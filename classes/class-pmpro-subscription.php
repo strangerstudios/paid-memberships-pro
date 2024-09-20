@@ -1010,10 +1010,10 @@ class PMPro_Subscription {
 	public function get_cost_text() {
 		if  ( 1 == $this->cycle_number ) {
 			// translators: %1$s - price, %2$s - period.
-			$cost_text = sprintf( __( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_period );
+			$cost_text = sprintf( __( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), pmpro_translate_billing_period( $this->cycle_period, $this->cycle_number ) );
 		} else {
 			// translators: %1$s - price, %2$d - number, %3$s - period.
-			$cost_text = sprintf( __( '%1$s every %2$d %3$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_number, $this->cycle_period );
+			$cost_text = sprintf( __( '%1$s every %2$d %3$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_number, pmpro_translate_billing_period( $this->cycle_period, $this->cycle_number ) );
 		}
 
 		/**

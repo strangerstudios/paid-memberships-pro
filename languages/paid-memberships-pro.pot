@@ -2,16 +2,16 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.1.3\n"
+"Project-Id-Version: Paid Memberships Pro 3.1.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-08-06T18:12:58+00:00\n"
+"POT-Creation-Date: 2024-09-18T14:09:04+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
 
 #. Plugin Name of the plugin
@@ -800,7 +800,7 @@ msgid "Create a Membership Level"
 msgstr ""
 
 #: adminpages/dashboard.php:130
-#: includes/functions.php:2134
+#: includes/functions.php:2136
 msgid "View Membership Levels"
 msgstr ""
 
@@ -934,7 +934,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:91
 #: classes/class-pmpro-members-list-table.php:133
 #: classes/class-pmpro-subscription.php:1212
-#: pages/checkout.php:195
+#: pages/checkout.php:210
 #: pages/confirmation.php:105
 #: shortcodes/pmpro_account.php:76
 msgid "Username"
@@ -1014,7 +1014,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:42
 #: adminpages/orders.php:640
 #: classes/class-pmpro-orders-list-table.php:149
-#: includes/functions.php:3251
+#: includes/functions.php:3253
 #: includes/privacy.php:281
 #: includes/profile.php:750
 #: pages/invoice.php:195
@@ -1257,7 +1257,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:487
 #: classes/gateways/class.pmprogateway_stripe.php:948
 #: pages/billing.php:323
-#: pages/checkout.php:460
+#: pages/checkout.php:475
 msgid "Expiration Date"
 msgstr ""
 
@@ -1443,8 +1443,8 @@ msgstr ""
 #: adminpages/orders.php:935
 #: classes/class-pmpro-field.php:936
 #: includes/email-templates.php:107
-#: includes/profile.php:1195
-#: includes/profile.php:1342
+#: includes/profile.php:1196
+#: includes/profile.php:1343
 #: pages/billing.php:385
 #: pages/cancel.php:153
 #: shortcodes/pmpro_account.php:256
@@ -2566,7 +2566,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:1009
 #: classes/class-pmpro-orders-list-table.php:1012
 #: includes/profile.php:791
-#: includes/profile.php:1148
+#: includes/profile.php:1149
 #: pages/confirmation.php:106
 #: shortcodes/pmpro_account.php:77
 msgid "Email"
@@ -2741,23 +2741,23 @@ msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:109
 #: classes/class-pmpro-members-list-table.php:135
-#: includes/profile.php:1145
+#: includes/profile.php:1146
 #: pages/billing.php:199
-#: pages/checkout.php:352
+#: pages/checkout.php:367
 msgid "First Name"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:113
 #: classes/class-pmpro-members-list-table.php:136
-#: includes/profile.php:1146
+#: includes/profile.php:1147
 #: pages/billing.php:203
-#: pages/checkout.php:356
+#: pages/checkout.php:371
 msgid "Last Name"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:123
 #: classes/gateways/class.pmprogateway_payflowpro.php:141
-#: pages/checkout.php:214
+#: pages/checkout.php:229
 msgid "Password"
 msgstr ""
 
@@ -2783,7 +2783,7 @@ msgid "Hide"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:144
-#: pages/checkout.php:229
+#: pages/checkout.php:244
 msgid "Confirm Password"
 msgstr ""
 
@@ -3106,7 +3106,7 @@ msgstr ""
 
 #: adminpages/orders.php:466
 #: pages/billing.php:195
-#: pages/checkout.php:348
+#: pages/checkout.php:363
 msgid "Billing Address"
 msgstr ""
 
@@ -3154,7 +3154,7 @@ msgstr ""
 #: pages/billing.php:159
 #: pages/billing.php:170
 #: pages/billing.php:291
-#: pages/checkout.php:450
+#: pages/checkout.php:465
 msgid "Payment Information"
 msgstr ""
 
@@ -3170,7 +3170,7 @@ msgstr ""
 #: includes/profile.php:751
 #: pages/checkout.php:161
 #: pages/checkout.php:164
-#: pages/checkout.php:501
+#: pages/checkout.php:516
 #: pages/invoice.php:300
 msgid "Discount Code"
 msgstr ""
@@ -3181,7 +3181,7 @@ msgid "Sub Total"
 msgstr ""
 
 #: adminpages/orders.php:627
-#: includes/functions.php:3230
+#: includes/functions.php:3232
 #: includes/privacy.php:277
 msgid "Tax"
 msgstr ""
@@ -4313,7 +4313,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:570
 #: includes/adminpages.php:304
 #: includes/adminpages.php:729
-#: includes/profile.php:1364
+#: includes/profile.php:1365
 msgid "Edit Member"
 msgstr ""
 
@@ -5034,9 +5034,9 @@ msgstr ""
 #: includes/login.php:665
 #: includes/login.php:810
 #: includes/login.php:822
-#: includes/profile.php:1309
-#: includes/profile.php:1322
-#: includes/profile.php:1329
+#: includes/profile.php:1310
+#: includes/profile.php:1323
+#: includes/profile.php:1330
 msgid "Required Field"
 msgstr ""
 
@@ -5519,7 +5519,7 @@ msgstr ""
 msgid "Just Deactivate"
 msgstr ""
 
-#: classes/class.memberorder.php:1764
+#: classes/class.memberorder.php:1770
 msgid "This is a test order used with the PMPro Email Templates addon."
 msgstr ""
 
@@ -5781,7 +5781,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:482
 #: classes/gateways/class.pmprogateway_stripe.php:943
 #: pages/billing.php:319
-#: pages/checkout.php:455
+#: pages/checkout.php:470
 msgid "Card Number"
 msgstr ""
 
@@ -5793,14 +5793,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:531
 #: classes/gateways/class.pmprogateway_stripe.php:966
 #: pages/checkout.php:167
-#: pages/checkout.php:504
+#: pages/checkout.php:519
 msgid "Apply discount code"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:531
 #: classes/gateways/class.pmprogateway_stripe.php:966
 #: pages/checkout.php:167
-#: pages/checkout.php:504
+#: pages/checkout.php:519
 msgid "Apply"
 msgstr ""
 
@@ -6229,7 +6229,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypal.php:207
 #: classes/gateways/class.pmprogateway_paypalexpress.php:523
 #: classes/gateways/class.pmprogateway_paypalstandard.php:176
-#: pages/checkout.php:614
+#: pages/checkout.php:629
 msgid "Submit and Check Out"
 msgstr ""
 
@@ -6237,7 +6237,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:523
 #: classes/gateways/class.pmprogateway_paypalstandard.php:176
 #: classes/gateways/class.pmprogateway_twocheckout.php:209
-#: pages/checkout.php:614
+#: pages/checkout.php:629
 msgid "Submit and Confirm"
 msgstr ""
 
@@ -6441,7 +6441,7 @@ msgid "Some webhooks recently sent by Stripe have not been received by your webs
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:492
-msgid "Recent webhook attempts appear to have worked correctly, but there are some event types that have not been checked. Those event types will be checked as they are sent by Stripe. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active."
+msgid "Some event types have not yet been triggered in Stripe. More information will be available here once Stripe attempts to send webhooks for each event type. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:494
@@ -9455,107 +9455,107 @@ msgstr ""
 msgid "Error interacting with database: %s"
 msgstr ""
 
-#: includes/functions.php:1468
-#: includes/functions.php:1507
+#: includes/functions.php:1470
+#: includes/functions.php:1509
 msgid "Membership level not found."
 msgstr ""
 
-#: includes/functions.php:1898
+#: includes/functions.php:1900
 msgid "No code was given to check."
 msgstr ""
 
-#: includes/functions.php:1907
+#: includes/functions.php:1909
 msgid "The discount code could not be found."
 msgstr ""
 
-#: includes/functions.php:1922
+#: includes/functions.php:1924
 msgid "This discount code goes into effect on %s."
 msgstr ""
 
-#: includes/functions.php:1929
+#: includes/functions.php:1931
 msgid "This discount code expired on %s."
 msgstr ""
 
-#: includes/functions.php:1938
+#: includes/functions.php:1940
 msgid "This discount code is no longer valid."
 msgstr ""
 
-#: includes/functions.php:1957
+#: includes/functions.php:1959
 msgid "This discount code does not apply to this membership level."
 msgstr ""
 
-#: includes/functions.php:1995
+#: includes/functions.php:1997
 msgid "This discount code is okay."
 msgstr ""
 
-#: includes/functions.php:2029
+#: includes/functions.php:2031
 msgid "and"
 msgstr ""
 
-#: includes/functions.php:2110
+#: includes/functions.php:2112
 msgid "This content is for members only. Visit the site and log in/register to read."
 msgstr ""
 
-#: includes/functions.php:2130
+#: includes/functions.php:2132
 msgid "Membership Required"
 msgstr ""
 
-#: includes/functions.php:2131
+#: includes/functions.php:2133
 msgid " You must be a member to access this content."
 msgstr ""
 
-#: includes/functions.php:2137
+#: includes/functions.php:2139
 msgid "!!levels!! Membership Required"
 msgstr ""
 
-#: includes/functions.php:2138
+#: includes/functions.php:2140
 msgid " You must be a !!levels!! member to access this content."
 msgstr ""
 
-#: includes/functions.php:2140
+#: includes/functions.php:2142
 #: includes/login.php:856
 msgid "Join Now"
 msgstr ""
 
-#: includes/functions.php:2186
+#: includes/functions.php:2188
 msgid "Already a member?"
 msgstr ""
 
-#: includes/functions.php:2186
-#: pages/checkout.php:303
+#: includes/functions.php:2188
+#: pages/checkout.php:317
 msgid "Log in here"
 msgstr ""
 
-#: includes/functions.php:2747
+#: includes/functions.php:2749
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
-#: includes/functions.php:2771
+#: includes/functions.php:2773
 msgid "Sign Up Now"
 msgstr ""
 
-#: includes/functions.php:3223
+#: includes/functions.php:3225
 msgid "Subtotal"
 msgstr ""
 
-#: includes/functions.php:4788
+#: includes/functions.php:4795
 msgid "No file was uploaded."
 msgstr ""
 
-#: includes/functions.php:4794
+#: includes/functions.php:4801
 msgid "No file name found."
 msgstr ""
 
-#: includes/functions.php:4801
-#: includes/functions.php:4822
+#: includes/functions.php:4808
+#: includes/functions.php:4829
 msgid "Invalid file type."
 msgstr ""
 
-#: includes/functions.php:4816
+#: includes/functions.php:4823
 msgid "Invalid field input."
 msgstr ""
 
-#: includes/functions.php:4840
+#: includes/functions.php:4847
 msgid "Invalid file submission."
 msgstr ""
 
@@ -9712,12 +9712,12 @@ msgid "You've entered an invalid email address."
 msgstr ""
 
 #: includes/login.php:446
-#: includes/profile.php:1256
+#: includes/profile.php:1257
 msgid "New passwords do not match."
 msgstr ""
 
 #: includes/login.php:450
-#: includes/profile.php:1252
+#: includes/profile.php:1253
 msgid "Please complete all fields."
 msgstr ""
 
@@ -9740,8 +9740,8 @@ msgstr ""
 #: includes/login.php:606
 #: includes/login.php:645
 #: includes/login.php:814
-#: includes/profile.php:1313
-#: pages/checkout.php:220
+#: includes/profile.php:1314
+#: pages/checkout.php:235
 msgid "Show Password"
 msgstr ""
 
@@ -9768,17 +9768,17 @@ msgid "Your password reset link has expired. Please request a new link below."
 msgstr ""
 
 #: includes/login.php:809
-#: includes/profile.php:1321
+#: includes/profile.php:1322
 msgid "New Password"
 msgstr ""
 
 #: includes/login.php:821
-#: includes/profile.php:1328
+#: includes/profile.php:1329
 msgid "Confirm New Password"
 msgstr ""
 
 #: includes/login.php:828
-#: includes/profile.php:1335
+#: includes/profile.php:1336
 #: includes/scripts.php:81
 msgid "Strength Indicator"
 msgstr ""
@@ -10057,45 +10057,12 @@ msgstr ""
 msgid "This email is already registered, please choose another one."
 msgstr ""
 
-#: includes/profile.php:1147
-msgid "Display name publicly as"
+#: includes/profile.php:1117
+msgid "Your profile has been updated."
 msgstr ""
 
-#: includes/profile.php:1159
-#: pages/billing.php:55
-#: pages/checkout.php:183
-msgid "Account Information"
-msgstr ""
-
-#: includes/profile.php:1168
-msgid "Site administrators must use the WordPress dashboard to update their email address."
-msgstr ""
-
-#: includes/profile.php:1194
-msgid "Submit the update profile form"
-msgstr ""
-
-#: includes/profile.php:1194
-msgid "Update Profile"
-msgstr ""
-
-#: includes/profile.php:1195
-msgid "Cancel changes and return to the account page"
-msgstr ""
-
-#: includes/profile.php:1254
-msgid "Please enter your current password."
-msgstr ""
-
-#: includes/profile.php:1258
-msgid "Your current password is incorrect."
-msgstr ""
-
-#: includes/profile.php:1269
-msgid "Your password has been updated."
-msgstr ""
-
-#: includes/profile.php:1289
+#: includes/profile.php:1118
+#: includes/profile.php:1290
 #: pages/cancel.php:175
 #: pages/cancel.php:192
 #: pages/confirmation.php:129
@@ -10103,13 +10070,51 @@ msgstr ""
 msgid "View Your Membership Account &rarr;"
 msgstr ""
 
-#: includes/profile.php:1301
-#: includes/profile.php:1341
+#: includes/profile.php:1148
+msgid "Display name publicly as"
+msgstr ""
+
+#: includes/profile.php:1160
+#: pages/billing.php:55
+#: pages/checkout.php:200
+msgid "Account Information"
+msgstr ""
+
+#: includes/profile.php:1169
+msgid "Site administrators must use the WordPress dashboard to update their email address."
+msgstr ""
+
+#: includes/profile.php:1195
+msgid "Submit the update profile form"
+msgstr ""
+
+#: includes/profile.php:1195
+msgid "Update Profile"
+msgstr ""
+
+#: includes/profile.php:1196
+msgid "Cancel changes and return to the account page"
+msgstr ""
+
+#: includes/profile.php:1255
+msgid "Please enter your current password."
+msgstr ""
+
+#: includes/profile.php:1259
+msgid "Your current password is incorrect."
+msgstr ""
+
+#: includes/profile.php:1270
+msgid "Your password has been updated."
+msgstr ""
+
+#: includes/profile.php:1302
+#: includes/profile.php:1342
 #: shortcodes/pmpro_account.php:99
 msgid "Change Password"
 msgstr ""
 
-#: includes/profile.php:1308
+#: includes/profile.php:1309
 msgid "Current Password"
 msgstr ""
 
@@ -10239,48 +10244,48 @@ msgid "Your billing information cannot be updated at this time."
 msgstr ""
 
 #: pages/billing.php:207
-#: pages/checkout.php:360
+#: pages/checkout.php:375
 msgid "Address 1"
 msgstr ""
 
 #: pages/billing.php:211
-#: pages/checkout.php:364
+#: pages/checkout.php:379
 msgid "Address 2"
 msgstr ""
 
 #: pages/billing.php:216
-#: pages/checkout.php:368
+#: pages/checkout.php:383
 msgid "City"
 msgstr ""
 
 #: pages/billing.php:220
-#: pages/checkout.php:372
+#: pages/checkout.php:387
 msgid "State"
 msgstr ""
 
 #: pages/billing.php:224
-#: pages/checkout.php:376
+#: pages/checkout.php:391
 msgid "Postal Code"
 msgstr ""
 
 #: pages/billing.php:234
-#: pages/checkout.php:383
+#: pages/checkout.php:398
 msgid "Country"
 msgstr ""
 
 #: pages/billing.php:260
-#: pages/checkout.php:256
-#: pages/checkout.php:410
+#: pages/checkout.php:271
+#: pages/checkout.php:425
 msgid "Email Address"
 msgstr ""
 
 #: pages/billing.php:264
-#: pages/checkout.php:264
+#: pages/checkout.php:279
 msgid "Confirm Email Address"
 msgstr ""
 
 #: pages/billing.php:268
-#: pages/checkout.php:425
+#: pages/checkout.php:440
 msgid "Phone"
 msgstr ""
 
@@ -10401,51 +10406,51 @@ msgstr ""
 msgid "Click here to enter your discount code"
 msgstr ""
 
-#: pages/checkout.php:280
+#: pages/checkout.php:295
 msgid "Full Name"
 msgstr ""
 
-#: pages/checkout.php:281
+#: pages/checkout.php:296
 msgid "LEAVE THIS BLANK"
 msgstr ""
 
-#: pages/checkout.php:295
+#: pages/checkout.php:310
 msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr ""
 
-#: pages/checkout.php:303
+#: pages/checkout.php:317
 msgid "Already have an account?"
 msgstr ""
 
-#: pages/checkout.php:318
+#: pages/checkout.php:333
 msgid "Choose your Payment Method"
 msgstr ""
 
-#: pages/checkout.php:325
+#: pages/checkout.php:340
 msgid "Check Out with a Credit Card Here"
 msgstr ""
 
-#: pages/checkout.php:331
+#: pages/checkout.php:346
 msgid "Check Out with PayPal"
 msgstr ""
 
-#: pages/checkout.php:417
+#: pages/checkout.php:432
 msgid "Confirm Email"
 msgstr ""
 
-#: pages/checkout.php:493
+#: pages/checkout.php:508
 msgid "Security Code (CVC)"
 msgstr ""
 
-#: pages/checkout.php:534
+#: pages/checkout.php:549
 msgid "I agree to the <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
 msgstr ""
 
-#: pages/checkout.php:597
+#: pages/checkout.php:612
 msgid "Complete Payment"
 msgstr ""
 
-#: pages/checkout.php:624
+#: pages/checkout.php:639
 msgid "Processing..."
 msgstr ""
 
