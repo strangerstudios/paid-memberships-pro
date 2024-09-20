@@ -103,7 +103,7 @@
 									$pay_to = pmpro_formatAddress(
 										$business_address['name'],
 										$business_address['street'],
-										'',
+										$business_address['street2'],
 										$business_address['city'],
 										$business_address['state'],
 										$business_address['zip'],

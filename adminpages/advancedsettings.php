@@ -43,6 +43,7 @@
 		$business_address = array();
 		$business_address['name'] = ! empty( $_POST['business_name'] ) ? sanitize_text_field( wp_unslash( $_POST['business_name'] ) ) : '';
 		$business_address['street'] = ! empty( $_POST['business_street'] ) ? sanitize_text_field( wp_unslash( $_POST['business_street'] ) ) : '';
+		$business_address['street2'] = ! empty( $_POST['business_street2'] ) ? sanitize_text_field( wp_unslash( $_POST['business_street2'] ) ) : '';
 		$business_address['city'] = ! empty( $_POST['business_city'] ) ? sanitize_text_field( wp_unslash( $_POST['business_city'] ) ) : '';
 		$business_address['state'] = ! empty( $_POST['business_state'] ) ? sanitize_text_field( wp_unslash( $_POST['business_state'] ) ) : '';
 		$business_address['zip'] = ! empty( $_POST['business_zip'] ) ? sanitize_text_field( wp_unslash( $_POST['business_zip'] ) ) : '';
@@ -96,6 +97,7 @@
 		$business_address = array(
 			'name' => '',
 			'street' => '',
+			'street2' => '',
 			'city' => '',
 			'state' => '',
 			'zip' => '',
@@ -291,8 +293,8 @@
 							<br />
 							<p class="description"><?php esc_html_e('Notifications are occasionally shown on the Paid Memberships Pro settings pages.', 'paid-memberships-pro' );?></p>
 						</td>
-				</tr>
-				<tr>
+					</tr>
+					<tr>
 						<th>
 							<label for="activity_email_frequency"><?php esc_html_e('Activity Email Frequency', 'paid-memberships-pro' );?></label>
 						</th>
@@ -348,6 +350,13 @@
 								<input type="text" id="business_street" name="business_street" value="<?php echo esc_attr( $business_address['street'] ); ?>" class="regular-text" />
 							</td>
 						</tr>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="business_street2"><?php esc_html_e( 'Business Street 2', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<input type="text" id="business_street2" name="business_street2" value="<?php echo esc_attr( $business_address['street2'] ); ?>" class="regular-text" />
+							</td>
 						<tr>
 							<th scope="row" valign="top">
 								<label for="business_city"><?php esc_html_e( 'Business City', 'paid-memberships-pro' ); ?></label>
