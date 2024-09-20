@@ -40,6 +40,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	// Get the current user's membership levels.
 	$mylevels = pmpro_getMembershipLevelsForUser();
 
+	// Sort the levels by the levels order.
+	if ( ! empty( $mylevels ) ) {
+		$mylevels = pmpro_sort_levels_by_order( $mylevels );
+	}
+
 	// Remove the filter so we don't mess up other stuff.
 	remove_filter( 'pmpro_disable_admin_membership_access', '__return_true', 15 ); 
 

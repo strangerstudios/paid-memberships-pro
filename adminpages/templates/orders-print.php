@@ -133,7 +133,7 @@
 					$pmpro_order_single_meta['bill_to']['value'] = pmpro_formatAddress(
 						$order->billing->name,
 						$order->billing->street,
-						"",
+						$order->billing->street2,
 						$order->billing->city,
 						$order->billing->state,
 						$order->billing->zip,

@@ -77,8 +77,8 @@
 				$morder = new MemberOrder();
 				$morder->user_id = $old_order->user_id;
 				$morder->membership_id = $old_order->membership_id;
-				$morder->InitialPayment = $fields['x_amount'];	//not the initial payment, but the class is expecting that
-				$morder->PaymentAmount = $fields['x_amount'];
+				$morder->subtotal = $fields['x_amount'];
+				$morder->total = $fields['x_amount'];
 				$morder->payment_transaction_id = $fields['x_trans_id'];
 				$morder->subscription_transaction_id = $fields['x_subscription_id'];
 
@@ -87,16 +87,6 @@
 
 				$morder->gateway = $old_order->gateway;
 				$morder->gateway_environment = $old_order->gateway_environment;
-
-				$morder->FirstName = $fields['x_first_name'];
-				$morder->LastName = $fields['x_last_name'];
-				$morder->Email = $fields['x_email'];
-				$morder->Address1 = $fields['x_address'];
-				$morder->City = $fields['x_city'];
-				$morder->State = $fields['x_state'];
-				$morder->CountryCode = $fields['x_country'];
-				$morder->Zip = $fields['x_zip'];
-				$morder->PhoneNumber = $fields['x_phone'];
 
 				$morder->billing = new stdClass();
 				$morder->billing->name = $fields['x_first_name'] . " " . $fields['x_last_name'];

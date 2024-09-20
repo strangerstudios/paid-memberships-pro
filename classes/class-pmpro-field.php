@@ -255,6 +255,34 @@ class PMPro_Field {
 	 */
 	public $html = '';
 
+	/**
+	 * The default value for a field.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $default = '';
+
+	/**
+	 * File upload types.
+	 * 
+	 * @since TBD
+	 * 
+	 * @var string
+	 *
+	 */
+	public $allowed_file_types = '';
+
+	/**
+	 * File upload limit
+	 * 
+	 * @since TBD
+	 * 
+	 * @var int
+	 */
+	public $max_file_size = '';
+
 	function __construct($name = NULL, $type = NULL, $attr = NULL) {
 		if ( ! empty( $name ) )
 			return $this->set( $name, $type, $attr );
@@ -525,7 +553,7 @@ class PMPro_Field {
 
 		// Get $file and $filetype.
 		$file = array_map( 'sanitize_text_field', $_FILES[ $name ] );
-		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
+		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );;
 
 		/*
 			save file in uploads
@@ -639,6 +667,18 @@ class PMPro_Field {
 		if ( is_admin() ) {
 			$r_beginning .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-' . esc_attr( $this->type ), 'pmpro_form_field-' . esc_attr( $this->type ) ) ) . '">';
 			$r_end .= "</div>";
+		}
+
+		if ( empty( $value ) && pmpro_is_checkout() ) {
+			/**
+			 * Filter to set the default value for a field. The default value will only load if no value is already found.
+			 * 
+			 * @param string $value The default value for the field.
+			 * @param object $this The field object.
+			 * 
+			 * @since TBD
+			 */
+			$value = apply_filters( 'pmpro_field_default_value', $this->default, $this );
 		}
 
 		if($this->type == "text")
@@ -978,17 +1018,39 @@ class PMPro_Field {
 			</script>
 			';
 
-			//file input
 			$r .= '<div id="pmpro_file_' . esc_attr( $this->id ) . '_upload" class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-file-upload' ) ) . '" ' . (empty($value) ? '' : 'style="display: none;"') . '>';
 			$r .= '<input type="file" id="' . esc_attr( $this->id ) . '" ';
-			if(!empty($this->accept))
-				$r .= 'accept="' . esc_attr( $this->accept ) . '" ';
-			if(!empty($this->class))
+			
+			if ( ! empty( $this->allowed_file_types ) ) {
+
+				// Break it out into an array if it is possible.
+				$allowed_file_array = explode( ',', $this->allowed_file_types );
+
+				// loop through the allowed arrays and add a period if there isn't one, BUT skip this if it contains a /* pattern (we can assume that it's okay.)
+				foreach( $allowed_file_array as $key => $allowed_file_type ) {
+					if ( strpos( $allowed_file_type, '/' ) === false && strpos( $allowed_file_type, '.' ) !== 0 ) {
+						$allowed_file_array[ $key ] = '.' . $allowed_file_type;
+					}
+				}
+
+				// Convert it back to a comma-separated string before adding it to the HTML.
+				$this->allowed_file_types = implode( ',', $allowed_file_array );
+
+				$r .= 'accept="' . esc_attr( $this->allowed_file_types ) . '" ';
+			}
+
+			if ( ! empty( $this->class ) ) {
 				$r .= 'class="' . esc_attr( $this->class ) . '" ';
-			if(!empty($this->html_attributes))
+			}
+
+			if ( ! empty( $this->html_attributes ) ) {
 				$r .= $this->getHTMLAttributes();
-			if(!empty($this->readonly))
+			}
+
+			if ( ! empty( $this->readonly ) ) {
 				$r .= 'disabled="disabled" ';
+			}
+
 			$r .= 'name="' . esc_attr( $this->name ) . '" />';
 			$r .= '</div>';
 

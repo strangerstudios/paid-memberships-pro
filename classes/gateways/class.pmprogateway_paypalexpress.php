@@ -43,14 +43,12 @@
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalexpress")
 			{
-				add_action('pmpro_checkout_preheader', array('PMProGateway_paypalexpress', 'pmpro_checkout_preheader'));
 				add_filter('pmpro_include_billing_address_fields', '__return_false');
 				add_filter('pmpro_include_payment_information_fields', '__return_false');
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
-				add_filter('pmpro_checkout_new_user_array', array('PMProGateway_paypalexpress', 'pmpro_checkout_new_user_array'));
-				add_filter('pmpro_checkout_confirmed', array('PMProGateway_paypalexpress', 'pmpro_checkout_confirmed'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
 				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
+				add_action('pmpro_checkout_preheader', array('PMProGateway_paypalexpress', 'pmpro_checkout_preheader'));
 			}
 			add_filter( 'pmpro_process_refund_paypalexpress', array('PMProGateway_paypalexpress', 'process_refund' ), 10, 2 );
 		}
@@ -254,21 +252,28 @@
 		 * @since 2.1
 		 */
 		static function pmpro_checkout_preheader() {
-			global $gateway, $pmpro_level;
+			global $gateway, $pmpro_level, $pmpro_review;
 
-			$default_gateway = get_option("pmpro_gateway");
+			// Check if the we already have an order that is being paid with PayPal Express. If not, bail.
+			if ( empty( $pmpro_review ) || ! is_a( $pmpro_review, 'MemberOrder' ) || $pmpro_review->gateway !== 'paypalexpress') {
+				return;
+			}
 
-			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
-				wp_register_script( 'pmpro_paypal',
-                            plugins_url( 'js/pmpro-paypal.js', PMPRO_BASE_FILE ),
-                            array( 'jquery' ),
-                            PMPRO_VERSION );
-				//wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', array());
-				wp_enqueue_script( 'pmpro_paypal' );
+			// Set some globals for compatibility with pre-TBD checkout page templates.
+			global $pmpro_paypal_token;
+			$pmpro_paypal_token = $pmpro_review->paypal_token;
+
+			// For backwards compatibility with pre-TBD checkout page templates, also check if the $_REQUEST['confirm'] attribute is set.
+			// If so, we want to process the chekcout form submission.
+			if ( ! empty( $_REQUEST['confirm'] ) ) {
+				// Process the checkout form submission.
+				$_REQUEST['submit-checkout'] = 1;
+				return;
 			}
 		}
 
 		/**
+
 		 * Save session vars before processing
 		 *
 		 * @since 1.8
@@ -303,14 +308,6 @@
 				$_SESSION['pmpro_signup_email'] = $bemail;
 			}
 
-			if( !empty( $_REQUEST['tos'] ) ) {
-				$tospost = get_post( get_option( 'pmpro_tospage' ) );
-				$_SESSION['tos'] = array(
-					'post_id' => $tospost->ID,
-					'post_modified' => $tospost->post_modified,
-				);
-			}
-
 			//can use this hook to save some other variables to the session
 			// @deprecated 2.12.3
 			do_action("pmpro_paypalexpress_session_vars");
@@ -320,9 +317,11 @@
 		 * Review and Confirmation code.
 		 *
 		 * @since 1.8
+		 * @deprecated TBD
 		 */
 		static function pmpro_checkout_confirmed($pmpro_confirmed)
 		{
+			_deprecated_function( __FUNCTION__, 'TBD', 'PMProGateway_paypalexpress::process()' );
 			global $pmpro_msg, $pmpro_msgt, $pmpro_level, $current_user, $pmpro_review, $pmpro_paypal_token, $discount_code, $bemail;
 
 			//PayPal Express Call Backs
@@ -385,29 +384,14 @@
 					//set up values
 					$morder->membership_id = $pmpro_level->id;
 					$morder->membership_name = $pmpro_level->name;
-					$morder->InitialPayment = pmpro_round_price( $pmpro_level->initial_payment );
-					$morder->PaymentAmount = pmpro_round_price( $pmpro_level->billing_amount );
-					$morder->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-					$morder->BillingPeriod = $pmpro_level->cycle_period;
+					$morder->subtotal = pmpro_round_price( $pmpro_level->initial_payment );
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
-					$morder->Email = $bemail;
 
 					//setup level var
 					$morder->getMembershipLevelAtCheckout();
 
 					//tax
-					$morder->subtotal = $morder->InitialPayment;
 					$morder->getTax();
-					if($pmpro_level->billing_limit)
-						$morder->TotalBillingCycles = $pmpro_level->billing_limit;
-
-					if(pmpro_isLevelTrial($pmpro_level))
-					{
-						$morder->TrialBillingPeriod = $pmpro_level->cycle_period;
-						$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
-						$morder->TrialBillingCycles = $pmpro_level->trial_limit;
-						$morder->TrialAmount = pmpro_round_price( $pmpro_level->trial_amount );
-					}
 
 					if($morder->confirm())
 					{
@@ -436,9 +420,11 @@
 		 * Swap in user/pass/etc from session
 		 *
 		 * @since 1.8
+		 * @deprecated TBD
 		 */
 		static function pmpro_checkout_new_user_array($new_user_array)
 		{
+			_deprecated_function( __FUNCTION__, 'TBD' );
 			global $current_user;
 
 			if(!$current_user->ID)
@@ -466,27 +452,76 @@
 		/**
 		 * Process at checkout
 		 *
-		 * Repurposed in v2.0. The old process() method is now confirm().
+		 * @since 2.0 - The old process() method is now confirm().
+		 * @since TBD - This method now handles both sending users to PayPal and confirming checkouts.
 		 */
-		function process(&$order)
-		{
-			$order->payment_type = "PayPal Express";
-			$order->cardtype = "";
-			$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
+		function process( &$order ) {
+			// If the user has not yet been sent to PayPal, send them to pay.
+			if ( empty( $order->paypal_token ) ) {
+				// No. Send them to PayPal.
+				$order->payment_type = "PayPal Express";
+				$order->cardtype = "";
 
-			return $this->setExpressCheckout($order);
+				return $this->setExpressCheckout($order);
+			}
+
+			// We know that the user had been sent to pay and has re-submitted the chekcout form to confirm.
+			// Make sure the order is in `token` status.
+			if ( $order->status !== 'token' ) {
+				pmpro_setMessage( __("Checkout was already processed.", 'paid-memberships-pro' ), 'pmpro_error' );
+				return false;
+			}
+
+			// Make sure we still have the PayPal token.
+			if ( empty( $order->paypal_token ) ) {
+				pmpro_setMessage( __( 'The PayPal Token was lost.', 'paid-memberships-pro' ), 'pmpro_error' );
+				return false;
+			}
+
+			// Validate the PayPal Token.
+			if ( ! $order->Gateway->getExpressCheckoutDetails($order) ) {
+				pmpro_setMessage( $order->error, 'pmpro_error' );
+				return false;
+			}
+
+			//set up values
+			$pmpro_level = $order->getMembershipLevelAtCheckout();
+			$user        = get_userdata( $order->user_id );
+			$order->membership_id = $pmpro_level->id;
+			$order->membership_name = $pmpro_level->name;
+			$order->subtotal = pmpro_round_price( $pmpro_level->initial_payment );
+
+			//setup level var
+			$order->getMembershipLevelAtCheckout();
+
+			//tax
+			$order->getTax();
+
+			if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
+				$success = $this->subscribe($order);
+			} else {
+				$success = $this->charge($order);
+			}
+
+			if ( ! $success ) {
+				pmpro_setMessage( $order->error, 'pmpro_error' );
+				return false;
+			}
+
+			return true;
 		}
 
 		/**
 		 * Process charge or subscription after confirmation.
 		 *
 		 * @since 1.8
+		 * @deprecated TBD
 		 */
 		function confirm(&$order)
 		{
+			_deprecated_function( __FUNCTION__, 'TBD', 'PMProGateway_paypalexpress::process()' );
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
-				$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
 				return $this->subscribe($order);
 			}
 			else
@@ -538,53 +573,55 @@
 
 			//clean up a couple values
 			$order->payment_type = "PayPal Express";
-			$order->CardType = "";
 			$order->cardtype = "";
 
+			// Get the level.
+			$level = $order->getMembershipLevelAtCheckout();
+
 			//taxes on initial amount
-			$initial_payment = $order->InitialPayment;
+			$initial_payment = $order->subtotal;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
 
 			// Note: SetExpressCheckout expects this amount to be the total including tax.
 			$initial_payment = pmpro_round_price_as_string( (float) $initial_payment + (float) $initial_payment_tax );
 
+			$profile_start_date = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
+
 			//paypal profile stuff
 			$nvpStr = "";
 			$nvpStr .="&AMT=" . $initial_payment . "&CURRENCYCODE=" . $pmpro_currency;
-			if(!empty($order->ProfileStartDate) && strtotime($order->ProfileStartDate, current_time("timestamp")) > 0)
-				$nvpStr .= "&PROFILESTARTDATE=" . $order->ProfileStartDate;
-			if(!empty($order->BillingFrequency))
-				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
+			if(!empty($profile_start_date) && strtotime($profile_start_date, current_time("timestamp")) > 0)
+				$nvpStr .= "&PROFILESTARTDATE=" . $profile_start_date;
+			if(!empty($level->cycle_number))
+				$nvpStr .= "&BILLINGPERIOD=" . $level->cycle_period . "&BILLINGFREQUENCY=" . $level->cycle_number . "&AUTOBILLOUTAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ) ) . "&L_PAYMENTTYPE0=Any";
 
 			//if billing cycles are defined
-			if(!empty($order->TotalBillingCycles))
-				$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
+			if(!empty($level->billing_limit))
+				$nvpStr .= "&TOTALBILLINGCYCLES=" . $level->billing_limit;
 
 			//if a trial period is defined
-			if(!empty($order->TrialBillingPeriod))
-			{
-				$trial_amount = $order->TrialAmount;
+			if( pmpro_isLevelTrial( $level ) ) {
+				$trial_amount = pmpro_round_price( $level->trial_amount );
 				$trial_tax = $order->getTaxForPrice($trial_amount);
 
 				// Note: SetExpressCheckout expects this amount to be the total including tax.
 				$trial_amount = pmpro_round_price_as_string( (float) $trial_amount + (float) $trial_tax );
 
-				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
+				$nvpStr .= "&TRIALBILLINGPERIOD=" . $level->cycle_period . "&TRIALBILLINGFREQUENCY=" . $level->cycle_frequency . "&TRIALAMT=" . $trial_amount . "&TRIALTOTALBILLINGCYCLES=" . $level->trial_limit;
 			}
-			if(!empty($order->TrialBillingCycles))
-				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 
-			if(!empty($order->discount_code))
-			{
-				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&pmpro_discount_code=" . $order->discount_code . "&review=" . $order->code));
+			// Build the return URL. If we are skipping confirmation, add the necessary parameters to make the checkout form appear as if it was submitted.
+			$return_url_params = array(
+				'pmpro_order' => $order->code,
+			);
+			if ( ! empty( get_option( 'pmpro_paypalexpress_skip_confirmation' ) ) ) {
+				$return_url_params['submit-checkout'] = 1;
+				$return_url_params['pmpro_checkout_nonce'] = wp_create_nonce( 'pmpro_checkout_nonce' );
 			}
-			else
-			{
-				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&review=" . $order->code));
-			}
+			$nvpStr .= "&ReturnUrl=" . urlencode( add_query_arg( $return_url_params, pmpro_url( 'checkout' ) ) );
 
 			$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());
 			if(!empty($additional_parameters))
@@ -652,7 +689,7 @@
 
 		function getExpressCheckoutDetails(&$order)
 		{
-			$nvpStr="&TOKEN=".$order->Token;
+			$nvpStr="&TOKEN=".$order->paypal_token;
 
 			$nvpStr = apply_filters("pmpro_get_express_checkout_details_nvpstr", $nvpStr, $order);
 
@@ -663,12 +700,6 @@
 			$this->httpParsedResponseAr = $this->PPHttpPost('GetExpressCheckoutDetails', $nvpStr);
 
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
-				$order->status = "review";
-
-				//update order
-
-				$order->saveOrder();
-
 				return true;
 			} else  {
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
@@ -687,7 +718,7 @@
 				$order->code = $order->getRandomCode();
 
 			//taxes on the amount
-			$amount = $order->InitialPayment;
+			$amount = $order->subtotal;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$order->subtotal = $amount;
 
@@ -696,20 +727,20 @@
 
 			//paypal profile stuff
 			$nvpStr = "";
-			if(!empty($order->Token))
-				$nvpStr .= "&TOKEN=" . $order->Token;
+			if(!empty($order->paypal_token))
+				$nvpStr .= "&TOKEN=" . $order->paypal_token;
 			$nvpStr .="&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency;
 			/*
 			if(!empty($amount_tax))
 				$nvpStr .= "&TAXAMT=" . $amount_tax;
 			*/
-			if(!empty($order->BillingFrequency))
-				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
+			if(!empty($level->cycle_number))
+				$nvpStr .= "&BILLINGPERIOD=" . $level->cycle_period . "&BILLINGFREQUENCY=" . $level->cycle_number . "&AUTOBILLOUTAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1";
 
-			$nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";
+			$nvpStr .= "&PAYERID=" . sanitize_text_field( $_REQUEST['PayerID'] ) . "&PAYMENTACTION=sale";
 
 			$nvpStr = apply_filters("pmpro_do_express_checkout_payment_nvpstr", $nvpStr, $order);
 
@@ -745,38 +776,81 @@
 			$order = apply_filters("pmpro_subscribe_order", $order, $this);
 
 			//taxes on initial amount
-			$initial_payment = $order->InitialPayment;
+			$initial_payment = $order->subtotal;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
 
 			// Note: CreateRecurringPaymentsProfile expects this amount to be the total including tax.
 			$initial_payment = pmpro_round_price_as_string( (float) $initial_payment + (float) $initial_payment_tax );
 
 			//taxes on the amount
-			$amount = $order->PaymentAmount;
+			$level = $order->getMembershipLevelAtCheckout();
+			$amount = $level->billing_amount;
 			$amount_tax = $order->getTaxForPrice( $amount );
 
 			// Note: CreateRecurringPaymentsProfile expects this amount to be the total excluding tax.
 			$amount = pmpro_round_price_as_string( $amount );
 
+			// Adding back a fix from filters.php that allowed for start dates > 1 year out.
+			$profile_start_date = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
+			$original_start_date = $profile_start_date;
+			$one_year_out = strtotime( '+1 Year', current_time( 'timestamp' ) );
+			$two_years_out = strtotime( '+2 Year', current_time( 'timestamp' ) );
+			$one_year_out_date = date_i18n( 'Y-m-d\TH:i:s\Z', $one_year_out );
+			$days_past = floor( ( strtotime( $profile_start_date ) - $one_year_out ) / DAY_IN_SECONDS );
+			$trial_amount = pmpro_round_price( $level->trial_amount );
+			$trial_period = $level->cycle_period;
+			$trial_frequency = $level->cycle_number;
+			$trial_cycles = $level->trial_limit;
+			if ( ! empty( $profile_start_date ) && $profile_start_date > $one_year_out_date ) {
+				// Max out the profile start date at 1 year out no matter what.
+				$profile_start_date = $one_year_out_date;
+
+				// Try to squeeze into the trial.
+				if ( empty( $trial_cycles ) && $days_past > 0 ) {
+					// Update the trial information.
+					$trial_amount = 0;
+					$trial_period = 'Day';
+					$trial_frequency = min( 365, $days_past );
+					$trial_cycles = 1;
+				}
+	
+				// if we were going to try to push it more than 2 years out, let's notify the admin
+				if ( ! empty( $trial_cycles ) || strtotime( $profile_start_date ) > $two_years_out ) {
+					// setup user data
+					global $current_user;
+					if ( empty( $order->user_id ) ) {
+						$order->user_id = $current_user->ID;
+					}
+					$order->getUser();
+	
+					// create email
+					$pmproemail = new PMProEmail();
+					$body = '<p>' . __( "There was a potential issue while setting the 'Profile Start Date' for a user's subscription at checkout. PayPal does not allow one to set a Profile Start Date further than 1 year out. Typically, this is not an issue, but sometimes a combination of custom code or add ons for PMPro (e.g. the Prorating or Auto-renewal Checkbox add ons) will try to set a Profile Start Date out past 1 year in order to respect an existing user's original expiration date before they checked out. The user's information is below. PMPro has allowed the checkout and simply restricted the Profile Start Date to 1 year out with a possible additional free Trial of up to 1 year. You should double check this information to determine if maybe the user has overpaid or otherwise needs to be addressed. If you get many of these emails, you should consider adjusting your custom code to avoid these situations.", 'paid-memberships-pro' ) . '</p>';
+					$body .= '<p>' . sprintf( __( 'User: %1$s<br />Email: %2$s<br />Membership Level: %3$s<br />Order #: %4$s<br />Original Profile Start Date: %5$s<br />Adjusted Profile Start Date: %6$s<br />Trial Period: %7$s<br />Trial Frequency: %8$s<br />', 'paid-memberships-pro' ), $order->user->user_nicename, $order->user->user_email, $level->name, $order->code, date( 'c', $original_start_date ), $one_year_out_date, $trial_period, $trial_frequency ) . '</p>';
+					$pmproemail->template = 'profile_start_date_limit_check';
+					$pmproemail->subject = sprintf( __( 'Profile Start Date Issue Detected and Fixed at %s', 'paid-memberships-pro' ), get_bloginfo( 'name' ) );
+					$pmproemail->data = array( 'body' => $body );
+					$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
+				}
+			}
+
 			//paypal profile stuff
 			$nvpStr = "";
-			if(!empty($order->Token))
-				$nvpStr .= "&TOKEN=" . $order->Token;
-			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
+			if(!empty($order->paypal_token))
+				$nvpStr .= "&TOKEN=" . $order->paypal_token;
+			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $profile_start_date;
 			if(!empty($amount_tax))
 				$nvpStr .= "&TAXAMT=" . pmpro_round_price_as_string( $amount_tax );
-			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
+			$nvpStr .= "&BILLINGPERIOD=" . $level->cycle_period . "&BILLINGFREQUENCY=" . $level->cycle_number . "&AUTOBILLOUTAMT=AddToNextBilling";
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 
 			//if billing cycles are defined
-			if(!empty($order->TotalBillingCycles))
-				$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
+			if(!empty($level->billing_limit))
+				$nvpStr .= "&TOTALBILLINGCYCLES=" . $level->billing_limit;
 
 			//if a trial period is defined
-			if(!empty($order->TrialBillingPeriod))
-			{
-				$trial_amount = $order->TrialAmount;
+			if ( pmpro_isLevelTrial( $level ) ) {
 				$trial_tax = $order->getTaxForPrice($trial_amount);
 
 				/*
@@ -786,10 +860,8 @@
 				 */
 				$trial_amount = pmpro_round_price_as_string( (float) $trial_amount + (float) $trial_tax );
 
-				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
+				$nvpStr .= "&TRIALBILLINGPERIOD=" . $trial_period . "&TRIALBILLINGFREQUENCY=" . $trial_frequency . "&TRIALAMT=" . $trial_amount . "&TRIALTOTALBILLINGCYCLES=" . $trial_cycles;
 			}
-			if(!empty($order->TrialBillingCycles))
-				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 
 			// Set MAXFAILEDPAYMENTS so subscriptions are cancelled after 1 failed payment.
 			$nvpStr .= "&MAXFAILEDPAYMENTS=1";
@@ -818,11 +890,6 @@
 
 					return true;
 				} else {
-					// stop processing the review request on checkout page
-					$pmpro_review = false;
-
-					$order->status = "error";
-
 					// this is wrong, but we don't know the real transaction id at this point
 					$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 					$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
@@ -838,8 +905,6 @@
 				}
 			} else  {
 				// stop processing the review request on checkout page
-				$pmpro_review = false;
-
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -1114,7 +1179,8 @@
 				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "paypalexpress")
 				{
 					//get the subscription status
-					$status = $order->getGatewaySubscriptionStatus();
+					$gateway = new PMProGateway_paypalexpress();
+					$status = $gateway->getSubscriptionStatus($order);
 
 					if(!empty($status) && !empty($status['NEXTBILLINGDATE']))
 					{

@@ -176,7 +176,6 @@ class PMProGateway_stripe extends PMProGateway {
 			} else {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
-				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
 			}
 		}
 
@@ -489,7 +488,7 @@ class PMProGateway_stripe extends PMProGateway {
 					if ( ! empty( $failed_webhooks ) ) {
 						echo '<div class="notice error inline"><p>'. esc_html__( 'Some webhooks recently sent by Stripe have not been received by your website. Please ensure that you have a webhook set up in Stripe for the Webhook URL shown above with all of the listed event types active. To test an event type again, please resend the most recent webhook event of that type from the Stripe webhook settings page or wait for it to be sent again in the future.', 'paid-memberships-pro' ) . '</p></div>';
 					} elseif ( ! empty( $missing_webhooks ) ) {
-						echo '<div class="notice inline"><p>'. esc_html__( 'Recent webhook attempts appear to have worked correctly, but there are some event types that have not been checked. Those event types will be checked as they are sent by Stripe. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active.', 'paid-memberships-pro' ) . '</p></div>';
+						echo '<div class="notice inline"><p>'. esc_html__( 'Some event types have not yet been triggered in Stripe. More information will be available here once Stripe attempts to send webhooks for each event type. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active.', 'paid-memberships-pro' ) . '</p></div>';
 					} else {
 						echo '<div class="notice notice-success inline"><p>'. esc_html__( 'All webhooks appear to be working correctly.', 'paid-memberships-pro' ) . '</p></div>';
 					}
@@ -862,18 +861,6 @@ class PMProGateway_stripe extends PMProGateway {
 		// Add the PaymentMethod ID to the order.
 		if ( ! empty ( $_REQUEST['payment_method_id'] ) ) {
 			$morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
-		}
-
-		//stripe lite code to get name from other sources if available
-		global $pmpro_stripe_lite, $current_user;
-		if ( ! empty( $pmpro_stripe_lite ) && empty( $morder->FirstName ) && empty( $morder->LastName ) ) {
-			if ( ! empty( $current_user->ID ) ) {
-				$morder->FirstName = get_user_meta( $current_user->ID, "first_name", true );
-				$morder->LastName  = get_user_meta( $current_user->ID, "last_name", true );
-			} elseif ( ! empty( $_REQUEST['first_name'] ) && ! empty( $_REQUEST['last_name'] ) ) {
-				$morder->FirstName = sanitize_text_field( $_REQUEST['first_name'] );
-				$morder->LastName  = sanitize_text_field( $_REQUEST['last_name'] );
-			}
 		}
 
 		return $morder;
@@ -1516,26 +1503,16 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Instead of changing membership levels, send users to Stripe to pay.
+	 * Send user to Stripe to pay.
 	 *
-	 * @since 2.8
+	 * @since 2.8 - Hooked into pmpro_checkout_before_change_membership_level
+	 * @since TBD - Now called by the gateway's process() method.
 	 *
 	 * @param int         $user_id ID of user who is checking out.
 	 * @param MemberOrder $morder  MemberOrder object for this checkout.
 	 */
-	static function pmpro_checkout_before_change_membership_level($user_id, $morder)
-	{
-		global $pmpro_level, $discount_code, $wpdb, $pmpro_currency;
-
-		//if no order, no need to pay
-		if ( empty( $morder ) || $morder->gateway != 'stripe' ) {
-			return;
-		}
-
-		// Only continue if the order's payment_transaction_id and subscription_transaction_id are empty, meaning that a payment hasn't been made yet.
-		if ( ! empty( $morder->payment_transaction_id ) || ! empty( $morder->subscription_transaction_id ) ) {
-			return;
-		}
+	static function pmpro_checkout_before_change_membership_level( $user_id, $morder ) {
+		global $pmpro_level;
 
 		$morder->user_id = $user_id;
 		$morder->status  = 'token';
@@ -1571,8 +1548,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$application_fee_percentage = $stripe->get_application_fee_percentage();
 
 		// First, let's handle the initial payment.
-		if ( ! empty( $morder->InitialPayment ) ) {
-			$initial_subtotal       = $morder->InitialPayment;
+		if ( ! empty( $morder->subtotal ) ) {
+			$initial_subtotal       = $morder->subtotal;
 			$initial_tax            = $morder->getTaxForPrice( $initial_subtotal );
 			$initial_payment_amount = pmpro_round_price( (float) $initial_subtotal + (float) $initial_tax );
 			$initial_payment_price  = $stripe->get_price_for_product( $product_id, $initial_payment_amount );
@@ -1597,11 +1574,12 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Now, let's handle the recurring payments.
-		if ( pmpro_isLevelRecurring( $morder->membership_level ) ) {
-			$recurring_subtotal       = $morder->PaymentAmount;
+		$level = $morder->getMembershipLevelAtCheckout();
+		if ( pmpro_isLevelRecurring( $level ) ) {
+			$recurring_subtotal       = $level->billing_amount;
 			$recurring_tax            = $morder->getTaxForPrice( $recurring_subtotal );
 			$recurring_payment_amount = pmpro_round_price( (float) $recurring_subtotal + (float) $recurring_tax );
-			$recurring_payment_price  = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $morder->BillingPeriod, $morder->BillingFrequency );
+			$recurring_payment_price  = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $level->cycle_period, $morder->BillingFrequency );
 			if ( is_string( $recurring_payment_price ) ) {
 				// There was an error getting the price.
 				pmpro_setMessage( __( 'Could not get price for recurring payment. ', 'paid-memberships-pro' ) . $recurring_payment_price, 'pmpro_error', true );
@@ -1620,7 +1598,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$unfiltered_trial_period_days = $stripe->calculate_trial_period_days( $morder, false );
 
 			if (
-				empty( $morder->TrialBillingCycles ) && // Check if there is a trial period.
+				empty( $level->trial_limit ) && // Check if there is a trial period.
 				$filtered_trial_period_days === $unfiltered_trial_period_days && // Check if the trial period is the same as the filtered trial period.
 				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
 				) {
@@ -1758,8 +1736,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public function process( &$order ) {
 		if ( self::using_stripe_checkout() ) {
-			// If using Stripe Checkout, we will try to collect the payment later.
-			return true;
+			// If using Stripe Checkout, redirect them.
+			self::pmpro_checkout_before_change_membership_level( $order->user_id, $order );
+
+			// If we were not redirected, there was an error.
+			return false;
 		}
 
 		$payment_transaction_id = '';
@@ -2516,30 +2497,10 @@ class PMProGateway_stripe extends PMProGateway {
 		$customer = empty( $user_id ) ? null : $this->get_customer_for_user( $user_id );
 
 		// Get customer name.
-		if ( ! empty( $order->FirstName ) && ! empty( $order->LastName ) ) {
-			$name = trim( $order->FirstName . " " . $order->LastName );
-		} elseif ( ! empty( $order->FirstName ) ) {
-			$name = $order->FirstName;
-		} elseif ( ! empty( $order->LastName ) ) {
-			$name = $order->LastName;
-		} elseif ( ! empty( $user->ID ) ) {
-			$name = trim( $user->first_name . " " . $user->last_name );
-			if ( empty( $name ) ) {
-				// In case first and last names aren't set.
-				$name = $user->user_login;
-			}
-		} else {
-			$name = 'No Name';
-		}
+		$name = empty( $order->billing->name ) ? $user->user_login : $order->billing->name;
 
 		// Get user's email.
-		if ( ! empty( $order->Email ) ) {
-			$email = $order->Email;
-		} elseif ( ! empty( $user->user_email ) ) {
-			$email = $user->user_email;
-		} else {
-			$email = "No Email";
-		}
+		$email = empty( $user->user_email ) ? "No Email" : $user->user_email;
 
 		// Build data to update customer with.
 		$customer_args = array(
@@ -2562,27 +2523,9 @@ class PMProGateway_stripe extends PMProGateway {
 				'city'        => $order->billing->city,
 				'country'     => $order->billing->country,
 				'line1'       => $order->billing->street,
-				'line2'       => '',
+				'line2'       => $order->billing->street2,
 				'postal_code' => $order->billing->zip,
 				'state'       => $order->billing->state,
-			);
-		} elseif (
-			! $this->customer_has_billing_address( $customer ) &&
-			! empty( $user->pmpro_baddress1 ) &&
-			! empty( $user->pmpro_bcity ) &&
-			! empty( $user->pmpro_bstate ) &&
-			! empty( $user->pmpro_bzipcode ) &&
-			! empty( $user->pmpro_bcountry )
-		) {
-			// We have an address in user meta and there is
-			// no address in Stripe. May as well send it.
-			$customer_args['address'] = array(
-				'city'        => $user->pmpro_bcity,
-				'country'     => $user->pmpro_bcountry,
-				'line1'       => $user->pmpro_baddress1,
-				'line2'       => $user->pmpro_baddress2,
-				'postal_code' => $user->pmpro_bzipcode,
-				'state'       => $user->pmpro_bstate,
 			);
 		}
 
@@ -2914,12 +2857,15 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return int trial period days.
 	 */
 	private function calculate_trial_period_days( $order, $filtered = true ) {
+		// Get the checkout level for this order.
+		$level = $order->getMembershipLevelAtCheckout();
+
 		// Check if we have a free trial period set.
-		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
+		if ( ! empty( $level->trial_limit ) && pmpro_round_price( $level->trial_amount ) == 0 ) {
 			// If so, we want to account for the trial period only while calculating the profile start date.
 			// We will then revert back to the original billing frequency after the calculation.
-			$original_billing_frequency = $order->BillingFrequency;
-			$order->BillingFrequency    = $order->BillingFrequency * ( $order->TrialBillingCycles + 1 );
+			$original_cycle_number = $level->cycle_number;
+			$level->cycle_number = $level->cycle_number * ( $level->trial_limit + 1 );
 		}
 
 		// Calculate the profile start date.
@@ -2927,8 +2873,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$profile_start_date = pmpro_calculate_profile_start_date( $order, 'U', $filtered );
 
 		// Restore the original billing frequency if needed so that the rest of the checkout has the correct info.
-		if ( ! empty( $original_billing_frequency ) ) {
-			$order->BillingFrequency = $original_billing_frequency;
+		if ( ! empty( $original_cycle_number ) ) {
+			$level->cycle_number = $original_cycle_number;
 		}
 
 		// Convert to days. We are rounding up to ensure that customers get the full membership time that they are paying for.
@@ -2946,9 +2892,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return Stripe_Subscription|bool false if error.
 	 */
 	private function create_subscription_for_customer_from_order( $customer_id, $order ) {
-		$subtotal = $order->PaymentAmount;
-		$tax      = $order->getTaxForPrice( $subtotal );
-		$amount   = pmpro_round_price( (float) $subtotal + (float) $tax );
+		$level = $order->getMembershipLevelAtCheckout();
+		$amount = $level->billing_amount;
+		$tax      = $order->getTaxForPrice( $amount );
+		$amount   = pmpro_round_price( (float) $amount + (float) $tax );
 
 		// Set up the subscription.
 		$product_id = $this->get_product_id_for_level( $order->membership_id );
@@ -2957,7 +2904,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		$price = $this->get_price_for_product( $product_id, $amount, $order->BillingPeriod, $order->BillingFrequency );
+		$price = $this->get_price_for_product( $product_id, $amount, $level->cycle_period, $level->cycle_number );
 		if ( is_string( $price ) ) {
 			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' ) . ' ' . esc_html( $price );
 			return false;
@@ -3480,7 +3427,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 3.0 Updated to private non-static.
 	 */
 	private function process_charges( &$order ) {
-		if ( 0 == floatval( $order->InitialPayment ) ) {
+		if ( 0 == floatval( $order->subtotal ) ) {
 			return true;
 		}
 
@@ -3801,10 +3748,7 @@ class PMProGateway_stripe extends PMProGateway {
 	private function create_payment_intent( &$order ) {
 		global $pmpro_currency;
 
-		$amount          = $order->InitialPayment;
-		$order->subtotal = $amount;
 		$tax             = $order->getTax( true );
-
 		$amount = pmpro_round_price( (float) $order->subtotal + (float) $tax );
 
 		$params = array(
@@ -3941,6 +3885,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string The description to send to Stripe.
 	 */
 	private static function get_order_description( $order ) {
-		return apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order );
+		$user = get_userdata( $order->user_id );
+		$email = empty( $user->user_email ) ? '' : $user->user_email;
+		return apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->billing->name ) . " (" . $email . ")", $order );
 	}
 }

@@ -12,8 +12,11 @@
  * @return string The profile start date in UTC time and the desired $date_format.
  */
 function pmpro_calculate_profile_start_date( $order, $date_format, $filter = true ) {
+	// Get the checkout level.
+	$level = $order->getMembershipLevelAtCheckout();
+
 	// Calculate the profile start date.
-	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $order->BillingFrequency . ' ' . $order->BillingPeriod ) );
+	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $level->cycle_number . ' ' . $level->cycle_period ) );
 
 	// Filter the profile start date if needed.
 	if ( $filter ) {
@@ -123,6 +126,10 @@ function pmpro_get_sensitive_checkout_request_vars() {
 		'ExpirationMonth',
 		'ExpirationYear',
 		'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
+		'pmpro_checkout_nonce', // The checkout nonce.
+		'checkjavascript', // Used to check if JavaScript is enabled.
+		'submit-checkout', // Used to check if the checkout form was submitted.
+		'submit-checkout_x', // Used to check if the checkout form was submitted.
 	);
 
 	/**
@@ -210,6 +217,11 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	 */
 	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $order->user_id, $pmpro_level, $startdate );
 
+	// If we have a discount code but not the ID, get the ID.
+	if ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+	}
+
 	//custom level to change user to
 	$custom_level = array(
 		'user_id'         => $order->user_id,
@@ -233,21 +245,18 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		$order->saveOrder();
 
 		//add discount code use
-		if ( ! empty( $discount_code ) ) {
-			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
-			if ( ! empty( $discount_code_id ) ) {
-				$wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
-							( code_id, user_id, order_id, timestamp ) 
-							VALUES( %d, %d, %s, %s )",
-						$discount_code_id,
-						$order->user_id,
-						$order->id,
-						current_time( 'mysql' )
-					)	
-				);
-			}
+		if ( ! empty( $discount_code_id ) ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
+						( code_id, user_id, order_id, timestamp ) 
+						VALUES( %d, %d, %s, %s )",
+					$discount_code_id,
+					$order->user_id,
+					$order->id,
+					current_time( 'mysql' )
+				)	
+			);
 			do_action( 'pmpro_discount_code_used', $discount_code_id, $order->user_id, $order->id );
 		}
 

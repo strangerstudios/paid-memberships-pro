@@ -97,6 +97,9 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	if ( ! in_array( 'billing_street', $read_only_fields ) && isset( $_POST['billing_street'] ) ) {
 		$order->billing->street = sanitize_text_field( wp_unslash( $_POST['billing_street'] ) );
 	}
+	if ( ! in_array( 'billing_street2', $read_only_fields ) && isset( $_POST['billing_street2'] ) ) {
+		$order->billing->street2 = sanitize_text_field( wp_unslash( $_POST['billing_street2'] ) );
+	}
 	if ( ! in_array( 'billing_city', $read_only_fields ) && isset( $_POST['billing_city'] ) ) {
 		$order->billing->city = sanitize_text_field( wp_unslash( $_POST['billing_city'] ) );
 	}
@@ -222,6 +225,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->billing = new stdClass();
 			$order->billing->name = '';
 			$order->billing->street = '';
+			$order->billing->street2 = '';
 			$order->billing->city = '';
 			$order->billing->state = '';
 			$order->billing->zip = '';
@@ -493,6 +497,18 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 												?>
 												<input id="billing_street" name="billing_street" type="text" size="50"
 													value="<?php echo esc_attr( $order->billing->street ); ?>"/></td>
+											<?php } ?>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="billing_street2"><?php esc_html_e( 'Billing Street 2', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'billing_street2', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->billing_street2 );
+							} else {
+												?>
+												<input id="billing_street2" name="billing_street2" type="text" size="50"
+													value="<?php echo esc_attr( $order->billing->street2 ); ?>"/></td>
 											<?php } ?>
 					</tr>
 					<tr>
@@ -876,28 +892,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 							</td>
 						</tr>
 					<?php } ?>
-
-					<?php
-						$tospage_id = get_option( 'pmpro_tospage' );
-						$consent_entry = $order->get_tos_consent_log_entry();
-
-						if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
-						?>
-						<tr>
-							<th scope="row" valign="top"><label for="tos_consent"><?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?></label></th>
-							<td id="tos_consent">
-								<?php
-									if( !empty( $consent_entry ) ) {
-										echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-									} else {
-										esc_html_e( 'N/A', 'paid-memberships-pro' );
-									}
-								?>
-							</td>
-						</tr>
-						<?php
-						}
-					?>
 					<tr>
 						<th scope="row" valign="top"><label for="notes"><?php esc_html_e( 'Notes', 'paid-memberships-pro' ); ?></label></th>
 						<td>
