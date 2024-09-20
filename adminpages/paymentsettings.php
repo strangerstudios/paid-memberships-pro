@@ -220,25 +220,9 @@
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
 		<p class="submit">
-			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e( 'Save Settings', 'paid-memberships-pro' );?>" />
+			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
 	</form>
-<style type="text/css">
-	.pmpro_flex_row {
-		display: flex;
-		align-items: center;
-	}
-	.pmpro_flex_label {
-		min-width: 140px;
-	}
-
-	.pmpro_td_container {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-</style>
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");
 ?>

@@ -147,8 +147,8 @@
 						<td>
 							<input id="block_dashboard" name="block_dashboard" type="checkbox" value="yes" <?php checked( $block_dashboard, 'yes' ); ?> /> <label for="block_dashboard"><?php esc_html_e('Block all users with the Subscriber role from accessing the Dashboard.', 'paid-memberships-pro' );?></label>
 						</td>
-				</tr>
-				<tr>
+					</tr>
+					<tr>
 						<th scope="row" valign="top">
 							<label for="hide_toolbar"><?php esc_html_e('WordPress Toolbar', 'paid-memberships-pro' );?></label>
 						</th>
@@ -180,8 +180,8 @@
 								<option value="1" <?php if($filterqueries == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 							</select>
 						</td>
-				</tr>
-				<tr>
+					</tr>
+					<tr>
 						<th scope="row" valign="top">
 							<label for="showexcerpts"><?php esc_html_e('Show Excerpts to Non-Members?', 'paid-memberships-pro' ); ?></label>
 						</th>
@@ -573,7 +573,8 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 								</label>
 							</p>
 							<p>
-								<label>				<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $wisdom_opt_out ); ?> />
+								<label>
+									<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $wisdom_opt_out ); ?> />
 									<?php esc_html_e( 'Do not track usage of Paid Memberships Pro on my site.', 'paid-memberships-pro' );?>
 								</label>
 							</p>
@@ -582,8 +583,8 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 								<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="<?php esc_attr_e( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ); ?></a>.
 							</p>
 						</td>
-				</tr>
-				<tr>
+					</tr>
+					<tr>
 						<th scope="row" valign="top">
 							<label for="uninstall"><?php esc_html_e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
 						</th>
