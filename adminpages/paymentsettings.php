@@ -223,6 +223,7 @@
 			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
 	</form>
+
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");
 ?>
