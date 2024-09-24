@@ -33,7 +33,6 @@ function pmpro_elementor_get_all_levels() {
 
 		$levels_array = array();
 
-		$levels_array[0] = __( 'Non-members', 'paid-memberships-pro' );
 		foreach( $all_levels as $level ) {
 			$levels_array[ $level->id ] = $level->name;
 		}

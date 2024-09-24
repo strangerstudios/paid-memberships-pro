@@ -25,37 +25,23 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 
 	// Define controls
 	public function add_controls( $element, $args ) {
-        /**
-         *  visibilityBlockEnabled
-         *   segment - all, specific, logged_in
-         *   levels
-         *   show_noaccess
-         */
-		
-
         $element->add_control(
 			'pmpro_enable', array(
 				'type' => \Elementor\Controls_Manager::SWITCHER,
 				'label' => esc_html__( 'Enable Paid Memberships Pro module visibility?', 'textdomain' ),
-				'options' => array(                
-					'yes' => esc_html__( 'Yes', 'textdomain' ),
-					'no' => esc_html__( 'No', 'textdomain' ),
-                    
-                ),
 				'default' => 'no',
-                
             )
 		);
 
         $element->add_control(
-			'pmpro_content_visibility', array(
+			'pmpro_invert_restrictions', array(
 				'type' => \Elementor\Controls_Manager::SELECT,
-				'label' => esc_html__( 'Content Visbility', 'textdomain' ),
 				'options' => array(                
-					'show' => esc_html__( 'Show', 'textdomain' ),
-					'hide' => esc_html__( 'Hide', 'textdomain' ),                    
+					'0' => esc_html__( 'Show content to...', 'textdomain' ),
+					'1' => esc_html__( 'Hide content from...', 'textdomain' ),                    
                 ),
-				'default' => 'show',
+                'label_block' => 'true',
+				'default' => '0',
                 'condition' => [
                     'pmpro_enable' => 'yes',
                 ],
@@ -63,34 +49,16 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 		);
 
         $element->add_control(
-			'pmpro_show_content_to', array(
+			'pmpro_segment', array(
 				'type' => \Elementor\Controls_Manager::SELECT,
-				'label' => esc_html__( 'Show Content To', 'textdomain' ),
 				'options' => array(                
 					'all' => esc_html__( 'All Members', 'textdomain' ),
 					'specific' => esc_html__( 'Specific Membership Levels', 'textdomain' ),
                     'logged_in' => esc_html__( 'Logged-In Users', 'textdomain' ),
                 ),
+                'label_block' => 'true',
 				'default' => 'all',
                 'condition' => [
-                    'pmpro_content_visibility' => 'show',
-                    'pmpro_enable' => 'yes',
-                ],
-            )
-		);
-
-        $element->add_control(
-			'pmpro_hide_content_from', array(
-				'type' => \Elementor\Controls_Manager::SELECT,
-				'label' => esc_html__( 'Hide Content From', 'textdomain' ),
-				'options' => array(                
-					'all' => esc_html__( 'All Members', 'textdomain' ),
-					'specific' => esc_html__( 'Specific Membership Levels', 'textdomain' ),
-                    'logged_in' => esc_html__( 'Logged-In Users', 'textdomain' ),
-                ),
-				'default' => 'all',
-                'condition' => [
-                    'pmpro_content_visibility' => 'hide',
                     'pmpro_enable' => 'yes',
                 ],
             )
@@ -101,11 +69,9 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
                 'type'        => Controls_Manager::SELECT2,
                 'options'     => pmpro_elementor_get_all_levels(),
                 'multiple'    => 'true',
-				'label_block' => 'true',
-				'description' => __( 'Membership Levels', 'paid-memberships-pro' ),
+				'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
                 'condition' => [
-                    'pmpro_show_content_to' => 'specific',    
-                    'pmpro_hide_content_from' => 'specific',
+                    'pmpro_segment' => 'specific',    
                     'pmpro_enable' => 'yes',                
                 ],
             )
@@ -117,12 +83,11 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 				'pmpro_no_access_message', array(
 					'label' => esc_html__( 'Show no access message', 'paid-memberships-pro' ),
 					'type' => \Elementor\Controls_Manager::SWITCHER,
-					'label_on' => esc_html__( 'Yes', 'paid-memberships-pro' ),
-					'label_off' => esc_html__( 'No', 'paid-memberships-pro' ),
 					'return_value' => 'yes',
 					'default' => 'no',
                     'condition' => [
                         'pmpro_enable' => 'yes',
+                        'pmpro_invert_restrictions' => '0',
                     ],
 				)
 			);
@@ -148,9 +113,22 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			return $should_render;
 		}
 
-        $should_render = pmpro_elementor_has_access( $element );        
+        $element_settings = $element->get_active_settings();
+
+        // If the block is not being restricted, then the user should be able to view it.
+        if ( empty( $element_settings['pmpro_enable'] ) || 'no' === $element_settings['pmpro_enable'] ) {
+            return true;
+        }
+
+        $apply_block_visibility_params = array(
+            'segment' => $element_settings['pmpro_segment'],
+            'levels' => $element_settings['pmpro_require_membership'],
+            'invert_restrictions' => $element_settings['pmpro_invert_restrictions'],
+            'show_noaccess' => $element_settings['pmpro_no_access_message'],
+        );
+        $should_render = ! empty( pmpro_apply_block_visibility( $apply_block_visibility_params, 'sample content' ) );
 		
-		return apply_filters( 'pmpro_elementor_section_access', $should_render, $element );
+		return apply_filters_deprecated( 'pmpro_elementor_section_access', array( $should_render, $element ), 'TBD' );
 	}
 
 	/**
@@ -171,159 +149,49 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         }
         
         $widget_settings = $widget->get_active_settings();
-        
-        if( isset( $widget_settings['pmpro_enable'] ) && $widget_settings['pmpro_enable'] === 'yes' ) {
 
-            if( isset( $widget_settings['pmpro_content_visibility'] ) && $widget_settings['pmpro_content_visibility'] === 'show' ) {
-                
-                if( isset( $widget_settings['pmpro_show_content_to'] ) && $widget_settings['pmpro_show_content_to'] === 'all' ) {
-                    
-                    if( pmpro_hasMembershipLevel() ) {
-                        return $content;
-                    } else {
-                        if( isset( $widget_settings['pmpro_no_access_message'] ) && $widget_settings['pmpro_no_access_message'] === 'yes' ) {
-                            return pmpro_get_no_access_message( NULL, array() );
-                        } else {
-                            return '';
-                        }
-                    }
-                
-                } else if( isset( $widget_settings['pmpro_show_content_to'] ) && $widget_settings['pmpro_show_content_to'] === 'specific' ) {
-                     
-                    if( pmpro_hasMembershipLevel( $widget_settings['pmpro_require_membership'] ) ) {
-                        return $content;
-                    } else {
-                        if( isset( $widget_settings['pmpro_no_access_message'] ) && $widget_settings['pmpro_no_access_message'] === 'yes' ) {
-                            return pmpro_get_no_access_message( NULL, $widget_settings['pmpro_require_membership'] );
-                        } else {
-                            return '';
-                        }
-                    }
-
-                } else if( isset( $widget_settings['pmpro_show_content_to'] ) && $widget_settings['pmpro_show_content_to'] === 'logged_in' ) {
-                    
-                    if( is_user_logged_in() ) {
-                        return $content;
-                    } else {
-                        if( isset( $widget_settings['pmpro_no_access_message'] ) && $widget_settings['pmpro_no_access_message'] === 'yes' ) {
-                            return pmpro_get_no_access_message( NULL, array() );
-                        } else {
-                            return '';
-                        }
-                    }
-
-                }
-                
-            } else {
-                
-                if( isset( $widget_settings['pmpro_hide_content_from'] ) && $widget_settings['pmpro_hide_content_from'] === 'all' ) {
-                    
-                    if( ! pmpro_hasMembershipLevel() ) {
-                        return $content;
-                    } else {
-                        if( isset( $widget_settings['pmpro_no_access_message'] ) && $widget_settings['pmpro_no_access_message'] === 'yes' ) {
-                            return pmpro_get_no_access_message( NULL, array() );
-                        } else {
-                            return '';
-                        }
-                    }
-                
-                } else if( isset( $widget_settings['pmpro_hide_content_from'] ) && $widget_settings['pmpro_hide_content_from'] === 'specific' ) {
-                     
-                    if( pmpro_hasMembershipLevel( $widget_settings['pmpro_require_membership'] ) ) {
-                        return $content;
-                    } else {
-                        if( isset( $widget_settings['pmpro_no_access_message'] ) && $widget_settings['pmpro_no_access_message'] === 'yes' ) {
-                            return pmpro_get_no_access_message( NULL, $widget_settings['pmpro_require_membership'] );
-                        } else {
-                            return '';
-                        }
-                    }
-
-                } else if( isset( $widget_settings['pmpro_hide_content_from'] ) && $widget_settings['pmpro_hide_content_from'] === 'logged_in' ) {
-                    
-                    if( is_user_logged_in() ) {
-                        return $content;
-                    } else {
-                        if( isset( $widget_settings['pmpro_no_access_message'] ) && $widget_settings['pmpro_no_access_message'] === 'yes' ) {
-                            return pmpro_get_no_access_message( NULL, array() );
-                        } else {
-                            return '';
-                        }
-                    }
-
-                }
-
-            }
-            
+        // If the block is not being restricted, bail.
+        if ( empty( $widget_settings['pmpro_enable'] ) || 'no' === $widget_settings['pmpro_enable'] ) {
+            return $content;
         }
 
-        return $content;
+        // Use the pmpro_apply_block_visibility() method to generate output.
+        $apply_block_visibility_params = array(
+            'segment' => $widget_settings['pmpro_segment'],
+            'levels' => $widget_settings['pmpro_require_membership'],
+            'invert_restrictions' => $widget_settings['pmpro_invert_restrictions'],
+            'show_noaccess' => $widget_settings['pmpro_no_access_message'],
+        );
+        return pmpro_apply_block_visibility( $apply_block_visibility_params, $content );
+
 	}
 
 	/**
 	 * Figure out if the user has access to restricted content.
 	 * @return bool True or false based if the user has access to the content or not.
 	 * @since 2.3
+     * @deprecated TBD
 	 */
 	public function pmpro_elementor_has_access( $element ) {
+        _deprecated_function( __METHOD__, 'TBD' );
 
 		$element_settings = $element->get_active_settings();
-        
-        if( isset( $element_settings['pmpro_no_access_message'] ) && $element_settings['pmpro_no_access_message'] === 'yes' ) {
-            /**
-             * If the element has the no access message enabled, 
-             * we should always show the element. 
-             */
-            return true;
-        } else {
-            /**
-             * If the element doesn't have the message enabled,
-             * we should check the visibility settings first.
-             */
-            if( isset( $element_settings['pmpro_enable'] ) && $element_settings['pmpro_enable'] === 'yes' ) {
 
-                if( isset( $element_settings['pmpro_content_visibility'] ) && $element_settings['pmpro_content_visibility'] === 'show' ) {
-                    
-                    if( isset( $element_settings['pmpro_show_content_to'] ) && $element_settings['pmpro_show_content_to'] === 'all' ) {
-                        
-                        $access = pmpro_hasMembershipLevel();
-                    
-                    } else if( isset( $element_settings['pmpro_show_content_to'] ) && $element_settings['pmpro_show_content_to'] === 'specific' ) {
-                         
-                        $access = pmpro_hasMembershipLevel( $element_settings['pmpro_require_membership'] );
-    
-                    } else if( isset( $element_settings['pmpro_show_content_to'] ) && $element_settings['pmpro_show_content_to'] === 'logged_in' ) {
-                        
-                        $access = is_user_logged_in();
-    
-                    }
-                    
-                } else if( isset( $element_settings['pmpro_content_visibility'] ) && $element_settings['pmpro_content_visibility'] === 'hide' ) {
-                    
-                    if( isset( $element_settings['pmpro_hide_content_from'] ) && $element_settings['pmpro_hide_content_from'] === 'all' ) {
-                        
-                        $access = ! pmpro_hasMembershipLevel();
-                    
-                    } else if( isset( $element_settings['pmpro_hide_content_from'] ) && $element_settings['pmpro_hide_content_from'] === 'specific' ) {
-                        
-                    
-                        $access = ! pmpro_hasMembershipLevel( $element_settings['pmpro_require_membership'] );
-    
-                    } else if( isset( $element_settings['pmpro_hide_content_from'] ) && $element_settings['pmpro_hide_content_from'] === 'logged_in' ) {
-                        
-                        $access = ! is_user_logged_in();
-    
-                    }
-                    
-                } else {
-                    $access = true;
-                }
-            }
+        // If the block is not being restricted, then the user has access.
+        if ( empty( $element_settings['pmpro_enable'] ) || 'no' === $element_settings['pmpro_enable'] ) {
+            return true;
         }
+
+        // If pmpro_apply_block_visibility returns content, then we want the user to see it.
+        $apply_block_visibility_params = array(
+            'segment' => $element_settings['pmpro_segment'],
+            'levels' => $element_settings['pmpro_require_membership'],
+            'invert_restrictions' => $element_settings['pmpro_invert_restrictions'],
+            'show_noaccess' => $element_settings['pmpro_no_access_message'],
+        );
+        $access = ! empty( pmpro_apply_block_visibility( $apply_block_visibility_params, 'sample content' ) );
         
-        
-		return apply_filters( 'pmpro_elementor_has_access', $access, $element, $restricted_levels );
+		return apply_filters( 'pmpro_elementor_has_access', $access, $element, $element_settings['pmpro_require_membership'] );
 	}
 }
 
