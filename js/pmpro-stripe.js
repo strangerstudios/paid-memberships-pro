@@ -65,6 +65,10 @@ jQuery( document ).ready( function( $ ) {
 		pmpro_require_billing = pmproStripe.pmpro_require_billing;
 	}
 	$( '.pmpro_form' ).submit( function( event ) {
+		// If the gateway field is present and not set to stripe, return.
+		if ( $( 'input[name="gateway"]' ).length > 0 && $( 'input[name="gateway"]:checked' ).val() !== 'stripe' ) {
+			return;
+		}
 
 		// If default is already being prevented, don't try to initiate the payment process.
 		// Likely caused by ReCAPTCHA failing.
