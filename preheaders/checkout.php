@@ -122,6 +122,15 @@ do_action( 'pmpro_checkout_preheader' );
 // We set a global var for add-ons that are expecting it.
 $pmpro_show_discount_code = pmpro_show_discount_code();
 
+/**
+ * Set whether the account fields should be skipped on the checkout page.
+ * This filter is useful when you do not want to show the account fields during the initial signup process.
+ *
+ * @param bool $skip_account_fields True if the account fields should be skipped.
+ * @param WP_User|null $current_user The current user object or null if there is no user.
+ */
+$skip_account_fields = apply_filters( "pmpro_skip_account_fields", ! empty( $current_user->ID ), $current_user );
+
 //load em up (other fields)
 global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
@@ -345,14 +354,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 // If there is still a valid checkout submission and we don't have an order yet, run the the code needed to get to that point in the checkout process.
 if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 	// Fill out account fields if we are skipping the account fields and we don't have a user yet.
-	/**
-	 * Set whether the account fields should be skipped on the checkout page.
-	 * This filter is useful when you do not want to show the account fields during the initial signup process.
-	 *
-	 * @param bool $skip_account_fields True if the account fields should be skipped.
-	 * @param WP_User|null $current_user The current user object or null if there is no user.
-	 */
-	$skip_account_fields = apply_filters( "pmpro_skip_account_fields", ! empty( $current_user->ID ), $current_user );
 	if ( empty( $current_user->ID ) && $skip_account_fields ) {
 		// If the first name, last name, and email address are set, use them to generate the username and password.
 		if ( ! empty( $bfirstname ) && ! empty( $blastname ) && ! empty( $bemail ) ) {
