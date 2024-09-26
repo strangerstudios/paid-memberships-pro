@@ -103,7 +103,7 @@ if ( ! empty( $template ) ) {
 							/**
 							 * Filter the extra actions for this template.
 							 *
-							 * @since TBD
+							 * @since 3.2
 							 *
 							 * @param array  $actions The list of actions.
 							 * @param object $template   The email template data.

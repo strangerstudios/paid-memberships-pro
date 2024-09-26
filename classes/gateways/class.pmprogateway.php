@@ -18,11 +18,11 @@
 		}
 
 		/**
-		 * @deprecated TBD
+		 * @deprecated 3.2
 		 */
 		function authorize(&$order)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.2' );
 
 			//create a code for the order
 			if(empty($order->code))
@@ -35,11 +35,11 @@
 		}
 
 		/**
-		 * @deprecated TBD
+		 * @deprecated 3.2
 		 */
 		function void(&$order)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.2' );
 
 			//need a transaction id
 			if(empty($order->payment_transaction_id))
@@ -52,11 +52,11 @@
 		}	
 
 		/**
-		 * @deprecated TBD
+		 * @deprecated 3.2
 		 */
 		function charge(&$order)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.2' );
 
 			//create a code for the order
 			if(empty($order->code))
@@ -69,11 +69,11 @@
 		}
 
 		/**
-		 * @deprecated TBD
+		 * @deprecated 3.2
 		 */
 		function subscribe(&$order)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.2' );
 
 			//create a code for the order
 			if(empty($order->code))
@@ -102,7 +102,7 @@
 		/**
 		 * Cancel the subscription associated with the passed order.
 		 *
-		 * @deprecated TBD Use cancel_subscription insetad.
+		 * @deprecated 3.2 Use cancel_subscription insetad.
 		 *
 		 * @param MemberOrder $order The order object associated with the subscription to cancel.
 		 * @return bool True if the subscription was canceled successfully, false otherwise.
@@ -126,11 +126,11 @@
 		}
 
 		/**
-		 * @deprecated TBD
+		 * @deprecated 3.2
 		 */
 		function getSubscriptionStatus(&$order)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.2' );
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
 				return false;
@@ -140,11 +140,11 @@
 		}
 
 		/**
-		 * @deprecated TBD
+		 * @deprecated 3.2
 		 */
 		function getTransactionStatus(&$order)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );	
+			_deprecated_function( __METHOD__, '3.2' );	
 			//this looks different for each gateway, but generally an array of some sort
 			return array();
 		}		

@@ -410,7 +410,7 @@ pmpro_braintreeWebhookExit();
 /**
  * Fix address info for order/transaction
  *
- * @deprecated TBD
+ * @deprecated 3.2
  *
  * @param int          $user_id
  * @param \MemberOrder $old_order
@@ -418,7 +418,7 @@ pmpro_braintreeWebhookExit();
  * @return \stdClass
  */
 function pmpro_braintreeAddressInfo( $user_id, $old_order ) {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.2' );
 	
 	// Grab billing info from the saved metadata as needed
 	

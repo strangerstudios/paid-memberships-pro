@@ -107,9 +107,9 @@ if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 // Allow for filters.
 // TODO: docblock.
 /**
- * @deprecated TBD
+ * @deprecated 3.2
  */
-$pmpro_requirebilling = apply_filters_deprecated( 'pmpro_require_billing', array( $pmpro_requirebilling, $pmpro_level ), 'TBD' );
+$pmpro_requirebilling = apply_filters_deprecated( 'pmpro_require_billing', array( $pmpro_requirebilling, $pmpro_level ), '3.2' );
 
 //in case a discount code was used or something else made the level free, but we're already over ssl
 if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
@@ -399,7 +399,7 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 			$pmpro_error_fields[] = "username";
 		}
 		$oldem_user = get_user_by( 'email', $bemail );
-		$oldem_user = apply_filters_deprecated( "pmpro_checkout_oldemail", array( ( false !== $oldem_user ? $oldem_user->user_email : null ) ), 'TBD' );
+		$oldem_user = apply_filters_deprecated( "pmpro_checkout_oldemail", array( ( false !== $oldem_user ? $oldem_user->user_email : null ) ), '3.2' );
 		if ( ! empty( $oldem_user ) ) {
 			pmpro_setMessage( __( "That email address is already in use. Please log in, or use a different email address.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "bemail";
@@ -471,7 +471,7 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 			)
 		);
 
-		$user_id = apply_filters_deprecated( 'pmpro_new_user', array( '', $new_user_array ), 'TBD' );
+		$user_id = apply_filters_deprecated( 'pmpro_new_user', array( '', $new_user_array ), '3.2' );
 		if ( empty( $user_id ) ) {
 			$user_id = wp_insert_user( $new_user_array );
 		}
@@ -634,7 +634,7 @@ if ( empty( $pmpro_review ) ) {
 	// make sure we have at least an empty order here to avoid a warning
 	$pmpro_review = false;
 }
-$pmpro_confirmed_data = apply_filters_deprecated( 'pmpro_checkout_confirmed', array( $pmpro_confirmed, $pmpro_review ), 'TBD' );
+$pmpro_confirmed_data = apply_filters_deprecated( 'pmpro_checkout_confirmed', array( $pmpro_confirmed, $pmpro_review ), '3.2' );
 if ( is_array( $pmpro_confirmed_data ) ) {
 	extract( $pmpro_confirmed_data );
 

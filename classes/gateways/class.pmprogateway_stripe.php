@@ -1506,7 +1506,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Send user to Stripe to pay.
 	 *
 	 * @since 2.8 - Hooked into pmpro_checkout_before_change_membership_level
-	 * @since TBD - Now called by the gateway's process() method.
+	 * @since 3.2 - Now called by the gateway's process() method.
 	 *
 	 * @param int         $user_id ID of user who is checking out.
 	 * @param MemberOrder $morder  MemberOrder object for this checkout.

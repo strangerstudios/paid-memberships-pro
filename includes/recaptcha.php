@@ -116,7 +116,7 @@ function pmpro_recaptcha_get_html() {
 
 	// If we are on the checkout page, run the deprecated pmpro_checkout_after_captcha action.
 	if ( pmpro_is_checkout() ) {
-		do_action_deprecated( 'pmpro_checkout_after_captcha', array(), 'TBD', 'pmpro_checkout_before_submit_button' );
+		do_action_deprecated( 'pmpro_checkout_after_captcha', array(), '3.2', 'pmpro_checkout_before_submit_button' );
 	}
 
 	$already_shown = true;
@@ -207,7 +207,7 @@ function pmpro_recaptcha_is_validated() {
 /**
  * Stop form submission if ReCAPTCHA is not validated.
  *
- * @since TBD
+ * @since 3.2
  *
  * @param bool $continue Whether to continue with form submission.
  */
@@ -238,7 +238,7 @@ add_filter( 'pmpro_billing_update_checks', 'pmpro_recaptcha_validation_check', 1
 /**
  * Show reCAPTCHA settings on the PMPro settings page.
  *
- * @since TBD
+ * @since 3.2
  */
 function pmpro_recaptcha_settings() {
 	// Get the current options.
@@ -305,7 +305,7 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_recaptcha_settings' );
 /**
  * Save reCAPTCHA settings on the PMPro settings page.
  *
- * @since TBD
+ * @since 3.2
  */
 function pmpro_recaptcha_settings_save() {
 	pmpro_setOption( "recaptcha", intval( $_POST['recaptcha'] ) );

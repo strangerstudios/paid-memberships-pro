@@ -2,7 +2,7 @@
 /**
  * Add TOS field to advanced settings.
  *
- * @since TBD
+ * @since 3.2
  *
  * @param array $settings The array of settings.
  * @return array The array of settings with the TOS field added.
@@ -22,7 +22,7 @@ add_filter( 'pmpro_custom_advanced_settings', 'pmpro_add_tos_field_to_advanced_s
 /**
  * Callback function to display the TOS field on the advanced settings page.
  *
- * @since TBD
+ * @since 3.2
  */
 function pmpro_tos_advanced_settings_callback() {
 	$tospage = get_option( 'pmpro_tospage' );
@@ -38,7 +38,7 @@ function pmpro_tos_advanced_settings_callback() {
 /**
  * Add a TOS consent checkbox to the checkout page.
  *
- * @since TBD
+ * @since 3.2
  */
 function pmpro_show_tos_at_checkout() {
 	global $pmpro_review;
@@ -48,7 +48,7 @@ function pmpro_show_tos_at_checkout() {
 
 	// If checkout is being reviewed, don't show the TOS checkbox.
 	if ( $pmpro_review ) {
-		do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), 'TBD' );
+		do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), '3.2' );
 		return;
 	}
 
@@ -58,7 +58,7 @@ function pmpro_show_tos_at_checkout() {
 		$tospage = get_post( $tospage );
 	}
 	if ( empty( $tospage ) ) {
-		do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), 'TBD' );
+		do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), '3.2' );
 		return;
 	}
 
@@ -99,25 +99,25 @@ function pmpro_show_tos_at_checkout() {
 				 *
 				 * @since 2.8
 				 */
-				do_action_deprecated( 'pmpro_checkout_after_tos', array(), 'TBD' );
+				do_action_deprecated( 'pmpro_checkout_after_tos', array(), '3.2' );
 			?>
 		</div> <!-- end pmpro_form_fields -->
 	</fieldset> <!-- end pmpro_tos_fields -->
 	<?php
-	do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), 'TBD' );
+	do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), '3.2' );
 
 }
 add_action( 'pmpro_checkout_before_submit_button', 'pmpro_show_tos_at_checkout', 5 ); // 5 to show before reCAPTCHA.
 
 /**
- * If a pre-TBD checkout template is being used, then the TOS checkbox will be displayed in the checkout template.
+ * If a pre-3.2 checkout template is being used, then the TOS checkbox will be displayed in the checkout template.
  *
  * This function will be unhooked at the top of pmpro_checkout_before_submit_button(), so this will only prevent pmpro_checkout_before_submit_button() from generating TOS fields if
  * the `pmpro_checkout_after_tos_fields` hook is called from the checkout preheader before `pmpro_checkout_before_submit_button` is run.
  *
- * Note: This function will be removed in a future version of Paid Memberships Pro once pre-TBD templates have had time to phase out.
+ * Note: This function will be removed in a future version of Paid Memberships Pro once pre-3.2 templates have had time to phase out.
  *
- * @since TBD
+ * @since 3.2
  */
 function pmpro_unhook_pmpro_show_tos_at_checkout() {
 	remove_action( 'pmpro_checkout_before_submit_button', 'pmpro_show_tos_at_checkout', 5 );
@@ -125,11 +125,11 @@ function pmpro_unhook_pmpro_show_tos_at_checkout() {
 add_action( 'pmpro_checkout_after_tos_fields', 'pmpro_unhook_pmpro_show_tos_at_checkout' );
 
 /**
- * In case a pre-TBD checkout template is being used, we need to set the $tospage global in order to display the TOS checkbox.
+ * In case a pre-3.2 checkout template is being used, we need to set the $tospage global in order to display the TOS checkbox.
  *
- * Note: This function will be removed in a future version of Paid Memberships Pro once pre-TBD templates have had time to phase out.
+ * Note: This function will be removed in a future version of Paid Memberships Pro once pre-3.2 templates have had time to phase out.
  *
- * @since TBD
+ * @since 3.2
  */
 function pmpro_set_tospage_global() {
 	global $tospage;
@@ -144,7 +144,7 @@ add_action( 'pmpro_checkout_preheader', 'pmpro_set_tospage_global' );
 /**
  * Validate the TOS checkbox at checkout.
  *
- * @since TBD
+ * @since 3.2
  *
  * @param bool $pmpro_continue_registration Whether or not to continue with registration.
  */
@@ -313,7 +313,7 @@ function pmpro_is_consent_current( $entry ) {
 /**
  * Show TOS log on the Edit Order page.
  *
- * @since TBD
+ * @since 3.2
  * 
  * @param MemberOrder $order The order object being edited.
  */
@@ -343,7 +343,7 @@ add_action( 'pmpro_after_order_settings', 'pmpro_show_tos_log_on_edit_order_page
 /**
  * Helper function to get the TOS concent log entry for an order.
  *
- * @since TBD
+ * @since 3.2
  *
  * @param MemberOrder $order The order object.
  * @return array|bool The TOS consent log entry for the order, or false if not found.
@@ -364,7 +364,7 @@ function pmpro_get_consent_log_entry_for_order( $order ) {
 /**
  * Add TOS consent log entry to the order CSV export.
  *
- * @since TBD
+ * @since 3.2
  *
  * @param array $extra_columns The extra columns to add to the CSV export as $heading => $callback.
  */
@@ -378,7 +378,7 @@ add_filter( 'pmpro_orders_csv_extra_columns', 'pmpro_add_tos_consent_log_entry_t
 /**
  * Callback function to get the TOS consent log entry post ID for the order CSV export.
  *
- * @since TBD
+ * @since 3.2
  *
  * @param MemberOrder $order The order object.
  */
@@ -393,7 +393,7 @@ function pmpro_get_tos_consent_log_entry_post_id_for_order_csv_export( $order ) 
 /**
  * Callback function to get the TOS consent log entry post modified date for the order CSV export.
  *
- * @since TBD
+ * @since 3.2
  *
  * @param MemberOrder $order The order object.
  */

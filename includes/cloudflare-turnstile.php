@@ -137,7 +137,7 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_cloudflare_turnstile_settings' 
 /**
  * Save CloudFlare Turnstile settings on the PMPro settings page.
  *
- * @since TBD
+ * @since 3.2
  */
 function pmpro_cloudflare_turnstile_settings_save() {
 	pmpro_setOption( 'cloudflare_turnstile', intval( $_POST['cloudflare_turnstile'] ) );
@@ -149,7 +149,7 @@ add_action( 'pmpro_save_security_settings', 'pmpro_cloudflare_turnstile_settings
 /**
  * Get human readable error messages for CloudFlare response.
  *
- * @since TBD
+ * @since 3.2
  */
 function pmpro_cloudflare_turnstile_get_error_message() {
 	$error_messages = array(

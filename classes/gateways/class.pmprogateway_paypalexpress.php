@@ -259,11 +259,11 @@
 				return;
 			}
 
-			// Set some globals for compatibility with pre-TBD checkout page templates.
+			// Set some globals for compatibility with pre-3.2 checkout page templates.
 			global $pmpro_paypal_token;
 			$pmpro_paypal_token = $pmpro_review->paypal_token;
 
-			// For backwards compatibility with pre-TBD checkout page templates, also check if the $_REQUEST['confirm'] attribute is set.
+			// For backwards compatibility with pre-3.2 checkout page templates, also check if the $_REQUEST['confirm'] attribute is set.
 			// If so, we want to process the chekcout form submission.
 			if ( ! empty( $_REQUEST['confirm'] ) ) {
 				// Process the checkout form submission.
@@ -317,11 +317,11 @@
 		 * Review and Confirmation code.
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.2
 		 */
 		static function pmpro_checkout_confirmed($pmpro_confirmed)
 		{
-			_deprecated_function( __FUNCTION__, 'TBD', 'PMProGateway_paypalexpress::process()' );
+			_deprecated_function( __FUNCTION__, '3.2', 'PMProGateway_paypalexpress::process()' );
 			global $pmpro_msg, $pmpro_msgt, $pmpro_level, $current_user, $pmpro_review, $pmpro_paypal_token, $discount_code, $bemail;
 
 			//PayPal Express Call Backs
@@ -420,11 +420,11 @@
 		 * Swap in user/pass/etc from session
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.2
 		 */
 		static function pmpro_checkout_new_user_array($new_user_array)
 		{
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.2' );
 			global $current_user;
 
 			if(!$current_user->ID)
@@ -453,7 +453,7 @@
 		 * Process at checkout
 		 *
 		 * @since 2.0 - The old process() method is now confirm().
-		 * @since TBD - This method now handles both sending users to PayPal and confirming checkouts.
+		 * @since 3.2 - This method now handles both sending users to PayPal and confirming checkouts.
 		 */
 		function process( &$order ) {
 			// If the user has not yet been sent to PayPal, send them to pay.
@@ -515,11 +515,11 @@
 		 * Process charge or subscription after confirmation.
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.2
 		 */
 		function confirm(&$order)
 		{
-			_deprecated_function( __FUNCTION__, 'TBD', 'PMProGateway_paypalexpress::process()' );
+			_deprecated_function( __FUNCTION__, '3.2', 'PMProGateway_paypalexpress::process()' );
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
 				return $this->subscribe($order);

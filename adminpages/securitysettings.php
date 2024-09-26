@@ -32,7 +32,7 @@
 		/**
 		 * Fires after security settings are saved.
 		 *
-		 * @since TBD
+		 * @since 3.2
 		 */
 		do_action( 'pmpro_save_security_settings' );
 
@@ -166,7 +166,7 @@
 						 * Fires after the spam protection settings are displayed.
 						 * Can be used to add additional spam protection settings.
 						 *
-						 * @since TBD
+						 * @since 3.2
 						 */
 						do_action( 'pmpro_security_spam_fields' );
 						?>

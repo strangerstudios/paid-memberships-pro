@@ -196,7 +196,7 @@ if ($submit) {
     /**
      * Mirror of pmpro_registration_checks filter for the billing page.
      *
-     * @since TBD
+     * @since 3.2
      *
      * @param bool $continue_billing_update Whether to continue with the billing update.
      */

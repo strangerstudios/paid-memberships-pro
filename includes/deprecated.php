@@ -749,7 +749,7 @@ function pmpro_recurring_emails_deprecated() {
 	// pmpror_recurring_emails function.
 	if ( ! function_exists( 'pmpror_recurring_emails' ) ) {
 		function pmpror_recurring_emails() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.2' );
 			pmpro_cron_recurring_payment_reminders();
 		}
 	}
@@ -757,7 +757,7 @@ function pmpro_recurring_emails_deprecated() {
 	// pmpror_template_callback function.
 	if ( ! function_exists( 'pmpror_template_callback' ) ) {
 		function pmpror_template_callback( $buffer ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.2' );
 			return $buffer;
 		}
 	}
@@ -765,21 +765,21 @@ function pmpro_recurring_emails_deprecated() {
 	// pmpror_load_plugin_text_domain function.
 	if ( ! function_exists( 'pmpror_load_plugin_text_domain' ) ) {
 		function pmpror_load_plugin_text_domain() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.2' );
 		}
 	}
 
 	// pmpror_init_test function.
 	if ( ! function_exists( 'pmpror_init_test' ) ) {
 		function pmpror_init_test() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.2' );
 		}
 	}
 
 	// pmpror_recurring_emails_legacy function.
 	if ( ! function_exists( 'pmpror_recurring_emails_legacy' ) ) {
 		function pmpror_recurring_emails_legacy() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.2' );
 			pmpro_cron_recurring_payment_reminders();
 		}
 	}
@@ -787,21 +787,21 @@ function pmpro_recurring_emails_deprecated() {
 	// pmpror_log function.
 	if ( ! function_exists( 'pmpror_log' ) ) {
 		function pmpror_log( $message ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.2' );
 		}
 	}
 
 	// pmpror_output_log function.
 	if ( ! function_exists( 'pmpror_output_log' ) ) {
 		function pmpror_output_log() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.2' );
 		}
 	}
 
 	// pmpro_recurring_emails_plugin_row_meta function.
 	if ( ! function_exists( 'pmpro_recurring_emails_plugin_row_meta' ) ) {
 		function pmpro_recurring_emails_plugin_row_meta( $links, $file ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.2' );
 			return $links;
 		}
 	}

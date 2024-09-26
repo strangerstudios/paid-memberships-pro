@@ -258,7 +258,7 @@ class PMPro_Field {
 	/**
 	 * The default value for a field.
 	 *
-	 * @since TBD
+	 * @since 3.2
 	 *
 	 * @var string
 	 */
@@ -267,7 +267,7 @@ class PMPro_Field {
 	/**
 	 * File upload types.
 	 * 
-	 * @since TBD
+	 * @since 3.2
 	 * 
 	 * @var string
 	 *
@@ -277,7 +277,7 @@ class PMPro_Field {
 	/**
 	 * File upload limit
 	 * 
-	 * @since TBD
+	 * @since 3.2
 	 * 
 	 * @var int
 	 */
@@ -676,7 +676,7 @@ class PMPro_Field {
 			 * @param string $value The default value for the field.
 			 * @param object $this The field object.
 			 * 
-			 * @since TBD
+			 * @since 3.2
 			 */
 			$value = apply_filters( 'pmpro_field_default_value', $this->default, $this );
 		}

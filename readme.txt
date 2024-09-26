@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.6
 Requires PHP: 5.6
-Stable tag: 3.1.4
+Stable tag: 3.1.99
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -216,7 +216,7 @@ Not sure? You can find out by doing a bit a research.
 10. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
-= 3.2 - TBD =
+= 3.2 RC1 - 09-26-2024 =
 * FEATURE: Users will now receive a notification email when they have an upcoming subscription payment. #3109 (@dparker1005)
 * FEATURE: Added integration with Cloudflare Turnstile. #3123 (@andrewlimaza)
 * ENHANCEMENT: The business address for the website can now be set on the Advanced Settings page and will be shown on invoices. #3134 (@MaximilianoRicoTabo)
@@ -228,6 +228,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Now creating a user at checkout even when order creation checks fail. #3137 (@dparker1005)
 * ENHANCEMENT: Memberships on the Membership Account page will now be shown in the order set on the Membership Levels settings page. #3112 (@kimcoleman)
 * BUG FIX/ENHANCEMENT: Street2 billing address lines are now stored separately in the MemberOrder object. #3122 (@dparker1005)
+* BUG FIX: Fixed an issue where payment fields on the update billing page might be wrapped in nested cards. #3143 (@kimcoleman)
 * REFACTOR: Abstracted all "Terms of Service" logic into a single file. #3119 (@dparker1005)
 * REFACTOR: Abstracted all reCAPTCHA logic into a single file. #3105 (@dparker1005)
 * REFACTOR: Cleaned up the checkout preheader flow including deprecating the `pmpro_build_order_for_checkout()` function in favor of inline logic. #3129 (@dparker1005)

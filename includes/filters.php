@@ -182,10 +182,10 @@ add_filter( 'pmpro_level_description', 'pmpro_pmpro_level_description' );
 
 	This function is being deprecated as ProfileStartDate is no longer stored as an order property.
 	This is now coded directly into the PayPal Express subscribe() function.
-	@deprecated TBD
+	@deprecated 3.2
 */
 function pmpro_pmpro_subscribe_order_startdate_limit( $order, $gateway ) {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.2' );
 	return $order;
 }
 

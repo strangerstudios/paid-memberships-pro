@@ -29,10 +29,10 @@ class PMProGateway_authorizenet extends PMProGateway
 	}
 
 	/**
-	 * @deprecated TBD
+	 * @deprecated 3.2
 	 */
 	static function pmpro_checkout_order( $morder ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '3.2' );
 		return $morder;
 	}
 

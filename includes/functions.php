@@ -3984,11 +3984,11 @@ function pmpro_show_discount_code() {
  /**
   * Build the order object used at checkout.
   * @since 2.1
-  * @deprecated TBD
+  * @deprecated 3.2
   * @return mixed $order Order object.
   */
  function pmpro_build_order_for_checkout() {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.2' );
 
 	global $gateway, $pmpro_level, $current_user, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $CVV;
 

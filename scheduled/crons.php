@@ -322,7 +322,7 @@ function pmpro_cron_recurring_payment_reminders() {
 			/**
 			 * Filter whether to send a recurring payment reminder email.
 			 *
-			 * @since TBD
+			 * @since 3.2
 			 *
 			 * @param bool $send_email Whether to send the email. Default is true.
 			 * @param PMPro_Subscription $subscription_obj The subscription object.
@@ -333,13 +333,13 @@ function pmpro_cron_recurring_payment_reminders() {
 			/**
 			 * @filter      pmprorm_send_reminder_to_user
 			 *
-			 * @deprecated TBD
+			 * @deprecated 3.2
 			 *
 			 * @param       boolean $send_mail - Whether to send mail or not (true by default)
 			 * @param       WP_User $user - User object being processed
 			 * @param       MembershipOrder $lastorder - Deprecated. Now passing null.
 			 */
-			$send_emails = apply_filters_deprecated( 'pmprorm_send_reminder_to_user', array( $send_email, $user, null ), 'TBD' );
+			$send_emails = apply_filters_deprecated( 'pmprorm_send_reminder_to_user', array( $send_email, $user, null ), '3.2' );
 
 			if ( $send_emails ) {
 				// Get the level info.
