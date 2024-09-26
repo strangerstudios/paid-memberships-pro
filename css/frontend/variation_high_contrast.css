@@ -731,6 +731,20 @@
 	}
 
 	/**
+	* Membership Billing
+	*/
+	[id^="pmpro_billing-"] .pmpro_card .pmpro_card {
+		background-color: transparent;
+		border: none;
+		box-shadow: none;
+		margin: 0;
+
+		.pmpro_card_content {
+			padding: 0;
+		}
+	}
+
+	/**
 	* Membership Orders
 	*/
 	.pmpro_table_orders .pmpro_tag {
