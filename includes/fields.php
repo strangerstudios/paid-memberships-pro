@@ -1347,6 +1347,8 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = $field->element_class;
         $field_hint = $field->hint;
         $field_options = $field->options;
+        $field_display_conditions = $field->display_conditions;
+        $field_conditions = $field->depends;
         $field_allowed_file_types = $field->allowed_file_types;
         $field_max_file_size = $field->max_file_size;
         $field_default = $field->default;
@@ -1362,6 +1364,11 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = '';
         $field_hint = '';
         $field_options = '';
+        $field_display_conditions = '';
+        $field_conditions = new stdClass();
+        $field_conditions->id = '';
+        $field_conditions->value = '';
+        $field_conditions->condition = '';
         $field_allowed_file_types = '';
         $field_max_file_size = '';
         $field_default = '';
@@ -1495,7 +1502,22 @@ function pmpro_get_field_html( $field = null ) {
                 </label>                
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
-
+            
+            <div class="pmpro_userfield-field-setting">
+                <label>
+                    <?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
+                    <textarea name="pmpro_userfields_field_options" /><?php echo esc_textarea( $field_options );?></textarea>
+                </label>
+                <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
+            </div> <!-- end pmpro_userfield-field-setting -->
+            
+			<div class="pmpro_userfield-field-setting">
+				<label>
+					<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
+					<input type="text" name="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
+				</label>
+			</div> <!-- end pmpro_userfield-field-setting -->
+			
 			<div class="pmpro_userfield-field-setting">
 				<div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
 					<div class="pmpro_userfield-field-setting">
@@ -1514,33 +1536,59 @@ function pmpro_get_field_html( $field = null ) {
 						<span class="description"><?php printf( esc_html__( 'Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s.', 'paid-memberships-pro' ), $server_max_upload . 'MB' ); ?></span>
 					</div> <!-- end pmpro_userfield-field-setting -->
 				</div>
-				<div class="pmpro_userfield-field-setting">
-					<label>
-						<?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
-						<textarea name="pmpro_userfields_field_options" /><?php echo esc_textarea( $field_options );?></textarea>
-					</label>
-					<span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
-				</div> <!-- end pmpro_userfield-field-setting -->
-				
-				<div class="pmpro_userfield-field-setting">
-					<label>
-						<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
-						<input type="text" name="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
-					</label>
-				</div> <!-- end pmpro_userfield-field-setting -->
 			</div>
+			<!-- Conditional logic -->
+			<div class="pmpro_userfield-field-full-width">
+				<div class="pmpro_userfield-field-setting">
+					<label class="pmpro_clickable">
+						<input type="checkbox" name="pmpro_userfields_field_show_conditional_logic" value=1 <?php checked( $field_display_conditions, 1 ); ?>/>
+						<?php esc_html_e( 'Enable Conditional Logic', 'paid-memberships-pro' ); ?>
+					</label>
+				</div>
+				<div id="pmpro_userfield-field-setting-conditional-logic" style="display:none;">
+					<p><?php esc_html_e( "Make this field conditionally show based on another field's value. Enter the dependent field name, condition type, and an optional exact value to match below.", 'paid-memberships-pro' ); ?></p>
+					<div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-triple">
+						<div class="pmpro_userfield-field-setting">
+							<label>
+								<?php esc_html_e( 'Depends on Field Name', 'paid-memberships-pro' ); ?><br>
+								<input type="text" name="pmpro_userfields_field_conditional_logic_field" value="<?php echo esc_attr( $field_conditions->id ); ?>" />
+							</label>
+						</div>
 
+						<div class="pmpro_userfield-field-setting">
+							<label>
+								<?php esc_html_e( 'Condition Type', 'paid-memberships-pro' ); ?><br>
+								<select id="pmpro_userfields_field_conditional_logic_condition" name="pmpro_userfields_field_conditional_logic_condition">
+									<option value=""> - </option>
+									<option value="is_empty" <?php selected( $field_conditions->condition, "is_empty" );?>><?php esc_attr_e( 'Is empty', 'paid-memberships-pro' ); ?></option>
+									<option value="is_not_empty" <?php selected( $field_conditions->condition, "is_not_empty" );?>><?php esc_attr_e( 'Is not empty', 'paid-memberships-pro' ); ?></option>
+									<option value="is_equal_to" <?php selected( $field_conditions->condition, "is_equal_to" );?>><?php esc_attr_e( 'Is equal to', 'paid-memberships-pro' ); ?></option>
+									<option value="is_not_equal_to" <?php selected( $field_conditions->condition, "is_not_equal_to" );?>><?php esc_attr_e( 'Is not equal to', 'paid-memberships-pro' ); ?></option>
+									<option value="contains" <?php selected( $field_conditions->condition, "contains" );?>><?php esc_attr_e( 'Contains', 'paid-memberships-pro' ); ?></option>
+									<option value="does_not_contain" <?php selected( $field_conditions->condition, "does_not_contain" );?>><?php esc_attr_e( 'Does not contain', 'paid-memberships-pro' ); ?></option>
+								</select>
+							</label>
+						</div>
+						<div id="pmpro_userfields_field_conditional_logic_value" class="pmpro_userfield-field-setting" style="display:none;">
+							<label>
+								<?php esc_html_e( 'Value', 'paid-memberships-pro' ); ?><br>
+								<input type="text" name="pmpro_userfields_field_conditional_logic_value" value="<?php echo esc_attr( $field_conditions->value ); ?>"/>
+							</label>
+						</div>
+					</div> <!-- end of triple -->
+				</div>
+			</div> <!-- end of full width -->
             <div class="pmpro_userfield-field-actions">            
                 <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
                 </button> 
 				<button name="pmpro_userfields_delete_field" class="button button-secondary is-destructive">
-                    <?php esc_html_e( 'Delete Field', 'paid-memberships-pro' ); ?>
-                </button>           
-            </div> <!-- end pmpro_userfield-field-actions -->
-        </div> <!-- end pmpro_userfield-field-settings -->        
-    </div> <!-- end pmpro_userfield-group-field -->
-    <?php
+					<?php esc_html_e( 'Delete Field', 'paid-memberships-pro' ); ?>
+				</button>           
+			</div> <!-- end pmpro_userfield-field-actions -->
+	</div> <!-- end pmpro_userfield-group-field -->
+</div>
+<?php
 }
 
 /**
@@ -1586,6 +1634,8 @@ function pmpro_get_user_fields_settings() {
 			$field->default = ! empty( $field->default ) ? $field->default : '';
 			$field->allowed_file_types = ! empty( $field->allowed_file_types ) ? $field->allowed_file_types : '';
 			$field->max_file_size = ! empty( $field->max_file_size ) ? $field->max_file_size : '';
+			$field->depends = ! empty( $field->depends ) ? $field->depends : '';
+			$field->display_conditions = ! empty( $field->display_conditions ) ? $field->display_conditions : '';
 		}
 	}
     
@@ -1673,6 +1723,8 @@ function pmpro_load_user_fields_from_settings() {
                     'options' => $options,
                     'levels' => $levels,
                     'memberslistcsv' => true,
+                    'depends' => $settings_field->depends,
+                    'display_conditions' => $settings_field->display_conditions,
                     'allowed_file_types' => $settings_field->allowed_file_types,
                     'max_file_size' => $settings_field->max_file_size,
                     'default' => $settings_field->default,
