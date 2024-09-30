@@ -210,7 +210,8 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 	 */
 	$r = apply_filters( 'pmpro_member_shortcode_field', $r, $user_id, $field );
 
-	return $r;
+	//Display the field among paragraphs and line breaks if needed.
+	return wpautop( $r );
 }
 add_shortcode( 'pmpro_member', 'pmpro_member_shortcode' );
 
