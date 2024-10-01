@@ -1011,6 +1011,7 @@ add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 
  * The 2Checkout gateway was deprecated in v2.6.
  * Cybersource was deprecated in 2.10.
  * PayPal Website Payments Pro was deprecated in 2.10.
+ * Authorize.net was deprecated in 3.2.
  *
  * This code will add it back those gateways if it was the selected gateway.
  * In future versions, we will remove gateway code entirely.
@@ -1027,7 +1028,7 @@ function pmpro_check_for_deprecated_gateways() {
 	}
 	$default_gateway = get_option( 'pmpro_gateway' );
 
-	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal' );
+	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal', 'authorizenet' );
 	foreach ( $deprecated_gateways as $deprecated_gateway ) {
 		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
 			require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_' . $deprecated_gateway . '.php' );

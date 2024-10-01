@@ -120,8 +120,6 @@ require_once( PMPRO_DIR . '/includes/blocks.php' ); // Set up blocks.
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway.php' ); // loaded by memberorder class when needed
 
 // load payment gateway class
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_authorizenet.php' );
-
 if ( version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {
 	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_braintree.php' );
 }
@@ -192,7 +190,6 @@ function pmpro_gateways() {
 		'paypalexpress'     => __( 'PayPal Express', 'paid-memberships-pro' ),
 		'payflowpro'        => __( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
 		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
-		'authorizenet'      => __( 'Authorize.net', 'paid-memberships-pro' ),
 		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
 	);
 
