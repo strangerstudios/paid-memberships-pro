@@ -127,7 +127,7 @@ function pmpro_init_save_wizard_data() {
 
 		// If Stripe is not already set up, and the user wants to use Stripe, then redirect them to Stripe Connect.
 		$environment = apply_filters( 'pmpro_wizard_stripe_environment', 'live' );
-		if ( ! empty( $_REQUEST['gateway'] ) && 'stripe' === sanitize_text_field( $_REQUEST['gateway'] ) && ! PMProGateway_Stripe::has_connect_credentials( $environment ) && ! PMProGateway_Stripe::using_legacy_keys() ) {
+		if ( ! empty( $_REQUEST['gateway'] ) && 'stripe' === sanitize_text_field( $_REQUEST['gateway'] ) && ! PMProGateway_Stripe::has_connect_credentials( $environment ) && ! PMProGateway_Stripe::using_api_keys() ) {
 			$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
 			$connect_url = add_query_arg(
 				array(
