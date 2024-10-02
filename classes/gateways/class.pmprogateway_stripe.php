@@ -308,11 +308,11 @@ class PMProGateway_stripe extends PMProGateway {
 			<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h2 class="pmpro_stripe_legacy_keys" <?php if( ! $stripe->show_legacy_keys_settings() ) {?>style="display: none;"<?php }?>><?php esc_html_e( 'Stripe API Settings (Legacy)', 'paid-memberships-pro' ); ?></h2>
+				<h2 class="pmpro_stripe_legacy_keys" <?php if( ! $stripe->show_legacy_keys_settings() ) {?>style="display: none;"<?php }?>><?php esc_html_e( 'Stripe API Settings', 'paid-memberships-pro' ); ?></h2>
 				<?php if( ! $stripe->show_legacy_keys_settings() ) {?>
 				<p>
 					<?php esc_html_e( 'Having trouble connecting through the button above or otherwise need to use your own API keys?', 'paid-memberships-pro' );?>
-					<a id="pmpro_stripe_legacy_keys_toggle" href="javascript:void(0);"><?php esc_html_e( 'Click here to use the legacy API settings.', 'paid-memberships-pro' );?></a>
+					<a id="pmpro_stripe_legacy_keys_toggle" href="javascript:void(0);"><?php esc_html_e( 'Click here to connect via API settings.', 'paid-memberships-pro' );?></a>
 				</p>
 				<script>
 					// Toggle to show the Stripe legacy keys settings.
@@ -591,10 +591,6 @@ class PMProGateway_stripe extends PMProGateway {
 						);
 						if ( empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off" ) {
 							$payment_request_error_escaped = sprintf( wp_kses( __( 'This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target="_blank" href="%s" title="Configuring WordPress to Always Use HTTPS/SSL">set up WordPress to always use HTTPS</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://www.paidmembershipspro.com/configuring-wordpress-always-use-httpsssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=configure-https' );
-						} elseif ( self::using_legacy_keys() && substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_live_" && substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_test_" ) {
-							$payment_request_error_escaped = sprintf( wp_kses( __( 'It looks like you are using an older Stripe publishable key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "pk_live_" or "pk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your publishable key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
-						} elseif ( self::using_legacy_keys() && substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_live_" && substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_test_" ) {
-							$payment_request_error_escaped = sprintf( wp_kses( __( 'It looks like you are using an older Stripe secret key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "sk_live_" or "sk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your secret key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
 						} elseif ( ! $stripe->pmpro_does_apple_pay_domain_exist() ) {
 							$payment_request_error_escaped = sprintf( wp_kses( __( 'Your domain could not be registered with Apple to enable Apple Pay. Please try <a target="_blank" href="%s" title="Apple Pay Settings Page in Stripe">registering your domain manually from the Apple Pay settings page in Stripe</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/settings/payments/apple_pay' );
 						}
@@ -1385,6 +1381,24 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool Whether the site is using legacy Stripe keys.
 	 */
 	public static function using_legacy_keys() {
+		// If the site is not using API keys, it is not using legacy keys.
+		if ( ! self::using_api_keys() ) {
+			return false;
+		}
+
+		// Get the secret key being used.
+		$secret_key = get_option( 'pmpro_stripe_secretkey' );
+
+		// If the key begins with "sk_", it is a legacy key.
+		return strpos( $secret_key, 'sk_' ) === 0;
+	}
+
+	/**
+	 * Determine whether the site is using API keys to authenticate with Stripe.
+	 *
+	 * @return bool Whether the site is using API keys to authenticate with Stripe.
+	 */
+	public static function using_api_keys() {
 		$r = ! empty( get_option( 'pmpro_stripe_secretkey' ) ) && ! empty( get_option( 'pmpro_stripe_publishablekey' ) );
 		return $r;
 	}
@@ -2261,15 +2275,11 @@ class PMProGateway_stripe extends PMProGateway {
 	private function show_connect_payment_option_fields( $livemode, $values, $gateway ) {
 		$gateway_environment = $this->gateway_environment;
 
-		$stripe_legacy_key      = $values['stripe_publishablekey'];
-		$stripe_legacy_secret   = $values['stripe_secretkey'];
-		$stripe_is_legacy_setup = ( self::using_legacy_keys() && ! empty( $stripe_legacy_key ) && ! empty( $stripe_legacy_secret ) );
-
 		$environment = $livemode ? 'live' : 'sandbox';
 		$environment2 = $livemode ? 'live' : 'test'; // For when 'test' is used instead of 'sandbox'.
 
 		// Determine if the gateway is connected in live mode and set var.
-		if ( self::has_connect_credentials( $environment ) || $stripe_is_legacy_setup ) {
+		if ( self::has_connect_credentials( $environment ) || self::using_api_keys() ) {
 			$connection_selector = 'pmpro_gateway-mode-connected';
 		} else {
 			$connection_selector = 'pmpro_gateway-mode-not-connected';
@@ -2285,8 +2295,10 @@ class PMProGateway_stripe extends PMProGateway {
 					<span class="pmpro_gateway-mode pmpro_gateway-mode-<?php echo esc_attr( $environment2 ); ?> <?php echo esc_attr( $connection_selector ); ?>">
 						<?php
 							echo ( $livemode ? esc_html__( 'Live Mode:', 'paid-memberships-pro' ) : esc_html__( 'Test Mode:', 'paid-memberships-pro' ) ) . ' ';
-							if ( $stripe_is_legacy_setup ) {
+							if ( self::using_legacy_keys() ) {
 								esc_html_e( 'Connected with Legacy Keys', 'paid-memberships-pro' );
+							} elseif ( self::using_api_keys() ) {
+								esc_html_e( 'Connected with API Keys', 'paid-memberships-pro' );
 							} elseif( self::has_connect_credentials( $environment ) ) {
 								esc_html_e( 'Connected', 'paid-memberships-pro' );
 							} else {
@@ -2299,22 +2311,15 @@ class PMProGateway_stripe extends PMProGateway {
 					<div class="notice notice-large notice-warning inline">
 						<p class="pmpro_stripe_webhook_notice">
 							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
-							<?php esc_html_e( 'You can continue to use the legacy API keys or choose to upgrade to our new Stripe Connect solution below.', 'paid-memberships-pro' ); ?><br />
-							<?php
-							if ( $livemode ) {
-								esc_html_e( 'Use the "Connect with Stripe" button below to securely authenticate with your Stripe account using Stripe Connect. Log in with the current Stripe account used for this site so that existing subscriptions are not affected by the update.', 'paid-memberships-pro' );
-							} else {
-								esc_html_e( 'Use the "Connect with Stripe" button below to securely authenticate with your Stripe account using Stripe Connect in test mode.', 'paid-memberships-pro' );
-							}
-							?>
+							<?php esc_html_e( 'Legacy API keys will eventually no longer be supported. To continue processing payments with Stripe, you may connect via Stripe Connect below or connect using "restricted API keys".', 'paid-memberships-pro' ); ?><br />
 							<a href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=switch-to-connect" target="_blank"><?php esc_html_e( 'Read the documentation on switching to Stripe Connect', 'paid-memberships-pro' ); ?></a>
 						</p>
 					</div>
-				<?php } elseif ( self::using_legacy_keys() ) {  ?>
+				<?php } elseif ( self::using_api_keys() && self::has_connect_credentials( $environment ) ) {  ?>
 					<div class="notice notice-large notice-warning inline">
 						<p class="pmpro_stripe_webhook_notice">
-							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
-							<?php esc_html_e( 'In order to complete the transition to using Stripe legacy API keys, please click the "Disconnect from Stripe" button below.', 'paid-memberships-pro' ); ?><br />
+							<strong><?php esc_html_e( 'Your site is using API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
+							<?php esc_html_e( 'In order to complete the transition to using Stripe API keys, please click the "Disconnect from Stripe" button below.', 'paid-memberships-pro' ); ?><br />
 						</p>
 					</div>
 				<?php } ?>
@@ -2930,7 +2935,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'pending_setup_intent.payment_method',
 				),
 			);
-			if ( ! self::using_legacy_keys() ) {
+			if ( ! self::using_api_keys() ) {
 				$params['application_fee_percent'] = $this->get_application_fee_percentage();
 			}
 			$subscription_params = apply_filters( 'pmpro_stripe_create_subscription_array', $subscription_params );
@@ -3590,7 +3595,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return int percentage to charge for application fee.
 	 */
 	private function get_application_fee_percentage() {
-		if ( self::using_legacy_keys() ) {
+		if ( self::using_api_keys() ) {
 			return 0;
 		}
 
@@ -3629,7 +3634,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return array params with application fee if applicable.
 	 */
 	private function add_application_fee_amount( $params ) {
-		if ( empty( $params['amount'] ) || self::using_legacy_keys() ) {
+		if ( empty( $params['amount'] ) || self::using_api_keys() ) {
 			return $params;
 		}
 		$amount = $params['amount'];
@@ -3648,9 +3653,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.6
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
+	 * @since 3.2 This now controls showing all API key settings, not just legacy keys.
 	 */
 	private function show_legacy_keys_settings() {
-		$r = self::using_legacy_keys();
+		$r = self::using_api_keys();
 		$r = apply_filters( 'pmpro_stripe_show_legacy_keys_settings', $r );
 		return $r;
 	}
@@ -3665,7 +3671,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function get_secretkey() {
 		$secretkey = '';
-		if ( self::using_legacy_keys() ) {
+		if ( self::using_api_keys() ) {
 			$secretkey = get_option( 'pmpro_stripe_secretkey' );
 		} else {
 			$secretkey = get_option( 'pmpro_gateway_environment' ) === 'live'
@@ -3685,7 +3691,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function get_publishablekey() {
 		$publishablekey = '';
-		if ( self::using_legacy_keys() ) {
+		if ( self::using_api_keys() ) {
 			$publishablekey = get_option( 'pmpro_stripe_publishablekey' );
 		} else {
 			$publishablekey = get_option( 'pmpro_gateway_environment' ) === 'live'
@@ -3825,8 +3831,8 @@ class PMProGateway_stripe extends PMProGateway {
 			
 			$secretkey = get_option( 'pmpro_stripe_secretkey' );
 
-			// If they are not using legacy keys, get Stripe Connect keys for the relevant environment.
-			if ( ! self::using_legacy_keys() && empty( $secretkey ) ) {
+			// If they are not using API keys, get Stripe Connect keys for the relevant environment.
+			if ( ! self::using_api_keys() && empty( $secretkey ) ) {
 				if ( get_option( 'pmpro_gateway_environment' ) === 'live' ) {
 					$secretkey = get_option( 'pmpro_live_stripe_connect_secretkey' );
 				} else {

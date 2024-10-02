@@ -46,7 +46,7 @@
 	}
 
 	try {
-		if ( PMProGateway_stripe::using_legacy_keys() ) {
+		if ( PMProGateway_stripe::using_api_keys() ) {
 			$secret_key = get_option( "pmpro_stripe_secretkey" );
 		} elseif ( $livemode ) {
 			$secret_key = get_option( 'pmpro_live_stripe_connect_secretkey' );

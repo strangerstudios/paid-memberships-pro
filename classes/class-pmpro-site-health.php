@@ -244,11 +244,17 @@ class PMPro_Site_Health {
 			$stripe = new PMProGateway_stripe();
 
 			$legacy  = $stripe->using_legacy_keys();
+			$api = $stripe->using_api_keys();
 			$connect = $stripe->has_connect_credentials();
 
 			if ( $legacy ) {
 				$gateway_text .= ' (' . __( 'Legacy Keys', 'paid-memberships-pro' ) . ')';
 				return $gateway_text . ' [' . $gateway . ':legacy-keys]';
+			}
+
+			if ( $api ) {
+				$gateway_text .= ' (' . __( 'API Keys', ' paid-memberships-pro' ) . ')';
+				return $gateway_text . ' [' . $gateway . ':api-keys ]';
 			}
 
 			if ( $connect ) {
