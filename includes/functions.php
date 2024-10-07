@@ -4799,8 +4799,8 @@ function pmpro_check_upload( $file_index ) {
 						return ltrim( $type, '.' );
 					}, $allowed_mime_types );
 
-					// Check the file type against the allowed types.
-					if ( ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
+					// Check the file type against the allowed types. If empty allowed mimes, assume any file upload is okay.
+					if ( ! empty( $allowed_mime_types ) && ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
 						return new WP_Error( 'pmpro_upload_file_type_error', sprintf( esc_html__( 'Invalid file type. Please try uploading the file type(s): %s', 'paid-memberships-pro' ), implode( ',' ,$allowed_mime_types ) ) );
 					}
 					
