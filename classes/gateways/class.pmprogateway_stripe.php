@@ -1594,7 +1594,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$recurring_subtotal       = $level->billing_amount;
 			$recurring_tax            = $morder->getTaxForPrice( $recurring_subtotal );
 			$recurring_payment_amount = pmpro_round_price( (float) $recurring_subtotal + (float) $recurring_tax );
-			$recurring_payment_price  = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $level->cycle_period, $morder->BillingFrequency );
+			$recurring_payment_price  = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $level->cycle_period, $level->cycle_number );
 			if ( is_string( $recurring_payment_price ) ) {
 				// There was an error getting the price.
 				pmpro_setMessage( __( 'Could not get price for recurring payment. ', 'paid-memberships-pro' ) . $recurring_payment_price, 'pmpro_error', true );
