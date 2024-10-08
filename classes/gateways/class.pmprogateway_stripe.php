@@ -3903,7 +3903,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * This is a temporary fix for orders requiring SCA authentication.
 	 * Eventually, we want to always save orders in pending status with all of the checkout data stored in order meta, but we are not doing that yet.
 	 *
-	 * @since TBD
+	 * @since 3.2.1
 	 */
 	public static function clear_pmpro_review( $pmpro_review ) {
 		// If we don't have an order, bail.

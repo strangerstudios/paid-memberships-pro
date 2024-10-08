@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.6
 Requires PHP: 5.6
-Stable tag: 3.2
+Stable tag: 3.2.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -216,7 +216,14 @@ Not sure? You can find out by doing a bit a research.
 10. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
-= 3.2 - 10-02-2024 =
+= 3.2.1 - 2024-10-08 =
+* ENHANCEMENT: Improved the print styles for frontend pages. #3158 (@kimcoleman)
+* BUG FIX: Fixed an issue where payments would not complete when Stripe 3DS was triggered. #3157 (@dparker1005)
+* BUG FIX: Fixed an issue where "file" user fields would not allow uploads if the file restrictions setting was empty. #3156 (@andrewlimaza)
+* BUG FIX: Fixed a deprecation warning when using Stripe Checkout. #3160 (@dparker1005)
+* BUG FIX: Fixed an issue where the "street2" billing address field may not be saved for Stripe payments. (@dparker1005)
+
+= 3.2 - 2024-10-02 =
 * FEATURE: Users will now receive a notification email when they have an upcoming subscription payment. #3109 (@dparker1005)
 * FEATURE: Added integration with Cloudflare Turnstile. #3123 (@andrewlimaza)
 * ENHANCEMENT: The business address for the website can now be set on the Advanced Settings page and will be shown on invoices. #3134 (@MaximilianoRicoTabo)
