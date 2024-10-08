@@ -44,7 +44,7 @@ function pmpro_show_upgrade_3_2_notice_wpp() {
 			<?php
 			printf(
 				wp_kses_post(
-					__( 'In previous versions of PMPro, PayPal Express was automatically added as a second payment option on the chekcout page when using the Website Payments Pro gateway. This feature has been removed in PMPro v3.2 but can be added back using the PMPro Add PayPal Express Option at Checkout Add On. For more information, read our <a href="%s">v3.2 release notes post here</a>.', 'paid-memberships-pro' )
+					__( 'In previous versions of PMPro, PayPal Express was automatically added as a second payment option on the checkout page when using the Website Payments Pro gateway. This feature has been removed in PMPro v3.2 but can be added back using the PMPro Add PayPal Express Option at Checkout Add On. For more information, read our <a href="%s">v3.2 release notes post here</a>.', 'paid-memberships-pro' )
 				),
 				esc_url( 'https://www.paidmembershipspro.com/pmpro-update-3-2/' )
 			);
