@@ -719,6 +719,7 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 		$order->billing = new stdClass();
 		$order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
 		$order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
+		$order->billing->street2 = empty( $payment_method->billing_details->address->line2 ) ? '' : $payment_method->billing_details->address->line2;
 		$order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
 		$order->billing->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
 		$order->billing->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
