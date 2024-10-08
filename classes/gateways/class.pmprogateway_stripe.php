@@ -172,7 +172,8 @@ class PMProGateway_stripe extends PMProGateway {
 				add_filter( 'pmpro_include_payment_information_fields', array(
 					'PMProGateway_stripe',
 					'pmpro_include_payment_information_fields'
-				) );				
+				) );	
+				add_filter( 'pmpro_after_checkout_preheader', array( 'PMProGateway_stripe', 'clear_pmpro_review' ) );			
 			} else {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
@@ -3894,5 +3895,29 @@ class PMProGateway_stripe extends PMProGateway {
 		$user = get_userdata( $order->user_id );
 		$email = empty( $user->user_email ) ? '' : $user->user_email;
 		return apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->billing->name ) . " (" . $email . ")", $order );
+	}
+
+	/**
+	 * Clear $pmpro_review.
+	 *
+	 * This is a temporary fix for orders requiring SCA authentication.
+	 * Eventually, we want to always save orders in pending status with all of the checkout data stored in order meta, but we are not doing that yet.
+	 *
+	 * @since TBD
+	 */
+	public static function clear_pmpro_review( $pmpro_review ) {
+		// If we don't have an order, bail.
+		if ( empty( $pmpro_review ) || ! is_a( $pmpro_review, 'MemberOrder' ) ) {
+			return;
+		}
+
+		// If this is not a Stripe order, bail.
+		if ( 'stripe' !== $pmpro_review->gateway ) {
+			return;
+		}
+
+		// Clear the global.
+		global $pmpro_review;
+		$pmpro_review = false;
 	}
 }
