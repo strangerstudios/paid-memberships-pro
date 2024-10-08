@@ -959,6 +959,23 @@
 }
 
 /**
+ * Print Styles
+ */
+ @media print {
+	.pmpro {
+		.pmpro_card {
+			background-color: transparent;
+			border: none;
+			box-shadow: none;
+		}
+		.pmpro_card_title,
+		.pmpro_card_content {
+			padding: 0;
+		}
+	}
+}
+
+/**
  * Responsive Styles
  */
 @media screen and (max-width: 767px) {

@@ -972,6 +972,27 @@
 }
 
 /**
+ * Print Styles
+ */
+@media print {
+	.pmpro {
+		.pmpro_card {
+			background-color: transparent;
+			border: none;
+			box-shadow: none;
+		}
+		.pmpro_card_title,
+		.pmpro_card_content,
+		.pmpro_section:has(.pmpro_form) .pmpro_card_title + .pmpro_card_content {
+			padding: 0;
+		}
+		.pmpro_form_legend {
+			margin-bottom: 0;
+		}
+	}
+}
+
+/**
  * Responsive Styles
  */
 @media screen and (max-width: 767px) {
