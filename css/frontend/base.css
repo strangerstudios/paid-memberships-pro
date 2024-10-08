@@ -554,7 +554,8 @@ button[type="button"]#other_discount_code_toggle:focus {
 @media print {
 	.pmpro {
 		.pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav),
-		.pmpro_actions_nav,
+		.pmpro_actions_nav-right,
+		.pmpro_actions_nav-left,
 		.pmpro_card_actions,
 		.pmpro_hide_print {
 			display: none;
