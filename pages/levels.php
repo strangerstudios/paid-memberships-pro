@@ -75,7 +75,7 @@ $level_groups  = pmpro_get_level_groups_in_order();
 									<tr>
 										<th><?php esc_html_e('Level', 'paid-memberships-pro' );?></th>
 										<th><?php esc_html_e('Price', 'paid-memberships-pro' );?></th>	
-										<th>&nbsp;</th>
+										<th><span class="screen-reader-text"><?php esc_html_e( 'Action', 'paid-memberships-pro' ); ?></span></th>
 									</tr>
 								</thead>
 								<tbody>
