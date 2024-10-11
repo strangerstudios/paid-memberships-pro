@@ -102,7 +102,7 @@
 		/**
 		 * Cancel the subscription associated with the passed order.
 		 *
-		 * @deprecated 3.2 Use cancel_subscription insetad.
+		 * @deprecated 3.2 Use cancel_subscription instead by overriding it in each gateway class.
 		 *
 		 * @param MemberOrder $order The order object associated with the subscription to cancel.
 		 * @return bool True if the subscription was canceled successfully, false otherwise.
@@ -119,11 +119,12 @@
 		 *
 		 * @param PMPro_Subscription $subscription The subscription to cancel.
 		 * @return bool True if the subscription was canceled successfully, false otherwise.
-		 */
-		function cancel_subscription( $subscription ) {
-			// Simulate a successful subscription cancelation.
-			return true;
-		}
+		 *
+		 * function cancel_subscription( $subscription ) {
+		 *  // Simulate a successful subscription cancelation.
+		 *	 return true;
+		 * }
+		*/
 
 		/**
 		 * @deprecated 3.2
