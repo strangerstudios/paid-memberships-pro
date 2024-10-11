@@ -4932,3 +4932,27 @@ function pmpro_get_subscription_period_end_date_for_order( $order, $date_format 
 	// Format and return the end date.
 	return date_i18n( $date_format, $period_end );
 }
+
+/**
+ * Check if a method is specifically defined in the given object's class, not inherited.
+ *
+ * @since 3.2.2
+ * @param object $object The object to check for the method.
+ * @param string $method_name The name of the method to check.
+ * @return bool True if the method is overridden in the object's class, false otherwise.
+ */
+function pmpro_method_defined_in_class( $object, $method_name ) {
+    // Get the class of the object.
+    $reflection_class = new ReflectionClass( $object );
+
+    // Check if the method exists in this class.
+    if ( !$reflection_class->hasMethod( $method_name ) ) {
+        return false; // The method doesn't exist at all.
+    }
+
+    // Get the method reflection.
+    $method = $reflection_class->getMethod( $method_name );
+
+    // Check if the method's declaring class is the same as the object's class.
+    return $method->getDeclaringClass()->getName() === $reflection_class->getName();
+}

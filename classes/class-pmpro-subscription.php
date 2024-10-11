@@ -1186,7 +1186,15 @@ class PMPro_Subscription {
 		$cancelled = false;
 		$gateway_object = $this->get_gateway_object();
 		if ( is_object( $gateway_object ) ) {
-			if ( method_exists( $gateway_object, 'cancel_subscription' ) ) {
+			/**
+			 * Note here. We want to check if the gateway class
+			 * _overrides_ the cancel_subscription method.
+			 * So we use our new pmpro_method_defined_in_class() function.
+			 * If not, we just look for a cancel method and fallback to cancelling that way.
+			 * For that method_exists check, we are okay if the cancel method is in
+			 * the extended class or the base class.
+			 */
+			if ( pmpro_method_defined_in_class( $gateway_object, 'cancel_subscription' ) ) {
 				$cancelled = $gateway_object->cancel_subscription( $this );
 			} elseif ( method_exists( $gateway_object, 'cancel' ) ) {
 				// Legacy: Build an order to pass to the old cancel() methods in gateways.
