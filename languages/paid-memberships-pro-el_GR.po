@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.2.1\n"
+"Project-Id-Version: Paid Memberships Pro 3.2.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-08T15:58:35+00:00\n"
+"POT-Creation-Date: 2024-10-12T21:40:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -4461,6 +4461,7 @@ msgstr "Βρέθηκαν %d Συνδρομητές"
 #: pages/checkout.php:210
 #: adminpages/emailtemplates-edit.php:23
 #: shortcodes/pmpro_account.php:81
+#: classes/class-pmpro-subscription.php:1220
 msgid "Username"
 msgstr "Username"
 
@@ -5483,6 +5484,7 @@ msgstr "Κατάσταση"
 #: classes/class-pmpro-subscription.php:1215
 #: adminpages/orders.php:772
 #: includes/profile.php:836
+#: classes/class-pmpro-subscription.php:1223
 msgid "Gateway"
 msgstr "Τρόπος πληρωμής"
 
@@ -5677,6 +5679,7 @@ msgstr "Δημιουργήθηκε από τον τρόπο πληρωμής. Χ
 #: classes/class-pmpro-subscription.php:1216
 #: adminpages/orders.php:827
 #: includes/profile.php:834
+#: classes/class-pmpro-subscription.php:1224
 msgid "Subscription Transaction ID"
 msgstr "ID Συνδρομής"
 
@@ -6379,6 +6382,7 @@ msgstr "διεγραμμένο"
 #: shortcodes/pmpro_account.php:177
 #: classes/class-pmpro-subscription.php:1214
 #: shortcodes/pmpro_account.php:182
+#: classes/class-pmpro-subscription.php:1222
 msgid "Subscription"
 msgstr "Συνδρομή"
 
@@ -16759,6 +16763,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1205
 #: classes/class-pmpro-subscription.php:1211
 #: adminpages/emailtemplates-edit.php:33
+#: classes/class-pmpro-subscription.php:1219
 msgid "User Email"
 msgstr ""
 
@@ -17483,6 +17488,7 @@ msgstr ""
 #: adminpages/subscriptions.php:132
 #: classes/class-pmpro-subscription.php:1212
 #: classes/class-pmpro-subscription.php:1218
+#: classes/class-pmpro-subscription.php:1226
 msgid "Edit User"
 msgstr ""
 
@@ -17886,6 +17892,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1192
 #: classes/class-pmpro-subscription.php:1207
 #: classes/class-pmpro-subscription.php:1213
+#: classes/class-pmpro-subscription.php:1221
 msgid "User Display Name"
 msgstr ""
 
@@ -32163,6 +32170,8 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1204
 #: classes/class-pmpro-subscription.php:1215
 #: classes/class-pmpro-subscription.php:1221
+#: classes/class-pmpro-subscription.php:1218
+#: classes/class-pmpro-subscription.php:1229
 msgid "There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active."
 msgstr ""
 
@@ -32174,6 +32183,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1202
 #: classes/class-pmpro-subscription.php:1217
 #: classes/class-pmpro-subscription.php:1223
+#: classes/class-pmpro-subscription.php:1231
 msgid "Subscription cancelled at gateway."
 msgstr ""
 
@@ -33784,6 +33794,7 @@ msgstr ""
 
 #: adminpages/pagesettings.php:622
 #: adminpages/pagesettings.php:611
+#: pages/levels.php:78
 msgid "Action"
 msgstr ""
 
