@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
-Tested up to: 6.6
+Tested up to: 6.6.2
 Requires PHP: 5.6
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -216,6 +216,10 @@ Not sure? You can find out by doing a bit a research.
 10. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
+= 3.2.2 - 2024-10-12 =
+* ENHANCEMENT: Added screen reader text to identify an empty header row on levels table output. #3161 (@kimcoleman)
+* BUG FIX: Fixed issue where some third party gateways were no longer cancelling subscriptions at the gateway when cancelled locally in WP/PMPro. If you were using a gateway that is not included with the core PMPro plugin, please double check all recent cancellations to make sure they were sync'd to your gateway. If not, you will have to cancel those subscriptions at the gateway manually. #3164 (@ideadude)
+
 = 3.2.1 - 2024-10-08 =
 * ENHANCEMENT: Improved the print styles for frontend pages. #3158 (@kimcoleman)
 * BUG FIX: Fixed an issue where payments would not complete when Stripe 3DS was triggered. #3157 (@dparker1005)
