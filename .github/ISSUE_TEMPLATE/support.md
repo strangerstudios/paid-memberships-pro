@@ -16,5 +16,4 @@ Usage docs can be found here: https://www.paidmembershipspro.com/documentation/
 Submit a ticket on our helpdesk by visiting https://www.paidmembershipspro.com/new-topic/ (Please note that an [active paid membership](https://www.paidmembershipspro.com/pricing) is required for paid support.)
 
 **General usage and development questions**
-- WordPress.org Forums: https://wordpress.org/support/plugin/paid-memberships-pro
 - Website: https://www.paidmembershipspro.com/contact/

@@ -284,40 +284,18 @@ function pmpro_admin_header() {
 add_action( 'admin_notices', 'pmpro_admin_header', 1 );
 
 /**
- * Add notice to rate us that replaces default WordPress footer text on PMPro pages.
+ * Replace the default WordPress footer text on PMPro pages.
  */
 function pmpro_admin_footer_text( $text ) {
-	global $current_screen;
-
 	// Show footer on our pages in admin, but not on the block editor.
 	if (
 		! isset( $_REQUEST['page'] ) ||
-		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ||
-		( isset( $_REQUEST['page'] ) && 'pmpro-advancedsettings' === $_REQUEST['page'] )
+		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) )
 	) {
 		return $text;
 	}
 
-	return sprintf(
-		wp_kses(
-			/* translators: $1$s - Paid Memberships Pro plugin name; $2$s - WP.org review link. */
-			__( 'Please <a href="%1$s" target="_blank" rel="noopener noreferrer">rate us %2$s on WordPress.org</a> to help others find %3$s. Thank you from the %4$s team!', 'paid-memberships-pro' ),
-			[
-				'a' => [
-					'href'   => [],
-					'target' => [],
-					'rel'    => [],
-				],
-				'p' => [
-					'class'  => [],
-				],
-			]
-		),
-		'https://wordpress.org/support/plugin/paid-memberships-pro/reviews/?filter=5#new-post',
-		'<span class="pmpro-rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>',
-		'Paid Memberships Pro',
-		'PMPro'
-	);
+	return '';
 }
 add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
 

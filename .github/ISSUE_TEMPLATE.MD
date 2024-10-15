@@ -1,6 +1,6 @@
 <!-- This form is for reporting bugs and issues specific to the Paid Memberships Pro plugin. This is not a support portal. If you need technical support from a human being, please submit a ticket via the helpdesk instead: https://www.paidmembershipspro.com/support/ -->
 
-<!-- Usage questions can also be directed to the public support forum here: https://wordpress.org/support/plugin/paid-memberships-pro, unless this is a question about a premium extension in which case you should use the helpdesk. -->
+<!-- Usage questions can also be directed to the contact form here: https://www.paidmembershipspro.com/contact/, unless this is a question about a premium extension in which case you should use the helpdesk. -->
 
 <!-- If you are a developer who needs a new filter/hook, raise a PR instead :) -->
 
@@ -11,7 +11,7 @@
 <!-- MARK COMPLETED ITEMS WITH AN [x] -->
 
 - [ ] I have searched for similar issues in both open and closed tickets and cannot find a duplicate.
-- [ ] The issue still exists against the latest `dev` branch of Paid Memberships Pro on GitHub (this is **not** the same version as on WordPress.org!)
+- [ ] The issue still exists against the latest `dev` branch of Paid Memberships Pro on GitHub (this is **not** the same version as the current stable release!)
 - [ ] I have attempted to find the simplest possible steps to reproduce the issue
 
 ## Steps to reproduce the issue
@@ -33,7 +33,7 @@ I was expecting to see...
 <!-- MARK COMPLETED ITEMS WITH AN [x] -->
 
 - [ ] This bug happens with only Paid Memberships Pro plugin active
-- [ ] This bug happens with a default WordPress theme active, or [Memberlite](https://wordpress.org/themes/memberlite/)
+- [ ] This bug happens with a default WordPress theme active, or [Memberlite](https://memberlitetheme.com)
 - [ ] I can reproduce this bug consistently using the steps above
 
 ## WordPress Environment
