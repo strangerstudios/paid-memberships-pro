@@ -1,6 +1,6 @@
 <!-- This form is for reporting bugs and issues specific to the Paid Memberships Pro plugin. This is not a support portal. If you need technical support from a human being, please submit a ticket via the helpdesk instead: https://www.paidmembershipspro.com/support/ -->
 
-<!-- Usage questions can also be directed to the contact form here: https://www.paidmembershipspro.com/contact/, unless this is a question about a premium extension in which case you should use the helpdesk. -->
+<!-- Usage questions can also be directed to our contact form here: https://www.paidmembershipspro.com/contact/, unless this is a question about a premium extension in which case you should use the helpdesk. -->
 
 <!-- If you are a developer who needs a new filter/hook, raise a PR instead :) -->
 
