@@ -100,7 +100,7 @@ Extend functionality with affiliates, page builders, themes, and landing pages.
 
 ### Documentation, Support, Localization
 
-Access free support here on WordPress.org or reach out on our [contact form](https://www.paidmembershipspro.com/contact/). Refer to our information on [premium support](https://www.paidmembershipspro.com/support/) if you would like more help.
+Reach out on our [contact form](https://www.paidmembershipspro.com/contact/) for free support. Refer to our information on [premium support](https://www.paidmembershipspro.com/support/) if you would like more help.
 
 Our website has extensive [documentation](https://www.paidmembershipspro.com/documentation/) to assist you in building your membership site.
 
@@ -112,7 +112,7 @@ Open source, REST API support, extensive hooks, and tools for easy customization
 Our website offers over 340 examples on how to use our action and filter hooks to customize your membership site.
 
 ### Free WordPress Theme
-Our official theme, [Memberlite](https://wordpress.org/themes/memberlite/), is built specifically for membership sites. Memberlite has deep integration with Paid Memberships Pro to offer advanced features for logged-in/out users and works alongside your favorite page builders, like the Block Editor and Elementor.
+Our official theme, [Memberlite](https://memberlitetheme.com), is built specifically for membership sites. Memberlite has deep integration with Paid Memberships Pro to offer advanced features for logged-in/out users and works alongside your favorite page builders, like the Block Editor and Elementor.
 
 ### Popular Add Ons
 
@@ -192,7 +192,7 @@ If you would like more help using PMPro on a network install, [reach our via our
 Please visit [our support site](https://www.paidmembershipspro.com/support) for more documentation and our support forums.
 
 = I found a bug in Paid Memberships Pro. =
-Please post it in the [WordPress support forum](https://wordpress.org/support/plugin/paid-memberships-pro/) and we'll fix it right away. Thanks for helping.
+Please reach out using our [contact form](https://www.paidmembershipspro.com/contact/) and we'll fix it right away. Thanks for helping.
 
 = Does PMPro Support X? =
 Not sure? You can find out by doing a bit a research.
@@ -200,7 +200,7 @@ Not sure? You can find out by doing a bit a research.
 1. [Check our compatibility page](https://www.paidmembershipspro.com/documentation/compatibility/).
 2. [Check our Add Ons](https://www.paidmembershipspro.com/add-ons/).
 3. [Do a search on our site](https://www.paidmembershipspro.com/).
-4. [Ask in the forums here](https://wordpress.org/support/plugin/paid-memberships-pro/).
+4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Screenshots ==
 

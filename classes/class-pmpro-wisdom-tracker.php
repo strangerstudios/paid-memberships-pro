@@ -30,7 +30,7 @@ class PMPro_Wisdom_Tracker {
 	 * @param $_plugin_slug                The slug for this plugin (PMPRO MODIFICATION).
 	 * @param $_plugin_file                The file path for this plugin
 	 * @param $_options                    Plugin options to track
-	 * @param $_require_optin              Whether user opt-in is required (always required on WordPress.org)
+	 * @param $_require_optin              Whether user opt-in is required
 	 * @param $_include_goodbye_form       Whether to include a form when the user deactivates
 	 * @param $_marketing                  Marketing method:
 	 *                                     0: Don't collect email addresses
