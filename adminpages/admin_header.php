@@ -239,6 +239,10 @@
 				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-orders' ) );?>"<?php if($view == 'pmpro-orders') { ?> class="current"<?php } ?>"><?php esc_html_e('Orders', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
+			<?php if(current_user_can('pmpro_edit_members')) { ?>
+				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-subscriptions' ) );?>"<?php if($view == 'pmpro-subscriptions') { ?> class="current"<?php } ?>"><?php esc_html_e('Subscriptions', 'paid-memberships-pro' );?></a></li>
+			<?php } ?>
+
 			<?php if(current_user_can('pmpro_reports')) { ?>
 				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports' ) );?>"<?php if($view == 'pmpro-reports') { ?> class="current"<?php } ?>"><?php esc_html_e('Reports', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
