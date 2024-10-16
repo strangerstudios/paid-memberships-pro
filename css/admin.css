@@ -814,7 +814,8 @@ body[class*="memberships_page_pmpro-"] {
 	color: #999;
 }
 @media only screen and (min-width: 1200px) {
-	.pmpro_admin table.wp-list-table thead th {
+	.pmpro_admin table.wp-list-table thead th,
+	.pmpro_admin table.wp-list-table tfoot th {
 		padding-left: calc( var(--pmpro--spacing--medium) / 2 );
 		padding-right: calc( var(--pmpro--spacing--medium) / 2 );
 	}
