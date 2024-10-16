@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.2.2\n"
+"Project-Id-Version: Paid Memberships Pro 3.3\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-12T21:40:03+00:00\n"
+"POT-Creation-Date: 2024-10-16T17:40:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -950,18 +950,10 @@ msgid "Follow @pmproplugin on Twitter."
 msgstr ""
 
 #: adminpages/dashboard.php:226
-msgid "Share an honest review at WordPress.org."
+msgid "Share an honest review."
 msgstr ""
 
-#: adminpages/dashboard.php:229
-msgid "Help translate Paid Memberships Pro into your language."
-msgstr ""
-
-#: adminpages/dashboard.php:229
-msgid "Translation Dashboard"
-msgstr ""
-
-#: adminpages/dashboard.php:255
+#: adminpages/dashboard.php:253
 #: adminpages/emailtemplates-edit.php:23
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:91
 #: classes/class-pmpro-members-list-table.php:133
@@ -972,8 +964,8 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: adminpages/dashboard.php:256
-#: adminpages/dashboard.php:326
+#: adminpages/dashboard.php:254
+#: adminpages/dashboard.php:324
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:84
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:621
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:41
@@ -1000,13 +992,13 @@ msgstr ""
 msgid "Level"
 msgstr ""
 
-#: adminpages/dashboard.php:257
+#: adminpages/dashboard.php:255
 #: adminpages/reports/logins.php:208
 #: classes/class-pmpro-admin-activity-email.php:119
 msgid "Joined"
 msgstr ""
 
-#: adminpages/dashboard.php:258
+#: adminpages/dashboard.php:256
 #: adminpages/reports/logins.php:209
 #: classes/class-pmpro-discount-code-list-table.php:138
 #: includes/profile.php:235
@@ -1014,17 +1006,17 @@ msgstr ""
 msgid "Expires"
 msgstr ""
 
-#: adminpages/dashboard.php:264
+#: adminpages/dashboard.php:262
 #: adminpages/reports/logins.php:288
 #: classes/class-pmpro-members-list-table.php:293
 msgid "No members found."
 msgstr ""
 
-#: adminpages/dashboard.php:300
+#: adminpages/dashboard.php:298
 msgid "View All Members "
 msgstr ""
 
-#: adminpages/dashboard.php:324
+#: adminpages/dashboard.php:322
 #: adminpages/discountcodes.php:448
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:40
 #: adminpages/orders.php:335
@@ -1034,7 +1026,7 @@ msgstr ""
 msgid "Code"
 msgstr ""
 
-#: adminpages/dashboard.php:325
+#: adminpages/dashboard.php:323
 #: adminpages/reports/logins.php:206
 #: classes/class-pmpro-orders-list-table.php:147
 #: classes/class.pmproemail.php:173
@@ -1042,7 +1034,7 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: adminpages/dashboard.php:327
+#: adminpages/dashboard.php:325
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:42
 #: adminpages/orders.php:656
 #: classes/class-pmpro-orders-list-table.php:149
@@ -1055,7 +1047,7 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: adminpages/dashboard.php:328
+#: adminpages/dashboard.php:326
 #: adminpages/emailtemplates-edit.php:95
 #: adminpages/emailtemplates.php:37
 #: adminpages/emailtemplates.php:148
@@ -1078,7 +1070,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: adminpages/dashboard.php:329
+#: adminpages/dashboard.php:327
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:39
 #: adminpages/orders.php:349
 #: classes/class-pmpro-orders-list-table.php:154
@@ -1092,14 +1084,14 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: adminpages/dashboard.php:336
+#: adminpages/dashboard.php:334
 #: classes/class-pmpro-orders-list-table.php:241
 #: pages/invoice.php:393
 msgid "No orders found."
 msgstr ""
 
-#: adminpages/dashboard.php:353
-#: adminpages/dashboard.php:368
+#: adminpages/dashboard.php:351
+#: adminpages/dashboard.php:366
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:96
 #: classes/class-pmpro-orders-list-table.php:1064
 #: classes/class-pmpro-orders-list-table.php:1083
@@ -1107,26 +1099,26 @@ msgstr ""
 msgid "deleted"
 msgstr ""
 
-#: adminpages/dashboard.php:355
-#: adminpages/dashboard.php:370
+#: adminpages/dashboard.php:353
+#: adminpages/dashboard.php:368
 #: classes/class-pmpro-orders-list-table.php:1066
 msgid "none"
 msgstr ""
 
-#: adminpages/dashboard.php:394
+#: adminpages/dashboard.php:392
 msgid "View All Orders "
 msgstr ""
 
-#: adminpages/dashboard.php:425
+#: adminpages/dashboard.php:423
 #: classes/class-pmpro-admin-activity-email.php:356
 msgid "No news found."
 msgstr ""
 
-#: adminpages/dashboard.php:431
+#: adminpages/dashboard.php:429
 msgid "Posted %s"
 msgstr ""
 
-#: adminpages/dashboard.php:439
+#: adminpages/dashboard.php:437
 msgid "View More"
 msgstr ""
 
@@ -7122,9 +7114,9 @@ msgstr ""
 msgid "<a class=\"pmpro_license_tag pmpro_license_tag-invalid\" href=\"%s\">No License</a>"
 msgstr ""
 
-#. translators: $1$s - Paid Memberships Pro plugin name; $2$s - WP.org review link.
-#: includes/admin.php:304
-msgid "Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">rate us %2$s on WordPress.org</a> to help others find %3$s. Thank you from the %4$s team!"
+#. translators: $1$s - Paid Memberships Pro plugin name; $2$s - testimonial link.
+#: includes/admin.php:301
+msgid "Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">submit a testimonial</a> to help others find %2$s. Thank you from the %3$s team!"
 msgstr ""
 
 #: includes/adminpages.php:91

@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.2.2\n"
+"Project-Id-Version: Paid Memberships Pro 3.3\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-12T21:40:28+00:00\n"
+"POT-Creation-Date: 2024-10-16T17:40:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -997,6 +997,7 @@ msgstr "El usuario no paga."
 #: adminpages/dashboard.php:258
 #: shortcodes/pmpro_account.php:191
 #: shortcodes/pmpro_account.php:196
+#: adminpages/dashboard.php:256
 msgid "Expires"
 msgstr "Expira"
 
@@ -2044,6 +2045,7 @@ msgstr "Esto será generado cuando guardes."
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:40
 #: adminpages/orders.php:335
 #: includes/profile.php:717
+#: adminpages/dashboard.php:322
 msgid "Code"
 msgstr "Cupón"
 
@@ -3646,6 +3648,7 @@ msgstr "%d miembros encontrados."
 #: adminpages/emailtemplates-edit.php:23
 #: shortcodes/pmpro_account.php:81
 #: classes/class-pmpro-subscription.php:1220
+#: adminpages/dashboard.php:253
 msgid "Username"
 msgstr "Nombre de usuario"
 
@@ -3733,6 +3736,7 @@ msgstr "Cuota"
 #: adminpages/dashboard.php:248
 #: adminpages/reports/logins.php:208
 #: adminpages/dashboard.php:257
+#: adminpages/dashboard.php:255
 msgid "Joined"
 msgstr "Se unió"
 
@@ -3791,6 +3795,7 @@ msgstr "Nunca"
 #: classes/class-pmpro-members-list-table.php:295
 #: classes/class-pmpro-members-list-table.php:293
 #: adminpages/dashboard.php:264
+#: adminpages/dashboard.php:262
 msgid "No members found."
 msgstr "No se han encontrado miembros."
 
@@ -4191,6 +4196,7 @@ msgstr "Cantidad de cupón"
 #: pages/invoice.php:210
 #: pages/invoice.php:350
 #: shortcodes/pmpro_account.php:337
+#: adminpages/dashboard.php:325
 msgid "Total"
 msgstr "Total"
 
@@ -4436,6 +4442,7 @@ msgstr "Año de expiración"
 #: pages/invoice.php:382
 #: shortcodes/pmpro_account.php:338
 #: shortcodes/pmpro_account.php:375
+#: adminpages/dashboard.php:326
 msgid "Status"
 msgstr "Estado"
 
@@ -4781,6 +4788,7 @@ msgstr "Generado por la pasarela. Util para comparar subscripciones."
 #: pages/invoice.php:377
 #: shortcodes/pmpro_account.php:335
 #: shortcodes/pmpro_account.php:370
+#: adminpages/dashboard.php:327
 msgid "Date"
 msgstr "Fecha"
 
@@ -5016,6 +5024,7 @@ msgstr "%d pagos encontrados."
 #: adminpages/dashboard.php:325
 #: classes/class.pmproemail.php:173
 #: classes/gateways/class.pmprogateway_payflowpro.php:133
+#: adminpages/dashboard.php:323
 msgid "User"
 msgstr "Usuario"
 
@@ -5091,6 +5100,8 @@ msgstr "IDs de transacción"
 #: classes/class-pmpro-orders-list-table.php:1083
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:96
 #: includes/profile.php:770
+#: adminpages/dashboard.php:351
+#: adminpages/dashboard.php:366
 msgid "deleted"
 msgstr "borrado"
 
@@ -5166,6 +5177,7 @@ msgstr "Borrar un pago es permanente y puede afectar a los usuarios activos. ¿S
 #: adminpages/dashboard.php:336
 #: pages/invoice.php:378
 #: pages/invoice.php:393
+#: adminpages/dashboard.php:334
 msgid "No orders found."
 msgstr "No se han encontrado pagos."
 
@@ -7090,6 +7102,8 @@ msgstr "Tu membresía esta <strong>activa</strong>."
 #: pages/invoice.php:378
 #: shortcodes/pmpro_account.php:336
 #: shortcodes/pmpro_account.php:371
+#: adminpages/dashboard.php:254
+#: adminpages/dashboard.php:324
 msgid "Level"
 msgstr "Nivel"
 
@@ -10277,6 +10291,7 @@ msgstr ""
 #: adminpages/dashboard.php:285
 #: adminpages/dashboard.php:291
 #: adminpages/dashboard.php:300
+#: adminpages/dashboard.php:298
 msgid "View All Members "
 msgstr ""
 
@@ -10308,6 +10323,8 @@ msgstr ""
 #: adminpages/dashboard.php:361
 #: classes/class-pmpro-orders-list-table.php:1066
 #: adminpages/dashboard.php:370
+#: adminpages/dashboard.php:353
+#: adminpages/dashboard.php:368
 msgid "none"
 msgstr ""
 
@@ -10318,6 +10335,7 @@ msgstr ""
 #: adminpages/dashboard.php:379
 #: adminpages/dashboard.php:385
 #: adminpages/dashboard.php:394
+#: adminpages/dashboard.php:392
 msgid "View All Orders "
 msgstr ""
 
@@ -10332,6 +10350,7 @@ msgstr ""
 #: adminpages/dashboard.php:416
 #: adminpages/dashboard.php:425
 #: classes/class-pmpro-admin-activity-email.php:356
+#: adminpages/dashboard.php:423
 msgid "No news found."
 msgstr ""
 
@@ -10342,6 +10361,7 @@ msgstr ""
 #: adminpages/dashboard.php:416
 #: adminpages/dashboard.php:422
 #: adminpages/dashboard.php:431
+#: adminpages/dashboard.php:429
 msgid "Posted %s"
 msgstr ""
 
@@ -10352,6 +10372,7 @@ msgstr ""
 #: adminpages/dashboard.php:424
 #: adminpages/dashboard.php:430
 #: adminpages/dashboard.php:439
+#: adminpages/dashboard.php:437
 msgid "View More"
 msgstr ""
 
@@ -31184,4 +31205,13 @@ msgstr ""
 
 #: includes/updates/upgrade_3_2.php:47
 msgid "In previous versions of PMPro, PayPal Express was automatically added as a second payment option on the checkout page when using the Website Payments Pro gateway. This feature has been removed in PMPro v3.2 but can be added back using the PMPro Add PayPal Express Option at Checkout Add On. For more information, read our <a href=\"%s\">v3.2 release notes post here</a>."
+msgstr ""
+
+#: adminpages/dashboard.php:226
+msgid "Share an honest review."
+msgstr ""
+
+#. translators: $1$s - Paid Memberships Pro plugin name; $2$s - testimonial link.
+#: includes/admin.php:301
+msgid "Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">submit a testimonial</a> to help others find %2$s. Thank you from the %3$s team!"
 msgstr ""
