@@ -295,7 +295,25 @@ function pmpro_admin_footer_text( $text ) {
 		return $text;
 	}
 
-	return '';
+	return sprintf(
+		wp_kses(
+			/* translators: $1$s - Paid Memberships Pro plugin name; $2$s - testimonial link. */
+			__( 'Please <a href="%1$s" target="_blank" rel="noopener noreferrer">submit a testimonial</a> to help others find %2$s. Thank you from the %3$s team!', 'paid-memberships-pro' ),
+			[
+				'a' => [
+					'href'   => [],
+					'target' => [],
+					'rel'    => [],
+				],
+				'p' => [
+					'class'  => [],
+				],
+			]
+		),
+		'https://www.paidmembershipspro.com/submit-testimonial/',
+		'Paid Memberships Pro',
+		'PMPro'
+	);
 }
 add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
 

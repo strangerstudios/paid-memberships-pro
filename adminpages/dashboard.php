@@ -223,6 +223,7 @@ function pmpro_dashboard_welcome_callback() { ?>
 				<li><a href="https://www.youtube.com/channel/UCFtMIeYJ4_YVidi1aq9kl5g/" target="_blank"><i class="dashicons dashicons-format-video"></i> <?php esc_html_e( 'Subscribe to our YouTube Channel.', 'paid-memberships-pro' ); ?></a></li>
 				<li><a href="https://www.facebook.com/PaidMembershipsPro" target="_blank"><i class="dashicons dashicons-facebook"></i> <?php esc_html_e( 'Follow us on Facebook.', 'paid-memberships-pro' ); ?></a></li>
 				<li><a href="https://twitter.com/pmproplugin" target="_blank"><i class="dashicons dashicons-twitter"></i> <?php esc_html_e( 'Follow @pmproplugin on Twitter.', 'paid-memberships-pro' ); ?></a></li>
+				<li><a href="https://www.paidmembershipspro.com/submit-testimonial/" target="_blank"><i class="dashicons dashicons-star-filled"></i> <?php esc_html_e( 'Share an honest review.', 'paid-memberships-pro' ); ?></a></li>
 			</ul>
 		</div> <!-- end pmpro-dashboard-welcome-column -->
 	</div> <!-- end pmpro-dashboard-welcome-columns -->
