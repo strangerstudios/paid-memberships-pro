@@ -680,7 +680,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 	// Default billing address fields from the values stored in user meta.
 	// Note that this will be removed in a future update as billing addresses are no longer stored in user meta by default.
-	if ( ! empty( $current_user->ID ) && empty( $pmpro_review ) ) {
+	if ( ! empty( $current_user->ID ) && empty( $submit ) ) {
 		$bfirstname    = get_user_meta( $current_user->ID, "pmpro_bfirstname", true );
 		$blastname     = get_user_meta( $current_user->ID, "pmpro_blastname", true );
 		$baddress1     = get_user_meta( $current_user->ID, "pmpro_baddress1", true );
