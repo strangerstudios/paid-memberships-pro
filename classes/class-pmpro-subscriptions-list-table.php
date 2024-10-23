@@ -538,6 +538,19 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		} else {
 			esc_html_e( '&#8212;', 'paid-memberships-pro' );
 		}
+
+		// If the subscription is active and the user does not have the level that the subscription is for, show a message.
+		if ( 'active' === $item->get_status() ) {
+			$user_levels    = pmpro_getMembershipLevelsForUser( $item->get_user_id() );
+			$user_level_ids = wp_list_pluck( $user_levels, 'id' );
+			if ( ! in_array( $item->get_membership_level_id(), $user_level_ids ) ) {
+				?>
+				<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+					<?php esc_html_e( 'Membership Ended', 'paid-memberships-pro' ); ?>
+				</span>
+				<?php
+			}
+		}
 		
 	}
 
