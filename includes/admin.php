@@ -28,7 +28,7 @@ function pmpro_admin_init_redirect_to_dashboard() {
 add_action( 'admin_init', 'pmpro_admin_init_redirect_to_dashboard' );
 
 /**
- * Block Subscibers from accessing the WordPress Dashboard.
+ * Block Subscribers from accessing the WordPress Dashboard.
  *
  * @since 2.3.4
  */
@@ -185,7 +185,7 @@ function pmpro_spamprotection_notice() {
 		get_option( 'pmpro_spamprotection' ) ||
 		! isset( $_REQUEST['page'] ) ||
 		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ||
-		( isset( $_REQUEST['page'] ) && 'pmpro-advancedsettings' === $_REQUEST['page'] )
+		( isset( $_REQUEST['page'] ) && 'pmpro-securitysettings' === $_REQUEST['page'] )
 	) {
 		return;
 	}
@@ -203,9 +203,9 @@ function pmpro_spamprotection_notice() {
 			</div>
 			<div class="pmpro_notification-content">
 				<h3><?php esc_html_e( 'Spam Protection Disabled', 'paid-memberships-pro' ); ?></h3>
-				<p><?php esc_html_e( 'Spam protection is currently disabled. This is not recommended. Please enable spam protection on the Advanced Settings page.', 'paid-memberships-pro' ); ?></p>
+				<p><?php esc_html_e( 'Spam protection is currently disabled. This is not recommended. Please enable spam protection on the Security Settings page.', 'paid-memberships-pro' ); ?></p>
 				<p>
-					<a href='<?php echo esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) ); ?>' class='button button-secondary'><?php esc_html_e( 'Go to Advanced Settings', 'paid-memberships-pro' ); ?></a>
+					<a href='<?php echo esc_url( admin_url( 'admin.php?page=pmpro-securitysettings' ) ); ?>' class='button button-secondary'><?php esc_html_e( 'Go to Security Settings', 'paid-memberships-pro' ); ?></a>
 				</p>
 			</div>
 		</div>
@@ -284,24 +284,21 @@ function pmpro_admin_header() {
 add_action( 'admin_notices', 'pmpro_admin_header', 1 );
 
 /**
- * Add notice to rate us that replaces default WordPress footer text on PMPro pages.
+ * Replace the default WordPress footer text on PMPro pages.
  */
 function pmpro_admin_footer_text( $text ) {
-	global $current_screen;
-
 	// Show footer on our pages in admin, but not on the block editor.
 	if (
 		! isset( $_REQUEST['page'] ) ||
-		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ||
-		( isset( $_REQUEST['page'] ) && 'pmpro-advancedsettings' === $_REQUEST['page'] )
+		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) )
 	) {
 		return $text;
 	}
 
 	return sprintf(
 		wp_kses(
-			/* translators: $1$s - Paid Memberships Pro plugin name; $2$s - WP.org review link. */
-			__( 'Please <a href="%1$s" target="_blank" rel="noopener noreferrer">rate us %2$s on WordPress.org</a> to help others find %3$s. Thank you from the %4$s team!', 'paid-memberships-pro' ),
+			/* translators: $1$s - Paid Memberships Pro plugin name; $2$s - testimonial link. */
+			__( 'Please <a href="%1$s" target="_blank" rel="noopener noreferrer">submit a testimonial</a> to help others find %2$s. Thank you from the %3$s team!', 'paid-memberships-pro' ),
 			[
 				'a' => [
 					'href'   => [],
@@ -313,8 +310,7 @@ function pmpro_admin_footer_text( $text ) {
 				],
 			]
 		),
-		'https://wordpress.org/support/plugin/paid-memberships-pro/reviews/?filter=5#new-post',
-		'<span class="pmpro-rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>',
+		'https://www.paidmembershipspro.com/submit-testimonial/',
 		'Paid Memberships Pro',
 		'PMPro'
 	);

@@ -23,7 +23,7 @@ function pmpro_is_field( $var ) {
 }
 
 /**
- * Add a field to the PMProRH regisration fields global
+ * Add a field to the PMPro registration fields global
  *
  *	$where refers to various hooks in the PMPro checkout page and can be:
  *	- after_username
@@ -72,7 +72,7 @@ function pmpro_add_user_field( $where, $field ) {
 /**
  * Add a new checkout box to the checkout_boxes section.
  * You can then use this as the $where parameter
- * to pmprorh_add_registration_field.
+ * to pmpro_add_user_field.
  *
  * Name must contain no spaces or special characters.
  */
@@ -108,7 +108,7 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
 }
 
 /**
- * Add a new User Taxonomy. You can then use this as the user_taxonomny parameter to pmprorh_add_registration_field.
+ * Add a new User Taxonomy. You can then use this as the user_taxonomny parameter to pmpro_add_user_field.
  *
  * @param string $name The singular name for the taxonomy object.
  * @param string $name_plural The plural name for the taxonomy object.
@@ -304,7 +304,7 @@ add_action( 'pmpro_checkout_after_email', 'pmpro_checkout_after_email_fields' );
 function pmpro_checkout_after_captcha_fields() {
 	pmpro_display_fields_in_group( 'after_captcha', 'checkout' );
 }
-add_action( 'pmpro_checkout_after_captcha', 'pmpro_checkout_after_captcha_fields' );
+add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_after_captcha_fields' );
 
 //checkout boxes
 function pmpro_checkout_boxes_fields() {
@@ -320,25 +320,30 @@ function pmpro_checkout_boxes_fields() {
 
 		if($n > 0) {
 			?>
-			<div id="pmpro_checkout_box-<?php echo esc_attr( sanitize_title( $cb->name ) ); ?>" class="pmpro_checkout">
-				<hr />
-				<h2>
-					<span class="pmpro_checkout-h2-name"><?php echo wp_kses_post( $cb->label );?></span>
-				</h2>
-				<div class="pmpro_checkout-fields">
-				<?php if(!empty($cb->description)) { ?>
-					<div class="pmpro_checkout_description"><?php echo wp_kses_post( $cb->description ); ?></div>
-				<?php } ?>
+			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $cb->name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $cb->name ) ) ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+						<?php if ( ! empty( $cb->label ) ) { ?>
+							<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $cb->label ); ?></h2>
+							</legend>
+						<?php } ?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+							<?php if ( ! empty( $cb->description ) ) { ?>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-description' ) ); ?>"><?php echo wp_kses_post( $cb->description ); ?></div>
+							<?php } ?>
 
-				<?php
-					foreach($pmpro_user_fields[$cb->name] as $field) {
-						if( pmpro_is_field($field) && pmpro_check_field_for_level($field) && (!isset($field->profile) || (isset($field->profile) && $field->profile !== "only" && $field->profile !== "only_admin"))) {
-							$field->displayAtCheckout();
-						}
-					}
-				?>
-				</div> <!-- end pmpro_checkout-fields -->
-			</div> <!-- end pmpro_checkout_box-name -->
+							<?php
+								foreach($pmpro_user_fields[$cb->name] as $field) {
+									if( pmpro_is_field($field) && pmpro_check_field_for_level($field) && (!isset($field->profile) || (isset($field->profile) && $field->profile !== "only" && $field->profile !== "only_admin"))) {
+										$field->displayAtCheckout();
+									}
+								}
+							?>
+						</div> <!-- end pmpro_form_fields -->
+					</div> <!-- end pmpro_card_content -->
+				</div> <!-- end pmpro_card -->
+			</fieldset> <!-- end pmpro_form_fieldset -->
 			<?php
 		}
 	}
@@ -367,7 +372,7 @@ add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_before_submit
 function pmpro_checkout_after_tos_fields() {
 	pmpro_display_fields_in_group( 'after_tos_fields', 'checkout' );
 }
-add_action( 'pmpro_checkout_after_tos_fields', 'pmpro_checkout_after_tos_fields' );
+add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_after_tos_fields', 6 );
 
 /**
  * Update the fields at checkout.
@@ -544,7 +549,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 	//return whatever status was before
 	return $okay;
 }
-add_filter( 'pmpro_registration_checks', 'pmpro_registration_checks_for_user_fields' );
+add_filter( 'pmpro_checkout_order_creation_checks', 'pmpro_registration_checks_for_user_fields' );
 
 /**
  * Sessions vars for TwoCheckout. PayPal Express was updated to store in order meta.
@@ -711,15 +716,16 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 				continue;
 			}
 			?>
-
-			<div class="pmpro_checkout_box-<?php echo esc_attr( sanitize_title( $where ) ); ?>">
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div>
+			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $where ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $where ) ) ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
-					<h2><?php echo wp_kses_post( $box->label ); ?></h2>
+					<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+						<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $box->label ); ?></h2>
+					</legend>
 				<?php } ?>
-
-				<div class="pmpro_member_profile_edit-fields">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 					<?php if ( ! empty( $box->description ) ) { ?>
-						<div class="pmpro_checkout_description"><?php echo wp_kses_post( $box->description ); ?></div>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-description' ) ); ?>"><?php echo wp_kses_post( $box->description ); ?></div>
 					<?php } ?>
 
 					<?php
@@ -728,26 +734,28 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 							$field->displayAtCheckout( $user->ID );
 						}
 					?>
-				</div> <!-- end pmpro_member_profile_edit-fields -->
-			</div> <!-- end pmpro_checkout_box-name -->
+				</div> <!-- end pmpro_form_fields -->
+			</fieldset> <!-- end pmpro_form_fieldset -->
 			<?php
 		}
 	} elseif ( ! empty( $profile_fields ) ) { ?>
-		<div class="pmpro_member_profile_edit-fields">
-			<?php
-				 // Cycle through groups.
-				foreach( $profile_fields as $field ) {
-					if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
-						$field->displayAtCheckout( $user->ID );
+		<fieldset class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset' ) ); ?>">
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+				<?php
+					// Cycle through groups.
+					foreach( $profile_fields as $field ) {
+						if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
+							$field->displayAtCheckout( $user->ID );
+						}
 					}
-				}
-			?>
-		</div> <!-- end pmpro_member_profile_edit-fields -->
+				?>
+			</div> <!-- end pmpro_form_fields -->
+		</fieldset> <!-- end pmpro_form_fieldset -->
 		<?php
 	}
 }
 function pmpro_show_user_fields_in_frontend_profile_with_locations( $user ) {
-	pmpro_show_user_fields_in_frontend_profile($user, true);
+	pmpro_show_user_fields_in_frontend_profile( $user, true );
 }
 add_action( 'pmpro_show_user_profile', 'pmpro_show_user_fields_in_frontend_profile_with_locations' );
 
@@ -894,7 +902,7 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 add_action( 'pmpro_add_member_added', 'pmpro_add_member_admin_save_user_fields', 10, 2 );
 
 /**
- * Get RH fields which are set to showup in the Members List CSV Export.
+ * Get user fields which are set to show up in the Members List CSV Export.
  */
 function pmpro_get_user_fields_for_csv() {
 	global $pmpro_user_fields;
@@ -1298,7 +1306,7 @@ function pmpro_get_field_group_html( $group = null ) {
 				<?php
 					if ( ! empty( $group->fields ) ) {
 						foreach ( $group->fields as $field ) {
-							echo wp_kses_post( pmpro_get_field_html( $field ) );
+							pmpro_get_field_html( $field );
 						}
 					}
                 ?>
@@ -1339,6 +1347,9 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = $field->element_class;
         $field_hint = $field->hint;
         $field_options = $field->options;
+        $field_allowed_file_types = $field->allowed_file_types;
+        $field_max_file_size = $field->max_file_size;
+        $field_default = $field->default;
     } else {
         // Default field values
         $field_label = '';
@@ -1351,6 +1362,9 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = '';
         $field_hint = '';
         $field_options = '';
+        $field_allowed_file_types = '';
+        $field_max_file_size = '';
+        $field_default = '';
     }
     
 	// Other vars
@@ -1408,6 +1422,7 @@ function pmpro_get_field_html( $field = null ) {
                         <option value="text" <?php selected( $field_type, 'text' ); ?>><?php esc_html_e( 'Text', 'paid-memberships-pro' ); ?></option>
                         <option value="textarea" <?php selected( $field_type, 'textarea' ); ?>><?php esc_html_e( 'Text Area', 'paid-memberships-pro' ); ?></option>
                         <option value="checkbox" <?php selected( $field_type, 'checkbox' ); ?>><?php esc_html_e( 'Checkbox', 'paid-memberships-pro' ); ?></option>
+			<option value="checkbox_grouped" <?php selected( $field_type, 'checkbox_grouped' ); ?>><?php esc_html_e( 'Checkbox Group', 'paid-memberships-pro' ); ?></option>
                         <option value="radio" <?php selected( $field_type, 'radio' ); ?>><?php esc_html_e( 'Radio', 'paid-memberships-pro' ); ?></option>
                         <option value="select" <?php selected( $field_type, 'select' ); ?>><?php esc_html_e( 'Select / Dropdown', 'paid-memberships-pro' ); ?></option>
                         <option value="select2" <?php selected( $field_type, 'select2' ); ?>><?php esc_html_e( 'Select2 / Autocomplete', 'paid-memberships-pro' ); ?></option>
@@ -1480,15 +1495,41 @@ function pmpro_get_field_html( $field = null ) {
                 </label>                
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
-            
-            <div class="pmpro_userfield-field-setting">
-                <label>
-                    <?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
-                    <textarea name="pmpro_userfields_field_options" /><?php echo esc_textarea( $field_options );?></textarea>
-                </label>
-                <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
-            </div> <!-- end pmpro_userfield-field-setting -->
-            
+
+			<div class="pmpro_userfield-field-setting">
+				<div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
+					<div class="pmpro_userfield-field-setting">
+						<label>
+							<?php esc_html_e( 'Allowed File Types', 'paid-memberships-pro' ); ?><br />
+							<input type="text" name="pmpro_userfields_field_allowed_file_types" value="<?php echo esc_attr( trim( $field_allowed_file_types ) ); ?>" />
+						</label>
+						<span class="description"><?php esc_html_e( 'Restrict the file type that is allowed to be uploaded. Separate the file types using a comma ",". For example: png,pdf,jpg.', 'paid-memberships-pro' ); ?></span>
+					</div> <!-- end pmpro_userfield-field-setting -->
+					<div class="pmpro_userfield-field-setting">
+						<?php $server_max_upload = wp_max_upload_size() / 1024 / 1024; ?>
+						<label>
+							<?php esc_html_e( 'Max File Size Upload', 'paid-memberships-pro' ); ?><br />
+							<input type="number" name="pmpro_userfields_field_max_file_size" value="<?php echo intval( $field_max_file_size ); ?>" max="<?php echo esc_attr( $server_max_upload ); ?>"/>
+						</label>
+						<span class="description"><?php printf( esc_html__( 'Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s.', 'paid-memberships-pro' ), $server_max_upload . 'MB' ); ?></span>
+					</div> <!-- end pmpro_userfield-field-setting -->
+				</div>
+				<div class="pmpro_userfield-field-setting">
+					<label>
+						<?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
+						<textarea name="pmpro_userfields_field_options" /><?php echo esc_textarea( $field_options );?></textarea>
+					</label>
+					<span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
+				</div> <!-- end pmpro_userfield-field-setting -->
+				
+				<div class="pmpro_userfield-field-setting">
+					<label>
+						<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
+						<input type="text" name="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
+					</label>
+				</div> <!-- end pmpro_userfield-field-setting -->
+			</div>
+
             <div class="pmpro_userfield-field-actions">            
                 <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
@@ -1521,7 +1562,32 @@ function pmpro_get_user_fields_settings() {
     
     $settings = get_option( 'pmpro_user_fields_settings', $default_user_fields_settings );
     
-    // TODO: Might want to validate the format the settings are in here.
+    // Make sure all expected properties are set for each group.
+	foreach ( $settings as $group ) {
+		$group->name = ! empty( $group->name ) ? $group->name : '';
+		$group->checkout = ! empty( $group->checkout ) ? $group->checkout : 'yes';
+		$group->profile = ! empty( $group->profile ) ? $group->profile : 'yes';
+		$group->description = ! empty( $group->description ) ? $group->description : '';
+		$group->levels = ! empty( $group->levels ) ? $group->levels : array();
+		$group->fields = ! empty( $group->fields ) ? $group->fields : array();
+
+		// Make sure all expected properties are set for each field in the group.
+		foreach( $group->fields as $field ) {
+			$field->label = ! empty( $field->label ) ? $field->label : '';
+			$field->name = ! empty( $field->name ) ? $field->name : '';
+			$field->type = ! empty( $field->type ) ? $field->type : '';
+			$field->required = ! empty( $field->required ) ? $field->required : false;
+			$field->readonly = ! empty( $field->readonly ) ? $field->readonly : false;
+			$field->profile = ! empty( $field->profile ) ? $field->profile : '';
+			$field->wrapper_class = ! empty( $field->wrapper_class ) ? $field->wrapper_class : '';
+			$field->element_class = ! empty( $field->element_class ) ? $field->element_class : '';
+			$field->hint = ! empty( $field->hint ) ? $field->hint : '';
+			$field->options = ! empty( $field->options ) ? $field->options : '';
+			$field->default = ! empty( $field->default ) ? $field->default : '';
+			$field->allowed_file_types = ! empty( $field->allowed_file_types ) ? $field->allowed_file_types : '';
+			$field->max_file_size = ! empty( $field->max_file_size ) ? $field->max_file_size : '';
+		}
+	}
     
     return $settings;
 }
@@ -1574,7 +1640,7 @@ function pmpro_load_user_fields_from_settings() {
             }
             
             // Figure out options.
-            $option_types = array( 'radio', 'select', 'select2', 'multiselect' );
+            $option_types = array( 'checkbox_grouped', 'radio', 'select', 'select2', 'multiselect' );
             if ( in_array( $settings_field->type, $option_types ) ) {
                 $options = array();
                 $settings_options = explode( "\n", $settings_field->options );
@@ -1607,6 +1673,9 @@ function pmpro_load_user_fields_from_settings() {
                     'options' => $options,
                     'levels' => $levels,
                     'memberslistcsv' => true,
+                    'allowed_file_types' => $settings_field->allowed_file_types,
+                    'max_file_size' => $settings_field->max_file_size,
+                    'default' => $settings_field->default,
                 )
             );
             pmpro_add_user_field( $group->name, $field );

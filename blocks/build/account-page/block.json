@@ -4,7 +4,7 @@
 	"name": "pmpro/account-page",
 	"title": "PMPro Page: Account (Full)",
 	"category": "pmpro-pages",
-	"description": "Dynamic page section to display the selected sections of the Membership Account page including Memberships, Profile, Invoices, and Member Links. These sections can also be added via separate blocks.",
+	"description": "Dynamic page section to display the selected sections of the Membership Account page including Memberships, Profile, Orders, and Member Links. These sections can also be added via separate blocks.",
 	"keywords": [ "account", "billing", "invoice", "links", "member", "order", "profile", "purchases", "quick link", "receipt", "user", "paid memberships pro", "pmpro" ],
 	"attributes": {
 		"membership": {

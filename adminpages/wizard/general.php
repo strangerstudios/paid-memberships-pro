@@ -45,7 +45,7 @@ global $pmpro_pages;
 		</div>
 		<div class="pmpro-wizard__field">
 			<label class="pmpro-wizard__label-block" for="createpages">
-				<input type="checkbox" name="createpages" id="createpages" value="1" <?php disabled( true, $member_pages_exist); ?>>
+				<input type="checkbox" name="createpages" id="createpages" value="1" checked <?php disabled( true, $member_pages_exist); ?>>
 				<?php esc_html_e( 'Yes, generate the required plugin pages for me. (Recommended)', 'paid-memberships-pro' ); ?>
 			</label>
 			<?php if ( $member_pages_exist ) {

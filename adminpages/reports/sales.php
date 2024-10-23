@@ -460,7 +460,7 @@ function pmpro_report_sales_page()
 	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
 	set_transient( 'pmpro_sales_data_' . $param_hash, $csvdata, HOUR_IN_SECONDS );
 
-	// Here, we're goign to build data for the Google Chart.
+	// Here, we're going to build data for the Google Chart.
 	// We are doing the calculations up here so that we don't need to weave them into the JS to display the chart.
 	$google_chart_column_labels = array();
 	$google_chart_row_data = array();
@@ -1097,7 +1097,7 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 					 	ON mo1.user_id = mo2.user_id
 						AND mo2.total > 0
 						AND mo2.status NOT IN('refunded', 'review', 'token', 'error')
-						AND mo2.timestamp < mo1.end_timestamp
+						AND mo2.timestamp < mo1.timestamp
 						AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 	}
 	

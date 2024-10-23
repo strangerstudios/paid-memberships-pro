@@ -268,18 +268,14 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
-				'nuclear_HTTPS',
 				'gateway_environment',
 				'braintree_merchantid',
 				'braintree_publickey',
 				'braintree_privatekey',
 				'braintree_encryptionkey',
 				'currency',
-				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards',
 			);
 
 			return $options;
@@ -449,88 +445,99 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//global vars
 			global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
-			//get accepted credit cards
-			$pmpro_accepted_credit_cards = get_option("pmpro_accepted_credit_cards");
-			$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
-			$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
-
 			//include ours
 			?>
-			<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
-				<h2>
-					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' );?></span>
-				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php printf(esc_html__('We Accept %s', 'paid-memberships-pro' ), esc_html( $pmpro_accepted_credit_cards_string ) );?></span>
-				</h2>
-				<?php $sslseal = get_option("pmpro_sslseal"); ?>
-				<?php if(!empty($sslseal)) { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
-				<?php } ?>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
-					<?php
-						$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', true);
-						if($pmpro_include_cardtype_field) { ?>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-card-type', 'pmpro_payment-card-type' ) ); ?>">
-							<label for="CardType"><?php esc_html_e('Card Type', 'paid-memberships-pro' );?></label>
-							<select id="CardType" name="CardType" class="<?php echo esc_attr( pmpro_get_element_class( 'CardType' ) ); ?>">
-								<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-									<option value="<?php echo esc_attr( $cc ); ?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
-								<?php } ?>
-							</select>
-						</div>
-					<?php } ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
-						<label for="AccountNumber"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
-						<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'AccountNumber' ) ); ?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" />
-					</div>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
-						<label for="ExpirationMonth"><?php esc_html_e('Expiration Date', 'paid-memberships-pro' );?></label>
-						<select id="ExpirationMonth" name="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( 'ExpirationMonth' ) ); ?>">
-							<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
-							<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
-							<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
-							<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
-							<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
-							<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
-							<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
-							<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
-							<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
-							<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
-							<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
-							<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
-						</select>/<select id="ExpirationYear" name="ExpirationYear" class="<?php echo esc_attr( pmpro_get_element_class( 'ExpirationYear' ) ); ?>">
-							<?php for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++) { ?>
-								<option value="<?php echo esc_attr( $i ); ?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo esc_html( $i ); ?></option>
-							<?php } ?>
-						</select>
-					</div>
-					<?php
-						$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
-						if($pmpro_show_cvv) { ?>
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
-								<label for="CVV"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
-								<input id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty( $_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'CVV' ) ); ?>" data-encrypted-name="cvv" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo esc_url( pmpro_https_filter(PMPRO_URL) )?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php esc_html_e("what's this?", 'paid-memberships-pro' );?></a>)</small>
+			<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>" <?php if ( ! $pmpro_requirebilling || apply_filters( 'pmpro_hide_payment_information_fields', false ) ) { ?>style="display: none;"<?php } ?>>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+						<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+							<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></h2>
+						</legend>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
+                                <input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
+								<script>
+									jQuery(document).ready(function() {
+											jQuery('#AccountNumber').validateCreditCard(function(result) {
+												var cardtypenames = {
+													"amex"                      : "American Express",
+													"diners_club_carte_blanche" : "Diners Club Carte Blanche",
+													"diners_club_international" : "Diners Club International",
+													"discover"                  : "Discover",
+													"jcb"                       : "JCB",
+													"laser"                     : "Laser",
+													"maestro"                   : "Maestro",
+													"mastercard"                : "Mastercard",
+													"visa"                      : "Visa",
+													"visa_electron"             : "Visa Electron"
+												};
+
+												if(result.card_type)
+													jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+												else
+													jQuery('#CardType').val('Unknown Card Type');
+											});
+									});
+								</script>
+								<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
+								<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'AccountNumber' ) ); ?>" type="text" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" />
 							</div>
-					<?php } ?>
-					<?php if($pmpro_show_discount_code) { ?>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
-							<label for="discount_code"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
-							<input class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'discount_code' ) ); ?>" id="pmpro_discount_code" name="pmpro_discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
-							<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
-							<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
-						</div>
-					<?php } ?>
-				</div> <!-- end pmpro_checkout-fields -->
-				<?php if(!empty($sslseal)) { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ) ); ?>">
-						<?php
-						// This value is set by admins and could contain JS. Will be replaced with a hook in future versions.
-						//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						echo stripslashes( $sslseal );
-						?>
-					</div>
-				</div> <!-- end pmpro_checkout-fields-display-seal -->
-				<?php } ?>
-			</div> <!-- end pmpro_payment_information_fields -->
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-select pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
+									<label for="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Expiration Date', 'paid-memberships-pro' );?></label>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
+										<select id="ExpirationMonth" name="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'ExpirationMonth' ) ); ?>">
+											<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
+											<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
+											<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
+											<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
+											<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
+											<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
+											<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
+											<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
+											<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
+											<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
+											<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
+											<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
+										</select>/<select id="ExpirationYear" name="ExpirationYear" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'ExpirationYear' ) ); ?>">
+										<?php
+											$num_years = apply_filters( 'pmpro_num_expiration_years', 10 );
+
+											for ( $i = date_i18n( 'Y' ); $i < intval( date_i18n( 'Y' ) ) + intval( $num_years ); $i++ )
+											{
+												?>
+												<option value="<?php echo esc_attr( $i ) ?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } elseif($i == date_i18n( 'Y' ) + 1) { ?>selected="selected"<?php } ?>><?php echo esc_html( $i )?></option>
+												<?php
+											}
+										?>
+										</select>
+									</div> <!-- end pmpro_form_fields-inline -->
+								</div>
+								<?php
+									$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
+									if($pmpro_show_cvv) { ?>
+										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
+											<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
+											<input id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty( $_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" data-encrypted-name="cvv" />
+										</div>
+								<?php } ?>
+							</div> <!-- end pmpro_cols-2 -->
+							<?php if ( $pmpro_show_discount_code ) { ?>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
+										<label for="pmpro_discount_code" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
+										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
+											<input id="pmpro_discount_code" name="pmpro_discount_code" type="text" value="<?php echo esc_attr( $discount_code ) ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_alter_price', 'pmpro_discount_code' ) ); ?>" />
+											<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-discount-code', 'discount_code_button' ) ); ?>" />
+										</div> <!-- end pmpro_form_fields-inline -->
+										<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ) ); ?>" style="display: none;"></p>
+									</div>
+								</div> <!-- end pmpro_cols-2 -->
+							<?php } ?>
+						</div> <!-- end pmpro_form_fields -->
+					</div> <!-- end pmpro_card_content -->
+				</div> <!-- end pmpro_card -->
+			</fieldset> <!-- end pmpro_payment_information_fields -->
 			<?php
 
 			//don't include the default
@@ -544,7 +551,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		function process(&$order)
 		{
 			//check for initial payment
-			if(floatval($order->InitialPayment) == 0)
+			if(floatval($order->subtotal) == 0)
 			{
 				//just subscribe
 				return $this->subscribe($order);
@@ -606,10 +613,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$order->code = $order->getRandomCode();
 
 			//what amount to charge?
-			$amount = $order->InitialPayment;
-
-			//tax
-			$order->subtotal = $amount;
 			$tax = $order->getTax(true);
 			$amount = pmpro_round_price_as_string((float)$order->subtotal + (float)$tax);
 
@@ -722,6 +725,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$customer_id = get_user_meta($user_id, "pmpro_braintree_customerid", true);
 			}
 
+			$nameparts = pnp_split_full_name( $order->billing->name );
+
 			//check for an existing Braintree customer
 			if(!empty($customer_id))
 			{
@@ -733,13 +738,13 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					if( ! empty( $order->braintree ) && ! empty( $order->braintree->number ) ) {
 						//put data in array for Braintree API calls
 						$update_array = array(
-							'firstName' => $order->FirstName,
-							'lastName' => $order->LastName,
+							'firstName' => empty( $nameparts['fname'] ) ? '' : $nameparts['fname'],
+							'lastName' => empty( $nameparts['lname'] ) ? '' : $nameparts['lname'],
 							'creditCard' => array(
 								'number' => $order->braintree->number,
 								'expirationDate' => $order->braintree->expiration_date,
 								'cvv' => $order->braintree->cvv,
-								'cardholderName' => trim($order->FirstName . " " . $order->LastName),
+								'cardholderName' => trim( $order->billing->name ),
 								'options' => array(
 									'updateExistingToken' => $this->customer->creditCards[0]->token
 								)
@@ -754,10 +759,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 							//add billing address to array
 							$update_array['creditCard']['billingAddress'] = array(
-								'firstName' => $order->FirstName,
-								'lastName' => $order->LastName,
-								'streetAddress' => $order->Address1,
-								'extendedAddress' => $order->Address2,
+								'firstName' => empty( $nameparts['fname'] ) ? '' : $nameparts['fname'],
+								'lastName' => empty( $nameparts['lname'] ) ? '' : $nameparts['lname'],
+								'streetAddress' => $order->billing->street,
+								'extendedAddress' => $order->billing->street2,
 								'locality' => $order->billing->city,
 								'region' => $order->billing->state,
 								'postalCode' => $order->billing->zip,
@@ -800,23 +805,24 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//no customer id, create one
 			if(!empty($order->accountnumber))
 			{
+				$user = get_userdata($user_id);
 				try
 				{
 					$result = Braintree_Customer::create(array(
-						'firstName' => $order->FirstName,
-						'lastName' => $order->LastName,
-						'email' => $order->Email,
+						'firstName' => empty($nameparts['fname']) ? '' : $nameparts['fname'],
+						'lastName' => empty($nameparts['lname']) ? '' : $nameparts['lname'],
+						'email' => empty( $user->user_email ) ? '' : $user->user_email,
 						'phone' => $order->billing->phone,
 						'creditCard' => array(
 							'number' => $order->braintree->number,
 							'expirationDate' => $order->braintree->expiration_date,
 							'cvv' => $order->braintree->cvv,
-							'cardholderName' =>  trim($order->FirstName . " " . $order->LastName),
+							'cardholderName' =>  trim($order->billing->name),
 							'billingAddress' => array(
-								'firstName' => $order->FirstName,
-								'lastName' => $order->LastName,
-								'streetAddress' => $order->Address1,
-								'extendedAddress' => $order->Address2,
+								'firstName' => empty($nameparts['fname']) ? '' : $nameparts['fname'],
+								'lastName' => empty($nameparts['lname']) ? '' : $nameparts['lname'],
+								'streetAddress' => $order->billing->street,
+								'extendedAddress' => $order->billing->street2,
 								'locality' => $order->billing->city,
 								'region' => $order->billing->state,
 								'postalCode' => $order->billing->zip,
@@ -883,51 +889,30 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				return false;	//error retrieving customer
 
 			//figure out the amounts
-			$amount = $order->PaymentAmount;
+			$level = $order->getMembershipLevelAtCheckout();
+			$amount = $level->billing_amount;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 
-			/*
-				There are two parts to the trial. Part 1 is simply the delay until the first payment
-				since we are doing the first payment as a separate transaction.
-				The second part is the actual "trial" set by the admin.
-
-				Braintree only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
-			*/
-			//figure out the trial length (first payment handled by initial charge)
-			if($order->BillingPeriod == "Year")
-				$trial_period_days = $order->BillingFrequency * 365;	//annual
-			elseif($order->BillingPeriod == "Day")
-				$trial_period_days = $order->BillingFrequency * 1;		//daily
-			elseif($order->BillingPeriod == "Week")
-				$trial_period_days = $order->BillingFrequency * 7;		//weekly
-			else
-				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
-
-			//convert to a profile start date
-			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp")));
-
-			//filter the start date
-			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
-
-			$start_ts  = strtotime($order->ProfileStartDate, current_time("timestamp") );
+			// Get the profile start date.
+			$start_ts = pmpro_calculate_profile_start_date( $order, 'U' );
 			$now =  strtotime( date('Y-m-d\T00:00:00', current_time('timestamp' ) ), current_time('timestamp' ) );
 
 			//convert back to days
 			$trial_period_days = ceil(abs( $now - $start_ts ) / 86400);
 
 			//now add the actual trial set by the site
-			if(!empty($order->TrialBillingCycles))
+			if(!empty($level->trial_limit))
 			{
-				$trialOccurrences = (int)$order->TrialBillingCycles;
-				if($order->BillingPeriod == "Year")
-					$trial_period_days = $trial_period_days + (365 * $order->BillingFrequency * $trialOccurrences);	//annual
-				elseif($order->BillingPeriod == "Day")
-					$trial_period_days = $trial_period_days + (1 * $order->BillingFrequency * $trialOccurrences);		//daily
-				elseif($order->BillingPeriod == "Week")
-					$trial_period_days = $trial_period_days + (7 * $order->BillingFrequency * $trialOccurrences);	//weekly
+				$trialOccurrences = (int)$level->trial_limit;
+				if( $level->cycle_period == "Year")
+					$trial_period_days = $trial_period_days + (365 * $level->cycle_number * $trialOccurrences);	//annual
+				elseif( $level->cycle_period == "Day")
+					$trial_period_days = $trial_period_days + (1 * $level->cycle_number * $trialOccurrences);		//daily
+				elseif( $level->cycle_period == "Week")
+					$trial_period_days = $trial_period_days + (7 * $level->cycle_number * $trialOccurrences);	//weekly
 				else
-					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly
+					$trial_period_days = $trial_period_days + (30 * $level->cycle_number * $trialOccurrences);	//assume monthly
 			}
 
 			//subscribe to the plan
@@ -947,8 +932,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					$details['trialDurationUnit'] = "day";
 				}
 
-				if(!empty($order->TotalBillingCycles))
-					$details['numberOfBillingCycles'] = $order->TotalBillingCycles;
+				if(!empty($level->billing_limit))
+					$details['numberOfBillingCycles'] = $level->billing_limit;
 
 				/**
 				 * Filter the Braintree Subscription create array.

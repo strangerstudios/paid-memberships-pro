@@ -76,15 +76,12 @@
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
-				'nuclear_HTTPS',
 				'gateway_environment',
 				'twocheckout_apiusername',
 				'twocheckout_apipassword',
 				'twocheckout_accountnumber',
 				'twocheckout_secretword',
 				'currency',
-				'use_ssl',
 				'tax_state',
 				'tax_rate'
 			);
@@ -230,6 +227,12 @@
 			if(empty($morder))
 				return;
 
+			// If this isn't a 2Checkout order, bail.
+			if ( 'twocheckout' !== $morder->gateway ) {
+				return;
+			}
+
+
 			$morder->user_id = $user_id;
 			$morder->saveOrder();
 
@@ -255,7 +258,6 @@
 
 			//clean up a couple values
 			$order->payment_type = "2CheckOut";
-			$order->CardType = "";
 			$order->cardtype = "";
 
 			//just save, the user will go to 2checkout to pay

@@ -157,7 +157,7 @@ function pmpro_search_filter_pmpro_pages( $query ) {
 		return $query;
 	}
 
-	// Ingore queries that aren't search related.
+	// Ignore queries that aren't search related.
 	if ( ! $query->is_search ) {
 		return $query;
 	}
@@ -244,7 +244,7 @@ function pmpro_search_filter( $query ) {
 
 	/**
 	 * No cache yet. Let's run the queries.
-	 * Some explaination of what we're doing.
+	 * Some explanation of what we're doing.
 	 * A = All posts hidden by level.
 	 * B = All posts hidden by category.
 	 * C = All posts the current user has access to by level.
@@ -327,7 +327,7 @@ if( ! empty( $filterqueries ) ) {
 
 function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 	global $post, $current_user;
-	
+
 	if( ! $skipcheck ) {
 		$hasaccess = pmpro_has_membership_access(NULL, NULL, true);
 		if( is_array( $hasaccess ) ) {
@@ -337,7 +337,7 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 			$hasaccess = $hasaccess[0];
 		}
 	}
-	
+
 	/**
 	 * Filter to let other plugins change how PMPro filters member content.
 	 * If anything other than false is returned, that value will overwrite
@@ -357,7 +357,7 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 			//show excerpt
 			global $post;
 			if( $post->post_excerpt ) {
-				//defined exerpt
+				//defined excerpt
 				$content = wpautop( $post->post_excerpt );
 			} elseif(strpos($content, "<span id=\"more-" . $post->ID . "\"></span>") !== false) {
 				//more tag
@@ -525,10 +525,8 @@ function pmpro_post_classes( $classes, $class, $post_id ) {
 	if( ! empty( $post_levels ) ) {
 		if( ! empty( $post_levels[1] ) ) {
 			$classes[] = 'pmpro-level-required';
-			foreach( $post_levels[1] as $post_level ) {
-				if ( isset( $post_level[0] ) ) {
-					$classes[] = 'pmpro-level-' . $post_level[0];
-				} 	
+			foreach( $post_levels[1] as $post_level_id ) {
+				$classes[] = 'pmpro-level-' . $post_level_id;	
 			}
 		}
 		if(!empty($post_levels[0]) && $post_levels[0] == true) {
@@ -567,8 +565,8 @@ function pmpro_body_classes( $classes ) {
 	if( ! empty( $post_levels ) ) {
 		if( ! empty( $post_levels[1] ) ) {
 			$classes[] = 'pmpro-body-level-required';
-			foreach( $post_levels[1] as $post_level ) {
-				$classes[] = 'pmpro-body-level-' . $post_level[0];
+			foreach( $post_levels[1] as $post_level_id ) {
+				$classes[] = 'pmpro-body-level-' . $post_level_id;	
 			}
 		}
 		if( ! empty( $post_levels[0] ) && $post_levels[0] == true) {

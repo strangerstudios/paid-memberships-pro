@@ -197,3 +197,42 @@ function pmpro_filter_core_blocks( $block_content, $block ) {
 	return pmpro_apply_block_visibility( $attributes, $block_content );
 }
 add_filter( 'render_block', 'pmpro_filter_core_blocks', 10, 2 );
+
+/**
+ * Add visibility content attributes server side as well.
+ *
+ * @param array $metadata The block metadata.
+ * @return array The filtered block metadata.
+ * @since 3.1
+ *
+ */
+function pmpro_block_type_metadata( $metadata ) {
+	//bail if it's not a core block
+	if ( empty( $metadata['name'] ) || ! str_starts_with( $metadata['name'], 'core/' ) ) {
+		return $metadata;
+	}
+
+	$metadata['attributes']['visibilityBlockEnabled'] = array(
+		'type' => 'boolean',
+		'default' => false,
+	);
+	$metadata['attributes']['invert_restrictions'] = array(
+		'type' => 'boolean',
+		'default' => false,
+	);
+	$metadata['attributes']['segment'] = array(
+		'type' => 'string',
+		'default' => 'all',
+	);
+	$metadata['attributes']['levels'] = array(
+		'type' => 'array',
+		'default' => array(),
+	);
+	$metadata['attributes']['show_noaccess'] = array(
+		'type' => 'boolean',
+		'default' => false,
+	);
+	return $metadata;
+}
+
+add_filter( 'block_type_metadata', 'pmpro_block_type_metadata', 10, 1 );

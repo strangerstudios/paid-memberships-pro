@@ -32,10 +32,9 @@
 
 	//check that the code is valid
 	$codecheck = pmpro_checkDiscountCode($discount_code, $level_ids, true);
-	if($codecheck[0] == false)
-	{
+	if( $codecheck[0] == false ) {
 		//uh oh. show code error
-		echo esc_html( pmpro_no_quotes($codecheck[1]) );
+		echo esc_html( $codecheck[1] );
 		?>
 		<script>
 			jQuery('#<?php echo esc_attr( $msgfield ); ?>').show();
@@ -86,7 +85,7 @@
 		$code_levels = apply_filters("pmpro_discount_code_level", $code_levels, $discount_code_id);
 	}
 
-	echo esc_html( sprintf( __( "The %s code has been applied to your order. ", 'paid-memberships-pro' ), $discount_code ) );
+	printf( esc_html__( 'The %s code has been applied to your order.', 'paid-memberships-pro' ), '<span class="' . esc_attr( pmpro_get_element_class( "pmpro_tag pmpro_tag-discount-code", "pmpro_tag-discount-code" ) ) . '">' . esc_html( $discount_code ) . '</span>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	$combined_level = null;
 	foreach ( $code_levels as $code_level ) {
@@ -120,19 +119,18 @@
 			}).appendTo('#pmpro_form');
 		}
 
-		jQuery('#other_discount_code_tr').hide();
+		jQuery('#other_discount_code_fields').hide();
 		jQuery('#other_discount_code_p').html('<button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to change your discount code', 'paid-memberships-pro' );?></button>');
 		jQuery('#other_discount_code_p').show();
 
 		jQuery('#other_discount_code_toggle').on('click',function() {
-			jQuery('#other_discount_code_tr').show();
+			jQuery('#other_discount_code_fields').show();
 			jQuery('#other_discount_code_p').hide();
 		});
 
 			<?php
 			$html = [];
-
-			$html[] = '<p class="' . pmpro_get_element_class( 'pmpro_level_discount_applied' ) . '">' . wp_kses_post( sprintf( __( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ) ) . '</div>';
+			$html[] = '<p class="' . pmpro_get_element_class( 'pmpro_level_discount_applied' ) . '">' . sprintf( esc_html__( 'The %s code has been applied to your order.', 'paid-memberships-pro' ), '<span class="' . esc_attr( pmpro_get_element_class( "pmpro_tag pmpro_tag-discount-code", "pmpro_tag-discount-code" ) ) . '">' . esc_html( $discount_code ) . '</span>' ) . '</p>';
 
 			if ( count( $code_levels ) <= 1 ) {
 				$code_level = empty( $code_levels ) ? null : $code_levels[0];
@@ -192,14 +190,6 @@
 				jQuery('#pmpro_billing_address_fields').show();
 				jQuery('#pmpro_payment_information_fields').show();
 				<?php
-			}
-
-			if ( pmpro_getGateway() == "paypal" && true == apply_filters('pmpro_include_payment_option_for_paypal', true ) ) {
-				if ( pmpro_areLevelsFree($code_levels) ) {
-					?> jQuery('#pmpro_payment_method').hide(); <?php
-				} else {
-					?> jQuery('#pmpro_payment_method').show(); <?php
-				}
 			}
 
 			//hide/show paypal button

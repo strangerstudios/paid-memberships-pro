@@ -97,6 +97,9 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	if ( ! in_array( 'billing_street', $read_only_fields ) && isset( $_POST['billing_street'] ) ) {
 		$order->billing->street = sanitize_text_field( wp_unslash( $_POST['billing_street'] ) );
 	}
+	if ( ! in_array( 'billing_street2', $read_only_fields ) && isset( $_POST['billing_street2'] ) ) {
+		$order->billing->street2 = sanitize_text_field( wp_unslash( $_POST['billing_street2'] ) );
+	}
 	if ( ! in_array( 'billing_city', $read_only_fields ) && isset( $_POST['billing_city'] ) ) {
 		$order->billing->city = sanitize_text_field( wp_unslash( $_POST['billing_city'] ) );
 	}
@@ -163,7 +166,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$hour   = intval( $_POST['ts_hour'] );
 		$minute = intval( $_POST['ts_minute'] );
 		$date = get_gmt_from_date( $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00' , 'U' );
-		$order->timestamp = $date; // Passed 'U' to get_gmt_from_date() so that we get a Unix timesamp.
+		$order->timestamp = $date; // Passed 'U' to get_gmt_from_date() so that we get a Unix timestamp.
 	}
 
 	// affiliate stuff
@@ -222,6 +225,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->billing = new stdClass();
 			$order->billing->name = '';
 			$order->billing->street = '';
+			$order->billing->street2 = '';
 			$order->billing->city = '';
 			$order->billing->state = '';
 			$order->billing->zip = '';
@@ -286,7 +290,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Edit Order', 'paid-memberships-pro' ); ?> ID: <?php echo esc_html( $order->id ); ?></h1>
 		<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-printer"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
-		<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action pmpro-has-icon pmpro-has-icon-email" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
+		<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_order" class="thickbox email_link page-title-action pmpro-has-icon pmpro-has-icon-email" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
 		<a title="<?php esc_attr_e( 'View', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $order->code ) ) ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users"><?php esc_html_e( 'View', 'paid-memberships-pro' ); ?></a>
 		<?php
 			if( pmpro_allowed_refunds( $order ) ) {
@@ -338,7 +342,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 								<?php
 								}
 							?>
-							<p class="description"><?php esc_html_e( 'A randomly generated code that serves as a unique, non-sequential invoice number.', 'paid-memberships-pro' ); ?></p>
+							<p class="description"><?php esc_html_e( 'A randomly generated code that serves as a unique, non-sequential order number.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -493,6 +497,18 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 												?>
 												<input id="billing_street" name="billing_street" type="text" size="50"
 													value="<?php echo esc_attr( $order->billing->street ); ?>"/></td>
+											<?php } ?>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="billing_street2"><?php esc_html_e( 'Billing Street 2', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'billing_street2', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->billing_street2 );
+							} else {
+												?>
+												<input id="billing_street2" name="billing_street2" type="text" size="50"
+													value="<?php echo esc_attr( $order->billing->street2 ); ?>"/></td>
 											<?php } ?>
 					</tr>
 					<tr>
@@ -876,28 +892,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 							</td>
 						</tr>
 					<?php } ?>
-
-					<?php
-						$tospage_id = get_option( 'pmpro_tospage' );
-						$consent_entry = $order->get_tos_consent_log_entry();
-
-						if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
-						?>
-						<tr>
-							<th scope="row" valign="top"><label for="tos_consent"><?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?></label></th>
-							<td id="tos_consent">
-								<?php
-									if( !empty( $consent_entry ) ) {
-										echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-									} else {
-										esc_html_e( 'N/A', 'paid-memberships-pro' );
-									}
-								?>
-							</td>
-						</tr>
-						<?php
-						}
-					?>
 					<tr>
 						<th scope="row" valign="top"><label for="notes"><?php esc_html_e( 'Notes', 'paid-memberships-pro' ); ?></label></th>
 						<td>

@@ -45,23 +45,20 @@ if ( ! in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) && empty(
 	exit;
 }
 
-// If the payment hasn't completed, enqueue JS to check for completion.
-if ( in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) ) {
-	// Enqueue PMPro Confirmation script.
-	wp_register_script(
-		'pmpro_confirmation',
-		plugins_url( 'js/pmpro-confirmation.js', PMPRO_BASE_FILE ),
-		array( 'jquery' ),
-		PMPRO_VERSION
-	);
-	wp_localize_script(
-		'pmpro_confirmation',
-		'pmpro',
-		array(
-			'restUrl' => get_rest_url(),
-			'nonce'   => wp_create_nonce( 'wp_rest' ),
-			'code'    => $pmpro_invoice->code,
-		)
-	);
-	wp_enqueue_script( 'pmpro_confirmation' );
-}
+// Enqueue PMPro Confirmation script.
+wp_register_script(
+	'pmpro_confirmation',
+	plugins_url( 'js/pmpro-confirmation.js', PMPRO_BASE_FILE ),
+	array( 'jquery' ),
+	PMPRO_VERSION
+);
+wp_localize_script(
+	'pmpro_confirmation',
+	'pmpro',
+	array(
+		'restUrl' => get_rest_url(),
+		'nonce'   => wp_create_nonce( 'wp_rest' ),
+		'code'    => $pmpro_invoice->code,
+	)
+);
+wp_enqueue_script( 'pmpro_confirmation' );

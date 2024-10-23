@@ -52,8 +52,8 @@ if ( ! pmpro_ipnCheckReceiverEmail( array( strtolower( $receiver_email ), strtol
 /*
 	PayPal Standard
 	- we will get txn_type subscr_signup and subscr_payment (or subscr_eot or subscr_failed or subscr_cancel)
-	- subscr_signup (if amount1 = 0, then we need to update membership, else ignore and wait for payment. create invoice for $0 with just subscr_id)
-	- subscr_payment (check if we should update membership, add invoice for amount with subscr_id and payment_id)
+	- subscr_signup (if amount1 = 0, then we need to update membership, else ignore and wait for payment. create order for $0 with just subscr_id)
+	- subscr_payment (check if we should update membership, add order for amount with subscr_id and payment_id)
 	- subscr_eot (usually sent for every subscription that doesn't have recurring activated, at the end)
 	- subscr_failed (usually sent if a recurring payment fails)
 	- subscr_cancel (sent on recurring payment profile cancellation)
@@ -220,7 +220,25 @@ if ( $txn_type == "recurring_payment" ) {
 		if ( $payment_status == "completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
 		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
-			pmpro_ipnFailedPayment( $last_subscription_order );
+			// Check if the subscription has been suspended/paused in PPE.
+			if ( $profile_status == "suspended") {
+				// Subscription was suspended. Let's remove the user's membership level, which will also cancel the subscription.
+				$subscription = $last_subscription_order->get_subscription();
+				if ( ! empty( $subscription ) ) {
+					$user = get_userdata( $subscription->get_user_id() );
+					if ( ! empty( $user ) ) {
+						pmpro_cancelMembershipLevel( $subscription->get_membership_level_id(), $user->ID );
+						ipnlog( 'Subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscr_id . ' was cancelled after payment failure.' );
+					} else {
+						ipnlog( 'ERROR: Could not cancel membership level for user with subscription transaction id = ' . $subscr_id . ' after payment failure. No user attached to subscription.' );
+					}
+				} else {
+					ipnlog( 'ERROR: Could not find this subscription to cancel after payment failure (subscription_transaction_id=' . $subscr_id . ').' );
+				}
+			} else {
+				// Subscription is not suspended. Send failed payment email.
+				pmpro_ipnFailedPayment( $last_subscription_order );
+			}
 		} else {
 			ipnlog( 'Payment status is ' . $payment_status . '.' );
 		}
@@ -358,7 +376,7 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 
 		ipnlog( sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
-		$user = get_user_by( 'email', $morder->Email );
+		$user = get_userdata( $morder->user_id );
 
 		// Send an email to the member.
 		$myemail = new PMProEmail();
@@ -551,7 +569,7 @@ function pmpro_ipnCheckReceiverEmail( $email ) {
 }
 
 /*
-	Change the membership level. We also update the membership order to include filtered valus.
+	Change the membership level. We also update the membership order to include filtered values.
 */
 function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
@@ -652,20 +670,20 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
 		//setup some values for the emails
 		if ( ! empty( $morder ) ) {
-			$invoice = new MemberOrder( $morder->id );
+			$order = new MemberOrder( $morder->id );
 		} else {
-			$invoice = null;
+			$order = null;
 		}
 
 		$user = get_userdata( $morder->user_id );
 
 		//send email to member
 		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutEmail( $user, $invoice );
+		$pmproemail->sendCheckoutEmail( $user, $order );
 
 		//send email to admin
 		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutAdminEmail( $user, $invoice );
+		$pmproemail->sendCheckoutAdminEmail( $user, $order );
 
 		return true;
 	} else {
@@ -707,6 +725,7 @@ function pmpro_ipnFailedPayment( $last_order ) {
 
 		$morder->billing->name    = $last_order->billing->name;
 		$morder->billing->street  = $last_order->billing->street;
+		$morder->billing->street2 = $last_order->billing->street2;
 		$morder->billing->city    = $last_order->billing->city;
 		$morder->billing->state   = $last_order->billing->state;
 		$morder->billing->zip     = $last_order->billing->zip;
@@ -759,31 +778,25 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		if ( false !== stripos( $last_order->gateway, "paypal" ) ) {
 
 			if ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
-				$morder->InitialPayment = sanitize_text_field( $_POST['mc_gross'] );    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = sanitize_text_field( $_POST['mc_gross'] );
+				$morder->total  = sanitize_text_field( $_POST['mc_gross'] );
 			} elseif ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
-				$morder->InitialPayment = sanitize_text_field( $_POST['amount'] );    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = sanitize_text_field( $_POST['amount'] );
+				$morder->total  = sanitize_text_field( $_POST['amount'] );
 			} elseif ( isset( $_POST['payment_gross'] )  && ! empty( $_POST['payment_gross' ] ) ) {
-				$morder->InitialPayment = sanitize_text_field( $_POST['payment_gross'] );    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = sanitize_text_field( $_POST['payment_gross'] );
+				$morder->total  = sanitize_text_field( $_POST['payment_gross'] );
 			}
 			
 			//check for tax
 			if ( isset( $_POST['tax'] ) && ! empty( $_POST['tax'] ) ) {
 				$morder->tax = (float) $_POST['tax'];
-				if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) && $morder->InitialPayment > (float) $_POST['amount'] ) {
-					$morder->tax *= (float) $morder->InitialPayment / (float) $_POST['amount'];
+				if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) && $morder->total > (float) $_POST['amount'] ) {
+					$morder->tax *= (float) $morder->total / (float) $_POST['amount'];
 				}
-
-				$morder->total = $morder->InitialPayment;	//so tax isn't added into the subtotal again
 				$morder->subtotal = $morder->total - $morder->tax;
+			} else {
+				$morder->tax = 0;
+				$morder->subtotal = $morder->total;
 			}
 		}
-
-		$morder->FirstName = sanitize_text_field( $_POST['first_name'] );
-		$morder->LastName  = sanitize_text_field( $_POST['last_name'] );
-		$morder->Email     = sanitize_text_field( $_POST['payer_email'] );
 
 		$morder->find_billing_address();
 
@@ -822,7 +835,7 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		$morder->saveOrder();
 		$morder->getMemberOrderByID( $morder->id );
 
-		//email the user their invoice
+		//email the user their order
 		$pmproemail = new PMProEmail();
 		$pmproemail->sendInvoiceEmail( get_userdata( $last_order->user_id ), $morder );
 

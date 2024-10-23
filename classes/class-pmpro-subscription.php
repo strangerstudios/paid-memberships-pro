@@ -783,6 +783,12 @@ class PMPro_Subscription {
 
 		// Get date in WP local timezone.
 		if ( $local_time ) {
+			if( 'U' === $format ){
+				// When formatting using the epoch, the date must already consider the timezone offset.
+				// Then, first apply a simple format to add the timezone.
+				$date = get_date_from_gmt( $date );
+			}
+
 			return get_date_from_gmt( $date, $format );
 		}
 
@@ -803,24 +809,34 @@ class PMPro_Subscription {
 	 * @return null|PMProGateway The PMProGateway object, null if not set or class found.
 	 */
 	public function get_gateway_object() {
-		// No gatway was set.
-		if ( empty( $this->gateway ) ) {
-			return null;
+		$gateway_object = null;
+
+		// The gateway was set.
+		if ( ! empty( $this->gateway ) ) {
+			// Default test gateway.
+			$classname = 'PMProGateway';
+
+			if ( 'free' !== $this->gateway ) {
+				// Adding the gateway suffix.
+				$classname .= '_' . $this->gateway;
+			}
+
+			if ( class_exists( $classname ) ) {
+				$gateway_object = new $classname( $this->gateway );
+			}
 		}
 
-		// Default test gateway.
-		$classname = 'PMProGateway';
+		/**
+		 * Allow changing the gateway object for this subscription
+		 *
+		 * @param PMProGateway $gateway_object Gateway object.
+		 * @param PMPro_Subscription $this Subscription object.
+		 *
+		 * @since 3.0.3
+		 */
+		$gateway_object = apply_filters( 'pmpro_subscription_gateway_object', $gateway_object, $this );
 
-		if ( 'free' !== $this->gateway ) {
-			// Adding the gateway suffix.
-			$classname .= '_' . $this->gateway;
-		}
-
-		if ( class_exists( $classname ) ) {
-			return new $classname( $this->gateway );
-		}
-
-		return null;
+		return $gateway_object;
 	}
 
 	/**
@@ -847,7 +863,7 @@ class PMPro_Subscription {
 			// Get the first order object.
 			$order = current( $orders );
 
-			// Use the order total as the intitial payment.
+			// Use the order total as the initial payment.
 			$this->initial_payment = $order->total;
 		}
 
@@ -994,11 +1010,21 @@ class PMPro_Subscription {
 	public function get_cost_text() {
 		if  ( 1 == $this->cycle_number ) {
 			// translators: %1$s - price, %2$s - period.
-			return sprintf( __( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_period );
+			$cost_text = sprintf( __( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), pmpro_translate_billing_period( $this->cycle_period, $this->cycle_number ) );
 		} else {
 			// translators: %1$s - price, %2$d - number, %3$s - period.
-			return sprintf( __( '%1$s every %2$d %3$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_number, $this->cycle_period );
+			$cost_text = sprintf( __( '%1$s every %2$d %3$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_number, pmpro_translate_billing_period( $this->cycle_period, $this->cycle_number ) );
 		}
+
+		/**
+		 * Filter the cost text for this subscription.
+		 *
+		 * @since 3.1
+		 *
+		 * @param string $cost_text The cost text for this subscription.
+		 * @param PMPro_Subscription $this The subscription object.
+		 */
+		return apply_filters( 'pmpro_subscription_cost_text', $cost_text, $this );
 	}
 
 	/**
@@ -1063,41 +1089,46 @@ class PMPro_Subscription {
 			$this->enddate = gmdate( 'Y-m-d H:i:s' );
 		}
 
-		$wpdb->replace( $wpdb->pmpro_subscriptions, [
-			'id'                          => $this->id,
-			'user_id'                     => $this->user_id,
-			'membership_level_id'         => $this->membership_level_id,
-			'gateway'                     => $this->gateway,
-			'gateway_environment'         => $this->gateway_environment,
-			'subscription_transaction_id' => $this->subscription_transaction_id,
-			'status'                      => $this->status,
-			'startdate'                   => $this->startdate,
-			'enddate'                     => $this->enddate,
-			'next_payment_date'           => $this->next_payment_date,
-			'billing_amount'              => $this->billing_amount,
-			'cycle_number'                => $this->cycle_number,
-			'cycle_period'                => $this->cycle_period,
-			'billing_limit'               => $this->billing_limit,
-			'trial_amount'                => $this->trial_amount,
-			'trial_limit'                 => $this->trial_limit,
-		], [
-			'%d', // id
-			'%d', // user_id
-			'%d', // membership_level_id
-			'%s', // gateway
-			'%s', // gateway_environment
-			'%s', // subscription_transaction_id
-			'%s', // status
-			'%s', // startdate
-			'%s', // enddate
-			'%s', // next_payment_date
-			'%f', // billing_amount
-			'%d', // cycle_number
-			'%s', // cycle_period
-			'%d', // billing_limit
-			'%f', // trial_amount
-			'%d', // trial_limit
-		] );
+		pmpro_insert_or_replace( 
+			$wpdb->pmpro_subscriptions,
+			array(
+				'id'                          => $this->id,
+				'user_id'                     => $this->user_id,
+				'membership_level_id'         => $this->membership_level_id,
+				'gateway'                     => $this->gateway,
+				'gateway_environment'         => $this->gateway_environment,
+				'subscription_transaction_id' => $this->subscription_transaction_id,
+				'status'                      => $this->status,
+				'startdate'                   => $this->startdate,
+				'enddate'                     => $this->enddate,
+				'next_payment_date'           => $this->next_payment_date,
+				'billing_amount'              => $this->billing_amount,
+				'cycle_number'                => $this->cycle_number,
+				'cycle_period'                => $this->cycle_period,
+				'billing_limit'               => $this->billing_limit,
+				'trial_amount'                => $this->trial_amount,
+				'trial_limit'                 => $this->trial_limit,
+			),
+			array(
+				'%d', // id
+				'%d', // user_id
+				'%d', // membership_level_id
+				'%s', // gateway
+				'%s', // gateway_environment
+				'%s', // subscription_transaction_id
+				'%s', // status
+				'%s', // startdate
+				'%s', // enddate
+				'%s', // next_payment_date
+				'%f', // billing_amount
+				'%d', // cycle_number
+				'%s', // cycle_period
+				'%d', // billing_limit
+				'%f', // trial_amount
+				'%d', // trial_limit
+			),
+			'id'
+		);
 
 		if ( $wpdb->insert_id ) {
 			$this->id = $wpdb->insert_id;
@@ -1155,7 +1186,15 @@ class PMPro_Subscription {
 		$cancelled = false;
 		$gateway_object = $this->get_gateway_object();
 		if ( is_object( $gateway_object ) ) {
-			if ( method_exists( $gateway_object, 'cancel_subscription' ) ) {
+			/**
+			 * Note here. We want to check if the gateway class
+			 * _overrides_ the cancel_subscription method.
+			 * So we use our new pmpro_method_defined_in_class() function.
+			 * If not, we just look for a cancel method and fallback to cancelling that way.
+			 * For that method_exists check, we are okay if the cancel method is in
+			 * the extended class or the base class.
+			 */
+			if ( pmpro_method_defined_in_class( $gateway_object, 'cancel_subscription' ) ) {
 				$cancelled = $gateway_object->cancel_subscription( $this );
 			} elseif ( method_exists( $gateway_object, 'cancel' ) ) {
 				// Legacy: Build an order to pass to the old cancel() methods in gateways.

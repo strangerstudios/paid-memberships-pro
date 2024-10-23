@@ -234,11 +234,21 @@
 		if(!empty($params['demo']) && $params['demo'] == 'Y')
 			$params['order_number'] = 1;
 
-		//is this a return call or notification
-		if(empty($params['message_type']))
-			$check = Twocheckout_Return::check( $params, get_option( 'pmpro_twocheckout_secretword' ) );
-		else
-			$check = Twocheckout_Notification::check( $params, get_option( 'pmpro_twocheckout_secretword' ) );
+		// Get the secret word
+		$secret_word = get_option('pmpro_twocheckout_secretword');
+
+		// Validate that the secret word is not empty
+		if ( empty( $secret_word ) ) {
+			return false;
+		}
+
+		// Is this a return call or notification
+		if (empty($params['message_type'])) {
+			$check = Twocheckout_Return::check( $params, $secret_word );
+		} else {
+			$check = Twocheckout_Notification::check( $params, $secret_word );
+		}
+
 
 		if( empty ( $check ) )
 			$r = false;	//HTTP failure
@@ -261,7 +271,7 @@
 	}
 
 	/*
-		Change the membership level. We also update the membership order to include filtered valus.
+		Change the membership level. We also update the membership order to include filtered values.
 	*/
 	function pmpro_insChangeMembershipLevel($txn_id, &$morder)
 	{
@@ -367,9 +377,9 @@
 
 			//setup some values for the emails
 			if(!empty($morder))
-				$invoice = new MemberOrder($morder->id);
+				$order = new MemberOrder($morder->id);
 			else
-				$invoice = NULL;
+				$order = NULL;
 
 			inslog("CHANGEMEMBERSHIPLEVEL: ORDER: " . var_export($morder, true) . "\n---\n");
 
@@ -381,11 +391,11 @@
 
 			//send email to member
 			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutEmail($user, $invoice);
+			$pmproemail->sendCheckoutEmail($user, $order);
 
 			//send email to admin
 			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutAdminEmail($user, $invoice);
+			$pmproemail->sendCheckoutAdminEmail($user, $order);
 
 			return true;
 		}
@@ -457,7 +467,7 @@
 			$morder->saveOrder();
 			$morder->getMemberOrderByID( $morder->id );
 
-			//email the user their invoice
+			//email the user their order
 			$pmproemail = new PMProEmail();
 			$pmproemail->sendInvoiceEmail( get_userdata( $last_order->user_id ), $morder );
 
@@ -480,8 +490,8 @@
 		global $pmpro_error;
 		//hook to do other stuff when payments stop		
 		do_action( 'pmpro_subscription_recurring_stopped', $morder );
-    do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the mispelled version in case. Will deprecate.
-    
+		do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the misspelled version in case. Will deprecate.
+	
 		$worked = pmpro_cancelMembershipLevel( $morder->membership_level->id, $morder->user->ID, 'inactive' );
 		if( $worked === true ) {
 			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );

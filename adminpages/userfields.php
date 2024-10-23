@@ -74,14 +74,14 @@
 	 */
 	add_meta_box(
 		'pmpro_userfields_save',
-		esc_html( 'Save', 'paid-memberships-pro' ),
+		esc_html__( 'Save', 'paid-memberships-pro' ),
 		'pmpro_userfields_save_widget',
 		'memberships_page_pmpro-userfields',
 		'side'
 	);
 	add_meta_box(
 		'pmpro_userfields_help',
-		esc_html( 'User Fields Help', 'paid-memberships-pro' ),
+		esc_html__( 'User Fields Help', 'paid-memberships-pro' ),
 		'pmpro_userfields_help_widget',
 		'memberships_page_pmpro-userfields',
 		'side'
@@ -103,8 +103,9 @@
 	 *
 	 */
 	function pmpro_userfields_help_widget() { ?>
-		<p><?php esc_html_e( 'User fields can be added to the membership checkout form, the frontend user profile edit page, and for admins only on the Edit Users Screen in the WordPress admin.', 'paid-memberships-pro' ); ?></p>
+		<p><?php esc_html_e( 'User fields can be added to the membership checkout form, the frontend user profile edit page, and for admins only on the Edit Member and Edit User screens.', 'paid-memberships-pro' ); ?></p>
 		<p><?php esc_html_e( 'Groups are used to define a collection of fields that should be displayed together under a common heading. Group settings control field locations and membership level visibility.', 'paid-memberships-pro' ); ?></p>
+		<p><a target="_blank" href="https://www.paidmembershipspro.com/documentation/user-fields/create-field-group/?utm_source=plugin&utm_medium=pmpro-userfields&utm_campaign=documentation&utm_content=user-fields"><?php esc_html_e( 'Documentation: User Fields', 'paid-memberships-pro' ); ?></a></p>
 		<?php
 	}
 
@@ -120,7 +121,7 @@
 
 					<?php						
 						foreach( $user_fields_settings as $group ) {
-							echo wp_kses_post( pmpro_get_field_group_html( $group ) );
+							pmpro_get_field_group_html( $group );
 						}
 					?>
 

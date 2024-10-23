@@ -7,17 +7,6 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 	public function __construct() {
 		$this->slug = 'subscriptions';
 		$this->title = __( 'Subscriptions', 'paid-memberships-pro' );
-
-		// Get the user's Stripe Customer if they have one.
-		$user = self::get_user();
-		$stripe = new PMProGateway_Stripe();
-		$customer = $stripe->get_customer_for_user( $user->ID );
-
-		// Link to the Stripe Customer if they have one.
-		// TODO: Eventually make this a hook or filter so other gateways can add their own links.
-		if ( ! empty( $customer ) ) {
-			$this->title_link = '<a target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users" href="' . esc_url( 'https://dashboard.stripe.com/' . ( get_option( 'pmpro_gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ) . '">' . esc_html__( 'Edit customer in Stripe', 'paid-memberships-pro' ) . '</a>';
-		}
 	}
 
 	/**
@@ -111,6 +100,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e( 'Created', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
 					<th><?php echo esc_html( $showing_active_subscriptions ? __( 'Next Payment', 'paid-memberships-pro' ) : __( 'Ended', 'paid-memberships-pro' ) ); ?></th>
 					<th><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
 				</tr>
@@ -200,6 +190,26 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 							// Show the subscription fee.
 							echo esc_html( $subscription->get_cost_text() );
 							?>
+						</td>
+						<td>
+							<?php
+							// Show the gateway used for this subscription.
+							$subscription_gateway = $subscription->get_gateway_object();
+							if ( ! empty( $subscription_gateway->gateway ) ) {
+								$gateway = ucwords( $subscription_gateway->gateway );
+
+								// Check if the gateway was set to sandbox mode.
+								if ( $subscription->get_gateway_environment() === 'sandbox' ) {
+									$gateway .= ' (' . __( 'test', 'paid-memberships-pro' ) . ')';
+								}
+							} else {
+								$gateway = '&#8212;';
+							}
+
+							echo esc_html( $gateway );
+							
+							?>
+						</td>
 						<td>
 							<?php
 							$date_to_show = $showing_active_subscriptions ? $subscription->get_next_payment_date( get_option( 'date_format' ) ) : $subscription->get_enddate( get_option( 'date_format' ) );

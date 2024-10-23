@@ -107,7 +107,7 @@
 							<label for="from_name"><?php esc_html_e('From Name', 'paid-memberships-pro' );?>:</label>
 						</th>
 						<td>
-							<input type="text" name="from_name" value="<?php echo esc_attr($from_name);?>" class="regular-text" />
+							<input type="text" name="from_name" value="<?php echo esc_attr( wp_unslash($from_name) );?>" class="regular-text" />
 						</td>
 					</tr>
 					<tr>

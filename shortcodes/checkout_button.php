@@ -14,9 +14,9 @@ function pmpro_checkout_button_shortcode($atts, $content=null, $code="")
 		'text' => NULL,
 		'class' => NULL
 	), $atts));
-	
+
 	ob_start(); ?>
- 	<span class="<?php esc_attr( pmpro_get_element_class( 'span_pmpro_checkout_button' ) ); ?>">
+ 	<span class="<?php echo esc_attr( pmpro_get_element_class( 'span_pmpro_checkout_button' ) ); ?>">
  		<?php
 			//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo pmpro_getCheckoutButton($level, $text, $class);

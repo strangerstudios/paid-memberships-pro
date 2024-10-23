@@ -17,6 +17,9 @@ function pmpro_init_check_for_deprecated_filters() {
 		'pmpro_default_field_group_label'   => 'pmprorh_section_header',
 		'pmpro_stripe_subscription_deleted' => null,
 		'pmpro_subscription_cancelled'      => null,
+		'pmpro_longform_address'            => null,
+		'pmpro_include_cardtype_field'      => null,
+		'pmpro_paypal_button_image'         => null,
 	);
 	
 	foreach ( $pmpro_map_deprecated_filters as $old => $new ) {
@@ -740,6 +743,72 @@ function pmpro_cancel_on_next_payment_date_deprecated() {
 add_action( 'plugins_loaded', 'pmpro_cancel_on_next_payment_date_deprecated', 20 );
 
 /**
+ * Old Recurring Emails functions.
+ */
+function pmpro_recurring_emails_deprecated() {
+	// pmpror_recurring_emails function.
+	if ( ! function_exists( 'pmpror_recurring_emails' ) ) {
+		function pmpror_recurring_emails() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+			pmpro_cron_recurring_payment_reminders();
+		}
+	}
+
+	// pmpror_template_callback function.
+	if ( ! function_exists( 'pmpror_template_callback' ) ) {
+		function pmpror_template_callback( $buffer ) {
+			_deprecated_function( __FUNCTION__, '3.2' );
+			return $buffer;
+		}
+	}
+
+	// pmpror_load_plugin_text_domain function.
+	if ( ! function_exists( 'pmpror_load_plugin_text_domain' ) ) {
+		function pmpror_load_plugin_text_domain() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+		}
+	}
+
+	// pmpror_init_test function.
+	if ( ! function_exists( 'pmpror_init_test' ) ) {
+		function pmpror_init_test() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+		}
+	}
+
+	// pmpror_recurring_emails_legacy function.
+	if ( ! function_exists( 'pmpror_recurring_emails_legacy' ) ) {
+		function pmpror_recurring_emails_legacy() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+			pmpro_cron_recurring_payment_reminders();
+		}
+	}
+
+	// pmpror_log function.
+	if ( ! function_exists( 'pmpror_log' ) ) {
+		function pmpror_log( $message ) {
+			_deprecated_function( __FUNCTION__, '3.2' );
+		}
+	}
+
+	// pmpror_output_log function.
+	if ( ! function_exists( 'pmpror_output_log' ) ) {
+		function pmpror_output_log() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+		}
+	}
+
+	// pmpro_recurring_emails_plugin_row_meta function.
+	if ( ! function_exists( 'pmpro_recurring_emails_plugin_row_meta' ) ) {
+		function pmpro_recurring_emails_plugin_row_meta( $links, $file ) {
+			_deprecated_function( __FUNCTION__, '3.2' );
+			return $links;
+		}
+	}
+}
+add_action( 'plugins_loaded', 'pmpro_recurring_emails_deprecated', 20 );
+
+/**
  * Check for active Add Ons that are not yet MMPU compatible.
  *
  * @since 3.0
@@ -819,7 +888,11 @@ function pmpro_get_deprecated_add_ons() {
 		'pmpro-table-pages' => array(
 			'file' => 'pmpro-table-pages.php',
 			'label' => 'Table Layout Plugin Pages'
-		)
+		),
+		'pmpro-recurring-emails' => array(
+			'file' => 'pmpro-recurring-emails.php',
+			'label' => 'Recurring Emails'
+		),
 	);
 	
 	$deprecated = apply_filters( 'pmpro_deprecated_add_ons_list', $deprecated );
@@ -938,6 +1011,7 @@ add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 
  * The 2Checkout gateway was deprecated in v2.6.
  * Cybersource was deprecated in 2.10.
  * PayPal Website Payments Pro was deprecated in 2.10.
+ * Authorize.net was deprecated in 3.2.
  *
  * This code will add it back those gateways if it was the selected gateway.
  * In future versions, we will remove gateway code entirely.
@@ -954,7 +1028,7 @@ function pmpro_check_for_deprecated_gateways() {
 	}
 	$default_gateway = get_option( 'pmpro_gateway' );
 
-	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal' );
+	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal', 'authorizenet' );
 	foreach ( $deprecated_gateways as $deprecated_gateway ) {
 		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
 			require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_' . $deprecated_gateway . '.php' );
@@ -1014,3 +1088,53 @@ function pmpro_get_plugin_duplicates() {
 
 	return $multiple_installations;
 }
+
+/**
+ * Show admin notice if site was using a custom-loaded frontend.css file.
+ * We no longer enqueue the frontend.css override file by default.
+ *
+ * @since 3.1
+ */
+function pmpro_was_loading_frontend_css_notice() {
+	global $current_user;
+
+	// If we are not on a PMPro admin page, don't show the notice.
+	if ( ! isset( $_REQUEST['page'] ) || ( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ) {
+		return;
+	}
+
+	// Determine if this site was loading a custom frontend.css override file.
+	if ( ! file_exists( get_stylesheet_directory() . '/paid-memberships-pro/css/frontend.css' ) && ! file_exists( get_template_directory() . '/paid-memberships-pro/frontend.css' ) ) {
+		// No custom frontend.css override file was found. Don't show the notice.
+		return;
+	}
+
+	// Get notifications that have been archived.
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+
+	// If the user hasn't dismissed the notice, show it.
+	if ( ! is_array( $archived_notifications ) || ! array_key_exists( 'was_loading_frontend_css_notice', $archived_notifications ) ) {
+		?>
+		<div id="was_loading_frontend_css_notice" class="notice notice-error pmpro_notification pmpro_notification-error">
+			<button type="button" class="pmpro-notice-button notice-dismiss" value="was_loading_frontend_css_notice"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<div class="pmpro_notification-icon">
+				<span class="dashicons dashicons-warning"></span>
+			</div>
+			<div class="pmpro_notification-content">
+				<h3><?php esc_html_e( 'Custom Frontend Stylesheet Detected', 'paid-memberships-pro' ); ?></h3>
+				<p>
+					<?php
+					printf(
+						wp_kses_post(
+							__( 'Paid Memberships Pro detected that you were using a custom override for the frontend stylesheet. As of v3.1 and later, we no longer load your custom stylesheet. For more information, read our <a href="%s">v3.1 release notes post here</a>.', 'paid-memberships-pro' )
+						),
+						esc_url( 'https://www.paidmembershipspro.com/pmpro-update-3-1/' )
+					);
+					?>
+				</p>
+			</div>
+		</div>
+		<?php
+	}
+}
+add_action( 'admin_notices', 'pmpro_was_loading_frontend_css_notice' );

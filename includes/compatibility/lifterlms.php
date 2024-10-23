@@ -459,6 +459,28 @@ add_filter( 'llms_install_get_pages', 'pmpro_lifter_install_get_pages' );
 add_filter( 'llms_install_create_pages', 'pmpro_lifter_install_get_pages' );	// Old filter.
 
 /**
+ * If the streamline option is enabled, unregister the LifterLMS membership post type.
+ *
+ * @param array $args The post type arguments.
+ * @param string $post_type The post type name.
+ * @since 3.1
+ */
+function pmpro_lifter_unregister_membership_post_type( $args, $post_type ) {
+	// Bail if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $args;
+	}
+
+	if ( 'llms_membership' === $post_type ) {
+		$args['has_archive'] = false;
+	}
+	return $args;
+}
+
+add_action( 'register_post_type_args', 'pmpro_lifter_unregister_membership_post_type', 10, 2 );
+
+
+/**
  * If (1) we are in streamlined mode and (2) PMPro Courses was
  * only being used for the LifterLMS module, deactivate it
  * and show a notice.
@@ -566,9 +588,9 @@ function pmpro_lifter_dashboard_checklist( $checklist ) {
 	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID WHERE p.post_type = 'course' AND p.post_status = 'publish' GROUP BY mp.page_id LIMIT 1";
 	$ap_check = $wpdb->get_var( $sqlQuery );
 	if ( $ap_check ) {
-		$checklist['access_plan'] = '<i class="fa fa-check"></i> ' . esc_html( 'Restrict a Course', 'paid-memberships-pro' );
+		$checklist['access_plan'] = '<i class="fa fa-check"></i> ' . esc_html__( 'Restrict a Course', 'paid-memberships-pro' );
 	} else {
-		$checklist['access_plan'] = '<i class="fa fa-times"></i> <a href="https://www.paidmembershipspro.com/add-ons/lifterlms/?utm_source=plugin&utm_medium=lifterlms-dashboard&utm_campaign=lifterlms&utm_content=restrict-a-course" target="_blank" rel="noopener">' .  esc_html( 'Restrict a Course', 'paid-memberships-pro' ) . '</a>';
+		$checklist['access_plan'] = '<i class="fa fa-times"></i> <a href="https://www.paidmembershipspro.com/add-ons/lifterlms/?utm_source=plugin&utm_medium=lifterlms-dashboard&utm_campaign=lifterlms&utm_content=restrict-a-course" target="_blank" rel="noopener">' .  esc_html__( 'Restrict a Course', 'paid-memberships-pro' ) . '</a>';
 	}	
 
 	return $checklist;
@@ -613,3 +635,23 @@ function pmpro_lifter_ajax_llms_widget_sold_pmpro() {
 	exit;
 }
 add_filter( 'wp_ajax_llms_widget_sold_pmpro', 'pmpro_lifter_ajax_llms_widget_sold_pmpro' );
+
+/**
+ * Make sure the PMPro lost password form
+ * doesn't submit to the LifterLMS lost password form.
+ *
+ * @since 3.1.1
+ */
+function pmpro_maybe_remove_lifterlms_lostpassword_url_filter() {
+	// Bail	if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return;
+	}
+
+	global $pmpro_pages;
+
+	if ( ! empty( $pmpro_pages ) && ! empty( $pmpro_pages['login'] ) && is_page( $pmpro_pages['login'] ) ) {
+		remove_filter( 'lostpassword_url', 'llms_lostpassword_url', 10, 0 );
+	}
+}
+add_action( 'wp', 'pmpro_maybe_remove_lifterlms_lostpassword_url_filter' );

@@ -156,7 +156,8 @@
 
 						data = {
 							action: 'pmpro_update_level_group_order',
-							level_group_order: level_group_order
+							level_group_order: level_group_order,
+							nonce: '<?php echo esc_attr( wp_create_nonce( 'pmpro_update_level_group_order' ) ); ?>'
 						};
 
 						$.post(ajaxurl, data, function(response) {
@@ -274,7 +275,7 @@
 							$pmpro_membershiplevels_page_action_link['url'] = esc_url( $pmpro_membershiplevels_page_action_link['url'] );
 						}
 						?>
-						<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo esc_url( $pmpro_membershiplevels_page_action_link['url'] ); ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
+						<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo $pmpro_membershiplevels_page_action_link['url']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
 						<?php
 					}
 				?>
@@ -341,7 +342,7 @@
 							<button class="pmpro_section-toggle-button" type="button" aria-expanded="<?php echo $section_visibility === 'hidden' ? 'false' : 'true'; ?>">
 								<span class="dashicons dashicons-arrow-<?php echo $section_visibility === 'hidden' ? 'down' : 'up'; ?>-alt2"></span>
 								<input type="hidden" class="pmpro-level-settings-group-id" value="<?php echo esc_attr( $level_group->id ); ?>" />
-								<?php echo esc_html( $level_group->name ) ?>
+								<?php echo esc_html( $level_group->name ) . '<small>'. sprintf( esc_html__( 'ID: %d', 'paid-memberships-pro' ), esc_html( $level_group->id ) ) . '</small>'; ?>
 							</button>
 						</div>
 						<div class="pmpro_section_inside">
@@ -601,9 +602,18 @@
 				<?php if( ! empty( $_REQUEST['showpopup'] ) ) { ?>addLevel();<?php } ?>
 			} );
 			function addLevel( group_id ) {
-				if ( typeof group_id !== undefined ) {
+				if ( group_id ) {
+					// Add the level group to URLs.
 					jQuery('a.pmpro_level_template').each(function(){
-						this.href += '&level_group=' + group_id;
+						// Only add the level group to links to the edit level page.
+						if ( this.href.indexOf('page=pmpro-membershiplevels') !== -1 ) {
+							this.href += '&level_group=' + group_id;
+						}
+					});
+				} else {
+					// Remove the level group from all URLs.
+					jQuery('a.pmpro_level_template').each(function(){
+						this.href = this.href.replace(/&level_group=\d+/, '');
 					});
 				}
 				jQuery('.pmpro-popup-overlay').show();

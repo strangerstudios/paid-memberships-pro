@@ -40,7 +40,7 @@ export default function Edit({ attributes, setAttributes }) {
 				</PanelBody>
 				<PanelBody>
 					<CheckboxControl
-						label={__('Show "Invoices" Section', 'paid-memberships-pro')}
+						label={__('Show "Orders" Section', 'paid-memberships-pro')}
 						checked={attributes.invoices}
 						onChange={(invoices) => setAttributes({ invoices })}
 					/>

@@ -27,6 +27,7 @@
 			add_filter('pmpro_payment_options', array('PMProGateway_check', 'pmpro_payment_options'));
 			add_filter('pmpro_payment_option_fields', array('PMProGateway_check', 'pmpro_payment_option_fields'), 10, 2);
 			add_filter('pmpro_checkout_after_payment_information_fields', array('PMProGateway_check', 'pmpro_checkout_after_payment_information_fields'));
+			add_action( 'pmpro_order_single_before_order_details', array( 'PMProGateway_check', 'pmpro_order_single_before_order_details' ) );
 
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
@@ -59,13 +60,10 @@
 		static function getGatewayOptions()
 		{			
 			$options = array(
-				'sslseal',
-				'nuclear_HTTPS',
 				'gateway_environment',
 				'instructions',
 				'check_gateway_label',
 				'currency',
-				'use_ssl',
 				'tax_state',
 				'tax_rate'
 			);
@@ -119,7 +117,7 @@
 			</th>
 			<td>
 				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( wpautop(  wp_unslash( $values['instructions'] ) ) ); ?></textarea>
-				<p class="description"><?php echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and invoice pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
+				<p class="description"><?php echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and order pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
 			</td>
 		</tr>
 		<?php
@@ -161,21 +159,54 @@
 				$instructions = get_option( 'pmpro_instructions' );
 				$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
 				?>
-				<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>">
-					<h2>
-						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php echo esc_html( sprintf( __( 'Pay by %s', 'paid-memberships-pro' ), $check_gateway_label ) ); ?></span>
-					</h2>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_check_instructions', 'pmpro_check_instructions' ) ); ?>">
-							<?php echo wp_kses_post( wpautop( wp_unslash( $instructions ) ) ); ?>
-						</div> <!-- end pmpro_checkout-field pmpro_check_instructions -->
-					</div> <!-- end pmpro_checkout-fields -->
-				</div> <!-- end pmpro_payment_information_fields -->
+				<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>">
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+							<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo esc_html( sprintf( __( 'Pay by %s', 'paid-memberships-pro' ), $check_gateway_label ) ); ?></h2>
+							</legend>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_check_instructions' ) ); ?>">
+									<?php echo wp_kses_post( wpautop( wp_unslash( $instructions ) ) ); ?>
+								</div> <!-- end pmpro_check_instructions -->
+							</div> <!-- end pmpro_form_fields -->
+						</div> <!-- end pmpro_card_content -->
+					</div> <!-- end pmpro_card -->
+				</fieldset> <!-- end pmpro_payment_information_fields -->
 				<?php
 			}
 		}
 
-		
+		/**
+		 * Show instructions on the single order frontend page.
+		 *
+		 * @since 3.1
+		 */
+		static function pmpro_order_single_before_order_details( $order) {
+			if ( $order->gateway == 'check' && ! pmpro_isLevelFree( $order->membership_level ) && $order->status == 'pending' ) {
+				$instructions = get_option( 'pmpro_instructions' );
+				$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
+				?>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_divider' ) ); ?>"></div>
+
+				<div id="pmpro_order_single-instructions">
+
+					<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_font-large' ) ); ?>">
+						<?php echo esc_html( sprintf( __ ( 'Payment Instructions: %s', 'paid-memberships-pro' ), $check_gateway_label ) ); ?>
+					</h3>
+
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ); ?>">
+						<?php echo wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ); ?>
+					</div>
+
+				</div> <!-- end pmpro_order_single-instructions -->
+
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_divider' ) ); ?>"></div>
+
+				<?php
+			}
+		}
+
 		/**
 		 * Process checkout.
 		 *
@@ -188,42 +219,13 @@
 			$order->cardtype = "";
 			
 			//check for initial payment
-			if(floatval($order->InitialPayment) == 0)
+			if(floatval($order->subtotal) == 0)
 			{
 				//auth first, then process
 				if($this->authorize($order))
 				{						
 					$this->void($order);										
-					if(!pmpro_isLevelTrial($order->membership_level))
-					{
-						//subscription will start today with a 1 period trial
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-						$order->TrialBillingPeriod = $order->BillingPeriod;
-						$order->TrialBillingFrequency = $order->BillingFrequency;													
-						$order->TrialBillingCycles = 1;
-						$order->TrialAmount = 0;
-						
-						//add a billing cycle to make up for the trial, if applicable
-						if(!empty($order->TotalBillingCycles))
-							$order->TotalBillingCycles++;
-					}
-					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
-					{
-						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");														
-						$order->TrialBillingCycles++;
-						
-						//add a billing cycle to make up for the trial, if applicable
-						if($order->TotalBillingCycles)
-							$order->TotalBillingCycles++;
-					}
-					else
-					{
-						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-					}
 					
-					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 					return $this->subscribe($order);
 				}
 				else
@@ -241,36 +243,7 @@
 					//set up recurring billing					
 					if(pmpro_isLevelRecurring($order->membership_level))
 					{						
-						if(!pmpro_isLevelTrial($order->membership_level))
-						{
-							//subscription will start today with a 1 period trial
-							$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-							$order->TrialBillingPeriod = $order->BillingPeriod;
-							$order->TrialBillingFrequency = $order->BillingFrequency;													
-							$order->TrialBillingCycles = 1;
-							$order->TrialAmount = 0;
-							
-							//add a billing cycle to make up for the trial, if applicable
-							if(!empty($order->TotalBillingCycles))
-								$order->TotalBillingCycles++;
-						}
-						elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
-						{
-							//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-							$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");														
-							$order->TrialBillingCycles++;
-							
-							//add a billing cycle to make up for the trial, if applicable
-							if(!empty($order->TotalBillingCycles))
-								$order->TotalBillingCycles++;
-						}
-						else
-						{
-							//add a period to the start date to account for the initial payment
-							$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-						}
 						
-						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 						if($this->subscribe($order))
 						{
 							$order->status = apply_filters("pmpro_check_status_after_checkout", "success");	//saved on checkout page	

@@ -309,16 +309,14 @@
 
 		$start = current_time('timestamp');
 
-		// get first and last user ID to use
-		$first_uid = $theusers[$i_start];
-
-		//get last UID, will depend on which iteration we're on.
-		if ( $ic != $iterations )
-			$last_uid = $theusers[($i_start + ( $max_users_per_loop - 1))];
-		else
+		// Get the last record to output, will depend on which iteration we're on.
+		if ( $ic != $iterations ) {
+			$i_end = ($i_start + ( $max_users_per_loop - 1));
+		} else {
 			// Final iteration, so last UID is the last record in the users array
-			$last_uid = $theusers[($users_found - 1)];
-
+			$i_end = ($users_found - 1);
+		}
+		$spl = array_slice($theusers, $i_start, $i_end + 1);
 		//increment starting position
 		$i_start += $max_users_per_loop;
 
@@ -326,7 +324,7 @@
 		if(!empty($search))
 			$search = str_replace('%', '%%', $search);
 
-		$userSql = $wpdb->prepare("
+		$userSql = "
 	        SELECT
 				DISTINCT u.ID,
 				u.user_login,
@@ -346,16 +344,12 @@
 			LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id
 			LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
 			{$former_member_join}
-			WHERE u.ID BETWEEN %d AND %d AND mu.membership_id > 0 {$filter} {$search}
+			WHERE u.ID in ( " . implode(', ', array_fill(0, count( $spl ), '%d' ) ) . " ) AND mu.membership_id > 0 {$filter} {$search}
 			GROUP BY u.ID, mu.membership_id
-			ORDER BY u.ID",
-				$first_uid,
-				$last_uid
-		);
-
-		// TODO: Only return the latest record for the user(s) current (and prior) levels IDs?
-
-		$usr_data = $wpdb->get_results($userSql);
+			ORDER BY u.ID
+		";
+		$userSql = call_user_func( array( $wpdb, 'prepare' ), $userSql, $spl );
+		$usr_data = $wpdb->get_results($userSql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$userSql = null;
 
 		if (PMPRO_BENCHMARK)

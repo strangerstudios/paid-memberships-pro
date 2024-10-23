@@ -12,7 +12,7 @@ import Edit from './edit';
 import metadata from './block.json';
 
 /**
- * Register the Membership Account: Invoices block.
+ * Register the Membership Account: Orders block.
  */
 registerBlockType( metadata.name, {
 	icon: {

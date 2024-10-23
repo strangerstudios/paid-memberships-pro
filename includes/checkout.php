@@ -12,8 +12,11 @@
  * @return string The profile start date in UTC time and the desired $date_format.
  */
 function pmpro_calculate_profile_start_date( $order, $date_format, $filter = true ) {
+	// Get the checkout level.
+	$level = $order->getMembershipLevelAtCheckout();
+
 	// Calculate the profile start date.
-	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $order->BillingFrequency . ' ' . $order->BillingPeriod ) );
+	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $level->cycle_number . ' ' . $level->cycle_period ) );
 
 	// Filter the profile start date if needed.
 	if ( $filter ) {
@@ -123,6 +126,10 @@ function pmpro_get_sensitive_checkout_request_vars() {
 		'ExpirationMonth',
 		'ExpirationYear',
 		'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
+		'pmpro_checkout_nonce', // The checkout nonce.
+		'checkjavascript', // Used to check if JavaScript is enabled.
+		'submit-checkout', // Used to check if the checkout form was submitted.
+		'submit-checkout_x', // Used to check if the checkout form was submitted.
 	);
 
 	/**
@@ -163,31 +170,57 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 }
 
 /**
- * Complete an asynchronous checkout.
+ * Complete a checkout.
  *
- * @since 2.12.3
+ * @since 3.1
  *
  * @param MemberOrder $order The order to complete the checkout for.
  * @return bool True if the checkout was completed successfully, false otherwise.
  */
- function pmpro_complete_async_checkout( $order ) {
+ function pmpro_complete_checkout( $order ) {
 	global $wpdb, $pmpro_level, $discount_code, $discount_code_id;
 
 	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
 	do_action( 'pmpro_checkout_before_change_membership_level', $order->user_id, $order );
 
-	//set the start date to current_time('timestamp') but allow filters  (documented in preheaders/checkout.php)
+	/**
+	 * Filter the start date for the membership/subscription.
+	 *
+	 * @since 1.8.9
+	 *
+	 * @param string $startdate , datetime formatsted for MySQL (NOW() or YYYY-MM-DD)
+	 * @param int $user_id , ID of the user checking out
+	 * @param object $pmpro_level , object of level being checked out for
+	 */
 	$startdate = apply_filters( "pmpro_checkout_start_date", "'" . current_time( 'mysql' ) . "'", $order->user_id, $pmpro_level );
 
 	//fix expiration date
 	if ( ! empty( $pmpro_level->expiration_number ) ) {
-		$enddate = "'" . date_i18n( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
+		if( $pmpro_level->expiration_period == 'Hour' ){
+			$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+		} else {
+			$enddate =  date( "Y-m-d 23:59:59", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+		}
 	} else {
 		$enddate = "NULL";
 	}
 
-	//filter the enddate (documented in preheaders/checkout.php)
+	/**
+	 * Filter the end date for the membership/subscription.
+	 *
+	 * @since 1.8.9
+	 *
+	 * @param string $enddate , datetime formatsted for MySQL (YYYY-MM-DD)
+	 * @param int $user_id , ID of the user checking out
+	 * @param object $pmpro_level , object of level being checked out for
+	 * @param string $startdate , startdate calculated above
+	 */
 	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $order->user_id, $pmpro_level, $startdate );
+
+	// If we have a discount code but not the ID, get the ID.
+	if ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+	}
 
 	//custom level to change user to
 	$custom_level = array(
@@ -205,11 +238,6 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		'enddate'         => $enddate
 	);
 
-	global $pmpro_error;
-	if ( ! empty( $pmpro_error ) ) {		
-		ipnlog( $pmpro_error );
-	}
-
 	//change level and continue "checkout"
 	if ( pmpro_changeMembershipLevel( $custom_level, $order->user_id, 'changed' ) !== false ) {
 		// Mark the order as successful.
@@ -217,21 +245,18 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		$order->saveOrder();
 
 		//add discount code use
-		if ( ! empty( $discount_code ) ) {
-			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
-			if ( ! empty( $discount_code_id ) ) {
-				$wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
-							( code_id, user_id, order_id, timestamp ) 
-							VALUES( %d, %d, %s, %s )",
-						$discount_code_id,
-						$order->user_id,
-						$order->id,
-						current_time( 'mysql' )
-					)	
-				);
-			}
+		if ( ! empty( $discount_code_id ) ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
+						( code_id, user_id, order_id, timestamp ) 
+						VALUES( %d, %d, %s, %s )",
+					$discount_code_id,
+					$order->user_id,
+					$order->id,
+					current_time( 'mysql' )
+				)	
+			);
 			do_action( 'pmpro_discount_code_used', $discount_code_id, $order->user_id, $order->id );
 		}
 
@@ -247,6 +272,10 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 			if ( empty( $old_lastname ) ) {
 				update_user_meta( $order->user_id, "last_name", stripslashes( sanitize_text_field( $_POST['last_name'] ) ) );
 			}
+		}
+
+		if ( $pmpro_level->expiration_period == 'Hour' ){
+			update_user_meta( $order->user_id, 'pmpro_disable_notifications', true );
 		}
 
 		//hook
@@ -272,3 +301,31 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		return false;
 	}
 }
+
+/**
+ * Legacy function.
+ *
+ * @since 2.12.3
+ *
+ * @param MemberOrder $order The order to complete the checkout for.
+ * @return bool True if the checkout was completed successfully, false otherwise.
+ */
+function pmpro_complete_async_checkout( $order ) {
+	return pmpro_complete_checkout( $order );
+}
+
+/**
+ * AJAX method to get the checkout nonce.
+ * Important for correcting the nonce value at checkout if the user is logged in during the same page load.
+ *
+ * @since 3.0.3
+ */
+function pmpro_get_checkout_nonce() {
+	// Output the checkout nonce.
+	echo esc_html( wp_create_nonce( 'pmpro_checkout_nonce' ) );
+
+	// End the AJAX request.
+	exit;
+}
+add_action( 'wp_ajax_pmpro_get_checkout_nonce', 'pmpro_get_checkout_nonce' );
+add_action( 'wp_ajax_nopriv_pmpro_get_checkout_nonce', 'pmpro_get_checkout_nonce' );

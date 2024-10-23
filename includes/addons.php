@@ -72,6 +72,46 @@ function pmpro_getAddons() {
 }
 
 /**
+ * Get a list of installed Add Ons with incorrect folder names.
+ *
+ * @since 3.1
+ *
+ * @return array $incorrect_folder_names An array of Add Ons with incorrect folder names. The key is the installed folder name, the value is the Add On data.
+ */
+function pmpro_get_add_ons_with_incorrect_folder_names() {
+	// Make an easily searchable array of installed plugins to reduce computational compexity.
+	// The key of the array is the plugin filename, the value is the folder name.
+	$installed_plugins = array();
+	foreach ( get_plugins() as $plugin_name => $plugin_data ) {
+		// Skip plugins that are not in a folder.
+		if ( false === strpos( $plugin_name, '/' ) ) {
+			continue;
+		}
+
+		// Add the plugin to the $installed_plugins array.
+		list( $plugin_folder, $plugin_filename ) = explode( '/', $plugin_name, 2 );
+		$installed_plugins[ $plugin_filename ] = $plugin_folder;
+	}
+
+	// Set up an array to track Add Ons with wrong folder names.
+	// The key of the array is the equivalent of $plugin_name above, the value is the Add On data.
+	$incorrect_folder_names = array();
+	foreach ( pmpro_getAddons() as $addon ) {
+		// Get information about the Add On.
+		list( $addon_folder, $addon_filename ) = explode( '/', $addon['plugin'], 2 );
+	
+		// Check if the Add On is installed with an incorrect folder name.
+		if ( array_key_exists( $addon_filename, $installed_plugins ) && $addon_folder !== $installed_plugins[ $addon_filename ] ) {
+			// The Add On is installed with the wrong folder nane. Add it to the array.
+			$installed_name = $installed_plugins[ $addon_filename ] . '/' . $addon_filename;
+			$incorrect_folder_names[ $installed_name ] = $addon;
+		}
+	}
+
+	return $incorrect_folder_names;
+}
+
+/**
  * Find a PMPro addon by slug.
  *
  * @since 1.8.5

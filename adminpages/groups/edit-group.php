@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @var int $edit_group
+ */
+
 // Creating or editing a group.
 // If we are editing an existing group, current group data.
 if ( intval( $edit_group ) > 0) {

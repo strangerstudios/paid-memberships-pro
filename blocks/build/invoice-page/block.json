@@ -2,10 +2,10 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "pmpro/invoice-page",
-	"title": "PMPro Page: Invoice",
+	"title": "PMPro Page: Orders",
 	"category": "pmpro-pages",
-	"description": "Dynamic page section that displays a list of all invoices (purchase history) for the active member. Each invoice can be selected and viewed in full detail.",
-	"keywords": [ "history", "order", "purchases", "receipt", "paid memberships pro", "pmpro" ],
+	"description": "Dynamic page section that displays a list of all orders (purchase history) for the active member. Each order can be selected and viewed in full detail.",
+	"keywords": [ "history", "order", "invoice", "purchases", "receipt", "paid memberships pro", "pmpro" ],
 	"attributes" : {
 	},
 	"supports": {

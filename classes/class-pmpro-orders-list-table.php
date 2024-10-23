@@ -335,8 +335,17 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		if( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) && ! $count ) {
 
-			$order = strtoupper( esc_sql( $_REQUEST['order'] ) );
-			$orderby = ( $_REQUEST['orderby'] );
+			if( isset( $_REQUEST['orderby'] ) ) {
+				$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+			} else {
+				$orderby = 'id';
+			}
+
+			if( isset( $_REQUEST['order'] ) && $_REQUEST['order'] == 'asc' ) {
+				$order = 'ASC';
+			} else {
+				$order = 'DESC';
+			}
 
 			if( $orderby == 'total' ) {
 				$orderby = 'total + 0'; //This pads the number and allows it to sort correctly
@@ -455,7 +464,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		if ( $which == 'top' ) {
 
-			global $wpdb;
+			global $wpdb, $pmpro_msg, $pmpro_msgt;
 
 			$now = current_time( 'timestamp' );
 
@@ -807,11 +816,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	function sanitize_orderby( $orderby ) {
 
 		$allowed_orderbys = array(
-			'order_id' 		=> 'id',
-			'level'	        => 'name',
-			'total' 	    => 'total',
-			'status' 	    => 'status_label',
-			'date' 		    => 'timestamp',
+			'id'           => 'id',
+			'name'	       => 'membership_id',
+			'total'        => 'total',
+			'status_label' => 'status',
+			'timestamp'    => 'timestamp',
 		);
 
 	 	if ( ! empty( $allowed_orderbys[$orderby] ) ) {
@@ -820,7 +829,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$orderby = false;
 		}
 
-		return $allowed_orderbys;
+		return $orderby;
 	}
 
 	/**
@@ -998,7 +1007,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				'email'   => sprintf(
 					'<a title="%1$s" href="%2$s" data-order="%3$s" class="thickbox email_link">%4$s</a>',
 					esc_attr__( 'Email', 'paid-memberships-pro' ),
-					'#TB_inline?width=600&height=200&inlineId=email_invoice',
+					'#TB_inline?width=600&height=200&inlineId=email_order',
 					esc_attr( $item->id ),
 					esc_html__( 'Email', 'paid-memberships-pro' )
 				),
@@ -1071,7 +1080,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		if ( ! empty( $level ) ) {
 			echo esc_html( $level->name );
 		} elseif ( $item->membership_id > 0 ) {
-			echo '['. esc_html( 'deleted', 'paid-memberships-pro' ).']';
+			echo '['. esc_html__( 'deleted', 'paid-memberships-pro' ).']';
 		} else {
 			esc_html_e( '&#8212;', 'paid-memberships-pro' );
 		}
@@ -1087,7 +1096,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_total( $item ) {
 
-		echo pmpro_escape_price( pmpro_formatPrice( $item->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo pmpro_escape_price( $item->get_formatted_total() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		// If there is a discount code, show it.
 		if ( $item->getDiscountCode() ) {
@@ -1128,6 +1137,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		if ( ! empty( $item->billing->street ) ) {
 			$r .= esc_html( $item->billing->street ) . '<br />';
+		}
+
+		if ( ! empty( $item->billing->street2 ) ) {
+			$r .= esc_html( $item->billing->street2 ) . '<br />';
 		}
 
 		if ( $item->billing->city && $item->billing->state ) {
