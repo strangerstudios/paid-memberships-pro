@@ -24,14 +24,201 @@ if ( ! empty( $subscription ) && ! empty( $_REQUEST['change-level'] ) && is_nume
 	$subscription->save();
 }
 
+// Process linking a subscription.
+if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
+	if ( ! empty( $_POST ) && check_admin_referer( 'link', 'pmpro_subscriptions_nonce' ) ) {
+		// Create a new subscription.
+		$create_subscription_args = array(
+			'user_id'              => sanitize_text_field( $_POST['user_id'] ),
+			'membership_level_id'  => sanitize_text_field( $_POST['membership_level_id'] ),
+			'gateway'              => sanitize_text_field( $_POST['gateway'] ),
+			'gateway_environment'  => sanitize_text_field( $_POST['gateway_environment'] ),
+			'subscription_transaction_id' => sanitize_text_field( $_POST['subscription_transaction_id'] ),
+			'status'               => 'active',
+		);
+		$new_subscription = PMPro_Subscription::create( $create_subscription_args );
+
+		if ( ! empty( $new_subscription ) ) {
+			// Show a success message.
+			$pmpro_msg  = esc_html__( 'Subscription linked successfully.', 'paid-memberships-pro' );
+			$pmpro_msgt = 'pmpro_success';
+
+			// Go to the "view" page.
+			unset( $_REQUEST['action'] );
+		} else {
+			// Show an error message.
+			$pmpro_msg  = esc_html__( 'Error linking subscription. This subscription may already exist on your website.', 'paid-memberships-pro' );
+			$pmpro_msgt = 'pmpro_error';
+		}
+	}
+}
+
+// Process editing a subscription.
+if ( ! empty( $subscription ) && isset( $_REQUEST['action'] ) && 'edit' === $_REQUEST['action'] ) {
+	if ( ! empty( $_POST ) && check_admin_referer( 'edit', 'pmpro_subscriptions_nonce' ) ) {
+		// Update the subscription.
+		$subscription->set( 'user_id', sanitize_text_field( $_POST['user_id'] ) );
+		$subscription->set( 'membership_level_id', sanitize_text_field( $_POST['membership_level_id'] ) );
+		$subscription->save();
+
+		// Show a success message.
+		$pmpro_msg  = esc_html__( 'Subscription updated successfully.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'pmpro_success';
+
+		// Go back to the "view" page.
+		unset( $_REQUEST['action'] );
+	}
+}
+
 require_once( dirname( __FILE__ ) . '/admin_header.php' );
 
 ?>
 <hr class="wp-header-end">
 <?php
 
-// Check if we have a subscription object.
-if ( ! empty( $subscription ) ) {
+if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
+	// Link a subscription.
+	?>
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Link Subscription', 'paid-memberships-pro' ); ?></h1>
+	<form action="" method="post">
+		<table class="form-table">
+			<tbody>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<input type="text" name="subscription_transaction_id" />
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<?php
+						// Get all gateways.
+						$gateways = pmpro_gateways();
+						$current_gateway = get_option( 'pmpro_gateway', '' );
+						?>
+						<select name="gateway">
+							<?php
+							foreach ( $gateways as $gateway ) {
+								?>
+								<option value="<?php echo esc_attr( $gateway ); ?>" <?php selected( $gateway, $current_gateway ); ?>><?php echo esc_html( $gateway ); ?></option>
+								<?php
+							}
+							?>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<?php
+						// Get the current gateway environment.
+						$gateway_environment = get_option( 'pmpro_gateway_environment' );
+						?>
+						<select name="gateway_environment">
+							<option value="sandbox" <?php selected( 'sandbox', $gateway_environment ); ?>><?php esc_html_e( 'Sandbox', 'paid-memberships-pro' ); ?></option>
+							<option value="live" <?php selected( 'live', $gateway_environment ); ?>><?php esc_html_e( 'Live', 'paid-memberships-pro' ); ?></option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'User ID', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<input type="text" name="user_id" />
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<?php
+						// Get all membership levels.
+						$levels = pmpro_getAllLevels( true, true );
+
+						// Display a dropdown of membership levels.
+						?>
+						<select name="membership_level_id">
+							<?php
+							foreach ( $levels as $level ) {
+								?>
+								<option value="<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name ); ?></option>
+								<?php
+							}
+							?>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<?php wp_nonce_field( 'link', 'pmpro_subscriptions_nonce' ); ?>
+		<input type="hidden" name="action" value="link" />
+		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Link Subscription', 'paid-memberships-pro' ); ?>" />
+	</form>
+	<?php
+} elseif ( ! empty( $subscription ) && isset( $_REQUEST['action'] ) && 'edit' === $_REQUEST['action'] ) {
+	// Edit a subscription.
+	?>
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Edit Subscription', 'paid-memberships-pro' ); ?></h1>
+	<a
+		href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ) ); ?>"
+		title="<?php esc_attr_e( 'View Subscription', 'paid-memberships-pro' ); ?>" 
+		class="page-title-action pmpro-has-icon pmpro-has-icon-visibility">
+		<?php esc_html_e( 'View Subscription', 'paid-memberships-pro' ); ?>
+	</a>
+	<form action="" method="post">
+		<table class="form-table">
+			<tbody>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'ID', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $subscription->get_id() ); ?></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $subscription->get_subscription_transaction_id() ); ?></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $subscription->get_gateway() ); ?></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $subscription->get_gateway_environment() ); ?></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'User ID', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<input type="text" name="user_id" value="<?php echo esc_attr( $subscription->get_user_id() ); ?>" />
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<?php
+						// Get all membership levels.
+						$levels = pmpro_getAllLevels( true, true );
+
+						// Display a dropdown of membership levels.
+						?>
+						<select name="membership_level_id">
+							<?php
+							foreach ( $levels as $level ) {
+								?>
+								<option value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $level->id, $subscription->get_membership_level_id() ); ?>><?php echo esc_html( $level->name ); ?></option>
+								<?php
+							}
+							?>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<?php wp_nonce_field( 'edit', 'pmpro_subscriptions_nonce' ); ?>
+		<input type="hidden" name="id" value="<?php echo esc_attr( $subscription->get_id() ); ?>" />
+		<input type="hidden" name="action" value="edit" />
+		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Update Subscription', 'paid-memberships-pro' ); ?>" />
+	</form>
+	<?php
+} elseif ( ! empty( $subscription ) ) {
+	// View a subscription.
 	?>
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'View Subscription', 'paid-memberships-pro' ); ?></h1>
 	<?php
@@ -50,6 +237,13 @@ if ( ! empty( $subscription ) ) {
 		)
 		: $sub_membership_level->name;
 	?>
+
+	<a
+		href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'action' => 'edit' ), admin_url('admin.php' ) ) ) ); ?>"
+		title="<?php esc_attr_e( 'Edit Subscription', 'paid-memberships-pro' ); ?>" 
+		class="page-title-action pmpro-has-icon pmpro-has-icon-edit">
+		<?php esc_html_e( 'Edit Subscription', 'paid-memberships-pro' ); ?>
+	</a>
 
 	<?php if ( $subscription->get_gateway_object()->supports( 'subscription_sync' ) ) { ?>
 		<a
@@ -168,15 +362,7 @@ if ( ! empty( $subscription ) ) {
 							if ( 'active' == $subscription->get_status() ) {
 								// Get all of the user's membership levels.
 								$user_membership_levels = pmpro_getMembershipLevelsForUser( $subscription->get_user_id() );
-
-								// If the user has a level other than the one that the subscription is for, show a link to show settings to move sub to new level.
-								$user_level_ids = empty( $user_membership_levels ) ? array() : wp_list_pluck( $user_membership_levels, 'id' );
-								if ( ! empty( array_diff( $user_level_ids, array( $sub_membership_level_id ) ) ) ) {
-									echo '<br />';
-									?>
-									<button class="button button-link" id="pmpro-show-change-subscription-level"><?php esc_html_e( 'Change Subscription Level', 'paid-memberships-pro' ); ?></button>
-									<?php
-								}
+								$user_level_ids         = array_map( 'intval', wp_list_pluck( $user_membership_levels, 'ID' ) );
 
 								// If the user does not have the level that this subscription is for, show a warning.
 								if ( ! in_array( $sub_membership_level_id, $user_level_ids ) ) {
@@ -184,36 +370,6 @@ if ( ! empty( $subscription ) ) {
 									<p class="description" style="color: red;"><?php esc_html_e( 'This user does not have the membership level that this subscription is for.', 'paid-memberships-pro' ); ?></p>
 									<?php
 								}
-
-								// Show a dropdown and save button to change the subscription level that shows when the link is clicked.
-								?>
-								<div id="pmpro-change-subscription-level" style="display: none;">
-									<form action="" method="post">
-										<select name="change-level">
-											<?php
-											foreach ( $user_membership_levels as $user_membership_level ) {
-												if ( $user_membership_level->id == $sub_membership_level_id ) {
-													continue;
-												}
-												?>
-												<option value="<?php echo esc_attr( $user_membership_level->id ); ?>" <?php selected( $user_membership_level->id, $sub_membership_level_id ); ?>><?php echo esc_html( $user_membership_level->name ); ?></option>
-												<?php
-											}
-											?>
-										</select>
-										<?php wp_nonce_field( 'change-level', 'pmpro_subscriptions_nonce' ); ?>
-										<input type="submit" class="button button-link" value="<?php esc_attr_e( 'Update Subscription Level', 'paid-memberships-pro' ); ?>" />
-									</form>
-								</div>
-								<script>
-									jQuery(document).ready(function() {
-										jQuery('#pmpro-show-change-subscription-level').on('click',function() {
-											jQuery('#pmpro-change-subscription-level').show();
-											jQuery(this).hide();
-										});
-									});
-								</script>
-								<?php
 							}
 							?>
 						</td>
@@ -332,6 +488,13 @@ if ( ! empty( $subscription ) ) {
 	<form id="subscriptions-list-form" method="get" action="">
 
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Subscriptions', 'paid-memberships-pro' ); ?></h1>
+
+		<a
+			href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'action' => 'link' ), admin_url('admin.php' ) ) ) ); ?>"
+			title="<?php esc_attr_e( 'Link Subscription', 'paid-memberships-pro' ); ?>" 
+			class="page-title-action pmpro-has-icon pmpro-has-icon-plus">
+			<?php esc_html_e( 'Link Subscription', 'paid-memberships-pro' ); ?>
+		</a>
 
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
 			<div id="message" class="
