@@ -68,6 +68,7 @@
 		$expires_day = intval($_POST['expires_day']);
 		$expires_year = intval($_POST['expires_year']);
 		$uses = intval($_POST['uses']);
+		$one_use_per_user = ! empty( $_POST['one_use_per_user'] ) ? 1 : 0;
 
 		//fix up dates
 		$starts = date("Y-m-d", strtotime($starts_month . "/" . $starts_day . "/" . $starts_year, $now ));
@@ -81,13 +82,15 @@
 				'code' => $code,
 				'starts' => $starts,
 				'expires' => $expires,
-				'uses' => $uses
+				'uses' => $uses,
+				'one_use_per_user' => $one_use_per_user
 			),
 			array(
 				'%d',
 				'%s',
 				'%s',
 				'%s',
+				'%d',
 				'%d'
 			)
 		);
@@ -519,10 +522,18 @@
 						</tr>
 
 						<tr>
-							<th scope="row" valign="top"><label for="uses"><?php esc_html_e('Uses', 'paid-memberships-pro' );?></label></th>
+							<th scope="row" valign="top"><label for="uses"><?php esc_html_e('Total Uses', 'paid-memberships-pro' );?></label></th>
 							<td>
 								<input name="uses" type="text" size="10" value="<?php if ( ! empty( $code->uses ) ) echo esc_attr( $code->uses ); ?>" />
 								<p class="description"><?php esc_html_e('Leave blank for unlimited uses.', 'paid-memberships-pro' );?></p>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row" valign="top"><label for="one_use_per_user"><?php esc_html_e('One Use Per User', 'paid-memberships-pro' );?></label></th>
+							<td>
+								<input name="one_use_per_user" type="checkbox" value="1" <?php if ( ! empty( $code->one_use_per_user ) ) checked( $code->one_use_per_user, 1 ); ?> />
+								<p class="description"><?php esc_html_e('Check this box to limit the code to one use per user.', 'paid-memberships-pro' );?></p>
 							</td>
 						</tr>
 

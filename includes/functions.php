@@ -1890,7 +1890,7 @@ function pmpro_getDiscountCode( $seed = null ) {
  * Is a discount code valid - $level_id could be a scalar or an array (or unset)
  */
 function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = false ) {
-	global $wpdb;
+	global $wpdb, $current_user;
 
 	$error = false;
 	$dbcode = false;
@@ -1938,6 +1938,16 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 			$used = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . esc_sql( $dbcode->id ) . "'" );
 			if ( $used >= $dbcode->uses ) {
 				$error = __( 'This discount code is no longer valid.', 'paid-memberships-pro' );
+			}
+		}
+	}
+
+	// check if this code is limited to one use per user
+	if ( ! $error ) {
+		if ( ! empty( $dbcode->one_use_per_user ) && ! empty( $current_user->ID ) ) {
+			$used = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . esc_sql( $dbcode->id ) . "' AND user_id = '" . esc_sql( $current_user->ID ) . "'" );
+			if ( $used > 0 ) {
+				$error = __( 'You have already used the discount code provided.', 'paid-memberships-pro' );
 			}
 		}
 	}
