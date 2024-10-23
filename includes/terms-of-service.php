@@ -65,43 +65,47 @@ function pmpro_show_tos_at_checkout() {
 	// Show the TOS checkbox.
 	?>
 	<fieldset id="pmpro_tos_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_tos_fields' ) ); ?>">
-		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-			<?php
-				if ( isset( $_REQUEST['tos'] ) ) {
-					$tos = intval( $_REQUEST['tos'] );
-				} else {
-					$tos = "";
-				}
-			?>
-			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-checkbox pmpro_form_field-required' ) ); ?>">
-				<label class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_clickable', 'tos' ) ); ?>" for="tos">
-					<input type="checkbox" name="tos" value="1" id="tos" <?php checked( 1, $tos ); ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-checkbox pmpro_form_input-required', 'tos' ) ); ?>" />
+		<div class="pmpro_card">
+			<div class="pmpro_card_content">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 					<?php
-						$tos_label = sprintf( __( 'I agree to the <a href="%1$s" target="_blank">%2$s</a>', 'paid-memberships-pro' ), esc_url( get_permalink( $tospage->ID ) ), esc_html( $tospage->post_title ) );
-						/**
-						 * Filter the Terms of Service field label.
-						 *
-						 * @since 3.1
-						 *
-						 * @param string $tos_label The field label.
-						 * @param object $tospage The Terms of Service page object.
-						 * @return string The filtered field label.
-						 */
-						$tos_label = apply_filters( 'pmpro_tos_field_label', $tos_label, $tospage );
-						echo wp_kses_post( $tos_label );
+						if ( isset( $_REQUEST['tos'] ) ) {
+							$tos = intval( $_REQUEST['tos'] );
+						} else {
+							$tos = "";
+						}
 					?>
-				</label>
-			</div> <!-- end pmpro_form_field-tos -->
-			<?php
-				/**
-				 * Allow adding text or more checkboxes after the Tos checkbox
-				 * This is NOT intended to support multiple Tos checkboxes
-				 *
-				 * @since 2.8
-				 */
-				do_action_deprecated( 'pmpro_checkout_after_tos', array(), '3.2' );
-			?>
-		</div> <!-- end pmpro_form_fields -->
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-checkbox pmpro_form_field-required' ) ); ?>">
+						<label class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_clickable', 'tos' ) ); ?>" for="tos">
+							<input type="checkbox" name="tos" value="1" id="tos" <?php checked( 1, $tos ); ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-checkbox pmpro_form_input-required', 'tos' ) ); ?>" />
+							<?php
+								$tos_label = sprintf( __( 'I agree to the <a href="%1$s" target="_blank">%2$s</a>', 'paid-memberships-pro' ), esc_url( get_permalink( $tospage->ID ) ), esc_html( $tospage->post_title ) );
+								/**
+								 * Filter the Terms of Service field label.
+								 *
+								 * @since 3.1
+								 *
+								 * @param string $tos_label The field label.
+								 * @param object $tospage The Terms of Service page object.
+								 * @return string The filtered field label.
+								 */
+								$tos_label = apply_filters( 'pmpro_tos_field_label', $tos_label, $tospage );
+								echo wp_kses_post( $tos_label );
+							?>
+						</label>
+					</div> <!-- end pmpro_form_field-tos -->
+					<?php
+						/**
+						 * Allow adding text or more checkboxes after the Tos checkbox
+						 * This is NOT intended to support multiple Tos checkboxes
+						 *
+						 * @since 2.8
+						 */
+						do_action_deprecated( 'pmpro_checkout_after_tos', array(), '3.2' );
+					?>
+				</div> <!-- end pmpro_form_fields -->
+			</div> <!-- end pmpro_card -->
+		</div> <!-- end pmpro_card_content -->
 	</fieldset> <!-- end pmpro_tos_fields -->
 	<?php
 	do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), '3.2' );
