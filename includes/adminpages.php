@@ -124,7 +124,6 @@ function pmpro_parent_file( $parent_file ) {
 		'pmpro-userfields' => 'pmpro-membershiplevels',
 		'pmpro-designsettings' => 'pmpro-membershiplevels',
 		'pmpro-advancedsettings' => 'pmpro-membershiplevels',
-		'pmpro-subscriptions' => 'pmpro-membershiplevels',
 		'pmpro-member' => 'pmpro-memberslist',
 	);
 	
