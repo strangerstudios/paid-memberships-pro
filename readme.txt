@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.6.2
 Requires PHP: 5.6
-Stable tag: 3.3
+Stable tag: 3.3.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,11 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.3.1 - 2024-10-24 =
+* ENHANCEMENT: Added a Subscriptions List Table to allow admins to view, manage, and link subscriptions from the WordPress admin. #2828 (@dparker1005, @kimcoleman)
+* ENHANCEMENT: Discount codes can now be set to only allow one use per user. #3175 (@dparker1005)
+* BUG FIX: Fixed an issue where billing address information would be cleared when a checkout attempt failed causing Stripe 3DS checks to break. #3172 (@dparker1005, @mircobabini)
+
 = 3.3 - 2024-10-16 =
 * FEATURE: Now updating the plugin from paidmembershipspro.com. #3167 (@dparker1005)
 * ENHANCEMENT: Updated translation files bundled with the plugin. #3168 (@MaximilianoRicoTabo)
