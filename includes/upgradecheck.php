@@ -392,6 +392,15 @@ function pmpro_checkForUpgrades() {
 		pmpro_upgrade_3_2();
 		update_option( 'pmpro_db_version', '3.2' );
 	}
+
+	/**
+	 * Version 3.4
+	 * Adding `one_use_per_user` column to discount codes.
+	 */
+	if ( $pmpro_db_version < 3.4 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.4' );
+	}
 }
 
 function pmpro_db_delta() {
@@ -567,6 +576,7 @@ function pmpro_db_delta() {
 		  `starts` date NOT NULL,
 		  `expires` date NOT NULL,
 		  `uses` int(11) NOT NULL,
+		  `one_use_per_user` tinyint(4) NOT NULL DEFAULT '0',
 		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),
