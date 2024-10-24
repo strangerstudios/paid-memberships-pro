@@ -1,4 +1,4 @@
-=== Paid Memberships Pro - Content Restriction, User Registration, & Paid Subscriptions ===
+=== Paid Memberships Pro ===
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
@@ -8,13 +8,13 @@ Stable tag: 3.3
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
+The Trusted Membership Platform That Grows with You
 
 == Description ==
 
-### The most trusted way to build a membership site on WordPress.
+### The Trusted Membership Platform That Grows with You
 
-Paid Memberships Pro is a complete solution to secure your content and create a seamless membership experience on WordPress. 
+Paid Memberships Pro is a complete solution to secure your content and create a seamless membership experience.
 
 With over 28 ways to protect content, advanced membership management, and built-in recurring payment gateways, we provide you with everything you need to create an efficient and user-friendly membership site.
 
@@ -58,7 +58,7 @@ You can also browse [Case Studies for successful membership sites that are using
 
 ### Built-in Ecommerce & Recurring Payments Features
 
-All of our payment gateways are included in the plugin. Choose from [Stripe](https://www.paidmembershipspro.com/gateway/stripe/), [PayPal](https://www.paidmembershipspro.com/gateway/paypal/), [Authorize.net](https://www.paidmembershipspro.com/gateway/authorize-net/), or [Braintree](https://www.paidmembershipspro.com/gateway/braintree/). You can offer multiple gateway options at checkout including [PayPal Express](https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/) or [manual and offline payments, like Bank Transfer, Check, and Venmo](https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/).
+All of our payment gateways are included in the plugin. Choose from [Stripe](https://www.paidmembershipspro.com/gateway/stripe/), [PayPal](https://www.paidmembershipspro.com/gateway/paypal/), or [Braintree](https://www.paidmembershipspro.com/gateway/braintree/). You can offer multiple gateway options at checkout including [PayPal Express](https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/) or [manual and offline payments, like Bank Transfer, Check, and Venmo](https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/).
 
 * **Flexible Pricing:** Configure free, one-time payment, or recurring subscription levels
 * **Multiple Gateways:** Integrate with Stripe, PayPal, and more
@@ -93,10 +93,10 @@ Extend functionality with affiliates, page builders, themes, and landing pages.
 
 * **Page Builder Compatibility:** Gutenberg Block Editor, Full Site Editing, Elementor, Divi, Beaver Builder, Oxygen Builder, SiteOrigin
 * **Integrate With Popular Platforms:** WooCommerce, BuddyPress/BuddyBoss, Mailchimp, Zapier
-* **Use With Your Favorite LMS:** LifterLMS, LearnDash, Sensei LMS, and Tutor LMS
+* **Use With Your Favorite LMS:** LifterLMS, LearnDash, and Tutor LMS
 
 > _"Recommended to anyone from beginner to experienced coders. I tried MemberMouse and MemberPress and they both lacked critical features that I wanted for my member site. PMPro has all the features I need (Social Login, ability to gift, multiple membership levels, works with BuddyPress) and more. I can easily customize to make it look great too. If I have questions, which is often since I am a beginner in WordPress and know nothing about coding, they are quick to respond and always find a way for me to do exactly what I want. Super happy. Would recommend to anyone from beginner to experienced coders!"_
-> _**@efsluys** via WordPress.org 5-star Review_
+> _**@efsluys** 5-star Review_
 
 ### Documentation, Support, Localization
 
@@ -109,7 +109,7 @@ We also offer unique content hubs, which explore the 8 most popular membership s
 ### Developer Friendly
 Open source, REST API support, extensive hooks, and tools for easy customization.
 
-Our website offers over 340 examples on how to use our action and filter hooks to customize your membership site.
+Our website offers over 310 examples on how to use our action and filter hooks to customize your membership site.
 
 ### Free WordPress Theme
 Our official theme, [Memberlite](https://memberlitetheme.com), is built specifically for membership sites. Memberlite has deep integration with Paid Memberships Pro to offer advanced features for logged-in/out users and works alongside your favorite page builders, like the Block Editor and Elementor.
@@ -122,7 +122,6 @@ Extend the features of your membership site or integrate with third-party servic
 * [Manage Affiliates](https://www.paidmembershipspro.com/managing-affiliates-with-paid-memberships-pro/) with Add Ons or use a popular third-party systems like [AffiliateWP](https://www.paidmembershipspro.com/using-affiliatewp-with-paid-memberships-pro/)
 * Let members [log in or join with their social media profiles](https://www.paidmembershipspro.com/add-ons/social-login-add-on/)
 * Design your site [using popular Page Builders](https://www.paidmembershipspro.com/using-page-builders-for-membership-site/) like Elementor, Page Builder by SiteOrigin, Beaver Builder, and Divi. We offer 15 core membership blocks for the WordPress Block Editor (Gutenberg)
-* [Optional WooCommerce Integration](https://www.paidmembershipspro.com/add-ons/pmpro-woocommerce/) to offer members-only discounts in your shop or sell membership as a product (WooCommerce is not required. Recurring payments and gateway integration is built into PMPro)
 * Create a [sales landing page with banners to run a sitewide or flash sale](https://sitewidesales.com)
 * [Offer members-only events](https://www.paidmembershipspro.com/add-ons/events-for-members-only/) with Events Manager, The Events Calendar, and Sugar Calendar
 
@@ -130,7 +129,11 @@ Extend the features of your membership site or integrate with third-party servic
 
 ### Paid Memberships Pro is a free membership plugin for WordPress
 
-Our plugin is 100% GPL and available from the WordPress repository or on our site at [www.paidmembershipspro.com](https://www.paidmembershipspro.com). The full version of the plugin is offered with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
+Our plugin is 100% GPL and can be downloaded at [www.paidmembershipspro.com/documentation/download/](https://www.paidmembershipspro.com/documentation/download/).
+
+The full version of the plugin is offered with no restrictions or additional licenses required.
+
+Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
 
 ### Compare PMPro to Other Membership Plugins and Platforms
 Are you comparing Paid Memberships Pro with another membership plugin or third-party platform? We have a series of [product comparison guides](https://www.paidmembershipspro.com/category/product-comparison/) that will help you see the distinct features of PMPro as compared to other options, including:
@@ -147,9 +150,7 @@ Are you comparing Paid Memberships Pro with another membership plugin or third-p
 == Installation ==
 
 = Download, Install and Activate! =
-1. Go to Plugins > Add New to find and install Paid Memberships Pro.
-2. Or, download the latest version of the plugin, then go to Plugins > Add New and click the "Upload Plugin" button to upload your .zip file.
-3. Activate the plugin.
+Visit [https://www.paidmembershipspro.com/documentation/download/](https://www.paidmembershipspro.com/documentation/download/) for the full plugin download and instructions on how to install Paid Memberships Pro in your WordPress site.
 
 = Use the Setup Wizard to Complete Initial Setup =
 After activation, you will be taken through a brief setup wizard to configure the plugin.
@@ -189,7 +190,7 @@ Our [Multisite Membership Add On](https://www.paidmembershipspro.com/add-ons/pmp
 If you would like more help using PMPro on a network install, [reach our via our contact page](https://www.paidmembershipspro.com/contact/).
 
 = I need help installing, configuring, or customizing Paid Memberships Pro. =
-Please visit [our support site](https://www.paidmembershipspro.com/support) for more documentation and our support forums.
+Please visit [our support site](https://www.paidmembershipspro.com/support/) for more documentation and our support forums.
 
 = I found a bug in Paid Memberships Pro. =
 Please reach out using our [contact form](https://www.paidmembershipspro.com/contact/) and we'll fix it right away. Thanks for helping.
@@ -201,19 +202,6 @@ Not sure? You can find out by doing a bit a research.
 2. [Check our Add Ons](https://www.paidmembershipspro.com/add-ons/).
 3. [Do a search on our site](https://www.paidmembershipspro.com/).
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
-
-== Screenshots ==
-
-1. Membership levels or Pricing page to showcase your subscription plans.
-2. Set up the membership levels that best fit your business, whether they are Free, Paid, or Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
-3. Use the CRM-like Edit Member dashboard to give admins a deeper view of a single member's profile information, memberships, subscriptions, orders, and more.
-4. Membership Account page, display all sections or show specific sections using shortcode attributes.
-5. Optimized Membership Checkout page that blends seamlessly into your WordPress site. Fields captured at checkout can be modified with other Add Ons.
-6. Easy to use Membership Access Settings by Page, Post, or Category. Use block settings or shortcodes to display restricted content inline. Developer-friendly hooks to restrict access any way you need.
-7. Members are WordPress Users. PMPro provides a unique interface to view a single member's history, filter and search all Members or export your Members List.
-8. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
-9. Filterable Sales Revenue Reports (reports also included for Visits, Views, Logins, Signups, Cancellations, and other Membership Stats).
-10. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
 = 3.3 - 2024-10-16 =
