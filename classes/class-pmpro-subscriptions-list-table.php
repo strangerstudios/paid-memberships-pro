@@ -141,13 +141,14 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	public function get_columns() {
 
 		$columns = array(
-			'id'                          => __( 'Subscription', 'paid-memberships-pro' ),
+			'id'                          => __( 'Subscription ID', 'paid-memberships-pro' ),
 			'user'                        => __( 'User', 'paid-memberships-pro' ),
 			'level'                       => __( 'Level', 'paid-memberships-pro' ),
+			'fee'                         => __( 'Fee', 'paid-memberships-pro' ),
+			'gateway'                     => __( 'Gateway', 'paid-memberships-pro' ),
 			'status'                      => __( 'Status', 'paid-memberships-pro' ),
-			'billing'                     => __( 'Billing', 'paid-memberships-pro' ),
-			'startdate'                   => __( 'Start Date', 'paid-memberships-pro' ),
-			'next_payment_date'           => __( 'Next Payment Date', 'paid-memberships-pro' ),
+			'startdate'                   => __( 'Created', 'paid-memberships-pro' ),
+			'next_payment_date'           => __( 'Next Payment', 'paid-memberships-pro' ),
 			'enddate'                     => __( 'Ended', 'paid-memberships-pro' ),
 			'orders'                      => __( 'Orders', 'paid-memberships-pro' ),
 		);
@@ -186,8 +187,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
 
 		// If user meta is not found, add the default hidden columns.
-		// Right now, we don't have any default hidden columns.
-		if ( ! $hidden ) {
+		if ( ! is_array( $hidden ) ) {
 			$hidden = array(
 				'startdate',
 			);
@@ -379,15 +379,17 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 				// Note: Only subscriptions belonging to current levels can be filtered. There is no option for subscriptions belonging to deleted levels.
 				$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 				?>
+				<?php esc_html_e( 'Show', 'paid-memberships-pro' ); ?>
 				<select id="level" name="level">
-					<option value=""><?php esc_html_e( 'Select a Level', 'paid-memberships-pro' ); ?></option>
+					<option value=""><?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?></option>
 					<?php foreach ( $levels as $level ) { ?>
 						<option
 							value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
 					<?php } ?>
 				</select>
+				<span id="filterby"><?php esc_html_e( 'filter by ', 'paid-memberships-pro' ); ?></span>
 				<select id="status" name="status">
-					<option value=""><?php esc_html_e( 'Select a Status', 'paid-memberships-pro' ); ?></option>
+					<option value=""><?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?></option>
 					<option value="active" <?php selected( $status, 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
 					<option value="cancelled" <?php selected( $status, 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
 					<option value="sync_error" <?php selected( $status, 'sync_error' ); ?>><?php esc_html_e( 'Sync Error', 'paid-memberships-pro' ); ?></option>
@@ -447,28 +449,9 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	public function column_id( $item ) {
 		?>
 		<strong><a href="admin.php?page=pmpro-subscriptions&id=<?php echo esc_attr( $item->get_id() ); ?>"><?php echo esc_html( $item->get_subscription_transaction_id() ); ?></a></strong>
-		<p>
-			<?php
-			if ( ! empty( $item->get_gateway() ) ) {
-				if ( ! empty( $pmpro_gateways[ $item->get_gateway() ] ) ) {
-					echo $pmpro_gateways[ $item->get_gateway() ];
-				} else {
-					echo esc_html( ucwords( $item->get_gateway() ) );
-				}
-				if ( $item->get_gateway_environment() == 'sandbox' ) {
-					echo ' (test)';
-				}
-			}
-			?>
-		</p>
 		<div class="row-actions">
 			<?php
 			$actions = [
-				'id'	 => sprintf(
-					// translators: %s is the Subscription ID.
-					__( 'ID: %s', 'paid-memberships-pro' ),
-					esc_attr( $item->get_id() )
-				),
 				'view' => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
 					esc_attr__( 'View Details', 'paid-memberships-pro' ),
@@ -555,14 +538,34 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Renders the columns subscription billing information
+	 * Renders the columns subscription fee information
 	 *
 	 * @param object  $item
 	 *
 	 * @return string
 	 */
-	public function column_billing( $item ) {
+	public function column_fee( $item ) {
 		echo esc_html( $item->get_cost_text() );
+	}
+
+	/**
+	 * Renders the columns gateway information
+	 *
+	 * @param object  $item
+	 *
+	 * @return string
+	 */
+	public function column_gateway( $item ) {
+		if ( ! empty( $item->get_gateway() ) ) {
+			if ( ! empty( $pmpro_gateways[ $item->get_gateway() ] ) ) {
+				echo $pmpro_gateways[ $item->get_gateway() ];
+			} else {
+				echo esc_html( ucwords( $item->get_gateway() ) );
+			}
+			if ( $item->get_gateway_environment() == 'sandbox' ) {
+				echo ' (test)';
+			}
+		}
 	}
 
 	/**
@@ -599,7 +602,12 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_startdate( $item ) {
-		echo esc_html( $item->get_startdate( get_option( 'date_format' ) ) );
+		echo esc_html( sprintf(
+			// translators: %1$s is the date and %2$s is the time.
+			__( '%1$s at %2$s', 'paid-memberships-pro' ),
+			esc_html( $item->get_startdate( get_option( 'date_format' ) ) ),
+			esc_html( $item->get_startdate( get_option( 'time_format' ) ) )
+		) );
 	}
 
 	/**
@@ -610,9 +618,17 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_next_payment_date( $item ) {
-		$next_payment_date = $item->get_next_payment_date( get_option( 'date_format' ) );
-		if ( ! empty( $next_payment_date ) ) {
-			echo esc_html( $next_payment_date );
+		$date_to_show = $item->get_next_payment_date( get_option( 'date_format' ) );
+		$time_to_show = $item->get_next_payment_date( get_option( 'time_format' ) );
+		if ( ! empty( $date_to_show ) ) {
+			echo esc_html(
+				sprintf(
+					// translators: %1$s is the date and %2$s is the time.
+					__( '%1$s at %2$s', 'paid-memberships-pro' ),
+					esc_html( $date_to_show ),
+					esc_html( $time_to_show )
+				)
+			);
 		} else {
 			esc_html_e( '&#8212;', 'paid-memberships-pro' );
 		}
@@ -626,9 +642,17 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_enddate( $item ) {
-		$enddate = $item->get_enddate( get_option( 'date_format' ) );
-		if ( ! empty( $enddate ) ) {
-			echo esc_html( $enddate );
+		$date_to_show = $item->get_enddate( get_option( 'date_format' ) );
+		$time_to_show = $item->get_enddate( get_option( 'time_format' ) );
+		if ( ! empty( $date_to_show ) ) {
+			echo esc_html(
+				sprintf(
+					// translators: %1$s is the date and %2$s is the time.
+					__( '%1$s at %2$s', 'paid-memberships-pro' ),
+					esc_html( $date_to_show ),
+					esc_html( $time_to_show )
+				)
+			);
 		} else {
 			esc_html_e( '&#8212;', 'paid-memberships-pro' );
 		}

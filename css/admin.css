@@ -504,6 +504,10 @@ body[class*="memberships_page_pmpro-"] {
 	text-wrap: nowrap;
 }
 
+td > .pmpro_tag {
+	text-wrap: wrap;
+}
+
 .pmpro_tag-has_icon:before {
 	font: normal 12px/1 dashicons;
 	margin-right: 3px;
