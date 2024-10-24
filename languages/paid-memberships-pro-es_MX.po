@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.3\n"
+"Project-Id-Version: Paid Memberships Pro 3.3.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-16T17:55:24+00:00\n"
+"POT-Creation-Date: 2024-10-24T17:05:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -40,10 +40,12 @@ msgid "Important Notice: Paid Memberships Pro v3.2 Update"
 msgstr ""
 
 #: includes/functions.php:4811
+#: includes/functions.php:4821
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr ""
 
 #: includes/functions.php:4804
+#: includes/functions.php:4814
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr ""
 
@@ -151,14 +153,17 @@ msgid "Please complete the security check."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2322
+#: classes/gateways/class.pmprogateway_stripe.php:2340
 msgid "Your site is using API keys to authenticate with Stripe."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2315
+#: classes/gateways/class.pmprogateway_stripe.php:2333
 msgid "Legacy API keys will eventually no longer be supported. To continue processing payments with Stripe, you may connect via Stripe Connect below or connect using \"restricted API keys\"."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2302
+#: classes/gateways/class.pmprogateway_stripe.php:2320
 msgid "Connected with API Keys"
 msgstr ""
 
@@ -492,18 +497,22 @@ msgid "Show Password"
 msgstr ""
 
 #: includes/functions.php:2188
+#: includes/functions.php:2198
 msgid "Already a member?"
 msgstr ""
 
 #: includes/functions.php:2140
+#: includes/functions.php:2150
 msgid " You must be a !!levels!! member to access this content."
 msgstr ""
 
 #: includes/functions.php:2139
+#: includes/functions.php:2149
 msgid "!!levels!! Membership Required"
 msgstr ""
 
 #: includes/functions.php:2133
+#: includes/functions.php:2143
 msgid " You must be a member to access this content."
 msgstr ""
 
@@ -558,6 +567,7 @@ msgid "Restrict a Course"
 msgstr ""
 
 #: includes/adminpages.php:638
+#: includes/adminpages.php:650
 msgid "Membership Orders Page"
 msgstr ""
 
@@ -748,6 +758,7 @@ msgstr ""
 
 #: adminpages/securitysettings.php:92
 #: includes/adminpages.php:77
+#: includes/adminpages.php:78
 msgid "Security Settings"
 msgstr ""
 
@@ -765,6 +776,7 @@ msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:18
 #: adminpages/subscriptions.php:85
+#: adminpages/subscriptions.php:355
 msgid "Edit Customer in Stripe"
 msgstr ""
 
@@ -886,6 +898,7 @@ msgstr ""
 
 #: adminpages/designsettings.php:53
 #: includes/adminpages.php:81
+#: includes/adminpages.php:82
 msgid "Design Settings"
 msgstr ""
 
@@ -930,10 +943,12 @@ msgid "Membership Required Message"
 msgstr ""
 
 #: adminpages/admin_header.php:301
+#: adminpages/admin_header.php:305
 msgid "Design"
 msgstr ""
 
 #: adminpages/admin_header.php:285
+#: adminpages/admin_header.php:289
 msgid "Security"
 msgstr ""
 
@@ -954,10 +969,12 @@ msgstr "ID: %d"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:123
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:203
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:207
 msgid "test"
 msgstr "prueba"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2151
+#: classes/gateways/class.pmprogateway_stripe.php:2161
 msgid "Stripe login credentials are not set."
 msgstr "Las credenciales de inicio de sesión de Stripe no están establecidas."
 
@@ -1915,6 +1932,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: includes/profile.php:864
+#: classes/class-pmpro-subscriptions-list-table.php:238
 msgid "No subscriptions found."
 msgstr "No se encontraron suscripciones."
 
@@ -2039,30 +2057,37 @@ msgid "Security check failed."
 msgstr "Falló la comprobación de seguridad."
 
 #: includes/adminpages.php:473
+#: includes/adminpages.php:485
 msgid "View without membership access"
 msgstr "Ver sin acceso de membresía"
 
 #: includes/adminpages.php:472
+#: includes/adminpages.php:484
 msgid "View with current membership levels"
 msgstr "Ver con los niveles actuales de membresía"
 
 #: includes/adminpages.php:471
+#: includes/adminpages.php:483
 msgid "View with membership access"
 msgstr "Ver con acceso de membresía"
 
 #: includes/adminpages.php:469
+#: includes/adminpages.php:481
 msgid "Preview your membership site by changing the selected view below."
 msgstr "Previsualiza tu sitio de membresía cambiando la vista seleccionada abajo."
 
 #: includes/adminpages.php:451
+#: includes/adminpages.php:463
 msgid "View: With Access"
 msgstr "Vista: Con Acceso"
 
 #: includes/adminpages.php:453
+#: includes/adminpages.php:465
 msgid "View: My Access"
 msgstr "Vista: Mi Acceso"
 
 #: includes/adminpages.php:449
+#: includes/adminpages.php:461
 msgid "View: No Access"
 msgstr "Vista: Sin acceso"
 
@@ -2214,6 +2239,8 @@ msgid "Discount codes per page"
 msgstr "Códigos de descuento por página"
 
 #: adminpages/subscriptions.php:316
+#: adminpages/subscriptions.php:548
+#: classes/class-pmpro-subscriptions-list-table.php:144
 msgid "Subscription ID"
 msgstr "ID de suscripción"
 
@@ -2225,6 +2252,7 @@ msgstr[1] ""
 
 #: adminpages/subscriptions.php:256
 #: includes/profile.php:838
+#: adminpages/subscriptions.php:488
 msgid "Next Payment Date"
 msgstr "Próxima Fecha de Pago"
 
@@ -2233,6 +2261,7 @@ msgid "Update Subscription Level"
 msgstr "Actualizar Nivel de Suscripción"
 
 #: adminpages/subscriptions.php:186
+#: adminpages/subscriptions.php:448
 msgid "This user does not have the membership level that this subscription is for."
 msgstr "Este usuario no tiene el nivel de membresía para esta suscripción."
 
@@ -2241,6 +2270,7 @@ msgid "Change Subscription Level"
 msgstr "Cambiar de Nivel de Suscripción"
 
 #: adminpages/subscriptions.php:157
+#: adminpages/subscriptions.php:427
 msgid "Unknown Member"
 msgstr "Miembro desconocido"
 
@@ -2249,23 +2279,31 @@ msgstr "Miembro desconocido"
 #: includes/adminpages.php:304
 #: includes/adminpages.php:729
 #: includes/profile.php:1334
+#: adminpages/subscriptions.php:397
+#: includes/adminpages.php:316
+#: includes/adminpages.php:741
 msgid "Edit Member"
 msgstr "Editar Miembro"
 
 #: adminpages/subscriptions.php:120
+#: adminpages/subscriptions.php:390
 msgid "Member: %s"
 msgstr "Miembro: %s"
 
 #: adminpages/subscriptions.php:110
+#: adminpages/subscriptions.php:380
 msgid "Subscription Information"
 msgstr "Información de suscripción"
 
 #: adminpages/subscriptions.php:70
+#: adminpages/subscriptions.php:340
 msgid "Please confirm that you want to cancel this subscription. This action stops any future charges at the gateway but does not cancel the corresponding membership level."
 msgstr "Por favor, confirma que deseas cancelar esta suscripción. Esta acción detiene cualquier cargo futuro en la plataforma de pago, pero no cancela el nivel de membresía correspondiente."
 
 #: adminpages/subscriptions.php:59
 #: adminpages/subscriptions.php:61
+#: adminpages/subscriptions.php:329
+#: adminpages/subscriptions.php:331
 msgid "Sync With Gateway"
 msgstr "Sincronizar con la plataforma de pago"
 
@@ -2300,6 +2338,9 @@ msgstr "Ajustes de la Página de Membresía Principal"
 
 #: adminpages/orders.php:845
 #: adminpages/subscriptions.php:31
+#: adminpages/subscriptions.php:228
+#: adminpages/subscriptions.php:230
+#: adminpages/subscriptions.php:301
 msgid "View Subscription"
 msgstr "Ver suscripción"
 
@@ -2518,42 +2559,62 @@ msgstr "Términos de Servicio"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:147
 #: adminpages/subscriptions.php:235
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:151
+#: adminpages/subscriptions.php:467
+#: classes/class-pmpro-subscriptions-list-table.php:395
 msgid "Sync Error"
 msgstr "Error de sincronización"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:137
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:141
+#: classes/class-pmpro-subscriptions-list-table.php:532
 msgid "Membership Ended"
 msgstr "La membresía ha finalizado"
 
 #. translators: %d is the level ID.
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:124
 #: adminpages/subscriptions.php:50
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:128
+#: adminpages/subscriptions.php:313
 msgid "Level ID: %d [deleted]"
 msgstr "Nivel ID: %d [eliminado]"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:104
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:108
+#: classes/class-pmpro-subscriptions-list-table.php:151
 msgid "Next Payment"
 msgstr "Próximo pago"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:101
 #: adminpages/subscriptions.php:243
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:105
+#: adminpages/subscriptions.php:475
+#: classes/class-pmpro-subscriptions-list-table.php:150
 msgid "Created"
 msgstr "Creado"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:70
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:74
 msgid "This user does not have any subscriptions."
 msgstr "Este usuario no tiene ninguna suscripción."
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:45
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:49
 msgid "Cancelled Subscriptions (%d)"
 msgstr "Subscripciones canceladas (%d)"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:26
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:30
 msgid "Active Subscriptions (%d)"
 msgstr "Subscripciones activas (%d)"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:9
 #: includes/adminpages.php:104
+#: adminpages/admin_header.php:243
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:10
+#: adminpages/subscriptions.php:568
+#: includes/adminpages.php:60
+#: includes/adminpages.php:232
 msgid "Subscriptions"
 msgstr "Subscripciones"
 
@@ -2679,6 +2740,8 @@ msgstr "Cancelar la suscripción del usuario para este nivel."
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:259
 #: adminpages/subscriptions.php:67
 #: adminpages/subscriptions.php:71
+#: adminpages/subscriptions.php:337
+#: adminpages/subscriptions.php:341
 msgid "Cancel Subscription"
 msgstr "Cancelar suscripción"
 
@@ -2754,6 +2817,7 @@ msgstr "Editar Menú del Área de Miembros"
 #: adminpages/member-edit.php:90
 #: includes/adminpages.php:105
 #: includes/adminpages.php:148
+#: includes/adminpages.php:106
 msgid "Add Member"
 msgstr "Agregar Miembro"
 
@@ -2817,14 +2881,17 @@ msgid "Edit Email Templates"
 msgstr "Editar plantillas de correo electrónico"
 
 #: adminpages/discountcodes.php:539
+#: adminpages/discountcodes.php:553
 msgid "Membership Level Settings"
 msgstr "Ajustes de Nivel de Membresía"
 
 #: adminpages/discountcodes.php:436
+#: adminpages/discountcodes.php:439
 msgid "General Discount Code Settings"
 msgstr "Ajustes generales de código de descuento"
 
 #: adminpages/admin_header.php:266
+#: adminpages/admin_header.php:270
 msgid "Membership Settings Menu"
 msgstr "Menú de configuración de membresía"
 
@@ -2833,23 +2900,29 @@ msgid "Memberships Area Menu"
 msgstr "Menú de Área de Membresías"
 
 #: includes/functions.php:4830
+#: includes/functions.php:4840
 msgid "Invalid file submission."
 msgstr "Envío de archivo no válido."
 
 #: includes/functions.php:4785
+#: includes/functions.php:4795
 msgid "Invalid field input."
 msgstr "Campo de entrada no válido."
 
 #: includes/functions.php:4770
 #: includes/functions.php:4791
+#: includes/functions.php:4780
+#: includes/functions.php:4801
 msgid "Invalid file type."
 msgstr "Tipo de archivo no válido."
 
 #: includes/functions.php:4763
+#: includes/functions.php:4773
 msgid "No file name found."
 msgstr "No se ha encontrado ningún nombre de archivo."
 
 #: includes/functions.php:4757
+#: includes/functions.php:4767
 msgid "No file was uploaded."
 msgstr "No se ha subido ningún archivo."
 
@@ -2940,6 +3013,7 @@ msgid "Next Step: Register a Stripe Webhook."
 msgstr "Siguiente paso: Registra un Webhook de Stripe."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2353
+#: classes/gateways/class.pmprogateway_stripe.php:2371
 msgid "This will disconnect all sites using this Stripe account from Stripe in test mode only."
 msgstr "Esto desconectará todos los sitios que usan esta cuenta de Stripe de Stripe solo en modo de prueba."
 
@@ -3003,6 +3077,7 @@ msgid "Potential Spam Checkouts"
 msgstr "Posibles pagos de spam"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2386
+#: classes/gateways/class.pmprogateway_stripe.php:2404
 msgid "Learn More"
 msgstr "Obtener más información"
 
@@ -3350,10 +3425,12 @@ msgid "Spam Protection Disabled"
 msgstr "Protección antispam desactivada"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2921
+#: classes/gateways/class.pmprogateway_stripe.php:2939
 msgid "Cannot find payment method."
 msgstr "No se ha encontrado el método de pago."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2032
+#: classes/gateways/class.pmprogateway_stripe.php:2042
 msgid "No subscription transaction ID."
 msgstr "No hay ID de transacción de la suscripción."
 
@@ -3437,6 +3514,7 @@ msgid "Site URL Change Detected"
 msgstr "Se ha detectado un cambio en la URL del sitio"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2382
+#: classes/gateways/class.pmprogateway_stripe.php:2400
 msgid "Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges."
 msgstr "Nota: Estás utilizando la integración gratuita de la pasarela de pago Stripe. No hay ninguna tarifa adicional para el procesamiento de pagos por encima de lo que cobre Stripe."
 
@@ -3761,6 +3839,8 @@ msgstr "ilimitados"
 
 #: adminpages/admin_header.php:259
 #: includes/adminpages.php:101
+#: adminpages/admin_header.php:263
+#: includes/adminpages.php:103
 msgid "Setup Wizard"
 msgstr "Asistente de configuración"
 
@@ -4235,6 +4315,8 @@ msgstr "Gestionar los campos de usuario"
 #: adminpages/admin_header.php:297
 #: adminpages/userfields.php:114
 #: includes/adminpages.php:80
+#: adminpages/admin_header.php:301
+#: includes/adminpages.php:81
 msgid "User Fields"
 msgstr "Campos de usuario"
 
@@ -4309,10 +4391,12 @@ msgid "Search Results"
 msgstr "Resultados de la búsqueda"
 
 #: includes/adminpages.php:646
+#: includes/adminpages.php:658
 msgid "Paid Memberships Pro Login Page"
 msgstr "Página de acceso de Paid Memberships Pro"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2323
+#: classes/gateways/class.pmprogateway_stripe.php:2341
 msgid "In order to complete the transition to using Stripe API keys, please click the \"Disconnect from Stripe\" button below."
 msgstr ""
 
@@ -4321,6 +4405,7 @@ msgid "Order %s deleted successfully."
 msgstr "Pedido %s borrado correctamente."
 
 #: includes/functions.php:2132
+#: includes/functions.php:2142
 msgid "Membership Required"
 msgstr ""
 
@@ -4473,10 +4558,13 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3876
 #: classes/gateways/class.pmprogateway_stripe.php:3878
+#: classes/gateways/class.pmprogateway_stripe.php:3894
+#: classes/gateways/class.pmprogateway_stripe.php:3896
 msgid "Admin: There was a problem processing the refund"
 msgstr "Administración: Ha habido un problema al procesar el reembolso"
 
 #: classes/gateways/class.pmprogateway_stripe.php:3872
+#: classes/gateways/class.pmprogateway_stripe.php:3890
 msgid "Admin: An error occurred while attempting to process this refund."
 msgstr "Administrador: Se ha producido un error al intentar procesar este reembolso."
 
@@ -4579,6 +4667,7 @@ msgstr "Administración: Ha habido un problema al procesar un reembolso para el 
 #. translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1284
 #: classes/gateways/class.pmprogateway_stripe.php:3860
+#: classes/gateways/class.pmprogateway_stripe.php:3878
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr "Administración: Pedido reembolsado correctamente el %1$s para el ID de transacción %2$s por %3$s."
 
@@ -4748,6 +4837,14 @@ msgstr "Paid Memberships Pro - Ajustes de la pasarela de pago"
 #: includes/functions.php:641
 #: includes/profile.php:69
 #: includes/profile.php:735
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:186
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:225
+#: adminpages/subscriptions.php:480
+#: adminpages/subscriptions.php:493
+#: adminpages/subscriptions.php:507
+#: classes/class-pmpro-subscriptions-list-table.php:607
+#: classes/class-pmpro-subscriptions-list-table.php:627
+#: classes/class-pmpro-subscriptions-list-table.php:651
 msgid "%1$s at %2$s"
 msgstr "%1$s a las %2$s"
 
@@ -4759,11 +4856,14 @@ msgstr "Información adicional del pedido"
 #: adminpages/orders.php:839
 #: adminpages/subscriptions.php:296
 #: classes/class-pmpro-orders-list-table.php:1255
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:240
+#: adminpages/subscriptions.php:528
 msgid "View all orders for this subscription"
 msgstr "Ver todos los pedidos de esta suscripción"
 
 #: adminpages/orders.php:765
 #: adminpages/subscriptions.php:309
+#: adminpages/subscriptions.php:541
 msgid "Payment Gateway Information"
 msgstr "Información sobre la pasarela de pago"
 
@@ -4833,6 +4933,7 @@ msgid "ID: %s"
 msgstr "ID: %s"
 
 #: adminpages/discountcodes.php:722
+#: adminpages/discountcodes.php:736
 msgid "Save Code"
 msgstr "Guardar código"
 
@@ -4861,6 +4962,7 @@ msgid "Enable Tracking"
 msgstr "Activar el seguimiento"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2852
+#: classes/gateways/class.pmprogateway_stripe.php:2870
 msgid "Could not create price."
 msgstr "No se ha podido crear el precio."
 
@@ -4907,6 +5009,7 @@ msgid "Your <strong>%1$s</strong> key is active. %1$s accounts include access to
 msgstr "Tu clave <strong>%1$s</strong> está activa. Las cuentas %1$s incluyen acceso a documentación y descargas gratuitas."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2555
+#: classes/gateways/class.pmprogateway_stripe.php:2573
 msgid "Error updating customer record with Stripe."
 msgstr "Error al actualizar el registro del cliente con Stripe."
 
@@ -4922,10 +5025,12 @@ msgid "Select:"
 msgstr "Seleccionar:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2915
+#: classes/gateways/class.pmprogateway_stripe.php:2933
 msgid "Cannot get price."
 msgstr "No se puede obtener el precio."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2909
+#: classes/gateways/class.pmprogateway_stripe.php:2927
 msgid "Cannot find product for membership level."
 msgstr "No se puede encontrar el producto para el nivel de membresía."
 
@@ -4935,6 +5040,7 @@ msgstr "Error al crear la suscripción para el cliente."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1794
 #: classes/gateways/class.pmprogateway_stripe.php:2046
+#: classes/gateways/class.pmprogateway_stripe.php:2056
 msgid "Error retrieving payment method."
 msgstr "Error al recuperar el método de pago."
 
@@ -5126,10 +5232,12 @@ msgid "Custom Level Confirmation Message"
 msgstr "Mensaje de confirmación de nivel personalizado"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2316
+#: classes/gateways/class.pmprogateway_stripe.php:2334
 msgid "Read the documentation on switching to Stripe Connect"
 msgstr "Lea la documentación sobre el cambio a Stripe Connect"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2300
+#: classes/gateways/class.pmprogateway_stripe.php:2318
 msgid "Connected with Legacy Keys"
 msgstr "Conectado con las claves heredadas"
 
@@ -5809,50 +5917,62 @@ msgid "Other Stripe Settings"
 msgstr "Otros ajustes de Stripe"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2298
+#: classes/gateways/class.pmprogateway_stripe.php:2316
 msgid "Test Mode:"
 msgstr "Modo de prueba:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2380
+#: classes/gateways/class.pmprogateway_stripe.php:2398
 msgid "Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license."
 msgstr "Nota: Estás usando la integración gratuita de la pasarela de pago de Stripe. Esto incluye una cuota adicional del %s por el procesamiento de pagos. Esta cuota se elimina al activar una licencia de PMPro premium."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2375
+#: classes/gateways/class.pmprogateway_stripe.php:2393
 msgid "Note: You have a valid license and are not charged additional platform fees for payment processing."
 msgstr "Nota: Tienes una licencia válida y no se te cobrarán cuotas de plataforma adicionales por el procesamiento de pagos."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2368
+#: classes/gateways/class.pmprogateway_stripe.php:2386
 msgid "Connect with Stripe"
 msgstr "Conectar con Stripe"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2351
+#: classes/gateways/class.pmprogateway_stripe.php:2369
 msgid "This will disconnect all sites using this Stripe account from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site."
 msgstr "Esto desconectará de Stripe todos los sitios que usen esta cuenta de Stripe. Los usuarios no podrán completar el pago de la membresía ni actualizar su información de facturación. Las suscripciones existentes no se verán afectadas en la pasarela, pero no se crearán nuevos pedidos periódicos en este sitio."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2347
+#: classes/gateways/class.pmprogateway_stripe.php:2365
 msgid "Disconnect From Stripe"
 msgstr "Desconectar de Stripe"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2331
+#: classes/gateways/class.pmprogateway_stripe.php:2349
 msgid "Stripe Connection"
 msgstr "Conección con Stripe"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2314
+#: classes/gateways/class.pmprogateway_stripe.php:2332
 msgid "Your site is using legacy API keys to authenticate with Stripe."
 msgstr "Tu sitio está usando claves API heredadas para identificarse con Stripe."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2306
+#: classes/gateways/class.pmprogateway_stripe.php:2324
 msgid "Not Connected"
 msgstr "No conectado"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2304
+#: classes/gateways/class.pmprogateway_stripe.php:2322
 msgid "Connected"
 msgstr "Conectado"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2298
+#: classes/gateways/class.pmprogateway_stripe.php:2316
 msgid "Live Mode:"
 msgstr "Modo en vivo:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2295
+#: classes/gateways/class.pmprogateway_stripe.php:2313
 msgid "Stripe Connect Settings"
 msgstr "Ajustes de conexión a Stripe"
 
@@ -5866,6 +5986,7 @@ msgstr "Total pagado"
 
 #: adminpages/emailtemplates.php:138
 #: includes/adminpages.php:287
+#: includes/adminpages.php:299
 msgid "Member"
 msgstr "Miembro"
 
@@ -6026,11 +6147,14 @@ msgstr ""
 
 #: adminpages/discountcodes.php:694
 #: adminpages/levels/edit-level.php:550
+#: adminpages/discountcodes.php:708
 msgid "Hour(s)"
 msgstr "Hora(s)"
 
 #: adminpages/admin_header.php:293
 #: includes/adminpages.php:79
+#: adminpages/admin_header.php:297
+#: includes/adminpages.php:80
 msgid "Email Templates"
 msgstr "Plantillas de correo electrónico"
 
@@ -6133,6 +6257,7 @@ msgstr "Se ha configurado un webhook en Stripe, pero está desactivado."
 
 #: adminpages/discountcodes.php:632
 #: adminpages/levels/edit-level.php:391
+#: adminpages/discountcodes.php:646
 msgid "Stripe integration does not allow billing periods longer than 1 year."
 msgstr "La integración de Stripe no permite periodos de facturación mayores a 1 año."
 
@@ -6659,6 +6784,7 @@ msgstr "Registro"
 
 #: includes/functions.php:2142
 #: includes/login.php:856
+#: includes/functions.php:2152
 msgid "Join Now"
 msgstr "Únete ahora"
 
@@ -6785,6 +6911,7 @@ msgstr "Bienvenido"
 
 #: adminpages/pagesettings.php:420
 #: includes/adminpages.php:650
+#: includes/adminpages.php:662
 msgid "Member Profile Edit Page"
 msgstr "Página de edición del perfil de miembro"
 
@@ -6826,6 +6953,7 @@ msgid "Require Membership Level"
 msgstr "Requiere nivel de membresía"
 
 #: includes/adminpages.php:670
+#: includes/adminpages.php:682
 msgid "Members Per Page"
 msgstr "Miembros por página"
 
@@ -6848,6 +6976,7 @@ msgstr "Editar pedido"
 #: adminpages/subscriptions.php:132
 #: classes/class-pmpro-members-list-table.php:575
 #: classes/class-pmpro-subscription.php:1226
+#: adminpages/subscriptions.php:402
 msgid "Edit User"
 msgstr "Editar usuario"
 
@@ -6871,6 +7000,11 @@ msgstr "Error"
 #: includes/profile.php:779
 #: includes/profile.php:789
 #: pages/invoice.php:96
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:132
+#: classes/class-pmpro-subscriptions-list-table.php:522
+#: classes/class-pmpro-subscriptions-list-table.php:633
+#: classes/class-pmpro-subscriptions-list-table.php:657
+#: classes/class-pmpro-subscriptions-list-table.php:674
 msgid "&#8212;"
 msgstr "&#8212;"
 
@@ -6973,10 +7107,14 @@ msgstr "Opcional: Personaliza tu página de niveles de membresía mediante la ex
 #: adminpages/admin_header.php:255
 #: includes/adminpages.php:71
 #: includes/adminpages.php:275
+#: adminpages/admin_header.php:259
+#: includes/adminpages.php:72
+#: includes/adminpages.php:287
 msgid "License"
 msgstr "Licencia"
 
 #: paid-memberships-pro.php:197
+#: paid-memberships-pro.php:198
 msgid "Default"
 msgstr "Predeterminado"
 
@@ -6994,10 +7132,12 @@ msgid "Payment action required for your %s membership"
 msgstr "Acción de pago necesaria para tu membresía en %s"
 
 #: classes/gateways/class.pmprogateway_stripe.php:3013
+#: classes/gateways/class.pmprogateway_stripe.php:3031
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr "Para finalizar la configuración de tu suscripción, es necesaria la identificación como cliente. Por favor, complete los pasos de verificación emitidos por tu proveedor de pago."
 
 #: classes/gateways/class.pmprogateway_stripe.php:3486
+#: classes/gateways/class.pmprogateway_stripe.php:3504
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr "Para finalizar esta transacción, es necesaria la identificación del cliente. Por favor, completa los pasos de verificación emitidos por tu proveedor de pago."
 
@@ -7394,6 +7534,7 @@ msgid "PMPro v2.0 Update"
 msgstr "Actualización v2.0 de PMPro"
 
 #: includes/functions.php:2773
+#: includes/functions.php:2783
 msgid "Sign Up Now"
 msgstr "Regístrate ahora"
 
@@ -7521,6 +7662,7 @@ msgstr "Generar páginas de membresía"
 
 #: adminpages/dashboard.php:130
 #: includes/functions.php:2136
+#: includes/functions.php:2146
 msgid "View Membership Levels"
 msgstr "Ver niveles de membresía"
 
@@ -7561,18 +7703,22 @@ msgid "With a Discount Code"
 msgstr "Con un código de descuento"
 
 #: adminpages/discountcodes.php:741
+#: adminpages/discountcodes.php:755
 msgid "Documentation: Discount Codes"
 msgstr "Documentación: Códigos de descuento"
 
 #: adminpages/discountcodes.php:740
+#: adminpages/discountcodes.php:754
 msgid "Create a Discount Code"
 msgstr "Crear un código de descuento"
 
 #: adminpages/discountcodes.php:739
+#: adminpages/discountcodes.php:753
 msgid "Discount codes allow you to override your membership level's default pricing."
 msgstr "Los códigos de descuento te permiten anular el precio por defecto de tu nivel de membresía."
 
 #: adminpages/discountcodes.php:738
+#: adminpages/discountcodes.php:752
 msgid "No Discount Codes Found"
 msgstr "No se han encontrado códigos de descuento"
 
@@ -7626,12 +7772,16 @@ msgstr "Marca esto para incluir este mensaje en el correo electrónico de confir
 
 #: adminpages/discountcodes.php:350
 #: adminpages/levels/save-level.php:127
+#: adminpages/discountcodes.php:353
 msgid "WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">see our post here</a>."
 msgstr "ADVERTENCIA: Se ha establecido un nivel con un importe de facturación periódico y una fecha de caducidad. Solo necesitas establecer uno de estos a menos que realmente quieras que esta membresía caduque después de un período de tiempo específico. Para obtener más información, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">consulta nuestra entrada aquí</a>."
 
 #: adminpages/admin_header.php:247
 #: includes/adminpages.php:61
 #: includes/adminpages.php:244
+#: adminpages/admin_header.php:251
+#: includes/adminpages.php:62
+#: includes/adminpages.php:256
 msgid "Settings"
 msgstr "Ajustes"
 
@@ -7703,32 +7853,38 @@ msgid "Kenyan Shilling"
 msgstr "Chelín keniano"
 
 #: includes/adminpages.php:642
+#: includes/adminpages.php:654
 msgid "Membership Levels Page"
 msgstr "Página de niveles de membresía"
 
 #: includes/adminpages.php:634
 #: blocks/build/confirmation-page/index.js:1
 #: blocks/src/confirmation-page/edit.js:26
+#: includes/adminpages.php:646
 msgid "Membership Confirmation Page"
 msgstr "Página de confirmación de la membresía"
 
 #: includes/adminpages.php:630
+#: includes/adminpages.php:642
 msgid "Membership Checkout Page"
 msgstr "Página de pago de la membresía"
 
 #: includes/adminpages.php:626
 #: blocks/build/cancel-page/index.js:1
 #: blocks/src/cancel-page/edit.js:26
+#: includes/adminpages.php:638
 msgid "Membership Cancel Page"
 msgstr "Página de cancelación de la membresía"
 
 #: includes/adminpages.php:622
+#: includes/adminpages.php:634
 msgid "Membership Billing Information Page"
 msgstr "Página de información de facturación de membresía"
 
 #: includes/adminpages.php:618
 #: blocks/build/account-page/index.js:1
 #: blocks/src/account-page/edit.js:58
+#: includes/adminpages.php:630
 msgid "Membership Account Page"
 msgstr "Página de la cuenta de membresía"
 
@@ -7910,6 +8066,7 @@ msgstr "Consentimiento de los términos del servicio"
 #: classes/class-pmpro-orders-list-table.php:1066
 #: adminpages/dashboard.php:353
 #: adminpages/dashboard.php:368
+#: classes/class-pmpro-subscriptions-list-table.php:503
 msgid "none"
 msgstr "ninguno"
 
@@ -7937,6 +8094,8 @@ msgstr "Caducada"
 #: classes/class-pmpro-admin-activity-email.php:121
 #: classes/class-pmpro-members-list-table.php:158
 #: classes/class-pmpro-orders-list-table.php:360
+#: classes/class-pmpro-subscriptions-list-table.php:394
+#: classes/class-pmpro-subscriptions-list-table.php:579
 msgid "Cancelled"
 msgstr "Cancelada"
 
@@ -8013,6 +8172,7 @@ msgstr "Documentación"
 #: adminpages/pagesettings.php:108
 #: adminpages/paymentsettings.php:19
 #: adminpages/securitysettings.php:14
+#: adminpages/discountcodes.php:306
 msgid "Are you sure you want to do that? Try again."
 msgstr "¿Seguro que quieres hacer esto? Inténtalo de nuevo."
 
@@ -9219,14 +9379,17 @@ msgid "Please complete all required fields."
 msgstr "Por favor, completa todos los campos obligatorios."
 
 #: paid-memberships-pro.php:224
+#: paid-memberships-pro.php:225
 msgid "Once a month"
 msgstr "Una vez al mes"
 
 #: paid-memberships-pro.php:191
+#: paid-memberships-pro.php:192
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr "PayPal Payflow Pro/PayPal Pro"
 
 #: paid-memberships-pro.php:187
+#: paid-memberships-pro.php:188
 msgid "Testing Only"
 msgstr "Solo prueba"
 
@@ -9341,6 +9504,7 @@ msgstr "Confirma tu contraseña"
 
 #: includes/functions.php:2188
 #: pages/checkout.php:317
+#: includes/functions.php:2198
 msgid "Log in here"
 msgstr "logeate aquí"
 
@@ -9500,6 +9664,8 @@ msgstr ""
 #: shortcodes/pmpro_account.php:371
 #: adminpages/dashboard.php:254
 #: adminpages/dashboard.php:324
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:104
+#: classes/class-pmpro-subscriptions-list-table.php:146
 msgid "Level"
 msgstr "Nivel"
 
@@ -9605,18 +9771,22 @@ msgid "None"
 msgstr "Ninguno"
 
 #: includes/functions.php:2749
+#: includes/functions.php:2759
 msgid "Sign Up for !!name!! Now"
 msgstr "Regístrate en !!name!! ya"
 
 #: includes/functions.php:2031
+#: includes/functions.php:2041
 msgid "and"
 msgstr "y"
 
 #: includes/functions.php:1997
+#: includes/functions.php:2007
 msgid "This discount code is okay."
 msgstr "El código de descuento es válido."
 
 #: includes/functions.php:1959
+#: includes/functions.php:1969
 msgid "This discount code does not apply to this membership level."
 msgstr "Este código de descuento no se puede aplicar a este nivel de membresía."
 
@@ -9899,18 +10069,22 @@ msgid "US Dollars (&#36;)"
 msgstr "Dólar americano (&#36;)"
 
 #: includes/adminpages.php:709
+#: includes/adminpages.php:721
 msgid "Support"
 msgstr "Soporte"
 
 #: includes/adminpages.php:709
+#: includes/adminpages.php:721
 msgid "Visit Customer Support Forum"
 msgstr "Visita el foro de soporte al cliente"
 
 #: includes/adminpages.php:708
+#: includes/adminpages.php:720
 msgid "Docs"
 msgstr "Documentación"
 
 #: includes/adminpages.php:708
+#: includes/adminpages.php:720
 msgid "View PMPro Documentation"
 msgstr "Ver la documentación de PMPro"
 
@@ -9919,6 +10093,7 @@ msgid "<span class=\"ab-icon\"></span>Memberships"
 msgstr "<span class=\"ab-icon\"></span>Membresías"
 
 #: includes/adminpages.php:91
+#: includes/adminpages.php:93
 msgid "Updates Required"
 msgstr "Actualización necesaria"
 
@@ -9926,6 +10101,9 @@ msgstr "Actualización necesaria"
 #: adminpages/discountcodes.php:730
 #: classes/class-pmpro-site-health.php:81
 #: includes/adminpages.php:74
+#: adminpages/admin_header.php:277
+#: adminpages/discountcodes.php:744
+#: includes/adminpages.php:75
 msgid "Discount Codes"
 msgstr "Códigos de descuento"
 
@@ -9933,16 +10111,21 @@ msgstr "Códigos de descuento"
 #: adminpages/reports.php:46
 #: includes/adminpages.php:60
 #: includes/adminpages.php:232
+#: adminpages/admin_header.php:247
+#: includes/adminpages.php:61
+#: includes/adminpages.php:244
 msgid "Reports"
 msgstr "Informes"
 
 #: adminpages/wizard/payments.php:3
 #: includes/adminpages.php:76
+#: includes/adminpages.php:77
 msgid "Payment Settings"
 msgstr "Ajustes de pago"
 
 #: adminpages/pagesettings.php:183
 #: includes/adminpages.php:75
+#: includes/adminpages.php:76
 msgid "Page Settings"
 msgstr "Ajustes de página"
 
@@ -10021,14 +10204,17 @@ msgid "Error: "
 msgstr "Error: "
 
 #: classes/gateways/class.pmprogateway_stripe.php:2135
+#: classes/gateways/class.pmprogateway_stripe.php:2145
 msgid "Could not find the customer."
 msgstr "No se ha podido encontrar al cliente."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2119
+#: classes/gateways/class.pmprogateway_stripe.php:2129
 msgid "Could not cancel old subscription."
 msgstr "No se ha podido cancelar la suscripción antigua."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2566
+#: classes/gateways/class.pmprogateway_stripe.php:2584
 msgid "Error creating customer record with Stripe."
 msgstr "Error al crear el registro del cliente con Stripe."
 
@@ -10055,11 +10241,13 @@ msgstr "Clave secreta"
 #: adminpages/wizard/payments.php:30
 #: classes/gateways/class.pmprogateway_stripe.php:232
 #: paid-memberships-pro.php:189
+#: paid-memberships-pro.php:190
 msgid "Stripe"
 msgstr "Stripe"
 
 #: classes/gateways/class.pmprogateway_paypalstandard.php:60
 #: paid-memberships-pro.php:192
+#: paid-memberships-pro.php:193
 msgid "PayPal Standard"
 msgstr "PayPal Standard"
 
@@ -10075,6 +10263,7 @@ msgstr "Para integrar completamente con Paypal, asegúrate de introducir tu IPN 
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:74
 #: paid-memberships-pro.php:190
+#: paid-memberships-pro.php:191
 msgid "PayPal Express"
 msgstr "PayPal Express"
 
@@ -10187,6 +10376,8 @@ msgstr "Instrucciones"
 #: classes/gateways/class.pmprogateway_check.php:50
 #: paid-memberships-pro.php:188
 #: paid-memberships-pro.php:202
+#: paid-memberships-pro.php:189
+#: paid-memberships-pro.php:203
 msgid "Pay by Check"
 msgstr "Pagar con cheque"
 
@@ -10295,6 +10486,7 @@ msgstr "Ajustes de Braintree"
 
 #: classes/gateways/class.pmprogateway_braintree.php:258
 #: paid-memberships-pro.php:193
+#: paid-memberships-pro.php:194
 msgid "Braintree Payments"
 msgstr "Pagos con Braintree"
 
@@ -10477,6 +10669,7 @@ msgid "Updating Paid Memberships Pro"
 msgstr "Actualizando Paid Memberships Pro"
 
 #: includes/functions.php:3225
+#: includes/functions.php:3235
 msgid "Subtotal"
 msgstr "Subtotal"
 
@@ -10719,6 +10912,7 @@ msgstr "Ajustes de moneda e impuestos"
 #: adminpages/paymentsettings.php:86
 #: adminpages/paymentsettings.php:99
 #: classes/class-pmpro-site-health.php:69
+#: adminpages/admin_header.php:285
 msgid "Payment Gateway"
 msgstr "Pasarela de pago"
 
@@ -10884,6 +11078,7 @@ msgstr "Suscripción"
 #: includes/profile.php:770
 #: adminpages/dashboard.php:351
 #: adminpages/dashboard.php:366
+#: classes/class-pmpro-subscriptions-list-table.php:501
 msgid "deleted"
 msgstr "borrado"
 
@@ -10896,6 +11091,9 @@ msgstr "IDs de transacción"
 #: pages/confirmation.php:108
 #: blocks/build/checkout-page/index.js:1
 #: blocks/src/checkout-page/edit.js:40
+#: adminpages/subscriptions.php:194
+#: adminpages/subscriptions.php:271
+#: adminpages/subscriptions.php:432
 msgid "Membership Level"
 msgstr "Nivel de membresía"
 
@@ -10905,6 +11103,7 @@ msgstr "Nivel de membresía"
 #: classes/class.pmproemail.php:173
 #: classes/gateways/class.pmprogateway_payflowpro.php:133
 #: adminpages/dashboard.php:323
+#: classes/class-pmpro-subscriptions-list-table.php:145
 msgid "User"
 msgstr "Usuario"
 
@@ -10913,10 +11112,12 @@ msgid "Search Orders"
 msgstr "Buscar pedidos"
 
 #: classes/class-pmpro-orders-list-table.php:658
+#: classes/class-pmpro-subscriptions-list-table.php:398
 msgid "Filter"
 msgstr "Filtro"
 
 #: classes/class-pmpro-orders-list-table.php:608
+#: classes/class-pmpro-subscriptions-list-table.php:390
 msgid "filter by "
 msgstr "filtrar por"
 
@@ -10959,6 +11160,9 @@ msgstr "Añadir nuevo pedido"
 #: classes/class-pmpro-site-health.php:77
 #: includes/adminpages.php:59
 #: includes/adminpages.php:220
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:109
+#: adminpages/subscriptions.php:522
+#: classes/class-pmpro-subscriptions-list-table.php:153
 msgid "Orders"
 msgstr "Pedidos"
 
@@ -11009,6 +11213,8 @@ msgstr "Generado por la pasarela. Útil para comparar suscripciones."
 #: classes/class-pmpro-subscription.php:1224
 #: includes/privacy.php:325
 #: includes/profile.php:834
+#: adminpages/subscriptions.php:155
+#: adminpages/subscriptions.php:253
 msgid "Subscription Transaction ID"
 msgstr "ID de transacción de la suscripción"
 
@@ -11038,6 +11244,9 @@ msgstr "Sandbox/Pruebas"
 #: adminpages/subscriptions.php:324
 #: includes/privacy.php:317
 #: includes/profile.php:837
+#: adminpages/subscriptions.php:179
+#: adminpages/subscriptions.php:261
+#: adminpages/subscriptions.php:556
 msgid "Gateway Environment"
 msgstr "Entorno de la pasarela"
 
@@ -11049,6 +11258,11 @@ msgstr "Entorno de la pasarela"
 #: classes/class-pmpro-subscription.php:1223
 #: includes/privacy.php:313
 #: includes/profile.php:836
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:107
+#: adminpages/subscriptions.php:161
+#: adminpages/subscriptions.php:257
+#: adminpages/subscriptions.php:552
+#: classes/class-pmpro-subscriptions-list-table.php:148
 msgid "Gateway"
 msgstr "Pasarela"
 
@@ -11073,6 +11287,8 @@ msgstr "Pasarela"
 #: shortcodes/pmpro_account.php:338
 #: shortcodes/pmpro_account.php:375
 #: adminpages/dashboard.php:326
+#: adminpages/subscriptions.php:456
+#: classes/class-pmpro-subscriptions-list-table.php:149
 msgid "Status"
 msgstr "Estado"
 
@@ -11120,12 +11336,14 @@ msgstr "Tipo de pago"
 #: pages/invoice.php:350
 #: shortcodes/pmpro_account.php:337
 #: adminpages/dashboard.php:325
+#: includes/functions.php:3263
 msgid "Total"
 msgstr "Total"
 
 #: adminpages/orders.php:643
 #: includes/functions.php:3232
 #: includes/privacy.php:281
+#: includes/functions.php:3242
 msgid "Tax"
 msgstr "Impuesto"
 
@@ -11178,6 +11396,8 @@ msgid "Membership Level ID"
 msgstr "ID de nivel de membresía"
 
 #: adminpages/orders.php:402
+#: adminpages/subscriptions.php:188
+#: adminpages/subscriptions.php:265
 msgid "User ID"
 msgstr "ID de usuario"
 
@@ -11222,6 +11442,9 @@ msgstr "No se han encontrado miembros."
 #: adminpages/subscriptions.php:269
 #: classes/class-pmpro-members-list-table.php:154
 #: includes/profile.php:839
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:108
+#: adminpages/subscriptions.php:501
+#: classes/class-pmpro-subscriptions-list-table.php:152
 msgid "Ended"
 msgstr "Finalizado"
 
@@ -11235,6 +11458,9 @@ msgstr "Se unió"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:102
 #: adminpages/subscriptions.php:284
 #: adminpages/wizard/memberships.php:48
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:106
+#: adminpages/subscriptions.php:516
+#: classes/class-pmpro-subscriptions-list-table.php:147
 msgid "Fee"
 msgstr "Cuota"
 
@@ -11281,6 +11507,7 @@ msgstr "Miembros cancelados"
 #: classes/class-pmpro-members-list-table.php:781
 #: classes/class.pmproemail.php:325
 #: classes/class.pmproemail.php:386
+#: classes/class-pmpro-subscriptions-list-table.php:384
 msgid "All Levels"
 msgstr "Todos los niveles"
 
@@ -11289,6 +11516,7 @@ msgstr "Todos los niveles"
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:81
+#: classes/class-pmpro-subscriptions-list-table.php:382
 msgid "Show"
 msgstr "Mostrar"
 
@@ -11343,6 +11571,7 @@ msgstr "Añadir nuevo nivel"
 #: pages/billing.php:376
 #: pages/cancel.php:153
 #: shortcodes/pmpro_account.php:261
+#: adminpages/discountcodes.php:737
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -11375,21 +11604,25 @@ msgstr "Otras opciones"
 
 #: adminpages/discountcodes.php:677
 #: adminpages/levels/edit-level.php:459
+#: adminpages/discountcodes.php:691
 msgid "Payflow integration currently does not support trial amounts greater than $0."
 msgstr "La integracion con Payflow actualmente no soporta cantidades para el periodo de prueba superiores a $0."
 
 #: adminpages/discountcodes.php:675
 #: adminpages/levels/edit-level.php:457
+#: adminpages/discountcodes.php:689
 msgid "Braintree integration currently does not support trial amounts greater than $0."
 msgstr "La integración con Braintree actualmente no soporta cantidades para el periodo de prueba superiores a 0$."
 
 #: adminpages/discountcodes.php:673
 #: adminpages/levels/edit-level.php:455
+#: adminpages/discountcodes.php:687
 msgid "Stripe integration currently does not support trial amounts greater than $0."
 msgstr "La integracion con Stripe actualmente no soporta cantidades para el periodo de prueba superiores a $0."
 
 #: adminpages/discountcodes.php:652
 #: adminpages/levels/edit-level.php:435
+#: adminpages/discountcodes.php:666
 msgid "2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount."
 msgstr "La integración con 2Checkout no admite periodos de prueba personalizados. Puedes realizar periodos de prueba estableciendo un pago inicial distinto del importe de facturación."
 
@@ -11409,11 +11642,13 @@ msgstr "Nota"
 
 #: adminpages/discountcodes.php:630
 #: adminpages/levels/edit-level.php:389
+#: adminpages/discountcodes.php:644
 msgid "Braintree integration currently only supports billing periods of \"Month\" or \"Year\"."
 msgstr "La integración con Braintree actualmente solo soporta periodos de facturación \"mensuales\" o \"anuales\"."
 
 #: adminpages/discountcodes.php:616
 #: adminpages/levels/edit-level.php:365
+#: adminpages/discountcodes.php:630
 msgid "per"
 msgstr "por"
 
@@ -11501,6 +11736,8 @@ msgstr "Por defecto, los correos electrónicos generados por el sistema se enví
 #: adminpages/admin_header.php:289
 #: adminpages/emailsettings.php:85
 #: includes/adminpages.php:78
+#: adminpages/admin_header.php:293
+#: includes/adminpages.php:79
 msgid "Email Settings"
 msgstr "Ajustes de correo electrónico"
 
@@ -11515,6 +11752,7 @@ msgstr "editar"
 
 #: adminpages/admin_header.php:269
 #: classes/class-pmpro-discount-code-list-table.php:140
+#: adminpages/admin_header.php:273
 msgid "Levels"
 msgstr "Niveles"
 
@@ -11533,67 +11771,80 @@ msgstr "Empieza"
 
 #: adminpages/discountcodes.php:757
 #: adminpages/reports/logins.php:118
+#: adminpages/discountcodes.php:771
 msgid "Search"
 msgstr "Buscar"
 
 #: adminpages/discountcodes.php:704
 #: adminpages/levels/edit-level.php:567
+#: adminpages/discountcodes.php:718
 msgid "Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires."
 msgstr "Establece la duración de acceso para la membresía. Ten en cuenta que cualquier pago futuro (suscripciones periódicas, si las hay) se cancelarán cuando la membresía caduque."
 
 #: adminpages/discountcodes.php:688
 #: adminpages/levels/edit-level.php:544
 #: pages/confirmation.php:121
+#: adminpages/discountcodes.php:702
 msgid "Expires In"
 msgstr "Caduca en"
 
 #: adminpages/discountcodes.php:684
 #: adminpages/levels/edit-level.php:530
+#: adminpages/discountcodes.php:698
 msgid "Check this to set when membership access expires."
 msgstr "Marca esto para establecer cuando caduca el acceso a la membresía."
 
 #: adminpages/discountcodes.php:683
 #: adminpages/levels/edit-level.php:527
+#: adminpages/discountcodes.php:697
 msgid "Membership Expiration"
 msgstr "Caducidad de la membresía"
 
 #: adminpages/discountcodes.php:671
 #: adminpages/levels/edit-level.php:453
+#: adminpages/discountcodes.php:685
 msgid "subscription payments"
 msgstr "pagos de suscripción"
 
 #: adminpages/discountcodes.php:669
 #: adminpages/levels/edit-level.php:451
+#: adminpages/discountcodes.php:683
 msgid "for the first"
 msgstr "por el/los primer/os"
 
 #: adminpages/discountcodes.php:658
 #: adminpages/levels/edit-level.php:440
+#: adminpages/discountcodes.php:672
 msgid "Trial Billing Amount"
 msgstr "Cantidad a facturar en el periodo de prueba"
 
 #: adminpages/discountcodes.php:650
 #: adminpages/levels/edit-level.php:432
+#: adminpages/discountcodes.php:664
 msgid "Check to add a custom trial period."
 msgstr "Marca esto para añadir un periodo de prueba personalizado."
 
 #: adminpages/discountcodes.php:648
 #: adminpages/levels/edit-level.php:428
+#: adminpages/discountcodes.php:662
 msgid "Custom Trial"
 msgstr "Periodo de prueba personalizado"
 
 #: adminpages/discountcodes.php:642
 #: adminpages/levels/edit-level.php:410
+#: adminpages/discountcodes.php:656
 msgid "The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite."
 msgstr "El número <strong>total</strong> de ciclos de facturación periódicos para este nivel, incluyendo el periodo de prueba (si existe), pero sin incluir el pago inicial. Establécelo a cero si la membresía es indefinida."
 
 #: adminpages/discountcodes.php:638
 #: adminpages/levels/edit-level.php:406
+#: adminpages/discountcodes.php:652
 msgid "Billing Cycle Limit"
 msgstr "Límite del ciclo de facturación"
 
 #: adminpages/discountcodes.php:628
 #: adminpages/levels/edit-level.php:387
+#: adminpages/discountcodes.php:642
 msgid "The amount to be billed one cycle after the initial payment."
 msgstr "El importe que se facturará un ciclo después del pago inicial."
 
@@ -11601,6 +11852,8 @@ msgstr "El importe que se facturará un ciclo después del pago inicial."
 #: adminpages/discountcodes.php:694
 #: adminpages/levels/edit-level.php:373
 #: adminpages/levels/edit-level.php:554
+#: adminpages/discountcodes.php:634
+#: adminpages/discountcodes.php:708
 msgid "Year(s)"
 msgstr "Año(s)"
 
@@ -11608,6 +11861,8 @@ msgstr "Año(s)"
 #: adminpages/discountcodes.php:694
 #: adminpages/levels/edit-level.php:372
 #: adminpages/levels/edit-level.php:553
+#: adminpages/discountcodes.php:634
+#: adminpages/discountcodes.php:708
 msgid "Month(s)"
 msgstr "Mes(es)"
 
@@ -11615,6 +11870,8 @@ msgstr "Mes(es)"
 #: adminpages/discountcodes.php:694
 #: adminpages/levels/edit-level.php:371
 #: adminpages/levels/edit-level.php:552
+#: adminpages/discountcodes.php:634
+#: adminpages/discountcodes.php:708
 msgid "Week(s)"
 msgstr "Semana(s)"
 
@@ -11622,39 +11879,48 @@ msgstr "Semana(s)"
 #: adminpages/discountcodes.php:694
 #: adminpages/levels/edit-level.php:370
 #: adminpages/levels/edit-level.php:551
+#: adminpages/discountcodes.php:634
+#: adminpages/discountcodes.php:708
 msgid "Day(s)"
 msgstr "Día(s)"
 
 #: adminpages/discountcodes.php:605
 #: adminpages/levels/edit-level.php:354
+#: adminpages/discountcodes.php:619
 msgid "Billing Amount"
 msgstr "Cantidad a facturar"
 
 #: adminpages/discountcodes.php:601
 #: adminpages/levels/edit-level.php:350
+#: adminpages/discountcodes.php:615
 msgid "Check if this level has a recurring subscription payment."
 msgstr "Márcalo si este nivel tiene un pago de suscripción periódico."
 
 #: adminpages/discountcodes.php:600
 #: adminpages/levels/edit-level.php:347
+#: adminpages/discountcodes.php:614
 msgid "Recurring Subscription"
 msgstr "Suscripción periódica"
 
 #: adminpages/discountcodes.php:595
 #: adminpages/levels/edit-level.php:343
+#: adminpages/discountcodes.php:609
 msgid "The initial amount collected at registration."
 msgstr "La cantidad inicial recogida durante el registro."
 
 #: adminpages/discountcodes.php:584
 #: adminpages/levels/edit-level.php:332
+#: adminpages/discountcodes.php:598
 msgid "Initial Payment"
 msgstr "Pago inicial"
 
 #: adminpages/discountcodes.php:543
+#: adminpages/discountcodes.php:557
 msgid "Which levels will this code apply to?"
 msgstr "¿A qué niveles se aplicará este código?"
 
 #: adminpages/discountcodes.php:525
+#: adminpages/discountcodes.php:530
 msgid "Leave blank for unlimited uses."
 msgstr "Déjalo en blanco para permitir un uso ilimitado."
 
@@ -11668,6 +11934,7 @@ msgstr "Usos"
 #: classes/gateways/class.pmprogateway_stripe.php:932
 #: pages/billing.php:323
 #: pages/checkout.php:447
+#: adminpages/discountcodes.php:507
 msgid "Expiration Date"
 msgstr "Fecha de caducidad"
 
@@ -11676,6 +11943,7 @@ msgstr "Fecha de caducidad"
 #: classes/class-pmpro-members-list-table.php:143
 #: includes/privacy.php:186
 #: includes/profile.php:883
+#: adminpages/discountcodes.php:489
 msgid "Start Date"
 msgstr "Fecha de inicio"
 
@@ -11687,10 +11955,12 @@ msgstr "Fecha de inicio"
 #: classes/class-pmpro-orders-list-table.php:146
 #: includes/profile.php:717
 #: adminpages/dashboard.php:322
+#: adminpages/discountcodes.php:451
 msgid "Code"
 msgstr "Código"
 
 #: adminpages/discountcodes.php:444
+#: adminpages/discountcodes.php:447
 msgid "This will be generated when you save."
 msgstr "Esto se generará al guardar."
 
@@ -11701,55 +11971,70 @@ msgstr "Esto se generará al guardar."
 #: classes/class-pmpro-discount-code-list-table.php:134
 #: classes/class-pmpro-members-list-table.php:134
 #: classes/class-pmpro-orders-list-table.php:144
+#: adminpages/discountcodes.php:446
+#: adminpages/subscriptions.php:249
 msgid "ID"
 msgstr "ID"
 
 #: adminpages/discountcodes.php:367
 #: adminpages/discountcodes.php:731
+#: adminpages/discountcodes.php:370
+#: adminpages/discountcodes.php:745
 msgid "Add New Discount Code"
 msgstr "Añadir nuevo código de descuento"
 
 #: adminpages/discountcodes.php:365
+#: adminpages/discountcodes.php:368
 msgid "Edit Discount Code"
 msgstr "Editar código de descuento"
 
 #: adminpages/discountcodes.php:344
+#: adminpages/discountcodes.php:347
 msgid "Code not found."
 msgstr "Código no encontrado."
 
 #: adminpages/discountcodes.php:338
+#: adminpages/discountcodes.php:341
 msgid "Error deleting code. Please try again."
 msgstr "Error al borrar el código. Por favor, inténtalo de nuevo."
 
 #: adminpages/discountcodes.php:332
+#: adminpages/discountcodes.php:335
 msgid "Error deleting discount code. The code was only partially deleted. Please try again."
 msgstr "Error al borrar el código de descuento. El código solo se ha eliminado parcialmente. Por favor, inténtalo de nuevo."
 
 #: adminpages/discountcodes.php:327
+#: adminpages/discountcodes.php:330
 msgid "Code %s deleted successfully."
 msgstr "Código %s borrado correctamente."
 
 #: adminpages/discountcodes.php:287
+#: adminpages/discountcodes.php:290
 msgid "There were errors updating the level values: "
 msgstr "Hubo errores actualizando los valores del nivel:"
 
 #: adminpages/discountcodes.php:279
+#: adminpages/discountcodes.php:282
 msgid "Error saving values for the %s level."
 msgstr "Error al guardar los valores para el nivel %s."
 
 #: adminpages/discountcodes.php:117
+#: adminpages/discountcodes.php:120
 msgid "Error updating discount code. That code may already be in use."
 msgstr "Error al actualizar el código de descuento. Es posible que el código ya esté en uso."
 
 #: adminpages/discountcodes.php:113
+#: adminpages/discountcodes.php:116
 msgid "Error adding discount code. That code may already be in use."
 msgstr "Error al añadir el código de descuento. Es posible que ese código ya esté en uso."
 
 #: adminpages/discountcodes.php:105
+#: adminpages/discountcodes.php:108
 msgid "Discount code updated successfully."
 msgstr "Código de descuento actualizado correctamente."
 
 #: adminpages/discountcodes.php:99
+#: adminpages/discountcodes.php:102
 msgid "Discount code added successfully."
 msgstr "Código de descuento añadido correctamente."
 
@@ -11890,10 +12175,12 @@ msgstr "¿Filtrar búsquedas y archivos?"
 #: adminpages/advancedsettings.php:128
 #: adminpages/wizard/advanced.php:13
 #: includes/adminpages.php:82
+#: includes/adminpages.php:83
 msgid "Advanced Settings"
 msgstr "Ajustes avanzados"
 
 #: includes/functions.php:2112
+#: includes/functions.php:2122
 msgid "This content is for members only. Visit the site and log in/register to read."
 msgstr "Este contenido es solo para miembros. Visita el sitio e inicia sesión / regístrate para leerlo."
 
@@ -11904,6 +12191,7 @@ msgstr "Tus opciones avanzadas se han actualizado."
 #: adminpages/admin_header.php:305
 #: adminpages/functions.php:455
 #: adminpages/wizard/wizard.php:75
+#: adminpages/admin_header.php:309
 msgid "Advanced"
 msgstr "Avanzado"
 
@@ -11920,6 +12208,7 @@ msgid "Email"
 msgstr "Correo electrónico"
 
 #: adminpages/admin_header.php:277
+#: adminpages/admin_header.php:281
 msgid "Pages"
 msgstr "Páginas"
 
@@ -12014,6 +12303,9 @@ msgstr "Añade un nivel de membresía para comenzar."
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:175
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:158
 #: classes/class-pmpro-members-list-table.php:697
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:162
+#: classes/class-pmpro-subscriptions-list-table.php:457
+#: classes/class-pmpro-subscriptions-list-table.php:467
 msgid "View Details"
 msgstr "Ver detalles"
 
@@ -12095,6 +12387,8 @@ msgstr "Inactivo"
 #: adminpages/securitysettings.php:381
 #: classes/class-pmpro-site-health.php:307
 #: classes/class-pmpro-site-health.php:313
+#: classes/class-pmpro-subscriptions-list-table.php:393
+#: classes/class-pmpro-subscriptions-list-table.php:579
 msgid "Active"
 msgstr "Activo"
 
@@ -12125,6 +12419,9 @@ msgstr "Última revisión el %s de %s"
 #: adminpages/admin_header.php:251
 #: includes/adminpages.php:62
 #: includes/adminpages.php:256
+#: adminpages/admin_header.php:255
+#: includes/adminpages.php:63
+#: includes/adminpages.php:268
 msgid "Add Ons"
 msgstr "Extensiones"
 
@@ -12168,4 +12465,106 @@ msgstr ""
 #. translators: $1$s - Paid Memberships Pro plugin name; $2$s - testimonial link.
 #: includes/admin.php:301
 msgid "Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">submit a testimonial</a> to help others find %2$s. Thank you from the %3$s team!"
+msgstr ""
+
+#. Description of the plugin
+#: paid-memberships-pro.php
+msgid "The Trusted Membership Platform That Grows with You"
+msgstr ""
+
+#: adminpages/discountcodes.php:525
+msgid "Limit Total Uses"
+msgstr ""
+
+#: adminpages/discountcodes.php:529
+msgid "Define the maximum number of times this discount code can be used across all users."
+msgstr ""
+
+#: adminpages/discountcodes.php:536
+msgid "Limit Per User"
+msgstr ""
+
+#: adminpages/discountcodes.php:539
+msgid "Restrict this discount code to a single use per unique user."
+msgstr ""
+
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:13
+#: adminpages/subscriptions.php:137
+#: adminpages/subscriptions.php:217
+#: adminpages/subscriptions.php:572
+#: adminpages/subscriptions.php:574
+msgid "Link Subscription"
+msgstr ""
+
+#: adminpages/subscriptions.php:32
+#: adminpages/subscriptions.php:91
+msgid "All fields are required."
+msgstr ""
+
+#: adminpages/subscriptions.php:38
+#: adminpages/subscriptions.php:97
+msgid "Invalid user ID."
+msgstr ""
+
+#: adminpages/subscriptions.php:44
+#: adminpages/subscriptions.php:103
+msgid "Invalid membership level ID."
+msgstr ""
+
+#: adminpages/subscriptions.php:53
+msgid "This subscription already exists on your website."
+msgstr ""
+
+#: adminpages/subscriptions.php:72
+msgid "Subscription linked successfully."
+msgstr ""
+
+#: adminpages/subscriptions.php:79
+msgid "Error linking subscription."
+msgstr ""
+
+#: adminpages/subscriptions.php:114
+msgid "Subscription updated successfully."
+msgstr ""
+
+#: adminpages/subscriptions.php:182
+msgid "Sandbox"
+msgstr ""
+
+#: adminpages/subscriptions.php:183
+msgid "Live"
+msgstr ""
+
+#: adminpages/subscriptions.php:225
+#: adminpages/subscriptions.php:321
+#: adminpages/subscriptions.php:323
+msgid "Edit Subscription"
+msgstr ""
+
+#: adminpages/subscriptions.php:295
+msgid "Update Subscription"
+msgstr ""
+
+#: adminpages/subscriptions.php:590
+msgid "Search Subscriptions"
+msgstr ""
+
+#: classes/class-pmpro-subscriptions-list-table.php:52
+msgid "Subscriptions per page"
+msgstr ""
+
+#: classes/class-pmpro-subscriptions-list-table.php:392
+msgid "All Statuses"
+msgstr ""
+
+#: classes/class-pmpro-subscriptions-list-table.php:590
+msgid "Sync Error:"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:2213
+msgid "Subscription customer ID does not match user's Stripe customer ID."
+msgstr ""
+
+#: includes/functions.php:1950
+msgid "You have already used the discount code provided."
 msgstr ""
