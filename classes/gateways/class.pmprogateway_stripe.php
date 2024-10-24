@@ -1868,31 +1868,41 @@ class PMProGateway_stripe extends PMProGateway {
 		$customer_id = get_user_meta( $user_id, 'pmpro_stripe_customerid', true );
 
 		if ( empty( $customer_id ) ) {
-			// Try to figure out the cuseromer ID from their last order.
-			$order = new MemberOrder();
-			$order->getLastMemberOrder(
-				$user_id,
-				array(
-					'success',
-					'cancelled'
-				),
-				null,
-				'stripe',
-				$this->gateway_environment
+			// Try to figure out the customer ID from their subscription.
+			$subscription_search_params = array(
+				'user_id' => $user_id,
+				'status'  => 'active',
+				'gateway' => 'stripe',
 			);
-
-			// If we don't have a customer ID yet, get the Customer ID from their subscription.
-			if ( empty( $customer_id ) && ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
+			$subscriptions = PMPro_Subscription::get_subscriptions( $subscription_search_params );
+			foreach ( $subscriptions as $subscription ) {
 				try {
-					$subscription = Stripe_Subscription::retrieve( $order->subscription_transaction_id );
+					$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
 				} catch ( \Throwable $e ) {
 					// Assume no customer found.
 				} catch ( \Exception $e ) {
 					// Assume no customer found.
 				}
-				if ( ! empty( $subscription ) && ! empty( $subscription->customer ) ) {
-					$customer_id = $subscription->customer;
+				if ( ! empty( $stripe_subscription ) && ! empty( $stripe_subscription->customer ) ) {
+					$customer_id = $stripe_subscription->customer;
+					break;
 				}
+				$stripe_subscription = null;
+			}
+
+			// If we don't have a customer ID yet, try to figure out the cuseromer ID from their last order.
+			if ( empty( $customer_id ) ) {
+				$order = new MemberOrder();
+				$order->getLastMemberOrder(
+					$user_id,
+					array(
+						'success',
+						'cancelled'
+					),
+					null,
+					'stripe',
+					$this->gateway_environment
+				);
 			}
 
 			// If we don't have a customer ID yet, get the Customer ID from their charge.
@@ -2194,6 +2204,14 @@ class PMProGateway_stripe extends PMProGateway {
 				$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
 			}
 			$subscription->set( $update_array );
+
+			// Check if the user's Stripe customer ID is the same as the subscription's customer ID.
+			// We are waiting until after the subscription is created in case the customer didn't have a Stripe customer ID before.
+			$customer = $this->get_customer_for_user( $subscription->get_user_id() );
+			if ( ! empty( $customer ) && $customer->id !== $stripe_subscription->customer ) {
+				// Throw an error.
+				return __( 'Subscription customer ID does not match user\'s Stripe customer ID.', 'paid-memberships-pro' );
+			}
 		}
 	}
 
