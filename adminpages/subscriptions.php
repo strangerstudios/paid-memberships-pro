@@ -128,11 +128,11 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 
 if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 	// Link a subscription.
-	$subscription_transaction_id = ! empty( $_POST['subscription_transaction_id'] ) ? sanitize_text_field( $_POST['subscription_transaction_id'] ) : '';
-	$gateway                    = ! empty( $_POST['gateway'] ) ? sanitize_text_field( $_POST['gateway'] ) : get_option( 'pmpro_gateway', '' );
-	$gateway_environment		= ! empty( $_POST['gateway_environment'] ) ? sanitize_text_field( $_POST['gateway_environment'] ) : get_option( 'pmpro_gateway_environment', '' );
-	$user_id                    = ! empty( $_POST['user_id'] ) ? sanitize_text_field( $_POST['user_id'] ) : '';
-	$membership_level_id        = ! empty( $_POST['membership_level_id'] ) ? sanitize_text_field( $_POST['membership_level_id'] ) : '';
+	$subscription_transaction_id = ! empty( $_REQUEST['subscription_transaction_id'] ) ? sanitize_text_field( $_REQUEST['subscription_transaction_id'] ) : '';
+	$gateway                    = ! empty( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : get_option( 'pmpro_gateway', '' );
+	$gateway_environment		= ! empty( $_REQUEST['gateway_environment'] ) ? sanitize_text_field( $_REQUEST['gateway_environment'] ) : get_option( 'pmpro_gateway_environment', '' );
+	$user_id                    = ! empty( $_REQUEST['user_id'] ) ? sanitize_text_field( $_REQUEST['user_id'] ) : '';
+	$membership_level_id        = ! empty( $_REQUEST['membership_level_id'] ) ? sanitize_text_field( $_REQUEST['membership_level_id'] ) : '';
 	?>
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'Link Subscription', 'paid-memberships-pro' ); ?></h1>
 	<?php
@@ -219,8 +219,8 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 	<?php
 } elseif ( ! empty( $subscription ) && isset( $_REQUEST['action'] ) && 'edit' === $_REQUEST['action'] ) {
 	// Edit a subscription.
-	$user_id = empty( $_POST['user_id'] ) ? $subscription->get_user_id() : sanitize_text_field( $_POST['user_id'] );
-	$membership_level_id = empty( $_POST['membership_level_id'] ) ? $subscription->get_membership_level_id() : sanitize_text_field( $_POST['membership_level_id'] );
+	$user_id = empty( $_REQUEST['user_id'] ) ? $subscription->get_user_id() : sanitize_text_field( $_REQUEST['user_id'] );
+	$membership_level_id = empty( $_REQUEST['membership_level_id'] ) ? $subscription->get_membership_level_id() : sanitize_text_field( $_REQUEST['membership_level_id'] );
 	?>
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'Edit Subscription', 'paid-memberships-pro' ); ?></h1>
 	<a
