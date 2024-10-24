@@ -504,6 +504,10 @@ body[class*="memberships_page_pmpro-"] {
 	text-wrap: nowrap;
 }
 
+td > .pmpro_tag {
+	text-wrap: wrap;
+}
+
 .pmpro_tag-has_icon:before {
 	font: normal 12px/1 dashicons;
 	margin-right: 3px;
@@ -1353,7 +1357,8 @@ body[class*="memberships_page_pmpro-"] {
 	word-break: break-word;
 }
 
-.pmpro_order-status {
+.pmpro_order-status,
+.pmpro_subscription-status {
 	border: 1px solid transparent;
 	border-radius: var(--pmpro--border--radius);
 	display: block;
@@ -1363,14 +1368,17 @@ body[class*="memberships_page_pmpro-"] {
 }
 
 .pmpro_order-status-success,
-.pmpro_order-status-cancelled {
+.pmpro_order-status-cancelled,
+.pmpro_subscription-status-active {
 	background-color: var(--pmpro--color--success-background);
 	border-color: var(--pmpro--color--success-border);
 	color: var(--pmpro--color--success-text);
 }
 
 .pmpro_order-status-error,
-.pmpro_order-status-refunded {
+.pmpro_order-status-refunded,
+.pmpro_subscription-status-cancelled,
+.pmpro_subscription-status-error {
 	background-color: var(--pmpro--color--error-background);
 	border-color: var(--pmpro--color--error-border);
 	color: var(--pmpro--color--error-text);

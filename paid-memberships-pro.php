@@ -71,6 +71,7 @@ require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin not
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
 require_once( PMPRO_DIR . '/classes/class-pmpro-members-list-table.php' ); // Members List
 require_once( PMPRO_DIR . '/classes/class-pmpro-orders-list-table.php' ); // Orders List
+require_once( PMPRO_DIR . '/classes/class-pmpro-subscriptions-list-table.php' ); // Subscriptions List
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-code-list-table.php' ); // Discount Code List
 
 require_once( PMPRO_DIR . '/includes/services.php' );               // services loaded by AJAX and via webhook, etc
