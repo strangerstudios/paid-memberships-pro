@@ -394,12 +394,12 @@ function pmpro_checkForUpgrades() {
 	}
 
 	/**
-	 * Version 3.4
+	 * Version 3.3.1
 	 * Adding `one_use_per_user` column to discount codes.
 	 */
-	if ( $pmpro_db_version < 3.4 ) {
+	if ( $pmpro_db_version < 3.3 ) {
 		pmpro_db_delta();
-		update_option( 'pmpro_db_version', '3.4' );
+		update_option( 'pmpro_db_version', '3.3' );
 	}
 }
 
