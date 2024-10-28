@@ -415,6 +415,17 @@ if( 'stripe' === $default_gateway ) {
 	) );
 }
 
+// Add any templates registered via the PMPro_Email_Template class.
+$registered_templates = PMPro_Email_Template::get_all_email_templates();
+foreach ( $registered_templates as $registered_template_slug => $registered_template_class ) {
+	$pmpro_email_templates_defaults[ $registered_template_slug ] = array(
+		'subject'     => $registered_template_class::get_default_subject(),
+		'description' => $registered_template_class::get_template_name(),
+		'body'        => $registered_template_class::get_default_body(),
+		'help_text'   => $registered_template_class::get_template_description(),
+	);
+}
+
 /**
  * Filter default template settings and add new templates.
  *
