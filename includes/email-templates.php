@@ -102,17 +102,6 @@ $pmpro_email_templates_defaults = array(
 ', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent out if a recurring payment has failed for a member, usually due to an expired or cancelled credit card. This email is sent to the site administrator.', 'paid-memberships-pro' )
 	),
-	'cancel' => array(
-		'subject' => __( "Your membership at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
-		'description' => __('Cancel', 'paid-memberships-pro'),
-		'body' => __( '<p>Your membership at !!sitename!! has been cancelled.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-
-<p>If you did not request this cancellation and would like more information please contact us at !!siteemail!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'The site administrator can manually cancel a user\'s membership through the WordPress admin or the member can cancel their own membership through your site. This email is sent to the member as confirmation of a cancelled membership.', 'paid-memberships-pro' )
-	),
 	'cancel_admin'  => array(
 		'subject' => __( "Membership for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
 		'description' => __('Cancel (admin)', 'paid-memberships-pro'),

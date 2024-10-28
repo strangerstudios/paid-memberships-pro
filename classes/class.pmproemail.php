@@ -302,31 +302,8 @@
 			if(!$user)
 				return false;
 			
-			$this->email = $user->user_email;
-			$this->subject = sprintf(__('Your membership at %s has been CANCELLED', 'paid-memberships-pro'), get_option("blogname"));
-
-			$this->data = array(
-				'user_email' => $user->user_email, 
-				'display_name' => $user->display_name,
-				'header_name' => $user->display_name,
-				'user_login' => $user->user_login, 
-				'sitename' => get_option( 'blogname' ), 
-				'siteemail' => get_option( 'pmpro_from_email' ),
-				'levels_url' => pmpro_url( 'levels' )
-			);
-
-			if(!empty($old_level_id)) {
-				if(!is_array($old_level_id))
-					$old_level_id = array($old_level_id);
-				$this->data['membership_id'] = $old_level_id[0];	//pass just the first as the level id
-				$this->data['membership_level_name'] = pmpro_implodeToEnglish($wpdb->get_col("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode("','", $old_level_id) . "')"));
-			} else {
-				$this->data['membership_id'] = '';
-				$this->data['membership_level_name'] = __('All Levels', 'paid-memberships-pro' );
-			}
-
-			$this->template = apply_filters("pmpro_email_template", "cancel", $this);
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Cancel( $user, $old_level_id );
+			$email->send();
 		}
 		
 		/**
