@@ -1,15 +1,4 @@
 <?php 
-// Global to store field groups and user fields.
-global $pmpro_field_groups, $pmpro_user_fields;
-$pmpro_user_fields = array();
-
-// Add default group.
-$cb = new stdClass();
-$cb->name = 'checkout_boxes';
-$cb->label = apply_filters( 'pmpro_default_field_group_label', __( 'More Information','paid-memberships-pro' ) );
-$cb->order = 0;
-$pmpro_field_groups = array( 'checkout_boxes' => $cb );
-
 /**
  * Check if a variable is a PMPro_Field.
  * Also checks for PMProRH_Field.
@@ -35,38 +24,23 @@ function pmpro_is_field( $var ) {
  *	- before_submit_button
  *	- just_profile (make sure you set the profile attr of the field to true or admins)
  */
-function pmpro_add_user_field( $where, $field ) {
-	global $pmpro_user_fields;
-	
+function pmpro_add_user_field( $where, $field ) {	
     /**
      * Filter the group to add the field to.
      * 
      * @since 2.9.3
+	 * @deprecated TBD
      * 
      * @param string $where The name of the group to add the field to.
      * @param PMProField $field The field being added.
      */
-    $where = apply_filters( 'pmpro_add_user_field_where', $where, $field );
-    
-    /**
-     * Filter the field to add.
-     * 
-     * @since 2.9.3
-     *             
-     * @param PMProField $field The field being added.
-     * @param string $where The name of the group to add the field to.
-     */
-    $field = apply_filters( 'pmpro_add_user_field', $field, $where );
-    
-    if(empty($pmpro_user_fields[$where])) {
-		$pmpro_user_fields[$where] = array();
-	}
-	if ( ! empty( $field ) && pmpro_is_field( $field ) ) {
-		$pmpro_user_fields[$where][] = $field;
-		return true;
-	}
+    $where = apply_filters_deprecated( 'pmpro_add_user_field_where', array( $where, $field ), 'TBD', 'pmpro_add_user_field' );
 
-	return false;
+	// Get the field group.
+	$field_group = PMPro_Field_Group::get( $where );
+
+	// Add the field to the group.
+	$field_group->add_field( $field );
 }
 
 /**
@@ -77,34 +51,7 @@ function pmpro_add_user_field( $where, $field ) {
  * Name must contain no spaces or special characters.
  */
 function pmpro_add_field_group( $name, $label = NULL, $description = '', $order = NULL ) {
-	global $pmpro_field_groups;
-	// Bail if the group already exists.
-	foreach ( $pmpro_field_groups as $group ) {
-		if ( $group->name === $name ) {
-			// Group already exists.
-			return false;
-		}
-	}
-
-	$temp = new stdClass();
-	$temp->name = $name;
-	$temp->label = $label;
-	$temp->description = $description;
-	$temp->order = $order;
-
-	//defaults
-	if( empty( $temp->label ) ) {
-        $temp->label = ucwords($temp->name);
-    }
-	if( ! isset( $order ) ) {
-		$lastbox = pmpro_array_end( $pmpro_field_groups );
-		$temp->order = $lastbox->order + 1;
-	}
-
-	$pmpro_field_groups[$name] = $temp;
-	usort( $pmpro_field_groups, 'pmpro_sort_by_order' );
-
-	return true;
+	return PMPro_Field_Group::add( $name, $label, $description );
 }
 
 /**
@@ -210,15 +157,7 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
  * Get a field group by name.
  */
 function pmpro_get_field_group_by_name( $name ) {
-	global $pmpro_field_groups;
-	if( ! empty( $pmpro_field_groups ) ) {
-		foreach( $pmpro_field_groups as $group ) {
-			if( $group->name == $name ) {
-                return $group;
-            }
-		}
-	}
-	return false;
+	return PMPro_Field_Group::get( $name );
 }
 
 /**
@@ -258,23 +197,22 @@ function pmpro_check_field_for_level( $field, $scope = 'default', $args = NULL )
  * Find fields in a group and display them at checkout.
  */
 function pmpro_display_fields_in_group( $group, $scope = 'checkout' ) {
-    global $pmpro_user_fields;
-
-	if( ! empty( $pmpro_user_fields[$group] ) ) {
-		foreach( $pmpro_user_fields[$group] as $field ) {
-			if ( ! pmpro_is_field( $field ) ) {
-                continue;
-            }
-            
-            if ( ! pmpro_check_field_for_level( $field ) ) {
-                continue;
-            }
-            
-            if ( $scope == 'checkout' ) {
-                if( ! isset( $field->profile ) || $field->profile !== 'only' && $field->profile !== 'only_admin' ) {
-    				$field->displayAtCheckout();
-    			}
-            }
+    // Get the field group.
+	$field_group = pmpro_get_field_group_by_name( $group );
+	$fields = $field_group->get_fields();
+	foreach( $fields as $field ) {
+		if ( ! pmpro_is_field( $field ) ) {
+			continue;
+		}
+		
+		if ( ! pmpro_check_field_for_level( $field ) ) {
+			continue;
+		}
+		
+		if ( $scope == 'checkout' ) {
+			if( ! isset( $field->profile ) || $field->profile !== 'only' && $field->profile !== 'only_admin' ) {
+				$field->displayAtCheckout();
+			}
 		}
 	}
 }
@@ -308,33 +246,42 @@ add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_after_captcha
 
 //checkout boxes
 function pmpro_checkout_boxes_fields() {
-	global $pmpro_user_fields, $pmpro_field_groups;
+	// Get all field groups.
+	$field_groups = PMPro_Field_Group::get_all();
 
-	foreach($pmpro_field_groups as $cb)
-	{
+	// Cycle through the field groups.
+	foreach( $field_groups as $field_group_name => $field_group ) {
+		// If this is not a checkout box, skip it.
+		if ( in_array( $field_group_name, array( 'after_username', 'after_password', 'after_email', 'after_captcha', 'after_pricing_fields', 'after_billing_fields', 'before_submit_button', 'after_tos_fields' ) ) ) {
+			continue;
+		}
+
+		// Get all the fields for this group.
+		$fields = $field_group->get_fields();
+
 		//how many fields to show at checkout?
 		$n = 0;
-		if(!empty($pmpro_user_fields[$cb->name]))
-			foreach($pmpro_user_fields[$cb->name] as $field)
+		if(!empty( $fields ))
+			foreach( $fields as $field)
 				if(pmpro_is_field($field) && pmpro_check_field_for_level($field) && (!isset($field->profile) || (isset($field->profile) && $field->profile !== "only" && $field->profile !== "only_admin")))		$n++;
 
 		if($n > 0) {
 			?>
-			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $cb->name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $cb->name ) ) ); ?>">
+			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $field_group_name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $field_group_name ) ) ); ?>">
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 						<?php if ( ! empty( $cb->label ) ) { ?>
 							<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
-								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $cb->label ); ?></h2>
+								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $field_group->label ); ?></h2>
 							</legend>
 						<?php } ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 							<?php if ( ! empty( $cb->description ) ) { ?>
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-description' ) ); ?>"><?php echo wp_kses_post( $cb->description ); ?></div>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-description' ) ); ?>"><?php echo wp_kses_post( $field_group->description ); ?></div>
 							<?php } ?>
 
 							<?php
-								foreach($pmpro_user_fields[$cb->name] as $field) {
+								foreach($fields  as $field) {
 									if( pmpro_is_field($field) && pmpro_check_field_for_level($field) && (!isset($field->profile) || (isset($field->profile) && $field->profile !== "only" && $field->profile !== "only_admin"))) {
 										$field->displayAtCheckout();
 									}
@@ -378,89 +325,83 @@ add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_after_tos_fie
  * Update the fields at checkout.
  */
 function pmpro_after_checkout_save_fields( $user_id, $order ) {
-	global $pmpro_user_fields;
+	// Loop through all the field groups.
+	$field_groups = PMPro_Field_Group::get_all();
+	foreach($field_groups as $group_name => $group) {
+		// Loop through all the fields in the group.
+		$fields = $group->get_fields();
+		foreach($fields as $field) {
+			if( ! pmpro_is_field( $field ) ) {
+				continue;
+			}
+			
+			if ( ! pmpro_check_field_for_level( $field, "profile", $user_id ) ) {
+				continue;
+			}
 
-	//any fields?
-	if(!empty($pmpro_user_fields))
-	{
-		//cycle through groups
-		foreach($pmpro_user_fields as $where => $fields)
-		{
-			//cycle through fields
-			foreach($fields as $field)
+			if(!empty($field->profile) && ($field->profile === "only" || $field->profile === "only_admin")) {
+				continue;	//wasn't shown at checkout
+			}
+
+			//assume no value
+			$value = NULL;
+
+			// Where are we getting the value from? We sanitize $value right after this.
+			// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			if(isset($_REQUEST[$field->name]))
 			{
-                if( ! pmpro_is_field( $field ) ) {
-                    continue;
-                }
-                
-                if ( ! pmpro_check_field_for_level( $field, "profile", $user_id ) ) {
-                    continue;
-                }
-
-				if(!empty($field->profile) && ($field->profile === "only" || $field->profile === "only_admin")) {
-                    continue;	//wasn't shown at checkout
-                }
-
-				//assume no value
-				$value = NULL;
-
-				// Where are we getting the value from? We sanitize $value right after this.
-				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				if(isset($_REQUEST[$field->name]))
+				//request
+				$value = $_REQUEST[$field->name];
+			}
+			elseif(isset($_REQUEST[$field->name . '_checkbox']) && $field->type == 'checkbox')
+			{
+				//unchecked checkbox
+				$value = 0;
+			}
+			elseif(!empty($_POST[$field->name . "_checkbox"]) && in_array( $field->type, array( 'checkbox', 'checkbox_grouped', 'select2' ) ) )	//handle unchecked checkboxes
+			{
+				//unchecked checkbox
+				$value = array();
+			}
+			elseif(isset($_SESSION[$field->name]))
+			{
+				//file or value?
+				if(is_array($_SESSION[$field->name]) && isset($_SESSION[$field->name]['name']))
 				{
-					//request
-					$value = $_REQUEST[$field->name];
-				}
-				elseif(isset($_REQUEST[$field->name . '_checkbox']) && $field->type == 'checkbox')
-				{
-					//unchecked checkbox
-					$value = 0;
-				}
-				elseif(!empty($_POST[$field->name . "_checkbox"]) && in_array( $field->type, array( 'checkbox', 'checkbox_grouped', 'select2' ) ) )	//handle unchecked checkboxes
-				{
-					//unchecked checkbox
-					$value = array();
-				}
-				elseif(isset($_SESSION[$field->name]))
-				{
-					//file or value?
-					if(is_array($_SESSION[$field->name]) && isset($_SESSION[$field->name]['name']))
-					{
-						//add to files global
-						$_FILES[$field->name] = $_SESSION[$field->name];
+					//add to files global
+					$_FILES[$field->name] = $_SESSION[$field->name];
 
-						//set value to name
-						$value = $_SESSION[$field->name]['name'];
-					}
-					else
-					{
-						//session
-						$value = $_SESSION[$field->name];
-					}
-
-					//unset
-					unset($_SESSION[$field->name]);
+					//set value to name
+					$value = $_SESSION[$field->name]['name'];
 				}
-				elseif(isset($_FILES[$field->name]))
+				else
 				{
-					//file
-					$value = $_FILES[$field->name]['name'];
+					//session
+					$value = $_SESSION[$field->name];
 				}
-				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-				//update user meta
-				if(isset($value))
-				{
-					if ( ! empty( $field->sanitize ) ) {
-						$value = pmpro_sanitize( $value, $field );
-                    }
+				//unset
+				unset($_SESSION[$field->name]);
+			}
+			elseif(isset($_FILES[$field->name]))
+			{
+				//file
+				$value = $_FILES[$field->name]['name'];
+			}
+			// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-					//callback?
-					if(!empty($field->save_function))
-						call_user_func( $field->save_function, $user_id, $field->name, $value, $order );
-					else
-						update_user_meta($user_id, $field->meta_key, $value);
+			//update user meta
+			if(isset($value))
+			{
+				if ( ! empty( $field->sanitize ) ) {
+					$value = pmpro_sanitize( $value, $field );
 				}
+
+				//callback?
+				if(!empty($field->save_function))
+					call_user_func( $field->save_function, $user_id, $field->name, $value, $order );
+				else
+					update_user_meta($user_id, $field->meta_key, $value);
 			}
 		}
 	}
@@ -475,51 +416,44 @@ add_action( 'pmpro_before_send_to_payfast', 'pmpro_after_checkout_save_fields', 
  * Require required fields.
  */
 function pmpro_registration_checks_for_user_fields( $okay ) {
-	global $current_user;
-
-	//arrays to store fields that were required and missed
+	// Arrays to store fields that were required and missed.
 	$required = array();
     $required_labels = array();
 
-	//any fields?
-	global $pmpro_user_fields;
-	if(!empty($pmpro_user_fields))
-	{
-		//cycle through groups
-		foreach($pmpro_user_fields as $where => $fields)
-		{
-			//cycle through fields
-			foreach($fields as $field)
-			{
-                //handle arrays
-                $field->name = preg_replace('/\[\]$/', '', $field->name);
+	// Loop through all the field groups.
+	$field_groups = PMPro_Field_Group::get_all();
+	foreach($field_groups as $group_name => $group) {
+		// Loop through all the fields in the group.
+		$fields = $group->get_fields();
+		foreach($fields as $field) {
+			//handle arrays
+			$field->name = preg_replace('/\[\]$/', '', $field->name);
 
-				//if the field is not for this level, skip it
-                if( ! pmpro_is_field( $field ) ) {
-                    continue;
-                }
-                
-                if ( ! pmpro_check_field_for_level( $field ) ) {
-                    continue;
-                }
+			//if the field is not for this level, skip it
+			if( ! pmpro_is_field( $field ) ) {
+				continue;
+			}
+			
+			if ( ! pmpro_check_field_for_level( $field ) ) {
+				continue;
+			}
 
-				if(!empty($field->profile) && ($field->profile === "only" || $field->profile === "only_admin")) {
-                    continue;	//wasn't shown at checkout
-                }
+			if(!empty($field->profile) && ($field->profile === "only" || $field->profile === "only_admin")) {
+				continue;	//wasn't shown at checkout
+			}
 
-				// If this is a file upload, check whether the file is allowed.
-				if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) {
-					$upload_check = pmpro_check_upload( $field->name );
-					if ( is_wp_error( $upload_check ) ) {
-						pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
-						return false;
-					}
+			// If this is a file upload, check whether the file is allowed.
+			if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) {
+				$upload_check = pmpro_check_upload( $field->name );
+				if ( is_wp_error( $upload_check ) ) {
+					pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
+					return false;
 				}
+			}
 
-				if( ! $field->was_filled_if_needed() ) {
-					$required[] = $field->name;
-                    $required_labels[] = $field->label;
-				}
+			if( ! $field->was_filled_if_needed() ) {
+				$required[] = $field->name;
+				$required_labels[] = $field->label;
 			}
 		}
 	}
@@ -557,68 +491,63 @@ add_filter( 'pmpro_checkout_order_creation_checks', 'pmpro_registration_checks_f
  * @deprecated 2.12.4 Use pmpro_after_checkout_save_fields instead to save fields immediately or pmpro_save_checkout_data_to_order for delayed checkouts.
  */
 function pmpro_paypalexpress_session_vars_for_user_fields() {
-	global $pmpro_user_fields;
-
 	_deprecated_function( __FUNCTION__, '2.12.4', 'pmpro_after_checkout_save_fields' );
 
-	//save our added fields in session while the user goes off to PayPal
-	if(!empty($pmpro_user_fields))
-	{
-		//cycle through groups
-		foreach($pmpro_user_fields as $where => $fields)
+	// Loop through all the field groups.
+	$field_groups = PMPro_Field_Group::get_all();
+	foreach($field_groups as $group_name => $group) {
+		// Loop through all the fields in the group.
+		$fields = $group->get_fields();
+		foreach($fields as $field)
 		{
-			//cycle through fields
-			foreach($fields as $field)
-			{
-                if( ! pmpro_is_field( $field ) ) {
-                    continue;
-                }
-                
-                if ( ! pmpro_check_field_for_level( $field ) ) {
-                    continue;
-                }
+			if( ! pmpro_is_field( $field ) ) {
+				continue;
+			}
+			
+			if ( ! pmpro_check_field_for_level( $field ) ) {
+				continue;
+			}
 
-                if( isset( $_REQUEST[$field->name] ) ) {
-					$_SESSION[$field->name] = pmpro_sanitize( $_REQUEST[$field->name], $field ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				} elseif ( isset( $_FILES[$field->name] ) ) {
-					/*
-						We need to save the file somewhere and save values in $_SESSION
-					*/
-					// Make sure the file is allowed.
-					$upload_check = pmpro_check_upload( $field->name );
-					if ( is_wp_error( $upload_check ) ) {
-						continue;
-					}
-
-					// Get $file and $filetype.
-					$file = array_map( 'sanitize_text_field', $_FILES[ $field->name ] );
-					$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
-
-					// Make sure file was uploaded during this page load.
-					if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {						
-						continue;
-					}
-
-					//check for a register helper directory in wp-content
-					$upload_dir = wp_upload_dir();
-					$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
-
-					//create the dir and subdir if needed
-					if(!is_dir($pmprorh_dir))
-					{
-						wp_mkdir_p($pmprorh_dir);
-					}
-
-					//move file
-					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $file['name'] ) );
-					move_uploaded_file( sanitize_text_field( $$file['tmp_name'] ), $new_filename );
-
-					//update location of file
-					$_FILES[$field->name]['tmp_name'] = $new_filename;
-
-					//save file info in session
-					$_SESSION[$field->name] = array_map( 'sanitize_text_field', $file );
+			if( isset( $_REQUEST[$field->name] ) ) {
+				$_SESSION[$field->name] = pmpro_sanitize( $_REQUEST[$field->name], $field ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			} elseif ( isset( $_FILES[$field->name] ) ) {
+				/*
+					We need to save the file somewhere and save values in $_SESSION
+				*/
+				// Make sure the file is allowed.
+				$upload_check = pmpro_check_upload( $field->name );
+				if ( is_wp_error( $upload_check ) ) {
+					continue;
 				}
+
+				// Get $file and $filetype.
+				$file = array_map( 'sanitize_text_field', $_FILES[ $field->name ] );
+				$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
+
+				// Make sure file was uploaded during this page load.
+				if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {						
+					continue;
+				}
+
+				//check for a register helper directory in wp-content
+				$upload_dir = wp_upload_dir();
+				$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
+
+				//create the dir and subdir if needed
+				if(!is_dir($pmprorh_dir))
+				{
+					wp_mkdir_p($pmprorh_dir);
+				}
+
+				//move file
+				$new_filename = $pmprorh_dir . basename( sanitize_file_name( $file['name'] ) );
+				move_uploaded_file( sanitize_text_field( $$file['tmp_name'] ), $new_filename );
+
+				//update location of file
+				$_FILES[$field->name]['tmp_name'] = $new_filename;
+
+				//save file info in session
+				$_SESSION[$field->name] = array_map( 'sanitize_text_field', $file );
 			}
 		}
 	}
@@ -628,8 +557,6 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
  * Show user fields in profile.
  */
 function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
-	global $pmpro_user_fields;
-
 	//which fields are marked for the profile
 	$profile_fields = pmpro_get_user_fields_for_profile($user->ID, $withlocations);
 
@@ -764,25 +691,20 @@ add_action( 'pmpro_show_user_profile', 'pmpro_show_user_fields_in_frontend_profi
  * when using the Add Member Admin Add On.
  */
 // Add fields to form.
-function pmpro_add_member_admin_fields( $user = null, $user_id = null)
-{
-    global $pmpro_user_fields;
-
-    $addmember_fields = array();
-    if(!empty($pmpro_user_fields))
-    {
-        //cycle through groups
-        foreach($pmpro_user_fields as $where => $fields)
-        {
-            //cycle through fields
-            foreach($fields as $field)
-            {
-	            if(pmpro_is_field($field) && isset($field->addmember) && !empty($field->addmember) && ( in_array( strtolower( $field->addmember ), array( 'true', 'yes' ) ) || true == $field->addmember ) )
-                {
-                        $addmember_fields[] = $field;
-                }
-            }
-        }
+function pmpro_add_member_admin_fields( $user = null, $user_id = null) {
+	$addmember_fields = array();
+	// Loop through all the field groups.
+	$field_groups = PMPro_Field_Group::get_all();
+	foreach($field_groups as $group_name => $group) {
+		// Loop through all the fields in the group.
+		$fields = $group->get_fields();
+		foreach($fields as $field)
+		{
+			if(pmpro_is_field($field) && isset($field->addmember) && !empty($field->addmember) && ( in_array( strtolower( $field->addmember ), array( 'true', 'yes' ) ) || true == $field->addmember ) )
+			{
+				$addmember_fields[] = $field;
+			}
+		}
     }
 
 
@@ -818,7 +740,6 @@ add_action( 'pmpro_add_member_fields', 'pmpro_add_member_admin_fields', 10, 2 );
  * @return void
  */
 function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
-	global $pmpro_user_fields;
 	
 	// Use the ID from the $user object if passed in.
 	if ( ! empty( $user ) && is_object( $user ) ) {
@@ -838,21 +759,19 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 		return false;
 	}
 
-    $addmember_fields = array();
-    if(!empty($pmpro_user_fields))
-    {
-        //cycle through groups
-        foreach($pmpro_user_fields as $where => $fields)
-        {
-            //cycle through fields
-            foreach($fields as $field)
-            {
-	            if(pmpro_is_field($field) && isset($field->addmember) && !empty($field->addmember) && ( in_array( strtolower( $field->addmember ), array( 'true', 'yes' ) ) || true == $field->addmember ) )
-                {
-                        $addmember_fields[] = $field;
-                }
-            }
-        }
+	$addmember_fields = array();
+	// Loop through all the field groups.
+	$field_groups = PMPro_Field_Group::get_all();
+	foreach($field_groups as $group_name => $group) {
+		// Loop through all the fields in the group.
+		$fields = $group->get_fields();
+		foreach($fields as $field)
+		{
+			if(pmpro_is_field($field) && isset($field->addmember) && !empty($field->addmember) && ( in_array( strtolower( $field->addmember ), array( 'true', 'yes' ) ) || true == $field->addmember ) )
+			{
+					$addmember_fields[] = $field;
+			}
+		}
     }
 
     //save our added fields in session while the user goes off to PayPal
@@ -905,22 +824,17 @@ add_action( 'pmpro_add_member_added', 'pmpro_add_member_admin_save_user_fields',
  * Get user fields which are set to show up in the Members List CSV Export.
  */
 function pmpro_get_user_fields_for_csv() {
-	global $pmpro_user_fields;
-
 	$csv_fields = array();
-	if(!empty($pmpro_user_fields))
-	{
-		//cycle through groups
-		foreach($pmpro_user_fields as $where => $fields)
+	// Loop through all the field groups.
+	$field_groups = PMPro_Field_Group::get_all();
+	foreach($field_groups as $group_name => $group) {
+		// Loop through all the fields in the group.
+		$fields = $group->get_fields();
+		foreach($fields as $field)
 		{
-			//cycle through fields
-			foreach($fields as $field)
+			if(pmpro_is_field($field) && !empty($field->memberslistcsv) && ($field->memberslistcsv == "true"))
 			{
-				if(pmpro_is_field($field) && !empty($field->memberslistcsv) && ($field->memberslistcsv == "true"))
-				{
-					$csv_fields[] = $field;
-				}
-
+				$csv_fields[] = $field;
 			}
 		}
 	}
@@ -933,42 +847,38 @@ function pmpro_get_user_fields_for_csv() {
  * If a $user_id is passed in, get fields based on the user's level.
  */
 function pmpro_get_user_fields_for_profile( $user_id, $withlocations = false ) {
-	global $pmpro_user_fields;
-
 	$profile_fields = array();
-	if(!empty($pmpro_user_fields))
-	{
-		//cycle through groups
-		foreach($pmpro_user_fields as $where => $fields)
+	// Loop through all the field groups.
+	$field_groups = PMPro_Field_Group::get_all();
+	foreach($field_groups as $group_name => $group) {
+		// Loop through all the fields in the group.
+		$fields = $group->get_fields();
+		foreach($fields as $field)
 		{
-			//cycle through fields
-			foreach($fields as $field)
-			{
-				if( ! pmpro_is_field( $field ) ) {
-                    continue;
-                }
-                
-                if ( ! pmpro_check_field_for_level( $field, "profile", $user_id ) ) {
-                    continue;
-                }
+			if( ! pmpro_is_field( $field ) ) {
+				continue;
+			}
+			
+			if ( ! pmpro_check_field_for_level( $field, "profile", $user_id ) ) {
+				continue;
+			}
 
-				if(!empty($field->profile) && ($field->profile === "admins" || $field->profile === "admin" || $field->profile === "only_admin"))
-				{
-					if( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_membership_manager' ) )
-					{
-						if($withlocations)
-							$profile_fields[$where][] = $field;
-						else
-							$profile_fields[] = $field;
-					}
-				}
-				elseif(!empty($field->profile))
+			if(!empty($field->profile) && ($field->profile === "admins" || $field->profile === "admin" || $field->profile === "only_admin"))
+			{
+				if( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_membership_manager' ) )
 				{
 					if($withlocations)
-						$profile_fields[$where][] = $field;
+						$profile_fields[$group_name][] = $field;
 					else
 						$profile_fields[] = $field;
 				}
+			}
+			elseif(!empty($field->profile))
+			{
+				if($withlocations)
+					$profile_fields[$group_name][] = $field;
+				else
+					$profile_fields[] = $field;
 			}
 		}
 	}
@@ -1050,7 +960,7 @@ add_action( 'pmpro_personal_options_update', 'pmpro_save_user_fields_in_profile'
  * Add user fields to confirmation email.
  */
 function pmpro_add_user_fields_to_email( $email ) {
-	global $wpdb, $pmpro_user_fields, $pmpro_field_groups;
+	global $wpdb;
 
 	//only update admin confirmation emails
 	if ( ! empty( $email ) && strpos( $email->template, "checkout" ) !== false && strpos( $email->template, "admin" ) !== false ) {
@@ -1062,22 +972,15 @@ function pmpro_add_user_fields_to_email( $email ) {
 
 
 			//add to bottom of email
-			if ( ! empty( $pmpro_field_groups ) ) {
+			$field_groups = PMPro_Field_Group::get_all();
+			if ( ! empty( $field_groups ) ) {
 				$fields_content = "<p>" . __( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
 				$added_field = false;
-				//cycle through groups
-				foreach( $pmpro_field_groups as $group ) {
-
-					// Get the groups name so we can grab it from the associative array.
-					$group_name = $group->name;
-
-					// Skip if there are no fields in this group.
-					if ( empty( $pmpro_user_fields[$group_name] ) ) {
-						continue;
-					}
-					
-					//cycle through groups and fields associated with that group.
-					foreach( $pmpro_user_fields[$group_name] as $field ) {
+				// Loop through all the field groups.
+				foreach( $field_groups as $group_name => $group ) {
+					// Loop through all the fields in the group.
+					$fields = $group->get_fields();
+					foreach( $fields as $field ) {
 
 						if ( ! pmpro_is_field( $field ) ) {
 							continue;
@@ -1186,8 +1089,11 @@ add_action( 'pmpro_cron_delete_tmp', 'pmpro_cron_delete_tmp' );
 /**
  * Get user fields from global.
  * @since 2.9.3
+ * @deprecated TBD
  */
 function pmpro_get_user_fields() {
+	_deprecated_function( __FUNCTION__, 'TBD' );
+
     global $pmpro_user_fields;
         
     return (array)$pmpro_user_fields;
@@ -1304,8 +1210,8 @@ function pmpro_get_field_group_html( $group = null ) {
 			
 			<div class="pmpro_userfield-group-fields">
 				<?php
-					if ( ! empty( $group->fields ) ) {
-						foreach ( $group->fields as $field ) {
+					if ( ! empty( $group_fields ) ) {
+						foreach ( $group_fields as $field ) {
 							pmpro_get_field_html( $field );
 						}
 					}
@@ -1596,7 +1502,6 @@ function pmpro_get_user_fields_settings() {
  * Load user field settings into the fields global var.
  */
 function pmpro_load_user_fields_from_settings() {
-    global $pmpro_user_fields, $pmpro_field_groups;
     $settings_groups = pmpro_get_user_fields_settings();
 
     foreach ( $settings_groups as $group ) {
@@ -1716,9 +1621,12 @@ function pmpro_has_coded_user_fields() {
  * @return string|array The label(s) for the passed value. Will be same type as $field_value.
  */
 function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
-	global $pmpro_user_fields;
-	foreach ( $pmpro_user_fields as $user_field_group ) { // Loop through each user field group.
-		foreach ( $user_field_group as $user_field ) { // Loop through each user field in the group.
+	// Loop through all the field groups.
+	$field_groups = PMPro_Field_Group::get_all();
+	foreach($field_groups as $group_name => $group) {
+		// Loop through all the fields in the group.
+		$fields = $group->get_fields();
+		foreach( $fields as $user_field ) {
 			// Check if this is the user field that we are displaying.
 			if ( $user_field->name !== $field_name ) {
 				continue;
@@ -1757,23 +1665,29 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
 }
 
 /**
- * Get a single field from the global $pmpro_user_fields array.
+ * Get a single user field.
  * @since 3.0
  * @param string $field_name The name of the field to get.
  * @return bool|object The field object if found, false otherwise.
  */
 function pmpro_get_user_field( $field_name ) {
-	global $pmpro_user_fields;
-	
-	if ( empty( $pmpro_user_fields ) ) {
-		return false;
-	}
-
-	foreach ( $pmpro_user_fields as $group ) {
-		foreach ( $group as $field ) {
-			if ( $field->name === $field_name ) {
-				return $field;
+	// Loop through all the field groups.
+	$field_groups = PMPro_Field_Group::get_all();
+	foreach($field_groups as $group_name => $group) {
+		// Loop through all the fields in the group.
+		$fields = $group->get_fields();
+		foreach( $fields as $user_field ) {
+			// Check if this is the user field that we are displaying.
+			if ( $user_field->name !== $field_name ) {
+				continue;
 			}
+
+			// Make sure that we have a valid user field.
+			if ( ! pmpro_is_field( $user_field ) ) {
+				continue;
+			}
+
+			return $user_field;
 		}
 	}
 	
