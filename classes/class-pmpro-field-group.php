@@ -1,4 +1,9 @@
 <?php
+/**
+ * Note: One goal of this class is to abstract all uses of the global $pmpro_field_groups and $pmpro_user_fields arrays.
+ *       In the next major release, we will likely remove these globals and store field groups and fields in this class
+ *       instead to prevent conflicts with other plugins and themes.
+ */
 class PMPro_Field_Group {
 	/**
 	 * The name of the field group.
