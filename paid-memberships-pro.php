@@ -120,17 +120,10 @@ require_once( PMPRO_DIR . '/includes/blocks.php' ); // Set up blocks.
 // load gateway
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway.php' ); // loaded by memberorder class when needed
 
-// load payment gateway class
-if ( version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {
-	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_braintree.php' );
-}
-
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-codes.php' ); // loaded by memberorder class when needed
 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_payflowpro.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.php' );
 
 pmpro_check_for_deprecated_gateways();
 
@@ -189,9 +182,6 @@ function pmpro_gateways() {
 		'check'             => __( 'Pay by Check', 'paid-memberships-pro' ),
 		'stripe'            => __( 'Stripe', 'paid-memberships-pro' ),
 		'paypalexpress'     => __( 'PayPal Express', 'paid-memberships-pro' ),
-		'payflowpro'        => __( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
-		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
-		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
 	);
 
 	if ( pmpro_onlyFreeLevels() ) {
