@@ -4765,8 +4765,6 @@ function pmpro_set_expiration_date( $user_id, $level_id, $enddate ) {
  * @return true|WP_Error True if the file is allowed, otherwise a WP_Error object.
  */
 function pmpro_check_upload( $file_index ) {
-	global $pmpro_user_fields;
-
 	// Check if the file was uploaded.
 	if ( empty( $_FILES[ $file_index ] ) ) {
 		return new WP_Error( 'pmpro_upload_error', __( 'No file was uploaded.', 'paid-memberships-pro' ) );
@@ -4787,51 +4785,40 @@ function pmpro_check_upload( $file_index ) {
 	}
 
 	// If this is an upload for a user field, we need to perform additional checks.
-	$is_user_field = false;
-	if ( ! empty( $pmpro_user_fields ) && is_array( $pmpro_user_fields ) ) {
-		foreach ( $pmpro_user_fields as $checkout_box ) {
-			foreach ( $checkout_box as $field ) {
-				if ( $field->name == $file_index ) {
-					// This file is being uploaded for a user field.
-					$is_user_field = true;
+	$field = PMPro_Field_Group::get_field( $file_index );
+	if ( ! empty( $field) ) {
+		// First, make sure that this is a 'file' field.
+		if ( $field->type !== 'file' ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid field input.', 'paid-memberships-pro' ) );
+		}
 
-					// First, make sure that this is a 'file' field.
-					if ( $field->type !== 'file' ) {
-						return new WP_Error( 'pmpro_upload_error', __( 'Invalid field input.', 'paid-memberships-pro' ) );
-					}
+		// If there are allowed file types, check if the file is an allowed file type.
+		// It does not look like the ext property is documented anywhere, but keeping it in case sites are using it.
+		if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
+		}
 
-					// If there are allowed file types, check if the file is an allowed file type.
-					// It does not look like the ext property is documented anywhere, but keeping it in case sites are using it.
-					if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
-						return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
-					}
+		// Check the file type against the allowed types.
+		$allowed_mime_types = ! empty( $field->allowed_file_types ) ? array_map( 'sanitize_text_field', explode( ',', $field->allowed_file_types ) ) : array();
 
-					// Check the file type against the allowed types.
-					$allowed_mime_types = ! empty( $field->allowed_file_types ) ? array_map( 'sanitize_text_field', explode( ',', $field->allowed_file_types ) ) : array();
+		//Remove fullstops from the beginning of the allowed file types.
+		$allowed_mime_types = array_map( function( $type ) {
+			return ltrim( $type, '.' );
+		}, $allowed_mime_types );
 
-					//Remove fullstops from the beginning of the allowed file types.
-					$allowed_mime_types = array_map( function( $type ) {
-						return ltrim( $type, '.' );
-					}, $allowed_mime_types );
-
-					// Check the file type against the allowed types. If empty allowed mimes, assume any file upload is okay.
-					if ( ! empty( $allowed_mime_types ) && ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
-						return new WP_Error( 'pmpro_upload_file_type_error', sprintf( esc_html__( 'Invalid file type. Please try uploading the file type(s): %s', 'paid-memberships-pro' ), implode( ',' ,$allowed_mime_types ) ) );
-					}
-					
-					// Check if the file upload is too big to upload.
-					if ( $field->max_file_size > 0 ) {
-						$upload_max_file_size_in_bytes = $field->max_file_size * 1024 * 1024;
-						if ( $file['size'] > $upload_max_file_size_in_bytes ) {
-							return new WP_Error( 'pmpro_upload_file_size_error', sprintf( esc_html__( 'File size is too large for %s. Please upload files smaller than %dMB.', 'paid-memberships-pro' ), $field->label, $field->max_file_size ) );
-						}
-					}
-				}
+		// Check the file type against the allowed types. If empty allowed mimes, assume any file upload is okay.
+		if ( ! empty( $allowed_mime_types ) && ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
+			return new WP_Error( 'pmpro_upload_file_type_error', sprintf( esc_html__( 'Invalid file type. Please try uploading the file type(s): %s', 'paid-memberships-pro' ), implode( ',' ,$allowed_mime_types ) ) );
+		}
+		
+		// Check if the file upload is too big to upload.
+		if ( $field->max_file_size > 0 ) {
+			$upload_max_file_size_in_bytes = $field->max_file_size * 1024 * 1024;
+			if ( $file['size'] > $upload_max_file_size_in_bytes ) {
+				return new WP_Error( 'pmpro_upload_file_size_error', sprintf( esc_html__( 'File size is too large for %s. Please upload files smaller than %dMB.', 'paid-memberships-pro' ), $field->label, $field->max_file_size ) );
 			}
 		}
-	}
-
-	if ( ! $is_user_field ) {
+	} else {
 		/**
 		 * Filter whether a file not associated with a user field can be uploaded.
 		 *
