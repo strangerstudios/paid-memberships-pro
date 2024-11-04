@@ -18,7 +18,7 @@
 
 	// Email variables.
 	$email_variables = [
-		'general' => [
+		__( 'General Settings / Membership Info', 'paid-memberships-pro' ) => [
 			'!!name!!'                  => __( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
 			'!!user_login!!'            => __( 'Username', 'paid-memberships-pro' ),
 			'!!sitename!!'              => __( 'Site Title', 'paid-memberships-pro' ),
@@ -34,7 +34,7 @@
 			'!!login_url!!'            => __( 'Login URL', 'paid-memberships-pro' ),
 			'!!levels_url!!'           => __( 'Membership Levels Page URL', 'paid-memberships-pro' ),
 		],
-		'billing' => [
+		__( 'Billing Information', 'paid-memberships-pro' ) => [
 			'!!billing_address!!' => __( 'Billing Info Complete Address', 'paid-memberships-pro' ),
 			'!!billing_name!!'    => __( 'Billing Info Name', 'paid-memberships-pro' ),
 			'!!billing_street!!'  => __( 'Billing Info Street Address', 'paid-memberships-pro' ),
@@ -57,6 +57,15 @@
 			'!!membership_level_confirmation_message!!' => __( 'Custom Level Confirmation Message', 'paid-memberships-pro' ),
 		]
 	];
+
+	// If we have a PMPro_Email_Template class for this template, use those variables instead.
+	$email_template_class = PMPro_Email_Template::get_email_template( $edit );
+	if ( $email_template_class ) {
+		$email_variables = array(
+			__( 'Global Variables', 'paid-memberships-pro' ) => PMPro_Email_Template::get_base_email_template_variables_with_description(),
+			sprintf( __( '%s Variables', 'paid-memberships-pro' ), $email_template_class::get_template_name() ) => $email_template_class::get_email_template_variables_with_description(),
+		);
+	}
 ?>
 <hr class="wp-header-end">
 <div id="poststuff">
@@ -165,39 +174,27 @@
 					</div>
 					<div class="pmpro_section_inside">
 						<p><?php esc_html_e( 'Use the placeholder variables below to customize your member and admin emails with specific user or membership data.', 'paid-memberships-pro' ); ?></p>
-						<h3><?php esc_html_e('General Settings / Membership Info', 'paid-memberships-pro'); ?></h3>
-						<table class="widefat fixed striped">
-							<tbody>
-								<?php
-									foreach ( $email_variables['general'] as $email_variable => $description ) {
-										?>
-										<tr>
-											<th><code><?php echo esc_html( $email_variable ); ?></code></th>
-											<td><?php echo esc_html( $description ); ?></td>
-										</tr>
-										<?php
-								}
-								?>
-							</tbody>
-						</table>
-
-						<h3><?php esc_html_e( 'Billing Information', 'paid-memberships-pro' ); ?></h3>
-						<table class="widefat fixed striped">
-							<tbody>
-								<?php
-									foreach ( $email_variables['billing'] as $email_variable => $description ) {
-										?>
-										<tr>
-											<th>
-												<code><?php echo esc_html( $email_variable ); ?></code>
-											</th>
-											<td><?php echo esc_html( $description ); ?></td>
-										</tr>
-										<?php
-									}
-								?>
-							</tbody>
-						</table>
+						<?php
+						foreach ( $email_variables as $section => $variables ) {
+							?>
+							<h3><?php echo esc_html( $section ); ?></h3>
+							<table class="widefat fixed striped">
+								<tbody>
+									<?php
+										foreach ( $variables as $email_variable => $description ) {
+											?>
+											<tr>
+												<th><code><?php echo esc_html( $email_variable ); ?></code></th>
+												<td><?php echo esc_html( $description ); ?></td>
+											</tr>
+											<?php
+										}
+									?>
+								</tbody>
+							</table>
+							<?php
+						}
+						?>
 					</div> <!-- end pmpro_section_inside -->
 				</div> <!-- end pmpro_section -->
 			</div>
