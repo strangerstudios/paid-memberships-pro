@@ -56,7 +56,7 @@ abstract class PMPro_Email_Template {
 	 */
 	final protected function get_base_email_template_variables() {
 		$base_email_template_variables = array(
-			'site_name' => get_option( 'blogname' ),
+			'sitename' => get_option( 'blogname' ),
 			'siteemail' => get_option( 'pmpro_from_email' ),
 			'site_url'  => home_url(),
 			'levels_url' => pmpro_url( 'levels' ),
@@ -77,7 +77,7 @@ abstract class PMPro_Email_Template {
 	 */
 	final public static function get_base_email_template_variables_with_description() {
 		$base_email_template_variables_with_description = array(
-			'!!site_name!!' => __( 'The name of the site.', 'paid-memberships-pro' ),
+			'!!sitename!!' => __( 'The name of the site.', 'paid-memberships-pro' ),
 			'!!siteemail!!' => __( 'The email address of the site.', 'paid-memberships-pro' ),
 			'!!site_url!!'  => __( 'The URL of the site.', 'paid-memberships-pro' ),
 			'!!levels_url!!' => __( 'The URL of the page where users can view available membership levels.', 'paid-memberships-pro' ),
