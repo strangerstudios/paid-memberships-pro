@@ -1433,34 +1433,9 @@
 			
 			if(!$user)
 				return false;
-	
-			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership at %s has been changed", "paid-memberships-pro"), get_option("blogname"));
 
-			$this->data = array(
-				'subject' => $this->subject,
-				'header_name' => $user->display_name,
-				'name' => $user->display_name, 
-				'display_name' => $user->display_name, 
-				'user_login' => $user->user_login, 
-				'user_email' => $user->user_email, 
-				'sitename' => get_option( 'blogname' ), 
-				'siteemail' => get_option( 'pmpro_from_email' ), 
-				'login_link' => pmpro_login_url(), 
-				'login_url' => pmpro_login_url(),
-				'levels_url' => pmpro_url( 'levels' )
-			);
-
-			// If the user no longer has a membership level, set the membership_change text to "Membership has been cancelled."
-			if ( ! pmpro_hasMembershipLevel( null, $user->ID ) ) {
-				$this->data['membership_change'] = __( 'Your membership has been cancelled.', 'paid-memberships-pro' );
-			} else {
-				$this->data['membership_change'] = __( 'You can view your current memberships by logging in and visiting your membership account page.', 'paid-memberships-pro' );
-			}
-
-			$this->template = apply_filters("pmpro_email_template", "admin_change", $this);
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Change( $user );
+			$email->send();
 		}
 		
 		/**
@@ -1477,33 +1452,8 @@
 			if(!$user)
 				return false;
 
-			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Membership for %s at %s has been changed", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
-
-			$this->data = array(
-				'subject' => $this->subject,
-				'header_name' => $this->get_admin_name( $this->email ),
-				'name' =>$user->display_name,
-				'display_name' => $user->display_name,
-				'user_login' => $user->user_login, 
-				'user_email' => $user->user_email, 
-				'sitename' => get_option('blogname'), 
-				'siteemail' => $this->email,
-				'login_link' => pmpro_login_url(), 
-				'login_url' => pmpro_login_url(),
-				'levels_url' => pmpro_url( 'levels' )
-			);
-
-			// If the user no longer has a membership level, set the membership_change text to "Membership has been cancelled."
-			if ( ! pmpro_hasMembershipLevel( null, $user->ID ) ) {
-				$this->data['membership_change'] = __( "The user's membership has been cancelled.", 'paid-memberships-pro' );
-			} else {
-				$this->data['membership_change'] = __( "You can view the user's current memberships from their Edit Member page.", 'paid-memberships-pro' );
-			}
-
-			$this->template = apply_filters("pmpro_email_template", "admin_change_admin", $this);
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Change_Admin( $user );
+			$email->send();
 		}
 
 		/**
