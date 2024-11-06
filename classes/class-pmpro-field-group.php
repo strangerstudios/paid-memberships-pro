@@ -173,10 +173,8 @@ class PMPro_Field_Group {
 		}
 
 		foreach ( $pmpro_user_fields as $group_name => $fields ) {
-			foreach ( $fields as $field ) {
-				if ( $field->name === $name ) {
-					return $field;
-				}
+			if ( isset( $fields[ $name ] ) ) {
+				return $fields[ $name ];
 			}
 		}
 
@@ -218,7 +216,7 @@ class PMPro_Field_Group {
 		}
 
 		// Add the field to the group.
-		$pmpro_user_fields[ $this->name ][] = $field;
+		$pmpro_user_fields[ $this->name ][ $field->name ] = $field;
 
 		return true;
 	}

@@ -257,315 +257,39 @@ jQuery(document).ready(function () {
 
 // Function to prep click events.
 function pmpro_userfields_prep_click_events() {
-	// Whenever we make a change, warn the user if they try to navigate away.
-	function pmpro_userfields_made_a_change() {
-		window.onbeforeunload = function () {
-			return true;
-		};
-		jQuery('#pmpro_userfields_savesettings').prop("disabled", false);
+	function update_userfield_type_fields() {
+		// Hide all <tr> elements with the `field_type` class.
+		jQuery('.field_type').hide();
+
+		// Get the selected field type.
+		var field_type = jQuery('.pmpro_admin-pmpro-userfields select[name=type]').val();
+
+		// Show al the <tr> elements with `field_type_{field_type}` class.
+		jQuery('.field_type_' + field_type).show();
 	}
-
-	// Add group button.
-	jQuery('#pmpro_userfields_add_group').unbind('click').on('click', function (event) {
-		jQuery('#pmpro_userfields_add_group').parent('p').before(pmpro.user_fields_blank_group);
-		pmpro_userfields_prep_click_events();
-		jQuery('#pmpro_userfields_add_group').parent('p').prev().find('input').focus().select();
-		pmpro_userfields_made_a_change();
-	});
-
-	// Delete group button.
-	jQuery('.pmpro_userfield-group-actions button[name=pmpro_userfields_delete_group]').unbind('click').on('click', function (event) {
-		var thegroup = jQuery(this).closest('.pmpro_userfield-group');
-		var thename = thegroup.find('input[name=pmpro_userfields_group_name]').val();
-		var answer;
-		if (thename.length > 0) {
-			answer = window.confirm('Delete the "' + thename + '" group?');
-		} else {
-			answer = window.confirm('Delete this group?');
-		}
-		if (answer) {
-			thegroup.remove();
-			pmpro_userfields_made_a_change();
-		}
-	});
-
-	// Add field button.
-	jQuery('button[name="pmpro_userfields_add_field"]').unbind('click').on('click', function (event) {
-		var thefields = jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields');
-		thefields.append(pmpro.user_fields_blank_field);
-		pmpro_userfields_prep_click_events();
-		thefields.children().last().find('.edit-field').click();
-		thefields.children().last().find('input[name="pmpro_userfields_field_label"]').focus().select();
-		pmpro_userfields_made_a_change();
-	});
-
-	// Delete field button.
-	jQuery('.pmpro_userfield-field-options a.delete-field, .pmpro_userfield-field-actions .is-destructive').unbind('click').on('click', function (event) {
-		var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
-		var thelabel = thefield.find('input[name=pmpro_userfields_field_label]').val();
-		var answer;
-		if (thelabel.length > 0) {
-			answer = window.confirm('Delete the "' + thelabel + '" field?');
-		} else {
-			answer = window.confirm('Delete this unlabeled field?');
-		}
-		if (answer) {
-			thefield.remove();
-			pmpro_userfields_made_a_change();
-		}
-	});
-
-	// Toggle groups.    
-	jQuery('button.pmpro_userfield-group-buttons-button-toggle-group, div.pmpro_userfield-group-header h3').unbind('click').on('click', function (event) {
-		event.preventDefault();
-
-		// Ignore if the text field was clicked.        
-		if (jQuery(event.target).prop('nodeName') === 'INPUT') {
-			return;
-		}
-
-		// Find the toggle button and open or close.
-		let thebutton = jQuery(event.target).parents('.pmpro_userfield-group').find('button.pmpro_userfield-group-buttons-button-toggle-group');
-		let buttonicon = thebutton.children('.dashicons');
-		let groupheader = thebutton.closest('.pmpro_userfield-group-header');
-		let groupinside = groupheader.siblings('.pmpro_userfield-inside');
-
-		if (buttonicon.hasClass('dashicons-arrow-up')) {
-			// closing
-			buttonicon.removeClass('dashicons-arrow-up');
-			buttonicon.addClass('dashicons-arrow-down');
-			groupinside.slideUp();
-		} else {
-			// opening
-			buttonicon.removeClass('dashicons-arrow-down');
-			buttonicon.addClass('dashicons-arrow-up');
-			groupinside.slideDown();
-		}
-	});
-
-	// Move group up.
-	jQuery('.pmpro_userfield-group-buttons-button-move-up').unbind('click').on('click', function (event) {
-		var thegroup = jQuery(this).closest('.pmpro_userfield-group');
-		var thegroupprev = thegroup.prev('.pmpro_userfield-group');
-		if (thegroupprev.length > 0) {
-			thegroup.insertBefore(thegroupprev);
-			pmpro_userfields_made_a_change();
-		}
-	});
-
-	// Move group down.
-	jQuery('.pmpro_userfield-group-buttons-button-move-down').unbind('click').on('click', function (event) {
-		var thegroup = jQuery(this).closest('.pmpro_userfield-group');
-		var thegroupnext = thegroup.next('.pmpro_userfield-group');
-		if (thegroupnext.length > 0) {
-			thegroup.insertAfter(thegroupnext);
-			pmpro_userfields_made_a_change();
-		}
-	});
-
-	// Open field.
-	jQuery('a.edit-field').unbind('click').on('click', function (event) {
-		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
-		var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
-
-		fieldcontainer.removeClass('pmpro_userfield-group-field-collapse');
-		fieldcontainer.addClass('pmpro_userfield-group-field-expand');
-		fieldsettings.find('select[name=pmpro_userfields_field_type]').change();
-		fieldsettings.show();
-	});
-
-	// Close field.
-	jQuery('button.pmpro_userfields_close_field').unbind('click').on('click', function (event) {
-		event.preventDefault();
-		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
-		var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
-		var fieldheading = fieldsettings.prev();
-		// Update label, name, and type.
-		fieldheading.find('span.pmpro_userfield-label').html(fieldsettings.find('input[name=pmpro_userfields_field_label]').val().replace(/(<([^>]+)>)/gi, ''));
-		fieldheading.find('li.pmpro_userfield-group-column-name').html(fieldsettings.find('input[name=pmpro_userfields_field_name]').val());
-		fieldheading.find('li.pmpro_userfield-group-column-type').html(fieldsettings.find('select[name=pmpro_userfields_field_type]').val());
-
-		// Toggle
-		fieldcontainer.removeClass('pmpro_userfield-group-field-expand');
-		fieldcontainer.addClass('pmpro_userfield-group-field-collapse');
-		fieldsettings.hide();
-	});
-
-	// Move field up.
-	jQuery('.pmpro_userfield-field-buttons-button-move-up').unbind('click').on('click', function (event) {
-		var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
-		var thefieldprev = thefield.prev('.pmpro_userfield-group-field');
-		if (thefieldprev.length > 0) {
-			thefield.insertBefore(thefieldprev);
-			pmpro_userfields_made_a_change();
-		}
-	});
-
-	// Move field down.
-	jQuery('.pmpro_userfield-field-buttons-button-move-down').unbind('click').on('click', function (event) {
-		var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
-		var thefieldnext = thefield.next('.pmpro_userfield-group-field');
-		if (thefieldnext.length > 0) {
-			thefield.insertAfter(thefieldnext);
-			pmpro_userfields_made_a_change();
-		}
-	});
-
-	// Duplicate field.
-	jQuery('a.duplicate-field').unbind('click').on('click', function (event) {
-		var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
-		thefield.clone(true).insertAfter(thefield); // clone( true ) to clone event handlers.
-		pmpro_userfields_made_a_change();
-	});
+	update_userfield_type_fields();
 
 	// Toggle field settings based on type.
-	jQuery('select[name=pmpro_userfields_field_type]').on('change', function (event) {
-		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
-		var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
-		var fieldtype = jQuery(this).val();
-
-		var fieldoptions = fieldsettings.find('textarea[name=pmpro_userfields_field_options]').parents('.pmpro_userfield-field-setting');
-		var fieldfiles = fieldsettings.find('input[name=pmpro_userfields_field_max_file_size]').parents('.pmpro_userfield-field-setting');
-		var fielddefault = fieldsettings.find('input[name=pmpro_userfields_field_default]').parents('.pmpro_userfield-field-setting');
-
-		// Hide all the field settings.
-		fieldoptions.hide();
-		fieldfiles.hide();
-		fielddefault.hide();
-
-		// Show the option field if needed.
-		var optiontypes = ['checkbox_grouped', 'radio', 'select', 'select2', 'multiselect'];
-		if (jQuery.inArray(fieldtype, optiontypes) > -1) {
-			fieldoptions.show();
-		}
-
-		// Show the file field options if needed.
-		if (fieldtype === 'file') {
-			fieldfiles.show();
-		}
-
-		// Show the default field if needed.
-		var defaulttypes = ['text', 'textarea', 'checkbox', 'radio', 'select', 'date', 'readonly', 'hidden', 'number'];
-		if (jQuery.inArray(fieldtype, defaulttypes) > -1) {
-			fielddefault.show();
-		}
+	jQuery('.pmpro_admin-pmpro-userfields select[name=type]').on('change', function (event) {
+		update_userfield_type_fields();
 	});
 
 	// Suggest name after leaving label field.
-	jQuery('input[name=pmpro_userfields_field_label]').on('focusout', function (event) {
-		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
-		var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
-		var fieldname = fieldsettings.find('input[name=pmpro_userfields_field_name]');
-		if (!fieldname.val()) {
-			fieldname.val(jQuery(this).val().toLowerCase().replace(/[^a-z0-9]/gi, '_').replace(/(^\_+|\_+$)/mg, ''));
+	jQuery('.pmpro_admin-pmpro-userfields input[name=label]').on('focusout', function (event) {
+		// Check if the "name" field is empty and a text field.
+		var name = jQuery('.pmpro_admin-pmpro-userfields input[name=name]').val();
+		var label = jQuery('.pmpro_admin-pmpro-userfields input[name=label]').val();
+		if ( ! name && label ) {
+			// Generate a name based on the label.
+			name = label.toLowerCase().replace(/[^a-z0-9]/gi, '_').replace(/(^\_+|\_+$)/mg, '');
+			jQuery('.pmpro_admin-pmpro-userfields input[name=name]').val(name);
 		}
 	});
 
-	// If we change a field, mark it as changed.
-	jQuery('.pmpro_userfield-group input, .pmpro_userfield-group textarea, .pmpro_userfield-group select').on('change', function (event) {
-		pmpro_userfields_made_a_change();
-	});
-
-	// Save User Field Settings
-	jQuery('#pmpro_userfields_savesettings').unbind('click').on('click', function (event) {
-		///event.preventDefault();
-		// We have saved, so we no longer need to warn user if they try to navigate away.
-		window.onbeforeunload = null;
-
-		let field_groups = [];
-		let group_names = [];
-		let default_group_name = 'More Information';
-
-		jQuery('.pmpro_userfield-group').each(function (index, value) {
-			let group_name = jQuery(this).find('input[name=pmpro_userfields_group_name]').val();
-
-			// Make sure name is not blank.
-			if (group_name.length === 0) {
-				group_name = default_group_name;
-			}
-			// Make sure name is unique.
-			let count = 1;
-			while (group_names.includes(group_name)) {
-				count++;
-				group_name = group_name.replace(/\(0-9*\)/, '');
-				group_name = group_name + ' (' + String(count) + ')';
-			}
-			group_names.push(group_name);
-
-			let group_checkout = jQuery(this).find('select[name=pmpro_userfields_group_checkout]').val();
-			let group_profile = jQuery(this).find('select[name=pmpro_userfields_group_profile]').val();
-			let group_description = jQuery(this).find('textarea[name=pmpro_userfields_group_description]').val();
-
-			// Get level ids.            
-			let group_levels = [];
-			jQuery(this).find('input[name="pmpro_userfields_group_membership[]"]:checked').each(function () {
-				group_levels.push(parseInt(jQuery(this).attr('id').replace('pmpro_userfields_group_membership_', '')));
-			});
-
-			// Get fields.
-			let group_fields = [];
-			jQuery(this).find('div.pmpro_userfield-group-fields div.pmpro_userfield-field-settings').each(function () {
-				let field_label = jQuery(this).find('input[name=pmpro_userfields_field_label]').val();
-				let field_name = jQuery(this).find('input[name=pmpro_userfields_field_name]').val();
-				let field_type = jQuery(this).find('select[name=pmpro_userfields_field_type]').val();
-				let field_required = jQuery(this).find('select[name=pmpro_userfields_field_required]').val();
-				let field_readonly = jQuery(this).find('select[name=pmpro_userfields_field_readonly]').val();
-				let field_profile = jQuery(this).find('select[name=pmpro_userfields_field_profile]').val();
-				let field_wrapper_class = jQuery(this).find('input[name=pmpro_userfields_field_class]').val();
-				let field_element_class = jQuery(this).find('input[name=pmpro_userfields_field_divclass]').val();
-				let field_hint = jQuery(this).find('textarea[name=pmpro_userfields_field_hint]').val();
-				let field_options = jQuery(this).find('textarea[name=pmpro_userfields_field_options]').val();
-				let field_allowed_file_types = jQuery(this).find('input[name=pmpro_userfields_field_allowed_file_types]').val();
-				let field_max_file_size = jQuery(this).find('input[name=pmpro_userfields_field_max_file_size]').val();
-				let field_default = jQuery(this).find('input[name=pmpro_userfields_field_default]').val();
-
-				// Get level ids.            
-				let field_levels = [];
-				jQuery(this).find('input[name="pmpro_userfields_field_levels[]"]:checked').each(function () {
-					field_levels.push(parseInt(jQuery(this).attr('id').replace('pmpro_userfields_field_levels_', '')));
-				});
-
-				let field = {
-					'label': field_label,
-					'name': field_name,
-					'type': field_type,
-					'required': field_required,
-					'readonly': field_readonly,
-					'levels': field_levels,
-					'profile': field_profile,
-					'wrapper_class': field_wrapper_class,
-					'element_class': field_element_class,
-					'hint': field_hint,
-					'options': field_options,
-					'allowed_file_types': field_allowed_file_types,
-					'max_file_size': field_max_file_size,
-					'default': field_default
-				};
-
-				// Add to array. (Only if it has a label or name.)
-				if (field.label.length > 0 || field.name.length > 0) {
-					group_fields.push(field);
-				}
-			});
-
-			// Set up the field group object.
-			let field_group = {
-				'name': group_name,
-				'checkout': group_checkout,
-				'profile': group_profile,
-				'description': group_description,
-				'levels': group_levels,
-				'fields': group_fields
-			};
-
-			// Add to array.
-			field_groups.push(field_group);
-		});
-
-		// console.log( field_groups );
-		jQuery('#pmpro_user_fields_settings').val(JSON.stringify(field_groups));
-
-		return true;
+	jQuery('.pmpro-level-restrictions-preview-button').on('click', function(event) {
+		event.preventDefault();
+		jQuery(this).hide();
+		jQuery(this).next('.pmpro-level-restrictions-preview-list').show();
 	});
 }
 

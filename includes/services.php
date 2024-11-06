@@ -197,18 +197,127 @@ add_action('wp_ajax_pmpro_update_level_group_order', 'pmpro_update_level_group_o
 // User fields AJAX.
 /**
  * Callback to draw a field group.
+ *
+ * @deprecated TBD
  */
-function pmpro_userfields_get_group_ajax() {	
-	pmpro_get_field_group_html();
+function pmpro_userfields_get_group_ajax() {
+	_deprecated_function( __FUNCTION__, 'TBD' );
     exit;
 }
 add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_ajax' );
  
 /**
  * Callback to draw a field.
+ *
+ * @deprecated TBD
  */
 function pmpro_userfields_get_field_ajax() {
- 	pmpro_get_field_html();
+	_deprecated_function( __FUNCTION__, 'TBD' );
 	exit;
 }
 add_action( 'wp_ajax_pmpro_userfields_get_field', 'pmpro_userfields_get_field_ajax' );
+
+function pmpro_update_field_order() {
+	// only admins can get this
+	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_userfields' ) ) ) {
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	// Check the nonce.
+	if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_update_field_order' ) ) {
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	// Get the field group that was reordered and the new order.
+	$field_group = sanitize_text_field( $_REQUEST['group'] );
+	$ordered_fields = array_map( 'sanitize_text_field', $_REQUEST['ordered_fields'] );
+	
+	// Get the current user fields settings.
+	$current_settings = pmpro_get_user_fields_settings();
+
+	// Find the group object that we are reordering.
+	$group = null;
+	foreach ( $current_settings as $group_settings ) {
+		if ( $group_settings->name === $field_group ) {
+			$group = $group_settings;
+			break;
+		}
+	}
+	if ( empty( $group ) ) {
+		die( esc_html__( 'Could not find the group to reorder.', 'paid-memberships-pro' ) );
+	}
+
+	// Create an associative version of $group->fields to make it easier to reorder.
+	$group_field_tmp = array();
+	foreach ( $group->fields as $field ) {
+		$group_field_tmp[ $field->name ] = $field;
+	}
+
+	// Create a reordered version of the fields.
+	$reordered_fields = array();
+	foreach ( $ordered_fields as $field_name ) {
+		if ( isset( $group_field_tmp[ $field_name ] ) ) {
+			$reordered_fields[] = $group_field_tmp[ $field_name ];
+			unset( $group_field_tmp[ $field_name ] );
+		}
+	}
+
+	// If there are any fields left in $group_field_tmp, add them to the end of $reordered_fields.
+	if ( ! empty( $group_field_tmp ) ) {
+		$reordered_fields = array_merge( $reordered_fields, $group_field_tmp );
+	}
+
+	// Update the group with the reordered fields.
+	$group->fields = $reordered_fields;
+
+	// Update the settings with the reordered group.
+	update_option( 'pmpro_user_fields_settings', $current_settings );
+
+    exit;
+}
+add_action('wp_ajax_pmpro_update_field_order', 'pmpro_update_field_order');
+
+
+function pmpro_update_field_group_order() {
+	// only admins can get this
+	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_userfields' ) ) ) {
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	// Check the nonce.
+	if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_update_field_group_order' ) ) {
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	// Get the new order.
+	$ordered_groups = array_map( 'sanitize_text_field', $_REQUEST['ordered_groups'] );
+
+	// Get the current user fields settings.
+	$current_settings = pmpro_get_user_fields_settings();
+
+	// Create an associative version of $current_settings to make it easier to reorder.
+	$current_settings_tmp = array();
+	foreach ( $current_settings as $group_settings ) {
+		$current_settings_tmp[ $group_settings->name ] = $group_settings;
+	}
+
+	// Create a reordered version of the groups.
+	$reordered_groups = array();
+	foreach ( $ordered_groups as $group_name ) {
+		if ( isset( $current_settings_tmp[ $group_name ] ) ) {
+			$reordered_groups[] = $current_settings_tmp[ $group_name ];
+			unset( $current_settings_tmp[ $group_name ] );
+		}
+	}
+
+	// If there are any groups left in $current_settings_tmp, add them to the end of $reordered_groups.
+	if ( ! empty( $current_settings_tmp ) ) {
+		$reordered_groups = array_merge( $reordered_groups, $current_settings_tmp );
+	}
+
+	// Update the settings with the reordered groups.
+	update_option( 'pmpro_user_fields_settings', $reordered_groups );
+
+	exit;
+}
+add_action('wp_ajax_pmpro_update_field_group_order', 'pmpro_update_field_group_order');
