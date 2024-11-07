@@ -880,7 +880,7 @@ class PMPro_Field {
 			$r_end .= "</div>";
 		}
 
-		if ( empty( $value ) && pmpro_is_checkout() ) {
+		if ( '' === $value && pmpro_is_checkout() ) {
 			/**
 			 * Filter to set the default value for a field. The default value will only load if no value is already found.
 			 * 
@@ -894,7 +894,7 @@ class PMPro_Field {
 
 		if($this->type == "text")
 		{
-			$r = '<input type="text" id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '" value="' . esc_attr(wp_unslash($value)) . '" ';
+			$r = '<input type="text" id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '" value="' . ( is_string( $value ) ? esc_attr(wp_unslash($value) ) : '' ) . '" ';
 			if(!empty($this->size))
 				$r .= 'size="' . esc_attr( $this->size ) . '" ';
 			if(!empty($this->class))
@@ -1120,7 +1120,7 @@ class PMPro_Field {
 				$r .= 'readonly="readonly" ';
 			if(!empty($this->html_attributes))
 				$r .= $this->getHTMLAttributes();
-			$r .= '>' . esc_textarea(wp_unslash($value)) . '</textarea>';
+				$r .= '>' . ( ( is_string( $value ) ) ? esc_textarea(wp_unslash($value) ) : '' ) . '</textarea>';
 		}
 		elseif($this->type == "hidden")
 		{
