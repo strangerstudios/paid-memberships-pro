@@ -299,6 +299,41 @@ function pmpro_userfields_prep_click_events() {
 		pmpro_userfields_made_a_change();
 	});
 
+	// Make sure the file is finished loading for this logic of conditional logic.
+	jQuery(document).ready(function() {
+		// Show the conditional fields if previously checked on page load/interaction.
+		if ( jQuery( '.pmpro_userfield-field-options a.edit-field' ).click( function(){
+			if ( jQuery(this).closest('.pmpro_userfield-group-field').find('input[name="pmpro_userfields_field_show_conditional_logic"]').is(":checked") ) {
+				jQuery(this).closest('.pmpro_userfield-group-field').find('#pmpro_userfield-field-setting-conditional-logic').show();
+			}
+			
+			var condition_value = jQuery(this).closest('.pmpro_userfield-group-field').find('#pmpro_userfields_field_conditional_logic_condition');
+
+			// Show any predefined conditional fields.
+			if ( condition_value.val() !== 'is_empty' && condition_value.val() !== 'is_not_empty' && condition_value.val() !== '' ) {
+				jQuery(this).closest('.pmpro_userfield-group-field').find('#pmpro_userfields_field_conditional_logic_value').show() ;
+			}
+		}));
+
+		// Show or hide the conditional value field if the fields are not "is_empty" and "is_not_empty".
+		jQuery('select#pmpro_userfields_field_conditional_logic_condition').on('change', function() {
+			if( jQuery(this).val() !== 'is_empty' && jQuery(this).val() !== 'is_not_empty' && jQuery(this).val() !== '' ) {
+				jQuery(this).closest('.pmpro_userfield-field-setting').next('#pmpro_userfields_field_conditional_logic_value').show();
+			} else {
+				jQuery(this).closest('.pmpro_userfield-field-setting').next('#pmpro_userfields_field_conditional_logic_value').hide();
+			}
+		});
+
+		// Show or hide condtion fields if the checkbox is checked or not. This tries to show the first field setting after the conditonal logic checkbox which triggers to show all fields within the div as well.
+		jQuery('input[name="pmpro_userfields_field_show_conditional_logic"]').click(function() {
+			if(jQuery(this).is(":checked")) {
+				jQuery(this).closest('.pmpro_userfield-field-setting').next().show();
+			} else {
+				jQuery(this).closest('.pmpro_userfield-field-setting').next().hide();
+			}
+		});
+	});
+
 	// Delete field button.
 	jQuery('.pmpro_userfield-field-options a.delete-field, .pmpro_userfield-field-actions .is-destructive').unbind('click').on('click', function (event) {
 		var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
@@ -515,10 +550,18 @@ function pmpro_userfields_prep_click_events() {
 				let field_element_class = jQuery(this).find('input[name=pmpro_userfields_field_divclass]').val();
 				let field_hint = jQuery(this).find('textarea[name=pmpro_userfields_field_hint]').val();
 				let field_options = jQuery(this).find('textarea[name=pmpro_userfields_field_options]').val();
+				let field_display_conditions = jQuery(this).find('input[name=pmpro_userfields_field_show_conditional_logic]').is(':checked');
 				let field_allowed_file_types = jQuery(this).find('input[name=pmpro_userfields_field_allowed_file_types]').val();
 				let field_max_file_size = jQuery(this).find('input[name=pmpro_userfields_field_max_file_size]').val();
 				let field_default = jQuery(this).find('input[name=pmpro_userfields_field_default]').val();
 
+				// Field conditions (aka depends)
+				let field_conditions = {
+					'id': jQuery(this).find('input[name=pmpro_userfields_field_conditional_logic_field]').val(),
+					'value': jQuery(this).find('input[name=pmpro_userfields_field_conditional_logic_value]').val(),
+					'condition': jQuery(this).find('select[name=pmpro_userfields_field_conditional_logic_condition]').val()
+				};
+				
 				// Get level ids.            
 				let field_levels = [];
 				jQuery(this).find('input[name="pmpro_userfields_field_levels[]"]:checked').each(function () {
@@ -537,6 +580,8 @@ function pmpro_userfields_prep_click_events() {
 					'element_class': field_element_class,
 					'hint': field_hint,
 					'options': field_options,
+					'display_conditions': field_display_conditions,
+					'depends': field_conditions,
 					'allowed_file_types': field_allowed_file_types,
 					'max_file_size': field_max_file_size,
 					'default': field_default
