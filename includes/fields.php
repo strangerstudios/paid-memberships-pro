@@ -391,7 +391,7 @@ function pmpro_checkout_user_creation_checks_user_fields( $okay ) {
 			}
 
 			// If the field was filled if needed, skip it.
-			if ( empty( $field->was_filled_if_needed() ) ) {
+			if ( $field->was_filled_if_needed() ) {
 				continue;
 			}
 
@@ -491,7 +491,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 			}
 
 			// If the field was filled if needed, skip it.
-			if ( empty( $field->was_filled_if_needed() ) ) {
+			if ( $field->was_filled_if_needed() ) {
 				continue;
 			}
 
