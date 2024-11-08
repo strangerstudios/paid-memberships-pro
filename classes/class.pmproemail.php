@@ -1394,7 +1394,7 @@
 			if(!$user)
 				return false;
 
-			$email = new PMPro_Email_Template_Change( $user );
+			$email = new PMPro_Email_Template_Admin_Change( $user );
 			$email->send();
 		}
 		
@@ -1412,7 +1412,7 @@
 			if(!$user)
 				return false;
 
-			$email = new PMPro_Email_Template_Change_Admin( $user );
+			$email = new PMPro_Email_Template_Admin_Change_Admin( $user );
 			$email->send();
 		}
 
