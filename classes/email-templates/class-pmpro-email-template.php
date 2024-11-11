@@ -42,6 +42,7 @@ abstract class PMPro_Email_Template {
 		$pmpro_email           = new PMProEmail();
 		$pmpro_email->email    = $this->get_recipient_email();
 		$pmpro_email->subject  = $this->get_default_subject(); // This will be overridden if there is a subject saved in the database.
+		$pmpro_email->body     = $this->get_default_body();
 		$pmpro_email->data     = array_merge( $this->get_base_email_template_variables(), $this->get_email_template_variables() );
 		$pmpro_email->template = apply_filters_deprecated( 'pmpro_email_template', array( $this->get_template_slug() ), 'TBD', 'pmpro_email_body' );
 		return $pmpro_email->sendEmail();

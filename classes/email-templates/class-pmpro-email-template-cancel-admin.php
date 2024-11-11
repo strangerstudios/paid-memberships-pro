@@ -1,6 +1,6 @@
 <?php
 
-class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
+class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	/**
 	 * The user object of the user to send the email to.
 	 *
@@ -24,6 +24,7 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 * @param int|array|null $cancelled_level_ids The ID or array of IDs of the membership levels that were cancelled. If null, "all" levels were cancelled.
 	 */
 	public function __construct( WP_User $user, $cancelled_level_ids ) {
+		// deprecating having null $cancelled_level_ids
 		if ( $cancelled_level_ids == null ) {
 			_doing_it_wrong( __FUNCTION__, esc_html__( 'The $cancelled_level_ids parameter is required.', 'paid-memberships-pro' ), '3.3' );
 		}
@@ -39,7 +40,7 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 * @return string The email template slug.
 	 */
 	public static function get_template_slug() {
-		return 'cancel';
+		return 'cancel_admin';
 	}
 
 	/**
@@ -50,7 +51,7 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Cancel', 'paid-memberships-pro' );
+		return __('Cancel (admin)', 'paid-memberships-pro');
 	}
 
 	/**
@@ -61,7 +62,7 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return __( 'The site administrator can manually cancel a user\'s membership through the WordPress admin or the member can cancel their own membership through your site. This email is sent to the member as confirmation of a cancelled membership.', 'paid-memberships-pro' );
+		return __( 'The site administrator can manually cancel a user\'s membership through the WordPress admin or the member can cancel their own membership through your site. This email is sent to the site administrator as confirmation of a cancelled membership.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -72,7 +73,7 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return __( 'Your membership at !!sitename!! has been CANCELLED', 'paid-memberships-pro' );
+		return __( "Membership for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' );
 	}
 
 	/**
@@ -83,12 +84,14 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return __( '<p>Your membership at !!sitename!! has been cancelled.</p>
+		return __( '<p>The membership for !!user_login!! at !!sitename!! has been cancelled.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
 <p>Membership Level: !!membership_level_name!!</p>
+<p>Start Date: !!startdate!!</p>
+<p>End Date: !!enddate!!</p>
 
-<p>If you did not request this cancellation and would like more information please contact us at !!siteemail!!</p>', 'paid-memberships-pro' );
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -99,13 +102,14 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public static function get_email_template_variables_with_description() {
-		return array(
-			'!!user_email!!' => __( 'The email address of the user who cancelled their membership.', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The display name of the user who cancelled their membership.', 'paid-memberships-pro' ),
-			'!!user_login!!' => __( 'The login name of the user who cancelled their membership.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => __( 'The ID of the membership level that was cancelled.', 'paid-memberships-pro' ),
+		 return array(
+		 	'!!user_email!!' => __( 'The email address of the user who cancelled their membership.', 'paid-memberships-pro' ),
+		 	'!!display_name!!' => __( 'The display name of the user who cancelled their membership.', 'paid-memberships-pro' ),
+		 	'!!user_login!!' => __( 'The login name of the user who cancelled their membership.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => __( 'The name of the membership level that was cancelled.', 'paid-memberships-pro' ),
-		);
+			'!!startdate!!' => __( 'The start date of the membership level that was cancelled.', 'paid-memberships-pro' ),
+			'!!enddate!!' => __( 'The end date of the membership level that was cancelled.', 'paid-memberships-pro' )
+		 );
 	}
 
 	/**
@@ -147,17 +151,56 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 		);
 
 		if ( empty( $this->cancelled_level_ids ) ) {
-			$email_template_variables['membership_id'] = '';
 			$email_template_variables['membership_level_name'] = __( 'All Levels', 'paid-memberships-pro' );
 		} elseif ( is_array( $this->cancelled_level_ids ) ) {
-			$email_template_variables['membership_id'] = $this->cancelled_level_ids[0]; // Pass just the first as the level id.
 			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode( "','", $this->cancelled_level_ids ) . "')" ) );
 		} else {
-			$email_template_variables['membership_id'] = $this->cancelled_level_ids;
 			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $this->cancelled_level_ids . "'" ) );
 		}
 
+		$startdate = $this->get_start_and_end_date( 'startdate' );
+		
+		if( !empty( $startdate ) ) {
+			$email_template_variables['startdate'] = date_i18n( get_option( 'date_format' ), $startdate );
+		} else {
+			$email_template_variables['startdate'] = "";
+		}
+
+		$enddate = $this->get_start_and_end_date( 'enddate' );
+		
+		if( !empty( $enddate ) ) {
+			$email_template_variables['enddate'] = date_i18n( get_option( 'date_format' ), $enddate );
+		} else {
+			$email_template_variables['enddate'] = "";
+		}
+
 		return $email_template_variables;
+	}
+
+	/**
+	 * Get the start or end date of the membership level that was cancelled.
+	 *
+	 * @since TBD
+	 * @param string $end_or_start_date Either startdate or enddate.
+	 * @return int The start or end date of the membership level that was cancelled.
+	 *
+	 */
+	private function get_start_and_end_date( $end_or_start_date ) {
+		global $wpdb;
+		
+		$old_level_id = $this->cancelled_level_ids;
+		// if $this->cancelled_level_ids is an array, get the first level id
+		if( is_array( $this->cancelled_level_ids ) ) {
+			$old_level_id = $this->cancelled_level_ids[0];
+		}
+
+		return $wpdb->get_var(
+			"SELECT UNIX_TIMESTAMP(CONVERT_TZ(" . $end_or_start_date .", '+00:00', @@global.time_zone)) as " . $end_or_start_date . " 
+			 FROM $wpdb->pmpro_memberships_users 
+			 WHERE user_id = '" . $this->user->ID . "' 
+			 	AND membership_id = '" . $old_level_id . "' 
+				AND status IN('inactive', 'cancelled', 'admin_cancelled') 
+			ORDER BY id DESC" );
 	}
 }
 
@@ -169,10 +212,9 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
  * @param array $email_templates The email templates (template slug => email template class name)
  * @return array The modified email templates array.
  */
-function pmpro_email_templates_cancel( $email_templates ) {
-	$email_templates['cancel'] = 'PMPro_Email_Template_Cancel';
+function pmpro_email_templates_cancel_admin( $email_templates ) {
+	$email_templates['cancel_admin'] = 'PMPro_Email_Template_Cancel_Admin';
 
 	return $email_templates;
 }
-add_filter( 'pmpro_email_templates', 'pmpro_email_templates_cancel' );
-
+add_filter( 'pmpro_email_templates', 'pmpro_email_templates_cancel_admin' );

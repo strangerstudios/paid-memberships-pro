@@ -52,7 +52,9 @@ require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );    
 
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template.php' ); // base class for email templates
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel.php' ); // cancel email template
-
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-admin.php' ); // cancel email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change-admin.php' ); // change email template
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
 

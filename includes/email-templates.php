@@ -25,28 +25,6 @@ $pmpro_email_templates_defaults = array(
 		'body' => __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
-	'admin_change' => array(
-		'subject' => __( "Your membership at !!sitename!! has been changed", 'paid-memberships-pro' ),
-		'description' => __( 'Admin Change', 'paid-memberships-pro'),
-		'body' => __( '<p>An administrator at !!sitename!! has changed your membership level.</p>
-
-<p>!!membership_change!!</p>
-		
-<p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>
-		
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'The site administrator can manually update a user\'s membership level through the WordPress admin. This email notifies the member of the level update.', 'paid-memberships-pro' )
-	),
-	'admin_change_admin' => array(
-		'subject' => __( "Membership for !!user_login!! at !!sitename!! has been changed", 'paid-memberships-pro' ),
-		'description' => __('Admin Change (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>An administrator at !!sitename!! has changed a membership level for !!name!!.</p>
-
-<p>!!membership_change!!</p>
-
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'The site administrator can manually update a user\'s membership level through the WordPress admin. This email notifies the site administrator of the level update.', 'paid-memberships-pro' )
-	),
 	'billing' => array(
 		'subject'  => __( "Your billing information has been updated at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Billing Information Updated', 'paid-memberships-pro'),
@@ -101,19 +79,6 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your WordPress admin here: !!login_url!!</p>
 ', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent out if a recurring payment has failed for a member, usually due to an expired or cancelled credit card. This email is sent to the site administrator.', 'paid-memberships-pro' )
-	),
-	'cancel_admin'  => array(
-		'subject' => __( "Membership for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
-		'description' => __('Cancel (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>The membership for !!user_login!! at !!sitename!! has been cancelled.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-<p>Start Date: !!startdate!!</p>
-<p>End Date: !!enddate!!</p>
-
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'The site administrator can manually cancel a user\'s membership through the WordPress admin or the member can cancel their own membership through your site. This email is sent to the site administrator as confirmation of a cancelled membership.', 'paid-memberships-pro' )
 	),
 	'cancel_on_next_payment_date' => array(
 		'subject' => __( "Your payment subscription at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
