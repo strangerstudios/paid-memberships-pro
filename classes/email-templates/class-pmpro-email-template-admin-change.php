@@ -73,8 +73,11 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	 */
 	public static function get_default_body() {
 		return __( '<p>An administrator at !!sitename!! has changed your membership level.</p>
+
 <p>!!membership_change!!</p>
+
 <p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>
+
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' );
 	}
 
