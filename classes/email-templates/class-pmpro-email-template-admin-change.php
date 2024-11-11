@@ -15,7 +15,6 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	 * @since TBD
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int|array|null $cancelled_level_ids The ID or array of IDs of the membership levels that were cancelled. If null, "all" levels were cancelled.
 	 */
 	public function __construct( WP_User $user ) {
 		$this->user = $user;
@@ -74,9 +73,9 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	 */
 	public static function get_default_body() {
 		return __( '<p>An administrator at !!sitename!! has changed your membership level.</p>
-			<p>!!membership_change!!</p>
-			<p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>
-			<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' );
+<p>!!membership_change!!</p>
+<p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -98,7 +97,6 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 		$email_template_variables = array(
 			'membership_changed' => $membership_changed,
 			'subject' => $this->get_default_subject(),
-			'header_name' => $user->display_name,
 			'name' => $user->display_name, 
 			'display_name' => $user->display_name, 
 			'user_login' => $user->user_login, 
@@ -116,7 +114,12 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!membership_changed!!' => __( 'Membership Level Change', 'paid-memberships-pro' ),
+			'!!membership_change!!' => __( 'Membership Level Change', 'paid-memberships-pro' ),
+			'!!subject!!' => __( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
+			'!!name!!' => __( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
+			'!!display_name!!' => __( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
+			'!!user_login!!' => __( 'The login name of the user whose membership was changed.', 'paid-memberships-pro' ),
+			'!!user_email!!' => __( 'The email address of the user whose membership was changed.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -143,18 +146,17 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	}
 }
 
-	/**
-	 * Register the email template.
-	 *
-	 * @since TBD
-	 *
-	 * @param array $email_templates The email templates (template slug => email template class name)
-	 * @return array The modified email templates array.
-	 */
-	function pmpro_email_templates_change( $email_templates ) {
-		$email_templates['admin_change'] = 'PMPro_Email_Template_Admin_Change';
+/**
+ * Register the email template.
+ *
+ * @since TBD
+ *
+ * @param array $email_templates The email templates (template slug => email template class name)
+ * @return array The modified email templates array.
+ */
+function pmpro_email_templates_change( $email_templates ) {
+	$email_templates['admin_change'] = 'PMPro_Email_Template_Admin_Change';
 
-		return $email_templates;
-	}
-
+	return $email_templates;
+}
 add_filter( 'pmpro_email_templates', 'pmpro_email_templates_change' );
