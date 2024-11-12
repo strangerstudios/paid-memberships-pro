@@ -162,7 +162,9 @@ if ( is_admin() ) {
 /*
 	Definitions
 */
-define( 'SITENAME', str_replace( '&#039;', "'", get_bloginfo( 'name' ) ) );
+if ( ! defined( 'SITENAME' ) ) {
+	define( 'SITENAME', str_replace( '&#039;', "'", get_bloginfo( 'name' ) ) );
+}
 if ( ! defined( 'SITEURL'  ) ) {
 	$urlparts = explode( '//', home_url() );
 	define( 'SITEURL', $urlparts[1] );
