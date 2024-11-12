@@ -783,14 +783,7 @@ class PMPro_Subscription {
 
 		// Get date in WP local timezone.
 		if ( $local_time ) {
-
-			$date = get_date_from_gmt( $date );
-
-			// If it's not a timestamp, conver it to one for the date_i18n function.
-			if ( ! is_numeric( $date ) ) {
-				$date = strtotime( $date );
-			}
-
+			$date = strtotime( get_date_from_gmt( $date ) );
 			return date_i18n( $format, $date, true );
 		}
 
