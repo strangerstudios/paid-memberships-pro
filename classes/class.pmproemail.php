@@ -946,62 +946,14 @@
 			global $current_user;
 			if(!$user)
 				$user = $current_user;
-			
+
 			if(!$user || !$order)
 				return false;
 
-			//get Level from constructor
-			$membership_level = new PMPro_Membership_Level( $order->membership_id );
+			$email = new PMPro_Email_Template_Billing_Failure( $user, $order );
+			$email->send();
+		}
 
-			// Try to get the subscription ID.
-			$subscription = $order->get_subscription();
-			$subscription_id = ! empty( $subscription ) ? $subscription->get_id() : null;
-
-			$this->email = $user->user_email;
-			$this->subject = sprintf( __("Membership payment for level %s failed at %s", "paid-memberships-pro"),
-				$membership_level->name, get_option("blogname") );
-
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $user->display_name,
-								'name' => $user->display_name,
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,									
-								'billing_name' => $order->billing->name,
-								'billing_street' => $order->billing->street,
-								'billing_street2' => $order->billing->street2,
-								'billing_city' => $order->billing->city,
-								'billing_state' => $order->billing->state,
-								'billing_zip' => $order->billing->zip,
-								'billing_country' => $order->billing->country,
-								'billing_phone' => $order->billing->phone,
-								'cardtype' => $order->cardtype,
-								'accountnumber' => hideCardNumber($order->accountnumber),
-								'expirationmonth' => $order->expirationmonth,
-								'expirationyear' => $order->expirationyear,
-								'login_link' => pmpro_login_url( pmpro_url( 'billing', empty( $subscription_id ) ? '' : '?subscription_id=' . $subscription_id ) ),
-								'login_url' => pmpro_login_url( pmpro_url( 'billing', empty( $subscription_id ) ? '' : '?subscription_id=' . $subscription_id ) ),
-								'levels_url' => pmpro_url( 'levels' )
-							);
-			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																 $order->billing->street,
-																 $order->billing->street2,
-																 $order->billing->city,
-																 $order->billing->state,
-																 $order->billing->zip,
-																 $order->billing->country,
-																 $order->billing->phone);
-
-			$this->template = apply_filters("pmpro_email_template", "billing_failure", $this);
-
-			return $this->sendEmail();
-		}				
-		
 		/**
 		 * Send the admin an email when their recurring payment has failed.
 		 *
@@ -1011,52 +963,13 @@
 		function sendBillingFailureAdminEmail($email, $order = NULL) {
 			if(!$order)			
 				return false;
-				
-			$user = get_userdata($order->user_id);
-			$membership_level = new PMPro_Membership_Level( $order->membership_id );
-			
-			$this->email = $email;
-			$this->subject = sprintf(__("Membership payment failed For %s at %s", "paid-memberships-pro"), $user->display_name, get_option("blogname"));
-			
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $this->get_admin_name( $email ),
-								'name' => 'Admin', 
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,									
-								'billing_name' => $order->billing->name,
-								'billing_street' => $order->billing->street,
-								'billing_street2' => $order->billing->street2,
-								'billing_city' => $order->billing->city,
-								'billing_state' => $order->billing->state,
-								'billing_zip' => $order->billing->zip,
-								'billing_country' => $order->billing->country,
-								'billing_phone' => $order->billing->phone,
-								'cardtype' => $order->cardtype,
-								'accountnumber' => hideCardNumber($order->accountnumber),
-								'expirationmonth' => $order->expirationmonth,
-								'expirationyear' => $order->expirationyear,
-								'login_link' => pmpro_login_url( get_edit_user_link( $user->ID ) ),
-								'login_url' => pmpro_login_url( get_edit_user_link( $user->ID ) ),
-								'levels_url' => pmpro_url( 'levels' ),
-							);
-			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																 $order->billing->street,
-																 $order->billing->street2,
-																 $order->billing->city,
-																 $order->billing->state,
-																 $order->billing->zip,
-																 $order->billing->country,
-																 $order->billing->phone);
 
-			$this->template = apply_filters("pmpro_email_template", "billing_failure_admin", $this);
+			$user = get_userdata( $order->user_id );
+			if(!$user)
+				return false;
 
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Billing_Failure_Admin( $user, $order );
+			$email->send();
 		}
 
 		/**
