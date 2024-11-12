@@ -783,22 +783,24 @@ class PMPro_Subscription {
 
 		// Get date in WP local timezone.
 		if ( $local_time ) {
-			if( 'U' === $format ){
-				// When formatting using the epoch, the date must already consider the timezone offset.
-				// Then, first apply a simple format to add the timezone.
-				$date = get_date_from_gmt( $date );
+
+			$date = get_date_from_gmt( $date );
+
+			// If it's not a timestamp, conver it to one for the date_i18n function.
+			if ( ! is_numeric( $date ) ) {
+				$date = strtotime( $date );
 			}
 
-			return get_date_from_gmt( $date, $format );
+			return date_i18n( $format, $date, true );
 		}
 
-		// Allow timestamps.
+		// If it's not a timestamp, conver it to one for the date_i18n function.
 		if ( ! is_numeric( $date ) ) {
 			$date = strtotime( $date );
 		}
 
-		// Get date in GMT timezone.
-		return gmdate( $format, $date );
+		$date = gmdate( $date );
+		return date_i18n( $format, $date, true );
 	}
 
 	/**
