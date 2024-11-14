@@ -6,6 +6,15 @@
 global $pmpro_reports;
 
 /**
+ * Filter the admin reports provided by our core, our Add Ons, and other plugins/themes.
+ *
+ * @since TBD
+ *
+ * @param array  $pmpro_reports The registered reports.
+ */
+$pmpro_reports = apply_filters( 'pmpro_registered_reports', $pmpro_reports );
+
+/**
 * Load the Paid Memberships Pro dashboard-area header
 */
 require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
