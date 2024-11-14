@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Global to store field groups and user fields.
 global $pmpro_field_groups, $pmpro_user_fields;
 $pmpro_user_fields = array();
@@ -37,27 +37,27 @@ function pmpro_is_field( $var ) {
  */
 function pmpro_add_user_field( $where, $field ) {
 	global $pmpro_user_fields;
-	
+
     /**
      * Filter the group to add the field to.
-     * 
+     *
      * @since 2.9.3
-     * 
+     *
      * @param string $where The name of the group to add the field to.
-     * @param PMProField $field The field being added.
+     * @param PMPro_Field $field The field being added.
      */
     $where = apply_filters( 'pmpro_add_user_field_where', $where, $field );
-    
+
     /**
      * Filter the field to add.
-     * 
+     *
      * @since 2.9.3
-     *             
-     * @param PMProField $field The field being added.
+     *
+     * @param PMPro_Field $field The field being added.
      * @param string $where The name of the group to add the field to.
      */
     $field = apply_filters( 'pmpro_add_user_field', $field, $where );
-    
+
     if(empty($pmpro_user_fields[$where])) {
 		$pmpro_user_fields[$where] = array();
 	}
@@ -116,7 +116,7 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
  */
 function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	global $pmpro_user_taxonomies;
-	
+
 	// Sanitize the taxonomy $name and make sure it is less than 32 characters.
 	$safe_name = sanitize_key( $name );
 	if ( strlen( $safe_name ) > 32 ) {
@@ -234,7 +234,7 @@ function pmpro_check_field_for_level( $field, $scope = 'default', $args = NULL )
 			} else {
                 return false;
 			}
-		} else {			
+		} else {
 			if ( empty( $pmpro_checkout_level_ids ) && ! empty( $pmpro_level ) && ! empty( $pmpro_level->id ) ) {
 				$pmpro_checkout_level_ids = array( $pmpro_level->id );
 			}
@@ -265,11 +265,11 @@ function pmpro_display_fields_in_group( $group, $scope = 'checkout' ) {
 			if ( ! pmpro_is_field( $field ) ) {
                 continue;
             }
-            
+
             if ( ! pmpro_check_field_for_level( $field ) ) {
                 continue;
             }
-            
+
             if ( $scope == 'checkout' ) {
                 if( ! isset( $field->profile ) || $field->profile !== 'only' && $field->profile !== 'only_admin' ) {
     				$field->displayAtCheckout();
@@ -392,7 +392,7 @@ function pmpro_after_checkout_save_fields( $user_id, $order ) {
                 if( ! pmpro_is_field( $field ) ) {
                     continue;
                 }
-                
+
                 if ( ! pmpro_check_field_for_level( $field, "profile", $user_id ) ) {
                     continue;
                 }
@@ -498,7 +498,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
                 if( ! pmpro_is_field( $field ) ) {
                     continue;
                 }
-                
+
                 if ( ! pmpro_check_field_for_level( $field ) ) {
                     continue;
                 }
@@ -573,7 +573,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
                 if( ! pmpro_is_field( $field ) ) {
                     continue;
                 }
-                
+
                 if ( ! pmpro_check_field_for_level( $field ) ) {
                     continue;
                 }
@@ -595,7 +595,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
 
 					// Make sure file was uploaded during this page load.
-					if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {						
+					if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {
 						continue;
 					}
 
@@ -651,7 +651,7 @@ function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
 				}
 			}
 			?>
-			
+
 
 			<table class="form-table">
 			<?php
@@ -801,7 +801,7 @@ function pmpro_add_member_admin_fields( $user = null, $user_id = null)
 		    		if( pmpro_is_field( $field ) ) {
                         $field->displayInProfile($user_id);
                     }
-					
+
             }
             ?>
     <?php
@@ -819,7 +819,7 @@ add_action( 'pmpro_add_member_fields', 'pmpro_add_member_admin_fields', 10, 2 );
  */
 function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 	global $pmpro_user_fields;
-	
+
 	// Use the ID from the $user object if passed in.
 	if ( ! empty( $user ) && is_object( $user ) ) {
 		$user_id = $user->ID;
@@ -831,7 +831,7 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 	}
 
 	// check whether the user login variable contains something useful
-	if (empty($user_id)) {		
+	if (empty($user_id)) {
 
 		pmpro_setMessage( __( 'Unable to add/update user fields for this member', 'paid-memberships-pro' ), 'pmpro_error' );
 
@@ -947,7 +947,7 @@ function pmpro_get_user_fields_for_profile( $user_id, $withlocations = false ) {
 				if( ! pmpro_is_field( $field ) ) {
                     continue;
                 }
-                
+
                 if ( ! pmpro_check_field_for_level( $field, "profile", $user_id ) ) {
                     continue;
                 }
@@ -1075,7 +1075,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 					if ( empty( $pmpro_user_fields[$group_name] ) ) {
 						continue;
 					}
-					
+
 					//cycle through groups and fields associated with that group.
 					foreach( $pmpro_user_fields[$group_name] as $field ) {
 
@@ -1189,7 +1189,7 @@ add_action( 'pmpro_cron_delete_tmp', 'pmpro_cron_delete_tmp' );
  */
 function pmpro_get_user_fields() {
     global $pmpro_user_fields;
-        
+
     return (array)$pmpro_user_fields;
 }
 
@@ -1203,7 +1203,7 @@ function pmpro_get_field_group_html( $group = null ) {
         $group_name = $group->name;
     	$group_show_checkout = $group->checkout;
     	$group_show_profile = $group->profile;
-    	$group_description = $group->description;    	
+    	$group_description = $group->description;
     	$group_levels = $group->levels;
         $group_fields = $group->fields;
     } else {
@@ -1211,11 +1211,11 @@ function pmpro_get_field_group_html( $group = null ) {
         $group_name = '';
     	$group_show_checkout = 'yes';
     	$group_show_profile = 'yes';
-    	$group_description = '';    	
+    	$group_description = '';
     	$group_levels = array();
         $group_fields = array();
     }
-    
+
     // Other vars
 	$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 
@@ -1235,10 +1235,10 @@ function pmpro_get_field_group_html( $group = null ) {
                 <span id="pmpro_userfield-group-buttons-description-2" class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Move Group Down', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-group-buttons -->
             <h3>
-                <label>                    
+                <label>
                     <?php esc_html_e( 'Group Name', 'paid-memberships-pro' ); ?>
                     <input type="text" name="pmpro_userfields_group_name" placeholder="<?php esc_attr_e( 'Group Name', 'paid-memberships-pro' ); ?>" value="<?php echo esc_attr( $group_name ); ?>" />
-                </label>                
+                </label>
             </h3>
             <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-toggle-group" aria-label="<?php esc_attr_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?>">
                 <span class="dashicons dashicons-arrow-up"></span>
@@ -1248,7 +1248,7 @@ function pmpro_get_field_group_html( $group = null ) {
 
         <div class="pmpro_userfield-inside">
 			<div class="pmpro_userfield-field-settings">
-				
+
 				<div class="pmpro_userfield-field-setting">
 					<label>
                         <?php esc_html_e( 'Show fields at checkout?', 'paid-memberships-pro' ); ?><br />
@@ -1258,7 +1258,7 @@ function pmpro_get_field_group_html( $group = null ) {
     					</select>
                     </label>
 				</div> <!-- end pmpro_userfield-field-setting -->
-				
+
 				<div class="pmpro_userfield-field-setting">
 					<label>
                         <?php esc_html_e( 'Show fields on user profile?', 'paid-memberships-pro' ); ?><br />
@@ -1269,14 +1269,14 @@ function pmpro_get_field_group_html( $group = null ) {
     					</select>
                     </label>
 				</div> <!-- end pmpro_userfield-field-setting -->
-				
+
 				<div class="pmpro_userfield-field-setting">
 					<label>
                         <?php esc_html_e( 'Description (optional, visible to users)', 'paid-memberships-pro' ); ?><br />
 					    <textarea name="pmpro_userfields_group_description"><?php echo esc_textarea( $group_description );?></textarea>
                     </label>
 				</div> <!-- end pmpro_userfield-field-setting -->
-				
+
 				<div class="pmpro_userfield-field-setting">
                     <?php esc_html_e( 'Restrict Fields for Membership Levels', 'paid-memberships-pro' ); ?><br />
                     <div class="pmpro_checkbox_box" <?php if ( count( $levels ) > 3 ) { ?>style="height: 90px; overflow: auto;"<?php } ?>>
@@ -1290,18 +1290,18 @@ function pmpro_get_field_group_html( $group = null ) {
 						<?php } ?>
 					</div>
 				</div> <!-- end pmpro_userfield-field-setting -->
-			
+
 			</div> <!-- end pmpro_userfield-field-settings -->
-			
+
 			<h3><?php esc_html_e( 'Manage Fields in This Group', 'paid-memberships-pro' ); ?></h3>
-			
+
 			<ul class="pmpro_userfield-group-thead">
 				<li class="pmpro_userfield-group-column-order"><?php esc_html_e( 'Order', 'paid-memberships-pro'); ?></li>
 				<li class="pmpro_userfield-group-column-label"><?php esc_html_e( 'Label', 'paid-memberships-pro'); ?></li>
 				<li class="pmpro_userfield-group-column-name"><?php esc_html_e( 'Name', 'paid-memberships-pro'); ?></li>
 				<li class="pmpro_userfield-group-column-type"><?php esc_html_e( 'Type', 'paid-memberships-pro'); ?></li>
 			</ul>
-			
+
 			<div class="pmpro_userfield-group-fields">
 				<?php
 					if ( ! empty( $group->fields ) ) {
@@ -1310,9 +1310,9 @@ function pmpro_get_field_group_html( $group = null ) {
 						}
 					}
                 ?>
-                
+
                 <!-- end pmpro_userfield-group-fields -->
-            
+
             </div> <!-- end pmpro_userfield-inside -->
 
 			<div class="pmpro_userfield-group-actions">
@@ -1330,7 +1330,7 @@ function pmpro_get_field_group_html( $group = null ) {
     </div> <!-- end inside -->
     <?php
 }
- 
+
 /**
  * Get field HTML for settings.
  */
@@ -1341,7 +1341,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_name = $field->name;
         $field_type = $field->type;
         $field_required = $field->required;
-        $field_readonly = $field->readonly;     	
+        $field_readonly = $field->readonly;
         $field_profile = $field->profile;
         $field_wrapper_class = $field->wrapper_class;
         $field_element_class = $field->element_class;
@@ -1366,7 +1366,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_max_file_size = '';
         $field_default = '';
     }
-    
+
 	// Other vars
 	$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 	?>
@@ -1402,8 +1402,8 @@ function pmpro_get_field_html( $field = null ) {
             <div class="pmpro_userfield-field-setting">
                 <label>
                     <?php esc_html_e( 'Label', 'paid-memberships-pro' ); ?><br />
-                    <input type="text" name="pmpro_userfields_field_label" value="<?php echo esc_attr( $field_label );?>" />                    
-                </label>                
+                    <input type="text" name="pmpro_userfields_field_label" value="<?php echo esc_attr( $field_label );?>" />
+                </label>
                 <span class="description"><?php esc_html_e( 'Brief descriptive text for the field. Shown on user forms.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
 
@@ -1411,7 +1411,7 @@ function pmpro_get_field_html( $field = null ) {
                 <label>
                     <?php esc_html_e( 'Name', 'paid-memberships-pro' ); ?><br />
                     <input type="text" name="pmpro_userfields_field_name" value="<?php echo esc_attr( $field_name );?>" />
-                </label>                
+                </label>
                 <span class="description"><?php esc_html_e( 'Single word with no spaces. Underscores are allowed.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
 
@@ -1433,7 +1433,7 @@ function pmpro_get_field_html( $field = null ) {
                         <option value="readonly" <?php selected( $field_type, 'readonly' ); ?>><?php esc_html_e( 'Read-Only', 'paid-memberships-pro' ); ?></option>
                         <option value="hidden" <?php selected( $field_type, 'hidden' ); ?>><?php esc_html_e( 'Hidden', 'paid-memberships-pro' ); ?></option>
                     </select>
-                </label>                
+                </label>
             </div> <!-- end pmpro_userfield-field-setting -->
 
             <div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
@@ -1444,7 +1444,7 @@ function pmpro_get_field_html( $field = null ) {
                             <option value="no" <?php selected( $field_required, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
                             <option value="yes" <?php selected( $field_required, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
                         </select>
-                    </label>                    
+                    </label>
                 </div> <!-- end pmpro_userfield-field-setting -->
 
                 <div class="pmpro_userfield-field-setting">
@@ -1454,7 +1454,7 @@ function pmpro_get_field_html( $field = null ) {
                             <option value="no" <?php selected( $field_readonly, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
                             <option value="yes" <?php selected( $field_readonly, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
                         </select>
-                    </label>                    
+                    </label>
                 </div> <!-- end pmpro_userfield-field-setting -->
             </div> <!-- end pmpro_userfield-field-setting-dual -->
 
@@ -1467,7 +1467,7 @@ function pmpro_get_field_html( $field = null ) {
                         <option value="admins" <?php selected( $field_profile, 'admins' );?>><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
                         <option value="no" <?php selected( $field_profile, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
                     </select>
-                </label>                
+                </label>
             </div> <!-- end pmpro_userfield-field-setting -->
 
             <div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
@@ -1483,7 +1483,7 @@ function pmpro_get_field_html( $field = null ) {
                     <label>
                         <?php esc_html_e( 'Field Element Class (optional)', 'paid-memberships-pro' ); ?><br />
                         <input type="text" name="pmpro_userfields_field_divclass" value="<?php echo esc_attr( $field_element_class );?>" />
-                    </label>                
+                    </label>
                     <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field', 'paid-memberships-pro' ); ?></span>
                 </div> <!-- end pmpro_userfield-field-setting -->
             </div> <!-- end pmpro_userfield-field-setting-dual -->
@@ -1492,7 +1492,7 @@ function pmpro_get_field_html( $field = null ) {
                 <label>
                     <?php esc_html_e( 'Hint (optional)', 'paid-memberships-pro' ); ?><br />
                     <textarea name="pmpro_userfields_field_hint" /><?php echo esc_textarea( $field_hint );?></textarea>
-                </label>                
+                </label>
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
 
@@ -1521,7 +1521,7 @@ function pmpro_get_field_html( $field = null ) {
 					</label>
 					<span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
 				</div> <!-- end pmpro_userfield-field-setting -->
-				
+
 				<div class="pmpro_userfield-field-setting">
 					<label>
 						<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
@@ -1530,15 +1530,15 @@ function pmpro_get_field_html( $field = null ) {
 				</div> <!-- end pmpro_userfield-field-setting -->
 			</div>
 
-            <div class="pmpro_userfield-field-actions">            
+            <div class="pmpro_userfield-field-actions">
                 <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
-                </button> 
+                </button>
 				<button name="pmpro_userfields_delete_field" class="button button-secondary is-destructive">
                     <?php esc_html_e( 'Delete Field', 'paid-memberships-pro' ); ?>
-                </button>           
+                </button>
             </div> <!-- end pmpro_userfield-field-actions -->
-        </div> <!-- end pmpro_userfield-field-settings -->        
+        </div> <!-- end pmpro_userfield-field-settings -->
     </div> <!-- end pmpro_userfield-group-field -->
     <?php
 }
@@ -1559,9 +1559,9 @@ function pmpro_get_user_fields_settings() {
             'fields' => array(),
         )
     );
-    
+
     $settings = get_option( 'pmpro_user_fields_settings', $default_user_fields_settings );
-    
+
     // Make sure all expected properties are set for each group.
 	foreach ( $settings as $group ) {
 		$group->name = ! empty( $group->name ) ? $group->name : '';
@@ -1588,7 +1588,7 @@ function pmpro_get_user_fields_settings() {
 			$field->max_file_size = ! empty( $field->max_file_size ) ? $field->max_file_size : '';
 		}
 	}
-    
+
     return $settings;
 }
 
@@ -1601,7 +1601,7 @@ function pmpro_load_user_fields_from_settings() {
 
     foreach ( $settings_groups as $group ) {
         pmpro_add_field_group( $group->name, $group->name, $group->description );
-        
+
         // Figure out profile value. Change 2 settings values into 1 field value.
         if ( $group->checkout === 'yes' ) {
             if ( $group->profile === 'yes' ) {
@@ -1621,7 +1621,7 @@ function pmpro_load_user_fields_from_settings() {
                 continue;
             }
         }
-        
+
         foreach ( $group->fields as $settings_field ) {
             // Figure out field profile from settings and group profile.
             if ( empty( $settings_field->profile ) || $settings_field->profile === '[Inherit Group Setting]' ) {
@@ -1638,7 +1638,7 @@ function pmpro_load_user_fields_from_settings() {
                     $profile = false;
                 }
             }
-            
+
             // Figure out options.
             $option_types = array( 'checkbox_grouped', 'radio', 'select', 'select2', 'multiselect' );
             if ( in_array( $settings_field->type, $option_types ) ) {
@@ -1655,15 +1655,15 @@ function pmpro_load_user_fields_from_settings() {
             } else {
                 $options = false;
             }
-            
+
             // Set field levels based on group.
             $levels = $group->levels;
-            
+
             $field = new PMPro_Field(
                 $settings_field->name,
                 $settings_field->type,
                 array(
-                    'label' => $settings_field->label,                    
+                    'label' => $settings_field->label,
                     'required' => filter_var( $settings_field->required, FILTER_VALIDATE_BOOLEAN ),
                     'readonly' => filter_var( $settings_field->readonly, FILTER_VALIDATE_BOOLEAN ),
                     'profile' => $profile,
@@ -1680,7 +1680,7 @@ function pmpro_load_user_fields_from_settings() {
             );
             pmpro_add_user_field( $group->name, $field );
         }
-    }        
+    }
 }
 add_action( 'init', 'pmpro_load_user_fields_from_settings', 1 );
 
@@ -1728,17 +1728,17 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
             if ( ! pmpro_is_field( $user_field ) ) {
                 continue;
             }
-            
+
             // Check if this is the user field that we are displaying.
             if ( empty( $user_field->options ) ) {
                 continue;
             }
-            
+
             // Make sure that $options is an array.
             if ( ! is_array( $user_field->options ) ) {
                 continue;
             }
-            
+
 			// Replace meta values with their corresponding labels.
 			if ( is_array( $field_value ) ) {
 				foreach ( $field_value as $key => $value ) {
@@ -1764,7 +1764,7 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
  */
 function pmpro_get_user_field( $field_name ) {
 	global $pmpro_user_fields;
-	
+
 	if ( empty( $pmpro_user_fields ) ) {
 		return false;
 	}
@@ -1776,6 +1776,6 @@ function pmpro_get_user_field( $field_name ) {
 			}
 		}
 	}
-	
+
 	return false;
 }
