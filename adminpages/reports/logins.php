@@ -3,17 +3,19 @@
 	PMPro Report
 	Title: Logins
 	Slug: login
-	
-	For each report, add a line like:
-	global $pmpro_reports;
-	$pmpro_reports['slug'] = 'Title';
-	
-	For each report, also write two functions:
+
+	For each report, write three functions:
+	* pmpro_report_{slug}_register() to register the widget (slug and title).
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
-global $pmpro_reports;
-$pmpro_reports['login'] = __('Visits, Views, and Logins', 'paid-memberships-pro');
+function pmpro_report_login_register( $pmpro_reports ) {
+	$pmpro_reports['login'] = __( 'Visits, Views, and Logins', 'paid-memberships-pro' );
+
+	return $pmpro_reports;
+}
+
+add_filter( 'pmpro_registered_reports', 'pmpro_report_login_register' );
 
 function pmpro_report_login_widget() {
 	global $wpdb, $pmpro_reports;
@@ -70,7 +72,7 @@ function pmpro_report_login_widget() {
 		<p class="pmpro_report-button">
 			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=login' ) ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'View the full %s report', 'paid-memberships-pro' ), $pmpro_reports['login'] ) ); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
 		</p>
-	<?php } ?>	
+	<?php } ?>
 </span>
 <?php
 }
@@ -123,7 +125,7 @@ function pmpro_report_login_page()
 			$pn = intval($_REQUEST['pn']);
 		else
 			$pn = 1;
-			
+
 		if(isset($_REQUEST['limit']))
 			$limit = intval($_REQUEST['limit']);
 		else
@@ -156,7 +158,7 @@ function pmpro_report_login_page()
 		}
 
 		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
-		
+
 		$theusers = $wpdb->get_results($sqlQuery);
 		$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
 	?>
@@ -193,7 +195,7 @@ function pmpro_report_login_page()
 			</div>
 			<br class="clear" />
 		</div> <!-- end tablenav -->
-	<?php } ?>	
+	<?php } ?>
 	<table id="pmpro_report_login_data" class="widefat striped">
 		<thead>
 			<tr>

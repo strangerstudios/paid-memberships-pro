@@ -4,20 +4,23 @@
 	Title: Sales
 	Slug: sales
 
-	For each report, add a line like:
-	global $pmpro_reports;
-	$pmpro_reports['slug'] = 'Title';
-
-	For each report, also write two functions:
+	For each report, write three functions:
+	* pmpro_report_{slug}_register() to register the widget (slug and title).
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
-global $pmpro_reports;
-$gateway_environment = get_option( "pmpro_gateway_environment");
-if($gateway_environment == "sandbox")
-	$pmpro_reports['sales'] = __('Sales and Revenue (Testing/Sandbox)', 'paid-memberships-pro' );
-else
-	$pmpro_reports['sales'] = __('Sales and Revenue', 'paid-memberships-pro' );
+function pmpro_report_sales_register( $pmpro_reports ) {
+	$gateway_environment = get_option( "pmpro_gateway_environment" );
+	if ( $gateway_environment == "sandbox" ) {
+		$pmpro_reports['sales'] = __( 'Sales and Revenue (Testing/Sandbox)', 'paid-memberships-pro' );
+	} else {
+		$pmpro_reports['sales'] = __( 'Sales and Revenue', 'paid-memberships-pro' );
+	}
+
+	return $pmpro_reports;
+}
+
+add_filter( 'pmpro_registered_reports', 'pmpro_report_sales_register' );
 
 //queue Google Visualization JS on report page
 function pmpro_report_sales_init()
@@ -254,7 +257,7 @@ function pmpro_report_sales_page()
 		// Set up the start and end dates.
 		$startdate = $year . '-01-01';
 		$enddate = $year . '-12-' . date_i18n( 't', strtotime( $startdate ) );
-		
+
 		// Set up the compare period.
 		$compare_startdate = date( 'Y-m-d', strtotime( $startdate . ' -1 year' ) );
 		$compare_enddate = date( 'Y-m-d', strtotime( $enddate . ' -1 year' ) );
@@ -297,7 +300,7 @@ function pmpro_report_sales_page()
 	$dates = pmpro_report_sales_data( $report_data_args );
 	// Set the array keys to the dates.
 	$dates = array_combine( wp_list_pluck( $dates, 'date' ), $dates );
-	
+
 	// Get the compare period data if we need it.
 	if ( ! empty( $compare_startdate ) && ! empty( $compare_enddate ) ) {
 		$report_data_args['startdate'] = $compare_startdate;
@@ -454,7 +457,7 @@ function pmpro_report_sales_page()
 
 	// Order $dates by date.
 	ksort( $dates );
-	
+
 	// Save a transient for each combo of params. Expires in 1 hour.
 	$param_array = array( $period, $type, $month, $year, $l, $discount_code );
 	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
@@ -637,7 +640,7 @@ function pmpro_report_sales_page()
 				<?php
 					}
 				?>
-			</select>		
+			</select>
 			<?php
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
 			$sqlQuery .= "ORDER BY id DESC ";
@@ -705,7 +708,7 @@ function pmpro_report_sales_page()
 		google.charts.setOnLoadCallback(drawVisualization);
 		function drawVisualization() {
 			var dataTable = new google.visualization.DataTable();
-			
+
 			// Date
 			dataTable.addColumn('string', <?php echo wp_json_encode( esc_html( $report_unit ) ); ?>);
 
@@ -715,7 +718,7 @@ function pmpro_report_sales_page()
 			<?php
 			foreach ( $google_chart_column_labels as $label ) {
 				echo "dataTable.addColumn('number', " . wp_json_encode( esc_html( $label ) ) . ");";
-			} 
+			}
 			?>
 
 			dataTable.addRows([
@@ -849,7 +852,7 @@ function pmpro_report_sales_page()
 							break;
 					}
 				}
-				
+
 				// Adjust the title if we have a date or not so it reads better.
 				if ( $date ) {
 					// translators: %1$s is the report period, %2$s is the report type, %3$s is the date.
@@ -873,7 +876,7 @@ function pmpro_report_sales_page()
 */
 
 //get sales
-function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) {	
+function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) {
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_sales' );
 	$param_hash = md5( $period . ' ' . $type . PMPRO_VERSION );
@@ -898,7 +901,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	// Build the query.
 	global $wpdb;
 	$sqlQuery = "SELECT mo1.id FROM $wpdb->pmpro_membership_orders mo1 ";
-	
+
 	// Need to join on older orders if we're looking for renewals or new sales.
 	if ( $type !== 'all' ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
@@ -907,12 +910,12 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
                         AND mo2.timestamp < mo1.timestamp
                         AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 	}
-	
+
 	// Get valid orders within the time frame.
 	$sqlQuery .= "WHERE mo1.total > 0
 				 	AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
 					AND mo1.timestamp >= '" . esc_sql( $startdate ) . "'
-					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";									
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	// Restrict by level.
 	if( ! empty( $levels ) && $levels != 'all' ) {
@@ -922,9 +925,9 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 		}
 		$levels = implode( ',', array_map( 'intval', $levels ) );
 		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
-	}		
-	
-	// Filter to renewals or new orders only. 	
+	}
+
+	// Filter to renewals or new orders only.
 	if ( $type == 'renewals' ) {
 		$sqlQuery .= "AND mo2.id IS NOT NULL ";
 	} elseif ( $type == 'new' ) {
@@ -989,11 +992,11 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	$sql_query .= ' GROUP BY rtotal ORDER BY num DESC ';
 
 	$prices           = $wpdb->get_results( $sql_query );
-	
+
 	if( !empty( $count) ) {
 		$prices = array_slice( $prices, 0, $count, true );
 	}
-	
+
 	$prices_formatted = array();
 	foreach ( $prices as $price ) {
 		if ( isset( $price->rtotal ) ) {
@@ -1005,7 +1008,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 							AND timestamp >= '" . esc_sql( $startdate ) . "'
 							AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 			$total = $wpdb->get_var( $sql_query );
-			
+
 			/* skipping this until we figure out how to make it performant
 			// New sales.
 			$sql_query = "SELECT mo1.id
@@ -1022,10 +1025,10 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 							AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
 							AND mo2.id IS NULL
 						  GROUP BY mo1.id ";
-			$sql_query = "SELECT COUNT(*) FROM (" . $sql_query . ") as t1";			
+			$sql_query = "SELECT COUNT(*) FROM (" . $sql_query . ") as t1";
 			$new = $wpdb->get_var( $sql_query );
-			
-			// Renewals.			
+
+			// Renewals.
 			$sql_query = "SELECT mo1.id
 						  FROM $wpdb->pmpro_membership_orders mo1
 						  	LEFT JOIN $wpdb->pmpro_membership_orders mo2
@@ -1040,9 +1043,9 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 							AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
 							AND mo2.id IS NOT NULL
 						  GROUP BY mo1.id ";
-			$sql_query = "SELECT COUNT(*) FROM (" . $sql_query . ") as t1";			
+			$sql_query = "SELECT COUNT(*) FROM (" . $sql_query . ") as t1";
 			$renewals = $wpdb->get_var( $sql_query );
-			
+
 			$prices_formatted[ $price->rtotal ] = array( 'total' => $total, 'new' => $new, 'renewals' => $renewals );
 			*/
 			$prices_formatted[ $price->rtotal ] = array( 'total' => $total );
@@ -1091,7 +1094,7 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 	$sqlQuery = "SELECT mo1.total as total
 				 FROM $wpdb->pmpro_membership_orders mo1 ";
 
-	// Need to join on older orders if we're looking for renewals or new sales.			
+	// Need to join on older orders if we're looking for renewals or new sales.
 	if ( $type != 'all' ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_membership_orders mo2
 					 	ON mo1.user_id = mo2.user_id
@@ -1100,8 +1103,8 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 						AND mo2.timestamp < mo1.timestamp
 						AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 	}
-	
-	// Get valid orders within the timeframe.		 
+
+	// Get valid orders within the timeframe.
 	$sqlQuery .= "WHERE mo1.status NOT IN('refunded', 'review', 'token', 'error')
 				 	AND mo1.timestamp >= '" . esc_sql( $startdate ) . "'
 					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
@@ -1115,8 +1118,8 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 		$levels = implode( ',', array_map( 'intval', $levels ) );
 		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
 	}
-		
-	// Filter to renewals or new orders only. 	
+
+	// Filter to renewals or new orders only.
 	if ( $type == 'renewals' ) {
 		$sqlQuery .= "AND mo2.id IS NOT NULL ";
 	} elseif ( $type == 'new' ) {
@@ -1125,10 +1128,10 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 
 	// Group so we get one mo1 order per row.
 	$sqlQuery .= "GROUP BY mo1.id ";
-	
+
 	// Want the total across the orders found.
 	$sqlQuery = "SELECT SUM(total) FROM(" . $sqlQuery . ") as t1";
-	
+
 	$revenue = pmpro_round_price( $wpdb->get_var($sqlQuery) );
 
 	//save in cache
@@ -1159,7 +1162,7 @@ function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_id
 		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
 	}
 	if ( ! empty( $level_ids ) ) {
-		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'intval', $level_ids ) ) . ') '; 
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'intval', $level_ids ) ) . ') ';
 	}
 	return $wpdb->get_var($sql_query);
 }

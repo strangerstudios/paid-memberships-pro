@@ -4,16 +4,18 @@
 	Title: Membership Stats
 	Slug: memberships
 
-	For each report, add a line like:
-	global $pmpro_reports;
-	$pmpro_reports['slug'] = 'Title';
-
-	For each report, also write two functions:
+	For each report, write three functions:
+	* pmpro_report_{slug}_register() to register the widget (slug and title).
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
-global $pmpro_reports;
-$pmpro_reports['memberships'] = __( 'Membership Stats', 'paid-memberships-pro' );
+function pmpro_report_memberships_register( $pmpro_reports ) {
+	$pmpro_reports['memberships'] = __( 'Membership Stats', 'paid-memberships-pro' );
+
+	return $pmpro_reports;
+}
+
+add_filter( 'pmpro_registered_reports', 'pmpro_report_memberships_register' );
 
 // queue Google Visualization JS on report page
 function pmpro_report_memberships_init() {
@@ -390,17 +392,17 @@ function pmpro_report_memberships_page() {
 			<span id="for"><?php esc_html_e( 'for', 'paid-memberships-pro' ); ?></span>
 			<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
 			<select id="level" name="level">
-				<option value="" 
+				<option value=""
 				<?php
 				if ( ! $l ) {
 					?>
 					selected="selected"<?php } ?>><?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?></option>
-				<option value="paid-levels" 
+				<option value="paid-levels"
 				<?php
 				if ( isset( $_REQUEST['level'] ) && $_REQUEST['level'] === 'paid-levels' ) {
 					?>
 					selected="selected" <?php } ?>><?php esc_html_e( 'All Paid Levels', 'paid-memberships-pro' ); ?></option>
-				<option value="free-levels" 
+				<option value="free-levels"
 				<?php
 				if ( isset( $_REQUEST['level'] ) && $_REQUEST['level'] === 'free-levels' ) {
 					?>
@@ -410,7 +412,7 @@ function pmpro_report_memberships_page() {
 					$levels = pmpro_sort_levels_by_order( $levels );
 				foreach ( $levels as $level ) {
 					?>
-					<option value="<?php echo esc_attr( $level->id ); ?>" 
+					<option value="<?php echo esc_attr( $level->id ); ?>"
 												<?php
 												if ( $l == $level->id ) {
 													?>
@@ -429,7 +431,7 @@ function pmpro_report_memberships_page() {
 				?>
 			<label for="discount_code" class="screen-reader-text"><?php esc_html_e( 'Filter report by discount code', 'paid-memberships-pro' ); ?></label>
 			<select id="discount_code" name="discount_code">
-				<option value="" 
+				<option value=""
 				<?php
 				if ( empty( $discount_code ) ) {
 					?>
