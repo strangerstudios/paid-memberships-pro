@@ -55,6 +55,14 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-c
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-admin.php' ); // cancel email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change.php' ); // change email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change-admin.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-checkout-check.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-checkout-check-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-free.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-free-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-paid.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php' );
+
+
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
 
