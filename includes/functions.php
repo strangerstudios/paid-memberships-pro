@@ -1888,6 +1888,11 @@ function pmpro_getDiscountCode( $seed = null ) {
 
 /**
  * Is a discount code valid - $level_id could be a scalar or an array (or unset)
+ * @param string $code The discount code to check.
+ * @param int|array $level_id The level ID or an array of level IDs to check the code against.
+ * @param bool $return_errors Whether to return an error message if the code is invalid.
+ * @return bool|string True or false. If $return_errors is true, returns an array with 2 elements: the first is true or false, the second is an error message.
+ * @since [TBD] Bails if spam protection is triggered. Failed attempts are tracked as spam activity.
  */
 function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = false ) {
 	global $wpdb, $current_user;
@@ -1900,6 +1905,12 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 		$error = __( 'No code was given to check.', 'paid-memberships-pro' );
 	}
 
+	// Bail if spam protection is triggered.
+	$spamprotection = get_option("pmpro_spamprotection");
+	if ( ! empty( $spamprotection ) && pmpro_is_spammer() ) {
+		$error = __( 'Suspicious activity detected. Try again in a few minutes.', 'paid-memberships-pro' );
+	}
+
 	// get code from db
 	if ( ! $error ) {
 		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
@@ -1907,6 +1918,9 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 		// did we find it?
 		if ( empty( $dbcode->id ) ) {
 			$error = __( 'The discount code could not be found.', 'paid-memberships-pro' );
+
+			// Track this as spam activity so folks don't test for codes.
+			pmpro_track_spam_activity();
 		}
 	}
 
@@ -4459,7 +4473,7 @@ function pmpro_get_ip() {
 	}
 	
 	// Check if it's a valid IP address or not.
-	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) || ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) && ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
 		return false;
 	}
 
