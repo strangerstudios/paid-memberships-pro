@@ -242,15 +242,15 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 			<?php
 		}
 	?>
-	<div class="pmpro_section" data-visibility="shown" data-activated="true">
-		<div class="pmpro_section_toggle">
-			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-				<span class="dashicons dashicons-arrow-up-alt2"></span>
-				<?php esc_html_e( 'Subscription Information', 'paid-memberships-pro' ); ?>
-			</button>
-		</div>
-		<div class="pmpro_section_inside">
-			<form action="" method="post">
+	<form action="" method="post">
+		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+					<span class="dashicons dashicons-arrow-up-alt2"></span>
+					<?php esc_html_e( 'Subscription Information', 'paid-memberships-pro' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside">
 				<table class="form-table">
 					<tbody>
 						<tr>
@@ -300,15 +300,15 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 						</tr>
 					</tbody>
 				</table>
-			</form>
-		</div> <!-- end pmpro_section_inside -->
-	</div> <!-- end pmpro_section -->
-	<p class="submit">
-		<?php wp_nonce_field( 'edit', 'pmpro_subscriptions_nonce' ); ?>
-		<input type="hidden" name="id" value="<?php echo esc_attr( $subscription->get_id() ); ?>" />
-		<input type="hidden" name="action" value="edit" />
-		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Update Subscription', 'paid-memberships-pro' ); ?>" />
-	</p>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
+		<p class="submit">
+			<?php wp_nonce_field( 'edit', 'pmpro_subscriptions_nonce' ); ?>
+			<input type="hidden" name="id" value="<?php echo esc_attr( $subscription->get_id() ); ?>" />
+			<input type="hidden" name="action" value="edit" />
+			<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Update Subscription', 'paid-memberships-pro' ); ?>" />
+		</p>
+	</form>
 	<?php
 } elseif ( ! empty( $subscription ) ) {
 	// View a subscription.
