@@ -669,7 +669,7 @@ class PMPro_Field {
 			$r_end .= "</div>";
 		}
 
-		if ( empty( $value ) && pmpro_is_checkout() ) {
+		if ( '' === $value && pmpro_is_checkout() ) {
 			/**
 			 * Filter to set the default value for a field. The default value will only load if no value is already found.
 			 * 
