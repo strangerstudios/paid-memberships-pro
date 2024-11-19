@@ -4,6 +4,13 @@
 		exit;
 	}
 
+	/**
+	 * Run code before the applydiscountcode service.
+	 *
+	 * @since TBD
+	 */
+	do_action( 'pmpro_before_applydiscountcode_service' );
+
 	//vars
 	global $wpdb;
 	if(!empty($_REQUEST['code']))

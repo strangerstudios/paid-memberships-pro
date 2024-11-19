@@ -190,3 +190,44 @@ function pmpro_disable_checkout_for_spammers( $required_fields ) {
 	return $required_fields;
 }
 add_filter( 'pmpro_required_billing_fields', 'pmpro_disable_checkout_for_spammers' );
+
+/**
+ * Block and track spam for the apply discount code service.
+ *
+ * @since TBD
+ */
+function pmpro_applydiscountcode_spam_check() {
+	global $wpdb;
+
+	// Bail if Spam Protection is disabled.
+	$spamprotection = get_option( 'pmpro_spamprotection' );
+	if ( empty( $spamprotection ) ) {
+		return;
+	}
+
+	// If we already know that the visitor is a spammer, we don't need to check again.
+	if ( pmpro_is_spammer() ) {
+		echo esc_html( 'Suspicious activity detected. Try again in a few minutes.', 'paid-memberships-pro' );
+		$msgfield = empty( $_REQUEST['msgfield'] ) ? 'pmpro_message' : preg_replace("/[^A-Za-z0-9\_\-]/", "", sanitize_text_field( $_REQUEST['msgfield'] ) );
+		?>
+		<script>
+			jQuery('#<?php echo esc_attr( $msgfield ); ?>').show();
+			jQuery('#<?php echo esc_attr( $msgfield ); ?>').removeClass('pmpro_success');
+			jQuery('#<?php echo esc_attr( $msgfield ); ?>').addClass('pmpro_error');
+			jQuery('#<?php echo esc_attr( $msgfield ); ?>').addClass('pmpro_discount_code_msg');
+			jQuery('#<?php echo esc_attr( $msgfield ); ?>').attr('role', 'alert');
+		</script>
+		<?php
+		exit( 0 );
+	}
+
+	// If the visitor submitted a code that is not a valid code on the site, track the activity.
+	if ( ! empty( $_REQUEST['code'] ) ) {
+		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['code'] ) );
+		$discount_code_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = %s LIMIT 1", $discount_code ) );
+		if ( empty( $discount_code_id ) ) {
+			pmpro_track_spam_activity();
+		}
+	}
+}
+add_action( 'pmpro_before_applydiscountcode_service', 'pmpro_applydiscountcode_spam_check' );
