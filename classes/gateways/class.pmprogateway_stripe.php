@@ -3763,6 +3763,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$params = array(
 			'customer'               => $order->stripe_customer->id,
 			'payment_method'         => $order->payment_method_id,
+			'payment_method_types'   => array( 'card' ),
 			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
