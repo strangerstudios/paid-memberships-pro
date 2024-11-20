@@ -3,17 +3,19 @@
 	PMPro Report
 	Title: Logins
 	Slug: login
-	
-	For each report, add a line like:
-	global $pmpro_reports;
-	$pmpro_reports['slug'] = 'Title';
-	
-	For each report, also write two functions:
+
+	For each report, write three functions:
+	* pmpro_report_{slug}_register() to register the widget (slug and title).
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
-global $pmpro_reports;
-$pmpro_reports['login'] = __('Visits, Views, and Logins', 'paid-memberships-pro');
+function pmpro_report_login_register( $pmpro_reports ) {
+	$pmpro_reports['login'] = __( 'Visits, Views, and Logins', 'paid-memberships-pro' );
+
+	return $pmpro_reports;
+}
+
+add_filter( 'pmpro_registered_reports', 'pmpro_report_login_register' );
 
 function pmpro_report_login_widget() {
 	global $wpdb, $pmpro_reports;

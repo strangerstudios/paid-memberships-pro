@@ -1,4 +1,20 @@
 <?php
+global $pmpro_reports;
+if( null === $pmpro_reports ) {
+	$pmpro_reports = array();
+}
+
+/**
+ * Populate the $pmpro_reports global.
+ *
+ * @since TBD
+ */
+function pmpro_populate_reports() {
+	global $pmpro_reports;
+	$pmpro_reports = apply_filters( 'pmpro_registered_reports', $pmpro_reports );
+}
+add_action( 'init', 'pmpro_populate_reports', 5 );
+
 /*
 	Load Reports From Theme
 */

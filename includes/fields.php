@@ -6,7 +6,7 @@ $pmpro_user_fields = array();
 // Add default group.
 $cb = new stdClass();
 $cb->name = 'checkout_boxes';
-$cb->label = apply_filters( 'pmpro_default_field_group_label', __( 'More Information','paid-memberships-pro' ) );
+$cb->label = apply_filters( 'pmpro_default_field_group_label', 'More Information' );
 $cb->order = 0;
 $pmpro_field_groups = array( 'checkout_boxes' => $cb );
 
