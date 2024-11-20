@@ -35,7 +35,9 @@ if ( empty( $pmpro_invoice ) ) {
 			if ( ! empty( $pmpro_invoice ) ) {
 				$pmpro_invoice->getUser();
 				$pmpro_invoice->getMembershipLevel();
-				$pmpro_invoice->user->membership_level = $pmpro_invoice->membership_level; // Backwards compatibility.
+				if ( ! empty( $pmpro_invoice->user ) && ! empty( $pmpro_invoice->membership_level ) ) {
+					$pmpro_invoice->user->membership_level = $pmpro_invoice->membership_level; // Backwards compatibility.
+				}
 
 				// Start building the confirmation message.
 				if ( 'success' != $pmpro_invoice->status ) {
