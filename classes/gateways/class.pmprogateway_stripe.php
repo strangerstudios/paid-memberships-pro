@@ -3365,25 +3365,14 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		// If this is already cancelled, return true.
-		if ( ! empty( $subscription->canceled_at ) ) {
-			return true;
-		}
-
-		// Make sure we get the customer for this subscription.
-		$order = new MemberOrder();
-		$order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
-
-		// No order?
-		if ( empty( $order ) ) {
-			//lets cancel anyway, but this is suspicious
-			$r = $subscription->cancel();
-
-			return true;
+		// Get the PMPro subscription.
+		$pmpro_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription->id, 'stripe', get_option( 'pmpro_gateway_environment', 'sandbox' ) );
+		if ( empty( $pmpro_subscription ) ) {
+			return false;
 		}
 
 		// Okay have an order, so get customer so we can cancel invoices too
-		$customer = $this->update_customer_at_checkout( $order );
+		$customer = $this->get_customer_for_user( $pmpro_subscription->get_user_id() );
 
 		// Get open invoices.
 		$invoices = Stripe_Invoice::all(['customer' => $customer->id, 'status' => 'open']);
@@ -3401,12 +3390,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 			// Sometimes we don't want to cancel the local membership when Stripe sends its webhook.
 			if ( $preserve_local_membership ) {
-				$this->ignoreCancelWebhookForThisSubscription( $subscription->id, $order->user_id );
+				$this->ignoreCancelWebhookForThisSubscription( $subscription->id, $pmpro_subscription->get_user_id() );
 			}
 
 			// Cancel
 			$r = $subscription->cancel();
-
 			return true;
 		} catch ( \Throwable $e ) {
 			return false;
