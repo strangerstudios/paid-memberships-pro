@@ -88,6 +88,14 @@ function pmpro_get_spam_activity( $ip = null ) {
  * @return bool True if the tracking of activity was successful, or false if IP could not be determined.
  */
 function pmpro_track_spam_activity( $ip = null ) {
+	// Make sure that we only track spam a maximum of once per page load.
+	static $already_tracked = false;
+	if ( $already_tracked ) {
+		return false;
+	}
+	$already_tracked = true;
+
+	// Get the IP address if it's not provided.
 	if ( empty( $ip ) ) {
 		$ip = pmpro_get_ip();
 	}
@@ -190,3 +198,30 @@ function pmpro_disable_checkout_for_spammers( $required_fields ) {
 	return $required_fields;
 }
 add_filter( 'pmpro_required_billing_fields', 'pmpro_disable_checkout_for_spammers' );
+
+/**
+ * Track spam when trying to apply discount codes.
+ *
+ * @param bool $okay true if code check is okay or false if there was an error.
+ * @param object $dbcode Object containing code data from the database row.
+ */
+function pmpro_check_discount_code_spam_check( $okay, $dbcode ) {
+	// Bail if Spam Protection is disabled.
+	$spamprotection = get_option( 'pmpro_spamprotection' );
+	if ( empty( $spamprotection ) ) {
+		return $okay;
+	}
+
+	// If we already know that the visitor is a spammer, we don't need to check again.
+	if ( pmpro_is_spammer() ) {
+		// Returning a string is considered returning an error message.
+		return __( 'Suspicious activity detected. Try again in a few minutes.', 'paid-memberships-pro' );
+	}
+
+	// If the discount code is not a valid code on the site, track the activity.
+	if ( empty( $dbcode->id ) ) {
+		pmpro_track_spam_activity();
+	}
+	return $okay;
+}
+add_filter( 'pmpro_check_discount_code', 'pmpro_check_discount_code_spam_check', 10, 2 );
