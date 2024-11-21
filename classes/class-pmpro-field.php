@@ -1604,6 +1604,9 @@ class PMPro_Field {
 		switch( $this->type ) {
 			case 'text':
 			case 'textarea':
+				// Make sure that the value is a string.
+				$output = is_string( $value ) ? $value : '';
+
 				// If the field is a URL, check if we should try to embed it or show it as a link.
 				if ( wp_http_validate_url( $value ) ) {
 					/**
@@ -1688,87 +1691,95 @@ class PMPro_Field {
 				$output = implode( ', ', $labels );
 				break;
 			case 'file':
-				$file_type = wp_check_filetype($value['fullurl']);
-				switch ( $file_type['type'] ) {
-					case 'image/jpeg':
-					case 'image/png':
-					case 'image/gif':
-						$output = '<a href="' . $value['fullurl'] . '" title="' . $value['filename'] . '" target="_blank"><img class="subtype-' . $file_type['ext'] . '" src="' . $value['fullurl'] . '"><span class="pmpro_user_field_filename">' . $value['filename'] . '</span></a>';
-						$allowed_html = array(
-							'a' => array(
-								'href' => array(),
-								'title' => array(),
-								'target' => array(),
-							),
-							'img' => array(
-								'class' => array(),
-								'src' => array(),
-							),
-							'span' => array(
-								'class' => array(),
-							),
-						);
-						break;
-					case 'video/mpeg':
-					case 'video/mp4':
-						$output = do_shortcode('[video src="' . $value['fullurl'] . '"]');
-						$allowed_html = array(
-							'video' => array(
-								'src'       => true,
-								'poster'    => true,
-								'width'     => true,
-								'height'    => true,
-								'preload'   => true,
-								'controls'  => true,
-								'autoplay'  => true,
-								'loop'      => true,
-								'muted'     => true,
-							),
-							'source' => array(
-								'src'   => true,
-								'type'  => true,
-							),
-						);
-						break;
-					case 'audio/mpeg':
-					case 'audio/wav':
-						$output = do_shortcode('[audio src="' . $value['fullurl'] . '"]');
-						$allowed_html = array(
-							'audio' => array(
-								'src'       => true,
-								'controls'  => true,
-								'autoplay'  => true,
-								'loop'      => true,
-								'muted'     => true,
-								'preload'   => true,
-							),
-							'source' => array(
-								'src'   => true,
-								'type'  => true,
-							),
-						);
-						break;
-					default:
-						$output = '<a href="' . $value['fullurl'] . '" title="' . $value['filename'] . '" target="_blank"><img class="subtype-' . $file_type['ext'] . '" src="' . wp_mime_type_icon( $file_type['type'] ) . '"><span class="pmpro_user_field_filename">' . $value['filename'] . '</span></a>';
-						$allowed_html = array(
-							'a' => array(
-								'href' => array(),
-								'title' => array(),
-								'target' => array(),
-							),
-							'img' => array(
-								'class' => array(),
-								'src' => array(),
-							),
-							'span' => array(
-								'class' => array(),
-							),
-						);
-						break;
+				// Validate the value.
+				if ( empty( $value ) ) {
+					$output = __( 'No file uploaded.', 'paid-memberships-pro' );
+				} elseif ( ! is_array( $value ) || empty( $value['fullurl'] ) ) {
+					$output = __( 'Invalid file data.', 'paid-memberships-pro' );
+				} else {
+					// We have a file. Determine how to display it.
+					$file_type = wp_check_filetype($value['fullurl']);
+					switch ( $file_type['type'] ) {
+						case 'image/jpeg':
+						case 'image/png':
+						case 'image/gif':
+							$output = '<a href="' . $value['fullurl'] . '" title="' . $value['filename'] . '" target="_blank"><img class="subtype-' . $file_type['ext'] . '" src="' . $value['fullurl'] . '"><span class="pmpro_user_field_filename">' . $value['filename'] . '</span></a>';
+							$allowed_html = array(
+								'a' => array(
+									'href' => array(),
+									'title' => array(),
+									'target' => array(),
+								),
+								'img' => array(
+									'class' => array(),
+									'src' => array(),
+								),
+								'span' => array(
+									'class' => array(),
+								),
+							);
+							break;
+						case 'video/mpeg':
+						case 'video/mp4':
+							$output = do_shortcode('[video src="' . $value['fullurl'] . '"]');
+							$allowed_html = array(
+								'video' => array(
+									'src'       => true,
+									'poster'    => true,
+									'width'     => true,
+									'height'    => true,
+									'preload'   => true,
+									'controls'  => true,
+									'autoplay'  => true,
+									'loop'      => true,
+									'muted'     => true,
+								),
+								'source' => array(
+									'src'   => true,
+									'type'  => true,
+								),
+							);
+							break;
+						case 'audio/mpeg':
+						case 'audio/wav':
+							$output = do_shortcode('[audio src="' . $value['fullurl'] . '"]');
+							$allowed_html = array(
+								'audio' => array(
+									'src'       => true,
+									'controls'  => true,
+									'autoplay'  => true,
+									'loop'      => true,
+									'muted'     => true,
+									'preload'   => true,
+								),
+								'source' => array(
+									'src'   => true,
+									'type'  => true,
+								),
+							);
+							break;
+						default:
+							$output = '<a href="' . $value['fullurl'] . '" title="' . $value['filename'] . '" target="_blank"><img class="subtype-' . $file_type['ext'] . '" src="' . wp_mime_type_icon( $file_type['type'] ) . '"><span class="pmpro_user_field_filename">' . $value['filename'] . '</span></a>';
+							$allowed_html = array(
+								'a' => array(
+									'href' => array(),
+									'title' => array(),
+									'target' => array(),
+								),
+								'img' => array(
+									'class' => array(),
+									'src' => array(),
+								),
+								'span' => array(
+									'class' => array(),
+								),
+							);
+							break;
+					}
 				}
 				break;
 			default:
-				$output = $value;
+				$output = (string) $value;
 				break;
 		}
 
