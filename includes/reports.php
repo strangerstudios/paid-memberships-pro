@@ -7,7 +7,7 @@ if( null === $pmpro_reports ) {
 /**
  * Populate the $pmpro_reports global.
  *
- * @since TBD
+ * @since 3.3.2
  */
 function pmpro_populate_reports() {
 	global $pmpro_reports;

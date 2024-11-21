@@ -256,7 +256,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 
 		//add discount code use
 		if ( ! empty( $discount_code_id ) ) {
-			do_action_deprecated( 'pmpro_discount_code_used', array( $discount_code_id, $order->user_id, $order->id ), 'TBD', 'pmpro_added_order' );
+			do_action_deprecated( 'pmpro_discount_code_used', array( $discount_code_id, $order->user_id, $order->id ), '3.3.2', 'pmpro_added_order' );
 		}
 
 		//save first and last name fields
