@@ -1703,7 +1703,6 @@ class PMPro_Field {
 						case 'image/jpeg':
 						case 'image/png':
 						case 'image/gif':
-							/* translators: %1$s: File name, %2$s: User Field name, %3$s: Member Display Name */
 							$output = '<div class="pmpro_form_field-file-preview"><img class="subtype-' . $file_type['ext'] . '" alt="" src="' . $value['previewurl'] . '"><div class="pmpro_form_field-file-name"><a href="' . $value['fullurl'] . '" target="_blank">' . $value['filename'] . '</a></div></div>';
 							$allowed_html = array(
 								'a' => array(
