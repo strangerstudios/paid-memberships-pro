@@ -37,10 +37,10 @@ $levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 			<span id="pmpro_userfield-group-buttons-description-2" class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Move Group Down', 'paid-memberships-pro' ); ?></span>
 		</div> <!-- end pmpro_userfield-group-buttons -->
 		<h3>
-			<label>                    
+			<label for="pmpro_userfields_group_name">
 				<?php esc_html_e( 'Group Name', 'paid-memberships-pro' ); ?>
-				<input type="text" name="pmpro_userfields_group_name" placeholder="<?php esc_attr_e( 'Group Name', 'paid-memberships-pro' ); ?>" value="<?php echo esc_attr( $group_name ); ?>" />
-			</label>                
+				<input type="text" name="pmpro_userfields_group_name" id="pmpro_userfields_group_name" placeholder="<?php esc_attr_e( 'Group Name', 'paid-memberships-pro' ); ?>" value="<?php echo esc_attr( $group_name ); ?>" />
+			</label>
 		</h3>
 		<button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-toggle-group" aria-label="<?php esc_attr_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?>">
 			<span class="dashicons dashicons-arrow-up"></span>
@@ -51,40 +51,34 @@ $levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 	<div class="pmpro_userfield-inside">
 		<div class="pmpro_userfield-field-settings">
 			
-			<div class="pmpro_userfield-field-setting">
-				<label>
-					<?php esc_html_e( 'Show fields at checkout?', 'paid-memberships-pro' ); ?><br />
-					<select name="pmpro_userfields_group_checkout">
-						<option value="yes" <?php selected( $group_show_checkout, 'yes' ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
-						<option value="no" <?php selected( $group_show_checkout, 'no' ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-					</select>
-				</label>
+			<div id="pmpro_userfield-group-setting_group_checkout" class="pmpro_userfield-field-setting pmpro_userfield-field-setting_1-2">
+				<label for="pmpro_userfields_group_checkout"><?php esc_html_e( 'Show fields at checkout?', 'paid-memberships-pro' ); ?></label>
+				<select name="pmpro_userfields_group_checkout" id="pmpro_userfields_group_checkout">
+					<option value="yes" <?php selected( $group_show_checkout, 'yes' ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+					<option value="no" <?php selected( $group_show_checkout, 'no' ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+				</select>
 			</div> <!-- end pmpro_userfield-field-setting -->
 			
-			<div class="pmpro_userfield-field-setting">
-				<label>
-					<?php esc_html_e( 'Show fields on user profile?', 'paid-memberships-pro' ); ?><br />
-					<select name="pmpro_userfields_group_profile">
-						<option value="yes" <?php selected( $group_show_profile, 'yes' ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
-						<option value="admins" <?php selected( $group_show_profile, 'admins' ); ?>><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
-						<option value="no" <?php selected( $group_show_profile, 'no' ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-					</select>
-				</label>
+			<div id="pmpro_userfield-group-setting_group_profile" class="pmpro_userfield-field-setting pmpro_userfield-field-setting_1-2">
+				<label for="pmpro_userfields_group_profile"><?php esc_html_e( 'Show fields on user profile?', 'paid-memberships-pro' ); ?></label>
+				<select name="pmpro_userfields_group_profile" id="pmpro_userfields_group_profile">
+					<option value="yes" <?php selected( $group_show_profile, 'yes' ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+					<option value="admins" <?php selected( $group_show_profile, 'admins' ); ?>><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
+					<option value="no" <?php selected( $group_show_profile, 'no' ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+				</select>
 			</div> <!-- end pmpro_userfield-field-setting -->
 			
-			<div class="pmpro_userfield-field-setting">
-				<label>
-					<?php esc_html_e( 'Description (optional, visible to users)', 'paid-memberships-pro' ); ?><br />
-					<textarea name="pmpro_userfields_group_description"><?php echo esc_textarea( $group_description );?></textarea>
-				</label>
+			<div id="pmpro_userfield-group-setting_group_description" class="pmpro_userfield-field-setting pmpro_userfield-field-setting_1-2">
+				<label for="pmpro_userfields_group_description"><?php esc_html_e( 'Description (optional, visible to users)', 'paid-memberships-pro' ); ?></label>
+				<textarea name="pmpro_userfields_group_description" id="pmpro_userfields_group_description"><?php echo esc_textarea( $group_description );?></textarea>
 			</div> <!-- end pmpro_userfield-field-setting -->
 			
-			<div class="pmpro_userfield-field-setting">
+			<div id="pmpro_userfield-group-setting_group_membership" class="pmpro_userfield-field-setting pmpro_userfield-field-setting_1-2">
 				<?php esc_html_e( 'Restrict Fields for Membership Levels', 'paid-memberships-pro' ); ?><br />
 				<div class="pmpro_checkbox_box" <?php if ( count( $levels ) > 3 ) { ?>style="height: 90px; overflow: auto;"<?php } ?>>
 					<?php foreach( $levels as $level ) { ?>
 						<div class="pmpro_clickable">
-							<label>
+							<label for="pmpro_userfields_group_membership_<?php echo esc_attr( $level->id); ?>">
 								<input type="checkbox" id="pmpro_userfields_group_membership_<?php echo esc_attr( $level->id); ?>" name="pmpro_userfields_group_membership[]" <?php checked( true, in_array( $level->id, $group_levels ) );?>>
 								<?php echo esc_html( $level->name ); ?>
 							</label>
