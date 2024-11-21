@@ -1573,7 +1573,7 @@
 		 * Get a random code to use as the order code.
 		 */
 		function getRandomCode() {
-			global $wpdb;
+			global $wpdb, $current_user;
 
 			// We mix this with the seed to make sure we get unique codes.
 			static $count = 0;
@@ -1589,7 +1589,8 @@
 			}
 
 			while( empty( $code ) ) {
-				$scramble = md5( $auth_code . microtime() . $secure_auth_code . $count );
+				$current_user_id = ! empty( $current_user->ID ) ? $current_user->ID : 0;
+				$scramble = md5( $auth_code . microtime() . $secure_auth_code . $current_user_id . $count );
 				$code = substr( $scramble, 0, 10 );
 				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
 				$check = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = %s LIMIT 1", $code ) );
