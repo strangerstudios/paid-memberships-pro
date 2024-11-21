@@ -828,7 +828,7 @@ class PMPro_Field {
 		if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
 			$preview_file = wp_get_image_editor( $file_path );
 			if ( ! is_wp_error( $preview_file ) ) {
-				$preview_file->resize( 200, NULL, false );
+				$preview_file->resize( 400, 400, false );
 				$preview_file->generate_filename( 'pmpro_file_preview' );
 				$preview_file = $preview_file->save();
 			}
@@ -1703,14 +1703,19 @@ class PMPro_Field {
 						case 'image/jpeg':
 						case 'image/png':
 						case 'image/gif':
-							$output = '<a href="' . $value['fullurl'] . '" title="' . $value['filename'] . '" target="_blank"><img class="subtype-' . $file_type['ext'] . '" src="' . $value['fullurl'] . '"><span class="pmpro_user_field_filename">' . $value['filename'] . '</span></a>';
+							/* translators: %1$s: File name, %2$s: User Field name, %3$s: Member Display Name */
+							$output = '<div class="pmpro_form_field-file-preview"><img class="subtype-' . $file_type['ext'] . '" alt="" src="' . $value['previewurl'] . '"><div class="pmpro_form_field-file-name"><a href="' . $value['fullurl'] . '" target="_blank">' . $value['filename'] . '</a></div></div>';
 							$allowed_html = array(
 								'a' => array(
 									'href' => array(),
 									'title' => array(),
 									'target' => array(),
 								),
+								'div' => array(
+									'class' => array(),
+								),
 								'img' => array(
+									'alt' => array(),
 									'class' => array(),
 									'src' => array(),
 								),
