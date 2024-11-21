@@ -1763,7 +1763,7 @@ class PMPro_Field {
 							);
 							break;
 						default:
-							$output = '<a href="' . $value['fullurl'] . '" title="' . $value['filename'] . '" target="_blank"><img class="subtype-' . $file_type['ext'] . '" src="' . wp_mime_type_icon( $file_type['type'] ) . '"><span class="pmpro_user_field_filename">' . $value['filename'] . '</span></a>';
+							$output = '<a href="' . $value['fullurl'] . '" target="_blank"><img class="subtype-' . $file_type['ext'] . '" src="' . wp_mime_type_icon( $file_type['type'] ) . '"><span class="pmpro_user_field_filename">' . $value['filename'] . '</span></a>';
 							$allowed_html = array(
 								'a' => array(
 									'href' => array(),
