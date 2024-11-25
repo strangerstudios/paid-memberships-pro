@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.6.2
 Requires PHP: 5.6
-Stable tag: 3.3.1
+Stable tag: 3.3.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,19 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.3.2 - 2024-11-21 =
+* ENHANCEMENT: Updated the "Checkout Spam Protection" security setting to also check for spam when trying to apply invalid discount codes. #3208 (@ideadude, @dparker1005)
+* ENHANCEMENT: Added a new filter `pmpro_registered_reports` for registering reports. #3200 (@mircobabini)
+* ENHANCEMENT: Now showing the Stripe API version being used by PMPro in site health instead of on the Payment Gateways settings page. #3204 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed an issue where Stripe error messages at checkout would not show at the bottom of the checkout page. #3194 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Now setting the discount code for an order during the `saveOrder()` method at checkout and when updating an order in the WP admin. #3190 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Improved the logic to get random order codes to help prevent duplicate order codes. #3191 (@dparker1005)
+* BUG FIX: Fixed `doing_it_wrong` notices for strings that are localized before the `init` hook which started showing after sites updated to WordPress version 6.7. #3200 (@mircobabini)
+* BUG FIX: Fixed an issue where the value '0' for a user field would be overwritten with the field's default value when displayed in the checkout form. #3189 (@dparker1005)
+* BUG FIX: Fixed an issue where IP addresses may not be detected correctly when using the `pmpro_get_ip()` function. #3192 (@andrewlimaza)
+* BUG FIX: Now ensuring that the `SITENAME` constant is not already defined before defining it. #3196 (@dparker1005)
+* BUG FIX: Fixed a fatal error that would occur on the confirmation page if an invalid user ID is set on the order object being shown. #3207 (@dparker1005)
+
 = 3.3.1 - 2024-10-24 =
 * ENHANCEMENT: Added a Subscriptions List Table to allow admins to view, manage, and link subscriptions from the WordPress admin. #2828 (@dparker1005, @kimcoleman)
 * ENHANCEMENT: Discount codes can now be set to only allow one use per user. #3175 (@dparker1005)

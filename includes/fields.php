@@ -6,7 +6,7 @@ $pmpro_user_fields = array();
 // Add default group.
 $cb = new stdClass();
 $cb->name = 'checkout_boxes';
-$cb->label = apply_filters( 'pmpro_default_field_group_label', __( 'More Information','paid-memberships-pro' ) );
+$cb->label = apply_filters( 'pmpro_default_field_group_label', 'More Information' );
 $cb->order = 0;
 $pmpro_field_groups = array( 'checkout_boxes' => $cb );
 
@@ -44,7 +44,7 @@ function pmpro_add_user_field( $where, $field ) {
      * @since 2.9.3
      * 
      * @param string $where The name of the group to add the field to.
-     * @param PMProField $field The field being added.
+     * @param PMPro_Field $field The field being added.
      */
     $where = apply_filters( 'pmpro_add_user_field_where', $where, $field );
     
@@ -53,7 +53,7 @@ function pmpro_add_user_field( $where, $field ) {
      * 
      * @since 2.9.3
      *             
-     * @param PMProField $field The field being added.
+     * @param PMPro_Field $field The field being added.
      * @param string $where The name of the group to add the field to.
      */
     $field = apply_filters( 'pmpro_add_user_field', $field, $where );

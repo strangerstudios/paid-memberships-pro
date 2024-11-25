@@ -4,20 +4,23 @@
 	Title: Sales
 	Slug: sales
 
-	For each report, add a line like:
-	global $pmpro_reports;
-	$pmpro_reports['slug'] = 'Title';
-
-	For each report, also write two functions:
+	For each report, write three functions:
+	* pmpro_report_{slug}_register() to register the widget (slug and title).
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
-global $pmpro_reports;
-$gateway_environment = get_option( "pmpro_gateway_environment");
-if($gateway_environment == "sandbox")
-	$pmpro_reports['sales'] = __('Sales and Revenue (Testing/Sandbox)', 'paid-memberships-pro' );
-else
-	$pmpro_reports['sales'] = __('Sales and Revenue', 'paid-memberships-pro' );
+function pmpro_report_sales_register( $pmpro_reports ) {
+	$gateway_environment = get_option( "pmpro_gateway_environment" );
+	if ( $gateway_environment == "sandbox" ) {
+		$pmpro_reports['sales'] = __( 'Sales and Revenue (Testing/Sandbox)', 'paid-memberships-pro' );
+	} else {
+		$pmpro_reports['sales'] = __( 'Sales and Revenue', 'paid-memberships-pro' );
+	}
+
+	return $pmpro_reports;
+}
+
+add_filter( 'pmpro_registered_reports', 'pmpro_report_sales_register' );
 
 //queue Google Visualization JS on report page
 function pmpro_report_sales_init()

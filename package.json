@@ -1,6 +1,6 @@
 {
   "name": "paid-memberships-pro",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "WordPress Membership Plugin",
   "directories": {
     "test": "tests"
