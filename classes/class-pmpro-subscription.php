@@ -780,20 +780,19 @@ class PMPro_Subscription {
 		} elseif ( 'date_format' === $format ) {
 			$format = get_option( 'date_format' );
 		}
-
 		// Get date in WP local timezone.
 		if ( $local_time ) {
-			$date = strtotime( get_date_from_gmt( $date ) );
-			return date_i18n( $format, $date );
+			// wp_date() returns time in local timezone by default.
+			return wp_date( $format, strtotime( $date ) );
 		}
 
-		// If it's not a timestamp, conver it to one for the date_i18n function.
+		// If it's not a timestamp, convert it to one.
 		if ( ! is_numeric( $date ) ) {
 			$date = strtotime( $date );
 		}
 
-		$date = gmdate( $date );
-		return date_i18n( $format, $date );
+		// Get date in GMT timezone.
+		return wp_date( $format, $date, new DateTimezone('GMT') );
 	}
 
 	/**
