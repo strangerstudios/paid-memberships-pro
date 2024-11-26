@@ -1672,6 +1672,13 @@ class PMPro_Field {
 			case 'checkbox':
 				$output = $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
 				break;
+			case 'number':
+					// Make sure that the value is a number.
+					$output = is_numeric( $value ) ? number_format_i18n( $value ) : '';
+					break;
+			case 'date':
+				$output = date_i18n( get_option( 'date_format' ), $value );
+				break;
 			case 'select':
 			case 'multiselect':
 			case 'select2':
