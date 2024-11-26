@@ -1703,7 +1703,7 @@ class PMPro_Field {
 						case 'image/jpeg':
 						case 'image/png':
 						case 'image/gif':
-							$output = '<div class="pmpro_form_field-file-preview"><img class="subtype-' . $file_type['ext'] . '" alt="" src="' . $value['previewurl'] . '"><div class="pmpro_form_field-file-name"><a href="' . $value['fullurl'] . '" target="_blank">' . $value['filename'] . '</a></div></div>';
+							$output = '<div class="' . pmpro_get_element_class( 'pmpro_form_field-file-preview' ) . '"><img class="' . pmpro_get_element_class( 'pmpro_form_field-file-subtype_' . $file_type['ext'] ) . '" alt="" src="' . $value['previewurl'] . '"><div class="' . pmpro_get_element_class( 'pmpro_form_field-file-name' ) . '"><a href="' . $value['fullurl'] . '" target="_blank">' . $value['filename'] . '</a></div></div>';
 							$allowed_html = array(
 								'a' => array(
 									'href' => array(),
@@ -1763,23 +1763,24 @@ class PMPro_Field {
 							);
 							break;
 						default:
-							$output = '<a href="' . $value['fullurl'] . '" target="_blank"><img class="subtype-' . $file_type['ext'] . '" src="' . wp_mime_type_icon( $file_type['type'] ) . '"><span class="pmpro_user_field_filename">' . $value['filename'] . '</span></a>';
+							$output = '<a href="' . $value['fullurl'] . '" target="_blank"><img class="' . pmpro_get_element_class( 'pmpro_form_field-file-subtype_' . $file_type['ext'] ) . '" src="' . wp_mime_type_icon( $file_type['type'] ) . '"><div class="' . pmpro_get_element_class( 'pmpro_form_field-file-name' ) . '">' . $value['filename'] . '</div></a>';
 							$allowed_html = array(
 								'a' => array(
 									'href' => array(),
-									'title' => array(),
 									'target' => array(),
 								),
 								'img' => array(
 									'class' => array(),
 									'src' => array(),
 								),
-								'span' => array(
+								'div' => array(
 									'class' => array(),
 								),
 							);
 							break;
 					}
+					// Wrap the output in a div.
+					$output = '<div class="' . pmpro_get_element_class( 'pmpro_form_field-file-' . $file_type['ext'] ) . '">' . $output . '</div>';
 				}
 				break;
 			default:
