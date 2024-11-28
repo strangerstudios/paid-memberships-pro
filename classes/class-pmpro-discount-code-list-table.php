@@ -410,18 +410,9 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 					esc_html__( 'Edit', 'paid-memberships-pro' )
 				),
 				'copy'   => sprintf(
-					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Copy', 'paid-memberships-pro' ),
-					esc_url(
-						add_query_arg(
-							[
-								'page' => 'pmpro-discountcodes',
-								'edit' => - 1,
-								'copy' => $item->id,
-							],
-							admin_url( 'admin.php' )
-						)
-					),
+					'<button type="button" title="%1$s" class="%2$s">%3$s</button>',
+					esc_attr__( 'Copy code to the clipboard', 'paid-memberships-pro' ),
+					esc_attr__('pmpro_copy_discount_code button-link edit-filters', 'paid-memberships-pro'),
 					esc_html__( 'Copy', 'paid-memberships-pro' )
 				),
 				'delete' => sprintf(

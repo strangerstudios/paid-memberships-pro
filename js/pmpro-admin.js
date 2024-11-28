@@ -1002,3 +1002,43 @@ function pmpro_changeTabs( e, inputChanged ) {
 jQuery(document).ready(function () {
 	jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
 });
+
+jQuery(document).ready(function ($) {
+	/**
+	 * Copy Discount Code to Clipboard
+	 *
+	 * @param {Event} event The click event
+	 * @returns {void}
+	 * @since TBD
+	 */
+	$('.pmpro_copy_discount_code').on('click', function (event) {
+        // Find first link text
+        const code = $(this).closest('td').find('a').first().text();
+
+        // Check for Clipboard API support
+        if ( ! navigator.clipboard ) {
+            console.error('Navigator Clipboard API not supported');
+            return;
+        }
+
+        // Create a new Blob object with the discount code
+        const blob = new Blob([code], { type: 'text/plain' });
+
+        // Create a ClipboardItem object and write the Blob to the clipboard
+        navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })])
+            .then(() => {
+                // Hide copy button and show success message
+                $(this).hide();
+                $(this).after('<span class="success-message">Copied!</span>');
+
+                // Remove success message and show copy button after a delay
+                setTimeout(() => {
+                    $('.success-message').remove();
+                    $('.pmpro_copy_discount_code').show();
+                }, 3000);
+            })
+            .catch(err => {
+                console.error('Failed to copy code:', err);
+            });
+    });
+});
