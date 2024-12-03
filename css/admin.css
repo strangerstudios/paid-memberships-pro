@@ -1228,7 +1228,7 @@ td > .pmpro_tag {
 }
 
 .pmpro_admin-pmpro-member button.wp-generate-pw {
-	margin-bottom: var(--pmpro--spacing--small );
+	margin-bottom: var(--pmpro--spacing--small);
 }
 
 .pmpro_admin-pmpro-member #pmpro-member-edit-memberships-panel .pmpro_section .pmpro_section_inside {
@@ -1909,18 +1909,21 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-inside input[type=text],
+.pmpro_admin-pmpro-userfields .pmpro_userfield-inside input[type=number],
 .pmpro_admin-pmpro-userfields .pmpro_userfield-inside select,
-.pmpro_admin-pmpro-userfields .pmpro_userfield-inside textarea {
-	width: 90%;
+.pmpro_admin-pmpro-userfields .pmpro_userfield-inside textarea,
+.pmpro_admin-pmpro-userfields .pmpro_userfield-inside .pmpro_checkbox_box {
+	max-width: 100%;
+	width: 100%;
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-inside textarea {
-	height: 90px;
+	height: 65px;
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-inside h3 {
 	margin: 0;
-	padding: 8px 12px;
+	padding: var(--pmpro--spacing--small);
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group {
@@ -1954,11 +1957,12 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-thead li {
 	font-weight: bold;
-	padding: 8px 12px;
+	padding: var(--pmpro--spacing--small);
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-tbody li {
-	padding: 8px 12px;
+	margin: 0;
+	padding: var(--pmpro--spacing--small);
 }
 
 .pmpro_admin-pmpro-userfields li.pmpro_userfield-group-column-order {
@@ -1986,41 +1990,16 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	font-weight: bold;
 }
 
-.pmpro_admin-pmpro-userfields .pmpro_userfield-group-field-collapse li.pmpro_userfield-group-column-label .pmpro_userfield-label {
-	margin-bottom: .2em;
-}
-
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-label,
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-name,
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-type {
 	display: none;
 }
 
-.pmpro_admin-pmpro-userfields .pmpro_userfield-group-field .pmpro_userfield-group-options {
+.pmpro_admin-pmpro-userfields .pmpro_userfield-field-options {
 	color: #DDD;
 	font-size: 13px;
-	left: -9999em;
 	position: relative;
-}
-
-.pmpro_admin-pmpro-userfields .pmpro_userfield-group-field .pmpro_userfield-group-options a {
-	text-decoration: none;
-}
-
-.pmpro_admin-pmpro-userfields .pmpro_userfield-group-field .pmpro_userfield-group-options a:hover {
-	text-decoration: underline;
-}
-
-.pmpro_admin-pmpro-userfields .pmpro_userfield-group-field-collapse:hover .pmpro_userfield-group-options {
-	left: 0;
-}
-
-.pmpro_admin-pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-options {
-	display: none;
-}
-
-.pmpro_admin-pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-options a {
-	color: #FFF;
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-field {
@@ -2041,38 +2020,30 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	align-items: center;
 	display: flex;
 	flex-grow: 1;
-	margin: 0 0 0 12px;
+	margin: 0 0 0 var(--pmpro--spacing--small);
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-header h3 label {
 	display: inline-block;
-	margin-right: 5px;
+	margin-right: calc( var(--pmpro--spacing--small) / 2 );
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings {
-	padding: 0 12px;
+	padding: 0 var(--pmpro--spacing--small);
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting {
-	margin: 12px 0;
-}
-
-.pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-dual {
-	column-count: 2;
-}
-
-.pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-dual .pmpro_userfield-field-setting {
-	margin: 0;
+	margin: var(--pmpro--spacing--small) 0;
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-radio span {
 	display: inline-block;
-	margin-right: 12px;
+	margin-right: var(--pmpro--spacing--small);
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-field-actions {	
 	width: 100%;
-	padding: 8px 12px;
+	padding: var(--pmpro--spacing--small);
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-actions {
@@ -2087,13 +2058,19 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 		width: 500px;
 	}
 
-	.pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings {
+	.pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings,
+	.pmpro_admin-pmpro-userfields .pmpro_userfield-row-settings {
 		display: flex;
 		flex-wrap: wrap;
+		column-gap: var(--pmpro--spacing--medium);
 	}
 
-	.pmpro_admin-pmpro-userfields .pmpro_userfield-field-setting {
-		flex: 50%;
+	.pmpro_admin-pmpro-userfields .pmpro_userfield-field-setting_1-2 {
+		flex: 0 0 calc( 50% - var(--pmpro--spacing--medium) );
+	}
+
+	.pmpro_admin-pmpro-userfields .pmpro_userfield-field-setting_1-4 {
+		flex: 0 0 calc( 25% - var(--pmpro--spacing--medium) );
 	}
 }
 
