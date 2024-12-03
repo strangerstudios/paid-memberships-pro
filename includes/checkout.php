@@ -255,7 +255,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		$order->saveOrder();
 
 		//add discount code use
-		if ( ! empty( $discount_code_id ) ) {
+		if ( ! empty( $discount_code_id ) || ! empty( $discount_code ) ) {
 			do_action_deprecated( 'pmpro_discount_code_used', array( $discount_code_id, $order->user_id, $order->id ), '3.3.2', 'pmpro_added_order' );
 		}
 
