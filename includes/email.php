@@ -369,7 +369,7 @@ function pmpro_email_templates_send_test() {
 			break;
 		case 'membership_expiring';
 			$send_email = 'sendMembershipExpiringEmail';
-			$params = array($test_user);
+			$params = array( $test_user, $test_order->membership_id );
 			break;
 		case 'payment_action':
 			$send_email = 'sendPaymentActionRequiredEmail';

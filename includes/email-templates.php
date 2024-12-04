@@ -286,17 +286,6 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to manage your account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the member when their membership expires.', 'paid-memberships-pro' )
 	),
-	'membership_expiring' => array(
-		'subject' => __( "Your membership at !!sitename!! will end soon", 'paid-memberships-pro' ),
-		'description' => __('Membership Expiring', 'paid-memberships-pro'),
-		'body' => __( '<p>Thank you for your membership to !!sitename!!. This is just a reminder that your membership will end on !!enddate!!.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent to the member when their expiration date is approaching, at an interval based on the term of the membership.', 'paid-memberships-pro' )
-	),
 	'refund' => array(
 		'subject' => __( 'Order #!!order_id!! at !!sitename!! has been REFUNDED', 'paid-memberships-pro' ),
 		'description' => __('Refund', 'paid-memberships-pro'),
