@@ -274,18 +274,6 @@ $pmpro_email_templates_defaults = array(
 <p>To view an online version of this order, click here: !!order_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the member each time a new subscription payment is made.', 'paid-memberships-pro' )
 	),
-	'membership_expired' => array(
-		'subject' => __( "Your membership at !!sitename!! has ended", 'paid-memberships-pro' ),
-		'description' => __('Membership Expired', 'paid-memberships-pro'),
-		'body' => __( '<p>Your membership at !!sitename!! has ended.</p>
-
-<p>Thank you for your support.</p>
-
-<p>View our current membership offerings here: !!levels_url!!</p>
-
-<p>Log in to manage your account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent to the member when their membership expires.', 'paid-memberships-pro' )
-	),
 	'membership_expiring' => array(
 		'subject' => __( "Your membership at !!sitename!! will end soon", 'paid-memberships-pro' ),
 		'description' => __('Membership Expiring', 'paid-memberships-pro'),
