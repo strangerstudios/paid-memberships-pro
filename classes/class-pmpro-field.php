@@ -828,7 +828,7 @@ class PMPro_Field {
 		if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
 			$preview_file = wp_get_image_editor( $file_path );
 			if ( ! is_wp_error( $preview_file ) ) {
-				$preview_file->resize( 200, NULL, false );
+				$preview_file->resize( 400, 400, false );
 				$preview_file->generate_filename( 'pmpro_file_preview' );
 				$preview_file = $preview_file->save();
 			}
@@ -1596,54 +1596,203 @@ class PMPro_Field {
 	 * @since 3.0 Shows files as links and added echo parameter.
 	 */
 	function displayValue( $value, $echo = true ) {
+		// Build the output.
 		$output = '';
 		$allowed_html = array();
 
-		if(is_array( $value ) && ! empty( $this->options ) ) {
-			$labels = array();
-			foreach( $value as $item ) {
-				$labels[] = $this->options[$item];
-			}
-			$output .= implode( ', ', $labels);
-		} elseif( is_array( $value ) ) {
-			$output .= implode( ', ', $value );
-		} elseif( ! empty( $this->options ) && isset( $this->options[$value] ) ) {
-			$output .= $this->options[$value];
-		} elseif ( $this->type == 'checkbox' ) {
-			$output .= $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
-		} elseif ( $this->type == 'file' ) {
-			// Show a preview of existing file if image type.
-			if ( ( ! empty( $this->preview ) ) && ! empty( $value ) && ! empty( $this->file['previewurl'] ) ) {
-				$filetype = wp_check_filetype( basename( $this->file['previewurl'] ), null );
-				if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
-					$output .= '<div class="pmpro_file_preview"><img src="' . $this->file['previewurl'] . '" alt="' . basename($value) . '" /></div>';
-				}
-				$allowed_html['div'] = array(
-					'class' => array(),
-				);
-				$allowed_html['img'] = array(
-					'src' => array(),
-					'alt' => array(),
-				);
-			}
+		// Switch on the type of field.
+		switch( $this->type ) {
+			case 'text':
+			case 'textarea':
+				// Make sure that the value is a string.
+				$output = is_string( $value ) ? $value : '';
 
-			// Show link to file if available, or name if not.
-			if( ! empty( $this->file ) && ! empty( $this->file['fullurl'] ) ) {
-				$output .= '<span class="pmpro_file_' . $this->name . '_name"><a target="_blank" href="' . esc_url( $this->file['fullurl'] ) . '">' . basename($value) . '</a></span>';
-				$allowed_html['span'] = array(
-					'class' => array(),
-				);
-				$allowed_html['a'] = array(
-					'href' => array(),
-					'target' => array(),
-				);
-			} elseif( empty( $value ) ) {
-				$output .= esc_html__( 'N/A', 'paid-memberships-pro' );
-			} else {
-				$output .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
-			}
-		} else {
-			$output .= $value;
+				// If the field is a URL, check if we should try to embed it or show it as a link.
+				if ( wp_http_validate_url( $value ) ) {
+					/**
+					 * Filter whether links should be clickable, embedded, or shown as plain text.
+					 *
+					 * @since TBD
+					 *
+					 * @param string $link_display_type The type of link display. Accepts 'embedded', 'clickable_link', 'clickable_label', or 'text'.
+					 * @param string $value             The value to be shown.
+					 * @param PMPro_Field $field	    Field object that the value is for.
+					 */
+					$link_display_type = apply_filters( 'pmpro_field_value_link_display_type', 'embedded', $value, $this );
+					switch ( $link_display_type ) {
+						case 'embedded':
+							$url_embed = wp_oembed_get( $value );
+							if ( ! empty( $url_embed ) ) {
+								// Oembed returned a value.
+								$output = $url_embed;
+								$allowed_html = array(
+									'iframe' => array(
+										'src'             => true,
+										'height'          => true,
+										'width'           => true,
+										'frameborder'     => true,
+										'allowfullscreen' => true,
+										'allow'           => true,
+									),
+									'script' => array(
+										'type' => true,
+										'src'  => true,
+									),
+								);
+								break;
+							}
+							// If we got here, we can't embed. Fall through to clickable link.
+						case 'clickable_link':
+							$output = '<a href="' . esc_url( $value ) . '" target="_blank">' . esc_html( $value ) . '</a>';
+							$allowed_html = array(
+								'a' => array(
+									'href'   => true,
+									'target' => true,
+								),
+							);
+							break;
+						case 'clickable_label':
+							$output = '<a href="' . esc_url( $value ) . '" target="_blank">' . esc_html( $this->label ) . '</a>';
+							$allowed_html = array(
+								'a' => array(
+									'href'   => true,
+									'target' => true,
+								),
+							);
+							break;
+						default:
+							// Do nothing. The value is already set.
+							$output = $value;
+							break;
+					}
+				} else {
+					$output = $value;
+				}
+				break;
+			case 'checkbox':
+				$output = $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
+				break;
+			case 'number':
+					// Make sure that the value is a number.
+					$output = is_numeric( $value ) ? number_format_i18n( $value ) : '';
+					break;
+			case 'date':
+				$output = date_i18n( get_option( 'date_format' ), $value );
+				break;
+			case 'select':
+			case 'multiselect':
+			case 'select2':
+			case 'radio':
+			case 'checkbox_grouped':
+				// For simplicity, make sure that $value and $this->options are arrays.
+				if ( ! is_array( $value ) ) {
+					$value = array( $value );
+				}
+				if ( ! is_array( $this->options ) ) {
+					$this->options = array();
+				}
+				$labels = array();
+				foreach( $value as $item ) {
+					$labels[] = array_key_exists( $item, $this->options ) ? $this->options[ $item ] : $item;
+				}
+				$output = implode( ', ', $labels );
+				break;
+			case 'file':
+				// Validate the value.
+				if ( empty( $value ) ) {
+					$output = __( 'No file uploaded.', 'paid-memberships-pro' );
+				} elseif ( ! is_array( $value ) || empty( $value['fullurl'] ) ) {
+					$output = __( 'Invalid file data.', 'paid-memberships-pro' );
+				} else {
+					// We have a file. Determine how to display it.
+					$file_type = wp_check_filetype($value['fullurl']);
+					switch ( $file_type['type'] ) {
+						case 'image/jpeg':
+						case 'image/png':
+						case 'image/gif':
+							$output = '<div class="' . pmpro_get_element_class( 'pmpro_form_field-file-preview' ) . '"><img class="' . pmpro_get_element_class( 'pmpro_form_field-file-subtype_' . $file_type['ext'] ) . '" alt="" src="' . $value['previewurl'] . '"><div class="' . pmpro_get_element_class( 'pmpro_form_field-file-name' ) . '"><a href="' . $value['fullurl'] . '" target="_blank">' . $value['filename'] . '</a></div></div>';
+							$allowed_html = array(
+								'a' => array(
+									'href' => array(),
+									'title' => array(),
+									'target' => array(),
+								),
+								'div' => array(
+									'class' => array(),
+								),
+								'img' => array(
+									'alt' => array(),
+									'class' => array(),
+									'src' => array(),
+								),
+								'span' => array(
+									'class' => array(),
+								),
+							);
+							break;
+						case 'video/mpeg':
+						case 'video/mp4':
+							$output = do_shortcode('[video src="' . $value['fullurl'] . '"]');
+							$allowed_html = array(
+								'video' => array(
+									'src'       => true,
+									'poster'    => true,
+									'width'     => true,
+									'height'    => true,
+									'preload'   => true,
+									'controls'  => true,
+									'autoplay'  => true,
+									'loop'      => true,
+									'muted'     => true,
+								),
+								'source' => array(
+									'src'   => true,
+									'type'  => true,
+								),
+							);
+							break;
+						case 'audio/mpeg':
+						case 'audio/wav':
+							$output = do_shortcode('[audio src="' . $value['fullurl'] . '"]');
+							$allowed_html = array(
+								'audio' => array(
+									'src'       => true,
+									'controls'  => true,
+									'autoplay'  => true,
+									'loop'      => true,
+									'muted'     => true,
+									'preload'   => true,
+								),
+								'source' => array(
+									'src'   => true,
+									'type'  => true,
+								),
+							);
+							break;
+						default:
+							$output = '<a href="' . $value['fullurl'] . '" target="_blank"><img class="' . pmpro_get_element_class( 'pmpro_form_field-file-subtype_' . $file_type['ext'] ) . '" src="' . wp_mime_type_icon( $file_type['type'] ) . '"><div class="' . pmpro_get_element_class( 'pmpro_form_field-file-name' ) . '">' . $value['filename'] . '</div></a>';
+							$allowed_html = array(
+								'a' => array(
+									'href' => array(),
+									'target' => array(),
+								),
+								'img' => array(
+									'class' => array(),
+									'src' => array(),
+								),
+								'div' => array(
+									'class' => array(),
+								),
+							);
+							break;
+					}
+					// Wrap the output in a div.
+					$output = '<div class="' . pmpro_get_element_class( 'pmpro_form_field-file-' . $file_type['ext'] ) . '">' . $output . '</div>';
+				}
+				break;
+			default:
+				$output = (string) $value;
+				break;
 		}
 
 		// Enforce string as output.
@@ -1654,7 +1803,6 @@ class PMPro_Field {
 		} else {
 			return wp_kses( $output, $allowed_html );
 		}
-
 	}
 
 	/**
