@@ -185,20 +185,11 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		}
 	}
 
-	// Check for files to reformat them.
-	if ( is_array( $r ) && ! empty( $r['fullurl'] ) ) {
-		$file_field = pmpro_get_user_field( $field );
-		if ( ! empty( $file_field ) ) {
-			$file_field->file = $r;
-			$file_field->readonly = true;
-			$r = $file_field->displayValue( $r['fullurl'], false ); // False to not echo.
-		} else {
-			$r = '<a href="' . esc_url( $r['fullurl'] ) . '">' . esc_html( basename($r['fullurl'] ) ) . '</a>';
-		}
+	// If this is a user field, get the display value.
+	$user_field = PMPro_Field_Group::get_field( $field );
+	if ( ! empty( $user_field ) ) {
+		$r = $user_field->displayValue( $r, false );
 	}
-
-	// If this is a user field with an associative array of options, get the label(s) for the value(s).
-	$r = pmpro_get_label_for_user_field_value( $field, $r );
 
 	// Check for arrays to reformat them.
 	if ( is_array( $r ) ) {
