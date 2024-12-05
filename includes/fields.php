@@ -32,7 +32,7 @@ function pmpro_add_user_field( $where, $field ) {
 	 * @deprecated TBD
      * 
      * @param string $where The name of the group to add the field to.
-     * @param PMProField $field The field being added.
+     * @param PMPro_Field $field The field being added.
      */
     $where = apply_filters_deprecated( 'pmpro_add_user_field_where', array( $where, $field ), 'TBD', 'pmpro_add_user_field' );
 

@@ -4454,7 +4454,6 @@ function pmpro_get_ip() {
 			 */
 			$address_chain = explode( ',', sanitize_text_field( $_SERVER[ $header ] ) );
 			$client_ip     = trim( $address_chain[0] );
-
 			break;
 		}
 	}
@@ -4462,14 +4461,14 @@ function pmpro_get_ip() {
 	if ( ! $client_ip ) {
 		return false;
 	}
-	
-	// Check if it's a valid IP address or not.
-	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) || ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-		return false;
-	}
 
 	// Sanitize the IP
 	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
+
+	// Check if it's a valid IPv4 or IPv6 address.
+	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) && ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		return false;
+	}
 
 	return $client_ip;
 }

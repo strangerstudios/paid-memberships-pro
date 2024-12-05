@@ -180,6 +180,11 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		}
 	}
 
+	// Set the discount code.
+	if( isset( $_REQUEST['discount_code_id'] ) ) {
+		$order->discount_code_id = intval( $_REQUEST['discount_code_id'] );
+	}
+
 	// check nonce for saving
 	$nonceokay = true;
 	if ( empty( $_REQUEST['pmpro_orders_nonce'] ) || ! check_admin_referer( 'save', 'pmpro_orders_nonce' ) ) {
@@ -194,11 +199,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	} else {
 		$pmpro_msg  = __( 'Error saving order.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'error';
-	}
-
-	// also update the discount code if needed
-	if( isset( $_REQUEST['discount_code_id'] ) ) {
-		$order->updateDiscountCode( intval( $_REQUEST['discount_code_id'] ) );
 	}
 } else {
 	// order passed?
