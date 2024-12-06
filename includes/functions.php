@@ -4965,3 +4965,65 @@ function pmpro_method_defined_in_class( $object, $method_name ) {
     // Check if the method's declaring class is the same as the object's class.
     return $method->getDeclaringClass()->getName() === $reflection_class->getName();
 }
+
+/**
+ * Check if we can check a token order for completion.
+ *
+ * @since TBD
+ *
+ * @param int $order_id The ID of the order to check.
+ * @return bool True if we can check the order for completion, false otherwise.
+ */
+function pmpro_can_check_token_order_for_completion( $order_id ) {
+	// Get the order object.
+	$order = new MemberOrder( $order_id );
+
+	// If the order does not exist, we can't check it.
+	if ( empty( $order->id ) ) {
+		return false;
+	}
+
+	// If the order is not a token order, we can't check it.
+	if ( 'token' !== $order->status ) {
+		return false;
+	}
+
+	// If the order does not have a gateway set, we can't check it.
+	if ( empty( $order->Gateway ) ) {
+		return false;
+	}
+
+	// Check if the order supports checking for completion.
+	return $order->Gateway->supports( 'check_token_orders' );
+}
+
+/**
+ * Check a token order for completion.
+ *
+ * @since TBD
+ *
+ * @param int $order_id The ID of the order to check.
+ * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+ */
+function pmpro_check_token_order_for_completion( $order_id ) {
+	// Get the order object.
+	$order = new MemberOrder( $order_id );
+
+	// If the order does not exist, we can't check it.
+	if ( empty( $order->id ) ) {
+		return __( 'Order not found.', 'paid-memberships-pro' );
+	}
+
+	// If the order is not a token order, we can't check it.
+	if ( 'token' !== $order->status ) {
+		return __( 'Order is not a token order.', 'paid-memberships-pro' );
+	}
+
+	// If the order does not have a gateway set, we can't check it.
+	if ( empty( $order->Gateway ) ) {
+		return __( 'Order gateway not found.', 'paid-memberships-pro' );
+	}
+
+	// Check the order for completion.
+	return $order->Gateway->check_token_order( $order );
+}

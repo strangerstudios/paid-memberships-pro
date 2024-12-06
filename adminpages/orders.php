@@ -53,6 +53,27 @@ if ( ! empty( $_REQUEST['refund'] ) ) {
 	}
 }
 
+// Check if a token order has been completed.
+if ( ! empty( $_REQUEST['token_order'] ) ) {
+	// Check the nonce.
+	if ( empty( $_REQUEST['pmpro_orders_nonce'] ) || ! check_admin_referer( 'check_token_order', 'pmpro_orders_nonce' ) ) {
+		// Nonce failed.
+		$pmpro_msg  = __( 'Nonce failed for checking token order.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'error';
+	} else {
+		// Nonce passed. Process the token order.
+		$completed = pmpro_check_token_order_for_completion( (int) $_REQUEST['token_order'] );
+		if ( is_string( $completed ) ) {
+			// An error string was returned.
+			$pmpro_msg = __( 'Error checking token order: ', 'paid-memberships-pro' ) . $completed;
+			$pmpro_msgt = 'error';
+		} else {
+			$pmpro_msg = __( 'The token order has been completed.', 'paid-memberships-pro' );
+			$pmpro_msgt = 'success';
+		}
+	}
+}
+
 $thisyear = date( 'Y', $now );
 
 // this array stores fields that should be read only
