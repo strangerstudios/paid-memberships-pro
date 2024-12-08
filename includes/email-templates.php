@@ -250,30 +250,6 @@ $pmpro_email_templates_defaults = array(
 </p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent when a member\'s payment method will be expiring soon. This allows the member to update their payment method before a payment failure, which may result in lost access to member features.', 'paid-memberships-pro' )
 	),
-	'invoice'  => array(
-		'subject' => __( "Recurring payment receipt for !!sitename!! membership", 'paid-memberships-pro' ),
-		'description' => __('Recurring Payment Receipt', 'paid-memberships-pro'),
-		'body' => __( '<p>Thank you for your membership to !!sitename!!. Below is a receipt for your most recent membership order.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>
-	Order #!!order_id!! on !!order_date!!<br />
-	Total Billed: !!order_total!!
-</p>
-<p>
-	Billing Information:<br />
-	!!billing_address!!
-</p>
-
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>
-<p>To view an online version of this order, click here: !!order_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent to the member each time a new subscription payment is made.', 'paid-memberships-pro' )
-	),
 	'membership_expired' => array(
 		'subject' => __( "Your membership at !!sitename!! has ended", 'paid-memberships-pro' ),
 		'description' => __('Membership Expired', 'paid-memberships-pro'),
@@ -328,49 +304,16 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the admin as confirmation of a refunded payment. The email is sent after your membership site receives notification of a successful payment refund through your gateway.', 'paid-memberships-pro' )
 	),
-	'membership_recurring' => array(
-		'subject' => __( "Your membership at !!sitename!! will renew soon", 'paid-memberships-pro' ),
-		'description' => __('Recurring Payment Reminder', 'paid-memberships-pro'),
-		'body' => __( '<p>Thank you for your membership to !!sitename!!.</p>
-
-<p>This is just a reminder that your !!membership_level_name!! membership will automatically renew on !!renewaldate!!.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-
-<p>If for some reason you do not want to renew your membership you can cancel by clicking here: !!cancel_link!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent when a subscription is approaching its renewal date. The additional placeholders !!renewaldate!! and !!billing_amount!! can be used to print the date that the subscription will renew and the renewal price.', 'paid-memberships-pro' )
-	),
 );
-//we can hide the payment action required emails if default gateway isn't Stripe.
-$default_gateway = get_option( 'pmpro_gateway' );
-if( 'stripe' === $default_gateway ) {
-	$pmpro_email_templates_defaults = array_merge( $pmpro_email_templates_defaults, array(
-		'payment_action' => array(
-			'subject' => __( "Payment action required for your !!sitename!! membership", 'paid-memberships-pro' ),
-			'description' => __('Payment Action Required', 'paid-memberships-pro' ),
-			'body' => __( '<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
-
-<p>Please complete the verification steps issued by your payment provider at the following link:</p>
-<p>!!invoice_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent to the user when an attempted membership checkout requires additional customer authentication.', 'paid-memberships-pro' )
-		),
-		'payment_action_admin' => array(
-			'subject' => __( "Payment action required: membership for !!user_login!! at !!sitename!!", 'paid-memberships-pro' ),
-			'description' => __('Payment Action Required (admin)', 'paid-memberships-pro'),
-			'body' => __( '<p>A payment at !!sitename!! for !!user_login!! requires additional customer authentication to complete.</p>
-<p>Below is a copy of the email we sent to !!user_email!! to notify them that they need to complete their payment:</p>
-
-<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
-
-<p>Please complete the verification steps issued by your payment provider at the following link:</p>
-<p>!!invoice_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent to the site administrator when an attempted membership checkout requires additional customer authentication.', 'paid-memberships-pro' )
-		)
-	) );
-}
 
 // Add any templates registered via the PMPro_Email_Template class.
 $registered_templates = PMPro_Email_Template::get_all_email_templates();
+$default_gateway = get_option( 'pmpro_gateway' );
+// if gateway is not stripe, remove the payment action emails
+if( 'stripe' !== $default_gateway ) {
+	unset( $registered_templates['payment_action'] );
+	unset( $registered_templates['payment_action_admin'] );
+}
 foreach ( $registered_templates as $registered_template_slug => $registered_template_class ) {
 	$pmpro_email_templates_defaults[ $registered_template_slug ] = array(
 		'subject'     => $registered_template_class::get_default_subject(),

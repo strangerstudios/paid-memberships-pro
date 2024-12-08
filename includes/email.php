@@ -296,6 +296,10 @@ function pmpro_email_templates_send_test() {
 
 	$test_user = $current_user;
 
+
+	//test subscription object
+	$test_subscription = new PMPro_Subscription( array( 'user_id' => $test_user->ID, 'membership_level_id' => $test_user->membership_level->id, 'next_payment_date' => date( 'Y-m-d', strtotime( '+1 month' )  ) )  );
+
 	// Grab the first membership level defined as a "test level" to use
 	$all_levels = pmpro_getAllLevels( true);
 	$test_user->membership_level = array_pop( $all_levels );
@@ -378,6 +382,10 @@ function pmpro_email_templates_send_test() {
 		case 'payment_action_admin':
 			$send_email = 'sendPaymentActionRequiredAdminEmail';
 			$params = array($test_user, $test_order, "http://www.example-notification-url.com/not-a-real-site");
+			break;
+		case 'membership_recurring':
+			$send_email = 'send_recurring_payment_reminder';
+			$params = array( $test_subscription );
 			break;
 		default:
 			$send_email = 'sendEmail';
