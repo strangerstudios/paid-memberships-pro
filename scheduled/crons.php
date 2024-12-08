@@ -330,6 +330,11 @@ function pmpro_cron_recurring_payment_reminders() {
 			 */
 			$send_email = apply_filters( 'pmpro_send_recurring_payment_reminder_email', true, $subscription_obj, $days );
 
+			if ( $send_emails ) {
+				$pmproemail = new PMProEmail();
+				$pmproemail->send_recurring_payment_reminder( $user, $subscription_obj->get_membership_level_id() );
+			}
+
 			/**
 			 * @filter      pmprorm_send_reminder_to_user
 			 *
