@@ -379,6 +379,14 @@ function pmpro_email_templates_send_test() {
 			$send_email = 'sendPaymentActionRequiredAdminEmail';
 			$params = array($test_user, $test_order, "http://www.example-notification-url.com/not-a-real-site");
 			break;
+		case 'refund':
+			$send_email = 'sendRefundedEmail';
+			$params = array( $test_user, $test_order );
+			break;
+		case 'refund_admin':
+			$send_email = 'sendRefundedAdminEmail';
+			$params = array( $test_user, $test_order );
+			break;
 		default:
 			$send_email = 'sendEmail';
 			$params = array();
