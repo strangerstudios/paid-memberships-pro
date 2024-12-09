@@ -444,61 +444,8 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
-			if ( ! empty( $membership_level ) ) {
-				$membership_level_id = $membership_level->id;
-				$membership_level_name = $membership_level->name;
-			} else {
-				$membership_level_id = '';
-				$membership_level_name = __( 'N/A', 'paid-memberships-pro' );
-			}
-
-			$this->email = $user->user_email;
-			$this->subject = sprintf(__( 'Order #%s at %s has been REFUNDED', 'paid-memberships-pro' ), $order->code, get_option( 'blogname' ) );
-
-			$this->data = array(
-				'user_login' => $user->user_login,
-				'user_email' => $user->user_email,
-				'display_name' => $user->display_name,
-				'header_name' => $user->display_name,
-				'sitename' => get_option('blogname'),
-				'siteemail' => get_option('pmpro_from_email'),
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
-				'membership_id' => $membership_level_id,
-				'membership_level_name' => $membership_level_name,
-				'order_id' => $order->code,
-				'order_total' => $order->get_formatted_total(),
-				'order_date' => date_i18n(get_option('date_format'), $order->getTimestamp()),
-				'billing_name' => $order->billing->name,
-				'billing_street' => $order->billing->street,
-				'billing_street2' => $order->billing->street2,
-				'billing_city' => $order->billing->city,
-				'billing_state' => $order->billing->state,
-				'billing_zip' => $order->billing->zip,
-				'billing_country' => $order->billing->country,
-				'billing_phone' => $order->billing->phone,
-				'cardtype' => $order->cardtype,
-				'accountnumber' => hideCardNumber($order->accountnumber),
-				'expirationmonth' => $order->expirationmonth,
-				'expirationyear' => $order->expirationyear,
-				'order_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-				'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-				'levels_url' => pmpro_url( 'levels' )
-			);
-			$this->data['billing_address'] = pmpro_formatAddress(
-				$order->billing->name,
-				$order->billing->street,
-				$order->billing->street2,
-				$order->billing->city,
-				$order->billing->state,
-				$order->billing->zip,
-				$order->billing->country,
-				$order->billing->phone
-			);
-
-			$this->template = apply_filters( 'pmpro_email_template', 'refund', $this );
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Refund( $user, $order );
+			$email->send();
 		}
 		
 		/**
@@ -517,65 +464,11 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
-			if ( ! empty( $membership_level ) ) {
-				$membership_level_id = $membership_level->id;
-				$membership_level_name = $membership_level->name;
-			} else {
-				$membership_level_id = '';
-				$membership_level_name = __( 'N/A', 'paid-memberships-pro' );
-			}
+			$email = new PMPro_Email_Template_Refund_Admin( $user, $order );
+			$email->send();
 
-			$this->email = get_bloginfo( 'admin_email' );
-			$this->subject = sprintf(__( 'Order #%s at %s has been REFUNDED', 'paid-memberships-pro' ), $order->code, get_option( 'blogname' ) );
-
-			$this->data = array(
-				'user_login' => $user->user_login,
-				'user_email' => $user->user_email,
-				'display_name' => $user->display_name,
-				'header_name' => $this->get_admin_name( $this->email ),
-				'sitename' => get_option('blogname'),
-				'siteemail' => get_option('pmpro_from_email'),
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
-				'membership_id' => $membership_level_id,
-				'membership_level_name' => $membership_level_name,
-				'order_id' => $order->code,
-				'order_total' => $order->get_formatted_total(),
-				'order_date' => date_i18n(get_option('date_format'), $order->getTimestamp()),
-				'billing_name' => $order->billing->name,
-				'billing_street' => $order->billing->street,
-				'billing_street2' => $order->billing->street2,
-				'billing_city' => $order->billing->city,
-				'billing_state' => $order->billing->state,
-				'billing_zip' => $order->billing->zip,
-				'billing_country' => $order->billing->country,
-				'billing_phone' => $order->billing->phone,
-				'cardtype' => $order->cardtype,
-				'accountnumber' => hideCardNumber($order->accountnumber),
-				'expirationmonth' => $order->expirationmonth,
-				'expirationyear' => $order->expirationyear,
-				'order_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-				'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-				'levels_url' => pmpro_url( 'levels' )							
-
-			);
-			$this->data['billing_address'] = pmpro_formatAddress(
-				$order->billing->name,
-				$order->billing->street,
-				$order->billing->street2,
-				$order->billing->city,
-				$order->billing->state,
-				$order->billing->zip,
-				$order->billing->country,
-				$order->billing->phone
-			);
-
-			$this->template = apply_filters( 'pmpro_email_template', 'refund_admin', $this );
-
-			return $this->sendEmail();
 		}
-		
+
 		/**
 		 * Send the member a confirmation checkout email after successfully purchasing a membership level.
 		 *
