@@ -72,6 +72,23 @@ class PMProGateway_paypalrest extends PMProGateway {
 	}
 
 	/**
+	 * Get a list of payment options that the PayPal REST gateway needs/supports.
+	 * Note: This function needs to exist for the currency and tax settings to show.
+	 *
+	 * @since 1.8
+	 */
+	public static function getGatewayOptions() {
+		$options = array(
+			'gateway_environment',
+			'currency',
+			'tax_state',
+			'tax_rate',
+		);
+
+		return $options;
+	}
+
+	/**
 	 * Set payment options for payment settings page.
 	 *
 	 * @since TBD
@@ -80,16 +97,10 @@ class PMProGateway_paypalrest extends PMProGateway {
 	 * @return array The updated list of payment options.
 	 */
 	public static function pmpro_payment_options( $options ) {
-		$options = array_merge(
-			$options,
-			array(
-				'gateway_environment',
-				'currency',
-				'tax_state',
-				'tax_rate',
-			)
-		);
-		return $options;
+		// Get the list of gateway options.
+		$paypalrest_options = self::getGatewayOptions();
+
+		return array_merge( $options, $paypalrest_options );
 	}
 
 	/**
