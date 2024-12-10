@@ -442,6 +442,28 @@ class PMProGateway_paypalrest extends PMProGateway {
 	}
 
 	/**
+	 * Cancel a subscription in PayPal.
+	 *
+	 * @param PMPro_Subscription $subscription The subscription to cancel.
+	 * @return bool False if we could not confirm that the subscription was cancelled at the gateway.
+	 */
+	function cancel_subscription( $subscription ) {
+		// Send the request to cancel the subscription.
+		$response = self::send_request(
+			'POST',
+			'v1/billing/subscriptions/' . $subscription->get_subscription_transaction_id() . '/cancel',
+			array(),
+			$subscription->get_gateway_environment()
+		);
+
+		// If we got an error, save it to the subscription.
+		if ( is_string( $response ) ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Pull subscription info from Stripe.
 	 *
 	 * @param PMPro_Subscription $subscription to pull data for.
@@ -532,8 +554,8 @@ class PMProGateway_paypalrest extends PMProGateway {
 
 		// Get the base URL and credentials for the request.
 		$base_url      = ( 'live' === $gateway_environment ) ? 'https://api-m.paypal.com/' : 'https://api-m.sandbox.paypal.com/';
-		$client_id     = get_option( 'pmpro_paypalrest_client_id_ ' . $gateway_environment );
-		$client_secret = get_option( 'pmpro_paypalrest_client_secret' . $gateway_environment );
+		$client_id     = get_option( 'pmpro_paypalrest_client_id_' . $gateway_environment );
+		$client_secret = get_option( 'pmpro_paypalrest_client_secret_' . $gateway_environment );
 
 		// Build the request.
 		$request_args = array(
