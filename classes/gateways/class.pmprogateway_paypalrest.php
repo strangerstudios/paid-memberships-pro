@@ -75,7 +75,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 	 * Get a list of payment options that the PayPal REST gateway needs/supports.
 	 * Note: This function needs to exist for the currency and tax settings to show.
 	 *
-	 * @since 1.8
+	 * @since TBD
 	 */
 	public static function getGatewayOptions() {
 		$options = array(
