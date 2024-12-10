@@ -63,6 +63,13 @@ function pmpro_wp_ajax_paypalrest_webhook()
 }
 add_action('wp_ajax_nopriv_pmpro_paypalrest_webhook', 'pmpro_wp_ajax_paypalrest_webhook');
 add_action('wp_ajax_pmpro_paypalrest_webhook', 'pmpro_wp_ajax_paypalrest_webhook');
+function pmpro_wp_ajax_paypalrest_oauth()
+{
+	require_once(dirname(__FILE__) . "/../services/paypalrest-oauth.php");	
+	exit;	
+}
+add_action('wp_ajax_nopriv_pmpro_paypalreste_oauth', 'pmpro_wp_ajax_paypalrest_oauth');
+add_action('wp_ajax_pmpro_paypalrest_oauth', 'pmpro_wp_ajax_paypalrest_oauth');
 function pmpro_wp_ajax_memberlist_csv()
 {
 	require_once(dirname(__FILE__) . "/../adminpages/memberslist-csv.php");	

@@ -26,6 +26,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 		// Add fields to the payment settings page.
 		add_filter( 'pmpro_payment_options', array( 'PMProGateway_paypalrest', 'pmpro_payment_options' ) );
 		add_filter( 'pmpro_payment_option_fields', array( 'PMProGateway_paypalrest', 'pmpro_payment_option_fields' ), 10, 2 );
+		add_action( 'pmpro_after_saved_payment_options', array( 'PMProGateway_paypalrest', 'pmpro_after_saved_payment_options' ) );
 
 		// Checkout filters.
 		$gateway = pmpro_getGateway();
@@ -82,8 +83,6 @@ class PMProGateway_paypalrest extends PMProGateway {
 		$options = array_merge(
 			$options,
 			array(
-				'paypalrest_client_id',
-				'paypalrest_client_secret',
 				'gateway_environment',
 				'currency',
 				'tax_state',
@@ -102,43 +101,133 @@ class PMProGateway_paypalrest extends PMProGateway {
 	 * @param string $gateway The current gateway.
 	 */
 	public static function pmpro_payment_option_fields( $values, $gateway ) {
+		self::show_environment_fields( 'live', $gateway === 'paypalrest' );
+		self::show_environment_fields( 'sandbox', $gateway === 'paypalrest' );
 		?>
-		<tr class="pmpro_settings_divider gateway gateway_paypalrest" <?php if ( $gateway !== 'paypalrest' ) { ?>style="display: none;"<?php } ?>>
-			<td colspan="2">
-				<h2 class="title"><?php esc_html_e( 'PayPal REST Settings', 'paid-memberships-pro' ); ?></h2>
-			</td>
-		</tr>
-		<tr class="gateway gateway_paypalrest" <?php if ( $gateway !== 'paypalrest' ) { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label for="paypalrest_client_id"><?php esc_html_e( 'Client ID', 'paid-memberships-pro' ); ?>:</label>
-			</th>
-			<td>
-				<input type="text" id="paypalrest_client_id" name="paypalrest_client_id" size="60" value="<?php echo esc_attr( $values['paypalrest_client_id'] ); ?>" />
-			</td>
-		</tr>
-		<tr class="gateway gateway_paypalrest" <?php if ( $gateway !== 'paypalrest' ) { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label for="paypalrest_client_secret"><?php esc_html_e( 'Client Secret', 'paid-memberships-pro' ); ?>:</label>
-			</th>
-			<td>
-				<input type="text" id="paypalrest_client_secret" name="paypalrest_client_secret" size="60" value="<?php echo esc_attr( $values['paypalrest_client_secret'] ); ?>" />
-			</td>
-		</tr>
-		<tr class="pmpro_settings_divider gateway gateway_paypalrest" <?php if ( $gateway != "paypalrest" ) { ?>style="display: none;"<?php } ?>>
+		<script id="paypal-js" src="https://www.sandbox.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js"></script>
+		<?php
+	}
+
+	/**
+	 * Show payment option fields for either the live or sandbox environment.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $environment The environment to show fields for. Either 'sandbox' or 'live'.
+	 * @param bool $display Whether or not to display the fields.
+	 */
+	private static function show_environment_fields( $environment, $display ) {
+		$client_id = get_option( 'pmpro_paypalrest_client_id_' . $environment );
+		$client_secret = get_option( 'pmpro_paypalrest_client_secret_' . $environment );
+		?>
+		<tr class="pmpro_settings_divider gateway gateway_paypalrest" <?php if ( ! $display ) { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h2><?php esc_html_e( 'Webhook', 'paid-memberships-pro' ); ?></h2>
-			</td>
-		</tr>
-		<tr class="gateway gateway_paypalrest" <?php if ( $gateway != "paypalrest" ) { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?></label>
-			</th>
-			<td>
-				<p><code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
+				<h2 class="title"><?php echo esc_html__( 'PayPal REST Settings', 'paid-memberships-pro' ) . ' (' . esc_html( $environment ) . ')'; ?></h2>
 			</td>
 		</tr>
 		<?php
+		if ( empty( $client_id ) || empty( $client_secret ) ) {
+			// We are not connected to PayPal. Show the connect button.
+			?>
+			<tr class="gateway gateway_paypalrest" <?php if ( ! $display ) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label><?php esc_html_e( 'Connect to PayPal', 'paid-memberships-pro' ); ?>:</label>
+				</th>
+				<td>
+					<?php
+					// Set up a nonce for the OAuth callback.
+					$nonce = wp_generate_password( 64, false );
+
+					// Store the nonce in user meta.
+					update_user_meta( get_current_user_id(), 'pmpro_paypalrest_oauth_nonce_' . $environment, $nonce );
+
+					// Build the OAuth URL.
+					$oauth_url = add_query_arg( array(
+						'nonce' => $nonce,
+						'environment' => $environment,
+					), admin_url( '?pmpro_get_paypalrest_signup_link=pmpro_get_paypalrest_signup_link' ) ); // TODO: Change this to the actual URL.
+					$paypal_script_callback_name = 'pmpro_paypalrest_oauth_callback_' . $environment;
+					?>
+					<script>
+						function <?php echo esc_html( $paypal_script_callback_name ); ?>(authCode, sharedId) {
+							fetch('/wp-admin/admin-ajax.php?action=pmpro_paypalrest_oauth&authCode=' + authCode + '&sharedId=' + sharedId + '&environment=' + '<?php echo esc_html( $environment ); ?>', {
+								method: 'POST',
+								headers: {
+									'content-type': 'application/json'
+								}
+							}).then(function(res) {
+								if (!res.ok) {
+									alert("Something went wrong!");
+								} else {
+									location.reload();
+								}
+							});
+						}
+					</script>
+					<a target="_blank" data-paypal-onboard-complete="<?php echo esc_html( $paypal_script_callback_name ); ?>" href="<?php echo esc_url( $oauth_url ); ?>&displayMode=minibrowser" data-paypal-button="true">Connect to PayPal</a>
+				</td>
+			</tr>
+			<?php
+		} else {
+			// We are connected to PayPal. Show information.
+			?>
+			<tr class="gateway gateway_paypalrest" <?php if ( ! $display ) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<?php esc_html_e( 'Client ID', 'paid-memberships-pro' ); ?>:
+				</th>
+				<td>
+					<p><code><?php echo esc_html( $client_id ); ?></code></p>
+				</td>
+			</tr>
+			<tr class="gateway gateway_paypalrest" <?php if ( ! $display ) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<?php esc_html_e( 'Client Secret', 'paid-memberships-pro' ); ?>:
+				</th>
+				<td>
+					<p><code><?php echo esc_html( $client_secret ); ?></code></p>
+				</td>
+			</tr>
+			<tr class"gateway gateway_paypalrest" <?php if ( ! $display ) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="paypalrest_disconnect_<?php echo esc_attr( $environment ); ?>"><?php esc_html_e( 'Disconnect from PayPal', 'paid-memberships-pro' ); ?>:</label>
+				</th>
+				<td>
+					<input type="checkbox" id="paypalrest_disconnect_<?php echo esc_attr( $environment ); ?>" name="paypalrest_disconnect_<?php echo esc_attr( $environment ); ?>" value="1" />
+					<p class="description"><?php esc_html_e( 'Check this box to disconnect from PayPal when saving changes.', 'paid-memberships-pro' ); ?></p>
+				</td>
+			<tr class="pmpro_settings_divider gateway gateway_paypalrest" <?php if ( ! $display ) { ?>style="display: none;"<?php } ?>>
+				<td colspan="2">
+					<h2><?php esc_html_e( 'Webhook', 'paid-memberships-pro' ); ?></h2>
+				</td>
+			</tr>
+			<tr class="gateway gateway_paypalrest" <?php if ( ! $display ) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>
+				</th>
+				<td>
+					<p><code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
+				</td>
+			</tr>
+			<?php
+		}
+	}
+
+	/**
+	 * When payment settings are saved, if the user wants to disconnect from PayPal, do so.
+	 *
+	 * @since TBD
+	 */
+	public static function pmpro_after_saved_payment_options() {
+		// Check if the user wants to disconnect from PayPal.
+		if ( ! empty( $_REQUEST['paypalrest_disconnect_sandbox'] ) ) {
+			delete_option( 'pmpro_paypalrest_client_id_sandbox' );
+			delete_option( 'pmpro_paypalrest_client_secret_sandbox' );
+		}
+		if ( ! empty( $_REQUEST['paypalrest_disconnect_live'] ) ) {
+			delete_option( 'pmpro_paypalrest_client_id_live' );
+			delete_option( 'pmpro_paypalrest_client_secret_live' );
+		}
 	}
 
 	/**
@@ -436,10 +525,15 @@ class PMProGateway_paypalrest extends PMProGateway {
 			$gateway_environment = pmpro_getOption( 'gateway_environment' );
 		}
 
-		// TODO: Double-check the live URL.
+		// If the gateway environment is still not set, default to 'sandbox'.
+		if ( empty( $gateway_environment ) ) {
+			$gateway_environment = 'sandbox';
+		}
+
+		// Get the base URL and credentials for the request.
 		$base_url      = ( 'live' === $gateway_environment ) ? 'https://api-m.paypal.com/' : 'https://api-m.sandbox.paypal.com/';
-		$client_id     = get_option( 'pmpro_paypalrest_client_id' );
-		$client_secret = get_option( 'pmpro_paypalrest_client_secret' );
+		$client_id     = get_option( 'pmpro_paypalrest_client_id_ ' . $gateway_environment );
+		$client_secret = get_option( 'pmpro_paypalrest_client_secret' . $gateway_environment );
 
 		// Build the request.
 		$request_args = array(
@@ -700,5 +794,71 @@ class PMProGateway_paypalrest extends PMProGateway {
 		}
 
 		return json_decode( $response['body'] )->id;
+	}
+}
+
+// Everything below here is sample code for generating OAuth connection urls and should be deleted once
+// the Stranger Studios server is set up.
+if ( ! empty( $_REQUEST['pmpro_get_paypalrest_signup_link'] ) ) {
+	$nonce = empty($_REQUEST['nonce']) ? "" : $_REQUEST['nonce'];
+	$environment = empty($_REQUEST['environment']) ? "sandbox" : $_REQUEST['environment'];
+
+	// TODO: Get the correct client and secret IDs for the Stranger Studios platform account.
+	$platform_client_id = defined( 'PMPRO_PAYPALREST_PLATFORM_CLIENT_ID' ) ? PMPRO_PAYPALREST_PLATFORM_CLIENT_ID : '';
+	$platform_client_secret = defined( 'PMPRO_PAYPALREST_PLATFORM_CLIENT_SECRET' ) ? PMPRO_PAYPALREST_PLATFORM_CLIENT_SECRET : '';
+
+	// Get the OAuth link to send the user to.
+	$ch = curl_init( ( $environment === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com' ) . '/v2/customer/partner-referrals' );
+	curl_setopt($ch, CURLOPT_POST, true);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, [
+		"Content-Type: application/json",
+		"Authorization: Basic " . base64_encode( $platform_client_id . ":" . $platform_client_secret )
+	]);
+	$data = [
+		"operations" => [
+			[
+				"operation" => "API_INTEGRATION",
+				"api_integration_preference" => [
+					"rest_api_integration" => [
+						"integration_method" => "PAYPAL",
+						"integration_type" => "FIRST_PARTY",
+						"first_party_details" => [
+							"features" => ["PAYMENT", "REFUND"],
+							"seller_nonce" => $nonce
+						]
+					]
+				]
+			]
+		],
+		"products" => ["EXPRESS_CHECKOUT"],
+		"legal_consents" => [
+			[
+				"type" => "SHARE_DATA_CONSENT",
+				"granted" => true
+			]
+		]
+	];
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+	// Execute cURL request and get the response
+	$response = curl_exec($ch);
+
+	// Close cURL
+	curl_close($ch);
+
+	// If successful, return the link with rel action_url
+	if ($response) {
+		$response = json_decode($response, true);
+		$links = $response['links'];
+		foreach ($links as $link) {
+			if ($link['rel'] === 'action_url') {
+				// Redirect to the PayPal Partner Referrals API link
+				header('Location: ' . $link['href']);
+				exit;
+			}
+		}
+	} else {
+		// TODO: Handle error
 	}
 }
