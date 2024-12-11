@@ -489,7 +489,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 				$trial_tax                = $order->getTaxForPrice( $trial_subtotal );
 				$trial_amount             = pmpro_round_price( (float) $trial_subtotal + (float) $trial_tax );
 
-				$plan_id = self::get_plan_for_product( $product_id, $initial_payment_amount, $recurring_payment_amount, $level->cycle_period, $level->cycle_number, $trial_amount, $level->trial_limit );
+				$plan_id = self::get_plan_for_product( $product_id, $initial_payment_amount, $recurring_payment_amount, $level->cycle_period, $level->cycle_number, $trial_amount, $level->trial_limit, $level->name );
 				if ( ! $plan_id ) {
 					// If we couldn't get the plan ID, return an error message.
 					$error = __( 'Error creating plan.', 'paid-memberships-pro' );
@@ -766,7 +766,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 	 *
 	 * @return string|false The plan ID or false if the plan ID is not found or created.
 	 */
-	private static function get_plan_for_product( $product_id, $setup_fee, $amount, $cycle_period, $cycle_number, $trial_amount, $trial_limit ) {
+	private static function get_plan_for_product( $product_id, $setup_fee, $amount, $cycle_period, $cycle_number, $trial_amount, $trial_limit, $level_name ) {
 		// Check if we have already created a plan with the same parameters.
 		$page = 1;
 		while ( true ) {
@@ -904,7 +904,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 			'v1/billing/plans',
 			array(
 				'product_id' => $product_id,
-				'name'       => 'Test Plan ' . substr( time(), -4 ),
+				'name'       => substr( $level_name, 0, 127 ),
 				'billing_cycles' => $billing_cycles,
 				'payment_preferences' => array(
 					'auto_bill_outstanding' => true,
