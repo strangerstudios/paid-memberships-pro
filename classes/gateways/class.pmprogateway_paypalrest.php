@@ -214,10 +214,97 @@ class PMProGateway_paypalrest extends PMProGateway {
 			</tr>
 			<tr class="gateway gateway_paypalrest" <?php if ( ! $display ) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>
+					<?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
 				</th>
 				<td>
 					<p><code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
+				</td>
+			</tr>
+			<tr class="gateway gateway_paypalrest" <?php if ( ! $display ) { ?>style="display: none;"<?php } ?>>
+				<?php
+				// Get the current webhook ID.
+				$webhook_id = get_option( 'pmpro_paypalrest_webhook_id_' . $environment );
+
+				// Determine which UI to show.
+				if ( empty( $webhook_id ) ) {
+					// We don't have a webhook set up. Show disconnected status and a checkbox to create a webhook.
+					$webhook_status_label = __( 'Webhook Disconnected', 'paid-memberships-pro' );
+					$webhook_status_checkbox_small = __( 'Check this box to create a webhook.', 'paid-memberships-pro' );
+				} else {
+					// Get the webhook object.
+					$webhook_object = self::get_webhook( $webhook_id, $environment );
+					if ( empty( $webhook_object ) ) {
+						// We couldn't get the webhook object. Show an error message.
+						$webhook_status_label = __( 'Webhook Does Not Exist', 'paid-memberships-pro' );
+						$webhook_status_checkbox_small = __( 'Check this box to create a new webhook.', 'paid-memberships-pro' );
+					} else {
+						// We have a webhook object. Check the URL and events for the webhook.
+						$webhook_events  = array_map( function( $event ) {
+							return $event->name;
+						}, $webhook_object->event_types );
+						$required_events = self::get_required_webhook_events();
+						if ( self::get_site_webhook_url() !== $webhook_object->url ) {
+							// The webhook URL is incorrect. Show a warning message.
+							$webhook_status_label = __( 'Webhook URL Incorrect', 'paid-memberships-pro' );
+							$webhook_status_checkbox_small = __( 'Check this box to create a new webhook.', 'paid-memberships-pro' );
+						} elseif ( count( array_diff( $required_events, $webhook_events ) ) > 0 ) {
+							// The webhook events are incorrect. Show a warning message.
+							$webhook_status_label = __( 'Webhook Events Incorrect', 'paid-memberships-pro' );
+							$webhook_status_checkbox_small = __( 'Check this box to fix the webhook events.', 'paid-memberships-pro' );
+						} else {
+							// The webhook is set up correctly. Show a success message.
+							$webhook_status_label = __( 'Webhook Connected', 'paid-memberships-pro' );
+						}
+					}
+				}
+				?>
+				<th scope="row" valign="top">
+					<?php
+					// If the webhook is not set up correctly, show an error icon.
+					echo esc_html( $webhook_status_label );
+					if ( ! empty( $webhook_status_checkbox_small ) ) {
+						?>
+						<span class="dashicons dashicons-warning" style="color: #dc3232;"></span>
+						<?php
+					}
+					?>:
+				</th>
+				<td>
+					<?php
+					if ( empty( $webhook_status_checkbox_small ) ) {
+						?>
+						<p><?php esc_html_e( 'Webhook ID', 'paid-memberships-pro' ); ?>: <code><?php echo esc_html( $webhook_id ); ?></code></p>
+						<?php
+					} else {
+						?>
+						<input type="checkbox" id="paypalrest_create_webhook_<?php echo esc_attr( $environment ); ?>" name="paypalrest_create_webhook_<?php echo esc_attr( $environment ); ?>" value="1" />
+						<p class="description"><?php echo esc_html( $webhook_status_checkbox_small ); ?></p>
+						<?php
+						// If the site is not https://, show a warning message that PayPal only supports https://.
+						if ( 'https' !== parse_url( self::get_site_webhook_url(), PHP_URL_SCHEME ) ) {
+							?>
+							<p class="description"><?php esc_html_e( 'PayPal only supports HTTPS URLs for webhooks.', 'paid-memberships-pro' ); ?></p>
+							<?php
+						}
+					}
+					?>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top">
+					<?php esc_html_e( 'Webhook Last Received', 'paid-memberships-pro' ); ?>:
+				</th>
+				<td>
+					<?php
+					$last_received = get_option( 'pmpro_paypalrest_webhook_last_received_' . $environment );
+					if ( empty( $last_received ) ) {
+						// We have never received a validated webhook.
+						echo esc_html__( 'Never', 'paid-memberships-pro' );
+					} else {
+						// Output the date in the site date and time format.
+						echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $last_received ) ) );
+					}
+					?>
 				</td>
 			</tr>
 			<?php
@@ -225,7 +312,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 	}
 
 	/**
-	 * When payment settings are saved, if the user wants to disconnect from PayPal, do so.
+	 * When payment settings are saved, process checkboxes.
 	 *
 	 * @since TBD
 	 */
@@ -238,6 +325,14 @@ class PMProGateway_paypalrest extends PMProGateway {
 		if ( ! empty( $_REQUEST['paypalrest_disconnect_live'] ) ) {
 			delete_option( 'pmpro_paypalrest_client_id_live' );
 			delete_option( 'pmpro_paypalrest_client_secret_live' );
+		}
+
+		// Check if the user wants to create a webhook.
+		if ( ! empty( $_REQUEST['paypalrest_create_webhook_sandbox'] ) ) {
+			self::create_webhook( 'sandbox' );
+		}
+		if ( ! empty( $_REQUEST['paypalrest_create_webhook_live'] ) ) {
+			self::create_webhook( 'live' );
 		}
 	}
 
@@ -828,7 +923,158 @@ class PMProGateway_paypalrest extends PMProGateway {
 
 		return json_decode( $response['body'] )->id;
 	}
+
+	/**
+	 * Get a list of webhook events that are required for Paid Memberships Pro.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The list of webhook events.
+	 */
+	private static function get_required_webhook_events() {
+		return array(
+			'CHECKOUT.ORDER.APPROVED',
+			'BILLING.SUBSCRIPTION.ACTIVATED',
+			'PAYMENT.SALE.COMPLETED',
+			'BILLING.SUBSCRIPTION.SUSPENDED',
+			'BILLING.SUBSCRIPTION.CANCELLED',
+			'BILLING.SUBSCRIPTION.EXPIRED',
+			'PAYMENT.CAPTURE.REFUNDED',
+			'BILLING.SUBSCRIPTION.PAYMENT.FAILED',
+		);
+	}
+
+	/**
+	 * Get information about a webhook from PayPal.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $webhook_id The ID of the webhook to get information about.
+	 * @param string $gateway_environment The environment to use for the request.
+	 * @return object|false The webhook object or false if the webhook could not be retrieved.
+	 */
+	private static function get_webhook( $webhook_id, $gateway_environment ) {
+		$response = self::send_request(
+			'GET',
+			'v1/notifications/webhooks/' . $webhook_id,
+			array(),
+			$gateway_environment
+		);
+
+		if ( is_string( $response ) ) {
+			return false;
+		}
+		return json_decode( $response['body'] );
+	}
+
+	/**
+	 * List all webhooks from PayPal.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $gateway_environment The environment to use for the request.
+	 * @return array|false The list of webhook objects or false if the webhooks could not be retrieved.
+	 */
+	private static function get_all_webhooks( $gateway_environment ) {
+		$page = 1;
+		$webhooks = array();
+		while ( true ) {
+			$response = self::send_request(
+				'GET',
+				'v1/notifications/webhooks/?' . http_build_query(
+					array(
+						'page_size' => 20, // 20 is the max.
+						'page' => $page,
+					)
+				),
+				array(),
+				$gateway_environment
+			);
+
+			if ( is_string( $response ) ) {
+				return false;
+			}
+
+			$webhooks = array_merge( $webhooks, json_decode( $response['body'] )->webhooks );
+			if ( count( $webhooks ) < 20 ) {
+				break;
+			}
+			$page++;
+		}
+
+		return $webhooks;
+	}
+
+	/**
+	 * Create a webhook in PayPal.
+	 *
+	 * If a webhook with the same URL already exists, fix it and use that one instead.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $gateway_environment The environment to use for the request.
+	 */
+	private static function create_webhook( $gateway_environment ) {
+		// Get the webhook URL.
+		$webhook_url = self::get_site_webhook_url();
+
+		// Get all webhooks from PayPal.
+		$webhooks = self::get_all_webhooks( $gateway_environment );
+
+		// Check if a webhook with the same URL already exists.
+		foreach ( $webhooks as $webhook ) {
+			if ( $webhook->url === $webhook_url ) {
+				// We found a matching webhook. Save the webhook ID.
+				update_option( 'pmpro_paypalrest_webhook_id_' . $gateway_environment, $webhook->id );
+
+				// Make sure the webhook has all the required events.
+				$events = array_map( function( $event ) {
+					return $event->name;
+				}, $webhook->event_types );
+				$required_events = self::get_required_webhook_events();
+				if ( ! empty( array_diff( $required_events, $events ) ) ) {
+					$response = self::send_request(
+						'PATCH',
+						'v1/notifications/webhooks/' . $webhook->id,
+						array(
+							array(
+								'op' => 'replace',
+								'path' => '/event_types',
+								'value' => array_map( function( $event ) {
+									return array( 'name' => $event );
+								}, $required_events )
+							),
+						),
+						$gateway_environment
+					);
+				}
+
+				// Return to avoid creating a new webhook.
+				return;
+			}
+		}
+
+		// Create a new webhook.
+		$event_types = array_map( function( $event ) {
+			return array( 'name' => $event );
+		}, self::get_required_webhook_events() );
+		$response = self::send_request(
+			'POST',
+			'v1/notifications/webhooks',
+			array(
+				'url' => $webhook_url,
+				'event_types' => $event_types,
+			),
+			$gateway_environment
+		);
+
+		// If successful, save the webhook ID.
+		if ( ! is_string( $response ) ) {
+			update_option( 'pmpro_paypalrest_webhook_id_' . $gateway_environment, json_decode( $response['body'] )->id );
+		}
+	}
 }
+
 
 // Everything below here is sample code for generating OAuth connection urls and should be deleted once
 // the Stranger Studios server is set up.

@@ -30,6 +30,7 @@ if ( defined( 'PMPRO_PAYPALREST_DEVELOPMENT_MODE' ) && PMPRO_PAYPALREST_DEVELOPM
 	$validated = true;
 } else {
 	// Validate the webhook request.
+	$webhook_id = get_option( 'pmpro_paypalrest_webhook_id_' . $gateway_environment );
 	$validated = false;
 	$validate_response = PMProGateway_paypalrest::send_request( 'POST', 'v1/notifications/verify-webhook-signature', array(
 		'auth_algo' => empty( $headers['PAYPAL-AUTH-ALGO'] ) ? '' : $headers['PAYPAL-AUTH-ALGO'],
@@ -37,7 +38,7 @@ if ( defined( 'PMPRO_PAYPALREST_DEVELOPMENT_MODE' ) && PMPRO_PAYPALREST_DEVELOPM
 		'transmission_id' => empty( $headers['PAYPAL-TRANSMISSION-ID'] ) ? '' : $headers['PAYPAL-TRANSMISSION-ID'],
 		'transmission_sig' => empty( $headers['PAYPAL-TRANSMISSION-SIG'] ) ? '' : $headers['PAYPAL-TRANSMISSION-SIG'],
 		'transmission_time' => empty( $headers['PAYPAL-TRANSMISSION-TIME'] ) ? '' : $headers['PAYPAL-TRANSMISSION-TIME'],
-		'webhook_id' => 'YOUR_WEBHOOK_ID', // TODO: Get the webhook ID from the database.
+		'webhook_id' => empty( $webhook_id ) ? '' : $webhook_id,
 		'webhook_event' => $body,
 	), $gateway_environment );
 	if ( is_string( $validate_response ) ) {
@@ -52,6 +53,9 @@ if ( defined( 'PMPRO_PAYPALREST_DEVELOPMENT_MODE' ) && PMPRO_PAYPALREST_DEVELOPM
 
 		// Send the 200 OK response early to avoid timeouts.
 		pmpro_send_200_http_response();
+
+		// Update the "last received" option.
+		update_option( 'pmpro_paypalrest_webhook_last_received_' . $gateway_environment, current_time( 'timestamp' ) );
 	}
 }
 
