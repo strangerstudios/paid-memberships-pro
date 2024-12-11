@@ -451,10 +451,10 @@ class PMProGateway_paypalrest extends PMProGateway {
 			// If we didn't get an error string, redirect the user to PayPal to pay.
 			if ( ! is_string( $response ) ) {
 				// Save the order ID so that we can complete the order later.
-				update_pmpro_membership_order_meta( $order->id, 'paypalrest_order_id', json_decode( $response['body'] )->id );
+				update_pmpro_membership_order_meta( $order->id, 'paypalrest_order_id', $response->id );
 
 				// Find the payer action link and redirect the user to it.
-				$links = json_decode( $response['body'] )->links;
+				$links = $response->links;
 				foreach ( $links as $link ) {
 					if ( $link->rel === 'payer-action' ) {
 						wp_redirect( $link->href );
@@ -517,11 +517,11 @@ class PMProGateway_paypalrest extends PMProGateway {
 				// If we didn't get an error string, redirect the user to PayPal.
 				if ( ! is_string( $response ) ) {
 					// Save the subscription ID so that we can complete the order later.
-					$order->subscription_transaction_id = json_decode( $response['body'] )->id;
+					$order->subscription_transaction_id = $response->id;
 					$order->saveOrder();
 
 					// Find the approve link and redirect the user to it.
-					$links = json_decode( $response['body'] )->links;
+					$links = $response->links;
 					foreach ( $links as $link ) {
 						if ( $link->rel === 'approve' ) {
 							wp_redirect( $link->href );
@@ -590,7 +590,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 		}
 
 		// Update the subscription with the new data.
-		$paypal_subscription = json_decode( $response['body'] );
+		$paypal_subscription = $response;
 		$update_array = array(
 			'startdate' => date( 'Y-m-d H:i:s', strtotime( $paypal_subscription->create_time ) ),
 		);
@@ -614,7 +614,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 				return $response;
 			}
 
-			$paypal_plan = json_decode( $response['body'] );
+			$paypal_plan = $response;
 			foreach( $paypal_plan->billing_cycles as $billing_cycle ) {
 				if ( 'REGULAR' === $billing_cycle->tenure_type ) {
 					$update_array['billing_amount'] = $billing_cycle->pricing_scheme->fixed_price->value;
@@ -645,7 +645,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 	 * @param array $body The body to send with the request.
 	 * @param string $gateway_environment The environment to use for the request. If empty, the current environment will be used.
 	 *
-	 * @return array|string The response from the request or an error message.
+	 * @return object|string The response from the request or an error message.
 	 */
 	public static function send_request( $method, $endpoint_url, $body = array(), $gateway_environment = '' ) {
 		// If the gateway environment is not set, get it from the options.
@@ -689,7 +689,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 		}
 
 		// Return the response.
-		return $response;
+		return json_decode( $response['body'] );
 	}
 
 	/**
@@ -746,7 +746,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 		}
 
 		// Save the product ID to the database.
-		$product_id = sanitize_text_field( json_decode( $response['body'] )->id );
+		$product_id = sanitize_text_field( $response->id );
 		update_option( 'pmpro_paypalrest_product_id_' . $level_id, $product_id );
 		return $product_id;
 	}
@@ -788,7 +788,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 			}
 
 			// If there are no plans, try to create a new one.
-			$plans_summaries = json_decode( $response['body'] )->plans;
+			$plans_summaries = $response->plans;
 			if ( empty( $plans_summaries ) ) {
 				break;
 			}
@@ -806,7 +806,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 					continue;
 				}
 
-				$plan = json_decode( $response['body'] );
+				$plan = $response;
 
 				// Check the initial payment.
 				if ( (float) $setup_fee !== (float) $plan->payment_preferences->setup_fee->value ) {
@@ -921,7 +921,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 			return false;
 		}
 
-		return json_decode( $response['body'] )->id;
+		return $response->id;
 	}
 
 	/**
@@ -964,7 +964,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 		if ( is_string( $response ) ) {
 			return false;
 		}
-		return json_decode( $response['body'] );
+		return $response;
 	}
 
 	/**
@@ -995,7 +995,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 				return false;
 			}
 
-			$webhooks = array_merge( $webhooks, json_decode( $response['body'] )->webhooks );
+			$webhooks = array_merge( $webhooks, $response->webhooks );
 			if ( count( $webhooks ) < 20 ) {
 				break;
 			}
@@ -1070,7 +1070,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 
 		// If successful, save the webhook ID.
 		if ( ! is_string( $response ) ) {
-			update_option( 'pmpro_paypalrest_webhook_id_' . $gateway_environment, json_decode( $response['body'] )->id );
+			update_option( 'pmpro_paypalrest_webhook_id_' . $gateway_environment, $response->id );
 		}
 	}
 }

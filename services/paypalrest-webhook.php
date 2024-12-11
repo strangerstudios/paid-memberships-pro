@@ -79,7 +79,7 @@ if ( ! $validated ) {
 				break;
 			} else {
 				// The order data was retrieved successfully. Update $resource with the new data.
-				$resource = json_decode( $response['body'] );
+				$resource = $response;
 			}
 
 			// Find the order in PMPro.
@@ -101,7 +101,7 @@ if ( ! $validated ) {
 					$logstr .= 'Error capturing payment for order #' . $order->id . ': ' . $response;
 				} else {
 					// The payment was captured successfully. Update $resource with the new data.
-					$resource = json_decode( $response['body'] );
+					$resource = $response;
 				}
 			}
 
