@@ -242,11 +242,126 @@ if ( ! $validated ) {
 			break;
 		case 'PAYMENT.CAPTURE.REFUNDED':
 			// Handle refunds.
-			// TODO: Is this the correct event type for refunds?
+			$logstr .= 'Processing refund ' . $resource->id . '. ';
+
+			if ( ! empty( $resource->capture_id ) ) {
+				// This is using the v1 API version.
+				$logstr .= 'Using v1 API version. ';
+
+				// The transaction ID is given to us.
+				$transaction_id = $resource->capture_id;
+
+				// Also get the refund amount.
+				$refund_amount = abs( (float)$resource->amount->total );
+			} else {
+				// This is using the v2 API version.
+				$logstr .= 'Using v2 API version. ';
+
+				// We need to parse the transaction ID from the "rel"=>"up" link.
+				foreach ( $resource->links as $link ) {
+					if ( 'up' === $link->rel ) {
+						$transaction_id = basename( $link->href );
+						break;
+					}
+				}
+
+				// Also get the refund amount.
+				$refund_amount = abs( (float)$resource->amount->value );
+			}
+
+			// If we don't have a transaction ID, record the error.
+			if ( empty( $transaction_id ) ) {
+				$logstr .= 'Transaction ID not found. ';
+				break;
+			}
+
+			// Log the transaction ID.
+			$logstr .= 'Transaction ID: ' . $transaction_id . '. ';
+
+			// Find the order in PMPro.
+			$order_search_args = array(
+				'gateway' => 'paypalrest',
+				'gateway_environment' => $gateway_environment,
+				'payment_transaction_id' => $transaction_id,
+			);
+			$order = MemberOrder::get_order( $order_search_args );
+
+			// If we don't have an order, record the error.
+			if ( empty( $order ) ) {
+				$logstr .= 'Corresponding order not found. ';
+				break;
+			}
+
+			// Check if the order is already refunded.
+			if ( 'refunded' === $order->status ) {
+				$logstr .= 'Order #' . $order->id . ' is already refunded. ';
+				break;
+			}
+
+			// If the order isn't in success status, record the error.
+			if ( 'success' !== $order->status ) {
+				$logstr .= 'Order #' . $order->id . ' is not in success status. ';
+				break;
+			}
+
+			// Make a note if the refund is partial.
+			if ( $refund_amount < $order->total ) {
+				$logstr .= 'Partial refund for $' . $refund_amount . '. ';
+				$order->notes .= 'Webhook: Partial refund for $' . $refund_amount . '. ';
+			}
+
+			// Mark the order as refunded.
+			$order->status = 'refunded';
+			$order->saveOrder();
+			$logstr .= 'Order #' . $order->id . ' marked as refunded. ';
+
+			// Get the user for the order.
+			$user = get_userdata( $order->user_id );
+
+			// If we don't have a user, record the error.
+			if ( empty( $user ) ) {
+				$logstr .= 'User not found. ';
+				break;
+			}
+
+			// Send emails to the user and admin.
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendRefundedEmail( $user, $order );
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendRefundedAdminEmail( $user, $order );
 			break;
 		case 'BILLING.SUBSCRIPTION.PAYMENT.FAILED':
-			// Handle denied payments.
-			// TODO: Implement this.
+			// Handle failed payments.
+			$logstr .= 'Processing failed payment for PayPal subscription ID ' . $resource->id . '. ';
+
+			// Get the PMPro Subscription object for this PayPal subscription.
+			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $resource->id, 'paypalrest', $gateway_environment );
+
+			// If we couldn't find a subscription, record the error.
+			if ( empty( $subscription ) ) {
+				$logstr .= 'Subscription for subscription ID ' . $resource->id . ' not found.';
+				break;
+			}
+
+			// Get the user for the subscription.
+			$user = get_userdata( $subscription->get_user_id() );
+
+			// If we don't have a user, record the error.
+			if ( empty( $user ) ) {
+				$logstr .= 'User not found.';
+				break;
+			}
+
+			// Create a fake MemberOrder object to pass to our payment failed email.
+			$order = new MemberOrder();
+			$order->user_id = $subscription->get_user_id();
+			$order->membership_id = $subscription->get_membership_level_id();
+
+			// Send emails to the user and admin.
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendBillingFailureEmail( $user, $order );
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendBillingFailureAdminEmail( get_bloginfo( 'admin_email' ), $order );
 			break;
 		default:
 			// Handle other events.
