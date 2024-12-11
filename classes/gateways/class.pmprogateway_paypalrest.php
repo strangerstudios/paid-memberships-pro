@@ -28,6 +28,9 @@ class PMProGateway_paypalrest extends PMProGateway {
 		add_filter( 'pmpro_payment_option_fields', array( 'PMProGateway_paypalrest', 'pmpro_payment_option_fields' ), 10, 2 );
 		add_action( 'pmpro_after_saved_payment_options', array( 'PMProGateway_paypalrest', 'pmpro_after_saved_payment_options' ) );
 
+		// Allow processing refunds.
+		add_filter( 'pmpro_process_refund_paypalrest', array( 'PMProGateway_paypalrest', 'process_refund' ), 10, 2 );
+
 		// Checkout filters.
 		$gateway = pmpro_getGateway();
 		if ( $gateway === 'paypalrest' ) {
@@ -633,6 +636,49 @@ class PMProGateway_paypalrest extends PMProGateway {
 
 		// Save the updated subscription.
 		$subscription->set( $update_array );
+	}
+
+	/**
+	 * Refunds an order (only supports full amounts).
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $success Status of the refund (default: false).
+	 * @param MemberOrder $order The order being refunded.
+	 *
+	 * @return bool True if the refund was successful, false otherwise.
+	 */
+	public static function process_refund( $success, $order ) {
+		// If we've already somehow processed a refund, bail.
+		if ( $success ) {
+			return $success;
+		}
+
+		// If we don't have a transaction ID, bail.
+		if ( empty( $order->payment_transaction_id ) ) {
+			return false;
+		}
+	
+		// Send the request to refund the payment.
+		$response = self::send_request(
+			'POST',
+			'v2/payments/captures/' . $order->payment_transaction_id . '/refund',
+			array(),
+			$order->gateway_environment
+		);
+
+		// If we got an error string, save it to order notes.
+		if ( is_string( $response ) ) {
+			$order->notes .= "\n" . __( 'Error processing refund:', 'paid-memberships-pro' ) . ' ' . $response;
+			$order->saveOrder();
+			return false;
+		}
+
+		// If we got a successful response, set the order status to refunded.
+		$order->status = 'refunded';
+		$order->saveOrder();
+		return true;
+
 	}
 
 	/**
