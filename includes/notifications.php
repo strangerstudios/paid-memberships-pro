@@ -436,6 +436,40 @@ function pmpro_notification_test_pmpro_setting( $data ) {
 }
 
 /**
+ * Test any wp_option setting for a specific value.
+ * @param array $data Array from the notification with [0] option name to check [1] value to check for.
+ * @returns bool true if an option if found with the specified name and value.
+ */
+function pmpro_notification_test_wp_option( $data ) {
+	if ( ! is_array( $data ) || !isset( $data[0] ) || !isset( $data[1] ) ) {
+		return false;
+	}
+	
+	$option_value = get_option( $data[0] );	
+	if ( isset( $option_value ) ) {
+		// If it's an array of data, check if if the value is correct.
+		if ( is_array( $option_value ) ) {
+			// in_array?
+			if ( in_array( $data[1], $option_value ) ) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		// If it's a single value, check if it matches.
+		if ( $option_value == $data[1] ) {
+			return true;
+		} else {
+			return false;
+		}
+
+	} else { // no option value found for the key.
+		return false;
+	}
+}
+
+/**
  * PMPro site URL test.
  * @param string $string String or array of strings to look for in the site URL
  * @returns bool true if the string shows up in the site URL
