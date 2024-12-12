@@ -160,7 +160,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 					$oauth_url = add_query_arg( array(
 						'nonce' => $nonce,
 						'environment' => $environment,
-					), admin_url( '?pmpro_get_paypalrest_signup_link=pmpro_get_paypalrest_signup_link' ) ); // TODO: Change this to the actual URL.
+					), 'https://connect.paidmembershipspro.com/paypal/v1' );
 					$paypal_script_callback_name = 'pmpro_paypalrest_oauth_callback_' . $environment;
 					?>
 					<script>
@@ -1118,72 +1118,5 @@ class PMProGateway_paypalrest extends PMProGateway {
 		if ( ! is_string( $response ) ) {
 			update_option( 'pmpro_paypalrest_webhook_id_' . $gateway_environment, $response->id );
 		}
-	}
-}
-
-
-// Everything below here is sample code for generating OAuth connection urls and should be deleted once
-// the Stranger Studios server is set up.
-if ( ! empty( $_REQUEST['pmpro_get_paypalrest_signup_link'] ) ) {
-	$nonce = empty($_REQUEST['nonce']) ? "" : $_REQUEST['nonce'];
-	$environment = empty($_REQUEST['environment']) ? "sandbox" : $_REQUEST['environment'];
-
-	// TODO: Get the correct client and secret IDs for the Stranger Studios platform account.
-	$platform_client_id = defined( 'PMPRO_PAYPALREST_PLATFORM_CLIENT_ID' ) ? PMPRO_PAYPALREST_PLATFORM_CLIENT_ID : '';
-	$platform_client_secret = defined( 'PMPRO_PAYPALREST_PLATFORM_CLIENT_SECRET' ) ? PMPRO_PAYPALREST_PLATFORM_CLIENT_SECRET : '';
-
-	// Get the OAuth link to send the user to.
-	$ch = curl_init( ( $environment === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com' ) . '/v2/customer/partner-referrals' );
-	curl_setopt($ch, CURLOPT_POST, true);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, [
-		"Content-Type: application/json",
-		"Authorization: Basic " . base64_encode( $platform_client_id . ":" . $platform_client_secret )
-	]);
-	$data = [
-		"operations" => [
-			[
-				"operation" => "API_INTEGRATION",
-				"api_integration_preference" => [
-					"rest_api_integration" => [
-						"integration_method" => "PAYPAL",
-						"integration_type" => "FIRST_PARTY",
-						"first_party_details" => [
-							"features" => ["PAYMENT", "REFUND"],
-							"seller_nonce" => $nonce
-						]
-					]
-				]
-			]
-		],
-		"products" => ["EXPRESS_CHECKOUT"],
-		"legal_consents" => [
-			[
-				"type" => "SHARE_DATA_CONSENT",
-				"granted" => true
-			]
-		]
-	];
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-	// Execute cURL request and get the response
-	$response = curl_exec($ch);
-
-	// Close cURL
-	curl_close($ch);
-
-	// If successful, return the link with rel action_url
-	if ($response) {
-		$response = json_decode($response, true);
-		$links = $response['links'];
-		foreach ($links as $link) {
-			if ($link['rel'] === 'action_url') {
-				// Redirect to the PayPal Partner Referrals API link
-				header('Location: ' . $link['href']);
-				exit;
-			}
-		}
-	} else {
-		// TODO: Handle error
 	}
 }
