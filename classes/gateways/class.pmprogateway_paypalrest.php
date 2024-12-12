@@ -1060,7 +1060,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 	 *
 	 * @param string $gateway_environment The environment to use for the request.
 	 */
-	private static function create_webhook( $gateway_environment ) {
+	public static function create_webhook( $gateway_environment ) {
 		// Get the webhook URL.
 		$webhook_url = self::get_site_webhook_url();
 

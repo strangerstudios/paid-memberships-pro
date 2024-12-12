@@ -70,3 +70,9 @@ if ( is_wp_error( $credentials_request ) ) {
 $credentials = json_decode( wp_remote_retrieve_body( $credentials_request ) );
 update_option( 'pmpro_paypalrest_client_id_' . $environment, $credentials->client_id );
 update_option( 'pmpro_paypalrest_client_secret_' . $environment, $credentials->client_secret );
+
+// Set the current gateway to PayPal REST.
+update_option( 'pmpro_gateway', 'paypalrest' );
+
+// Attempt to set up a webhook for the seller.
+PMProGateway_paypalrest::create_webhook( $environment );
