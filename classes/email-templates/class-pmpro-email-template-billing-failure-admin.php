@@ -122,7 +122,6 @@ class PMPro_Email_Template_Billing_Failure_Admin extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 		return array(
 			'!!subject!!' => __( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!header_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
 			'!!name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => __( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!user_email!!' => __( 'The email address of the user billing failed', 'paid-memberships-pro' ),
@@ -159,7 +158,6 @@ class PMPro_Email_Template_Billing_Failure_Admin extends PMPro_Email_Template {
 		$membership_level = pmpro_getLevel( $order->membership_id );
 		return array(
 			'subject' => $this->get_default_subject(),
-			'header_name' => $user->display_name,
 			'name' => $user->display_name,
 			'user_login' => $user->user_login,
 			'membership_id' => $membership_level->id,
