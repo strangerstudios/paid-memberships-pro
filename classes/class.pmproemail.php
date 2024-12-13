@@ -825,7 +825,7 @@
 				return false;
 			}
 
-			$email = new PMPro_Email_Template_Billing_Info_Updated( $user, $order );
+			$email = new PMPro_Email_Template_Billing( $user, $order );
 			$email->send();
 		}
 		
@@ -848,7 +848,7 @@
 				return false;
 			}
 
-			$email = new PMPro_Email_Template_Billing_Info_Updated_Admin( $user, $order );
+			$email = new PMPro_Email_Template_Billing_Admin( $user, $order );
 			$email->send();
 		}
 		
