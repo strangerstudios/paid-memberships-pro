@@ -437,7 +437,7 @@ function pmpro_notification_test_pmpro_setting( $data ) {
 
 /**
  * Test any wp_option setting for a specific value.
- * @param array $data Array from the notification with [0] option name to check [1] value to check for.
+ * @param array $data notification data that is passed through this function to check if the value (data[1]) is set for the key (data[0]) or in an array should the option be an array.
  * @returns bool true if an option if found with the specified name and value.
  */
 function pmpro_notification_test_wp_option( $data ) {
