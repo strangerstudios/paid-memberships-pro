@@ -44,7 +44,7 @@ if ( defined( 'PMPRO_PAYPALREST_DEVELOPMENT_MODE' ) && PMPRO_PAYPALREST_DEVELOPM
 	if ( is_string( $validate_response ) ) {
 		// An error string was returned. Record it.
 		$logstr .= 'Error validating webhook request: ' . $validate_response . "\n";
-	} elseif ( 'SUCCESS' !== json_decode( $validate_response['body'] )->verification_status ) {
+	} elseif ( 'SUCCESS' !== $validate_response->verification_status ) {
 		// The webhook request was not validated. Record the error.
 		$logstr .= 'Webhook request not validated.';
 	} else {
@@ -148,15 +148,10 @@ if ( ! $validated ) {
 					// An error string was returned. Record it.
 					$logstr .= 'Error getting subscription transactions for subscription ID ' . $resource->id . ': ' . $subscription_transsactions;
 					break;
-				} else {
-					// The subscription transactions were retrieved successfully. Update $resource with the new data.
-					$subscription_transsactions = json_decode( $subscription_transsactions['body'] );
-
-					// If there is an initial payment, update the order with the payment transaction ID.
-					if ( ! empty( $subscription_transsactions->transactions ) ) {
-						$order->payment_transaction_id = $subscription_transsactions->transactions[0]->id;
-						$order->saveOrder();
-					}
+				} if ( ! empty( $subscription_transsactions->transactions ) ) {
+					// There is an initial payment. Update the order with the payment transaction ID.
+					$order->payment_transaction_id = $subscription_transsactions->transactions[0]->id;
+					$order->saveOrder();
 				}
 
 				// Complete the checkout.
