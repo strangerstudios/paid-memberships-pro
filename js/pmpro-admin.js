@@ -1004,20 +1004,45 @@ jQuery(document).ready(function () {
 });
 
 jQuery(document).ready(function ($) {
+
 	/**
-	 * Copy Discount Code to Clipboard
+	 * If it's mouseenter show the clipboard icon hider otherwise
 	 *
-	 * @param {Event} event The click event
+	 * @param {Event} evt The event object
 	 * @returns {void}
 	 * @since TBD
 	 */
-	$('.pmpro_copy_discount_code').on('click', function (event) {
+	$('table.discountcodes tr').on( "mouseenter mouseleave focus", function ( evt ) {
+		$(this).find('td.column-discount_code .pmpro_copy_discount_code').hide();
+		if (evt.type === 'mouseenter' ) {
+			$(this).find('.pmpro_copy_discount_code').show();
+		}
+	});
+
+	/**
+	 * If focus on the code show the clipboard icon for accessibility sake
+	 *
+	 * @param {Event} evt The event object
+	 * @returns {void}
+	 * @since TBD
+	 */
+	$('td.column-discount_code a').on( "focus", function ( evt ) {
+		$(this).closest( 'td' ).find( '.pmpro_copy_discount_code' ).show();
+	});
+
+	/**
+	 * Copy Discount Code to Clipboard
+	 *
+	 * @param {Event} evt The click event
+	 * @returns {void}
+	 * @since TBD
+	 */
+	$('.pmpro_copy_discount_code').on('click', function ( evt ) {
         // Find first link text
         const code = $(this).closest('td').find('a').first().text();
 
-        // Check for Clipboard API support
+        // Bail if Clipboard API isn't supported
         if ( ! navigator.clipboard ) {
-            console.error('Navigator Clipboard API not supported');
             return;
         }
 
