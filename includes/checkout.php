@@ -13,7 +13,7 @@
  */
 function pmpro_calculate_profile_start_date( $order, $date_format, $filter = true ) {
 	// Get the checkout level.
-	$level = $order->getMembershipLevelAtCheckout();	
+	$level = $order->getMembershipLevelAtCheckout();
 
 	// If the level already has a profile start date set, use it. Otherwise, calculate it based on the cycle number and period.
 	if ( ! empty( $level->profile_start_date ) ) {
