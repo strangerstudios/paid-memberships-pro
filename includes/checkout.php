@@ -13,10 +13,16 @@
  */
 function pmpro_calculate_profile_start_date( $order, $date_format, $filter = true ) {
 	// Get the checkout level.
-	$level = $order->getMembershipLevelAtCheckout();
+	$level = $order->getMembershipLevelAtCheckout();	
 
-	// Calculate the profile start date.
-	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $level->cycle_number . ' ' . $level->cycle_period ) );
+	// If the level already has a profile start date set, use it. Otherwise, calculate it based on the cycle number and period.
+	if ( ! empty( $level->profile_start_date ) ) {
+		// Use the profile start date that is already set.
+		$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( $level->profile_start_date ) );
+	} else {
+		// Calculate the profile start date based on the cycle number and period.
+		$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $level->cycle_number . ' ' . $level->cycle_period ) );
+	}
 
 	// Filter the profile start date if needed.
 	if ( $filter ) {
@@ -28,13 +34,14 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 		 * to use that format in case we update this code in the future.
 		 *
 		 * @since 1.4
+		 * @deprecated TBD Set the 'profile_start_date' property on the checkout level object instead.
 		 *
 		 * @param string $profile_start_date The profile start date in UTC YYYY-MM-DD HH:MM:SS format.
 		 * @param MemberOrder $order         The order that the profile start date is being calculated for.
 		 *
 		 * @return string The profile start date in UTC YYYY-MM-DD HH:MM:SS format.
 		 */
-		$profile_start_date = apply_filters( 'pmpro_profile_start_date', $profile_start_date, $order );
+		$profile_start_date = apply_filters_deprecated( 'pmpro_profile_start_date', array( $profile_start_date, $order ), 'TBD' );
 	}
 
 	// Convert $profile_start_date to correct format.
