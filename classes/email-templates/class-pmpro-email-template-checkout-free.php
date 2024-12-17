@@ -123,7 +123,6 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 
 		return array(
 			'!!subject!!' => __( 'The subject of the email.', 'paid-memberships-pro' ),
-			'!!header_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
 			'!!name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
 			'!!display_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
 			'!!user_login!!' => __( 'The login name of the email recipient.', 'paid-memberships-pro' ),
@@ -170,7 +169,6 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 
 		$email_template_variables = array(
 			'subject' => $this->get_default_subject(),
-			'header_name' => $this->get_recipient_name(),
 			'name' => $this->get_recipient_name(),
 			'display_name' => $this->get_recipient_name(),
 			'user_login' => $user->user_login,
