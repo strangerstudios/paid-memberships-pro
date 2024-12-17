@@ -179,6 +179,10 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 		global $wpdb;
 		$user = $this->user;
 		$order = $this->order;
+		//If user is not the same one from order, let's get the user from order to fill the email
+		if( $order->user_id != $user->ID ) {
+			$user = get_userdata( $order->user_id );
+		}
 		$membership_level = pmpro_getLevel( $order->membership_id );
 		
 		//Get discount code if it exists
@@ -199,9 +203,9 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 
 		$email_template_variables = array(
 			'subject' => $this->get_default_subject(),
-			'header_name' => $this->get_recipient_name(),
-			'name' => $this->get_recipient_name(),
-			'display_name' => $this->get_recipient_name(),
+			'header_name' => $user->display_name,
+			'name' => $user->display_name,
+			'display_name' => $user->display_name,
 			'user_login' => $user->user_login,
 			'membership_id' => $membership_level->id,
 			'membership_level_name' => $membership_level->name,
