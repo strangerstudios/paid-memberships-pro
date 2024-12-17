@@ -25,47 +25,6 @@ $pmpro_email_templates_defaults = array(
 		'body' => __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
-	'billing_failure' => array(
-		'subject' => __( "Membership payment failed at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __( 'Payment Failure', 'paid-memberships-pro' ),
-		'body' => __( '<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br/> !!login_url!! </p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent out if a recurring payment has failed, usually due to an expired or cancelled credit card. This email is sent to the member to allowing them time to update payment information without a disruption in access to your site.', 'paid-memberships-pro' )
-	),
-	'billing_failure_admin' => array(
-		'subject' => __( "Membership payment failed for !!display_name!! at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __( 'Payment Failure (admin)', 'paid-memberships-pro'  ),
-		'body' => __( '<p>The subscription payment for !!user_login!! for level !!membership_level_name!! at !!sitename!! has failed.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-
-<p>Log in to your WordPress admin here: !!login_url!!</p>
-', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent out if a recurring payment has failed for a member, usually due to an expired or cancelled credit card. This email is sent to the site administrator.', 'paid-memberships-pro' )
-	),
-	'cancel_on_next_payment_date' => array(
-		'subject' => __( "Your payment subscription at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
-		'description' => __('Canceled Auto-Renewals', 'paid-memberships-pro'),
-		'body' => __( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-<p>Your access will expire on !!enddate!!.</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'When a user cancels a membership with a recurring subscription, they will still have access until when their next payment would have been taken. This email is sent to the member to notify them of this change.', 'paid-memberships-pro' )
-	),
-	'cancel_on_next_payment_date_admin' => array(
-		'subject' => __( "Payment subscription for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
-		'description' => __('Canceled Auto-Renewals (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>The payment subscription for !!user_login!! at !!sitename!! has been cancelled.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-<p>Start Date: !!startdate!!</p>
-<p>Expiration Date: !!enddate!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'When a user cancels a membership with a recurring subscription, they will still have access until when their next payment would have been taken. This email is sent to the site administrator to notify them of this change.', 'paid-memberships-pro' )
-	),
 	'checkout_check' => array(
 		'subject' => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
 		'description' => sprintf( __('Checkout - %s', 'paid-memberships-pro' ), $check_gateway_label ),
