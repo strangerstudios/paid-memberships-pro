@@ -119,7 +119,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 
 		$element_settings = $element->get_active_settings();
 
-		$restricted_levels = $element_settings['pmpro_require_membership'];
+		$restricted_levels = empty( $element_settings['pmpro_require_membership'] ) ? array() : $element_settings['pmpro_require_membership'];
 
 		// Just bail if the content isn't restricted at all.
 		if ( ! $restricted_levels ) {
