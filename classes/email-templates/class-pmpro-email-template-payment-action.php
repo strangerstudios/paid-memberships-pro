@@ -119,7 +119,6 @@ class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 		return array(
 			'!!subject!!' => __( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!header_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
 			'!!name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => __( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!display_name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
@@ -144,7 +143,6 @@ class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 			"subject" => $this->subject,
 			"name" => $user->display_name,
 			"user_login" => $user->user_login,
-			"header_name" => $user->display_name,
 			"display_name" => $user->display_name,
 			"order_link" => $order_url,
 			"order_url" => $order_url,
