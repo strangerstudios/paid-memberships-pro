@@ -369,11 +369,11 @@ function pmpro_email_templates_send_test() {
 			break;
 		case 'membership_expired';
 			$send_email = 'sendMembershipExpiredEmail';
-			$params = array($test_user);
+			$params = array($test_user, $test_order->membership_id );
 			break;
 		case 'membership_expiring';
 			$send_email = 'sendMembershipExpiringEmail';
-			$params = array($test_user);
+			$params = array( $test_user, $test_order->membership_id );
 			break;
 		case 'payment_action':
 			$send_email = 'sendPaymentActionRequiredEmail';
@@ -386,6 +386,10 @@ function pmpro_email_templates_send_test() {
 		case 'membership_recurring':
 			$send_email = 'send_recurring_payment_reminder';
 			$params = array( $test_subscription );
+      break;
+		case 'credit_card_expiring':
+			$send_email = 'sendCreditCardExpiringEmail';
+			$params = array($test_user, $test_order,  "http://www.example-notification-url.com/not-a-real-site");
 			break;
 		default:
 			$send_email = 'sendEmail';
