@@ -161,7 +161,11 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 		}
 
 		// Get the membership level object.
-		$membership_level = pmpro_getLevel( $membership_id );
+		if ( empty( $membership_id ) ) {
+			$membership_level = pmpro_getMembershipLevelForUser($this->user->ID);
+		} else {
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($this->user->ID, $membership_id);
+		}
 
 		return array(
 			"subject" => $this->get_default_subject(),
