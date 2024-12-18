@@ -134,6 +134,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
+		global $wpdb;
 	
 		$order = $this->order;
 		$user = $this->user;
