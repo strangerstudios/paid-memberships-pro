@@ -25,37 +25,6 @@ $pmpro_email_templates_defaults = array(
 		'body' => __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
-	'refund' => array(
-		'subject' => __( 'Order #!!order_id!! at !!sitename!! has been REFUNDED', 'paid-memberships-pro' ),
-		'description' => __('Refund', 'paid-memberships-pro'),
-		'body' => __( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>
-	Order #!!order_id!! on !!order_date!!<br />
-	Total Refunded: !!order_total!!
-</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>
-<p>To view an online version of this order, click here: !!order_url!!</p>
-
-<p>If you did not request this refund and would like more information please contact us at !!siteemail!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent to the member as confirmation of a refunded payment. The email is sent after your membership site receives notification of a successful payment refund through your gateway.', 'paid-memberships-pro' )
-	),
-	'refund_admin' => array(
-		'subject' => __( 'Order #!!order_id!! at !!sitename!! has been REFUNDED', 'paid-memberships-pro' ),
-		'description' => __('Refund (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>
-	Order #!!order_id!! on !!order_date!!<br />
-	Total Refunded: !!order_total!!
-</p>
-
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent to the admin as confirmation of a refunded payment. The email is sent after your membership site receives notification of a successful payment refund through your gateway.', 'paid-memberships-pro' )
-	),
 );
 
 // Add any templates registered via the PMPro_Email_Template class.
