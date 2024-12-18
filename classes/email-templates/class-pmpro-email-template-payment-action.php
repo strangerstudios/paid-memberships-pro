@@ -140,7 +140,7 @@ class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 		$user = $this->user;
 		$order_url = $this->order_url;
 		return array(
-			"subject" => $this->subject,
+			"subject" => $this->get_default_subject(),
 			"name" => $user->display_name,
 			"user_login" => $user->user_login,
 			"display_name" => $user->display_name,

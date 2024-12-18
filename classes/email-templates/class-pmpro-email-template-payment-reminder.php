@@ -89,7 +89,8 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	 * @return string The email address to send the email to.
 	 */
 	public function get_recipient_email() {
-		return $this->user->user_email;
+		$user = get_userdata( $this->subscription_obj->get_user_id() );
+		return $user->user_email;
 	}
 
 	/**
@@ -100,7 +101,8 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	 * @return string The name of the email recipient.
 	 */
 	public function get_recipient_name() {
-		return $this->user->display_name;
+		$user = get_userdata( $this->subscription_obj->get_user_id() );
+		return $user->display_name;
 	}
 
 
