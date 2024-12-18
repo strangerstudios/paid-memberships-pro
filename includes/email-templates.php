@@ -25,41 +25,6 @@ $pmpro_email_templates_defaults = array(
 		'body' => __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
-	'billing' => array(
-		'subject'  => __( "Your billing information has been updated at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Billing Information Updated', 'paid-memberships-pro'),
-		'body' => __( '<p>Your billing information at !!sitename!! has been changed.</p><p>Account: !!display_name!! (!!user_email!!)</p>
-<p>
-	Billing Information:<br />
-	!!billing_address!!
-</p><p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p><p>If you did not request a billing information change please contact us at !!siteemail!!</p><p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'Members can update the payment method associated with their recurring subscription. This email is sent to the member as a confirmation of a payment method update.', 'paid-memberships-pro' )
-	),
-	'billing_admin' => array(
-		'subject' => __( "Billing information has been updated for !!user_login!! at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Billing Information Updated (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>The billing information for !!display_name!! at !!sitename!! has been changed.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>
-	Billing Information:<br />
-	!!billing_name!!<br />
-	!!billing_street!!<br />
-	!!billing_city!!, !!billing_state!! !!billing_zip!!	!!billing_country!!
-	!!billing_phone!!
-</p>
-
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
-
-<p>Log in to your WordPress dashboard here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'Members can update the payment method associated with their recurring subscription. This email is sent to the site administrator as a confirmation of a payment method update.', 'paid-memberships-pro' )
-	),
 	'checkout_check' => array(
 		'subject' => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
 		'description' => sprintf( __('Checkout - %s', 'paid-memberships-pro' ), $check_gateway_label ),

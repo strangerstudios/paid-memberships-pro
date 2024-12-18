@@ -779,50 +779,8 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
-			
-			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your billing information has been updated at %s", "paid-memberships-pro"), get_option("blogname"));
-
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $user->display_name,
-								'name' => $user->display_name,
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,																	
-								'billing_name' => $order->billing->name,
-								'billing_street' => $order->billing->street,
-								'billing_street2' => $order->billing->street2,
-								'billing_city' => $order->billing->city,
-								'billing_state' => $order->billing->state,
-								'billing_zip' => $order->billing->zip,
-								'billing_country' => $order->billing->country,
-								'billing_phone' => $order->billing->phone,
-								'cardtype' => $order->cardtype,
-								'accountnumber' => hideCardNumber($order->accountnumber),
-								'expirationmonth' => $order->expirationmonth,
-								'expirationyear' => $order->expirationyear,
-								'login_link' => pmpro_login_url(),
-								'login_url' => pmpro_login_url(),
-								'levels_url' => pmpro_url( 'levels' )							
-							);
-			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																 $order->billing->street,
-																 $order->billing->street2,
-																 $order->billing->city,
-																 $order->billing->state,
-																 $order->billing->zip,
-																 $order->billing->country,
-																 $order->billing->phone);
-
-			$this->template = apply_filters( "pmpro_email_template", "billing", $this );
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Billing( $user, $order );
+			$email->send();
 		}
 		
 		/**
@@ -844,50 +802,8 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
-			
-			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
-			
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $this->get_admin_name( $this->email ),
-								'name' => $user->display_name,
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,																	
-								'billing_name' => $order->billing->name,
-								'billing_street' => $order->billing->street,
-								'billing_street2' => $order->billing->street2,
-								'billing_city' => $order->billing->city,
-								'billing_state' => $order->billing->state,
-								'billing_zip' => $order->billing->zip,
-								'billing_country' => $order->billing->country,
-								'billing_phone' => $order->billing->phone,
-								'cardtype' => $order->cardtype,
-								'accountnumber' => hideCardNumber($order->accountnumber),
-								'expirationmonth' => $order->expirationmonth,
-								'expirationyear' => $order->expirationyear,
-								'login_link' => pmpro_login_url(),
-								'login_url' => pmpro_login_url(),
-								'levels_url' => pmpro_url( 'levels' )							
-							);
-			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																 $order->billing->street,
-																 $order->billing->street2,
-																 $order->billing->city,
-																 $order->billing->state,
-																 $order->billing->zip,
-																 $order->billing->country,
-																 $order->billing->phone);
-
-			$this->template = apply_filters( "pmpro_email_template", "billing_admin", $this );
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Billing_Admin( $user, $order );
+			$email->send();
 		}
 		
 		/**
