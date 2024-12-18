@@ -1,4 +1,3 @@
-
 <?php
 function pmpro_load_textdomain() {
 	$locale = apply_filters( 'plugin_locale', get_user_locale(), 'paid-memberships-pro' );
