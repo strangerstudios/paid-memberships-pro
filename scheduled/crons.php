@@ -330,13 +330,6 @@ function pmpro_cron_recurring_payment_reminders() {
 			 */
 			$send_email = apply_filters( 'pmpro_send_recurring_payment_reminder_email', true, $subscription_obj, $days );
 
-			//if template is membership_recurring, use the new method, let pass otherwise.
-			if( $send_email && 'membership_recurring' == $template ) {
-				$send_emails = false;
-				$pmproemail = new PMProEmail();
-				$pmproemail->send_recurring_payment_reminder( $user, $subscription_obj->get_membership_level_id() );
-			}
-
 			/**
 			 * @filter      pmprorm_send_reminder_to_user
 			 *
@@ -349,7 +342,12 @@ function pmpro_cron_recurring_payment_reminders() {
 			$send_emails = apply_filters_deprecated( 'pmprorm_send_reminder_to_user', array( $send_email, $user, null ), '3.2' );
  
 
-			if ( $send_emails ) {
+			if ( $send_emails && 'membership_recurring' == $template ) {
+				// This is the default email. Use the email template class.
+				$pmproemail = new PMPro_Email_Template_Payment_Reminder( $subscription_obj );
+				$pmproemail->send();
+			} else if ( $send_emails ) {
+				// This is not the default email. Build the email from scratch.
 				// Get the level info.
 				$membership_level = pmpro_getLevel( $subscription_obj->get_membership_level_id() );
 
