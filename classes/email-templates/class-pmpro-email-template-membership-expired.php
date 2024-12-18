@@ -122,7 +122,6 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 		return array(
 			'!!subject!!' => __( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!header_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
 			'!!name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
@@ -168,7 +167,6 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 			"subject" => $this->subject,
 			"name" => $user->display_name,
 			"user_login" => $user->user_login,
-			"header_name" => $user->display_name,
 			"display_name" => $user->display_name,
 			"user_email" => $user->user_email,
 			"levels_link" => pmpro_url("levels"),
