@@ -85,7 +85,7 @@ function pmpro_check_for_translations() {
 		$plugin_slug = $add_on['Slug'];
 
 		// This uses the Traduttore plugin to check for translations for locales etc.
-		\Required\Traduttore_Registry\add_project(
+		PMPro\Required\Traduttore_Registry\add_project(
 			'plugin',
 			$plugin_slug,
 			'https://translate.strangerstudios.com/api/translations/' . $plugin_slug
