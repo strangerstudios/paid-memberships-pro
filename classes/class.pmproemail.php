@@ -828,6 +828,10 @@
 			if( empty( $order_url ) && isset( $order->order_url ) )
 				$order_url = $order->order_url;
 
+			// if an order URL wasn't passed in, grab it from the order
+			if(empty($order_url) && isset($order->invoice_url))
+			$order_url = $order->invoice_url;
+
 			// still no order URL? bail
 			if( empty( $order_url ) )
 				return false;
