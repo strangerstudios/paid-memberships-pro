@@ -1003,7 +1003,27 @@ jQuery(document).ready(function () {
 	jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
 });
 
+/**
+ * Copy to the clipboard for discount codes, order ids, payment ids, etc.
+ */
 jQuery(document).ready(function ($) {
+
+	//get all the buttons
+	const $allButtons = $( '.pmpro_copy_to_clipboard' );
+
+	//get all table rows
+	const $allTableRows = $( 'table.discountcodes tr, table.subscriptions tr, table.orders tr' );
+
+	//get all anchors in the same table cell
+	const $allAnchors = $( 'td.column-discount_code a, td.column-subscription_id a, td.column-order_id a' );
+
+	// Bail if Clipboard API isn't supported
+	if ( ! navigator.clipboard ) {
+		//hide all buttons. Iterate over the jquery elements array and hide them all.
+		$allButtons.each( function () {
+			$( this ).remove();
+		});
+	}
 
 	/**
 	 * If it's mouseenter show the clipboard icon hider otherwise
@@ -1012,10 +1032,12 @@ jQuery(document).ready(function ($) {
 	 * @returns {void}
 	 * @since TBD
 	 */
-	$('table.discountcodes tr').on( "mouseenter mouseleave focus", function ( evt ) {
-		$(this).find('td.column-discount_code .pmpro_copy_discount_code').hide();
-		if (evt.type === 'mouseenter' ) {
-			$(this).find('.pmpro_copy_discount_code').show();
+	$( $allTableRows ).on( "mouseenter mouseleave focus", function ( evt ) {
+		const button = $( this ).find( '.pmpro_copy_to_clipboard' );
+		button.hide();
+
+		if ( evt.type === 'mouseenter' || evt.type === 'focus' ) {
+			button.show();
 		}
 	});
 
@@ -1026,25 +1048,24 @@ jQuery(document).ready(function ($) {
 	 * @returns {void}
 	 * @since TBD
 	 */
-	$('td.column-discount_code a').on( "focus", function ( evt ) {
-		$(this).closest( 'td' ).find( '.pmpro_copy_discount_code' ).show();
+	$( $allAnchors ).on( "focus", function ( evt ) {
+		$(this).closest('td').find('.pmpro_copy_to_clipboard').show();
 	});
 
 	/**
-	 * Copy Discount Code to Clipboard
+	 * Copy  to Clipboard different codes across the site. Check the class pmpro_copy_to_clipboard to find where it's used.
 	 *
 	 * @param {Event} evt The click event
 	 * @returns {void}
 	 * @since TBD
 	 */
-	$('.pmpro_copy_discount_code').on('click', function ( evt ) {
+	$('.pmpro_copy_to_clipboard').on('click', function ( evt ) {
         // Find first link text
-        const code = $(this).closest('td').find('a').first().text();
-
-        // Bail if Clipboard API isn't supported
-        if ( ! navigator.clipboard ) {
-            return;
-        }
+        let code = $(this).closest('td').find('a').first().text();
+		//if it's a payment transaction id, we need to get the text from the first anchor
+		if( $(this).hasClass('pmpro_copy_payment_transaction_id') ) {
+			code = $(this).closest('td').find('p').first().text().split(":")[1].trim();
+		}
 
         // Create a new Blob object with the discount code
         const blob = new Blob([code], { type: 'text/plain' });
@@ -1059,7 +1080,7 @@ jQuery(document).ready(function ($) {
                 // Remove success message and show copy button after a delay
                 setTimeout(() => {
                     $('.success-message').remove();
-                    $('.pmpro_copy_discount_code').show();
+                    $('.pmpro_copy_to_clipboard').show();
                 }, 3000);
             })
             .catch(err => {

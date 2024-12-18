@@ -1647,13 +1647,13 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.pmpro_admin tr td button.pmpro_copy_discount_code .dashicons:not(.button .dashicons) {
+.pmpro_admin tr td button.pmpro_copy_to_clipboard .dashicons:not(.button .dashicons) {
 	padding-top: unset;
 	font-size: 14px;
 	line-height: 1.4;
 }
 
-.pmpro_admin tr td button.pmpro_copy_discount_code:hover {
+.pmpro_admin tr td button.pmpro_copy_to_clipboard:hover {
 	color: #043959;
 }
 

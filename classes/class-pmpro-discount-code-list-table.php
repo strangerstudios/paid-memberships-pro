@@ -370,7 +370,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		?>
 		<strong><a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $item->id ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->id ), admin_url('admin.php' ) ) ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
 		<button title="<?php echo esc_attr__('Copy code to the clipboard', 'paid-memberships-pro' ) ?>" type="button" 
-			class="pmpro_copy_discount_code button-link edit-filters" style="display:none">
+			class="pmpro_copy_discount_code pmpro_copy_to_clipboard button-link edit-filters" style="display:none">
 			<span class="dashicons dashicons-clipboard" aria-hidden="true"></span>
 		</button>
 		<div class="row-actions">
