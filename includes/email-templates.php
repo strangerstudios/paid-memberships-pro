@@ -25,24 +25,6 @@ $pmpro_email_templates_defaults = array(
 		'body' => __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
-	'credit_card_expiring'     => array(
-		'subject' => __( "Credit card on file expiring soon at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Credit Card Expiring', 'paid-memberships-pro'),
-		'body' => __( '<p>The payment method used for your membership at !!sitename!! will expire soon. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_url!!</strong></p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>The most recent account information we have on file is:</p>
-
-<p>!!billing_name!!</br />
-	!!billing_address!!
-</p>
-
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent when a member\'s payment method will be expiring soon. This allows the member to update their payment method before a payment failure, which may result in lost access to member features.', 'paid-memberships-pro' )
-	),
 	'invoice'  => array(
 		'subject' => __( "Recurring payment receipt for !!sitename!! membership", 'paid-memberships-pro' ),
 		'description' => __('Recurring Payment Receipt', 'paid-memberships-pro'),

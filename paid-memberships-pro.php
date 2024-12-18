@@ -55,6 +55,7 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-c
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-admin.php' ); // cancel email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change.php' ); // change email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change-admin.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-credit-card-expiring.php' ); // credit card expiring email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-check.php' );
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-check-admin.php' );
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-free.php' );
