@@ -347,35 +347,8 @@
 				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), '3.0' );
 			}
 
-			// Get the level object.
-			$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $level_id );
-
-			// Make sure that the level is now set to expire.
-				if ( empty( $level ) || empty( $level->enddate) ) {
-				return false;
-			}
-
-			$this->email = $user->user_email;
-			$this->subject = sprintf( __( 'Your payment subscription at %s has been CANCELLED', 'paid-memberships-pro' ), $user->user_login, get_option( 'blogname' ) );
-
-			$this->data = array(
-				'user_login' => $user->user_login,
-				'user_email' => $user->user_email,
-				'display_name' => $user->display_name,
-				'sitename' => get_option( 'blogname' ),
-				'siteemail' => get_option( 'pmpro_from_email' ),
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
-				'levels_url' => pmpro_url( 'levels' ),
-				'membership_id' => $level->id,
-				'membership_level_name' => $level->name,
-				'startdate' => date_i18n( get_option( 'date_format' ), $level->startdate ),
-				'enddate' => date_i18n( get_option( 'date_format' ), $level->enddate ),
-			);
-
-			$this->template = apply_filters( "pmpro_email_template", "cancel_on_next_payment_date", $this );
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Cancel_On_Next_Payment_Date( $user, $level_id );
+			$email->send();
 		}
 
 		/**
@@ -401,31 +374,12 @@
 			$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $level_id );
 
 			// Make sure that the level is now set to expire.
-			if ( empty( $level ) || empty( $level->enddate) ) {
+			if ( empty( $level ) || empty( $level->enddate ) ) {
 				return false;
 			}
 
-			$this->email = get_option( 'pmpro_from_email' );
-			$this->subject = sprintf( __( 'Payment subscription for %s at %s has been CANCELLED', 'paid-memberships-pro' ), $user->user_login, get_option( 'blogname' ) );
-
-			$this->data = array(
-				'user_login' => $user->user_login,
-				'user_email' => $user->user_email,
-				'display_name' => $user->display_name,
-				'sitename' => get_option( 'blogname' ),
-				'siteemail' => get_option( 'pmpro_from_email' ),
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
-				'levels_url' => pmpro_url( 'levels' ),
-				'membership_id' => $level->id,
-				'membership_level_name' => $level->name,
-				'startdate' => date_i18n( get_option( 'date_format' ), $level->startdate ),
-				'enddate' => date_i18n( get_option( 'date_format' ), $level->enddate ),
-			);
-
-			$this->template = apply_filters( "pmpro_email_template", "cancel_on_next_payment_date_admin", $this );
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin( $user, $level_id );
+			$email->send();
 		}
 
 		/**
@@ -595,102 +549,35 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
-
-			$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
-			if ( ! empty( $confirmation_in_email ) ) {
-				$confirmation_message = $membership_level->confirmation;
+			$email =  null;
+			if( !empty( $this->template ) ) {
+				switch ( $this->template )  {
+					case 'checkout_check':
+					$email = new PMPro_Email_Template_Checkout_Check( $user, $order );
+					break;
+					case 'checkout_free':
+					$email = new PMPro_Email_Template_Checkout_Free( $user, $order );
+					break;
+					case 'checkout_paid':
+					$email = new PMPro_Email_Template_Checkout_Paid( $user, $order );
+					break;
+				}
 			} else {
-				$confirmation_message = '';
-			}
-			
-			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership confirmation for %s", 'paid-memberships-pro' ), get_option("blogname"));	
-			
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $user->display_name,
-								'name' => $user->display_name,
-								'display_name' => $user->display_name,
-								'user_login' => $user->user_login,
-								'sitename' => get_option('blogname'),
-								'siteemail' => get_option('pmpro_from_email'),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'membership_level_confirmation_message' => wpautop( $confirmation_message ),
-								'membership_cost' => pmpro_getLevelCost($membership_level),								
-								'login_link' => pmpro_login_url(),
-								'login_url' => pmpro_login_url(),
-								'user_email' => $user->user_email,	
-								'levels_url' => pmpro_url( 'levels' )							
-							);						
-			
-			// Figure out which template to use.
-			if ( empty( $this->template ) ) {
 				if( ! empty( $order ) && ! pmpro_isLevelFree( $membership_level ) ) {
 					if( $order->gateway == "check" ) {
-						$this->template = "checkout_check";						
+						$email = new PMPro_Email_Template_Checkout_Check( $user, $order );
 					} else {
-						$this->template = "checkout_paid";
-					}										
+						$email = new PMPro_Email_Template_Checkout_Paid( $user, $order );
+					}
 				} elseif( pmpro_isLevelFree( $membership_level ) ) {
-					$this->template = "checkout_free";					
+					$email = new PMPro_Email_Template_Checkout_Free( $user, $order );
 				}
 			}
-			
-			$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
-			
-			// Gather data depending on template being used.
-			if( in_array( $this->template, array( 'checkout_check', 'checkout_paid' ) ) ) {
-				if( $this->template === 'checkout_check' ) {					
-					$this->data["instructions"] = wpautop( get_option( "pmpro_instructions" ) );
-				}
-				
-				$this->data["order_id"] = $order->code;
-				$this->data["order_total"] = $order->get_formatted_total();
-				$this->data["order_date"] = date_i18n( get_option( 'date_format' ), $order->getTimestamp() );
-				$this->data["billing_name"] = $order->billing->name;
-				$this->data["billing_street"] = $order->billing->street;
-				$this->data["billing_street2"] = $order->billing->street2;
-				$this->data["billing_city"] = $order->billing->city;
-				$this->data["billing_state"] = $order->billing->state;
-				$this->data["billing_zip"] = $order->billing->zip;
-				$this->data["billing_country"] = $order->billing->country;
-				$this->data["billing_phone"] = $order->billing->phone;
-				$this->data["cardtype"] = $order->cardtype;
-				$this->data["accountnumber"] = hideCardNumber($order->accountnumber);
-				$this->data["expirationmonth"] = $order->expirationmonth;
-				$this->data["expirationyear"] = $order->expirationyear;
-				$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																	 $order->billing->street,
-																	 $order->billing->street2,
-																	 $order->billing->city,
-																	 $order->billing->state,
-																	 $order->billing->zip,
-																	 $order->billing->country,
-																	 $order->billing->phone);
-				
-				if( $order->getDiscountCode() ) {
-					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
-				} else {
-					$this->data["discount_code"] = "";
-				}
-			} elseif( $this->template === 'checkout_free' ) {				
-				if( ! empty( $discount_code ) ) {
-					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";		
-				} else {
-					$this->data["discount_code"] = "";
-				}
+			//Bail if $email is null
+			if( $email == null ) {
+				return false;
 			}
-			
-			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
-			if( $enddate ) {
-				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
-			} else {
-				$this->data["membership_expiration"] = "";
-			}			
-			
-			return $this->sendEmail();
+			$email->send();
 		}
 		
 		/**
@@ -712,100 +599,37 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
-
-			$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
-			if ( ! empty( $confirmation_in_email ) ) {
-				$confirmation_message = $membership_level->confirmation;
+			$email = null;
+			if( !empty( $this->template ) ) {
+				switch( $this->template ) {
+					case 'checkout_check_admin':
+						$email = new PMPro_Email_Template_Checkout_Check_Admin( $user, $order );
+						break;
+					case 'checkout_free_admin':
+						$email = new PMPro_Email_Template_Checkout_Free_Admin( $user, $order );
+						break;
+					case 'checkout_paid':
+						$email = new PMPro_Email_Template_Checkout_Paid_Admin( $user, $order );
+						break;
+				}
 			} else {
-				$confirmation_message = '';
-			}
-			
-			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Member checkout for %s at %s", 'paid-memberships-pro' ), $membership_level->name, get_option("blogname"));	
-			
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $this->get_admin_name( $this->email ),
-								'name' => $user->display_name, 
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'membership_level_confirmation_message' => $confirmation_message,
-								'membership_cost' => pmpro_getLevelCost($membership_level),								
-								'login_link' => pmpro_login_url(),
-								'login_url' => pmpro_login_url(),
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,	
-								'levels_url' => pmpro_url( 'levels' )							
-							);						
-			
-			// Figure out which template to use.
-			if ( empty( $this->template ) ) {
 				if( ! empty( $order ) && ! pmpro_isLevelFree( $membership_level ) ) {
 					if( $order->gateway == "check" ) {
-						$this->template = "checkout_check_admin";						
+						$email = new PMPro_Email_Template_Checkout_Check_Admin( $user, $order );
 					} else {
-						$this->template = "checkout_paid_admin";
+						$email = new PMPro_Email_Template_Checkout_Paid_Admin( $user, $order );
 					}										
 				} elseif( pmpro_isLevelFree( $membership_level ) ) {
-					$this->template = "checkout_free_admin";					
+					$email = new PMPro_Email_Template_Checkout_Free_Admin( $user, $order );
 				}
 			}
-			
-			$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
-			
-			// Gather data depending on template being used.
-			if( in_array( $this->template, array( 'checkout_check_admin', 'checkout_paid_admin' ) ) ) {
-				$this->data["order_id"] = $order->code;
-				$this->data["order_total"] = $order->get_formatted_total();
-				$this->data["order_date"] = date_i18n(get_option('date_format'), $order->getTimestamp());
-				$this->data["billing_name"] = $order->billing->name;
-				$this->data["billing_street"] = $order->billing->street;
-				$this->data["billing_street2"] = $order->billing->street2;
-				$this->data["billing_city"] = $order->billing->city;
-				$this->data["billing_state"] = $order->billing->state;
-				$this->data["billing_zip"] = $order->billing->zip;
-				$this->data["billing_country"] = $order->billing->country;
-				$this->data["billing_phone"] = $order->billing->phone;
-				$this->data["cardtype"] = $order->cardtype;
-				$this->data["accountnumber"] = hideCardNumber($order->accountnumber);
-				$this->data["expirationmonth"] = $order->expirationmonth;
-				$this->data["expirationyear"] = $order->expirationyear;
-				$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																	 $order->billing->street,
-																	 $order->billing->street2,
-																	 $order->billing->city,
-																	 $order->billing->state,
-																	 $order->billing->zip,
-																	 $order->billing->country,
-																	 $order->billing->phone);
-				
-				if( $order->getDiscountCode() ) {
-					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
-				} else {
-					$this->data["discount_code"] = "";
-				}
-			} elseif( $this->template === 'checkout_free_admin' ) {				
-				if( ! empty( $discount_code ) ) {
-					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";		
-				} else {
-					$this->data["discount_code"] = "";
-				}
+			//Bail if $email is null
+			if( $email == null ) {
+				return false;
 			}
-			
-			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
-			if( $enddate ) {
-				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
-			} else {
-				$this->data["membership_expiration"] = "";
-			}
-			
-			return $this->sendEmail();
+			$email->send();
 		}
-		
+
 		/**
 		 * Send the member a confirmation email when updating their billing details
 		 *
@@ -825,50 +649,8 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
-			
-			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your billing information has been updated at %s", "paid-memberships-pro"), get_option("blogname"));
-
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $user->display_name,
-								'name' => $user->display_name,
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,																	
-								'billing_name' => $order->billing->name,
-								'billing_street' => $order->billing->street,
-								'billing_street2' => $order->billing->street2,
-								'billing_city' => $order->billing->city,
-								'billing_state' => $order->billing->state,
-								'billing_zip' => $order->billing->zip,
-								'billing_country' => $order->billing->country,
-								'billing_phone' => $order->billing->phone,
-								'cardtype' => $order->cardtype,
-								'accountnumber' => hideCardNumber($order->accountnumber),
-								'expirationmonth' => $order->expirationmonth,
-								'expirationyear' => $order->expirationyear,
-								'login_link' => pmpro_login_url(),
-								'login_url' => pmpro_login_url(),
-								'levels_url' => pmpro_url( 'levels' )							
-							);
-			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																 $order->billing->street,
-																 $order->billing->street2,
-																 $order->billing->city,
-																 $order->billing->state,
-																 $order->billing->zip,
-																 $order->billing->country,
-																 $order->billing->phone);
-
-			$this->template = apply_filters( "pmpro_email_template", "billing", $this );
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Billing( $user, $order );
+			$email->send();
 		}
 		
 		/**
@@ -890,50 +672,8 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
-			
-			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
-			
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $this->get_admin_name( $this->email ),
-								'name' => $user->display_name,
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,																	
-								'billing_name' => $order->billing->name,
-								'billing_street' => $order->billing->street,
-								'billing_street2' => $order->billing->street2,
-								'billing_city' => $order->billing->city,
-								'billing_state' => $order->billing->state,
-								'billing_zip' => $order->billing->zip,
-								'billing_country' => $order->billing->country,
-								'billing_phone' => $order->billing->phone,
-								'cardtype' => $order->cardtype,
-								'accountnumber' => hideCardNumber($order->accountnumber),
-								'expirationmonth' => $order->expirationmonth,
-								'expirationyear' => $order->expirationyear,
-								'login_link' => pmpro_login_url(),
-								'login_url' => pmpro_login_url(),
-								'levels_url' => pmpro_url( 'levels' )							
-							);
-			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																 $order->billing->street,
-																 $order->billing->street2,
-																 $order->billing->city,
-																 $order->billing->state,
-																 $order->billing->zip,
-																 $order->billing->country,
-																 $order->billing->phone);
-
-			$this->template = apply_filters( "pmpro_email_template", "billing_admin", $this );
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Billing_Admin( $user, $order );
+			$email->send();
 		}
 		
 		/**
@@ -946,62 +686,14 @@
 			global $current_user;
 			if(!$user)
 				$user = $current_user;
-			
+
 			if(!$user || !$order)
 				return false;
 
-			//get Level from constructor
-			$membership_level = new PMPro_Membership_Level( $order->membership_id );
+			$email = new PMPro_Email_Template_Billing_Failure( $user, $order );
+			$email->send();
+		}
 
-			// Try to get the subscription ID.
-			$subscription = $order->get_subscription();
-			$subscription_id = ! empty( $subscription ) ? $subscription->get_id() : null;
-
-			$this->email = $user->user_email;
-			$this->subject = sprintf( __("Membership payment for level %s failed at %s", "paid-memberships-pro"),
-				$membership_level->name, get_option("blogname") );
-
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $user->display_name,
-								'name' => $user->display_name,
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,									
-								'billing_name' => $order->billing->name,
-								'billing_street' => $order->billing->street,
-								'billing_street2' => $order->billing->street2,
-								'billing_city' => $order->billing->city,
-								'billing_state' => $order->billing->state,
-								'billing_zip' => $order->billing->zip,
-								'billing_country' => $order->billing->country,
-								'billing_phone' => $order->billing->phone,
-								'cardtype' => $order->cardtype,
-								'accountnumber' => hideCardNumber($order->accountnumber),
-								'expirationmonth' => $order->expirationmonth,
-								'expirationyear' => $order->expirationyear,
-								'login_link' => pmpro_login_url( pmpro_url( 'billing', empty( $subscription_id ) ? '' : '?subscription_id=' . $subscription_id ) ),
-								'login_url' => pmpro_login_url( pmpro_url( 'billing', empty( $subscription_id ) ? '' : '?subscription_id=' . $subscription_id ) ),
-								'levels_url' => pmpro_url( 'levels' )
-							);
-			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																 $order->billing->street,
-																 $order->billing->street2,
-																 $order->billing->city,
-																 $order->billing->state,
-																 $order->billing->zip,
-																 $order->billing->country,
-																 $order->billing->phone);
-
-			$this->template = apply_filters("pmpro_email_template", "billing_failure", $this);
-
-			return $this->sendEmail();
-		}				
-		
 		/**
 		 * Send the admin an email when their recurring payment has failed.
 		 *
@@ -1011,52 +703,13 @@
 		function sendBillingFailureAdminEmail($email, $order = NULL) {
 			if(!$order)			
 				return false;
-				
-			$user = get_userdata($order->user_id);
-			$membership_level = new PMPro_Membership_Level( $order->membership_id );
-			
-			$this->email = $email;
-			$this->subject = sprintf(__("Membership payment failed For %s at %s", "paid-memberships-pro"), $user->display_name, get_option("blogname"));
-			
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $this->get_admin_name( $email ),
-								'name' => 'Admin', 
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,									
-								'billing_name' => $order->billing->name,
-								'billing_street' => $order->billing->street,
-								'billing_street2' => $order->billing->street2,
-								'billing_city' => $order->billing->city,
-								'billing_state' => $order->billing->state,
-								'billing_zip' => $order->billing->zip,
-								'billing_country' => $order->billing->country,
-								'billing_phone' => $order->billing->phone,
-								'cardtype' => $order->cardtype,
-								'accountnumber' => hideCardNumber($order->accountnumber),
-								'expirationmonth' => $order->expirationmonth,
-								'expirationyear' => $order->expirationyear,
-								'login_link' => pmpro_login_url( get_edit_user_link( $user->ID ) ),
-								'login_url' => pmpro_login_url( get_edit_user_link( $user->ID ) ),
-								'levels_url' => pmpro_url( 'levels' ),
-							);
-			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																 $order->billing->street,
-																 $order->billing->street2,
-																 $order->billing->city,
-																 $order->billing->state,
-																 $order->billing->zip,
-																 $order->billing->country,
-																 $order->billing->phone);
 
-			$this->template = apply_filters("pmpro_email_template", "billing_failure_admin", $this);
+			$user = get_userdata( $order->user_id );
+			if(!$user)
+				return false;
 
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Billing_Failure_Admin( $user, $order );
+			$email->send();
 		}
 
 		/**
@@ -1081,51 +734,8 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
-			
-			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Credit card on file expiring soon at %s", "paid-memberships-pro"), get_option("blogname"));
-			
-			$this->data = array(
-								'subject' => $this->subject,
-								'header_name' => $user->display_name,
-								'name' => $user->display_name,
-								'user_login' => $user->user_login,
-								'sitename' => get_option( 'blogname' ),
-								'siteemail' => get_option( 'pmpro_from_email' ),
-								'membership_id' => $membership_level->id,
-								'membership_level_name' => $membership_level->name,
-								'display_name' => $user->display_name,
-								'user_email' => $user->user_email,									
-								'billing_name' => $order->billing->name,
-								'billing_street' => $order->billing->street,
-								'billing_street2' => $order->billing->street2,
-								'billing_city' => $order->billing->city,
-								'billing_state' => $order->billing->state,
-								'billing_zip' => $order->billing->zip,
-								'billing_country' => $order->billing->country,
-								'billing_phone' => $order->billing->phone,
-								'cardtype' => $order->cardtype,
-								'accountnumber' => hideCardNumber($order->accountnumber),
-								'expirationmonth' => $order->expirationmonth,
-								'expirationyear' => $order->expirationyear,
-								'login_link' => pmpro_login_url( pmpro_url( 'billing' ) ),
-								'login_url' => pmpro_login_url( pmpro_url( 'billing' ) ),
-								'levels_url' => pmpro_url( 'levels' )							
-
-							);
-			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
-																 $order->billing->street,
-																 $order->billing->street2,
-																 $order->billing->city,
-																 $order->billing->state,
-																 $order->billing->zip,
-																 $order->billing->country,
-																 $order->billing->phone);
-
-			$this->template = apply_filters("pmpro_email_template", "credit_card_expiring", $this);
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Credit_Card_Expiring( $user, $order );
+			return $email->send();
 		}
 		
 		/**
