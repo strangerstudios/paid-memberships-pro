@@ -142,7 +142,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	public function get_email_template_variables() {
 		global $wpdb;
 		// If we don't have a level ID, query the user's most recently expired level from the database.
-		if ( empty( $this->$membership_id ) ) {
+		if ( empty( $this->membership_id ) ) {
 			$membership_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT membership_id FROM $wpdb->pmpro_memberships_users
@@ -150,7 +150,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 					AND status = 'expired'
 					ORDER BY enddate DESC
 					LIMIT 1",
-					$user->ID
+					$this->user->ID
 				)
 			);
 
@@ -164,11 +164,11 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 		$membership_level = pmpro_getLevel( $membership_id );
 
 		return array(
-			"subject" => $this->subject,
-			"name" => $user->display_name,
-			"user_login" => $user->user_login,
-			"display_name" => $user->display_name,
-			"user_email" => $user->user_email,
+			"subject" => $this->get_default_subject(),
+			"name" => $this->user->display_name,
+			"user_login" => $this->user->user_login,
+			"display_name" => $this->user->display_name,
+			"user_email" => $this->user->user_email,
 			"levels_link" => pmpro_url("levels"),
 			"membership_id" => ( ! empty( $membership_level ) && ! empty( $membership_level->id ) ) ? $membership_level->id : 0,
 			"membership_level_name" => ( ! empty( $membership_level ) && ! empty( $membership_level->name ) ) ? $membership_level->name : '[' . esc_html( 'deleted', 'paid-memberships-pro' ) . ']',
