@@ -57,6 +57,25 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-a
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change-admin.php' ); // change email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-refund.php' ); // refund email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-refund-admin.php' ); // refund email admin template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action.php' ); // expiration email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action-admin.php' ); // expiration email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-receipt.php' ); // invoice email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-reminder.php' ); // recurring payment email reminder template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expiring.php' ); // expiring email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expired.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-credit-card-expiring.php' ); // credit card expiring email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-check.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-check-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-free.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-free-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-paid.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing.php' ); // update billing email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-admin.php' ); // update billing admin email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure.php' ); // billing failure email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure-admin.php' ); // billing failure email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php' ); //cancel auto renewals email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php' ); //cancel auto renewals admin email template
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
