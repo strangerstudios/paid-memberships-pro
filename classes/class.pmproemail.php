@@ -916,36 +916,14 @@
 			
 			if(!$user)
 				return false;
-			
+
 			if ( empty( $membership_id ) ) {
-				$membership_level = pmpro_getMembershipLevelForUser($user->ID);
-			} else {
-				$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $membership_id);
+				$membership_level = pmpro_getMembershipLevelForUser( $user->ID );
+				$membership_id = $membership_level->id;
 			}
 						
-			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership at %s will end soon", "paid-memberships-pro"), get_option("blogname"));
-
-			$this->data = array(
-				'subject' => $this->subject,
-				'header_name' => $user->display_name,
-				'name' => $user->display_name,
-				'user_login' => $user->user_login, 
-				'sitename' => get_option('blogname'), 
-				'membership_id' => $membership_level->id, 
-				'membership_level_name' => $membership_level->name, 
-				'siteemail' => get_option('pmpro_from_email'), 
-				'login_link' => pmpro_login_url(), 
-				'login_url' => pmpro_login_url(), 
-				'enddate' => date_i18n(get_option('date_format'), $membership_level->enddate), 
-				'display_name' => $user->display_name, 
-				'user_email' => $user->user_email,
-				'levels_url' => pmpro_url( 'levels' )
-			);
-
-			$this->template = apply_filters("pmpro_email_template", "membership_expiring", $this);
-
-			return $this->sendEmail();
+			$email = new PMPro_Email_Template_Membership_Expiring( $user, $membership_id );
+			$email->send();
 		}
 		
 		/**
