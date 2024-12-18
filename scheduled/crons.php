@@ -340,8 +340,14 @@ function pmpro_cron_recurring_payment_reminders() {
 			 * @param       MembershipOrder $lastorder - Deprecated. Now passing null.
 			 */
 			$send_emails = apply_filters_deprecated( 'pmprorm_send_reminder_to_user', array( $send_email, $user, null ), '3.2' );
+ 
 
-			if ( $send_emails ) {
+			if ( $send_emails && 'membership_recurring' == $template ) {
+				// This is the default email. Use the email template class.
+				$pmproemail = new PMPro_Email_Template_Payment_Reminder( $subscription_obj );
+				$pmproemail->send();
+			} else if ( $send_emails ) {
+				// This is not the default email. Build the email from scratch.
 				// Get the level info.
 				$membership_level = pmpro_getLevel( $subscription_obj->get_membership_level_id() );
 
