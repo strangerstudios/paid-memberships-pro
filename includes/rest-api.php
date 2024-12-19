@@ -1195,7 +1195,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/me' => true,
 				'/pmpro/v1/recent_memberships' => 'pmpro_edit_members',
 				'/pmpro/v1/recent_orders' => 'pmpro_orders',
-				'/pmpro/v1/post_restrictions' => 'pmpro_edit_members',
+				'/pmpro/v1/post_restrictions' => 'edit_others_posts',
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );
 			
@@ -1209,8 +1209,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					// No permission for this method, default to false.
 					$permission_to_check = false;
 				} else {
-					// Same permission for all methods, use it.
-					$permission_to_check = $route_caps[$route];
+					// If it's a boolean return it if it's a string ask if user can
+					$permission_to_check = $route_caps[$route] || current_user_can( $route_caps[$route] );
 				}
 
 				// Check the permission.
