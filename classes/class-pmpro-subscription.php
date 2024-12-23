@@ -781,24 +781,7 @@ class PMPro_Subscription {
 			$format = get_option( 'date_format' );
 		}
 
-		// Get date in WP local timezone.
-		if ( $local_time ) {
-			if( 'U' === $format ){
-				// When formatting using the epoch, the date must already consider the timezone offset.
-				// Then, first apply a simple format to add the timezone.
-				$date = get_date_from_gmt( $date );
-			}
-
-			return get_date_from_gmt( $date, $format );
-		}
-
-		// Allow timestamps.
-		if ( ! is_numeric( $date ) ) {
-			$date = strtotime( $date );
-		}
-
-		// Get date in GMT timezone.
-		return gmdate( $format, $date );
+		return wp_date( $format, strtotime( $date ), $local_time ? null : new DateTimezone( 'UTC' ) );
 	}
 
 	/**
