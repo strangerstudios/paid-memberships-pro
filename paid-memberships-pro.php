@@ -30,6 +30,7 @@ require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // s
 require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP session vars
 
 require_once( PMPRO_DIR . '/includes/localization.php' );           // localization functions
+require_once( PMPRO_DIR . '/includes/lib/glotpress-helper.php' );   // handles translation updates logic from our own server.
 require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        // parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
 require_once( PMPRO_DIR . '/includes/functions.php' );              // misc functions used by the plugin
 require_once( PMPRO_DIR . '/includes/updates.php' );                // database and other updates
