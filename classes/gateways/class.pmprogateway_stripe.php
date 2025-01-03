@@ -1611,6 +1611,7 @@ class PMProGateway_stripe extends PMProGateway {
 			if (
 				empty( $level->trial_limit ) && // Check if there is a trial period.
 				$filtered_trial_period_days === $unfiltered_trial_period_days && // Check if the trial period is the same as the filtered trial period.
+				empty( $level->profile_start_date ) && // Check if the profile start date set directly on the level is empty.
 				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
 				) {
 				// We can combine the initial payment and the recurring payment.
