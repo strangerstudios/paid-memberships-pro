@@ -1022,6 +1022,30 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				);
 			}
 
+			// If the order is in token status and the gateway allows verifying completion, show the action.
+			// Checking for the status first to avoid loading the gateway object unnecessarily.
+			if ( 'token' === $item->status && pmpro_can_check_token_order_for_completion( $item->id ) ) {
+				$actions['check_token_order'] = sprintf(
+					'<a title="%1$s" href="%2$s">%3$s</a>',
+					esc_attr__( 'Recheck', 'paid-memberships-pro' ),
+					esc_url(
+						wp_nonce_url(
+							add_query_arg(
+								[
+									'page'   => 'pmpro-orders',
+									'action' => 'check_token_order',
+									'token_order' => $item->id,
+								],
+								admin_url( 'admin.php' )
+							),
+							'check_token_order',
+							'pmpro_orders_nonce'
+						)
+					),
+					esc_html__( 'Recheck', 'paid-memberships-pro' )
+				);
+			}
+
 			/**
 			 * Filter the extra actions for this user on this order.
 			 *
