@@ -3064,6 +3064,12 @@ function pmpro_formatAddress( $name, $address1, $address2, $city, $state, $zip, 
 		}
 
 		$address .= "\n";
+	} elseif ( ! empty( $city ) ) {
+		$address .= $city;
+		if ( ! empty( $zip ) ) {
+			$address .= ' ' . $zip;
+		}
+		$address .= "\n";
 	}
 
 	if ( ! empty( $country ) ) {
