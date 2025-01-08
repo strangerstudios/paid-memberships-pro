@@ -2607,16 +2607,6 @@ function pmpro_are_any_visible_levels() {
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
 
-	static $function_cache = array();
-
-	// Check if we have a cached value to use.
-	$cache_key = md5( serialize( array( $level_id, $discount_code ) ) );
-	if ( array_key_exists( $cache_key, $function_cache ) ) {
-		// Set the global and return the cached value.
-		$pmpro_level = $function_cache[ $cache_key ];
-		return $pmpro_level;
-	}
-
 	// Reset $pmpro_level global.
 	$pmpro_level = null;
 
@@ -2702,11 +2692,6 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
-
-	// Cache the result for future use if this is a "top level" call to this function.
-	if ( ! doing_filter( 'pmpro_checkout_level' ) ) {
-		$function_cache[ $cache_key ] = $pmpro_level;
-	}
 
 	return $pmpro_level;
 }
