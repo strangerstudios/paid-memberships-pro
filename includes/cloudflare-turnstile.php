@@ -173,7 +173,7 @@ function pmpro_cloudflare_turnstile_get_error_message() {
 
 /**
  * Clear the CloudFlare Turnstile session variable after checkout.
- * @since TBD
+ * @since 3.3.3
  */
 function pmpro_after_checkout_reset_cloudflare_turnstile() {
     pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_validated' );

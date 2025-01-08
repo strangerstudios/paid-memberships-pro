@@ -4975,7 +4975,7 @@ function pmpro_method_defined_in_class( $object, $method_name ) {
 /**
  * Check if we can check a token order for completion.
  *
- * @since TBD
+ * @since 3.3.3
  *
  * @param int $order_id The ID of the order to check.
  * @return bool True if we can check the order for completion, false otherwise.
@@ -5006,7 +5006,7 @@ function pmpro_can_check_token_order_for_completion( $order_id ) {
 /**
  * Check a token order for completion.
  *
- * @since TBD
+ * @since 3.3.3
  *
  * @param int $order_id The ID of the order to check.
  * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
