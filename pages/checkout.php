@@ -36,7 +36,16 @@ if ( empty( $default_gateway ) ) {
 
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 
-	<?php do_action( 'pmpro_checkout_before_form' ); ?>
+	<?php
+	/**
+	 * Fires before the checkout form.
+	 *
+	 * @since TBD Added $pmpro_level as a parameter.
+	 *
+	 * @param object $pmpro_level The PMPro Level object being purchased.
+	 */
+	do_action( 'pmpro_checkout_before_form', $pmpro_level );
+	?>
 
 	<section id="pmpro_level-<?php echo intval( $pmpro_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_checkout_gateway_class, 'pmpro_level-' . $pmpro_level->id ) ); ?>">
 
@@ -148,7 +157,16 @@ if ( empty( $default_gateway ) ) {
 							?>
 						</div> <!-- end #pmpro_level_cost -->
 
-						<?php do_action( 'pmpro_checkout_after_level_cost' ); ?>
+						<?php
+						/**
+						 * Fires after the level cost text is shown.
+						 *
+						 * @since TBD Added $pmpro_level as a parameter.
+						 *
+						 * @param object $pmpro_level The PMPro Level object being purchased.
+						 */
+						do_action( 'pmpro_checkout_after_level_cost', $pmpro_level );
+						?>
 
 					</div> <!-- end pmpro_card_content -->
 					<?php if ( $pmpro_show_discount_code ) { ?>
@@ -174,7 +192,16 @@ if ( empty( $default_gateway ) ) {
 				} // if ( $include_pricing_fields )
 			?>
 
-			<?php do_action( 'pmpro_checkout_after_pricing_fields' ); ?>
+			<?php
+			/**
+			 * Fires after the pricing fields are shown.
+			 *
+			 * @since TBD Added $pmpro_level as a parameter.
+			 *
+			 * @param object $pmpro_level The PMPro Level object being purchased.
+			 */
+			do_action( 'pmpro_checkout_after_pricing_fields', $pmpro_level );
+			?>
 
 			<?php
 			// Define whether we should show the Account Information box.
@@ -323,7 +350,16 @@ if ( empty( $default_gateway ) ) {
 
 			<?php do_action( 'pmpro_checkout_after_user_fields' ); ?>
 
-			<?php do_action( 'pmpro_checkout_boxes' ); ?>
+			<?php
+			/**
+			 * Add additional checkout boxes to the checkout page.
+			 *
+			 * @since TBD Added $pmpro_level as a parameter.
+			 *
+			 * @param object $pmpro_level The PMPro Level object being purchased.
+			 */
+			do_action( 'pmpro_checkout_boxes', $pmpro_level );
+			?>
 
 			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
@@ -503,8 +539,23 @@ if ( empty( $default_gateway ) ) {
 			?>
 
 			<?php
-      do_action( 'pmpro_checkout_after_payment_information_fields' );
-			do_action( 'pmpro_checkout_before_submit_button' );
+			/**
+			 * Fires after the payment information fields on the checkout page.
+			 *
+			 * @since TBD Added $pmpro_level as a parameter.
+			 *
+			 * @param object $pmpro_level The PMPro Level object being purchased.
+			 */
+      		do_action( 'pmpro_checkout_after_payment_information_fields', $pmpro_level );
+
+			/**
+			 * Fires before the submit button on the checkout page.
+			 *
+			 * @since TBD Added $pmpro_level as a parameter.
+			 *
+			 * @param object $pmpro_level The PMPro Level object being purchased.
+			 */
+			do_action( 'pmpro_checkout_before_submit_button', $pmpro_level );
 
 			// Add nonce.
 			wp_nonce_field( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' );
@@ -560,7 +611,16 @@ if ( empty( $default_gateway ) ) {
 
 		</form> <!-- end pmpro_form -->
 
-		<?php do_action( 'pmpro_checkout_after_form' ); ?>
+		<?php
+		/**
+		 * Fires after the submit button on the checkout page.
+		 *
+		 * @since TBD Added $pmpro_level as a parameter.
+		 *
+		 * @param object $pmpro_level The PMPro Level object being purchased.
+		 */
+		do_action( 'pmpro_checkout_after_form', $pmpro_level );
+		?>
 
 	</section> <!-- end pmpro_level-ID -->
 
