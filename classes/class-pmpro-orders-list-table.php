@@ -1027,7 +1027,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			if ( 'token' === $item->status && pmpro_can_check_token_order_for_completion( $item->id ) ) {
 				$actions['check_token_order'] = sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Recheck', 'paid-memberships-pro' ),
+					esc_attr__( 'Recheck Payment', 'paid-memberships-pro' ),
 					esc_url(
 						wp_nonce_url(
 							add_query_arg(
