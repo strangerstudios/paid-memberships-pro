@@ -1155,30 +1155,15 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$r .= esc_html( $item->cardtype ) . ': x' . esc_html( last4( $item->accountnumber ) ) . '<br />';
 		}
 
-		if ( ! empty( $item->billing->name ) ) {
-			$r .= esc_html( $item->billing->name ) . '<br />';
-		}
-
-		if ( ! empty( $item->billing->street ) ) {
-			$r .= esc_html( $item->billing->street ) . '<br />';
-		}
-
-		if ( ! empty( $item->billing->street2 ) ) {
-			$r .= esc_html( $item->billing->street2 ) . '<br />';
-		}
-
-		if ( $item->billing->city && $item->billing->state ) {
-			$r .= esc_html( $item->billing->city ) . ', ';
-			$r .= esc_html( $item->billing->state ) . ' ';
-			$r .= esc_html( $item->billing->zip ) . ' ';
-			if ( ! empty( $item->billing->country ) ) {
-				$r .= esc_html( $item->billing->country );
-			}
-		}
-
-		if ( ! empty( $item->billing->phone ) ) {
-			$r .= '<br />' . esc_html( formatPhone( $item->billing->phone ) );
-		}
+		$name = empty( $item->billing->name ) ? '' : $item->billing->name;
+		$street = empty( $item->billing->street ) ? '' : $item->billing->street;
+		$street2 = empty( $item->billing->street2 ) ? '' : $item->billing->street2;
+		$city = empty( $item->billing->city ) ? '' : $item->billing->city;
+		$state = empty( $item->billing->state ) ? '' : $item->billing->state;
+		$zip = empty( $item->billing->zip ) ? '' : $item->billing->zip;
+		$country = empty( $item->billing->country ) ? '' : $item->billing->country;
+		$phone = empty( $item->billing->phone ) ? '' : $item->billing->phone;
+		$r .= pmpro_formatAddress( $name, $street, $street2, $city, $state, $zip, $country, $phone );
 
 		// If this column is completely empty, set $r to a dash.
 		if ( empty( $r ) ) {
