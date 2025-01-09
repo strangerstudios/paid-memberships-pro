@@ -52,6 +52,7 @@ class PMProGateway_paypalrest extends PMProGateway {
 		$supports = array(
 			'subscription_sync' => true,
 			'payment_method_updates' => false,
+			'check_token_orders' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -679,6 +680,87 @@ class PMProGateway_paypalrest extends PMProGateway {
 		$order->saveOrder();
 		return true;
 
+	}
+
+	/**
+	 * Check whether the payment for a token order has been completed. If so, process the order.
+	 *
+	 * @param MemberOrder $order The order object to check.
+	 * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+	 */
+	function check_token_order( $order ) {
+		// If this is not a token order, bail.
+		if ( 'token' !== $order->status ) {
+			return __( 'This is not a token order.', 'paid-memberships-pro' );
+		}
+
+		// Check if we have a PayPal order ID in order meta. If so, this is a one-time payment.
+		$paypal_order_id = get_pmpro_membership_order_meta( $order->id, 'paypalrest_order_id', true );
+
+		// If we don't have a PayPal order ID or a subscription transaction ID, we can't link this order to a checkout. Bail.
+		if ( empty( $paypal_order_id ) && empty( $order->subscription_transaction_id ) ) {
+			return __( 'No PayPal order ID or subscription transaction ID found.', 'paid-memberships-pro' );
+		}
+
+		// Get information about the checkout from PayPal.
+		if ( ! empty( $paypal_order_id ) ) {
+			// Processing a one-time payment.
+			// Get the order from PayPal.
+			$paypal_order = self::send_request( 'GET', 'v2/checkout/orders/' . $paypal_order_id, array(), $order->gateway_environment );
+			if ( is_string( $paypal_order ) ) {
+				// An error string was returned. Record it.
+				return __( 'Could not get order information.', 'paid-memberships-pro' ) . ' ' . $paypal_order;
+			}
+
+			// If we have a PayPal order that still needs to be captured, do so.
+			if ( 'APPROVED' === $paypal_order->status ) {
+				$response = self::send_request( 'POST', 'v2/checkout/orders/' . $paypal_order->id . '/capture', array(), $order->gateway_environment );
+				if ( is_string( $response ) ) {
+					// An error string was returned. Record it.
+					return __( 'Could not capture payment.', 'paid-memberships-pro' ) . ' ' . $response;
+				} else {
+					// The payment was captured successfully. Update $resource with the new data.
+					$paypal_order = $response;
+				}
+			}
+
+			// If the order is not in the COMPLETED status, bail.
+			if ( 'COMPLETED' !== $paypal_order->status ) {
+				return __( 'Order is not yet completed.', 'paid-memberships-pro' );
+			}
+
+			// Set the payment transaction ID.
+			$order->payment_transaction_id = $paypal_order->purchase_units[0]->payments->captures[0]->id;
+		} else {
+			// Processing a subscription payment.
+			// Get the subscription from PayPal.
+			$subscription = self::send_request(
+				'GET',
+				'v1/billing/subscriptions/' . $order->subscription_transaction_id,
+				array(),
+				$order->gateway_environment
+			);
+			if ( is_string( $subscription ) ) {
+				// Couldn't get the subscription. Bail.
+				return __( 'Could not get subscription information.', 'paid-memberships-pro' ) . ' ' . $subscription;
+			}
+
+			// If the subscription isn't active, bail.
+			if ( 'ACTIVE' !== $subscription->status ) {
+				return __( 'Subscription is not yet active.', 'paid-memberships-pro' );
+			}
+	
+			// The subscription is active. Get the payment transaction ID if there was an initial payment and continue completing the checkout.
+			$subscription_transactions = self::send_request( 'GET', 'v1/billing/subscriptions/' . $subscription->id . '/transactions/?' . http_build_query( array( 'start_time' => date( 'c', strtotime( $subscription->create_time ) - 3600 ), 'end_time' => date( 'c', strtotime( $subscription->create_time ) + 3600 ) ) ), array(), $order->gateway_environment );
+			if ( ! is_string( $subscription_transactions ) && ! empty( $subscription_transactions->transactions ) ) {
+				// There is an initial payment. Update the order with the payment transaction ID.
+				$order->payment_transaction_id = $subscription_transactions->transactions[0]->id;
+			}
+		}
+
+		// Complete the checkout.
+		pmpro_pull_checkout_data_from_order( $order );
+ 		return pmpro_complete_async_checkout( $order );
 	}
 
 	/**

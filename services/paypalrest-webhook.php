@@ -95,7 +95,7 @@ if ( ! $validated ) {
 
 			// If we have a PayPal order that still needs to be captured, do so.
 			if ( ! empty( $order ) && 'APPROVED' === $resource->status ) {
-				$response = PMProGateway_paypalrest::send_request( 'POST', 'v2/checkout/orders/' . $resource->id . '/capture', $gateway_environment );
+				$response = PMProGateway_paypalrest::send_request( 'POST', 'v2/checkout/orders/' . $resource->id . '/capture', array(), $gateway_environment );
 				if ( is_string( $response ) ) {
 					// An error string was returned. Record it.
 					$logstr .= 'Error capturing payment for order #' . $order->id . ': ' . $response;
@@ -143,14 +143,16 @@ if ( ! $validated ) {
 				$logstr .= 'Token order not found.';
 			} else {
 				// The order was found. Get the payment transaction ID if there was an initial payment. Search between an hour before and after the subscription creation time.
-				$subscription_transsactions = PMProGateway_paypalrest::send_request( 'GET', 'v1/billing/subscriptions/' . $resource->id . '/transactions/?' . http_build_query( array( 'start_time' => date( 'c', strtotime( $resource->create_time ) - 3600 ), 'end_time' => date( 'c', strtotime( $resource->create_time ) + 3600 ) ) ), array(), $gateway_environment );
-				if ( is_string( $subscription_transsactions ) ) {
+				$subscription_transactions = PMProGateway_paypalrest::send_request( 'GET', 'v1/billing/subscriptions/' . $resource->id . '/transactions/?' . http_build_query( array( 'start_time' => date( 'c', strtotime( $resource->create_time ) - 3600 ), 'end_time' => date( 'c', strtotime( $resource->create_time ) + 3600 ) ) ), array(), $gateway_environment );
+				if ( is_string( $subscription_transactions ) ) {
 					// An error string was returned. Record it.
-					$logstr .= 'Error getting subscription transactions for subscription ID ' . $resource->id . ': ' . $subscription_transsactions;
+					$logstr .= 'Error getting subscription transactions for subscription ID ' . $resource->id . ': ' . $subscription_transactions;
 					break;
-				} if ( ! empty( $subscription_transsactions->transactions ) ) {
+				}
+
+				if ( ! empty( $subscription_transactions->transactions ) ) {
 					// There is an initial payment. Update the order with the payment transaction ID.
-					$order->payment_transaction_id = $subscription_transsactions->transactions[0]->id;
+					$order->payment_transaction_id = $subscription_transactions->transactions[0]->id;
 					$order->saveOrder();
 				}
 
