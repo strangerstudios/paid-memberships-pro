@@ -206,4 +206,14 @@
 			// Update the subscription.
 			$subscription->set( $update_array );
 		}
+
+		/**
+		 * Check whether the payment for a token order has been completed. If so, process the order.
+		 *
+		 * @param MemberOrder $order The order object to check.
+		 * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+		 */
+		function check_token_order( $order ) {
+			return __( 'Checking token orders is not supported for this gateway.', 'paid-memberships-pro' );
+		}
 	}

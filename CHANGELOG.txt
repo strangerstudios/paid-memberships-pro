@@ -1,4 +1,20 @@
 == Changelog ==
+= 3.3.3 - 2025-01-08 =
+* ENHANCEMENT: Added a "Recheck Payment" option for token orders on the Edit Order page to allow admins to check whether the payment has been completed and, if so, complete the corresponding checkout. This currently only works for Stripe Checkout orders. #3226 (@dparker1005)
+* ENHANCEMENT: Added the Bangladeshi Taka to the list of supported currencies. #3239 (@kimwhite)
+* ENHANCEMENT: Updated the `fr_FR` language files to include translations from the base `fr` language files. #3231 (@andrewlimaza)
+* ENHANCEMENT: Updated the `es_ES` language files to include translations from the base `es` language files. #3216 (@MaximilianoRicoTabo)
+* ENHANCEMENT: Added an icon for the Abandoned Cart Recovery Add On and the upcoming Testimonials Add On. (@kimcoleman)
+* ENHANCEMENT: Simplified the `composer.json` file to remove unnecessary dependencies. #3237 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Updated the `post_restrictions` API endpoint to check whether the user has access to edit the specific post. #3243 (@dparker1005, @MaximilianoRicoTabo)
+* BUG FIX: Fixed an issue where checkout might fail for new users when using PayPal Express. #3225 (@JarrydLong, @dparker1005)
+* BUG FIX: Fixed an issue where CloudFlare Turnstile validation would fail for PayPal Express checkouts. #3232 (@andrewlimaza)
+* BUG FIX: Fixed an issue where some REST API endpoints would mistakenly require the `pmpro_edit_members` capability. #3243 (@dparker1005, @MaximilianoRicoTabo)
+* BUG FIX: Fixed an issue where Stripe Checkout would always overwrite the tax value set on an order even if tax isn't being calculated by Stripe Checkout. #3242 (@dparker1005)
+* BUG FIX: Fixed an issue where formatted billing addresses without a state omitted the city and postal code. #3240 (@dparker1005)
+* BUG FIX: Fixed a broken link to gateway settings documentation on the Payment Gateway settings page. #3244 (@kimcoleman)
+* BUG FIX: Fixed a PHP notice when editing a post in Elementor that did not have a "require membership" setting saved. #3235 (@dparker1005)
+
 = 3.3.2 - 2024-11-21 =
 * ENHANCEMENT: Updated the "Checkout Spam Protection" security setting to also check for spam when trying to apply invalid discount codes. #3208 (@ideadude, @dparker1005)
 * ENHANCEMENT: Added a new filter `pmpro_registered_reports` for registering reports. #3200 (@mircobabini)

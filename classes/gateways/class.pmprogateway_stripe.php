@@ -78,7 +78,8 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function supports( $feature ) {
 		$supports = array(
 			'subscription_sync' => true,
-			'payment_method_updates' => 'individual'
+			'payment_method_updates' => 'individual',
+			'check_token_orders' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -3884,6 +3885,94 @@ class PMProGateway_stripe extends PMProGateway {
 		$order->saveOrder();
 
 		return $success;
+	}
+
+	/**
+	 * Check whether the payment for a token order has been completed. If so, process the order.
+	 *
+	 * @param MemberOrder $order The order object to check.
+	 * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+	 */
+	function check_token_order( $order ) {
+		// If this is not a token order, bail.
+		if ( 'token' !== $order->status ) {
+			return __( 'This is not a token order.', 'paid-memberships-pro' );
+		}
+
+		// Get the checkout session ID for this order.
+		$checkout_session_id = get_pmpro_membership_order_meta( $order->id, 'stripe_checkout_session_id', true );
+		if ( empty( $checkout_session_id ) ) {
+			return __( 'No checkout session ID found.', 'paid-memberships-pro' );
+		}
+
+		// Get the checkout session from Stripe.
+		try {
+			$checkout_session = Stripe_Checkout_Session::retrieve( $checkout_session_id );
+		} catch ( Stripe\Error\Base $e ) {
+			return __( 'Could not retrieve checkout session: ', 'paid-memberships-pro' ) . $e->getMessage();
+		} catch ( \Throwable $e ) {
+			return __( 'Could not retrieve checkout session: ', 'paid-memberships-pro' ) . $e->getMessage();
+		} catch ( \Exception $e ) {
+			return __( 'Could not retrieve checkout session: ', 'paid-memberships-pro' ) . $e->getMessage();
+		}
+
+		// If the checkout session is pending, this is a delayed notification payment method. We don't handle this yet. Bail.
+		if ( 'pending' === $checkout_session->payment_status ) {
+			return __( 'Payment is still pending.', 'paid-memberships-pro' );
+		}
+
+		// If the checkout session is not paid, bail.
+		if ( 'paid' !== $checkout_session->payment_status ) {
+			return __( 'Checkout session has not yet been completed.', 'paid-memberships-pro' );
+		}
+
+		// The order has been paid. Get the payment and subscription IDs.
+		if ( $checkout_session->mode === 'payment' ) {
+			// User purchased a one-time payment level. Assign the charge ID to the order.
+			try {
+				$payment_intent_args = array(
+					'id'     => $checkout_session->payment_intent,
+					'expand' => array(
+						'payment_method',
+						'latest_charge',
+					),
+				);
+				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+				$order->payment_transaction_id = $payment_intent->latest_charge->id;
+			} catch ( \Stripe\Error\Base $e ) {
+				// Could not get payment intent. We just won't set a payment transaction ID.
+			}
+		} elseif ( $checkout_session->mode === 'subscription' ) {
+			// User purchased a subscription. Assign the subscription ID invoice ID to the order.
+			$order->subscription_transaction_id = $checkout_session->subscription;
+			try {
+				$subscription_args = array(
+					'id'     => $checkout_session->subscription,
+					'expand' => array(
+						'latest_invoice',
+						'default_payment_method',
+					),
+				);
+				$subscription = \Stripe\Subscription::retrieve( $subscription_args );
+				if ( ! empty( $subscription->latest_invoice->id ) ) {
+					$order->payment_transaction_id = $subscription->latest_invoice->id;
+				}
+			} catch ( \Stripe\Error\Base $e ) {
+				// Could not get invoices. We just won't set a payment transaction ID.
+			}
+		}
+
+		// Update the amounts paid.
+		$currency = pmpro_get_currency();
+		$currency_unit_multiplier = pow( 10, intval( $currency['decimals'] ) );
+
+		$order->total    = (float) $checkout_session->amount_total / $currency_unit_multiplier;
+		$order->subtotal = (float) $checkout_session->amount_subtotal / $currency_unit_multiplier;
+		$order->tax      = (float) $checkout_session->total_details->amount_tax / $currency_unit_multiplier;
+
+		// Complete the checkout.
+		pmpro_pull_checkout_data_from_order( $order );
+ 		return pmpro_complete_async_checkout( $order );
 	}
 
 	/**
