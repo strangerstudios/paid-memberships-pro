@@ -50,11 +50,19 @@ function pmpro_getAddons() {
 			// error
 			pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
 		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
-			// update addons in cache
+			// Update addons in cache.
 			$addons = json_decode( wp_remote_retrieve_body( $remote_addons ), true );
+
+			// If we don't have any addons, bail.
+			if ( empty( $addons ) ) {
+				return array();
+			}
+
+			// Create a short name for each Add On.
 			foreach ( $addons as $key => $value ) {
 				$addons[$key]['ShortName'] = trim( str_replace( array( 'Add On', 'Paid Memberships Pro - ' ), '', $addons[$key]['Title'] ) );
 			}
+
 			// Alphabetize the list by ShortName.
 			$short_names = array_column( $addons, 'ShortName' );
 			array_multisort( $short_names, SORT_ASC, SORT_STRING | SORT_FLAG_CASE, $addons );
