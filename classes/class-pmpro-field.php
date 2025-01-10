@@ -1900,7 +1900,7 @@ class PMPro_Field {
 	 */
 	function was_filled_if_needed() {
 		// If the field is not required, skip it.
-		if ( empty( $field->required ) ) {
+		if ( empty( $this->required ) ) {
 			return true;
 		}
 

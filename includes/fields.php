@@ -334,6 +334,8 @@ add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_after_tos_fie
 /**
  * Update user creation fields at checkout after a user is created.
  *
+ * Only runs for the after_username, after_email, and after_password field groups.
+ *
  * @since TBD
  *
  * @param int $user_id The ID of the user that was created.
@@ -360,6 +362,8 @@ add_action( 'pmpro_checkout_before_user_auth', 'pmpro_checkout_before_user_auth_
 
 /**
  * Require required fields before creating a user at checkout.
+ *
+ * Only runs for the after_username, after_email, and after_password field groups.
  */
 function pmpro_checkout_user_creation_checks_user_fields( $okay ) {
 	// Arrays to store fields that were required and missed.
@@ -430,6 +434,8 @@ add_filter( 'pmpro_checkout_user_creation_checks', 'pmpro_checkout_user_creation
 
 /**
  * Update the fields after a checkout is completed.
+ * 
+ * Does not run for the after_username, after_email, and after_password field groups.
  *
  * @param int $user_id The ID of the user that was created.
  * @param object $order The order object.
@@ -460,6 +466,8 @@ add_action( 'pmpro_before_send_to_payfast', 'pmpro_after_checkout_save_fields', 
 
 /**
  * Require required fields before creating an order at checkout.
+ *
+ * Does not run for the after_username, after_email, and after_password field groups.
  */
 function pmpro_registration_checks_for_user_fields( $okay ) {
 	// Arrays to store fields that were required and missed.
