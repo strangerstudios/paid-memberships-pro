@@ -451,6 +451,10 @@ class PMPro_Field_Group {
 				$field->divclass .= "pmpro_form_field pmpro_form_field-" . $field->type;
 				$field->class .= " pmpro_form_input-" . $field->type;
 
+				// Add a class to the field based on the id.
+				$field->divclass .= " pmpro_form_field-" . $field->id;
+				$field->class .= " pmpro_form_input-" . $field->id;
+
 				// Add the required class to field.
 				if ( ! empty( $args['show_required'] ) && ! empty( $field->required ) ) {
 					$field->divclass .= " pmpro_form_field-required";
@@ -463,8 +467,8 @@ class PMPro_Field_Group {
 				}
 
 				// Run the class through the filter.
-				$field->divclass = pmpro_get_element_class( $field->divclass );
-				$field->class = pmpro_get_element_class( $field->class );
+				$field->divclass = pmpro_get_element_class( $field->divclass, $field->id );
+				$field->class = pmpro_get_element_class( $field->class, $field->id );
 
 				?>
 				<div id="<?php echo esc_attr( $field->id );?>_div" <?php if ( ! empty( $field->divclass ) ) { echo 'class="' . esc_attr( $field->divclass ) . '"'; } ?>>
