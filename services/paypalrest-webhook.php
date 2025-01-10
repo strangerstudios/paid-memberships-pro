@@ -229,6 +229,7 @@ if ( ! $validated ) {
 		case 'BILLING.SUBSCRIPTION.CANCELLED':
 		case 'BILLING.SUBSCRIPTION.EXPIRED':
 			// Handle subscription termination.
+			// Note that this will not fire if an admin manually cancels a subscription in PayPal, but will fire if the user cancels their subscription in PayPal.
 			$logstr .= 'Processing subscription termination for PayPal subscription ID ' . $resource->id . '. ';
 			$logstr .= pmpro_handle_subscription_cancellation_at_gateway( $resource->id, 'paypalrest', $gateway_environment );
 			break;
