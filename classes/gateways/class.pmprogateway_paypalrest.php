@@ -63,6 +63,17 @@ class PMProGateway_paypalrest extends PMProGateway {
 	}
 
 	/**
+	 * Check if the PayPal REST beta is enabled.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool True if the PayPal REST beta is enabled, false otherwise.
+	 */
+	private static function beta_enabled() {
+		return defined( 'PMPRO_PAYPALREST_BETA' ) && PMPRO_PAYPALREST_BETA;
+	}
+
+	/**
 	 * Add PayPal REST to the list of gateways.
 	 *
 	 * @since TBD
@@ -71,7 +82,12 @@ class PMProGateway_paypalrest extends PMProGateway {
 	 * @return array The updated list of gateway options.
 	 */
 	public static function pmpro_gateways( $gateways ) {
-		$gateways['paypalrest'] = 'PayPal REST';
+		// For now, if the beta is not enabled, don't show the gateway.
+		if ( ! self::beta_enabled() ) {
+			return $gateways;
+		}
+
+		$gateways['paypalrest'] = 'PayPal REST (Beta)';
 		return $gateways;
 	}
 
