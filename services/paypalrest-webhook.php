@@ -169,7 +169,7 @@ if ( ! $validated ) {
 			break;
 		case 'PAYMENT.SALE.COMPLETED':
 			// Process recurring payments.
-			$logstr .= 'Processing a recurring payent ' . $resource->id . ' for PayPal subscription ID ' . $resource->billing_agreement_id . '. ';
+			$logstr .= 'Processing a recurring payment ' . $resource->id . ' for PayPal subscription ID ' . $resource->billing_agreement_id . '. ';
 
 			// First, let's make sure that we don't already have an order with this transaction ID.
 			$existing_order_search_args = array(
@@ -187,48 +187,43 @@ if ( ! $validated ) {
 
 			// We also need to be careful not to edit an order that is already going to be processed by the BILLING.SUBSCRIPTION.ACTIVATED event.
 			// We can assume that this is the case when there is token order for the subscription ID.
-			if ( empty( $existing_order ) ) {
-				$token_order_search_args = array(
-					'gateway' => 'paypalrest',
-					'gateway_environment' => $gateway_environment,
-					'status' => 'token',
-					'subscription_transaction_id' => $resource->billing_agreement_id,
-				);
-				$token_order = MemberOrder::get_order( $token_order_search_args );
-				if ( ! empty( $token_order ) ) {
-					// We have a token order for this subscription ID. Record the error.
-					$logstr .= 'Token order #' . $token_order->id . ' exists for subscription ID ' . $resource->billing_agreement_id . '. This order will be processed by BILLING.SUBSCRIPTION.ACTIVATED. ';
-					break;
-				}
+			$token_order_search_args = array(
+				'gateway' => 'paypalrest',
+				'gateway_environment' => $gateway_environment,
+				'status' => 'token',
+				'subscription_transaction_id' => $resource->billing_agreement_id,
+			);
+			$token_order = MemberOrder::get_order( $token_order_search_args );
+			if ( ! empty( $token_order ) ) {
+				// We have a token order for this subscription ID. Record the error.
+				$logstr .= 'Token order #' . $token_order->id . ' exists for subscription ID ' . $resource->billing_agreement_id . '. This order will be processed by BILLING.SUBSCRIPTION.ACTIVATED. ';
+				break;
 			}
 			
-			// If we don't have an existing order and this isn't an initial payment, let's get the PMPro Subscription object for this PayPal subscription.
-			if ( empty( $existing_order ) && ! $is_initial_payent ) {
-				$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $resource->billing_agreement_id, 'paypalrest', $gateway_environment );
-				if ( empty( $subscription ) ) {
-					// We couldn't find a subscription. Record the error.
-					$logstr .= 'Subscription for subscription ID ' . $resource->billing_agreement_id . ' not found.';
-				}
+			// This payment has not been processed and is not the initial payment. Let's get the PMPro Subscription object for this PayPal subscription.
+			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $resource->billing_agreement_id, 'paypalrest', $gateway_environment );
+			if ( empty( $subscription ) ) {
+				// We couldn't find a subscription. Record the error.
+				$logstr .= 'Subscription for subscription ID ' . $resource->billing_agreement_id . ' not found.';
+				break;
 			}
 
-			// If we have a subscription, we can create a new order.
-			if ( ! empty( $subscription) ) {
-				$morder = new MemberOrder();
-				$morder->user_id = $subscription->get_user_id();
-				$morder->membership_id = $subscription->get_membership_level_id();
-				$morder->timestamp = strtotime( $resource->create_time );
-				$morder->payment_transaction_id = $resource->id;
-				$morder->subscription_transaction_id = $resource->billing_agreement_id;
-				$morder->gateway = 'paypalrest';
-				$morder->gateway_environment = $gateway_environment;
-				$morder->status = 'success';
-				$morder->total = $resource->amount->total;
-				$morder->subtotal = empty( $resource->amount->details->subtotal ) ? $resource->amount->total : $resource->amount->details->subtotal;
-				$morder->tax = empty( $resource->amount->details->tax ) ? 0 : $resource->amount->details->tax;
-				$morder->saveOrder();
+			// We have a subscription. Create a new order.
+			$morder = new MemberOrder();
+			$morder->user_id = $subscription->get_user_id();
+			$morder->membership_id = $subscription->get_membership_level_id();
+			$morder->timestamp = strtotime( $resource->create_time );
+			$morder->payment_transaction_id = $resource->id;
+			$morder->subscription_transaction_id = $resource->billing_agreement_id;
+			$morder->gateway = 'paypalrest';
+			$morder->gateway_environment = $gateway_environment;
+			$morder->status = 'success';
+			$morder->total = $resource->amount->total;
+			$morder->subtotal = empty( $resource->amount->details->subtotal ) ? $resource->amount->total : $resource->amount->details->subtotal;
+			$morder->tax = empty( $resource->amount->details->tax ) ? 0 : $resource->amount->details->tax;
+			$morder->saveOrder();
 
-				$logstr .= 'Order #' . $morder->id . ' created successfully.';
-			}
+			$logstr .= 'Order #' . $morder->id . ' created successfully.';
 			break;
 		case 'BILLING.SUBSCRIPTION.SUSPENDED':
 		case 'BILLING.SUBSCRIPTION.CANCELLED':
@@ -373,7 +368,7 @@ if ( defined( 'PMPRO_PAYPALREST_WEBHOOK_DEBUG' ) && PMPRO_PAYPALREST_WEBHOOK_DEB
 	// Log to file.
 	$logfile = apply_filters( 'pmpro_paypalrest_webhook_logfile', dirname( __FILE__ ) . "/../logs/paypalrest-webhook.txt" );
 	$loghandle = fopen( $logfile, "a+" );
-	fwrite( $loghandle, $logstr );
+	fwrite( $loghandle, $logstr . "\n" );
 	fclose( $loghandle );
 } elseif( defined('PMPRO_PAYPALREST_WEBHOOK_DEBUG' ) && false !== PMPRO_PAYPALREST_WEBHOOK_DEBUG ) {
 	// Send log to email.
