@@ -88,6 +88,15 @@
 	color: var(--pmpro--color--alert-link);
 }
 
+.pmpro_message p {
+	margin: 0 0 var(--pmpro--base--spacing--small);
+	padding: 0;
+}
+
+.pmpro_message p:last-of-type {
+	margin-bottom: 0;
+}
+
 /**
  * Form Elements
  */
