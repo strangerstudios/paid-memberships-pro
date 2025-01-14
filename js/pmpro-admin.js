@@ -750,108 +750,68 @@ jQuery(document).ready(function () {
 });
 
 // Add Ons Page Code.
-jQuery(document).ready(function () {
+jQuery(document).ready(function ($) {
 	// Hide the license banner.
-	jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
-		e.preventDefault();
-		jQuery('.pmpro-popup-overlay').hide();
+	$('.pmproPopupCloseButton, .pmproPopupCompleteButton').on( 'click', function ( event ) {
+		event.preventDefault();
+		$('.pmpro-popup-overlay').hide();
 	});
 
 	// Hide the popup banner if "ESC" is pressed.
-	jQuery(document).keyup(function (e) {
-		if (e.key === 'Escape') {
-			jQuery('.pmpro-popup-overlay').hide();
+	$(document).on( 'keyup', function ( event ) {
+		if ( event.key === 'Escape' ) {
+			$('.pmpro-popup-overlay').hide();
 		}
 	});
 
-	jQuery('#pmpro-admin-add-ons-list .action-button .pmproAddOnActionButton').click(function (e) {
-		e.preventDefault();
+	$('#pmpro-admin-add-ons-list .action-button .pmproAddOnActionButton').on( 'click', function ( event ) {
+		event.preventDefault();
 
-		var button = jQuery(this);
+		const $actionButton = $(this);
 
 		// Make sure we only run once.
-		if (button.hasClass('disabled')) {
+		if ( $actionButton.hasClass( 'disabled' ) ) {
 			return;
 		}
-		button.addClass('disabled');
+
+		$actionButton.addClass('disabled');
 
 		// Pull the action that we are performing on this button.
-		var action = button.siblings('input[name="pmproAddOnAdminAction"]').val();
+		const action = $actionButton.siblings( 'input[name="pmproAddOnAdminAction"]' ).val();
 
-		if ('license' === action) {
+		if ( 'license' === action ) {
 			// Get the add on name and the user's current license type and show banner.
-			document.getElementById('addon-name').innerHTML = button.siblings('input[name="pmproAddOnAdminName"]').val();
-			document.getElementById('addon-license').innerHTML = button.siblings('input[name="pmproAddOnAdminLicense"]').val();
-			jQuery('.pmpro-popup-overlay').show();
-			button.removeClass('disabled');
+			$('#addon-name').html( $actionButton.siblings( 'input[name="pmproAddOnAdminName"]' ).val() );
+			$('#addon-license').html( $actionButton.siblings( 'input[name="pmproAddOnAdminLicense"]' ).val() );
+			$('.pmpro-popup-overlay').show();
+			$actionButton.removeClass('disabled');
 			return false;
 		} else {
 			// Remove checkmark if there.
-			button.removeClass('checkmarked');
+			$actionButton.removeClass('checkmarked');
 
 			// Update the button text.            
 			if ('activate' === action) {
-				button.html('Activating...');
+				$actionButton.html('Activating...');
 			} else if ('install' === action) {
-				button.html('Installing...');
+				$actionButton.html('Installing...');
 			} else if ('update' === action) {
-				button.html('Updating...');
+				$actionButton.html('Updating...');
 			} else {
 				// Invalid action.
 				return;
 			}
 
 			// Run the action.
-			var actionUrl = button.siblings('input[name="pmproAddOnAdminActionUrl"]').val();
-			jQuery.ajax({
+			const actionUrl = $actionButton.siblings('input[name="pmproAddOnAdminActionUrl"]').val();
+			$.ajax({
 				url: actionUrl,
 				type: 'GET',
-				success: function (response) {
-					// Create an element that we can use jQuery to parse.
-					var responseElement = jQuery('<div></div>').html(response);
-
-					// Check for errors.
-					if ('activate' === action && responseElement.find('#message').hasClass('error')) {
-						button.html('Could not activate.');
-						return;
-					} else if ('install' === action && 0 === responseElement.find('.button-primary').length) {
-						button.html('Could not install.');
-						return;
-					} else if ('update' === action && -1 === responseElement.html().indexOf('<p>' + pmpro.plugin_updated_successfully_text)) {
-						button.html('Could not update.');
-						return;
-					}
-
-					// Add check mark.
-					button.addClass('checkmarked');
-
-					// Show success message.
-					if ('activate' === action) {
-						button.html('Activated');
-					} else if ('install' === action) {
-						button.html('Installed');
-					} else if ('update' === action) {
-						button.html('Updated');
-					}
-
-					// If user just installed, give them the option to activate.
-					// TODO: Also give option to activate after update, but this is harder.
-					if ('install' === action) {
-						var primaryButtons = responseElement.find('.button-primary');
-						if (primaryButtons.length > 0) {
-							var activateButton = primaryButtons[0];
-							var activateButtonHref = activateButton.getAttribute('href');
-							if (activateButtonHref) {
-								// Wait 1 second before showing the activate button.
-								setTimeout(function () {
-									button.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
-									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val(activateButtonHref);
-									button.html('Activate');
-									button.removeClass('disabled');
-								}, 1000);
-							}
-						}
-					}
+				success: function ( response ) {
+					// Parse the response
+					const responseElement = $('<div/>').html(response);
+					// Handle action response
+					handleActionResponse(action, responseElement, $actionButton);
 				},
 				error: function (response) {
 					if ('activate' === action) {
@@ -867,6 +827,59 @@ jQuery(document).ready(function () {
 		}
 	});
 });
+
+/**
+ * AJAX response handler for add-on actions.
+ *
+ * @param {*} action  The action being performed.
+ * @param {*} responseElement  The response element.
+ * @param {*} $actionButton  The action button.
+ * @returns  void
+ * @since TBD
+ */
+const handleActionResponse = (action, responseElement, $actionButton) => {
+	const errorMessages = {
+		activate: 'Could not activate.',
+		install: 'Could not install.',
+		update: 'Could not update.'
+	};
+
+	const successMessages = {
+		activate: 'Activated',
+		install: 'Installed',
+		update: 'Updated'
+	};
+
+    // Action-specific error handling
+	if (
+		(action === 'activate' && responseElement.find('#message').hasClass('error')) ||
+		(action === 'install' && responseElement.find('.button-primary').length === 0) ||
+		(action === 'update' && responseElement.html().indexOf('<p>' + pmpro.plugin_updated_successfully_text) === -1)
+	) {
+		$actionButton.html(errorMessages[action]);
+		return;
+	}
+
+	// Show success message and mark as completed
+	$actionButton.addClass('checkmarked').html(successMessages[action]);
+
+	// Handle post-install activation prompt
+	if ( action === 'install' ) {
+		const primaryButtons = responseElement.find('.button-primary');
+		if (primaryButtons.length > 0) {
+			const activateButton = primaryButtons[0];
+			const activateButtonHref = activateButton.getAttribute('href');
+
+			if ( activateButtonHref ) {
+				setTimeout(() => {
+					$actionButton.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
+					$actionButton.siblings('input[name="pmproAddOnAdminActionUrl"]').val(activateButtonHref);
+					$actionButton.html('Activate').removeClass('disabled');
+				}, 1000);
+			}
+		}
+	}
+};
 
 /**
  * Add/Edit Member Page
