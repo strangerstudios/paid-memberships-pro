@@ -233,7 +233,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 												__( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ),
 												'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"',
 												esc_html( $term )
-											),
+											)
 										);
 										?>
 									</p>
