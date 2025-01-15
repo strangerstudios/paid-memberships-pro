@@ -886,7 +886,7 @@ function pmpro_report_sales_page()
 				// round to two decimals.
 				?>
 				<tr>
-					<td><?php echo esc_html( $row->date ); ?></td>
+					<td><?php echo date_i18n( $tooltip_date_format, strtotime( $row->date ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $row->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></td>
 					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $row->new ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $row->renewals ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
