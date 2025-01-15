@@ -272,13 +272,13 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			$settings['pmpro_levels'] = $settings['pmpro_require_membership'];
 			$settings['pmpro_segment'] = 'specific';
 			$settings['pmpro_invert_restrictions'] = '0';
-			$settings['show_noaccess'] = empty( $settings['pmpro_no_access_message'] ) ? 'no' : $settings['pmpro_no_access_message'];
+			$settings['pmpro_show_noaccess'] = empty( $settings['pmpro_no_access_message'] ) ? 'no' : $settings['pmpro_no_access_message'];
 		} elseif ( 1 === count( $settings['pmpro_require_membership'] ) ) {
 			// '0' is the only value in the array. This means that we should restrict to non-members.
 			$settings['pmpro_levels'] = array();
 			$settings['pmpro_segment'] = 'all';
 			$settings['pmpro_invert_restrictions'] = '1';
-			$settings['show_noaccess'] = 'no';
+			$settings['pmpro_show_noaccess'] = 'no';
 		} else {
 			// '0' is in the array, but there are other values. This means that we need to block access to all levels that are not in the array.
 			// First, get all PMPro level IDs.
@@ -289,7 +289,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			$settings['pmpro_levels'] = array_values( array_diff( $all_levels_ids, $settings['pmpro_require_membership'] ) );
 			$settings['pmpro_segment'] = 'specific';
 			$settings['pmpro_invert_restrictions'] = '1';
-			$settings['show_noaccess'] = 'no';
+			$settings['pmpro_show_noaccess'] = 'no';
 		}
 
 		// Remove the old pmpro_require_membership setting.
