@@ -120,10 +120,10 @@ function pmpro_report_sales_data( $args ){
 
 	$type_function = ! empty( $args['type_function'] ) ? $args['type_function'] : '';
 	$report_unit = ! empty( $args['report_unit'] ) ? $args['report_unit'] : '';
-	$discount_code = ! empty( $args['discount_code'] ) ? $args['discount_code'] : '';
+	$discount_code = ! empty( $args['discount_code'] ) ? $args['discount_code'] : array();
 	$startdate = ! empty( $args['startdate'] ) ? $args['startdate'] : '';
 	$enddate = ! empty( $args['enddate'] ) ? $args['enddate'] : '';
-	$l = ! empty( $args['l'] ) ? (int) $args['l'] : '';
+	$l = ! empty( $args['l'] ) ? $args['l'] : array();
 
 	//testing or live data
 	$gateway_environment = get_option( "pmpro_gateway_environment");
@@ -168,11 +168,22 @@ function pmpro_report_sales_data( $args ){
 	if(!empty($enddate))
 		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '" . esc_sql( $enddate ) . " 23:59:59' , INTERVAL - " . esc_sql( $tz_offset ) . " SECOND )";
 
-	if(!empty($l))
-		$sqlQuery .= "AND mo1.membership_id IN(" . $l . ") "; // $l is already escaped. See declaration.
+	if ( ! empty( $l ) ) {
+		if ( is_array( $l ) ) {
+			$l_escaped = implode( ',', array_map( 'intval', $l ) );
+		} else {
+			$l_escaped = (int) $l;
+		}
+		$sqlQuery .= "AND mo1.membership_id IN(" . $l_escaped . ") "; // $l_escaped is already escaped. See above.
+	}
 
 	if ( ! empty( $discount_code ) ) {
-		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
+		if ( is_array( $discount_code ) ) {
+			$discount_code_escaped = implode( ',', array_map( 'intval', $discount_code ) );
+		} else {
+			$discount_code_escaped = (int) $discount_code;
+		}
+		$sqlQuery .= "AND dc.code_id IN(" . $discount_code_escaped . ") "; // $discount_code_escaped is already escaped. See above.
 	}
 
 	$sqlQuery .= " GROUP BY mo1.id ";
@@ -217,15 +228,23 @@ function pmpro_report_sales_page()
 	}
 
 	if( ! empty( $_REQUEST['level'] ) ) {
-		$l = intval($_REQUEST['level']);
+		if ( is_array( $_REQUEST['level'] ) ) {
+			$l = array_map( 'intval', $_REQUEST['level'] );
+		} else {
+			$l = array( intval( $_REQUEST['level'] ) );
+		}
 	} else {
-		$l = "";
+		$l = array();
 	}
 
-	if ( ! empty( $_REQUEST[ 'discount_code' ] ) ) {
-		$discount_code = intval( $_REQUEST[ 'discount_code' ] );
+	if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
+		if ( is_array( $_REQUEST[ 'discount_code' ] ) ) {
+			$discount_code = array_map( 'intval', $_REQUEST[ 'discount_code' ] );
+		} else {
+			$discount_code = array( intval( $_REQUEST[ 'discount_code' ] ) );
+		}
 	} else {
-		$discount_code = '';
+		$discount_code = array();
 	}
 
 	if ( isset( $_REQUEST[ 'show_parts' ] ) ) {
@@ -459,7 +478,7 @@ function pmpro_report_sales_page()
 	ksort( $dates );
 	
 	// Save a transient for each combo of params. Expires in 1 hour.
-	$param_array = array( $period, $type, $month, $year, $l, $discount_code );
+	$param_array = array( $period, $type, $month, $year, implode( ',', $l ), implode( ',', $discount_code ) );
 	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
 	set_transient( 'pmpro_sales_data_' . $param_hash, $csvdata, HOUR_IN_SECONDS );
 
@@ -628,32 +647,43 @@ function pmpro_report_sales_page()
 			</select>
 			<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 			<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
-			<select id="level" name="level">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
+			<select id="level" name="level[]" multiple>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					$levels = pmpro_sort_levels_by_order( $levels );
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?php echo esc_attr( $level->id ); ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name); ?></option>
+					<option value="<?php echo esc_attr( $level->id ); ?>" <?php if ( in_array( $level->id, $l ) ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name); ?></option>
 				<?php
 					}
 				?>
-			</select>		
+			</select>
 			<?php
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
 			$sqlQuery .= "ORDER BY id DESC ";
 			$codes = $wpdb->get_results($sqlQuery, OBJECT);
 			if ( ! empty( $codes ) ) { ?>
 			<label for="discount_code" class="screen-reader-text"><?php esc_html_e( 'Filter report by discount code', 'paid-memberships-pro' ); ?></label>
-			<select id="discount_code" name="discount_code">
-				<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Codes', 'paid-memberships-pro' );?></option>
+			<select id="discount_code" name="discount_code[]" multiple>
 				<?php foreach ( $codes as $code ) { ?>
-					<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
+					<option value="<?php echo esc_attr( $code->id ); ?>" <?php if ( in_array( $code->id, $discount_code ) ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $code->code ); ?></option>
 				<?php } ?>
 			</select>
 			<?php } ?>
+			<script>
+				// Make the level and discount code fields select2.
+				jQuery(document).ready(function() {
+					jQuery('#level').select2({
+						placeholder: '<?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?>',
+						allowClear: true
+					});
+					jQuery('#discount_code').select2({
+						placeholder: '<?php esc_html_e( 'All Codes', 'paid-memberships-pro' ); ?>',
+						allowClear: true
+					});
+				});
+			</script>
 			<label for="show_parts" class="screen-reader-text"><?php esc_html_e( 'Select report data to include', 'paid-memberships-pro' ); ?></label>
 			<select id="show_parts" name="show_parts">
 				<option value='new_renewals' <?php selected( $new_renewals, 'new_renewals' ); ?> ><?php esc_html_e( 'Show New and Renewals', 'paid-memberships-pro' ); ?></option>
