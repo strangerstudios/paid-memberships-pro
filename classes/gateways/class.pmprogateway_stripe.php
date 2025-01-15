@@ -78,7 +78,8 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function supports( $feature ) {
 		$supports = array(
 			'subscription_sync' => true,
-			'payment_method_updates' => 'individual'
+			'payment_method_updates' => 'individual',
+			'check_token_orders' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -172,11 +173,11 @@ class PMProGateway_stripe extends PMProGateway {
 				add_filter( 'pmpro_include_payment_information_fields', array(
 					'PMProGateway_stripe',
 					'pmpro_include_payment_information_fields'
-				) );				
+				) );	
+				add_filter( 'pmpro_after_checkout_preheader', array( 'PMProGateway_stripe', 'clear_pmpro_review' ) );			
 			} else {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
-				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
 			}
 		}
 
@@ -309,11 +310,11 @@ class PMProGateway_stripe extends PMProGateway {
 			<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h2 class="pmpro_stripe_legacy_keys" <?php if( ! $stripe->show_legacy_keys_settings() ) {?>style="display: none;"<?php }?>><?php esc_html_e( 'Stripe API Settings (Legacy)', 'paid-memberships-pro' ); ?></h2>
+				<h2 class="pmpro_stripe_legacy_keys" <?php if( ! $stripe->show_legacy_keys_settings() ) {?>style="display: none;"<?php }?>><?php esc_html_e( 'Stripe API Settings', 'paid-memberships-pro' ); ?></h2>
 				<?php if( ! $stripe->show_legacy_keys_settings() ) {?>
 				<p>
 					<?php esc_html_e( 'Having trouble connecting through the button above or otherwise need to use your own API keys?', 'paid-memberships-pro' );?>
-					<a id="pmpro_stripe_legacy_keys_toggle" href="javascript:void(0);"><?php esc_html_e( 'Click here to use the legacy API settings.', 'paid-memberships-pro' );?></a>
+					<a id="pmpro_stripe_legacy_keys_toggle" href="javascript:void(0);"><?php esc_html_e( 'Click here to connect via API settings.', 'paid-memberships-pro' );?></a>
 				</p>
 				<script>
 					// Toggle to show the Stripe legacy keys settings.
@@ -529,10 +530,6 @@ class PMProGateway_stripe extends PMProGateway {
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-			<th><?php esc_html_e( 'Stripe API Version', 'paid-memberships-pro' ); ?></th>
-			<td><code><?php echo esc_html( PMPRO_STRIPE_API_VERSION ); ?></code></td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_payment_flow"><?php esc_html_e( 'Payment Flow', 'paid-memberships-pro' ); ?></label>
 			</th>
@@ -592,10 +589,6 @@ class PMProGateway_stripe extends PMProGateway {
 						);
 						if ( empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off" ) {
 							$payment_request_error_escaped = sprintf( wp_kses( __( 'This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target="_blank" href="%s" title="Configuring WordPress to Always Use HTTPS/SSL">set up WordPress to always use HTTPS</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://www.paidmembershipspro.com/configuring-wordpress-always-use-httpsssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=configure-https' );
-						} elseif ( self::using_legacy_keys() && substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_live_" && substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_test_" ) {
-							$payment_request_error_escaped = sprintf( wp_kses( __( 'It looks like you are using an older Stripe publishable key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "pk_live_" or "pk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your publishable key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
-						} elseif ( self::using_legacy_keys() && substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_live_" && substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_test_" ) {
-							$payment_request_error_escaped = sprintf( wp_kses( __( 'It looks like you are using an older Stripe secret key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "sk_live_" or "sk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your secret key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
 						} elseif ( ! $stripe->pmpro_does_apple_pay_domain_exist() ) {
 							$payment_request_error_escaped = sprintf( wp_kses( __( 'Your domain could not be registered with Apple to enable Apple Pay. Please try <a target="_blank" href="%s" title="Apple Pay Settings Page in Stripe">registering your domain manually from the Apple Pay settings page in Stripe</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/settings/payments/apple_pay' );
 						}
@@ -862,18 +855,6 @@ class PMProGateway_stripe extends PMProGateway {
 		// Add the PaymentMethod ID to the order.
 		if ( ! empty ( $_REQUEST['payment_method_id'] ) ) {
 			$morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
-		}
-
-		//stripe lite code to get name from other sources if available
-		global $pmpro_stripe_lite, $current_user;
-		if ( ! empty( $pmpro_stripe_lite ) && empty( $morder->FirstName ) && empty( $morder->LastName ) ) {
-			if ( ! empty( $current_user->ID ) ) {
-				$morder->FirstName = get_user_meta( $current_user->ID, "first_name", true );
-				$morder->LastName  = get_user_meta( $current_user->ID, "last_name", true );
-			} elseif ( ! empty( $_REQUEST['first_name'] ) && ! empty( $_REQUEST['last_name'] ) ) {
-				$morder->FirstName = sanitize_text_field( $_REQUEST['first_name'] );
-				$morder->LastName  = sanitize_text_field( $_REQUEST['last_name'] );
-			}
 		}
 
 		return $morder;
@@ -1398,6 +1379,24 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool Whether the site is using legacy Stripe keys.
 	 */
 	public static function using_legacy_keys() {
+		// If the site is not using API keys, it is not using legacy keys.
+		if ( ! self::using_api_keys() ) {
+			return false;
+		}
+
+		// Get the secret key being used.
+		$secret_key = get_option( 'pmpro_stripe_secretkey' );
+
+		// If the key begins with "sk_", it is a legacy key.
+		return strpos( $secret_key, 'sk_' ) === 0;
+	}
+
+	/**
+	 * Determine whether the site is using API keys to authenticate with Stripe.
+	 *
+	 * @return bool Whether the site is using API keys to authenticate with Stripe.
+	 */
+	public static function using_api_keys() {
 		$r = ! empty( get_option( 'pmpro_stripe_secretkey' ) ) && ! empty( get_option( 'pmpro_stripe_publishablekey' ) );
 		return $r;
 	}
@@ -1516,26 +1515,16 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Instead of changing membership levels, send users to Stripe to pay.
+	 * Send user to Stripe to pay.
 	 *
-	 * @since 2.8
+	 * @since 2.8 - Hooked into pmpro_checkout_before_change_membership_level
+	 * @since 3.2 - Now called by the gateway's process() method.
 	 *
 	 * @param int         $user_id ID of user who is checking out.
 	 * @param MemberOrder $morder  MemberOrder object for this checkout.
 	 */
-	static function pmpro_checkout_before_change_membership_level($user_id, $morder)
-	{
-		global $pmpro_level, $discount_code, $wpdb, $pmpro_currency;
-
-		//if no order, no need to pay
-		if ( empty( $morder ) || $morder->gateway != 'stripe' ) {
-			return;
-		}
-
-		// Only continue if the order's payment_transaction_id and subscription_transaction_id are empty, meaning that a payment hasn't been made yet.
-		if ( ! empty( $morder->payment_transaction_id ) || ! empty( $morder->subscription_transaction_id ) ) {
-			return;
-		}
+	static function pmpro_checkout_before_change_membership_level( $user_id, $morder ) {
+		global $pmpro_level;
 
 		$morder->user_id = $user_id;
 		$morder->status  = 'token';
@@ -1571,8 +1560,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$application_fee_percentage = $stripe->get_application_fee_percentage();
 
 		// First, let's handle the initial payment.
-		if ( ! empty( $morder->InitialPayment ) ) {
-			$initial_subtotal       = $morder->InitialPayment;
+		if ( ! empty( $morder->subtotal ) ) {
+			$initial_subtotal       = $morder->subtotal;
 			$initial_tax            = $morder->getTaxForPrice( $initial_subtotal );
 			$initial_payment_amount = pmpro_round_price( (float) $initial_subtotal + (float) $initial_tax );
 			$initial_payment_price  = $stripe->get_price_for_product( $product_id, $initial_payment_amount );
@@ -1597,11 +1586,12 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Now, let's handle the recurring payments.
-		if ( pmpro_isLevelRecurring( $morder->membership_level ) ) {
-			$recurring_subtotal       = $morder->PaymentAmount;
+		$level = $morder->getMembershipLevelAtCheckout();
+		if ( pmpro_isLevelRecurring( $level ) ) {
+			$recurring_subtotal       = $level->billing_amount;
 			$recurring_tax            = $morder->getTaxForPrice( $recurring_subtotal );
 			$recurring_payment_amount = pmpro_round_price( (float) $recurring_subtotal + (float) $recurring_tax );
-			$recurring_payment_price  = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $morder->BillingPeriod, $morder->BillingFrequency );
+			$recurring_payment_price  = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $level->cycle_period, $level->cycle_number );
 			if ( is_string( $recurring_payment_price ) ) {
 				// There was an error getting the price.
 				pmpro_setMessage( __( 'Could not get price for recurring payment. ', 'paid-memberships-pro' ) . $recurring_payment_price, 'pmpro_error', true );
@@ -1620,7 +1610,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$unfiltered_trial_period_days = $stripe->calculate_trial_period_days( $morder, false );
 
 			if (
-				empty( $morder->TrialBillingCycles ) && // Check if there is a trial period.
+				empty( $level->trial_limit ) && // Check if there is a trial period.
 				$filtered_trial_period_days === $unfiltered_trial_period_days && // Check if the trial period is the same as the filtered trial period.
 				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
 				) {
@@ -1758,8 +1748,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public function process( &$order ) {
 		if ( self::using_stripe_checkout() ) {
-			// If using Stripe Checkout, we will try to collect the payment later.
-			return true;
+			// If using Stripe Checkout, redirect them.
+			self::pmpro_checkout_before_change_membership_level( $order->user_id, $order );
+
+			// If we were not redirected, there was an error.
+			return false;
 		}
 
 		$payment_transaction_id = '';
@@ -1872,31 +1865,41 @@ class PMProGateway_stripe extends PMProGateway {
 		$customer_id = get_user_meta( $user_id, 'pmpro_stripe_customerid', true );
 
 		if ( empty( $customer_id ) ) {
-			// Try to figure out the cuseromer ID from their last order.
-			$order = new MemberOrder();
-			$order->getLastMemberOrder(
-				$user_id,
-				array(
-					'success',
-					'cancelled'
-				),
-				null,
-				'stripe',
-				$this->gateway_environment
+			// Try to figure out the customer ID from their subscription.
+			$subscription_search_params = array(
+				'user_id' => $user_id,
+				'status'  => 'active',
+				'gateway' => 'stripe',
 			);
-
-			// If we don't have a customer ID yet, get the Customer ID from their subscription.
-			if ( empty( $customer_id ) && ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
+			$subscriptions = PMPro_Subscription::get_subscriptions( $subscription_search_params );
+			foreach ( $subscriptions as $subscription ) {
 				try {
-					$subscription = Stripe_Subscription::retrieve( $order->subscription_transaction_id );
+					$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
 				} catch ( \Throwable $e ) {
 					// Assume no customer found.
 				} catch ( \Exception $e ) {
 					// Assume no customer found.
 				}
-				if ( ! empty( $subscription ) && ! empty( $subscription->customer ) ) {
-					$customer_id = $subscription->customer;
+				if ( ! empty( $stripe_subscription ) && ! empty( $stripe_subscription->customer ) ) {
+					$customer_id = $stripe_subscription->customer;
+					break;
 				}
+				$stripe_subscription = null;
+			}
+
+			// If we don't have a customer ID yet, try to figure out the cuseromer ID from their last order.
+			if ( empty( $customer_id ) ) {
+				$order = new MemberOrder();
+				$order->getLastMemberOrder(
+					$user_id,
+					array(
+						'success',
+						'cancelled'
+					),
+					null,
+					'stripe',
+					$this->gateway_environment
+				);
 			}
 
 			// If we don't have a customer ID yet, get the Customer ID from their charge.
@@ -2198,6 +2201,14 @@ class PMProGateway_stripe extends PMProGateway {
 				$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
 			}
 			$subscription->set( $update_array );
+
+			// Check if the user's Stripe customer ID is the same as the subscription's customer ID.
+			// We are waiting until after the subscription is created in case the customer didn't have a Stripe customer ID before.
+			$customer = $this->get_customer_for_user( $subscription->get_user_id() );
+			if ( ! empty( $customer ) && $customer->id !== $stripe_subscription->customer ) {
+				// Throw an error.
+				return __( 'Subscription customer ID does not match user\'s Stripe customer ID.', 'paid-memberships-pro' );
+			}
 		}
 	}
 
@@ -2280,15 +2291,11 @@ class PMProGateway_stripe extends PMProGateway {
 	private function show_connect_payment_option_fields( $livemode, $values, $gateway ) {
 		$gateway_environment = $this->gateway_environment;
 
-		$stripe_legacy_key      = $values['stripe_publishablekey'];
-		$stripe_legacy_secret   = $values['stripe_secretkey'];
-		$stripe_is_legacy_setup = ( self::using_legacy_keys() && ! empty( $stripe_legacy_key ) && ! empty( $stripe_legacy_secret ) );
-
 		$environment = $livemode ? 'live' : 'sandbox';
 		$environment2 = $livemode ? 'live' : 'test'; // For when 'test' is used instead of 'sandbox'.
 
 		// Determine if the gateway is connected in live mode and set var.
-		if ( self::has_connect_credentials( $environment ) || $stripe_is_legacy_setup ) {
+		if ( self::has_connect_credentials( $environment ) || self::using_api_keys() ) {
 			$connection_selector = 'pmpro_gateway-mode-connected';
 		} else {
 			$connection_selector = 'pmpro_gateway-mode-not-connected';
@@ -2304,8 +2311,10 @@ class PMProGateway_stripe extends PMProGateway {
 					<span class="pmpro_gateway-mode pmpro_gateway-mode-<?php echo esc_attr( $environment2 ); ?> <?php echo esc_attr( $connection_selector ); ?>">
 						<?php
 							echo ( $livemode ? esc_html__( 'Live Mode:', 'paid-memberships-pro' ) : esc_html__( 'Test Mode:', 'paid-memberships-pro' ) ) . ' ';
-							if ( $stripe_is_legacy_setup ) {
+							if ( self::using_legacy_keys() ) {
 								esc_html_e( 'Connected with Legacy Keys', 'paid-memberships-pro' );
+							} elseif ( self::using_api_keys() ) {
+								esc_html_e( 'Connected with API Keys', 'paid-memberships-pro' );
 							} elseif( self::has_connect_credentials( $environment ) ) {
 								esc_html_e( 'Connected', 'paid-memberships-pro' );
 							} else {
@@ -2318,22 +2327,15 @@ class PMProGateway_stripe extends PMProGateway {
 					<div class="notice notice-large notice-warning inline">
 						<p class="pmpro_stripe_webhook_notice">
 							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
-							<?php esc_html_e( 'You can continue to use the legacy API keys or choose to upgrade to our new Stripe Connect solution below.', 'paid-memberships-pro' ); ?><br />
-							<?php
-							if ( $livemode ) {
-								esc_html_e( 'Use the "Connect with Stripe" button below to securely authenticate with your Stripe account using Stripe Connect. Log in with the current Stripe account used for this site so that existing subscriptions are not affected by the update.', 'paid-memberships-pro' );
-							} else {
-								esc_html_e( 'Use the "Connect with Stripe" button below to securely authenticate with your Stripe account using Stripe Connect in test mode.', 'paid-memberships-pro' );
-							}
-							?>
+							<?php esc_html_e( 'Legacy API keys will eventually no longer be supported. To continue processing payments with Stripe, you may connect via Stripe Connect below or connect using "restricted API keys".', 'paid-memberships-pro' ); ?><br />
 							<a href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=switch-to-connect" target="_blank"><?php esc_html_e( 'Read the documentation on switching to Stripe Connect', 'paid-memberships-pro' ); ?></a>
 						</p>
 					</div>
-				<?php } elseif ( self::using_legacy_keys() ) {  ?>
+				<?php } elseif ( self::using_api_keys() && self::has_connect_credentials( $environment ) ) {  ?>
 					<div class="notice notice-large notice-warning inline">
 						<p class="pmpro_stripe_webhook_notice">
-							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
-							<?php esc_html_e( 'In order to complete the transition to using Stripe legacy API keys, please click the "Disconnect from Stripe" button below.', 'paid-memberships-pro' ); ?><br />
+							<strong><?php esc_html_e( 'Your site is using API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
+							<?php esc_html_e( 'In order to complete the transition to using Stripe API keys, please click the "Disconnect from Stripe" button below.', 'paid-memberships-pro' ); ?><br />
 						</p>
 					</div>
 				<?php } ?>
@@ -2516,30 +2518,10 @@ class PMProGateway_stripe extends PMProGateway {
 		$customer = empty( $user_id ) ? null : $this->get_customer_for_user( $user_id );
 
 		// Get customer name.
-		if ( ! empty( $order->FirstName ) && ! empty( $order->LastName ) ) {
-			$name = trim( $order->FirstName . " " . $order->LastName );
-		} elseif ( ! empty( $order->FirstName ) ) {
-			$name = $order->FirstName;
-		} elseif ( ! empty( $order->LastName ) ) {
-			$name = $order->LastName;
-		} elseif ( ! empty( $user->ID ) ) {
-			$name = trim( $user->first_name . " " . $user->last_name );
-			if ( empty( $name ) ) {
-				// In case first and last names aren't set.
-				$name = $user->user_login;
-			}
-		} else {
-			$name = 'No Name';
-		}
+		$name = empty( $order->billing->name ) ? $user->user_login : $order->billing->name;
 
 		// Get user's email.
-		if ( ! empty( $order->Email ) ) {
-			$email = $order->Email;
-		} elseif ( ! empty( $user->user_email ) ) {
-			$email = $user->user_email;
-		} else {
-			$email = "No Email";
-		}
+		$email = empty( $user->user_email ) ? "No Email" : $user->user_email;
 
 		// Build data to update customer with.
 		$customer_args = array(
@@ -2562,27 +2544,9 @@ class PMProGateway_stripe extends PMProGateway {
 				'city'        => $order->billing->city,
 				'country'     => $order->billing->country,
 				'line1'       => $order->billing->street,
-				'line2'       => '',
+				'line2'       => $order->billing->street2,
 				'postal_code' => $order->billing->zip,
 				'state'       => $order->billing->state,
-			);
-		} elseif (
-			! $this->customer_has_billing_address( $customer ) &&
-			! empty( $user->pmpro_baddress1 ) &&
-			! empty( $user->pmpro_bcity ) &&
-			! empty( $user->pmpro_bstate ) &&
-			! empty( $user->pmpro_bzipcode ) &&
-			! empty( $user->pmpro_bcountry )
-		) {
-			// We have an address in user meta and there is
-			// no address in Stripe. May as well send it.
-			$customer_args['address'] = array(
-				'city'        => $user->pmpro_bcity,
-				'country'     => $user->pmpro_bcountry,
-				'line1'       => $user->pmpro_baddress1,
-				'line2'       => $user->pmpro_baddress2,
-				'postal_code' => $user->pmpro_bzipcode,
-				'state'       => $user->pmpro_bstate,
 			);
 		}
 
@@ -2914,12 +2878,15 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return int trial period days.
 	 */
 	private function calculate_trial_period_days( $order, $filtered = true ) {
+		// Get the checkout level for this order.
+		$level = $order->getMembershipLevelAtCheckout();
+
 		// Check if we have a free trial period set.
-		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
+		if ( ! empty( $level->trial_limit ) && pmpro_round_price( $level->trial_amount ) == 0 ) {
 			// If so, we want to account for the trial period only while calculating the profile start date.
 			// We will then revert back to the original billing frequency after the calculation.
-			$original_billing_frequency = $order->BillingFrequency;
-			$order->BillingFrequency    = $order->BillingFrequency * ( $order->TrialBillingCycles + 1 );
+			$original_cycle_number = $level->cycle_number;
+			$level->cycle_number = $level->cycle_number * ( $level->trial_limit + 1 );
 		}
 
 		// Calculate the profile start date.
@@ -2927,8 +2894,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$profile_start_date = pmpro_calculate_profile_start_date( $order, 'U', $filtered );
 
 		// Restore the original billing frequency if needed so that the rest of the checkout has the correct info.
-		if ( ! empty( $original_billing_frequency ) ) {
-			$order->BillingFrequency = $original_billing_frequency;
+		if ( ! empty( $original_cycle_number ) ) {
+			$level->cycle_number = $original_cycle_number;
 		}
 
 		// Convert to days. We are rounding up to ensure that customers get the full membership time that they are paying for.
@@ -2946,9 +2913,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return Stripe_Subscription|bool false if error.
 	 */
 	private function create_subscription_for_customer_from_order( $customer_id, $order ) {
-		$subtotal = $order->PaymentAmount;
-		$tax      = $order->getTaxForPrice( $subtotal );
-		$amount   = pmpro_round_price( (float) $subtotal + (float) $tax );
+		$level = $order->getMembershipLevelAtCheckout();
+		$amount = $level->billing_amount;
+		$tax      = $order->getTaxForPrice( $amount );
+		$amount   = pmpro_round_price( (float) $amount + (float) $tax );
 
 		// Set up the subscription.
 		$product_id = $this->get_product_id_for_level( $order->membership_id );
@@ -2957,7 +2925,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		$price = $this->get_price_for_product( $product_id, $amount, $order->BillingPeriod, $order->BillingFrequency );
+		$price = $this->get_price_for_product( $product_id, $amount, $level->cycle_period, $level->cycle_number );
 		if ( is_string( $price ) ) {
 			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' ) . ' ' . esc_html( $price );
 			return false;
@@ -2983,7 +2951,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'pending_setup_intent.payment_method',
 				),
 			);
-			if ( ! self::using_legacy_keys() ) {
+			if ( ! self::using_api_keys() ) {
 				$params['application_fee_percent'] = $this->get_application_fee_percentage();
 			}
 			$subscription_params = apply_filters( 'pmpro_stripe_create_subscription_array', $subscription_params );
@@ -3398,25 +3366,14 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		// If this is already cancelled, return true.
-		if ( ! empty( $subscription->canceled_at ) ) {
-			return true;
-		}
-
-		// Make sure we get the customer for this subscription.
-		$order = new MemberOrder();
-		$order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
-
-		// No order?
-		if ( empty( $order ) ) {
-			//lets cancel anyway, but this is suspicious
-			$r = $subscription->cancel();
-
-			return true;
+		// Get the PMPro subscription.
+		$pmpro_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription->id, 'stripe', get_option( 'pmpro_gateway_environment', 'sandbox' ) );
+		if ( empty( $pmpro_subscription ) ) {
+			return false;
 		}
 
 		// Okay have an order, so get customer so we can cancel invoices too
-		$customer = $this->update_customer_at_checkout( $order );
+		$customer = $this->get_customer_for_user( $pmpro_subscription->get_user_id() );
 
 		// Get open invoices.
 		$invoices = Stripe_Invoice::all(['customer' => $customer->id, 'status' => 'open']);
@@ -3434,12 +3391,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 			// Sometimes we don't want to cancel the local membership when Stripe sends its webhook.
 			if ( $preserve_local_membership ) {
-				$this->ignoreCancelWebhookForThisSubscription( $subscription->id, $order->user_id );
+				$this->ignoreCancelWebhookForThisSubscription( $subscription->id, $pmpro_subscription->get_user_id() );
 			}
 
 			// Cancel
 			$r = $subscription->cancel();
-
 			return true;
 		} catch ( \Throwable $e ) {
 			return false;
@@ -3480,7 +3436,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 3.0 Updated to private non-static.
 	 */
 	private function process_charges( &$order ) {
-		if ( 0 == floatval( $order->InitialPayment ) ) {
+		if ( 0 == floatval( $order->subtotal ) ) {
 			return true;
 		}
 
@@ -3643,7 +3599,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return int percentage to charge for application fee.
 	 */
 	private function get_application_fee_percentage() {
-		if ( self::using_legacy_keys() ) {
+		if ( self::using_api_keys() ) {
 			return 0;
 		}
 
@@ -3682,7 +3638,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return array params with application fee if applicable.
 	 */
 	private function add_application_fee_amount( $params ) {
-		if ( empty( $params['amount'] ) || self::using_legacy_keys() ) {
+		if ( empty( $params['amount'] ) || self::using_api_keys() ) {
 			return $params;
 		}
 		$amount = $params['amount'];
@@ -3701,9 +3657,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.6
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
+	 * @since 3.2 This now controls showing all API key settings, not just legacy keys.
 	 */
 	private function show_legacy_keys_settings() {
-		$r = self::using_legacy_keys();
+		$r = self::using_api_keys();
 		$r = apply_filters( 'pmpro_stripe_show_legacy_keys_settings', $r );
 		return $r;
 	}
@@ -3718,7 +3675,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function get_secretkey() {
 		$secretkey = '';
-		if ( self::using_legacy_keys() ) {
+		if ( self::using_api_keys() ) {
 			$secretkey = get_option( 'pmpro_stripe_secretkey' );
 		} else {
 			$secretkey = get_option( 'pmpro_gateway_environment' ) === 'live'
@@ -3738,7 +3695,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function get_publishablekey() {
 		$publishablekey = '';
-		if ( self::using_legacy_keys() ) {
+		if ( self::using_api_keys() ) {
 			$publishablekey = get_option( 'pmpro_stripe_publishablekey' );
 		} else {
 			$publishablekey = get_option( 'pmpro_gateway_environment' ) === 'live'
@@ -3801,15 +3758,13 @@ class PMProGateway_stripe extends PMProGateway {
 	private function create_payment_intent( &$order ) {
 		global $pmpro_currency;
 
-		$amount          = $order->InitialPayment;
-		$order->subtotal = $amount;
 		$tax             = $order->getTax( true );
-
 		$amount = pmpro_round_price( (float) $order->subtotal + (float) $tax );
 
 		$params = array(
 			'customer'               => $order->stripe_customer->id,
 			'payment_method'         => $order->payment_method_id,
+			'payment_method_types'   => array( 'card' ),
 			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
@@ -3881,8 +3836,8 @@ class PMProGateway_stripe extends PMProGateway {
 			
 			$secretkey = get_option( 'pmpro_stripe_secretkey' );
 
-			// If they are not using legacy keys, get Stripe Connect keys for the relevant environment.
-			if ( ! self::using_legacy_keys() && empty( $secretkey ) ) {
+			// If they are not using API keys, get Stripe Connect keys for the relevant environment.
+			if ( ! self::using_api_keys() && empty( $secretkey ) ) {
 				if ( get_option( 'pmpro_gateway_environment' ) === 'live' ) {
 					$secretkey = get_option( 'pmpro_live_stripe_connect_secretkey' );
 				} else {
@@ -3933,6 +3888,94 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Check whether the payment for a token order has been completed. If so, process the order.
+	 *
+	 * @param MemberOrder $order The order object to check.
+	 * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+	 */
+	function check_token_order( $order ) {
+		// If this is not a token order, bail.
+		if ( 'token' !== $order->status ) {
+			return __( 'This is not a token order.', 'paid-memberships-pro' );
+		}
+
+		// Get the checkout session ID for this order.
+		$checkout_session_id = get_pmpro_membership_order_meta( $order->id, 'stripe_checkout_session_id', true );
+		if ( empty( $checkout_session_id ) ) {
+			return __( 'No checkout session ID found.', 'paid-memberships-pro' );
+		}
+
+		// Get the checkout session from Stripe.
+		try {
+			$checkout_session = Stripe_Checkout_Session::retrieve( $checkout_session_id );
+		} catch ( Stripe\Error\Base $e ) {
+			return __( 'Could not retrieve checkout session: ', 'paid-memberships-pro' ) . $e->getMessage();
+		} catch ( \Throwable $e ) {
+			return __( 'Could not retrieve checkout session: ', 'paid-memberships-pro' ) . $e->getMessage();
+		} catch ( \Exception $e ) {
+			return __( 'Could not retrieve checkout session: ', 'paid-memberships-pro' ) . $e->getMessage();
+		}
+
+		// If the checkout session is pending, this is a delayed notification payment method. We don't handle this yet. Bail.
+		if ( 'pending' === $checkout_session->payment_status ) {
+			return __( 'Payment is still pending.', 'paid-memberships-pro' );
+		}
+
+		// If the checkout session is not paid, bail.
+		if ( 'paid' !== $checkout_session->payment_status ) {
+			return __( 'Checkout session has not yet been completed.', 'paid-memberships-pro' );
+		}
+
+		// The order has been paid. Get the payment and subscription IDs.
+		if ( $checkout_session->mode === 'payment' ) {
+			// User purchased a one-time payment level. Assign the charge ID to the order.
+			try {
+				$payment_intent_args = array(
+					'id'     => $checkout_session->payment_intent,
+					'expand' => array(
+						'payment_method',
+						'latest_charge',
+					),
+				);
+				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+				$order->payment_transaction_id = $payment_intent->latest_charge->id;
+			} catch ( \Stripe\Error\Base $e ) {
+				// Could not get payment intent. We just won't set a payment transaction ID.
+			}
+		} elseif ( $checkout_session->mode === 'subscription' ) {
+			// User purchased a subscription. Assign the subscription ID invoice ID to the order.
+			$order->subscription_transaction_id = $checkout_session->subscription;
+			try {
+				$subscription_args = array(
+					'id'     => $checkout_session->subscription,
+					'expand' => array(
+						'latest_invoice',
+						'default_payment_method',
+					),
+				);
+				$subscription = \Stripe\Subscription::retrieve( $subscription_args );
+				if ( ! empty( $subscription->latest_invoice->id ) ) {
+					$order->payment_transaction_id = $subscription->latest_invoice->id;
+				}
+			} catch ( \Stripe\Error\Base $e ) {
+				// Could not get invoices. We just won't set a payment transaction ID.
+			}
+		}
+
+		// Update the amounts paid.
+		$currency = pmpro_get_currency();
+		$currency_unit_multiplier = pow( 10, intval( $currency['decimals'] ) );
+
+		$order->total    = (float) $checkout_session->amount_total / $currency_unit_multiplier;
+		$order->subtotal = (float) $checkout_session->amount_subtotal / $currency_unit_multiplier;
+		$order->tax      = (float) $checkout_session->total_details->amount_tax / $currency_unit_multiplier;
+
+		// Complete the checkout.
+		pmpro_pull_checkout_data_from_order( $order );
+ 		return pmpro_complete_async_checkout( $order );
+	}
+
+	/**
 	 * Get the description to send to Stripe for an order.
 	 *
 	 * @since 3.0
@@ -3941,6 +3984,32 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string The description to send to Stripe.
 	 */
 	private static function get_order_description( $order ) {
-		return apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order );
+		$user = get_userdata( $order->user_id );
+		$email = empty( $user->user_email ) ? '' : $user->user_email;
+		return apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->billing->name ) . " (" . $email . ")", $order );
+	}
+
+	/**
+	 * Clear $pmpro_review.
+	 *
+	 * This is a temporary fix for orders requiring SCA authentication.
+	 * Eventually, we want to always save orders in pending status with all of the checkout data stored in order meta, but we are not doing that yet.
+	 *
+	 * @since 3.2.1
+	 */
+	public static function clear_pmpro_review( $pmpro_review ) {
+		// If we don't have an order, bail.
+		if ( empty( $pmpro_review ) || ! is_a( $pmpro_review, 'MemberOrder' ) ) {
+			return;
+		}
+
+		// If this is not a Stripe order, bail.
+		if ( 'stripe' !== $pmpro_review->gateway ) {
+			return;
+		}
+
+		// Clear the global.
+		global $pmpro_review;
+		$pmpro_review = false;
 	}
 }

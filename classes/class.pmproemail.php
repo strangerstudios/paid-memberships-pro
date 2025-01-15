@@ -535,6 +535,7 @@
 				'order_date' => date_i18n(get_option('date_format'), $order->getTimestamp()),
 				'billing_name' => $order->billing->name,
 				'billing_street' => $order->billing->street,
+				'billing_street2' => $order->billing->street2,
 				'billing_city' => $order->billing->city,
 				'billing_state' => $order->billing->state,
 				'billing_zip' => $order->billing->zip,
@@ -551,7 +552,7 @@
 			$this->data['billing_address'] = pmpro_formatAddress(
 				$order->billing->name,
 				$order->billing->street,
-				"", //address 2
+				$order->billing->street2,
 				$order->billing->city,
 				$order->billing->state,
 				$order->billing->zip,
@@ -607,6 +608,7 @@
 				'order_date' => date_i18n(get_option('date_format'), $order->getTimestamp()),
 				'billing_name' => $order->billing->name,
 				'billing_street' => $order->billing->street,
+				'billing_street2' => $order->billing->street2,
 				'billing_city' => $order->billing->city,
 				'billing_state' => $order->billing->state,
 				'billing_zip' => $order->billing->zip,
@@ -624,7 +626,7 @@
 			$this->data['billing_address'] = pmpro_formatAddress(
 				$order->billing->name,
 				$order->billing->street,
-				"", //address 2
+				$order->billing->street2,
 				$order->billing->city,
 				$order->billing->state,
 				$order->billing->zip,
@@ -712,6 +714,7 @@
 				$this->data["order_date"] = date_i18n( get_option( 'date_format' ), $order->getTimestamp() );
 				$this->data["billing_name"] = $order->billing->name;
 				$this->data["billing_street"] = $order->billing->street;
+				$this->data["billing_street2"] = $order->billing->street2;
 				$this->data["billing_city"] = $order->billing->city;
 				$this->data["billing_state"] = $order->billing->state;
 				$this->data["billing_zip"] = $order->billing->zip;
@@ -723,7 +726,7 @@
 				$this->data["expirationyear"] = $order->expirationyear;
 				$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
 																	 $order->billing->street,
-																	 "", //address 2
+																	 $order->billing->street2,
 																	 $order->billing->city,
 																	 $order->billing->state,
 																	 $order->billing->zip,
@@ -824,6 +827,7 @@
 				$this->data["order_date"] = date_i18n(get_option('date_format'), $order->getTimestamp());
 				$this->data["billing_name"] = $order->billing->name;
 				$this->data["billing_street"] = $order->billing->street;
+				$this->data["billing_street2"] = $order->billing->street2;
 				$this->data["billing_city"] = $order->billing->city;
 				$this->data["billing_state"] = $order->billing->state;
 				$this->data["billing_zip"] = $order->billing->zip;
@@ -835,7 +839,7 @@
 				$this->data["expirationyear"] = $order->expirationyear;
 				$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
 																	 $order->billing->street,
-																	 "", //address 2
+																	 $order->billing->street2,
 																	 $order->billing->city,
 																	 $order->billing->state,
 																	 $order->billing->zip,
@@ -902,6 +906,7 @@
 								'user_email' => $user->user_email,																	
 								'billing_name' => $order->billing->name,
 								'billing_street' => $order->billing->street,
+								'billing_street2' => $order->billing->street2,
 								'billing_city' => $order->billing->city,
 								'billing_state' => $order->billing->state,
 								'billing_zip' => $order->billing->zip,
@@ -917,7 +922,7 @@
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
 																 $order->billing->street,
-																 "", //address 2
+																 $order->billing->street2,
 																 $order->billing->city,
 																 $order->billing->state,
 																 $order->billing->zip,
@@ -966,6 +971,7 @@
 								'user_email' => $user->user_email,																	
 								'billing_name' => $order->billing->name,
 								'billing_street' => $order->billing->street,
+								'billing_street2' => $order->billing->street2,
 								'billing_city' => $order->billing->city,
 								'billing_state' => $order->billing->state,
 								'billing_zip' => $order->billing->zip,
@@ -981,7 +987,7 @@
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
 																 $order->billing->street,
-																 "", //address 2
+																 $order->billing->street2,
 																 $order->billing->city,
 																 $order->billing->state,
 																 $order->billing->zip,
@@ -1031,6 +1037,7 @@
 								'user_email' => $user->user_email,									
 								'billing_name' => $order->billing->name,
 								'billing_street' => $order->billing->street,
+								'billing_street2' => $order->billing->street2,
 								'billing_city' => $order->billing->city,
 								'billing_state' => $order->billing->state,
 								'billing_zip' => $order->billing->zip,
@@ -1046,7 +1053,7 @@
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
 																 $order->billing->street,
-																 "", //address 2
+																 $order->billing->street2,
 																 $order->billing->city,
 																 $order->billing->state,
 																 $order->billing->zip,
@@ -1087,6 +1094,7 @@
 								'user_email' => $user->user_email,									
 								'billing_name' => $order->billing->name,
 								'billing_street' => $order->billing->street,
+								'billing_street2' => $order->billing->street2,
 								'billing_city' => $order->billing->city,
 								'billing_state' => $order->billing->state,
 								'billing_zip' => $order->billing->zip,
@@ -1102,7 +1110,7 @@
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
 																 $order->billing->street,
-																 "", //address 2
+																 $order->billing->street2,
 																 $order->billing->city,
 																 $order->billing->state,
 																 $order->billing->zip,
@@ -1154,6 +1162,7 @@
 								'user_email' => $user->user_email,									
 								'billing_name' => $order->billing->name,
 								'billing_street' => $order->billing->street,
+								'billing_street2' => $order->billing->street2,
 								'billing_city' => $order->billing->city,
 								'billing_state' => $order->billing->state,
 								'billing_zip' => $order->billing->zip,
@@ -1170,7 +1179,7 @@
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
 																 $order->billing->street,
-																 "", //address 2
+																 $order->billing->street2,
 																 $order->billing->city,
 																 $order->billing->state,
 																 $order->billing->zip,
@@ -1222,6 +1231,7 @@
 								'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 								'billing_name' => $order->billing->name,
 								'billing_street' => $order->billing->street,
+								'billing_street2' => $order->billing->street2,
 								'billing_city' => $order->billing->city,
 								'billing_state' => $order->billing->state,
 								'billing_zip' => $order->billing->zip,
@@ -1239,7 +1249,7 @@
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
 																 $order->billing->street,
-																 "", //address 2
+																 $order->billing->street2,
 																 $order->billing->city,
 																 $order->billing->state,
 																 $order->billing->zip,

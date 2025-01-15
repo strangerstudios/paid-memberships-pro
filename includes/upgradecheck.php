@@ -381,6 +381,26 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.1001' );
 	}
 
+	/**
+	 * Version 3.2
+	 * Notice that PPE is no longer automatically bundled with Website Payments Pro.
+	 * Adding billing_street2 to the orders table.
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_2.php" );
+	if ( $pmpro_db_version < 3.2 ) {
+		pmpro_db_delta();
+		pmpro_upgrade_3_2();
+		update_option( 'pmpro_db_version', '3.2' );
+	}
+
+	/**
+	 * Version 3.3.1
+	 * Adding `one_use_per_user` column to discount codes.
+	 */
+	if ( $pmpro_db_version < 3.3 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.3' );
+	}
 }
 
 function pmpro_db_delta() {
@@ -453,6 +473,7 @@ function pmpro_db_delta() {
 		  `paypal_token` varchar(64) NOT NULL DEFAULT '',
 		  `billing_name` varchar(128) NOT NULL DEFAULT '',
 		  `billing_street` varchar(128) NOT NULL DEFAULT '',
+		  `billing_street2` varchar(128) NOT NULL DEFAULT '',
 		  `billing_city` varchar(128) NOT NULL DEFAULT '',
 		  `billing_state` varchar(32) NOT NULL DEFAULT '',
 		  `billing_zip` varchar(16) NOT NULL DEFAULT '',
@@ -555,6 +576,7 @@ function pmpro_db_delta() {
 		  `starts` date NOT NULL,
 		  `expires` date NOT NULL,
 		  `uses` int(11) NOT NULL,
+		  `one_use_per_user` tinyint(4) NOT NULL DEFAULT '0',
 		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),

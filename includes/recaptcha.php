@@ -57,9 +57,21 @@ add_action( 'pmpro_checkout_preheader', 'pmpro_init_recaptcha' );
 add_action( 'pmpro_billing_preheader', 'pmpro_init_recaptcha', 9 ); // Run before the Stripe class loads pmpro-stripe.js
 
 /**
- * Outputs the HTML needed in the checkout form to display the ReCAPTCHA.
+ * Outputs the HTML needed to display ReCAPTCHA in a form.
  */
 function pmpro_recaptcha_get_html() {
+	static $already_shown = false;
+
+	// Make sure that we only show the captcha once.
+	if ( $already_shown ) {
+		return;
+	}
+
+	// If ReCAPTCHA is not enabled, bail.
+	if ( empty( get_option( 'pmpro_recaptcha' ) ) ) {
+		return;
+	}
+
 	// If ReCAPTCHA has already been validated, return.
 	if ( true === pmpro_recaptcha_is_validated() ) {
 		return;
@@ -81,20 +93,37 @@ function pmpro_recaptcha_get_html() {
 	}
 	$lang = apply_filters( 'pmpro_recaptcha_lang', $lang );
 
-	// Check which version of ReCAPTCHA we are using.
-	$recaptcha_version = get_option( 'pmpro_recaptcha_version' ); 
-	if( $recaptcha_version == '3_invisible' ) { ?>
-		<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>" data-size="invisible" data-callback="onSubmit"></div>
+	?>
+	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
+		<?php
+
+		// Check which version of ReCAPTCHA we are using.
+		$recaptcha_version = get_option( 'pmpro_recaptcha_version' ); 
+		if( $recaptcha_version == '3_invisible' ) { ?>
+			<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>" data-size="invisible" data-callback="onSubmit"></div>
+				<script type="text/javascript"
+					src="https://www.google.com/recaptcha/api.js?onload=pmpro_recaptcha_onloadCallback&hl=<?php echo esc_attr( $lang );?>&render=explicit" async defer>
+				</script>
+		<?php } else { ?>
+			<div class="g-recaptcha" data-callback="pmpro_recaptcha_validatedCallback" data-expired-callback="pmpro_recaptcha_expiredCallback" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>"></div>
 			<script type="text/javascript"
-				src="https://www.google.com/recaptcha/api.js?onload=pmpro_recaptcha_onloadCallback&hl=<?php echo esc_attr( $lang );?>&render=explicit" async defer>
+				src="https://www.google.com/recaptcha/api.js?hl=<?php echo esc_attr( $lang );?>">
 			</script>
-	<?php } else { ?>
-		<div class="g-recaptcha" data-callback="pmpro_recaptcha_validatedCallback" data-expired-callback="pmpro_recaptcha_expiredCallback" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>"></div>
-		<script type="text/javascript"
-			src="https://www.google.com/recaptcha/api.js?hl=<?php echo esc_attr( $lang );?>">
-		</script>
-	<?php }				
+		<?php }
+		?>
+	</div>
+	<?php
+
+	// If we are on the checkout page, run the deprecated pmpro_checkout_after_captcha action.
+	if ( pmpro_is_checkout() ) {
+		do_action_deprecated( 'pmpro_checkout_after_captcha', array(), '3.2', 'pmpro_checkout_before_submit_button' );
+	}
+
+	$already_shown = true;
 }
+add_action( 'pmpro_checkout_before_submit_button', 'pmpro_recaptcha_get_html' );
+add_action( 'pmpro_billing_before_submit_button', 'pmpro_recaptcha_get_html' );
+
 
 /**
  * AJAX Method to Validate a ReCAPTCHA Response Token
@@ -174,3 +203,114 @@ function pmpro_recaptcha_is_validated() {
 		return $recaptcha_errors;
 	}
 }
+
+/**
+ * Stop form submission if ReCAPTCHA is not validated.
+ *
+ * @since 3.2
+ *
+ * @param bool $continue Whether to continue with form submission.
+ */
+function pmpro_recaptcha_validation_check( $continue = true ) {
+	// If the form is already not going to be submitted, return.
+	if ( ! $continue ) {
+		return false;
+	}
+
+	// If ReCAPTCHA is not enabled, return.
+	if ( empty( get_option( 'pmpro_recaptcha' ) ) ) {
+		return true;
+	}
+
+	// Check if reCAPTCHA is validated.
+	$recaptcha_valid = pmpro_recaptcha_is_validated();
+
+	if ( true === $recaptcha_valid ) {
+		return true;
+	} else {
+		pmpro_setMessage( sprintf( __( 'reCAPTCHA failed. (%s) Please try again.', 'paid-memberships-pro' ), $recaptcha_valid ), 'pmpro_error' );
+		return false;
+	}
+}
+add_filter( 'pmpro_checkout_checks', 'pmpro_recaptcha_validation_check', 10, 1 );
+add_filter( 'pmpro_billing_update_checks', 'pmpro_recaptcha_validation_check', 10, 1 );
+
+/**
+ * Show reCAPTCHA settings on the PMPro settings page.
+ *
+ * @since 3.2
+ */
+function pmpro_recaptcha_settings() {
+	// Get the current options.
+	$recaptcha = get_option( 'pmpro_recaptcha' );
+	$recaptcha_version = get_option( 'pmpro_recaptcha_version' );
+	$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
+	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
+
+	// If reCAPTCHA is not enabled, hide some settings by default.
+	$tr_style = empty( $recaptcha ) ? 'display: none;' : '';
+
+	// Output settings fields.
+	?>
+	<tr>
+		<th scope="row" valign="top">
+			<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?></label>
+		</th>
+		<td>
+			<select id="recaptcha" name="recaptcha">
+				<option value="0" <?php if( !$recaptcha ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' );?></option>
+				<!-- For reference, removed the Yes - Free memberships only. option -->
+				<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes - All memberships.', 'paid-memberships-pro' );?></option>
+			</select>
+			<p class="description"><?php esc_html_e( 'A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
+		</td>
+	</tr>
+	<tr class='pmpro_recaptcha_settings' style='<?php esc_attr_e( $tr_style); ?>'>
+		<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label></th>
+		<td>					
+			<select id="recaptcha_version" name="recaptcha_version">
+				<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php esc_html_e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
+				<option value="3_invisible" <?php selected( '3_invisible', $recaptcha_version ); ?>><?php esc_html_e( 'v3 - Invisible', 'paid-memberships-pro' ); ?></option>
+			</select>
+			<p class="description"><?php esc_html_e( 'Changing your version will require new API keys.', 'paid-memberships-pro' ); ?></p>
+		</td>
+	</tr>
+	<tr class='pmpro_recaptcha_settings' style='<?php esc_attr_e( $tr_style); ?>'>
+		<th scope="row"><label for="recaptcha_publickey"><?php esc_html_e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label></th>
+		<td>
+			<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" value="<?php echo esc_attr($recaptcha_publickey);?>" class="regular-text code" />
+		</td>
+	</tr>
+	<tr class='pmpro_recaptcha_settings' style='<?php esc_attr_e( $tr_style); ?>'>
+		<th scope="row"><label for="recaptcha_privatekey"><?php esc_html_e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?>:</label></th>
+		<td>
+			<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" value="<?php echo esc_attr($recaptcha_privatekey);?>" class="regular-text code" />
+		</td>
+	</tr>
+	<script>
+		jQuery(document).ready(function() {
+			jQuery('#recaptcha').change(function() {
+				if(jQuery(this).val() == '2') {
+					jQuery('.pmpro_recaptcha_settings').show();
+				} else {
+					jQuery('.pmpro_recaptcha_settings').hide();
+				}
+			});
+		});
+	</script>
+	<?php
+}
+add_action( 'pmpro_security_spam_fields', 'pmpro_recaptcha_settings' );
+
+/**
+ * Save reCAPTCHA settings on the PMPro settings page.
+ *
+ * @since 3.2
+ */
+function pmpro_recaptcha_settings_save() {
+	pmpro_setOption( "recaptcha", intval( $_POST['recaptcha'] ) );
+	pmpro_setOption( "recaptcha_version", sanitize_text_field( $_POST['recaptcha_version'] ) );
+	pmpro_setOption( "recaptcha_publickey", sanitize_text_field( $_POST['recaptcha_publickey'] ) );
+	pmpro_setOption( "recaptcha_privatekey", sanitize_text_field( $_POST['recaptcha_privatekey'] ) );
+}
+add_action( 'pmpro_save_security_settings', 'pmpro_recaptcha_settings_save' );

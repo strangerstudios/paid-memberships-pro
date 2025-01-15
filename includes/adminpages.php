@@ -57,6 +57,7 @@ function pmpro_add_pages() {
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
 	$members_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
 	$orders_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Orders', 'paid-memberships-pro' ), __( 'Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders' );
+	$subscriptions_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), pmpro_get_edit_member_capability(), 'pmpro-subscriptions', 'pmpro_subscriptions' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Settings', 'paid-memberships-pro' ), __( 'Settings', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Add Ons', 'paid-memberships-pro' ), __( 'Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons' );
@@ -84,6 +85,7 @@ function pmpro_add_pages() {
 	// Set up screen settings for list tables.
 	add_action( 'load-' . $members_list_table_hook, 'PMPro_Members_List_Table::hook_screen_options' );
 	add_action( 'load-' . $orders_list_table_hook, 'PMPro_Orders_List_Table::hook_screen_options' );
+	add_action( 'load-' . $subscriptions_list_table_hook, 'PMPro_Subscriptions_List_Table::hook_screen_options' );
 	add_action( 'load-' . $discount_codes_list_table_hook, 'PMPro_Discount_Code_List_Table::hook_screen_options' );
 
 	//updates page only if needed
@@ -101,7 +103,6 @@ function pmpro_add_pages() {
 	add_submenu_page( $wizard_location, __( 'Setup Wizard', 'paid-memberships-pro' ), __( 'Setup Wizard', 'paid-memberships-pro' ), 'pmpro_wizard', 'pmpro-wizard', 'pmpro_wizard' );
 
 	// Hidden pages
-	add_submenu_page( 'admin.php', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), pmpro_get_edit_member_capability(), 'pmpro-subscriptions', 'pmpro_subscriptions' );
 	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), pmpro_get_edit_member_capability(), 'pmpro-member', 'pmpro_member_edit_display' );
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
@@ -123,7 +124,6 @@ function pmpro_parent_file( $parent_file ) {
 		'pmpro-userfields' => 'pmpro-membershiplevels',
 		'pmpro-designsettings' => 'pmpro-membershiplevels',
 		'pmpro-advancedsettings' => 'pmpro-membershiplevels',
-		'pmpro-subscriptions' => '',
 		'pmpro-member' => 'pmpro-memberslist',
 	);
 	
@@ -219,6 +219,18 @@ function pmpro_admin_bar_menu() {
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Orders', 'paid-memberships-pro' ),
 				'href' => admin_url( 'admin.php?page=pmpro-orders' )
+			)
+		);
+	}
+
+	// Add menu item for Subscriptions.
+	if ( current_user_can( 'pmpro_edit_members' ) ) {
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-subscriptions',
+				'parent' => 'paid-memberships-pro',
+				'title' => __( 'Subscriptions', 'paid-memberships-pro' ),
+				'href' => admin_url( 'admin.php?page=pmpro-subscriptions' )
 			)
 		);
 	}
@@ -384,8 +396,8 @@ function pmpro_admin_init_redirect_single_item_edit() {
 	// View Subscription redirect.
 	if ( $pmpro_admin_page == 'pmpro-subscriptions' ) {
 		// If the subscription they are trying to view does not exist, redirect them to the members list.
-		if ( empty( $_REQUEST['id'] ) || empty( PMPro_Subscription::get_subscription( $_REQUEST['id'] ) ) ) {
-			wp_redirect( add_query_arg( array( 'page' => 'pmpro-memberslist' ), admin_url( 'admin.php' ) ) );
+		if ( ! empty( $_REQUEST['id'] ) && empty( PMPro_Subscription::get_subscription( $_REQUEST['id'] ) ) ) {
+			wp_redirect( add_query_arg( array( 'page' => 'pmpro-subscriptions' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
 	}

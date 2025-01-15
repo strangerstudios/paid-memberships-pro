@@ -187,48 +187,6 @@ function pmpro_retrieve_password_message( $message ) {
 add_filter( 'retrieve_password_message', 'pmpro_retrieve_password_message', 10, 1 );
 
 /**
- * Get template data. Ajax endpoint to get template data from the database and serve into the client side.
- *
- * @return void Despite it doesn't return anything, it echoes the template data.
- * @since 3.1
- */
-function pmpro_email_templates_get_template_data() {
-
-	check_ajax_referer('pmproet', 'security');
-
-	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
-	}
-
-	global $pmpro_email_templates_defaults;
-
-	$template = sanitize_text_field( $_REQUEST['template'] );
-
-	//get template data
-	$template_data['body'] = get_option('pmpro_email_' . $template . '_body');
-	$template_data['subject'] = get_option('pmpro_email_' . $template . '_subject');
-	$template_data['disabled'] = get_option('pmpro_email_' . $template . '_disabled');
-
-	if (empty($template_data['body'])) {
-		//if not found, load template
-		$template_data['body'] = pmpro_email_templates_get_template_body($template);
-	}
-
-	if (empty($template_data['subject']) && $template != "header" && $template != "footer") {
-		$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
-	}
-
-	// Get template help text from defaults.
-	$template_data['help_text'] = $pmpro_email_templates_defaults[$template]['help_text'];
-
-	echo json_encode($template_data);
-
-	exit;
-}
-add_action('wp_ajax_pmpro_email_templates_get_template_data', 'pmpro_email_templates_get_template_data');
-
-
-/**
  * Ajax endpoint to save template data into the database.
  *
  * @return void Despite it doesn't return anything, it echoes a message to the AJAX callback.
@@ -528,6 +486,7 @@ function pmpro_email_templates_email_data($data, $email) {
 		{
 			$new_data['billing_name'] = $order->billing->name;
 			$new_data['billing_street'] = $order->billing->street;
+			$new_data['billing_street2'] = $order->billing->street2;
 			$new_data['billing_city'] = $order->billing->city;
 			$new_data['billing_state'] = $order->billing->state;
 			$new_data['billing_zip'] = $order->billing->zip;
@@ -546,7 +505,7 @@ function pmpro_email_templates_email_data($data, $email) {
 				//billing address
 			$new_data["billing_address"] = pmpro_formatAddress($order->billing->name,
 				$order->billing->street,
-				"", //address 2
+				$order->billing->street2,
 				$order->billing->city,
 				$order->billing->state,
 				$order->billing->zip,

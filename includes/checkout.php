@@ -12,8 +12,11 @@
  * @return string The profile start date in UTC time and the desired $date_format.
  */
 function pmpro_calculate_profile_start_date( $order, $date_format, $filter = true ) {
+	// Get the checkout level.
+	$level = $order->getMembershipLevelAtCheckout();
+
 	// Calculate the profile start date.
-	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $order->BillingFrequency . ' ' . $order->BillingPeriod ) );
+	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $level->cycle_number . ' ' . $level->cycle_period ) );
 
 	// Filter the profile start date if needed.
 	if ( $filter ) {
@@ -123,6 +126,10 @@ function pmpro_get_sensitive_checkout_request_vars() {
 		'ExpirationMonth',
 		'ExpirationYear',
 		'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
+		'pmpro_checkout_nonce', // The checkout nonce.
+		'checkjavascript', // Used to check if JavaScript is enabled.
+		'submit-checkout', // Used to check if the checkout form was submitted.
+		'submit-checkout_x', // Used to check if the checkout form was submitted.
 	);
 
 	/**
@@ -234,23 +241,22 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	//change level and continue "checkout"
 	if ( pmpro_changeMembershipLevel( $custom_level, $order->user_id, 'changed' ) !== false ) {
 		// Mark the order as successful.
-		$order->status                 = "success";
+		$order->status = "success";
+		if ( ! empty( $discount_code_id ) ) {
+			/**
+			 * Ideally, we would set the discount code ID on the order when it is initially created, but
+			 * this would conflict with Add Ons and custom code (specifically Sponsored Members) that
+			 * expect discount codes only to be set after successful checkouts.
+			 *
+			 * @TODO: In the next breaking release, we should set the discount code ID on the order when it is initially created.
+			 */
+			$order->discount_code_id = $discount_code_id;
+		}
 		$order->saveOrder();
 
 		//add discount code use
 		if ( ! empty( $discount_code_id ) ) {
-			$wpdb->query(
-				$wpdb->prepare(
-					"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
-						( code_id, user_id, order_id, timestamp ) 
-						VALUES( %d, %d, %s, %s )",
-					$discount_code_id,
-					$order->user_id,
-					$order->id,
-					current_time( 'mysql' )
-				)	
-			);
-			do_action( 'pmpro_discount_code_used', $discount_code_id, $order->user_id, $order->id );
+			do_action_deprecated( 'pmpro_discount_code_used', array( $discount_code_id, $order->user_id, $order->id ), '3.3.2', 'pmpro_added_order' );
 		}
 
 		//save first and last name fields

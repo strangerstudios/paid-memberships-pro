@@ -392,6 +392,7 @@ class PMPro_Wisdom_Integration {
 
 		// Get Stripe gateway info for other stats below.
 		$stripe_using_legacy_keys       = PMProGateway_stripe::using_legacy_keys();
+		$stripe_using_api_keys          = PMProGateway_stripe::using_api_keys();
 		$stripe_has_connect_credentials = PMProGateway_stripe::has_connect_credentials( 'live' ) || PMProGateway_stripe::has_connect_credentials( 'sandbox' );
 
 		// Append the Stripe gateway qualifiers.
@@ -399,6 +400,10 @@ class PMPro_Wisdom_Integration {
 			// Add Legacy Keys text if using Legacy Keys.
 			if ( $stripe_using_legacy_keys ) {
 				$stats['pmpro_gateway'] .= ' (' . __( 'Legacy Keys', 'paid-memberships-pro' ) . ')';
+			}
+
+			if ( $stripe_using_api_keys ) {
+				$stats['pmpro_gateway'] .= ' (' . __( 'API Keys', 'paid-memberships-pro' ) . ')';
 			}
 
 			// Add Stripe Connect text if using Stripe Connect.
@@ -418,7 +423,7 @@ class PMPro_Wisdom_Integration {
 			'paypal'         => get_option( 'pmpro_apiusername' ),
 			'paypalexpress'  => get_option( 'paypalexpress_skip_confirmation' ),
 			'paypalstandard' => get_option( 'gateway_email' ),
-			'stripe'         => $stripe_using_legacy_keys || $stripe_has_connect_credentials,
+			'stripe'         => $stripe_using_legacy_keys || $stripe_using_api_keys || $stripe_has_connect_credentials,
 			'stripe_sandbox' => get_option( 'sandbox_stripe_connect_user_id' ),
 			'twocheckout'    => get_option( 'twocheckout_accountnumber' ),
 		];

@@ -276,6 +276,7 @@
 			$this->billing = new stdClass();
 			$this->billing->name = '';
 			$this->billing->street = '';
+			$this->billing->street2 = '';
 			$this->billing->city = '';
 			$this->billing->state = '';
 			$this->billing->zip = '';
@@ -340,6 +341,89 @@
 				return $this->other_properties[ $property ];
 			}
 
+			/**
+			 * Support some legacy properties. These should be removed in the next major release.
+			 */
+			switch ( $property ) {
+				case 'ExpirationDate':
+					_doing_it_wrong( __METHOD__, __( 'ExpirationDate is deprecated. Use expirationmonth and expirationyear instead.', 'paid-memberships-pro' ), '3.2' );
+					return $this->expirationmonth . $this->expirationyear;
+				case 'ExpirationDate_YdashM':
+					_doing_it_wrong( __METHOD__, __( 'ExpirationDate_YdashM is deprecated. Use expirationyear and expirationmonth instead.', 'paid-memberships-pro' ), '3.2' );
+					return $this->expirationyear . '-' . $this->expirationmonth;
+				case 'membership_name':
+					_doing_it_wrong( __METHOD__, __( 'membership_name is deprecated. Use pmpro_getLevel() instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = pmpro_getLevel( $this->membership_id );
+					return empty( $level->name ) ? '' : $level->name;
+				case 'InitialPayment':
+					_doing_it_wrong( __METHOD__, __( 'InitialPayment is deprecated. Use subtotal instead.', 'paid-memberships-pro' ), '3.2' );
+					return $this->subtotal;
+				case 'PaymentAmount':
+					_doing_it_wrong( __METHOD__, __( 'PaymentAmount is deprecated. Get billing_amount from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = $this->getMembershipLevelAtCheckout();
+					return empty( $level->billing_amount ) ? 0 : $level->billing_amount;
+				case 'BillingPeriod':
+					_doing_it_wrong( __METHOD__, __( 'BillingPeriod is deprecated. Get cycle_period from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = $this->getMembershipLevelAtCheckout();
+					return empty( $level->cycle_period ) ? '' : $level->cycle_period;
+				case 'BillingFrequency':
+					_doing_it_wrong( __METHOD__, __( 'BillingFrequency is deprecated. Get cycle_number from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = $this->getMembershipLevelAtCheckout();
+					return empty( $level->cycle_number ) ? 0 : $level->cycle_number;
+				case 'TrialBillingPeriod':
+					_doing_it_wrong( __METHOD__, __( 'TrialBillingPeriod is deprecated. Get cycle_period from $this->getMembershipLevelAtCheckout() if the level is a trial instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = $this->getMembershipLevelAtCheckout();
+					return pmpro_isLevelTrial( $level ) ? $level->cycle_period : '';
+				case 'TrialBillingFrequency':
+					_doing_it_wrong( __METHOD__, __( 'TrialBillingFrequency is deprecated. Get cycle_number from $this->getMembershipLevelAtCheckout() if the level is a trial instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = $this->getMembershipLevelAtCheckout();
+					return pmpro_isLevelTrial( $level ) ? $level->cycle_number : 0;
+				case 'TrialBillingCycles':
+					_doing_it_wrong( __METHOD__, __( 'TrialBillingCycles is deprecated. Get trial_limit from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = $this->getMembershipLevelAtCheckout();
+					return $level->trial_limit;
+				case 'TrialAmount':
+					_doing_it_wrong( __METHOD__, __( 'TrialAmount is deprecated. Get trial_amount from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = $this->getMembershipLevelAtCheckout();
+					return pmpro_round_price( $level->trial_amount );
+				case 'TotalBillingCycles':
+					_doing_it_wrong( __METHOD__, __( 'TotalBillingCycles is deprecated. Get billing_limit from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = $this->getMembershipLevelAtCheckout();
+					return empty( $level->billing_limit ) ? 0 : $level->billing_limit;
+				case 'ProfileStartDate':
+					_doing_it_wrong( __METHOD__, __( 'ProfileStartDate is deprecated. Use the pmpro_calculate_profile_start_date() instead.', 'paid-memberships-pro' ), '3.2' );
+					return pmpro_calculate_profile_start_date( $this, 'Y-m-d\TH:i:s' );
+				case 'CVV2':
+					_doing_it_wrong( __METHOD__, __( 'CVV2 is deprecated. Use the CVV from $_REQUEST instead.', 'paid-memberships-pro' ), '3.2' );
+					return empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] );
+				case 'FirstName':
+					_doing_it_wrong( __METHOD__, __( 'FirstName is deprecated. Use the the billing name instead.', 'paid-memberships-pro' ), '3.2' );
+					$nameparts = pnp_split_full_name( $this->billing->name );
+					return empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+				case 'LastName':
+					_doing_it_wrong( __METHOD__, __( 'LastName is deprecated. Use the the billing name instead.', 'paid-memberships-pro' ), '3.2' );
+					$nameparts = pnp_split_full_name( $this->billing->name );
+					return empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
+				case 'Address1':
+					_doing_it_wrong( __METHOD__, __( 'Address1 is deprecated. Use the the billing address instead.', 'paid-memberships-pro' ), '3.2' );
+					return empty( $this->billing->street ) ? '' : $this->billing->street;
+				case 'Address2':
+					_doing_it_wrong( __METHOD__, __( 'Address2 is deprecated. Use the the billing address instead.', 'paid-memberships-pro' ), '3.2' );
+					return empty( $this->billing->street2 ) ? '' : $this->billing->street2;
+				case 'Email':
+					_doing_it_wrong( __METHOD__, __( 'Email is deprecated. Use the the user email instead.', 'paid-memberships-pro' ), '3.2' );
+					$user = get_userdata( $this->user_id );
+					return empty( $user->user_email ) ? '' : $user->user_email;
+				case 'initial_amount':
+					_doing_it_wrong( __METHOD__, __( 'initial_amount is deprecated. Use the subtotal and then calculate the tax instead.', 'paid-memberships-pro' ), '3.2' );
+					$initial_tax = $this->getTaxForPrice( $this->subtotal );
+					return pmpro_round_price((float)$this->subtotal + (float)$initial_tax);
+				case 'subscription_amount':
+					_doing_it_wrong( __METHOD__, __( 'subscription_amount is deprecated. Use the billing_amount from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
+					$level = $this->getMembershipLevelAtCheckout();
+					$subscription_tax = $this->getTaxForPrice( $level->billing_amount );
+					return pmpro_round_price( (float)$level->billing_amount + (float)$subscription_tax );
+			}
 		}
 
 		/**
@@ -717,28 +801,12 @@
 				$this->billing = new stdClass();
 				$this->billing->name = $dbobj->billing_name;
 				$this->billing->street = $dbobj->billing_street;
+				$this->billing->street2 = $dbobj->billing_street2;
 				$this->billing->city = $dbobj->billing_city;
 				$this->billing->state = $dbobj->billing_state;
 				$this->billing->zip = $dbobj->billing_zip;
 				$this->billing->country = $dbobj->billing_country;
 				$this->billing->phone = $dbobj->billing_phone;
-
-				//split up some values
-				$nameparts = pnp_split_full_name($this->billing->name);
-
-				if(!empty($nameparts['fname']))
-					$this->FirstName = $nameparts['fname'];
-				else
-					$this->FirstName = "";
-				if(!empty($nameparts['lname']))
-					$this->LastName = $nameparts['lname'];
-				else
-					$this->LastName = "";
-
-				$this->Address1 = $this->billing->street;
-
-				//get email from user_id
-				$this->Email = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 				$this->subtotal = $dbobj->subtotal;
 				$this->tax = (float)$dbobj->tax;
@@ -748,10 +816,6 @@
 				$this->accountnumber = trim($dbobj->accountnumber);
 				$this->expirationmonth = $dbobj->expirationmonth;
 				$this->expirationyear = $dbobj->expirationyear;
-
-				//date formats sometimes useful
-				$this->ExpirationDate = $this->expirationmonth . $this->expirationyear;
-				$this->ExpirationDate_YdashM = $this->expirationyear . "-" . $this->expirationmonth;
 
 				$this->status = $dbobj->status;
 				$this->gateway = $dbobj->gateway;
@@ -1250,6 +1314,8 @@
 			$values = array("price" => $price, "tax_state" => $tax_state, "tax_rate" => $tax_rate);
 			if(!empty($this->billing->street))
 				$values['billing_street'] = $this->billing->street;
+			if(!empty($this->billing->street2))
+				$values['billing_street2'] = $this->billing->street2;
 			if(!empty($this->billing->state))
 				$values['billing_state'] = $this->billing->state;
 			if(!empty($this->billing->city))
@@ -1372,6 +1438,7 @@
 									`paypal_token` = '" . esc_sql( $this->paypal_token ) . "',
 									`billing_name` = '" . esc_sql($this->billing->name) . "',
 									`billing_street` = '" . esc_sql($this->billing->street) . "',
+									`billing_street2` = '" . esc_sql($this->billing->street2) . "',
 									`billing_city` = '" . esc_sql($this->billing->city) . "',
 									`billing_state` = '" . esc_sql($this->billing->state) . "',
 									`billing_zip` = '" . esc_sql($this->billing->zip) . "',
@@ -1403,31 +1470,18 @@
 				//set up actions
 				$before_action = "pmpro_add_order";
 				$after_action = "pmpro_added_order";
-
-				// Perform calculations before a new order is added.
-				// Figure out how much we charged.
-				$amount = ! empty( $this->InitialPayment ) ? (float)$this->InitialPayment : (float)$this->subtotal;
-
-				// Fill subtotal if necessary.
-				if ( empty( $this->subtotal ) ) {
-					$this->subtotal = $amount;
-				}
-
-				// Calculate tax if necessary.
-				$this->tax = empty( $this->tax ) ? $this->getTax(true) : $this->tax;
-
-				// Calculate total.
-				$this->total = empty( $this->total ) ? (float)$amount + (float)$this->tax : $this->total;
 				
-				//only on inserts, we might want to set the expirationmonth and expirationyear from ExpirationDate
+				//only on inserts, we might want to set the expirationmonth and expirationyear from ExpirationDate/
+				// This will be removed in a future version.
 				if( (empty($this->expirationmonth) || empty($this->expirationyear)) && !empty($this->ExpirationDate)) {
+					_doing_it_wrong( 'MemberOrder::saveOrder', 'ExpirationDate is deprecated. Use expirationmonth and expirationyear.', '3.2' );
 					$this->expirationmonth = substr($this->ExpirationDate, 0, 2);
 					$this->expirationyear = substr($this->ExpirationDate, 2, 4);
 				}
 				
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders
-								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
+								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_street2`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
 								VALUES('" . esc_sql( $this->code ) . "',
 									   '" . esc_sql( session_id() ) . "',
 									   " . intval($this->user_id) . ",
@@ -1435,6 +1489,7 @@
 									   '" . esc_sql( $this->paypal_token ) . "',
 									   '" . esc_sql(trim($this->billing->name)) . "',
 									   '" . esc_sql(trim($this->billing->street)) . "',
+									   '" . esc_sql(trim($this->billing->street2)) . "',
 									   '" . esc_sql($this->billing->city) . "',
 									   '" . esc_sql($this->billing->state) . "',
 									   '" . esc_sql($this->billing->zip) . "',
@@ -1518,7 +1573,7 @@
 		 * Get a random code to use as the order code.
 		 */
 		function getRandomCode() {
-			global $wpdb;
+			global $wpdb, $current_user;
 
 			// We mix this with the seed to make sure we get unique codes.
 			static $count = 0;
@@ -1534,7 +1589,8 @@
 			}
 
 			while( empty( $code ) ) {
-				$scramble = md5( $auth_code . microtime() . $secure_auth_code . $count );
+				$current_user_id = ! empty( $current_user->ID ) ? $current_user->ID : 0;
+				$scramble = md5( $auth_code . microtime() . $secure_auth_code . $current_user_id . $count );
 				$code = substr( $scramble, 0, 10 );
 				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
 				$check = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = %s LIMIT 1", $code ) );
@@ -1588,9 +1644,11 @@
 		 * For offsite gateways with a confirm step.
 		 *
 		 * @since 1.8
+		 * @deprecated 3.2
 		 */
 		function confirm()
 		{
+			_deprecated_function( __FUNCTION__, '3.2' );
 			if (is_object($this->Gateway)) {
 				return $this->Gateway->confirm($this);
 			}
@@ -1622,9 +1680,12 @@
 
 		/**
 		 * Call the getSubscriptionStatus method of the gateway class.
+		 *
+		 * @deprecated 3.2
 		 */
 		function getGatewaySubscriptionStatus()
 		{
+			_deprecated_function( __FUNCTION__, '3.2' );
 			if (is_object($this->Gateway)) {
 				return $this->Gateway->getSubscriptionStatus( $this );
 			}
@@ -1632,9 +1693,12 @@
 
 		/**
 		 * Call the getTransactionStatus method of the gateway class.
+		 *
+		 * @deprecated 3.2
 		 */
 		function getGatewayTransactionStatus()
 		{
+			_deprecated_function( __FUNCTION__, '3.2' );
 			if (is_object($this->Gateway)) {
 				return $this->Gateway->getTransactionStatus( $this );
 			}
@@ -1643,8 +1707,10 @@
 		/** 
 		 * Get TOS consent information.
 		 * @since  1.9.5
+		 * @deprecated 3.2 - Use pmpro_get_consent_log_entry_for_order() insetad.
 		 */
 		function get_tos_consent_log_entry() {
+			_deprecated_function( __METHOD__, '3.2', 'pmpro_get_consent_log_entry_for_order()' );
 			if ( empty( $this->id ) ) {
 				return false;
 			}
@@ -1665,48 +1731,21 @@
 		 * @since 2.5.5
 		 */
 		function find_billing_address() {
-			global $wpdb;
-
 			if ( empty( $this->billing ) || empty( $this->billing->street ) ) {
 				// We do not already have a billing address.
 				$last_subscription_order = new MemberOrder();
 				$last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $this->subscription_transaction_id );
 				if ( ! empty( $last_subscription_order->billing ) && ! empty( $last_subscription_order->billing->street ) ) {
 					// Last order in subscription has biling information. Pull data from there. 
-					$this->Address1    = $last_subscription_order->billing->street;
-					$this->City        = $last_subscription_order->billing->city;
-					$this->State       = $last_subscription_order->billing->state;
-					$this->Zip         = $last_subscription_order->billing->zip;
-					$this->CountryCode = $last_subscription_order->billing->country;
-					$this->PhoneNumber = $last_subscription_order->billing->phone;
-					$this->Email       = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
-
 					$this->billing          = new stdClass();
 					$this->billing->name    = $last_subscription_order->billing->name;
 					$this->billing->street  = $last_subscription_order->billing->street;
+					$this->billing->street2 = $last_subscription_order->billing->street2;
 					$this->billing->city    = $last_subscription_order->billing->city;
 					$this->billing->state   = $last_subscription_order->billing->state;
 					$this->billing->zip     = $last_subscription_order->billing->zip;
 					$this->billing->country = $last_subscription_order->billing->country;
 					$this->billing->phone   = $last_subscription_order->billing->phone;
-				} else {
-					// Last order did not have billing information. Try to pull from usermeta.
-					$this->Address1    = get_user_meta( $this->user_id, "pmpro_baddress1", true );
-					$this->City        = get_user_meta( $this->user_id, "pmpro_bcity", true );
-					$this->State       = get_user_meta( $this->user_id, "pmpro_bstate", true );
-					$this->Zip         = get_user_meta( $this->user_id, "pmpro_bzipcode", true );
-					$this->CountryCode = get_user_meta( $this->user_id, "pmpro_bcountry", true );
-					$this->PhoneNumber = get_user_meta( $this->user_id, "pmpro_bphone", true );
-					$this->Email       = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
-
-					$this->billing          = new stdClass();
-					$this->billing->name    = get_user_meta( $this->user_id, "pmpro_bfirstname", true ) . " " . get_user_meta( $this->user_id, "pmpro_blastname", true ) ;
-					$this->billing->street  = $this->Address1;
-					$this->billing->city    = $this->City;
-					$this->billing->state   = $this->State;
-					$this->billing->zip     = $this->Zip;
-					$this->billing->country = $this->CountryCode;
-					$this->billing->phone   = $this->PhoneNumber;
 				}
 			}
 		}
@@ -1742,24 +1781,22 @@
 			if ( ! empty( $all_levels ) ) {
 				$first_level                = array_shift( $all_levels );
 				$this->membership_id  = $first_level->id;
-				$this->InitialPayment = $first_level->initial_payment;
+				$this->subtotal = $first_level->initial_payment;
+				$this->total    = $first_level->initial_payment;
 			} else {
 				$this->membership_id  = 1;
-				$this->InitialPayment = 1;
+				$this->subtotal = 1;
+				$this->total    = 1;
 			}
 			$this->user_id             = $current_user->ID;
 			$this->cardtype            = "Visa";
 			$this->accountnumber       = "4111111111111111";
 			$this->expirationmonth     = date( 'm', current_time( 'timestamp' ) );
 			$this->expirationyear      = ( intval( date( 'Y', current_time( 'timestamp' ) ) ) + 1 );
-			$this->ExpirationDate      = $this->expirationmonth . $this->expirationyear;
-			$this->CVV2                = '123';
-			$this->FirstName           = 'Jane';
-			$this->LastName            = 'Doe';
-			$this->Address1            = '123 Street';
 			$this->billing             = new stdClass();
 			$this->billing->name       = 'Jane Doe';
 			$this->billing->street     = '123 Street';
+			$this->billing->street2    = 'Apt 1';
 			$this->billing->city       = 'City';
 			$this->billing->state      = 'ST';
 			$this->billing->country    = 'US';
@@ -1829,7 +1866,7 @@
 				'trial_amount'                => empty( $subscription_level->trial_amount ) ? 0.00 : $subscription_level->trial_amount,
 				'trial_limit'                 => empty( $subscription_level->trial_limit ) ? 0 : $subscription_level->trial_limit,
 				'startdate'                   => date_i18n( 'Y-m-d H:i:s', $this->timestamp ),
-				'next_payment_date'           => empty( $this->ProfileStartDate ) ? date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $subscription_level->cycle_number . ' ' . $subscription_level->cycle_period, (int)$this->timestamp ) ) : $this->ProfileStartDate,
+				'next_payment_date'           => pmpro_calculate_profile_start_date( $this, 'Y-m-d H:i:s' ),
 			);
 
 			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
@@ -1843,11 +1880,6 @@
 		 *              False if ALL billing address fields are empty.
 		 */
 		function has_billing_address() {
-			// This is sometimes set.
-			if ( ! empty( $this->Address1 ) ) {
-				return true;
-			}
-			
 			// Avoid a warning if no billing object at all.
 			if ( empty( $this->billing ) ) {
 				return false;
@@ -1856,6 +1888,7 @@
 			// Check billing fields.
 			if ( ! empty( $this->billing->name ) 
 				|| ! empty( $this->billing->street )
+				|| ! empty( $this->billing->street2 )
 				|| ! empty( $this->billing->city )
 				|| ! empty( $this->billing->state )
 				|| ! empty( $this->billing->country )

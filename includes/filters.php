@@ -179,56 +179,15 @@ add_filter( 'pmpro_level_description', 'pmpro_pmpro_level_description' );
 	Note that this affects PayPal Standard as well, but the fix
 	for that flavor of PayPal is different and may be included in future
 	updates.
+
+	This function is being deprecated as ProfileStartDate is no longer stored as an order property.
+	This is now coded directly into the PayPal Express subscribe() function.
+	@deprecated 3.2
 */
 function pmpro_pmpro_subscribe_order_startdate_limit( $order, $gateway ) {
-	$affected_gateways = array( 'paypalexpress', 'paypal' );
-
-	if ( in_array( $gateway->gateway, $affected_gateways ) ) {
-		$original_start_date = strtotime( $order->ProfileStartDate, current_time( 'timestamp' ) );
-		$one_year_out = strtotime( '+1 Year', current_time( 'timestamp' ) );
-		$two_years_out = strtotime( '+2 Year', current_time( 'timestamp' ) );
-		$one_year_out_date = date_i18n( 'Y-m-d', $one_year_out ) . 'T0:0:0';
-		$days_past = floor( ( $original_start_date - $one_year_out ) / DAY_IN_SECONDS );
-		if ( ! empty( $order->ProfileStartDate ) && $order->ProfileStartDate > $one_year_out_date ) {
-			// try to squeeze into the trial
-			if ( empty( $order->TrialBillingPeriod ) && $days_past > 0 ) {
-				// update the order
-				$order->TrialAmount = 0;
-				$order->TrialBillingPeriod = 'Day';
-				$order->TrialBillingFrequency = min( 365, $days_past );
-				$order->TrialBillingCycles = 1;
-			}
-
-			// max out at 1 year out no matter what
-			$order->ProfileStartDate = $one_year_out_date;
-
-			// if we were going to try to push it more than 2 years out, let's notify the admin
-			if ( ! empty( $order->TrialBillilngPeriod ) || $original_start_date > $two_years_out ) {
-				// setup user data
-				global $current_user;
-				if ( empty( $order->user_id ) ) {
-					$order->user_id = $current_user->ID;
-				}
-				$order->getUser();
-
-				// get level data
-				$level = pmpro_getLevel( $order->membership_id );
-
-				// create email
-				$pmproemail = new PMProEmail();
-				$body = '<p>' . __( "There was a potential issue while setting the 'Profile Start Date' for a user's subscription at checkout. PayPal does not allow one to set a Profile Start Date further than 1 year out. Typically, this is not an issue, but sometimes a combination of custom code or add ons for PMPro (e.g. the Prorating or Auto-renewal Checkbox add ons) will try to set a Profile Start Date out past 1 year in order to respect an existing user's original expiration date before they checked out. The user's information is below. PMPro has allowed the checkout and simply restricted the Profile Start Date to 1 year out with a possible additional free Trial of up to 1 year. You should double check this information to determine if maybe the user has overpaid or otherwise needs to be addressed. If you get many of these emails, you should consider adjusting your custom code to avoid these situations.", 'paid-memberships-pro' ) . '</p>';
-				$body .= '<p>' . sprintf( __( 'User: %1$s<br />Email: %2$s<br />Membership Level: %3$s<br />Order #: %4$s<br />Original Profile Start Date: %5$s<br />Adjusted Profile Start Date: %6$s<br />Trial Period: %7$s<br />Trial Frequency: %8$s<br />', 'paid-memberships-pro' ), $order->user->user_nicename, $order->user->user_email, $level->name, $order->code, date( 'c', $original_start_date ), $one_year_out_date, $order->TrialBillingPeriod, $order->TrialBillingFrequency ) . '</p>';
-				$pmproemail->template = 'profile_start_date_limit_check';
-				$pmproemail->subject = sprintf( __( 'Profile Start Date Issue Detected and Fixed at %s', 'paid-memberships-pro' ), get_bloginfo( 'name' ) );
-				$pmproemail->data = array( 'body' => $body );
-				$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
-			}
-		}
-	}
-
+	_deprecated_function( __FUNCTION__, '3.2' );
 	return $order;
 }
-add_filter( 'pmpro_subscribe_order', 'pmpro_pmpro_subscribe_order_startdate_limit', 99, 2 );
 
 /**
  * Before changing membership at checkout,

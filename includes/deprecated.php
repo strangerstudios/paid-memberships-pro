@@ -743,6 +743,72 @@ function pmpro_cancel_on_next_payment_date_deprecated() {
 add_action( 'plugins_loaded', 'pmpro_cancel_on_next_payment_date_deprecated', 20 );
 
 /**
+ * Old Recurring Emails functions.
+ */
+function pmpro_recurring_emails_deprecated() {
+	// pmpror_recurring_emails function.
+	if ( ! function_exists( 'pmpror_recurring_emails' ) ) {
+		function pmpror_recurring_emails() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+			pmpro_cron_recurring_payment_reminders();
+		}
+	}
+
+	// pmpror_template_callback function.
+	if ( ! function_exists( 'pmpror_template_callback' ) ) {
+		function pmpror_template_callback( $buffer ) {
+			_deprecated_function( __FUNCTION__, '3.2' );
+			return $buffer;
+		}
+	}
+
+	// pmpror_load_plugin_text_domain function.
+	if ( ! function_exists( 'pmpror_load_plugin_text_domain' ) ) {
+		function pmpror_load_plugin_text_domain() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+		}
+	}
+
+	// pmpror_init_test function.
+	if ( ! function_exists( 'pmpror_init_test' ) ) {
+		function pmpror_init_test() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+		}
+	}
+
+	// pmpror_recurring_emails_legacy function.
+	if ( ! function_exists( 'pmpror_recurring_emails_legacy' ) ) {
+		function pmpror_recurring_emails_legacy() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+			pmpro_cron_recurring_payment_reminders();
+		}
+	}
+
+	// pmpror_log function.
+	if ( ! function_exists( 'pmpror_log' ) ) {
+		function pmpror_log( $message ) {
+			_deprecated_function( __FUNCTION__, '3.2' );
+		}
+	}
+
+	// pmpror_output_log function.
+	if ( ! function_exists( 'pmpror_output_log' ) ) {
+		function pmpror_output_log() {
+			_deprecated_function( __FUNCTION__, '3.2' );
+		}
+	}
+
+	// pmpro_recurring_emails_plugin_row_meta function.
+	if ( ! function_exists( 'pmpro_recurring_emails_plugin_row_meta' ) ) {
+		function pmpro_recurring_emails_plugin_row_meta( $links, $file ) {
+			_deprecated_function( __FUNCTION__, '3.2' );
+			return $links;
+		}
+	}
+}
+add_action( 'plugins_loaded', 'pmpro_recurring_emails_deprecated', 20 );
+
+/**
  * Check for active Add Ons that are not yet MMPU compatible.
  *
  * @since 3.0
@@ -822,7 +888,11 @@ function pmpro_get_deprecated_add_ons() {
 		'pmpro-table-pages' => array(
 			'file' => 'pmpro-table-pages.php',
 			'label' => 'Table Layout Plugin Pages'
-		)
+		),
+		'pmpro-recurring-emails' => array(
+			'file' => 'pmpro-recurring-emails.php',
+			'label' => 'Recurring Emails'
+		),
 	);
 	
 	$deprecated = apply_filters( 'pmpro_deprecated_add_ons_list', $deprecated );
@@ -941,6 +1011,7 @@ add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 
  * The 2Checkout gateway was deprecated in v2.6.
  * Cybersource was deprecated in 2.10.
  * PayPal Website Payments Pro was deprecated in 2.10.
+ * Authorize.net was deprecated in 3.2.
  *
  * This code will add it back those gateways if it was the selected gateway.
  * In future versions, we will remove gateway code entirely.
@@ -957,7 +1028,7 @@ function pmpro_check_for_deprecated_gateways() {
 	}
 	$default_gateway = get_option( 'pmpro_gateway' );
 
-	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal' );
+	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal', 'authorizenet' );
 	foreach ( $deprecated_gateways as $deprecated_gateway ) {
 		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
 			require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_' . $deprecated_gateway . '.php' );

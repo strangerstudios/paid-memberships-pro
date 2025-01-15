@@ -68,6 +68,7 @@
 		$expires_day = intval($_POST['expires_day']);
 		$expires_year = intval($_POST['expires_year']);
 		$uses = intval($_POST['uses']);
+		$one_use_per_user = ! empty( $_POST['one_use_per_user'] ) ? 1 : 0;
 
 		//fix up dates
 		$starts = date("Y-m-d", strtotime($starts_month . "/" . $starts_day . "/" . $starts_year, $now ));
@@ -81,13 +82,15 @@
 				'code' => $code,
 				'starts' => $starts,
 				'expires' => $expires,
-				'uses' => $uses
+				'uses' => $uses,
+				'one_use_per_user' => $one_use_per_user
 			),
 			array(
 				'%d',
 				'%s',
 				'%s',
 				'%s',
+				'%d',
 				'%d'
 			)
 		);
@@ -446,7 +449,7 @@
 
 						<tr>
 							<th scope="row" valign="top"><label for="code"><?php esc_html_e('Code', 'paid-memberships-pro' );?></label></th>
-							<td><input name="code" type="text" size="20" value="<?php echo esc_attr( $code->code ); ?>" /></td>
+							<td><input name="code" id="code" type="text" size="20" value="<?php echo esc_attr( $code->code ); ?>" /></td>
 						</tr>
 
 						<?php
@@ -485,7 +488,7 @@
 						<tr>
 							<th scope="row" valign="top"><label for="starts"><?php esc_html_e('Start Date', 'paid-memberships-pro' );?></label></th>
 							<td>
-								<select name="starts_month">
+								<select name="starts_month" id="starts">
 									<?php
 										for($i = 1; $i < 13; $i++)
 										{
@@ -503,7 +506,7 @@
 						<tr>
 							<th scope="row" valign="top"><label for="expires"><?php esc_html_e('Expiration Date', 'paid-memberships-pro' );?></label></th>
 							<td>
-								<select name="expires_month">
+								<select name="expires_month" id="expires">
 									<?php
 										for($i = 1; $i < 13; $i++)
 										{
@@ -519,10 +522,21 @@
 						</tr>
 
 						<tr>
-							<th scope="row" valign="top"><label for="uses"><?php esc_html_e('Uses', 'paid-memberships-pro' );?></label></th>
+							<th scope="row" valign="top"><label for="uses"><?php esc_html_e( 'Limit Total Uses', 'paid-memberships-pro' );?></label></th>
 							<td>
-								<input name="uses" type="text" size="10" value="<?php if ( ! empty( $code->uses ) ) echo esc_attr( $code->uses ); ?>" />
-								<p class="description"><?php esc_html_e('Leave blank for unlimited uses.', 'paid-memberships-pro' );?></p>
+								<input name="uses" id="uses" type="text" size="10" value="<?php if ( ! empty( $code->uses ) ) echo esc_attr( $code->uses ); ?>" />
+								<p class="description">
+									<?php esc_html_e( 'Define the maximum number of times this discount code can be used across all users.', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e('Leave blank for unlimited uses.', 'paid-memberships-pro' ); ?>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row" valign="top"><label for="one_use_per_user"><?php esc_html_e( 'Limit Per User', 'paid-memberships-pro' );?></label></th>
+							<td>
+								<input name="one_use_per_user" id="one_use_per_user" type="checkbox" value="1" <?php if ( ! empty( $code->one_use_per_user ) ) checked( $code->one_use_per_user, 1 ); ?> />
+								<label for="one_use_per_user"><?php esc_html_e('Restrict this discount code to a single use per unique user.', 'paid-memberships-pro' );?></label>
 							</td>
 						</tr>
 

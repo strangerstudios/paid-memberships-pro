@@ -1890,7 +1890,7 @@ function pmpro_getDiscountCode( $seed = null ) {
  * Is a discount code valid - $level_id could be a scalar or an array (or unset)
  */
 function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = false ) {
-	global $wpdb;
+	global $wpdb, $current_user;
 
 	$error = false;
 	$dbcode = false;
@@ -1938,6 +1938,16 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 			$used = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . esc_sql( $dbcode->id ) . "'" );
 			if ( $used >= $dbcode->uses ) {
 				$error = __( 'This discount code is no longer valid.', 'paid-memberships-pro' );
+			}
+		}
+	}
+
+	// check if this code is limited to one use per user
+	if ( ! $error ) {
+		if ( ! empty( $dbcode->one_use_per_user ) && ! empty( $current_user->ID ) ) {
+			$used = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . esc_sql( $dbcode->id ) . "' AND user_id = '" . esc_sql( $current_user->ID ) . "'" );
+			if ( $used > 0 ) {
+				$error = __( 'You have already used the discount code provided.', 'paid-memberships-pro' );
 			}
 		}
 	}
@@ -3054,6 +3064,12 @@ function pmpro_formatAddress( $name, $address1, $address2, $city, $state, $zip, 
 		}
 
 		$address .= "\n";
+	} elseif ( ! empty( $city ) ) {
+		$address .= $city;
+		if ( ! empty( $zip ) ) {
+			$address .= ' ' . $zip;
+		}
+		$address .= "\n";
 	}
 
 	if ( ! empty( $country ) ) {
@@ -3614,11 +3630,7 @@ function pmpro_getGateway() {
 	}
 
 	// set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-	if ( get_option( 'pmpro_gateway' ) == 'paypal' ) {
-		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( 'paypal', 'paypalexpress' ) );
-	} else {
-		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( get_option( 'pmpro_gateway' ) ) );
-	}
+	$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( get_option( 'pmpro_gateway' ) ) );
 
 	// make sure it's valid
 	if ( ! in_array( $gateway, $valid_gateways ) ) {
@@ -3988,75 +4000,41 @@ function pmpro_show_discount_code() {
  /**
   * Build the order object used at checkout.
   * @since 2.1
+  * @deprecated 3.2
   * @return mixed $order Order object.
   */
  function pmpro_build_order_for_checkout() {
-	global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_requirebilling, $tospage, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_states, $recaptcha, $recaptcha_privatekey, $CVV;
+	_deprecated_function( __FUNCTION__, '3.2' );
 
+	global $gateway, $pmpro_level, $current_user, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $CVV;
+
+	// Create a new order object.
 	$morder                   = new MemberOrder();
 	$morder->user_id          = $current_user->ID;
 	$morder->membership_id    = $pmpro_level->id;
-	$morder->membership_name  = $pmpro_level->name;
-	$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
-	$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
-	$morder->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", current_time( "timestamp" ) );
-	$morder->BillingPeriod    = $pmpro_level->cycle_period;
-	$morder->BillingFrequency = $pmpro_level->cycle_number;
-	if ( $pmpro_level->billing_limit ) {
-		$morder->TotalBillingCycles = $pmpro_level->billing_limit;
-	}
-	if ( pmpro_isLevelTrial( $pmpro_level ) ) {
-		$morder->TrialBillingPeriod    = $pmpro_level->cycle_period;
-		$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
-		$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
-		$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
-	}
-
-	// Credit card values.
-	$morder->cardtype              = $CardType;
-	$morder->accountnumber         = $AccountNumber;
-	$morder->expirationmonth       = $ExpirationMonth;
-	$morder->expirationyear        = $ExpirationYear;
-	$morder->ExpirationDate        = $ExpirationMonth . $ExpirationYear;
-	$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
-	$morder->CVV2                  = $CVV;
-
-	// Not saving email in order table, but the sites need it.
-	$morder->Email = $bemail;
-
-	// Save the user ID if logged in.
-	if ( $current_user->ID ) {
-		$morder->user_id = $current_user->ID;
-	}
-
-	// Sometimes we need these split up.
-	$morder->FirstName = $bfirstname;
-	$morder->LastName  = $blastname;
-	$morder->Address1  = $baddress1;
-	$morder->Address2  = $baddress2;
-
-	// Set other values.
+	$morder->cardtype         = $CardType;
+	$morder->accountnumber    = $AccountNumber;
+	$morder->expirationmonth  = $ExpirationMonth;
+	$morder->expirationyear   = $ExpirationYear;
+	$morder->gateway          = $gateway;
 	$morder->billing          = new stdClass();
 	$morder->billing->name    = $bfirstname . " " . $blastname;
-	$morder->billing->street  = trim( $baddress1 . " " . $baddress2 );
+	$morder->billing->street  = trim( $baddress1 );
+	$morder->billing->street2 = trim( $baddress2 );
 	$morder->billing->city    = $bcity;
 	$morder->billing->state   = $bstate;
 	$morder->billing->country = $bcountry;
 	$morder->billing->zip     = $bzipcode;
 	$morder->billing->phone   = $bphone;
-	$morder->gateway = $gateway;
+
+	// Calculate the order subtotal, tax, and total.
+	$morder->subtotal         = pmpro_round_price( $pmpro_level->initial_payment );
+	$morder->tax              = pmpro_round_price( $morder->getTax( true ) );
+	$morder->total            = pmpro_round_price( $morder->subtotal + $morder->tax );
+
+	// Finish setting up the order.
 	$morder->setGateway();
-
-	// Set up level var.
-	$morder->getMembershipLevelAtCheckout();
-
-	// Set tax.
-	$initial_tax = $morder->getTaxForPrice( $morder->InitialPayment );
-	$recurring_tax = $morder->getTaxForPrice( $morder->PaymentAmount );
-
-	// Set amounts.
-	$morder->initial_amount = pmpro_round_price((float)$morder->InitialPayment + (float)$initial_tax);
-	$morder->subscription_amount = pmpro_round_price((float)$morder->PaymentAmount + (float)$recurring_tax);
+	$morder->getMembershipLevelAtCheckout();	
 
 	// Filter for order, since v1.8
 	$morder = apply_filters( 'pmpro_checkout_order', $morder );
@@ -4477,7 +4455,6 @@ function pmpro_get_ip() {
 			 */
 			$address_chain = explode( ',', sanitize_text_field( $_SERVER[ $header ] ) );
 			$client_ip     = trim( $address_chain[0] );
-
 			break;
 		}
 	}
@@ -4485,14 +4462,14 @@ function pmpro_get_ip() {
 	if ( ! $client_ip ) {
 		return false;
 	}
-	
-	// Check if it's a valid IP address or not.
-	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) || ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-		return false;
-	}
 
 	// Sanitize the IP
 	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
+
+	// Check if it's a valid IPv4 or IPv6 address.
+	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) && ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		return false;
+	}
 
 	return $client_ip;
 }
@@ -4828,6 +4805,27 @@ function pmpro_check_upload( $file_index ) {
 					if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
 						return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
 					}
+
+					// Check the file type against the allowed types.
+					$allowed_mime_types = ! empty( $field->allowed_file_types ) ? array_map( 'sanitize_text_field', explode( ',', $field->allowed_file_types ) ) : array();
+
+					//Remove fullstops from the beginning of the allowed file types.
+					$allowed_mime_types = array_map( function( $type ) {
+						return ltrim( $type, '.' );
+					}, $allowed_mime_types );
+
+					// Check the file type against the allowed types. If empty allowed mimes, assume any file upload is okay.
+					if ( ! empty( $allowed_mime_types ) && ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
+						return new WP_Error( 'pmpro_upload_file_type_error', sprintf( esc_html__( 'Invalid file type. Please try uploading the file type(s): %s', 'paid-memberships-pro' ), implode( ',' ,$allowed_mime_types ) ) );
+					}
+					
+					// Check if the file upload is too big to upload.
+					if ( $field->max_file_size > 0 ) {
+						$upload_max_file_size_in_bytes = $field->max_file_size * 1024 * 1024;
+						if ( $file['size'] > $upload_max_file_size_in_bytes ) {
+							return new WP_Error( 'pmpro_upload_file_size_error', sprintf( esc_html__( 'File size is too large for %s. Please upload files smaller than %dMB.', 'paid-memberships-pro' ), $field->label, $field->max_file_size ) );
+						}
+					}
 				}
 			}
 		}
@@ -4948,4 +4946,90 @@ function pmpro_get_subscription_period_end_date_for_order( $order, $date_format 
 
 	// Format and return the end date.
 	return date_i18n( $date_format, $period_end );
+}
+
+/**
+ * Check if a method is specifically defined in the given object's class, not inherited.
+ *
+ * @since 3.2.2
+ * @param object $object The object to check for the method.
+ * @param string $method_name The name of the method to check.
+ * @return bool True if the method is overridden in the object's class, false otherwise.
+ */
+function pmpro_method_defined_in_class( $object, $method_name ) {
+    // Get the class of the object.
+    $reflection_class = new ReflectionClass( $object );
+
+    // Check if the method exists in this class.
+    if ( !$reflection_class->hasMethod( $method_name ) ) {
+        return false; // The method doesn't exist at all.
+    }
+
+    // Get the method reflection.
+    $method = $reflection_class->getMethod( $method_name );
+
+    // Check if the method's declaring class is the same as the object's class.
+    return $method->getDeclaringClass()->getName() === $reflection_class->getName();
+}
+
+/**
+ * Check if we can check a token order for completion.
+ *
+ * @since 3.3.3
+ *
+ * @param int $order_id The ID of the order to check.
+ * @return bool True if we can check the order for completion, false otherwise.
+ */
+function pmpro_can_check_token_order_for_completion( $order_id ) {
+	// Get the order object.
+	$order = new MemberOrder( $order_id );
+
+	// If the order does not exist, we can't check it.
+	if ( empty( $order->id ) ) {
+		return false;
+	}
+
+	// If the order is not a token order, we can't check it.
+	if ( 'token' !== $order->status ) {
+		return false;
+	}
+
+	// If the order does not have a gateway set, we can't check it.
+	if ( empty( $order->Gateway ) ) {
+		return false;
+	}
+
+	// Check if the order supports checking for completion.
+	return $order->Gateway->supports( 'check_token_orders' );
+}
+
+/**
+ * Check a token order for completion.
+ *
+ * @since 3.3.3
+ *
+ * @param int $order_id The ID of the order to check.
+ * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+ */
+function pmpro_check_token_order_for_completion( $order_id ) {
+	// Get the order object.
+	$order = new MemberOrder( $order_id );
+
+	// If the order does not exist, we can't check it.
+	if ( empty( $order->id ) ) {
+		return __( 'Order not found.', 'paid-memberships-pro' );
+	}
+
+	// If the order is not a token order, we can't check it.
+	if ( 'token' !== $order->status ) {
+		return __( 'Order is not a token order.', 'paid-memberships-pro' );
+	}
+
+	// If the order does not have a gateway set, we can't check it.
+	if ( empty( $order->Gateway ) ) {
+		return __( 'Order gateway not found.', 'paid-memberships-pro' );
+	}
+
+	// Check the order for completion.
+	return $order->Gateway->check_token_order( $order );
 }

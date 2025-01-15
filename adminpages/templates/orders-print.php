@@ -107,9 +107,24 @@
 
 			if ( (float)$order->total > 0 ) {
 				// Pay to.
+				$business_address = get_option( 'pmpro_business_address' );
+				if ( ! empty( $business_address['name'] ) ) {
+					$pay_to = pmpro_formatAddress(
+						$business_address['name'],
+						$business_address['street'],
+						$business_address['street2'],
+						$business_address['city'],
+						$business_address['state'],
+						$business_address['zip'],
+						$business_address['country'],
+						$business_address['phone']
+					);
+				} else {
+					$pay_to = get_option( 'blogname' );
+				}
 				$pmpro_order_single_meta['pay_to'] = array(
 					'label' => __( 'Pay to', 'paid-memberships-pro' ),
-					'value' => get_option( 'blogname' ),
+					'value' => $pay_to,
 				);
 
 				// Bill to.
@@ -118,7 +133,7 @@
 					$pmpro_order_single_meta['bill_to']['value'] = pmpro_formatAddress(
 						$order->billing->name,
 						$order->billing->street,
-						"",
+						$order->billing->street2,
 						$order->billing->city,
 						$order->billing->state,
 						$order->billing->zip,

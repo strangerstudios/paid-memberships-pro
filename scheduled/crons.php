@@ -243,3 +243,137 @@ function pmpro_cron_admin_activity_email() {
 		$pmproemail->sendAdminActivity();
 	}
 }
+
+add_action( 'pmpro_cron_recurring_payment_reminders', 'pmpro_cron_recurring_payment_reminders' );
+function pmpro_cron_recurring_payment_reminders() {
+	global $wpdb;
+
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
+
+	// Clean up errors in the memberships_users table that could cause problems.
+	pmpro_cleanup_memberships_users_table();
+
+	/**
+	 * Filter will set how many days before you want to send, and the template to use.
+	 *
+	 * @filter  pmpro_upcoming_recurring_payment_reminder
+	 *
+	 * @param   array $reminders key = # of days before payment will be charged (7 => 'membership_recurring')
+	 *                                  value = name of template to use w/o extension (membership_recurring.html)
+	 */
+	$emails = apply_filters( 'pmpro_upcoming_recurring_payment_reminder', array(
+		7 => 'membership_recurring',
+	) );
+	ksort( $emails, SORT_NUMERIC );
+
+	// Loop through each reminder and send reminders, keeping track of the previous $days value.
+	$previous_days = 0;
+	foreach ( $emails as $days => $template ) {
+		// Get all subscriptions that will renew between $previous_days and $days.
+		// Also need to check that we haven't already sent this reminder by checking subscription meta.
+		// Can't actually use the PMPro_Subscriptions class here, because it doesn't support searching by next payment date
+		$sqlQuery = $wpdb->prepare(
+			"SELECT subscription.*
+			FROM {$wpdb->pmpro_subscriptions} subscription
+			LEFT JOIN {$wpdb->pmpro_subscriptionmeta} last_next_payment_date 
+				ON subscription.id = last_next_payment_date.pmpro_subscription_id
+				AND last_next_payment_date.meta_key = 'pmprorm_last_next_payment_date'
+			LEFT JOIN {$wpdb->pmpro_subscriptionmeta} last_days
+				ON subscription.id = last_days.pmpro_subscription_id
+				AND last_days.meta_key = 'pmprorm_last_days'
+			WHERE subscription.status = 'active'
+			AND subscription.next_payment_date >= %s
+			AND subscription.next_payment_date < %s
+			AND ( last_next_payment_date.meta_value IS NULL
+				OR last_next_payment_date.meta_value != subscription.next_payment_date
+				OR last_days.meta_value > %d
+			)",
+			date_i18n( 'Y-m-d', strtotime( "+{$previous_days} days", current_time( 'timestamp' ) ) ),
+			date_i18n( 'Y-m-d', strtotime( "+{$days} days", current_time( 'timestamp' ) ) ),
+			$days
+		);
+
+		// Run the query.
+		$subscriptions_to_notify = $wpdb->get_results( $sqlQuery );
+
+		// Make sure that the query was successful.
+		if ( is_wp_error( $subscriptions_to_notify ) ) {
+			continue;
+		}
+
+
+		// Loop through each subscription and send reminder.
+		foreach ( $subscriptions_to_notify as $subscription_to_notify ) {
+			// Get the subscription object.
+			$subscription_obj = new PMPro_Subscription( $subscription_to_notify->id );
+
+			// Get the user.
+			$user = get_userdata( $subscription_obj->get_user_id() );
+			if ( empty( $user ) ) {
+				// No user. Let's update the metadata for the subscription and continue.
+				update_pmpro_subscription_meta( $subscription_obj->get_id(), 'pmprorm_last_next_payment_date', $subscription_to_notify->next_payment_date );
+				update_pmpro_subscription_meta( $subscription_obj->get_id(), 'pmprorm_last_days', $days );
+				continue;
+			}
+
+			/**
+			 * Filter whether to send a recurring payment reminder email.
+			 *
+			 * @since 3.2
+			 *
+			 * @param bool $send_email Whether to send the email. Default is true.
+			 * @param PMPro_Subscription $subscription_obj The subscription object.
+			 * @param int $days The number of days before the next payment that the email is being sent.
+			 */
+			$send_email = apply_filters( 'pmpro_send_recurring_payment_reminder_email', true, $subscription_obj, $days );
+
+			/**
+			 * @filter      pmprorm_send_reminder_to_user
+			 *
+			 * @deprecated 3.2
+			 *
+			 * @param       boolean $send_mail - Whether to send mail or not (true by default)
+			 * @param       WP_User $user - User object being processed
+			 * @param       MembershipOrder $lastorder - Deprecated. Now passing null.
+			 */
+			$send_emails = apply_filters_deprecated( 'pmprorm_send_reminder_to_user', array( $send_email, $user, null ), '3.2' );
+
+			if ( $send_emails ) {
+				// Get the level info.
+				$membership_level = pmpro_getLevel( $subscription_obj->get_membership_level_id() );
+
+				// Send the email.
+				$pmproemail = new PMProEmail();
+				$pmproemail->email    = $user->user_email;
+				$pmproemail->template = $template;
+				$pmproemail->data     = array(
+					'subject'               => $pmproemail->subject,
+					'name'                  => $user->display_name,
+					'user_login'            => $user->user_login,
+					'sitename'              => get_option( 'blogname' ),
+					'membership_id'         => $subscription_obj->get_membership_level_id(),
+					'membership_level_name' => empty( $membership_level ) ? sprintf( __( '[Deleted level #%d]', 'pmpro-recurring-emails' ), $subscription_obj->get_membership_level_id() ) : $membership_level->name,
+					'membership_cost'       => $subscription_obj->get_cost_text(),
+					'billing_amount'        => pmpro_formatPrice( $subscription_obj->get_billing_amount() ),
+					'renewaldate'           => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
+					'siteemail'             => get_option( "pmpro_from_email" ),
+					'login_link'            => wp_login_url(),
+					'display_name'          => $user->display_name,
+					'user_email'            => $user->user_email,
+					'cancel_link'           => wp_login_url( pmpro_url( 'cancel' ) ),
+				);
+				$pmproemail->sendEmail();
+			}
+
+			// Update the subscription meta to prevent duplicate emails.
+			update_pmpro_subscription_meta( $subscription_obj->get_id(), 'pmprorm_last_next_payment_date', $subscription_to_notify->next_payment_date );
+			update_pmpro_subscription_meta( $subscription_obj->get_id(), 'pmprorm_last_days', $days );
+		}
+
+		// Update the previous days value.
+		$previous_days = $days;
+	}
+}
