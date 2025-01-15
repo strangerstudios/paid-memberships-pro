@@ -272,7 +272,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			$settings['pmpro_levels'] = $settings['pmpro_require_membership'];
 			$settings['pmpro_segment'] = 'specific';
 			$settings['pmpro_invert_restrictions'] = '0';
-			$settings['show_noaccess'] = empty( $settings['pmpro_show_noaccess'] ) ? 'no' : 'yes';
+			$settings['show_noaccess'] = empty( $settings['pmpro_no_access_message'] ) ? 'no' : $settings['pmpro_no_access_message'];
 		} elseif ( 1 === count( $settings['pmpro_require_membership'] ) ) {
 			// '0' is the only value in the array. This means that we should restrict to non-members.
 			$settings['pmpro_levels'] = array();
@@ -286,7 +286,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			$all_levels_ids = wp_list_pluck( $all_levels, 'id' );
 
 			// Get the levels that are not in the pmpro_require_membership array.
-			$settings['pmpro_levels'] = array_diff( $all_levels_ids, $settings['pmpro_require_membership'] );
+			$settings['pmpro_levels'] = array_values( array_diff( $all_levels_ids, $settings['pmpro_require_membership'] ) );
 			$settings['pmpro_segment'] = 'specific';
 			$settings['pmpro_invert_restrictions'] = '1';
 			$settings['show_noaccess'] = 'no';
@@ -294,7 +294,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 
 		// Remove the old pmpro_require_membership setting.
 		unset( $settings['pmpro_require_membership'] );
-		unset( $settings['pmpro_show_noaccess'] );
+		unset( $settings['pmpro_no_access_message'] );
 
 		return $settings;
 	}
