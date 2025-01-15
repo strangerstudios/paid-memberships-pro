@@ -865,18 +865,20 @@ const handleActionResponse = (action, responseElement, $actionButton) => {
 
 	// Handle post-install activation prompt
 	if ( action === 'install' ) {
-		const primaryButtons = responseElement.find('.button-primary');
-		if (primaryButtons.length > 0) {
-			const activateButton = primaryButtons[0];
-			const activateButtonHref = activateButton.getAttribute('href');
+		const $primaryButtons = responseElement.find('.button-primary');
+		//Find the activate button and set the action to activate.
+		const $primaryButton = $primaryButtons.filter( function() {
+			return  jQuery(this).attr('href') && jQuery(this).attr('href').indexOf( 'plugins.php?action=activate&plugin=' > 1 );
+		});
 
-			if ( activateButtonHref ) {
-				setTimeout(() => {
-					$actionButton.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
-					$actionButton.siblings('input[name="pmproAddOnAdminActionUrl"]').val(activateButtonHref);
-					$actionButton.html('Activate').removeClass('disabled');
-				}, 1000);
-			}
+		const href = $primaryButton.attr('href');
+
+		if ( href ) {
+			setTimeout(() => {
+				$actionButton.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
+				$actionButton.siblings('input[name="pmproAddOnAdminActionUrl"]').val( href );
+				$actionButton.html('Activate').removeClass('disabled');
+			}, 1000);
 		}
 	}
 };
