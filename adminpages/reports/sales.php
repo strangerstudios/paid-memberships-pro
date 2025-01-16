@@ -887,18 +887,18 @@ function pmpro_report_sales_page()
 				?>
 				<tr>
 					<td><?php echo date_i18n( $tooltip_date_format, strtotime( $row->date ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $row->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $row->new ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $row->renewals ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->total ) ) : esc_html( $row->total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></td>
+					<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->new ) ) : esc_html( $row->new ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->renewals ) ) : esc_html( $row->renewals); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 				</tr>
 				<?php
 			}
 			?>
 			<tr>
 				<td><strong><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></strong></td>
-				<td><strong><?php echo pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'total' ) ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong></td>
-				<td><strong><?php echo pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'new' ) ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong></td>
-				<td><strong><?php echo pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'renewals' ) ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong></td>
+				<td><strong><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'total' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'total' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong></td>
+				<td><strong><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'new' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'new' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong></td>
+				<td><strong><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'renewals' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'renewals' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong></td>
 			</tr>
 		</tbody>
 	</table>
