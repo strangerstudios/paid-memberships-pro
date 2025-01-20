@@ -61,7 +61,7 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return __( "Membership for !!header_name!! at !!site_name!! has been changed", "paid-memberships-pro" );
+		return __( "Your membership at !!sitename!! has been changed", "paid-memberships-pro" );
 	}
 
 	/**
@@ -92,13 +92,13 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 		$user = $this->user;
 		// If the user no longer has a membership level, set the membership_change text to "Membership has been cancelled."
 		if ( ! pmpro_hasMembershipLevel( null,  $this->user->ID ) ) {
-			$membership_changed = __( 'Your membership has been cancelled.', 'paid-memberships-pro' );
+			$membership_change = __( 'Your membership has been cancelled.', 'paid-memberships-pro' );
 		} else {
-			$membership_changed = __( 'You can view your current memberships by logging in and visiting your membership account page.', 'paid-memberships-pro' );
+			$membership_change = __( 'You can view your current memberships by logging in and visiting your membership account page.', 'paid-memberships-pro' );
 		}
 
 		$email_template_variables = array(
-			'membership_changed' => $membership_changed,
+			'membership_change' => $membership_change,
 			'subject' => $this->get_default_subject(),
 			'name' => $user->display_name, 
 			'display_name' => $user->display_name, 

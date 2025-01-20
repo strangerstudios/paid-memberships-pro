@@ -90,13 +90,13 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 		$user = $this->user;
 		// If the user no longer has a membership level, set the membership_change text to "Membership has been cancelled."
 		if ( ! pmpro_hasMembershipLevel( null,  $this->user->ID ) ) {
-			$membership_changed = __( 'The user\'s membership has been cancelled.', 'paid-memberships-pro' );
+			$membership_change = __( 'The user\'s membership has been cancelled.', 'paid-memberships-pro' );
 		} else {
-			$membership_changed = __( 'You can view the user\'s current memberships from their Edit Member page.', 'paid-memberships-pro' );
+			$membership_change = __( 'You can view the user\'s current memberships from their Edit Member page.', 'paid-memberships-pro' );
 		}
 
 		$email_template_variables = array(
-			'membership_changed' => $membership_changed,
+			'membership_change' => $membership_change,
 			'subject' => $this->get_default_subject(),
 			'name' => $user->display_name,
 			'display_name' => $user->display_name,
