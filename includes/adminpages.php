@@ -704,6 +704,10 @@ function pmpro_add_action_links( $links ) {
 		}
 	}
 
+	if ( empty( $top_menu_page ) ) {
+		return $links;
+	}
+
 	$new_links = array(
 		'<a href="' . admin_url( 'admin.php?page=' . $top_menu_page ) . '">Settings</a>',
 	);
