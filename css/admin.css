@@ -3377,6 +3377,14 @@ button.pmpro_report_th_closed:before {
 	width: 100%;
 }
 
+.pmpro_table_area table {
+	max-width: 900px;
+}
+
+.pmpro_table_area tfoot th {
+	font-weight: 700;
+}
+
 /**
  * Dashboard admin page
  */
