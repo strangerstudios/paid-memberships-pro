@@ -297,6 +297,14 @@ function pmpro_report_sales_page()
 		$startdate = date( 'Y-m-01', strtotime( current_time( 'mysql' ) . ' -12 month' ) );
 		// Set the end date to the last day of the previous month.
 		$enddate = date('Y-m-t', strtotime( current_time( 'mysql' ) . ' -1 month' ) );
+	} else if ( $period === 'custom' ) {
+		// Set up the report unit to use.
+		$report_unit = 'DAY';
+		$axis_date_format = 'd';
+		$tooltip_date_format = get_option( 'date_format' );
+		// Set up the start and end dates.
+		$startdate = sanitize_text_field( $_REQUEST['custom_start_date'] );
+		$enddate = sanitize_text_field( $_REQUEST['custom_end_date'] );
 	} else {
 		// Set up the report unit to use.
 		$report_unit = 'YEAR';
@@ -626,6 +634,7 @@ function pmpro_report_sales_page()
 				<option value='7days' <?php selected( $period, '7days' ); ?>><?php esc_html_e( 'Last 7 Days', 'paid-memberships-pro' ); ?></option>
 				<option value='30days' <?php selected( $period, '30days' ); ?>><?php esc_html_e( 'Last 30 Days', 'paid-memberships-pro' ); ?></option>
 				<option value='12months' <?php selected( $period, '12months' ); ?>><?php esc_html_e( 'Last 12 Months', 'paid-memberships-pro' ); ?></option>
+				<option value='custom' <?php selected( $period, 'custom' ); ?>><?php esc_html_e( 'Custom Range', 'paid-memberships-pro' ); ?></option>
 			</select>
 			<label for="type" class="screen-reader-text"><?php esc_html_e( 'Select report type', 'paid-memberships-pro' ); ?></label>
 			<select id="type" name="type">
@@ -645,6 +654,12 @@ function pmpro_report_sales_page()
 					<option value="<?php echo esc_attr( $i );?>" <?php selected($year, $i);?>><?php echo esc_html( $i );?></option>
 				<?php } ?>
 			</select>
+			<span class="pmpro_report-filter-text pmpro-sales-report-custom"><?php esc_html_e('from', 'paid-memberships-pro' )?></span>
+			<label for="custom_start_date" class="screen-reader-text pmpro-sales-report-custo"><?php esc_html_e( 'Select report start date', 'paid-memberships-pro' ); ?></label>
+			<input type="date" id="custom_start_date" name="custom_start_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( $startdate ); ?>" />
+			<span class="pmpro_report-filter-text pmpro-sales-report-custom"><?php esc_html_e('to', 'paid-memberships-pro' )?></span>
+			<label for="custom_end_date" class="screen-reader-text pmpro-sales-report-custo"><?php esc_html_e( 'Select report end date', 'paid-memberships-pro' ); ?></label>
+			<input type="date" id="custom_end_date" name="custom_end_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( $enddate ); ?>" />
 			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 			<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
 			<select id="level" name="level[]" multiple>
@@ -717,18 +732,27 @@ function pmpro_report_sales_page()
 				jQuery('#for').show();
 				jQuery('#month').show();
 				jQuery('#year').show();
+				jQuery('.pmpro-sales-report-custom').hide();
 			}
 			else if(period == 'monthly')
 			{
 				jQuery('#for').show();
 				jQuery('#month').hide();
 				jQuery('#year').show();
+				jQuery('.pmpro-sales-report-custom').hide();
+			}
+			else if ( period == 'custom' ) {
+				jQuery('.pmpro-sales-report-custom').show();
+				jQuery('#for').hide();
+				jQuery('#month').hide();
+				jQuery('#year').hide();
 			}
 			else
 			{
 				jQuery('#for').hide();
 				jQuery('#month').hide();
 				jQuery('#year').hide();
+				jQuery('.pmpro-sales-report-custom').hide();
 			}
 		}
 
