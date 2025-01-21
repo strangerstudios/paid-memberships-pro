@@ -363,7 +363,7 @@ function pmpro_report_memberships_page() {
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro' ); ?></h3>
 		<div class="tablenav top">
-			<span><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></span>
+			<span class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></span>
 			<label for="period" class="screen-reader-text"><?php esc_html_e( 'Select report time period', 'paid-memberships-pro' ); ?></label>
 			<select id="period" name="period">
 				<option value="daily" <?php selected( $period, 'daily' ); ?>><?php esc_html_e( 'Daily', 'paid-memberships-pro' ); ?></option>
@@ -376,7 +376,7 @@ function pmpro_report_memberships_page() {
 				<option value="signup_v_cancel" <?php selected( $type, 'signup_v_cancel' ); ?>><?php esc_html_e( 'Signups vs. Cancellations', 'paid-memberships-pro' ); ?></option>
 				<option value="signup_v_expiration" <?php selected( $type, 'signup_v_expiration' ); ?>><?php esc_html_e( 'Signups vs. Expirations', 'paid-memberships-pro' ); ?></option>
 			</select>
-			<span id="for"><?php esc_html_e( 'for', 'paid-memberships-pro' ); ?></span>
+			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e( 'for', 'paid-memberships-pro' ); ?></span>
 			<label for="month" class="screen-reader-text"><?php esc_html_e( 'Select report month', 'paid-memberships-pro' ); ?></label>
 			<select id="month" name="month">
 				<?php for ( $i = 1; $i < 13; $i++ ) { ?>
@@ -389,7 +389,7 @@ function pmpro_report_memberships_page() {
 					<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $year, $i ); ?>><?php echo esc_html( $i ); ?></option>
 				<?php } ?>
 			</select>
-			<span id="for"><?php esc_html_e( 'for', 'paid-memberships-pro' ); ?></span>
+			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e( 'for', 'paid-memberships-pro' ); ?></span>
 			<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
 			<select id="level" name="level">
 				<option value="" 
@@ -441,11 +441,10 @@ function pmpro_report_memberships_page() {
 				<?php } ?>
 			</select>
 			<?php } ?>
-			<input type="hidden" name="page" value="pmpro-reports" />
-			<input type="hidden" name="report" value="memberships" />
-			<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Generate Report', 'paid-memberships-pro' ); ?>" />
-			<br class="clear" />
 		</div> <!-- end tablenav -->
+		<input type="hidden" name="page" value="pmpro-reports" />
+		<input type="hidden" name="report" value="memberships" />
+		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Generate Report', 'paid-memberships-pro' ); ?>" />
 	</div> <!-- end pmpro_report-filters -->
 	<div class="pmpro_chart_area">
 		<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
