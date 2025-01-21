@@ -527,41 +527,45 @@ function pmpro_report_memberships_page() {
 	<?php
 	// Show a table with all of the raw data.
 	?>
-	<table class="widefat">
-		<thead>
-			<tr>
-				<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Signups', 'paid-memberships-pro' ); ?></th>
-				<th><?php echo esc_html( $cancellations_label ); ?></th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php
-			foreach ( $dates as $key => $value ) {
-				?>
+	<div class="pmpro_table_area">
+		<table class="widefat striped">
+			<thead>
 				<tr>
-					<td><?php
-						if ( $period == 'monthly' ) {
-							echo esc_html( date_i18n( 'M', mktime( 0, 0, 0, $value->date, 2 ) ) );
-						} elseif ( $period == 'daily' ) {
-							echo esc_html( $key );
-						} else {
-							echo esc_html( $value->date );
-						}
-						?></td>
-					<td><?php echo esc_html( $value->signups ); ?></td>
-					<td><?php echo esc_html( $value->cancellations ); ?></td>
+					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Signups', 'paid-memberships-pro' ); ?></th>
+					<th><?php echo esc_html( $cancellations_label ); ?></th>
 				</tr>
+			</thead>
+			<tbody>
 				<?php
-			}
-			?>
-			<tr>
-				<td><strong><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></strong></td>
-				<td><strong><?php echo esc_html( array_sum( wp_list_pluck( $dates, 'signups' ) ) ); ?></strong></td>
-				<td><strong><?php echo esc_html( array_sum( wp_list_pluck( $dates, 'cancellations' ) ) ); ?></strong></td>
-			</tr>
-		</tbody>
-	</table>
+					foreach ( $dates as $key => $value ) {
+					?>
+					<tr>
+						<th scope="row"><?php
+							if ( $period == 'monthly' ) {
+								echo esc_html( date_i18n( 'F Y', mktime( 0, 0, 0, $value->date, 2 ) ) );
+							} elseif ( $period == 'daily' ) {
+								echo esc_html( $key );
+							} else {
+								echo esc_html( $value->date );
+							}
+							?></th>
+						<td><?php echo esc_html( $value->signups ); ?></td>
+						<td><?php echo esc_html( $value->cancellations ); ?></td>
+					</tr>
+					<?php
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
+					<th><?php echo esc_html( array_sum( wp_list_pluck( $dates, 'signups' ) ) ); ?></th>
+					<th><?php echo esc_html( array_sum( wp_list_pluck( $dates, 'cancellations' ) ) ); ?></th>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
 	<?php
 }
 
