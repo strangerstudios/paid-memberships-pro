@@ -1,15 +1,15 @@
-# Copyright (C) 2024 Paid Memberships Pro
+# Copyright (C) 2025 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.3.2\n"
+"Project-Id-Version: Paid Memberships Pro 3.3.3\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-11-21T16:32:30+00:00\n"
+"POT-Creation-Date: 2025-01-08T17:43:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -42,12 +42,14 @@ msgstr ""
 #: includes/functions.php:4811
 #: includes/functions.php:4821
 #: includes/functions.php:4820
+#: includes/functions.php:4826
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr ""
 
 #: includes/functions.php:4804
 #: includes/functions.php:4814
 #: includes/functions.php:4813
+#: includes/functions.php:4819
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr ""
 
@@ -99,84 +101,103 @@ msgid "Your membership at !!sitename!! will renew soon"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:162
+#: includes/cloudflare-turnstile.php:168
 msgid "An internal error happened while validating the response. The request can be retried."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:161
+#: includes/cloudflare-turnstile.php:167
 msgid "The response parameter (token) has already been validated before. This means that the token was issued five minutes ago and is no longer valid, or it was already redeemed."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:160
+#: includes/cloudflare-turnstile.php:166
 msgid "The request was rejected because it was malformed."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:159
+#: includes/cloudflare-turnstile.php:165
 msgid "The response parameter (token) is invalid or has expired. Most of the time, this means a fake token has been used. If the error persists, contact customer support."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:158
+#: includes/cloudflare-turnstile.php:164
 msgid "The response parameter (token) was not passed."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:157
+#: includes/cloudflare-turnstile.php:163
 msgid "The secret parameter was invalid or did not exist."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:156
+#: includes/cloudflare-turnstile.php:162
 msgid "The secret parameter was not passed."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:117
+#: includes/cloudflare-turnstile.php:123
 msgid "Turnstile Secret Key"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:111
+#: includes/cloudflare-turnstile.php:117
 msgid "Turnstile Site Key"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:107
+#: includes/cloudflare-turnstile.php:113
 msgid "Click here to signup for CloudFlare Turnstile"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:107
+#: includes/cloudflare-turnstile.php:113
 msgid "A free CloudFlare Turnstile key is required."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:100
+#: includes/cloudflare-turnstile.php:106
 msgid "Use CloudFlare Turnstile?"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:71
+#: includes/cloudflare-turnstile.php:76
 msgid "An error occurred while validating the security check."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:52
+#: includes/cloudflare-turnstile.php:57
 msgid "Please complete the security check."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2322
 #: classes/gateways/class.pmprogateway_stripe.php:2340
 #: classes/gateways/class.pmprogateway_stripe.php:2336
+#: classes/gateways/class.pmprogateway_stripe.php:2337
 msgid "Your site is using API keys to authenticate with Stripe."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2315
 #: classes/gateways/class.pmprogateway_stripe.php:2333
 #: classes/gateways/class.pmprogateway_stripe.php:2329
+#: classes/gateways/class.pmprogateway_stripe.php:2330
 msgid "Legacy API keys will eventually no longer be supported. To continue processing payments with Stripe, you may connect via Stripe Connect below or connect using \"restricted API keys\"."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2302
 #: classes/gateways/class.pmprogateway_stripe.php:2320
 #: classes/gateways/class.pmprogateway_stripe.php:2316
+#: classes/gateways/class.pmprogateway_stripe.php:2317
 msgid "Connected with API Keys"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:316
+#: classes/gateways/class.pmprogateway_stripe.php:317
 msgid "Click here to connect via API settings."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:312
+#: classes/gateways/class.pmprogateway_stripe.php:313
 msgid "Stripe API Settings"
 msgstr ""
 
@@ -271,6 +292,7 @@ msgstr ""
 
 #: adminpages/orders.php:503
 #: includes/privacy.php:253
+#: adminpages/orders.php:524
 msgid "Billing Street 2"
 msgstr ""
 
@@ -354,31 +376,37 @@ msgid "Business Settings"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:492
+#: classes/gateways/class.pmprogateway_stripe.php:493
 msgid "Some event types have not yet been triggered in Stripe. More information will be available here once Stripe attempts to send webhooks for each event type. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1282
 #: classes/gateways/class.pmprogateway_stripe.php:1278
+#: classes/gateways/class.pmprogateway_stripe.php:1279
 msgid "Enable webhooks now"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1277
 #: classes/gateways/class.pmprogateway_stripe.php:1273
+#: classes/gateways/class.pmprogateway_stripe.php:1274
 msgid "Important Notice: Stripe Webhooks Are Disabled"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1268
 #: classes/gateways/class.pmprogateway_stripe.php:1264
+#: classes/gateways/class.pmprogateway_stripe.php:1265
 msgid "Set up webhooks now"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1266
 #: classes/gateways/class.pmprogateway_stripe.php:1262
+#: classes/gateways/class.pmprogateway_stripe.php:1263
 msgid "A valid Stripe webhook is required for your membership checkout to communicate with your payment gateway. We have detected that your Stripe webhook is either disabled or not configured for this website."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1263
 #: classes/gateways/class.pmprogateway_stripe.php:1259
+#: classes/gateways/class.pmprogateway_stripe.php:1260
 msgid "Important Notice: Your Stripe Webhook Is Disabled or Not Configured"
 msgstr ""
 
@@ -591,6 +619,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypal.php:179
 #: classes/gateways/class.pmprogateway_paypalexpress.php:548
 #: classes/gateways/class.pmprogateway_paypalstandard.php:166
+#: classes/gateways/class.pmprogateway_paypalexpress.php:553
 msgid "Check Out With %s"
 msgstr ""
 
@@ -967,6 +996,7 @@ msgid "Security"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:414
+#: classes/gateways/class.pmprogateway_stripe.php:415
 msgid "Webhook History"
 msgstr "Web Kancaları Geçmişi"
 
@@ -990,14 +1020,17 @@ msgstr "test"
 #: classes/gateways/class.pmprogateway_stripe.php:2151
 #: classes/gateways/class.pmprogateway_stripe.php:2161
 #: classes/gateways/class.pmprogateway_stripe.php:2157
+#: classes/gateways/class.pmprogateway_stripe.php:2158
 msgid "Stripe login credentials are not set."
 msgstr "Stripe oturum açma kimlik bilgileri ayarlanmamış."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1010
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1011
 msgid "Subscription transaction ID is empty."
 msgstr "Abonelik işlem kimliği boş."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1005
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1006
 msgid "PayPal login credentials are not set."
 msgstr "PayPal giriş bilgileri ayarlanmamış."
 
@@ -2114,10 +2147,12 @@ msgstr "%1$s &lsaquo; %2$s &#8212; WordPress"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1365
 #: classes/gateways/class.pmprogateway_stripe.php:1361
+#: classes/gateways/class.pmprogateway_stripe.php:1362
 msgid "I Have Set Up My Webhooks"
 msgstr "Webhook'larımı Kurdum"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1051
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1052
 msgid "Subscription could not be found."
 msgstr "Abonelik bulunamadı."
 
@@ -2230,11 +2265,13 @@ msgstr "Ağ geçidi sınıfı bulunamadı."
 
 #. translators: %s is the subscription transaction ID.
 #: classes/class-pmpro-orders-list-table.php:1221
+#: classes/class-pmpro-orders-list-table.php:1230
 msgid "Subscription: %s"
 msgstr "Abonelik: %s"
 
 #. translators: %s is the payment transaction ID.
 #: classes/class-pmpro-orders-list-table.php:1211
+#: classes/class-pmpro-orders-list-table.php:1220
 msgid "Payment: %s"
 msgstr "Ödeme: %s"
 
@@ -2371,18 +2408,22 @@ msgstr "Birincil Üyelik Sayfası Ayarları"
 #: adminpages/subscriptions.php:230
 #: adminpages/subscriptions.php:301
 #: adminpages/subscriptions.php:316
+#: adminpages/orders.php:866
 msgid "View Subscription"
 msgstr "Aboneliği Görüntüle"
 
 #: adminpages/orders.php:708
+#: adminpages/orders.php:729
 msgid "Only the last 4 digits are stored in this site to use as a reference with the gateway."
 msgstr "Ağ geçidinde referans olarak kullanılmak üzere bu sitede yalnızca son 4 hane saklanır."
 
 #: adminpages/orders.php:436
+#: adminpages/orders.php:457
 msgid "ID %d [deleted]"
 msgstr "ID %d [silindi]"
 
 #: adminpages/orders.php:328
+#: adminpages/orders.php:349
 msgid "Order Information"
 msgstr "Sipariş Bilgileri"
 
@@ -2938,12 +2979,14 @@ msgstr "Üyelikler Alanı Menüsü"
 #: includes/functions.php:4830
 #: includes/functions.php:4840
 #: includes/functions.php:4839
+#: includes/functions.php:4845
 msgid "Invalid file submission."
 msgstr "Geçersiz dosya gönderimi."
 
 #: includes/functions.php:4785
 #: includes/functions.php:4795
 #: includes/functions.php:4794
+#: includes/functions.php:4800
 msgid "Invalid field input."
 msgstr "Geçersiz alan girişi."
 
@@ -2953,18 +2996,22 @@ msgstr "Geçersiz alan girişi."
 #: includes/functions.php:4801
 #: includes/functions.php:4779
 #: includes/functions.php:4800
+#: includes/functions.php:4785
+#: includes/functions.php:4806
 msgid "Invalid file type."
 msgstr "Geçersiz dosya türü."
 
 #: includes/functions.php:4763
 #: includes/functions.php:4773
 #: includes/functions.php:4772
+#: includes/functions.php:4778
 msgid "No file name found."
 msgstr "Dosya adı bulunamadı."
 
 #: includes/functions.php:4757
 #: includes/functions.php:4767
 #: includes/functions.php:4766
+#: includes/functions.php:4772
 msgid "No file was uploaded."
 msgstr "Hiç dosya yüklenmedi."
 
@@ -3015,41 +3062,49 @@ msgstr "Erişim yok mesajını göster"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1362
 #: classes/gateways/class.pmprogateway_stripe.php:1358
+#: classes/gateways/class.pmprogateway_stripe.php:1359
 msgid "You must complete these steps for both the Sandbox/Testing and Live/Production modes if you intend to use Stripe for testing."
 msgstr "Stripe'ı test için kullanmak istiyorsanız bu adımları hem Sandbox/Test hem de Canlı/Üretim modları için tamamlamanız gerekir."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1359
 #: classes/gateways/class.pmprogateway_stripe.php:1355
+#: classes/gateways/class.pmprogateway_stripe.php:1356
 msgid "Click \"Add endpoint\" to save your webhook"
 msgstr "Web kancanızı kaydetmek için \"Uç nokta ekle \"ye tıklayın"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1349
 #: classes/gateways/class.pmprogateway_stripe.php:1345
+#: classes/gateways/class.pmprogateway_stripe.php:1346
 msgid "Select the following events to listen to:"
 msgstr "Dinlemek için aşağıdaki etkinlikleri seçin:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1345
 #: classes/gateways/class.pmprogateway_stripe.php:1341
+#: classes/gateways/class.pmprogateway_stripe.php:1342
 msgid "Paste the following value into the \"Endpoint URL\" field:"
 msgstr "Aşağıdaki değeri \"Bitiş Noktası URL'si\" alanına yapıştırın:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1343
 #: classes/gateways/class.pmprogateway_stripe.php:1339
+#: classes/gateways/class.pmprogateway_stripe.php:1340
 msgid "Click \"Add an endpoint\""
 msgstr "\"Uç nokta ekle\" ye tıklayın"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1339
 #: classes/gateways/class.pmprogateway_stripe.php:1335
+#: classes/gateways/class.pmprogateway_stripe.php:1336
 msgid "Webhooks"
 msgstr "Web kancaları"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1338
 #: classes/gateways/class.pmprogateway_stripe.php:1334
+#: classes/gateways/class.pmprogateway_stripe.php:1335
 msgid "Open the %s page in your Stripe dashboard"
 msgstr "Stripe kontrol panelinizde %s sayfasını açın"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1332
 #: classes/gateways/class.pmprogateway_stripe.php:1328
+#: classes/gateways/class.pmprogateway_stripe.php:1329
 msgid "Here's how to create a webhook endpoint in your Stripe dashboard"
 msgstr "Stripe kontrol panelinizde bir web kancası uç noktasını nasıl oluşturacağınız aşağıda açıklanmıştır"
 
@@ -3057,17 +3112,21 @@ msgstr "Stripe kontrol panelinizde bir web kancası uç noktasını nasıl oluş
 #: classes/gateways/class.pmprogateway_stripe.php:1331
 #: classes/gateways/class.pmprogateway_stripe.php:1276
 #: classes/gateways/class.pmprogateway_stripe.php:1327
+#: classes/gateways/class.pmprogateway_stripe.php:1277
+#: classes/gateways/class.pmprogateway_stripe.php:1328
 msgid "In order for Stripe to function properly, there must be a Stripe Webhook configured for this website."
 msgstr "Stripe'ın düzgün çalışabilmesi için, bu web sitesi için yapılandırılmış bir Stripe Webhook olmalıdır."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1328
 #: classes/gateways/class.pmprogateway_stripe.php:1324
+#: classes/gateways/class.pmprogateway_stripe.php:1325
 msgid "Next Step: Register a Stripe Webhook."
 msgstr "Sonraki Adım: Bir Stripe Webhook kaydedin."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2353
 #: classes/gateways/class.pmprogateway_stripe.php:2371
 #: classes/gateways/class.pmprogateway_stripe.php:2367
+#: classes/gateways/class.pmprogateway_stripe.php:2368
 msgid "This will disconnect all sites using this Stripe account from Stripe in test mode only."
 msgstr "Bu, bu Stripe hesabını kullanan tüm sitelerin Stripe ile bağlantısını yalnızca test modunda kesecektir."
 
@@ -3133,6 +3192,7 @@ msgstr "Potansiyel Spam Çıkışlar"
 #: classes/gateways/class.pmprogateway_stripe.php:2386
 #: classes/gateways/class.pmprogateway_stripe.php:2404
 #: classes/gateways/class.pmprogateway_stripe.php:2400
+#: classes/gateways/class.pmprogateway_stripe.php:2401
 msgid "Learn More"
 msgstr "Daha fazla öğren"
 
@@ -3141,6 +3201,7 @@ msgstr "Daha fazla öğren"
 #: pages/checkout.php:167
 #: pages/checkout.php:491
 #: classes/gateways/class.pmprogateway_stripe.php:946
+#: classes/gateways/class.pmprogateway_stripe.php:947
 msgid "Apply discount code"
 msgstr "İndirim kodu uygula"
 
@@ -3538,12 +3599,14 @@ msgstr "Spam Koruması Devre Dışı"
 #: classes/gateways/class.pmprogateway_stripe.php:2921
 #: classes/gateways/class.pmprogateway_stripe.php:2939
 #: classes/gateways/class.pmprogateway_stripe.php:2935
+#: classes/gateways/class.pmprogateway_stripe.php:2936
 msgid "Cannot find payment method."
 msgstr "Ödeme yöntemi bulunamıyor."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2032
 #: classes/gateways/class.pmprogateway_stripe.php:2042
 #: classes/gateways/class.pmprogateway_stripe.php:2038
+#: classes/gateways/class.pmprogateway_stripe.php:2039
 msgid "No subscription transaction ID."
 msgstr "Abonelik işlem kimliği yok."
 
@@ -3629,6 +3692,7 @@ msgstr "Site URL Değişikliği Tespit Edildi"
 #: classes/gateways/class.pmprogateway_stripe.php:2382
 #: classes/gateways/class.pmprogateway_stripe.php:2400
 #: classes/gateways/class.pmprogateway_stripe.php:2396
+#: classes/gateways/class.pmprogateway_stripe.php:2397
 msgid "Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges."
 msgstr "Not: Ücretsiz Stripe ödeme ağ geçidi entegrasyonunu kullanıyorsunuz. Ödeme işlemleri için Stripe'ın aldığı ücretin üzerinde ek bir ücret yoktur."
 
@@ -3638,64 +3702,79 @@ msgstr "Faturalandırmayı yönetin"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1717
 #: classes/gateways/class.pmprogateway_stripe.php:1713
+#: classes/gateways/class.pmprogateway_stripe.php:1714
 msgid "User is not logged in."
 msgstr "Kullanıcı oturum açmamış."
 
 #: classes/gateways/class.pmprogateway_stripe.php:644
 #: classes/gateways/class.pmprogateway_stripe.php:640
+#: classes/gateways/class.pmprogateway_stripe.php:641
 msgid "Collect Tax IDs in Stripe Checkout"
 msgstr "Stripe Checkout'ta Vergi Kimliklerini Toplama"
 
 #: classes/gateways/class.pmprogateway_stripe.php:622
 #: classes/gateways/class.pmprogateway_stripe.php:618
+#: classes/gateways/class.pmprogateway_stripe.php:619
 msgid "Calculate Tax in Stripe Checkout"
 msgstr "Stripe Checkout'ta Vergi Hesaplama"
 
 #: classes/gateways/class.pmprogateway_stripe.php:563
 #: classes/gateways/class.pmprogateway_stripe.php:559
+#: classes/gateways/class.pmprogateway_stripe.php:560
 msgid "Show Payment Request Button for On-Site Payments"
 msgstr "Yerinde Ödemeler için Ödeme Talebi Düğmesini Göster"
 
 #: classes/gateways/class.pmprogateway_stripe.php:549
 #: classes/gateways/class.pmprogateway_stripe.php:545
+#: classes/gateways/class.pmprogateway_stripe.php:546
 msgid "Show Billing Address Fields in PMPro Checkout Form"
 msgstr "PMPro Ödeme Formunda Fatura Adresi Alanlarını Göster"
 
 #: classes/gateways/class.pmprogateway_stripe.php:544
 #: classes/gateways/class.pmprogateway_stripe.php:540
+#: classes/gateways/class.pmprogateway_stripe.php:541
 msgid "Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout). If using Stripe Checkout, be sure that all webhook events listed above are set up in Stripe."
 msgstr "Ödeme bilgileri alanlarını Üyelik Ödeme sayfanıza yerleştirin veya Stripe tarafından barındırılan ödeme sayfasını (Stripe Checkout) kullanın. Stripe Checkout kullanıyorsanız, yukarıda listelenen tüm web kancası olaylarının Stripe'ta ayarlandığından emin olun."
 
 #: classes/gateways/class.pmprogateway_stripe.php:502
+#: classes/gateways/class.pmprogateway_stripe.php:503
 msgid "Last Received"
 msgstr "Son Alınan"
 
 #: classes/gateways/class.pmprogateway_stripe.php:501
+#: classes/gateways/class.pmprogateway_stripe.php:502
 msgid "Event Type"
 msgstr "Olay Türü"
 
 #: classes/gateways/class.pmprogateway_stripe.php:494
+#: classes/gateways/class.pmprogateway_stripe.php:495
 msgid "All webhooks appear to be working correctly."
 msgstr "Tüm web kancaları düzgün çalışıyor gibi görünüyor."
 
 #: classes/gateways/class.pmprogateway_stripe.php:490
+#: classes/gateways/class.pmprogateway_stripe.php:491
 msgid "Some webhooks recently sent by Stripe have not been received by your website. Please ensure that you have a webhook set up in Stripe for the Webhook URL shown above with all of the listed event types active. To test an event type again, please resend the most recent webhook event of that type from the Stripe webhook settings page or wait for it to be sent again in the future."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:472
+#: classes/gateways/class.pmprogateway_stripe.php:473
 msgid "Last Sent "
 msgstr "Son Gönderilen "
 
 #: classes/gateways/class.pmprogateway_stripe.php:469
 #: classes/gateways/class.pmprogateway_stripe.php:481
+#: classes/gateways/class.pmprogateway_stripe.php:470
+#: classes/gateways/class.pmprogateway_stripe.php:482
 msgid "Working"
 msgstr "Çalışıyor"
 
 #: classes/gateways/class.pmprogateway_stripe.php:432
+#: classes/gateways/class.pmprogateway_stripe.php:433
 msgid "Never Received"
 msgstr "Hiç Alınmadı"
 
 #: classes/gateways/class.pmprogateway_stripe.php:374
+#: classes/gateways/class.pmprogateway_stripe.php:375
 msgid "Webhook Status"
 msgstr "Web Kancası Durumu"
 
@@ -4006,6 +4085,7 @@ msgstr "Bu üye için kullanıcı alanları eklenemiyor/güncellenemiyor"
 
 #: classes/gateways/class.pmprogateway_stripe.php:999
 #: classes/gateways/class.pmprogateway_stripe.php:995
+#: classes/gateways/class.pmprogateway_stripe.php:996
 msgid "Stripe Customer"
 msgstr "Stripe Müşteri"
 
@@ -4013,6 +4093,8 @@ msgstr "Stripe Müşteri"
 #: classes/gateways/class.pmprogateway_paypal.php:183
 #: classes/gateways/class.pmprogateway_paypalexpress.php:552
 #: classes/gateways/class.pmprogateway_paypalstandard.php:170
+#: classes/class-pmpro-orders-list-table.php:1147
+#: classes/gateways/class.pmprogateway_paypalexpress.php:557
 msgid "PayPal"
 msgstr "PayPal"
 
@@ -4456,6 +4538,7 @@ msgstr "%s lisansı ile %s ve daha fazlasını alın."
 #: adminpages/membershiplevels.php:560
 #: classes/gateways/class.pmprogateway_stripe.php:1326
 #: classes/gateways/class.pmprogateway_stripe.php:1322
+#: classes/gateways/class.pmprogateway_stripe.php:1323
 msgid "Close Popup"
 msgstr "Açılır Pencereyi Kapat"
 
@@ -4523,6 +4606,7 @@ msgstr "Ücretli Üyelikler Pro Giriş Sayfası"
 #: classes/gateways/class.pmprogateway_stripe.php:2323
 #: classes/gateways/class.pmprogateway_stripe.php:2341
 #: classes/gateways/class.pmprogateway_stripe.php:2337
+#: classes/gateways/class.pmprogateway_stripe.php:2338
 msgid "In order to complete the transition to using Stripe API keys, please click the \"Disconnect from Stripe\" button below."
 msgstr ""
 
@@ -4591,6 +4675,7 @@ msgstr "Üyelerin üyeliklerini ve varsa aktif aboneliklerini iptal edebilecekle
 
 #: classes/gateways/class.pmprogateway_stripe.php:916
 #: classes/gateways/class.pmprogateway_stripe.php:912
+#: classes/gateways/class.pmprogateway_stripe.php:913
 msgid "Credit Card"
 msgstr "Kredi Kartı"
 
@@ -4689,128 +4774,155 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3896
 #: classes/gateways/class.pmprogateway_stripe.php:3879
 #: classes/gateways/class.pmprogateway_stripe.php:3881
+#: classes/gateways/class.pmprogateway_stripe.php:3880
+#: classes/gateways/class.pmprogateway_stripe.php:3882
 msgid "Admin: There was a problem processing the refund"
 msgstr "Yönetici: Geri ödemenin işlenmesinde bir sorun oluştu"
 
 #: classes/gateways/class.pmprogateway_stripe.php:3872
 #: classes/gateways/class.pmprogateway_stripe.php:3890
 #: classes/gateways/class.pmprogateway_stripe.php:3875
+#: classes/gateways/class.pmprogateway_stripe.php:3876
 msgid "Admin: An error occurred while attempting to process this refund."
 msgstr "Yönetici: Bu para iadesi işlenmeye çalışılırken bir hata oluştu."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1741
 #: classes/gateways/class.pmprogateway_stripe.php:1737
+#: classes/gateways/class.pmprogateway_stripe.php:1738
 msgid "Please contact the site administrator."
 msgstr "Lütfen site yöneticisi ile iletişime geçin."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1736
 #: classes/gateways/class.pmprogateway_stripe.php:1732
+#: classes/gateways/class.pmprogateway_stripe.php:1733
 msgid "Could not get Customer Portal URL. This feature may not be set up in Stripe."
 msgstr "Müşteri Portalı URL'si alınamadı. Bu özellik Stripe'ta ayarlanmamış olabilir."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1725
 #: classes/gateways/class.pmprogateway_stripe.php:1721
+#: classes/gateways/class.pmprogateway_stripe.php:1722
 msgid "Could not get Stripe customer for user."
 msgstr "Kullanıcı için Stripe müşterisi alınamadı."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1683
 #: classes/gateways/class.pmprogateway_stripe.php:1687
 #: classes/gateways/class.pmprogateway_stripe.php:1679
+#: classes/gateways/class.pmprogateway_stripe.php:1680
+#: classes/gateways/class.pmprogateway_stripe.php:1684
 msgid "Could not create checkout session. "
 msgstr "Ödeme oturumu oluşturulamadı. "
 
 #: classes/gateways/class.pmprogateway_stripe.php:1600
 #: classes/gateways/class.pmprogateway_stripe.php:1596
+#: classes/gateways/class.pmprogateway_stripe.php:1597
 msgid "Could not get price for recurring payment. "
 msgstr "Yinelenen ödeme için fiyat alınamadı. "
 
 #: classes/gateways/class.pmprogateway_stripe.php:1573
 #: classes/gateways/class.pmprogateway_stripe.php:1569
+#: classes/gateways/class.pmprogateway_stripe.php:1570
 msgid "Could not get price for initial payment. "
 msgstr "İlk ödeme için fiyat alamadım. "
 
 #: classes/gateways/class.pmprogateway_stripe.php:1555
 #: classes/gateways/class.pmprogateway_stripe.php:1551
+#: classes/gateways/class.pmprogateway_stripe.php:1552
 msgid "Could not get product ID."
 msgstr "Ürün kimliği alınamadı."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1546
 #: classes/gateways/class.pmprogateway_stripe.php:1542
+#: classes/gateways/class.pmprogateway_stripe.php:1543
 msgid "Could not get customer. "
 msgstr "Müşteriye ulaşamadım. "
 
 #: classes/gateways/class.pmprogateway_stripe.php:1510
 #: classes/gateways/class.pmprogateway_stripe.php:1506
+#: classes/gateways/class.pmprogateway_stripe.php:1507
 msgid "Your previous order has not yet been processed. Submitting your payment again will cause a separate charge to be initiated."
 msgstr "Önceki siparişiniz henüz işleme alınmamıştır. Ödemenizi tekrar göndermeniz ayrı bir ücretlendirmenin başlatılmasına neden olacaktır."
 
 #: classes/gateways/class.pmprogateway_stripe.php:651
 #: classes/gateways/class.pmprogateway_stripe.php:647
+#: classes/gateways/class.pmprogateway_stripe.php:648
 msgid "Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers."
 msgstr "Vergi kimlikleri yalnızca Stripe Tax'i etkinleştirdiyseniz toplanır. Stripe yalnızca ABN, AB KDV ve GB KDV numaraları için otomatik doğrulama gerçekleştirir. Diğer tüm numaralar için Oturum sırasında sağlanan vergi kimliklerinin geçerli olduğunu doğrulamanız gerekir."
 
 #: classes/gateways/class.pmprogateway_stripe.php:649
 #: classes/gateways/class.pmprogateway_stripe.php:645
+#: classes/gateways/class.pmprogateway_stripe.php:646
 msgid "Yes, collect tax IDs."
 msgstr "Evet, vergi kimliklerini toplayın."
 
 #: classes/gateways/class.pmprogateway_stripe.php:648
 #: classes/gateways/class.pmprogateway_stripe.php:644
+#: classes/gateways/class.pmprogateway_stripe.php:645
 msgid "No, do not collect tax IDs."
 msgstr "Hayır, vergi kimliklerini toplamayın."
 
 #: classes/gateways/class.pmprogateway_stripe.php:639
 #: classes/gateways/class.pmprogateway_stripe.php:635
+#: classes/gateways/class.pmprogateway_stripe.php:636
 msgid "Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target=\"_blank\" href=\"%s\">activate Stripe Tax</a> in your Stripe dashboard. <a target=\"_blank\" href=\"%s\">More information about Stripe Tax »</a>"
 msgstr "Stripe Tax yalnızca Stripe Checkout (Stripe tarafından barındırılan ödeme sayfası) kullanıldığında kullanılabilir. Stripe kontrol panelinizde <a target=\"_blank\" href=\"%s\">Stripe Tax</a> özelliğini etkinleştirmeniz gerekir. <a target=\"_blank\" href=\"%s\">Stripe Tax hakkında daha fazla bilgi\"</a>"
 
 #: classes/gateways/class.pmprogateway_stripe.php:628
 #: classes/gateways/class.pmprogateway_stripe.php:624
+#: classes/gateways/class.pmprogateway_stripe.php:625
 msgid "Calculate tax on top of membership price"
 msgstr "Üyelik fiyatına ek olarak vergi hesaplayın"
 
 #: classes/gateways/class.pmprogateway_stripe.php:627
 #: classes/gateways/class.pmprogateway_stripe.php:623
+#: classes/gateways/class.pmprogateway_stripe.php:624
 msgid "Membership price includes tax"
 msgstr "Üyelik fiyatına vergi dahildir"
 
 #: classes/gateways/class.pmprogateway_stripe.php:626
 #: classes/gateways/class.pmprogateway_stripe.php:622
+#: classes/gateways/class.pmprogateway_stripe.php:623
 msgid "Do not calculate tax"
 msgstr "Vergi hesaplamayın"
 
 #: classes/gateways/class.pmprogateway_stripe.php:616
 #: classes/gateways/class.pmprogateway_stripe.php:612
+#: classes/gateways/class.pmprogateway_stripe.php:613
 msgid "Always"
 msgstr "Her zaman"
 
 #: classes/gateways/class.pmprogateway_stripe.php:615
 #: classes/gateways/class.pmprogateway_stripe.php:611
+#: classes/gateways/class.pmprogateway_stripe.php:612
 msgid "Only when necessary"
 msgstr "Sadece gerekli olduğunda"
 
 #: classes/gateways/class.pmprogateway_stripe.php:611
 #: classes/gateways/class.pmprogateway_stripe.php:607
+#: classes/gateways/class.pmprogateway_stripe.php:608
 msgid "Collect Billing Address in Stripe Checkout"
 msgstr "Stripe Checkout'ta Fatura Adresi Toplama"
 
 #: classes/gateways/class.pmprogateway_stripe.php:541
 #: classes/gateways/class.pmprogateway_stripe.php:537
+#: classes/gateways/class.pmprogateway_stripe.php:538
 msgid "Accept payments in Stripe (Stripe Checkout)"
 msgstr "Stripe'ta ödemeleri kabul edin (Stripe Checkout)"
 
 #: classes/gateways/class.pmprogateway_stripe.php:542
 #: classes/gateways/class.pmprogateway_stripe.php:538
+#: classes/gateways/class.pmprogateway_stripe.php:539
 msgid "Accept payments on this site"
 msgstr "Bu sitede ödemeleri kabul edin"
 
 #: classes/gateways/class.pmprogateway_stripe.php:537
 #: classes/gateways/class.pmprogateway_stripe.php:533
+#: classes/gateways/class.pmprogateway_stripe.php:534
 msgid "Payment Flow"
 msgstr "Ödeme Akışı"
 
 #. translators: %1$s is the Transaction ID. %1$s is the Gateway Error
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1299
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1300
 msgid "Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s."
 msgstr "Yönetici: İşlem kimliği %1$s için geri ödeme işleminde bir sorun oluştu. Ağ Geçidi Hatası: %2$s."
 
@@ -4821,6 +4933,8 @@ msgstr "Yönetici: İşlem kimliği %1$s için geri ödeme işleminde bir sorun 
 #: classes/gateways/class.pmprogateway_stripe.php:3860
 #: classes/gateways/class.pmprogateway_stripe.php:3878
 #: classes/gateways/class.pmprogateway_stripe.php:3863
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1285
+#: classes/gateways/class.pmprogateway_stripe.php:3864
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr "Yönetici: Sipariş, %3$s tarafından %2$s işlem kimliği için %1$s tarihinde başarıyla iade edildi."
 
@@ -5005,10 +5119,12 @@ msgstr "Ücretli Üyelikler Pro - Ödeme Geçidi Ayarları"
 #: adminpages/subscriptions.php:495
 #: adminpages/subscriptions.php:508
 #: adminpages/subscriptions.php:522
+#: classes/class-pmpro-orders-list-table.php:1278
 msgid "%1$s at %2$s"
 msgstr "%1$s, %2$s'de"
 
 #: adminpages/orders.php:858
+#: adminpages/orders.php:879
 msgid "Additional Order Information"
 msgstr "Ek Sipariş Bilgileri"
 
@@ -5019,6 +5135,8 @@ msgstr "Ek Sipariş Bilgileri"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:240
 #: adminpages/subscriptions.php:528
 #: adminpages/subscriptions.php:543
+#: adminpages/orders.php:860
+#: classes/class-pmpro-orders-list-table.php:1264
 msgid "View all orders for this subscription"
 msgstr "Bu abonelik için tüm siparişleri görüntüle"
 
@@ -5026,18 +5144,22 @@ msgstr "Bu abonelik için tüm siparişleri görüntüle"
 #: adminpages/subscriptions.php:309
 #: adminpages/subscriptions.php:541
 #: adminpages/subscriptions.php:556
+#: adminpages/orders.php:786
 msgid "Payment Gateway Information"
 msgstr "Ödeme Geçidi Bilgileri"
 
 #: adminpages/orders.php:732
+#: adminpages/orders.php:753
 msgid "MM/YYYY"
 msgstr "MM/YYYY"
 
 #: adminpages/orders.php:395
+#: adminpages/orders.php:416
 msgid "Member Information"
 msgstr "Üye Bilgileri"
 
 #: adminpages/orders.php:345
+#: adminpages/orders.php:366
 msgid "A randomly generated code that serves as a unique, non-sequential order number."
 msgstr ""
 
@@ -5046,16 +5168,20 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:1019
 #: classes/class-pmpro-orders-list-table.php:1021
 #: includes/email-templates.php:348
+#: adminpages/orders.php:320
+#: adminpages/orders.php:322
 msgid "Refund"
 msgstr "Para iadesi"
 
 #: adminpages/orders.php:294
+#: adminpages/orders.php:315
 msgid "View"
 msgstr "Görüntüleme"
 
 #. translators: %s is the Order Code.
 #: adminpages/orders.php:272
 #: classes/class-pmpro-orders-list-table.php:934
+#: adminpages/orders.php:293
 msgid "Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?"
 msgstr "Ödeme ağ geçidinde %s siparişini iade edin. Bu işlem kalıcıdır. Kullanıcı ve yönetici, iade işlemi tamamlandıktan sonra bir e-posta onayı alacaktır. Bu siparişi iade etmek istediğinizden emin misiniz?"
 
@@ -5127,6 +5253,7 @@ msgstr "İzlemeyi Etkinleştir"
 #: classes/gateways/class.pmprogateway_stripe.php:2852
 #: classes/gateways/class.pmprogateway_stripe.php:2870
 #: classes/gateways/class.pmprogateway_stripe.php:2866
+#: classes/gateways/class.pmprogateway_stripe.php:2867
 msgid "Could not create price."
 msgstr "Fiyat oluşturulamadı."
 
@@ -5169,6 +5296,8 @@ msgstr "Yeni %s"
 
 #: adminpages/orders.php:839
 #: classes/class-pmpro-orders-list-table.php:1255
+#: adminpages/orders.php:860
+#: classes/class-pmpro-orders-list-table.php:1264
 msgid "Renewal"
 msgstr "Yenileme"
 
@@ -5180,6 +5309,7 @@ msgstr "<strong>%1$s</strong> anahtarınız etkin. %1$s hesapları belgelere ve 
 #: classes/gateways/class.pmprogateway_stripe.php:2555
 #: classes/gateways/class.pmprogateway_stripe.php:2573
 #: classes/gateways/class.pmprogateway_stripe.php:2569
+#: classes/gateways/class.pmprogateway_stripe.php:2570
 msgid "Error updating customer record with Stripe."
 msgstr "Stripe ile müşteri kaydı güncellenirken hata oluştu."
 
@@ -5199,17 +5329,20 @@ msgstr "Seç:"
 #: classes/gateways/class.pmprogateway_stripe.php:2915
 #: classes/gateways/class.pmprogateway_stripe.php:2933
 #: classes/gateways/class.pmprogateway_stripe.php:2929
+#: classes/gateways/class.pmprogateway_stripe.php:2930
 msgid "Cannot get price."
 msgstr "Fiyat alınamıyor."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2909
 #: classes/gateways/class.pmprogateway_stripe.php:2927
 #: classes/gateways/class.pmprogateway_stripe.php:2923
+#: classes/gateways/class.pmprogateway_stripe.php:2924
 msgid "Cannot find product for membership level."
 msgstr "Üyelik seviyesi için ürün bulunamıyor."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1841
 #: classes/gateways/class.pmprogateway_stripe.php:1837
+#: classes/gateways/class.pmprogateway_stripe.php:1838
 msgid "Error creating subscription for customer."
 msgstr "Müşteri için abonelik oluşturulurken hata oluştu."
 
@@ -5218,16 +5351,20 @@ msgstr "Müşteri için abonelik oluşturulurken hata oluştu."
 #: classes/gateways/class.pmprogateway_stripe.php:2056
 #: classes/gateways/class.pmprogateway_stripe.php:1790
 #: classes/gateways/class.pmprogateway_stripe.php:2052
+#: classes/gateways/class.pmprogateway_stripe.php:1791
+#: classes/gateways/class.pmprogateway_stripe.php:2053
 msgid "Error retrieving payment method."
 msgstr "Ödeme yöntemi alınırken hata oluştu."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1772
 #: classes/gateways/class.pmprogateway_stripe.php:1768
+#: classes/gateways/class.pmprogateway_stripe.php:1769
 msgid "Error processing payment intent."
 msgstr "Ödeme niyeti işlenirken hata oluştu."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1001
 #: classes/gateways/class.pmprogateway_stripe.php:997
+#: classes/gateways/class.pmprogateway_stripe.php:998
 msgid "Edit customer in Stripe"
 msgstr "Stripe'ta müşteri düzenleme"
 
@@ -5367,6 +5504,7 @@ msgid "There was an issue validating your license key: %s"
 msgstr "Lisans anahtarınızın doğrulanmasında bir sorun oluştu: %s"
 
 #: classes/gateways/class.pmprogateway_stripe.php:315
+#: classes/gateways/class.pmprogateway_stripe.php:316
 msgid "Having trouble connecting through the button above or otherwise need to use your own API keys?"
 msgstr "Yukarıdaki düğme aracılığıyla bağlanmakta sorun mu yaşıyorsunuz veya kendi API anahtarlarınızı kullanmanız mı gerekiyor?"
 
@@ -5439,12 +5577,14 @@ msgstr "Özel Seviye Onay Mesajı"
 #: classes/gateways/class.pmprogateway_stripe.php:2316
 #: classes/gateways/class.pmprogateway_stripe.php:2334
 #: classes/gateways/class.pmprogateway_stripe.php:2330
+#: classes/gateways/class.pmprogateway_stripe.php:2331
 msgid "Read the documentation on switching to Stripe Connect"
 msgstr "Stripe Connect'e geçişle ilgili belgeleri okuyun"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2300
 #: classes/gateways/class.pmprogateway_stripe.php:2318
 #: classes/gateways/class.pmprogateway_stripe.php:2314
+#: classes/gateways/class.pmprogateway_stripe.php:2315
 msgid "Connected with Legacy Keys"
 msgstr "Eski Anahtarlarla Bağlandı"
 
@@ -6108,93 +6248,109 @@ msgstr "Bazı Eklentiler artık Paid Memberships Pro çekirdek eklentisi ile bir
 #. translators: %s Error Message
 #: classes/gateways/class.pmprogateway_stripe.php:1197
 #: classes/gateways/class.pmprogateway_stripe.php:1193
+#: classes/gateways/class.pmprogateway_stripe.php:1194
 msgid "<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s"
 msgstr "<strong>Hata:</strong> PMPro'nun Stripe API ile bağlantısı kesilemedi. Sebep: %s"
 
 #. translators: %s Error Message
 #: classes/gateways/class.pmprogateway_stripe.php:1156
 #: classes/gateways/class.pmprogateway_stripe.php:1152
+#: classes/gateways/class.pmprogateway_stripe.php:1153
 msgid "<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s"
 msgstr "<strong>Hata:</strong> PMPro Stripe API'ye bağlanamadı. Sebep: %s"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1118
 #: classes/gateways/class.pmprogateway_stripe.php:1114
+#: classes/gateways/class.pmprogateway_stripe.php:1115
 msgid "Invalid response from the Stripe Connect server."
 msgstr "Stripe Connect sunucusundan geçersiz yanıt."
 
 #: classes/gateways/class.pmprogateway_stripe.php:528
+#: classes/gateways/class.pmprogateway_stripe.php:529
 msgid "Other Stripe Settings"
 msgstr "Diğer Stripe Ayarları"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2298
 #: classes/gateways/class.pmprogateway_stripe.php:2316
 #: classes/gateways/class.pmprogateway_stripe.php:2312
+#: classes/gateways/class.pmprogateway_stripe.php:2313
 msgid "Test Mode:"
 msgstr "Test Modu:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2380
 #: classes/gateways/class.pmprogateway_stripe.php:2398
 #: classes/gateways/class.pmprogateway_stripe.php:2394
+#: classes/gateways/class.pmprogateway_stripe.php:2395
 msgid "Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license."
 msgstr "Not: Ücretsiz Stripe ödeme ağ geçidi entegrasyonunu kullanıyorsunuz. Bu, ödeme işlemleri için ek bir %s ücreti içerir. Premium PMPro lisansı etkinleştirildiğinde bu ücret kaldırılır."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2375
 #: classes/gateways/class.pmprogateway_stripe.php:2393
 #: classes/gateways/class.pmprogateway_stripe.php:2389
+#: classes/gateways/class.pmprogateway_stripe.php:2390
 msgid "Note: You have a valid license and are not charged additional platform fees for payment processing."
 msgstr "Not: Geçerli bir lisansınız var ve ödeme işlemleri için ek platform ücretleri alınmıyor."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2368
 #: classes/gateways/class.pmprogateway_stripe.php:2386
 #: classes/gateways/class.pmprogateway_stripe.php:2382
+#: classes/gateways/class.pmprogateway_stripe.php:2383
 msgid "Connect with Stripe"
 msgstr "Stripe ile Bağlan"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2351
 #: classes/gateways/class.pmprogateway_stripe.php:2369
 #: classes/gateways/class.pmprogateway_stripe.php:2365
+#: classes/gateways/class.pmprogateway_stripe.php:2366
 msgid "This will disconnect all sites using this Stripe account from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site."
 msgstr "Bu işlem, bu Stripe hesabını kullanan tüm sitelerin Stripe ile bağlantısını kesecektir. Kullanıcılar üyelik ödemesini tamamlayamayacak veya fatura bilgilerini güncelleyemeyecektir. Mevcut abonelikler ağ geçidinden etkilenmeyecek, ancak bu sitede yeni yinelenen siparişler oluşturulmayacaktır."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2347
 #: classes/gateways/class.pmprogateway_stripe.php:2365
 #: classes/gateways/class.pmprogateway_stripe.php:2361
+#: classes/gateways/class.pmprogateway_stripe.php:2362
 msgid "Disconnect From Stripe"
 msgstr "Stripe ile Bağlantıyı Kes"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2331
 #: classes/gateways/class.pmprogateway_stripe.php:2349
 #: classes/gateways/class.pmprogateway_stripe.php:2345
+#: classes/gateways/class.pmprogateway_stripe.php:2346
 msgid "Stripe Connection"
 msgstr "Stripe Bağlantısı"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2314
 #: classes/gateways/class.pmprogateway_stripe.php:2332
 #: classes/gateways/class.pmprogateway_stripe.php:2328
+#: classes/gateways/class.pmprogateway_stripe.php:2329
 msgid "Your site is using legacy API keys to authenticate with Stripe."
 msgstr "Siteniz Stripe ile kimlik doğrulaması yapmak için eski API anahtarlarını kullanıyor."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2306
 #: classes/gateways/class.pmprogateway_stripe.php:2324
 #: classes/gateways/class.pmprogateway_stripe.php:2320
+#: classes/gateways/class.pmprogateway_stripe.php:2321
 msgid "Not Connected"
 msgstr "Bağlanılamadı"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2304
 #: classes/gateways/class.pmprogateway_stripe.php:2322
 #: classes/gateways/class.pmprogateway_stripe.php:2318
+#: classes/gateways/class.pmprogateway_stripe.php:2319
 msgid "Connected"
 msgstr "Bağlanıldı"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2298
 #: classes/gateways/class.pmprogateway_stripe.php:2316
 #: classes/gateways/class.pmprogateway_stripe.php:2312
+#: classes/gateways/class.pmprogateway_stripe.php:2313
 msgid "Live Mode:"
 msgstr "Canlı Mod:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2295
 #: classes/gateways/class.pmprogateway_stripe.php:2313
 #: classes/gateways/class.pmprogateway_stripe.php:2309
+#: classes/gateways/class.pmprogateway_stripe.php:2310
 msgid "Stripe Connect Settings"
 msgstr "Stripe Connect Ayarları"
 
@@ -6386,10 +6542,12 @@ msgid "Edit Code: %s"
 msgstr "Düzenleme Kodu: %s"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:899
+#: classes/gateways/class.pmprogateway_paypalexpress.php:900
 msgid "Error creating plan with PayPal."
 msgstr "PayPal ile plan oluştururken hata oluştu."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:898
+#: classes/gateways/class.pmprogateway_paypalexpress.php:899
 msgid "Something went wrong creating plan with PayPal; missing PROFILESTATUS."
 msgstr "PayPal ile plan oluştururken bir şeyler yanlış gitti; PROFILESTATUS eksik."
 
@@ -6407,6 +6565,8 @@ msgstr "<p>Sitenizde bir üyenin Braintree aboneliğinin süresi doldu. Bu genel
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:365
 #: classes/gateways/class.pmprogateway_paypalexpress.php:471
+#: classes/gateways/class.pmprogateway_paypalexpress.php:370
+#: classes/gateways/class.pmprogateway_paypalexpress.php:476
 msgid "Checkout was already processed."
 msgstr "Ödeme işlemi zaten gerçekleştirilmişti."
 
@@ -6425,6 +6585,7 @@ msgid "Please check the ReCAPTCHA box to confirm you are not a bot."
 msgstr "Bot olmadığınızı onaylamak için lütfen ReCAPTCHA kutusunu işaretleyin."
 
 #: includes/currencies.php:103
+#: includes/currencies.php:108
 msgid "Ukrainian Hryvnia (&#8372;)"
 msgstr "Ukrayna Grivnası (&#8372;)"
 
@@ -6443,43 +6604,53 @@ msgstr "Braintree ile abonelik alınırken hata oluştu:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:916
 #: classes/gateways/class.pmprogateway_stripe.php:912
+#: classes/gateways/class.pmprogateway_stripe.php:913
 msgid "Pay with Credit Card"
 msgstr "Kredi Kartı ile Ödeme"
 
 #: classes/gateways/class.pmprogateway_stripe.php:743
 #: classes/gateways/class.pmprogateway_stripe.php:739
+#: classes/gateways/class.pmprogateway_stripe.php:740
 msgid "Webhook creation failed. Please refresh and try again."
 msgstr "Web kancası oluşturulamadı. Lütfen yenileyin ve tekrar deneyin."
 
 #: classes/gateways/class.pmprogateway_stripe.php:596
 #: classes/gateways/class.pmprogateway_stripe.php:592
+#: classes/gateways/class.pmprogateway_stripe.php:593
 msgid "Your domain could not be registered with Apple to enable Apple Pay. Please try <a target=\"_blank\" href=\"%s\" title=\"Apple Pay Settings Page in Stripe\">registering your domain manually from the Apple Pay settings page in Stripe</a>."
 msgstr "Alan adınız Apple Pay'i etkinleştirmek için Apple'a kaydedilemedi. Lütfen <a target=\"_blank\" href=\"%s\" title=\"Stripe'ta Apple Pay Ayarları Sayfası\">Stripe'taki Apple Pay ayarları sayfasından alan adınızı manuel olarak kaydetmeyi deneyin</a>."
 
 #: classes/gateways/class.pmprogateway_stripe.php:594
 #: classes/gateways/class.pmprogateway_stripe.php:590
+#: classes/gateways/class.pmprogateway_stripe.php:591
 msgid "This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target=\"_blank\" href=\"%s\" title=\"Configuring WordPress to Always Use HTTPS/SSL\">set up WordPress to always use HTTPS</a>."
 msgstr "Bu web sayfası HTTP üzerinden sunuluyor, ancak Stripe Ödeme Talebi Düğmesi yalnızca HTTPS üzerinden sunulan sayfalarda çalışacaktır. Bunu çözmek için <a target=\"_blank\" href=\"%s\" title=\"WordPress'i Her Zaman HTTPS/SSL Kullanacak Şekilde Yapılandırma\">WordPress'i her zaman HTTPS</a> kullanacak şekilde ayarlamanız gerekir."
 
 #: classes/gateways/class.pmprogateway_stripe.php:581
 #: classes/gateways/class.pmprogateway_stripe.php:577
+#: classes/gateways/class.pmprogateway_stripe.php:578
 msgid "Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target=\"_blank\" href=\"%s\" title=\"More Information about the domain association file for Apple Pay\">More Information</a>"
 msgstr "Kullanıcıların tarayıcılarına bağlı olarak Apple Pay, Google Pay veya Microsoft Pay kullanarak ödeme yapmalarına izin verin. Etkinleştirildiğinde, alan adınız otomatik olarak Apple'a kaydedilir ve sitenizde bir alan adı ilişkilendirme dosyası barındırılır. <a target=\"_blank\" href=\"%s\" title=\"Apple Pay için alan adı ilişkilendirme dosyası hakkında daha fazla bilgi\">Daha fazla bilgi</a>"
 
 #: classes/gateways/class.pmprogateway_stripe.php:399
+#: classes/gateways/class.pmprogateway_stripe.php:400
 msgid "Disable Webhook"
 msgstr "Web Kancasını Devre Dışı Bırak"
 
 #: classes/gateways/class.pmprogateway_stripe.php:386
 #: classes/gateways/class.pmprogateway_stripe.php:393
+#: classes/gateways/class.pmprogateway_stripe.php:387
+#: classes/gateways/class.pmprogateway_stripe.php:394
 msgid "Rebuild Webhook"
 msgstr "Web Kancasını yeniden oluştur"
 
 #: classes/gateways/class.pmprogateway_stripe.php:393
+#: classes/gateways/class.pmprogateway_stripe.php:394
 msgid "A webhook is set up in Stripe, but it is using an old API version."
 msgstr "Stripe'ta bir web kancası ayarlandı, ancak eski bir API sürümü kullanıyor."
 
 #: classes/gateways/class.pmprogateway_stripe.php:386
+#: classes/gateways/class.pmprogateway_stripe.php:387
 msgid "A webhook is set up in Stripe, but it is disabled."
 msgstr "Stripe'ta bir web kancası ayarlandı, ancak devre dışı bırakıldı."
 
@@ -6506,6 +6677,7 @@ msgid "The billing details for some of your discount codes are not supported by 
 msgstr "İndirim kodlarınızdan bazılarının fatura bilgileri ağ geçidiniz tarafından desteklenmiyor."
 
 #: includes/currencies.php:68
+#: includes/currencies.php:73
 msgid "Romanian Leu"
 msgstr "Romanya Leyi"
 
@@ -6584,36 +6756,46 @@ msgstr "YouTube Kanalımıza abone olun."
 
 #: classes/gateways/class.pmprogateway_stripe.php:716
 #: classes/gateways/class.pmprogateway_stripe.php:712
+#: classes/gateways/class.pmprogateway_stripe.php:713
 msgid "There was an error deleting the webhook."
 msgstr "Web kancasını silerken bir hata oluştu."
 
 #: classes/gateways/class.pmprogateway_stripe.php:399
 #: classes/gateways/class.pmprogateway_stripe.php:688
 #: classes/gateways/class.pmprogateway_stripe.php:684
+#: classes/gateways/class.pmprogateway_stripe.php:400
+#: classes/gateways/class.pmprogateway_stripe.php:685
 msgid "Your webhook is enabled."
 msgstr "Web kancanız etkinleştirildi."
 
 #: classes/gateways/class.pmprogateway_stripe.php:678
 #: classes/gateways/class.pmprogateway_stripe.php:674
+#: classes/gateways/class.pmprogateway_stripe.php:675
 msgid "Webhook creation failed. You might already have a webhook set up."
 msgstr "Web kancası oluşturma başarısız oldu. Zaten bir web kancası kurmuş olabilirsiniz."
 
 #: classes/gateways/class.pmprogateway_stripe.php:366
+#: classes/gateways/class.pmprogateway_stripe.php:367
 msgid "Webhook URL"
 msgstr "Web Kancası URL'si"
 
 #: classes/gateways/class.pmprogateway_stripe.php:406
 #: classes/gateways/class.pmprogateway_stripe.php:710
 #: classes/gateways/class.pmprogateway_stripe.php:706
+#: classes/gateways/class.pmprogateway_stripe.php:407
+#: classes/gateways/class.pmprogateway_stripe.php:707
 msgid "A webhook in Stripe is required to process payments, manage failed payments, and synchronize cancellations."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:380
 #: classes/gateways/class.pmprogateway_stripe.php:404
+#: classes/gateways/class.pmprogateway_stripe.php:381
+#: classes/gateways/class.pmprogateway_stripe.php:405
 msgid "Create Webhook"
 msgstr "Web Kancası Oluştur"
 
 #: classes/gateways/class.pmprogateway_stripe.php:361
+#: classes/gateways/class.pmprogateway_stripe.php:362
 msgid "Webhook"
 msgstr "Web Kancası"
 
@@ -6802,6 +6984,7 @@ msgid "yesterday"
 msgstr "dün"
 
 #: adminpages/orders.php:381
+#: adminpages/orders.php:402
 msgid "at"
 msgstr "de"
 
@@ -7168,6 +7351,7 @@ msgid "PMPro"
 msgstr "PMPro"
 
 #: includes/currencies.php:44
+#: includes/currencies.php:49
 msgid "Ghanaian Cedi (&#8373;)"
 msgstr "Gana Cedi (&#8373;)"
 
@@ -7201,6 +7385,7 @@ msgid "Dismiss this notice."
 msgstr "Bu mesajı gizle."
 
 #: adminpages/orders.php:291
+#: adminpages/orders.php:312
 msgid "Edit Order"
 msgstr "Siparişi Düzenle"
 
@@ -7239,6 +7424,10 @@ msgstr "Hata"
 #: classes/class-pmpro-subscriptions-list-table.php:633
 #: classes/class-pmpro-subscriptions-list-table.php:657
 #: classes/class-pmpro-subscriptions-list-table.php:674
+#: classes/class-pmpro-orders-list-table.php:1109
+#: classes/class-pmpro-orders-list-table.php:1170
+#: classes/class-pmpro-orders-list-table.php:1199
+#: classes/class-pmpro-orders-list-table.php:1237
 msgid "&#8212;"
 msgstr "&#8212;"
 
@@ -7324,6 +7513,7 @@ msgstr "Not: PayPal Standard kullanmanızı önermiyoruz. PayPal Express, Websit
 
 #: classes/gateways/class.pmprogateway_stripe.php:666
 #: classes/gateways/class.pmprogateway_stripe.php:662
+#: classes/gateways/class.pmprogateway_stripe.php:663
 msgid "Optional: Offer PayPal Express as an option at checkout using the <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">Add PayPal Express Add On</a>."
 msgstr "İsteğe bağlı: <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">Add PayPal Express Add On</a> seçeneğini kullanarak PayPal Express'i ödeme sırasında bir seçenek olarak sunun."
 
@@ -7370,22 +7560,26 @@ msgstr "%s üyeliğiniz için ödeme işlemi gerekli"
 #: classes/gateways/class.pmprogateway_stripe.php:3013
 #: classes/gateways/class.pmprogateway_stripe.php:3031
 #: classes/gateways/class.pmprogateway_stripe.php:3027
+#: classes/gateways/class.pmprogateway_stripe.php:3028
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr "Aboneliğinizi ayarlamayı tamamlamak için müşteri kimlik doğrulaması gereklidir. Lütfen ödeme sağlayıcınız tarafından verilen doğrulama adımlarını tamamlayın."
 
 #: classes/gateways/class.pmprogateway_stripe.php:3486
 #: classes/gateways/class.pmprogateway_stripe.php:3504
 #: classes/gateways/class.pmprogateway_stripe.php:3488
+#: classes/gateways/class.pmprogateway_stripe.php:3489
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr "Bu işlemi tamamlamak için müşteri kimlik doğrulaması gereklidir. Lütfen ödeme sağlayıcınız tarafından verilen doğrulama adımlarını tamamlayın."
 
 #: classes/gateways/class.pmprogateway_stripe.php:939
 #: classes/gateways/class.pmprogateway_stripe.php:935
+#: classes/gateways/class.pmprogateway_stripe.php:936
 msgid "CVC"
 msgstr "CVC"
 
 #: classes/gateways/class.pmprogateway_stripe.php:772
 #: classes/gateways/class.pmprogateway_stripe.php:768
+#: classes/gateways/class.pmprogateway_stripe.php:769
 msgid "Verification steps confirmed. Your payment is processing."
 msgstr "Doğrulama adımları tamamlandı. Ödeme bekleniyor."
 
@@ -8085,6 +8279,7 @@ msgstr "İade Edildi"
 #: pages/invoice.php:45
 #: pages/invoice.php:365
 #: shortcodes/pmpro_account.php:358
+#: classes/class-pmpro-orders-list-table.php:1258
 msgid "Paid"
 msgstr "Ücretli"
 
@@ -8099,6 +8294,7 @@ msgid "The most complete member management and membership subscriptions plugin f
 msgstr "WordPress için en eksiksiz üye yönetimi ve üyelik abonelikleri eklentisi."
 
 #: includes/currencies.php:59
+#: includes/currencies.php:64
 msgid "Kenyan Shilling"
 msgstr "Kenya Şilini"
 
@@ -8318,6 +8514,7 @@ msgstr "TOS Onayı"
 #: adminpages/dashboard.php:353
 #: adminpages/dashboard.php:368
 #: classes/class-pmpro-subscriptions-list-table.php:503
+#: classes/class-pmpro-orders-list-table.php:1090
 msgid "none"
 msgstr "Hiç"
 
@@ -8334,6 +8531,7 @@ msgid "reCAPTCHA Site Key"
 msgstr "reCAPTCHA Site Anahtarı"
 
 #: classes/gateways/class.pmprogateway_stripe.php:344
+#: classes/gateways/class.pmprogateway_stripe.php:345
 msgid "Your Publishable Key appears incorrect."
 msgstr "Yayınlanabilir Anahtarınız yanlış görünüyor."
 
@@ -8376,6 +8574,7 @@ msgid "That email address is already in use. Please log in, or use a different e
 msgstr "Bu e-posta adresi zaten kullanılıyor. Lütfen giriş yapın veya farklı bir e-posta adresi kullanın."
 
 #: includes/currencies.php:76
+#: includes/currencies.php:81
 msgid "Russian Ruble (&#8381;)"
 msgstr "Rus Rublesi (&#8381;)"
 
@@ -8428,14 +8627,17 @@ msgid "Are you sure you want to do that? Try again."
 msgstr "Bunu yapmak istediğine emin misin? Tekrar dene."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:831
+#: classes/gateways/class.pmprogateway_paypalexpress.php:832
 msgid "Profile Start Date Issue Detected and Fixed at %s"
 msgstr "Profil Başlangıç Tarihi Sorunu %s'de Tespit Edildi ve Düzeltildi"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:829
+#: classes/gateways/class.pmprogateway_paypalexpress.php:830
 msgid "User: %1$s<br />Email: %2$s<br />Membership Level: %3$s<br />Order #: %4$s<br />Original Profile Start Date: %5$s<br />Adjusted Profile Start Date: %6$s<br />Trial Period: %7$s<br />Trial Frequency: %8$s<br />"
 msgstr "Kullanıcı: %1$s<br />E-posta: %2$s<br />Üyelik Seviyesi: %3$s<br />Sipariş #: %4$s<br />Orijinal Profil Başlangıç Tarihi: %5$s<br />Düzeltilmiş Profil Başlangıç Tarihi: %6$s<br />Deneme Süresi: %7$s<br />Deneme Sıklığı: %8$s<br />"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:828
+#: classes/gateways/class.pmprogateway_paypalexpress.php:829
 msgid "There was a potential issue while setting the 'Profile Start Date' for a user's subscription at checkout. PayPal does not allow one to set a Profile Start Date further than 1 year out. Typically, this is not an issue, but sometimes a combination of custom code or add ons for PMPro (e.g. the Prorating or Auto-renewal Checkbox add ons) will try to set a Profile Start Date out past 1 year in order to respect an existing user's original expiration date before they checked out. The user's information is below. PMPro has allowed the checkout and simply restricted the Profile Start Date to 1 year out with a possible additional free Trial of up to 1 year. You should double check this information to determine if maybe the user has overpaid or otherwise needs to be addressed. If you get many of these emails, you should consider adjusting your custom code to avoid these situations."
 msgstr "Ödeme sırasında bir kullanıcının aboneliği için 'Profil Başlangıç Tarihi' ayarlanırken olası bir sorun vardı. PayPal, 1 yıldan daha ileri bir Profil Başlangıç Tarihi ayarlanmasına izin vermiyor. Tipik olarak bu bir sorun değildir, ancak bazen PMPro için özel kod veya eklentilerin bir kombinasyonu (örneğin, Prorating veya Auto-renewal Checkbox eklentileri), mevcut bir kullanıcının ödeme yapmadan önceki orijinal son kullanma tarihine saygı duymak için 1 yıldan sonra bir Profil Başlangıç Tarihi ayarlamaya çalışacaktır. Kullanıcının bilgileri aşağıdadır. PMPro ödeme yapılmasına izin verdi ve Profil Başlangıç Tarihini 1 yıla kadar olası bir ek ücretsiz Deneme ile 1 yıl ile sınırlandırdı. Kullanıcının fazla ödeme yapıp yapmadığını veya başka bir şekilde ele alınması gerekip gerekmediğini belirlemek için bu bilgileri iki kez kontrol etmelisiniz. Bu e-postalardan çok sayıda alıyorsanız, bu durumlardan kaçınmak için özel kodunuzu ayarlamayı düşünmelisiniz."
 
@@ -9718,6 +9920,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:995
 #: classes/class-pmpro-orders-list-table.php:1005
 #: includes/profile.php:755
+#: adminpages/orders.php:313
 msgid "Print"
 msgstr "Yazdır"
 
@@ -10029,6 +10232,8 @@ msgstr "Ücretli Üyelikler Pro Destek Lisansı"
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:108
 #: blocks/src/sidebar/index.js:128
+#: adminpages/orders.php:452
+#: adminpages/orders.php:640
 msgid "None"
 msgstr "Yok"
 
@@ -10198,111 +10403,139 @@ msgid "The price for membership is <strong>%s</strong> now"
 msgstr "Üyelik ücreti<strong>%s</strong>"
 
 #: includes/currencies.php:111
+#: includes/currencies.php:116
 msgid "Vietnamese Dong"
 msgstr "Vietnam Dong"
 
 #: includes/currencies.php:101
+#: includes/currencies.php:106
 msgid "Turkish Lira"
 msgstr "Türk Lirası"
 
 #: includes/currencies.php:100
+#: includes/currencies.php:105
 msgid "Thai Baht"
 msgstr "Tayland Bahtı"
 
 #: includes/currencies.php:99
+#: includes/currencies.php:104
 msgid "Taiwan New Dollars"
 msgstr "Tayvan Yeni Doları"
 
 #: includes/currencies.php:98
+#: includes/currencies.php:103
 msgid "Swiss Franc"
 msgstr "İsviçre Frangı"
 
 #: includes/currencies.php:97
+#: includes/currencies.php:102
 msgid "Swedish Krona"
 msgstr "İsveç Kronu"
 
 #: includes/currencies.php:94
+#: includes/currencies.php:99
 msgid "South Korean Won"
 msgstr "Güney Kore Wonu"
 
 #: includes/currencies.php:89
+#: includes/currencies.php:94
 msgid "South African Rand (R)"
 msgstr "Güney Afrika Randı (R)"
 
 #: includes/currencies.php:84
+#: includes/currencies.php:89
 msgid "Singapore Dollar (&#36;)"
 msgstr "Singapur Doları (&#36;)"
 
 #: includes/currencies.php:66
+#: includes/currencies.php:71
 msgid "Polish Zloty"
 msgstr "Polonya Zlotisi"
 
 #: includes/currencies.php:65
+#: includes/currencies.php:70
 msgid "Philippine Pesos"
 msgstr "Filipin Pezosu"
 
 #: includes/currencies.php:64
+#: includes/currencies.php:69
 msgid "Norwegian Krone"
 msgstr "Norveç Kronu"
 
 #: includes/currencies.php:63
+#: includes/currencies.php:68
 msgid "New Zealand Dollar (&#36;)"
 msgstr "Yeni Zelanda Doları (&#36;)"
 
 #: includes/currencies.php:62
+#: includes/currencies.php:67
 msgid "Nigerian Naira (&#8358;)"
 msgstr "Nijerya Nairası (&#8358;)"
 
 #: includes/currencies.php:61
+#: includes/currencies.php:66
 msgid "Mexican Peso (&#36;)"
 msgstr "Meksika Pesosu (&#36;)"
 
 #: includes/currencies.php:60
+#: includes/currencies.php:65
 msgid "Malaysian Ringgits"
 msgstr "Malezya Ringgit"
 
 #: includes/currencies.php:54
+#: includes/currencies.php:59
 msgid "Japanese Yen (&yen;)"
 msgstr "Japon yeni (&yen;)"
 
 #: includes/currencies.php:52
+#: includes/currencies.php:57
 msgid "Israeli Shekel"
 msgstr "İsrail Şekeli"
 
 #: includes/currencies.php:51
+#: includes/currencies.php:56
 msgid "Indonesia Rupiah"
 msgstr "Endonezya Rupiah"
 
 #: includes/currencies.php:50
+#: includes/currencies.php:55
 msgid "Indian Rupee"
 msgstr "Hint Rupisi"
 
 #: includes/currencies.php:49
+#: includes/currencies.php:54
 msgid "Hungarian Forint"
 msgstr "Macar Forinti"
 
 #: includes/currencies.php:48
+#: includes/currencies.php:53
 msgid "Hong Kong Dollar (&#36;)"
 msgstr "Hong Kong Doları (&#36;)"
 
 #: includes/currencies.php:36
+#: includes/currencies.php:41
 msgid "Danish Krone"
 msgstr "Danimarka Kronu"
 
 #: includes/currencies.php:28
+#: includes/currencies.php:33
 msgid "Czech Koruna"
 msgstr "Czech Koruna"
 
 #: includes/currencies.php:26
+#: includes/currencies.php:31
 msgid "Chinese Yuan"
 msgstr "Çin Yuanı"
 
 #: includes/currencies.php:25
 #: includes/currencies.php:122
+#: includes/currencies.php:30
+#: includes/currencies.php:127
 msgid "Canadian Dollars (&#36;)"
 msgstr "Kanada Doları (&#36;)"
 
 #: includes/currencies.php:21
+#: includes/currencies.php:26
 msgid "Brazilian Real (R&#36;)"
 msgstr "Brezilya Reali (R&#36;)"
 
@@ -10316,17 +10549,21 @@ msgstr "Arjantin Pesosu (&#36;)"
 
 #: includes/currencies.php:14
 #: includes/currencies.php:123
+#: includes/currencies.php:128
 msgid "Pounds Sterling (&pound;)"
 msgstr "İngiliz sterlini (&pound;)"
 
 #: includes/currencies.php:9
 #: includes/currencies.php:124
+#: includes/currencies.php:129
 msgid "Euros (&euro;)"
 msgstr "Euro"
 
 #: includes/currencies.php:7
 #: includes/currencies.php:121
 #: includes/currencies.php:148
+#: includes/currencies.php:126
+#: includes/currencies.php:153
 msgid "US Dollars (&#36;)"
 msgstr "Amerikan Doları"
 
@@ -10462,24 +10699,28 @@ msgid "2Checkout"
 msgstr "2Çıkış yap"
 
 #: classes/gateways/class.pmprogateway_stripe.php:477
+#: classes/gateways/class.pmprogateway_stripe.php:478
 msgid "Error: "
 msgstr "Hata:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2135
 #: classes/gateways/class.pmprogateway_stripe.php:2145
 #: classes/gateways/class.pmprogateway_stripe.php:2141
+#: classes/gateways/class.pmprogateway_stripe.php:2142
 msgid "Could not find the customer."
 msgstr "Müşteriyi bulamadık."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2119
 #: classes/gateways/class.pmprogateway_stripe.php:2129
 #: classes/gateways/class.pmprogateway_stripe.php:2125
+#: classes/gateways/class.pmprogateway_stripe.php:2126
 msgid "Could not cancel old subscription."
 msgstr "Eski abonelik iptal edilemedi."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2566
 #: classes/gateways/class.pmprogateway_stripe.php:2584
 #: classes/gateways/class.pmprogateway_stripe.php:2580
+#: classes/gateways/class.pmprogateway_stripe.php:2581
 msgid "Error creating customer record with Stripe."
 msgstr "Stripe ile müşteri kaydı oluşturulurken hata oluştu."
 
@@ -10493,14 +10734,17 @@ msgstr "Abonelik Güncellemeleri"
 
 #: classes/gateways/class.pmprogateway_stripe.php:558
 #: classes/gateways/class.pmprogateway_stripe.php:554
+#: classes/gateways/class.pmprogateway_stripe.php:555
 msgid "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>"
 msgstr "Stripe, fatura adresi alanları gerektirmez. Ödeme sayfasında bunları gizlemek için 'Hayır'ı seçin.<br /><strong>Hayır ise, Stripe kontrol paneli ayarlarında adres doğrulamayı devre dışı bıraktığınızdan emin olun.</strong>"
 
 #: classes/gateways/class.pmprogateway_stripe.php:336
+#: classes/gateways/class.pmprogateway_stripe.php:337
 msgid "Publishable Key"
 msgstr "Yayınlanabilir Anahtar"
 
 #: classes/gateways/class.pmprogateway_stripe.php:352
+#: classes/gateways/class.pmprogateway_stripe.php:353
 msgid "Secret Key"
 msgstr "Secret Key"
 
@@ -10509,6 +10753,7 @@ msgstr "Secret Key"
 #: paid-memberships-pro.php:189
 #: paid-memberships-pro.php:190
 #: paid-memberships-pro.php:192
+#: classes/gateways/class.pmprogateway_stripe.php:233
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -10522,6 +10767,9 @@ msgstr "PayPal Standart"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:361
 #: classes/gateways/class.pmprogateway_paypalexpress.php:408
 #: classes/gateways/class.pmprogateway_paypalexpress.php:477
+#: classes/gateways/class.pmprogateway_paypalexpress.php:366
+#: classes/gateways/class.pmprogateway_paypalexpress.php:413
+#: classes/gateways/class.pmprogateway_paypalexpress.php:482
 msgid "The PayPal Token was lost."
 msgstr "PayPal Token kaybedildi."
 
@@ -10539,6 +10787,7 @@ msgstr "PayPal Express"
 #: classes/gateways/class.pmprogateway_paypal.php:627
 #: classes/gateways/class.pmprogateway_paypalexpress.php:946
 #: classes/gateways/class.pmprogateway_paypalstandard.php:525
+#: classes/gateways/class.pmprogateway_paypalexpress.php:947
 msgid "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 msgstr "Site sahibine başvurun ya da ileri giderek ücret olmadığından emin olmak için PayPal içinde aboneliğinizi iptal edebilirsiniz."
 
@@ -10547,6 +10796,7 @@ msgstr "Site sahibine başvurun ya da ileri giderek ücret olmadığından emin 
 #: classes/gateways/class.pmprogateway_paypalstandard.php:176
 #: classes/gateways/class.pmprogateway_twocheckout.php:209
 #: pages/checkout.php:544
+#: classes/gateways/class.pmprogateway_paypalexpress.php:563
 msgid "Submit and Confirm"
 msgstr "Gönder ve Onayla"
 
@@ -10554,6 +10804,7 @@ msgstr "Gönder ve Onayla"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:558
 #: classes/gateways/class.pmprogateway_paypalstandard.php:176
 #: pages/checkout.php:544
+#: classes/gateways/class.pmprogateway_paypalexpress.php:563
 msgid "Submit and Check Out"
 msgstr "Gönder ve Öde"
 
@@ -10702,6 +10953,7 @@ msgstr "Ödeme hatası: Lütfen webmaster ile iletişime geçin (braintree-load-
 #: pages/checkout.php:167
 #: pages/checkout.php:491
 #: classes/gateways/class.pmprogateway_stripe.php:946
+#: classes/gateways/class.pmprogateway_stripe.php:947
 msgid "Apply"
 msgstr "Uygula"
 
@@ -10715,6 +10967,7 @@ msgstr "CVV"
 #: pages/billing.php:319
 #: pages/checkout.php:442
 #: classes/gateways/class.pmprogateway_stripe.php:923
+#: classes/gateways/class.pmprogateway_stripe.php:924
 msgid "Card Number"
 msgstr "Kart Numarası"
 
@@ -10726,6 +10979,8 @@ msgstr "Kart Numarası"
 #: pages/billing.php:291
 #: pages/checkout.php:437
 #: classes/gateways/class.pmprogateway_stripe.php:904
+#: adminpages/orders.php:606
+#: classes/gateways/class.pmprogateway_stripe.php:905
 msgid "Payment Information"
 msgstr "Ödeme Bilgisi"
 
@@ -10768,6 +11023,7 @@ msgstr "Braintree Ödemeleri"
 #: classes/gateways/class.pmprogateway_braintree.php:87
 #: classes/gateways/class.pmprogateway_stripe.php:1465
 #: classes/gateways/class.pmprogateway_stripe.php:1461
+#: classes/gateways/class.pmprogateway_stripe.php:1462
 msgid "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it."
 msgstr "%s ağ geçidi %s PHP uzantısına bağlıdır. Lütfen etkinleştirin veya barındırma sağlayıcınızdan etkinleştirmesini isteyin."
 
@@ -10914,6 +11170,8 @@ msgstr "Bu üyelik %s tarihinde sona erecek."
 #: pages/checkout.php:488
 #: pages/invoice.php:315
 #: classes/gateways/class.pmprogateway_stripe.php:943
+#: adminpages/orders.php:629
+#: classes/gateways/class.pmprogateway_stripe.php:944
 msgid "Discount Code"
 msgstr "İndirim Kodu"
 
@@ -10947,6 +11205,7 @@ msgstr "Ücretli Üyelikleri Güncelleme Pro"
 
 #: includes/functions.php:3225
 #: includes/functions.php:3235
+#: includes/functions.php:3241
 msgid "Subtotal"
 msgstr "Ara-toplam"
 
@@ -11422,6 +11681,8 @@ msgstr "Abonelik"
 #: adminpages/dashboard.php:351
 #: adminpages/dashboard.php:366
 #: classes/class-pmpro-subscriptions-list-table.php:501
+#: classes/class-pmpro-orders-list-table.php:1088
+#: classes/class-pmpro-orders-list-table.php:1107
 msgid "deleted"
 msgstr "silindi"
 
@@ -11455,6 +11716,7 @@ msgid "User"
 msgstr "Kullanıcı"
 
 #: adminpages/orders.php:979
+#: adminpages/orders.php:1000
 msgid "Search Orders"
 msgstr "Siparişleri Ara"
 
@@ -11494,6 +11756,7 @@ msgstr "Bir tarih aralığı içinde"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:11
 #: adminpages/orders.php:940
+#: adminpages/orders.php:961
 msgid "Add New Order"
 msgstr "Yeni sipariş ekle"
 
@@ -11511,6 +11774,7 @@ msgstr "Yeni sipariş ekle"
 #: adminpages/subscriptions.php:522
 #: classes/class-pmpro-subscriptions-list-table.php:153
 #: adminpages/subscriptions.php:537
+#: adminpages/orders.php:960
 msgid "Orders"
 msgstr "Siparişler"
 
@@ -11523,18 +11787,22 @@ msgid "Send a receipt for this order to: "
 msgstr ""
 
 #: adminpages/orders.php:928
+#: adminpages/orders.php:949
 msgid "Save Order"
 msgstr "Siparişi kaydet"
 
 #: adminpages/orders.php:896
+#: adminpages/orders.php:917
 msgid "Notes"
 msgstr "Notlar"
 
 #: adminpages/orders.php:882
+#: adminpages/orders.php:903
 msgid "Affiliate SubID"
 msgstr "Affiliate SubID"
 
 #: adminpages/orders.php:869
+#: adminpages/orders.php:890
 msgid "Affiliate ID"
 msgstr "Affiliate ID"
 
@@ -11550,11 +11818,13 @@ msgstr "Affiliate ID"
 #: shortcodes/pmpro_account.php:335
 #: shortcodes/pmpro_account.php:370
 #: adminpages/dashboard.php:327
+#: adminpages/orders.php:370
 msgid "Date"
 msgstr "Tarih"
 
 #: adminpages/orders.php:841
 #: adminpages/subscriptions.php:264
+#: adminpages/orders.php:862
 msgid "Generated by the gateway. Useful to cross reference subscriptions."
 msgstr "Ağ geçidi tarafından oluşturulan. Çapraz sipariş referansları."
 
@@ -11565,15 +11835,18 @@ msgstr "Ağ geçidi tarafından oluşturulan. Çapraz sipariş referansları."
 #: adminpages/subscriptions.php:155
 #: adminpages/subscriptions.php:253
 #: adminpages/subscriptions.php:261
+#: adminpages/orders.php:848
 msgid "Subscription Transaction ID"
 msgstr "Abonelik Dönüşüm Numarası"
 
 #: adminpages/orders.php:822
+#: adminpages/orders.php:843
 msgid "Generated by the gateway. Useful to cross reference orders."
 msgstr "Ağ geçidi tarafından oluşturulan. Çapraz sipariş referansları."
 
 #: adminpages/orders.php:812
 #: includes/privacy.php:321
+#: adminpages/orders.php:833
 msgid "Payment Transaction ID"
 msgstr "Ödeme Dönüşüm Numarası"
 
@@ -11581,6 +11854,7 @@ msgstr "Ödeme Dönüşüm Numarası"
 #: adminpages/paymentsettings.php:127
 #: classes/class-pmpro-site-health.php:281
 #: classes/class-pmpro-site-health.php:285
+#: adminpages/orders.php:825
 msgid "Live/Production"
 msgstr "Canlı/Üretim"
 
@@ -11588,6 +11862,7 @@ msgstr "Canlı/Üretim"
 #: adminpages/paymentsettings.php:126
 #: classes/class-pmpro-site-health.php:280
 #: classes/class-pmpro-site-health.php:284
+#: adminpages/orders.php:824
 msgid "Sandbox/Testing"
 msgstr "Sandbox/Test"
 
@@ -11601,6 +11876,7 @@ msgstr "Sandbox/Test"
 #: adminpages/subscriptions.php:556
 #: adminpages/subscriptions.php:272
 #: adminpages/subscriptions.php:571
+#: adminpages/orders.php:816
 msgid "Gateway Environment"
 msgstr "Ödeme Kanalı Türü"
 
@@ -11619,6 +11895,7 @@ msgstr "Ödeme Kanalı Türü"
 #: classes/class-pmpro-subscriptions-list-table.php:148
 #: adminpages/subscriptions.php:268
 #: adminpages/subscriptions.php:567
+#: adminpages/orders.php:793
 msgid "Gateway"
 msgstr "Ödeme geçidi"
 
@@ -11646,6 +11923,8 @@ msgstr "Ödeme geçidi"
 #: adminpages/subscriptions.php:456
 #: classes/class-pmpro-subscriptions-list-table.php:149
 #: adminpages/subscriptions.php:471
+#: adminpages/orders.php:758
+#: classes/gateways/class.pmprogateway_stripe.php:504
 msgid "Status"
 msgstr "Durum"
 
@@ -11655,30 +11934,36 @@ msgstr "Geçerlilik Yılı"
 
 #: adminpages/orders.php:717
 #: includes/privacy.php:301
+#: adminpages/orders.php:738
 msgid "Expiration Month"
 msgstr "Bitiş Ayı"
 
 #: adminpages/orders.php:699
 #: classes/gateways/class.pmprogateway_twocheckout.php:142
 #: includes/privacy.php:297
+#: adminpages/orders.php:720
 msgid "Account Number"
 msgstr "Hesap Numarası"
 
 #: adminpages/orders.php:695
+#: adminpages/orders.php:716
 msgid "e.g. Visa, MasterCard, AMEX, etc"
 msgstr "Örneğin Visa, MasterCard, AMEX, vb"
 
 #: adminpages/orders.php:685
 #: includes/privacy.php:293
+#: adminpages/orders.php:706
 msgid "Card Type"
 msgstr "Kart Türü"
 
 #: adminpages/orders.php:681
+#: adminpages/orders.php:702
 msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
 msgstr "Örneğin PayPal Express, PayPal standart, kredi kartı."
 
 #: adminpages/orders.php:670
 #: includes/privacy.php:289
+#: adminpages/orders.php:691
 msgid "Payment Type"
 msgstr "Ödeme Türü"
 
@@ -11694,6 +11979,8 @@ msgstr "Ödeme Türü"
 #: shortcodes/pmpro_account.php:337
 #: adminpages/dashboard.php:325
 #: includes/functions.php:3263
+#: adminpages/orders.php:677
+#: includes/functions.php:3269
 msgid "Total"
 msgstr "Toplam"
 
@@ -11701,54 +11988,65 @@ msgstr "Toplam"
 #: includes/functions.php:3232
 #: includes/privacy.php:281
 #: includes/functions.php:3242
+#: adminpages/orders.php:664
+#: includes/functions.php:3248
 msgid "Tax"
 msgstr "Vergi"
 
 #: adminpages/orders.php:630
 #: includes/privacy.php:277
+#: adminpages/orders.php:651
 msgid "Sub Total"
 msgstr "Ara Toplam"
 
 #: adminpages/orders.php:565
 #: includes/privacy.php:273
+#: adminpages/orders.php:586
 msgid "Billing Phone"
 msgstr "Fatura"
 
 #: adminpages/orders.php:552
 #: includes/privacy.php:269
 #: includes/privacy.php:362
+#: adminpages/orders.php:573
 msgid "Billing Country"
 msgstr "Fatura Ülke"
 
 #: adminpages/orders.php:540
 #: includes/privacy.php:265
 #: includes/privacy.php:360
+#: adminpages/orders.php:561
 msgid "Billing Postal Code"
 msgstr "Fatura Posta Kodu"
 
 #: adminpages/orders.php:528
 #: includes/privacy.php:261
+#: adminpages/orders.php:549
 msgid "Billing State"
 msgstr "Fatura eyalet"
 
 #: adminpages/orders.php:515
 #: includes/privacy.php:257
 #: includes/privacy.php:358
+#: adminpages/orders.php:536
 msgid "Billing City"
 msgstr "Fatura Şehir"
 
 #: adminpages/orders.php:491
 #: includes/privacy.php:249
+#: adminpages/orders.php:512
 msgid "Billing Street"
 msgstr "Fatura Sokak"
 
 #: adminpages/orders.php:477
 #: includes/privacy.php:245
+#: adminpages/orders.php:498
 msgid "Billing Name"
 msgstr "Fatura Adı"
 
 #: adminpages/emailtemplates-edit.php:26
 #: adminpages/orders.php:417
+#: adminpages/orders.php:438
 msgid "Membership Level ID"
 msgstr "Üyelik Seviyesi Kimliği"
 
@@ -11756,10 +12054,12 @@ msgstr "Üyelik Seviyesi Kimliği"
 #: adminpages/subscriptions.php:188
 #: adminpages/subscriptions.php:265
 #: adminpages/subscriptions.php:276
+#: adminpages/orders.php:423
 msgid "User ID"
 msgstr "Kullanıcı Kimliği"
 
 #: adminpages/orders.php:306
+#: adminpages/orders.php:327
 msgid "New Order"
 msgstr "Yeni Sipariş"
 
@@ -11770,11 +12070,13 @@ msgstr "Sipariş"
 
 #: adminpages/orders.php:195
 #: adminpages/orders.php:200
+#: adminpages/orders.php:221
 msgid "Error saving order."
 msgstr "Sipariş kayıt etme hatası."
 
 #: adminpages/orders.php:192
 #: adminpages/orders.php:197
+#: adminpages/orders.php:218
 msgid "Order saved successfully."
 msgstr "Sipariş başarıyla kaydedildi."
 
@@ -11832,6 +12134,7 @@ msgstr "Ücretsiz"
 #: adminpages/orders.php:470
 #: pages/billing.php:195
 #: pages/checkout.php:335
+#: adminpages/orders.php:491
 msgid "Billing Address"
 msgstr "Fatura Adresi"
 
@@ -11897,6 +12200,7 @@ msgstr "Göster"
 #: adminpages/reports/logins.php:113
 #: adminpages/reports/memberships.php:361
 #: adminpages/reports/sales.php:596
+#: adminpages/orders.php:984
 msgid "Export to CSV"
 msgstr "CSV olarak aktar"
 
@@ -11919,6 +12223,7 @@ msgstr "Üyeliğe İzin Ver"
 #: includes/profile.php:313
 #: pages/cancel.php:135
 #: pages/cancel.php:147
+#: adminpages/orders.php:747
 msgid "Expiration"
 msgstr "Son erme"
 
@@ -11944,6 +12249,7 @@ msgstr "Yeni Seviye Ekle"
 #: pages/cancel.php:153
 #: shortcodes/pmpro_account.php:261
 #: adminpages/discountcodes.php:737
+#: adminpages/orders.php:950
 msgid "Cancel"
 msgstr "Vazgeç"
 
@@ -12119,6 +12425,7 @@ msgid "Are you sure you want to delete the %s discount code? The subscriptions f
 msgstr "%s indirim kodunu silmek istediğinizden emin misiniz? Mevcut kullanıcılar için abonelikleri değişmez, ancak yeni kullanıcılar için artık bu kodu kullanmak mümkün olmayacaktır."
 
 #: classes/class-pmpro-orders-list-table.php:1104
+#: classes/class-pmpro-orders-list-table.php:1128
 msgid "edit"
 msgstr "düzenle"
 
@@ -12311,6 +12618,7 @@ msgstr "Kullanımlar"
 #: pages/checkout.php:447
 #: adminpages/discountcodes.php:507
 #: classes/gateways/class.pmprogateway_stripe.php:928
+#: classes/gateways/class.pmprogateway_stripe.php:929
 msgid "Expiration Date"
 msgstr "Bitiş Tarihi"
 
@@ -12332,6 +12640,7 @@ msgstr "Başlangıç Tarihi"
 #: includes/profile.php:717
 #: adminpages/dashboard.php:322
 #: adminpages/discountcodes.php:451
+#: adminpages/orders.php:356
 msgid "Code"
 msgstr "Kod"
 
@@ -12468,6 +12777,9 @@ msgstr "reCAPTCHA kullanılsın mı?"
 #: includes/fields.php:1466
 #: classes/gateways/class.pmprogateway_stripe.php:552
 #: classes/gateways/class.pmprogateway_stripe.php:566
+#: classes/gateways/class.pmprogateway_stripe.php:553
+#: classes/gateways/class.pmprogateway_stripe.php:567
+#: includes/cloudflare-turnstile.php:111
 msgid "Yes"
 msgstr "Evet"
 
@@ -12517,6 +12829,9 @@ msgstr "Tüm Üyelere Reklamları Gizle"
 #: includes/recaptcha.php:261
 #: classes/gateways/class.pmprogateway_stripe.php:550
 #: classes/gateways/class.pmprogateway_stripe.php:564
+#: classes/gateways/class.pmprogateway_stripe.php:551
+#: classes/gateways/class.pmprogateway_stripe.php:565
+#: includes/cloudflare-turnstile.php:110
 msgid "No"
 msgstr "Hayır"
 
@@ -12586,6 +12901,7 @@ msgstr "Gelişmiş"
 #: pages/confirmation.php:106
 #: shortcodes/pmpro_account.php:82
 #: pages/confirmation.php:108
+#: adminpages/orders.php:314
 msgid "Email"
 msgstr "Email"
 
@@ -12622,6 +12938,7 @@ msgstr "Braintree Ağ Geçidi PHP 5.4.45 veya daha üstünü gerektirir. PHP %s 
 #: adminpages/admin_header.php:150
 #: classes/gateways/class.pmprogateway_stripe.php:1450
 #: classes/gateways/class.pmprogateway_stripe.php:1446
+#: classes/gateways/class.pmprogateway_stripe.php:1447
 msgid "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 msgstr "Stripe Ağ Geçidi PHP 5.3.29 veya daha üstünü gerektirir. PHP %s veya daha yüksek bir sürüme yükseltmenizi öneririz. Ev sahibinizden yükseltme yapmasını isteyin."
 
@@ -12716,6 +13033,8 @@ msgstr "%s tarafından"
 #: includes/terms-of-service.php:333
 #: pages/invoice.php:378
 #: shortcodes/pmpro_account.php:371
+#: adminpages/orders.php:636
+#: classes/gateways/class.pmprogateway_stripe.php:485
 msgid "N/A"
 msgstr "Mevcut Değil"
 
@@ -12955,6 +13274,7 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2213
 #: classes/gateways/class.pmprogateway_stripe.php:2209
+#: classes/gateways/class.pmprogateway_stripe.php:2210
 msgid "Subscription customer ID does not match user's Stripe customer ID."
 msgstr ""
 
@@ -12964,4 +13284,66 @@ msgstr ""
 
 #: classes/class-pmpro-site-health.php:251
 msgid "API Version"
+msgstr ""
+
+#: adminpages/orders.php:61
+msgid "Nonce failed for checking token order."
+msgstr ""
+
+#: adminpages/orders.php:68
+msgid "Error checking token order: "
+msgstr ""
+
+#: adminpages/orders.php:71
+msgid "The token order has been completed."
+msgstr ""
+
+#: classes/class-pmpro-orders-list-table.php:1030
+msgid "Recheck Payment"
+msgstr ""
+
+#: classes/class-pmpro-orders-list-table.php:1045
+msgid "Recheck"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway.php:217
+msgid "Checking token orders is not supported for this gateway."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3899
+msgid "This is not a token order."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3905
+msgid "No checkout session ID found."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3912
+#: classes/gateways/class.pmprogateway_stripe.php:3914
+#: classes/gateways/class.pmprogateway_stripe.php:3916
+msgid "Could not retrieve checkout session: "
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3921
+msgid "Payment is still pending."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3926
+msgid "Checkout session has not yet been completed."
+msgstr ""
+
+#: includes/currencies.php:21
+msgid "Bangladeshi taka (৳&nbsp;)"
+msgstr ""
+
+#: includes/functions.php:5020
+msgid "Order not found."
+msgstr ""
+
+#: includes/functions.php:5025
+msgid "Order is not a token order."
+msgstr ""
+
+#: includes/functions.php:5030
+msgid "Order gateway not found."
 msgstr ""

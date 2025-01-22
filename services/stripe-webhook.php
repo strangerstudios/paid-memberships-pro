@@ -504,8 +504,11 @@
 			$currency_unit_multiplier = pow( 10, intval( $currency['decimals'] ) );
 
 			$order->total    = (float) $checkout_session->amount_total / $currency_unit_multiplier;
-			$order->subtotal = (float) $checkout_session->amount_subtotal / $currency_unit_multiplier;
-			$order->tax      = (float) $checkout_session->total_details->amount_tax / $currency_unit_multiplier;
+			if ( ! empty( get_option( 'pmpro_stripe_tax_id_collection_enabled' ) ) ) {
+				// If Stripe calculated tax, use that. Otherwise, keep the tax calculated by PMPro.
+				$order->subtotal = (float) $checkout_session->amount_subtotal / $currency_unit_multiplier;
+				$order->tax      = (float) $checkout_session->total_details->amount_tax / $currency_unit_multiplier;
+			}
 
 			// Was the checkout session successful?
 			if ( $checkout_session->payment_status == "paid" ) {

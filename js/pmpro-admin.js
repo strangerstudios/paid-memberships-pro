@@ -837,18 +837,21 @@ jQuery(document).ready(function () {
 					// If user just installed, give them the option to activate.
 					// TODO: Also give option to activate after update, but this is harder.
 					if ('install' === action) {
+						// Find the buttons that could be the activate button.
 						var primaryButtons = responseElement.find('.button-primary');
-						if (primaryButtons.length > 0) {
-							var activateButton = primaryButtons[0];
-							var activateButtonHref = activateButton.getAttribute('href');
-							if (activateButtonHref) {
+
+						// Loop through the buttons to find the activate button.
+						for (var i = 0; i < primaryButtons.length; i++) {
+							// If there is a href element beginning with plugins.php?action=activate&plugin=[plugin_slug], then it is very likely the activate button.
+							if ( primaryButtons[i].getAttribute('href') && primaryButtons[i].getAttribute('href').indexOf('plugins.php?action=activate&plugin=') > -1 ) {
 								// Wait 1 second before showing the activate button.
 								setTimeout(function () {
 									button.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
-									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val(activateButtonHref);
+									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val( primaryButtons[i].getAttribute('href') );
 									button.html('Activate');
 									button.removeClass('disabled');
 								}, 1000);
+								break;
 							}
 						}
 					}

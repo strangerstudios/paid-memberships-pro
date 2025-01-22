@@ -1,15 +1,15 @@
-# Copyright (C) 2024 Paid Memberships Pro
+# Copyright (C) 2025 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.3.2\n"
+"Project-Id-Version: Paid Memberships Pro 3.3.3\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-11-21T16:31:16+00:00\n"
+"POT-Creation-Date: 2025-01-08T17:42:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -42,12 +42,14 @@ msgstr ""
 #: includes/functions.php:4811
 #: includes/functions.php:4821
 #: includes/functions.php:4820
+#: includes/functions.php:4826
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr ""
 
 #: includes/functions.php:4804
 #: includes/functions.php:4814
 #: includes/functions.php:4813
+#: includes/functions.php:4819
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr ""
 
@@ -99,84 +101,103 @@ msgid "Your membership at !!sitename!! will renew soon"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:162
+#: includes/cloudflare-turnstile.php:168
 msgid "An internal error happened while validating the response. The request can be retried."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:161
+#: includes/cloudflare-turnstile.php:167
 msgid "The response parameter (token) has already been validated before. This means that the token was issued five minutes ago and is no longer valid, or it was already redeemed."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:160
+#: includes/cloudflare-turnstile.php:166
 msgid "The request was rejected because it was malformed."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:159
+#: includes/cloudflare-turnstile.php:165
 msgid "The response parameter (token) is invalid or has expired. Most of the time, this means a fake token has been used. If the error persists, contact customer support."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:158
+#: includes/cloudflare-turnstile.php:164
 msgid "The response parameter (token) was not passed."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:157
+#: includes/cloudflare-turnstile.php:163
 msgid "The secret parameter was invalid or did not exist."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:156
+#: includes/cloudflare-turnstile.php:162
 msgid "The secret parameter was not passed."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:117
+#: includes/cloudflare-turnstile.php:123
 msgid "Turnstile Secret Key"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:111
+#: includes/cloudflare-turnstile.php:117
 msgid "Turnstile Site Key"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:107
+#: includes/cloudflare-turnstile.php:113
 msgid "Click here to signup for CloudFlare Turnstile"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:107
+#: includes/cloudflare-turnstile.php:113
 msgid "A free CloudFlare Turnstile key is required."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:100
+#: includes/cloudflare-turnstile.php:106
 msgid "Use CloudFlare Turnstile?"
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:71
+#: includes/cloudflare-turnstile.php:76
 msgid "An error occurred while validating the security check."
 msgstr ""
 
 #: includes/cloudflare-turnstile.php:52
+#: includes/cloudflare-turnstile.php:57
 msgid "Please complete the security check."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2322
 #: classes/gateways/class.pmprogateway_stripe.php:2340
 #: classes/gateways/class.pmprogateway_stripe.php:2336
+#: classes/gateways/class.pmprogateway_stripe.php:2337
 msgid "Your site is using API keys to authenticate with Stripe."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2315
 #: classes/gateways/class.pmprogateway_stripe.php:2333
 #: classes/gateways/class.pmprogateway_stripe.php:2329
+#: classes/gateways/class.pmprogateway_stripe.php:2330
 msgid "Legacy API keys will eventually no longer be supported. To continue processing payments with Stripe, you may connect via Stripe Connect below or connect using \"restricted API keys\"."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2302
 #: classes/gateways/class.pmprogateway_stripe.php:2320
 #: classes/gateways/class.pmprogateway_stripe.php:2316
+#: classes/gateways/class.pmprogateway_stripe.php:2317
 msgid "Connected with API Keys"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:316
+#: classes/gateways/class.pmprogateway_stripe.php:317
 msgid "Click here to connect via API settings."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:312
+#: classes/gateways/class.pmprogateway_stripe.php:313
 msgid "Stripe API Settings"
 msgstr ""
 
@@ -271,6 +292,7 @@ msgstr ""
 
 #: adminpages/orders.php:503
 #: includes/privacy.php:253
+#: adminpages/orders.php:524
 msgid "Billing Street 2"
 msgstr ""
 
@@ -354,31 +376,37 @@ msgid "Business Settings"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:492
+#: classes/gateways/class.pmprogateway_stripe.php:493
 msgid "Some event types have not yet been triggered in Stripe. More information will be available here once Stripe attempts to send webhooks for each event type. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1282
 #: classes/gateways/class.pmprogateway_stripe.php:1278
+#: classes/gateways/class.pmprogateway_stripe.php:1279
 msgid "Enable webhooks now"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1277
 #: classes/gateways/class.pmprogateway_stripe.php:1273
+#: classes/gateways/class.pmprogateway_stripe.php:1274
 msgid "Important Notice: Stripe Webhooks Are Disabled"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1268
 #: classes/gateways/class.pmprogateway_stripe.php:1264
+#: classes/gateways/class.pmprogateway_stripe.php:1265
 msgid "Set up webhooks now"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1266
 #: classes/gateways/class.pmprogateway_stripe.php:1262
+#: classes/gateways/class.pmprogateway_stripe.php:1263
 msgid "A valid Stripe webhook is required for your membership checkout to communicate with your payment gateway. We have detected that your Stripe webhook is either disabled or not configured for this website."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1263
 #: classes/gateways/class.pmprogateway_stripe.php:1259
+#: classes/gateways/class.pmprogateway_stripe.php:1260
 msgid "Important Notice: Your Stripe Webhook Is Disabled or Not Configured"
 msgstr ""
 
@@ -591,6 +619,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypal.php:179
 #: classes/gateways/class.pmprogateway_paypalexpress.php:548
 #: classes/gateways/class.pmprogateway_paypalstandard.php:166
+#: classes/gateways/class.pmprogateway_paypalexpress.php:553
 msgid "Check Out With %s"
 msgstr ""
 
@@ -967,6 +996,7 @@ msgid "Security"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:414
+#: classes/gateways/class.pmprogateway_stripe.php:415
 msgid "Webhook History"
 msgstr ""
 
@@ -990,14 +1020,17 @@ msgstr "prova"
 #: classes/gateways/class.pmprogateway_stripe.php:2151
 #: classes/gateways/class.pmprogateway_stripe.php:2161
 #: classes/gateways/class.pmprogateway_stripe.php:2157
+#: classes/gateways/class.pmprogateway_stripe.php:2158
 msgid "Stripe login credentials are not set."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1010
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1011
 msgid "Subscription transaction ID is empty."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1005
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1006
 msgid "PayPal login credentials are not set."
 msgstr ""
 
@@ -2103,10 +2136,12 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1365
 #: classes/gateways/class.pmprogateway_stripe.php:1361
+#: classes/gateways/class.pmprogateway_stripe.php:1362
 msgid "I Have Set Up My Webhooks"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1051
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1052
 msgid "Subscription could not be found."
 msgstr ""
 
@@ -2219,11 +2254,13 @@ msgstr ""
 
 #. translators: %s is the subscription transaction ID.
 #: classes/class-pmpro-orders-list-table.php:1221
+#: classes/class-pmpro-orders-list-table.php:1230
 msgid "Subscription: %s"
 msgstr "Subscripció: %s"
 
 #. translators: %s is the payment transaction ID.
 #: classes/class-pmpro-orders-list-table.php:1211
+#: classes/class-pmpro-orders-list-table.php:1220
 msgid "Payment: %s"
 msgstr "Pagament: %s"
 
@@ -2360,18 +2397,22 @@ msgstr ""
 #: adminpages/subscriptions.php:230
 #: adminpages/subscriptions.php:301
 #: adminpages/subscriptions.php:316
+#: adminpages/orders.php:866
 msgid "View Subscription"
 msgstr ""
 
 #: adminpages/orders.php:708
+#: adminpages/orders.php:729
 msgid "Only the last 4 digits are stored in this site to use as a reference with the gateway."
 msgstr ""
 
 #: adminpages/orders.php:436
+#: adminpages/orders.php:457
 msgid "ID %d [deleted]"
 msgstr ""
 
 #: adminpages/orders.php:328
+#: adminpages/orders.php:349
 msgid "Order Information"
 msgstr ""
 
@@ -2927,12 +2968,14 @@ msgstr ""
 #: includes/functions.php:4830
 #: includes/functions.php:4840
 #: includes/functions.php:4839
+#: includes/functions.php:4845
 msgid "Invalid file submission."
 msgstr "L'enviament del fitxer no és vàlid."
 
 #: includes/functions.php:4785
 #: includes/functions.php:4795
 #: includes/functions.php:4794
+#: includes/functions.php:4800
 msgid "Invalid field input."
 msgstr "Camp d'entrada no vàlid."
 
@@ -2942,18 +2985,22 @@ msgstr "Camp d'entrada no vàlid."
 #: includes/functions.php:4801
 #: includes/functions.php:4779
 #: includes/functions.php:4800
+#: includes/functions.php:4785
+#: includes/functions.php:4806
 msgid "Invalid file type."
 msgstr "Tipus de fitxer no vàlid."
 
 #: includes/functions.php:4763
 #: includes/functions.php:4773
 #: includes/functions.php:4772
+#: includes/functions.php:4778
 msgid "No file name found."
 msgstr "No s'ha trobat cap nom de fitxer."
 
 #: includes/functions.php:4757
 #: includes/functions.php:4767
 #: includes/functions.php:4766
+#: includes/functions.php:4772
 msgid "No file was uploaded."
 msgstr "No s'ha pujat cap fitxer."
 
@@ -3004,41 +3051,49 @@ msgstr "Mostra el missatge d'accés denegat"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1362
 #: classes/gateways/class.pmprogateway_stripe.php:1358
+#: classes/gateways/class.pmprogateway_stripe.php:1359
 msgid "You must complete these steps for both the Sandbox/Testing and Live/Production modes if you intend to use Stripe for testing."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1359
 #: classes/gateways/class.pmprogateway_stripe.php:1355
+#: classes/gateways/class.pmprogateway_stripe.php:1356
 msgid "Click \"Add endpoint\" to save your webhook"
 msgstr "Feu clic a «Afegeix un extrem» per desar el webhook"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1349
 #: classes/gateways/class.pmprogateway_stripe.php:1345
+#: classes/gateways/class.pmprogateway_stripe.php:1346
 msgid "Select the following events to listen to:"
 msgstr "Seleccioneu els següents esdeveniments per escoltar-los:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1345
 #: classes/gateways/class.pmprogateway_stripe.php:1341
+#: classes/gateways/class.pmprogateway_stripe.php:1342
 msgid "Paste the following value into the \"Endpoint URL\" field:"
 msgstr "Enganxeu el següent valor al camp «URL de l'extrem»:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1343
 #: classes/gateways/class.pmprogateway_stripe.php:1339
+#: classes/gateways/class.pmprogateway_stripe.php:1340
 msgid "Click \"Add an endpoint\""
 msgstr "Feu clic a «Afegeix un extrem»"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1339
 #: classes/gateways/class.pmprogateway_stripe.php:1335
+#: classes/gateways/class.pmprogateway_stripe.php:1336
 msgid "Webhooks"
 msgstr "Webhooks"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1338
 #: classes/gateways/class.pmprogateway_stripe.php:1334
+#: classes/gateways/class.pmprogateway_stripe.php:1335
 msgid "Open the %s page in your Stripe dashboard"
 msgstr "Obriu la pàgina %s al vostre tauler de Stripe"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1332
 #: classes/gateways/class.pmprogateway_stripe.php:1328
+#: classes/gateways/class.pmprogateway_stripe.php:1329
 msgid "Here's how to create a webhook endpoint in your Stripe dashboard"
 msgstr "A continuació s'explica com crear un extrem de webhook al tauler de Stripe"
 
@@ -3046,17 +3101,21 @@ msgstr "A continuació s'explica com crear un extrem de webhook al tauler de Str
 #: classes/gateways/class.pmprogateway_stripe.php:1331
 #: classes/gateways/class.pmprogateway_stripe.php:1276
 #: classes/gateways/class.pmprogateway_stripe.php:1327
+#: classes/gateways/class.pmprogateway_stripe.php:1277
+#: classes/gateways/class.pmprogateway_stripe.php:1328
 msgid "In order for Stripe to function properly, there must be a Stripe Webhook configured for this website."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1328
 #: classes/gateways/class.pmprogateway_stripe.php:1324
+#: classes/gateways/class.pmprogateway_stripe.php:1325
 msgid "Next Step: Register a Stripe Webhook."
 msgstr "Pas següent: registreu un webhook de Stripe."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2353
 #: classes/gateways/class.pmprogateway_stripe.php:2371
 #: classes/gateways/class.pmprogateway_stripe.php:2367
+#: classes/gateways/class.pmprogateway_stripe.php:2368
 msgid "This will disconnect all sites using this Stripe account from Stripe in test mode only."
 msgstr "Això desconnectarà de Stripe tots els llocs web que utilitzen aquest compte de Stripe només en mode de prova."
 
@@ -3122,6 +3181,7 @@ msgstr "Possibles pagaments brossa"
 #: classes/gateways/class.pmprogateway_stripe.php:2386
 #: classes/gateways/class.pmprogateway_stripe.php:2404
 #: classes/gateways/class.pmprogateway_stripe.php:2400
+#: classes/gateways/class.pmprogateway_stripe.php:2401
 msgid "Learn More"
 msgstr "Més informació"
 
@@ -3130,6 +3190,7 @@ msgstr "Més informació"
 #: pages/checkout.php:167
 #: pages/checkout.php:491
 #: classes/gateways/class.pmprogateway_stripe.php:946
+#: classes/gateways/class.pmprogateway_stripe.php:947
 msgid "Apply discount code"
 msgstr "Aplica el codi de descompte"
 
@@ -3527,12 +3588,14 @@ msgstr "Protecció contra la brossa desactivada"
 #: classes/gateways/class.pmprogateway_stripe.php:2921
 #: classes/gateways/class.pmprogateway_stripe.php:2939
 #: classes/gateways/class.pmprogateway_stripe.php:2935
+#: classes/gateways/class.pmprogateway_stripe.php:2936
 msgid "Cannot find payment method."
 msgstr "No es pot trobar el mètode de pagament."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2032
 #: classes/gateways/class.pmprogateway_stripe.php:2042
 #: classes/gateways/class.pmprogateway_stripe.php:2038
+#: classes/gateways/class.pmprogateway_stripe.php:2039
 msgid "No subscription transaction ID."
 msgstr "No hi ha cap identificador de transacció de subscripció."
 
@@ -3618,6 +3681,7 @@ msgstr "S'ha detectat un canvi a l'URL del lloc web"
 #: classes/gateways/class.pmprogateway_stripe.php:2382
 #: classes/gateways/class.pmprogateway_stripe.php:2400
 #: classes/gateways/class.pmprogateway_stripe.php:2396
+#: classes/gateways/class.pmprogateway_stripe.php:2397
 msgid "Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges."
 msgstr "Nota: esteu utilitzant la integració gratuïta de la passarel·la de pagament Stripe. No hi ha cap quota addicional pel processament de pagaments a més del que cobra Stripe."
 
@@ -3627,64 +3691,79 @@ msgstr "Gestiona la facturació"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1717
 #: classes/gateways/class.pmprogateway_stripe.php:1713
+#: classes/gateways/class.pmprogateway_stripe.php:1714
 msgid "User is not logged in."
 msgstr "L'usuari no està connectat."
 
 #: classes/gateways/class.pmprogateway_stripe.php:644
 #: classes/gateways/class.pmprogateway_stripe.php:640
+#: classes/gateways/class.pmprogateway_stripe.php:641
 msgid "Collect Tax IDs in Stripe Checkout"
 msgstr "Recopila els identificadors fiscals a Stripe Checkout"
 
 #: classes/gateways/class.pmprogateway_stripe.php:622
 #: classes/gateways/class.pmprogateway_stripe.php:618
+#: classes/gateways/class.pmprogateway_stripe.php:619
 msgid "Calculate Tax in Stripe Checkout"
 msgstr "Calcula l'impost a Stripe Checkout"
 
 #: classes/gateways/class.pmprogateway_stripe.php:563
 #: classes/gateways/class.pmprogateway_stripe.php:559
+#: classes/gateways/class.pmprogateway_stripe.php:560
 msgid "Show Payment Request Button for On-Site Payments"
 msgstr "Mostra el botó de sol·licitud de pagament per a pagaments in situ"
 
 #: classes/gateways/class.pmprogateway_stripe.php:549
 #: classes/gateways/class.pmprogateway_stripe.php:545
+#: classes/gateways/class.pmprogateway_stripe.php:546
 msgid "Show Billing Address Fields in PMPro Checkout Form"
 msgstr "Mostra els camps de l'adreça de facturació al formulari de pagament de PMPro"
 
 #: classes/gateways/class.pmprogateway_stripe.php:544
 #: classes/gateways/class.pmprogateway_stripe.php:540
+#: classes/gateways/class.pmprogateway_stripe.php:541
 msgid "Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout). If using Stripe Checkout, be sure that all webhook events listed above are set up in Stripe."
 msgstr "Incrusteu els camps d'informació de pagament a la vostra pàgina de pagament d'afiliació o utilitzeu la pàgina de pagament allotjada per Stripe (Stripe Checkout). Si utilitzeu Stripe Checkout, assegureu-vos que tots els esdeveniments de webhook enumerats anteriorment estiguin configurats a Stripe."
 
 #: classes/gateways/class.pmprogateway_stripe.php:502
+#: classes/gateways/class.pmprogateway_stripe.php:503
 msgid "Last Received"
 msgstr "Darrer rebut"
 
 #: classes/gateways/class.pmprogateway_stripe.php:501
+#: classes/gateways/class.pmprogateway_stripe.php:502
 msgid "Event Type"
 msgstr "Tipus d'esdeveniment"
 
 #: classes/gateways/class.pmprogateway_stripe.php:494
+#: classes/gateways/class.pmprogateway_stripe.php:495
 msgid "All webhooks appear to be working correctly."
 msgstr "Sembla que tots els webhooks funcionen correctament."
 
 #: classes/gateways/class.pmprogateway_stripe.php:490
+#: classes/gateways/class.pmprogateway_stripe.php:491
 msgid "Some webhooks recently sent by Stripe have not been received by your website. Please ensure that you have a webhook set up in Stripe for the Webhook URL shown above with all of the listed event types active. To test an event type again, please resend the most recent webhook event of that type from the Stripe webhook settings page or wait for it to be sent again in the future."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:472
+#: classes/gateways/class.pmprogateway_stripe.php:473
 msgid "Last Sent "
 msgstr "Darrer enviat "
 
 #: classes/gateways/class.pmprogateway_stripe.php:469
 #: classes/gateways/class.pmprogateway_stripe.php:481
+#: classes/gateways/class.pmprogateway_stripe.php:470
+#: classes/gateways/class.pmprogateway_stripe.php:482
 msgid "Working"
 msgstr "S'està treballant"
 
 #: classes/gateways/class.pmprogateway_stripe.php:432
+#: classes/gateways/class.pmprogateway_stripe.php:433
 msgid "Never Received"
 msgstr "Mai rebut"
 
 #: classes/gateways/class.pmprogateway_stripe.php:374
+#: classes/gateways/class.pmprogateway_stripe.php:375
 msgid "Webhook Status"
 msgstr "Estat del webhook"
 
@@ -3995,6 +4074,7 @@ msgstr "No s'han pogut afegir/actualitzar els camps d'usuari d'aquest membre"
 
 #: classes/gateways/class.pmprogateway_stripe.php:999
 #: classes/gateways/class.pmprogateway_stripe.php:995
+#: classes/gateways/class.pmprogateway_stripe.php:996
 msgid "Stripe Customer"
 msgstr "Client de Stripe"
 
@@ -4002,6 +4082,8 @@ msgstr "Client de Stripe"
 #: classes/gateways/class.pmprogateway_paypal.php:183
 #: classes/gateways/class.pmprogateway_paypalexpress.php:552
 #: classes/gateways/class.pmprogateway_paypalstandard.php:170
+#: classes/class-pmpro-orders-list-table.php:1147
+#: classes/gateways/class.pmprogateway_paypalexpress.php:557
 msgid "PayPal"
 msgstr "PayPal"
 
@@ -4445,6 +4527,7 @@ msgstr "Obteniu %s i més amb una llicència %s."
 #: adminpages/membershiplevels.php:560
 #: classes/gateways/class.pmprogateway_stripe.php:1326
 #: classes/gateways/class.pmprogateway_stripe.php:1322
+#: classes/gateways/class.pmprogateway_stripe.php:1323
 msgid "Close Popup"
 msgstr "Tanca la finestra emergent"
 
@@ -4512,6 +4595,7 @@ msgstr "Pàgina d'entrada de Paid Memberships Pro"
 #: classes/gateways/class.pmprogateway_stripe.php:2323
 #: classes/gateways/class.pmprogateway_stripe.php:2341
 #: classes/gateways/class.pmprogateway_stripe.php:2337
+#: classes/gateways/class.pmprogateway_stripe.php:2338
 msgid "In order to complete the transition to using Stripe API keys, please click the \"Disconnect from Stripe\" button below."
 msgstr ""
 
@@ -4580,6 +4664,7 @@ msgstr "Secció dinàmica de la pàgina on els membres poden cancel·lar la seva
 
 #: classes/gateways/class.pmprogateway_stripe.php:916
 #: classes/gateways/class.pmprogateway_stripe.php:912
+#: classes/gateways/class.pmprogateway_stripe.php:913
 msgid "Credit Card"
 msgstr "Targeta de crèdit"
 
@@ -4678,128 +4763,155 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3896
 #: classes/gateways/class.pmprogateway_stripe.php:3879
 #: classes/gateways/class.pmprogateway_stripe.php:3881
+#: classes/gateways/class.pmprogateway_stripe.php:3880
+#: classes/gateways/class.pmprogateway_stripe.php:3882
 msgid "Admin: There was a problem processing the refund"
 msgstr "Administració: Hi ha hagut un problema en processar el reemborsament"
 
 #: classes/gateways/class.pmprogateway_stripe.php:3872
 #: classes/gateways/class.pmprogateway_stripe.php:3890
 #: classes/gateways/class.pmprogateway_stripe.php:3875
+#: classes/gateways/class.pmprogateway_stripe.php:3876
 msgid "Admin: An error occurred while attempting to process this refund."
 msgstr "Administració: s'ha produït un error en intentar processar aquest reemborsament."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1741
 #: classes/gateways/class.pmprogateway_stripe.php:1737
+#: classes/gateways/class.pmprogateway_stripe.php:1738
 msgid "Please contact the site administrator."
 msgstr "Poseu-vos en contacte amb l'administrador del lloc web."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1736
 #: classes/gateways/class.pmprogateway_stripe.php:1732
+#: classes/gateways/class.pmprogateway_stripe.php:1733
 msgid "Could not get Customer Portal URL. This feature may not be set up in Stripe."
 msgstr "No s'ha pogut obtenir l'URL del portal del client. És possible que aquesta característica no estigui configurada a Stripe."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1725
 #: classes/gateways/class.pmprogateway_stripe.php:1721
+#: classes/gateways/class.pmprogateway_stripe.php:1722
 msgid "Could not get Stripe customer for user."
 msgstr "No s'ha pogut obtenir el client de Stripe per a l'usuari."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1683
 #: classes/gateways/class.pmprogateway_stripe.php:1687
 #: classes/gateways/class.pmprogateway_stripe.php:1679
+#: classes/gateways/class.pmprogateway_stripe.php:1680
+#: classes/gateways/class.pmprogateway_stripe.php:1684
 msgid "Could not create checkout session. "
 msgstr "No s'ha pogut crear la sessió de pagament. "
 
 #: classes/gateways/class.pmprogateway_stripe.php:1600
 #: classes/gateways/class.pmprogateway_stripe.php:1596
+#: classes/gateways/class.pmprogateway_stripe.php:1597
 msgid "Could not get price for recurring payment. "
 msgstr "No s'ha pogut obtenir el preu del pagament recurrent. "
 
 #: classes/gateways/class.pmprogateway_stripe.php:1573
 #: classes/gateways/class.pmprogateway_stripe.php:1569
+#: classes/gateways/class.pmprogateway_stripe.php:1570
 msgid "Could not get price for initial payment. "
 msgstr "No s'ha pogut obtenir el preu del pagament inicial. "
 
 #: classes/gateways/class.pmprogateway_stripe.php:1555
 #: classes/gateways/class.pmprogateway_stripe.php:1551
+#: classes/gateways/class.pmprogateway_stripe.php:1552
 msgid "Could not get product ID."
 msgstr "No s'ha pogut obtenir l'identificador del producte."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1546
 #: classes/gateways/class.pmprogateway_stripe.php:1542
+#: classes/gateways/class.pmprogateway_stripe.php:1543
 msgid "Could not get customer. "
 msgstr "No s'ha pogut obtenir el client. "
 
 #: classes/gateways/class.pmprogateway_stripe.php:1510
 #: classes/gateways/class.pmprogateway_stripe.php:1506
+#: classes/gateways/class.pmprogateway_stripe.php:1507
 msgid "Your previous order has not yet been processed. Submitting your payment again will cause a separate charge to be initiated."
 msgstr "Encara no s'ha processat la vostra comanda anterior. Si torneu a realitzar el pagament, s'iniciarà un nou càrrec."
 
 #: classes/gateways/class.pmprogateway_stripe.php:651
 #: classes/gateways/class.pmprogateway_stripe.php:647
+#: classes/gateways/class.pmprogateway_stripe.php:648
 msgid "Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers."
 msgstr "Els identificadors fiscals només es recullen si heu activat Stripe Tax. Stripe només realitza la validació automàtica dels números ABN, EU VAT i GB VAT. Heu de verificar que els identificadors fiscals proporcionats siguin vàlids durant la sessió per a tots els altres nombres."
 
 #: classes/gateways/class.pmprogateway_stripe.php:649
 #: classes/gateways/class.pmprogateway_stripe.php:645
+#: classes/gateways/class.pmprogateway_stripe.php:646
 msgid "Yes, collect tax IDs."
 msgstr "Sí, recull identificadors fiscals."
 
 #: classes/gateways/class.pmprogateway_stripe.php:648
 #: classes/gateways/class.pmprogateway_stripe.php:644
+#: classes/gateways/class.pmprogateway_stripe.php:645
 msgid "No, do not collect tax IDs."
 msgstr "No, no recullis identificadors fiscals."
 
 #: classes/gateways/class.pmprogateway_stripe.php:639
 #: classes/gateways/class.pmprogateway_stripe.php:635
+#: classes/gateways/class.pmprogateway_stripe.php:636
 msgid "Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target=\"_blank\" href=\"%s\">activate Stripe Tax</a> in your Stripe dashboard. <a target=\"_blank\" href=\"%s\">More information about Stripe Tax »</a>"
 msgstr "Stripe Tax només està disponible quan s'utilitza Stripe Checkout (la pàgina de pagament allotjada a Stripe). Heu d'<a target=\"_blank\" href=\"%s\">activar Stripe Tax</a> al vostre tauler de Stripe. <a target=\"_blank\" href=\"%s\">Més informació sobre Stripe Tax »</a>"
 
 #: classes/gateways/class.pmprogateway_stripe.php:628
 #: classes/gateways/class.pmprogateway_stripe.php:624
+#: classes/gateways/class.pmprogateway_stripe.php:625
 msgid "Calculate tax on top of membership price"
 msgstr "Calcula els impostos sobre el preu d'afiliació"
 
 #: classes/gateways/class.pmprogateway_stripe.php:627
 #: classes/gateways/class.pmprogateway_stripe.php:623
+#: classes/gateways/class.pmprogateway_stripe.php:624
 msgid "Membership price includes tax"
 msgstr "El preu de l'afiliació inclou els impostos"
 
 #: classes/gateways/class.pmprogateway_stripe.php:626
 #: classes/gateways/class.pmprogateway_stripe.php:622
+#: classes/gateways/class.pmprogateway_stripe.php:623
 msgid "Do not calculate tax"
 msgstr "No calculis impostos"
 
 #: classes/gateways/class.pmprogateway_stripe.php:616
 #: classes/gateways/class.pmprogateway_stripe.php:612
+#: classes/gateways/class.pmprogateway_stripe.php:613
 msgid "Always"
 msgstr "Sempre"
 
 #: classes/gateways/class.pmprogateway_stripe.php:615
 #: classes/gateways/class.pmprogateway_stripe.php:611
+#: classes/gateways/class.pmprogateway_stripe.php:612
 msgid "Only when necessary"
 msgstr "Només quan sigui necessari"
 
 #: classes/gateways/class.pmprogateway_stripe.php:611
 #: classes/gateways/class.pmprogateway_stripe.php:607
+#: classes/gateways/class.pmprogateway_stripe.php:608
 msgid "Collect Billing Address in Stripe Checkout"
 msgstr "Recull l'adreça de facturació a Stripe Checkout"
 
 #: classes/gateways/class.pmprogateway_stripe.php:541
 #: classes/gateways/class.pmprogateway_stripe.php:537
+#: classes/gateways/class.pmprogateway_stripe.php:538
 msgid "Accept payments in Stripe (Stripe Checkout)"
 msgstr "Accepta pagaments a Stripe (Stripe Checkout)"
 
 #: classes/gateways/class.pmprogateway_stripe.php:542
 #: classes/gateways/class.pmprogateway_stripe.php:538
+#: classes/gateways/class.pmprogateway_stripe.php:539
 msgid "Accept payments on this site"
 msgstr "Accepteu pagaments en aquest lloc web"
 
 #: classes/gateways/class.pmprogateway_stripe.php:537
 #: classes/gateways/class.pmprogateway_stripe.php:533
+#: classes/gateways/class.pmprogateway_stripe.php:534
 msgid "Payment Flow"
 msgstr "Flux de pagament"
 
 #. translators: %1$s is the Transaction ID. %1$s is the Gateway Error
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1299
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1300
 msgid "Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s."
 msgstr "Administració: Hi ha hagut un problema en processar un reemborsament per a l'identificador de transacció %1$s. Error de passarel·la: %2$s."
 
@@ -4810,6 +4922,8 @@ msgstr "Administració: Hi ha hagut un problema en processar un reemborsament pe
 #: classes/gateways/class.pmprogateway_stripe.php:3860
 #: classes/gateways/class.pmprogateway_stripe.php:3878
 #: classes/gateways/class.pmprogateway_stripe.php:3863
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1285
+#: classes/gateways/class.pmprogateway_stripe.php:3864
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr "Administració: Comanda reemborsada correctament el %1$s per a l'identificador de transacció %2$s per %3$s."
 
@@ -4994,10 +5108,12 @@ msgstr "Paid Memberships Pro - Opcions de la passarel·la de pagament"
 #: adminpages/subscriptions.php:495
 #: adminpages/subscriptions.php:508
 #: adminpages/subscriptions.php:522
+#: classes/class-pmpro-orders-list-table.php:1278
 msgid "%1$s at %2$s"
 msgstr "%1$s a les %2$s"
 
 #: adminpages/orders.php:858
+#: adminpages/orders.php:879
 msgid "Additional Order Information"
 msgstr "Informació addicional de la comanda"
 
@@ -5008,6 +5124,8 @@ msgstr "Informació addicional de la comanda"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:240
 #: adminpages/subscriptions.php:528
 #: adminpages/subscriptions.php:543
+#: adminpages/orders.php:860
+#: classes/class-pmpro-orders-list-table.php:1264
 msgid "View all orders for this subscription"
 msgstr "Visualitza totes les comandes d'aquesta subscripció"
 
@@ -5015,18 +5133,22 @@ msgstr "Visualitza totes les comandes d'aquesta subscripció"
 #: adminpages/subscriptions.php:309
 #: adminpages/subscriptions.php:541
 #: adminpages/subscriptions.php:556
+#: adminpages/orders.php:786
 msgid "Payment Gateway Information"
 msgstr "Informació de la passarel·la de pagament"
 
 #: adminpages/orders.php:732
+#: adminpages/orders.php:753
 msgid "MM/YYYY"
 msgstr "MM/YYYY"
 
 #: adminpages/orders.php:395
+#: adminpages/orders.php:416
 msgid "Member Information"
 msgstr "Informació del membre"
 
 #: adminpages/orders.php:345
+#: adminpages/orders.php:366
 msgid "A randomly generated code that serves as a unique, non-sequential order number."
 msgstr "Un codi generat aleatòriament que serveix com a número de comanda únic i no seqüencial."
 
@@ -5035,16 +5157,20 @@ msgstr "Un codi generat aleatòriament que serveix com a número de comanda úni
 #: classes/class-pmpro-orders-list-table.php:1019
 #: classes/class-pmpro-orders-list-table.php:1021
 #: includes/email-templates.php:348
+#: adminpages/orders.php:320
+#: adminpages/orders.php:322
 msgid "Refund"
 msgstr "Reemborsament"
 
 #: adminpages/orders.php:294
+#: adminpages/orders.php:315
 msgid "View"
 msgstr "Visualitza"
 
 #. translators: %s is the Order Code.
 #: adminpages/orders.php:272
 #: classes/class-pmpro-orders-list-table.php:934
+#: adminpages/orders.php:293
 msgid "Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?"
 msgstr "Reemborseu la comanda %s a la passarel·la de pagament. Aquesta acció és permanent. L'usuari i l'administrador rebran una confirmació per correu electrònic després de processar el reemborsament. Segur que voleu reemborsar aquesta comanda?"
 
@@ -5116,6 +5242,7 @@ msgstr "Activa el seguiment"
 #: classes/gateways/class.pmprogateway_stripe.php:2852
 #: classes/gateways/class.pmprogateway_stripe.php:2870
 #: classes/gateways/class.pmprogateway_stripe.php:2866
+#: classes/gateways/class.pmprogateway_stripe.php:2867
 msgid "Could not create price."
 msgstr "No s'ha pogut crear el preu."
 
@@ -5158,6 +5285,8 @@ msgstr "Nou %s"
 
 #: adminpages/orders.php:839
 #: classes/class-pmpro-orders-list-table.php:1255
+#: adminpages/orders.php:860
+#: classes/class-pmpro-orders-list-table.php:1264
 msgid "Renewal"
 msgstr "Renovació"
 
@@ -5169,6 +5298,7 @@ msgstr "La vostra clau <strong>%1$s</strong> està activa. Els comptes %1$s incl
 #: classes/gateways/class.pmprogateway_stripe.php:2555
 #: classes/gateways/class.pmprogateway_stripe.php:2573
 #: classes/gateways/class.pmprogateway_stripe.php:2569
+#: classes/gateways/class.pmprogateway_stripe.php:2570
 msgid "Error updating customer record with Stripe."
 msgstr "S'ha produït un error en actualitzar el registre del client amb Stripe."
 
@@ -5188,17 +5318,20 @@ msgstr "Seleccioneu:"
 #: classes/gateways/class.pmprogateway_stripe.php:2915
 #: classes/gateways/class.pmprogateway_stripe.php:2933
 #: classes/gateways/class.pmprogateway_stripe.php:2929
+#: classes/gateways/class.pmprogateway_stripe.php:2930
 msgid "Cannot get price."
 msgstr "No es pot obtenir el preu."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2909
 #: classes/gateways/class.pmprogateway_stripe.php:2927
 #: classes/gateways/class.pmprogateway_stripe.php:2923
+#: classes/gateways/class.pmprogateway_stripe.php:2924
 msgid "Cannot find product for membership level."
 msgstr "No s'ha trobat el producte per al nivell d'afiliació."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1841
 #: classes/gateways/class.pmprogateway_stripe.php:1837
+#: classes/gateways/class.pmprogateway_stripe.php:1838
 msgid "Error creating subscription for customer."
 msgstr "S'ha produït un error en crear la subscripció del client."
 
@@ -5207,16 +5340,20 @@ msgstr "S'ha produït un error en crear la subscripció del client."
 #: classes/gateways/class.pmprogateway_stripe.php:2056
 #: classes/gateways/class.pmprogateway_stripe.php:1790
 #: classes/gateways/class.pmprogateway_stripe.php:2052
+#: classes/gateways/class.pmprogateway_stripe.php:1791
+#: classes/gateways/class.pmprogateway_stripe.php:2053
 msgid "Error retrieving payment method."
 msgstr "S'ha produït un error en recuperar la forma de pagament."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1772
 #: classes/gateways/class.pmprogateway_stripe.php:1768
+#: classes/gateways/class.pmprogateway_stripe.php:1769
 msgid "Error processing payment intent."
 msgstr "S'ha produït un error en processar la intenció de pagament."
 
 #: classes/gateways/class.pmprogateway_stripe.php:1001
 #: classes/gateways/class.pmprogateway_stripe.php:997
+#: classes/gateways/class.pmprogateway_stripe.php:998
 msgid "Edit customer in Stripe"
 msgstr "Edita el client a Stripe"
 
@@ -5356,6 +5493,7 @@ msgid "There was an issue validating your license key: %s"
 msgstr "S'ha produït un problema en validar la vostra clau de llicència: %s"
 
 #: classes/gateways/class.pmprogateway_stripe.php:315
+#: classes/gateways/class.pmprogateway_stripe.php:316
 msgid "Having trouble connecting through the button above or otherwise need to use your own API keys?"
 msgstr "Teniu problemes per connectar-vos mitjançant el botó anterior o necessiteu utilitzar les vostres pròpies claus API?"
 
@@ -5428,12 +5566,14 @@ msgstr "Missatge de confirmació de nivell personalitzat"
 #: classes/gateways/class.pmprogateway_stripe.php:2316
 #: classes/gateways/class.pmprogateway_stripe.php:2334
 #: classes/gateways/class.pmprogateway_stripe.php:2330
+#: classes/gateways/class.pmprogateway_stripe.php:2331
 msgid "Read the documentation on switching to Stripe Connect"
 msgstr "Consulteu la documentació sobre com canviar a Stripe Connect"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2300
 #: classes/gateways/class.pmprogateway_stripe.php:2318
 #: classes/gateways/class.pmprogateway_stripe.php:2314
+#: classes/gateways/class.pmprogateway_stripe.php:2315
 msgid "Connected with Legacy Keys"
 msgstr "Connectat amb claus heretades"
 
@@ -6097,93 +6237,109 @@ msgstr "Alguns complements ara s'han incorporat a l'extensió bàsica de Paid Me
 #. translators: %s Error Message
 #: classes/gateways/class.pmprogateway_stripe.php:1197
 #: classes/gateways/class.pmprogateway_stripe.php:1193
+#: classes/gateways/class.pmprogateway_stripe.php:1194
 msgid "<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s"
 msgstr "<strong>Error:</strong> PMPro no s'ha pogut desconnectar de l'API de Stripe. Motiu: %s"
 
 #. translators: %s Error Message
 #: classes/gateways/class.pmprogateway_stripe.php:1156
 #: classes/gateways/class.pmprogateway_stripe.php:1152
+#: classes/gateways/class.pmprogateway_stripe.php:1153
 msgid "<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s"
 msgstr "<strong>Error:</strong> PMPro no s'ha pogut connectar a l'API de Stripe. Motiu: %s"
 
 #: classes/gateways/class.pmprogateway_stripe.php:1118
 #: classes/gateways/class.pmprogateway_stripe.php:1114
+#: classes/gateways/class.pmprogateway_stripe.php:1115
 msgid "Invalid response from the Stripe Connect server."
 msgstr "Resposta no vàlida del servidor Stripe Connect."
 
 #: classes/gateways/class.pmprogateway_stripe.php:528
+#: classes/gateways/class.pmprogateway_stripe.php:529
 msgid "Other Stripe Settings"
 msgstr "Altres opcions de Stripe"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2298
 #: classes/gateways/class.pmprogateway_stripe.php:2316
 #: classes/gateways/class.pmprogateway_stripe.php:2312
+#: classes/gateways/class.pmprogateway_stripe.php:2313
 msgid "Test Mode:"
 msgstr "Mode de proves:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2380
 #: classes/gateways/class.pmprogateway_stripe.php:2398
 #: classes/gateways/class.pmprogateway_stripe.php:2394
+#: classes/gateways/class.pmprogateway_stripe.php:2395
 msgid "Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license."
 msgstr "Nota: Esteu utilitzant la integració gratuïta de la passarel·la de pagament Stripe. Això inclou una quota addicional de l'1% pel processament dels pagaments. Aquesta quota s'elimina activant una llicència PMPro prèmium."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2375
 #: classes/gateways/class.pmprogateway_stripe.php:2393
 #: classes/gateways/class.pmprogateway_stripe.php:2389
+#: classes/gateways/class.pmprogateway_stripe.php:2390
 msgid "Note: You have a valid license and are not charged additional platform fees for payment processing."
 msgstr "Nota: Teniu una llicència vàlida i no se us cobren quotes de plataforma addicionals pel processament dels pagaments."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2368
 #: classes/gateways/class.pmprogateway_stripe.php:2386
 #: classes/gateways/class.pmprogateway_stripe.php:2382
+#: classes/gateways/class.pmprogateway_stripe.php:2383
 msgid "Connect with Stripe"
 msgstr "Connecta amb Stripe"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2351
 #: classes/gateways/class.pmprogateway_stripe.php:2369
 #: classes/gateways/class.pmprogateway_stripe.php:2365
+#: classes/gateways/class.pmprogateway_stripe.php:2366
 msgid "This will disconnect all sites using this Stripe account from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site."
 msgstr "Això desconnectarà de Stripe tots els llocs web que utilitzen aquest compte de Stripe. Els usuaris no podran completar el pagament d'afiliació ni actualitzar la seva informació de facturació. Les subscripcions existents no es veuran afectades a la passarel·la, però no es crearan noves comandes recurrents en aquest lloc."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2347
 #: classes/gateways/class.pmprogateway_stripe.php:2365
 #: classes/gateways/class.pmprogateway_stripe.php:2361
+#: classes/gateways/class.pmprogateway_stripe.php:2362
 msgid "Disconnect From Stripe"
 msgstr "Desconnecta de Stripe"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2331
 #: classes/gateways/class.pmprogateway_stripe.php:2349
 #: classes/gateways/class.pmprogateway_stripe.php:2345
+#: classes/gateways/class.pmprogateway_stripe.php:2346
 msgid "Stripe Connection"
 msgstr "Connexió a Stripe"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2314
 #: classes/gateways/class.pmprogateway_stripe.php:2332
 #: classes/gateways/class.pmprogateway_stripe.php:2328
+#: classes/gateways/class.pmprogateway_stripe.php:2329
 msgid "Your site is using legacy API keys to authenticate with Stripe."
 msgstr "El vostre lloc està utilitzant claus d'API heretades per identificar-se amb Stripe."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2306
 #: classes/gateways/class.pmprogateway_stripe.php:2324
 #: classes/gateways/class.pmprogateway_stripe.php:2320
+#: classes/gateways/class.pmprogateway_stripe.php:2321
 msgid "Not Connected"
 msgstr "No està connectat"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2304
 #: classes/gateways/class.pmprogateway_stripe.php:2322
 #: classes/gateways/class.pmprogateway_stripe.php:2318
+#: classes/gateways/class.pmprogateway_stripe.php:2319
 msgid "Connected"
 msgstr "Connectat"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2298
 #: classes/gateways/class.pmprogateway_stripe.php:2316
 #: classes/gateways/class.pmprogateway_stripe.php:2312
+#: classes/gateways/class.pmprogateway_stripe.php:2313
 msgid "Live Mode:"
 msgstr "Mode en viu:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2295
 #: classes/gateways/class.pmprogateway_stripe.php:2313
 #: classes/gateways/class.pmprogateway_stripe.php:2309
+#: classes/gateways/class.pmprogateway_stripe.php:2310
 msgid "Stripe Connect Settings"
 msgstr "Opcions de Stripe Connect"
 
@@ -6375,10 +6531,12 @@ msgid "Edit Code: %s"
 msgstr "Edita el codi: %s"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:899
+#: classes/gateways/class.pmprogateway_paypalexpress.php:900
 msgid "Error creating plan with PayPal."
 msgstr "S'ha produït un error en crear el pla amb PayPal."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:898
+#: classes/gateways/class.pmprogateway_paypalexpress.php:899
 msgid "Something went wrong creating plan with PayPal; missing PROFILESTATUS."
 msgstr "Alguna cosa ha anat malament en crear el pla amb PayPal; falta PROFILESTATUS."
 
@@ -6396,6 +6554,8 @@ msgstr "<p>La subscripció a Braintree d'un membre ha caducat al vostre lloc. Ai
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:365
 #: classes/gateways/class.pmprogateway_paypalexpress.php:471
+#: classes/gateways/class.pmprogateway_paypalexpress.php:370
+#: classes/gateways/class.pmprogateway_paypalexpress.php:476
 msgid "Checkout was already processed."
 msgstr "El pagament ja s'ha processat."
 
@@ -6414,6 +6574,7 @@ msgid "Please check the ReCAPTCHA box to confirm you are not a bot."
 msgstr "Marqueu la casella de reCAPTCHA per confirmar que no sou un robot."
 
 #: includes/currencies.php:103
+#: includes/currencies.php:108
 msgid "Ukrainian Hryvnia (&#8372;)"
 msgstr "Hrívnia ucraïnesa (&#8372;)"
 
@@ -6432,43 +6593,53 @@ msgstr "S'ha produït un error en obtenir la subscripció amb Braintree:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:916
 #: classes/gateways/class.pmprogateway_stripe.php:912
+#: classes/gateways/class.pmprogateway_stripe.php:913
 msgid "Pay with Credit Card"
 msgstr "Pagament amb targeta de crèdit"
 
 #: classes/gateways/class.pmprogateway_stripe.php:743
 #: classes/gateways/class.pmprogateway_stripe.php:739
+#: classes/gateways/class.pmprogateway_stripe.php:740
 msgid "Webhook creation failed. Please refresh and try again."
 msgstr "La creació del webhook ha fallat. Actualitzeu i torneu-ho a provar."
 
 #: classes/gateways/class.pmprogateway_stripe.php:596
 #: classes/gateways/class.pmprogateway_stripe.php:592
+#: classes/gateways/class.pmprogateway_stripe.php:593
 msgid "Your domain could not be registered with Apple to enable Apple Pay. Please try <a target=\"_blank\" href=\"%s\" title=\"Apple Pay Settings Page in Stripe\">registering your domain manually from the Apple Pay settings page in Stripe</a>."
 msgstr "El vostre domini no s'ha pogut registrar amb Apple per activar Apple Pay. Proveu de <a target=\"_blank\" href=\"%s\" title=\"Pàgina d'opcions d'Apple Pay a Stripe\">registrar el vostre domini manualment a la pàgina d'opcions d'Apple Pay a Stripe</a>."
 
 #: classes/gateways/class.pmprogateway_stripe.php:594
 #: classes/gateways/class.pmprogateway_stripe.php:590
+#: classes/gateways/class.pmprogateway_stripe.php:591
 msgid "This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target=\"_blank\" href=\"%s\" title=\"Configuring WordPress to Always Use HTTPS/SSL\">set up WordPress to always use HTTPS</a>."
 msgstr "Aquesta web es publica a través d'HTTP, però el botó de sol·licitud de pagament de Stripe només funcionarà a les pàgines que es serveixen mitjançant HTTPS. Per resoldre-ho, heu de <a target=\"_blank\" href=\"%s\" title=\"Configurar WordPress perquè utilitzi sempre HTTPS/SSL\">configurar WordPress perquè utilitzi sempre HTTPS</a>."
 
 #: classes/gateways/class.pmprogateway_stripe.php:581
 #: classes/gateways/class.pmprogateway_stripe.php:577
+#: classes/gateways/class.pmprogateway_stripe.php:578
 msgid "Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target=\"_blank\" href=\"%s\" title=\"More Information about the domain association file for Apple Pay\">More Information</a>"
 msgstr "Permeteu als usuaris pagar amb Apple Pay, Google Pay o Microsoft Pay en funció del seu navegador. Quan estigui activat, el vostre domini es registrarà automàticament a Apple i s'allotjarà un fitxer d'associació de domini al vostre lloc. <a target=\"_blank\" href=\"%s\" title=\"Més informació sobre el fitxer d'associació de domini per a Apple Pay\">Més informació</a>"
 
 #: classes/gateways/class.pmprogateway_stripe.php:399
+#: classes/gateways/class.pmprogateway_stripe.php:400
 msgid "Disable Webhook"
 msgstr "Desactiva el webhook"
 
 #: classes/gateways/class.pmprogateway_stripe.php:386
 #: classes/gateways/class.pmprogateway_stripe.php:393
+#: classes/gateways/class.pmprogateway_stripe.php:387
+#: classes/gateways/class.pmprogateway_stripe.php:394
 msgid "Rebuild Webhook"
 msgstr "Regenera el webhook"
 
 #: classes/gateways/class.pmprogateway_stripe.php:393
+#: classes/gateways/class.pmprogateway_stripe.php:394
 msgid "A webhook is set up in Stripe, but it is using an old API version."
 msgstr "S'ha configurat un webhook a Stripe, però utilitza una versió antiga de l'API."
 
 #: classes/gateways/class.pmprogateway_stripe.php:386
+#: classes/gateways/class.pmprogateway_stripe.php:387
 msgid "A webhook is set up in Stripe, but it is disabled."
 msgstr "S'ha configurat un webhook a Stripe, però està desactivat."
 
@@ -6495,6 +6666,7 @@ msgid "The billing details for some of your discount codes are not supported by 
 msgstr "La vostra passarel·la no admet els detalls de facturació d'alguns dels vostres codis de descompte."
 
 #: includes/currencies.php:68
+#: includes/currencies.php:73
 msgid "Romanian Leu"
 msgstr "Leu romanès"
 
@@ -6573,36 +6745,46 @@ msgstr "Subscriviu-vos al nostre canal de YouTube."
 
 #: classes/gateways/class.pmprogateway_stripe.php:716
 #: classes/gateways/class.pmprogateway_stripe.php:712
+#: classes/gateways/class.pmprogateway_stripe.php:713
 msgid "There was an error deleting the webhook."
 msgstr "S'ha produït un error en suprimir el webhook."
 
 #: classes/gateways/class.pmprogateway_stripe.php:399
 #: classes/gateways/class.pmprogateway_stripe.php:688
 #: classes/gateways/class.pmprogateway_stripe.php:684
+#: classes/gateways/class.pmprogateway_stripe.php:400
+#: classes/gateways/class.pmprogateway_stripe.php:685
 msgid "Your webhook is enabled."
 msgstr "El vostre webhook està activat."
 
 #: classes/gateways/class.pmprogateway_stripe.php:678
 #: classes/gateways/class.pmprogateway_stripe.php:674
+#: classes/gateways/class.pmprogateway_stripe.php:675
 msgid "Webhook creation failed. You might already have a webhook set up."
 msgstr "La creació del webhook ha fallat. És possible que ja tingueu configurat un webhook."
 
 #: classes/gateways/class.pmprogateway_stripe.php:366
+#: classes/gateways/class.pmprogateway_stripe.php:367
 msgid "Webhook URL"
 msgstr "URL del webhook"
 
 #: classes/gateways/class.pmprogateway_stripe.php:406
 #: classes/gateways/class.pmprogateway_stripe.php:710
 #: classes/gateways/class.pmprogateway_stripe.php:706
+#: classes/gateways/class.pmprogateway_stripe.php:407
+#: classes/gateways/class.pmprogateway_stripe.php:707
 msgid "A webhook in Stripe is required to process payments, manage failed payments, and synchronize cancellations."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:380
 #: classes/gateways/class.pmprogateway_stripe.php:404
+#: classes/gateways/class.pmprogateway_stripe.php:381
+#: classes/gateways/class.pmprogateway_stripe.php:405
 msgid "Create Webhook"
 msgstr "Crea un webhook"
 
 #: classes/gateways/class.pmprogateway_stripe.php:361
+#: classes/gateways/class.pmprogateway_stripe.php:362
 msgid "Webhook"
 msgstr "Webhook"
 
@@ -6791,6 +6973,7 @@ msgid "yesterday"
 msgstr "ahir"
 
 #: adminpages/orders.php:381
+#: adminpages/orders.php:402
 msgid "at"
 msgstr "a les"
 
@@ -7157,6 +7340,7 @@ msgid "PMPro"
 msgstr "PMPro"
 
 #: includes/currencies.php:44
+#: includes/currencies.php:49
 msgid "Ghanaian Cedi (&#8373;)"
 msgstr "Cedi ghanès (&#8373;)"
 
@@ -7190,6 +7374,7 @@ msgid "Dismiss this notice."
 msgstr "Descarta aquest avís."
 
 #: adminpages/orders.php:291
+#: adminpages/orders.php:312
 msgid "Edit Order"
 msgstr "Edita la comanda"
 
@@ -7228,6 +7413,10 @@ msgstr "Error"
 #: classes/class-pmpro-subscriptions-list-table.php:633
 #: classes/class-pmpro-subscriptions-list-table.php:657
 #: classes/class-pmpro-subscriptions-list-table.php:674
+#: classes/class-pmpro-orders-list-table.php:1109
+#: classes/class-pmpro-orders-list-table.php:1170
+#: classes/class-pmpro-orders-list-table.php:1199
+#: classes/class-pmpro-orders-list-table.php:1237
 msgid "&#8212;"
 msgstr "&#8212;"
 
@@ -7313,6 +7502,7 @@ msgstr "Nota: No recomanem utilitzar PayPal Standard. Us suggerim que utilitzeu 
 
 #: classes/gateways/class.pmprogateway_stripe.php:666
 #: classes/gateways/class.pmprogateway_stripe.php:662
+#: classes/gateways/class.pmprogateway_stripe.php:663
 msgid "Optional: Offer PayPal Express as an option at checkout using the <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">Add PayPal Express Add On</a>."
 msgstr "Opcional: Oferiu PayPal Express com a opció a l'hora de pagar mitjançant el <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">complement Add PayPal Express</a>."
 
@@ -7359,22 +7549,26 @@ msgstr "Acció de pagament necessària per a la teva afiliació a %s"
 #: classes/gateways/class.pmprogateway_stripe.php:3013
 #: classes/gateways/class.pmprogateway_stripe.php:3031
 #: classes/gateways/class.pmprogateway_stripe.php:3027
+#: classes/gateways/class.pmprogateway_stripe.php:3028
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr "La identificació del client és necessària per acabar de configurar la vostra subscripció. Completeu els passos de verificació emesos pel vostre proveïdor de pagaments."
 
 #: classes/gateways/class.pmprogateway_stripe.php:3486
 #: classes/gateways/class.pmprogateway_stripe.php:3504
 #: classes/gateways/class.pmprogateway_stripe.php:3488
+#: classes/gateways/class.pmprogateway_stripe.php:3489
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr "La identificació del client és necessària per completar aquesta transacció. Completeu els passos de verificació emesos pel vostre proveïdor de pagaments."
 
 #: classes/gateways/class.pmprogateway_stripe.php:939
 #: classes/gateways/class.pmprogateway_stripe.php:935
+#: classes/gateways/class.pmprogateway_stripe.php:936
 msgid "CVC"
 msgstr "CVC"
 
 #: classes/gateways/class.pmprogateway_stripe.php:772
 #: classes/gateways/class.pmprogateway_stripe.php:768
+#: classes/gateways/class.pmprogateway_stripe.php:769
 msgid "Verification steps confirmed. Your payment is processing."
 msgstr "S'han confirmat els passos de verificació. El vostre pagament s'està processant."
 
@@ -8074,6 +8268,7 @@ msgstr "Reemborsat"
 #: pages/invoice.php:45
 #: pages/invoice.php:365
 #: shortcodes/pmpro_account.php:358
+#: classes/class-pmpro-orders-list-table.php:1258
 msgid "Paid"
 msgstr "Pagat"
 
@@ -8088,6 +8283,7 @@ msgid "The most complete member management and membership subscriptions plugin f
 msgstr "L'extensió de gestió de membres i afiliacions de membres més completa per a WordPress."
 
 #: includes/currencies.php:59
+#: includes/currencies.php:64
 msgid "Kenyan Shilling"
 msgstr "Xíling kenyà"
 
@@ -8307,6 +8503,7 @@ msgstr "Consentiment de les condicions del servei"
 #: adminpages/dashboard.php:353
 #: adminpages/dashboard.php:368
 #: classes/class-pmpro-subscriptions-list-table.php:503
+#: classes/class-pmpro-orders-list-table.php:1090
 msgid "none"
 msgstr "cap"
 
@@ -8323,6 +8520,7 @@ msgid "reCAPTCHA Site Key"
 msgstr "Clau de lloc de reCAPTCHA"
 
 #: classes/gateways/class.pmprogateway_stripe.php:344
+#: classes/gateways/class.pmprogateway_stripe.php:345
 msgid "Your Publishable Key appears incorrect."
 msgstr "La vostra clau publicable sembla incorrecta."
 
@@ -8365,6 +8563,7 @@ msgid "That email address is already in use. Please log in, or use a different e
 msgstr "Aquesta adreça de correu electrònic ja es troba en ús. Entreu o utilitzeu una adreça de correu electrònic diferent."
 
 #: includes/currencies.php:76
+#: includes/currencies.php:81
 msgid "Russian Ruble (&#8381;)"
 msgstr "Ruble rus (&#8381;)"
 
@@ -8417,14 +8616,17 @@ msgid "Are you sure you want to do that? Try again."
 msgstr "Esteu segur que voleu fer això? Torneu-ho a provar."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:831
+#: classes/gateways/class.pmprogateway_paypalexpress.php:832
 msgid "Profile Start Date Issue Detected and Fixed at %s"
 msgstr "Problema amb la data d'inici del perfil detectat i corregit a %s"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:829
+#: classes/gateways/class.pmprogateway_paypalexpress.php:830
 msgid "User: %1$s<br />Email: %2$s<br />Membership Level: %3$s<br />Order #: %4$s<br />Original Profile Start Date: %5$s<br />Adjusted Profile Start Date: %6$s<br />Trial Period: %7$s<br />Trial Frequency: %8$s<br />"
 msgstr "Usuari: %1$s<br />Correu electrònic: %2$s<br />Nivell d'afiliació: %3$s<br />Comanda #: %4$s<br />Data d'inici del perfil original: %5$s<br />Data d'inici del perfil ajustat: %6$s<br />Període de prova: %7$s<br />Freqüència del període de prova: %8$s<br />"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:828
+#: classes/gateways/class.pmprogateway_paypalexpress.php:829
 msgid "There was a potential issue while setting the 'Profile Start Date' for a user's subscription at checkout. PayPal does not allow one to set a Profile Start Date further than 1 year out. Typically, this is not an issue, but sometimes a combination of custom code or add ons for PMPro (e.g. the Prorating or Auto-renewal Checkbox add ons) will try to set a Profile Start Date out past 1 year in order to respect an existing user's original expiration date before they checked out. The user's information is below. PMPro has allowed the checkout and simply restricted the Profile Start Date to 1 year out with a possible additional free Trial of up to 1 year. You should double check this information to determine if maybe the user has overpaid or otherwise needs to be addressed. If you get many of these emails, you should consider adjusting your custom code to avoid these situations."
 msgstr "Hi ha hagut un problema potencial en establir la «Data d'inici del perfil» a la subscripció d'un usuari en finalitzar la compra. PayPal no permet establir una data d'inici del perfil de més d'1 any. Normalment, això no sol ser un problema, però de vegades la combinació de codi personalitzat o de complements de PMPro (p.ex. els complements Prorating o Auto-renewal Checkbox) intentaran establir una data d'inici del perfil de més d'1 any per tal de respectar la data de caducitat original d'un usuari existent abans de finalitzar la compra. La informació de l'usuari es troba a sota. PMPro ha permès el pagament i simplement ha restringit la data d'inici del perfil a 1 any, amb un període de prova addicional possible de fins a 1 any. Hauríeu de revisar aquesta informació per determinar si és possible que l'usuari hagi pagat de més o si necessita algun tipus de solució. Si rebeu molts correus d'aquests hauríeu de plantejar-vos modificar el vostre codi personalitzat per evitar aquestes situacions."
 
@@ -9707,6 +9909,7 @@ msgstr "Mètode de pagament"
 #: classes/class-pmpro-orders-list-table.php:995
 #: classes/class-pmpro-orders-list-table.php:1005
 #: includes/profile.php:755
+#: adminpages/orders.php:313
 msgid "Print"
 msgstr "Imprimeix"
 
@@ -10018,6 +10221,8 @@ msgstr "Llicència de suport de Paid Memberships Pro"
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:108
 #: blocks/src/sidebar/index.js:128
+#: adminpages/orders.php:452
+#: adminpages/orders.php:640
 msgid "None"
 msgstr "Cap"
 
@@ -10187,111 +10392,139 @@ msgid "The price for membership is <strong>%s</strong> now"
 msgstr "El preu de l'afiliació és de <strong>%s</strong> ara"
 
 #: includes/currencies.php:111
+#: includes/currencies.php:116
 msgid "Vietnamese Dong"
 msgstr "Dong vietnamita"
 
 #: includes/currencies.php:101
+#: includes/currencies.php:106
 msgid "Turkish Lira"
 msgstr "Lira turca"
 
 #: includes/currencies.php:100
+#: includes/currencies.php:105
 msgid "Thai Baht"
 msgstr "Baht tailandès"
 
 #: includes/currencies.php:99
+#: includes/currencies.php:104
 msgid "Taiwan New Dollars"
 msgstr "Dòlars nous de Taiwan"
 
 #: includes/currencies.php:98
+#: includes/currencies.php:103
 msgid "Swiss Franc"
 msgstr "Franc suís"
 
 #: includes/currencies.php:97
+#: includes/currencies.php:102
 msgid "Swedish Krona"
 msgstr "Corona sueca"
 
 #: includes/currencies.php:94
+#: includes/currencies.php:99
 msgid "South Korean Won"
 msgstr "Won sud-coreà"
 
 #: includes/currencies.php:89
+#: includes/currencies.php:94
 msgid "South African Rand (R)"
 msgstr "Rand sud-africà (R)"
 
 #: includes/currencies.php:84
+#: includes/currencies.php:89
 msgid "Singapore Dollar (&#36;)"
 msgstr "Dòlar de Singapur (&#36;)"
 
 #: includes/currencies.php:66
+#: includes/currencies.php:71
 msgid "Polish Zloty"
 msgstr "Zloty polonès"
 
 #: includes/currencies.php:65
+#: includes/currencies.php:70
 msgid "Philippine Pesos"
 msgstr "Pesos filipins"
 
 #: includes/currencies.php:64
+#: includes/currencies.php:69
 msgid "Norwegian Krone"
 msgstr "Corona noruega"
 
 #: includes/currencies.php:63
+#: includes/currencies.php:68
 msgid "New Zealand Dollar (&#36;)"
 msgstr "Dòlar neozelandès (&#36;)"
 
 #: includes/currencies.php:62
+#: includes/currencies.php:67
 msgid "Nigerian Naira (&#8358;)"
 msgstr "Naira nigeriana (&#8358;)"
 
 #: includes/currencies.php:61
+#: includes/currencies.php:66
 msgid "Mexican Peso (&#36;)"
 msgstr "Peso mexicà (&#36;)"
 
 #: includes/currencies.php:60
+#: includes/currencies.php:65
 msgid "Malaysian Ringgits"
 msgstr "Ringgits malaisis"
 
 #: includes/currencies.php:54
+#: includes/currencies.php:59
 msgid "Japanese Yen (&yen;)"
 msgstr "Ien japonès (&yen;)"
 
 #: includes/currencies.php:52
+#: includes/currencies.php:57
 msgid "Israeli Shekel"
 msgstr "Nou xéquel"
 
 #: includes/currencies.php:51
+#: includes/currencies.php:56
 msgid "Indonesia Rupiah"
 msgstr "Rúpia indonèsia"
 
 #: includes/currencies.php:50
+#: includes/currencies.php:55
 msgid "Indian Rupee"
 msgstr "Rupia índia"
 
 #: includes/currencies.php:49
+#: includes/currencies.php:54
 msgid "Hungarian Forint"
 msgstr "Fòrint hongarès"
 
 #: includes/currencies.php:48
+#: includes/currencies.php:53
 msgid "Hong Kong Dollar (&#36;)"
 msgstr "Dòlar de Hong Kong (&#36;)"
 
 #: includes/currencies.php:36
+#: includes/currencies.php:41
 msgid "Danish Krone"
 msgstr "Corona danesa"
 
 #: includes/currencies.php:28
+#: includes/currencies.php:33
 msgid "Czech Koruna"
 msgstr "Corona txeca"
 
 #: includes/currencies.php:26
+#: includes/currencies.php:31
 msgid "Chinese Yuan"
 msgstr "Yuan xinès"
 
 #: includes/currencies.php:25
 #: includes/currencies.php:122
+#: includes/currencies.php:30
+#: includes/currencies.php:127
 msgid "Canadian Dollars (&#36;)"
 msgstr "Dòlars canadencs (&#36;)"
 
 #: includes/currencies.php:21
+#: includes/currencies.php:26
 msgid "Brazilian Real (R&#36;)"
 msgstr "Real brasiler (R&#36;)"
 
@@ -10305,17 +10538,21 @@ msgstr "Peso argentí (&#36;)"
 
 #: includes/currencies.php:14
 #: includes/currencies.php:123
+#: includes/currencies.php:128
 msgid "Pounds Sterling (&pound;)"
 msgstr "Lliura esterlina (&pound;)"
 
 #: includes/currencies.php:9
 #: includes/currencies.php:124
+#: includes/currencies.php:129
 msgid "Euros (&euro;)"
 msgstr "Euros (&euro;)"
 
 #: includes/currencies.php:7
 #: includes/currencies.php:121
 #: includes/currencies.php:148
+#: includes/currencies.php:126
+#: includes/currencies.php:153
 msgid "US Dollars (&#36;)"
 msgstr "Dòlars dels EUA (&#36;)"
 
@@ -10451,24 +10688,28 @@ msgid "2Checkout"
 msgstr "2Checkout"
 
 #: classes/gateways/class.pmprogateway_stripe.php:477
+#: classes/gateways/class.pmprogateway_stripe.php:478
 msgid "Error: "
 msgstr "Error:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:2135
 #: classes/gateways/class.pmprogateway_stripe.php:2145
 #: classes/gateways/class.pmprogateway_stripe.php:2141
+#: classes/gateways/class.pmprogateway_stripe.php:2142
 msgid "Could not find the customer."
 msgstr "No s'ha trobat el comprador."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2119
 #: classes/gateways/class.pmprogateway_stripe.php:2129
 #: classes/gateways/class.pmprogateway_stripe.php:2125
+#: classes/gateways/class.pmprogateway_stripe.php:2126
 msgid "Could not cancel old subscription."
 msgstr "No s'ha pogut cancel·lar l'antiga subscripció."
 
 #: classes/gateways/class.pmprogateway_stripe.php:2566
 #: classes/gateways/class.pmprogateway_stripe.php:2584
 #: classes/gateways/class.pmprogateway_stripe.php:2580
+#: classes/gateways/class.pmprogateway_stripe.php:2581
 msgid "Error creating customer record with Stripe."
 msgstr "Error en crear el registre d'usuari amb Stripe."
 
@@ -10482,14 +10723,17 @@ msgstr "La subscripció s'ha actualitzat."
 
 #: classes/gateways/class.pmprogateway_stripe.php:558
 #: classes/gateways/class.pmprogateway_stripe.php:554
+#: classes/gateways/class.pmprogateway_stripe.php:555
 msgid "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>"
 msgstr "Stripe no requereix camps d'adreça de facturació. Trieu «No» per amagar-los a la pàgina de pagament.<br /><strong>Si no, assegureu-vos de desactivar la verificació d'adreces a les opcions del tauler de Stripe.</strong>"
 
 #: classes/gateways/class.pmprogateway_stripe.php:336
+#: classes/gateways/class.pmprogateway_stripe.php:337
 msgid "Publishable Key"
 msgstr "Clau publicable"
 
 #: classes/gateways/class.pmprogateway_stripe.php:352
+#: classes/gateways/class.pmprogateway_stripe.php:353
 msgid "Secret Key"
 msgstr "Clau secreta"
 
@@ -10498,6 +10742,7 @@ msgstr "Clau secreta"
 #: paid-memberships-pro.php:189
 #: paid-memberships-pro.php:190
 #: paid-memberships-pro.php:192
+#: classes/gateways/class.pmprogateway_stripe.php:233
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -10511,6 +10756,9 @@ msgstr "PayPal Standard"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:361
 #: classes/gateways/class.pmprogateway_paypalexpress.php:408
 #: classes/gateways/class.pmprogateway_paypalexpress.php:477
+#: classes/gateways/class.pmprogateway_paypalexpress.php:366
+#: classes/gateways/class.pmprogateway_paypalexpress.php:413
+#: classes/gateways/class.pmprogateway_paypalexpress.php:482
 msgid "The PayPal Token was lost."
 msgstr "S'ha perdut el testimoni de PayPal."
 
@@ -10528,6 +10776,7 @@ msgstr "PayPal Express"
 #: classes/gateways/class.pmprogateway_paypal.php:627
 #: classes/gateways/class.pmprogateway_paypalexpress.php:946
 #: classes/gateways/class.pmprogateway_paypalstandard.php:525
+#: classes/gateways/class.pmprogateway_paypalexpress.php:947
 msgid "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 msgstr "Poseu-vos en contacte amb l'administrador del lloc o cancel·leu la vostra subscripció a PayPal per assegurar-vos que no se us cobrarà d'ara endavant."
 
@@ -10536,6 +10785,7 @@ msgstr "Poseu-vos en contacte amb l'administrador del lloc o cancel·leu la vost
 #: classes/gateways/class.pmprogateway_paypalstandard.php:176
 #: classes/gateways/class.pmprogateway_twocheckout.php:209
 #: pages/checkout.php:544
+#: classes/gateways/class.pmprogateway_paypalexpress.php:563
 msgid "Submit and Confirm"
 msgstr "Envia i confirma"
 
@@ -10543,6 +10793,7 @@ msgstr "Envia i confirma"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:558
 #: classes/gateways/class.pmprogateway_paypalstandard.php:176
 #: pages/checkout.php:544
+#: classes/gateways/class.pmprogateway_paypalexpress.php:563
 msgid "Submit and Check Out"
 msgstr "Envia i paga"
 
@@ -10691,6 +10942,7 @@ msgstr "Error de pagament: Poseu-vos en contacte amb el webmaster (braintree-loa
 #: pages/checkout.php:167
 #: pages/checkout.php:491
 #: classes/gateways/class.pmprogateway_stripe.php:946
+#: classes/gateways/class.pmprogateway_stripe.php:947
 msgid "Apply"
 msgstr "Aplica"
 
@@ -10704,6 +10956,7 @@ msgstr "CVV"
 #: pages/billing.php:319
 #: pages/checkout.php:442
 #: classes/gateways/class.pmprogateway_stripe.php:923
+#: classes/gateways/class.pmprogateway_stripe.php:924
 msgid "Card Number"
 msgstr "Nombre de la targeta"
 
@@ -10715,6 +10968,8 @@ msgstr "Nombre de la targeta"
 #: pages/billing.php:291
 #: pages/checkout.php:437
 #: classes/gateways/class.pmprogateway_stripe.php:904
+#: adminpages/orders.php:606
+#: classes/gateways/class.pmprogateway_stripe.php:905
 msgid "Payment Information"
 msgstr "Informació de pagament"
 
@@ -10757,6 +11012,7 @@ msgstr "Pagaments de Braintree"
 #: classes/gateways/class.pmprogateway_braintree.php:87
 #: classes/gateways/class.pmprogateway_stripe.php:1465
 #: classes/gateways/class.pmprogateway_stripe.php:1461
+#: classes/gateways/class.pmprogateway_stripe.php:1462
 msgid "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it."
 msgstr "La passarel·la %s depèn de l'extensió %s de PHP. Activeu-la o demaneu al vostre proveïdor d'allotjament que l'activi."
 
@@ -10903,6 +11159,8 @@ msgstr "Aquesta afiliació caducarà el %s."
 #: pages/checkout.php:488
 #: pages/invoice.php:315
 #: classes/gateways/class.pmprogateway_stripe.php:943
+#: adminpages/orders.php:629
+#: classes/gateways/class.pmprogateway_stripe.php:944
 msgid "Discount Code"
 msgstr "Codi de descompte"
 
@@ -10936,6 +11194,7 @@ msgstr "Actualitzant Paid Memberships Pro"
 
 #: includes/functions.php:3225
 #: includes/functions.php:3235
+#: includes/functions.php:3241
 msgid "Subtotal"
 msgstr "Subtotal"
 
@@ -11411,6 +11670,8 @@ msgstr "Subscripció"
 #: adminpages/dashboard.php:351
 #: adminpages/dashboard.php:366
 #: classes/class-pmpro-subscriptions-list-table.php:501
+#: classes/class-pmpro-orders-list-table.php:1088
+#: classes/class-pmpro-orders-list-table.php:1107
 msgid "deleted"
 msgstr "suprimit"
 
@@ -11444,6 +11705,7 @@ msgid "User"
 msgstr "Usuari"
 
 #: adminpages/orders.php:979
+#: adminpages/orders.php:1000
 msgid "Search Orders"
 msgstr "Cerca comandes"
 
@@ -11483,6 +11745,7 @@ msgstr "Dins d'un període"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:11
 #: adminpages/orders.php:940
+#: adminpages/orders.php:961
 msgid "Add New Order"
 msgstr "Afegeix una nova comanda"
 
@@ -11500,6 +11763,7 @@ msgstr "Afegeix una nova comanda"
 #: adminpages/subscriptions.php:522
 #: classes/class-pmpro-subscriptions-list-table.php:153
 #: adminpages/subscriptions.php:537
+#: adminpages/orders.php:960
 msgid "Orders"
 msgstr "Comandes"
 
@@ -11512,18 +11776,22 @@ msgid "Send a receipt for this order to: "
 msgstr "Envia un rebut d'aquesta comanda a: "
 
 #: adminpages/orders.php:928
+#: adminpages/orders.php:949
 msgid "Save Order"
 msgstr "Desa la comanda"
 
 #: adminpages/orders.php:896
+#: adminpages/orders.php:917
 msgid "Notes"
 msgstr "Notes"
 
 #: adminpages/orders.php:882
+#: adminpages/orders.php:903
 msgid "Affiliate SubID"
 msgstr "Subidentificador d'afiliat"
 
 #: adminpages/orders.php:869
+#: adminpages/orders.php:890
 msgid "Affiliate ID"
 msgstr "Identificador d'afiliat"
 
@@ -11539,11 +11807,13 @@ msgstr "Identificador d'afiliat"
 #: shortcodes/pmpro_account.php:335
 #: shortcodes/pmpro_account.php:370
 #: adminpages/dashboard.php:327
+#: adminpages/orders.php:370
 msgid "Date"
 msgstr "Data"
 
 #: adminpages/orders.php:841
 #: adminpages/subscriptions.php:264
+#: adminpages/orders.php:862
 msgid "Generated by the gateway. Useful to cross reference subscriptions."
 msgstr "Generat per la passarel·la. Útil per comparar subscripcions."
 
@@ -11554,15 +11824,18 @@ msgstr "Generat per la passarel·la. Útil per comparar subscripcions."
 #: adminpages/subscriptions.php:155
 #: adminpages/subscriptions.php:253
 #: adminpages/subscriptions.php:261
+#: adminpages/orders.php:848
 msgid "Subscription Transaction ID"
 msgstr "Identificador de la transacció de la subscripció"
 
 #: adminpages/orders.php:822
+#: adminpages/orders.php:843
 msgid "Generated by the gateway. Useful to cross reference orders."
 msgstr "Generat per la passarel·la. Útil per comparar comandes."
 
 #: adminpages/orders.php:812
 #: includes/privacy.php:321
+#: adminpages/orders.php:833
 msgid "Payment Transaction ID"
 msgstr "Identificador de la transacció de pagament"
 
@@ -11570,6 +11843,7 @@ msgstr "Identificador de la transacció de pagament"
 #: adminpages/paymentsettings.php:127
 #: classes/class-pmpro-site-health.php:281
 #: classes/class-pmpro-site-health.php:285
+#: adminpages/orders.php:825
 msgid "Live/Production"
 msgstr "En viu/Producció"
 
@@ -11577,6 +11851,7 @@ msgstr "En viu/Producció"
 #: adminpages/paymentsettings.php:126
 #: classes/class-pmpro-site-health.php:280
 #: classes/class-pmpro-site-health.php:284
+#: adminpages/orders.php:824
 msgid "Sandbox/Testing"
 msgstr "Sandbox/Proves"
 
@@ -11590,6 +11865,7 @@ msgstr "Sandbox/Proves"
 #: adminpages/subscriptions.php:556
 #: adminpages/subscriptions.php:272
 #: adminpages/subscriptions.php:571
+#: adminpages/orders.php:816
 msgid "Gateway Environment"
 msgstr "Entorn de la passarel·la"
 
@@ -11608,6 +11884,7 @@ msgstr "Entorn de la passarel·la"
 #: classes/class-pmpro-subscriptions-list-table.php:148
 #: adminpages/subscriptions.php:268
 #: adminpages/subscriptions.php:567
+#: adminpages/orders.php:793
 msgid "Gateway"
 msgstr "Passarel·la"
 
@@ -11635,6 +11912,8 @@ msgstr "Passarel·la"
 #: adminpages/subscriptions.php:456
 #: classes/class-pmpro-subscriptions-list-table.php:149
 #: adminpages/subscriptions.php:471
+#: adminpages/orders.php:758
+#: classes/gateways/class.pmprogateway_stripe.php:504
 msgid "Status"
 msgstr "Estat"
 
@@ -11644,30 +11923,36 @@ msgstr "Any de caducitat"
 
 #: adminpages/orders.php:717
 #: includes/privacy.php:301
+#: adminpages/orders.php:738
 msgid "Expiration Month"
 msgstr "Mes de caducitat"
 
 #: adminpages/orders.php:699
 #: classes/gateways/class.pmprogateway_twocheckout.php:142
 #: includes/privacy.php:297
+#: adminpages/orders.php:720
 msgid "Account Number"
 msgstr "Nombre del compte"
 
 #: adminpages/orders.php:695
+#: adminpages/orders.php:716
 msgid "e.g. Visa, MasterCard, AMEX, etc"
 msgstr "Per exemple, Visa, MasterCard, AMEX, etc"
 
 #: adminpages/orders.php:685
 #: includes/privacy.php:293
+#: adminpages/orders.php:706
 msgid "Card Type"
 msgstr "Tipus de targeta"
 
 #: adminpages/orders.php:681
+#: adminpages/orders.php:702
 msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
 msgstr "Per exemple, PayPal Express, PayPal Standard, targeta de crèdit."
 
 #: adminpages/orders.php:670
 #: includes/privacy.php:289
+#: adminpages/orders.php:691
 msgid "Payment Type"
 msgstr "Tipus de pagament"
 
@@ -11683,6 +11968,8 @@ msgstr "Tipus de pagament"
 #: shortcodes/pmpro_account.php:337
 #: adminpages/dashboard.php:325
 #: includes/functions.php:3263
+#: adminpages/orders.php:677
+#: includes/functions.php:3269
 msgid "Total"
 msgstr "Total"
 
@@ -11690,54 +11977,65 @@ msgstr "Total"
 #: includes/functions.php:3232
 #: includes/privacy.php:281
 #: includes/functions.php:3242
+#: adminpages/orders.php:664
+#: includes/functions.php:3248
 msgid "Tax"
 msgstr "Impost"
 
 #: adminpages/orders.php:630
 #: includes/privacy.php:277
+#: adminpages/orders.php:651
 msgid "Sub Total"
 msgstr "Subtotal"
 
 #: adminpages/orders.php:565
 #: includes/privacy.php:273
+#: adminpages/orders.php:586
 msgid "Billing Phone"
 msgstr "Telèfon de facturació"
 
 #: adminpages/orders.php:552
 #: includes/privacy.php:269
 #: includes/privacy.php:362
+#: adminpages/orders.php:573
 msgid "Billing Country"
 msgstr "País de facturació"
 
 #: adminpages/orders.php:540
 #: includes/privacy.php:265
 #: includes/privacy.php:360
+#: adminpages/orders.php:561
 msgid "Billing Postal Code"
 msgstr "Codi postal de facturació"
 
 #: adminpages/orders.php:528
 #: includes/privacy.php:261
+#: adminpages/orders.php:549
 msgid "Billing State"
 msgstr "Província de facturació"
 
 #: adminpages/orders.php:515
 #: includes/privacy.php:257
 #: includes/privacy.php:358
+#: adminpages/orders.php:536
 msgid "Billing City"
 msgstr "Ciutat de facturació"
 
 #: adminpages/orders.php:491
 #: includes/privacy.php:249
+#: adminpages/orders.php:512
 msgid "Billing Street"
 msgstr "Adreça de facturació"
 
 #: adminpages/orders.php:477
 #: includes/privacy.php:245
+#: adminpages/orders.php:498
 msgid "Billing Name"
 msgstr "Nom de facturació"
 
 #: adminpages/emailtemplates-edit.php:26
 #: adminpages/orders.php:417
+#: adminpages/orders.php:438
 msgid "Membership Level ID"
 msgstr "Identificador de nivell d'afiliació"
 
@@ -11745,10 +12043,12 @@ msgstr "Identificador de nivell d'afiliació"
 #: adminpages/subscriptions.php:188
 #: adminpages/subscriptions.php:265
 #: adminpages/subscriptions.php:276
+#: adminpages/orders.php:423
 msgid "User ID"
 msgstr "Identificador de l'usuari"
 
 #: adminpages/orders.php:306
+#: adminpages/orders.php:327
 msgid "New Order"
 msgstr "Nova comanda"
 
@@ -11759,11 +12059,13 @@ msgstr "Comanda"
 
 #: adminpages/orders.php:195
 #: adminpages/orders.php:200
+#: adminpages/orders.php:221
 msgid "Error saving order."
 msgstr "S'ha produït un error en desar la comanda."
 
 #: adminpages/orders.php:192
 #: adminpages/orders.php:197
+#: adminpages/orders.php:218
 msgid "Order saved successfully."
 msgstr "Comanda desada correctament."
 
@@ -11821,6 +12123,7 @@ msgstr "Preu"
 #: adminpages/orders.php:470
 #: pages/billing.php:195
 #: pages/checkout.php:335
+#: adminpages/orders.php:491
 msgid "Billing Address"
 msgstr "Adreça de facturació"
 
@@ -11886,6 +12189,7 @@ msgstr "Mostra"
 #: adminpages/reports/logins.php:113
 #: adminpages/reports/memberships.php:361
 #: adminpages/reports/sales.php:596
+#: adminpages/orders.php:984
 msgid "Export to CSV"
 msgstr "Exporta a CSV"
 
@@ -11908,6 +12212,7 @@ msgstr "Permet registres"
 #: includes/profile.php:313
 #: pages/cancel.php:135
 #: pages/cancel.php:147
+#: adminpages/orders.php:747
 msgid "Expiration"
 msgstr "Caducitat"
 
@@ -11933,6 +12238,7 @@ msgstr "Afegeix un nou nivell"
 #: pages/cancel.php:153
 #: shortcodes/pmpro_account.php:261
 #: adminpages/discountcodes.php:737
+#: adminpages/orders.php:950
 msgid "Cancel"
 msgstr "Cancel·la"
 
@@ -12108,6 +12414,7 @@ msgid "Are you sure you want to delete the %s discount code? The subscriptions f
 msgstr "Esteu segur que vols suprimir el codi de descompte %s ? Les subscripcions dels usuaris existents no canviaran, però els nous usuaris no podran utilitzar aquest codi mai més."
 
 #: classes/class-pmpro-orders-list-table.php:1104
+#: classes/class-pmpro-orders-list-table.php:1128
 msgid "edit"
 msgstr "edita"
 
@@ -12300,6 +12607,7 @@ msgstr "Usos"
 #: pages/checkout.php:447
 #: adminpages/discountcodes.php:507
 #: classes/gateways/class.pmprogateway_stripe.php:928
+#: classes/gateways/class.pmprogateway_stripe.php:929
 msgid "Expiration Date"
 msgstr "Data de caducitat"
 
@@ -12321,6 +12629,7 @@ msgstr "Data d'inici"
 #: includes/profile.php:717
 #: adminpages/dashboard.php:322
 #: adminpages/discountcodes.php:451
+#: adminpages/orders.php:356
 msgid "Code"
 msgstr "Codi"
 
@@ -12457,6 +12766,9 @@ msgstr "Voleu utilitzar reCAPTCHA?"
 #: includes/fields.php:1466
 #: classes/gateways/class.pmprogateway_stripe.php:552
 #: classes/gateways/class.pmprogateway_stripe.php:566
+#: classes/gateways/class.pmprogateway_stripe.php:553
+#: classes/gateways/class.pmprogateway_stripe.php:567
+#: includes/cloudflare-turnstile.php:111
 msgid "Yes"
 msgstr "Sí"
 
@@ -12506,6 +12818,9 @@ msgstr "Amaga els anuncis a tots els membres"
 #: includes/recaptcha.php:261
 #: classes/gateways/class.pmprogateway_stripe.php:550
 #: classes/gateways/class.pmprogateway_stripe.php:564
+#: classes/gateways/class.pmprogateway_stripe.php:551
+#: classes/gateways/class.pmprogateway_stripe.php:565
+#: includes/cloudflare-turnstile.php:110
 msgid "No"
 msgstr "No"
 
@@ -12575,6 +12890,7 @@ msgstr "Avançat"
 #: pages/confirmation.php:106
 #: shortcodes/pmpro_account.php:82
 #: pages/confirmation.php:108
+#: adminpages/orders.php:314
 msgid "Email"
 msgstr "Correu electrònic"
 
@@ -12611,6 +12927,7 @@ msgstr "La passarel·la de Braintree requereix PHP 5.4.45 o superior. Recomanem 
 #: adminpages/admin_header.php:150
 #: classes/gateways/class.pmprogateway_stripe.php:1450
 #: classes/gateways/class.pmprogateway_stripe.php:1446
+#: classes/gateways/class.pmprogateway_stripe.php:1447
 msgid "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 msgstr "El passarel·la de Stripe requereix PHP 5.3.29 o superior. Recomanem actualitzar a PHP %s o superior. Demaneu al vostre proveïdor que l'actualitzi."
 
@@ -12705,6 +13022,8 @@ msgstr "Per %s"
 #: includes/terms-of-service.php:333
 #: pages/invoice.php:378
 #: shortcodes/pmpro_account.php:371
+#: adminpages/orders.php:636
+#: classes/gateways/class.pmprogateway_stripe.php:485
 msgid "N/A"
 msgstr "N/A"
 
@@ -12944,6 +13263,7 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2213
 #: classes/gateways/class.pmprogateway_stripe.php:2209
+#: classes/gateways/class.pmprogateway_stripe.php:2210
 msgid "Subscription customer ID does not match user's Stripe customer ID."
 msgstr ""
 
@@ -12953,4 +13273,66 @@ msgstr ""
 
 #: classes/class-pmpro-site-health.php:251
 msgid "API Version"
+msgstr ""
+
+#: adminpages/orders.php:61
+msgid "Nonce failed for checking token order."
+msgstr ""
+
+#: adminpages/orders.php:68
+msgid "Error checking token order: "
+msgstr ""
+
+#: adminpages/orders.php:71
+msgid "The token order has been completed."
+msgstr ""
+
+#: classes/class-pmpro-orders-list-table.php:1030
+msgid "Recheck Payment"
+msgstr ""
+
+#: classes/class-pmpro-orders-list-table.php:1045
+msgid "Recheck"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway.php:217
+msgid "Checking token orders is not supported for this gateway."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3899
+msgid "This is not a token order."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3905
+msgid "No checkout session ID found."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3912
+#: classes/gateways/class.pmprogateway_stripe.php:3914
+#: classes/gateways/class.pmprogateway_stripe.php:3916
+msgid "Could not retrieve checkout session: "
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3921
+msgid "Payment is still pending."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3926
+msgid "Checkout session has not yet been completed."
+msgstr ""
+
+#: includes/currencies.php:21
+msgid "Bangladeshi taka (৳&nbsp;)"
+msgstr ""
+
+#: includes/functions.php:5020
+msgid "Order not found."
+msgstr ""
+
+#: includes/functions.php:5025
+msgid "Order is not a token order."
+msgstr ""
+
+#: includes/functions.php:5030
+msgid "Order gateway not found."
 msgstr ""

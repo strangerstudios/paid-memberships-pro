@@ -47,9 +47,9 @@
 				add_filter('pmpro_include_payment_information_fields', '__return_false');
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
-				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
-				add_action('pmpro_checkout_preheader', array('PMProGateway_paypalexpress', 'pmpro_checkout_preheader'));
+				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);				
 			}
+            add_action('pmpro_checkout_preheader', array('PMProGateway_paypalexpress', 'pmpro_checkout_preheader'));
 			add_filter( 'pmpro_process_refund_paypalexpress', array('PMProGateway_paypalexpress', 'process_refund' ), 10, 2 );
 		}
 
@@ -259,6 +259,12 @@
 				return;
 			}
 
+			// If we are completing checkout immediately, make sure we immediately submit the checkout form with a valid nonce.
+			if ( ! empty( get_option('pmpro_paypalexpress_skip_confirmation') ) ) {
+				$_REQUEST['submit-checkout'] = 1;
+				$_REQUEST['pmpro_checkout_nonce'] = wp_create_nonce( 'pmpro_checkout_nonce' );
+			}
+
 			// Set some globals for compatibility with pre-3.2 checkout page templates.
 			global $pmpro_paypal_token;
 			$pmpro_paypal_token = $pmpro_review->paypal_token;
@@ -268,7 +274,6 @@
 			if ( ! empty( $_REQUEST['confirm'] ) ) {
 				// Process the checkout form submission.
 				$_REQUEST['submit-checkout'] = 1;
-				return;
 			}
 		}
 
@@ -617,10 +622,6 @@
 			$return_url_params = array(
 				'pmpro_order' => $order->code,
 			);
-			if ( ! empty( get_option( 'pmpro_paypalexpress_skip_confirmation' ) ) ) {
-				$return_url_params['submit-checkout'] = 1;
-				$return_url_params['pmpro_checkout_nonce'] = wp_create_nonce( 'pmpro_checkout_nonce' );
-			}
 			$nvpStr .= "&ReturnUrl=" . urlencode( add_query_arg( $return_url_params, pmpro_url( 'checkout' ) ) );
 
 			$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());
