@@ -78,10 +78,7 @@ class PMPro_Email_Template_Billing_Admin extends PMPro_Email_Template {
 <p>Account: !!display_name!! (!!user_email!!)</p>
 <p>
 	Billing Information:<br />
-	!!billing_name!!<br />
-	!!billing_street!!<br />
-	!!billing_city!!, !!billing_state!! !!billing_zip!!	!!billing_country!!
-	!!billing_phone!!
+	!!billing_address!!
 </p>
 
 <p>
