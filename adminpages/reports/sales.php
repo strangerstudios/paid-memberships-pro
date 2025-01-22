@@ -939,9 +939,10 @@ function pmpro_report_sales_page()
 			<tbody>
 				<?php
 				foreach ( $csvdata as $row ) {
-					// round to two decimals.
+					// If the row date is numeric (YEAR report unit), we'll just use the year.
+					$row_date = is_numeric( $row->date ) ? $row->date : date_i18n( $tooltip_date_format, strtotime( $row->date ) );
 					?>
-						<th scope="row"><?php echo date_i18n( $tooltip_date_format, strtotime( $row->date ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+						<th scope="row"><?php echo esc_html( $row_date ); ?></th>
 						<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->total ) ) : esc_html( $row->total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></td>
 						<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->new ) ) : esc_html( $row->new ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 						<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->renewals ) ) : esc_html( $row->renewals); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
