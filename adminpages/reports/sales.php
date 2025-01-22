@@ -390,7 +390,7 @@ function pmpro_report_sales_page()
 				'date'     => $loop_date,
 				'total'    => $dates[ $loop_date ]->value,
 				'new'      => $dates[ $loop_date ]->value - $dates[ $loop_date ]->renewals,
-				'renewals' => $dates[ $loop_date ]->renewals,
+				'renewals' => $dates[ $loop_date ]->renewals ?: 0,
 			);
 
 			// Increment the loop timestamp.
@@ -923,6 +923,44 @@ function pmpro_report_sales_page()
 	</script>
 
 	</form>
+	<?php
+	// Show a table with all of the raw data.
+	?>
+	<div class="pmpro_table_area">
+		<table class="widefat striped">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'New', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Renewals', 'paid-memberships-pro' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach ( $csvdata as $row ) {
+					// If the row date is numeric (YEAR report unit), we'll just use the year.
+					$row_date = is_numeric( $row->date ) ? $row->date : date_i18n( $tooltip_date_format, strtotime( $row->date ) );
+					?>
+						<th scope="row"><?php echo esc_html( $row_date ); ?></th>
+						<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->total ) ) : esc_html( $row->total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></td>
+						<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->new ) ) : esc_html( $row->new ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+						<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->renewals ) ) : esc_html( $row->renewals); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					</tr>
+					<?php
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></td>
+					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'total' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'total' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'new' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'new' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'renewals' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'renewals' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
 	<?php
 }
 
