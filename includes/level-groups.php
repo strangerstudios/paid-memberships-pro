@@ -225,3 +225,32 @@ function pmpro_get_level_ids_for_group( $group_id ) {
 
 	return empty( $levels ) ? array() : $levels;
 }
+
+/**
+ * Get the active membership levels in a specific level group for a user.
+ * @since TBD
+ *
+ * @param int $user_id The ID of the user to get the levels for.
+ * @param int $group_id The ID of the group to get the levels for.
+ * @return array An array of membership levels.
+ */
+function pmpro_get_membership_levels_for_user_in_group( $user_id, $group_id ) {
+	// Get all level IDs in the group.
+	$level_ids = pmpro_get_level_ids_for_group( $group_id );
+
+	// Get all active levels for the user.
+	$levels = pmpro_getMembershipLevelsForUser( $user_id );
+	if ( empty( $levels ) ) {
+		return array();
+	}
+
+	// Filter out levels that are not in the group.
+	$levels_in_group = array();
+	foreach ( $levels as $level ) {
+		if ( in_array( $level->id, $level_ids ) ) {
+			$levels_in_group[] = $level;
+		}
+	}
+
+	return $levels_in_group;
+}
