@@ -657,27 +657,13 @@ function pmpro_maybe_remove_lifterlms_lostpassword_url_filter() {
 add_action( 'wp', 'pmpro_maybe_remove_lifterlms_lostpassword_url_filter' );
 
 /**
- * Remove Members-only from Access Plan -> Plan availability dropdown.
+ * Remove Plan availability dropdown from Lifter's access plan settings.
  *
- * @param LLMS_Access_Plan $plan The access plan object.
- * @param int $id The post ID.
- * @param LLMS_Order $order The order object.
+ * @return bool False to remove the dropdown, true to keep it.
  * @since TBD
- * return void
  */
-function custom_llms_access_plan_mb_after_body( $plan, $id, $order ) {
-	// Bail	if streamline is not enabled.
-	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
-		return;
-	}
-	?>
-
-	<script type="text/javascript">
-		jQuery( document ).ready(function($) {
-			$( 'option[value="members"]' ).remove();
-		});
-	</script>
-	<?php
+function pmpro_llms_show_membership_settings_for_access_plans() {
+	return ! get_option( 'pmpro_lifter_streamline' );
 }
 
-add_action( 'llms_access_plan_mb_after_body', 'custom_llms_access_plan_mb_after_body', 10, 3 );
+add_filter( 'llms_show_membership_settings_for_access_plans', 'pmpro_llms_show_membership_settings_for_access_plans' );
