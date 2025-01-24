@@ -1,141 +1,29 @@
-<?php	
+<?php
+	/**
+	 * This class serves as a base class for all gateways and is also used for orders set to the `free` or `test` gateway.
+	 */
 	//require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	#[AllowDynamicProperties]
 	class PMProGateway
-	{	
-		function __construct($gateway = NULL)
-		{
-			$this->gateway = $gateway;
-			return $this->gateway;
-		}										
-		
-		function process(&$order)
-		{
-			//check for initial payment
-			if(floatval($order->InitialPayment) == 0)
-			{
-				//auth first, then process
-				if($this->authorize($order))
-				{						
-					$this->void($order);										
-					if(!pmpro_isLevelTrial($order->membership_level))
-					{
-						//subscription will start today with a 1 period trial
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-						$order->TrialBillingPeriod = $order->BillingPeriod;
-						$order->TrialBillingFrequency = $order->BillingFrequency;													
-						$order->TrialBillingCycles = 1;
-						$order->TrialAmount = 0;
-						
-						//add a billing cycle to make up for the trial, if applicable
-						if(!empty($order->TotalBillingCycles))
-							$order->TotalBillingCycles++;
-					}
-					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
-					{
-						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");														
-						$order->TrialBillingCycles++;
-						
-						//add a billing cycle to make up for the trial, if applicable
-						if($order->TotalBillingCycles)
-							$order->TotalBillingCycles++;
-					}
-					else
-					{
-						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-					}
-					
-					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
-					return $this->subscribe($order);
-				}
-				else
-				{
-					if(empty($order->error))
-						$order->error = __("Unknown error: Authorization failed.", 'paid-memberships-pro' );
-					return false;
-				}
-			}
-			else
-			{
-				//charge first payment
-				if($this->charge($order))
-				{							
-					//set up recurring billing					
-					if(pmpro_isLevelRecurring($order->membership_level))
-					{						
-						if(!pmpro_isLevelTrial($order->membership_level))
-						{
-							//subscription will start today with a 1 period trial
-							$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-							$order->TrialBillingPeriod = $order->BillingPeriod;
-							$order->TrialBillingFrequency = $order->BillingFrequency;													
-							$order->TrialBillingCycles = 1;
-							$order->TrialAmount = 0;
-							
-							//add a billing cycle to make up for the trial, if applicable
-							if(!empty($order->TotalBillingCycles))
-								$order->TotalBillingCycles++;
-						}
-						elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
-						{
-							//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-							$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");														
-							$order->TrialBillingCycles++;
-							
-							//add a billing cycle to make up for the trial, if applicable
-							if(!empty($order->TotalBillingCycles))
-								$order->TotalBillingCycles++;
-						}
-						else
-						{
-							//add a period to the start date to account for the initial payment
-							$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-						}
-						
-						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
-						if($this->subscribe($order))
-						{
-							return true;
-						}
-						else
-						{
-							if($this->void($order))
-							{
-								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
-							}
-							else
-							{
-								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
-								
-								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", 'paid-memberships-pro' );
-							}
-							
-							return false;								
-						}
-					}
-					else
-					{
-						//only a one time charge
-						$order->status = "success";	//saved on checkout page											
-						return true;
-					}
-				}
-				else
-				{
-					if(empty($order->error))
-						$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
-					
-					return false;
-				}	
-			}	
+	{
+		/**
+		 * Process the payment for a checkout order.
+		 * This includes charging the inital payment and setting up a subscription if applicable.
+		 *
+		 * @param MemberOrder $order The order object to process.
+		 * @return bool True if the payment was processed successfully, false otherwise.
+		 */
+		function process( &$order ) {
+			return true;
 		}
-		
+
+		/**
+		 * @deprecated 3.2
+		 */
 		function authorize(&$order)
 		{
+			_deprecated_function( __METHOD__, '3.2' );
+
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -145,9 +33,14 @@
 			$order->updateStatus("authorized");													
 			return true;					
 		}
-		
+
+		/**
+		 * @deprecated 3.2
+		 */
 		function void(&$order)
 		{
+			_deprecated_function( __METHOD__, '3.2' );
+
 			//need a transaction id
 			if(empty($order->payment_transaction_id))
 				return false;
@@ -157,9 +50,14 @@
 			$order->updateStatus("voided");					
 			return true;
 		}	
-		
+
+		/**
+		 * @deprecated 3.2
+		 */
 		function charge(&$order)
 		{
+			_deprecated_function( __METHOD__, '3.2' );
+
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -169,9 +67,14 @@
 			$order->updateStatus("success");					
 			return true;						
 		}
-		
+
+		/**
+		 * @deprecated 3.2
+		 */
 		function subscribe(&$order)
 		{
+			_deprecated_function( __METHOD__, '3.2' );
+
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -184,26 +87,50 @@
 			$order->subscription_transaction_id = "TEST" . $order->code;				
 			return true;
 		}	
-		
-		function update(&$order)
-		{
+
+		/**
+		 * Update the billing information for the subscription associated with the passed order.
+		 *
+		 * @param MemberOrder $order The order object associated with the subscription to update.
+		 * @return bool True if the billing information was updated successfully, false otherwise.
+		 */
+		function update( &$order ) {
 			//simulate a successful billing update
 			return true;
 		}
-		
-		function cancel(&$order)
-		{
+
+		/**
+		 * Cancel the subscription associated with the passed order.
+		 *
+		 * @deprecated 3.2 Use cancel_subscription insetad.
+		 *
+		 * @param MemberOrder $order The order object associated with the subscription to cancel.
+		 * @return bool True if the subscription was canceled successfully, false otherwise.
+		 */
+		function cancel( &$order ) {
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
-				return false;
-			
-			//simulate a successful cancel
-			$order->updateStatus("cancelled");					
+				return false;				
 			return true;
-		}	
-		
+		}
+
+		/**
+		 * Cancel a payment subscription.
+		 *
+		 * @param PMPro_Subscription $subscription The subscription to cancel.
+		 * @return bool True if the subscription was canceled successfully, false otherwise.
+		 */
+		function cancel_subscription( $subscription ) {
+			// Simulate a successful subscription cancelation.
+			return true;
+		}
+
+		/**
+		 * @deprecated 3.2
+		 */
 		function getSubscriptionStatus(&$order)
 		{
+			_deprecated_function( __METHOD__, '3.2' );
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
 				return false;
@@ -212,8 +139,12 @@
 			return array();
 		}
 
+		/**
+		 * @deprecated 3.2
+		 */
 		function getTransactionStatus(&$order)
-		{			
+		{
+			_deprecated_function( __METHOD__, '3.2' );	
 			//this looks different for each gateway, but generally an array of some sort
 			return array();
 		}		
@@ -274,5 +205,15 @@
 
 			// Update the subscription.
 			$subscription->set( $update_array );
+		}
+
+		/**
+		 * Check whether the payment for a token order has been completed. If so, process the order.
+		 *
+		 * @param MemberOrder $order The order object to check.
+		 * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+		 */
+		function check_token_order( $order ) {
+			return __( 'Checking token orders is not supported for this gateway.', 'paid-memberships-pro' );
 		}
 	}

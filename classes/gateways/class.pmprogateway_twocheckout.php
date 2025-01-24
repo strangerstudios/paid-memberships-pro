@@ -258,7 +258,6 @@
 
 			//clean up a couple values
 			$order->payment_type = "2CheckOut";
-			$order->CardType = "";
 			$order->cardtype = "";
 
 			//just save, the user will go to 2checkout to pay

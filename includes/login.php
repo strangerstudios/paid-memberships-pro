@@ -145,7 +145,7 @@ add_action( 'wp_loaded', 'pmpro_wp_loaded_login_setup' );
  * Our login page is not set up to handle them.
  */
 function pmpro_use_default_login_for_confirm_admin_email( $location ) {
-	if ( strpos( $location, 'action=confirm_admin_email' ) !== false ) {
+	if ( isset($location) && strpos( $location, 'action=confirm_admin_email' ) !== false ) {
 		$login_url = wp_login_url();
 
 		remove_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
@@ -525,8 +525,8 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 							<?php
 						}
-					} elseif ( $location !== 'widget' && ( $action === 'reset_pass' || ( $action === 'rp' && in_array( $_REQUEST['login'], array( 'invalidkey', 'expiredkey' ) ) ) ) ) {
-						// Reset password form.
+  			  } elseif ( $location !== 'widget' && ( $action === 'reset_pass' || ( $action === 'rp' && isset( $_REQUEST['error'] ) && in_array( $_REQUEST['error'], array( 'invalidkey', 'expiredkey' ) ) ) ) ) {
+					// Reset password form.
 						?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card pmpro_lost_password_wrap', 'pmpro_lost_password_wrap' ) ); ?>">
 							<?php

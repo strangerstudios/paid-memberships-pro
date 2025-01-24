@@ -46,7 +46,7 @@
 	}
 
 	try {
-		if ( PMProGateway_stripe::using_legacy_keys() ) {
+		if ( PMProGateway_stripe::using_api_keys() ) {
 			$secret_key = get_option( "pmpro_stripe_secretkey" );
 		} elseif ( $livemode ) {
 			$secret_key = get_option( 'pmpro_live_stripe_connect_secretkey' );
@@ -411,7 +411,7 @@
 
 				$morder->SaveOrder();
 
-				$user = get_user_by( 'email', $morder->Email );
+				$user = get_userdata( $morder->user_id );
 				if ( empty( $user ) ) {
 					$logstr .= "Couldn't find the old order's user. Order ID = " . $morder->id . ".";
 					pmpro_stripeWebhookExit();
@@ -504,8 +504,11 @@
 			$currency_unit_multiplier = pow( 10, intval( $currency['decimals'] ) );
 
 			$order->total    = (float) $checkout_session->amount_total / $currency_unit_multiplier;
-			$order->subtotal = (float) $checkout_session->amount_subtotal / $currency_unit_multiplier;
-			$order->tax      = (float) $checkout_session->total_details->amount_tax / $currency_unit_multiplier;
+			if ( ! empty( get_option( 'pmpro_stripe_tax_id_collection_enabled' ) ) ) {
+				// If Stripe calculated tax, use that. Otherwise, keep the tax calculated by PMPro.
+				$order->subtotal = (float) $checkout_session->amount_subtotal / $currency_unit_multiplier;
+				$order->tax      = (float) $checkout_session->total_details->amount_tax / $currency_unit_multiplier;
+			}
 
 			// Was the checkout session successful?
 			if ( $checkout_session->payment_status == "paid" ) {
@@ -699,15 +702,11 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 			$order->accountnumber = hideCardNumber( $payment_method->card->last4 );
 			$order->expirationmonth = $payment_method->card->exp_month;
 			$order->expirationyear = $payment_method->card->exp_year;
-			$order->ExpirationDate = $order->expirationmonth . $order->expirationyear;
-			$order->ExpirationDate_YdashM = $order->expirationyear . "-" . $order->expirationmonth;			
 		} else {
 			$order->cardtype = '';
 			$order->accountnumber = '';
 			$order->expirationmonth = '';
 			$order->expirationyear = '';
-			$order->ExpirationDate = '';
-			$order->ExpirationDate_YdashM = '';
 		}
 	} else {
 		// Some defaults.
@@ -716,8 +715,6 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 		$order->accountnumber = '';
 		$order->expirationmonth = '';
 		$order->expirationyear = '';
-		$order->ExpirationDate = '';
-		$order->ExpirationDate_YdashM = '';
 	}
 
 	// Check if we have a billing address in the payment method.
@@ -725,15 +722,12 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 		$order->billing = new stdClass();
 		$order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
 		$order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
+		$order->billing->street2 = empty( $payment_method->billing_details->address->line2 ) ? '' : $payment_method->billing_details->address->line2;
 		$order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
 		$order->billing->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
 		$order->billing->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
 		$order->billing->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
 		$order->billing->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
-
-		$name_parts = empty( $payment_method->billing_details->name ) ? [] : pnp_split_full_name( $payment_method->billing_details->name );
-		$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
-		$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
 	} else {
 		// No billing address in the payment method, let's try to get it from the customer.
 		if ( ! empty( $customer_id ) ) {
@@ -743,25 +737,15 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 			$order->billing = new stdClass();
 			$order->billing->name = empty( $customer->name ) ? '' : $customer->name;
 			$order->billing->street = empty( $customer->address->line1 ) ? '' : $customer->address->line1;
+			$order->billing->street2 = empty( $customer->address->line2 ) ? '' : $customer->address->line2;
 			$order->billing->city = empty( $customer->address->city ) ? '' : $customer->address->city;
 			$order->billing->state = empty( $customer->address->state ) ? '' : $customer->address->state;
 			$order->billing->zip = empty( $customer->address->postal_code ) ? '' : $customer->address->postal_code;
 			$order->billing->country = empty( $customer->address->country ) ? '' : $customer->address->country;
 			$order->billing->phone = empty( $customer->phone ) ? '' : $customer->phone;
-
-			$name_parts = empty( $customer->name ) ? [] : pnp_split_full_name( $customer->name );
-			$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
-			$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
 		} else {
 			// No billing address in the customer, let's try to get it from the old order or from user meta.
 			$order->find_billing_address();
 		}
 	}
-	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . esc_sql( $order->user_id ) . "' LIMIT 1");
-	$order->Address1 = $order->billing->street;
-	$order->City = $order->billing->city;
-	$order->State = $order->billing->state;
-	$order->Zip = $order->billing->zip;
-	$order->Country = $order->billing->country;
-	$order->PhoneNumber = $order->billing->phone;
 }

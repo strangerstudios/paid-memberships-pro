@@ -62,13 +62,7 @@ if (empty($pmpro_billing_order->gateway)) {
     $besecure = false;
 } elseif ($pmpro_billing_order->gateway == "paypalexpress") {
     $besecure = get_option("pmpro_use_ssl");
-    //still they might have website payments pro setup
-    if ($gateway == "paypal") {
-        //$besecure = true;
-    } else {
-        //$besecure = false;
-        $show_paypal_link = true;
-    }
+    $show_paypal_link = true;
 } elseif( $pmpro_billing_order->gateway == 'check' ) {
     $show_check_payment_instructions = true;
 } else {
@@ -198,16 +192,15 @@ if ($submit) {
             break;
         }
     }
-	
-	// Check reCAPTCHA if needed.
-    $recaptcha = get_option( "pmpro_recaptcha");
-    if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-        $recaptcha_validated = pmpro_recaptcha_is_validated(); // Returns true if validated, string error message if not.
-        if ( is_string( $recaptcha_validated ) ) {
-            $pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_validated );
-            $pmpro_msgt = "pmpro_error";
-        }
-    }
+
+    /**
+     * Mirror of pmpro_registration_checks filter for the billing page.
+     *
+     * @since 3.2
+     *
+     * @param bool $continue_billing_update Whether to continue with the billing update.
+     */
+    $continue_billing_update = apply_filters( 'pmpro_billing_update_checks', true );
 	
     if (!empty($missing_billing_field)) {
         $pmpro_msg = __("Please complete all required fields.", 'paid-memberships-pro' );
@@ -218,7 +211,7 @@ if ($submit) {
     } elseif (!is_email($bemail)) {
         $pmpro_msg = __("The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
-    } elseif ( $pmpro_msgt == 'pmpro_error' ) {
+    } elseif ( empty( $continue_billing_update ) || $pmpro_msgt == 'pmpro_error' ) {
 		// Something else threw an error, maybe reCAPTCHA.		
 	} else {
         //all good. update billing info.
@@ -228,22 +221,11 @@ if ($submit) {
         $pmpro_billing_order->accountnumber = $AccountNumber;
         $pmpro_billing_order->expirationmonth = $ExpirationMonth;
         $pmpro_billing_order->expirationyear = $ExpirationYear;
-        $pmpro_billing_order->ExpirationDate = $ExpirationMonth . $ExpirationYear;
-        $pmpro_billing_order->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
-        $pmpro_billing_order->CVV2 = $CVV;
-        
-        //not saving email in order table, but the sites need it
-        $pmpro_billing_order->Email = $bemail;
-
-        //sometimes we need these split up
-        $pmpro_billing_order->FirstName = $bfirstname;
-        $pmpro_billing_order->LastName = $blastname;
-        $pmpro_billing_order->Address1 = $baddress1;
-        $pmpro_billing_order->Address2 = $baddress2;
 
         //other values
         $pmpro_billing_order->billing->name = $bfirstname . " " . $blastname;
-        $pmpro_billing_order->billing->street = trim($baddress1 . " " . $baddress2);
+        $pmpro_billing_order->billing->street = trim( $baddress1 );
+        $pmpro_billing_order->billing->street2 = trim( $baddress2 );
         $pmpro_billing_order->billing->city = $bcity;
         $pmpro_billing_order->billing->state = $bstate;
         $pmpro_billing_order->billing->country = $bcountry;

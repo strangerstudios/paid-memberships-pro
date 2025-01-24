@@ -5,8 +5,12 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 	 * Set up the panel.
 	 */
 	public function __construct() {
+		$user = self::get_user();
 		$this->slug = 'subscriptions';
 		$this->title = __( 'Subscriptions', 'paid-memberships-pro' );
+		//$this->title_link = empty( $user->ID ) ? '' : '<a href="' . esc_url( add_query_arg( array( 'user_id' => intval( $user->ID ) ), admin_url( 'user-edit.php' ) ) ) . '" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users">' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . '</a>';
+		// Link to the link subscription page instead.
+		$this->title_link = empty( $user->ID ) ? '' : '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'action' => 'link', 'user_id' => intval( $user->ID ) ), admin_url( 'admin.php' ) ) ) . '" class="page-title-action pmpro-has-icon pmpro-has-icon-plus">' . esc_html__( 'Link Subscription', 'paid-memberships-pro' ) . '</a>';
 	}
 
 	/**

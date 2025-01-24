@@ -122,13 +122,14 @@ function pmpro_get_order_json() {
 	
 	$order_id = intval( $_REQUEST['order_id'] );
 	$order = new MemberOrder($order_id);
+	$user = get_userdata($order->user_id);
 		
 	$r = array(
 		'id' => (int)$order->id,
 		'user_id' => (int)$order->user_id,
 		'membership_id' => (int)$order->membership_id,
 		'code' => esc_html( $order->code ),
-		'Email' => sanitize_email( $order->Email ),		
+		'Email' => sanitize_email( empty( $user->user_email ) ? '' : $user->user_email ),		
 	);
 	
 	echo wp_json_encode($r);

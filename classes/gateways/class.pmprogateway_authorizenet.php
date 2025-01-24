@@ -26,21 +26,13 @@ class PMProGateway_authorizenet extends PMProGateway
 		//add fields to payment settings
 		add_filter('pmpro_payment_options', array('PMProGateway_authorizenet', 'pmpro_payment_options'));
 		add_filter('pmpro_payment_option_fields', array('PMProGateway_authorizenet', 'pmpro_payment_option_fields'), 10, 2);
-
-		add_filter('pmpro_checkout_order', array('PMProGateway_authorizenet', 'pmpro_checkout_order'));
-		add_filter('pmpro_billing_order', array('PMProGateway_authorizenet', 'pmpro_checkout_order'));
-
 	}
 
+	/**
+	 * @deprecated 3.2
+	 */
 	static function pmpro_checkout_order( $morder ) {
-
-		if ( isset( $_REQUEST['CVV'] ) ) {
-			$authorizenet_cvv = sanitize_text_field( $_REQUEST['CVV'] );
-		} else {
-			$authorizenet_cvv = '';
-		}
-
-		$morder->CVV2 = $authorizenet_cvv;
+		_deprecated_function( __FUNCTION__, '3.2' );
 		return $morder;
 	}
 
@@ -161,13 +153,12 @@ class PMProGateway_authorizenet extends PMProGateway
 	function process(&$order)
 	{
 		//check for initial payment
-		if(floatval($order->InitialPayment) == 0)
+		if(floatval($order->subtotal) == 0)
 		{
 			//auth first, then process
 			if($this->authorize($order))
 			{
 				$this->void($order);
-				$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 				return $this->subscribe($order);
 			}
 			else
@@ -185,7 +176,6 @@ class PMProGateway_authorizenet extends PMProGateway
 				//set up recurring billing
 				if(pmpro_isLevelRecurring($order->membership_level))
 				{
-					$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 					if($this->subscribe($order))
 					{
 						return true;
@@ -247,13 +237,14 @@ class PMProGateway_authorizenet extends PMProGateway
 		$amount = "1.00";
 
 		//combine address
-		$address = $order->Address1;
-		if(!empty($order->Address2))
-			$address .= "\n" . $order->Address2;
+		$address = $order->billing->street;
+		if(!empty($order->billing->street2))
+			$address .= "\n" . $order->billing->street2;
 
-		//customer stuff
-		$customer_email = $order->Email;
-		$customer_phone = $order->billing->phone;
+		// Get the name parts.
+		$nameparts = pnp_split_full_name( $order->billing->name );
+
+		$user = get_userdata($order->user_id);
 
 		if(!isset($order->membership_level->name))
 			$order->membership_level->name = "";
@@ -273,27 +264,28 @@ class PMProGateway_authorizenet extends PMProGateway
 			"x_method"			=> "CC",
 			"x_card_type"		=> $order->cardtype,
 			"x_card_num"		=> $order->accountnumber,
-			"x_exp_date"		=> $order->ExpirationDate,
+			"x_exp_date"		=> $order->expirationmonth . $order->expirationyear,
 
 			"x_amount"			=> $amount,
 			"x_description"		=> apply_filters( 'pmpro_authorizenet_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")),
 
-			"x_first_name"		=> $order->FirstName,
-			"x_last_name"		=> $order->LastName,
+			"x_first_name"		=> empty( $nameparts['fname'] ) ? '' : $nameparts['fname'],
+			"x_last_name"		=> empty( $nameparts['lname'] ) ? '' : $nameparts['lname'],
 			"x_address"			=> $address,
 			"x_city"			=> $order->billing->city,
 			"x_state"			=> $order->billing->state,
 			"x_zip"				=> $order->billing->zip,
 			"x_country"			=> $order->billing->country,
 			"x_invoice_num"		=> $order->code,
-			"x_phone"			=> $customer_phone,
-			"x_email"			=> $order->Email
+			"x_phone"			=> $order->billing->phone,
+			"x_email"			=> empty( $user->user_email ) ? '' : $user->user_email,
 			// Additional fields can be added here as outlined in the AIM integration
 			// guide at: http://developer.authorize.net
 		);
 
-		if(!empty($order->CVV2))
-			$post_values["x_card_code"] = $order->CVV2;
+		if ( ! empty( $_REQUEST['CVV']  ) ) {
+			$post_values["x_card_code"] = sanitize_text_field( $_REQUEST['CVV'] );
+		}
 
 		$post_string = $this->build_post_string( $post_values, 'authorize' );
 
@@ -416,21 +408,18 @@ class PMProGateway_authorizenet extends PMProGateway
 		$post_url = apply_filters("pmpro_authorizenet_post_url", $post_url, $gateway_environment);
 
 		//what amount to charge?
-		$amount = $order->InitialPayment;
-
-		//tax
-		$order->subtotal = $amount;
 		$tax = $order->getTax(true);
 		$amount = pmpro_round_price_as_string((float)$order->subtotal + (float)$tax);
 
 		//combine address
-		$address = $order->Address1;
-		if(!empty($order->Address2))
-			$address .= "\n" . $order->Address2;
+		$address = $order->billing->street;
+		if(!empty($order->billing->street2))
+			$address .= "\n" . $order->billing->street2;
 
-		//customer stuff
-		$customer_email = $order->Email;
-		$customer_phone = $order->billing->phone;
+		// Get the name parts.
+		$nameparts = pnp_split_full_name( $order->billing->name );
+
+		$user = get_userdata($order->user_id);
 
 		if(!isset($order->membership_level->name))
 			$order->membership_level->name = "";
@@ -450,30 +439,30 @@ class PMProGateway_authorizenet extends PMProGateway
 			"x_method"			=> "CC",
 			"x_card_type"		=> $order->cardtype,
 			"x_card_num"		=> $order->accountnumber,
-			"x_exp_date"		=> $order->ExpirationDate,
+			"x_exp_date"		=> $order->expirationmonth . $order->expirationyear,
 
 			"x_amount"			=> $amount,
 			"x_tax"				=> $tax,
 			"x_description"		=> apply_filters( 'pmpro_authorizenet_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")),
 
-			"x_first_name"		=> $order->FirstName,
-			"x_last_name"		=> $order->LastName,
+			"x_first_name"		=> empty( $nameparts['fname'] ) ? '' : $nameparts['fname'],
+			"x_last_name"		=> empty( $nameparts['lname'] ) ? '' : $nameparts['lname'],
 			"x_address"			=> $address,
 			"x_city"			=> $order->billing->city,
 			"x_state"			=> $order->billing->state,
 			"x_zip"				=> $order->billing->zip,
 			"x_country"			=> $order->billing->country,
 			"x_invoice_num"		=> $order->code,
-			"x_phone"			=> $customer_phone,
-			"x_email"			=> $order->Email
+			"x_phone"			=> $order->billing->phone,
+			"x_email"			=> empty( $user->user_email ) ? '' : $user->user_email,
 
 			// Additional fields can be added here as outlined in the AIM integration
 			// guide at: http://developer.authorize.net
 		);
 
 
-		if(!empty($order->CVV2) ) {
-			$post_values["x_card_code"] = $order->CVV2;
+		if ( ! empty( $_REQUEST['CVV']  ) ) {
+			$post_values["x_card_code"] = sanitize_text_field( $_REQUEST['CVV'] );
 		}
 
 		$post_string = $this->build_post_string( $post_values, 'charge' );
@@ -531,21 +520,22 @@ class PMProGateway_authorizenet extends PMProGateway
 		$loginname = get_option("pmpro_loginname");
 		$transactionkey = get_option("pmpro_transactionkey");
 
-		$amount = $order->PaymentAmount;
+		$level = $order->getMembershipLevelAtCheckout();
+		$amount = $level->billing_amount;
 		$refId = $order->code;
-		$name = $order->membership_name;
-		$length = (int)$order->BillingFrequency;
+		$name = empty( $level->name ) ? '' : $level->name;
+		$length = (int)$level->cycle_number;
 
-		if($order->BillingPeriod == "Month")
+		if( $level->cycle_period == "Month")
 			$unit = "months";
-		elseif($order->BillingPeriod == "Day")
+		elseif( $level->cycle_period == "Day")
 			$unit = "days";
-		elseif($order->BillingPeriod == "Year" && $order->BillingFrequency == 1)
+		elseif( $level->cycle_period == "Year" && $level->cycle_number == 1)
 		{
 			$unit = "months";
 			$length = 12;
 		}
-		elseif($order->BillingPeriod == "Week")
+		elseif( $level->cycle_period == "Week")
 		{
 			$unit = "days";
 			$length = $length * 7;	//converting weeks to days
@@ -553,17 +543,17 @@ class PMProGateway_authorizenet extends PMProGateway
 		else
 			return false;	//authorize.net only supports months and days
 
-		$startDate = substr($order->ProfileStartDate, 0, 10);
-		if(!empty($order->TotalBillingCycles))
-			$totalOccurrences = (int)$order->TotalBillingCycles;
+		$startDate = substr( pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' ), 0, 10);
+		if(!empty($level->billing_limit))
+			$totalOccurrences = (int)$level->billing_limit;
 		if(empty($totalOccurrences))
 			$totalOccurrences = 9999;
-		if(isset($order->TrialBillingCycles))
-			$trialOccurrences = (int)$order->TrialBillingCycles;
+		if(isset($level->trial_limit))
+			$trialOccurrences = (int)$level->trial_limit;
 		else
 			$trialOccurrences = 0;
-		if(isset($order->TrialAmount))
-			$trialAmount = $order->TrialAmount;
+		if( ! empty( pmpro_round_price( $level->trial_amount ) ) )
+			$trialAmount = pmpro_round_price( $level->trial_amount );
 		else
 			$trialAmount = NULL;
 
@@ -574,31 +564,26 @@ class PMProGateway_authorizenet extends PMProGateway
 		$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 		$trialAmount = pmpro_round_price_as_string((float)$trialAmount + (float)$trial_tax);
 
-		//authorize.net doesn't support different periods between trial and actual
-
-		if(!empty($order->TrialBillingPeriod) && $order->TrialBillingPeriod != $order->BillingPeriod)
-		{
-			return false;
-		}
-
 		$cardNumber = $order->accountnumber;
-		$expirationDate = $order->ExpirationDate_YdashM;
-		$cardCode = $order->CVV2;
+		$expirationDate = $order->expirationmonth . '-' . $order->expirationyear;
+		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] );
 
-		$firstName = $order->FirstName;
-		$lastName = $order->LastName;
+		$nameparts = pnp_split_full_name( $order->billing->name );
+		$firstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+		$lastName = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
 
 		//do address stuff then?
-		$address = $order->Address1;
-		if(!empty($order->Address2))
-			$address .= "\n" . $order->Address2;
+		$address = $order->billing->street;
+		if(!empty($order->billing->street2))
+			$address .= "\n" . $order->billing->street2;
 		$city = $order->billing->city;
 		$state = $order->billing->state;
 		$zip = $order->billing->zip;
 		$country = $order->billing->country;
 
 		//customer stuff
-		$customer_email = $order->Email;
+		$user = get_userdata($order->user_id);
+		$customer_email = empty( $user->user_email ) ? '' : $user->user_email;
 		if(strpos($order->billing->phone, "+") === false)
 			$customer_phone = $order->billing->phone;
 		else
@@ -710,28 +695,29 @@ class PMProGateway_authorizenet extends PMProGateway
 		$loginname = get_option("pmpro_loginname");
 		$transactionkey = get_option("pmpro_transactionkey");
 
-		//$amount = $order->PaymentAmount;
 		$refId = $order->code;
 		$subscriptionId = $order->subscription_transaction_id;
 
 		$cardNumber = $order->accountnumber;
-		$expirationDate = $order->ExpirationDate_YdashM;
-		$cardCode = $order->CVV2;
+		$expirationDate = $order->expirationmonth . '-' . $order->expirationyear;
+		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] );
 
-		$firstName = $order->FirstName;
-		$lastName = $order->LastName;
+		$nameparts = pnp_split_full_name( $order->billing->name );
+		$firstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+		$lastName = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
 
 		//do address stuff then?
-		$address = $order->Address1;
-		if(!empty($order->Address2))
-			$address .= "\n" . $order->Address2;
+		$address = $order->billing->street;
+		if(!empty($order->billing->street2))
+			$address .= "\n" . $order->billing->street2;
 		$city = $order->billing->city;
 		$state = $order->billing->state;
 		$zip = $order->billing->zip;
 		$country = $order->billing->country;
 
 		//customer stuff
-		$customer_email = $order->Email;
+		$user = get_userdata($order->user_id);
+		$customer_email = empty( $user->user_email ) ? '' : $user->user_email;
 		if(strpos($order->billing->phone, "+") === false)
 			$customer_phone = $order->billing->phone;
 

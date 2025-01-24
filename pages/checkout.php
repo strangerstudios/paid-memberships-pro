@@ -1,17 +1,17 @@
 <?php
 /**
  * Template: Checkout
- * Version: 3.1.4
+ * Version: 3.2
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.1.4
+ * @version 3.2
  *
  * @author Paid Memberships Pro
  */
 
-global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $tospage, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_default_country;
+global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_default_country;
 global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 
 $pmpro_levels = pmpro_getAllLevels();
@@ -325,34 +325,6 @@ if ( empty( $default_gateway ) ) {
 
 			<?php do_action( 'pmpro_checkout_boxes' ); ?>
 
-			<?php if ( pmpro_getGateway() == "paypal" && empty($pmpro_review) && true == apply_filters('pmpro_include_payment_option_for_paypal', true ) ) { ?>
-			<fieldset id="pmpro_payment_method" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_method' ) ); ?>" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-						<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
-							<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Choose your Payment Method', 'paid-memberships-pro' ); ?></h2>
-						</legend>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-radio-items pmpro_cols-2' ) ); ?>">
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-radio-item gateway_paypal', 'gateway_paypal' ) ); ?>">
-									<input id="gateway-paypal" type="radio" name="gateway" value="paypal" <?php if(!$gateway || $gateway == "paypal") { ?>checked="checked"<?php } ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-radio' ) ); ?>" />
-									<label for="gateway-paypal" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_form_label-inline pmpro_clickable' ) ); ?>">
-										<a href="javascript:void(0);"><?php esc_html_e('Check Out with a Credit Card Here', 'paid-memberships-pro' );?></a>
-									</label>
-								</div> <!-- end gateway_paypal -->
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-radio-item gateway_paypalexpress', 'gateway_paypalexpress' ) ); ?>">
-									<input id="gateway-paypalexpress" type="radio" name="gateway" value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>checked="checked"<?php } ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-radio' ) ); ?>" />
-									<label for="gateway-paypalexpress" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_form_label-inline pmpro_clickable' ) ); ?>">
-										<a href="javascript:void(0);" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_radio' ) ); ?>"><?php esc_html_e('Check Out with PayPal', 'paid-memberships-pro' );?></a>
-									</label>
-								</div> <!-- end gateway_paypalexpress -->
-							</div> <!-- end pmpro_form_field-radio-items -->
-						</div> <!-- end pmpro_form_fields -->
-					</div> <!-- end pmpro_card_content -->
-				</div> <!-- end pmpro_card -->
-			</fieldset> <!-- end pmpro_payment_method -->
-			<?php } ?>
-
 			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 				if ( $pmpro_include_billing_address_fields ) { ?>
@@ -530,69 +502,12 @@ if ( empty( $default_gateway ) ) {
 				}
 			?>
 
-			<?php do_action( 'pmpro_checkout_after_payment_information_fields' ); ?>
-
-			<?php if ( $tospage && ! $pmpro_review ) { ?>
-				<fieldset id="pmpro_tos_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_tos_fields' ) ); ?>">
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-						<?php
-							if ( isset( $_REQUEST['tos'] ) ) {
-								$tos = intval( $_REQUEST['tos'] );
-							} else {
-								$tos = "";
-							}
-						?>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-checkbox pmpro_form_field-required' ) ); ?>">
-							<label class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_clickable', 'tos' ) ); ?>" for="tos">
-								<input type="checkbox" name="tos" value="1" id="tos" <?php checked( 1, $tos ); ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-checkbox pmpro_form_input-required', 'tos' ) ); ?>" />
-								<?php
-									$tos_label = sprintf( __( 'I agree to the <a href="%1$s" target="_blank">%2$s</a>', 'paid-memberships-pro' ), esc_url( get_permalink( $tospage->ID ) ), esc_html( $tospage->post_title ) );
-									/**
-									 * Filter the Terms of Service field label.
-									 *
-									 * @since 3.1
-									 *
-									 * @param string $tos_label The field label.
-									 * @param object $tospage The Terms of Service page object.
-									 * @return string The filtered field label.
-									 */
-									$tos_label = apply_filters( 'pmpro_tos_field_label', $tos_label, $tospage );
-									echo wp_kses_post( $tos_label );
-								?>
-							</label>
-						</div> <!-- end pmpro_form_field-tos -->
-						<?php
-							/**
-							 * Allow adding text or more checkboxes after the Tos checkbox
-							 * This is NOT intended to support multiple Tos checkboxes
-							 *
-							 * @since 2.8
-							 */
-							do_action( 'pmpro_checkout_after_tos' );
-						?>
-					</div> <!-- end pmpro_form_fields -->
-				</fieldset> <!-- end pmpro_tos_fields -->
-				<?php
-				}
-			?>
-
-			<?php do_action( 'pmpro_checkout_after_tos_fields' ); ?>
-
-			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
 			<?php
-				$recaptcha = get_option( "pmpro_recaptcha");
-				if ( $recaptcha == 2 || $recaptcha == 1 ) {
-					pmpro_recaptcha_get_html();
-				}
-			?>
-			</div> <!-- end pmpro_captcha -->
+      do_action( 'pmpro_checkout_after_payment_information_fields' );
+			do_action( 'pmpro_checkout_before_submit_button' );
 
-			<?php
-				do_action( 'pmpro_checkout_after_captcha' );
-				do_action( 'pmpro_checkout_before_submit_button' );
-
-				// Add nonce.
-				wp_nonce_field( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' );
+			// Add nonce.
+			wp_nonce_field( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' );
 			?>
 
 			<?php if ( $pmpro_msg ) { ?>
@@ -604,11 +519,11 @@ if ( empty( $default_gateway ) ) {
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">
 
 				<?php if ( $pmpro_review ) { ?>
-
 					<span id="pmpro_submit_span">
 						<input type="hidden" name="confirm" value="1" />
 						<input type="hidden" name="token" value="<?php echo esc_attr($pmpro_paypal_token); ?>" />
 						<input type="hidden" name="gateway" value="<?php echo esc_attr($gateway); ?>" />
+						<input type="hidden" name="submit-checkout" value="1" />
 						<input type="submit" id="pmpro_btn-submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php esc_attr_e('Complete Payment', 'paid-memberships-pro' );?>" />
 					</span>
 

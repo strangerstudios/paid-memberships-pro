@@ -367,15 +367,6 @@
 						}
 						?>
 
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
-						<?php
-							$recaptcha = get_option("pmpro_recaptcha");
-							if ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-								pmpro_recaptcha_get_html();
-							}
-						?>				
-						</div> <!-- end pmpro_captcha -->
-
 						<?php do_action("pmpro_billing_before_submit_button"); ?>
 
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">

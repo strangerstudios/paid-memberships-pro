@@ -130,8 +130,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder                              = new \MemberOrder();
 	$morder->user_id                     = $old_order->user_id;
 	$morder->membership_id               = $old_order->membership_id;
-	$morder->InitialPayment              = $transaction->amount;    //not the initial payment, but the order class is expecting this
-	$morder->PaymentAmount               = $transaction->amount;
+	$morder->subtotal                    = $transaction->amount;
+	$morder->total                       = $transaction->amount;
 	$morder->payment_transaction_id      = $transaction->id;
 	$morder->subscription_transaction_id = $webhookNotification->subscription->id;
 
@@ -144,15 +144,6 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder->billing = new stdClass();
 	
 	if (! empty( $transaction->billing_details) ) {
-		$morder->FirstName = $transaction->billing_details->first_name;
-		$morder->LastName  = $transaction->billing_details->last_name;
-		$morder->Email     = $wpdb->get_var( "SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1" );
-		$morder->Address1  = $transaction->billing_details->street_address;
-		$morder->City      = $transaction->billing_details->locality;
-		$morder->State     = $transaction->billing_details->region;
-		//$morder->CountryCode = $old_order->billing->city;
-		$morder->Zip         = $transaction->billing_details->postal_code;
-		
 		$morder->billing->name    = trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->last_name );
 		$morder->billing->street  = $transaction->billing_details->street_address;
 		$morder->billing->city    = $transaction->billing_details->locality;
@@ -160,23 +151,15 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 		$morder->billing->zip     = $transaction->billing_details->postal_code;
 		$morder->billing->country = $transaction->billing_details->country_code_alpha2;	
 	} else {
-		$morder->FirstName = $old_order->FirstName;
-		$morder->LastName = $old_order->LastName;
-		$morder->Email = $user->user_email;
-		$morder->Address1 = $old_order->Address1;
-		$morder->City = $old_order->billing->city;
-		$morder->State = $old_order->billing->state;
-		$morder->Zip = $old_order->billing->zip;
-		
 		$morder->billing->name    = $old_order->billing->name;
 		$morder->billing->street  = $old_order->billing->street;
+		$morder->billing->street2 = $old_order->billing->street2;
 		$morder->billing->city    = $old_order->billing->city;
 		$morder->billing->state   = $old_order->billing->state;
 		$morder->billing->zip     = $old_order->billing->zip;
 		$morder->billing->country = $old_order->billing->country;
 	}
 	
-	$morder->PhoneNumber = $old_order->billing->phone;
 	$morder->billing->phone   = $old_order->billing->phone;
 	
 	//Updates this order with the most recent orders payment method information and saves it. 
@@ -235,11 +218,6 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$transaction = isset( $webhookNotification->transactions ) && is_array( $webhookNotification->transactions ) ?
 		$webhookNotification->transactions[0] :
 		null;
-	
-	if ( empty( $transaction ) || ! isset( $transaction->billing_details ) ) {
-		// Get billing address info from either old order or billing meta
-		$old_order->billing = pmpro_braintreeAddressInfo( $user_id, $old_order );
-	}
 	
 	//prep this order for the failure emails
 	$morder          = new \MemberOrder();
@@ -320,11 +298,6 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 		$webhookNotification->transactions[0] :
 		null;
 	
-	if ( empty( $transaction ) || ! isset( $transaction->billing_details ) ) {
-		// Get billing address info from either old order or billing meta
-		$old_order->billing = pmpro_braintreeAddressInfo( $user_id, $old_order );
-	}
-	
 	//prep this order for the failure emails
 	$morder          = new \MemberOrder();
 	$morder->user_id = $user_id;
@@ -401,11 +374,6 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 		$webhookNotification->transactions[0] :
 		null;
 	
-	if ( empty( $transaction ) || ! isset( $transaction->billing_details ) ) {
-		// Get billing address info from either old order or billing meta
-		$old_order->billing = pmpro_braintreeAddressInfo( $user_id, $old_order );
-	}
-	
 	// We don't currently allow billing limits (number_of_billing_cycles) on Braintree subscriptions.
 	// But in case we get here, let's send the correct email to the admin.	
 	$myemail = new PMProEmail();
@@ -442,13 +410,15 @@ pmpro_braintreeWebhookExit();
 /**
  * Fix address info for order/transaction
  *
+ * @deprecated 3.2
+ *
  * @param int          $user_id
  * @param \MemberOrder $old_order
  *
  * @return \stdClass
  */
 function pmpro_braintreeAddressInfo( $user_id, $old_order ) {
-	
+	_deprecated_function( __FUNCTION__, '3.2' );
 	
 	// Grab billing info from the saved metadata as needed
 	

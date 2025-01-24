@@ -1,215 +1,166 @@
 <?php
-	//only admins can get this
-	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_emailsettings")))
-	{
-		die( esc_html__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
-	}	
-	
-	global $wpdb, $msg, $msgt, $pmpro_email_templates_defaults, $current_user, $pmpro_pages;
-	
-				
-	require_once(dirname(__FILE__) . "/admin_header.php");	
-?>
-<form action="" method="post" enctype="multipart/form-data"> 
-	<?php wp_nonce_field('savesettings', 'pmpro_emailsettings_nonce');?>
+// Only admins can get to this screen.
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_emailsettings' ) ) ) {
+	die (esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+}
+
+require_once(dirname(__FILE__) . "/admin_header.php");
+
+global $wpdb, $msg, $msgt, $pmpro_email_templates_defaults, $current_user;
+
+// Set the template based on the request or post value, if set.
+$edit = isset( $_REQUEST['edit'] ) ? $_REQUEST['edit'] : ( isset( $_POST['edit'] ) ? $_POST['edit'] : null );
+$template = isset( $pmpro_email_templates_defaults[ $edit ] ) ? $pmpro_email_templates_defaults[ $edit ] : null;
+
+// Do we have a template to edit? If so, show the edit screen.
+if ( ! empty( $template ) ) {
+	require_once( PMPRO_DIR . '/adminpages/emailtemplates-edit.php' );
+} else {
+	// Showing the email templates list.
+	?>
 	<hr class="wp-header-end">
-	<h1><?php esc_html_e( 'Email Templates', 'paid-memberships-pro' ); ?></h1>
-	<div id="edit-email-templates" class="pmpro_section" data-visibility="shown" data-activated="true">
-		<div class="pmpro_section_toggle">
-			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-				<span class="dashicons dashicons-arrow-up-alt2"></span>
-				<?php esc_html_e( 'Edit Email Templates', 'paid-memberships-pro' ); ?>
-			</button>
-		</div>
-		<div class="pmpro_section_inside">
-			<p><?php esc_html_e( 'Select an email template from the dropdown below to customize the subject and body of emails sent through your membership site. You can also disable a specific email or send a test version through this admin page.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/documentation/member-communications/list-of-pmpro-email-templates/" target="_blank"><?php esc_html_e( 'Click here for a description of each email sent to your members and admins at different stages of the member experience.', 'paid-memberships-pro'); ?></a></p>
-			<table class="form-table">
-				<tr class="status hide-while-loading" style="display:none;">
-					<th scope="row" valign="top"></th>
-					<td>
-						<div id="message" class="status_message_wrapper">
-							<p class="status_message"></p>
-						</div>
-					</td>
-				</tr>
+	<h1><?php esc_html_e( 'Edit Email Templates', 'paid-memberships-pro' ); ?></h1>
+	<p><?php esc_html_e( 'Select an email template to customize the subject and body of emails sent through your membership site. You can also disable a specific email or send a test version through this admin page.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/documentation/member-communications/list-of-pmpro-email-templates/" target="_blank"><?php esc_html_e( 'Click here for a description of each email sent to your members and admins at different stages of the member experience.', 'paid-memberships-pro'); ?></a></p>
+	<table class="wp-list-table widefat striped">
+		<thead>
+			<tr>
+				<th scope="row">
+					<?php esc_html_e( 'Email Template Name', 'paid-memberships-pro' ); ?>
+				</th>
+				<th>
+					<?php esc_html_e( 'Default Recipient', 'paid-memberships-pro' ); ?>
+				</th>
+				<th>
+					<?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?>
+				</th>
+				<th>
+					<?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php
+			/**
+			 * Filter to show the "default" email template in the dropdown.
+			 *
+			 * @since 3.1
+			 *
+			 * @param bool $show_default_email_template Whether to show the default email template in the dropdown.
+			 */
+			$show_default_email_template = apply_filters( 'pmpro_show_default_email_template_in_dropdown', false );
+
+			// Alphabetize the email templates by description.
+			uasort( $pmpro_email_templates_defaults, function( $a, $b ) {
+				return strcasecmp( $a['description'], $b['description'] );
+			} );
+
+			// Move the default, header, and footer email templates to the bottom of the list.
+			$pmpro_email_templates_defaults = array_merge(
+				array_filter(
+					$pmpro_email_templates_defaults,
+					function( $key ) {
+						return ! in_array( $key, [ 'default', 'header', 'footer' ], true );
+					},
+					ARRAY_FILTER_USE_KEY
+				),
+				array_filter(
+					$pmpro_email_templates_defaults,
+					function( $key ) {
+						return in_array( $key, [ 'default', 'header', 'footer' ], true );
+					},
+					ARRAY_FILTER_USE_KEY
+				)
+			);
+
+			foreach ( $pmpro_email_templates_defaults as $key => $template ) {
+				// If the template is the default template and we're not showing it in the dropdown, skip it.
+				if ( 'default' === $key && ! $show_default_email_template ) {
+					continue;
+				}
+				?>
 				<tr>
-					<th scope="row" valign="top">
-						<label for="pmpro_email_template_switcher"><?php esc_html_e( 'Email Template', 'paid-memberships-pro' ); ?></label>
-					</th>
-					<td>
-						<select name="pmpro_email_template_switcher" id="pmpro_email_template_switcher">
-							<option value="" selected="selected"><?php echo '--- ' . esc_html__( 'Select a Template to Edit', 'paid-memberships-pro' ) . ' ---'; ?></option>
+					<td class="has-row-actions" data-colname="<?php esc_attr_e( 'Email Template Name', 'paid-memberships-pro' ); ?>">
+						<strong><a href="<?php echo esc_url( add_query_arg( [ 'page' => 'pmpro-emailtemplates', 'edit' => $key ] ), admin_url( 'admin.php' ) ); ?>"><?php echo esc_html( $template['description'] ); ?></a></strong>
+						<div class="row-actions">
+						<?php
+							$actions = [
+								'edit'   => sprintf(
+									'<a title="%1$s" href="%2$s">%3$s</a>',
+									esc_attr__( 'Edit', 'paid-memberships-pro' ),
+									esc_url(
+										add_query_arg(
+											[
+												'page' => 'pmpro-emailtemplates',
+												'edit' => $key,
+											],
+											admin_url( 'admin.php' )
+										)
+									),
+									esc_html__( 'Edit', 'paid-memberships-pro' )
+								),
+							];
 
-							<?php
 							/**
-							 * Filter to show the "default" email template in the dropdown.
+							 * Filter the extra actions for this template.
 							 *
-							 * @since 3.1
+							 * @since 3.2
 							 *
-							 * @param bool $show_default_email_template Whether to show the default email template in the dropdown.
+							 * @param array  $actions The list of actions.
+							 * @param object $template   The email template data.
 							 */
-							$show_default_email_template = apply_filters( 'pmpro_show_default_email_template_in_dropdown', false );
-							foreach ( $pmpro_email_templates_defaults as $key => $template ) {
-								// If the template is the default template and we're not showing it in the dropdown, skip it.
-								if ( 'default' === $key && ! $show_default_email_template ) {
-									continue;
-								}
-								?>
-								<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $template['description'] ); ?></option>
+							$actions = apply_filters( 'pmpro_emailtemplates_row_actions', $actions, $template );
 
-								<?php
+							$actions_html = [];
+
+							foreach ( $actions as $action => $link ) {
+								$actions_html[] = sprintf(
+									'<span class="%1$s">%2$s</span>',
+									esc_attr( $action ),
+									$link
+								);
+							}
+
+							if ( ! empty( $actions_html ) ) {
+								echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							}
 							?>
-						</select>
-						<img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" id="pmproet-spinner" style="display:none;"/>
-
-						<p id="pmpro_email_template_help_text" class="description"></p>
-					</td>
-				</tr>
-				<tr class="hide-while-loading">
-					<th scope="row" valign="top"></th>
-					<td>
-						<label><input id="pmpro_email_template_disable" name="pmpro_email_template_disable" type="checkbox" /><span
-								id="disable_label"><?php esc_html_e( 'Disable this email?', 'paid-memberships-pro' ); ?></span></label>
-
-
-						<p id="disable_description" class="description"><?php esc_html_e( 'Emails with this template will not be sent.', 'paid-memberships-pro' ); ?></p>
-
-					</td>
-				</tr>
-				<tr class="hide-while-loading">
-					<th scope="row" valign="top"><label for="pmpro_email_template_subject"><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></label></th>
-
-					<td>
-						<input id="pmpro_email_template_subject" name="pmpro_email_template_subject" type="text" size="100"/>
-					</td>
-				</tr>
-				<tr class="hide-while-loading">
-					<th scope="row" valign="top"><label for="pmpro_email_template_body"><?php esc_html_e( 'Body', 'paid-memberships-pro' ); ?></label></th>
-
-					<td>
-						<div id="template_editor_container">
-							<textarea rows="10" cols="80" name="pmpro_email_template_body" id="pmpro_email_template_body"></textarea>
 						</div>
 					</td>
-				</tr>
-				<tr class="hide-while-loading">
-					<th scope="row" valign="top"></th>
-					<td>
-						<?php esc_html_e( 'Send a test email to ', 'paid-memberships-pro' ); ?>
-						<input id="test_email_address" name="test_email_address" type="text"
-							value="<?php echo esc_attr( $current_user->user_email ); ?>"/>
-						<input id="send_test_email" class="button" name="send_test_email" value="<?php esc_attr_e( 'Save Template and Send Email', 'paid-memberships-pro' ); ?>"
-
-							type="button"/>
-
-						<p class="description">
-							<?php esc_html_e( 'Your current membership will be used for any membership level data.', 'paid-memberships-pro' ); ?>
-						</p>
+					<td data-colname="<?php esc_attr_e( 'Default Recipient', 'paid-memberships-pro' ); ?>">
+						<?php
+							// If the email has _admin in $key, it's an admin email.
+							// If the email is default, header, or footer, show a dash.
+							if ( strpos( $key, '_admin' ) !== false ) {
+								echo esc_html__( 'Admin', 'paid-memberships-pro' );
+							} elseif ( in_array( $key, [ 'default', 'header', 'footer' ], true ) ) {
+								echo esc_html__( '&#8212;', 'paid-memberships-pro' );
+							} else {
+								echo esc_html__( 'Member', 'paid-memberships-pro' );
+							}
+						?>
+					</td>
+					<td data-colname="<?php esc_attr_e( 'Subject', 'paid-memberships-pro' ); ?>">
+						<?php
+							$subject = get_option( 'pmpro_email_' . $key . '_subject', $template['subject'] );
+							echo ! empty( $subject ) ? esc_html( $subject ) : __( '&#8212;', 'paid-memberships-pro' );
+						?>
+					</td>
+					<td data-colname="<?php esc_attr_e( 'Status', 'paid-memberships-pro' ); ?>">
+						<?php
+							if ( filter_var( get_option( 'pmpro_email_' . $key . '_disabled' ), FILTER_VALIDATE_BOOLEAN ) ) {
+								echo '<span class="pmpro_tag pmpro_tag-alert">' . esc_html__( 'Disabled', 'paid-memberships-pro' ) . '</span>';
+							} else {
+								echo '<span class="pmpro_tag pmpro_tag-success">' . esc_html__( 'Enabled', 'paid-memberships-pro' ) . '</span>';
+							}
+						?>
 					</td>
 				</tr>
-				<tr class="controls hide-while-loading">
-					<th scope="row" valign="top"></th>
-					<td>
-						<p class="submit">
-							<input id="pmpro_submit_template_data" name="pmpro_save_template" type="button" class="button-primary"
-								value="<?php esc_attr_e( 'Save Template', 'paid-memberships-pro' ); ?>"/>
+				<?php
+			}
+		?>
+		</tbody>
+	</table>
+	<?php
+}
 
-							<input id="pmpro_reset_template_data" name="pmpro_reset_template" type="button" class="button"
-								value="<?php esc_attr_e( 'Reset Template', 'paid-memberships-pro' ); ?>"/>
-
-						</p>
-					</td>
-				</tr>
-			</table>
-		</div> <!-- end pmpro_section_inside -->
-	</div> <!-- end pmpro_section -->
-	<div id="email-variable-reference" class="pmpro_section" data-visibility="shown" data-activated="true">
-		<div class="pmpro_section_toggle">
-			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-				<span class="dashicons dashicons-arrow-up-alt2"></span>
-				<?php esc_html_e( 'Variable Reference', 'paid-memberships-pro' ); ?>
-			</button>
-		</div>
-		<div class="pmpro_section_inside">
-			<p><?php esc_html_e( 'Use the placeholder variables below to customize your member and admin emails with specific user or membership data.', 'paid-memberships-pro' ); ?></p>
-
-			<h3><?php esc_html_e('General Settings / Membership Info', 'paid-memberships-pro'); ?></h3>
-			<table class="widefat fixed striped">
-				<tbody>
-					<?php
-					$email_variables = [
-						'!!name!!'                  => __( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
-						'!!user_login!!'            => __( 'Username', 'paid-memberships-pro' ),
-						'!!sitename!!'              => __( 'Site Title', 'paid-memberships-pro' ),
-						'!!siteemail!!'             => __( 'Site Email Address (General Settings > Email OR Memberships > Settings > Email Settings)', 'paid-memberships-pro' ),
-						'!!membership_id!!'         => __( 'Membership Level ID', 'paid-memberships-pro' ),
-						'!!membership_level_name!!' => __( 'Membership Level Name', 'paid-memberships-pro' ),
-						'!!membership_change!!'     => __( 'Membership Level Change', 'paid-memberships-pro' ),
-						'!!membership_expiration!!' => __( 'Membership Level Expiration', 'paid-memberships-pro' ),
-						'!!startdate!!'             => __( 'Membership Start Date', 'paid-memberships-pro' ),
-						'!!enddate!!'               => __( 'Membership End Date', 'paid-memberships-pro' ),
-						'!!display_name!!'          => __( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
-						'!!user_email!!'            => __( 'User Email', 'paid-memberships-pro' ),
-						'!!login_url!!'            => __( 'Login URL', 'paid-memberships-pro' ),
-						'!!levels_url!!'           => __( 'Membership Levels Page URL', 'paid-memberships-pro' ),
-					];
-
-					foreach ( $email_variables as $email_variable => $description ) {
-						?>
-							<tr>
-								<th><code><?php echo esc_html( $email_variable ); ?></code></th>
-								<td><?php echo esc_html( $description ); ?></td>
-							</tr>
-						<?php
-					}
-					?>
-				</tbody>
-			</table>
-
-			<h3><?php esc_html_e( 'Billing Information', 'paid-memberships-pro' ); ?></h3>
-			<table class="widefat fixed striped">
-				<tbody>
-					<?php
-					$email_variables = [
-						'!!billing_address!!' => __( 'Billing Info Complete Address', 'paid-memberships-pro' ),
-						'!!billing_name!!'    => __( 'Billing Info Name', 'paid-memberships-pro' ),
-						'!!billing_street!!'  => __( 'Billing Info Street Address', 'paid-memberships-pro' ),
-						'!!billing_city!!'    => __( 'Billing Info City', 'paid-memberships-pro' ),
-						'!!billing_state!!'   => __( 'Billing Info State', 'paid-memberships-pro' ),
-						'!!billing_zip!!'     => __( 'Billing Info ZIP Code', 'paid-memberships-pro' ),
-						'!!billing_country!!' => __( 'Billing Info Country', 'paid-memberships-pro' ),
-						'!!billing_phone!!'   => __( 'Billing Info Phone #', 'paid-memberships-pro' ),
-						'!!cardtype!!'        => __( 'Credit Card Type', 'paid-memberships-pro' ),
-						'!!accountnumber!!'   => __( 'Credit Card Number (last 4 digits)', 'paid-memberships-pro' ),
-						'!!expirationmonth!!' => __( 'Credit Card Expiration Month (mm format)', 'paid-memberships-pro' ),
-						'!!expirationyear!!'  => __( 'Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro' ),
-						'!!membership_cost!!' => __( 'Membership Level Cost Text', 'paid-memberships-pro' ),
-						'!!instructions!!'    => __( 'Payment Instructions (used in Checkout - Email Template)', 'paid-memberships-pro' ),
-						'!!order_id!!'        => __( 'Order ID', 'paid-memberships-pro' ),
-						'!!order_total!!  '   => __( 'Order Total', 'paid-memberships-pro' ),
-						'!!order_date!!'      => __( 'Order Date', 'paid-memberships-pro' ),
-						'!!order_url!!'       => __( 'Order Page URL', 'paid-memberships-pro' ),
-						'!!discount_code!!'   => __( 'Discount Code Applied', 'paid-memberships-pro' ),
-						'!!membership_level_confirmation_message!!' => __( 'Custom Level Confirmation Message', 'paid-memberships-pro' ),
-					];
-
-					foreach ( $email_variables as $email_variable => $description ) {
-						?>
-							<tr>
-								<th><code><?php echo esc_html( $email_variable ); ?></code></th>
-								<td><?php echo esc_html( $description ); ?></td>
-							</tr>
-						<?php
-					}
-					?>
-				</tbody>
-			</table>
-		</div> <!-- end pmpro_section_inside -->
-	</div> <!-- end pmpro_section -->
-	
-	<?php wp_nonce_field( 'pmproet', 'security' ); ?>
-
-</form>
-<?php
-	require_once(dirname(__FILE__) . "/admin_footer.php");
+require_once(dirname(__FILE__) . "/admin_footer.php");

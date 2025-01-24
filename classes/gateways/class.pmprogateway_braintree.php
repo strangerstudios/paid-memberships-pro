@@ -551,7 +551,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		function process(&$order)
 		{
 			//check for initial payment
-			if(floatval($order->InitialPayment) == 0)
+			if(floatval($order->subtotal) == 0)
 			{
 				//just subscribe
 				return $this->subscribe($order);
@@ -613,10 +613,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$order->code = $order->getRandomCode();
 
 			//what amount to charge?
-			$amount = $order->InitialPayment;
-
-			//tax
-			$order->subtotal = $amount;
 			$tax = $order->getTax(true);
 			$amount = pmpro_round_price_as_string((float)$order->subtotal + (float)$tax);
 
@@ -729,6 +725,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$customer_id = get_user_meta($user_id, "pmpro_braintree_customerid", true);
 			}
 
+			$nameparts = pnp_split_full_name( $order->billing->name );
+
 			//check for an existing Braintree customer
 			if(!empty($customer_id))
 			{
@@ -740,13 +738,13 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					if( ! empty( $order->braintree ) && ! empty( $order->braintree->number ) ) {
 						//put data in array for Braintree API calls
 						$update_array = array(
-							'firstName' => $order->FirstName,
-							'lastName' => $order->LastName,
+							'firstName' => empty( $nameparts['fname'] ) ? '' : $nameparts['fname'],
+							'lastName' => empty( $nameparts['lname'] ) ? '' : $nameparts['lname'],
 							'creditCard' => array(
 								'number' => $order->braintree->number,
 								'expirationDate' => $order->braintree->expiration_date,
 								'cvv' => $order->braintree->cvv,
-								'cardholderName' => trim($order->FirstName . " " . $order->LastName),
+								'cardholderName' => trim( $order->billing->name ),
 								'options' => array(
 									'updateExistingToken' => $this->customer->creditCards[0]->token
 								)
@@ -761,10 +759,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 							//add billing address to array
 							$update_array['creditCard']['billingAddress'] = array(
-								'firstName' => $order->FirstName,
-								'lastName' => $order->LastName,
-								'streetAddress' => $order->Address1,
-								'extendedAddress' => $order->Address2,
+								'firstName' => empty( $nameparts['fname'] ) ? '' : $nameparts['fname'],
+								'lastName' => empty( $nameparts['lname'] ) ? '' : $nameparts['lname'],
+								'streetAddress' => $order->billing->street,
+								'extendedAddress' => $order->billing->street2,
 								'locality' => $order->billing->city,
 								'region' => $order->billing->state,
 								'postalCode' => $order->billing->zip,
@@ -807,23 +805,24 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//no customer id, create one
 			if(!empty($order->accountnumber))
 			{
+				$user = get_userdata($user_id);
 				try
 				{
 					$result = Braintree_Customer::create(array(
-						'firstName' => $order->FirstName,
-						'lastName' => $order->LastName,
-						'email' => $order->Email,
+						'firstName' => empty($nameparts['fname']) ? '' : $nameparts['fname'],
+						'lastName' => empty($nameparts['lname']) ? '' : $nameparts['lname'],
+						'email' => empty( $user->user_email ) ? '' : $user->user_email,
 						'phone' => $order->billing->phone,
 						'creditCard' => array(
 							'number' => $order->braintree->number,
 							'expirationDate' => $order->braintree->expiration_date,
 							'cvv' => $order->braintree->cvv,
-							'cardholderName' =>  trim($order->FirstName . " " . $order->LastName),
+							'cardholderName' =>  trim($order->billing->name),
 							'billingAddress' => array(
-								'firstName' => $order->FirstName,
-								'lastName' => $order->LastName,
-								'streetAddress' => $order->Address1,
-								'extendedAddress' => $order->Address2,
+								'firstName' => empty($nameparts['fname']) ? '' : $nameparts['fname'],
+								'lastName' => empty($nameparts['lname']) ? '' : $nameparts['lname'],
+								'streetAddress' => $order->billing->street,
+								'extendedAddress' => $order->billing->street2,
 								'locality' => $order->billing->city,
 								'region' => $order->billing->state,
 								'postalCode' => $order->billing->zip,
@@ -890,51 +889,30 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				return false;	//error retrieving customer
 
 			//figure out the amounts
-			$amount = $order->PaymentAmount;
+			$level = $order->getMembershipLevelAtCheckout();
+			$amount = $level->billing_amount;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 
-			/*
-				There are two parts to the trial. Part 1 is simply the delay until the first payment
-				since we are doing the first payment as a separate transaction.
-				The second part is the actual "trial" set by the admin.
-
-				Braintree only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
-			*/
-			//figure out the trial length (first payment handled by initial charge)
-			if($order->BillingPeriod == "Year")
-				$trial_period_days = $order->BillingFrequency * 365;	//annual
-			elseif($order->BillingPeriod == "Day")
-				$trial_period_days = $order->BillingFrequency * 1;		//daily
-			elseif($order->BillingPeriod == "Week")
-				$trial_period_days = $order->BillingFrequency * 7;		//weekly
-			else
-				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
-
-			//convert to a profile start date
-			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp")));
-
-			//filter the start date
-			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
-
-			$start_ts  = strtotime($order->ProfileStartDate, current_time("timestamp") );
+			// Get the profile start date.
+			$start_ts = pmpro_calculate_profile_start_date( $order, 'U' );
 			$now =  strtotime( date('Y-m-d\T00:00:00', current_time('timestamp' ) ), current_time('timestamp' ) );
 
 			//convert back to days
 			$trial_period_days = ceil(abs( $now - $start_ts ) / 86400);
 
 			//now add the actual trial set by the site
-			if(!empty($order->TrialBillingCycles))
+			if(!empty($level->trial_limit))
 			{
-				$trialOccurrences = (int)$order->TrialBillingCycles;
-				if($order->BillingPeriod == "Year")
-					$trial_period_days = $trial_period_days + (365 * $order->BillingFrequency * $trialOccurrences);	//annual
-				elseif($order->BillingPeriod == "Day")
-					$trial_period_days = $trial_period_days + (1 * $order->BillingFrequency * $trialOccurrences);		//daily
-				elseif($order->BillingPeriod == "Week")
-					$trial_period_days = $trial_period_days + (7 * $order->BillingFrequency * $trialOccurrences);	//weekly
+				$trialOccurrences = (int)$level->trial_limit;
+				if( $level->cycle_period == "Year")
+					$trial_period_days = $trial_period_days + (365 * $level->cycle_number * $trialOccurrences);	//annual
+				elseif( $level->cycle_period == "Day")
+					$trial_period_days = $trial_period_days + (1 * $level->cycle_number * $trialOccurrences);		//daily
+				elseif( $level->cycle_period == "Week")
+					$trial_period_days = $trial_period_days + (7 * $level->cycle_number * $trialOccurrences);	//weekly
 				else
-					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly
+					$trial_period_days = $trial_period_days + (30 * $level->cycle_number * $trialOccurrences);	//assume monthly
 			}
 
 			//subscribe to the plan
@@ -954,8 +932,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					$details['trialDurationUnit'] = "day";
 				}
 
-				if(!empty($order->TotalBillingCycles))
-					$details['numberOfBillingCycles'] = $order->TotalBillingCycles;
+				if(!empty($level->billing_limit))
+					$details['numberOfBillingCycles'] = $level->billing_limit;
 
 				/**
 				 * Filter the Braintree Subscription create array.

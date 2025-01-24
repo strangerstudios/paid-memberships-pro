@@ -88,6 +88,15 @@
 	color: var(--pmpro--color--alert-link);
 }
 
+.pmpro_message p {
+	margin: 0 0 var(--pmpro--base--spacing--small);
+	padding: 0;
+}
+
+.pmpro_message p:last-of-type {
+	margin-bottom: 0;
+}
+
 /**
  * Form Elements
  */
@@ -554,7 +563,8 @@ button[type="button"]#other_discount_code_toggle:focus {
 @media print {
 	.pmpro {
 		.pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav),
-		.pmpro_actions_nav,
+		.pmpro_actions_nav-right,
+		.pmpro_actions_nav-left,
 		.pmpro_card_actions,
 		.pmpro_hide_print {
 			display: none;
