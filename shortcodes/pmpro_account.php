@@ -200,6 +200,18 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										}
 										?>
 									</ul> <!-- end pmpro_list -->
+									<?php
+										$membership_account_message = get_pmpro_membership_level_meta( $level->id, 'membership_account_message', true );
+										if ( $membership_account_message ) {
+											?>
+											<div id="pmpro_account_membership_message_<?php echo esc_attr( $level->id );?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account_membership_message' ) ); ?>">
+												<?php echo wpautop( wp_kses_post( apply_filters( 'pmpro_account_membership_message', $membership_account_message, $level ) ) ); ?>
+											</div>
+											<?php
+										}
+										
+										do_action( 'pmpro_member_account_message', $level );
+									?>
 								</div> <!-- end pmpro_card_content -->
 
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
