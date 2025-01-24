@@ -3057,23 +3057,29 @@ tr.pmpro_alert {
 	overflow: hidden;
 }
 
-#pmpro-admin-add-ons .add-on-item img {
+#pmpro-admin-add-ons .add-on-item .add-on-icon {
 	border: 1px solid var(--pmpro--border--color);
+	display: flex;
 	float: left;
-	max-width: 75px;
+	height: 75px;
+	width: 75px;
+}
+
+#pmpro-admin-add-ons .add-on-item img {
 	padding: 4px;
 }
 
-#pmpro-admin-add-ons .add-on-item h5 {
+#pmpro-admin-add-ons .add-on-item .add-on-name {
 	margin: 0 0 10px 100px;
 	font-size: 16px;
+	font-weight: 700;
 }
 
-#pmpro-admin-add-ons .add-on-item h5 a {
+#pmpro-admin-add-ons .add-on-item .add-on-name a {
 	color: #444;
 }
 
-#pmpro-admin-add-ons .add-on-item h5 a:hover {
+#pmpro-admin-add-ons .add-on-item .add-on-name a:hover {
 	color: #006799;
 }
 
