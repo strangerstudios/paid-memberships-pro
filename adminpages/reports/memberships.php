@@ -530,9 +530,9 @@ function pmpro_report_memberships_page() {
 		<table class="widefat striped">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Signups', 'paid-memberships-pro' ); ?></th>
-					<th><?php echo esc_html( $cancellations_label ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Signups', 'paid-memberships-pro' ); ?></th>
+					<th scope="col"><?php echo esc_html( $cancellations_label ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -542,9 +542,9 @@ function pmpro_report_memberships_page() {
 					<tr>
 						<th scope="row"><?php
 							if ( $period == 'monthly' ) {
-								echo esc_html( date_i18n( 'F Y', mktime( 0, 0, 0, $value->date, 2 ) ) );
+								echo esc_html( date_i18n( 'F Y', mktime( 0, 0, 0, $value->date, 1, $year ) ) );
 							} elseif ( $period == 'daily' ) {
-								echo esc_html( $key );
+								echo esc_html( date_i18n( get_option( 'date_format' ), mktime( 0, 0, 0, $month, $key, $year ) ) );
 							} else {
 								echo esc_html( $value->date );
 							}
