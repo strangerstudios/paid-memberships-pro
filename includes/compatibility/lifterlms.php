@@ -657,13 +657,9 @@ function pmpro_maybe_remove_lifterlms_lostpassword_url_filter() {
 add_action( 'wp', 'pmpro_maybe_remove_lifterlms_lostpassword_url_filter' );
 
 /**
- * Remove Plan availability dropdown from Lifter's access plan settings.
- *
- * @return bool False to remove the dropdown, true to keep it.
- * @since TBD
+ * Hide Membership Settings for an Access Plan for a course if LifterLMS streamline is enabled.
  */
 function pmpro_llms_show_membership_settings_for_access_plans() {
 	return ! get_option( 'pmpro_lifter_streamline' );
 }
-
 add_filter( 'llms_show_membership_settings_for_access_plans', 'pmpro_llms_show_membership_settings_for_access_plans' );
