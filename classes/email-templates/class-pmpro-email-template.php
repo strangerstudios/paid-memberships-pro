@@ -61,6 +61,7 @@ abstract class PMPro_Email_Template {
 			'siteemail' => get_option( 'pmpro_from_email' ),
 			'site_url'  => home_url(),
 			'levels_url' => pmpro_url( 'levels' ),
+			'levels_link' => pmpro_url( 'levels' ),
 			'login_link' => pmpro_login_url(), 
 			'login_url' => pmpro_login_url(),
 			'header_name' => $this->get_recipient_name(),
@@ -82,7 +83,6 @@ abstract class PMPro_Email_Template {
 			'!!siteemail!!' => __( 'The email address of the site.', 'paid-memberships-pro' ),
 			'!!site_url!!'  => __( 'The URL of the site.', 'paid-memberships-pro' ),
 			'!!levels_url!!' => __( 'The URL of the page where users can view available membership levels.', 'paid-memberships-pro' ),
-			'!!login_link!!' => __( 'The URL of the login page.', 'paid-memberships-pro' ),
 			'!!login_url!!' => __( 'The URL of the login page.', 'paid-memberships-pro' ),
 			'!!header_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
 		);
