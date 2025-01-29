@@ -130,7 +130,6 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 			'!!order_link!!' => __( 'The URL of the order.', 'paid-memberships-pro' ),
 			'!!order_url!!' => __( 'The URL of the order.', 'paid-memberships-pro' ),
 			'!!invoice_url!!' => __( 'The URL of the order. Legacy purpose', 'paid-memberships-pro' ),
-			'!!levels_url!!' => __( 'The URL of the membership levels page.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -152,7 +151,6 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 			"order_link" => $order_url,
 			"order_url" => $order_url,
 			"invoice_url" => $order_url, // Legacy purpose, remove in future version
-			"levels_url" => pmpro_url( 'levels' )
 		);
 	}
 }
