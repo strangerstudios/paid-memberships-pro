@@ -449,7 +449,7 @@
 	}
 
 	#pmpro_tos_fields {
-		margin-top: var(--pmpro--base--spacing--large);
+		margin: var(--pmpro--base--spacing--medium) 0;
 	}
 
 	.pmpro_form_submit {
@@ -458,7 +458,7 @@
 		flex-direction: row;
 		flex-wrap: wrap;
 		gap: var(--pmpro--base--spacing--medium);
-		margin-top: var(--pmpro--base--spacing--large);
+		margin-top: var(--pmpro--base--spacing--medium);
 	}
 
 	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
