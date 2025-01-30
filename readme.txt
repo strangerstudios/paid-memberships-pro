@@ -204,6 +204,28 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.4 - TBD =
+* FEATURE: Now pulling localization files from https://translate.strangerstudios.com. #3211 (@andrewlimaza)
+* FEATURE: Added a new Membership Account Message level setting to show a level-specific message to members on the Membership Account page. #3271 (@andrewlimaza, @kimcoleman)
+* ENHANCEMENT: Email template variables shown when editing an email template will now be specific to the email template being edited. #3234 (@MaximilianoRicoTabo, @dparker1005)
+* ENHANCEMENT: Now allowing filtering the Sales and Revenue report by multiple levels and discount codes. #3258 (@dparker1005)
+* ENHANCEMENT: Now allowing custom date ranges for the Sales and Revenue report. #3257 (@dparker1005)
+* ENHANCEMENT: Now showing the raw Sales and Revenue report data in a table under the chart. #3256 (@dparker1005)
+* ENHANCEMENT: Improved how user field values are displayed. #3223 (@dparker1005, @kimcoleman)
+* ENHANCEMENT: Improved the accessibility of the Memberships > Add Ons page. #3268 (@kimcoleman)
+* ENHANCEMENT: Now localizing formatted dates in the PMPro_Subscription class. #3195 (@andrewlimaza)
+* ENHANCEMENT: Now supporting setting a `profile_start_date` directly on a checkout level. #3233 (@dparker1005)
+* ENHANCEMENT: Added a new function `pmpro_get_membership_levels_for_user_in_group()`. #3267 (@dparker1005)
+* ENHANCEMENT: Now supporting subscription transaction IDs up to 64 characters. #3274 (@dparker1005)
+* ENHANCEMENT: Added a new filter `pmpro_membership_account_after_level_card_content` to allow additional content to be added to level cards on the Membership Account page. #3271 (@andrewlimaza, @kimcoleman)
+* BUG FIX/ENHANCEMENT: Now pulling the discount code from the checkout level object at checkout instead of the globals which may not be set. #3247 (@dparker1005)
+* BUG FIX: Fixed an issue where required user fields may not be highlighted when submitted with an empty value. #3251 (@kimcoleman)
+* REFACTOR: Created an abstract PMPro_Email_Template class and child classes for each email template. #3234 (@MaximilianoRicoTabo, @dparker1005)
+* REFACTOR: Cleaned up user fields code throughout the plugin. #3223 (@dparker1005, @kimcoleman)
+* REFACTOR: Removed potentially problematic caching from the `pmpro_getLevelAtCheckout()` function and began passing the checkout level to all relevant hooks instead. #3246 (@dparker1005)
+* DEPRECATED: Marking PayFlow, PayPal Standard, and Braintree as deprecated. Websites that are already using these gateways can continue using them, but they will not be shown as an option on new websites. #3184 (@dparker1005)
+* DEPRECATED: Removed references to PayPal from the Membership Billing page which has not been supported for some time. #3252 (@kimcoleman)
+
 = TBD - TBD =
 * ENHANCEMENT: Added a table with the raw report data under the Membership Stats report. #3260 (@dparker1005)
 * BUG FIX: Fixed an issue where the "Signups vs. Cancellations" and "Signups vs. Expirations" reports would not display. #3260 (@dparker1005)
