@@ -5042,7 +5042,7 @@ function pmpro_add_level_account_message( $level ) {
 	if ( $membership_account_message ) {
 		?>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-message' ) ); ?>">
-			<?php echo wpautop( wp_kses_post( apply_filters( 'pmpro_account_membership_message', $membership_account_message, $level ) ) ); ?>
+			<?php echo wpautop( wp_kses_post( $membership_account_message ) ); ?>
 		</div>
 		<?php
 	}
