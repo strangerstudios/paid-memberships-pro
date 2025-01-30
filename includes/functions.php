@@ -5033,3 +5033,18 @@ function pmpro_check_token_order_for_completion( $order_id ) {
 	// Check the order for completion.
 	return $order->Gateway->check_token_order( $order );
 }
+
+/**
+ * Show a message on the account page for a specific membership level.
+ */
+function pmpro_add_level_account_message( $level ) {
+	$membership_account_message = get_pmpro_membership_level_meta( $level->id, 'membership_account_message', true );
+	if ( $membership_account_message ) {
+		?>
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-message' ) ); ?>">
+			<?php echo wpautop( wp_kses_post( apply_filters( 'pmpro_account_membership_message', $membership_account_message, $level ) ) ); ?>
+		</div>
+		<?php
+	}
+}
+add_action( 'pmpro_member_account_message', 'pmpro_add_level_account_message' );
