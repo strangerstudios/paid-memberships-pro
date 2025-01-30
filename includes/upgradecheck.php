@@ -401,6 +401,15 @@ function pmpro_checkForUpgrades() {
 		pmpro_db_delta();
 		update_option( 'pmpro_db_version', '3.3' );
 	}
+
+	/**
+	 * Version 3.4
+	 * Allowing subscription transaction IDs up to 64 characters.
+	 */
+	if ( $pmpro_db_version < 3.4 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.4' );
+	}
 }
 
 function pmpro_db_delta() {
@@ -492,7 +501,7 @@ function pmpro_db_delta() {
 		  `gateway` varchar(64) NOT NULL,
 		  `gateway_environment` varchar(64) NOT NULL,
 		  `payment_transaction_id` varchar(64) NOT NULL,
-		  `subscription_transaction_id` varchar(32) NOT NULL,
+		  `subscription_transaction_id` varchar(64) NOT NULL,
 		  `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 		  `affiliate_id` varchar(32) NOT NULL,
 		  `affiliate_subid` varchar(32) NOT NULL,
@@ -642,7 +651,7 @@ function pmpro_db_delta() {
 			`membership_level_id` int(11) unsigned NOT NULL,
 			`gateway` varchar(64) NOT NULL,
 			`gateway_environment` varchar(64) NOT NULL,
-			`subscription_transaction_id` varchar(32) NOT NULL,
+			`subscription_transaction_id` varchar(64) NOT NULL,
 			`status` varchar(20) NOT NULL DEFAULT 'active',
 			`startdate` datetime DEFAULT NULL,
 			`enddate` datetime DEFAULT NULL,
