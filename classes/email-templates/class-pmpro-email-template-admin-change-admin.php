@@ -39,7 +39,7 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Admin Change (admin)', 'paid-memberships-pro' );
+		return esc_html__( 'Admin Change (admin)', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -50,7 +50,7 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return __( 'The site administrator can manually update a user\'s membership level through the WordPress admin. This email notifies the site administrator of the level update.', 'paid-memberships-pro' );
+		return esc_html__( 'The site administrator can manually update a user\'s membership level through the WordPress admin. This email notifies the site administrator of the level update.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -61,7 +61,7 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return __( "Membership for !!display_name!! at !!sitename!! has been changed", 'paid-memberships-pro' );
+		return esc_html__( "Membership for !!display_name!! at !!sitename!! has been changed", 'paid-memberships-pro' );
 	}
 
 	/**
@@ -72,7 +72,7 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return __( '<p>An administrator at !!sitename!! has changed a membership level for !!display_name!!.</p>
+		return wp_kses_post( '<p>An administrator at !!sitename!! has changed a membership level for !!display_name!!.</p>
 
 <p>!!membership_change!!</p>
 
@@ -90,9 +90,9 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 		$user = $this->user;
 		// If the user no longer has a membership level, set the membership_change text to "Membership has been cancelled."
 		if ( ! pmpro_hasMembershipLevel( null,  $this->user->ID ) ) {
-			$membership_change = __( 'The user\'s membership has been cancelled.', 'paid-memberships-pro' );
+			$membership_change = esc_html__( 'The user\'s membership has been cancelled.', 'paid-memberships-pro' );
 		} else {
-			$membership_change = __( 'You can view the user\'s current memberships from their Edit Member page.', 'paid-memberships-pro' );
+			$membership_change = esc_html__( 'You can view the user\'s current memberships from their Edit Member page.', 'paid-memberships-pro' );
 		}
 
 		$email_template_variables = array(
@@ -115,12 +115,12 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!membership_change!!' => __( 'Membership Level Change', 'paid-memberships-pro' ),
-			'!!subject!!' => __( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => __( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
-			'!!user_login!!' => __( 'The login name of the user whose membership was changed.', 'paid-memberships-pro' ),
-			'!!user_email!!' => __( 'The email address of the user whose membership was changed.', 'paid-memberships-pro' ),
+			'!!membership_change!!' => esc_html__( 'Membership Level Change', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
+			'!!name!!' => esc_html__( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The login name of the user whose membership was changed.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user whose membership was changed.', 'paid-memberships-pro' ),
 		);
 	}
 

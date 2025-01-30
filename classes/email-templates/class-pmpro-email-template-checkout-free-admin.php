@@ -48,7 +48,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Checkout - Free (admin)', 'paid-memberships-pro' );
+		return esc_html__( 'Checkout - Free (admin)', 'paid-memberships-pro' );
 	}
 
 
@@ -60,7 +60,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 	 * @return string The help text.
 	 */
 	public static function get_template_description() {
-		return __( 'This is the membership confirmation email sent to the site administrator for every membership checkout that has no charge.', 'paid-memberships-pro' );
+		return esc_html__( 'This is the membership confirmation email sent to the site administrator for every membership checkout that has no charge.', 'paid-memberships-pro' );
 
 	}
 
@@ -72,7 +72,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 	 * @return string The email subject.
 	 */
 	public static function get_default_subject() {
-		return __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' );
+		return esc_html__( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' );
 	}
 
 	/**
@@ -83,7 +83,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return __( '<p>There was a new member checkout at !!sitename!!.</p>
+		return wp_kses_post( '<p>There was a new member checkout at !!sitename!!.</p>
 		<p>Below are details about the new membership account.</p>
 
 		<p>Account: !!display_name!! (!!user_email!!)</p>
@@ -128,17 +128,17 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 
 		return array(
-			'!!subject!!' => __( 'The subject of the email.', 'paid-memberships-pro' ),
-			'!!name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!user_login!!' => __( 'The login name of the email recipient.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!confirmation_message!!' => __( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
-			'!!membership_cost!!' => __( 'The cost of the membership level.', 'paid-memberships-pro' ),
-			'!!user_email!!' => __( 'The email address of the email recipient.', 'paid-memberships-pro' ),
-			'!!membership_expiration!!' => __( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
-			'!!discount_code!!' => __( 'The discount code used for the membership level.', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The subject of the email.', 'paid-memberships-pro' ),
+			'!!name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The login name of the email recipient.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
+			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the email recipient.', 'paid-memberships-pro' ),
+			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
+			'!!discount_code!!' => esc_html__( 'The discount code used for the membership level.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -169,7 +169,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 
 		$discount_code = '';
 		if( $order->getDiscountCode() ) {
-			$discount_code = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
+			$discount_code = "<p>" . esc_html__("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
 		}
 
 

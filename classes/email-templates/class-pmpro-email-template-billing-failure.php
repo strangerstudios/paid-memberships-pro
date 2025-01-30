@@ -48,7 +48,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Payment Failure', 'paid-memberships-pro' );
+		return esc_html__( 'Payment Failure', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -59,7 +59,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 	 * @return string The help text.
 	 */
 	public static function get_template_description() {
-		return __( 'This email is sent out if a recurring payment has failed, usually due to an expired or cancelled credit card. This email is sent to the member to allowing them time to update payment information without a disruption in access to your site.', 'paid-memberships-pro' );
+		return esc_html__( 'This email is sent out if a recurring payment has failed, usually due to an expired or cancelled credit card. This email is sent to the member to allowing them time to update payment information without a disruption in access to your site.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -70,7 +70,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 	 * @return string The email subject.
 	 */
 	public static function get_default_subject() {
-		return __( "Membership payment failed at !!sitename!!", 'paid-memberships-pro' );
+		return esc_html__( "Membership payment failed at !!sitename!!", 'paid-memberships-pro' );
 	}
 
 	/**
@@ -81,7 +81,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return __( '<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br/> !!login_url!! </p>
+		return wp_kses_post( '<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br/> !!login_url!! </p>
 		<p>Account: !!display_name!! (!!user_email!!)</p>', 'paid-memberships-pro' );
 	}
 
@@ -116,26 +116,26 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!subject!!' => __( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!user_login!!' => __( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => __( 'The email address of the user billing failed', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The display name of the user billing failed', 'paid-memberships-pro' ),
-			'!!membership_id!!' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!billing_name!!' => __( 'Billing Info Name', 'paid-memberships-pro' ),
-			'!!billing_street!!' => __( 'Billing Info Street', 'paid-memberships-pro' ),
-			'!!billing_street2!!' => __( 'Billing Info Street 2', 'paid-memberships-pro' ),
-			'!!billing_city!!' => __( 'Billing Info City', 'paid-memberships-pro' ),
-			'!!billing_state!!' => __( 'Billing Info State', 'paid-memberships-pro' ),
-			'!!billing_zip!!' => __( 'Billing Info Zip', 'paid-memberships-pro' ),
-			'!!billing_country!!' => __( 'Billing Info Country', 'paid-memberships-pro' ),
-			'!!billing_phone!!' => __( 'Billing Info Phone', 'paid-memberships-pro' ),
-			'!!billing_address!!' => __( 'Billing Info Complete Address', 'paid-memberships-pro' ),
-			'!!cardtype!!' => __( 'Credit Card Type', 'paid-memberships-pro' ),
-			'!!accountnumber!!' => __( 'Credit Card Number (last 4 digits)', 'paid-memberships-pro' ),
-			'!!expirationmonth!!' => __( 'Credit Card Expiration Month (mm format)', 'paid-memberships-pro' ),
-			'!!expirationyear!!' => __( 'Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
+			'!!name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user billing failed', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user billing failed', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!billing_name!!' => esc_html__( 'Billing Info Name', 'paid-memberships-pro' ),
+			'!!billing_street!!' => esc_html__( 'Billing Info Street', 'paid-memberships-pro' ),
+			'!!billing_street2!!' => esc_html__( 'Billing Info Street 2', 'paid-memberships-pro' ),
+			'!!billing_city!!' => esc_html__( 'Billing Info City', 'paid-memberships-pro' ),
+			'!!billing_state!!' => esc_html__( 'Billing Info State', 'paid-memberships-pro' ),
+			'!!billing_zip!!' => esc_html__( 'Billing Info Zip', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'Billing Info Country', 'paid-memberships-pro' ),
+			'!!billing_phone!!' => esc_html__( 'Billing Info Phone', 'paid-memberships-pro' ),
+			'!!billing_address!!' => esc_html__( 'Billing Info Complete Address', 'paid-memberships-pro' ),
+			'!!cardtype!!' => esc_html__( 'Credit Card Type', 'paid-memberships-pro' ),
+			'!!accountnumber!!' => esc_html__( 'Credit Card Number (last 4 digits)', 'paid-memberships-pro' ),
+			'!!expirationmonth!!' => esc_html__( 'Credit Card Expiration Month (mm format)', 'paid-memberships-pro' ),
+			'!!expirationyear!!' => esc_html__( 'Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro' ),
 
 		);
 	}

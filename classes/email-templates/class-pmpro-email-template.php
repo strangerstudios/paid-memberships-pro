@@ -79,12 +79,12 @@ abstract class PMPro_Email_Template {
 	 */
 	final public static function get_base_email_template_variables_with_description() {
 		$base_email_template_variables_with_description = array(
-			'!!sitename!!' => __( 'The name of the site.', 'paid-memberships-pro' ),
-			'!!siteemail!!' => __( 'The email address of the site.', 'paid-memberships-pro' ),
-			'!!site_url!!'  => __( 'The URL of the site.', 'paid-memberships-pro' ),
-			'!!levels_url!!' => __( 'The URL of the page where users can view available membership levels.', 'paid-memberships-pro' ),
-			'!!login_url!!' => __( 'The URL of the login page.', 'paid-memberships-pro' ),
-			'!!header_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
+			'!!sitename!!' => esc_html__( 'The name of the site.', 'paid-memberships-pro' ),
+			'!!siteemail!!' => esc_html__( 'The email address of the site.', 'paid-memberships-pro' ),
+			'!!site_url!!'  => esc_html__( 'The URL of the site.', 'paid-memberships-pro' ),
+			'!!levels_url!!' => esc_html__( 'The URL of the page where users can view available membership levels.', 'paid-memberships-pro' ),
+			'!!login_url!!' => esc_html__( 'The URL of the login page.', 'paid-memberships-pro' ),
+			'!!header_name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
 		);
 
 		return $base_email_template_variables_with_description;

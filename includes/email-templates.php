@@ -3,27 +3,27 @@
 // File used to setup default email templates data.
 global $pmpro_email_templates_defaults;
 
-$check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : __( 'Check', 'paid-memberships-pro' );
+$check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' );
  
 // Default email templates.
 $pmpro_email_templates_defaults = array(
 	'default' => array(
-		'subject' => __( "An email from !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __( 'Default Email', 'paid-memberships-pro'),
-		'body' => __( '!!body!!', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent when there is a general message that needs to be communicated to the site administrator.', 'paid-memberships-pro' )
+		'subject' => esc_html__( "An email from !!sitename!!", 'paid-memberships-pro' ),
+		'description' => esc_html__( 'Default Email', 'paid-memberships-pro'),
+		'body' => esc_html__( '!!body!!', 'paid-memberships-pro' ),
+		'help_text' => esc_html__( 'This email is sent when there is a general message that needs to be communicated to the site administrator.', 'paid-memberships-pro' )
 	),
 	'footer' => array(
 		'subject' => '',
-		'description' => __( 'Email Footer', 'paid-memberships-pro'),
-		'body' => __( '<p>Respectfully,<br />!!sitename!! </p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is the closing message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
+		'description' => esc_html__( 'Email Footer', 'paid-memberships-pro'),
+		'body' => wp_kses_post( '<p>Respectfully,<br />!!sitename!! </p>', 'paid-memberships-pro' ),
+		'help_text' => esc_html__( 'This is the closing message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
 	'header' => array(
 		'subject'     => '',
-		'description' => __( 'Email Header', 'paid-memberships-pro'),
-		'body' => __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
+		'description' => esc_html__( 'Email Header', 'paid-memberships-pro'),
+		'body' => wp_kses_post( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
+		'help_text' => esc_html__( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
 );
 

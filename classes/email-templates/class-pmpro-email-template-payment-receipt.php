@@ -48,7 +48,7 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Recurring Payment Receipt', 'paid-memberships-pro' );
+		return esc_html__( 'Recurring Payment Receipt', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -59,7 +59,7 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return __( 'This email is sent to the member each time a new subscription payment is made.', 'paid-memberships-pro' );
+		return esc_html__( 'This email is sent to the member each time a new subscription payment is made.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -70,7 +70,7 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return __( "Recurring payment receipt for !!sitename!! membership", 'paid-memberships-pro' );
+		return esc_html__( "Recurring payment receipt for !!sitename!! membership", 'paid-memberships-pro' );
 	}
 
 	/**
@@ -81,7 +81,7 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return __( '<p>Thank you for your membership to !!sitename!!. Below is a receipt for your most recent membership order.</p>
+		return wp_kses_post( '<p>Thank you for your membership to !!sitename!!. Below is a receipt for your most recent membership order.</p>
 
 			<p>Account: !!display_name!! (!!user_email!!)</p>
 			<p>
@@ -134,33 +134,33 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!subject!!' => __( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!user_login!!' => __( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => __( 'The email address of the user.', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!order_id!!' => __( 'The order ID.', 'paid-memberships-pro' ),
-			'!!order_total!!' => __( 'The total amount of the order.', 'paid-memberships-pro' ),
-			'!!order_date!!' => __( 'The date of the order.', 'paid-memberships-pro' ),
-			'!!order_link!!' => __( 'The URL of the order.', 'paid-memberships-pro' ),
-			'!!order_url!!' => __( 'The URL of the order.', 'paid-memberships-pro' ),
-			'!!billing_name!!' => __( 'The name of the billing contact.', 'paid-memberships-pro' ),
-			'!!billing_street!!' => __( 'The street address of the billing contact.', 'paid-memberships-pro' ),
-			'!!billing_street2!!' => __( 'The second line of the street address of the billing contact.', 'paid-memberships-pro' ),
-			'!!billing_city!!' => __( 'The city of the billing contact.', 'paid-memberships-pro' ),
-			'!!billing_state!!' => __( 'The state of the billing contact.', 'paid-memberships-pro' ),
-			'!!billing_zip!!' => __( 'The ZIP code of the billing contact.', 'paid-memberships-pro' ),
-			'!!billing_country!!' => __( 'The country of the billing contact.', 'paid-memberships-pro' ),
-			'!!billing_phone!!' => __( 'The phone number of the billing contact.', 'paid-memberships-pro' ),
-			'!!billing_address!!' => __( 'The formatted billing address.', 'paid-memberships-pro' ),
-			'!!cardtype!!' => __( 'The type of credit card used for the order.', 'paid-memberships-pro' ),
-			'!!accountnumber!!' => __( 'The last four digits of the credit card used for the order.', 'paid-memberships-pro' ),
-			'!!expirationmonth!!' => __( 'The expiration month of the credit card used for the order.', 'paid-memberships-pro' ),
-			'!!expirationyear!!' => __( 'The expiration year of the credit card used for the order.', 'paid-memberships-pro' ),
-			'!!discount_code!!' => __( 'The discount code used for the order.', 'paid-memberships-pro' ),
-			'!!membership_expiration!!' => __( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
+			'!!name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!order_id!!' => esc_html__( 'The order ID.', 'paid-memberships-pro' ),
+			'!!order_total!!' => esc_html__( 'The total amount of the order.', 'paid-memberships-pro' ),
+			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
+			'!!order_link!!' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
+			'!!order_url!!' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
+			'!!billing_name!!' => esc_html__( 'The name of the billing contact.', 'paid-memberships-pro' ),
+			'!!billing_street!!' => esc_html__( 'The street address of the billing contact.', 'paid-memberships-pro' ),
+			'!!billing_street2!!' => esc_html__( 'The second line of the street address of the billing contact.', 'paid-memberships-pro' ),
+			'!!billing_city!!' => esc_html__( 'The city of the billing contact.', 'paid-memberships-pro' ),
+			'!!billing_state!!' => esc_html__( 'The state of the billing contact.', 'paid-memberships-pro' ),
+			'!!billing_zip!!' => esc_html__( 'The ZIP code of the billing contact.', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'The country of the billing contact.', 'paid-memberships-pro' ),
+			'!!billing_phone!!' => esc_html__( 'The phone number of the billing contact.', 'paid-memberships-pro' ),
+			'!!billing_address!!' => esc_html__( 'The formatted billing address.', 'paid-memberships-pro' ),
+			'!!cardtype!!' => esc_html__( 'The type of credit card used for the order.', 'paid-memberships-pro' ),
+			'!!accountnumber!!' => esc_html__( 'The last four digits of the credit card used for the order.', 'paid-memberships-pro' ),
+			'!!expirationmonth!!' => esc_html__( 'The expiration month of the credit card used for the order.', 'paid-memberships-pro' ),
+			'!!expirationyear!!' => esc_html__( 'The expiration year of the credit card used for the order.', 'paid-memberships-pro' ),
+			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
+			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
 
 			
 
@@ -187,9 +187,9 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 		//Get discount code if it exists
 		$discount_code = "";
 		if( $order->getDiscountCode() && !empty( $order->discount_code->code ) ) {
-			$discount_code = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
+			$discount_code = "<p>" . esc_html__("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
 		} else {
-			$discount_code = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code . "</p>\n";
+			$discount_code = "<p>" . esc_html__("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code . "</p>\n";
 		}
 
 		//Get membership expiration date

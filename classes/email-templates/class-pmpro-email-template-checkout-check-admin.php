@@ -47,7 +47,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Checkout - Pay by Check (admin)', 'paid-memberships-pro' );
+		return esc_html__( 'Checkout - Pay by Check (admin)', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -58,8 +58,8 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 	 * @return string The help text.
 	 */
 	public static function get_template_description() {
-		$check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : __( 'Check', 'paid-memberships-pro' );
-		return sprintf( __('This is the membership confirmation email sent to the site administrator for every membership checkout using the "%s (Pay by Check)" gateway.', 'paid-memberships-pro' ),  $check_gateway_label );
+		$check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' );
+		return sprintf( esc_html__('This is the membership confirmation email sent to the site administrator for every membership checkout using the "%s (Pay by Check)" gateway.', 'paid-memberships-pro' ),  $check_gateway_label );
 	}
 
 	/**
@@ -70,7 +70,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return __( 'Member checkout for !!membership_level_name!! at !!sitename!!', 'paid-memberships-pro' );
+		return esc_html__( 'Member checkout for !!membership_level_name!! at !!sitename!!', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -81,9 +81,9 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 	 * @return string The default body for the email.
 	 */
 	public static function get_default_body() {
-		$check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : __( 'Check', 'paid-memberships-pro' );
+		$check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' );
 
-		return sprintf( __( '<p>There was a new member checkout at !!sitename!!.</p>
+		return sprintf( wp_kses_post( '<p>There was a new member checkout at !!sitename!!.</p>
 		
 		<p><strong>They have chosen to pay by %s.</strong></p>
 		
@@ -155,7 +155,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 		}
 
 		if( $order->getDiscountCode() ) {
-			$discount_code = "<p>" . __( "Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
+			$discount_code = "<p>" . esc_html__( "Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
 		} else {
 			$discount_code = "";
 		}
@@ -210,15 +210,15 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 
 		return array(
-			'!!subject!!' => __( 'The subject of the email.', 'paid-memberships-pro' ),
-			'!!name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!user_login!!' => __( 'The login name of the email recipient.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!confirmation_message!!' => __( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
-			'!!membership_cost!!' => __( 'The cost of the membership level.', 'paid-memberships-pro' ),
-			'!!user_email!!' => __( 'The email address of the email recipient.', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The subject of the email.', 'paid-memberships-pro' ),
+			'!!name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The login name of the email recipient.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
+			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the email recipient.', 'paid-memberships-pro' ),
 		);
 	}
 

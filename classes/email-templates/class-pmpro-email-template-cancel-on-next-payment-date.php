@@ -50,7 +50,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Cancelled Auto-Renewals', 'paid-memberships-pro' );
+		return esc_html__( 'Cancelled Auto-Renewals', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -61,7 +61,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return __( 'When a user cancels a membership with a recurring subscription, they will still have access until when their next payment would have been taken. This email is sent to the member to notify them of this change.', 'paid-memberships-pro' );
+		return esc_html__( 'When a user cancels a membership with a recurring subscription, they will still have access until when their next payment would have been taken. This email is sent to the member to notify them of this change.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -72,7 +72,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return __( 'Your payment subscription at !!sitename!! has been CANCELLED', 'paid-memberships-pro' );
+		return esc_html__( 'Your payment subscription at !!sitename!! has been CANCELLED', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -83,7 +83,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return __( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
+		return wp_kses_post( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
 		
 		<p>Account: !!display_name!! (!!user_email!!)</p>
 		<p>Membership Level: !!membership_level_name!!</p>
@@ -99,13 +99,13 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'user_login' => __( 'The user\'s username.', 'paid-memberships-pro' ),
-			'user_email' => __( 'The user\'s email address.', 'paid-memberships-pro' ),
-			'display_name' => __( 'The user\'s display name.', 'paid-memberships-pro' ),
-			'membership_id' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'membership_level_name' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'startdate' => __( 'The start date of the membership level.', 'paid-memberships-pro' ),
-			'enddate' => __( 'The end date of the membership level.', 'paid-memberships-pro' ),
+			'user_login' => esc_html__( 'The user\'s username.', 'paid-memberships-pro' ),
+			'user_email' => esc_html__( 'The user\'s email address.', 'paid-memberships-pro' ),
+			'display_name' => esc_html__( 'The user\'s display name.', 'paid-memberships-pro' ),
+			'membership_id' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'membership_level_name' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'startdate' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
+			'enddate' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' ),
 		);
 	}
 

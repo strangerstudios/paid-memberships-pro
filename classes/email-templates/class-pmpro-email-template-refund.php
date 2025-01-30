@@ -47,7 +47,7 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Refund', 'paid-memberships-pro' );
+		return esc_html__( 'Refund', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -58,7 +58,7 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return __( 'This email is sent to the member as confirmation of a refunded payment. The email is sent after your 
+		return esc_html__( 'This email is sent to the member as confirmation of a refunded payment. The email is sent after your 
 			membership site receives notification of a successful payment refund through your gateway.', 'paid-memberships-pro' );
 	}
 
@@ -70,7 +70,7 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return __( 'Order #!!order_id!! at !!sitename!! has been REFUNDED', 'paid-memberships-pro' );
+		return esc_html__( 'Order #!!order_id!! at !!sitename!! has been REFUNDED', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -81,7 +81,7 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return  __( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
+		return  wp_kses_post( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
 
 		<p>Account: !!display_name!! (!!user_email!!)</p>
 		<p>
@@ -104,28 +104,28 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!user_login!!' => __( 'The login name of the user who requested the refund.', 'paid-memberships-pro' ),
-			'!!user_email!!' => __( 'The email address of the user who requested the refund.', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The display name of the user who requested the refund.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => __( 'The ID of the membership level that was refunded.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => __( 'The name of the membership level that was refunded.', 'paid-memberships-pro' ),
-			'!!order_id!!' => __( 'The order ID of the refunded order.', 'paid-memberships-pro' ),
-			'!!order_total!!' => __( 'The total amount refunded.', 'paid-memberships-pro' ),
-			'!!order_date!!' => __( 'The date the refund was processed.', 'paid-memberships-pro' ),
-			'!!billing_name!!' => __( 'The billing name associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_street!!' => __( 'The billing street address associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_street2!!' => __( 'The billing street address line 2 associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_city!!' => __( 'The billing city associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_state!!' => __( 'The billing state associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_zip!!' => __( 'The billing zip code associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_country!!' => __( 'The billing country associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_phone!!' => __( 'The billing phone number associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!cardtype!!' => __( 'The card type used for the refunded order.', 'paid-memberships-pro' ),
-			'!!accountnumber!!' => __( 'The last four digits of the account number used for the refunded order.', 'paid-memberships-pro' ),
-			'!!expirationmonth!!' => __( 'The expiration month of the card used for the refunded order.', 'paid-memberships-pro' ),
-			'!!expirationyear!!' => __( 'The expiration year of the card used for the refunded order.', 'paid-memberships-pro' ),
-			'!!order_link!!' => __( 'The URL to the invoice for the refunded order.', 'paid-memberships-pro' ),
-			'!!order_url!!' => __( 'The URL to the invoice for the refunded order.', 'paid-memberships-pro' ),			
+			'!!user_login!!' => esc_html__( 'The login name of the user who requested the refund.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user who requested the refund.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user who requested the refund.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level that was refunded.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level that was refunded.', 'paid-memberships-pro' ),
+			'!!order_id!!' => esc_html__( 'The order ID of the refunded order.', 'paid-memberships-pro' ),
+			'!!order_total!!' => esc_html__( 'The total amount refunded.', 'paid-memberships-pro' ),
+			'!!order_date!!' => esc_html__( 'The date the refund was processed.', 'paid-memberships-pro' ),
+			'!!billing_name!!' => esc_html__( 'The billing name associated with the refunded order.', 'paid-memberships-pro' ),
+			'!!billing_street!!' => esc_html__( 'The billing street address associated with the refunded order.', 'paid-memberships-pro' ),
+			'!!billing_street2!!' => esc_html__( 'The billing street address line 2 associated with the refunded order.', 'paid-memberships-pro' ),
+			'!!billing_city!!' => esc_html__( 'The billing city associated with the refunded order.', 'paid-memberships-pro' ),
+			'!!billing_state!!' => esc_html__( 'The billing state associated with the refunded order.', 'paid-memberships-pro' ),
+			'!!billing_zip!!' => esc_html__( 'The billing zip code associated with the refunded order.', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'The billing country associated with the refunded order.', 'paid-memberships-pro' ),
+			'!!billing_phone!!' => esc_html__( 'The billing phone number associated with the refunded order.', 'paid-memberships-pro' ),
+			'!!cardtype!!' => esc_html__( 'The card type used for the refunded order.', 'paid-memberships-pro' ),
+			'!!accountnumber!!' => esc_html__( 'The last four digits of the account number used for the refunded order.', 'paid-memberships-pro' ),
+			'!!expirationmonth!!' => esc_html__( 'The expiration month of the card used for the refunded order.', 'paid-memberships-pro' ),
+			'!!expirationyear!!' => esc_html__( 'The expiration year of the card used for the refunded order.', 'paid-memberships-pro' ),
+			'!!order_link!!' => esc_html__( 'The URL to the invoice for the refunded order.', 'paid-memberships-pro' ),
+			'!!order_url!!' => esc_html__( 'The URL to the invoice for the refunded order.', 'paid-memberships-pro' ),			
 		);
 
 	}

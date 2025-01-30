@@ -47,7 +47,7 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Payment Action Required (admin)', 'paid-memberships-pro' );
+		return esc_html__( 'Payment Action Required (admin)', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -58,7 +58,7 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return __( 'This email is sent to the site administrator when an attempted membership checkout requires additional customer authentication.', 'paid-memberships-pro' );
+		return esc_html__( 'This email is sent to the site administrator when an attempted membership checkout requires additional customer authentication.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return __( "Payment action required: membership for !!user_login!! at !!sitename!!", 'paid-memberships-pro' );
+		return esc_html__( "Payment action required: membership for !!user_login!! at !!sitename!!", 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,7 +80,7 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return __( '<p>A payment at !!sitename!! for !!user_login!! requires additional customer authentication to complete.</p>
+		return wp_kses_post( '<p>A payment at !!sitename!! for !!user_login!! requires additional customer authentication to complete.</p>
 		<p>Below is a copy of the email we sent to !!user_email!! to notify them that they need to complete their payment:</p>
 		
 		<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
@@ -123,13 +123,13 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!subject!!' => __( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!user_login!!' => __( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!order_link!!' => __( 'The URL of the order.', 'paid-memberships-pro' ),
-			'!!order_url!!' => __( 'The URL of the order.', 'paid-memberships-pro' ),
-			'!!invoice_url!!' => __( 'The URL of the order. Legacy purpose', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
+			'!!name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!order_link!!' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
+			'!!order_url!!' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
+			'!!invoice_url!!' => esc_html__( 'The URL of the order. Legacy purpose', 'paid-memberships-pro' ),
 		);
 	}
 

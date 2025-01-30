@@ -170,7 +170,7 @@
 				} elseif ( ! empty ( $this->data['name'] ) ) {
 					$this->data['header_name'] = $this->data['name'];
 				} else {
-					$this->data['header_name'] = __( 'User', 'paid-memberships-pro' );
+					$this->data['header_name'] = esc_html__( 'User', 'paid-memberships-pro' );
 				}
 			}
 

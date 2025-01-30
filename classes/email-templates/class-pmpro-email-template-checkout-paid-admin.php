@@ -47,7 +47,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Checkout - Paid (admin)', 'paid-memberships-pro' );
+		return esc_html__( 'Checkout - Paid (admin)', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -58,7 +58,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 	 * @return string The help text.
 	 */
 	public static function get_template_description() {
-		return __( 'This is the membership confirmation email sent to the site administrator for every paid membership checkout on the site.', 'paid-memberships-pro' );
+		return esc_html__( 'This is the membership confirmation email sent to the site administrator for every paid membership checkout on the site.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 	 * @return string The email subject.
 	 */
 	public static function get_default_subject() {
-		return __( 'Member checkout for !!membership_level_name!! at !!sitename!!', 'paid-memberships-pro' );
+		return esc_html__( 'Member checkout for !!membership_level_name!! at !!sitename!!', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,7 +80,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return __( '<p>There was a new member checkout at !!sitename!!.</p>
+		return wp_kses_post( '<p>There was a new member checkout at !!sitename!!.</p>
 	<p>Below are details about the new membership account and a receipt for the initial membership order.</p>
 
 	<p>Account: !!display_name!! (!!user_email!!)</p>
@@ -157,7 +157,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 
 		$discount_code = '';
 		if( $order->getDiscountCode() ) {
-			$discount_code = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
+			$discount_code = "<p>" . esc_html__("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
 		}
 
 		$email_template_variables = array(
@@ -212,33 +212,33 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 
 		return array(
-			'!!subject!!' => __( 'The subject of the email.', 'paid-memberships-pro' ),
-			'!!name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!user_login!!' => __( 'The login name of the email recipient.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!confirmation_message!!' => __( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
-			'!!membership_cost!!' => __( 'The cost of the membership level.', 'paid-memberships-pro' ),
-			'!!user_email!!' => __( 'The email address of the email recipient.', 'paid-memberships-pro' ),
-			'!!membership_expiration!!' => __( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
-			'!!discount_code!!' => __( 'The discount code used for the membership level.', 'paid-memberships-pro' ),
-			'!!order_id!!' => __( 'The ID of the order.', 'paid-memberships-pro' ),
-			'!!order_date!!' => __( 'The date of the order.', 'paid-memberships-pro' ),
-			'!!order_total!!' => __( 'The total cost of the order.', 'paid-memberships-pro' ),
-			'!!billing_name!!' => __( 'Billing Info Name', 'paid-memberships-pro' ),
-			'!!billing_street!!' => __( 'Billing Info Street', 'paid-memberships-pro' ),
-			'!!billing_street2!!' => __( 'Billing Info Street 2', 'paid-memberships-pro' ),
-			'!!billing_city!!' => __( 'Billing Info City', 'paid-memberships-pro' ),
-			'!!billing_state!!' => __( 'Billing Info State', 'paid-memberships-pro' ),
-			'!!billing_zip!!' => __( 'Billing Info Zip', 'paid-memberships-pro' ),
-			'!!billing_country!!' => __( 'Billing Info Country', 'paid-memberships-pro' ),
-			'!!billing_phone!!' => __( 'Billing Info Phone', 'paid-memberships-pro' ),
-			'!!billing_address!!' => __( 'Billing Info Complete Address', 'paid-memberships-pro' ),
-			'!!cardtype!!' => __( 'Credit Card Type', 'paid-memberships-pro' ),
-			'!!accountnumber!!' => __( 'Credit Card Number (last 4 digits)', 'paid-memberships-pro' ),
-			'!!expirationmonth!!' => __( 'Credit Card Expiration Month (mm format)', 'paid-memberships-pro' ),
-			'!!expirationyear!!' => __( 'Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The subject of the email.', 'paid-memberships-pro' ),
+			'!!name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The login name of the email recipient.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
+			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the email recipient.', 'paid-memberships-pro' ),
+			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
+			'!!discount_code!!' => esc_html__( 'The discount code used for the membership level.', 'paid-memberships-pro' ),
+			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
+			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
+			'!!order_total!!' => esc_html__( 'The total cost of the order.', 'paid-memberships-pro' ),
+			'!!billing_name!!' => esc_html__( 'Billing Info Name', 'paid-memberships-pro' ),
+			'!!billing_street!!' => esc_html__( 'Billing Info Street', 'paid-memberships-pro' ),
+			'!!billing_street2!!' => esc_html__( 'Billing Info Street 2', 'paid-memberships-pro' ),
+			'!!billing_city!!' => esc_html__( 'Billing Info City', 'paid-memberships-pro' ),
+			'!!billing_state!!' => esc_html__( 'Billing Info State', 'paid-memberships-pro' ),
+			'!!billing_zip!!' => esc_html__( 'Billing Info Zip', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'Billing Info Country', 'paid-memberships-pro' ),
+			'!!billing_phone!!' => esc_html__( 'Billing Info Phone', 'paid-memberships-pro' ),
+			'!!billing_address!!' => esc_html__( 'Billing Info Complete Address', 'paid-memberships-pro' ),
+			'!!cardtype!!' => esc_html__( 'Credit Card Type', 'paid-memberships-pro' ),
+			'!!accountnumber!!' => esc_html__( 'Credit Card Number (last 4 digits)', 'paid-memberships-pro' ),
+			'!!expirationmonth!!' => esc_html__( 'Credit Card Expiration Month (mm format)', 'paid-memberships-pro' ),
+			'!!expirationyear!!' => esc_html__( 'Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro' ),
 		);
 	}
 }

@@ -421,7 +421,7 @@ function pmpro_email_templates_test_recipient($email) {
 
 //for test emails
 function pmpro_email_templates_test_body($body, $email = null) {
-	$body .= '<br /><br /><b>-- ' . __('THIS IS A TEST EMAIL', 'paid-memberships-pro') . ' --</b>';
+	$body .= '<br /><br /><b>-- ' . esc_html__('THIS IS A TEST EMAIL', 'paid-memberships-pro') . ' --</b>';
 	return $body;
 }
 
@@ -477,7 +477,7 @@ function pmpro_email_templates_email_data($data, $email) {
 
 		// Membership Information.
 		$new_data['membership_expiration'] = '';
-		$new_data["membership_change"] = __("Your membership has been cancelled.", "paid-memberships-pro");
+		$new_data["membership_change"] = esc_html__("Your membership has been cancelled.", "paid-memberships-pro");
 		if ( empty( $user->membership_level ) ) {
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 		}
@@ -490,10 +490,10 @@ function pmpro_email_templates_email_data($data, $email) {
 			}
 			if ( ! empty($user->membership_level->enddate) ) {
 				$new_data['enddate'] = date_i18n( get_option( 'date_format' ), $user->membership_level->enddate );
-				$new_data['membership_expiration'] = "<p>" . sprintf( __("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
+				$new_data['membership_expiration'] = "<p>" . sprintf( esc_html__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
 				$new_data["membership_change"] .= " " . sprintf(__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) );
 			} else if ( ! empty( $email->expiration_changed ) ) {
-				$new_data["membership_change"] .= " " . __("This membership does not expire.", "paid-memberships-pro");
+				$new_data["membership_change"] .= " " . esc_html__("This membership does not expire.", "paid-memberships-pro");
 			}
 		}
 	}

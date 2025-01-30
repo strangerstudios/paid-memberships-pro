@@ -47,7 +47,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return __( 'Membership Expired', 'paid-memberships-pro' );
+		return esc_html__( 'Membership Expired', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -58,7 +58,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return __( 'This email is sent to the member when their membership expires.', 'paid-memberships-pro' );
+		return esc_html__( 'This email is sent to the member when their membership expires.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return __( 'Your membership at !!sitename!! has ended', 'paid-memberships-pro' );
+		return esc_html__( 'Your membership at !!sitename!! has ended', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,7 +80,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return __( '<p>Your membership at !!sitename!! has ended.</p>
+		return wp_kses_post( '<p>Your membership at !!sitename!! has ended.</p>
 
 		<p>Thank you for your support.</p>
 
@@ -121,13 +121,13 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!subject!!' => __( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!user_login!!' => __( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => __( 'The email address of the user.', 'paid-memberships-pro' ),
-			'!!display_name!!' => __( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
+			'!!name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 		);
 	}
 

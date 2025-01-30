@@ -212,22 +212,22 @@ $gateway_environment = get_option( 'pmpro_gateway_environment' );
 // Returns a list of all available gateway
 function pmpro_gateways() {
 	$pmpro_gateways = array(
-		''                  => __( 'Testing Only', 'paid-memberships-pro' ),
-		'check'             => __( 'Pay by Check', 'paid-memberships-pro' ),
-		'stripe'            => __( 'Stripe', 'paid-memberships-pro' ),
-		'paypalexpress'     => __( 'PayPal Express', 'paid-memberships-pro' ),
-		'payflowpro'        => __( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
-		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
-		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
+		''                  => esc_html__( 'Testing Only', 'paid-memberships-pro' ),
+		'check'             => esc_html__( 'Pay by Check', 'paid-memberships-pro' ),
+		'stripe'            => esc_html__( 'Stripe', 'paid-memberships-pro' ),
+		'paypalexpress'     => esc_html__( 'PayPal Express', 'paid-memberships-pro' ),
+		'payflowpro'        => esc_html__( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
+		'paypalstandard'    => esc_html__( 'PayPal Standard', 'paid-memberships-pro' ),
+		'braintree'         => esc_html__( 'Braintree Payments', 'paid-memberships-pro' ),
 	);
 
 	if ( pmpro_onlyFreeLevels() ) {
-		$pmpro_gateways[''] = __( 'Default', 'paid-memberships-pro' );
+		$pmpro_gateways[''] = esc_html__( 'Default', 'paid-memberships-pro' );
 	}
 
 	$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
 	if ( ! empty( $check_gateway_label ) ) {
-		$pmpro_gateways['check'] =  esc_html( $check_gateway_label . ' (' . __( 'Pay by Check', 'paid-memberships-pro' ) . ')' );
+		$pmpro_gateways['check'] =  esc_html( $check_gateway_label . ' (' . esc_html__( 'Pay by Check', 'paid-memberships-pro' ) . ')' );
 	}
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );
@@ -249,7 +249,7 @@ $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true 
 function pmpro_cron_schedules_monthly( $schedules ) {
 	$schedules['monthly'] = array(
 		'interval' => 2635200,
-		'display' => __( 'Once a month', 'paid-memberships-pro' ),
+		'display' => esc_html__( 'Once a month', 'paid-memberships-pro' ),
 	);
 	return $schedules;
 }

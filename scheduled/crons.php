@@ -121,7 +121,7 @@ function pmpro_cron_expiration_warnings()
 				$pmproemail->sendMembershipExpiringEmail( $euser, $e->membership_id);
 
 				if ( WP_DEBUG ) {
-					error_log( sprintf( __("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
+					error_log( sprintf( esc_html__("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 		}
@@ -214,7 +214,7 @@ function pmpro_cron_credit_card_expiring_warnings() {
 				$pmproemail->sendCreditCardExpiringEmail($euser,$last_order);
 
 				if ( WP_DEBUG ) {
-					error_log( sprintf( __("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
+					error_log( sprintf( esc_html__("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 
@@ -361,7 +361,7 @@ function pmpro_cron_recurring_payment_reminders() {
 					'user_login'            => $user->user_login,
 					'sitename'              => get_option( 'blogname' ),
 					'membership_id'         => $subscription_obj->get_membership_level_id(),
-					'membership_level_name' => empty( $membership_level ) ? sprintf( __( '[Deleted level #%d]', 'pmpro-recurring-emails' ), $subscription_obj->get_membership_level_id() ) : $membership_level->name,
+					'membership_level_name' => empty( $membership_level ) ? sprintf( esc_html__( '[Deleted level #%d]', 'pmpro-recurring-emails' ), $subscription_obj->get_membership_level_id() ) : $membership_level->name,
 					'membership_cost'       => $subscription_obj->get_cost_text(),
 					'billing_amount'        => pmpro_formatPrice( $subscription_obj->get_billing_amount() ),
 					'renewaldate'           => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
