@@ -116,8 +116,14 @@ if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
 	$besecure = true;
 }    //be secure anyway since we're already checking out
 
-//action to run extra code for gateways/etc
-do_action( 'pmpro_checkout_preheader' );
+/**
+ * Action to run extra code for gateways/etc.
+ *
+ * @since TBD Added $pmpro_level parameter.
+ *
+ * @param object $pmpro_level The level being purchased.
+ */
+do_action( 'pmpro_checkout_preheader', $pmpro_level );
 
 // We set a global var for add-ons that are expecting it.
 $pmpro_show_discount_code = pmpro_show_discount_code();
@@ -423,9 +429,12 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		 * Filter whether the current checkout should continue.
 		 * Note: This will be deprecated in a future version. Use pmpro_checkout_checks, pmpro_checkout_user_creation_checks, or pmpro_checkout_order_creation_checks instead.
 		 *
+		 * @since TBD Added $pmpro_level parameter.
+		 *
 		 * @param bool $pmpro_continue_registration True if the checkout should continue.
+		 * @param object $pmpro_level The level being purchased.
 		 */
-		$pmpro_continue_registration = apply_filters( "pmpro_registration_checks", true );
+		$pmpro_continue_registration = apply_filters( "pmpro_registration_checks", true, $pmpro_level );
 		if ( ! $pmpro_continue_registration ) {
 			// If this is false, there should have been an error message set by the filter but just in case, set a generic error message.
 			pmpro_setMessage( __( 'Checkout checks failed.', 'paid-memberships-pro' ), 'pmpro_error' );
@@ -437,9 +446,12 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		/**
 		 * Filter whether this checkout should proceed to the user creation step.
 		 *
+		 * @since TBD Added $pmpro_level parameter.
+		 *
 		 * @param bool $pmpro_checkout_user_creation_checks True if the checkout should continue.
+		 * @param object $pmpro_level The level being purchased.
 		 */
-		$pmpro_checkout_user_creation_checks = apply_filters( 'pmpro_checkout_user_creation_checks', true );
+		$pmpro_checkout_user_creation_checks = apply_filters( 'pmpro_checkout_user_creation_checks', true, $pmpro_level );
 		if ( ! $pmpro_checkout_user_creation_checks ) {
 			// If this is false, there should have been an error message set by the filter but just in case, set a generic error message.
 			pmpro_setMessage( __( 'User creation checks failed.', 'paid-memberships-pro' ), 'pmpro_error' );
@@ -549,9 +561,12 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		/**
 		 * Filter whether this checkout should proceed to the order creation step.
 		 *
+		 * @since TBD Added $pmpro_level parameter.
+		 *
 		 * @param bool $pmpro_checkout_checks True if the checkout should continue.
+		 * @param object $pmpro_level The level being purchased.
 		 */
-		$pmpro_checkout_order_creation_checks = apply_filters( "pmpro_checkout_order_creation_checks", true );
+		$pmpro_checkout_order_creation_checks = apply_filters( "pmpro_checkout_order_creation_checks", true, $pmpro_level );
 		if ( ! $pmpro_checkout_order_creation_checks ) {
 			// If this is false, there should have been an error message set by the filter but just in case, set a generic error message.
 			pmpro_setMessage( __( 'Order creation checks failed.', 'paid-memberships-pro' ), 'pmpro_error' );

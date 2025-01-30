@@ -47,9 +47,9 @@
 				add_filter('pmpro_include_payment_information_fields', '__return_false');
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
-				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
-				add_action('pmpro_checkout_preheader', array('PMProGateway_paypalexpress', 'pmpro_checkout_preheader'));
+				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);				
 			}
+            add_action('pmpro_checkout_preheader', array('PMProGateway_paypalexpress', 'pmpro_checkout_preheader'));
 			add_filter( 'pmpro_process_refund_paypalexpress', array('PMProGateway_paypalexpress', 'process_refund' ), 10, 2 );
 		}
 
@@ -259,6 +259,12 @@
 				return;
 			}
 
+			// If we are completing checkout immediately, make sure we immediately submit the checkout form with a valid nonce.
+			if ( ! empty( get_option('pmpro_paypalexpress_skip_confirmation') ) ) {
+				$_REQUEST['submit-checkout'] = 1;
+				$_REQUEST['pmpro_checkout_nonce'] = wp_create_nonce( 'pmpro_checkout_nonce' );
+			}
+
 			// Set some globals for compatibility with pre-3.2 checkout page templates.
 			global $pmpro_paypal_token;
 			$pmpro_paypal_token = $pmpro_review->paypal_token;
@@ -268,7 +274,6 @@
 			if ( ! empty( $_REQUEST['confirm'] ) ) {
 				// Process the checkout form submission.
 				$_REQUEST['submit-checkout'] = 1;
-				return;
 			}
 		}
 
@@ -617,10 +622,6 @@
 			$return_url_params = array(
 				'pmpro_order' => $order->code,
 			);
-			if ( ! empty( get_option( 'pmpro_paypalexpress_skip_confirmation' ) ) ) {
-				$return_url_params['submit-checkout'] = 1;
-				$return_url_params['pmpro_checkout_nonce'] = wp_create_nonce( 'pmpro_checkout_nonce' );
-			}
 			$nvpStr .= "&ReturnUrl=" . urlencode( add_query_arg( $return_url_params, pmpro_url( 'checkout' ) ) );
 
 			$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());
@@ -826,7 +827,7 @@
 					// create email
 					$pmproemail = new PMProEmail();
 					$body = '<p>' . __( "There was a potential issue while setting the 'Profile Start Date' for a user's subscription at checkout. PayPal does not allow one to set a Profile Start Date further than 1 year out. Typically, this is not an issue, but sometimes a combination of custom code or add ons for PMPro (e.g. the Prorating or Auto-renewal Checkbox add ons) will try to set a Profile Start Date out past 1 year in order to respect an existing user's original expiration date before they checked out. The user's information is below. PMPro has allowed the checkout and simply restricted the Profile Start Date to 1 year out with a possible additional free Trial of up to 1 year. You should double check this information to determine if maybe the user has overpaid or otherwise needs to be addressed. If you get many of these emails, you should consider adjusting your custom code to avoid these situations.", 'paid-memberships-pro' ) . '</p>';
-					$body .= '<p>' . sprintf( __( 'User: %1$s<br />Email: %2$s<br />Membership Level: %3$s<br />Order #: %4$s<br />Original Profile Start Date: %5$s<br />Adjusted Profile Start Date: %6$s<br />Trial Period: %7$s<br />Trial Frequency: %8$s<br />', 'paid-memberships-pro' ), $order->user->user_nicename, $order->user->user_email, $level->name, $order->code, date( 'c', $original_start_date ), $one_year_out_date, $trial_period, $trial_frequency ) . '</p>';
+					$body .= '<p>' . sprintf( __( 'User: %1$s<br />Email: %2$s<br />Membership Level: %3$s<br />Order #: %4$s<br />Original Profile Start Date: %5$s<br />Adjusted Profile Start Date: %6$s<br />Trial Period: %7$s<br />Trial Frequency: %8$s<br />', 'paid-memberships-pro' ), $order->user->user_nicename, $order->user->user_email, $level->name, $order->code, $original_start_date , $one_year_out_date, $trial_period, $trial_frequency ) . '</p>';
 					$pmproemail->template = 'profile_start_date_limit_check';
 					$pmproemail->subject = sprintf( __( 'Profile Start Date Issue Detected and Fixed at %s', 'paid-memberships-pro' ), get_bloginfo( 'name' ) );
 					$pmproemail->data = array( 'body' => $body );

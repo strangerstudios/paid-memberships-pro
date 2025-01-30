@@ -525,8 +525,8 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 							<?php
 						}
-					} elseif ( $location !== 'widget' && ( $action === 'reset_pass' || ( $action === 'rp' && in_array( $_REQUEST['login'], array( 'invalidkey', 'expiredkey' ) ) ) ) ) {
-						// Reset password form.
+  			  } elseif ( $location !== 'widget' && ( $action === 'reset_pass' || ( $action === 'rp' && isset( $_REQUEST['error'] ) && in_array( $_REQUEST['error'], array( 'invalidkey', 'expiredkey' ) ) ) ) ) {
+					// Reset password form.
 						?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card pmpro_lost_password_wrap', 'pmpro_lost_password_wrap' ) ); ?>">
 							<?php

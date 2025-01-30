@@ -2595,7 +2595,11 @@ function pmpro_are_any_visible_levels() {
 }
 
 /**
- * Get level at checkout and place into $pmpro_level global.
+ * Get level at checkout.
+ * 
+ * This function is only meant to be called once during checkout. Afterwards, the
+ * checkout level object should be passed to relevent hooks/filters.
+ *
  * If no level is passed or found in the URL parameters, global vars,
  * or in the post options, then this will return the first level found.
  *
@@ -2606,16 +2610,6 @@ function pmpro_are_any_visible_levels() {
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
-
-	static $function_cache = array();
-
-	// Check if we have a cached value to use.
-	$cache_key = md5( serialize( array( $level_id, $discount_code ) ) );
-	if ( array_key_exists( $cache_key, $function_cache ) ) {
-		// Set the global and return the cached value.
-		$pmpro_level = $function_cache[ $cache_key ];
-		return $pmpro_level;
-	}
 
 	// Reset $pmpro_level global.
 	$pmpro_level = null;
@@ -2702,11 +2696,6 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
-
-	// Cache the result for future use if this is a "top level" call to this function.
-	if ( ! doing_filter( 'pmpro_checkout_level' ) ) {
-		$function_cache[ $cache_key ] = $pmpro_level;
-	}
 
 	return $pmpro_level;
 }
@@ -3063,6 +3052,12 @@ function pmpro_formatAddress( $name, $address1, $address2, $city, $state, $zip, 
 			$address .= ' ' . $zip;
 		}
 
+		$address .= "\n";
+	} elseif ( ! empty( $city ) ) {
+		$address .= $city;
+		if ( ! empty( $zip ) ) {
+			$address .= ' ' . $zip;
+		}
 		$address .= "\n";
 	}
 
@@ -3809,12 +3804,17 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
  * Sanitizes the passed value.
  * Default sanitizing for things like user fields.
  *
+ * @since TBD Marking the $field argument as deprecated.
+ *
  * @param array|int|null|string|stdClass $value The value to sanitize
- * @param PMPro_Field $field (optional) Field to check type.
  *
  * @return array|int|string|object     Sanitized value
  */
 function pmpro_sanitize( $value, $field = null ) {
+	if ( null !== $field ) {
+		// This argument is deprecated. User fields now have sanitization logic in the field class.
+		_deprecated_argument( __FUNCTION__, 'TBD', __( 'The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class.', 'paid-memberships-pro' ) );
+	}
 
 	if ( is_array( $value ) ) {
 
@@ -4449,7 +4449,6 @@ function pmpro_get_ip() {
 			 */
 			$address_chain = explode( ',', sanitize_text_field( $_SERVER[ $header ] ) );
 			$client_ip     = trim( $address_chain[0] );
-
 			break;
 		}
 	}
@@ -4457,14 +4456,14 @@ function pmpro_get_ip() {
 	if ( ! $client_ip ) {
 		return false;
 	}
-	
-	// Check if it's a valid IP address or not.
-	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) || ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-		return false;
-	}
 
 	// Sanitize the IP
 	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
+
+	// Check if it's a valid IPv4 or IPv6 address.
+	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) && ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		return false;
+	}
 
 	return $client_ip;
 }
@@ -4760,8 +4759,6 @@ function pmpro_set_expiration_date( $user_id, $level_id, $enddate ) {
  * @return true|WP_Error True if the file is allowed, otherwise a WP_Error object.
  */
 function pmpro_check_upload( $file_index ) {
-	global $pmpro_user_fields;
-
 	// Check if the file was uploaded.
 	if ( empty( $_FILES[ $file_index ] ) ) {
 		return new WP_Error( 'pmpro_upload_error', __( 'No file was uploaded.', 'paid-memberships-pro' ) );
@@ -4782,51 +4779,40 @@ function pmpro_check_upload( $file_index ) {
 	}
 
 	// If this is an upload for a user field, we need to perform additional checks.
-	$is_user_field = false;
-	if ( ! empty( $pmpro_user_fields ) && is_array( $pmpro_user_fields ) ) {
-		foreach ( $pmpro_user_fields as $checkout_box ) {
-			foreach ( $checkout_box as $field ) {
-				if ( $field->name == $file_index ) {
-					// This file is being uploaded for a user field.
-					$is_user_field = true;
+	$field = PMPro_Field_Group::get_field( $file_index );
+	if ( ! empty( $field) ) {
+		// First, make sure that this is a 'file' field.
+		if ( $field->type !== 'file' ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid field input.', 'paid-memberships-pro' ) );
+		}
 
-					// First, make sure that this is a 'file' field.
-					if ( $field->type !== 'file' ) {
-						return new WP_Error( 'pmpro_upload_error', __( 'Invalid field input.', 'paid-memberships-pro' ) );
-					}
+		// If there are allowed file types, check if the file is an allowed file type.
+		// It does not look like the ext property is documented anywhere, but keeping it in case sites are using it.
+		if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
+		}
 
-					// If there are allowed file types, check if the file is an allowed file type.
-					// It does not look like the ext property is documented anywhere, but keeping it in case sites are using it.
-					if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
-						return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
-					}
+		// Check the file type against the allowed types.
+		$allowed_mime_types = ! empty( $field->allowed_file_types ) ? array_map( 'sanitize_text_field', explode( ',', $field->allowed_file_types ) ) : array();
 
-					// Check the file type against the allowed types.
-					$allowed_mime_types = ! empty( $field->allowed_file_types ) ? array_map( 'sanitize_text_field', explode( ',', $field->allowed_file_types ) ) : array();
+		//Remove fullstops from the beginning of the allowed file types.
+		$allowed_mime_types = array_map( function( $type ) {
+			return ltrim( $type, '.' );
+		}, $allowed_mime_types );
 
-					//Remove fullstops from the beginning of the allowed file types.
-					$allowed_mime_types = array_map( function( $type ) {
-						return ltrim( $type, '.' );
-					}, $allowed_mime_types );
-
-					// Check the file type against the allowed types. If empty allowed mimes, assume any file upload is okay.
-					if ( ! empty( $allowed_mime_types ) && ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
-						return new WP_Error( 'pmpro_upload_file_type_error', sprintf( esc_html__( 'Invalid file type. Please try uploading the file type(s): %s', 'paid-memberships-pro' ), implode( ',' ,$allowed_mime_types ) ) );
-					}
-					
-					// Check if the file upload is too big to upload.
-					if ( $field->max_file_size > 0 ) {
-						$upload_max_file_size_in_bytes = $field->max_file_size * 1024 * 1024;
-						if ( $file['size'] > $upload_max_file_size_in_bytes ) {
-							return new WP_Error( 'pmpro_upload_file_size_error', sprintf( esc_html__( 'File size is too large for %s. Please upload files smaller than %dMB.', 'paid-memberships-pro' ), $field->label, $field->max_file_size ) );
-						}
-					}
-				}
+		// Check the file type against the allowed types. If empty allowed mimes, assume any file upload is okay.
+		if ( ! empty( $allowed_mime_types ) && ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
+			return new WP_Error( 'pmpro_upload_file_type_error', sprintf( esc_html__( 'Invalid file type. Please try uploading the file type(s): %s', 'paid-memberships-pro' ), implode( ',' ,$allowed_mime_types ) ) );
+		}
+		
+		// Check if the file upload is too big to upload.
+		if ( $field->max_file_size > 0 ) {
+			$upload_max_file_size_in_bytes = $field->max_file_size * 1024 * 1024;
+			if ( $file['size'] > $upload_max_file_size_in_bytes ) {
+				return new WP_Error( 'pmpro_upload_file_size_error', sprintf( esc_html__( 'File size is too large for %s. Please upload files smaller than %dMB.', 'paid-memberships-pro' ), $field->label, $field->max_file_size ) );
 			}
 		}
-	}
-
-	if ( ! $is_user_field ) {
+	} else {
 		/**
 		 * Filter whether a file not associated with a user field can be uploaded.
 		 *
@@ -4965,4 +4951,66 @@ function pmpro_method_defined_in_class( $object, $method_name ) {
 
     // Check if the method's declaring class is the same as the object's class.
     return $method->getDeclaringClass()->getName() === $reflection_class->getName();
+}
+
+/**
+ * Check if we can check a token order for completion.
+ *
+ * @since 3.3.3
+ *
+ * @param int $order_id The ID of the order to check.
+ * @return bool True if we can check the order for completion, false otherwise.
+ */
+function pmpro_can_check_token_order_for_completion( $order_id ) {
+	// Get the order object.
+	$order = new MemberOrder( $order_id );
+
+	// If the order does not exist, we can't check it.
+	if ( empty( $order->id ) ) {
+		return false;
+	}
+
+	// If the order is not a token order, we can't check it.
+	if ( 'token' !== $order->status ) {
+		return false;
+	}
+
+	// If the order does not have a gateway set, we can't check it.
+	if ( empty( $order->Gateway ) ) {
+		return false;
+	}
+
+	// Check if the order supports checking for completion.
+	return $order->Gateway->supports( 'check_token_orders' );
+}
+
+/**
+ * Check a token order for completion.
+ *
+ * @since 3.3.3
+ *
+ * @param int $order_id The ID of the order to check.
+ * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+ */
+function pmpro_check_token_order_for_completion( $order_id ) {
+	// Get the order object.
+	$order = new MemberOrder( $order_id );
+
+	// If the order does not exist, we can't check it.
+	if ( empty( $order->id ) ) {
+		return __( 'Order not found.', 'paid-memberships-pro' );
+	}
+
+	// If the order is not a token order, we can't check it.
+	if ( 'token' !== $order->status ) {
+		return __( 'Order is not a token order.', 'paid-memberships-pro' );
+	}
+
+	// If the order does not have a gateway set, we can't check it.
+	if ( empty( $order->Gateway ) ) {
+		return __( 'Order gateway not found.', 'paid-memberships-pro' );
+	}
+
+	// Check the order for completion.
+	return $order->Gateway->check_token_order( $order );
 }

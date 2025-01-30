@@ -383,3 +383,29 @@ function pmpro_cron_recurring_payment_reminders() {
 		$previous_days = $days;
 	}
 }
+
+/**
+ * Delete old files in wp-content/uploads/pmpro-register-helper/tmp every day.
+ */
+function pmpro_cron_delete_tmp() {
+	$upload_dir = wp_upload_dir();
+	$pmprorh_dir = $upload_dir['basedir'] . "/paid-memberships-pro/tmp/";
+
+	if(file_exists($pmprorh_dir) && $handle = opendir($pmprorh_dir))
+	{
+		while(false !== ($file = readdir($handle)))
+		{
+			$file = $pmprorh_dir . $file;
+			$filelastmodified = filemtime($file);
+			if(is_file($file) && (time() - $filelastmodified) > 3600)
+			{
+				unlink($file);
+			}
+		}
+
+		closedir($handle);
+	}
+
+	exit;
+}
+add_action( 'pmpro_cron_delete_tmp', 'pmpro_cron_delete_tmp' );

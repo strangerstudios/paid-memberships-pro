@@ -3,17 +3,19 @@
 	PMPro Report
 	Title: Logins
 	Slug: login
-	
-	For each report, add a line like:
-	global $pmpro_reports;
-	$pmpro_reports['slug'] = 'Title';
-	
-	For each report, also write two functions:
+
+	For each report, write three functions:
+	* pmpro_report_{slug}_register() to register the widget (slug and title).
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
-global $pmpro_reports;
-$pmpro_reports['login'] = __('Visits, Views, and Logins', 'paid-memberships-pro');
+function pmpro_report_login_register( $pmpro_reports ) {
+	$pmpro_reports['login'] = __( 'Visits, Views, and Logins', 'paid-memberships-pro' );
+
+	return $pmpro_reports;
+}
+
+add_filter( 'pmpro_registered_reports', 'pmpro_report_login_register' );
 
 function pmpro_report_login_widget() {
 	global $wpdb, $pmpro_reports;
@@ -167,7 +169,7 @@ function pmpro_report_login_page()
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
 		<div class="tablenav top">
-			<label for="l"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
+			<label for="l" class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
 			<select id="l" name="l" onchange="jQuery('#visits-views-logins-form').trigger('submit');" aria-label="<?php esc_attr_e( 'Select a membership level to customize this report', 'paid-memberships-pro' ); ?>">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
 				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
@@ -183,7 +185,6 @@ function pmpro_report_login_page()
 					}
 				?>
 			</select>
-			<br class="clear" />
 		</div> <!-- end tablenav -->
 	</div> <!-- end pmpro_report-filters -->
 	<?php if ( $theusers ) { ?>

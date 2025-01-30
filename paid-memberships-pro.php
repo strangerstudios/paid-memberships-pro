@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.3.1
+ * Version: 3.3.3
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.3.1' );
+define( 'PMPRO_VERSION', '3.3.3' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -46,6 +46,7 @@ require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
 require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
+require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
@@ -147,17 +148,10 @@ require_once( PMPRO_DIR . '/includes/blocks.php' ); // Set up blocks.
 // load gateway
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway.php' ); // loaded by memberorder class when needed
 
-// load payment gateway class
-if ( version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {
-	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_braintree.php' );
-}
-
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-codes.php' ); // loaded by memberorder class when needed
 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_payflowpro.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.php' );
 
 pmpro_check_for_deprecated_gateways();
 
@@ -189,7 +183,9 @@ if ( is_admin() ) {
 /*
 	Definitions
 */
-define( 'SITENAME', str_replace( '&#039;', "'", get_bloginfo( 'name' ) ) );
+if ( ! defined( 'SITENAME' ) ) {
+	define( 'SITENAME', str_replace( '&#039;', "'", get_bloginfo( 'name' ) ) );
+}
 if ( ! defined( 'SITEURL'  ) ) {
 	$urlparts = explode( '//', home_url() );
 	define( 'SITEURL', $urlparts[1] );
@@ -216,9 +212,6 @@ function pmpro_gateways() {
 		'check'             => esc_html__( 'Pay by Check', 'paid-memberships-pro' ),
 		'stripe'            => esc_html__( 'Stripe', 'paid-memberships-pro' ),
 		'paypalexpress'     => esc_html__( 'PayPal Express', 'paid-memberships-pro' ),
-		'payflowpro'        => esc_html__( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
-		'paypalstandard'    => esc_html__( 'PayPal Standard', 'paid-memberships-pro' ),
-		'braintree'         => esc_html__( 'Braintree Payments', 'paid-memberships-pro' ),
 	);
 
 	if ( pmpro_onlyFreeLevels() ) {

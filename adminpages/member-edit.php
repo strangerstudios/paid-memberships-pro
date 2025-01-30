@@ -25,11 +25,19 @@ function pmpro_member_edit_get_panels() {
 	// Add user fields panels.
 	$user_id = PMPro_Member_Edit_Panel::get_user()->ID;
 	if ( $user_id ) {
-		$profile_user_fields = pmpro_get_user_fields_for_profile( $user_id, true );
-		if ( ! empty( $profile_user_fields ) ) {
-			foreach ( $profile_user_fields as $group_name => $user_fields ) {
-				$panels[] = new PMPro_Member_Edit_Panel_User_Fields( $group_name );
+		foreach( PMPro_Field_Group::get_all() as $group ) {
+			$fields_to_display = $group->get_fields_to_display(
+				array(
+					'scope' => 'profile',
+					'user_id' => $user_id,
+				)
+			);
+	
+			if ( empty( $fields_to_display ) ) {
+				continue;
 			}
+
+			$panels[] = new PMPro_Member_Edit_Panel_User_Fields( $group->name );
 		}
 	}
 
@@ -85,7 +93,7 @@ function pmpro_member_edit_display() {
 		<?php		
 		if ( ! empty( $user->ID ) ) {
 			echo get_avatar( $user->ID, 96 );
-			echo wp_kses_post( sprintf( __( 'Edit Member: %s', 'paid-memberships-pro' ), '<strong>' . $user->display_name . '</strong>' ) );
+			echo wp_kses_post( sprintf( esc_html__( 'Edit Member: %s', 'paid-memberships-pro' ), '<strong>' . $user->display_name . '</strong>' ) );
 		} else {
 			echo esc_html_e( 'Add Member', 'paid-memberships-pro' );
 		}

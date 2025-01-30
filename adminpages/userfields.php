@@ -45,7 +45,7 @@
 		
 		// Assume success.
 		$msg = true;
-		$msgt = __( 'Your user field settings have been updated.', 'paid-memberships-pro' );
+		$msgt = esc_html__( 'Your user field settings have been updated.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -60,7 +60,9 @@
 	require_once( dirname(__FILE__) . '/admin_header.php' );
 
 	// Show warning if there are additional fields that are coded.
-	if ( pmpro_has_coded_user_fields() ) {
+	$num_fields_from_settings = array_sum( array_map( function ($group) { return count( $group->fields ); }, pmpro_get_user_fields_settings() ) ); // Fields from UI settings page.
+	$total_registered_fields = array_sum( array_map( function ($group) { return count( $group->get_fields() ); }, PMPro_Field_Group::get_all() ) ); // All registered fields.
+	if ( $num_fields_from_settings < $total_registered_fields ) {
 		?>
 		<div class="notice notice-warning">
 			<p><?php esc_html_e( 'This website has additional user fields that are set up with code. Coded fields cannot be edited here and will show in addition to the fields set up on this page.', 'paid-memberships-pro' ); ?></p>

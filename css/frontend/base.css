@@ -88,6 +88,15 @@
 	color: var(--pmpro--color--alert-link);
 }
 
+.pmpro_message p {
+	margin: 0 0 var(--pmpro--base--spacing--small);
+	padding: 0;
+}
+
+.pmpro_message p:last-of-type {
+	margin-bottom: 0;
+}
+
 /**
  * Form Elements
  */
@@ -174,6 +183,11 @@
 /* File-specific field type */
 .pmpro_form_field-file button {
 	margin-right: var(--pmpro--base--spacing--small);
+}
+
+.pmpro_form_field-file-preview img {
+	height: auto;
+	width: 200px;
 }
 
 /* Checkout and Billing forms */

@@ -78,7 +78,8 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function supports( $feature ) {
 		$supports = array(
 			'subscription_sync' => true,
-			'payment_method_updates' => 'individual'
+			'payment_method_updates' => 'individual',
+			'check_token_orders' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -527,10 +528,6 @@ class PMProGateway_stripe extends PMProGateway {
 				<hr />
 				<h2><?php esc_html_e( 'Other Stripe Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-			<th><?php esc_html_e( 'Stripe API Version', 'paid-memberships-pro' ); ?></th>
-			<td><code><?php echo esc_html( PMPRO_STRIPE_API_VERSION ); ?></code></td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
@@ -1615,6 +1612,7 @@ class PMProGateway_stripe extends PMProGateway {
 			if (
 				empty( $level->trial_limit ) && // Check if there is a trial period.
 				$filtered_trial_period_days === $unfiltered_trial_period_days && // Check if the trial period is the same as the filtered trial period.
+				empty( $level->profile_start_date ) && // Check if the profile start date set directly on the level is empty.
 				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
 				) {
 				// We can combine the initial payment and the recurring payment.
@@ -3369,25 +3367,14 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		// If this is already cancelled, return true.
-		if ( ! empty( $subscription->canceled_at ) ) {
-			return true;
-		}
-
-		// Make sure we get the customer for this subscription.
-		$order = new MemberOrder();
-		$order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
-
-		// No order?
-		if ( empty( $order ) ) {
-			//lets cancel anyway, but this is suspicious
-			$r = $subscription->cancel();
-
-			return true;
+		// Get the PMPro subscription.
+		$pmpro_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription->id, 'stripe', get_option( 'pmpro_gateway_environment', 'sandbox' ) );
+		if ( empty( $pmpro_subscription ) ) {
+			return false;
 		}
 
 		// Okay have an order, so get customer so we can cancel invoices too
-		$customer = $this->update_customer_at_checkout( $order );
+		$customer = $this->get_customer_for_user( $pmpro_subscription->get_user_id() );
 
 		// Get open invoices.
 		$invoices = Stripe_Invoice::all(['customer' => $customer->id, 'status' => 'open']);
@@ -3405,12 +3392,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 			// Sometimes we don't want to cancel the local membership when Stripe sends its webhook.
 			if ( $preserve_local_membership ) {
-				$this->ignoreCancelWebhookForThisSubscription( $subscription->id, $order->user_id );
+				$this->ignoreCancelWebhookForThisSubscription( $subscription->id, $pmpro_subscription->get_user_id() );
 			}
 
 			// Cancel
 			$r = $subscription->cancel();
-
 			return true;
 		} catch ( \Throwable $e ) {
 			return false;
@@ -3779,6 +3765,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$params = array(
 			'customer'               => $order->stripe_customer->id,
 			'payment_method'         => $order->payment_method_id,
+			'payment_method_types'   => array( 'card' ),
 			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
@@ -3899,6 +3886,94 @@ class PMProGateway_stripe extends PMProGateway {
 		$order->saveOrder();
 
 		return $success;
+	}
+
+	/**
+	 * Check whether the payment for a token order has been completed. If so, process the order.
+	 *
+	 * @param MemberOrder $order The order object to check.
+	 * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+	 */
+	function check_token_order( $order ) {
+		// If this is not a token order, bail.
+		if ( 'token' !== $order->status ) {
+			return __( 'This is not a token order.', 'paid-memberships-pro' );
+		}
+
+		// Get the checkout session ID for this order.
+		$checkout_session_id = get_pmpro_membership_order_meta( $order->id, 'stripe_checkout_session_id', true );
+		if ( empty( $checkout_session_id ) ) {
+			return __( 'No checkout session ID found.', 'paid-memberships-pro' );
+		}
+
+		// Get the checkout session from Stripe.
+		try {
+			$checkout_session = Stripe_Checkout_Session::retrieve( $checkout_session_id );
+		} catch ( Stripe\Error\Base $e ) {
+			return __( 'Could not retrieve checkout session: ', 'paid-memberships-pro' ) . $e->getMessage();
+		} catch ( \Throwable $e ) {
+			return __( 'Could not retrieve checkout session: ', 'paid-memberships-pro' ) . $e->getMessage();
+		} catch ( \Exception $e ) {
+			return __( 'Could not retrieve checkout session: ', 'paid-memberships-pro' ) . $e->getMessage();
+		}
+
+		// If the checkout session is pending, this is a delayed notification payment method. We don't handle this yet. Bail.
+		if ( 'pending' === $checkout_session->payment_status ) {
+			return __( 'Payment is still pending.', 'paid-memberships-pro' );
+		}
+
+		// If the checkout session is not paid, bail.
+		if ( 'paid' !== $checkout_session->payment_status ) {
+			return __( 'Checkout session has not yet been completed.', 'paid-memberships-pro' );
+		}
+
+		// The order has been paid. Get the payment and subscription IDs.
+		if ( $checkout_session->mode === 'payment' ) {
+			// User purchased a one-time payment level. Assign the charge ID to the order.
+			try {
+				$payment_intent_args = array(
+					'id'     => $checkout_session->payment_intent,
+					'expand' => array(
+						'payment_method',
+						'latest_charge',
+					),
+				);
+				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+				$order->payment_transaction_id = $payment_intent->latest_charge->id;
+			} catch ( \Stripe\Error\Base $e ) {
+				// Could not get payment intent. We just won't set a payment transaction ID.
+			}
+		} elseif ( $checkout_session->mode === 'subscription' ) {
+			// User purchased a subscription. Assign the subscription ID invoice ID to the order.
+			$order->subscription_transaction_id = $checkout_session->subscription;
+			try {
+				$subscription_args = array(
+					'id'     => $checkout_session->subscription,
+					'expand' => array(
+						'latest_invoice',
+						'default_payment_method',
+					),
+				);
+				$subscription = \Stripe\Subscription::retrieve( $subscription_args );
+				if ( ! empty( $subscription->latest_invoice->id ) ) {
+					$order->payment_transaction_id = $subscription->latest_invoice->id;
+				}
+			} catch ( \Stripe\Error\Base $e ) {
+				// Could not get invoices. We just won't set a payment transaction ID.
+			}
+		}
+
+		// Update the amounts paid.
+		$currency = pmpro_get_currency();
+		$currency_unit_multiplier = pow( 10, intval( $currency['decimals'] ) );
+
+		$order->total    = (float) $checkout_session->amount_total / $currency_unit_multiplier;
+		$order->subtotal = (float) $checkout_session->amount_subtotal / $currency_unit_multiplier;
+		$order->tax      = (float) $checkout_session->total_details->amount_tax / $currency_unit_multiplier;
+
+		// Complete the checkout.
+		pmpro_pull_checkout_data_from_order( $order );
+ 		return pmpro_complete_async_checkout( $order );
 	}
 
 	/**
