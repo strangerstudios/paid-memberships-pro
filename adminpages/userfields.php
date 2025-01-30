@@ -45,7 +45,7 @@
 		
 		// Assume success.
 		$msg = true;
-		$msgt = __( 'Your user field settings have been updated.', 'paid-memberships-pro' );
+		$msgt = esc_html__( 'Your user field settings have been updated.', 'paid-memberships-pro' );
 	}
 
 	/**

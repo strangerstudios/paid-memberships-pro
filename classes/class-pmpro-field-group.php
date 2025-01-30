@@ -77,7 +77,7 @@ class PMPro_Field_Group {
 		// If no label is provided, use the name.
 		if ( empty( $label ) ) {
 			if ( $name === 'checkout_boxes' ) {
-				apply_filters( 'pmpro_default_field_group_label', __( 'More Information','paid-memberships-pro' ) );
+				apply_filters( 'pmpro_default_field_group_label', esc_html__( 'More Information','paid-memberships-pro' ) );
 			} else {
 				$label = ucwords( str_replace( '_', ' ', $name ) );
 			}
@@ -263,6 +263,15 @@ class PMPro_Field_Group {
 		// Get the user ID.
 		$user_id = empty( $args['user_id'] ) ? get_current_user_id() : $args['user_id'];
 
+		// Get the checkout level if this is the checkout scope.
+		if ( 'checkout' === $args['scope'] ) {
+			$checkout_level = pmpro_getLevelAtCheckout();
+			if ( empty( $checkout_level->id ) ) {
+				// If we don't have a checkout level, we can't show any fields.
+				return array();
+			}
+		}
+
 		// Get a list of the fields that should be displayed.
 		$fields_to_display = array();
 		foreach ( $fields as $field ) {
@@ -275,13 +284,7 @@ class PMPro_Field_Group {
 				}
 
 				// Check if this field is for the level being purchased.
-				// Get the checkout level.
-				$checkout_level = pmpro_getLevelAtCheckout();
-				$chekcout_level_id = ! empty( $checkout_level->id ) ? (int)$checkout_level->id : NULL;
-				if ( empty( $chekcout_level_id ) ) {
-					continue;
-				}
-				if ( ! empty( $field->levels ) && ! in_array( (int) $chekcout_level_id, $field->levels, true ) ) {
+				if ( ! empty( $field->levels ) && ! in_array( (int) $checkout_level->id, $field->levels, true ) ) {
 					continue;
 				}
 			} else {

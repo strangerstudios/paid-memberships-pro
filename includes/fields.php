@@ -86,16 +86,16 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 		'name'                       => ucwords( $name ),
 		'singular_name'              => ucwords( $name ),
 		'menu_name'                  => ucwords( $name_plural ),
-		'search_items'               => sprintf( __( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'popular_items'              => sprintf( __( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'all_items'                  => sprintf( __( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'edit_item'                  => sprintf( __( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'update_item'                => sprintf( __( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'add_new_item'               => sprintf( __( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'new_item_name'              => sprintf( __( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'paid-memberships-pro' ), $name_plural ),
-		'add_or_remove_items'        => sprintf( __( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
-		'choose_from_most_used'      => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
+		'search_items'               => sprintf( esc_html__( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'popular_items'              => sprintf( esc_html__( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'all_items'                  => sprintf( esc_html__( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'edit_item'                  => sprintf( esc_html__( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'update_item'                => sprintf( esc_html__( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'add_new_item'               => sprintf( esc_html__( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'new_item_name'              => sprintf( esc_html__( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'separate_items_with_commas' => sprintf( esc_html__( 'Separate %s with commas', 'paid-memberships-pro' ), $name_plural ),
+		'add_or_remove_items'        => sprintf( esc_html__( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
+		'choose_from_most_used'      => sprintf( esc_html__( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
 	);
 
 	$pmpro_user_taxonomy_args = array(
@@ -155,11 +155,8 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 
 /**
  * Get a field group by name.
- *
- * @deprecated TBD Use PMPro_Field_Group::get instead.
  */
 function pmpro_get_field_group_by_name( $name ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_Field_Group::get' );
 	return PMPro_Field_Group::get( $name );
 }
 
@@ -231,10 +228,10 @@ function pmpro_display_fields_in_group( $group, $scope = 'checkout' ) {
 		'after_tos_fields',
 	);
 	if ( ! in_array( $group, $valid_groups ) ) {
-		_doing_it_wrong( __FUNCTION__, sprintf( __( 'The group %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $group, __FUNCTION__ ), '2.9.3' );
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The group %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $group, __FUNCTION__ ), '2.9.3' );
 	}
 	if ( $scope !== 'checkout' ) {
-		_doing_it_wrong( __FUNCTION__, sprintf( __( 'The scope %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $scope, __FUNCTION__ ), '2.9.3' );
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The scope %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $scope, __FUNCTION__ ), '2.9.3' );
 	}
 
     // Get the field group.
@@ -414,10 +411,10 @@ function pmpro_checkout_user_creation_checks_user_fields( $okay ) {
 		$pmpro_error_fields = array_merge((array)$pmpro_error_fields, $required);
 
 		if( count( $required ) == 1 ) {
-			$pmpro_msg = sprintf( __( 'The %s field is required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( esc_html__( 'The %s field is required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		} else {
-			$pmpro_msg = sprintf( __( 'The %s fields are required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( esc_html__( 'The %s fields are required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		}
 
@@ -518,10 +515,10 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 		$pmpro_error_fields = array_merge((array)$pmpro_error_fields, $required);
 
 		if( count( $required ) == 1 ) {
-			$pmpro_msg = sprintf( __( 'The %s field is required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( esc_html__( 'The %s field is required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		} else {
-			$pmpro_msg = sprintf( __( 'The %s fields are required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( esc_html__( 'The %s fields are required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		}
 
@@ -778,7 +775,7 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 	// check whether the user login variable contains something useful
 	if (empty($user_id)) {		
 
-		pmpro_setMessage( __( 'Unable to add/update user fields for this member', 'paid-memberships-pro' ), 'pmpro_error' );
+		pmpro_setMessage( esc_html__( 'Unable to add/update user fields for this member', 'paid-memberships-pro' ), 'pmpro_error' );
 
 		return false;
 	}
@@ -913,7 +910,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 			//add to bottom of email
 			$field_groups = PMPro_Field_Group::get_all();
 			if ( ! empty( $field_groups ) ) {
-				$fields_content = "<p>" . __( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
+				$fields_content = "<p>" . esc_html__( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
 				$added_field = false;
 				// Loop through all the field groups.
 				foreach( $field_groups as $group_name => $group ) {
@@ -1013,7 +1010,7 @@ function pmpro_get_field_html( $field = null ) {
 function pmpro_get_user_fields_settings() {
     $default_user_fields_settings = array(
         (object) array(
-            'name' => __( 'More Information', 'paid-memberships-pro' ),
+            'name' => esc_html__( 'More Information', 'paid-memberships-pro' ),
             'checkout' => 'yes',
             'profile' => 'yes',
             'description' => '',

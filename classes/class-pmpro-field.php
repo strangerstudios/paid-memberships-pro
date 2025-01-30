@@ -609,7 +609,7 @@ class PMPro_Field {
 	 */
 	function get_value_from_request() {
 		if ( isset( $_REQUEST[ $this->name ] ) ) {
-			$value = $_REQUEST[$this->name];
+			$value = $_REQUEST[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		} elseif ( isset( $_REQUEST[ $this->name . '_checkbox' ] ) && $this->type == 'checkbox' ) {
 			// Empty checkbox.
 			$value = 0;
@@ -618,16 +618,16 @@ class PMPro_Field {
 			$value = array();
 		} elseif ( isset( $_FILES[$this->name] ) && $this->type == 'file' ) {
 			// File field.
-			$value = $_FILES[$this->name]['name'];
+			$value = $_FILES[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}  elseif ( isset( $_SESSION[$this->name] ) ) {
 			// Value stored in session.
 			if ( is_array( $_SESSION[$this->name] ) && isset( $_SESSION[$this->name]['name'] ) ) {
 				// File field in session.
-				$_FILES[$this->name] = $_SESSION[$this->name];
-				$value = $_SESSION[$this->name]['name'];
+				$_FILES[$this->name] = $_SESSION[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$value = $_SESSION[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			} else {
 				// Other field in session.
-				$value = $_SESSION[$this->name];
+				$value = $_SESSION[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			}
 
 			// Clean up session.
@@ -816,7 +816,7 @@ class PMPro_Field {
 		{
 			// Make sure file was uploaded.
 			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-				pmpro_setMessage( sprintf( __( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
+				pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
 				return false;
 			}
 
@@ -1009,7 +1009,7 @@ class PMPro_Field {
 					$this->select2options = 'placeholder: "' . esc_attr($this->placeholder) . '"';
 				}
 			} else {
-				$r .= 'placeholder="' . __('Choose one or more.', 'paid-memberships-pro') . '" ';
+				$r .= 'placeholder="' . esc_html__('Choose one or more.', 'paid-memberships-pro') . '" ';
 			}
 			if(!empty($this->class))
 				$r .= 'class="' . esc_attr( $this->class ) . '" ';
@@ -1175,13 +1175,13 @@ class PMPro_Field {
 					if ( $this->allow_delete === true || 
 						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options' ) )
 					) {
-						$r_beginning .= '<button class="button is-destructive pmpro_btn pmpro_btn-delete" id="pmpro_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Delete', 'paid-memberships-pro' ) . '</button>';
+						$r_beginning .= '<button class="button is-destructive pmpro_btn pmpro_btn-delete" id="pmpro_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . esc_html__( 'Delete', 'paid-memberships-pro' ) . '</button>';
 					}
 				}
 
 				if( empty( $this->readonly ) ) {
-					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-secondary" id="pmpro_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Replace', 'paid-memberships-pro' ) . '</button>';
-					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-cancel" id="pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
+					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-secondary" id="pmpro_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . esc_html__( 'Replace', 'paid-memberships-pro' ) . '</button>';
+					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-cancel" id="pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</button>';
 					$r_beginning .= '<input id="pmpro_delete_file_' . esc_attr( $this->name ) . '_field" name="pmpro_delete_file_' . esc_attr( $this->name ) . '_field" type="hidden" value="0" />';
 				}
 				$r_beginning .= '</div>';
@@ -1670,7 +1670,7 @@ class PMPro_Field {
 				}
 				break;
 			case 'checkbox':
-				$output = $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
+				$output = $value ? esc_html__( 'Yes', 'paid-memberships-pro' ) : esc_html__( 'No', 'paid-memberships-pro' );
 				break;
 			case 'number':
 					// Make sure that the value is a number.
@@ -1700,9 +1700,9 @@ class PMPro_Field {
 			case 'file':
 				// Validate the value.
 				if ( empty( $value ) ) {
-					$output = __( 'No file uploaded.', 'paid-memberships-pro' );
+					$output = esc_html__( 'No file uploaded.', 'paid-memberships-pro' );
 				} elseif ( ! is_array( $value ) || empty( $value['fullurl'] ) ) {
-					$output = __( 'Invalid file data.', 'paid-memberships-pro' );
+					$output = esc_html__( 'Invalid file data.', 'paid-memberships-pro' );
 				} else {
 					// We have a file. Determine how to display it.
 					$file_type = wp_check_filetype($value['fullurl']);
