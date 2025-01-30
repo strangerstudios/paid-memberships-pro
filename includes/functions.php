@@ -5037,7 +5037,7 @@ function pmpro_check_token_order_for_completion( $order_id ) {
 /**
  * Show a message on the account page for a specific membership level.
  */
-function pmpro_add_level_account_message( $level ) {
+function pmpro_display_member_account_level_message( $level ) {
 	$membership_account_message = get_pmpro_membership_level_meta( $level->id, 'membership_account_message', true );
 	if ( $membership_account_message ) {
 		?>
@@ -5047,4 +5047,4 @@ function pmpro_add_level_account_message( $level ) {
 		<?php
 	}
 }
-add_action( 'pmpro_member_account_message', 'pmpro_add_level_account_message' );
+add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );
