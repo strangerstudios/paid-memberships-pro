@@ -913,11 +913,11 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			if ( $send_change_email ) {
 				// Send an email to the user.
 				$myemail = new PMProEmail();
-				$myemail->sendCancelEmail( $user );
+				$myemail->sendCancelEmail( $user, $level_id );
 
 				// Send an email to the admin.
 				$myemail = new PMProEmail();
-				$myemail->sendCancelAdminEmail( $user );
+				$myemail->sendCancelAdminEmail( $user, $level_id );
 			}
 		} else {
 			pmpro_setMessage( __( 'Membership action not found.', 'paid-memberships-pro' ), 'pmpro_error');

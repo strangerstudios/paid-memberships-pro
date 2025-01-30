@@ -51,6 +51,33 @@ require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
 
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template.php' ); // base class for email templates
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel.php' ); // cancel email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-admin.php' ); // cancel email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change-admin.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-refund.php' ); // refund email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-refund-admin.php' ); // refund email admin template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action.php' ); // expiration email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action-admin.php' ); // expiration email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-receipt.php' ); // invoice email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-reminder.php' ); // recurring payment email reminder template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expiring.php' ); // expiring email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expired.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-credit-card-expiring.php' ); // credit card expiring email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-check.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-check-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-free.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-free-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-paid.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing.php' ); // update billing email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-admin.php' ); // update billing admin email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure.php' ); // billing failure email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure-admin.php' ); // billing failure email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php' ); //cancel auto renewals email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php' ); //cancel auto renewals admin email template
+
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
 
@@ -181,19 +208,19 @@ $gateway_environment = get_option( 'pmpro_gateway_environment' );
 // Returns a list of all available gateway
 function pmpro_gateways() {
 	$pmpro_gateways = array(
-		''                  => __( 'Testing Only', 'paid-memberships-pro' ),
-		'check'             => __( 'Pay by Check', 'paid-memberships-pro' ),
-		'stripe'            => __( 'Stripe', 'paid-memberships-pro' ),
-		'paypalexpress'     => __( 'PayPal Express', 'paid-memberships-pro' ),
+		''                  => esc_html__( 'Testing Only', 'paid-memberships-pro' ),
+		'check'             => esc_html__( 'Pay by Check', 'paid-memberships-pro' ),
+		'stripe'            => esc_html__( 'Stripe', 'paid-memberships-pro' ),
+		'paypalexpress'     => esc_html__( 'PayPal Express', 'paid-memberships-pro' ),
 	);
 
 	if ( pmpro_onlyFreeLevels() ) {
-		$pmpro_gateways[''] = __( 'Default', 'paid-memberships-pro' );
+		$pmpro_gateways[''] = esc_html__( 'Default', 'paid-memberships-pro' );
 	}
 
 	$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
 	if ( ! empty( $check_gateway_label ) ) {
-		$pmpro_gateways['check'] =  esc_html( $check_gateway_label . ' (' . __( 'Pay by Check', 'paid-memberships-pro' ) . ')' );
+		$pmpro_gateways['check'] =  esc_html( $check_gateway_label . ' (' . esc_html__( 'Pay by Check', 'paid-memberships-pro' ) . ')' );
 	}
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );
@@ -215,7 +242,7 @@ $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true 
 function pmpro_cron_schedules_monthly( $schedules ) {
 	$schedules['monthly'] = array(
 		'interval' => 2635200,
-		'display' => __( 'Once a month', 'paid-memberships-pro' ),
+		'display' => esc_html__( 'Once a month', 'paid-memberships-pro' ),
 	);
 	return $schedules;
 }

@@ -296,6 +296,10 @@ function pmpro_email_templates_send_test() {
 
 	$test_user = $current_user;
 
+
+	//test subscription object
+	$test_subscription = new PMPro_Subscription( array( 'user_id' => $test_user->ID, 'membership_level_id' => $test_user->membership_level->id, 'next_payment_date' => date( 'Y-m-d', strtotime( '+1 month' )  ) )  );
+
 	// Grab the first membership level defined as a "test level" to use
 	$all_levels = pmpro_getAllLevels( true);
 	$test_user->membership_level = array_pop( $all_levels );
@@ -365,11 +369,11 @@ function pmpro_email_templates_send_test() {
 			break;
 		case 'membership_expired';
 			$send_email = 'sendMembershipExpiredEmail';
-			$params = array($test_user);
+			$params = array($test_user, $test_order->membership_id );
 			break;
 		case 'membership_expiring';
 			$send_email = 'sendMembershipExpiringEmail';
-			$params = array($test_user);
+			$params = array( $test_user, $test_order->membership_id );
 			break;
 		case 'payment_action':
 			$send_email = 'sendPaymentActionRequiredEmail';
@@ -378,6 +382,22 @@ function pmpro_email_templates_send_test() {
 		case 'payment_action_admin':
 			$send_email = 'sendPaymentActionRequiredAdminEmail';
 			$params = array($test_user, $test_order, "http://www.example-notification-url.com/not-a-real-site");
+			break;
+		case 'refund':
+			$send_email = 'sendRefundedEmail';
+			$params = array( $test_user, $test_order );
+			break;
+		case 'refund_admin':
+			$send_email = 'sendRefundedAdminEmail';
+			$params = array( $test_user, $test_order );
+      break;
+		case 'membership_recurring':
+			$send_email = 'send_recurring_payment_reminder';
+			$params = array( $test_subscription );
+      break;
+		case 'credit_card_expiring':
+			$send_email = 'sendCreditCardExpiringEmail';
+			$params = array($test_user, $test_order,  "http://www.example-notification-url.com/not-a-real-site");
 			break;
 		default:
 			$send_email = 'sendEmail';
@@ -401,7 +421,7 @@ function pmpro_email_templates_test_recipient($email) {
 
 //for test emails
 function pmpro_email_templates_test_body($body, $email = null) {
-	$body .= '<br /><br /><b>-- ' . __('THIS IS A TEST EMAIL', 'paid-memberships-pro') . ' --</b>';
+	$body .= '<br /><br /><b>-- ' . esc_html__('THIS IS A TEST EMAIL', 'paid-memberships-pro') . ' --</b>';
 	return $body;
 }
 
@@ -457,7 +477,7 @@ function pmpro_email_templates_email_data($data, $email) {
 
 		// Membership Information.
 		$new_data['membership_expiration'] = '';
-		$new_data["membership_change"] = __("Your membership has been cancelled.", "paid-memberships-pro");
+		$new_data["membership_change"] = esc_html__("Your membership has been cancelled.", "paid-memberships-pro");
 		if ( empty( $user->membership_level ) ) {
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 		}
@@ -470,10 +490,10 @@ function pmpro_email_templates_email_data($data, $email) {
 			}
 			if ( ! empty($user->membership_level->enddate) ) {
 				$new_data['enddate'] = date_i18n( get_option( 'date_format' ), $user->membership_level->enddate );
-				$new_data['membership_expiration'] = "<p>" . sprintf( __("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
+				$new_data['membership_expiration'] = "<p>" . sprintf( esc_html__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
 				$new_data["membership_change"] .= " " . sprintf(__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) );
 			} else if ( ! empty( $email->expiration_changed ) ) {
-				$new_data["membership_change"] .= " " . __("This membership does not expire.", "paid-memberships-pro");
+				$new_data["membership_change"] .= " " . esc_html__("This membership does not expire.", "paid-memberships-pro");
 			}
 		}
 	}
