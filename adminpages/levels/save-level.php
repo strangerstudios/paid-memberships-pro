@@ -36,6 +36,12 @@ $ml_expiration_number = intval($_REQUEST['expiration_number']);
 $ml_expiration_period = sanitize_text_field($_REQUEST['expiration_period']);
 $ml_categories = array();
 
+if ( ! empty( $_REQUEST['membership_account_message'] ) ) {
+	$ml_membership_account_message = wp_kses( wp_unslash( $_REQUEST['membership_account_message'] ), $allowedposttags );
+} else {
+	$ml_membership_account_message = '';
+}
+
 //reversing disable to allow here
 if(empty($_REQUEST['disable_signups']))
 	$ml_allow_signups = 1;
@@ -141,5 +147,8 @@ if ( isset( $ml_confirmation_in_email ) ) {
 if ( ! empty( $_REQUEST['level_group'] ) ) {
 	pmpro_add_level_to_group( $saveid, (int) $_REQUEST['level_group'] );
 }
+
+// Update the Membership Account Message.
+update_pmpro_membership_level_meta( $saveid, 'membership_account_message', $ml_membership_account_message );
 
 do_action("pmpro_save_membership_level", $saveid);

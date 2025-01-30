@@ -176,6 +176,13 @@ if (!empty($temp_id)) {
 } else {
 	$confirmation_in_email = 0;
 }
+
+// Get the Membership Account Message via meta.
+if ( ! empty( $temp_id ) ) {
+	$membership_account_message = get_pmpro_membership_level_meta( $temp_id, 'membership_account_message', true );
+} else {
+	$membership_account_message = '';
+}
 ?>
 <hr class="wp-header-end">
 <?php if (!empty($level->id)) { ?>
@@ -247,6 +254,11 @@ if (!empty($page_msg)) { ?>
 						<th scope="row" valign="top"><label for="description"><?php esc_html_e('Description', 'paid-memberships-pro'); ?></label></th>
 						<td class="pmpro_description">
 							<?php wp_editor($level->description, 'description', array('textarea_rows' => 5)); ?>
+							<p class="description"><?php
+								printf( 
+									esc_html__( 'This text appears at checkout and on the pricing page if using the %s. Use it to provide a brief overview of the membership level, highlighting key features and benefits to potential members.', 'paid-memberships-pro' ),
+									'<a target="_blank" href="https://www.paidmembershipspro.com/add-ons/pmpro-advanced-levels-shortcode/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=pmpro-advanced-levels-shortcode">' . esc_html__( 'Advanced Levels Page Add On', 'paid-memberships-pro' ) . '</a>' );
+								?></p>
 						</td>
 					</tr>
 					<tr>
@@ -270,6 +282,13 @@ if (!empty($page_msg)) { ?>
 							</p>
 						</td>
 					</tr>
+					<tr>
+            			<th scope="row" valign="top"><label for="membership_account_message"><?php esc_html_e( 'Membership Account Message', 'paid-memberships-pro'); ?></label></th>
+            			<td class="pmpro_membership_account_message">
+                			<?php wp_editor( $membership_account_message, 'membership_account_message', array( 'textarea_rows' => 5 ) ); ?>
+                			<p class="description"><?php esc_html_e( 'This message appears only to members of this level in the "My Memberships" section of the account page. Use it to share benefits or link to content specific to this level.', 'paid-memberships-pro' ); ?></p>
+           				</td>
+        			</tr>
 				</tbody>
 			</table>
 			<?php

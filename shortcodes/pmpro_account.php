@@ -200,6 +200,15 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										}
 										?>
 									</ul> <!-- end pmpro_list -->
+									<?php
+										/**
+										 * Hook to add content after the default level card content.
+										 *
+										 * @since TBD
+										 * @param object $level The current level object.
+										 */
+										do_action( 'pmpro_membership_account_after_level_card_content', $level );
+									?>
 								</div> <!-- end pmpro_card_content -->
 
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
