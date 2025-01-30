@@ -257,7 +257,7 @@ if (!empty($page_msg)) { ?>
 							<p class="description"><?php
 								printf( 
 									esc_html__( 'This text appears at checkout and on the pricing page if using the %s. Use it to provide a brief overview of the membership level, highlighting key features and benefits to potential members.', 'paid-memberships-pro' ),
-									'<a href="https://www.paidmembershipspro.com/add-ons/pmpro-advanced-levels-shortcode/?utm_source=plugin&utm_medium=pmpro-level-settings&utm_campaign=xxx">' . esc_html__( 'Advanced Levels Page Add On', 'paid-memberships-pro' ) . '</a>' );
+									'<a target="_blank" href="https://www.paidmembershipspro.com/add-ons/pmpro-advanced-levels-shortcode/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=pmpro-advanced-levels-shortcode">' . esc_html__( 'Advanced Levels Page Add On', 'paid-memberships-pro' ) . '</a>' );
 								?></p>
 						</td>
 					</tr>
@@ -286,7 +286,7 @@ if (!empty($page_msg)) { ?>
             			<th scope="row" valign="top"><label for="membership_account_message"><?php esc_html_e( 'Membership Account Message', 'paid-memberships-pro'); ?></label></th>
             			<td class="pmpro_membership_account_message">
                 			<?php wp_editor( $membership_account_message, 'membership_account_message', array( 'textarea_rows' => 5 ) ); ?>
-                			<p class="description"><?php esc_html_e( 'This message appears only to members of this level in the “My Memberships” section of the account page. Use it to share details about benefits or features specific to this membership level.', 'paid-memberships-pro' ); ?></p>
+                			<p class="description"><?php esc_html_e( 'This message appears only to members of this level in the "My Memberships" section of the account page. Use it to share benefits or link to content specific to this level.', 'paid-memberships-pro' ); ?></p>
            				</td>
         			</tr>
 				</tbody>
