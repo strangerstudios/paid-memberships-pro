@@ -204,6 +204,18 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= TBD - TBD =
+* ENHANCEMENT: Added a table with the raw report data under the Membership Stats report. #3260 (@dparker1005)
+* BUG FIX: Fixed an issue where the "Signups vs. Cancellations" and "Signups vs. Expirations" reports would not display. #3260 (@dparker1005)
+* BUG FIX: Fixed an issue where reset password errors would not be handled correctly. #3262 (@mircobabini)
+* BUG FIX: Fixed an issue where the "Activate" button may not show immediately after installing an Add On on the Memberships > Add Ons page. #3255 (@MaximilianoRicoTabo, @dparker1005)
+* BUG FIX: Fixed a PHP fatal error if `pmpro_getAddons()` fails to retrieve the list of Add Ons. #3249 (@dparker1005)
+* BUG FIX: Fixed a PHP 5.6 fatal error in the admin activity email class. #3253 (@andrewlimaza)
+* BUG FIX: Fixed a styling issue when there are multiple paragraphs in a contextual message. #3250 (@kimcoleman)
+* BUG FIX: Fixed a styling issue where there may be a gap when Turnstile is enabled but not visible. #3273 (@kimcoleman)
+* BUG FIX: Fixed a potential PHP warning when building plugin action links. #3264 (@mircobabini)
+* BUG FIX: Corrected the refund policy on the license page to reflect recent changes. #3272 (@kimcoleman)
+
 = 3.3.3 - 2025-01-08 =
 * ENHANCEMENT: Added a "Recheck Payment" option for token orders on the Edit Order page to allow admins to check whether the payment has been completed and, if so, complete the corresponding checkout. This currently only works for Stripe Checkout orders. #3226 (@dparker1005)
 * ENHANCEMENT: Added the Bangladeshi Taka to the list of supported currencies. #3239 (@kimwhite)
