@@ -104,7 +104,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 			?>
 
 			<?php
-				echo '<p>' . wp_kses( __( '<strong>Need help?</strong> Your license allows you to open new tickets in our private support area. Purchases are backed by a 30 day, no questions asked refund policy.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ) . '</p>';
+				echo '<p>' . wp_kses( __( '<strong>Need help?</strong> Your license allows you to open new tickets in our private support area. Purchases are backed by a 100 day, no questions asked refund policy.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ) . '</p>';
 			?>
 
 			<?php if ( ! pmpro_license_isValid() ) { ?>
