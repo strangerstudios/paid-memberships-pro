@@ -185,6 +185,11 @@
 	margin-right: var(--pmpro--base--spacing--small);
 }
 
+.pmpro_form_field-file-preview img {
+	height: auto;
+	width: 200px;
+}
+
 /* Checkout and Billing forms */
 #pmpro_payment_information_fields .pmpro_form_fields label {
 	display: block;
