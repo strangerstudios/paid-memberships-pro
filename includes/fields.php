@@ -1058,7 +1058,7 @@ function pmpro_load_user_fields_from_settings() {
     $settings_groups = pmpro_get_user_fields_settings();
 
     foreach ( $settings_groups as $group ) {
-        $group_obj = PMPro_field_Group::add( $group->name, $group->name, $group->description );
+        $group_obj = PMPro_Field_Group::add( $group->name, $group->name, $group->description );
         
         // Figure out profile value. Change 2 settings values into 1 field value.
         if ( $group->checkout === 'yes' ) {
