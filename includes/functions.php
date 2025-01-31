@@ -3804,7 +3804,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
  * Sanitizes the passed value.
  * Default sanitizing for things like user fields.
  *
- * @since TBD Marking the $field argument as deprecated.
+ * @since 3.4 Marking the $field argument as deprecated.
  *
  * @param array|int|null|string|stdClass $value The value to sanitize
  *
@@ -3813,7 +3813,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 function pmpro_sanitize( $value, $field = null ) {
 	if ( null !== $field ) {
 		// This argument is deprecated. User fields now have sanitization logic in the field class.
-		_deprecated_argument( __FUNCTION__, 'TBD', __( 'The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class.', 'paid-memberships-pro' ) );
+		_deprecated_argument( __FUNCTION__, '3.4', __( 'The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class.', 'paid-memberships-pro' ) );
 	}
 
 	if ( is_array( $value ) ) {

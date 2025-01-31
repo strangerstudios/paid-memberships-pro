@@ -54,7 +54,7 @@ class PMPro_Field_Group {
 	/**
 	 * Add a field group.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param string $name        The name of the field group.
 	 * @param string|null $label  The label for the field group. If NULL, a cleaned version of the name will be used.
@@ -95,7 +95,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get all added field groups.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array An array of PMPro_Field_Group objects.
 	 */
@@ -112,7 +112,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get an added field group by name.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param string $name The name of the field group.
 	 * @return PMPro_Field_Group The field group object.
@@ -133,7 +133,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get the field group for a field.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param PMPro_Field $field The field object.
 	 * @return PMPro_Field_Group|null The field group object, or NULL if the field is not in a group.
@@ -160,7 +160,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get a field by name.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param string $name The name of the field.
 	 * @return PMPro_Field|null The field object, or NULL if the field is not in a group.
@@ -186,7 +186,7 @@ class PMPro_Field_Group {
 	/**
 	 * Add a field to this field group.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param PMPro_Field $field The field object to add.
 	 * @return bool True if the field was added, otherwise false.
@@ -226,7 +226,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get all fields in this field group.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array An array of PMPro_Field objects.
 	 */
@@ -246,7 +246,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get all fields to display in a specific context.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param array $args The arguments for getting the fields.
 	 */
@@ -315,7 +315,7 @@ class PMPro_Field_Group {
 	/**
 	 * Display the field group.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param array $args The arguments for displaying the fields.
 	 */
@@ -525,7 +525,7 @@ class PMPro_Field_Group {
 	/**
 	 * Save fields in a specific context.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param array $args The arguments for saving the fields.
 	 * @return bool True if the fields were saved, otherwise false.

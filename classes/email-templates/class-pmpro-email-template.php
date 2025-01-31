@@ -3,7 +3,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get all email templates.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array All email templates (template slug => email template class name).
 	 */
@@ -11,7 +11,7 @@ abstract class PMPro_Email_Template {
 		/**
 		 * Allow email templates to be registered.
 		 *
-		 * @since TBD
+		 * @since 3.4
 		 *
 		 * @param array $email_templates All email templates (template slug => email template class name).
 		 */
@@ -21,7 +21,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get an email template by its slug.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param string $template_slug The email template slug.
 	 * @return string|null The email template class name, or null if the email template is not found.
@@ -34,7 +34,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Send the email.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return bool Whether the email was sent successfully.
 	 */
@@ -44,14 +44,14 @@ abstract class PMPro_Email_Template {
 		$pmpro_email->subject  = $this->get_default_subject(); // This will be overridden if there is a subject saved in the database.
 		$pmpro_email->body     = $this->get_default_body();
 		$pmpro_email->data     = array_merge( $this->get_base_email_template_variables(), $this->get_email_template_variables() );
-		$pmpro_email->template = apply_filters_deprecated( 'pmpro_email_template', array( $this->get_template_slug() ), 'TBD', 'pmpro_email_body' );
+		$pmpro_email->template = apply_filters_deprecated( 'pmpro_email_template', array( $this->get_template_slug() ), '3.4', 'pmpro_email_body' );
 		return $pmpro_email->sendEmail();
 	}
 
 	/**
 	 * Get the base email template variables that should be available for all emails.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
@@ -73,7 +73,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get the base email template variables that should be available for all emails paired with a description of the variable.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
@@ -93,7 +93,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get the email template slug.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The email template slug.
 	 */
@@ -102,7 +102,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get the "nice name" of the email template.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The "nice name" of the email template.
 	 */
@@ -111,7 +111,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get "help text" to display to the admin when editing the email template.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
@@ -120,7 +120,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get the default subject for the email.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The default subject for the email.
 	 */
@@ -129,7 +129,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get the default body content for the email.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The default body content for the email.
 	 */
@@ -138,7 +138,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get the email template variables for the email paired with a description of the variable.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
@@ -147,7 +147,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get the email address to send the email to.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The email address to send the email to.
 	 */
@@ -156,7 +156,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get the name of the email recipient.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The name of the email recipient.
 	 */
@@ -165,7 +165,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Get the email template variables for the email.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array The email template variables for the email (key => value pairs).
 	 */

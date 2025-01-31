@@ -299,11 +299,11 @@ class PMPro_Field {
 	function __get( $name ) {
 		if ( isset( $this->$name ) ) {
 			if ( ! $this->is_valid_property( $name ) ) {
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s is not valid for the field type %s.', 'paid-memberships-pro' ), $name, $this->type ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s is not valid for the field type %s.', 'paid-memberships-pro' ), $name, $this->type ), '3.4' );
 			}
 			return $this->$name;
 		} else {
-			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s does not exist.', 'paid-memberships-pro' ), $name ), 'TBD' );
+			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s does not exist.', 'paid-memberships-pro' ), $name ), '3.4' );
 		}
 
 		return null;
@@ -318,7 +318,7 @@ class PMPro_Field {
 	 */
 	function __set( $name, $value ) {
 		if ( 'type' === $name ) {
-			_doing_it_wrong( __FUNCTION__, esc_html__( 'PMPro_Field properties should not be modified directly and may break in a future version. Instead, create a new PMPro_Field object.', 'paid-memberships-pro' ), 'TBD' );
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'PMPro_Field properties should not be modified directly and may break in a future version. Instead, create a new PMPro_Field object.', 'paid-memberships-pro' ), '3.4' );
 		}
 
 		$this->$name = $value;
@@ -341,19 +341,19 @@ class PMPro_Field {
 	function __call( $name, $arguments ) {
 		switch( $name ) {
 			case 'set':
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the $args property of the constructor when creating a new PMPro_Field object.', 'paid-memberships-pro' ), $name ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the $args property of the constructor when creating a new PMPro_Field object.', 'paid-memberships-pro' ), $name ), '3.4' );
 				break;
 			case 'saveUsersTable':
 			case 'saveTermRelationshipsTable':
 			case 'saveFile':
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the save_field_for_user method of the PMPro_Field object.', 'paid-memberships-pro' ), $name ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the save_field_for_user method of the PMPro_Field object.', 'paid-memberships-pro' ), $name ), '3.4' );
 				break;
 			case 'getHTML':
 			case 'getDependenciesJS':
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the display() method of the PMPro_Field object.', 'paid-memberships-pro' ), $name ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the display() method of the PMPro_Field object.', 'paid-memberships-pro' ), $name ), '3.4' );
 				break;
 			default:
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version.', 'paid-memberships-pro' ), $name ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version.', 'paid-memberships-pro' ), $name ), '3.4' );
 				break;
 		}
 		return call_user_func( array( $this, $name ), $arguments );
@@ -362,7 +362,7 @@ class PMPro_Field {
 	/**
 	 * Check if a property should be present for the current field type.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param string $property The property to check.
 	 * return bool Whether the property is valid for the field type.
@@ -603,7 +603,7 @@ class PMPro_Field {
 	 * Get the field value from $_REQEUST or $_SESSION.
 	 * The value will be sanitized if the field has the sanitize property set to true.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return mixed The value of the field or null if not found.
 	 */
@@ -654,7 +654,7 @@ class PMPro_Field {
 	/**
 	 * Save the field for a user.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param int $user_id The user ID to save the field for.
 	 */
@@ -1477,11 +1477,11 @@ class PMPro_Field {
 	/**
 	 * Display the field at checkout.
 	 *
-	 * @deprecated TBD Use PMPro_Field_Group::display() instead.
+	 * @deprecated 3.4 Use PMPro_Field_Group::display() instead.
 	 */
 	function displayAtCheckout()
 	{
-		_deprecated_function( __METHOD__, 'TBD', 'PMPro_Field_Group::display()' );
+		_deprecated_function( __METHOD__, '3.4', 'PMPro_Field_Group::display()' );
 		global $current_user;
 
 		if( null !== $this->get_value_from_request() ) {
@@ -1552,11 +1552,11 @@ class PMPro_Field {
 	}
 
 	/**
-	 * @deprecated TBD Use PMPro_Field_Group::display() instead.
+	 * @deprecated 3.4 Use PMPro_Field_Group::display() instead.
 	 */
 	function displayInProfile($user_id, $edit = NULL)
 	{
-		_deprecated_function( __METHOD__, 'TBD', 'PMPro_Field_Group::display()' );
+		_deprecated_function( __METHOD__, '3.4', 'PMPro_Field_Group::display()' );
 		global $current_user;
 		if(metadata_exists("user", $user_id, $this->meta_key))
 		{
@@ -1612,7 +1612,7 @@ class PMPro_Field {
 					/**
 					 * Filter whether links should be clickable, embedded, or shown as plain text.
 					 *
-					 * @since TBD
+					 * @since 3.4
 					 *
 					 * @param string $link_display_type The type of link display. Accepts 'embedded', 'clickable_link', 'clickable_label', or 'text'.
 					 * @param string $value             The value to be shown.
@@ -1821,10 +1821,10 @@ class PMPro_Field {
 	}
 
 	/**
-	 * @deprecated TBD Use PMPro_Field_Group::get_group_for_field() instead.
+	 * @deprecated 3.4 Use PMPro_Field_Group::get_group_for_field() instead.
 	 */
 	static function get_checkout_box_name_for_field( $field_name ) {
-		_deprecated_function( __METHOD__, 'TBD', 'PMPro_Field_Group::get_group_for_field()' );
+		_deprecated_function( __METHOD__, '3.4', 'PMPro_Field_Group::get_group_for_field()' );
 		$field = PMPro_Field_Group::get_field( $field_name );
 		if ( empty( $field ) ) {
 			return '';
@@ -1835,10 +1835,10 @@ class PMPro_Field {
 	}
 
 	/**
-	 * @deprecated TBD
+	 * @deprecated 3.4
 	 */
 	function was_present_on_checkout_page() {
-		_deprecated_function( __METHOD__, 'TBD' );
+		_deprecated_function( __METHOD__, '3.4' );
 		// Check if checkout box that field is in is on page.
 		$checkout_box = PMPro_Field_Group::get_group_for_field( $this );
 		if ( empty( $checkout_box ) ) {

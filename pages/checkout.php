@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Checkout
- * Version: 3.2
+ * Version: 3.4
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.2
+ * @version 3.4
  *
  * @author Paid Memberships Pro
  */
@@ -40,7 +40,7 @@ if ( empty( $default_gateway ) ) {
 	/**
 	 * Fires before the checkout form.
 	 *
-	 * @since TBD Added $pmpro_level as a parameter.
+	 * @since 3.4 Added $pmpro_level as a parameter.
 	 *
 	 * @param object $pmpro_level The PMPro Level object being purchased.
 	 */
@@ -161,7 +161,7 @@ if ( empty( $default_gateway ) ) {
 						/**
 						 * Fires after the level cost text is shown.
 						 *
-						 * @since TBD Added $pmpro_level as a parameter.
+						 * @since 3.4 Added $pmpro_level as a parameter.
 						 *
 						 * @param object $pmpro_level The PMPro Level object being purchased.
 						 */
@@ -196,7 +196,7 @@ if ( empty( $default_gateway ) ) {
 			/**
 			 * Fires after the pricing fields are shown.
 			 *
-			 * @since TBD Added $pmpro_level as a parameter.
+			 * @since 3.4 Added $pmpro_level as a parameter.
 			 *
 			 * @param object $pmpro_level The PMPro Level object being purchased.
 			 */
@@ -354,7 +354,7 @@ if ( empty( $default_gateway ) ) {
 			/**
 			 * Add additional checkout boxes to the checkout page.
 			 *
-			 * @since TBD Added $pmpro_level as a parameter.
+			 * @since 3.4 Added $pmpro_level as a parameter.
 			 *
 			 * @param object $pmpro_level The PMPro Level object being purchased.
 			 */
@@ -542,7 +542,7 @@ if ( empty( $default_gateway ) ) {
 			/**
 			 * Fires after the payment information fields on the checkout page.
 			 *
-			 * @since TBD Added $pmpro_level as a parameter.
+			 * @since 3.4 Added $pmpro_level as a parameter.
 			 *
 			 * @param object $pmpro_level The PMPro Level object being purchased.
 			 */
@@ -551,7 +551,7 @@ if ( empty( $default_gateway ) ) {
 			/**
 			 * Fires before the submit button on the checkout page.
 			 *
-			 * @since TBD Added $pmpro_level as a parameter.
+			 * @since 3.4 Added $pmpro_level as a parameter.
 			 *
 			 * @param object $pmpro_level The PMPro Level object being purchased.
 			 */
@@ -615,7 +615,7 @@ if ( empty( $default_gateway ) ) {
 		/**
 		 * Fires after the submit button on the checkout page.
 		 *
-		 * @since TBD Added $pmpro_level as a parameter.
+		 * @since 3.4 Added $pmpro_level as a parameter.
 		 *
 		 * @param object $pmpro_level The PMPro Level object being purchased.
 		 */

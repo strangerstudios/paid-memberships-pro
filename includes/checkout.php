@@ -34,14 +34,14 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 		 * to use that format in case we update this code in the future.
 		 *
 		 * @since 1.4
-		 * @deprecated TBD Set the 'profile_start_date' property on the checkout level object instead.
+		 * @deprecated 3.4 Set the 'profile_start_date' property on the checkout level object instead.
 		 *
 		 * @param string $profile_start_date The profile start date in UTC YYYY-MM-DD HH:MM:SS format.
 		 * @param MemberOrder $order         The order that the profile start date is being calculated for.
 		 *
 		 * @return string The profile start date in UTC YYYY-MM-DD HH:MM:SS format.
 		 */
-		$profile_start_date = apply_filters_deprecated( 'pmpro_profile_start_date', array( $profile_start_date, $order ), 'TBD' );
+		$profile_start_date = apply_filters_deprecated( 'pmpro_profile_start_date', array( $profile_start_date, $order ), '3.4' );
 	}
 
 	// Convert $profile_start_date to correct format.
@@ -233,7 +233,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	} elseif ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
 		// Throw a doing it wrong warning. If a discount code is being used, it should be set on the level.
 		// @TODO: Remove this in v4.0 along with references to the discount code globals. Discount codes should be set on the level object.
-		_doing_it_wrong( __FUNCTION__, __( 'Discount codes should be set on the $pmpro_level object.', 'paid-memberships-pro' ), 'TBD' );
+		_doing_it_wrong( __FUNCTION__, __( 'Discount codes should be set on the $pmpro_level object.', 'paid-memberships-pro' ), '3.4' );
 		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 	}
 

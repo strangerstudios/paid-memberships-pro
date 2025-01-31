@@ -59,7 +59,7 @@ function pmpro_translate_billing_period($period, $number = 1)
 
 /**
  * Handle translation updates from our own translation server.
- * @since TBD
+ * @since 3.4
  */
 function pmpro_check_for_translations() {
 	// Run it only on a PMPro page in the admin.

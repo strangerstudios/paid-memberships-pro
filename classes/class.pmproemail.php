@@ -874,7 +874,7 @@
 		 *
 		 * @param object $user The WordPress user object.
 		 * @return void
-		 * @since TBD
+		 * @since 3.4
 		 */
 		function send_recurring_payment_reminder( $subscription_obj = NULL ) {
 			// Bail if we don't have a subscription object.

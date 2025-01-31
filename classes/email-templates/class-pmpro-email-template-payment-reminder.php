@@ -11,7 +11,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Constructor.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
 	 * @param int $membership_id The membership level id of the membership level that expired.
@@ -23,7 +23,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Get the email template slug.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The email template slug.
 	 */
@@ -34,7 +34,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Get the "nice name" of the email template.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The "nice name" of the email template.
 	 */
@@ -45,7 +45,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Get "help text" to display to the admin when editing the email template.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
@@ -56,7 +56,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Get the default subject for the email.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The default subject for the email.
 	 */
@@ -67,7 +67,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Get the default body content for the email.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The default body content for the email.
 	 */
@@ -84,7 +84,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Get the email address to send the email to.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The email address to send the email to.
 	 */
@@ -96,7 +96,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Get the name of the email recipient.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return string The name of the email recipient.
 	 */
@@ -109,7 +109,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Get the email template variables for the email paired with a description of the variable.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
@@ -126,7 +126,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	/**
 	 * Get the email template variables for the email.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
@@ -149,7 +149,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 /**
  * Register the email template.
  *
- * @since TBD
+ * @since 3.4
  *
  * @param array $email_templates The email templates (template slug => email template class name)
  * @return array The modified email templates array.

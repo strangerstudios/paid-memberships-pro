@@ -228,7 +228,7 @@ function pmpro_get_level_ids_for_group( $group_id ) {
 
 /**
  * Get the active membership levels in a specific level group for a user.
- * @since TBD
+ * @since 3.4
  *
  * @param int $user_id The ID of the user to get the levels for.
  * @param int $group_id The ID of the group to get the levels for.

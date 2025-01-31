@@ -1012,7 +1012,7 @@ add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 
  * Cybersource was deprecated in 2.10.
  * PayPal Website Payments Pro was deprecated in 2.10.
  * Authorize.net was deprecated in 3.2.
- * PayFlow, PayPal Standard, and Braintree were deprecated in TBD.
+ * PayFlow, PayPal Standard, and Braintree were deprecated in 3.4.
  *
  * This code will add it back those gateways if it was the selected gateway.
  * In future versions, we will remove gateway code entirely.

@@ -29,12 +29,12 @@ function pmpro_add_user_field( $where, $field ) {
      * Filter the group to add the field to.
      * 
      * @since 2.9.3
-	 * @deprecated TBD
+	 * @deprecated 3.4
      * 
      * @param string $where The name of the group to add the field to.
      * @param PMPro_Field $field The field being added.
      */
-    $where = apply_filters_deprecated( 'pmpro_add_user_field_where', array( $where, $field ), 'TBD', 'pmpro_add_user_field' );
+    $where = apply_filters_deprecated( 'pmpro_add_user_field_where', array( $where, $field ), '3.4', 'pmpro_add_user_field' );
 
 	// Get the field group.
 	$field_group = PMPro_Field_Group::get( $where );
@@ -333,7 +333,7 @@ add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_after_tos_fie
  *
  * Only runs for the after_username, after_email, and after_password field groups.
  *
- * @since TBD
+ * @since 3.4
  *
  * @param int $user_id The ID of the user that was created.
  */
@@ -604,10 +604,10 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 /**
  * Show user fields in profile.
  *
- * @deprecated TBD
+ * @deprecated 3.4
  */
 function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_show_user_fields_in_profile_with_locations' );
+	_deprecated_function( __FUNCTION__, '3.4', 'pmpro_show_user_fields_in_profile_with_locations' );
 	if ( $withlocations ) {
 		return pmpro_show_user_fields_in_profile_with_locations( $user );
 	}
@@ -646,10 +646,10 @@ add_action( 'edit_user_profile', 'pmpro_show_user_fields_in_profile_with_locatio
  * Show Profile fields on the frontend "Member Profile Edit" page.
  *
  * @since 2.3
- * @deprecated TBD
+ * @deprecated 3.4
  */
 function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = false ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_show_user_fields_in_frontend_profile_with_locations' );
+	_deprecated_function( __FUNCTION__, '3.4', 'pmpro_show_user_fields_in_frontend_profile_with_locations' );
 	if ( $withlocations ) {
 		return pmpro_show_user_fields_in_frontend_profile_with_locations( $user );
 	}
@@ -833,10 +833,10 @@ function pmpro_get_user_fields_for_csv() {
  * Get user fields which are marked to show in the profile.
  * If a $user_id is passed in, get fields based on the user's level.
  *
- * @deprecated TBD Use PMPro_Field_Group::get_fields_to_display instead.
+ * @deprecated 3.4 Use PMPro_Field_Group::get_fields_to_display instead.
  */
 function pmpro_get_user_fields_for_profile( $user_id, $withlocations = false ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_Field_Group::get_fields_to_display' );
+	_deprecated_function( __FUNCTION__, '3.4', 'PMPro_Field_Group::get_fields_to_display' );
 	$profile_fields = array();
 	// Loop through all the field groups.
 	$field_groups = PMPro_Field_Group::get_all();
@@ -977,10 +977,10 @@ function pmpro_csv_columns_for_user_fields( $user, $column ) {
 /**
  * Get user fields from global.
  * @since 2.9.3
- * @deprecated TBD
+ * @deprecated 3.4
  */
 function pmpro_get_user_fields() {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.4' );
 
     global $pmpro_user_fields;
         
@@ -1146,12 +1146,12 @@ add_action( 'init', 'pmpro_load_user_fields_from_settings', 1 );
  * Check if user is adding custom user fields with code.
  *
  * @since 2.9
- * @deprecated TBD
+ * @deprecated 3.4
  *
  * @return bool True if user is adding custom user fields with code.
  */
 function pmpro_has_coded_user_fields() {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.4' );
 	global $pmprorh_registration_fields;
 
 	// Check if coded fields are being added using the PMPro Register Helper Add On active.
@@ -1169,7 +1169,7 @@ function pmpro_has_coded_user_fields() {
  * Gets the label(s) for a passed user field value.
  *
  * @since 2.11
- * @deprecated TBD Use PMProField::displayValue instead.
+ * @deprecated 3.4 Use PMProField::displayValue instead.
  *
  * @param string $field_name  The name of the field that the value belongs to.
  * @param string|array $field_value The value to get the label for.
@@ -1177,7 +1177,7 @@ function pmpro_has_coded_user_fields() {
  * @return string|array The label(s) for the passed value. Will be same type as $field_value.
  */
 function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'PMProField::displayValue' );
+	_deprecated_function( __FUNCTION__, '3.4', 'PMProField::displayValue' );
 
 	// Loop through all the field groups.
 	$field_groups = PMPro_Field_Group::get_all();
@@ -1215,12 +1215,12 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
 /**
  * Get a single user field.
  * @since 3.0
- * @deprecated TBD
+ * @deprecated 3.4
  * @param string $field_name The name of the field to get.
  * @return bool|object The field object if found, false otherwise.
  */
 function pmpro_get_user_field( $field_name ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_Field_Group::get_field' );
+	_deprecated_function( __FUNCTION__, '3.4', 'PMPro_Field_Group::get_field' );
 	$field = PMPro_Field_Group::get_field( $field_name );
 	return empty( $field ) ? false : $field;
 }

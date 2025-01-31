@@ -119,7 +119,7 @@ if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
 /**
  * Action to run extra code for gateways/etc.
  *
- * @since TBD Added $pmpro_level parameter.
+ * @since 3.4 Added $pmpro_level parameter.
  *
  * @param object $pmpro_level The level being purchased.
  */
@@ -429,7 +429,7 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		 * Filter whether the current checkout should continue.
 		 * Note: This will be deprecated in a future version. Use pmpro_checkout_checks, pmpro_checkout_user_creation_checks, or pmpro_checkout_order_creation_checks instead.
 		 *
-		 * @since TBD Added $pmpro_level parameter.
+		 * @since 3.4 Added $pmpro_level parameter.
 		 *
 		 * @param bool $pmpro_continue_registration True if the checkout should continue.
 		 * @param object $pmpro_level The level being purchased.
@@ -446,7 +446,7 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		/**
 		 * Filter whether this checkout should proceed to the user creation step.
 		 *
-		 * @since TBD Added $pmpro_level parameter.
+		 * @since 3.4 Added $pmpro_level parameter.
 		 *
 		 * @param bool $pmpro_checkout_user_creation_checks True if the checkout should continue.
 		 * @param object $pmpro_level The level being purchased.
@@ -561,7 +561,7 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		/**
 		 * Filter whether this checkout should proceed to the order creation step.
 		 *
-		 * @since TBD Added $pmpro_level parameter.
+		 * @since 3.4 Added $pmpro_level parameter.
 		 *
 		 * @param bool $pmpro_checkout_checks True if the checkout should continue.
 		 * @param object $pmpro_level The level being purchased.
