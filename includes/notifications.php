@@ -453,6 +453,67 @@ function pmpro_notification_test_site_url_match( $string ) {
 }
 
 /**
+ * Check against the WordPress options table.
+ * @param array $data Array from notification with plugin_file, comparison, and version to check. $data[0] is the option name, $data[1] is the comparison operator, and $data[2] is the value to compare against.
+ * @returns bool true if plugin is active and version comparison is true, false otherwise. *
+ */
+function pmpro_notification_test_check_option( $data, $option = NULL ) {
+
+    if ( ! is_array( $data ) ) {
+        return false;
+    }
+    
+    if ( ! isset( $data[0] ) || ! isset( $data[1] ) || ! isset( $data[2] ) ) {
+        return false;
+    }
+
+	// No option passed in, assume it's the first passthrough.
+    if ( empty( $option ) ) {
+        $option = get_option( $data[0] );
+    }
+
+    // If $option is an array, recursively check all its values.
+    if ( is_array( $option ) ) {
+        foreach ( $option as $opt ) {
+            if ( pmpro_notification_test_check_option( $data, $opt ) ) {
+                return true;
+            }
+        }
+        // If no match is found within the array, return false.
+        return false;
+    }
+
+    // Run the relevant check based on the condition passed through.
+    switch ( $data[1] ) {
+		case '=':
+        case '==':
+            return $option == $data[2];
+        case '!=':
+            return $option != $data[2];
+        case '>':
+        case '<':
+        case '>=':
+        case '<=':
+           return pmpro_int_compare( $option, $data[2], $data[1] );
+        case 'contains':
+            // Only proceed if $option is a string
+            return is_string( $option ) && strpos( $option, $data[2] ) !== false;
+        case 'notcontains':
+            // If $option is not a string and it doesn't contain $data[2], return true.
+            return ! ( is_string( $option ) && strpos( $option, $data[2] ) !== false );
+        case 'empty':
+            return empty( $option );
+        case 'notempty':
+            return ! empty( $option );
+        default:
+            return false;
+    }
+
+	// In case we reach here, let's just return false.
+	return false;
+}
+
+/**
  * Get the max notification priority allowed on this site.
  * Priority is a value from 1 to 5, or 0.
  * 0: No notifications at all.
