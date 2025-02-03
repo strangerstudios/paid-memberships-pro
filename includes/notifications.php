@@ -485,7 +485,7 @@ function pmpro_notification_test_check_option( $data, $option = NULL ) {
 
     // Run the relevant check based on the condition passed through.
     switch ( $data[1] ) {
-		case '=':
+        case '=':
         case '==':
             return $option == $data[2];
         case '!=':
