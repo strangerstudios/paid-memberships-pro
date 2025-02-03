@@ -196,7 +196,7 @@ function pmpro_report_memberships_page() {
 	}
 
 	$sqlQuery .= "WHERE mu.startdate >= '" . esc_sql( $startdate ) . "' ";
-	$sqlQuery .= "AND mu.startdate <= '" . esc_sql( $enddate ) . "' ";
+	$sqlQuery .= "AND mu.startdate <= '" . esc_sql( $enddate ) . " 23:59:59' ";
 
 	if ( ! empty( $l ) ) {
 		$sqlQuery .= 'AND mu.membership_id IN(' . $l . ') '; // $l is already escaped for SQL. See declaration.
