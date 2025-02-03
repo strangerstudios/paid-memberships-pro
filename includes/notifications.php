@@ -220,8 +220,6 @@ function pmpro_should_show_notification( $notification ) {
 					// one test failed, let's not show
 					break;
 				}
-			} else {
-				$show = false;
 			}
 		}
 	}
