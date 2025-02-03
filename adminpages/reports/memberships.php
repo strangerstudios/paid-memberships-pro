@@ -279,7 +279,8 @@ function pmpro_report_memberships_page() {
 	}
 
 	$sqlQuery .= "AND mu1.enddate >= '" . esc_sql( $startdate ) . "'
-	AND mu1.enddate < '" . esc_sql( $enddate ) . "' ";
+	AND mu1.enddate <= '" . $enddate . " 23:59:59' ";
+
 
 	// restrict by level
 	if ( ! empty( $l ) ) {
