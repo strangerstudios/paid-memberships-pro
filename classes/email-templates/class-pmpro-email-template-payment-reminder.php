@@ -102,7 +102,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	 */
 	public function get_recipient_name() {
 		$user = get_userdata( $this->subscription_obj->get_user_id() );
-		return $user->display_name;
+		return empty( $user->display_name ) ? esc_html__( 'Admin', 'paid-memberships-pro' ) : $user->display_name;
 	}
 
 

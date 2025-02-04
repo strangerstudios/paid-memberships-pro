@@ -110,7 +110,7 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	public function get_recipient_name() {
 		//get user by email
 		$user = get_user_by( 'email', $this->get_recipient_email() );
-		return $user->display_name;
+		return empty( $user->display_name ) ? esc_html__( 'Admin', 'paid-memberships-pro' ) : $user->display_name;
 	}
 
 
