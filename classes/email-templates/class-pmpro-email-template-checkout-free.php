@@ -147,7 +147,7 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 		global $wpdb;
 		$order = $this->order;
 		$user = $this->user;
-		$membership_level = pmpro_getLevel( $order->membership_id );
+		$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
 
 		$confirmation_message = '';
 		$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );

@@ -157,11 +157,12 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
+		$user = $this->user;
 		$order = $this->order;
 		$membership_level = pmpro_getLevel( $order->membership_id );
 
 		return array(
-			'subject' => $this->subject,
+			'subject' => $this->get_default_subject(),
 			'name' => $user->display_name,
 			'user_login' => $user->user_login,
 			'sitename' => get_option( 'blogname' ),

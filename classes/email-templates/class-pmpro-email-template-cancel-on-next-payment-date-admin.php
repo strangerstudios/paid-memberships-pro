@@ -139,7 +139,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email
 	 */
 	public function get_email_template_variables() {
 		$user = $this->user;
-		$level = pmpro_getLevel( $this->level_id );
+		$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $this->level_id );
 
 		$email_template_variables = array(
 			'user_login' => $user->user_login,
