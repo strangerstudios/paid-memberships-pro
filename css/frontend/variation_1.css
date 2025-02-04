@@ -718,7 +718,7 @@
 			margin-top: var(--pmpro--base--spacing--large);
 			padding-top: var(--pmpro--base--spacing--large);
 
-			:first-child {
+			> *:first-child {
 				margin-top: 0;
 				padding-top: 0;
 			}
