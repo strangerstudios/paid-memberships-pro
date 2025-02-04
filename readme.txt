@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.7.1
 Requires PHP: 5.6
-Stable tag: 3.3.99
+Stable tag: 3.3.991
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,7 +204,7 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
-= 3.4 RC1 - 2024-01-31 =
+= 3.4 RC2 - 2024-02-04 =
 * FEATURE: Now pulling localization files from https://translate.strangerstudios.com. #3211 (@andrewlimaza)
 * FEATURE: Added a new Membership Account Message level setting to show a level-specific message to members on the Membership Account page. #3271 (@andrewlimaza, @kimcoleman)
 * ENHANCEMENT: Email template variables shown when editing an email template will now be specific to the email template being edited. #3234 (@MaximilianoRicoTabo, @dparker1005)
