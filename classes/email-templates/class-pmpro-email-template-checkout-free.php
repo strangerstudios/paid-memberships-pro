@@ -82,12 +82,12 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 	 */
 	public static function get_default_body() {
 		return wp_kses_post( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
-		!!membership_level_confirmation_message!!
-		<p>Below are details about your membership account.</p>
-		
-		<p>Account: !!display_name!! (!!user_email!!)</p>
-		<p>Membership Level: !!membership_level_name!!</p>
-		!!membership_expiration!! !!discount_code!!', 'paid-memberships-pro' );
+!!membership_level_confirmation_message!!
+<p>Below are details about your membership account.</p>
+
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+!!membership_expiration!! !!discount_code!!', 'paid-memberships-pro' );
 	}
 
 	/**

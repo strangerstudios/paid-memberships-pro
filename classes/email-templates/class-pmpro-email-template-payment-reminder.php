@@ -74,11 +74,11 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	public static function get_default_body() {
 		return wp_kses_post( '<p>Thank you for your membership to !!sitename!!.</p>
 
-		<p>This is just a reminder that your !!membership_level_name!! membership will automatically renew on !!renewaldate!!.</p>
+<p>This is just a reminder that your !!membership_level_name!! membership will automatically renew on !!renewaldate!!.</p>
 
-		<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: !!display_name!! (!!user_email!!)</p>
 
-		<p>If for some reason you do not want to renew your membership you can cancel by clicking here: !!cancel_link!!</p>', 'paid-memberships-pro' );
+<p>If for some reason you do not want to renew your membership you can cancel by clicking here: !!cancel_link!!</p>', 'paid-memberships-pro' );
 	}
 
 	/**

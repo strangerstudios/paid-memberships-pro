@@ -84,22 +84,22 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 		$check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' );
 
 		return sprintf( wp_kses_post( '<p>There was a new member checkout at !!sitename!!.</p>
-		
-		<p><strong>They have chosen to pay by %s.</strong></p>
-		
-		<p>Below are details about the new membership account and a receipt for the initial membership order.</p>
-		
-		<p>Account: !!display_name!! (!!user_email!!)</p>
-		<p>Membership Level: !!membership_level_name!!</p>
-		<p>Membership Fee: !!membership_cost!!</p>
-		!!membership_expiration!! !!discount_code!!
-		
-		<p>
-		Order #!!order_id!! on !!order_date!!<br />
-		Total Billed: !!order_total!!
-		</p>
-		
-		<p>Log in to your membership account here: !!login_url!!</p>','paid-memberships-pro' ),  $check_gateway_label );
+
+<p><strong>They have chosen to pay by %s.</strong></p>
+
+<p>Below are details about the new membership account and a receipt for the initial membership order.</p>
+
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+<p>Membership Fee: !!membership_cost!!</p>
+!!membership_expiration!! !!discount_code!!
+
+<p>
+Order #!!order_id!! on !!order_date!!<br />
+Total Billed: !!order_total!!
+</p>
+
+<p>Log in to your membership account here: !!login_url!!</p>','paid-memberships-pro' ),  $check_gateway_label );
 	}
 
 	/**
