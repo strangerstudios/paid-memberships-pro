@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.3.99\n"
+"Project-Id-Version: Paid Memberships Pro 3.3.991\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-31T17:26:10+00:00\n"
+"POT-Creation-Date: 2025-02-04T18:55:37+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -313,6 +313,16 @@ msgid "Billing Street 2"
 msgstr ""
 
 #: adminpages/emailtemplates.php:134
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:148
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:148
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:112
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:136
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:111
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:126
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:117
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:129
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:113
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:151
 msgid "Admin"
 msgstr ""
 
@@ -584,6 +594,8 @@ msgstr ""
 #: includes/email-templates.php:364
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:74
 #: classes/email-templates/class-pmpro-email-template-refund.php:73
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:73
+#: classes/email-templates/class-pmpro-email-template-refund.php:72
 msgid "Order #!!order_id!! at !!sitename!! has been REFUNDED"
 msgstr ""
 
@@ -3451,6 +3463,7 @@ msgstr "Período"
 #: adminpages/reports/sales.php:649
 #: adminpages/reports/memberships.php:413
 #: adminpages/reports/sales.php:682
+#: adminpages/reports/memberships.php:414
 msgid "Filter report by discount code"
 msgstr "Filtrar informe por código de descuento"
 
@@ -3460,6 +3473,7 @@ msgstr "Filtrar informe por código de descuento"
 #: adminpages/reports/sales.php:630
 #: adminpages/reports/memberships.php:374
 #: adminpages/reports/sales.php:664
+#: adminpages/reports/memberships.php:375
 msgid "Filter report by membership level"
 msgstr "Filtrar el informe por nivel de afiliación"
 
@@ -3469,6 +3483,7 @@ msgstr "Filtrar el informe por nivel de afiliación"
 #: adminpages/reports/sales.php:623
 #: adminpages/reports/memberships.php:367
 #: adminpages/reports/sales.php:651
+#: adminpages/reports/memberships.php:368
 msgid "Select report year"
 msgstr "Seleccionar año de reporte"
 
@@ -3478,6 +3493,7 @@ msgstr "Seleccionar año de reporte"
 #: adminpages/reports/sales.php:617
 #: adminpages/reports/memberships.php:361
 #: adminpages/reports/sales.php:645
+#: adminpages/reports/memberships.php:362
 msgid "Select report month"
 msgstr "Seleccionar mes de reporte"
 
@@ -3487,6 +3503,7 @@ msgstr "Seleccionar mes de reporte"
 #: adminpages/reports/sales.php:611
 #: adminpages/reports/memberships.php:354
 #: adminpages/reports/sales.php:639
+#: adminpages/reports/memberships.php:355
 msgid "Select report type"
 msgstr "Seleccionar tipo de reporte"
 
@@ -3496,6 +3513,7 @@ msgstr "Seleccionar tipo de reporte"
 #: adminpages/reports/sales.php:602
 #: adminpages/reports/memberships.php:348
 #: adminpages/reports/sales.php:629
+#: adminpages/reports/memberships.php:349
 msgid "Select report time period"
 msgstr "Seleccionar período de tiempo del reporte"
 
@@ -3628,6 +3646,7 @@ msgstr "Renovaciones: %s"
 #: adminpages/reports/sales.php:601
 #: adminpages/reports/memberships.php:347
 #: adminpages/reports/sales.php:628
+#: adminpages/reports/memberships.php:348
 msgctxt "Dropdown label, e.g. Show Period"
 msgid "Show"
 msgstr "Mostrar"
@@ -3676,6 +3695,7 @@ msgstr "Último/a"
 #: adminpages/reports/sales.php:599
 #: adminpages/reports/memberships.php:345
 #: adminpages/reports/sales.php:626
+#: adminpages/reports/memberships.php:346
 msgid "Customize Report"
 msgstr "Personalizar informe"
 
@@ -4965,6 +4985,7 @@ msgid "Click here if you are not redirected automatically."
 msgstr "Haz clic aquí si no eres redirigido automáticamente."
 
 #: includes/email-templates.php:375
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:61
 msgid "This email is sent to the admin as confirmation of a refunded payment. The email is sent after your membership site receives notification of a successful payment refund through your gateway."
 msgstr "Este correo electrónico se envía al administrador como confirmación de un pago reembolsado. El correo electrónico se envía después de que tu sitio de membresía reciba el aviso de un reembolso de pago correcto a través de tu pasarela."
 
@@ -4987,6 +5008,7 @@ msgid "Refund (admin)"
 msgstr "Reembolso (administrador)"
 
 #: includes/email-templates.php:361
+#: classes/email-templates/class-pmpro-email-template-refund.php:61
 msgid "This email is sent to the member as confirmation of a refunded payment. The email is sent after your membership site receives notification of a successful payment refund through your gateway."
 msgstr "Este correo electrónico se envía al miembro como confirmación de un pago reembolsado. El correo electrónico se envía después de que tu sitio de membresía reciba el aviso de un reembolso de pago correcto a través de tu pasarela."
 
@@ -8582,18 +8604,21 @@ msgstr "Esta semana"
 #: adminpages/reports/sales.php:651
 #: adminpages/reports/memberships.php:419
 #: adminpages/reports/sales.php:698
+#: adminpages/reports/memberships.php:420
 msgid "All Codes"
 msgstr "Todos los códigos"
 
 #: adminpages/reports/memberships.php:407
 #: adminpages/reports/memberships.php:409
 #: adminpages/reports/memberships.php:390
+#: adminpages/reports/memberships.php:391
 msgid "All Free Levels"
 msgstr "Todos los niveles gratuitos"
 
 #: adminpages/reports/memberships.php:402
 #: adminpages/reports/memberships.php:404
 #: adminpages/reports/memberships.php:385
+#: adminpages/reports/memberships.php:386
 msgid "All Paid Levels"
 msgstr "Todos los niveles de pago"
 
@@ -11836,6 +11861,7 @@ msgstr "Ventas e ingresos (Prueba/Sandbox)"
 #: adminpages/reports/sales.php:665
 #: adminpages/reports/memberships.php:428
 #: adminpages/reports/sales.php:713
+#: adminpages/reports/memberships.php:429
 msgid "Generate Report"
 msgstr "Generar informe"
 
@@ -11851,24 +11877,29 @@ msgstr "Generar informe"
 #: adminpages/reports/memberships.php:373
 #: adminpages/reports/sales.php:644
 #: adminpages/reports/sales.php:663
+#: adminpages/reports/memberships.php:361
+#: adminpages/reports/memberships.php:374
 msgid "for"
 msgstr "para"
 
 #: adminpages/reports/memberships.php:375
 #: adminpages/reports/memberships.php:377
 #: adminpages/reports/memberships.php:358
+#: adminpages/reports/memberships.php:359
 msgid "Signups vs. Expirations"
 msgstr "Registros vs. vencimientos"
 
 #: adminpages/reports/memberships.php:374
 #: adminpages/reports/memberships.php:376
 #: adminpages/reports/memberships.php:357
+#: adminpages/reports/memberships.php:358
 msgid "Signups vs. Cancellations"
 msgstr "Registros vs. cancelaciones"
 
 #: adminpages/reports/memberships.php:373
 #: adminpages/reports/memberships.php:375
 #: adminpages/reports/memberships.php:356
+#: adminpages/reports/memberships.php:357
 msgid "Signups vs. All Cancellations"
 msgstr "Registros vs. todas las cancelaciones"
 
@@ -11879,6 +11910,7 @@ msgstr "Registros vs. todas las cancelaciones"
 #: adminpages/reports/sales.php:606
 #: adminpages/reports/memberships.php:352
 #: adminpages/reports/sales.php:633
+#: adminpages/reports/memberships.php:353
 msgid "Annual"
 msgstr "Al año"
 
@@ -11890,6 +11922,7 @@ msgstr "Al año"
 #: adminpages/reports/sales.php:605
 #: adminpages/reports/memberships.php:351
 #: adminpages/reports/sales.php:632
+#: adminpages/reports/memberships.php:352
 msgid "Monthly"
 msgstr "Al mes"
 
@@ -11900,6 +11933,7 @@ msgstr "Al mes"
 #: adminpages/reports/sales.php:604
 #: adminpages/reports/memberships.php:350
 #: adminpages/reports/sales.php:631
+#: adminpages/reports/memberships.php:351
 msgid "Daily"
 msgstr "A diario"
 
@@ -11923,6 +11957,7 @@ msgstr "Este año"
 #: adminpages/reports/memberships.php:42
 #: adminpages/reports/memberships.php:44
 #: adminpages/reports/memberships.php:479
+#: adminpages/reports/memberships.php:480
 msgid "All Cancellations"
 msgstr "Todas las cancelaciones"
 
@@ -11939,6 +11974,8 @@ msgstr "Todas las cancelaciones"
 #: adminpages/reports/sales.php:549
 #: adminpages/reports/sales.php:560
 #: adminpages/reports/sales.php:589
+#: adminpages/reports/memberships.php:483
+#: adminpages/reports/memberships.php:535
 msgid "Signups"
 msgstr "Registros"
 
@@ -11948,6 +11985,7 @@ msgstr "Registros"
 #: adminpages/reports/memberships.php:13
 #: adminpages/reports/memberships.php:358
 #: adminpages/reports/memberships.php:339
+#: adminpages/reports/memberships.php:340
 msgid "Membership Stats"
 msgstr "Estadísticas de membresía"
 
@@ -12415,6 +12453,7 @@ msgstr "ID de afiliado"
 #: adminpages/user-fields/field-settings.php:92
 #: shortcodes/pmpro_account.php:344
 #: shortcodes/pmpro_account.php:379
+#: adminpages/reports/memberships.php:534
 msgid "Date"
 msgstr "Fecha"
 
@@ -12587,6 +12626,7 @@ msgstr "Tipo de pago"
 #: adminpages/reports/sales.php:956
 #: includes/functions.php:3258
 #: shortcodes/pmpro_account.php:346
+#: adminpages/reports/memberships.php:562
 msgid "Total"
 msgstr "Total"
 
@@ -12799,6 +12839,8 @@ msgstr "Miembros cancelados"
 #: adminpages/reports/sales.php:693
 #: classes/email-templates/class-pmpro-email-template-cancel-admin.php:154
 #: classes/email-templates/class-pmpro-email-template-cancel.php:151
+#: adminpages/reports/memberships.php:381
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:156
 msgid "All Levels"
 msgstr "Todos los niveles"
 
@@ -12822,6 +12864,7 @@ msgstr "Mostrar"
 #: adminpages/orders.php:984
 #: adminpages/reports/memberships.php:342
 #: adminpages/reports/sales.php:623
+#: adminpages/reports/memberships.php:343
 msgid "Export to CSV"
 msgstr "Exportar a CSV"
 
@@ -14088,10 +14131,12 @@ msgid "<strong>Need help?</strong> Your license allows you to open new tickets i
 msgstr ""
 
 #: adminpages/reports/memberships.php:475
+#: adminpages/reports/memberships.php:476
 msgid "Cancellations"
 msgstr ""
 
 #: adminpages/reports/memberships.php:477
+#: adminpages/reports/memberships.php:478
 msgid "Expirations"
 msgstr ""
 
@@ -14676,101 +14721,141 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:105
 #: classes/email-templates/class-pmpro-email-template-refund.php:107
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:104
+#: classes/email-templates/class-pmpro-email-template-refund.php:106
 msgid "The login name of the user who requested the refund."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:106
 #: classes/email-templates/class-pmpro-email-template-refund.php:108
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:105
+#: classes/email-templates/class-pmpro-email-template-refund.php:107
 msgid "The email address of the user who requested the refund."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:107
 #: classes/email-templates/class-pmpro-email-template-refund.php:109
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:106
+#: classes/email-templates/class-pmpro-email-template-refund.php:108
 msgid "The display name of the user who requested the refund."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:108
 #: classes/email-templates/class-pmpro-email-template-refund.php:110
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:107
+#: classes/email-templates/class-pmpro-email-template-refund.php:109
 msgid "The ID of the membership level that was refunded."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:109
 #: classes/email-templates/class-pmpro-email-template-refund.php:111
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:108
+#: classes/email-templates/class-pmpro-email-template-refund.php:110
 msgid "The name of the membership level that was refunded."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:110
 #: classes/email-templates/class-pmpro-email-template-refund.php:112
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:109
+#: classes/email-templates/class-pmpro-email-template-refund.php:111
 msgid "The order ID of the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:111
 #: classes/email-templates/class-pmpro-email-template-refund.php:113
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:110
+#: classes/email-templates/class-pmpro-email-template-refund.php:112
 msgid "The total amount refunded."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:112
 #: classes/email-templates/class-pmpro-email-template-refund.php:114
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:111
+#: classes/email-templates/class-pmpro-email-template-refund.php:113
 msgid "The date the refund was processed."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:113
 #: classes/email-templates/class-pmpro-email-template-refund.php:115
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:112
+#: classes/email-templates/class-pmpro-email-template-refund.php:114
 msgid "The billing name associated with the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:114
 #: classes/email-templates/class-pmpro-email-template-refund.php:116
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:113
+#: classes/email-templates/class-pmpro-email-template-refund.php:115
 msgid "The billing street address associated with the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:115
 #: classes/email-templates/class-pmpro-email-template-refund.php:117
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:114
+#: classes/email-templates/class-pmpro-email-template-refund.php:116
 msgid "The billing street address line 2 associated with the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:116
 #: classes/email-templates/class-pmpro-email-template-refund.php:118
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:115
+#: classes/email-templates/class-pmpro-email-template-refund.php:117
 msgid "The billing city associated with the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:117
 #: classes/email-templates/class-pmpro-email-template-refund.php:119
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:116
+#: classes/email-templates/class-pmpro-email-template-refund.php:118
 msgid "The billing state associated with the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:118
 #: classes/email-templates/class-pmpro-email-template-refund.php:120
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:117
+#: classes/email-templates/class-pmpro-email-template-refund.php:119
 msgid "The billing zip code associated with the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:119
 #: classes/email-templates/class-pmpro-email-template-refund.php:121
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:118
+#: classes/email-templates/class-pmpro-email-template-refund.php:120
 msgid "The billing country associated with the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:120
 #: classes/email-templates/class-pmpro-email-template-refund.php:122
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:119
+#: classes/email-templates/class-pmpro-email-template-refund.php:121
 msgid "The billing phone number associated with the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:121
 #: classes/email-templates/class-pmpro-email-template-refund.php:123
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:120
+#: classes/email-templates/class-pmpro-email-template-refund.php:122
 msgid "The card type used for the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:122
 #: classes/email-templates/class-pmpro-email-template-refund.php:124
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:121
+#: classes/email-templates/class-pmpro-email-template-refund.php:123
 msgid "The last four digits of the account number used for the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:123
 #: classes/email-templates/class-pmpro-email-template-refund.php:125
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:122
+#: classes/email-templates/class-pmpro-email-template-refund.php:124
 msgid "The expiration month of the card used for the refunded order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:124
 #: classes/email-templates/class-pmpro-email-template-refund.php:126
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:123
+#: classes/email-templates/class-pmpro-email-template-refund.php:125
 msgid "The expiration year of the card used for the refunded order."
 msgstr ""
 
@@ -14778,6 +14863,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:126
 #: classes/email-templates/class-pmpro-email-template-refund.php:127
 #: classes/email-templates/class-pmpro-email-template-refund.php:128
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:124
+#: classes/email-templates/class-pmpro-email-template-refund.php:126
 msgid "The URL to the invoice for the refunded order."
 msgstr ""
 
