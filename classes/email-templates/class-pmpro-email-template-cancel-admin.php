@@ -120,7 +120,7 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	 * @return string The email address to send the email to.
 	 */
 	public function get_recipient_email() {
-		return $this->user->user_email;
+		return get_bloginfo( 'admin_email' );
 	}
 
 	/**
@@ -131,7 +131,9 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	 * @return string The name of the email recipient.
 	 */
 	public function get_recipient_name() {
-		return $this->user->display_name;
+		//get user by email
+		$user = get_user_by( 'email', $this->get_recipient_email() );
+		return $user->display_name;
 	}
 
 	/**
