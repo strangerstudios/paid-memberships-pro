@@ -253,8 +253,8 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		$now = current_time( 'timestamp' );
 
 		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
-		$l = isset( $_REQUEST['l'] ) ? intval( $_REQUEST['l'] ) : false;
-		$discount_code = isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : false;
+		$l = isset( $_REQUEST['l'] ) ? array_map( 'intval', $_REQUEST['l'] ) : false;
+		$discount_code = isset( $_REQUEST['discount-code'] ) ? array_map( 'intval', $_REQUEST['discount-code'] ) : false;
 		$start_month = isset( $_REQUEST['start-month'] ) ? intval( $_REQUEST['start-month'] ) : '1';
 		$start_day = isset( $_REQUEST['start-day'] ) ? intval( $_REQUEST['start-day'] ) : '1';
 		$start_year = isset( $_REQUEST['start-year'] ) ? intval( $_REQUEST['start-year'] ) : date( 'Y', $now );
@@ -262,11 +262,15 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		$end_day = isset( $_REQUEST['end-day'] ) ? intval( $_REQUEST['end-day'] ) : date( 'j', $now );
 		$end_year = isset( $_REQUEST['end-year'] ) ? intval( $_REQUEST['end-year'] ) : date( 'Y', $now );
 		$predefined_date = isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : 'This Month';
-		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+		$status = isset( $_REQUEST['status'] ) ? array_map( 'sanitize_text_field', $_REQUEST['status'] ) : false;
 		$filter = isset( $_REQUEST['filter'] ) ? sanitize_text_field( $_REQUEST['filter'] ) : 'all';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
+        $totals = isset( $_REQUEST['totals'] ) ? sanitize_text_field( $_REQUEST['totals'] ) : false;
+        $total_min = isset( $_REQUEST['total_min'] ) ? intval( $_REQUEST['total_min'] ) : 0;
+        $total_max = isset( $_REQUEST['total_max'] ) ? intval( $_REQUEST['total_max'] ) : 0;
 
 		$items_per_page = $this->get_items_per_page( 'pmpro_orders_per_page' );
+        
 		/**
 		 * Filter to set the default number of items to show per page
 		 * on the Orders page in the admin.
@@ -280,9 +284,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		$end   = $pn * $limit;
 		$start = $end - $limit;
 		
+        $condition = array();
+
 		// filters
 		if ( empty( $filter ) || $filter === 'all' ) {
-			$condition = '1=1';
+			$condition[] = '1=1';
 			$filter    = 'all';
 		} elseif ( $filter == 'within-a-date-range' ) {
 			$start_date = $start_year . '-' . $start_month . '-' . $start_day;
@@ -292,7 +298,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
 			$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 		
-			$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+			$condition[] = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 		} elseif ( $filter == 'predefined-date-range' ) {
 			if ( $predefined_date == 'Last Month' ) {
 				$start_date = date( 'Y-m-d', strtotime( 'first day of last month', $now ) );
@@ -314,20 +320,45 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
 			$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 		
-			$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
-		} elseif ( $filter == 'within-a-level' ) {
-			$condition = 'o.membership_id = ' . esc_sql( $l );
-		} elseif ( $filter == 'with-discount-code' ) {
-			$condition = 'dc.code_id = ' . esc_sql( $discount_code );
-		} elseif ( $filter == 'within-a-status' ) {
-			$condition = "o.status = '" . esc_sql( $status ) . "' ";
-		} elseif ( $filter == 'only-paid' ) {
-			$condition = "o.total > 0";
-		} elseif( $filter == 'only-free' ) {
-			$condition = "o.total = 0";
-		} else {
-			$condition = "";
-		}
+			$condition[] = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+		} 
+
+        if ( ! $l && $totals ) {
+            if(  $totals == 'only-paid' ) {
+                $levels = pmpro_report_get_levels( 'paid' );
+                $condition[] = 'o.membership_id IN (' . esc_sql( $levels ).")";     
+            }    
+            if( $totals == 'only-free' ) {
+                $levels = pmpro_report_get_levels( 'free' );
+                $condition[] = 'o.membership_id IN (' . esc_sql( $levels ).")";     
+            }		            
+                   
+
+		} 
+
+        if( $totals == 'custom' ){                    
+            $condition[] = 'o.total BETWEEN '.esc_sql( $total_min ).' AND '.esc_sql( $total_max );               
+        }
+        
+        if( $l ){            
+            $condition[] = 'o.membership_id IN (' . esc_sql( implode(", ", $l ) ).")";
+        }
+        
+        if ( $discount_code ) {
+			$condition[] = 'dc.code_id IN (' . esc_sql( implode(", ", $discount_code ) ).")";
+		} 
+
+        if ( $status ) {
+			$condition[] = "o.status IN ('" . esc_sql( implode(", ", $status ) ) . "' )";
+		}         
+        
+        // if ( $filter == 'only-paid' ) {
+		// 	$condition = "o.total > 0";
+		// } elseif( $filter == 'only-free' ) {
+		// 	$condition = "o.total = 0";
+		// }
+
+        $condition = implode(" AND ", $condition );
 		
 		$condition = apply_filters( 'pmpro_admin_orders_query_condition', $condition, $filter );
 
@@ -380,7 +411,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
 			}
 
-			if ( $filter === 'with-discount-code' ) {
+			if ( $discount_code ) {
 				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 			}
 
@@ -429,14 +460,14 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			
 		} else {
 
-			if ( $filter === 'with-discount-code' ) {
+			if ( $discount_code ) {
 				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 			}
 			//Not escaping here because we escape the values in the condition statement
 			$sqlQuery .= "WHERE " . $condition . ' ' . $order_query . ' ';
 
 		}
-
+        
 		if( $count ) {
 			return $wpdb->get_var( $sqlQuery );    
 		} else {
@@ -469,13 +500,13 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$now = current_time( 'timestamp' );
 
 			if ( isset( $_REQUEST['l'] ) ) {
-				$l = intval( $_REQUEST['l'] );
+				$l = array_map( 'intval', $_REQUEST['l'] );
 			} else {
 				$l = false;
 			}         
 
 			if ( isset( $_REQUEST['discount-code'] ) ) {
-				$discount_code = intval( $_REQUEST['discount-code'] );
+				$discount_code = array_map( 'intval', $_REQUEST['discount-code'] );
 			} else {
 				$discount_code = false;
 			}
@@ -523,11 +554,29 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			}
 
 			if ( isset( $_REQUEST['status'] ) ) {
-				$status = sanitize_text_field( $_REQUEST['status'] );
+				$status = array_map( 'sanitize_text_field', $_REQUEST['status'] );
 			} else {
 				$status = '';
 			}
 
+            if ( isset( $_REQUEST['totals'] ) ) {
+				$totals = sanitize_text_field( $_REQUEST['totals'] );
+			} else {
+				$totals = false;
+			}
+
+            if( isset( $_REQUEST['total_min'] ) ) {
+                $total_min = intval( $_REQUEST['total_min'] );
+            } else {
+                $total_min = '';
+            }
+
+            if( isset( $_REQUEST['total_max'] ) ) {
+                $total_max = intval( $_REQUEST['total_max'] );
+            } else {
+                $total_max = '';
+            }
+            
 			if ( isset( $_REQUEST['filter'] ) ) {
 				$filter = sanitize_text_field( $_REQUEST['filter'] );
 			} else {
@@ -555,21 +604,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			<div class="tablenav top">
 				<?php esc_html_e( 'Show', 'paid-memberships-pro' ); ?>
 				<select id="filter" name="filter">
-					<option value="all" <?php selected( $filter, 'all' ); ?>><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></option>
+					<option value="all" <?php selected( $filter, 'all' ); ?>><?php esc_html_e( 'All Dates', 'paid-memberships-pro' ); ?></option>
 					<option
 						value="within-a-date-range" <?php selected( $filter, 'within-a-date-range' ); ?>><?php esc_html_e( 'Within a Date Range', 'paid-memberships-pro' ); ?></option>
 					<option
-						value="predefined-date-range" <?php selected( $filter, 'predefined-date-range' ); ?>><?php esc_html_e( 'Predefined Date Range', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="within-a-level" <?php selected( $filter, 'within-a-level' ); ?>><?php esc_html_e( 'Within a Level', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="with-discount-code" <?php selected( $filter, 'with-discount-code' ); ?>><?php esc_html_e( 'With a Discount Code', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="within-a-status" <?php selected( $filter, 'within-a-status' ); ?>><?php esc_html_e( 'Within a Status', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="only-paid" <?php selected( $filter, 'only-paid' ); ?>><?php esc_html_e( 'Only Paid Orders', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="only-free" <?php selected( $filter, 'only-free' ); ?>><?php esc_html_e( 'Only Free Orders', 'paid-memberships-pro' ); ?></option>
+						value="predefined-date-range" <?php selected( $filter, 'predefined-date-range' ); ?>><?php esc_html_e( 'Predefined Date Range', 'paid-memberships-pro' ); ?></option>					
 
 					<?php $custom_filters = apply_filters( 'pmpro_admin_orders_filters', array() ); ?>
 					<?php foreach( $custom_filters as $value => $name ) { ?>
@@ -624,10 +663,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				// Note: only orders belonging to current levels can be filtered. There is no option for orders belonging to deleted levels
 				$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 				?>
-				<select id="l" name="l">
+				<select id="l" name="l[]" multiple="multiple">
+                    <option value=''><?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?></option>
 					<?php foreach ( $levels as $level ) { ?>
 						<option
-							value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
+							value="<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name ); ?></option>
 					<?php } ?>
 
 				</select>
@@ -637,10 +677,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				$sqlQuery .= "ORDER BY id DESC ";
 				$codes = $wpdb->get_results($sqlQuery, OBJECT);
 				if ( ! empty( $codes ) ) { ?>
-				<select id="discount-code" name="discount-code">
+				<select id="discount-code" name="discount-code[]" multiple="multiple">
+                    <option value=''><?php esc_html_e( 'All Discount Codes', 'paid-memberships-pro' ); ?></option>
 					<?php foreach ( $codes as $code ) { ?>
 						<option
-							value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
+							value="<?php echo esc_attr( $code->id ); ?>"><?php echo esc_html( $code->code ); ?></option>
 					<?php } ?>
 				</select>
 				<?php } ?>
@@ -648,22 +689,80 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				<?php
 					$statuses = pmpro_getOrderStatuses();
 				?>
-				<select id="status" name="status">
+				<select id="status" name="status[]" multiple="multiple">                    
 					<?php foreach ( $statuses as $the_status ) { ?>
 						<option
-							value="<?php echo esc_attr( $the_status ); ?>" <?php selected( $the_status, $status ); ?>><?php echo esc_html( $the_status ); ?></option>
+							value="<?php echo ( empty( $the_status ) ) ? "all" : esc_attr( $the_status ); ?>"><?php echo ( empty( $the_status ) ? esc_html_e( 'All Statuses' ) : esc_html( $the_status ) ); ?></option>
 					<?php } ?>
 				</select>
+
+                <select id="totals" name="totals">
+                        <option value='all'><?php esc_html_e( 'All Totals', 'paid-memberships-pro' ); ?></option>
+                        <option value='only-paid'><?php esc_html_e( 'Only Paid Orders', 'paid-memberships-pro' ); ?></option>
+                        <option value='only-free'><?php esc_html_e( 'Only Free Orders', 'paid-memberships-pro' ); ?></option>
+                        <option value='custom'><?php esc_html_e( 'Custom Range', 'paid-memberships-pro' ); ?></option>
+                </select>
+
+                <input type="number" id="total_min" name="total_min" value="<?php echo $total_min; ?>" placeholder="<?php esc_attr_e( 'Min Total', 'paid-memberships-pro' ); ?>"/>
+                <input type="number" id="total_max" name="total_max" value="<?php echo $total_max; ?>" placeholder="<?php esc_attr_e( 'Max Total', 'paid-memberships-pro' ); ?>"/>
+
 				<input type="hidden" name="page" value="pmpro-orders"/>
 				<input id="submit" class="button" type="submit" value="<?php esc_attr_e( 'Filter', 'paid-memberships-pro' ); ?>"/>
 
 			<script>
 				//update month/year when period dropdown is changed
 				jQuery(document).ready(function () {
+
+                    jQuery("#total_min").hide();
+                    jQuery("#total_max").hide();
+
 					jQuery('#filter').on('change',function () {
 						pmpro_ShowMonthOrYear();
 					});
+                    jQuery('#totals').on('change',function () {
+                        pmpro_showMinMax();
+                    });
+
+                    jQuery('#l').select2({
+                        placeholder: "<?php esc_html_e( 'Select a Level', 'paid-memberships-pro' ); ?>",
+                    });           
+                    
+                    <?php if( $l ) { ?>
+                        jQuery("#l").val(<?php echo json_encode( array_values( $l ) ); ?>).change();                
+                    <?php } ?>
+
+                    jQuery('#status').select2({
+                        placeholder: "<?php esc_html_e( 'Select a Status', 'paid-memberships-pro' ); ?>",
+                    });
+
+                    <?php if( ! empty( $status ) ) { ?>
+                        jQuery("#status").val(<?php echo is_array( $status ) ? json_encode( array_values( $status ) ) : ""; ?>).change();                
+                    <?php } ?>
+
+                    jQuery('#discount-code').select2({
+                        placeholder: "<?php esc_html_e( 'Select a Disount Code', 'paid-memberships-pro' ); ?>"                        
+                    });   
+
+                    <?php if( $discount_code ) { ?>
+                        jQuery("#discount-code").val(<?php echo json_encode( array_values( $discount_code ) ); ?>).change();                
+                    <?php } ?>
+
+                    <?php if( $totals ) { ?>
+                        jQuery("#totals").val(<?php echo json_encode( $totals ); ?>).change();                
+                    <?php } ?>
+
 				});
+
+                function pmpro_showMinMax(){
+                    var minmax = jQuery('#totals').val();
+                    if(minmax == 'custom'){
+                        jQuery("#total_min").show();
+                        jQuery("#total_max").show();
+                    } else {
+                        jQuery("#total_min").hide();
+                        jQuery("#total_max").hide();
+                    }
+                }
 
 				function pmpro_ShowMonthOrYear() {
 					var filter = jQuery('#filter').val();
@@ -674,14 +773,12 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 						jQuery('#end-month').hide();
 						jQuery('#end-day').hide();
 						jQuery('#end-year').hide();
-						jQuery('#predefined-date').hide();
-						jQuery('#status').hide();
-						jQuery('#l').hide();
-						jQuery('#discount-code').hide();
+						jQuery('#predefined-date').hide();						
 						jQuery('#from').hide();
 						jQuery('#to').hide();
 						jQuery('#submit').show();
 						jQuery('#filterby').hide();
+                        
 					}
 					else if (filter == 'within-a-date-range') {
 						jQuery('#start-month').show();
@@ -691,9 +788,9 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 						jQuery('#end-day').show();
 						jQuery('#end-year').show();
 						jQuery('#predefined-date').hide();
-						jQuery('#status').hide();
-						jQuery('#l').hide();
-						jQuery('#discount-code').hide();
+						// jQuery('#status').hide();
+						// jQuery('#l').hide();
+						// jQuery('#discount-code').hide();
 						jQuery('#submit').show();
 						jQuery('#from').show();
 						jQuery('#to').show();
@@ -707,97 +804,18 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 						jQuery('#end-day').hide();
 						jQuery('#end-year').hide();
 						jQuery('#predefined-date').show();
-						jQuery('#status').hide();
-						jQuery('#l').hide();
-						jQuery('#discount-code').hide();
+						// jQuery('#status').hide();
+						// jQuery('#l').hide();
+						// jQuery('#discount-code').hide();
 						jQuery('#submit').show();
 						jQuery('#from').hide();
 						jQuery('#to').hide();
-						jQuery('#filterby').show();
-					}
-					else if (filter == 'within-a-level') {
-						jQuery('#start-month').hide();
-						jQuery('#start-day').hide();
-						jQuery('#start-year').hide();
-						jQuery('#end-month').hide();
-						jQuery('#end-day').hide();
-						jQuery('#end-year').hide();
-						jQuery('#predefined-date').hide();
-						jQuery('#status').hide();
-						jQuery('#l').show();
-						jQuery('#discount-code').hide();
-						jQuery('#submit').show();
-						jQuery('#from').hide();
-						jQuery('#to').hide();
-						jQuery('#filterby').show();
-					}
-					else if (filter == 'with-discount-code') {
-						jQuery('#start-month').hide();
-						jQuery('#start-day').hide();
-						jQuery('#start-year').hide();
-						jQuery('#end-month').hide();
-						jQuery('#end-day').hide();
-						jQuery('#end-year').hide();
-						jQuery('#predefined-date').hide();
-						jQuery('#status').hide();
-						jQuery('#l').hide();
-						jQuery('#discount-code').show();
-						jQuery('#submit').show();
-						jQuery('#from').hide();
-						jQuery('#to').hide();
-						jQuery('#filterby').show();
-					}
-					else if (filter == 'within-a-status') {
-						jQuery('#start-month').hide();
-						jQuery('#start-day').hide();
-						jQuery('#start-year').hide();
-						jQuery('#end-month').hide();
-						jQuery('#end-day').hide();
-						jQuery('#end-year').hide();
-						jQuery('#predefined-date').hide();
-						jQuery('#status').show();
-						jQuery('#l').hide();
-						jQuery('#discount-code').hide();
-						jQuery('#submit').show();
-						jQuery('#from').hide();
-						jQuery('#to').hide();
-						jQuery('#filterby').show();
-					}
-					else if(filter == 'only-paid' || filter == 'only-free' ) {
-						jQuery('#start-month').hide();
-						jQuery('#start-day').hide();
-						jQuery('#start-year').hide();
-						jQuery('#end-month').hide();
-						jQuery('#end-day').hide();
-						jQuery('#end-year').hide();
-						jQuery('#predefined-date').hide();
-						jQuery('#status').hide();
-						jQuery('#l').hide();
-						jQuery('#discount-code').hide();
-						jQuery('#submit').show();
-						jQuery('#from').hide();
-						jQuery('#to').hide();
-						jQuery('#filterby').hide();
-					}  else {
-						jQuery('#start-month').hide();
-						jQuery('#start-day').hide();
-						jQuery('#start-year').hide();
-						jQuery('#end-month').hide();
-						jQuery('#end-day').hide();
-						jQuery('#end-year').hide();
-						jQuery('#predefined-date').hide();
-						jQuery('#status').hide();
-						jQuery('#l').hide();
-						jQuery('#discount-code').hide();
-						jQuery('#submit').show();
-						jQuery('#from').hide();
-						jQuery('#to').hide();
-						jQuery('#filterby').hide();
+						jQuery('#filterby').show();															
 					}
 				}
 
 				pmpro_ShowMonthOrYear();
-
+                pmpro_showMinMax();
 
 			</script>
 			<?php
