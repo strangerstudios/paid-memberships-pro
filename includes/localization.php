@@ -5,16 +5,13 @@ function pmpro_load_textdomain() {
 
 	//paths to local (plugin) and global (WP) language files
 	$mofile_local  = dirname( __DIR__ ) . '/languages/' . $mofile;
-	$mofile_global = WP_LANG_DIR . '/pmpro/' . $mofile;
-	$mofile_global2 = WP_LANG_DIR . '/paid-memberships-pro/' . $mofile;
+	$mofile_global = WP_LANG_DIR . '/plugins/paid-memberships-pro/' . $mofile;
 
 	unload_textdomain( 'paid-memberships-pro' );
 
 	//load global first    
 	if ( file_exists( $mofile_global ) ) {
 		load_textdomain( 'paid-memberships-pro', $mofile_global );
-	} elseif ( file_exists( $mofile_global2 ) ) {
-		load_textdomain( 'paid-memberships-pro', $mofile_global2 );
 	}
 
 	//load local second
