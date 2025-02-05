@@ -323,22 +323,18 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$condition[] = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 		} 
 
-        if ( ! $l && $totals ) {
+        if ( $totals ) {
             if(  $totals == 'only-paid' ) {
-                $levels = pmpro_report_get_levels( 'paid' );
-                $condition[] = 'o.membership_id IN (' . esc_sql( $levels ).")";     
+                $condition[] = 'o.total > 0';     
             }    
             if( $totals == 'only-free' ) {
-                $levels = pmpro_report_get_levels( 'free' );
-                $condition[] = 'o.membership_id IN (' . esc_sql( $levels ).")";     
+                $condition[] = 'o.total = 0';     
             }		            
-                   
+            if( $totals == 'custom' ){                    
+                $condition[] = 'o.total BETWEEN '.esc_sql( $total_min ).' AND '.esc_sql( $total_max );               
+            }
 
-		} 
-
-        if( $totals == 'custom' ){                    
-            $condition[] = 'o.total BETWEEN '.esc_sql( $total_min ).' AND '.esc_sql( $total_max );               
-        }
+		}         
         
         if( $l ){            
             $condition[] = 'o.membership_id IN (' . esc_sql( implode(", ", $l ) ).")";
@@ -352,11 +348,6 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$condition[] = "o.status IN ('" . esc_sql( implode(", ", $status ) ) . "' )";
 		}         
         
-        // if ( $filter == 'only-paid' ) {
-		// 	$condition = "o.total > 0";
-		// } elseif( $filter == 'only-free' ) {
-		// 	$condition = "o.total = 0";
-		// }
 
         $condition = implode(" AND ", $condition );
 		
