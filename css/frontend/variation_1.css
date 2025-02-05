@@ -632,6 +632,20 @@
 		justify-self: end;
 	}
 
+	#resetpassform .pmpro_cols-2 {
+		container: resetpassform / inline-size;
+	}
+
+	@container resetpassform (max-width: 620px) {
+		#resetpassform .pmpro_cols-2 {
+			flex-direction: column;
+		}
+
+		#resetpassform .pmpro_cols-2 > * {
+			width: 100%;
+		}
+	}
+
 	/**
 	* List Styles
 	*/
