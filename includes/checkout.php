@@ -41,7 +41,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 		 *
 		 * @return string The profile start date in UTC YYYY-MM-DD HH:MM:SS format.
 		 */
-		$profile_start_date = apply_filters_deprecated( 'pmpro_profile_start_date', array( $profile_start_date, $order ), '3.4' );
+		$profile_start_date = apply_filters_deprecated( 'pmpro_profile_start_date', array( $profile_start_date, $order ), '3.4', 'pmpro_checkout_level' );
 	}
 
 	// Convert $profile_start_date to correct format.
