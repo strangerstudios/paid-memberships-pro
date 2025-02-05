@@ -1,4 +1,3 @@
-
 <?php
 class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 
