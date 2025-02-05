@@ -30,73 +30,91 @@ $max_orders_per_loop = apply_filters( 'pmpro_set_max_orders_per_export_loop', 20
 global $wpdb;
 
 //get users
-if ( isset( $_REQUEST['s'] ) ) {
+if ( ! empty( $_REQUEST['s'] ) ) {
 	$s = sanitize_text_field( $_REQUEST['s'] );
 } else {
 	$s = "";
 }
 
-if ( isset( $_REQUEST['l'] ) ) {
-	$l = intval( $_REQUEST['l'] );
+if ( ! empty( $_REQUEST['l'] ) ) {
+    $l = array_map( 'intval', $_REQUEST['l'] );
 } else {
-	$l = false;
+    $l = false;
+}         
+
+if ( ! empty( $_REQUEST['discount-code'] ) ) {
+    $discount_code = array_map( 'intval', $_REQUEST['discount-code'] );
+} else {
+    $discount_code = false;
 }
 
-if ( isset( $_REQUEST['discount-code'] ) ) {
-	$discount_code = intval( $_REQUEST['discount-code'] );
-} else {
-	$discount_code = false;
-}
-
-if ( isset( $_REQUEST['start-month'] ) ) {
+if ( ! empty( $_REQUEST['start-month'] ) ) {
 	$start_month = intval( $_REQUEST['start-month'] );
 } else {
 	$start_month = "1";
 }
 
-if ( isset( $_REQUEST['start-day'] ) ) {
+if ( ! empty( $_REQUEST['start-day'] ) ) {
 	$start_day = intval( $_REQUEST['start-day'] );
 } else {
 	$start_day = "1";
 }
 
-if ( isset( $_REQUEST['start-year'] ) ) {
+if ( ! empty( $_REQUEST['start-year'] ) ) {
 	$start_year = intval( $_REQUEST['start-year'] );
 } else {
 	$start_year = date_i18n( "Y" );
 }
 
-if ( isset( $_REQUEST['end-month'] ) ) {
+if ( ! empty( $_REQUEST['end-month'] ) ) {
 	$end_month = intval( $_REQUEST['end-month'] );
 } else {
 	$end_month = date_i18n( "n" );
 }
 
-if ( isset( $_REQUEST['end-day'] ) ) {
+if ( ! empty( $_REQUEST['end-day'] ) ) {
 	$end_day = intval( $_REQUEST['end-day'] );
 } else {
 	$end_day = date_i18n( "j" );
 }
 
-if ( isset( $_REQUEST['end-year'] ) ) {
+if ( ! empty( $_REQUEST['end-year'] ) ) {
 	$end_year = intval( $_REQUEST['end-year'] );
 } else {
 	$end_year = date_i18n( "Y" );
 }
 
-if ( isset( $_REQUEST['predefined-date'] ) ) {
+if ( ! empty( $_REQUEST['predefined-date'] ) ) {
 	$predefined_date = sanitize_text_field( $_REQUEST['predefined-date'] );
 } else {
 	$predefined_date = "This Month";
 }
 
-if ( isset( $_REQUEST['status'] ) ) {
-	$status = sanitize_text_field( $_REQUEST['status'] );
+if ( ! empty( $_REQUEST['status'] ) ) {
+    $status = array_map( 'sanitize_text_field', $_REQUEST['status'] );
 } else {
-	$status = "";
+    $status = '';
 }
 
-if ( isset( $_REQUEST['filter'] ) ) {
+if ( ! empty( $_REQUEST['totals'] ) ) {
+    $totals = sanitize_text_field( $_REQUEST['totals'] );
+} else {
+    $totals = false;
+}
+
+if( ! empty( $_REQUEST['total_min'] ) ) {
+    $total_min = intval( $_REQUEST['total_min'] );
+} else {
+    $total_min = 0;
+}
+
+if( ! empty( $_REQUEST['total_max'] ) ) {
+    $total_max = intval( $_REQUEST['total_max'] );
+} else {
+    $total_max = 0;
+}
+
+if ( ! empty( $_REQUEST['filter'] ) ) {
 	$filter = sanitize_text_field( $_REQUEST['filter'] );
 } else {
 	$filter = "all";
@@ -123,9 +141,11 @@ if ( $limit ) {
 	$start = null;
 }
 
+$condition = array();
+
 //filters
 if ( $filter == "all" || ! $filter ) {
-	$condition = "1=1";
+	$condition[] = "1=1";
 } elseif ( $filter == "within-a-date-range" ) {
 	$start_date = $start_year . "-" . $start_month . "-" . $start_day;
 	$end_date   = $end_year . "-" . $end_month . "-" . $end_day;
@@ -134,7 +154,7 @@ if ( $filter == "all" || ! $filter ) {
 	$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
 	$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 
-	$condition = "o.timestamp BETWEEN '" . $start_date . "' AND '" . $end_date . "'";
+	$condition[] = "o.timestamp BETWEEN '" . $start_date . "' AND '" . $end_date . "'";
 } elseif ( $filter == "predefined-date-range" ) {
 	if ( $predefined_date == "Last Month" ) {
 		$start_date = date_i18n( "Y-m-d", strtotime( "first day of last month", current_time( "timestamp" ) ) );
@@ -156,18 +176,35 @@ if ( $filter == "all" || ! $filter ) {
 	$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
 	$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 
-	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
-} elseif ( $filter == "within-a-level" ) {
-	$condition = "o.membership_id = " . (int) $l;
-} elseif ( $filter == 'with-discount-code' ) {
-	$condition = 'dc.code_id = ' . (int) $discount_code;
-} elseif ( $filter == "within-a-status" ) {
-	$condition = "o.status = '" . esc_sql( $status ) . "' ";
-} elseif ( $filter == 'only-paid' ) {
-	$condition = "o.total > 0";
-} elseif( $filter == 'only-free' ) {
-	$condition = "o.total = 0";
+	$condition[] = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+} 
+
+if ( $totals ) {
+    if(  $totals == 'only-paid' ) {
+        $condition[] = 'o.total > 0';     
+    }    
+    if( $totals == 'only-free' ) {
+        $condition[] = 'o.total = 0';     
+    }		            
+    if( $totals == 'custom' ){                    
+        $condition[] = 'o.total BETWEEN '.esc_sql( $total_min ).' AND '.esc_sql( $total_max );               
+    }
+}         
+
+if( $l ){            
+    $condition[] = 'o.membership_id IN (' . esc_sql( implode(", ", $l ) ).")";
 }
+
+if ( $discount_code ) {
+    $condition[] = 'dc.code_id IN (' . esc_sql( implode(", ", $discount_code ) ).")";
+} 
+
+if ( $status ) {
+    $condition[] = "o.status IN ('" . esc_sql( implode(", ", $status ) ) . "' )";
+}         
+
+
+$condition = implode(" AND ", $condition );
 
 //string search
 if ( ! empty( $s ) ) {

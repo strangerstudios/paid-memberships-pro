@@ -966,7 +966,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		$url_params = array(
 			'filter'          => isset( $_REQUEST['filter'] ) ? trim( sanitize_text_field( $_REQUEST['filter'] ) ) : 'all',
 			's'               => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '',
-			'l'               => isset( $_REQUEST['l'] ) ? sanitize_text_field( $_REQUEST['l'] ) : false,
+			'l'               => isset( $_REQUEST['l'] ) ? array_map( 'intval', $_REQUEST['l'] ) : false,
 			'start-month'     => isset( $_REQUEST['start-month'] ) ? intval( $_REQUEST['start-month'] ) : '1',
 			'start-day'       => isset( $_REQUEST['start-day'] ) ? intval( $_REQUEST['start-day'] ) : '1',
 			'start-year'      => isset( $_REQUEST['start-year'] ) ? intval( $_REQUEST['start-year'] ) : date( 'Y', $now ),
@@ -974,10 +974,14 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			'end-day'         => isset( $_REQUEST['end-day'] ) ? intval( $_REQUEST['end-day'] ) : date( 'j', $now ),
 			'end-year'        => isset( $_REQUEST['end-year'] ) ? intval( $_REQUEST['end-year'] ) : date( 'Y', $now ),
 			'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : 'This Month',
-			'discount-code'	  => isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : false,
-			'status'          => isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '',
+			'discount-code'	  => isset( $_REQUEST['discount-code'] ) ? array_map( 'intval', $_REQUEST['discount-code'] ) : false,
+			'status'          => isset( $_REQUEST['status'] ) ? array_map( 'sanitize_text_field', $_REQUEST['status'] ) : false,
+            'totals'          => isset( $_REQUEST['totals'] ) ? sanitize_text_field( $_REQUEST['totals'] ) : false,
+            'total_min'       => isset( $_REQUEST['total_min'] ) ? intval( $_REQUEST['total_min'] ) : 0,
+            'total_max'       => isset( $_REQUEST['total_max'] ) ? intval( $_REQUEST['total_max'] ) : 0,
 		);
 		$export_url = add_query_arg( $url_params, $export_url );
+        
 		?>
 
 		<?php if ( current_user_can( 'pmpro_orderscsv' ) ) { ?>
