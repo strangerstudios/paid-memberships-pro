@@ -455,35 +455,60 @@ function pmpro_notification_test_site_url_match( $string ) {
 /**
  * Check against the WordPress options table.
  * @param array $data Array from notification with plugin_file, comparison, and version to check. $data[0] is the option name, $data[1] is the comparison operator, and $data[2] is the value to compare against.
- * @returns bool true if plugin is active and version comparison is true, false otherwise. *
+ * @param string $option_value The value of the option we need to check.
+ * @returns bool true if plugin is active and version comparison is true, false otherwise.
  */
-function pmpro_notification_test_check_option( $data, $option = NULL ) {
+// TODO: Support objects.
+function pmpro_notification_test_check_option( $data, $option_value = null ) {
+	// Used to determine if we're checking the option and data for the first time.
+	static $first_check = true;
 
-    if ( ! is_array( $data ) ) {
+    // Ensure data is a valid array with at least three elements.
+    if ( ! is_array( $data ) || count( $data ) < 3 ) {
         return false;
     }
-    
-    if ( ! isset( $data[0] ) || ! isset( $data[1] ) || ! isset( $data[2] ) ) {
-        return false;
+
+    // If no option is passed, fetch it using the first value in $data. /// This needs work, I'm guessing it's always running.
+    if ( empty( $option_value ) && $first_check ) {
+        if ( strpos( $data[0], ':' ) !== false ) {
+            list( $option_name, $sub_option ) = explode( ':', $data[0], 2 );
+            $option_value = get_option( $option_name );
+        } else {
+            $option_value = get_option( $data[0] );
+            $sub_option = null;
+        }
+
+		$first_check = false;
     }
 
-	// No option passed in, assume it's the first passthrough.
-    if ( empty( $option ) ) {
-        $option = get_option( $data[0] );
-    }
+    // If option value is an array, process accordingly.
+    if ( is_array( $option_value ) ) {
 
-    // If $option is an array, recursively check all its values.
-    if ( is_array( $option ) ) {
-        foreach ( $option as $opt ) {
-            if ( pmpro_notification_test_check_option( $data, $opt ) ) {
-                return true;
+		// We have the exact sub_option (array_key we want to check).
+        if ( ! empty( $sub_option ) && isset( $option[$sub_option] ) ) {
+            return pmpro_notification_test_check_option( $data, $option[$sub_option] );
+        }
+
+		// No key passed through, let's look if the db has any value. Useful is the option value is a specific string but we don't know the array key value (i.e. pmpro_option => array( 'site_type_obfuscated' => 'courses' );) 
+        foreach ( $option_value as $key => $value ) {
+           if ( is_array( $value ) ) {
+                foreach ( $value as $sub_value ) {
+                    if ( pmpro_notification_test_check_option( $data, $sub_value ) ) {
+                        return true;
+                    }
+				}
+            } else {
+                if ( pmpro_notification_test_check_option( $data, $value ) ) {
+                    return true;
+                }
             }
         }
-        // If no match is found within the array, return false.
+
         return false;
     }
 
-    // Run the relevant check based on the condition passed through.
+
+    // Run the relevant check based on the condition passed through against the value.
     switch ( $data[1] ) {
         case '=':
         case '==':
@@ -509,8 +534,6 @@ function pmpro_notification_test_check_option( $data, $option = NULL ) {
             return false;
     }
 
-	// In case we reach here, let's just return false.
-	return false;
 }
 
 /**
