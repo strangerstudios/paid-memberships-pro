@@ -178,14 +178,10 @@ function pmpro_lifter_after_all_membership_level_changes( $pmpro_old_user_levels
 			$current_levels = array();
 		}
 		$current_courses = pmpro_lifter_get_courses_for_levels( $current_levels );
-		error_log( 'current_levels: ' . print_r( $current_levels, true ) );
-		error_log( 'current_courses: ' . print_r( $current_courses, true ) );
 		
 		// Get old courses.
 		$old_levels = wp_list_pluck( $old_levels, 'ID' );
 		$old_courses = pmpro_lifter_get_courses_for_levels( $old_levels );
-		error_log( 'old_levels: ' . print_r( $old_levels, true ) );
-		error_log( 'old_courses: ' . print_r( $old_courses, true ) );
 		
 		// Unenroll the user in any courses they used to have, but lost.
 		$courses_to_unenroll = array_diff( $old_courses, $current_courses );
