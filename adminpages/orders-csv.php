@@ -192,17 +192,32 @@ if ( $totals ) {
 }         
 
 if( $l ){            
-    $condition[] = 'o.membership_id IN (' . esc_sql( implode(", ", $l ) ).")";
+    $escaped_levels = array_map(function($s) {
+        return "'" . esc_sql($s) . "'"; // Wrap each value in single quotes and escape it
+    }, $l);            
+    $condition[] = "o.membership_id IN (" . implode(", ", $escaped_levels) . ")";	            
 }
 
 if ( $discount_code ) {
-    $condition[] = 'dc.code_id IN (' . esc_sql( implode(", ", $discount_code ) ).")";
+    $escaped_discount_code = array_map(function($s) {
+        return "'" . esc_sql($s) . "'"; // Wrap each value in single quotes and escape it
+    }, $discount_code);            
+    $condition[] = "o.code_id IN (" . implode(", ", $escaped_discount_code) . ")";			
 } 
 
 if ( $status ) {
-    $condition[] = "o.status IN ('" . esc_sql( implode(", ", $status ) ) . "' )";
+    $escaped_status = array_map(function($s) {
+        return "'" . esc_sql($s) . "'"; // Wrap each value in single quotes and escape it
+    }, $status);            
+    $condition[] = "o.status IN (" . implode(", ", $escaped_status) . ")";
 }         
 
+if( $gateway ) {
+    $escated_gateway = array_map(function($s) {
+        return "'" . esc_sql($s) . "'"; // Wrap each value in single quotes and escape it
+    }, $gateway);            
+    $condition[] = "o.gateway IN (" . implode(", ", $escated_gateway) . ")";
+}       
 
 $condition = implode(" AND ", $condition );
 

@@ -268,7 +268,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
         $totals = isset( $_REQUEST['totals'] ) ? sanitize_text_field( $_REQUEST['totals'] ) : false;
         $total_min = isset( $_REQUEST['total_min'] ) ? intval( $_REQUEST['total_min'] ) : 0;
         $total_max = isset( $_REQUEST['total_max'] ) ? intval( $_REQUEST['total_max'] ) : 0;
-
+        $gateway = isset( $_REQUEST['gateway'] ) ? array_map( 'sanitize_text_field', $_REQUEST['gateway'] ) : '';
 		$items_per_page = $this->get_items_per_page( 'pmpro_orders_per_page' );
         
 		/**
@@ -337,18 +337,33 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}         
         
         if( $l ){            
-            $condition[] = 'o.membership_id IN (' . esc_sql( implode(", ", $l ) ).")";
+            $escaped_levels = array_map(function($s) {
+                return "'" . esc_sql($s) . "'"; // Wrap each value in single quotes and escape it
+            }, $l);            
+            $condition[] = "o.membership_id IN (" . implode(", ", $escaped_levels) . ")";	            
         }
         
         if ( $discount_code ) {
-			$condition[] = 'dc.code_id IN (' . esc_sql( implode(", ", $discount_code ) ).")";
+            $escaped_discount_code = array_map(function($s) {
+                return "'" . esc_sql($s) . "'"; // Wrap each value in single quotes and escape it
+            }, $discount_code);            
+            $condition[] = "o.code_id IN (" . implode(", ", $escaped_discount_code) . ")";			
 		} 
 
         if ( $status ) {
-			$condition[] = "o.status IN ('" . esc_sql( implode(", ", $status ) ) . "' )";
+			$escaped_status = array_map(function($s) {
+                return "'" . esc_sql($s) . "'"; // Wrap each value in single quotes and escape it
+            }, $status);            
+            $condition[] = "o.status IN (" . implode(", ", $escaped_status) . ")";
 		}         
         
-
+        if( $gateway ) {
+            $escated_gateway = array_map(function($s) {
+                return "'" . esc_sql($s) . "'"; // Wrap each value in single quotes and escape it
+            }, $gateway);            
+            $condition[] = "o.gateway IN (" . implode(", ", $escated_gateway) . ")";
+        }
+        
         $condition = implode(" AND ", $condition );
 		
 		$condition = apply_filters( 'pmpro_admin_orders_query_condition', $condition, $filter );
@@ -567,6 +582,12 @@ class PMPro_Orders_List_Table extends WP_List_Table {
             } else {
                 $total_max = '';
             }
+
+            if ( isset( $_REQUEST['gateway'] ) ) {
+				$selected_gateway = array_map( 'sanitize_text_field', $_REQUEST['gateway'] );
+			} else {
+				$selected_gateway = '';
+			}
             
 			if ( isset( $_REQUEST['filter'] ) ) {
 				$filter = sanitize_text_field( $_REQUEST['filter'] );
@@ -686,6 +707,43 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 							value="<?php echo ( empty( $the_status ) ) ? "all" : esc_attr( $the_status ); ?>"><?php echo ( empty( $the_status ) ? esc_html_e( 'All Statuses' ) : esc_html( $the_status ) ); ?></option>
 					<?php } ?>
 				</select>
+                <?php
+                $sqlQuery = "SELECT 
+                    COALESCE(NULLIF(`gateway`, ''), 'testing') AS gateway_label,
+                    `gateway_environment`
+                    FROM $wpdb->pmpro_membership_orders
+                    GROUP BY gateway_label, `gateway_environment`
+                    ORDER BY gateway_label, `gateway_environment`";
+				// $sqlQuery .= " ";
+				$gateways = $wpdb->get_results($sqlQuery, OBJECT);
+                
+                $usable_gateways = array();
+                            
+				if ( ! empty( $gateways ) ) {                     
+                    foreach( $gateways as $gateway ) {
+                        if( ! in_array( $gateway->gateway_label, array( 'testing', 'free' ) ) && $gateway->gateway_environment == 'live' ) {
+                            $usable_gateways[] = $gateway;
+                        }
+                    }
+
+                    if( count( $usable_gateways ) > 1 ) {
+
+                    
+                    
+                        ?>
+                        <select id="gateway" name="gateway[]" multiple="multiple">
+                            <option value=''><?php esc_html_e( 'All Gateways', 'paid-memberships-pro' ); ?></option>
+                            <?php foreach ( $usable_gateways as $gateway ) { ?>
+                                <option
+                                    value="<?php echo esc_attr( $gateway->gateway_label ); ?>"><?php echo esc_html( $gateway->gateway_label ); ?></option>
+                            <?php } ?>
+                        </select>
+                        <?php 
+                        }
+                
+                    }
+                    
+                ?>
 
                 <select id="totals" name="totals">
                         <option value='all'><?php esc_html_e( 'All Totals', 'paid-memberships-pro' ); ?></option>
@@ -740,6 +798,14 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
                     <?php if( $totals ) { ?>
                         jQuery("#totals").val(<?php echo json_encode( $totals ); ?>).change();                
+                    <?php } ?>
+
+                    jQuery('#gateway').select2({
+                        placeholder: "<?php esc_html_e( 'Select a Gateway', 'paid-memberships-pro' ); ?>"                        
+                    });   
+
+                    <?php if( $selected_gateway ) { ?>
+                        jQuery("#gateway").val(<?php echo json_encode( $selected_gateway ); ?>).change();                
                     <?php } ?>
 
 				});

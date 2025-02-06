@@ -979,6 +979,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
             'totals'          => isset( $_REQUEST['totals'] ) ? sanitize_text_field( $_REQUEST['totals'] ) : false,
             'total_min'       => isset( $_REQUEST['total_min'] ) ? intval( $_REQUEST['total_min'] ) : 0,
             'total_max'       => isset( $_REQUEST['total_max'] ) ? intval( $_REQUEST['total_max'] ) : 0,
+            'gateway'         => isset( $_REQUEST['gateway'] ) ? array_map( 'sanitize_text_field', $_REQUEST['gateway'] ) : '',
 		);
 		$export_url = add_query_arg( $url_params, $export_url );
         
