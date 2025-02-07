@@ -1,5 +1,5 @@
 == Changelog ==
-= 3.4 RC2 - 2024-02-04 =
+= 3.4 RC3 - 2024-02-07 =
 * FEATURE: Now pulling localization files from https://translate.strangerstudios.com. #3211 (@andrewlimaza)
 * FEATURE: Added a new Membership Account Message level setting to show a level-specific message to members on the Membership Account page. #3271 (@andrewlimaza, @kimcoleman)
 * ENHANCEMENT: Email template variables shown when editing an email template will now be specific to the email template being edited. #3234 (@MaximilianoRicoTabo, @dparker1005)
