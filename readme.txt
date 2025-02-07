@@ -232,12 +232,15 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed an issue where the last day of each month for daily Memberships reports would show 0 signups. #3280 (@dparker1005, @kimcoleman)
 * BUG FIX: Fixed an issue where reset password errors would not be handled correctly. #3262 (@mircobabini)
 * BUG FIX: Fixed an issue where the "Activate" button may not show immediately after installing an Add On on the Memberships > Add Ons page. #3255 (@MaximilianoRicoTabo, @dparker1005)
+* BUG FIX: Fixed an issue where courses would not be assigned correctly when users have multiple membership levels while using the LifterLMS streamline option. #3286 (@dparker1005)
 * BUG FIX: Fixed a PHP fatal error if `pmpro_getAddons()` fails to retrieve the list of Add Ons. #3249 (@dparker1005)
 * BUG FIX: Fixed an issue where notifications may be incorrectly shown when a callback does not exist. #3279 (@andrewlimaza)
 * BUG FIX: Fixed a PHP 5.6 fatal error in the admin activity email class. #3253 (@andrewlimaza)
 * BUG FIX: Fixed a styling issue when there are multiple paragraphs in a contextual message. #3250 (@kimcoleman)
 * BUG FIX: Fixed a styling issue where there may be a gap when Turnstile is enabled but not visible. #3273 (@kimcoleman)
+* BUG FIX: Fixed an incorrect path when loading the paid-memberships-pro text domain. #3282 (@andrewlimaza)
 * BUG FIX: Fixed a potential PHP warning when building plugin action links. #3264 (@mircobabini)
+* BUG FIX: Fixed a potential PHP error when attempting to display a subscription that does not exist in the Subscriptions table. #2383 (@dparker1005)
 * BUG FIX: Corrected the refund policy on the license page to reflect recent changes. #3272 (@kimcoleman)
 
 = 3.3.3 - 2025-01-08 =
