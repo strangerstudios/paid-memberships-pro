@@ -337,7 +337,9 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			$subscription_data = array();
 			foreach ( $subscription_ids as $subscription_id ) {
 				$subscription = PMPro_Subscription::get_subscription( $subscription_id );
-				$subscription_data[] = $subscription;
+				if ( ! empty( $subscription ) ) {
+					$subscription_data[] = $subscription;
+				}
 			}
 			return $subscription_data;
 		}
