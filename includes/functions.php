@@ -337,18 +337,20 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 
 function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	// initial payment
+	$pmpro_initial_payment = isset( $level->initial_payment ) ? $level->initial_payment : 0;
 	if ( ! $short ) {
-		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
+		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $pmpro_initial_payment ) );
 	} else {
 		if ( pmpro_isLevelFree( $level ) ) {
 			$r = '<strong>' . __('Free', 'paid-memberships-pro' ) . '</strong>';
 		} else {
-			$r = sprintf( __( '<strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
+			$r = sprintf( __( '<strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $pmpro_initial_payment ) );
 		}
 	}
 
 	// recurring part
-	if ( (float)$level->billing_amount > 0 ) {
+	$pmpro_billing_amount = isset( $level->billing_amount ) ? $level->billing_amount : 0;
+	if ( (float) $pmpro_billing_amount > 0 ) {
 		if ( $level->billing_limit > 1 ) {
 			if ( $level->cycle_number == '1' ) {
 				$r .= sprintf( __( ' and then <strong>%1$s per %2$s for %3$d more %4$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period ), $level->billing_limit, pmpro_translate_billing_period( $level->cycle_period, $level->billing_limit ) );
@@ -388,7 +390,8 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	$r .= ' ';
 
 	// trial part
-	if ( $level->trial_limit ) {
+	$pmpro_trial_limit = isset( $level->trial_limit ) ? $level->trial_limit : 0;
+	if ( $pmpro_trial_limit > 0 ) {
 		if ( (float)$level->trial_amount == 0 ) {
 			if ( $level->trial_limit == '1' ) {
 				$r .= ' ' . __( 'After your initial payment, your first payment is Free.', 'paid-memberships-pro' );
@@ -527,8 +530,8 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 }
 
 function pmpro_getLevelExpiration( &$level ) {
-
-	if ( $level->expiration_number ) {
+	$pmpro_expiration_number = isset( $level->expiration_number ) ? $level->expiration_number : 0;
+	if ( $pmpro_expiration_number ) {
 		$expiration_text = sprintf( __( 'Membership expires after %1$d %2$s.', 'paid-memberships-pro' ), $level->expiration_number, pmpro_translate_billing_period( $level->expiration_period, $level->expiration_number ) );
 	} else {
 		$expiration_text = '';
