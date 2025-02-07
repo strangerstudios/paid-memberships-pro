@@ -140,18 +140,19 @@ function pmpro_lifter_get_courses_for_levels( $level_ids ) {
 		return array();
 	}
 	
+	$level_placeholders = implode(',', array_fill(0, count($level_ids), '%d'));
 	$course_ids = $wpdb->get_col(
 		$wpdb->prepare(
 			"
 				SELECT mp.page_id 
 				FROM $wpdb->pmpro_memberships_pages mp 
 				LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID 
-				WHERE mp.membership_id IN(%s) 
+				WHERE mp.membership_id IN($level_placeholders) 
 				AND p.post_type = 'course' 
 				AND p.post_status = 'publish' 
 				GROUP BY mp.page_id
 			",
-			implode(',', $level_ids )
+			...$level_ids
 		)
 	);
 	
