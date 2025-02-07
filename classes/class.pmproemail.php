@@ -456,7 +456,8 @@
 					break;
 				}
 			} else {
-				$membership_level = pmpro_getLevel( $order->membership_id );
+				//Get the level for this user
+				$membership_level = pmpro_getMembershipLevelsForUser( $user->ID );
 				if( ! empty( $order ) && ! pmpro_isLevelFree( $membership_level ) ) {
 					if( $order->gateway == "check" ) {
 						$email = new PMPro_Email_Template_Checkout_Check( $user, $order );
