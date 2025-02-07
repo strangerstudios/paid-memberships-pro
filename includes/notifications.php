@@ -455,85 +455,101 @@ function pmpro_notification_test_site_url_match( $string ) {
 /**
  * Check against the WordPress options table.
  * @param array $data Array from notification with plugin_file, comparison, and version to check. $data[0] is the option name, $data[1] is the comparison operator, and $data[2] is the value to compare against.
- * @param string $option_value The value of the option we need to check.
  * @returns bool true if plugin is active and version comparison is true, false otherwise.
  */
-// TODO: Support objects.
-function pmpro_notification_test_check_option( $data, $option_value = null ) {
-	// Used to determine if we're checking the option and data for the first time.
-	static $first_check = true;
-
+function pmpro_notification_test_check_option( $data ) {
     // Ensure data is a valid array with at least three elements.
     if ( ! is_array( $data ) || count( $data ) < 3 ) {
         return false;
     }
 
-    // If no option is passed, fetch it using the first value in $data. /// This needs work, I'm guessing it's always running.
-    if ( empty( $option_value ) && $first_check ) {
-        if ( strpos( $data[0], ':' ) !== false ) {
-            list( $option_name, $sub_option ) = explode( ':', $data[0], 2 );
-            $option_value = get_option( $option_name );
-        } else {
-            $option_value = get_option( $data[0] );
-            $sub_option = null;
-        }
+	// Assign the option value, check type, and check value to variables for readability.
+	$option_to_check = $data[0];
+	$check_type      = $data[1];
+	$check_value     = $data[2];
 
-		$first_check = false;
-    }
+	// Get the option value.
+	if ( strpos( $option_to_check, ':' ) === false ) {
+		// This is the straightforward case where there are no sub-options to check.
+		$option_value = get_option( $option_to_check );
+	} else {
+		// This is the case where we need to dig deeper into the array or object.
+		while ( ! empty( $option_to_check ) ) {
+			// Split the option_to_check into the top level option names and sub-options.
+			list( $current_option_to_check, $option_keys_to_check ) = explode( ':', $option_to_check, 2 );
 
-    // If option value is an array, process accordingly.
-    if ( is_array( $option_value ) ) {
+			// Get the option_value for this layer of the array or object.
+			if ( ! isset( $option_value ) ) {
+				// We have not yet retrieved the top level option value. Do it now.
+				$option_value = get_option( $current_option_to_check );
+			} elseif ( is_array( $option_value ) && isset( $option_value[ $current_option_to_check ] ) ) {
+				// We have the sub_option we want to check.
+				$option_value = $option_value[ $current_option_to_check ];
+			} elseif ( is_object( $option_value ) && isset( $option_value->$current_option_to_check ) ) {
+				// We have the sub_option we want to check.
+				$option_value = $option_value->$current_option_to_check;
+			} else {
+				// If the sub_option doesn't exist, set the option_value to null and break out of the loop.
+				$option_value = null;
+				break;
+			}
 
-		// We have the exact sub_option (array_key we want to check).
-        if ( ! empty( $sub_option ) && isset( $option[$sub_option] ) ) {
-            return pmpro_notification_test_check_option( $data, $option[$sub_option] );
-        }
+				// Update the option_to_check to the sub option or option_key.
+			$option_to_check = $option_keys_to_check;
+		}
+	}
 
-		// No key passed through, let's look if the db has any value. Useful is the option value is a specific string but we don't know the array key value (i.e. pmpro_option => array( 'site_type_obfuscated' => 'courses' );) 
-        foreach ( $option_value as $key => $value ) {
-           if ( is_array( $value ) ) {
-                foreach ( $value as $sub_value ) {
-                    if ( pmpro_notification_test_check_option( $data, $sub_value ) ) {
-                        return true;
-                    }
-				}
-            } else {
-                if ( pmpro_notification_test_check_option( $data, $value ) ) {
-                    return true;
-                }
-            }
-        }
+	return pmpro_notification_check_option_helper( $option_value, $check_type, $check_value );
+}
 
-        return false;
-    }
+/**
+ * Helper function to check if a value is greater than, less than, greater than or equal to, or less than or equal to another value.
+ *
+ * @since TBD
+ *
+ * @param mixed $option_value The option value to compare.
+ * @param string $check_type The comparison operator.
+ * @param mixed $check_value The value to compare against.
+ * @return bool True if the comparison is true, false otherwise.
+ */
+function pmpro_notification_check_option_helper( $option_value, $check_type, $check_value ) {
 
+	// If the option value is an array, check each element individually and return true if any of them match.
+	if ( is_array( $option_value ) || is_object( $option_value ) ) {
+		foreach ( $option_value as $value ) {
+			if ( pmpro_notification_check_option_helper( $value, $check_type, $check_value ) ) {
+				return true;
+			}
+		}
 
-    // Run the relevant check based on the condition passed through against the value.
-    switch ( $data[1] ) {
-        case '=':
-        case '==':
-            return $option == $data[2];
-        case '!=':
-            return $option != $data[2];
-        case '>':
-        case '<':
-        case '>=':
-        case '<=':
-           return pmpro_int_compare( $option, $data[2], $data[1] );
-        case 'contains':
-            // Only proceed if $option is a string
-            return is_string( $option ) && strpos( $option, $data[2] ) !== false;
-        case 'notcontains':
-            // If $option is not a string and it doesn't contain $data[2], return true.
-            return ! ( is_string( $option ) && strpos( $option, $data[2] ) !== false );
-        case 'empty':
-            return empty( $option );
-        case 'notempty':
-            return ! empty( $option );
-        default:
-            return false;
-    }
+		return false;
+	}
 
+	// We have a single value to compare. Let's do it.
+	switch ( $check_type ) {
+		case '=':
+		case '==':
+			return $option_value == $check_value;
+		case '!=':
+			return $option_value != $check_value;
+		case '>':
+		case '<':
+		case '>=':
+		case '<=':
+			return pmpro_int_compare( $option_value, $check_value, $check_type );
+		case 'contains':
+			// Only proceed if $option_value is a string
+			return is_string( $option_value ) && strpos( $option_value, $check_value ) !== false;
+		case 'notcontains':
+			// If $option_value is not a string and it doesn't contain $check_value, return true.
+			return ! ( is_string( $option_value ) && strpos( $option_value, $check_value ) !== false );
+		case 'empty':
+			return empty( $option_value );
+		case 'notempty':
+			return ! empty( $option_value );
+		default:
+			return false;
+	}
 }
 
 /**
