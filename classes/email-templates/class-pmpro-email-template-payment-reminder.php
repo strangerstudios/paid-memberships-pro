@@ -61,7 +61,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( "Your membership at !!sitename!! will end soon", 'paid-memberships-pro' );
+		return esc_html__( "Your membership at !!sitename!! will renew soon", 'paid-memberships-pro' );
 	}
 
 	/**
