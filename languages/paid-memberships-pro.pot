@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.3.991\n"
+"Project-Id-Version: Paid Memberships Pro 3.3.992\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-02-04T18:55:10+00:00\n"
+"POT-Creation-Date: 2025-02-07T16:58:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -200,8 +200,8 @@ msgstr ""
 #: adminpages/securitysettings.php:381
 #: classes/class-pmpro-site-health.php:311
 #: classes/class-pmpro-site-health.php:317
-#: classes/class-pmpro-subscriptions-list-table.php:393
-#: classes/class-pmpro-subscriptions-list-table.php:579
+#: classes/class-pmpro-subscriptions-list-table.php:395
+#: classes/class-pmpro-subscriptions-list-table.php:581
 msgid "Active"
 msgstr ""
 
@@ -1114,7 +1114,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:96
 #: classes/class-pmpro-orders-list-table.php:1088
 #: classes/class-pmpro-orders-list-table.php:1107
-#: classes/class-pmpro-subscriptions-list-table.php:501
+#: classes/class-pmpro-subscriptions-list-table.php:503
 #: includes/profile.php:770
 msgid "deleted"
 msgstr ""
@@ -1122,7 +1122,7 @@ msgstr ""
 #: adminpages/dashboard.php:353
 #: adminpages/dashboard.php:368
 #: classes/class-pmpro-orders-list-table.php:1090
-#: classes/class-pmpro-subscriptions-list-table.php:503
+#: classes/class-pmpro-subscriptions-list-table.php:505
 msgid "none"
 msgstr ""
 
@@ -1947,10 +1947,10 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:1170
 #: classes/class-pmpro-orders-list-table.php:1199
 #: classes/class-pmpro-orders-list-table.php:1237
-#: classes/class-pmpro-subscriptions-list-table.php:522
-#: classes/class-pmpro-subscriptions-list-table.php:633
-#: classes/class-pmpro-subscriptions-list-table.php:657
-#: classes/class-pmpro-subscriptions-list-table.php:674
+#: classes/class-pmpro-subscriptions-list-table.php:524
+#: classes/class-pmpro-subscriptions-list-table.php:635
+#: classes/class-pmpro-subscriptions-list-table.php:659
+#: classes/class-pmpro-subscriptions-list-table.php:676
 #: includes/profile.php:772
 #: includes/profile.php:779
 #: includes/profile.php:789
@@ -2462,8 +2462,8 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:175
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:162
 #: classes/class-pmpro-members-list-table.php:697
-#: classes/class-pmpro-subscriptions-list-table.php:457
-#: classes/class-pmpro-subscriptions-list-table.php:467
+#: classes/class-pmpro-subscriptions-list-table.php:459
+#: classes/class-pmpro-subscriptions-list-table.php:469
 msgid "View Details"
 msgstr ""
 
@@ -2736,9 +2736,9 @@ msgstr ""
 #: adminpages/subscriptions.php:508
 #: adminpages/subscriptions.php:522
 #: classes/class-pmpro-orders-list-table.php:1278
-#: classes/class-pmpro-subscriptions-list-table.php:607
-#: classes/class-pmpro-subscriptions-list-table.php:627
-#: classes/class-pmpro-subscriptions-list-table.php:651
+#: classes/class-pmpro-subscriptions-list-table.php:609
+#: classes/class-pmpro-subscriptions-list-table.php:629
+#: classes/class-pmpro-subscriptions-list-table.php:653
 #: includes/functions.php:641
 #: includes/profile.php:69
 #: includes/profile.php:735
@@ -2851,13 +2851,13 @@ msgid "Level ID: %d [deleted]"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:141
-#: classes/class-pmpro-subscriptions-list-table.php:532
+#: classes/class-pmpro-subscriptions-list-table.php:534
 msgid "Membership Ended"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:151
 #: adminpages/subscriptions.php:482
-#: classes/class-pmpro-subscriptions-list-table.php:395
+#: classes/class-pmpro-subscriptions-list-table.php:397
 msgid "Sync Error"
 msgstr ""
 
@@ -3392,8 +3392,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:166
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:160
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:164
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:190
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:192
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:189
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:191
 #: classes/gateways/class.pmprogateway_braintree.php:528
 #: classes/gateways/class.pmprogateway_stripe.php:944
 #: includes/profile.php:720
@@ -4065,7 +4065,7 @@ msgstr ""
 #: adminpages/reports/memberships.php:381
 #: adminpages/reports/sales.php:693
 #: classes/class-pmpro-members-list-table.php:781
-#: classes/class-pmpro-subscriptions-list-table.php:384
+#: classes/class-pmpro-subscriptions-list-table.php:386
 #: classes/email-templates/class-pmpro-email-template-cancel-admin.php:156
 #: classes/email-templates/class-pmpro-email-template-cancel.php:151
 msgid "All Levels"
@@ -4087,7 +4087,7 @@ msgstr ""
 
 #: adminpages/reports/logins.php:221
 #: adminpages/wizard/memberships.php:55
-#: includes/localization.php:39
+#: includes/localization.php:36
 msgid "Week"
 msgstr ""
 
@@ -5196,17 +5196,17 @@ msgid "every"
 msgstr ""
 
 #: adminpages/wizard/memberships.php:54
-#: includes/localization.php:37
+#: includes/localization.php:34
 msgid "Day"
 msgstr ""
 
 #: adminpages/wizard/memberships.php:56
-#: includes/localization.php:41
+#: includes/localization.php:38
 msgid "Month"
 msgstr ""
 
 #: adminpages/wizard/memberships.php:57
-#: includes/localization.php:43
+#: includes/localization.php:40
 msgid "Year"
 msgstr ""
 
@@ -5353,8 +5353,8 @@ msgstr ""
 #: classes/class-pmpro-admin-activity-email.php:121
 #: classes/class-pmpro-members-list-table.php:158
 #: classes/class-pmpro-orders-list-table.php:360
-#: classes/class-pmpro-subscriptions-list-table.php:394
-#: classes/class-pmpro-subscriptions-list-table.php:579
+#: classes/class-pmpro-subscriptions-list-table.php:396
+#: classes/class-pmpro-subscriptions-list-table.php:581
 msgid "Cancelled"
 msgstr ""
 
@@ -5601,7 +5601,7 @@ msgstr ""
 
 #: classes/class-pmpro-members-list-table.php:779
 #: classes/class-pmpro-orders-list-table.php:556
-#: classes/class-pmpro-subscriptions-list-table.php:382
+#: classes/class-pmpro-subscriptions-list-table.php:384
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:81
@@ -5676,7 +5676,7 @@ msgid "To"
 msgstr ""
 
 #: classes/class-pmpro-orders-list-table.php:608
-#: classes/class-pmpro-subscriptions-list-table.php:390
+#: classes/class-pmpro-subscriptions-list-table.php:392
 msgid "filter by "
 msgstr ""
 
@@ -5689,7 +5689,7 @@ msgid "Last Year"
 msgstr ""
 
 #: classes/class-pmpro-orders-list-table.php:658
-#: classes/class-pmpro-subscriptions-list-table.php:398
+#: classes/class-pmpro-subscriptions-list-table.php:400
 msgid "Filter"
 msgstr ""
 
@@ -5962,11 +5962,11 @@ msgstr ""
 msgid "No subscriptions found."
 msgstr ""
 
-#: classes/class-pmpro-subscriptions-list-table.php:392
+#: classes/class-pmpro-subscriptions-list-table.php:394
 msgid "All Statuses"
 msgstr ""
 
-#: classes/class-pmpro-subscriptions-list-table.php:590
+#: classes/class-pmpro-subscriptions-list-table.php:592
 msgid "Sync Error:"
 msgstr ""
 
@@ -6217,7 +6217,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:123
 #: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:126
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:121
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:137
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:136
 msgid "The default subject for the email. This will be removed in a future version."
 msgstr ""
 
@@ -6287,8 +6287,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:129
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:122
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:124
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:138
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:143
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:137
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:142
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:120
 msgid "The display name of the user."
 msgstr ""
@@ -6308,7 +6308,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:130
 #: classes/email-templates/class-pmpro-email-template-membership-expired.php:126
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:125
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:139
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:138
 msgid "The ID of the membership level."
 msgstr ""
 
@@ -6327,7 +6327,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:131
 #: classes/email-templates/class-pmpro-email-template-membership-expired.php:127
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:126
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:140
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:139
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:118
 msgid "The name of the membership level."
 msgstr ""
@@ -6341,7 +6341,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:127
 #: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:128
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:123
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:141
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:140
 msgid "The username of the user."
 msgstr ""
 
@@ -6349,7 +6349,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:133
 #: classes/email-templates/class-pmpro-email-template-membership-expired.php:129
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:128
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:142
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:141
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:121
 msgid "The email address of the user."
 msgstr ""
@@ -6626,7 +6626,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:161
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:155
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:159
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:198
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:197
 #: includes/email.php:493
 #: includes/email.php:494
 msgid "This membership will expire on %s."
@@ -6712,7 +6712,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:224
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:228
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:130
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:163
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:162
 msgid "The expiration date of the membership level."
 msgstr ""
 
@@ -6733,7 +6733,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:149
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:227
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:231
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:146
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:145
 msgid "The date of the order."
 msgstr ""
 
@@ -6809,7 +6809,6 @@ msgid "This email is sent to the member when their expiration date is approachin
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:72
-#: classes/email-templates/class-pmpro-email-template-payment-reminder.php:64
 msgid "Your membership at !!sitename!! will end soon"
 msgstr ""
 
@@ -6829,8 +6828,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:131
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:125
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:126
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:146
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:147
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:148
 msgid "The URL of the order."
 msgstr ""
 
@@ -6855,79 +6854,79 @@ msgstr ""
 msgid "The URL of the membership levels page."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:51
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:50
 msgid "Recurring Payment Receipt"
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:62
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:61
 msgid "This email is sent to the member each time a new subscription payment is made."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:73
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:72
 msgid "Recurring payment receipt for !!sitename!! membership"
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:144
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:143
 msgid "The order ID."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:145
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:144
 msgid "The total amount of the order."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:149
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:148
 msgid "The name of the billing contact."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:150
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:149
 msgid "The street address of the billing contact."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:151
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:150
 msgid "The second line of the street address of the billing contact."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:152
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:151
 msgid "The city of the billing contact."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:153
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:152
 msgid "The state of the billing contact."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:154
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:153
 msgid "The ZIP code of the billing contact."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:155
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:154
 msgid "The country of the billing contact."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:156
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:155
 msgid "The phone number of the billing contact."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:157
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:156
 msgid "The formatted billing address."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:158
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:157
 msgid "The type of credit card used for the order."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:159
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:158
 msgid "The last four digits of the credit card used for the order."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:160
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:159
 msgid "The expiration month of the credit card used for the order."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:161
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:160
 msgid "The expiration year of the credit card used for the order."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:162
+#: classes/email-templates/class-pmpro-email-template-payment-receipt.php:161
 msgid "The discount code used for the order."
 msgstr ""
 
@@ -6937,6 +6936,10 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:53
 msgid "This email is sent when a subscription is approaching its renewal date. The additional placeholders !!renewaldate!! and !!billing_amount!! can be used to print the date that the subscription will renew and the renewal price."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-payment-reminder.php:64
+msgid "Your membership at !!sitename!! will renew soon"
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:119
@@ -8706,28 +8709,28 @@ msgstr ""
 msgid "Streamline LifterLMS"
 msgstr ""
 
-#: includes/compatibility/lifterlms.php:353
+#: includes/compatibility/lifterlms.php:354
 msgid "Since you already have Paid Memberships Pro installed, you can enable a \"streamlined\" version of LifterLMS that will let PMPro handle all checkouts, memberships, restrictions, and user fields."
 msgstr ""
 
-#: includes/compatibility/lifterlms.php:357
+#: includes/compatibility/lifterlms.php:358
 msgid "Enable streamlined version of LifterLMS"
 msgstr ""
 
-#: includes/compatibility/lifterlms.php:423
+#: includes/compatibility/lifterlms.php:424
 msgid "Security check failed."
 msgstr ""
 
-#: includes/compatibility/lifterlms.php:591
-#: includes/compatibility/lifterlms.php:593
+#: includes/compatibility/lifterlms.php:592
+#: includes/compatibility/lifterlms.php:594
 msgid "Restrict a Course"
 msgstr ""
 
-#: includes/compatibility/lifterlms.php:606
+#: includes/compatibility/lifterlms.php:607
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: includes/compatibility/lifterlms.php:622
+#: includes/compatibility/lifterlms.php:623
 msgid "Net Sales"
 msgstr ""
 
@@ -10333,27 +10336,27 @@ msgstr ""
 msgid "Bad response code %s."
 msgstr ""
 
-#: includes/localization.php:35
+#: includes/localization.php:32
 msgid "Hour"
 msgstr ""
 
-#: includes/localization.php:48
+#: includes/localization.php:45
 msgid "Hours"
 msgstr ""
 
-#: includes/localization.php:50
+#: includes/localization.php:47
 msgid "Days"
 msgstr ""
 
-#: includes/localization.php:52
+#: includes/localization.php:49
 msgid "Weeks"
 msgstr ""
 
-#: includes/localization.php:54
+#: includes/localization.php:51
 msgid "Months"
 msgstr ""
 
-#: includes/localization.php:56
+#: includes/localization.php:53
 msgid "Years"
 msgstr ""
 
