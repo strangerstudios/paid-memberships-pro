@@ -336,6 +336,11 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 
 
 function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
+	//Bail if no level
+	if ( empty( $level ) ) {
+		return '';
+	}
+
 	// initial payment
 	if ( ! $short ) {
 		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
@@ -527,6 +532,10 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 }
 
 function pmpro_getLevelExpiration( &$level ) {
+	//Bail if no level
+	if ( empty( $level ) ) {
+		return '';
+	}
 
 	if ( $level->expiration_number ) {
 		$expiration_text = sprintf( __( 'Membership expires after %1$d %2$s.', 'paid-memberships-pro' ), $level->expiration_number, pmpro_translate_billing_period( $level->expiration_period, $level->expiration_number ) );
