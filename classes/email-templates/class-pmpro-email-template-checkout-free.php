@@ -128,7 +128,7 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 			'!!user_login!!' => esc_html__( 'The login name of the email recipient.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the email recipient.', 'paid-memberships-pro' ),
 			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),

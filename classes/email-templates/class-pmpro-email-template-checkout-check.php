@@ -140,7 +140,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'!!user_login!!' => esc_html__( 'The login name of the email recipient.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the email recipient.', 'paid-memberships-pro' ),
 			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
@@ -162,13 +162,16 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 		$order = $this->order;
 		$user = $this->user;
 		$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
+		$discount_code = "";
+		if( $order->getDiscountCode() ) {
+			$discount_code = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
+		}
 
+		$confirmation_message = '';
 		$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
-			if ( ! empty( $confirmation_in_email ) ) {
-				$confirmation_message = $membership_level->confirmation;
-			} else {
-				$confirmation_message = '';
-			}
+		if ( ! empty( $confirmation_in_email ) ) {
+			$confirmation_message = $membership_level->confirmation;
+		}
 
 		$email_template_variables = array(
 			'subject' => $this->get_default_subject(),
@@ -177,17 +180,16 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'user_login' => $user->user_login,
 			'membership_id' => $membership_level->id,
 			'membership_level_name' => $membership_level->name,
-			'confirmation_message' => $confirmation_message,
+			'membership_level_confirmation_message' => $confirmation_message,
 			'membership_cost' => pmpro_getLevelCost($membership_level),
 			'user_email' => $user->user_email,
 			'order_id' => $order->code,
 			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
+			'discount_code' => $discount_code,
 		);
-
 		return $email_template_variables;
 	}
-
 }
 
 /**
