@@ -146,12 +146,11 @@ class PMPro_Email_Template_Checkout_Paid extends PMPro_Email_Template {
 		$user = $this->user;
 		$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
 
+		$confirmation_message = '';
 		$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
-			if ( ! empty( $confirmation_in_email ) ) {
-				$confirmation_message = $membership_level->confirmation;
-			} else {
-				$confirmation_message = '';
-			}
+		if ( ! empty( $confirmation_in_email ) ) {
+			$confirmation_message = $membership_level->confirmation;
+		}
 
 		$membership_expiration = '';
 		$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
@@ -222,7 +221,7 @@ class PMPro_Email_Template_Checkout_Paid extends PMPro_Email_Template {
 			'!!user_login!!' => esc_html__( 'The login name of the email recipient.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the email recipient.', 'paid-memberships-pro' ),
 			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
