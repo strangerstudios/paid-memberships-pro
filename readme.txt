@@ -217,6 +217,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed a styling issue when there are multiple paragraphs in a contextual message. #3250 (@kimcoleman)
 * BUG FIX: Fixed a styling issue where there may be a gap when Turnstile is enabled but not visible. #3273 (@kimcoleman)
 * BUG FIX: Fixed an incorrect path when loading the paid-memberships-pro text domain. #3282 (@andrewlimaza)
+* BUG FIX: Fixed a PHP warning when loading the checkout page template without the preheader (e.g., when loading the checkout block in the editor). #3287 (@MaximilianoRicoTabo)
 * BUG FIX: Fixed a potential PHP warning when building plugin action links. #3264 (@mircobabini)
 * BUG FIX: Fixed a potential PHP error when attempting to display a subscription that does not exist in the Subscriptions table. #2383 (@dparker1005)
 * BUG FIX: Corrected the refund policy on the license page to reflect recent changes. #3272 (@kimcoleman)
