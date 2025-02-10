@@ -16,6 +16,24 @@ global $discount_code, $username, $password, $password2, $bfirstname, $blastname
 
 $pmpro_levels = pmpro_getAllLevels();
 
+//If global $pmpro_level is null, let's instantiate a dummy level object to avoid errors.
+if ( ! isset( $pmpro_level ) ) {
+	$pmpro_level = new PMPro_Membership_Level();
+	$pmpro_level->id = 0;
+	$pmpro_level->name = __( 'Invalid Level', 'paid-memberships-pro' );
+	$pmpro_level->description = $pmpro_level->name;
+	$pmpro_level->confirmation = '';
+	$pmpro_level->initial_payment = 0;
+	$pmpro_level->billing_amount = 0;
+	$pmpro_level->cycle_number = 0;
+	$pmpro_level->cycle_period = 'Month';
+	$pmpro_level->billing_limit = 0;
+	$pmpro_level->trial_amount = 0;
+	$pmpro_level->trial_limit = 0;
+	$pmpro_level->expiration_number = 0;
+	$pmpro_level->expiration_period = 'Month';
+ }
+
 /**
  * Filter to set if PMPro uses email or text as the type for email field inputs.
  *
@@ -49,9 +67,9 @@ if ( empty( $default_gateway ) ) {
 
 	<section id="pmpro_level-<?php echo intval( $pmpro_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_checkout_gateway_class, 'pmpro_level-' . $pmpro_level->id ) ); ?>">
 
-		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php if(!empty($_REQUEST['review'])) echo esc_url( pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id) ); ?>" method="post">
+		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php if(!empty($_REQUEST['review'])) echo esc_url( pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id ) ); ?>" method="post">
 
-			<input type="hidden" id="pmpro_level" name="pmpro_level" value="<?php echo esc_attr($pmpro_level->id) ?>" />
+			<input type="hidden" id="pmpro_level" name="pmpro_level" value="<?php echo esc_attr( $pmpro_level->id ) ?>" />
 			<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />
 			<?php if ($discount_code && $pmpro_review) { ?>
 				<input class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_alter_price', 'pmpro_discount_code' ) ); ?>" id="pmpro_discount_code" name="pmpro_discount_code" type="hidden" value="<?php echo esc_attr($discount_code) ?>" />
@@ -120,7 +138,7 @@ if ( empty( $default_gateway ) ) {
 							 * @param string $description The level description.
 							 * @param object $pmpro_level The PMPro Level object.
 							 */
-							$level_description = apply_filters('pmpro_level_description', $pmpro_level->description, $pmpro_level);
+							$level_description = apply_filters( 'pmpro_level_description', $pmpro_level->description, $pmpro_level );
 							if ( ! empty( $level_description ) ) { ?>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_description_text' ) );?>">
 									<?php echo wp_kses_post( $level_description ); ?>
