@@ -22,7 +22,18 @@ if ( ! isset( $pmpro_level ) ) {
 	$pmpro_level->id = 0;
 	$pmpro_level->name = 'Invalid Level';
 	$pmpro_level->description = $pmpro_level->name;
-}
+	$pmpro_level->confirmation = '';
+	$pmpro_level->initial_payment = 0;
+	$pmpro_level->billing_amount = 0;
+	$pmpro_level->cycle_number = 0;
+	$pmpro_level->cycle_period = '';
+	$pmpro_level->billing_limit = 0;
+	$pmpro_level->trial_amount = 0;
+	$pmpro_level->trial_limit = 0;
+	$pmpro_level->allow_signups = 0;
+	$pmpro_level->expiration_number = 0;
+	$pmpro_level->expiration_period = '';
+ }
 
 /**
  * Filter to set if PMPro uses email or text as the type for email field inputs.
