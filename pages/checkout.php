@@ -20,19 +20,18 @@ $pmpro_levels = pmpro_getAllLevels();
 if ( ! isset( $pmpro_level ) ) {
 	$pmpro_level = new PMPro_Membership_Level();
 	$pmpro_level->id = 0;
-	$pmpro_level->name = 'Invalid Level';
+	$pmpro_level->name = __( 'Invalid Level', 'paid-memberships-pro' );
 	$pmpro_level->description = $pmpro_level->name;
 	$pmpro_level->confirmation = '';
 	$pmpro_level->initial_payment = 0;
 	$pmpro_level->billing_amount = 0;
 	$pmpro_level->cycle_number = 0;
-	$pmpro_level->cycle_period = '';
+	$pmpro_level->cycle_period = 'Month';
 	$pmpro_level->billing_limit = 0;
 	$pmpro_level->trial_amount = 0;
 	$pmpro_level->trial_limit = 0;
-	$pmpro_level->allow_signups = 0;
 	$pmpro_level->expiration_number = 0;
-	$pmpro_level->expiration_period = '';
+	$pmpro_level->expiration_period = 'Month';
  }
 
 /**
@@ -93,6 +92,7 @@ if ( empty( $default_gateway ) ) {
 							<?php
 							// Tell the user which level they are signing up for.
 							printf( esc_html__('You have selected the %s membership level.', 'paid-memberships-pro' ), '<strong>' . esc_html( $pmpro_level->name ) . '</strong>' );
+
 							// If a level will be removed with this purchase, let them know that too.
 							// First off, get the group for this level and check if it allows a user to have multiple levels.
 							$group_id = pmpro_get_group_id_for_level( $pmpro_level->id );
