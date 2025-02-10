@@ -16,6 +16,14 @@ global $discount_code, $username, $password, $password2, $bfirstname, $blastname
 
 $pmpro_levels = pmpro_getAllLevels();
 
+//If global $pmpro_level is null, let's instantiate a dummy level object to avoid errors.
+if ( ! isset( $pmpro_level ) ) {
+	$pmpro_level = new PMPro_Membership_Level();
+	$pmpro_level->id = 0;
+	$pmpro_level->name = 'Invalid Level';
+	$pmpro_level->description = $pmpro_level->name;
+}
+
 /**
  * Filter to set if PMPro uses email or text as the type for email field inputs.
  *
@@ -38,13 +46,11 @@ if ( empty( $default_gateway ) ) {
 
 	<?php do_action( 'pmpro_checkout_before_form' ); ?>
 
-	<?php $pmpro_level_id = isset( $pmpro_level->id ) ? $pmpro_level->id : ''; //Let's get the id here so we avoid warning in those pages where the level isn't defined ?>
+	<section id="pmpro_level-<?php echo intval( $pmpro_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_checkout_gateway_class, 'pmpro_level-' . $pmpro_level->id ) ); ?>">
 
-	<section id="pmpro_level-<?php echo intval( $pmpro_level_id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_checkout_gateway_class, 'pmpro_level-' . $pmpro_level_id ) ); ?>">
+		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php if(!empty($_REQUEST['review'])) echo esc_url( pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id ) ); ?>" method="post">
 
-		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php if(!empty($_REQUEST['review'])) echo esc_url( pmpro_url("checkout", "?pmpro_level=" . $pmpro_level_id ) ); ?>" method="post">
-
-			<input type="hidden" id="pmpro_level" name="pmpro_level" value="<?php echo esc_attr( $pmpro_level_id ) ?>" />
+			<input type="hidden" id="pmpro_level" name="pmpro_level" value="<?php echo esc_attr( $pmpro_level->id ) ?>" />
 			<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />
 			<?php if ($discount_code && $pmpro_review) { ?>
 				<input class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_alter_price', 'pmpro_discount_code' ) ); ?>" id="pmpro_discount_code" name="pmpro_discount_code" type="hidden" value="<?php echo esc_attr($discount_code) ?>" />
@@ -75,11 +81,10 @@ if ( empty( $default_gateway ) ) {
 						<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
 							<?php
 							// Tell the user which level they are signing up for.
-							$pmpro_level_name = isset( $pmpro_level->name ) ? $pmpro_level->name : '';
-							printf( esc_html__('You have selected the %s membership level.', 'paid-memberships-pro' ), '<strong>' . esc_html( $pmpro_level_name ) . '</strong>' );
+							printf( esc_html__('You have selected the %s membership level.', 'paid-memberships-pro' ), '<strong>' . esc_html( $pmpro_level->name ) . '</strong>' );
 							// If a level will be removed with this purchase, let them know that too.
 							// First off, get the group for this level and check if it allows a user to have multiple levels.
-							$group_id = pmpro_get_group_id_for_level( $pmpro_level_id );
+							$group_id = pmpro_get_group_id_for_level( $pmpro_level->id );
 							$group    = pmpro_get_level_group( $group_id );
 							if ( ! empty( $group ) && empty( $group->allow_multiple_selections ) ) {
 								// Get all of the user's current membership levels.
@@ -113,8 +118,7 @@ if ( empty( $default_gateway ) ) {
 							 * @param string $description The level description.
 							 * @param object $pmpro_level The PMPro Level object.
 							 */
-							$pmpro_level_description = isset( $pmpro_level->description ) ? $pmpro_level->description : '';
-							$level_description = apply_filters('pmpro_level_description', $pmpro_level_description, $pmpro_level);
+							$level_description = apply_filters( 'pmpro_level_description', $pmpro_level->description, $pmpro_level );
 							if ( ! empty( $level_description ) ) { ?>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_description_text' ) );?>">
 									<?php echo wp_kses_post( $level_description ); ?>
@@ -317,7 +321,7 @@ if ( empty( $default_gateway ) ) {
 						</div> <!-- end pmpro_card_content -->
 						<?php if ( ! $skip_account_fields ) { ?>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-								<?php esc_html_e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo esc_url( wp_login_url( apply_filters( 'pmpro_checkout_login_redirect', pmpro_url("checkout", "?pmpro_level=" . $pmpro_level_id . $discount_code_link) ) ) ); ?>"><?php esc_html_e('Log in here', 'paid-memberships-pro' ); ?></a>
+								<?php esc_html_e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo esc_url( wp_login_url( apply_filters( 'pmpro_checkout_login_redirect', pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id . $discount_code_link) ) ) ); ?>"><?php esc_html_e('Log in here', 'paid-memberships-pro' ); ?></a>
 							</div> <!-- end pmpro_card_actions -->
 						<?php } ?>
 					</div> <!-- end pmpro_card -->
