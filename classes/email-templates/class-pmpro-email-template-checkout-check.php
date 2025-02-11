@@ -188,7 +188,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 			'discount_code' => $discount_code,
-			'instructions' => get_option( 'pmpro_instructions' ),
+			'instructions' => wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ),
 		);
 		return $email_template_variables;
 	}
