@@ -148,6 +148,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
 			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
 			'!!order_total!!' => esc_html__( 'The total cost of the order.', 'paid-memberships-pro' ),
+			'!!instructions!!' => esc_html__( 'Instructions to the customer on how to pay.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -187,6 +188,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 			'discount_code' => $discount_code,
+			'instructions' => get_option( 'pmpro_instructions' ),
 		);
 		return $email_template_variables;
 	}

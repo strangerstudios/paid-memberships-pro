@@ -115,11 +115,11 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'membership_level_name' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'renewaldate' => esc_html__( 'The date of the next payment date.', 'paid-memberships-pro' ),
-			'display_name' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'user_email' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'cancel_link' => esc_html__( 'The link to cancel the subscription.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!renewaldate!!' => esc_html__( 'The date of the next payment date.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'!!cancel_link!!' => esc_html__( 'The link to cancel the subscription.', 'paid-memberships-pro' ),
 		);
 	}
 

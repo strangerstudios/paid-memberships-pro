@@ -296,13 +296,12 @@ function pmpro_email_templates_send_test() {
 
 	$test_user = $current_user;
 
-
-	//test subscription object
-	$test_subscription = new PMPro_Subscription( array( 'user_id' => $test_user->ID, 'membership_level_id' => $test_user->membership_level->id, 'next_payment_date' => date( 'Y-m-d', strtotime( '+1 month' )  ) )  );
-
 	// Grab the first membership level defined as a "test level" to use
 	$all_levels = pmpro_getAllLevels( true);
 	$test_user->membership_level = array_pop( $all_levels );
+
+	//test subscription object
+	$test_subscription = new PMPro_Subscription( array( 'user_id' => $test_user->ID, 'membership_level_id' => $test_user->membership_level->id, 'next_payment_date' => date( 'Y-m-d', strtotime( '+1 month' )  ) )  );
 
 	//add notice to email body
 	add_filter('pmpro_email_body', 'pmpro_email_templates_test_body', 10, 2);
@@ -314,11 +313,11 @@ function pmpro_email_templates_send_test() {
 	switch($test_email->template) {
 		case 'cancel':
 			$send_email = 'sendCancelEmail';
-			$params = array($test_user);
+			$params = array($test_user,$test_user->membership_level->id);
 			break;
 		case 'cancel_admin':
 			$send_email = 'sendCancelAdminEmail';
-			$params = array($current_user, $current_user->membership_level->id);
+			$params = array($test_user, $test_user->membership_level->id);
 			break;
 		case 'cancel_on_next_payment_date':
 		case 'cancel_on_next_payment_date_admin':
@@ -338,6 +337,7 @@ function pmpro_email_templates_send_test() {
 		case 'checkout_check':
 		case 'checkout_free':
 		case 'checkout_paid':
+			_log( $test_email->template );
 			$send_email = 'sendCheckoutEmail';
 			$params = array($test_user, $test_order);
 			break;
@@ -406,6 +406,8 @@ function pmpro_email_templates_send_test() {
 
 	//send the email
 	$response = call_user_func_array(array($test_email, $send_email), $params);
+
+	_log( $response, 'test email response from ' . $send_email );
 
 	//return the response
 	echo esc_html( $response );
