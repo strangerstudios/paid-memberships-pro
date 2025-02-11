@@ -2,7 +2,7 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
-Tested up to: 6.7.1
+Tested up to: 6.7.2
 Requires PHP: 5.6
 Stable tag: 3.4
 License: GPLv2
