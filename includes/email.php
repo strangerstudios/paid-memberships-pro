@@ -407,8 +407,6 @@ function pmpro_email_templates_send_test() {
 	//send the email
 	$response = call_user_func_array(array($test_email, $send_email), $params);
 
-	_log( $response, 'test email response from ' . $send_email );
-
 	//return the response
 	echo esc_html( $response );
 	exit;
