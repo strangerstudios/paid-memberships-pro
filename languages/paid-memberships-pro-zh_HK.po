@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.3.992\n"
+"Project-Id-Version: Paid Memberships Pro 3.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-02-07T17:00:08+00:00\n"
+"POT-Creation-Date: 2025-02-11T15:55:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -1051,6 +1051,7 @@ msgstr "請 <a href=\"%s\">登入</a> 後能讀內容. (<a href=\"%s\">請參加
 #: includes/functions.php:2110
 #: includes/functions.php:2112
 #: includes/functions.php:2122
+#: includes/functions.php:2131
 msgid "This content is for members only. Visit the site and log in/register to read."
 msgstr "這些內容是給會員的. 請登入/登記我們的網站就能讀."
 
@@ -2289,6 +2290,7 @@ msgstr "開始日期"
 #: classes/gateways/class.pmprogateway_stripe.php:929
 #: pages/billing.php:314
 #: pages/checkout.php:483
+#: pages/checkout.php:501
 msgid "Expiration Date"
 msgstr "到期日期"
 
@@ -4980,6 +4982,7 @@ msgstr "%d 會員找到."
 #: pages/confirmation.php:107
 #: classes/class-pmpro-subscription.php:1203
 #: pages/checkout.php:237
+#: pages/checkout.php:255
 msgid "Username"
 msgstr "會員名"
 
@@ -5056,6 +5059,7 @@ msgstr "姓氏"
 #: adminpages/orders.php:491
 #: pages/billing.php:186
 #: pages/checkout.php:371
+#: pages/checkout.php:389
 msgid "Billing Address"
 msgstr "付款帳單地址"
 
@@ -5625,6 +5629,7 @@ msgstr "小計部分"
 #: adminpages/orders.php:664
 #: includes/functions.php:3248
 #: includes/functions.php:3237
+#: includes/functions.php:3246
 msgid "Tax"
 msgstr "稅"
 
@@ -5737,6 +5742,7 @@ msgstr "禮券數量"
 #: includes/functions.php:3258
 #: shortcodes/pmpro_account.php:346
 #: adminpages/reports/memberships.php:562
+#: includes/functions.php:3267
 msgid "Total"
 msgstr "總數"
 
@@ -8911,6 +8917,7 @@ msgstr "價錢"
 #: includes/functions.php:3235
 #: includes/functions.php:3241
 #: includes/functions.php:3230
+#: includes/functions.php:3239
 msgid "Subtotal"
 msgstr "小計部分總數"
 
@@ -9292,6 +9299,11 @@ msgstr "你的會籍確認給 %s"
 #: pages/checkout.php:524
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:189
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:191
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:167
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:163
+#: pages/checkout.php:197
+#: pages/checkout.php:200
+#: pages/checkout.php:542
 msgid "Discount Code"
 msgstr "减價密碼"
 
@@ -9399,6 +9411,7 @@ msgstr "减價密碼"
 #: includes/email.php:493
 #: includes/email.php:494
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:197
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:158
 #, php-format
 msgid "This membership will expire on %s."
 msgstr "你的會籍會在%s到期."
@@ -9519,6 +9532,7 @@ msgstr "發票給%s 的會籍"
 #: classes/class.pmproemail.php:1296
 #: classes/class.pmproemail.php:1306
 #: classes/class.pmproemail.php:683
+#: classes/class.pmproemail.php:685
 #, php-format
 msgid "Your trial at %s is ending soon"
 msgstr "你的試用期在 %s 就近到期日"
@@ -10235,6 +10249,7 @@ msgstr "全面同Braintree配合, 你需要設定網鉤URL到"
 #: pages/billing.php:161
 #: pages/billing.php:282
 #: pages/checkout.php:473
+#: pages/checkout.php:491
 msgid "Payment Information"
 msgstr "付款資料"
 
@@ -10360,6 +10375,7 @@ msgstr "我們接受 %s"
 #: classes/gateways/class.pmprogateway_stripe.php:924
 #: pages/billing.php:310
 #: pages/checkout.php:478
+#: pages/checkout.php:496
 msgid "Card Number"
 msgstr "卡號碼"
 
@@ -10542,6 +10558,8 @@ msgstr "這是怎麼?"
 #: classes/gateways/class.pmprogateway_stripe.php:947
 #: pages/checkout.php:185
 #: pages/checkout.php:527
+#: pages/checkout.php:203
+#: pages/checkout.php:545
 msgid "Apply"
 msgstr "啟用"
 
@@ -10905,6 +10923,7 @@ msgstr "賣主"
 #: pages/checkout.php:214
 #: pages/checkout.php:229
 #: pages/checkout.php:256
+#: pages/checkout.php:274
 msgid "Password"
 msgstr "密碼"
 
@@ -11219,6 +11238,7 @@ msgstr "PayPal來結帳"
 #: pages/checkout.php:544
 #: classes/gateways/class.pmprogateway_paypalexpress.php:563
 #: pages/checkout.php:595
+#: pages/checkout.php:613
 msgid "Submit and Check Out"
 msgstr "提交和結帳"
 
@@ -11277,6 +11297,7 @@ msgstr "提交和結帳"
 #: pages/checkout.php:544
 #: classes/gateways/class.pmprogateway_paypalexpress.php:563
 #: pages/checkout.php:595
+#: pages/checkout.php:613
 msgid "Submit and Confirm"
 msgstr "提交和確認"
 
@@ -12993,6 +13014,8 @@ msgstr "越南盾"
 #: includes/functions.php:337
 #: includes/functions.php:341
 #: includes/functions.php:459
+#: includes/functions.php:346
+#: includes/functions.php:464
 #, php-format
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr "現在的會籍價用是<strong>%s</strong>"
@@ -13016,6 +13039,8 @@ msgstr "現在的會籍價用是<strong>%s</strong>"
 #: includes/functions.php:342
 #: includes/functions.php:346
 #: includes/functions.php:461
+#: includes/functions.php:351
+#: includes/functions.php:466
 #, php-format
 msgid "<strong>%s</strong> now"
 msgstr "現在是<strong>%s</strong>"
@@ -13159,6 +13184,7 @@ msgstr " 和然後 <strong>%s 每個 %d %s</strong>."
 #: includes/functions.php:451
 #: includes/functions.php:390
 #: includes/functions.php:394
+#: includes/functions.php:399
 msgid "After your initial payment, your first payment is Free."
 msgstr "交給這個首期付款後, 您這個週期如果没有到期或無任何改變您都不需要再交付款."
 
@@ -13181,6 +13207,7 @@ msgstr "交給這個首期付款後, 您這個週期如果没有到期或無任�
 #: includes/functions.php:453
 #: includes/functions.php:392
 #: includes/functions.php:396
+#: includes/functions.php:401
 #, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr "交給這個首期付款後, 您這個週期%d如果没有到期或無任何改變您都不需要再交付款."
@@ -13204,6 +13231,7 @@ msgstr "交給這個首期付款後, 您這個週期%d如果没有到期或無�
 #: includes/functions.php:457
 #: includes/functions.php:396
 #: includes/functions.php:400
+#: includes/functions.php:405
 #, php-format
 msgid "After your initial payment, your first payment will cost %s."
 msgstr "交給這個首期付款後, 您的第一個付款是 %s."
@@ -13274,6 +13302,7 @@ msgstr "<strong>%s 每個 %d %s</strong>"
 #: includes/functions.php:561
 #: includes/functions.php:500
 #: includes/functions.php:504
+#: includes/functions.php:509
 msgid "Trial pricing has been applied to the first payment."
 msgstr "試用價格已經應用在第一個付款."
 
@@ -13282,6 +13311,7 @@ msgstr "試用價格已經應用在第一個付款."
 #: includes/functions.php:563
 #: includes/functions.php:502
 #: includes/functions.php:506
+#: includes/functions.php:511
 #, php-format
 msgid "Trial pricing has been applied to the first %d payments."
 msgstr "試用價格已經應用在第一個%d付款."
@@ -13339,6 +13369,8 @@ msgstr "%s 會籍 expires after %d %s以後"
 #: includes/functions.php:1117
 #: includes/functions.php:1040
 #: includes/functions.php:1125
+#: includes/functions.php:1049
+#: includes/functions.php:1134
 msgid "User ID not found."
 msgstr "會員ID找不到."
 
@@ -13375,6 +13407,7 @@ msgstr "會員ID找不到."
 #: includes/functions.php:1072
 #: includes/functions.php:1175
 #: includes/functions.php:1183
+#: includes/functions.php:1192
 msgid "Invalid level."
 msgstr "不承認的程度."
 
@@ -13456,6 +13489,7 @@ msgstr "不改變?"
 #: includes/functions.php:956
 #: includes/functions.php:1063
 #: includes/functions.php:1071
+#: includes/functions.php:1080
 msgid "Error interacting with database"
 msgstr "同數據庫交流有錯"
 
@@ -13474,6 +13508,7 @@ msgstr "同數據庫交流有錯"
 #: includes/functions.php:1283
 #: includes/functions.php:1286
 #: includes/functions.php:1294
+#: includes/functions.php:1303
 #, php-format
 msgid "Error interacting with database: %s"
 msgstr "同數據庫交流有錯: %s"
@@ -13544,6 +13579,8 @@ msgstr "同數據庫交流有錯: %s"
 #: includes/functions.php:1507
 #: includes/functions.php:1470
 #: includes/functions.php:1509
+#: includes/functions.php:1479
+#: includes/functions.php:1518
 msgid "Membership level not found."
 msgstr "找不到會籍程度."
 
@@ -13577,6 +13614,7 @@ msgstr "找不到會籍程度."
 #: includes/functions.php:1890
 #: includes/functions.php:1898
 #: includes/functions.php:1900
+#: includes/functions.php:1909
 msgid "No code was given to check."
 msgstr "無給到密碼來檢查."
 
@@ -13617,6 +13655,7 @@ msgstr "無給到密碼來檢查."
 #: includes/functions.php:1899
 #: includes/functions.php:1907
 #: includes/functions.php:1909
+#: includes/functions.php:1918
 msgid "The discount code could not be found."
 msgstr "减價密碼找不到."
 
@@ -13657,6 +13696,7 @@ msgstr "减價密碼找不到."
 #: includes/functions.php:1914
 #: includes/functions.php:1922
 #: includes/functions.php:1924
+#: includes/functions.php:1933
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "减價密碼生效在 %s."
@@ -13698,6 +13738,7 @@ msgstr "减價密碼生效在 %s."
 #: includes/functions.php:1921
 #: includes/functions.php:1929
 #: includes/functions.php:1931
+#: includes/functions.php:1940
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "减價密碼到期在 %s."
@@ -13739,6 +13780,7 @@ msgstr "减價密碼到期在 %s."
 #: includes/functions.php:1930
 #: includes/functions.php:1938
 #: includes/functions.php:1940
+#: includes/functions.php:1949
 msgid "This discount code is no longer valid."
 msgstr "减價密碼已經不承認了."
 
@@ -13779,6 +13821,7 @@ msgstr "减價密碼已經不承認了."
 #: includes/functions.php:1957
 #: includes/functions.php:1959
 #: includes/functions.php:1969
+#: includes/functions.php:1978
 msgid "This discount code does not apply to this membership level."
 msgstr "减價密碼不可以啟用在這個程度."
 
@@ -13820,6 +13863,7 @@ msgstr "减價密碼不可以啟用在這個程度."
 #: includes/functions.php:1995
 #: includes/functions.php:1997
 #: includes/functions.php:2007
+#: includes/functions.php:2016
 msgid "This discount code is okay."
 msgstr "减價密碼無問題."
 
@@ -13869,6 +13913,7 @@ msgstr "减價密碼無問題."
 #: includes/functions.php:2029
 #: includes/functions.php:2031
 #: includes/functions.php:2041
+#: includes/functions.php:2050
 msgid "and"
 msgstr "和"
 
@@ -13915,6 +13960,7 @@ msgstr "和"
 #: includes/functions.php:2749
 #: includes/functions.php:2759
 #: includes/functions.php:2748
+#: includes/functions.php:2757
 msgid "Sign Up for !!name!! Now"
 msgstr "馬上報名加入到 !!name!!啊"
 
@@ -14593,6 +14639,7 @@ msgstr "您的會籍付款是給PayPal管理. 請 <a href=\"http://www.paypal.co
 #: pages/checkout.php:339
 #: pages/billing.php:190
 #: pages/checkout.php:375
+#: pages/checkout.php:393
 msgid "First Name"
 msgstr "名字"
 
@@ -14645,6 +14692,7 @@ msgstr "名字"
 #: pages/checkout.php:343
 #: pages/billing.php:194
 #: pages/checkout.php:379
+#: pages/checkout.php:397
 msgid "Last Name"
 msgstr "姓氏"
 
@@ -14680,6 +14728,7 @@ msgstr "姓氏"
 #: pages/checkout.php:347
 #: pages/billing.php:198
 #: pages/checkout.php:383
+#: pages/checkout.php:401
 msgid "Address 1"
 msgstr "地址 1"
 
@@ -14715,6 +14764,7 @@ msgstr "地址 1"
 #: pages/checkout.php:351
 #: pages/billing.php:202
 #: pages/checkout.php:387
+#: pages/checkout.php:405
 msgid "Address 2"
 msgstr "地址 2"
 
@@ -14749,6 +14799,7 @@ msgstr "地址 2"
 #: pages/checkout.php:383
 #: pages/billing.php:207
 #: pages/checkout.php:391
+#: pages/checkout.php:409
 msgid "City"
 msgstr "都市"
 
@@ -14783,6 +14834,7 @@ msgstr "都市"
 #: pages/checkout.php:387
 #: pages/billing.php:211
 #: pages/checkout.php:395
+#: pages/checkout.php:413
 msgid "State"
 msgstr "州"
 
@@ -14817,6 +14869,7 @@ msgstr "州"
 #: pages/checkout.php:391
 #: pages/billing.php:215
 #: pages/checkout.php:399
+#: pages/checkout.php:417
 msgid "Postal Code"
 msgstr "郵遞區號"
 
@@ -14881,6 +14934,7 @@ msgstr "都市, 州編碼"
 #: pages/checkout.php:398
 #: pages/billing.php:225
 #: pages/checkout.php:406
+#: pages/checkout.php:424
 msgid "Country"
 msgstr "國家"
 
@@ -14918,6 +14972,7 @@ msgstr "國家"
 #: pages/checkout.php:412
 #: pages/billing.php:259
 #: pages/checkout.php:448
+#: pages/checkout.php:466
 msgid "Phone"
 msgstr "電話"
 
@@ -14970,6 +15025,8 @@ msgstr "電話"
 #: pages/billing.php:251
 #: pages/checkout.php:298
 #: pages/checkout.php:433
+#: pages/checkout.php:316
+#: pages/checkout.php:451
 msgid "Email Address"
 msgstr "電子郵件地址"
 
@@ -15174,6 +15231,7 @@ msgstr "點擊這裡主頁."
 #: pages/checkout.php:57
 #: pages/checkout.php:60
 #: pages/checkout.php:69
+#: pages/checkout.php:87
 msgid "Almost done. Review the membership information and pricing below then <strong>click the \"Complete Payment\" button</strong> to finish your order."
 msgstr "就來完了. 重溫在下面的會籍資料和價格然後 <strong>點擊 \"Complete Payment\" 按鈕</strong> 就可以完成您的訂購."
 
@@ -15227,6 +15285,7 @@ msgstr "<p class=\"pmpro_level_discount_applied\">這個 <strong>%s</strong> 密
 #: services/applydiscountcode.php:123
 #: pages/checkout.php:157
 #: pages/checkout.php:175
+#: pages/checkout.php:193
 msgid "Click here to change your discount code"
 msgstr "點擊這裡减價密碼"
 
@@ -15243,6 +15302,7 @@ msgstr "點擊這裡减價密碼"
 #: pages/checkout.php:154
 #: pages/checkout.php:159
 #: pages/checkout.php:177
+#: pages/checkout.php:195
 msgid "Click here to enter your discount code"
 msgstr "點擊這裡來輸入您的减價密碼"
 
@@ -15259,6 +15319,7 @@ msgstr "點擊這裡來輸入您的减價密碼"
 #: pages/checkout.php:154
 #: pages/checkout.php:159
 #: pages/checkout.php:177
+#: pages/checkout.php:195
 msgid "Do you have a discount code?"
 msgstr "您有不有减價密碼?"
 
@@ -15282,6 +15343,7 @@ msgstr "您有不有减價密碼?"
 #: pages/checkout.php:200
 #: includes/profile.php:1129
 #: pages/checkout.php:227
+#: pages/checkout.php:245
 msgid "Account Information"
 msgstr "戶口資料"
 
@@ -15301,6 +15363,7 @@ msgstr "戶口資料"
 #: pages/checkout.php:303
 #: pages/checkout.php:317
 #: pages/checkout.php:344
+#: pages/checkout.php:362
 msgid "Already have an account?"
 msgstr "您已經有戶口嗎?"
 
@@ -15324,6 +15387,8 @@ msgstr "您已經有戶口嗎?"
 #: pages/checkout.php:317
 #: includes/functions.php:2198
 #: pages/checkout.php:344
+#: includes/functions.php:2207
+#: pages/checkout.php:362
 msgid "Log in here"
 msgstr "在這裡請登入"
 
@@ -15347,6 +15412,7 @@ msgstr "在這裡請登入"
 #: pages/checkout.php:229
 #: pages/checkout.php:244
 #: pages/checkout.php:271
+#: pages/checkout.php:289
 msgid "Confirm Password"
 msgstr "確認密碼"
 
@@ -15367,6 +15433,7 @@ msgstr "確認密碼"
 #: pages/checkout.php:279
 #: pages/billing.php:255
 #: pages/checkout.php:306
+#: pages/checkout.php:324
 msgid "Confirm Email Address"
 msgstr "確認電郵地址"
 
@@ -15386,6 +15453,7 @@ msgstr "確認電郵地址"
 #: pages/checkout.php:280
 #: pages/checkout.php:295
 #: pages/checkout.php:322
+#: pages/checkout.php:340
 msgid "Full Name"
 msgstr "全名"
 
@@ -15405,6 +15473,7 @@ msgstr "全名"
 #: pages/checkout.php:281
 #: pages/checkout.php:296
 #: pages/checkout.php:323
+#: pages/checkout.php:341
 msgid "LEAVE THIS BLANK"
 msgstr "留下這裡空白"
 
@@ -15424,6 +15493,7 @@ msgstr "留下這裡空白"
 #: pages/checkout.php:295
 #: pages/checkout.php:310
 #: pages/checkout.php:337
+#: pages/checkout.php:355
 #, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr "您的證入身份是 <strong>%s</strong>. 如果您想改變證入戶口在這個會籍, <a href=\"%s\">馬上證入</a>."
@@ -15511,6 +15581,7 @@ msgstr "我同意這個 %s"
 #: pages/checkout.php:612
 #: pages/checkout.php:527
 #: pages/checkout.php:578
+#: pages/checkout.php:596
 msgid "Complete Payment"
 msgstr "完成付款"
 
@@ -15538,6 +15609,7 @@ msgstr "完成付款"
 #: pages/checkout.php:639
 #: pages/checkout.php:554
 #: pages/checkout.php:605
+#: pages/checkout.php:623
 msgid "Processing..."
 msgstr "做變化過程..."
 
@@ -15900,6 +15972,7 @@ msgstr "&larr; 審視所有發票"
 #: adminpages/functions.php:440
 #: adminpages/membershiplevels.php:481
 #: adminpages/functions.php:431
+#: includes/functions.php:349
 msgid "Free"
 msgstr "免費"
 
@@ -18162,6 +18235,7 @@ msgstr ""
 #: includes/functions.php:2134
 #: includes/functions.php:2136
 #: includes/functions.php:2146
+#: includes/functions.php:2155
 msgid "View Membership Levels"
 msgstr ""
 
@@ -19049,6 +19123,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:237
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:241
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:136
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:240
 msgid "Billing Info Complete Address"
 msgstr ""
 
@@ -19062,6 +19137,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:113
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:229
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:232
 msgid "Billing Info Name"
 msgstr ""
 
@@ -19083,6 +19159,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:116
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:232
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:236
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:235
 msgid "Billing Info City"
 msgstr ""
 
@@ -19096,6 +19173,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:117
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:233
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:237
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:236
 msgid "Billing Info State"
 msgstr ""
 
@@ -19117,6 +19195,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:119
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:235
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:239
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:238
 msgid "Billing Info Country"
 msgstr ""
 
@@ -19140,6 +19219,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:122
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:238
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:242
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:241
 msgid "Credit Card Type"
 msgstr ""
 
@@ -19153,6 +19233,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:123
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:239
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:243
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:242
 msgid "Credit Card Number (last 4 digits)"
 msgstr ""
 
@@ -19166,6 +19247,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:124
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:240
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:244
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:243
 msgid "Credit Card Expiration Month (mm format)"
 msgstr ""
 
@@ -19179,6 +19261,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:125
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:241
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:245
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:244
 msgid "Credit Card Expiration Year (yyyy format)"
 msgstr ""
 
@@ -24870,6 +24953,7 @@ msgstr ""
 #: includes/functions.php:411
 #: includes/functions.php:350
 #: includes/functions.php:354
+#: includes/functions.php:359
 msgid " and then <strong>%1$s per %2$s for %3$d more %4$s</strong>."
 msgstr ""
 
@@ -24878,6 +24962,7 @@ msgstr ""
 #: includes/functions.php:413
 #: includes/functions.php:352
 #: includes/functions.php:356
+#: includes/functions.php:361
 msgid " and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>."
 msgstr ""
 
@@ -24886,6 +24971,7 @@ msgstr ""
 #: includes/functions.php:416
 #: includes/functions.php:355
 #: includes/functions.php:359
+#: includes/functions.php:364
 msgid " and then <strong>%1$s after %2$d %3$s</strong>."
 msgstr ""
 
@@ -24894,6 +24980,7 @@ msgstr ""
 #: includes/functions.php:421
 #: includes/functions.php:360
 #: includes/functions.php:364
+#: includes/functions.php:369
 msgid "The price for membership is <strong>%1$s per %2$s</strong>."
 msgstr ""
 
@@ -24902,6 +24989,7 @@ msgstr ""
 #: includes/functions.php:423
 #: includes/functions.php:362
 #: includes/functions.php:366
+#: includes/functions.php:371
 msgid "<strong>%1$s per %2$s</strong>."
 msgstr ""
 
@@ -24910,6 +24998,7 @@ msgstr ""
 #: includes/functions.php:427
 #: includes/functions.php:366
 #: includes/functions.php:370
+#: includes/functions.php:375
 msgid "The price for membership is <strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
 
@@ -24918,6 +25007,7 @@ msgstr ""
 #: includes/functions.php:429
 #: includes/functions.php:368
 #: includes/functions.php:372
+#: includes/functions.php:377
 msgid "<strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
 
@@ -24926,6 +25016,7 @@ msgstr ""
 #: includes/functions.php:434
 #: includes/functions.php:373
 #: includes/functions.php:377
+#: includes/functions.php:382
 msgid " and then <strong>%1$s per %2$s</strong>."
 msgstr ""
 
@@ -24934,6 +25025,7 @@ msgstr ""
 #: includes/functions.php:436
 #: includes/functions.php:375
 #: includes/functions.php:379
+#: includes/functions.php:384
 msgid " and then <strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
 
@@ -24942,6 +25034,7 @@ msgstr ""
 #: includes/functions.php:459
 #: includes/functions.php:398
 #: includes/functions.php:402
+#: includes/functions.php:407
 msgid "After your initial payment, your first %1$d payments will cost %2$s."
 msgstr ""
 
@@ -24955,6 +25048,8 @@ msgstr ""
 #: includes/functions.php:511
 #: includes/functions.php:412
 #: includes/functions.php:515
+#: includes/functions.php:417
+#: includes/functions.php:520
 msgid "Customers in %1$s will be charged %2$s%% tax."
 msgstr ""
 
@@ -24963,6 +25058,7 @@ msgstr ""
 #: includes/functions.php:529
 #: includes/functions.php:468
 #: includes/functions.php:472
+#: includes/functions.php:477
 msgid "<strong>%1$s per %2$s for %3$d more %4$s</strong>"
 msgstr ""
 
@@ -24971,6 +25067,7 @@ msgstr ""
 #: includes/functions.php:531
 #: includes/functions.php:470
 #: includes/functions.php:474
+#: includes/functions.php:479
 msgid "<strong>%1$s every %2$d %3$s for %4$d more payments</strong>"
 msgstr ""
 
@@ -24979,6 +25076,7 @@ msgstr ""
 #: includes/functions.php:534
 #: includes/functions.php:473
 #: includes/functions.php:477
+#: includes/functions.php:482
 msgid "<strong>%1$s after %2$d %3$s</strong>"
 msgstr ""
 
@@ -24987,6 +25085,7 @@ msgstr ""
 #: includes/functions.php:537
 #: includes/functions.php:476
 #: includes/functions.php:480
+#: includes/functions.php:485
 msgid "<strong>%1$s every %2$s</strong>"
 msgstr ""
 
@@ -24995,6 +25094,7 @@ msgstr ""
 #: includes/functions.php:539
 #: includes/functions.php:478
 #: includes/functions.php:482
+#: includes/functions.php:487
 msgid "<strong>%1$s every %2$d %3$s</strong>"
 msgstr ""
 
@@ -25003,6 +25103,7 @@ msgstr ""
 #: includes/functions.php:589
 #: includes/functions.php:528
 #: includes/functions.php:532
+#: includes/functions.php:541
 msgid "Membership expires after %1$d %2$s."
 msgstr ""
 
@@ -25011,6 +25112,7 @@ msgstr ""
 #: includes/functions.php:608
 #: includes/functions.php:547
 #: includes/functions.php:551
+#: includes/functions.php:560
 msgid "%1$s membership expires after %2$d %3$s"
 msgstr ""
 
@@ -25043,6 +25145,7 @@ msgstr ""
 #: includes/functions.php:2773
 #: includes/functions.php:2783
 #: includes/functions.php:2772
+#: includes/functions.php:2781
 msgid "Sign Up Now"
 msgstr ""
 
@@ -25352,6 +25455,7 @@ msgstr ""
 #: includes/functions.php:2140
 #: includes/functions.php:2142
 #: includes/functions.php:2152
+#: includes/functions.php:2161
 msgid "Join Now"
 msgstr ""
 
@@ -26168,6 +26272,7 @@ msgstr ""
 #: pages/checkout.php:508
 #: pages/checkout.php:480
 #: pages/checkout.php:516
+#: pages/checkout.php:534
 msgid "Security Code (CVC)"
 msgstr ""
 
@@ -26971,6 +27076,7 @@ msgstr ""
 #: shortcodes/pmpro_account.php:171
 #: includes/functions.php:635
 #: includes/functions.php:636
+#: includes/functions.php:645
 msgctxt "A dash is shown when there is no expiration date."
 msgid "&#8212;"
 msgstr ""
@@ -28856,6 +28962,7 @@ msgstr ""
 #: classes/class-pmpro-subscriptions-list-table.php:609
 #: classes/class-pmpro-subscriptions-list-table.php:629
 #: classes/class-pmpro-subscriptions-list-table.php:653
+#: includes/functions.php:650
 msgid "%1$s at %2$s"
 msgstr ""
 
@@ -30153,6 +30260,7 @@ msgstr ""
 #: includes/functions.php:2130
 #: includes/functions.php:2132
 #: includes/functions.php:2142
+#: includes/functions.php:2151
 msgid "Membership Required"
 msgstr ""
 
@@ -32639,6 +32747,7 @@ msgstr ""
 #: services/applydiscountcode.php:133
 #: pages/checkout.php:127
 #: pages/checkout.php:136
+#: pages/checkout.php:154
 msgid "The %s code has been applied to your order."
 msgstr ""
 
@@ -33346,6 +33455,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:947
 #: pages/checkout.php:185
 #: pages/checkout.php:527
+#: pages/checkout.php:203
+#: pages/checkout.php:545
 msgid "Apply discount code"
 msgstr ""
 
@@ -33848,6 +33959,7 @@ msgstr ""
 #: includes/functions.php:4766
 #: includes/functions.php:4772
 #: includes/functions.php:4764
+#: includes/functions.php:4773
 msgid "No file was uploaded."
 msgstr ""
 
@@ -33868,6 +33980,7 @@ msgstr ""
 #: includes/functions.php:4772
 #: includes/functions.php:4778
 #: includes/functions.php:4770
+#: includes/functions.php:4779
 msgid "No file name found."
 msgstr ""
 
@@ -33903,6 +34016,7 @@ msgstr ""
 #: includes/functions.php:4806
 #: includes/functions.php:4777
 #: includes/functions.php:4792
+#: includes/functions.php:4786
 msgid "Invalid file type."
 msgstr ""
 
@@ -35414,6 +35528,7 @@ msgstr ""
 #: includes/functions.php:1029
 #: includes/functions.php:1132
 #: includes/functions.php:1140
+#: includes/functions.php:1149
 msgid "The $cancel_level parameter is deprecated. Use pmpro_cancelMembershipLevel() instead."
 msgstr ""
 
@@ -35421,6 +35536,7 @@ msgstr ""
 #: includes/functions.php:1035
 #: includes/functions.php:1138
 #: includes/functions.php:1146
+#: includes/functions.php:1155
 msgid "The pmpro_cancelMembershipLevel() function should be used to cancel membership levels."
 msgstr ""
 
@@ -35428,6 +35544,7 @@ msgstr ""
 #: includes/functions.php:1057
 #: includes/functions.php:1160
 #: includes/functions.php:1168
+#: includes/functions.php:1177
 msgid "No membership_id specified in pmpro_changeMembershipLevel()."
 msgstr ""
 
@@ -35435,6 +35552,7 @@ msgstr ""
 #: includes/functions.php:1066
 #: includes/functions.php:1169
 #: includes/functions.php:1177
+#: includes/functions.php:1186
 msgid "Invalid level parameter passed to pmpro_changeMembershipLevel()."
 msgstr ""
 
@@ -35535,12 +35653,14 @@ msgstr ""
 #: pages/checkout.php:73
 #: pages/checkout.php:76
 #: pages/checkout.php:85
+#: pages/checkout.php:103
 msgid "You have selected the %s membership level."
 msgstr ""
 
 #: pages/checkout.php:97
 #: pages/checkout.php:100
 #: pages/checkout.php:109
+#: pages/checkout.php:127
 msgid "Your current membership level of %s will be removed when you complete your purchase."
 msgstr ""
 
@@ -37655,6 +37775,7 @@ msgstr ""
 #: includes/functions.php:2131
 #: includes/functions.php:2133
 #: includes/functions.php:2143
+#: includes/functions.php:2152
 msgid " You must be a member to access this content."
 msgstr ""
 
@@ -37662,6 +37783,7 @@ msgstr ""
 #: includes/functions.php:2137
 #: includes/functions.php:2139
 #: includes/functions.php:2149
+#: includes/functions.php:2158
 msgid "!!levels!! Membership Required"
 msgstr ""
 
@@ -37669,6 +37791,7 @@ msgstr ""
 #: includes/functions.php:2138
 #: includes/functions.php:2140
 #: includes/functions.php:2150
+#: includes/functions.php:2159
 msgid " You must be a !!levels!! member to access this content."
 msgstr ""
 
@@ -37676,6 +37799,7 @@ msgstr ""
 #: includes/functions.php:2186
 #: includes/functions.php:2188
 #: includes/functions.php:2198
+#: includes/functions.php:2207
 msgid "Already a member?"
 msgstr ""
 
@@ -37694,6 +37818,7 @@ msgstr ""
 #: pages/checkout.php:235
 #: includes/profile.php:1283
 #: pages/checkout.php:262
+#: pages/checkout.php:280
 msgid "Show Password"
 msgstr ""
 
@@ -37751,6 +37876,7 @@ msgstr ""
 
 #: pages/checkout.php:69
 #: pages/checkout.php:78
+#: pages/checkout.php:96
 msgid "Membership Information"
 msgstr ""
 
@@ -38513,6 +38639,7 @@ msgid "Subscription customer ID does not match user's Stripe customer ID."
 msgstr ""
 
 #: includes/functions.php:1950
+#: includes/functions.php:1959
 msgid "You have already used the discount code provided."
 msgstr ""
 
@@ -38579,16 +38706,19 @@ msgstr ""
 
 #: includes/functions.php:5020
 #: includes/functions.php:5001
+#: includes/functions.php:5010
 msgid "Order not found."
 msgstr ""
 
 #: includes/functions.php:5025
 #: includes/functions.php:5006
+#: includes/functions.php:5015
 msgid "Order is not a token order."
 msgstr ""
 
 #: includes/functions.php:5030
 #: includes/functions.php:5011
+#: includes/functions.php:5020
 msgid "Order gateway not found."
 msgstr ""
 
@@ -38767,6 +38897,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:125
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:139
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:138
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:222
 msgid "The ID of the membership level."
 msgstr ""
 
@@ -38788,6 +38919,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:140
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:118
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:139
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:223
 msgid "The name of the membership level."
 msgstr ""
 
@@ -38894,6 +39026,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:114
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:230
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:234
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
 msgid "Billing Info Street"
 msgstr ""
 
@@ -38902,6 +39035,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:115
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:231
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:235
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:234
 msgid "Billing Info Street 2"
 msgstr ""
 
@@ -38910,6 +39044,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:118
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:234
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:238
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:237
 msgid "Billing Info Zip"
 msgstr ""
 
@@ -38918,6 +39053,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing.php:120
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:236
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:240
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:239
 msgid "Billing Info Phone"
 msgstr ""
 
@@ -39007,6 +39143,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:125
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:215
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:219
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:218
 msgid "The subject of the email."
 msgstr ""
 
@@ -39023,6 +39160,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:220
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:221
 #: classes/email-templates/class-pmpro-email-template.php:87
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:219
 msgid "The name of the email recipient."
 msgstr ""
 
@@ -39032,6 +39170,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:128
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:218
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:222
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:221
 msgid "The login name of the email recipient."
 msgstr ""
 
@@ -39041,6 +39180,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:131
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:221
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:224
 msgid "The confirmation message for the membership level."
 msgstr ""
 
@@ -39050,6 +39190,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:132
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:222
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:226
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:225
 msgid "The cost of the membership level."
 msgstr ""
 
@@ -39059,6 +39200,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:133
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:223
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:227
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:226
 msgid "The email address of the email recipient."
 msgstr ""
 
@@ -39074,6 +39216,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:130
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:163
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:162
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:227
 msgid "The expiration date of the membership level."
 msgstr ""
 
@@ -39082,12 +39225,14 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:135
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:225
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:228
 msgid "The discount code used for the membership level."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:148
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:226
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:229
 msgid "The ID of the order."
 msgstr ""
 
@@ -39096,12 +39241,14 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:231
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:146
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:145
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:230
 msgid "The date of the order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:150
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:228
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:232
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:231
 msgid "The total cost of the order."
 msgstr ""
 
@@ -39410,5 +39557,10 @@ msgid "The scope %s should not be passed into %s. Use PMPro_Field_Group::display
 msgstr ""
 
 #: includes/functions.php:3816
+#: includes/functions.php:3825
 msgid "The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class."
+msgstr ""
+
+#: pages/checkout.php:23
+msgid "Invalid Level"
 msgstr ""
