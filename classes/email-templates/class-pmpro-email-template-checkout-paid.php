@@ -141,7 +141,6 @@ class PMPro_Email_Template_Checkout_Paid extends PMPro_Email_Template {
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
-		global $wpdb;
 		$order = $this->order;
 		$user = $this->user;
 		$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
@@ -153,9 +152,8 @@ class PMPro_Email_Template_Checkout_Paid extends PMPro_Email_Template {
 		}
 
 		$membership_expiration = '';
-		$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
-		if( $enddate ) {
-			$membership_expiration = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
+		if( ! empty( $membership_level->enddate ) ) {
+			$membership_expiration = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $membership_level->enddate)) . "</p>\n";
 		}
 
 		$discount_code = '';
