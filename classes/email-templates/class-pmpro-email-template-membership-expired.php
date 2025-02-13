@@ -80,13 +80,13 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>Your membership at !!sitename!! has ended.</p>
+		return wp_kses_post( __( '<p>Your membership at !!sitename!! has ended.</p>
 
-<p>Thank you for your support.</p>
+			<p>Thank you for your support.</p>
 
-<p>View our current membership offerings here: !!levels_url!!</p>
+			<p>View our current membership offerings here: !!levels_url!!</p>
 
-<p>Log in to manage your account here: !!login_url!!</p>', 'paid-memberships-pro' );
+			<p>Log in to manage your account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

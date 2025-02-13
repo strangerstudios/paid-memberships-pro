@@ -80,10 +80,10 @@ class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
+		return wp_kses_post( __( '<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
 
-<p>Please complete the verification steps issued by your payment provider at the following link:</p>
-<p>!!order_url!!</p>', 'paid-memberships-pro' );
+			<p>Please complete the verification steps issued by your payment provider at the following link:</p>
+			<p>!!order_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

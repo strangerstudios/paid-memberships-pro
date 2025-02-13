@@ -72,11 +72,11 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>An administrator at !!sitename!! has changed a membership level for !!display_name!!.</p>
+		return wp_kses_post( __( '<p>An administrator at !!sitename!! has changed a membership level for !!display_name!!.</p>
 
-<p>!!membership_change!!</p>
+		<p>!!membership_change!!</p>
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' );
+		<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro'  ));
 	}
 
 	/**

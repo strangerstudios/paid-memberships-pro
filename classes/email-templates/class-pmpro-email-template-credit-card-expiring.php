@@ -80,18 +80,18 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>The payment method used for your membership at !!sitename!! will expire soon. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_url!!</strong></p>
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>The most recent account information we have on file is:</p>
+		return wp_kses_post( __( '<p>The payment method used for your membership at !!sitename!! will expire soon. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_url!!</strong></p>
+			<p>Account: !!display_name!! (!!user_email!!)</p>
+			<p>The most recent account information we have on file is:</p>
 
-<p>!!billing_name!!</br />
-	!!billing_address!!
-</p>
+			<p>!!billing_name!!</br />
+				!!billing_address!!
+			</p>
 
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>', 'paid-memberships-pro' );
+			<p>
+				!!cardtype!!: !!accountnumber!!<br />
+				Expires: !!expirationmonth!!/!!expirationyear!!
+			</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

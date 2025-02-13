@@ -81,15 +81,15 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
+		return wp_kses_post( __( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>
-	Order #!!order_id!! on !!order_date!!<br />
-	Total Refunded: !!order_total!!
-</p>
+		<p>Account: !!display_name!! (!!user_email!!)</p>
+		<p>
+			Order #!!order_id!! on !!order_date!!<br />
+			Total Refunded: !!order_total!!
+		</p>
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' );
+		<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

@@ -83,14 +83,14 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>There was a new member checkout at !!sitename!!.</p>
-<p>Below are details about the new membership account.</p>
+		return wp_kses_post( __( '<p>There was a new member checkout at !!sitename!!.</p>
+			<p>Below are details about the new membership account.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-!!membership_expiration!! !!discount_code!!
+			<p>Account: !!display_name!! (!!user_email!!)</p>
+			<p>Membership Level: !!membership_level_name!!</p>
+			!!membership_expiration!! !!discount_code!!
 
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' );
+			<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

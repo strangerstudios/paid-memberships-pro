@@ -81,8 +81,8 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br/> !!login_url!! </p>
-<p>Account: !!display_name!! (!!user_email!!)</p>', 'paid-memberships-pro' );
+		return wp_kses_post( __( '<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br/> !!login_url!! </p>
+			<p>Account: !!display_name!! (!!user_email!!)</p>', 'paid-memberships-pro' ) );
 	}
 
 		/**
