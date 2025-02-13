@@ -33,23 +33,7 @@
 	}
 
 	//get/set settings
-	if(!empty($_REQUEST['savesettings']))
-	{
-		// Save any value that might have been passed in
-		// TODO: Remove this code once we have updated the check gateway to save 'instructions' correctly.
-		/*
-		foreach($payment_options as $option) {
-			//for now we make a special case for check instructions, but we need a way to specify sanitize functions for other fields
-			if( in_array( $option, array( 'instructions' ) ) ) {
-				global $allowedposttags;
-				$html = wp_kses(wp_unslash($_POST[$option]), $allowedposttags);
-				update_option("pmpro_{$option}", $html);
-            } else {
-				pmpro_setOption($option);
-			}
-		}
-		*/
-
+	if ( ! empty( $_REQUEST['savesettings'] ) ) {
 		// Check whether we are saving the settings for a specific gateway.
 		if ( ! empty( $gateway_class_name ) ) {
 			// Check if this gateway is enabled.

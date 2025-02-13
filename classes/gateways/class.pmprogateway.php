@@ -320,6 +320,7 @@
 				'currency',
 				'tax_state',
 				'tax_rate',
+				'instructions',
 			);
 			$gateway_options = array_diff( $gateway_options, $options_to_remove );
 			return $gateway_options;
