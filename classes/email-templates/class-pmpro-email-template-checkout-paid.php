@@ -86,29 +86,29 @@ class PMPro_Email_Template_Checkout_Paid extends PMPro_Email_Template {
 	 */
 	public static function get_default_body() {
 		return  wp_kses_post( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
-		!!membership_level_confirmation_message!!
-		<p>Below are details about your membership account and a receipt for your initial membership order.</p>
-		
-		<p>Account: !!display_name!! (!!user_email!!)</p>
-		<p>Membership Level: !!membership_level_name!!</p>
-		<p>Membership Fee: !!membership_cost!!</p>
-		!!membership_expiration!! !!discount_code!!
-		
-		<p>
-			Order #!!order_id!! on !!order_date!!<br />
-			Total Billed: !!order_total!!
-		</p>
-		<p>
-			Billing Information:<br />
-			!!billing_address!!
-		</p>
-		
-		<p>
-			!!cardtype!!: !!accountnumber!!<br />
-			Expires: !!expirationmonth!!/!!expirationyear!!
-		</p>
-		
-		<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' );
+!!membership_level_confirmation_message!!
+<p>Below are details about your membership account and a receipt for your initial membership order.</p>
+
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+<p>Membership Fee: !!membership_cost!!</p>
+!!membership_expiration!! !!discount_code!!
+
+<p>
+	Order #!!order_id!! on !!order_date!!<br />
+	Total Billed: !!order_total!!
+</p>
+<p>
+	Billing Information:<br />
+	!!billing_address!!
+</p>
+
+<p>
+	!!cardtype!!: !!accountnumber!!<br />
+	Expires: !!expirationmonth!!/!!expirationyear!!
+</p>
+
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' );
 	}
 
 	/**
