@@ -162,8 +162,8 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 
 		$email_template_variables = array(
 			'subject' => $this->get_default_subject(),
-			'name' => $this->get_recipient_name(),
-			'display_name' => $this->get_recipient_name(),
+			'name' => $user->display_name,
+			'display_name' => $user->display_name,
 			'user_login' => $user->user_login,
 			'membership_id' => $membership_level->id,
 			'membership_level_name' => $membership_level->name,
@@ -213,14 +213,14 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 
 		return array(
 			'!!subject!!' => esc_html__( 'The subject of the email.', 'paid-memberships-pro' ),
-			'!!name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!display_name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The login name of the email recipient.', 'paid-memberships-pro' ),
+			'!!name!!' => esc_html__( 'The name of the purchaser.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The name of the purchaser.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The login name of the purchaser.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
 			'!!confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the email recipient.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the purchaser.', 'paid-memberships-pro' ),
 			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
 			'!!discount_code!!' => esc_html__( 'The discount code used for the membership level.', 'paid-memberships-pro' ),
 			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
