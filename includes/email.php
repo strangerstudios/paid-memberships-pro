@@ -405,10 +405,7 @@ function pmpro_email_templates_send_test() {
 	}
 
 	//send the email
-	error_log( 'pmpro_email_templates_send_test: ' . print_r( $test_email, true ) );
-	error_log( 'pmpro_email_templates_send_test: ' . print_r( $send_email, true ) );
 	$response = call_user_func_array(array($test_email, $send_email), $params);
-	error_log( 'pmpro_email_templates_send_test: ' . print_r( $response, true ) );
 
 	//return the response
 	echo esc_html( $response );
