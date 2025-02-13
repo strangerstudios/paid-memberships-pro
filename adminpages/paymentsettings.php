@@ -38,8 +38,10 @@
 		if ( ! empty( $gateway_class_name ) ) {
 			// Check if this gateway is enabled.
 			if ( ! empty( $_REQUEST['enabled'] ) ) {
+				// This gateway should be enabled.
 				pmpro_setOption( 'gateway', $edit_gateway );
-			} else {
+			} elseif ( pmpro_getOption( 'gateway' ) === $edit_gateway ) {
+				// This gateway is currently enabled, but the user wants to disable it.
 				pmpro_setOption( 'gateway', '' );
 			}
 
