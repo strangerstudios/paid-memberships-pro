@@ -117,13 +117,6 @@ class PMProGateway_stripe extends PMProGateway {
 		//make sure Stripe is a gateway option
 		add_filter( 'pmpro_gateways', array( 'PMProGateway_stripe', 'pmpro_gateways' ) );
 
-		//add fields to payment settings
-		add_filter( 'pmpro_payment_options', array( 'PMProGateway_stripe', 'pmpro_payment_options' ) );
-		add_filter( 'pmpro_payment_option_fields', array(
-			'PMProGateway_stripe',
-			'pmpro_payment_option_fields'
-		), 10, 2 );
-
 		//old global RE showing billing address or not
 		global $pmpro_stripe_lite;
 		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! get_option( "pmpro_stripe_billingaddress" ) );    //default is opposite of the stripe_billingaddress setting
@@ -240,8 +233,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get a list of payment options that the Stripe gateway needs/supports.
 	 *
 	 * @since 1.8
+	 * @deprecated TBD
 	 */
 	public static function getGatewayOptions() {
+		_deprecated_function( __METHOD__, 'TBD' );
 		$options = array(
 			'gateway_environment',
 			'stripe_secretkey',
@@ -271,8 +266,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Set payment options for payment settings page.
 	 *
 	 * @since 1.8
+	 * @deprecated TBD
 	 */
 	public static function pmpro_payment_options( $options ) {
+		_deprecated_function( __METHOD__, 'TBD' );
 		//get stripe options
 		$stripe_options = self::getGatewayOptions();
 
