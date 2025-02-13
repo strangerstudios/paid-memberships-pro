@@ -115,6 +115,7 @@
 
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_paymentsettings_nonce');?>
+		<hr class="wp-header-end">
 		<?php
 		if ( empty( $gateway_class_name ) ) {
 			// Show the table of gateways and global settings.
