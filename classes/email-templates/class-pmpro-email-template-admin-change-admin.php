@@ -72,11 +72,11 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>An administrator at !!sitename!! has changed a membership level for !!display_name!!.</p>
+		return wp_kses_post( __( '<p>An administrator at !!sitename!! has changed a membership level for !!display_name!!.</p>
 
 <p>!!membership_change!!</p>
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' );
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -96,12 +96,12 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 		}
 
 		$email_template_variables = array(
-			'membership_change' => $membership_change,
 			'subject' => $this->get_default_subject(),
 			'name' => $user->display_name,
 			'display_name' => $user->display_name,
 			'user_login' => $user->user_login, 
 			'user_email' => $user->user_email, 
+			'membership_change' => $membership_change,
 		);
 		return $email_template_variables;
 	}
@@ -115,12 +115,11 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!membership_change!!' => esc_html__( 'Membership Level Change', 'paid-memberships-pro' ),
 			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => esc_html__( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
-			'!!display_name!!' => esc_html__( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The login name of the user whose membership was changed.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user whose membership was changed.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'!!membership_change!!' => esc_html__( 'A message indicating the change in membership.', 'paid-memberships-pro' ),
 		);
 	}
 

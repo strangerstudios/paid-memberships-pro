@@ -81,25 +81,26 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 	 * @return string The default body for the email.
 	 */
 	public static function get_default_body() {
-		$check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' );
 
-		return sprintf( wp_kses_post( '<p>There was a new member checkout at !!sitename!!.</p>
+		return wp_kses_post( __( '<p>There was a new member checkout at !!sitename!!.</p>
 
-<p><strong>They have chosen to pay by %s.</strong></p>
+<p><strong>They have chosen to pay by !!check_gateway_label!!.</strong></p>
 
 <p>Below are details about the new membership account and a receipt for the initial membership order.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
+
 <p>Membership Level: !!membership_level_name!!</p>
+
 <p>Membership Fee: !!membership_cost!!</p>
 !!membership_expiration!! !!discount_code!!
 
 <p>
-Order #!!order_id!! on !!order_date!!<br />
-Total Billed: !!order_total!!
+	Order #!!order_id!! on !!order_date!!<br />
+	Total Billed: !!order_total!!
 </p>
 
-<p>Log in to your membership account here: !!login_url!!</p>','paid-memberships-pro' ),  $check_gateway_label );
+<p>Log in to your WordPress admin here: !!login_url!!</p>','paid-memberships-pro' ) );
 	}
 
 	/**
@@ -161,14 +162,24 @@ Total Billed: !!order_total!!
 			'name' => $user->display_name,
 			'display_name' => $user->display_name,
 			'user_login' => $user->user_login,
+			'user_email' => $user->user_email,
 			'membership_id' => $membership_level->id,
 			'membership_level_name' => $membership_level->name,
-			'confirmation_message' => $confirmation_message,
+			'membership_level_confirmation_message' => $confirmation_message,
 			'membership_cost' => pmpro_getLevelCost($membership_level),
-			'user_email' => $user->user_email,	
+			'membership_expiration' => $membership_expiration,
 			'order_id' => $order->code,
-			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
+			'order_total' => $order->get_formatted_total(),
+			'discount_code' => $discount_code,
+			'billing_address' => pmpro_formatAddress( $order->billing->name,
+														 $order->billing->street,
+														 $order->billing->street2,
+														 $order->billing->city,
+														 $order->billing->state,
+														 $order->billing->zip,
+														 $order->billing->country,
+														 $order->billing->phone ),
 			'billing_name' => $order->billing->name,
 			'billing_street' => $order->billing->street,
 			'billing_street2' => $order->billing->street2,
@@ -177,20 +188,7 @@ Total Billed: !!order_total!!
 			'billing_zip' => $order->billing->zip,
 			'billing_country' => $order->billing->country,
 			'billing_phone' => $order->billing->phone,
-			'billing_address'=> pmpro_formatAddress( $order->billing->name,
-				$order->billing->street,
-				$order->billing->street2,
-				$order->billing->city,
-				$order->billing->state,
-				$order->billing->zip,
-				$order->billing->country,
-				$order->billing->phone ),
-			'cardtype' => $order->cardtype,
-			'accountnumber' => hideCardNumber( $order->accountnumber ),
-			'expirationmonth' => $order->expirationmonth,
-			'expirationyear' => $order->expirationyear,
-			'membership_expiration' => $membership_expiration,
-			'discount_code' => $discount_code
+			'check_gateway_label' => get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' )
 		);
 
 		return $email_template_variables;
@@ -206,15 +204,29 @@ Total Billed: !!order_total!!
 	public static function get_email_template_variables_with_description() {
 
 		return array(
-			'!!subject!!' => esc_html__( 'The subject of the email.', 'paid-memberships-pro' ),
-			'!!name!!' => esc_html__( 'The name of the purchaser.', 'paid-memberships-pro' ),
-			'!!display_name!!' => esc_html__( 'The name of the purchaser.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The login name of the purchaser.', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the purchaser.', 'paid-memberships-pro' ),
+			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
+			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
+			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
+			'!!order_total!!' => esc_html__( 'The total cost of the order.', 'paid-memberships-pro' ),
+			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
+			'!!billing_address!!' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
+			'!!billing_name!!' => esc_html__( 'The billing name of the order.', 'paid-memberships-pro' ),
+			'!!billing_street!!' => esc_html__( 'The billing street of the order.', 'paid-memberships-pro' ),
+			'!!billing_street2!!' => esc_html__( 'The billing street line 2 of the order.', 'paid-memberships-pro' ),
+			'!!billing_city!!' => esc_html__( 'The billing city of the order.', 'paid-memberships-pro' ),
+			'!!billing_state!!' => esc_html__( 'The billing state of the order.', 'paid-memberships-pro' ),
+			'!!billing_zip!!' => esc_html__( 'The billing ZIP code of the order.', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'The billing country of the order.', 'paid-memberships-pro' ),
+			'!!billing_phone!!' => esc_html__( 'The billing phone number of the order.', 'paid-memberships-pro' ),
+			'!!check_gateway_label!!' => esc_html__( 'The default or custom label for the check gateway.', 'paid-memberships-pro' ),
 		);
 	}
 
