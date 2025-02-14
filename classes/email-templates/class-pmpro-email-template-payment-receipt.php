@@ -179,7 +179,11 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 		if( $order->user_id != $user->ID ) {
 			$user = get_userdata( $order->user_id );
 		}
-		$membership_level = pmpro_getLevel( $order->membership_id );
+
+		$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
+ 		if ( empty( $membership_level ) ) {
+ 			$membership_level = pmpro_getLevel( $order->membership_id );
+ 		}
 		
 		//Get discount code if it exists
 		$discount_code = "";
@@ -190,11 +194,9 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
 		}
 
 		//Get membership expiration date
-		$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
-		if( $enddate ) {
-			$membership_expiration = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
-		} else {
-			$membership_expiration = "";
+		$membership_expiration = '';
+		if( ! empty( $membership_level->enddate ) ) {
+			$membership_expiration = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $membership_level->enddate)) . "</p>\n";
 		}
 
 		$email_template_variables = array(
