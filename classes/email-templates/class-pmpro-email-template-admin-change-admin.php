@@ -76,7 +76,7 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 
 <p>!!membership_change!!</p>
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro'  ));
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

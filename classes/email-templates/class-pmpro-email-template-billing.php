@@ -83,12 +83,12 @@ class PMPro_Email_Template_Billing extends PMPro_Email_Template {
 	public static function get_default_body() {
 		return wp_kses_post( __( '<p>Your billing information at !!sitename!! has been changed.</p><p>Account: !!display_name!! (!!user_email!!)</p>
 <p>
-Billing Information:<br />
-!!billing_address!!
+	Billing Information:<br />
+	!!billing_address!!
 </p>
 <p>
-!!cardtype!!: !!accountnumber!!<br />
-Expires: !!expirationmonth!!/!!expirationyear!!
+	!!cardtype!!: !!accountnumber!!<br />
+	Expires: !!expirationmonth!!/!!expirationyear!!
 </p>
 <p>If you did not request a billing information change please contact us at !!siteemail!!</p>
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ) );

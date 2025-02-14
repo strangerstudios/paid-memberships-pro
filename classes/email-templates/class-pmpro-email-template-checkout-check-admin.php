@@ -95,8 +95,8 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 !!membership_expiration!! !!discount_code!!
 
 <p>
-	Order #!!order_id!! on !!order_date!!<br />
-	Total Billed: !!order_total!!
+Order #!!order_id!! on !!order_date!!<br />
+Total Billed: !!order_total!!
 </p>
 
 <p>Log in to your membership account here: !!login_url!!</p>','paid-memberships-pro' ) ),  $check_gateway_label );
