@@ -110,9 +110,9 @@ class PMPro_Email_Template_Billing extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 		return array(
 			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!display_name!!' => esc_html__( 'The display name of the user who cancelled their membership.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user who cancelled their membership.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),			
 			'!!billing_address!!' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
