@@ -72,13 +72,13 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>An administrator at !!sitename!! has changed your membership level.</p>
+		return wp_kses_post( __( '<p>An administrator at !!sitename!! has changed your membership level.</p>
 
 <p>!!membership_change!!</p>
 
 <p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>
 
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' );
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -117,12 +117,11 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!membership_change!!' => esc_html__( 'Membership Level Change', 'paid-memberships-pro' ),
 			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => esc_html__( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
-			'!!display_name!!' => esc_html__( 'The display name of the user whose membership was changed.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The login name of the user whose membership was changed.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user whose membership was changed.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'!!membership_change!!' => esc_html__( 'A message indicating the change in membership.', 'paid-memberships-pro' ),
 		);
 	}
 

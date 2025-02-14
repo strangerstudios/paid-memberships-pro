@@ -80,10 +80,11 @@ class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
+		return wp_kses_post( __( '<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
 
 <p>Please complete the verification steps issued by your payment provider at the following link:</p>
-<p>!!order_url!!</p>', 'paid-memberships-pro' );
+
+<p>!!order_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -119,12 +120,10 @@ class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 		return array(
 			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!order_link!!' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'!!order_url!!' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
-			'!!invoice_url!!' => esc_html__( 'The URL of the order. Legacy purpose', 'paid-memberships-pro' ),
 			'!!levels_url!!' => esc_html__( 'The URL of the membership levels page.', 'paid-memberships-pro' ),
 		);
 	}
@@ -142,8 +141,9 @@ class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 		return array(
 			"subject" => $this->get_default_subject(),
 			"name" => $user->display_name,
-			"user_login" => $user->user_login,
 			"display_name" => $user->display_name,
+			"user_login" => $user->user_login,
+			"user_email" => $user->user_email,
 			"order_link" => $order_url,
 			"order_url" => $order_url,
 			"invoice_url" => $order_url, // Legacy purpose, remove in future version

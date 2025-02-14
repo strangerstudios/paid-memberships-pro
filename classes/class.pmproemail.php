@@ -420,7 +420,6 @@
 
 			$email = new PMPro_Email_Template_Refund_Admin( $user, $order );
 			return $email->send();
-
 		}
 
 		/**
@@ -730,7 +729,6 @@
 			}
 
 			$email = new PMPro_Email_Template_Membership_Expired( $user, $membership_id );
-
 			return $email->send();
 		}
 
@@ -840,7 +838,6 @@
 
 			$email = new PMPro_Email_Template_Payment_Action( $user, $order_url );
 			return $email->send();
-
 		}
 
 		/**
