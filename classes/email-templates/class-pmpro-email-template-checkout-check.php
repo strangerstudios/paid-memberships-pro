@@ -136,7 +136,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 
 		return array(
-			'!!subject!!' => esc_html__( 'The subject of the email.', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
 			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
@@ -145,10 +145,10 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'!!membership_level_confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
-			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
 			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
 			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
 			'!!order_total!!' => esc_html__( 'The total cost of the order.', 'paid-memberships-pro' ),
+			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
 			'!!instructions!!' => esc_html__( 'Payment instructions for the user to complete their purchase (defined in Payment Gateway settings).', 'paid-memberships-pro' ),
 		);
 	}
@@ -175,6 +175,13 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			$confirmation_message = $membership_level->confirmation;
 		}
 
+		$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
+		if( $enddate ) {
+			$membership_expiration = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
+		} else {
+			$membership_expiration = "";
+		}
+
 		$email_template_variables = array(
 			'subject' => $this->get_default_subject(),
 			'name' => $this->get_recipient_name(),
@@ -185,9 +192,10 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'membership_level_name' => $membership_level->name,
 			'membership_level_confirmation_message' => $confirmation_message,
 			'membership_cost' => pmpro_getLevelCost($membership_level),
+			'membership_expiration' => $membership_expiration,
 			'order_id' => $order->code,
-			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
+			'order_total' => $order->get_formatted_total(),
 			'discount_code' => $discount_code,
 			'instructions' => wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ),
 		);

@@ -116,7 +116,7 @@ class PMPro_Email_Template_Billing extends PMPro_Email_Template {
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),			
 			'!!billing_address!!' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
-			'!!billing_name!!' => esc_html__( 'The billing name of the user.', 'paid-memberships-pro' ),
+			'!!billing_name!!' => esc_html__( 'The billing name of the order.', 'paid-memberships-pro' ),
 			'!!billing_street!!' => esc_html__( 'The billing street of the order.', 'paid-memberships-pro' ),
 			'!!billing_street2!!' => esc_html__( 'The billing street line 2 of the order.', 'paid-memberships-pro' ),
 			'!!billing_city!!' => esc_html__( 'The billing city of the order.', 'paid-memberships-pro' ),

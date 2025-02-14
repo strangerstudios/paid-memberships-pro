@@ -171,9 +171,11 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 			'membership_level_name' => $membership_level->name,
 			'membership_level_confirmation_message' => $confirmation_message,
 			'membership_cost' => pmpro_getLevelCost($membership_level),
+			'membership_expiration' => $membership_expiration,
 			'order_id' => $order->code,
-			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
+			'order_total' => $order->get_formatted_total(),
+			'discount_code' => $discount_code,
 			'billing_name' => $order->billing->name,
 			'billing_street' => $order->billing->street,
 			'billing_street2' => $order->billing->street2,
@@ -194,8 +196,6 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 			'accountnumber' => hideCardNumber( $order->accountnumber ),
 			'expirationmonth' => $order->expirationmonth,
 			'expirationyear' => $order->expirationyear,
-			'membership_expiration' => $membership_expiration,
-			'discount_code' => $discount_code,
 			'check_gateway_label' => get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' )
 		);
 
@@ -212,7 +212,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 
 		return array(
-			'!!subject!!' => esc_html__( 'The subject of the email.', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
 			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
@@ -220,6 +220,11 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
+			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
+			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
+			'!!order_total!!' => esc_html__( 'The total cost of the order.', 'paid-memberships-pro' ),
+			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
 			'!!check_gateway_label!!' => esc_html__( 'The default or custom label for the check gateway.', 'paid-memberships-pro' ),
 		);
 	}
