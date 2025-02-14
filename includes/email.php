@@ -313,7 +313,7 @@ function pmpro_email_templates_send_test() {
 	switch($test_email->template) {
 		case 'cancel':
 			$send_email = 'sendCancelEmail';
-			$params = array($test_user,$test_user->membership_level->id);
+			$params = array($test_user, $test_user->membership_level->id);
 			break;
 		case 'cancel_admin':
 			$send_email = 'sendCancelAdminEmail';
