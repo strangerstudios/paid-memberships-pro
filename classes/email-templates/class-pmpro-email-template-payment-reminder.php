@@ -78,7 +78,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
 
-<p>If for some reason you do not want to renew your membership you can cancel by clicking here: !!cancel_link!!</p>', 'paid-memberships-pro' ) );
+<p>If for some reason you do not want to renew your membership you can cancel here: !!cancel_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -123,7 +123,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
 			'!!billing_amount!!' => esc_html__( 'The amount billed for the subscription.', 'paid-memberships-pro' ),
 			'!!renewaldate!!' => esc_html__( 'The date of the next payment.', 'paid-memberships-pro' ),
-			'!!cancel_link!!' => esc_html__( 'The link to cancel the subscription.', 'paid-memberships-pro' ),
+			'!!cancel_url!!' => esc_html__( 'The link to cancel the subscription.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -151,6 +151,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 			'billing_amount' =>  pmpro_formatPrice( $subscription_obj->get_billing_amount() ),
 			'renewaldate' => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
 			'cancel_link' => wp_login_url( pmpro_url( 'cancel' ) ),
+			'cancel_url' => wp_login_url( pmpro_url( 'cancel' ) ),
 		);
 	}
 }
