@@ -172,6 +172,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 			'membership_level_name' => $membership_level->name,
 			'membership_level_confirmation_message' => $confirmation_message,
 			'membership_cost' => pmpro_getLevelCost($membership_level),
+			'membership_expiration' => $membership_expiration,
 			'order_id' => $order->code,
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 			'order_total' => $order->get_formatted_total(),
@@ -196,7 +197,6 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 			'accountnumber' => hideCardNumber( $order->accountnumber ),
 			'expirationmonth' => $order->expirationmonth,
 			'expirationyear' => $order->expirationyear,
-			'membership_expiration' => $membership_expiration,
 		);
 
 		return $email_template_variables;

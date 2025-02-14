@@ -139,6 +139,8 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 			'!!membership_level_confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
+			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
+			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
 			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
 		);
 	}
@@ -183,6 +185,8 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 			'membership_level_confirmation_message' => $confirmation_message,
 			'membership_cost' => pmpro_getLevelCost( $membership_level ),
 			'membership_expiration' => $membership_expiration,
+			'order_id' => $order->code,
+			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 			'discount_code' => $discount_code,
 		);
 
