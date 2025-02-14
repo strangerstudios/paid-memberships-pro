@@ -167,6 +167,11 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			$discount_code = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
 		}
 
+		$membership_expiration = '';
+		if( ! empty( $membership_level->enddate ) ) {
+			$membership_expiration = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $membership_level->enddate)) . "</p>\n";
+		}
+
 		$confirmation_message = '';
 		$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
 		if ( ! empty( $confirmation_in_email ) ) {
@@ -186,6 +191,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'order_id' => $order->code,
 			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
+			'membership_expiration' => $membership_expiration,
 			'discount_code' => $discount_code,
 		);
 		return $email_template_variables;
