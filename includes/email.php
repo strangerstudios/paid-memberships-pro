@@ -337,7 +337,6 @@ function pmpro_email_templates_send_test() {
 		case 'checkout_check':
 		case 'checkout_free':
 		case 'checkout_paid':
-			_log( $test_email->template );
 			$send_email = 'sendCheckoutEmail';
 			$params = array($test_user, $test_order);
 			break;
