@@ -86,7 +86,7 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 <p>Account: !!display_name!! (!!user_email!!)</p>
 
 <p>
-	Order #!!order_id!! on !!order_date!!<br />
+	Order #!!order_id!! refunded on !!refund_date!!<br />
 	Total Refunded: !!order_total!!
 </p>
 
@@ -110,6 +110,7 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 			'!!order_id!!' => esc_html__( 'The order ID.', 'paid-memberships-pro' ),
 			'!!order_total!!' => esc_html__( 'The total amount of the order.', 'paid-memberships-pro' ),
 			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
+			'!!refund_date!!' => esc_html__( 'The refund date of the order.', 'paid-memberships-pro' ),
 			'!!billing_address!!' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
 			'!!billing_name!!' => esc_html__( 'The billing name of the order.', 'paid-memberships-pro' ),
 			'!!billing_street!!' => esc_html__( 'The billing street of the order.', 'paid-memberships-pro' ),
@@ -175,6 +176,7 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 			'order_id' => $order->code,
 			'order_total' => $order->total,
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->timestamp ),
+			'refund_date' => date_i18n( get_option( 'date_format' ), current_time( 'timestamp' ) ),
 			'billing_name' => $order->billing->name,
 			'billing_street' => $order->billing->street,
 			'billing_street2' => $order->billing->street2,
