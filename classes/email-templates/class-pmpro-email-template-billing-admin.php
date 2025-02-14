@@ -166,7 +166,7 @@ class PMPro_Email_Template_Billing_Admin extends PMPro_Email_Template {
 			'user_login' => $user->user_login,
 			'subject' => $this->get_default_subject(),
 			'user_email' => $user->user_email,
-			'display_name' => $this->get_recipient_name(),
+			'display_name' => $user->display_name,
 			'billing_name' => $order->billing->name,
 			'billing_street' => $order->billing->street,
 			'billing_street2' => $order->billing->street2,

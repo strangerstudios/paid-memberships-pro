@@ -115,7 +115,10 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
+			'membership_id' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'membership_level_name' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'membership_cost' => esc_html__( 'The cost of the membership.', 'paid-memberships-pro' ),
+			'billing_amount' => esc_html__( 'The amount billed for the subscription.', 'paid-memberships-pro' ),
 			'renewaldate' => esc_html__( 'The date of the next payment date.', 'paid-memberships-pro' ),
 			'display_name' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 			'user_email' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
@@ -137,7 +140,10 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 		$user = get_userdata( $subscription_obj->get_user_id() );
 
 		return array(
+			'membership_id' => $membership_id,
 			'membership_level_name' => $membership_level->name,
+			'membership_cost' => $subscription_obj->get_cost_text(),
+			'billing_amount' =>  pmpro_formatPrice( $subscription_obj->get_billing_amount() ),
 			'renewaldate' => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
 			'display_name' => $user->display_name,
 			'user_email' => $user->user_email,
