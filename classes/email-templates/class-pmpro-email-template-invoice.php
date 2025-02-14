@@ -1,5 +1,5 @@
 <?php
-class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
+class PMPro_Email_Template_Invoice extends PMPro_Email_Template {
 
 	/**
 	 * The user object of the user to send the email to.
@@ -248,8 +248,8 @@ class PMPro_Email_Template_Payment_Receipt extends PMPro_Email_Template {
  * @param array $email_templates The email templates (template slug => email template class name)
  * @return array The modified email templates array.
  */
-function pmpro_email_templates_payment_receipt( $email_templates ) {
-	$email_templates['invoice'] = 'PMPro_Email_Template_Payment_Receipt';
+function pmpro_email_templates_invoice( $email_templates ) {
+	$email_templates['invoice'] = 'PMPro_Email_Template_Invoice';
 	return $email_templates;
 }
-add_filter( 'pmpro_email_templates', 'pmpro_email_templates_payment_receipt' );
+add_filter( 'pmpro_email_templates', 'pmpro_email_templates_invoice' );
