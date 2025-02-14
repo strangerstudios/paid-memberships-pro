@@ -80,18 +80,26 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>The payment method used for your membership at !!sitename!! will expire soon. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_url!!</strong></p>
+		return wp_kses_post( __( '<p>The payment method used for your membership at !!sitename!! will expire soon.</p>
+
+<p>
+	<strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br />
+	!!login_url!!
+</p>
+
 <p>Account: !!display_name!! (!!user_email!!)</p>
+
 <p>The most recent account information we have on file is:</p>
 
-<p>!!billing_name!!</br />
+<p>
+	!!billing_name!!<br />
 	!!billing_address!!
 </p>
 
 <p>
 	!!cardtype!!: !!accountnumber!!<br />
 	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>', 'paid-memberships-pro' );
+</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -126,22 +134,20 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 		return array(
 			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!billing_address!!' => esc_html__( 'Billing Info Complete Address', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!billing_address!!' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
 			'!!billing_name!!' => esc_html__( 'The billing name of the user.', 'paid-memberships-pro' ),
-			'!!billing_street!!' => esc_html__( 'The billing street address of the user.', 'paid-memberships-pro' ),
-			'!!billing_street2!!' => esc_html__( 'The second billing street field address of the user.', 'paid-memberships-pro' ),
-			'!!billing_city!!' => esc_html__( 'The billing city of the user.', 'paid-memberships-pro' ),
-			'!!billing_state!!' => esc_html__( 'The billing state of the user.', 'paid-memberships-pro' ),
-			'!!billing_zip!!' => esc_html__( 'The billing ZIP code of the user.', 'paid-memberships-pro' ),
-			'!!billing_country!!' => esc_html__( 'The billing country of the user.', 'paid-memberships-pro' ),
-			'!!billing_phone!!' => esc_html__( 'The billing phone number of the user.', 'paid-memberships-pro' ),
+			'!!billing_street!!' => esc_html__( 'The billing street of the order.', 'paid-memberships-pro' ),
+			'!!billing_street2!!' => esc_html__( 'The billing street line 2 of the order.', 'paid-memberships-pro' ),
+			'!!billing_city!!' => esc_html__( 'The billing city of the order.', 'paid-memberships-pro' ),
+			'!!billing_state!!' => esc_html__( 'The billing state of the order.', 'paid-memberships-pro' ),
+			'!!billing_zip!!' => esc_html__( 'The billing ZIP code of the order.', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'The billing country of the order.', 'paid-memberships-pro' ),
+			'!!billing_phone!!' => esc_html__( 'The billing phone number of the order.', 'paid-memberships-pro' ),
 			'!!cardtype!!' => esc_html__( 'The type of credit card used.', 'paid-memberships-pro' ),
 			'!!accountnumber!!' => esc_html__( 'The last four digits of the credit card number.', 'paid-memberships-pro' ),
 			'!!expirationmonth!!' => esc_html__( 'The expiration month of the credit card.', 'paid-memberships-pro' ),
@@ -164,13 +170,13 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 		return array(
 			'subject' => $this->get_default_subject(),
 			'name' => $user->display_name,
+			'display_name' => $user->display_name,
 			'user_login' => $user->user_login,
+			'user_email' => $user->user_email,
 			'sitename' => get_option( 'blogname' ),
 			'siteemail' => get_option( 'pmpro_from_email' ),
 			'membership_id' => $membership_level->id,
 			'membership_level_name' => $membership_level->name,
-			'display_name' => $user->display_name,
-			'user_email' => $user->user_email,
 			'billing_name' => $order->billing->name,
 			'billing_street' => $order->billing->street,
 			'billing_street2' => $order->billing->street2,

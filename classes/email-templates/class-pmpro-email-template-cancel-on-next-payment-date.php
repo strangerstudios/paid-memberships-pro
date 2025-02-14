@@ -83,11 +83,13 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
+		return wp_kses_post( __( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
+
 <p>Membership Level: !!membership_level_name!!</p>
-<p>Your access will expire on !!enddate!!.</p>', 'paid-memberships-pro' );
+
+<p>Your access will expire on !!enddate!!.</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -99,13 +101,13 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'user_login' => esc_html__( 'The user\'s username.', 'paid-memberships-pro' ),
-			'user_email' => esc_html__( 'The user\'s email address.', 'paid-memberships-pro' ),
-			'display_name' => esc_html__( 'The user\'s display name.', 'paid-memberships-pro' ),
-			'membership_id' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'membership_level_name' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'startdate' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
-			'enddate' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The user\'s display name.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The user\'s username.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The user\'s email address.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!startdate!!' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
+			'!!enddate!!' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -143,9 +145,10 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 		$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $this->level_id );
 
 		$email_template_variables = array(
+			'name' => $user->display_name,
+			'display_name' => $user->display_name,
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
-			'display_name' => $user->display_name,
 			'membership_id' => $level->id,
 			'membership_level_name' => $level->name,
 			'startdate' => date_i18n( get_option( 'date_format' ), $level->startdate ),

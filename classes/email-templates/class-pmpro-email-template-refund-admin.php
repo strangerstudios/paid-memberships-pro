@@ -81,15 +81,16 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
+		return wp_kses_post( __( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
+
 <p>
 	Order #!!order_id!! on !!order_date!!<br />
 	Total Refunded: !!order_total!!
 </p>
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' );
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -101,27 +102,27 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!user_login!!' => esc_html__( 'The login name of the user who requested the refund.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user who requested the refund.', 'paid-memberships-pro' ),
-			'!!display_name!!' => esc_html__( 'The display name of the user who requested the refund.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => esc_html__( 'The ID of the membership level that was refunded.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => esc_html__( 'The name of the membership level that was refunded.', 'paid-memberships-pro' ),
-			'!!order_id!!' => esc_html__( 'The order ID of the refunded order.', 'paid-memberships-pro' ),
-			'!!order_total!!' => esc_html__( 'The total amount refunded.', 'paid-memberships-pro' ),
-			'!!order_date!!' => esc_html__( 'The date the refund was processed.', 'paid-memberships-pro' ),
-			'!!billing_name!!' => esc_html__( 'The billing name associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_street!!' => esc_html__( 'The billing street address associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_street2!!' => esc_html__( 'The billing street address line 2 associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_city!!' => esc_html__( 'The billing city associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_state!!' => esc_html__( 'The billing state associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_zip!!' => esc_html__( 'The billing zip code associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_country!!' => esc_html__( 'The billing country associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!billing_phone!!' => esc_html__( 'The billing phone number associated with the refunded order.', 'paid-memberships-pro' ),
-			'!!cardtype!!' => esc_html__( 'The card type used for the refunded order.', 'paid-memberships-pro' ),
-			'!!accountnumber!!' => esc_html__( 'The last four digits of the account number used for the refunded order.', 'paid-memberships-pro' ),
-			'!!expirationmonth!!' => esc_html__( 'The expiration month of the card used for the refunded order.', 'paid-memberships-pro' ),
-			'!!expirationyear!!' => esc_html__( 'The expiration year of the card used for the refunded order.', 'paid-memberships-pro' ),
-			'!!order_link!!' => esc_html__( 'The URL to the invoice for the refunded order.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!order_id!!' => esc_html__( 'The order ID.', 'paid-memberships-pro' ),
+			'!!order_total!!' => esc_html__( 'The total amount of the order.', 'paid-memberships-pro' ),
+			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
+			'!!billing_address!!' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
+			'!!billing_name!!' => esc_html__( 'The billing name of the order.', 'paid-memberships-pro' ),
+			'!!billing_street!!' => esc_html__( 'The billing street of the order.', 'paid-memberships-pro' ),
+			'!!billing_street2!!' => esc_html__( 'The billing street line 2 of the order.', 'paid-memberships-pro' ),
+			'!!billing_city!!' => esc_html__( 'The billing city of the order.', 'paid-memberships-pro' ),
+			'!!billing_state!!' => esc_html__( 'The billing state of the order.', 'paid-memberships-pro' ),
+			'!!billing_zip!!' => esc_html__( 'The billing ZIP code of the order.', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'The billing country of the order.', 'paid-memberships-pro' ),
+			'!!billing_phone!!' => esc_html__( 'The billing phone number of the order.', 'paid-memberships-pro' ),
+			'!!cardtype!!' => esc_html__( 'The type of credit card used.', 'paid-memberships-pro' ),
+			'!!accountnumber!!' => esc_html__( 'The last four digits of the credit card number.', 'paid-memberships-pro' ),
+			'!!expirationmonth!!' => esc_html__( 'The expiration month of the credit card.', 'paid-memberships-pro' ),
+			'!!expirationyear!!' => esc_html__( 'The expiration year of the credit card.', 'paid-memberships-pro' ),
 			'!!order_url!!' => esc_html__( 'The URL to the invoice for the refunded order.', 'paid-memberships-pro' ),
 		);
 
@@ -165,9 +166,10 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 		$level = pmpro_getLevel( $order->membership_id );
 
 		$email_template_variables = array(
+			'name' => $user->display_name,
+			'display_name' => $user->display_name,
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
-			'display_name' => $user->display_name,
 			'membership_id' => $order->membership_id,
 			'membership_level_name' => $level->name,
 			'order_id' => $order->code,
@@ -200,7 +202,6 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 		);
 
 		return $email_template_variables;
-
 	}
 }
 

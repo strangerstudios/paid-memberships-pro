@@ -84,14 +84,17 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>The membership for !!user_login!! at !!sitename!! has been cancelled.</p>
+		return wp_kses_post( __( '<p>The membership for !!user_login!! at !!sitename!! has been cancelled.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
+
 <p>Membership Level: !!membership_level_name!!</p>
+
 <p>Start Date: !!startdate!!</p>
+
 <p>End Date: !!enddate!!</p>
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' );
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -103,12 +106,12 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		 return array(
-		 	'!!user_email!!' => esc_html__( 'The email address of the user who cancelled their membership.', 'paid-memberships-pro' ),
-		 	'!!display_name!!' => esc_html__( 'The display name of the user who cancelled their membership.', 'paid-memberships-pro' ),
-		 	'!!user_login!!' => esc_html__( 'The login name of the user who cancelled their membership.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => esc_html__( 'The name of the membership level that was cancelled.', 'paid-memberships-pro' ),
-			'!!startdate!!' => esc_html__( 'The start date of the membership level that was cancelled.', 'paid-memberships-pro' ),
-			'!!enddate!!' => esc_html__( 'The end date of the membership level that was cancelled.', 'paid-memberships-pro' )
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!startdate!!' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
+			'!!enddate!!' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' )
 		 );
 	}
 
@@ -147,9 +150,10 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 		global $wpdb;
 
 		$email_template_variables = array(
-			'user_email' => $this->user->user_email,
+			'name' => $this->user->display_name,
 			'display_name' => $this->user->display_name,
 			'user_login' => $this->user->user_login,
+			'user_email' => $this->user->user_email,
 		);
 
 		if ( empty( $this->cancelled_level_ids ) ) {
