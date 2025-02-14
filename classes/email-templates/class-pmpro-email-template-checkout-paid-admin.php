@@ -144,6 +144,9 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 		$order = $this->order;
 		$user = $this->user;
 		$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
+		if ( empty( $membership_level ) ) {
+			$membership_level = pmpro_getLevel( $order->membership_id );
+		}
 
 		$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
 			if ( ! empty( $confirmation_in_email ) ) {

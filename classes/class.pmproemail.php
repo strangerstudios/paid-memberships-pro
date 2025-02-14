@@ -502,7 +502,7 @@
 					case 'checkout_free_admin':
 						$email = new PMPro_Email_Template_Checkout_Free_Admin( $user, $order );
 						break;
-					case 'checkout_paid':
+					case 'checkout_paid_admin':
 						$email = new PMPro_Email_Template_Checkout_Paid_Admin( $user, $order );
 						break;
 				}
