@@ -85,9 +85,9 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	public static function get_default_body() {
 		return wp_kses_post( __( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
 
-			<p>Account: !!display_name!! (!!user_email!!)</p>
-			<p>Membership Level: !!membership_level_name!!</p>
-			<p>Your access will expire on !!enddate!!.</p>', 'paid-memberships-pro' ) );
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+<p>Your access will expire on !!enddate!!.</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

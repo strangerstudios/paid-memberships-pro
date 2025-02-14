@@ -86,12 +86,12 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	public static function get_default_body() {
 		return wp_kses_post( __( '<p>The membership for !!user_login!! at !!sitename!! has been cancelled.</p>
 
-			<p>Account: !!display_name!! (!!user_email!!)</p>
-			<p>Membership Level: !!membership_level_name!!</p>
-			<p>Start Date: !!startdate!!</p>
-			<p>End Date: !!enddate!!</p>
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+<p>Start Date: !!startdate!!</p>
+<p>End Date: !!enddate!!</p>
 
-			<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

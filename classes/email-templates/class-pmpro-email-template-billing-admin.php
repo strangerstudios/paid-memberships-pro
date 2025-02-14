@@ -75,18 +75,18 @@ class PMPro_Email_Template_Billing_Admin extends PMPro_Email_Template {
 
 	public static function get_default_body() {
 		return wp_kses_post( __( '<p>The billing information for !!display_name!! at !!sitename!! has been changed.</p>
-			<p>Account: !!display_name!! (!!user_email!!)</p>
-			<p>
-				Billing Information:<br />
-				!!billing_address!!
-			</p>
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>
+	Billing Information:<br />
+	!!billing_address!!
+</p>
 
-			<p>
-				!!cardtype!!: !!accountnumber!!<br />
-				Expires: !!expirationmonth!!/!!expirationyear!!
-			</p>
+<p>
+	!!cardtype!!: !!accountnumber!!<br />
+	Expires: !!expirationmonth!!/!!expirationyear!!
+</p>
 
-			<p>Log in to your WordPress dashboard here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to your WordPress dashboard here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

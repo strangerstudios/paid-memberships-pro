@@ -82,16 +82,16 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 	public static function get_default_body() {
 		return  wp_kses_post( __( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
 
-		<p>Account: !!display_name!! (!!user_email!!)</p>
-		<p>
-			Order #!!order_id!! on !!order_date!!<br />
-			Total Refunded: !!order_total!!
-		</p>
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>
+	Order #!!order_id!! on !!order_date!!<br />
+	Total Refunded: !!order_total!!
+</p>
 
-		<p>Log in to your membership account here: !!login_url!!</p>
-		<p>To view an online version of this order, click here: !!order_url!!</p>
+<p>Log in to your membership account here: !!login_url!!</p>
+<p>To view an online version of this order, click here: !!order_url!!</p>
 
-		<p>If you did not request this refund and would like more information please contact us at !!siteemail!!</p>', 'paid-memberships-pro' ) );
+<p>If you did not request this refund and would like more information please contact us at !!siteemail!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

@@ -81,12 +81,12 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_default_body() {
 		return wp_kses_post( __( '<p>A payment at !!sitename!! for !!user_login!! requires additional customer authentication to complete.</p>
-			<p>Below is a copy of the email we sent to !!user_email!! to notify them that they need to complete their payment:</p>
+<p>Below is a copy of the email we sent to !!user_email!! to notify them that they need to complete their payment:</p>
 
-			<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
+<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
 
-			<p>Please complete the verification steps issued by your payment provider at the following link:</p>
-			<p>!!order_url!!</p>', 'paid-memberships-pro' ) );
+<p>Please complete the verification steps issued by your payment provider at the following link:</p>
+<p>!!order_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
