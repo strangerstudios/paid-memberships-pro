@@ -1,5 +1,5 @@
 <?php
-class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
+class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 
 	/**
 	 * The user object of the user to send the email to.
@@ -165,7 +165,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
  * @return array The modified email templates array.
  */
 function pmpro_email_templates_membership_recurring( $email_templates ) {
-	$email_templates['membership_recurring'] = 'PMPro_Email_Template_Payment_Reminder';
+	$email_templates['membership_recurring'] = 'PMPro_Email_Template_Membership_Recurring';
 	return $email_templates;
 }
 add_filter( 'pmpro_email_templates', 'pmpro_email_templates_membership_recurring' );

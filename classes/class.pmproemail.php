@@ -651,7 +651,7 @@
 				return false;
 			}
 
-			$email = new PMPro_Email_Template_Payment_Receipt( $user, $order );
+			$email = new PMPro_Email_Template_Invoice( $user, $order );
 			return $email->send();
 		}
 		
@@ -880,7 +880,7 @@
 			if ( ! $subscription_obj ) {
 				return false;
 			}
-			$email = new PMPro_Email_Template_Payment_Reminder( $subscription_obj );
+			$email = new PMPro_Email_Template_Membership_Recurring( $subscription_obj );
 			return $email->send();
 		}
 

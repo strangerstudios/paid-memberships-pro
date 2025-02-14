@@ -61,8 +61,8 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-r
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-refund-admin.php' ); // refund email admin template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action.php' ); // expiration email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action-admin.php' ); // expiration email template
-require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-receipt.php' ); // invoice email template
-require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-reminder.php' ); // recurring payment email reminder template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-invoice.php' ); // invoice email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-recurring.php' ); // recurring payment email reminder template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expiring.php' ); // expiring email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expired.php' ); // change email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-credit-card-expiring.php' ); // credit card expiring email template
