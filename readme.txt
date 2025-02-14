@@ -206,7 +206,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 3.4.1 - 2024-02-14 =
 * ENHANCEMENT: Added a `!!refund_date!!` email template variable to the refund email template. #3301 (@kimcoleman)
-* ENHANCEMENT: Added a `!!check_gateway_label!!` to the checkout check email template to show the set gateway label. #3301 (@kimcoleman)
+* ENHANCEMENT: Added a `!!check_gateway_label!!` email template variable to the checkout check email template to show the set gateway label. #3301 (@kimcoleman)
 * BUG FIX: Fixed an issue where sending test emails would always show an error message. #3301 (@kimcoleman, @derekashauer)
 * BUG FIX: Fixed an issue where checkout emails may show the expiration date for the wrong level. #3300, #3303 (@dparker1005)
 * BUG FIX: Fixed an issue where the admin's name may be mistakenly shown instead of the user's name in some admin email template variables. #3298 (@dparker1005)
