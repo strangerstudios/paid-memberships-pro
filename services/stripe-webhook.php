@@ -638,7 +638,7 @@
 			if(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && PMPRO_STRIPE_WEBHOOK_DEBUG === "log")
 			{
 				//file
-				$logfile = apply_filters( 'pmpro_stripe_webhook_logfile', dirname( __FILE__ ) . "/../logs/stripe-webhook.txt" );
+				$logfile = apply_filters( 'pmpro_stripe_webhook_logfile', wp_upload_dir()['basedir'] . "/pmpro/logs/stripe-webhook.txt" );
 				$loghandle = fopen( $logfile, "a+" );
 				fwrite( $loghandle, $logstr );
 				fclose( $loghandle );
