@@ -1029,7 +1029,7 @@ function pmpro_check_for_deprecated_gateways() {
 	}
 	$default_gateway = get_option( 'pmpro_gateway' );
 
-	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal', 'authorizenet', 'payflow', 'paypalstandard', 'braintree' );
+	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal', 'authorizenet', 'payflowpro', 'paypalstandard', 'braintree' );
 	foreach ( $deprecated_gateways as $deprecated_gateway ) {
 		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
 			require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_' . $deprecated_gateway . '.php' );
