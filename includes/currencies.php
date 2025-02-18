@@ -18,7 +18,7 @@
 		'ALL' => array(
 			'name' => __('Albanian Lek (Lekë)', 'paid-memberships-pro' ),
 			'symbol' => '&nbsp;Lek',
-			'decimals' => 2,
+			'decimals' => 0,
 			'thousands_separator' => ',',
 			'decimal_separator' => '.',
 			'position' => 'right',
