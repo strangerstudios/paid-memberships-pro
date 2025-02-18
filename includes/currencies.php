@@ -16,11 +16,11 @@
 			'position' => 'left'
 			),
 		'ALL' => array(
-    			'name' => __('Albanian Lek (Lekë)', 'paid-memberships-pro' ),
-    			'symbol' => ' Lek',
-			'decimals' => 0,
-    			'thousands_separator' => ',',
-    			'decimal_separator' => ',',
+			'name' => __('Albanian Lek (Lekë)', 'paid-memberships-pro' ),
+			'symbol' => '&nbsp;Lek',
+			'decimals' => 2,
+			'thousands_separator' => ',',
+			'decimal_separator' => '.',
 			'position' => 'right',
 			),
 		'ARS' => __('Argentine Peso (&#36;)', 'paid-memberships-pro' ),
