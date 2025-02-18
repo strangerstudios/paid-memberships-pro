@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.7.2
 Requires PHP: 5.6
-Stable tag: 3.4.1
+Stable tag: 3.4.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,10 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.4.2 - 2024-02-18 =
+* ENHANCEMENT: Added the Albanian Leke to the list of supported currencies. #3305 (@MaryOJob)
+* BUG FIX: Fixed an issue where sites using the Payflow gateway would no longer be able to use that gateway after it was marked as deprecated. #3306 (@dparker1005)
+
 = 3.4.1 - 2024-02-14 =
 * ENHANCEMENT: Added a `!!refund_date!!` email template variable to the refund email template. #3301 (@kimcoleman)
 * ENHANCEMENT: Added a `!!check_gateway_label!!` email template variable to the checkout check email template to show the set gateway label. #3301 (@kimcoleman)

@@ -412,10 +412,10 @@ function pmpro_checkForUpgrades() {
 	}
 
 	/**
-	 * Version 3.4.3
+	 * Version 3.4.2
 	 * Fixing broken Payflow deprecation.
 	 */
-	if ( $pmpro_db_version < 3.403 ) {
+	if ( $pmpro_db_version < 3.402 ) {
 		// Check if there are any Payflow settings.
 		if ( ! empty( get_option( 'pmpro_payflow_partner' ) ) ) {
 			// Get the current list of undeprecated gateways.
@@ -434,7 +434,7 @@ function pmpro_checkForUpgrades() {
 			}
 		}
 
-		update_option( 'pmpro_db_version', '3.403' );
+		update_option( 'pmpro_db_version', '3.402' );
 	}
 }
 
