@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.4.1\n"
+"Project-Id-Version: Paid Memberships Pro 3.4.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-02-14T16:48:57+00:00\n"
+"POT-Creation-Date: 2025-02-18T17:28:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -9634,6 +9634,8 @@ msgstr "Navštivte fórum podpory zákazníků"
 #: includes/currencies.php:148
 #: includes/currencies.php:126
 #: includes/currencies.php:153
+#: includes/currencies.php:134
+#: includes/currencies.php:161
 msgid "US Dollars (&#36;)"
 msgstr "americký dolar (&#36;)"
 
@@ -9645,6 +9647,7 @@ msgstr "americký dolar (&#36;)"
 #: includes/currencies.php:67
 #: includes/currencies.php:124
 #: includes/currencies.php:129
+#: includes/currencies.php:137
 msgid "Euros (&euro;)"
 msgstr "euro (&euro;)"
 
@@ -9656,18 +9659,21 @@ msgstr "euro (&euro;)"
 #: includes/currencies.php:66
 #: includes/currencies.php:123
 #: includes/currencies.php:128
+#: includes/currencies.php:136
 msgid "Pounds Sterling (&pound;)"
 msgstr "britská libra (&pound;)"
 
 #: includes/currencies.php:18
 #: includes/currencies.php:10
 #: includes/currencies.php:19
+#: includes/currencies.php:27
 msgid "Australian Dollars (&#36;)"
 msgstr "australský dolar (&#36;)"
 
 #: includes/currencies.php:20
 #: includes/currencies.php:21
 #: includes/currencies.php:26
+#: includes/currencies.php:34
 msgid "Brazilian Real (R&#36;)"
 msgstr "brazilský real (R&#36;)"
 
@@ -9681,6 +9687,7 @@ msgstr "brazilský real (R&#36;)"
 #: includes/currencies.php:122
 #: includes/currencies.php:30
 #: includes/currencies.php:127
+#: includes/currencies.php:135
 msgid "Canadian Dollars (&#36;)"
 msgstr "kanadský dolar (&#36;)"
 
@@ -9688,6 +9695,7 @@ msgstr "kanadský dolar (&#36;)"
 #: includes/currencies.php:13
 #: includes/currencies.php:26
 #: includes/currencies.php:31
+#: includes/currencies.php:39
 msgid "Chinese Yuan"
 msgstr "čínský jüan"
 
@@ -9696,6 +9704,7 @@ msgstr "čínský jüan"
 #: includes/currencies.php:14
 #: includes/currencies.php:28
 #: includes/currencies.php:33
+#: includes/currencies.php:41
 msgid "Czech Koruna"
 msgstr "česká koruna (Kč)"
 
@@ -9704,6 +9713,7 @@ msgstr "česká koruna (Kč)"
 #: includes/currencies.php:15
 #: includes/currencies.php:36
 #: includes/currencies.php:41
+#: includes/currencies.php:49
 msgid "Danish Krone"
 msgstr "dánská koruna"
 
@@ -9712,6 +9722,7 @@ msgstr "dánská koruna"
 #: includes/currencies.php:16
 #: includes/currencies.php:48
 #: includes/currencies.php:53
+#: includes/currencies.php:61
 msgid "Hong Kong Dollar (&#36;)"
 msgstr "hongkongský dolar (&#36;)"
 
@@ -9720,6 +9731,7 @@ msgstr "hongkongský dolar (&#36;)"
 #: includes/currencies.php:17
 #: includes/currencies.php:49
 #: includes/currencies.php:54
+#: includes/currencies.php:62
 msgid "Hungarian Forint"
 msgstr "maďarský forint"
 
@@ -9727,6 +9739,7 @@ msgstr "maďarský forint"
 #: includes/currencies.php:18
 #: includes/currencies.php:50
 #: includes/currencies.php:55
+#: includes/currencies.php:63
 msgid "Indian Rupee"
 msgstr "indická rupie"
 
@@ -9734,6 +9747,7 @@ msgstr "indická rupie"
 #: includes/currencies.php:19
 #: includes/currencies.php:51
 #: includes/currencies.php:56
+#: includes/currencies.php:64
 msgid "Indonesia Rupiah"
 msgstr "indonéská rupie"
 
@@ -9742,6 +9756,7 @@ msgstr "indonéská rupie"
 #: includes/currencies.php:20
 #: includes/currencies.php:52
 #: includes/currencies.php:57
+#: includes/currencies.php:65
 msgid "Israeli Shekel"
 msgstr "izraelský šekel"
 
@@ -9750,6 +9765,7 @@ msgstr "izraelský šekel"
 #: includes/currencies.php:21
 #: includes/currencies.php:54
 #: includes/currencies.php:59
+#: includes/currencies.php:67
 msgid "Japanese Yen (&yen;)"
 msgstr "japonský jen (&yen;)"
 
@@ -9758,6 +9774,7 @@ msgstr "japonský jen (&yen;)"
 #: includes/currencies.php:22
 #: includes/currencies.php:60
 #: includes/currencies.php:65
+#: includes/currencies.php:73
 msgid "Malaysian Ringgits"
 msgstr "malajsijský ringgit"
 
@@ -9766,6 +9783,7 @@ msgstr "malajsijský ringgit"
 #: includes/currencies.php:23
 #: includes/currencies.php:61
 #: includes/currencies.php:66
+#: includes/currencies.php:74
 msgid "Mexican Peso (&#36;)"
 msgstr "mexické peso (&#36;)"
 
@@ -9774,6 +9792,7 @@ msgstr "mexické peso (&#36;)"
 #: includes/currencies.php:24
 #: includes/currencies.php:63
 #: includes/currencies.php:68
+#: includes/currencies.php:76
 msgid "New Zealand Dollar (&#36;)"
 msgstr "novozélanský dolar (&#36;)"
 
@@ -9782,6 +9801,7 @@ msgstr "novozélanský dolar (&#36;)"
 #: includes/currencies.php:25
 #: includes/currencies.php:64
 #: includes/currencies.php:69
+#: includes/currencies.php:77
 msgid "Norwegian Krone"
 msgstr "norská koruna"
 
@@ -9790,6 +9810,7 @@ msgstr "norská koruna"
 #: includes/currencies.php:26
 #: includes/currencies.php:65
 #: includes/currencies.php:70
+#: includes/currencies.php:78
 msgid "Philippine Pesos"
 msgstr "filipínské peso"
 
@@ -9798,6 +9819,7 @@ msgstr "filipínské peso"
 #: includes/currencies.php:27
 #: includes/currencies.php:66
 #: includes/currencies.php:71
+#: includes/currencies.php:79
 msgid "Polish Zloty"
 msgstr "polský zlotý"
 
@@ -9806,12 +9828,14 @@ msgstr "polský zlotý"
 #: includes/currencies.php:28
 #: includes/currencies.php:84
 #: includes/currencies.php:89
+#: includes/currencies.php:97
 msgid "Singapore Dollar (&#36;)"
 msgstr "singapurský dolar (&#36;)"
 
 #: includes/currencies.php:50
 #: includes/currencies.php:89
 #: includes/currencies.php:94
+#: includes/currencies.php:102
 msgid "South African Rand (R)"
 msgstr "jihoafrický rand (R)"
 
@@ -9820,6 +9844,7 @@ msgstr "jihoafrický rand (R)"
 #: includes/currencies.php:50
 #: includes/currencies.php:94
 #: includes/currencies.php:99
+#: includes/currencies.php:107
 msgid "South Korean Won"
 msgstr "jihokorejský won"
 
@@ -9829,6 +9854,7 @@ msgstr "jihokorejský won"
 #: includes/currencies.php:51
 #: includes/currencies.php:97
 #: includes/currencies.php:102
+#: includes/currencies.php:110
 msgid "Swedish Krona"
 msgstr "švédská koruna"
 
@@ -9838,6 +9864,7 @@ msgstr "švédská koruna"
 #: includes/currencies.php:52
 #: includes/currencies.php:98
 #: includes/currencies.php:103
+#: includes/currencies.php:111
 msgid "Swiss Franc"
 msgstr "švýcarský frank"
 
@@ -9847,6 +9874,7 @@ msgstr "švýcarský frank"
 #: includes/currencies.php:53
 #: includes/currencies.php:99
 #: includes/currencies.php:104
+#: includes/currencies.php:112
 msgid "Taiwan New Dollars"
 msgstr "nový tchajwanský dolar"
 
@@ -9856,6 +9884,7 @@ msgstr "nový tchajwanský dolar"
 #: includes/currencies.php:54
 #: includes/currencies.php:100
 #: includes/currencies.php:105
+#: includes/currencies.php:113
 msgid "Thai Baht"
 msgstr "thajský baht"
 
@@ -9864,6 +9893,7 @@ msgstr "thajský baht"
 #: includes/currencies.php:55
 #: includes/currencies.php:101
 #: includes/currencies.php:106
+#: includes/currencies.php:114
 msgid "Turkish Lira"
 msgstr "turecká lira"
 
@@ -9872,6 +9902,7 @@ msgstr "turecká lira"
 #: includes/currencies.php:56
 #: includes/currencies.php:111
 #: includes/currencies.php:116
+#: includes/currencies.php:124
 msgid "Vietnamese Dong"
 msgstr "vietnamský dong"
 
@@ -20523,36 +20554,43 @@ msgid "US Armed Forces"
 msgstr ""
 
 #: includes/currencies.php:18
+#: includes/currencies.php:26
 msgid "Argentine Peso (&#36;)"
 msgstr ""
 
 #: includes/currencies.php:44
 #: includes/currencies.php:49
+#: includes/currencies.php:57
 msgid "Ghanaian Cedi (&#8373;)"
 msgstr ""
 
 #: includes/currencies.php:59
 #: includes/currencies.php:64
+#: includes/currencies.php:72
 msgid "Kenyan Shilling"
 msgstr ""
 
 #: includes/currencies.php:62
 #: includes/currencies.php:67
+#: includes/currencies.php:75
 msgid "Nigerian Naira (&#8358;)"
 msgstr ""
 
 #: includes/currencies.php:68
 #: includes/currencies.php:73
+#: includes/currencies.php:81
 msgid "Romanian Leu"
 msgstr ""
 
 #: includes/currencies.php:76
 #: includes/currencies.php:81
+#: includes/currencies.php:89
 msgid "Russian Ruble (&#8381;)"
 msgstr ""
 
 #: includes/currencies.php:103
 #: includes/currencies.php:108
+#: includes/currencies.php:116
 msgid "Ukrainian Hryvnia (&#8372;)"
 msgstr ""
 
@@ -35502,6 +35540,7 @@ msgid "Checkout session has not yet been completed."
 msgstr ""
 
 #: includes/currencies.php:21
+#: includes/currencies.php:29
 msgid "Bangladeshi taka (৳&nbsp;)"
 msgstr ""
 
@@ -37161,4 +37200,8 @@ msgid ""
 "<p>View an online version of this order here: !!order_url!!</p>\n"
 "\n"
 "<p>If you did not request this refund and would like more information please contact us at !!siteemail!!</p>"
+msgstr ""
+
+#: includes/currencies.php:19
+msgid "Albanian Lek (Lekë)"
 msgstr ""
