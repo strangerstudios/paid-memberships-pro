@@ -436,6 +436,15 @@ function pmpro_checkForUpgrades() {
 
 		update_option( 'pmpro_db_version', '3.402' );
 	}
+
+	/**
+	 * Version 3.5
+	 * Set up the restricted files directory.
+	 */
+	if ( $pmpro_db_version < 3.5 ) {
+		pmpro_set_up_restricted_files_directory();
+		update_option( 'pmpro_db_version', '3.5' );
+	}
 }
 
 function pmpro_db_delta() {

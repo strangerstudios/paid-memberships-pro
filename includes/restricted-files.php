@@ -5,7 +5,7 @@
  *
  * @since TBD
  */
-function pmpro_restricted_files_set_up_directories() {
+function pmpro_set_up_restricted_files_directory() {
 	// Create wp-content/uploads/pmpro folder if it doesn't exist.
 	$restricted_file_directory = pmpro_get_restricted_file_path();
 	if ( ! file_exists( $restricted_file_directory ) ) {
@@ -24,7 +24,6 @@ function pmpro_restricted_files_set_up_directories() {
 		'</FilesMatch>';
 	file_put_contents( trailingslashit( $restricted_file_directory ) . '.htaccess', $htaccess );
 }
-add_action( 'admin_init', 'pmpro_restricted_files_set_up_directories' );
 
 /**
  * If a restricted file is requested, check if the user has access.
