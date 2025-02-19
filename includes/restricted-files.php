@@ -7,10 +7,9 @@
  */
 function pmpro_restricted_files_set_up_directories() {
 	// Create wp-content/uploads/pmpro folder if it doesn't exist.
-	$upload_dir = wp_upload_dir();
-	$pmpro_dir = trailingslashit( $upload_dir['basedir'] ) . 'pmpro';
-	if ( ! file_exists( $pmpro_dir ) ) {
-		wp_mkdir_p( $pmpro_dir );
+	$restricted_file_directory = pmpro_get_restricted_file_path();
+	if ( ! file_exists( $restricted_file_directory ) ) {
+		wp_mkdir_p( $restricted_file_directory );
 	}
 
 	// Create/update .htaccess file for apache servers.
@@ -23,7 +22,7 @@ function pmpro_restricted_files_set_up_directories() {
 		'    Require all denied' . "\n" .
 		'  </IfModule>' . "\n" .
 		'</FilesMatch>';
-	file_put_contents( trailingslashit( $pmpro_dir ) . '.htaccess', $htaccess );
+	file_put_contents( trailingslashit( $restricted_file_directory ) . '.htaccess', $htaccess );
 }
 add_action( 'admin_init', 'pmpro_restricted_files_set_up_directories' );
 
@@ -56,7 +55,7 @@ function pmpro_restricted_files_check_request() {
 	}
 
 	// Serve the file.
-	$file_path = trailingslashit( wp_upload_dir()['basedir'] ) . 'pmpro/' . $file_dir . '/' . $file;
+	$file_path = pmpro_get_restricted_file_path( $file_dir, $file );
 	if ( file_exists( $file_path ) ) {
 		$finfo = finfo_open( FILEINFO_MIME_TYPE );
 		$content_type = finfo_file( $finfo, $file_path );
@@ -88,3 +87,32 @@ function pmpro_can_access_restricted_file( $can_access, $file_dir ) {
 	return $can_access;
 }
 add_filter( 'pmpro_can_access_restricted_file', 'pmpro_can_access_restricted_file', 10, 2 );
+
+/**
+ * Get the path to a restricted file.
+ *
+ * @since TBD
+ *
+ * @param  string $file_dir Directory of the restricted file.
+ * @param  string $file     Name of the restricted file.
+ * @return string           Path to the restricted file.
+ */
+function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
+	$uploads_dir = trailingslashit( wp_upload_dir()['basedir'] );
+	$restricted_file_path = $uploads_dir . 'pmpro/';
+	// Get the directory path.
+	if ( ! empty( $file_dir ) ) {
+		$restricted_file_path .= $file_dir . '/';
+
+		// Create the directory if it doesn't exist.
+		if ( ! file_exists( $restricted_file_path ) ) {
+			wp_mkdir_p( $restricted_file_path );
+		}
+
+		// Get the file path.
+		if ( ! empty( $file ) ) {
+			$restricted_file_path .= $file;
+		}
+	}
+	return $restricted_file_path;
+}
