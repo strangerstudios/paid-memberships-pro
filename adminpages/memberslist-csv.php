@@ -446,7 +446,7 @@
 				foreach($extra_columns as $heading => $callback)
 				{
 					$val = call_user_func($callback, $theuser, $heading);
-					$val = !empty($val) ? $val : null;
+					$val = ( is_string( $val ) || ! empty($val) ) ? $val : null;
 					array_push( $csvoutput, pmpro_enclose($val) );
 				}
 			}
