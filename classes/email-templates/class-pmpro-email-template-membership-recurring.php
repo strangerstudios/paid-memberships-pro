@@ -119,7 +119,7 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
 			'!!billing_amount!!' => esc_html__( 'The amount billed for the subscription.', 'paid-memberships-pro' ),
 			'!!renewaldate!!' => esc_html__( 'The date of the next payment.', 'paid-memberships-pro' ),
