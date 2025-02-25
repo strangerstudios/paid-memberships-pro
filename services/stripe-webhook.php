@@ -496,7 +496,7 @@
 			if ( empty( $payment_method ) ) {
 				$logstr .= "Could not find payment method for Checkout Session " . $checkout_session->id . ".";				
 			}
-			pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method, $subscription->customer );
+			pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method, empty( $subscription ) ? null : $subscription->customer );
 
 			// Update the amounts paid.
 			global $pmpro_currency;
