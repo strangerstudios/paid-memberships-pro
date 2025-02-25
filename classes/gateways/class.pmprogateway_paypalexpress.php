@@ -160,7 +160,7 @@
 								'title' => array(),
 							),
 						);
-						echo sprintf( wp_kses( __( 'Note: We do not recommend using PayPal Standard. We suggest using PayPal Express, Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target="_blank" href="%s" title="More information on why can be found here">More information on why can be found here</a>.', 'paid-memberships-pro' ), $allowed_message_html ), 'https://www.paidmembershipspro.com/read-using-paypal-standard-paid-memberships-pro/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=read-using-paypal-standard-paid-memberships-pro' );
+						echo sprintf( wp_kses( __( 'Note: the PayPal Standard gateway has been deprecated. Please switch to using <a href="%s" target="_blank">PayPal Express</a>.', 'paid-memberships-pro' ), $allowed_message_html ), 'https://www.paidmembershipspro.com/gateway/paypal-express/enable-express-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=enable-express-checkout' );
 					?>
 					</p>
 				</div>
