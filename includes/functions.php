@@ -5038,3 +5038,37 @@ function pmpro_display_member_account_level_message( $level ) {
 	}
 }
 add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );
+
+/**
+ * Generate required field attributes and labels dynamically, including wrapper classes.
+ *
+ * @param string $field_name The field key from the required fields array.
+ * @param string $field_type The type of the field (text, email, textarea, etc.).
+ * @return array Associative array with 'label', 'input_class', 'input_attr', and 'wrapper_class'.
+ * @since TBD
+ */
+function pmpro_get_required_field_attributes( $field_name, $field_type = 'text' ) {
+	global $pmpro_required_user_fields, $pmpro_required_billing_fields;
+	$is_required = isset( $pmpro_required_user_fields[ $field_name ] )
+		|| isset( $pmpro_required_billing_fields[ $field_name ] );
+
+	// Build the wrapper class dynamically based on field name and type.
+	$base_class = "pmpro_form_field pmpro_form_field-{$field_type} pmpro_form_field-{$field_name}";
+
+	return array(
+		'label' => $is_required ? sprintf(
+			' <span class="%s"><abbr title="%s">*</abbr></span>',
+			esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ),
+			esc_attr__( 'Required Field', 'paid-memberships-pro' )
+		) : '',
+		'input_class'   => $is_required ? 'pmpro_form_input-required' : '',
+		'input_attr'    => $is_required ? 'aria-required="true" required' : '',
+		'wrapper_class' => esc_attr( pmpro_get_element_class(
+				$base_class . ( $is_required ? ' pmpro_form_field-required' : '' ), "pmpro_form_field-{$field_name}"
+			)
+		),
+	);
+}
+
+
+
