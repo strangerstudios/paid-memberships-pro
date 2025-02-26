@@ -177,9 +177,7 @@ if ( is_admin() || defined('WP_CLI') ) {
 }
 
 // load plugin updater
-if ( is_admin() ) {
-	require_once( PMPRO_DIR . '/includes/addons.php' );
-}
+require_once( PMPRO_DIR . '/includes/addons.php' );
 
 /*
 	Definitions

@@ -507,9 +507,6 @@ class PMPro_Wisdom_Integration {
 	 * @return array The list of Add Ons categorized by active, inactive, and update available.
 	 */
 	public function get_addons_info() {
-		// This file only is usually only required when is_admin().
-		require_once( PMPRO_DIR . '/includes/addons.php' );
-		
 		// Build the list of Add Ons data to track.
 		$addons      = pmpro_getAddons();
 		$plugin_info = get_site_transient( 'update_plugins' );
