@@ -72,8 +72,11 @@ function pmpro_wp()
 		{
 			if( ! empty( $post->post_content ) && ( strpos( $post->post_content, "[pmpro_" . $pmpro_page_name . "]" ) !== false || ( function_exists( 'has_block' ) && has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) ) )
 			{
-				//preheader
-				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
+				// Do not load preheader if we are in the builder because of the redirects they do causing issues.
+				$editor = pmpro_is_page_builder_editor();
+				if ( ! $editor ) {
+					require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
+				}
 
 				//add class to body
 				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);

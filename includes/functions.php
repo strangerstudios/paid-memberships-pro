@@ -5038,3 +5038,54 @@ function pmpro_display_member_account_level_message( $level ) {
 	}
 }
 add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );
+
+/**
+ * Check if the current page is being edited with a page builder.
+ *
+ * @return bool True if the page is being edited with a page builder, false otherwise.
+ */
+function pmpro_is_page_builder_editor() {
+
+	// Check that we are editing a post.
+    global $post;
+    if ( ! $post ) {
+        return false;
+    }
+
+    // Check for Elementor.
+    if ( did_action( 'elementor/loaded' ) && isset( $_GET['elementor-preview'] ) ) {
+        return 'Elementor';
+    }
+
+    // Check for Visual Composer
+    if ( function_exists( 'vchelper' ) ) {
+		$frontendHelper = vchelper('Frontend');
+		if ( $frontendHelper->isVcvFrontend() ) {
+			return 'Visual Composer';
+		}
+    }
+
+    // Check for Beaver Builder, they even use the 'fl_builder' param as their check method.
+    if ( class_exists( 'FLBuilderModel' ) && isset( $_GET['fl_builder'] ) ) {
+        return 'Beaver Builder';
+    }
+
+    // Check for Divi Builder.
+    if ( function_exists( 'et_fb_is_enabled' ) && et_core_is_fb_enabled() ) {
+        return 'Divi';
+    }
+
+    // Check for Fusion Builder (Avada).
+    if ( ( function_exists( 'fusion_is_preview_frame' ) && fusion_is_preview_frame() ) || ( function_exists( 'fusion_is_builder_frame' ) && fusion_is_builder_frame() ) ) {
+        return 'Fusion';
+    }
+
+	// Check for Bricks Builder.
+    if ( function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) {
+        return 'Bricks';
+    }
+
+
+    return false;
+
+}
