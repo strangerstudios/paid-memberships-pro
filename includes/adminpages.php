@@ -15,6 +15,7 @@ function pmpro_getPMProCaps() {
 		'pmpro_discountcodes',
 		'pmpro_pagesettings',
 		'pmpro_paymentsettings',
+		'pmpro_taxsettings',
 		'pmpro_securitysettings',
 		'pmpro_emailsettings',		
 		'pmpro_emailtemplates',
@@ -75,6 +76,7 @@ function pmpro_add_pages() {
 	$discount_codes_list_table_hook = add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
 	add_submenu_page( 'admin.php', __( 'Page Settings', 'paid-memberships-pro' ), __( 'Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings' );
 	add_submenu_page( 'admin.php', __( 'Payment Settings', 'paid-memberships-pro' ), __( 'Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings' );
+	add_submenu_page( 'admin.php', __( 'Tax', 'paid-memberships-pro' ), __( 'Tax', 'paid-memberships-pro' ), 'pmpro_taxsettings', 'pmpro-taxsettings', 'pmpro_taxsettings' );
 	add_submenu_page( 'admin.php', __( 'Security Settings', 'paid-memberships-pro' ), __( 'Security Settings', 'paid-memberships-pro' ), 'pmpro_securitysettings', 'pmpro-securitysettings', 'pmpro_securitysettings' );
 	add_submenu_page( 'admin.php', __( 'Email Settings', 'paid-memberships-pro' ), __( 'Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Templates', 'paid-memberships-pro' ), __( 'Email Templates', 'paid-memberships-pro' ), 'pmpro_emailtemplates', 'pmpro-emailtemplates', 'pmpro_emailtemplates' );
@@ -118,6 +120,7 @@ function pmpro_parent_file( $parent_file ) {
 		'pmpro-discountcodes' => 'pmpro-membershiplevels',
 		'pmpro-pagesettings' => 'pmpro-membershiplevels',
 		'pmpro-paymentsettings' => 'pmpro-membershiplevels',
+		'pmpro-taxsettings' => 'pmpro-membershiplevels',
 		'pmpro-securitysettings' => 'pmpro-membershiplevels',
 		'pmpro-emailsettings' => 'pmpro-membershiplevels',
 		'pmpro-emailtemplates' => 'pmpro-membershiplevels',
@@ -548,6 +551,10 @@ function pmpro_pagesettings() {
 
 function pmpro_paymentsettings() {
 	require_once( PMPRO_DIR . '/adminpages/paymentsettings.php' );
+}
+
+function pmpro_taxsettings() {
+	require_once( PMPRO_DIR . '/adminpages/taxsettings.php' );
 }
 
 function pmpro_securitysettings() {
