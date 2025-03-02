@@ -128,7 +128,7 @@
 											}
 										?>
 									</select>
-									<p class="description"><?php esc_html_e( 'Select the primary payment gateway for membership checkouts in this site. Only change this setting once you have configured the gateway settings for the selected gateway environment.', 'paid-memberships-pro' ); ?></p>
+									<p class="description"><?php esc_html_e( 'Select the primary payment gateway for membership checkouts on this site. Before switching, ensure the selected gateway is fully configured for the chosen environment (live or test).', 'paid-memberships-pro' ); ?></p>
 								</td>
 							</tr>
 							<tr>
