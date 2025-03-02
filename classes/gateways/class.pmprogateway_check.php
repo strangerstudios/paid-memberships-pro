@@ -49,7 +49,27 @@
 		
 			return $gateways;
 		}
-		
+
+		/**
+		 * Check whether or not a gateway supports a specific feature.
+		 *
+		 * @since TBD
+		 *
+		 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
+		 */
+		public static function supports( $feature ) {
+			$supports = array(
+				'description' => esc_html__( 'Allow members to pay by check or other manual payment methods like Bank Transfer or Venmo. After receiving a payment, you must manually update the order status to "success" in order to activate the membership.', 'paid-memberships-pro' ),
+				'manage_settings' => true,
+			);
+
+			if ( empty( $supports[$feature] ) ) {
+				return false;
+			}
+
+			return $supports[$feature];
+		}
+
 		/**
 		 * Get a list of payment options that the Check gateway needs/supports.
 		 *		 
@@ -138,6 +158,15 @@
 			$check_gateway_label = get_option( 'pmpro_check_gateway_label', __( 'Check', 'paid-memberships-pro' ) );
 			$instructions = get_option( 'pmpro_instructions' );
 			?>
+			<p>
+				<?php
+					printf(
+						/* translators: %s: URL to the Manual Payment gateway documentation. */
+						esc_html__( 'For detailed setup instructions, please visit our %s.', 'paid-memberships-pro' ),
+						'<a href="https://www.paidmembershipspro.com/gateway/manual-payment/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=manual-payment-gateway-documentation" target="_blank">' . esc_html__( 'Manual Payment gateway documentation', 'paid-memberships-pro' ) . '</a>'
+					);
+				?>
+			</p>
 			<div id="pmpro_check" class="pmpro_section" data-visibility="shown" data-activated="true">
 				<div class="pmpro_section_toggle">
 					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
@@ -168,6 +197,21 @@
 							</tr>
 						</tbody>
 					</table>
+					<?php
+						if ( ! defined( 'PMPROPBC_VER' ) ) {
+							?>
+							<p>
+								<?php
+									printf(
+										/* translators: %s: URL to the Pay by Check Add On documentation. */
+										esc_html__( 'Optional: Offer manual payments in addition to your primary payment gateway using the %s.', 'paid-memberships-pro' ),
+										'<a href="https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=offer-manual-payments" target="_blank">' . esc_html__( 'Pay by Check: Manual and Offline Payments Add On', 'paid-memberships-pro' ) . '</a>'
+									);
+								?>
+							</p>
+							<?php
+						}
+					?>
 				</div>
 			</div>
 			<?php

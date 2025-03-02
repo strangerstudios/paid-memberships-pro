@@ -80,6 +80,8 @@ class PMProGateway_stripe extends PMProGateway {
 			'subscription_sync' => true,
 			'payment_method_updates' => 'individual',
 			'check_token_orders' => true,
+			'description' => esc_html__( 'With Stripe, you can accept membership payment onsite or offsite. The Stripe gateway supports over 135 currencies, built-in tax collection, and multiple payment methods like credit card, Google Pay, Apple Pay, and over 40 region-specific options.', 'paid-memberships-pro' ),
+			'manage_settings' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -670,7 +672,17 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function show_settings_fields() {
 		$stripe = new PMProGateway_stripe();
-
+		?>
+		<p>
+			<?php
+				printf(
+					/* translators: %s: URL to the Stripe gateway documentation. */
+					esc_html__( 'For detailed setup instructions, please visit our %s.', 'paid-memberships-pro' ),
+					'<a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=stripe-documentation" target="_blank">' . esc_html__( 'Stripe documentation', 'paid-memberships-pro' ) . '</a>'
+				);
+			?>
+		</p>
+		<?php
 		// Show connect fields.
 		$stripe->show_connection_settings_section( true ); // Show live connect fields.
 		$stripe->show_connection_settings_section( false ); // Show sandbox connect fields.
@@ -690,6 +702,7 @@ class PMProGateway_stripe extends PMProGateway {
 				</button>
 			</div>
 			<div class="pmpro_section_inside" <?php if ( ! $stripe->show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
+				<p><?php esc_html_e( 'If you cannot use Stripe Connect and must continue using API keys for your Stripe gateway setup, enter your Published and Restricted Keys below.', 'paid-memberships-pro' ); ?></p>
 				<table class="form-table">
 					<tbody>
 						<tr class="gateway pmpro_stripe_legacy_keys gateway_stripe">
@@ -710,7 +723,7 @@ class PMProGateway_stripe extends PMProGateway {
 						</tr>
 						<tr class="gateway pmpro_stripe_legacy_keys gateway_stripe">
 							<th scope="row" valign="top">
-								<label for="stripe_secretkey"><?php esc_html_e( 'Secret Key', 'paid-memberships-pro' ); ?></label>
+								<label for="stripe_secretkey"><?php esc_html_e( 'Restricted Key', 'paid-memberships-pro' ); ?></label>
 							</th>
 							<td>
 								<input type="text" id="stripe_secretkey" name="stripe_secretkey" value="<?php echo esc_attr( $secret_key ) ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
@@ -752,7 +765,7 @@ class PMProGateway_stripe extends PMProGateway {
 								<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout). If using Stripe Checkout, be sure that all webhook events listed above are set up in Stripe.', 'paid-memberships-pro' ); ?>
 							</td>
 						</tr>
-						<tr class="gateway gateway_stripe">
+						<tr class="gateway gateway_stripe gateway_stripe_onsite_fields">
 							<th scope="row" valign="top">
 								<label for="stripe_billingaddress"><?php esc_html_e( 'Show Billing Address Fields in PMPro Checkout Form', 'paid-memberships-pro' ); ?></label>
 							</th>
@@ -766,7 +779,7 @@ class PMProGateway_stripe extends PMProGateway {
 								<p class="description"><?php echo wp_kses_post( __( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ) ); ?></p>
 							</td>
 						</tr>
-						<tr class="gateway gateway_stripe">
+						<tr class="gateway gateway_stripe gateway_stripe_onsite_fields">
 							<th scope="row" valign="top">
 								<label for="stripe_payment_request_button"><?php esc_html_e( 'Show Payment Request Button for On-Site Payments', 'paid-memberships-pro' ); ?></label>
 							</th>
@@ -814,7 +827,7 @@ class PMProGateway_stripe extends PMProGateway {
 									?>
 							</td>
 						</tr>
-						<tr class="gateway gateway_stripe">
+						<tr class="gateway gateway_stripe gateway_stripe_checkout_fields">
 							<th scope="row" valign="top">
 								<label for="stripe_checkout_billing_address"><?php esc_html_e( 'Collect Billing Address in Stripe Checkout', 'paid-memberships-pro' ); ?></label>
 							</th>
@@ -825,15 +838,15 @@ class PMProGateway_stripe extends PMProGateway {
 								</select>
 							</td>
 						</tr>
-						<tr class="gateway gateway_stripe">
+						<tr class="gateway gateway_stripe gateway_stripe_checkout_fields">
 							<th scope="row" valign="top">
 								<label for="stripe_tax"><?php esc_html_e( 'Calculate Tax in Stripe Checkout', 'paid-memberships-pro' ); ?></label>
 							</th>
 							<td>
 								<select id="stripe_tax" name="stripe_tax">
 									<option value="no"><?php esc_html_e( 'Do not calculate tax', 'paid-memberships-pro' ); ?></option>
-									<option value="inclusive" <?php if ( $stripe_tax === 'inclusive' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Membership price includes tax', 'paid-memberships-pro' ); ?></option>
-									<option value="exclusive" <?php if ( $stripe_tax === 'exclusive' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Calculate tax on top of membership price', 'paid-memberships-pro' ); ?></option>
+									<option value="inclusive" <?php selected( $stripe_tax, 'inclusive' ); ?>><?php esc_html_e( 'Membership price includes tax', 'paid-memberships-pro' ); ?></option>
+									<option value="exclusive" <?php selected( $stripe_tax, 'exclusive' ); ?>><?php esc_html_e( 'Calculate tax on top of membership price', 'paid-memberships-pro' ); ?></option>
 								</select>
 								<?php
 									$allowed_stripe_tax_description_html = array (
@@ -859,20 +872,54 @@ class PMProGateway_stripe extends PMProGateway {
 								<p class="description"><?php esc_html_e( 'Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers.', 'paid-memberships-pro' ); ?></p>
 							</td>
 						</tr>
-						<?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
-								$allowed_appe_html = array (
-									'a' => array (
-										'href' => array(),
-										'target' => array(),
-										'title' => array(),
-									),
-								);
-								echo '<tr class="gateway gateway_stripe"';
-								echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
-						}
-						?>
 					</tbody>
 				</table>
+				<script>
+					jQuery(document).ready(function() {
+						// Disable fields in Stripe Checkout section if Payment Flow is set to 'onsite'.
+						jQuery('#stripe_payment_flow').on('change', function() {
+							var paymentFlow = jQuery(this).val();
+							if (paymentFlow === 'onsite') {
+								jQuery('.gateway_stripe_checkout_fields select, .gateway_stripe_checkout_fields input').prop('disabled', true);
+							} else {
+								jQuery('.gateway_stripe_checkout_fields select, .gateway_stripe_checkout_fields input').prop('disabled', false);
+							}
+
+							if (paymentFlow === 'checkout') {
+								jQuery('.gateway_stripe_onsite_fields select, .gateway_stripe_onsite_fields input').prop('disabled', true);
+							} else {
+								jQuery('.gateway_stripe_onsite_fields select, .gateway_stripe_onsite_fields input').prop('disabled', false);
+							}
+						});
+						jQuery('#stripe_payment_flow').change();
+
+						// Disable the tax IDs field if tax is not enabled.
+						jQuery('#stripe_tax').on('change', function() {
+							var tax = jQuery(this).val();
+							if (tax === 'no') {
+								jQuery('#stripe_tax_id_collection_enabled').prop('disabled', true);
+							} else {
+								jQuery('#stripe_tax_id_collection_enabled').prop('disabled', false);
+							}
+						});
+						jQuery('#stripe_tax').change();
+					});
+				</script>
+				<?php
+					if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
+						?>
+						<p>
+							<?php
+								printf(
+									/* translators: %s: URL to the Add PayPal Express Add On documentation. */
+									esc_html__( 'Optional: Offer PayPal Express as an option at checkout using the %s.', 'paid-memberships-pro' ),
+									'<a href="https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout" target="_blank">' . esc_html__( 'Add PayPal Express Add On', 'paid-memberships-pro' ) . '</a>'
+								);
+							?>
+						</p>
+						<?php
+					}
+				?>
 			</div>
 		</div>
 		<?php
@@ -2595,7 +2642,7 @@ class PMProGateway_stripe extends PMProGateway {
 							'action' => 'disconnect',
 							'gateway_environment' => $environment2,
 							'stripe_user_id' => $values[ $environment . '_stripe_connect_user_id'],
-							'return_url' => rawurlencode( add_query_arg( 'pmpro_stripe_connect_deauthorize_nonce', wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) ),
+							'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
 						),
 						$connect_url_base
 					);
@@ -2616,7 +2663,7 @@ class PMProGateway_stripe extends PMProGateway {
 						array(
 							'action' => 'authorize',
 							'gateway_environment' => $environment2,
-							'return_url' => rawurlencode( add_query_arg( 'pmpro_stripe_connect_nonce', wp_create_nonce( 'pmpro_stripe_connect_nonce' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) ),
+							'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
 						),
 						$connect_url_base
 					);
@@ -2733,7 +2780,7 @@ class PMProGateway_stripe extends PMProGateway {
 											'action' => 'disconnect',
 											'gateway_environment' => $environment2,
 											'stripe_user_id' => get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' ),
-											'return_url' => rawurlencode( add_query_arg( 'pmpro_stripe_connect_deauthorize_nonce', wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) ),
+											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
 										),
 										$connect_url_base
 									);
@@ -2754,7 +2801,7 @@ class PMProGateway_stripe extends PMProGateway {
 										array(
 											'action' => 'authorize',
 											'gateway_environment' => $environment2,
-											'return_url' => rawurlencode( add_query_arg( 'pmpro_stripe_connect_nonce', wp_create_nonce( 'pmpro_stripe_connect_nonce' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) ),
+											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
 										),
 										$connect_url_base
 									);
