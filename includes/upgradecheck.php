@@ -410,6 +410,32 @@ function pmpro_checkForUpgrades() {
 		pmpro_db_delta();
 		update_option( 'pmpro_db_version', '3.4' );
 	}
+
+	/**
+	 * Version 3.4.2
+	 * Fixing broken Payflow deprecation.
+	 */
+	if ( $pmpro_db_version < 3.402 ) {
+		// Check if there are any Payflow settings.
+		if ( ! empty( get_option( 'pmpro_payflow_partner' ) ) ) {
+			// Get the current list of undeprecated gateways.
+			$undeprecated_gateways = get_option( 'pmpro_undeprecated_gateways' );
+			if ( empty( $undeprecated_gateways ) ) {
+				$undeprecated_gateways = array();
+			} elseif ( is_string( $undeprecated_gateways ) ) {
+				// pmpro_setOption turns this into a comma separated string
+				$undeprecated_gateways = explode( ',', $undeprecated_gateways );
+			}
+
+			// If Payflow isn't in the list, add it.
+			if ( ! in_array( 'payflowpro', $undeprecated_gateways ) ) {
+				$undeprecated_gateways[] = 'payflowpro';
+				update_option( 'pmpro_undeprecated_gateways', $undeprecated_gateways );
+			}
+		}
+
+		update_option( 'pmpro_db_version', '3.402' );
+	}
 }
 
 function pmpro_db_delta() {

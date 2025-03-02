@@ -344,7 +344,7 @@ function pmpro_cron_recurring_payment_reminders() {
 
 			if ( $send_emails && 'membership_recurring' == $template ) {
 				// This is the default email. Use the email template class.
-				$pmproemail = new PMPro_Email_Template_Payment_Reminder( $subscription_obj );
+				$pmproemail = new PMPro_Email_Template_Membership_Recurring( $subscription_obj );
 				$pmproemail->send();
 			} else if ( $send_emails ) {
 				// This is not the default email. Build the email from scratch.

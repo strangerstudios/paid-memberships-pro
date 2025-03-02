@@ -81,11 +81,13 @@ class PMPro_Email_Template_Billing_Failure_Admin extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>The subscription payment for !!user_login!! for level !!membership_level_name!! at !!sitename!! has failed.</p>
+		return wp_kses_post( __( '<p>The subscription payment for !!user_login!! for level !!membership_level_name!! at !!sitename!! has failed.</p>
+
 <p>Account: !!display_name!! (!!user_email!!)</p>
+
 <p>Membership Level: !!membership_level_name!!</p>
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' );
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -122,26 +124,24 @@ class PMPro_Email_Template_Billing_Failure_Admin extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 		return array(
 			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
-			'!!name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user billing failed', 'paid-memberships-pro' ),
-			'!!display_name!!' => esc_html__( 'The display name of the user billing failed', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!billing_name!!' => esc_html__( 'Billing Info Name', 'paid-memberships-pro' ),
-			'!!billing_street!!' => esc_html__( 'Billing Info Street', 'paid-memberships-pro' ),
-			'!!billing_street2!!' => esc_html__( 'Billing Info Street 2', 'paid-memberships-pro' ),
-			'!!billing_city!!' => esc_html__( 'Billing Info City', 'paid-memberships-pro' ),
-			'!!billing_state!!' => esc_html__( 'Billing Info State', 'paid-memberships-pro' ),
-			'!!billing_zip!!' => esc_html__( 'Billing Info Zip', 'paid-memberships-pro' ),
-			'!!billing_country!!' => esc_html__( 'Billing Info Country', 'paid-memberships-pro' ),
-			'!!billing_phone!!' => esc_html__( 'Billing Info Phone', 'paid-memberships-pro' ),
-			'!!billing_address!!' => esc_html__( 'Billing Info Complete Address', 'paid-memberships-pro' ),
-			'!!cardtype!!' => esc_html__( 'Credit Card Type', 'paid-memberships-pro' ),
-			'!!accountnumber!!' => esc_html__( 'Credit Card Number (last 4 digits)', 'paid-memberships-pro' ),
-			'!!expirationmonth!!' => esc_html__( 'Credit Card Expiration Month (mm format)', 'paid-memberships-pro' ),
-			'!!expirationyear!!' => esc_html__( 'Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro' ),
-
+			'!!billing_address!!' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
+			'!!billing_name!!' => esc_html__( 'The billing name of the order.', 'paid-memberships-pro' ),
+			'!!billing_street!!' => esc_html__( 'The billing street of the order.', 'paid-memberships-pro' ),
+			'!!billing_street2!!' => esc_html__( 'The billing street line 2 of the order.', 'paid-memberships-pro' ),
+			'!!billing_city!!' => esc_html__( 'The billing city of the order.', 'paid-memberships-pro' ),
+			'!!billing_state!!' => esc_html__( 'The billing state of the order.', 'paid-memberships-pro' ),
+			'!!billing_zip!!' => esc_html__( 'The billing ZIP code of the order.', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'The billing country of the order.', 'paid-memberships-pro' ),
+			'!!billing_phone!!' => esc_html__( 'The billing phone number of the order.', 'paid-memberships-pro' ),
+			'!!cardtype!!' => esc_html__( 'The type of credit card used.', 'paid-memberships-pro' ),
+			'!!accountnumber!!' => esc_html__( 'The last four digits of the credit card number.', 'paid-memberships-pro' ),
+			'!!expirationmonth!!' => esc_html__( 'The expiration month of the credit card.', 'paid-memberships-pro' ),
+			'!!expirationyear!!' => esc_html__( 'The expiration year of the credit card.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -159,11 +159,11 @@ class PMPro_Email_Template_Billing_Failure_Admin extends PMPro_Email_Template {
 		return array(
 			'subject' => $this->get_default_subject(),
 			'name' => $user->display_name,
+			'display_name' => $user->display_name,
 			'user_login' => $user->user_login,
+			'user_email' => $user->user_email,
 			'membership_id' => $membership_level->id,
 			'membership_level_name' => $membership_level->name,
-			'display_name' => $user->display_name,
-			'user_email' => $user->user_email,
 			'billing_name' => $order->billing->name,
 			'billing_street' => $order->billing->street,
 			'billing_street2' => $order->billing->street2,

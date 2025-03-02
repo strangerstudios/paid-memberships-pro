@@ -303,7 +303,7 @@
 				return false;
 			
 			$email = new PMPro_Email_Template_Cancel( $user, $old_level_id );
-			$email->send();
+			return $email->send();
 		}
 		
 		/**
@@ -327,7 +327,7 @@
 				return false;
 
 			$email = new PMPro_Email_Template_Cancel_Admin( $user, $old_level_id );
-			$email->send();
+			return $email->send();
 		}
 
 		/**
@@ -348,7 +348,7 @@
 			}
 
 			$email = new PMPro_Email_Template_Cancel_On_Next_Payment_Date( $user, $level_id );
-			$email->send();
+			return $email->send();
 		}
 
 		/**
@@ -379,7 +379,7 @@
 			}
 
 			$email = new PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin( $user, $level_id );
-			$email->send();
+			return $email->send();
 		}
 
 		/**
@@ -399,7 +399,7 @@
 			}
 
 			$email = new PMPro_Email_Template_Refund( $user, $order );
-			$email->send();
+			return $email->send();
 		}
 		
 		/**
@@ -419,8 +419,7 @@
 			}
 
 			$email = new PMPro_Email_Template_Refund_Admin( $user, $order );
-			$email->send();
-
+			return $email->send();
 		}
 
 		/**
@@ -472,7 +471,7 @@
 			if( $email == null ) {
 				return false;
 			}
-			$email->send();
+			return $email->send();
 		}
 		
 		/**
@@ -503,7 +502,7 @@
 					case 'checkout_free_admin':
 						$email = new PMPro_Email_Template_Checkout_Free_Admin( $user, $order );
 						break;
-					case 'checkout_paid':
+					case 'checkout_paid_admin':
 						$email = new PMPro_Email_Template_Checkout_Paid_Admin( $user, $order );
 						break;
 				}
@@ -522,7 +521,7 @@
 			if( $email == null ) {
 				return false;
 			}
-			$email->send();
+			return $email->send();
 		}
 
 		/**
@@ -545,7 +544,7 @@
 			}
 
 			$email = new PMPro_Email_Template_Billing( $user, $order );
-			$email->send();
+			return $email->send();
 		}
 		
 		/**
@@ -568,7 +567,7 @@
 			}
 
 			$email = new PMPro_Email_Template_Billing_Admin( $user, $order );
-			$email->send();
+			return $email->send();
 		}
 		
 		/**
@@ -586,7 +585,7 @@
 				return false;
 
 			$email = new PMPro_Email_Template_Billing_Failure( $user, $order );
-			$email->send();
+			return $email->send();
 		}
 
 		/**
@@ -604,7 +603,7 @@
 				return false;
 
 			$email = new PMPro_Email_Template_Billing_Failure_Admin( $user, $order );
-			$email->send();
+			return $email->send();
 		}
 
 		/**
@@ -652,8 +651,8 @@
 				return false;
 			}
 
-			$email = new PMPro_Email_Template_Payment_Receipt( $user, $order );
-			$email->send();
+			$email = new PMPro_Email_Template_Invoice( $user, $order );
+			return $email->send();
 		}
 		
 		/**
@@ -730,8 +729,7 @@
 			}
 
 			$email = new PMPro_Email_Template_Membership_Expired( $user, $membership_id );
-
-			$email->send();
+			return $email->send();
 		}
 
 		/**
@@ -755,7 +753,7 @@
 			}
 						
 			$email = new PMPro_Email_Template_Membership_Expiring( $user, $membership_id );
-			$email->send();
+			return $email->send();
 		}
 		
 		/**
@@ -773,7 +771,7 @@
 				return false;
 
 			$email = new PMPro_Email_Template_Admin_Change( $user );
-			$email->send();
+			return $email->send();
 		}
 		
 		/**
@@ -791,7 +789,7 @@
 				return false;
 
 			$email = new PMPro_Email_Template_Admin_Change_Admin( $user );
-			$email->send();
+			return $email->send();
 		}
 
 		/**
@@ -839,8 +837,7 @@
 				return false;
 
 			$email = new PMPro_Email_Template_Payment_Action( $user, $order_url );
-			$email->send();
-
+			return $email->send();
 		}
 
 		/**
@@ -868,7 +865,7 @@
 				return false;
 
 			$email = new PMPro_Email_Template_Payment_Action_Admin( $user, $order_url );
-			$email->send();
+			return $email->send();
 		}
 
 		/**
@@ -883,8 +880,8 @@
 			if ( ! $subscription_obj ) {
 				return false;
 			}
-			$email = new PMPro_Email_Template_Payment_Reminder( $subscription_obj );
-			$email->send();
+			$email = new PMPro_Email_Template_Membership_Recurring( $subscription_obj );
+			return $email->send();
 		}
 
 		/**

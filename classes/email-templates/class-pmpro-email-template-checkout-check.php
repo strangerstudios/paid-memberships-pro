@@ -81,7 +81,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 	 * @return string The default body for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post('<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
+		return wp_kses_post( __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
 
 !!membership_level_confirmation_message!!
 
@@ -90,7 +90,9 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 <p>Below are details about your membership account and a receipt for your initial membership order.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
+
 <p>Membership Level: !!membership_level_name!!</p>
+
 <p>Membership Fee: !!membership_cost!!</p>
 !!membership_expiration!! !!discount_code!!
 
@@ -99,7 +101,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 	Total Billed: !!order_total!!
 </p>
 
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' );
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -134,20 +136,29 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 
 		return array(
-			'!!subject!!' => esc_html__( 'The subject of the email.', 'paid-memberships-pro' ),
-			'!!name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!display_name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The login name of the email recipient.', 'paid-memberships-pro' ),
+			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
 			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the email recipient.', 'paid-memberships-pro' ),
 			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
-			'!!discount_code!!' => esc_html__( 'The discount code used for the membership level.', 'paid-memberships-pro' ),
 			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
 			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
 			'!!order_total!!' => esc_html__( 'The total cost of the order.', 'paid-memberships-pro' ),
+			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
+			'!!billing_address!!' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
+			'!!billing_name!!' => esc_html__( 'The billing name of the order.', 'paid-memberships-pro' ),
+			'!!billing_street!!' => esc_html__( 'The billing street of the order.', 'paid-memberships-pro' ),
+			'!!billing_street2!!' => esc_html__( 'The billing street line 2 of the order.', 'paid-memberships-pro' ),
+			'!!billing_city!!' => esc_html__( 'The billing city of the order.', 'paid-memberships-pro' ),
+			'!!billing_state!!' => esc_html__( 'The billing state of the order.', 'paid-memberships-pro' ),
+			'!!billing_zip!!' => esc_html__( 'The billing ZIP code of the order.', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'The billing country of the order.', 'paid-memberships-pro' ),
+			'!!billing_phone!!' => esc_html__( 'The billing phone number of the order.', 'paid-memberships-pro' ),
+			'!!instructions!!' => esc_html__( 'Payment instructions for the user to complete their purchase (defined in Payment Gateway settings).', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -162,9 +173,18 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 		$order = $this->order;
 		$user = $this->user;
 		$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
+		if ( empty( $membership_level ) ) {
+			$membership_level = pmpro_getLevel( $order->membership_id );
+		}
+
 		$discount_code = "";
 		if( $order->getDiscountCode() ) {
 			$discount_code = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
+		}
+
+		$membership_expiration = '';
+		if( ! empty( $membership_level->enddate ) ) {
+			$membership_expiration = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $membership_level->enddate)) . "</p>\n";
 		}
 
 		$confirmation_message = '';
@@ -178,15 +198,33 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'name' => $this->get_recipient_name(),
 			'display_name' => $this->get_recipient_name(),
 			'user_login' => $user->user_login,
+			'user_email' => $user->user_email,
 			'membership_id' => $membership_level->id,
 			'membership_level_name' => $membership_level->name,
 			'membership_level_confirmation_message' => $confirmation_message,
 			'membership_cost' => pmpro_getLevelCost($membership_level),
-			'user_email' => $user->user_email,
+			'membership_expiration' => $membership_expiration,
 			'order_id' => $order->code,
-			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
+			'order_total' => $order->get_formatted_total(),
 			'discount_code' => $discount_code,
+			'billing_address' => pmpro_formatAddress( $order->billing->name,
+														 $order->billing->street,
+														 $order->billing->street2,
+														 $order->billing->city,
+														 $order->billing->state,
+														 $order->billing->zip,
+														 $order->billing->country,
+														 $order->billing->phone ),
+			'billing_name' => $order->billing->name,
+			'billing_street' => $order->billing->street,
+			'billing_street2' => $order->billing->street2,
+			'billing_city' => $order->billing->city,
+			'billing_state' => $order->billing->state,
+			'billing_zip' => $order->billing->zip,
+			'billing_country' => $order->billing->country,
+			'billing_phone' => $order->billing->phone,
+			'instructions' => wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ),
 		);
 		return $email_template_variables;
 	}

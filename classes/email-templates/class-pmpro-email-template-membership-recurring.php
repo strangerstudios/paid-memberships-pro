@@ -1,5 +1,5 @@
 <?php
-class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
+class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 
 	/**
 	 * The user object of the user to send the email to.
@@ -72,13 +72,13 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '<p>Thank you for your membership to !!sitename!!.</p>
+		return wp_kses_post( __( '<p>Thank you for your membership to !!sitename!!.</p>
 
 <p>This is just a reminder that your !!membership_level_name!! membership will automatically renew on !!renewaldate!!.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
 
-<p>If for some reason you do not want to renew your membership you can cancel by clicking here: !!cancel_link!!</p>', 'paid-memberships-pro' );
+<p>If for some reason you do not want to renew your membership you can cancel here: !!cancel_url!!</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -115,11 +115,15 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'membership_level_name' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'renewaldate' => esc_html__( 'The date of the next payment date.', 'paid-memberships-pro' ),
-			'display_name' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'user_email' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'cancel_link' => esc_html__( 'The link to cancel the subscription.', 'paid-memberships-pro' ),
+			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
+			'!!billing_amount!!' => esc_html__( 'The amount billed for the subscription.', 'paid-memberships-pro' ),
+			'!!renewaldate!!' => esc_html__( 'The date of the next payment.', 'paid-memberships-pro' ),
+			'!!cancel_url!!' => esc_html__( 'The link to cancel the subscription.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -137,11 +141,17 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
 		$user = get_userdata( $subscription_obj->get_user_id() );
 
 		return array(
-			'membership_level_name' => $membership_level->name,
-			'renewaldate' => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
+			'name' => $user->display_name,
 			'display_name' => $user->display_name,
+			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
+			'membership_id' => $membership_id,
+			'membership_level_name' => $membership_level->name,
+			'membership_cost' => $subscription_obj->get_cost_text(),
+			'billing_amount' =>  pmpro_formatPrice( $subscription_obj->get_billing_amount() ),
+			'renewaldate' => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
 			'cancel_link' => wp_login_url( pmpro_url( 'cancel' ) ),
+			'cancel_url' => wp_login_url( pmpro_url( 'cancel' ) ),
 		);
 	}
 }
@@ -155,7 +165,7 @@ class PMPro_Email_Template_Payment_Reminder extends PMPro_Email_Template {
  * @return array The modified email templates array.
  */
 function pmpro_email_templates_membership_recurring( $email_templates ) {
-	$email_templates['membership_recurring'] = 'PMPro_Email_Template_Payment_Reminder';
+	$email_templates['membership_recurring'] = 'PMPro_Email_Template_Membership_Recurring';
 	return $email_templates;
 }
 add_filter( 'pmpro_email_templates', 'pmpro_email_templates_membership_recurring' );

@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.4
+ * Version: 3.4.2
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.4' );
+define( 'PMPRO_VERSION', '3.4.2' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -61,8 +61,8 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-r
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-refund-admin.php' ); // refund email admin template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action.php' ); // expiration email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action-admin.php' ); // expiration email template
-require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-receipt.php' ); // invoice email template
-require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-reminder.php' ); // recurring payment email reminder template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-invoice.php' ); // invoice email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-recurring.php' ); // recurring payment email reminder template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expiring.php' ); // expiring email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expired.php' ); // change email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-credit-card-expiring.php' ); // credit card expiring email template

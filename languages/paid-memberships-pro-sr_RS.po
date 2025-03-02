@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.4\n"
+"Project-Id-Version: Paid Memberships Pro 3.4.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-02-11T15:55:17+00:00\n"
+"POT-Creation-Date: 2025-02-18T17:29:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -60,6 +60,8 @@ msgstr "Godina"
 #: includes/currencies.php:148
 #: includes/currencies.php:126
 #: includes/currencies.php:153
+#: includes/currencies.php:134
+#: includes/currencies.php:161
 msgid "US Dollars (&#36;)"
 msgstr "Američki dolar"
 
@@ -68,6 +70,7 @@ msgstr "Američki dolar"
 #: includes/currencies.php:9
 #: includes/currencies.php:124
 #: includes/currencies.php:129
+#: includes/currencies.php:137
 msgid "Euros (&euro;)"
 msgstr "Evro"
 
@@ -76,11 +79,13 @@ msgstr "Evro"
 #: includes/currencies.php:14
 #: includes/currencies.php:123
 #: includes/currencies.php:128
+#: includes/currencies.php:136
 msgid "Pounds Sterling (&pound;)"
 msgstr "Funta"
 
 #: includes/currencies.php:10
 #: includes/currencies.php:19
+#: includes/currencies.php:27
 msgid "Australian Dollars (&#36;)"
 msgstr "Australijski dolar"
 
@@ -94,102 +99,120 @@ msgstr ""
 #: includes/currencies.php:122
 #: includes/currencies.php:30
 #: includes/currencies.php:127
+#: includes/currencies.php:38
+#: includes/currencies.php:135
 msgid "Canadian Dollars (&#36;)"
 msgstr "Kanadski dolar"
 
 #: includes/currencies.php:13
 #: includes/currencies.php:26
 #: includes/currencies.php:31
+#: includes/currencies.php:39
 msgid "Chinese Yuan"
 msgstr "Kineski jen"
 
 #: includes/currencies.php:14
 #: includes/currencies.php:28
 #: includes/currencies.php:33
+#: includes/currencies.php:41
 msgid "Czech Koruna"
 msgstr "Češka kruna"
 
 #: includes/currencies.php:15
 #: includes/currencies.php:36
 #: includes/currencies.php:41
+#: includes/currencies.php:49
 msgid "Danish Krone"
 msgstr "Danska kruna"
 
 #: includes/currencies.php:16
 #: includes/currencies.php:48
 #: includes/currencies.php:53
+#: includes/currencies.php:61
 msgid "Hong Kong Dollar (&#36;)"
 msgstr ""
 
 #: includes/currencies.php:17
 #: includes/currencies.php:49
 #: includes/currencies.php:54
+#: includes/currencies.php:62
 msgid "Hungarian Forint"
 msgstr ""
 
 #: includes/currencies.php:18
 #: includes/currencies.php:50
 #: includes/currencies.php:55
+#: includes/currencies.php:63
 msgid "Indian Rupee"
 msgstr ""
 
 #: includes/currencies.php:19
 #: includes/currencies.php:51
 #: includes/currencies.php:56
+#: includes/currencies.php:64
 msgid "Indonesia Rupiah"
 msgstr ""
 
 #: includes/currencies.php:20
 #: includes/currencies.php:52
 #: includes/currencies.php:57
+#: includes/currencies.php:65
 msgid "Israeli Shekel"
 msgstr ""
 
 #: includes/currencies.php:21
 #: includes/currencies.php:54
 #: includes/currencies.php:59
+#: includes/currencies.php:67
 msgid "Japanese Yen (&yen;)"
 msgstr ""
 
 #: includes/currencies.php:22
 #: includes/currencies.php:60
 #: includes/currencies.php:65
+#: includes/currencies.php:73
 msgid "Malaysian Ringgits"
 msgstr ""
 
 #: includes/currencies.php:23
 #: includes/currencies.php:61
 #: includes/currencies.php:66
+#: includes/currencies.php:74
 msgid "Mexican Peso (&#36;)"
 msgstr ""
 
 #: includes/currencies.php:24
 #: includes/currencies.php:63
 #: includes/currencies.php:68
+#: includes/currencies.php:76
 msgid "New Zealand Dollar (&#36;)"
 msgstr ""
 
 #: includes/currencies.php:25
 #: includes/currencies.php:64
 #: includes/currencies.php:69
+#: includes/currencies.php:77
 msgid "Norwegian Krone"
 msgstr ""
 
 #: includes/currencies.php:26
 #: includes/currencies.php:65
 #: includes/currencies.php:70
+#: includes/currencies.php:78
 msgid "Philippine Pesos"
 msgstr ""
 
 #: includes/currencies.php:27
 #: includes/currencies.php:66
 #: includes/currencies.php:71
+#: includes/currencies.php:79
 msgid "Polish Zloty"
 msgstr ""
 
 #: includes/currencies.php:28
 #: includes/currencies.php:84
 #: includes/currencies.php:89
+#: includes/currencies.php:97
 msgid "Singapore Dollar (&#36;)"
 msgstr ""
 
@@ -200,42 +223,49 @@ msgstr ""
 #: includes/currencies.php:30
 #: includes/currencies.php:94
 #: includes/currencies.php:99
+#: includes/currencies.php:107
 msgid "South Korean Won"
 msgstr ""
 
 #: includes/currencies.php:31
 #: includes/currencies.php:97
 #: includes/currencies.php:102
+#: includes/currencies.php:110
 msgid "Swedish Krona"
 msgstr ""
 
 #: includes/currencies.php:32
 #: includes/currencies.php:98
 #: includes/currencies.php:103
+#: includes/currencies.php:111
 msgid "Swiss Franc"
 msgstr ""
 
 #: includes/currencies.php:33
 #: includes/currencies.php:99
 #: includes/currencies.php:104
+#: includes/currencies.php:112
 msgid "Taiwan New Dollars"
 msgstr ""
 
 #: includes/currencies.php:34
 #: includes/currencies.php:100
 #: includes/currencies.php:105
+#: includes/currencies.php:113
 msgid "Thai Baht"
 msgstr ""
 
 #: includes/currencies.php:35
 #: includes/currencies.php:101
 #: includes/currencies.php:106
+#: includes/currencies.php:114
 msgid "Turkish Lira"
 msgstr ""
 
 #: includes/currencies.php:36
 #: includes/currencies.php:111
 #: includes/currencies.php:116
+#: includes/currencies.php:124
 msgid "Vietnamese Dong"
 msgstr ""
 
@@ -1670,6 +1700,13 @@ msgstr "Članstvo ističe"
 #: pages/checkout.php:197
 #: pages/checkout.php:200
 #: pages/checkout.php:542
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:182
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:176
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:173
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:165
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:169
+#: classes/email-templates/class-pmpro-email-template-invoice.php:191
+#: classes/email-templates/class-pmpro-email-template-invoice.php:193
 msgid "Discount Code"
 msgstr "Kod za Popust"
 
@@ -4230,6 +4267,14 @@ msgstr "Vaša potvrda članstva za %s"
 #: includes/email.php:494
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:197
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:158
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:154
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:187
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:171
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:168
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:160
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:164
+#: classes/email-templates/class-pmpro-email-template-invoice.php:199
+#: includes/email.php:492
 #, php-format
 msgid "This membership will expire on %s."
 msgstr "Ovo članstvo će da istekne %s."
@@ -4288,6 +4333,7 @@ msgstr "Faktura za  %s članstvo"
 #: classes/class.pmproemail.php:1306
 #: classes/class.pmproemail.php:683
 #: classes/class.pmproemail.php:685
+#: classes/class.pmproemail.php:684
 #, php-format
 msgid "Your trial at %s is ending soon"
 msgstr "Vaša proba na %s se uskoro završava"
@@ -4385,6 +4431,7 @@ msgstr "Vaše članstvo na %s je promijenjeno"
 #: includes/email.php:508
 #: includes/email.php:466
 #: includes/email.php:486
+#: includes/email.php:485
 #, php-format
 msgid "The new level is %s."
 msgstr "Novi nivo je %s."
@@ -7475,6 +7522,8 @@ msgstr "Prikaži"
 #: adminpages/reports/memberships.php:381
 #: classes/email-templates/class-pmpro-email-template-cancel-admin.php:156
 #: classes/class-pmpro-subscriptions-list-table.php:386
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:160
+#: classes/email-templates/class-pmpro-email-template-cancel.php:153
 msgid "All Levels"
 msgstr "Svi Nivoi"
 
@@ -9936,6 +9985,7 @@ msgstr "Prolaz za Plaćanje mora biti uspostavljen prije nego što ijedna naplat
 #: includes/email.php:460
 #: classes/email-templates/class-pmpro-email-template-admin-change.php:95
 #: includes/email.php:480
+#: includes/email.php:479
 msgid "Your membership has been cancelled."
 msgstr "Vaša pretplata je otkazana."
 
@@ -14082,6 +14132,7 @@ msgstr ""
 #: includes/email.php:518
 #: includes/email.php:476
 #: includes/email.php:496
+#: includes/email.php:495
 msgid "This membership does not expire."
 msgstr ""
 
@@ -18118,46 +18169,55 @@ msgid "US Armed Forces"
 msgstr ""
 
 #: includes/currencies.php:18
+#: includes/currencies.php:26
 msgid "Argentine Peso (&#36;)"
 msgstr ""
 
 #: includes/currencies.php:21
 #: includes/currencies.php:26
+#: includes/currencies.php:34
 msgid "Brazilian Real (R&#36;)"
 msgstr ""
 
 #: includes/currencies.php:44
 #: includes/currencies.php:49
+#: includes/currencies.php:57
 msgid "Ghanaian Cedi (&#8373;)"
 msgstr ""
 
 #: includes/currencies.php:59
 #: includes/currencies.php:64
+#: includes/currencies.php:72
 msgid "Kenyan Shilling"
 msgstr ""
 
 #: includes/currencies.php:62
 #: includes/currencies.php:67
+#: includes/currencies.php:75
 msgid "Nigerian Naira (&#8358;)"
 msgstr ""
 
 #: includes/currencies.php:68
 #: includes/currencies.php:73
+#: includes/currencies.php:81
 msgid "Romanian Leu"
 msgstr ""
 
 #: includes/currencies.php:76
 #: includes/currencies.php:81
+#: includes/currencies.php:89
 msgid "Russian Ruble (&#8381;)"
 msgstr ""
 
 #: includes/currencies.php:89
 #: includes/currencies.php:94
+#: includes/currencies.php:102
 msgid "South African Rand (R)"
 msgstr ""
 
 #: includes/currencies.php:103
 #: includes/currencies.php:108
+#: includes/currencies.php:116
 msgid "Ukrainian Hryvnia (&#8372;)"
 msgstr ""
 
@@ -19000,6 +19060,7 @@ msgstr ""
 #: includes/email-templates.php:321
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:62
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:61
+#: classes/email-templates/class-pmpro-email-template-invoice.php:61
 msgid "This email is sent to the member each time a new subscription payment is made."
 msgstr ""
 
@@ -19020,6 +19081,7 @@ msgstr ""
 #: includes/email-templates.php:468
 #: includes/email-templates.php:491
 #: includes/email-templates.php:326
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:83
 msgid ""
 "<p>Your membership at !!sitename!! has ended.</p>\n"
 "\n"
@@ -19194,6 +19256,7 @@ msgstr ""
 #: includes/email.php:446
 #: includes/email.php:404
 #: includes/email.php:424
+#: includes/email.php:423
 msgid "THIS IS A TEST EMAIL"
 msgstr ""
 
@@ -29906,6 +29969,7 @@ msgstr ""
 #: includes/email-templates.php:6
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:61
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:84
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:194
 msgid "Check"
 msgstr ""
 
@@ -32297,12 +32361,14 @@ msgstr ""
 #: includes/email-templates.php:300
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:73
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:72
+#: classes/email-templates/class-pmpro-email-template-invoice.php:72
 msgid "Recurring payment receipt for !!sitename!! membership"
 msgstr ""
 
 #: includes/email-templates.php:301
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:51
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:50
+#: classes/email-templates/class-pmpro-email-template-invoice.php:50
 msgid "Recurring Payment Receipt"
 msgstr ""
 
@@ -32800,6 +32866,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:129
 #: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:113
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:151
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:147
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:149
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:114
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:139
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:117
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:127
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:119
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:133
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:115
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:153
 msgid "Admin"
 msgstr ""
 
@@ -32965,6 +33041,7 @@ msgstr ""
 
 #: includes/email-templates.php:378
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:64
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:64
 msgid "Your membership at !!sitename!! will renew soon"
 msgstr ""
 
@@ -32985,6 +33062,7 @@ msgstr ""
 
 #: includes/email-templates.php:387
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:53
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:53
 msgid "This email is sent when a subscription is approaching its renewal date. The additional placeholders !!renewaldate!! and !!billing_amount!! can be used to print the date that the subscription will renew and the renewal price."
 msgstr ""
 
@@ -33296,6 +33374,7 @@ msgid "Checkout session has not yet been completed."
 msgstr ""
 
 #: includes/currencies.php:21
+#: includes/currencies.php:29
 msgid "Bangladeshi taka (৳&nbsp;)"
 msgstr ""
 
@@ -33433,6 +33512,23 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:121
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:137
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:136
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:118
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:120
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:104
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:126
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:125
+#: classes/email-templates/class-pmpro-email-template-billing.php:112
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:210
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:139
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:133
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:130
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:218
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:222
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:136
+#: classes/email-templates/class-pmpro-email-template-invoice.php:139
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:124
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:128
+#: classes/email-templates/class-pmpro-email-template-payment-action.php:122
 msgid "The default subject for the email. This will be removed in a future version."
 msgstr ""
 
@@ -33477,6 +33573,29 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:120
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:137
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:142
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:119
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:121
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:105
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:127
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:126
+#: classes/email-templates/class-pmpro-email-template-billing.php:113
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:109
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:129
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:104
+#: classes/email-templates/class-pmpro-email-template-cancel.php:104
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:211
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:140
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:134
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:131
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:219
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:223
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:137
+#: classes/email-templates/class-pmpro-email-template-invoice.php:140
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:125
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:118
+#: classes/email-templates/class-pmpro-email-template-payment-action.php:123
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:105
+#: classes/email-templates/class-pmpro-email-template-refund.php:108
 msgid "The display name of the user."
 msgstr ""
 
@@ -33498,6 +33617,26 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:139
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:138
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:222
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:108
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:130
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:129
+#: classes/email-templates/class-pmpro-email-template-billing.php:116
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:132
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:107
+#: classes/email-templates/class-pmpro-email-template-cancel.php:107
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:214
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:143
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:137
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:134
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:222
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:226
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:140
+#: classes/email-templates/class-pmpro-email-template-invoice.php:143
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:128
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:128
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:121
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:108
+#: classes/email-templates/class-pmpro-email-template-refund.php:111
 msgid "The ID of the membership level."
 msgstr ""
 
@@ -33520,6 +33659,27 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:118
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:139
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:223
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:109
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:131
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:130
+#: classes/email-templates/class-pmpro-email-template-billing.php:117
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:112
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:133
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:108
+#: classes/email-templates/class-pmpro-email-template-cancel.php:108
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:215
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:144
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:138
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:135
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:223
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:227
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:141
+#: classes/email-templates/class-pmpro-email-template-invoice.php:144
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:129
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:129
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:122
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:109
+#: classes/email-templates/class-pmpro-email-template-refund.php:112
 msgid "The name of the membership level."
 msgstr ""
 
@@ -33534,6 +33694,31 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:123
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:141
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:140
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:120
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:122
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:106
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:128
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:127
+#: classes/email-templates/class-pmpro-email-template-billing.php:114
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:110
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:130
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:105
+#: classes/email-templates/class-pmpro-email-template-cancel.php:105
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:212
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:141
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:135
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:132
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:220
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:224
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:138
+#: classes/email-templates/class-pmpro-email-template-invoice.php:141
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:126
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:126
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:119
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:130
+#: classes/email-templates/class-pmpro-email-template-payment-action.php:124
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:106
+#: classes/email-templates/class-pmpro-email-template-refund.php:109
 msgid "The username of the user."
 msgstr ""
 
@@ -33544,6 +33729,31 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:142
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:121
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:141
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:121
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:123
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:107
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:129
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:128
+#: classes/email-templates/class-pmpro-email-template-billing.php:115
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:111
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:131
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:106
+#: classes/email-templates/class-pmpro-email-template-cancel.php:106
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:213
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:142
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:136
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:133
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:221
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:225
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:139
+#: classes/email-templates/class-pmpro-email-template-invoice.php:142
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:127
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:127
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:120
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:131
+#: classes/email-templates/class-pmpro-email-template-payment-action.php:125
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:107
+#: classes/email-templates/class-pmpro-email-template-refund.php:110
 msgid "The email address of the user."
 msgstr ""
 
@@ -33589,21 +33799,61 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-billing-admin.php:118
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:145
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:119
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:141
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:140
+#: classes/email-templates/class-pmpro-email-template-billing.php:127
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:240
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:244
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:151
+#: classes/email-templates/class-pmpro-email-template-invoice.php:158
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:123
+#: classes/email-templates/class-pmpro-email-template-refund.php:126
 msgid "The type of credit card used."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-billing-admin.php:119
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:146
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:120
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:142
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:141
+#: classes/email-templates/class-pmpro-email-template-billing.php:128
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:241
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:245
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:152
+#: classes/email-templates/class-pmpro-email-template-invoice.php:159
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:124
+#: classes/email-templates/class-pmpro-email-template-refund.php:127
 msgid "The last four digits of the credit card number."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-billing-admin.php:120
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:147
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:121
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:143
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:142
+#: classes/email-templates/class-pmpro-email-template-billing.php:129
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:242
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:246
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:153
+#: classes/email-templates/class-pmpro-email-template-invoice.php:160
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:125
+#: classes/email-templates/class-pmpro-email-template-refund.php:128
 msgid "The expiration month of the credit card."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-billing-admin.php:121
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:148
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:122
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:144
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:143
+#: classes/email-templates/class-pmpro-email-template-billing.php:130
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:243
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:247
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:154
+#: classes/email-templates/class-pmpro-email-template-invoice.php:161
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:126
+#: classes/email-templates/class-pmpro-email-template-refund.php:129
 msgid "The expiration year of the credit card."
 msgstr ""
 
@@ -33717,11 +33967,17 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:128
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:107
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:113
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:134
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:109
 msgid "The start date of the membership level."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:129
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:108
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:114
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:135
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:110
 msgid "The end date of the membership level."
 msgstr ""
 
@@ -33781,6 +34037,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:221
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:225
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:224
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:216
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:145
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:139
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:136
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:224
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:228
 msgid "The confirmation message for the membership level."
 msgstr ""
 
@@ -33791,6 +34053,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:222
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:226
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:217
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:146
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:140
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:137
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:229
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:123
 msgid "The cost of the membership level."
 msgstr ""
 
@@ -33817,6 +34086,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:163
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:162
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:227
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:218
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:147
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:141
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:138
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:226
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:230
+#: classes/email-templates/class-pmpro-email-template-invoice.php:163
 msgid "The expiration date of the membership level."
 msgstr ""
 
@@ -33833,6 +34109,11 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:226
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:230
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:219
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:142
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:139
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:227
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:231
 msgid "The ID of the order."
 msgstr ""
 
@@ -33842,6 +34123,14 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:146
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:145
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:220
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:143
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:140
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:228
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:232
+#: classes/email-templates/class-pmpro-email-template-invoice.php:147
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:112
+#: classes/email-templates/class-pmpro-email-template-refund.php:115
 msgid "The date of the order."
 msgstr ""
 
@@ -33849,6 +34138,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:228
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:232
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:221
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
 msgid "The total cost of the order."
 msgstr ""
 
@@ -33859,6 +34151,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:147
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:148
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:146
+#: classes/email-templates/class-pmpro-email-template-invoice.php:148
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:132
+#: classes/email-templates/class-pmpro-email-template-refund.php:130
 msgid "The URL of the order."
 msgstr ""
 
@@ -33868,16 +34163,23 @@ msgid "The URL of the order. Legacy purpose"
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:128
+#: classes/email-templates/class-pmpro-email-template-payment-action.php:127
 msgid "The URL of the membership levels page."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:144
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:143
+#: classes/email-templates/class-pmpro-email-template-invoice.php:145
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:110
+#: classes/email-templates/class-pmpro-email-template-refund.php:113
 msgid "The order ID."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:145
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:144
+#: classes/email-templates/class-pmpro-email-template-invoice.php:146
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:111
+#: classes/email-templates/class-pmpro-email-template-refund.php:114
 msgid "The total amount of the order."
 msgstr ""
 
@@ -33948,10 +34250,18 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:162
 #: classes/email-templates/class-pmpro-email-template-payment-receipt.php:161
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:222
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:151
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:144
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:141
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:234
+#: classes/email-templates/class-pmpro-email-template-invoice.php:162
 msgid "The discount code used for the order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:42
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:42
 msgid "Membership Recurring"
 msgstr ""
 
@@ -33960,6 +34270,7 @@ msgid "The date of the next payment date."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-payment-reminder.php:122
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:126
 msgid "The link to cancel the subscription."
 msgstr ""
 
@@ -34115,6 +34426,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-refund.php:128
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:124
 #: classes/email-templates/class-pmpro-email-template-refund.php:126
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:127
 msgid "The URL to the invoice for the refunded order."
 msgstr ""
 
@@ -34163,4 +34475,572 @@ msgstr ""
 
 #: pages/checkout.php:23
 msgid "Invalid Level"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:75
+msgid ""
+"<p>An administrator at !!sitename!! has changed a membership level for !!display_name!!.</p>\n"
+"\n"
+"<p>!!membership_change!!</p>\n"
+"\n"
+"<p>Log in to your WordPress admin here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:122
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:124
+msgid "A message indicating the change in membership."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:75
+msgid ""
+"<p>An administrator at !!sitename!! has changed your membership level.</p>\n"
+"\n"
+"<p>!!membership_change!!</p>\n"
+"\n"
+"<p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>\n"
+"\n"
+"<p>Log in to your membership account here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:77
+msgid ""
+"<p>The billing information for !!display_name!! at !!sitename!! has been changed.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>\n"
+"\tBilling Information:<br />\n"
+"\t!!billing_address!!\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"\t!!cardtype!!: !!accountnumber!!<br />\n"
+"\tExpires: !!expirationmonth!!/!!expirationyear!!\n"
+"</p>\n"
+"\n"
+"<p>Log in to your WordPress admin here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:110
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:132
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:131
+#: classes/email-templates/class-pmpro-email-template-billing.php:118
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:223
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:152
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:235
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:142
+#: classes/email-templates/class-pmpro-email-template-invoice.php:149
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:114
+#: classes/email-templates/class-pmpro-email-template-refund.php:117
+msgid "The complete billing address of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:111
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:133
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:132
+#: classes/email-templates/class-pmpro-email-template-billing.php:119
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:224
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:153
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:232
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:236
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:143
+#: classes/email-templates/class-pmpro-email-template-invoice.php:150
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:115
+#: classes/email-templates/class-pmpro-email-template-refund.php:118
+msgid "The billing name of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:112
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:134
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:133
+#: classes/email-templates/class-pmpro-email-template-billing.php:120
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:154
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:233
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:237
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:144
+#: classes/email-templates/class-pmpro-email-template-invoice.php:151
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:116
+#: classes/email-templates/class-pmpro-email-template-refund.php:119
+msgid "The billing street of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:113
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:135
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:134
+#: classes/email-templates/class-pmpro-email-template-billing.php:121
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:226
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:155
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:234
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:238
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:145
+#: classes/email-templates/class-pmpro-email-template-invoice.php:152
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:117
+#: classes/email-templates/class-pmpro-email-template-refund.php:120
+msgid "The billing street line 2 of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:114
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:136
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:135
+#: classes/email-templates/class-pmpro-email-template-billing.php:122
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:227
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:156
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:235
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:239
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:146
+#: classes/email-templates/class-pmpro-email-template-invoice.php:153
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:118
+#: classes/email-templates/class-pmpro-email-template-refund.php:121
+msgid "The billing city of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:115
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:137
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:136
+#: classes/email-templates/class-pmpro-email-template-billing.php:123
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:228
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:157
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:236
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:240
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:147
+#: classes/email-templates/class-pmpro-email-template-invoice.php:154
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:119
+#: classes/email-templates/class-pmpro-email-template-refund.php:122
+msgid "The billing state of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:116
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:138
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:137
+#: classes/email-templates/class-pmpro-email-template-billing.php:124
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:158
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:237
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:241
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:148
+#: classes/email-templates/class-pmpro-email-template-invoice.php:155
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:120
+#: classes/email-templates/class-pmpro-email-template-refund.php:123
+msgid "The billing ZIP code of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:117
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:139
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:138
+#: classes/email-templates/class-pmpro-email-template-billing.php:125
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:159
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:238
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:242
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:149
+#: classes/email-templates/class-pmpro-email-template-invoice.php:156
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:121
+#: classes/email-templates/class-pmpro-email-template-refund.php:124
+msgid "The billing country of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:118
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:140
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:139
+#: classes/email-templates/class-pmpro-email-template-billing.php:126
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:160
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:239
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:243
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:150
+#: classes/email-templates/class-pmpro-email-template-invoice.php:157
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:122
+#: classes/email-templates/class-pmpro-email-template-refund.php:125
+msgid "The billing phone number of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:84
+msgid ""
+"<p>The subscription payment for !!user_login!! for level !!membership_level_name!! at !!sitename!! has failed.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>Log in to your WordPress admin here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:84
+msgid ""
+"<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed.</p> \n"
+"\n"
+"<p>\n"
+"\t<strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br />\n"
+"\t!!login_url!!\n"
+"</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-billing.php:84
+msgid ""
+"<p>Your billing information at !!sitename!! has been changed.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>\n"
+"\tBilling Information:<br />\n"
+"\t!!billing_address!!\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"\t!!cardtype!!: !!accountnumber!!<br />\n"
+"\tExpires: !!expirationmonth!!/!!expirationyear!!\n"
+"</p>\n"
+"\n"
+"<p>If you did not request a billing information change please contact us at !!siteemail!!</p>\n"
+"\n"
+"<p>Log in to your membership account here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-cancel-admin.php:87
+msgid ""
+"<p>The membership for !!user_login!! at !!sitename!! has been cancelled.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>Start Date: !!startdate!!</p>\n"
+"\n"
+"<p>End Date: !!enddate!!</p>\n"
+"\n"
+"<p>Log in to your WordPress admin here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:83
+msgid ""
+"<p>The payment subscription for !!user_login!! at !!sitename!! has been cancelled.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>Start Date: !!startdate!!</p>\n"
+"\n"
+"<p>Expiration Date: !!enddate!!</p>\n"
+"\n"
+"<p>Log in to your WordPress admin here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:86
+msgid ""
+"<p>Your payment subscription at !!sitename!! has been cancelled.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>Your access will expire on !!enddate!!.</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-cancel.php:86
+msgid ""
+"<p>Your membership at !!sitename!! has been cancelled.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>If you did not request this cancellation and would like more information please contact us at !!siteemail!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:85
+msgid ""
+"<p>There was a new member checkout at !!sitename!!.</p>\n"
+"\n"
+"<p><strong>They have chosen to pay by !!check_gateway_label!!.</strong></p>\n"
+"\n"
+"<p>Below are details about the new membership account and a receipt for the initial membership order.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>Membership Fee: !!membership_cost!!</p>\n"
+"!!membership_expiration!! !!discount_code!!\n"
+"\n"
+"<p>\n"
+"\tOrder #!!order_id!! on !!order_date!!<br />\n"
+"\tTotal Billed: !!order_total!!\n"
+"</p>\n"
+"\n"
+"<p>Log in to your WordPress admin here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:232
+msgid "The default or custom label for the check gateway."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:84
+msgid ""
+"<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>\n"
+"\n"
+"!!membership_level_confirmation_message!!\n"
+"\n"
+"!!instructions!!\n"
+"\n"
+"<p>Below are details about your membership account and a receipt for your initial membership order.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>Membership Fee: !!membership_cost!!</p>\n"
+"!!membership_expiration!! !!discount_code!!\n"
+"\n"
+"<p>\n"
+"\tOrder #!!order_id!! on !!order_date!!<br />\n"
+"\tTotal Billed: !!order_total!!\n"
+"</p>\n"
+"\n"
+"<p>Log in to your membership account here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:161
+msgid "Payment instructions for the user to complete their purchase (defined in Payment Gateway settings)."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:86
+msgid ""
+"<p>There was a new member checkout at !!sitename!!.</p>\n"
+"\n"
+"<p>Below are details about the new membership account.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"!!membership_expiration!! !!discount_code!!\n"
+"\n"
+"<p>Log in to your WordPress admin here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:84
+msgid ""
+"<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>\n"
+"\n"
+"!!membership_level_confirmation_message!!\n"
+"\n"
+"<p>Below are details about your membership account.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"!!membership_expiration!! !!discount_code!!\n"
+"\n"
+"<p>Log in to your membership account here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:83
+msgid ""
+"<p>There was a new member checkout at !!sitename!!.</p>\n"
+"\n"
+"<p>Below are details about the new membership account and a receipt for the initial membership order.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>Membership Fee: !!membership_cost!!</p>\n"
+"!!membership_expiration!! !!discount_code!!\n"
+"\n"
+"<p>\n"
+"\tOrder #!!order_id!! on !!order_date!!<br />\n"
+"\tTotal Billed: !!order_total!!\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"\tBilling Information:<br />\n"
+"\t!!billing_address!!\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"\t!!cardtype!!: !!accountnumber!!<br />\n"
+"\tExpires: !!expirationmonth!!/!!expirationyear!!\n"
+"</p>\n"
+"\n"
+"<p>Log in to your WordPress admin here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:88
+msgid ""
+"<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>\n"
+"\n"
+"!!membership_level_confirmation_message!!\n"
+"\n"
+"<p>Below are details about your membership account and a receipt for your initial membership order.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>Membership Fee: !!membership_cost!!</p>\n"
+"!!membership_expiration!! !!discount_code!!\n"
+"\n"
+"<p>\n"
+"\tOrder #!!order_id!! on !!order_date!!<br />\n"
+"\tTotal Billed: !!order_total!!\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"\tBilling Information:<br />\n"
+"\t!!billing_address!!\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"\t!!cardtype!!: !!accountnumber!!<br />\n"
+"\tExpires: !!expirationmonth!!/!!expirationyear!!\n"
+"</p>\n"
+"\n"
+"<p>Log in to your membership account here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:83
+msgid ""
+"<p>The payment method used for your membership at !!sitename!! will expire soon.</p>\n"
+"\n"
+"<p>\n"
+"\t<strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br />\n"
+"\t!!login_url!!\n"
+"</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>The most recent account information we have on file is:</p>\n"
+"\n"
+"<p>\n"
+"\t!!billing_name!!<br />\n"
+"\t!!billing_address!!\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"\t!!cardtype!!: !!accountnumber!!<br />\n"
+"\tExpires: !!expirationmonth!!/!!expirationyear!!\n"
+"</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-invoice.php:83
+msgid ""
+"<p>Thank you for your membership to !!sitename!!. Below is a receipt for your most recent membership order.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>\n"
+"\tOrder #!!order_id!! on !!order_date!!<br />\n"
+"\tTotal Billed: !!order_total!!\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"\tBilling Information:<br />\n"
+"\t!!billing_address!!\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"\t!!cardtype!!: !!accountnumber!!<br />\n"
+"\tExpires: !!expirationmonth!!/!!expirationyear!!\n"
+"</p>\n"
+"\n"
+"<p>Log in to your membership account here: !!login_url!!</p>\n"
+"\n"
+"<p>View an online version of this order here: !!order_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:83
+msgid ""
+"<p>Thank you for your membership to !!sitename!!. This is just a reminder that your membership will end on !!enddate!!.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>Membership Level: !!membership_level_name!!</p>\n"
+"\n"
+"<p>Log in to your membership account here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:75
+msgid ""
+"<p>Thank you for your membership to !!sitename!!.</p>\n"
+"\n"
+"<p>This is just a reminder that your !!membership_level_name!! membership will automatically renew on !!renewaldate!!.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>If for some reason you do not want to renew your membership you can cancel here: !!cancel_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:124
+msgid "The amount billed for the subscription."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-membership-recurring.php:125
+msgid "The date of the next payment."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:83
+msgid ""
+"<p>A payment at !!sitename!! for !!user_login!! requires additional customer authentication to complete.</p>\n"
+"\n"
+"<p>Below is a copy of the email we sent to !!user_email!! to notify them that they need to complete their payment:</p>\n"
+"\n"
+"<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>\n"
+"\n"
+"<p>Please complete the verification steps issued by your payment provider at the following link:</p>\n"
+"\n"
+"<p>!!order_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-payment-action.php:83
+msgid ""
+"<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>\n"
+"\n"
+"<p>Please complete the verification steps issued by your payment provider at the following link:</p>\n"
+"\n"
+"<p>!!order_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:84
+msgid ""
+"<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>\n"
+"\tOrder #!!order_id!! refunded on !!refund_date!!<br />\n"
+"\tTotal Refunded: !!order_total!!\n"
+"</p>\n"
+"\n"
+"<p>Log in to your WordPress admin here: !!login_url!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:113
+#: classes/email-templates/class-pmpro-email-template-refund.php:116
+msgid "The refund date of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-refund.php:83
+msgid ""
+"<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>\n"
+"\n"
+"<p>Account: !!display_name!! (!!user_email!!)</p>\n"
+"\n"
+"<p>\n"
+"\tOrder #!!order_id!! refunded on !!refund_date!!<br />\n"
+"\tTotal Refunded: !!order_total!!\n"
+"</p>\n"
+"\n"
+"<p>Log in to your membership account here: !!login_url!!</p>\n"
+"\n"
+"<p>View an online version of this order here: !!order_url!!</p>\n"
+"\n"
+"<p>If you did not request this refund and would like more information please contact us at !!siteemail!!</p>"
+msgstr ""
+
+#: includes/currencies.php:19
+msgid "Albanian Lek (Lekë)"
 msgstr ""

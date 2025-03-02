@@ -399,16 +399,16 @@ class PMPro_Wisdom_Integration {
 		if ( 'stripe' === $stats['pmpro_gateway'] ) {
 			// Add Legacy Keys text if using Legacy Keys.
 			if ( $stripe_using_legacy_keys ) {
-				$stats['pmpro_gateway'] .= ' (' . __( 'Legacy Keys', 'paid-memberships-pro' ) . ')';
+				$stats['pmpro_gateway'] .= ' (Legacy Keys)';
 			}
 
 			if ( $stripe_using_api_keys ) {
-				$stats['pmpro_gateway'] .= ' (' . __( 'API Keys', 'paid-memberships-pro' ) . ')';
+				$stats['pmpro_gateway'] .= ' (API Keys)';
 			}
 
 			// Add Stripe Connect text if using Stripe Connect.
 			if ( $stripe_has_connect_credentials ) {
-				$stats['pmpro_gateway'] .= ' (' . __( 'Stripe Connect', 'paid-memberships-pro' ) . ')';
+				$stats['pmpro_gateway'] .= ' (Stripe Connect)';
 			}
 
 			$stats['pmpro_gateway'] = strtolower( $stats['pmpro_gateway'] );
