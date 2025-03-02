@@ -62,6 +62,11 @@
 		//assume success
 		$msg = true;
 		$msgt = __("Your payment settings have been updated.", 'paid-memberships-pro' );
+
+		// Append a link to main payments settings page.
+		if ( isset( $_REQUEST['edit_gateway'] ) ) {
+			$msgt .= ' <a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings' ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Return to Payment Settings', 'paid-memberships-pro' ) . '</a>';
+		}
 	}
 
 	/*
