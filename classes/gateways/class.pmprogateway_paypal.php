@@ -57,6 +57,25 @@
 		}
 
 		/**
+		 * Check whether or not a gateway supports a specific feature.
+		 *
+		 * @since TBD
+		 *
+		 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
+		 */
+		public static function supports( $feature ) {
+			$supports = array(
+				'manage_settings' => true,
+			);
+
+			if ( empty( $supports[$feature] ) ) {
+				return false;
+			}
+
+			return $supports[$feature];
+		}
+
+		/**
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *
 		 * @since 1.8

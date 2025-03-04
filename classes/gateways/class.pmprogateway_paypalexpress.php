@@ -81,6 +81,8 @@
 			$supports = array(
 				'subscription_sync' => true,
 				'payment_method_updates' => false,
+				'description' => esc_html__( 'With PayPal, members can pay with their PayPal balance, credit/debit cards, linked bank accounts, or local payment methods. PayPal is accepted worldwide and offers multi-currency support for 200+ markets and 25+ currencies.', 'paid-memberships-pro' ),
+				'manage_settings' => true,
 			);
 
 			if ( empty( $supports[$feature] ) ) {
@@ -228,6 +230,15 @@
 		 */
 		public static function show_settings_fields() {
 			?>
+			<p>
+				<?php
+					printf(
+						/* translators: %s: URL to the PayPal Express gateway documentation. */
+						esc_html__( 'For detailed setup instructions, please visit our %s.', 'paid-memberships-pro' ),
+						'<a href="https://www.paidmembershipspro.com/gateway/paypal-express/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=paypal-express-documentation" target="_blank">' . esc_html__( 'PayPal Express documentation', 'paid-memberships-pro' ) . '</a>'
+					);
+				?>
+			</p>
 			<div id="pmpro_paypal" class="pmpro_section" data-visibility="shown" data-activated="true">
 				<div class="pmpro_section_toggle">
 					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
@@ -286,8 +297,11 @@
 									<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
 								</th>
 								<td>
-									<p class="description"><?php esc_html_e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?></p>
 									<p><code><?php echo esc_html( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );?></code></p>
+									<p class="description">
+										<?php esc_html_e( 'You must set up this IPN (Instant Payment Notification) URL in your PayPal account to fully integrate with PayPal Express.', 'paid-memberships-pro' ); ?>
+										<a href="https://www.paidmembershipspro.com/setting-ipn-urls-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=set-up-paypal-ipn" target="_blank"><?php esc_html_e( 'Read the documentation on setting up your PayPal IPN', 'paid-memberships-pro' ); ?></a>
+									</p>
 								</td>
 							</tr>
 						</tbody>
