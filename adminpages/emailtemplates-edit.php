@@ -65,6 +65,11 @@
 			esc_html__( 'Global Variables', 'paid-memberships-pro' ) => PMPro_Email_Template::get_base_email_template_variables_with_description(),
 			sprintf( esc_html__( '%s Variables', 'paid-memberships-pro' ), $email_template_class::get_template_name() ) => $email_template_class::get_email_template_variables_with_description(),
 		);
+	} elseif ( in_array( $edit, array( 'header', 'footer' ) ) ) {
+		// The header and footer templates are special cases. Just show the globals.
+		$email_variables = array(
+			esc_html__( 'Global Variables', 'paid-memberships-pro' ) => PMPro_Email_Template::get_base_email_template_variables_with_description(),
+		);
 	}
 ?>
 <hr class="wp-header-end">
