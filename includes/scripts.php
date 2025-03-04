@@ -135,6 +135,7 @@ function pmpro_admin_enqueue_scripts() {
         $all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name );
 		$level->formatted_price = trim( pmpro_no_quotes( pmpro_getLevelCost( $level, true, true ) ) );
         $level->formatted_expiration = trim( pmpro_no_quotes( pmpro_getLevelExpiration( $level ) ) );
+		$level->formatted_description = apply_filters( 'pmpro_level_description', $level->description, $level );
         $all_levels_formatted_text[$level->id] = $level;
     }
     // Get HTML for empty field group.
