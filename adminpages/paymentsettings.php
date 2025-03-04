@@ -244,11 +244,11 @@
 					</p>
 				</div> <!-- end pmpro_section_inside -->
 			</div> <!-- end pmpro_section -->
-			<div id="currency-tax-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div id="other-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 				<div class="pmpro_section_toggle">
 					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 						<span class="dashicons dashicons-arrow-up-alt2"></span>
-						<?php esc_html_e( 'Currency and Tax Settings', 'paid-memberships-pro' ); ?>
+						<?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?>
 					</button>
 				</div>
 				<div class="pmpro_section_inside">
@@ -296,6 +296,14 @@
 						</tr>
 					</tbody>
 					</table>
+					<?php
+						/**
+						 * Fires after the Payment Settings form fields.
+						 *
+						 * @since TBD
+						 */
+						do_action( 'pmpro_after_payment_settings' );
+					?>
 					<p class="submit">
 						<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" />
 					</p>
