@@ -707,7 +707,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'message' => __( 'A webhook in Stripe is required to process payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' )
 		);
 		if ( ! empty( $webhook ) ) {
-			$delete_webhook_response = $stripe->delete_webhook( $webhook, $secretkey );
+			$delete_webhook_response = $stripe->delete_webhook( $webhook );
 
 			if ( is_wp_error( $delete_webhook_response ) || empty( $delete_webhook_response['deleted'] ) || $delete_webhook_response['deleted'] != true ) {
 				$message = is_wp_error( $delete_webhook_response ) ? $delete_webhook_response->get_error_message() : __( 'There was an error deleting the webhook.', 'paid-memberships-pro' );
