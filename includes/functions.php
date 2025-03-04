@@ -5085,7 +5085,10 @@ function pmpro_is_page_builder_editor() {
         return 'Bricks';
     }
 
+	if ( function_exists( 'Breakdance\\isRequestFromBuilderIframe' ) && Breakdance\isRequestFromBuilderIframe() ) {
+		return 'Breakdance/Oxygen';
+	}
 
-    return false;
+	return false;
 
 }
