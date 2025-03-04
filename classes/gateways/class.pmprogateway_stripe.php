@@ -767,20 +767,6 @@ class PMProGateway_stripe extends PMProGateway {
 						</tr>
 						<tr class="gateway gateway_stripe gateway_stripe_onsite_fields">
 							<th scope="row" valign="top">
-								<label for="stripe_billingaddress"><?php esc_html_e( 'Show Billing Address Fields in PMPro Checkout Form', 'paid-memberships-pro' ); ?></label>
-							</th>
-							<td>
-								<select id="stripe_billingaddress" name="stripe_billingaddress">
-									<option value="0"
-											<?php if ( empty( $billing_address ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-									<option value="1"
-											<?php if ( ! empty( $billing_address ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
-								</select>
-								<p class="description"><?php echo wp_kses_post( __( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ) ); ?></p>
-							</td>
-						</tr>
-						<tr class="gateway gateway_stripe gateway_stripe_onsite_fields">
-							<th scope="row" valign="top">
 								<label for="stripe_payment_request_button"><?php esc_html_e( 'Show Payment Request Button for On-Site Payments', 'paid-memberships-pro' ); ?></label>
 							</th>
 							<td>
@@ -825,6 +811,20 @@ class PMProGateway_stripe extends PMProGateway {
 										}
 									}
 									?>
+							</td>
+						</tr>
+						<tr class="gateway gateway_stripe">
+							<th scope="row" valign="top">
+								<label for="stripe_billingaddress"><?php esc_html_e( 'Show Billing Address Fields in PMPro Checkout Form', 'paid-memberships-pro' ); ?></label>
+							</th>
+							<td>
+								<select id="stripe_billingaddress" name="stripe_billingaddress">
+									<option value="0"
+											<?php if ( empty( $billing_address ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+									<option value="1"
+											<?php if ( ! empty( $billing_address ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+								</select>
+								<p class="description"><?php echo wp_kses_post( __( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ) ); ?></p>
 							</td>
 						</tr>
 						<tr class="gateway gateway_stripe gateway_stripe_checkout_fields">
