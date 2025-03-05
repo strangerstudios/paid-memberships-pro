@@ -9,17 +9,12 @@
  * @since 1.8.5
  */
 function pmpro_setupAddonUpdateInfo() {
-	// Only hook these functions in the WP admin.
-	if ( ! is_admin() ) {
-		return;
-	}
-
 	add_filter( 'plugins_api', 'pmpro_plugins_api', 10, 3 );
 	add_filter( 'pre_set_site_transient_update_plugins', 'pmpro_update_plugins_filter' );
 	add_filter( 'http_request_args', 'pmpro_http_request_args_for_addons', 10, 2 );
 	add_action( 'update_option_pmpro_license_key', 'pmpro_reset_update_plugins_cache', 10, 2 );
 }
-add_action( 'init', 'pmpro_setupAddonUpdateInfo' );
+add_action( 'admin_init', 'pmpro_setupAddonUpdateInfo' );
 
 /**
  * Get addon information from PMPro server.
