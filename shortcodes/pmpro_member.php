@@ -191,6 +191,16 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		$r = $user_field->displayValue( $r, false );
 	}
 
+	if ( 'textarea' == $user_field->type ) {
+		//Let devs change default wp_kses_post and wpautop behavior.
+		$apply_formatting = 
+			apply_filters( 'pmpro_member_shortcode_text_area_apply_formatting', true, $user_field, $user_id, $field );
+
+		if ( $apply_formatting ) {
+			$r = wp_kses_post( wpautop( $r ) );
+		}
+	}
+
 	// Check for arrays to reformat them.
 	if ( is_array( $r ) ) {
 		$r = implode( ', ', $r );
