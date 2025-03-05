@@ -14,7 +14,7 @@ function pmpro_setupAddonUpdateInfo() {
 	add_filter( 'http_request_args', 'pmpro_http_request_args_for_addons', 10, 2 );
 	add_action( 'update_option_pmpro_license_key', 'pmpro_reset_update_plugins_cache', 10, 2 );
 }
-add_action( 'init', 'pmpro_setupAddonUpdateInfo' );
+add_action( 'admin_init', 'pmpro_setupAddonUpdateInfo' );
 
 /**
  * Get addon information from PMPro server.

@@ -257,7 +257,6 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									// Get Add On statistics.
 									$all_addons   = 0;
 									$update_addons = 0;
-									require_once( PMPRO_DIR . '/includes/addons.php' );
 									$addons        = pmpro_getAddons();
 									$plugin_info   = get_site_transient( 'update_plugins' );
 									foreach ( $addons as $addon ) {
