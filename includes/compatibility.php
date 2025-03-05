@@ -57,6 +57,11 @@ function pmpro_compatibility_checker() {
 			'check_value' => 'OxyEl'
 		],
 		[
+			'file'        => 'oxygen-builder-v6.php',
+			'check_type'  => 'function',
+			'check_value' => '\Breakdance\Themeless\registerCondition', // More reliable check for Oxygen v6 / Breakdance.
+		],
+		[
 			'file'		  => 'lifterlms.php',
 			'check_type'  => 'function',
 			'check_value' => 'llms'
@@ -75,7 +80,7 @@ function pmpro_compatibility_checker() {
 
 	foreach ( $compat_checks as $value ) {
 		if ( pmpro_compatibility_checker_is_requirement_met( $value ) ) {
-			include_once( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
+				include_once( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
 		}
 	}
 }
