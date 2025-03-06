@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
-Tested up to: 6.7.2
+Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.4.2
+Stable tag: 3.4.3
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,25 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.4.3 - 2025-03-06 =
+* ENHANCEMENT: Now hiding the "Members Only" access plan in LifterLMS when the Lifter Streamline is enabled.
+* BUG FIX/ENHANCEMENT: Now showing the correct email template variables for the header and footer templates. #3314 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Updated the styling and content of the admin activity email. #3318 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: No longer adding `<p>` tags to the "pay by check" instructions when the textarea is saved. #3295 (@derekashauer)
+* BUG FIX/ENHANCEMENT: Updated the PayPal Standard gateway message to recommend PayPal Express as an alternative. #3319 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Now setting the line height of PMPro font sizes. #3324 (@kimcoleman)
+* BUG FIX: Fixed a PHP fatal error when viewing a subscription in the Subscriptions List whose gateway does not exist. #3325 (@dparker1005)
+* BUG FIX: Fixed a PHP fatal error that could occur when using the Update Manager Add On and sending the admin activity email or telemetry data. #3321 (@dparker1005)
+* BUG FIX: Fixed an issue where duplicate members may be shown in the Members List CSV export. #3291 (@MaximilianoRicoTabo)
+* BUG FIX: Fixed email template variables missing '!!' from the start of the variable name on the edit email template page. #3315 (@dparker1005)
+* BUG FIX: Fixed an issue where user creation fields may incorrectly be shown as required when they are not needed. #3326 (@dparker1005)
+* BUG FIX: Fixed an issue where level descriptions would not show correctly in the block editor. #3328 (@kimcoleman)
+* BUG FIX: Fixed an issue where custom coded columns with a value of '0' would not be displayed. #3311 (@dparker1005)
+* BUG FIX: Fixed a PHP warning when processing a Stripe completed checkout webhook for a one-time payment. #3317 (@dparker1005)
+* BUG FIX: Fixed a PHP warning when deleting a Stripe webhook. #3310 (@mircobabini)
+* DEPRECATED: Marked the `pmpro_member_shortcode_access` filter as deprecated. Use `pmpro_has_membership_level` instead. #3322 (@MaximilianoRicoTabo)
+* DEPRECATED: Removed the `!!subject!!` email template variable from the list of documented email template variables. #3316 (@dparker1005)
+
 = 3.4.2 - 2024-02-18 =
 * ENHANCEMENT: Added the Albanian Leke to the list of supported currencies. #3305 (@MaryOJob)
 * BUG FIX: Fixed an issue where sites using the Payflow gateway would no longer be able to use that gateway after it was marked as deprecated. #3306 (@dparker1005)
