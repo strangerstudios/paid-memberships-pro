@@ -1677,7 +1677,8 @@ class PMPro_Field {
 					$output = is_numeric( $value ) ? number_format_i18n( $value ) : '';
 					break;
 			case 'date':
-				$output = date_i18n( get_option( 'date_format' ), $value );
+				$timestamp = strtotime( $value );
+				$output = $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : '';
 				break;
 			case 'select':
 			case 'multiselect':
