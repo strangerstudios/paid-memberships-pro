@@ -3,7 +3,6 @@
 // Include custom settings to restrict Elementor widgets.
 require_once( 'elementor/class-pmpro-elementor.php' );
 
-
 /**
  * Elementor Compatibility
  */
@@ -47,9 +46,35 @@ function pmpro_elementor_get_all_levels() {
 }
 add_action( 'plugins_loaded', 'pmpro_elementor_compatibility', 15 );
 
-
-
+/**
+ * Delete the locally stored elementor cache for levle ID's whenever saving a levle.
+ *
+ * @since TBD
+ * 
+ * @param int $level_id The level ID for the membership level that was saved.
+ */
 function pmpro_elementor_clear_level_cache( $level_id ) {
 	delete_transient( 'pmpro_elementor_levels_cache' );
 }
 add_action( 'pmpro_save_membership_level', 'pmpro_elementor_clear_level_cache' );
+
+/**
+ * Stop rendering shortcodes when in Elementor editor mode.
+ * 
+ * Note: The is_preview_mode() returns false when actually previewing the post or page in Elementor.
+ * This can be treated as "editor mode" where the user is editing the post or page in Elementor.
+ * 
+ * @since TBD
+ * 
+ * @param bool $dont_render Whether to render the shortcode.
+ * @param string $page_name The name of the PMPro page.
+ * @return bool $dont_render Whether to render the shortcode.
+ */
+function pmpro_elementor_stop_rendering_shortcodes( $dont_render, $page_name ) {
+	if ( \Elementor\Plugin::$instance->preview->is_preview_mode() ) {
+		$dont_render = true;
+	}
+
+	return $dont_render;
+}
+add_filter( 'pmpro_dont_render_shortcode', 'pmpro_elementor_stop_rendering_shortcodes', 10, 2 );

@@ -72,6 +72,21 @@ function pmpro_wp()
 		{
 			if( ! empty( $post->post_content ) && ( strpos( $post->post_content, "[pmpro_" . $pmpro_page_name . "]" ) !== false || ( function_exists( 'has_block' ) && has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) ) )
 			{
+
+				/**
+				 * Filter to determine if the shortcode should be rendered.
+				 * 
+				 * Use this filter to not render the shortcode when needed. Useful for page builders or similar cases.
+				 * 
+				 * @since TBD
+				 * 
+				 * @param bool $render Whether to render the shortcode. Default is true.
+				 * @param string $pmpro_page_name The name of the PMPro page.
+				 */
+				if ( apply_filters( 'pmpro_dont_render_shortcode', false, $pmpro_page_name ) ) {
+					return;
+				}
+
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
 
