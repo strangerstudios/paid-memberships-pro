@@ -13,10 +13,6 @@
 function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 	global $current_user;
 
-	//Bail if current user is not logged in
-	if ( ! $current_user->exists() ) {
-		return '';
-	}
 	// Get the attributes and their defaults.
 	extract(
 		shortcode_atts(
@@ -29,6 +25,11 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 			$atts
 		)
 	);
+
+	//Bail if curent user is not logged in and user_id is not set
+	if ( ! $current_user->exists() && ! $user_id ) {
+		return '';
+	}
 
 	// Bail if there's no field attribute.
 	if ( empty( $field ) ) {
