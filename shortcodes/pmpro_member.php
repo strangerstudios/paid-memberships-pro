@@ -31,11 +31,16 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		return;
 	}
 
-	// Make sure the user_id is of an existing user.
-	$user = get_userdata( $user_id );
-	if ( ! $user ) {
-		return;
+	// Make sure the user_id is of an existing user when not viewing their own profile.
+	if ( $user_id !== $current_user->ID ) {
+		$user = get_userdata( $user_id );
+		if ( ! $user ) {
+			return;
+		}
+	} else {
+		$user = $current_user;
 	}
+
 
 	// Bail if there's no field attribute.
 	if ( empty( $field ) ) {
