@@ -31,7 +31,7 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		return;
 	}
 
-	// Make sure the user_id is of an existing user when not viewing their own profile.
+	// Make sure the user_id is of an existing user when not viewing their own information.
 	if ( $user_id !== $current_user->ID ) {
 		$user = get_userdata( $user_id );
 		if ( ! $user ) {
