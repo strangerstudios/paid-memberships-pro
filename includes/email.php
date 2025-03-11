@@ -399,12 +399,19 @@ function pmpro_email_templates_send_test() {
 			$params = array($test_user, $test_order,  "http://www.example-notification-url.com/not-a-real-site");
 			break;
 		default:
-			$send_email = 'sendEmail';
-			$params = array();
+			$send_email = apply_filters( 'pmpro_email_template_send_test_email', 'sendEmail', $test_email->template );
+			$params = apply_filters( 'pmpro_email_template_send_test_email_params', array(), $test_email->template );
 	}
 
-	//send the email
-	$response = call_user_func_array(array($test_email, $send_email), $params);
+	//send the email. Let's see if the $send_email exists in the PMProEmail class or we need to look for more wide
+	if ( method_exists( $test_email, $send_email ) ) {
+		$response = call_user_func_array( [$test_email, $send_email], $params );
+	} elseif ( function_exists( $send_email ) ) {
+		$response = call_user_func_array( $send_email, $params );
+	} else {
+		//Should we throw an error or log something here ?
+		$response = false;
+	}
 
 	//return the response
 	echo esc_html( $response );
