@@ -1798,6 +1798,24 @@ class PMPro_Field {
 		// Enforce string as output.
 		$output = (string) $output;
 
+		/**
+		 * Filter the field's output before it's displayed to allow wpautop formatting.
+		 * 
+		 * @since TBD
+		 * 
+		 * @param array $field_types The field types to apply wpautop formatting to.
+		 * @param PMPro_Field $field The field object, which can be used to tweak the formatting for more specific fields or based on value.
+		 */
+		if ( in_array( $this->type, apply_filters( 'pmpro_field_wpautop_field_types', array( 'textarea' ), $this ) ) ) {
+			
+			// Add <p> tags for the allowed html filter if it doesn't already exist for the field type.
+			if ( ! isset( $allowed_html['p'] ) ) {
+				$allowed_html['p'] = array();
+			}
+
+			$output = wpautop( $output );
+		}
+
 		if ( $echo ) {
 			echo wp_kses( $output, $allowed_html );
 		} else {
