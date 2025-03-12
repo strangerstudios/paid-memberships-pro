@@ -91,6 +91,18 @@ abstract class PMPro_Email_Template {
 	}
 
 	/**
+	 * Send a test email.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $email The email address to send the test email to.
+	 * @return bool Whether the email was sent successfully.
+	 */
+	public static function send_test( $email ) {
+		return false;
+	}
+
+	/**
 	 * Get the email template slug.
 	 *
 	 * @since 3.4

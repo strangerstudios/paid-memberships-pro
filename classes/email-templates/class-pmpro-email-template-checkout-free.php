@@ -192,6 +192,35 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 		return $email_template_variables;
 	}
 
+	/**
+	 * Send a test email.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $email The email address to send the test email to.
+	 * @return bool Whether the email was sent successfully.
+	 */
+	public static function send_test( $email ) {
+
+		global $current_user;
+
+		//Create test order
+		$test_order = new MemberOrder();
+		$test_order->get_test_order();
+
+		//Instantiate this class with mock data to get access to the non-static methods
+		$test_checkout_paid_template = new PMPro_Email_Template_Checkout_Free( $current_user, $test_order );
+
+		$test_email = new PMProEmail();
+		$test_email->email = $email;
+		$test_email->subject  =  self::get_default_subject();
+		// Add test mail text to the default body
+		$test_email->body = pmpro_email_templates_test_body( self::get_default_body() );
+		$test_email->data = array_merge( $test_checkout_paid_template->get_base_email_template_variables(),
+			$test_checkout_paid_template->get_email_template_variables() );
+		$test_email->template = self::get_template_slug();
+		return $test_email->sendEmail();
+	}
 }
 
 /**
