@@ -284,7 +284,7 @@ function pmpro_email_templates_send_test() {
 	$pmpro_email_template = PMPro_Email_Template::get_email_template(
 		str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) ) );
 
-		// it's a class name, not an instance and method is static. Call it directly.
+	//it's a class name, not an instance and method is static. Call it directly.
 	$response = $pmpro_email_template::send_test( sanitize_email( $_REQUEST['email'] ) );
 
 	if ( ! $response ) {
@@ -340,18 +340,6 @@ function pmpro_email_templates_send_test() {
 					return array( $pmpro_conpd_email_test_level->id => $pmpro_conpd_email_test_level );
 				} );
 				$params = array( $test_user, $pmpro_conpd_email_test_level->id );
-				break;
-			case 'checkout_check':
-			case 'checkout_free':
-			case 'checkout_paid':
-				$send_email = 'sendCheckoutEmail';
-				$params = array($test_user, $test_order);
-				break;
-			case 'checkout_check_admin':
-			case 'checkout_free_admin':
-			case 'checkout_paid_admin':
-				$send_email = 'sendCheckoutAdminEmail';
-				$params = array($test_user, $test_order);
 				break;
 			case 'billing':
 				$send_email = 'sendBillingEmail';
