@@ -174,7 +174,7 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 			'membership_id' => $order->membership_id,
 			'membership_level_name' => $level->name,
 			'order_id' => $order->code,
-			'order_total' => $order->total,
+			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->timestamp ),
 			'refund_date' => date_i18n( get_option( 'date_format' ), current_time( 'timestamp' ) ),
 			'billing_name' => $order->billing->name,
