@@ -10,11 +10,96 @@
  */
 function pmpro_setupAddonUpdateInfo() {
 	add_filter( 'plugins_api', 'pmpro_plugins_api', 10, 3 );
-	add_filter( 'pre_set_site_transient_update_plugins', 'pmpro_update_plugins_filter' );
-	add_filter( 'http_request_args', 'pmpro_http_request_args_for_addons', 10, 2 );
 	add_action( 'update_option_pmpro_license_key', 'pmpro_reset_update_plugins_cache', 10, 2 );
 }
 add_action( 'admin_init', 'pmpro_setupAddonUpdateInfo' );
+
+/**
+ * Add built in plugins to the Plugins API.
+ *
+ * @since  3.1
+ */
+function pmpro_plugins_api( $api, $action = '', $args = null ) {
+	// Not even looking for plugin information? Or not given slug?
+	if ( 'plugin_information' != $action || empty( $args->slug ) ) {
+		return $api;
+	}
+
+	// If there is already data there, the PMPro Update Manager probably handled it.
+	if ( ! empty( $api ) ) {
+		return $api;
+	}
+
+	// List of default addons and 
+	$default_addons = array(
+		'pmpro-update-manager' => array(
+			'Name' => 'PMPro Update Manager',
+			'Slug' => 'pmpro-update-manager',
+			'plugin' => 'pmpro-update-manager/pmpro-update-manager.php',
+			'Version' => '0.1',
+			'Author' => 'Paid Memberships Pro',
+			'AuthorURI' => 'https://www.paidmembershipspro.com',
+			'Requires' => '',
+			'Tested' => '',
+			'LastUpdated' => '',
+			'URI' => 'https://www.paidmembershipspro.com/add-ons/pmpro-update-manager/',
+			'Download' => 'https://license.paidmembershipspro.com/beta/pmpro-update-manager.zip',
+			'Description' => 'Manage plugin updates for PMPro Add Ons.',
+			'Installation' => '',
+			'FAQ' => '',
+			'Changelog' => ''
+		)
+	);
+
+	// If not one of the above addons, bail.
+	if ( ! array_key_exists( $args->slug, $default_addons ) ) {
+		return $api;
+	}
+
+	// Create a new stdClass object and populate it with our plugin information.
+	$api = new stdClass();
+	$addon = $default_addons[$args->slug];
+
+	// add info
+	$api->name                  = isset( $addon['Name'] ) ? $addon['Name'] : '';
+	$api->slug                  = isset( $addon['Slug'] ) ? $addon['Slug'] : '';
+	$api->plugin                = isset( $addon['plugin'] ) ? $addon['plugin'] : '';
+	$api->version               = isset( $addon['Version'] ) ? $addon['Version'] : '';
+	$api->author                = isset( $addon['Author'] ) ? $addon['Author'] : '';
+	$api->author_profile        = isset( $addon['AuthorURI'] ) ? $addon['AuthorURI'] : '';
+	$api->requires              = isset( $addon['Requires'] ) ? $addon['Requires'] : '';
+	$api->tested                = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
+	$api->last_updated          = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
+	$api->homepage              = isset( $addon['URI'] ) ? $addon['URI'] : '';
+	// It is against the current wp.org guidelines to override these download locations remotely, but we are only doing it for the specific plugins defined above using the exact data hardcoded there.
+	$api->download_link         = isset( $addon['Download'] ) ? $addon['Download'] : '';
+	$api->package               = isset( $addon['Download'] ) ? $addon['Download'] : '';
+
+	// add sections
+	if ( !empty( $addon['Description'] ) ) {
+		$api->sections['description'] = $addon['Description'];
+	}
+	if ( !empty( $addon['Installation'] ) ) {
+		$api->sections['installation'] = $addon['Installation'];
+	}
+	if ( !empty( $addon['FAQ'] ) ) {
+		$api->sections['faq'] = $addon['FAQ'];
+	}
+	if ( !empty( $addon['Changelog'] ) ) {
+		$api->sections['changelog'] = $addon['Changelog'];
+	}
+
+	// get license key if one is available
+	$key = get_option( 'pmpro_license_key', '' );
+	if ( ! empty( $key ) && ! empty( $api->download_link ) ) {
+		$api->download_link = add_query_arg( 'key', $key, $api->download_link );
+	}
+	if ( ! empty( $key ) && ! empty( $api->package ) ) {
+		$api->package = add_query_arg( 'key', $key, $api->package );
+	}
+	
+	return $api;
+}
 
 /**
  * Get addon information from PMPro server.
@@ -143,7 +228,6 @@ function pmpro_getAddonBySlug( $slug ) {
 	return false;
 }
 
-
 /**
  * Get the Add On slugs for each category we identify.
  *
@@ -252,166 +336,6 @@ function pmpro_get_addon_icon( $slug ) {
 		$plugin_icon_src = PMPRO_URL . '/images/add-ons/default-icon.png';
 	}
 	return $plugin_icon_src;
-}
-
-/**
- * Infuse plugin update details when WordPress runs its update checker.
- *
- * @since 1.8.5
- *
- * @param object $value  The WordPress update object.
- * @return object $value Amended WordPress update object on success, default if object is empty.
- */
-function pmpro_update_plugins_filter( $value ) {
-
-	// If no update object exists, return early.
-	if ( empty( $value ) ) {
-		return $value;
-	}
-
-	// Get Add On information
-	$addons = pmpro_getAddons();
-
-	// No Add Ons?
-	if ( empty( $addons ) ) {
-		return $value;
-	}
-
-	// Check Add Ons
-	foreach ( $addons as $addon ) {
-		// Skip for wordpress.org plugins
-		if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress.org' ) {
-			continue;
-		}
-
-		// Get data for plugin
-		$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
-		$plugin_file_abs = WP_PLUGIN_DIR . '/' . $plugin_file;
-
-		// Couldn't find plugin? Skip
-		if ( ! file_exists( $plugin_file_abs ) ) {
-			continue;
-		} else {
-			$plugin_data = get_plugin_data( $plugin_file_abs, false, true );
-		}
-
-		// Compare versions
-		if ( version_compare( $plugin_data['Version'], $addon['Version'], '<' ) ) {
-			$value->response[ $plugin_file ] = pmpro_getPluginAPIObjectFromAddon( $addon );
-			$value->response[ $plugin_file ]->new_version = $addon['Version'];
-			$value->response[ $plugin_file ]->icons = array( 'default' => esc_url( pmpro_get_addon_icon( $addon['Slug'] ) ) );
-		} else {
-			$value->no_update[ $plugin_file ] = pmpro_getPluginAPIObjectFromAddon( $addon );
-		}
-	}
-
-	// Return the update object.
-	return $value;
-}
-
-/**
- * Disables SSL verification to prevent download package failures.
- *
- * @since 1.8.5
- *
- * @param array  $args  Array of request args.
- * @param string $url  The URL to be pinged.
- * @return array $args Amended array of request args.
- */
-function pmpro_http_request_args_for_addons( $args, $url ) {
-	// If this is an SSL request and we are performing an upgrade routine, disable SSL verification.
-	if ( strpos( $url, 'https://' ) !== false && strpos( $url, PMPRO_LICENSE_SERVER ) !== false && strpos( $url, 'download' ) !== false ) {
-		$args['sslverify'] = false;
-	}
-
-	return $args;
-}
-
-/**
- * Setup plugin updaters
- *
- * @since  1.8.5
- */
-function pmpro_plugins_api( $api, $action = '', $args = null ) {
-	// Not even looking for plugin information? Or not given slug?
-	if ( 'plugin_information' != $action || empty( $args->slug ) ) {
-		return $api;
-	}
-
-	// get addon information
-	$addon = pmpro_getAddonBySlug( $args->slug );
-
-	// no addons?
-	if ( empty( $addon ) ) {
-		return $api;
-	}
-
-	// handled by wordpress.org?
-	if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress.org' ) {
-		return $api;
-	}
-
-	// Create a new stdClass object and populate it with our plugin information.
-	$api = pmpro_getPluginAPIObjectFromAddon( $addon );
-	return $api;
-}
-
-/**
- * Convert the format from the pmpro_getAddons function to that needed for plugins_api
- *
- * @since  1.8.5
- */
-function pmpro_getPluginAPIObjectFromAddon( $addon ) {
-	$api                        = new stdClass();
-
-	if ( empty( $addon ) ) {
-		return $api;
-	}
-
-	// add info
-	$api->name                  = isset( $addon['Name'] ) ? $addon['Name'] : '';
-	$api->slug                  = isset( $addon['Slug'] ) ? $addon['Slug'] : '';
-	$api->plugin                = isset( $addon['plugin'] ) ? $addon['plugin'] : '';
-	$api->version               = isset( $addon['Version'] ) ? $addon['Version'] : '';
-	$api->author                = isset( $addon['Author'] ) ? $addon['Author'] : '';
-	$api->author_profile        = isset( $addon['AuthorURI'] ) ? $addon['AuthorURI'] : '';
-	$api->requires              = isset( $addon['Requires'] ) ? $addon['Requires'] : '';
-	$api->tested                = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
-	$api->last_updated          = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
-	$api->homepage              = isset( $addon['URI'] ) ? $addon['URI'] : '';
-	$api->download_link         = isset( $addon['Download'] ) ? $addon['Download'] : '';
-	$api->package               = isset( $addon['Download'] ) ? $addon['Download'] : '';
-
-	// add sections
-	if ( !empty( $addon['Description'] ) ) {
-		$api->sections['description'] = $addon['Description'];
-	}
-	if ( !empty( $addon['Installation'] ) ) {
-		$api->sections['installation'] = $addon['Installation'];
-	}
-	if ( !empty( $addon['FAQ'] ) ) {
-		$api->sections['faq'] = $addon['FAQ'];
-	}
-	if ( !empty( $addon['Changelog'] ) ) {
-		$api->sections['changelog'] = $addon['Changelog'];
-	}
-
-	// get license key if one is available
-	$key = get_option( 'pmpro_license_key', '' );
-	if ( ! empty( $key ) && ! empty( $api->download_link ) ) {
-		$api->download_link = add_query_arg( 'key', $key, $api->download_link );
-	}
-	if ( ! empty( $key ) && ! empty( $api->package ) ) {
-		$api->package = add_query_arg( 'key', $key, $api->package );
-	}
-	
-	if ( empty( $api->upgrade_notice ) && pmpro_license_type_is_premium( $addon['License'] ) ) {
-		if ( ! pmpro_license_isValid( null, $addon['License'] ) ) {
-			$api->upgrade_notice = sprintf( __( 'Important: This plugin requires a valid PMPro %s license key to update.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
-		}
-	}	
-
-	return $api;
 }
 
 /**
@@ -557,3 +481,110 @@ function pmpro_can_download_addon_with_license( $addon_license ) {
 	
 	return pmpro_license_isValid( null, $types_to_check );		
 }
+
+/**
+ *  Show a notice if the Update Manager Add On isn't installed.
+ * 
+ * @since TBD
+ */
+function pmpro_update_manager_notices() {
+	global $current_user, $pagenow;
+	
+	// Only show on the PMPro dashboard and some other plugin-related pages.
+	$is_pmpro_page = isset( $_REQUEST['page'] ) 
+	&& substr( sanitize_text_field( $_REQUEST['page'] ), 0, 6 ) == 'pmpro-';
+	$is_other_plugin_page = in_array( $pagenow, array( "update-core.php", "plugins.php" ) );
+	$show_notice = $is_pmpro_page || $is_other_plugin_page;
+	if ( ! $show_notice ) {
+		return;
+	}
+
+	// If pmpro update manager is already active bail
+	$manager_update_slug = 'pmpro-update-manager';
+	$manager_update_plugin_file = 'pmpro-update-manager/pmpro-update-manager.php';
+	if ( is_plugin_active( $manager_update_plugin_file ) ) {
+		return;
+	}
+
+	// Which installed addons are updated via the PMPro license server?
+	$addons = pmpro_getAddons();
+	$installed_plugins = array_keys( get_plugins() );
+	$pmpro_license_server_addons = array();
+	foreach ( $addons as $addon ) {
+		$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
+		$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+		
+		// Must not update via .org.
+		if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress.org' ) {
+			continue;
+		}
+
+		// Must be installed.
+		if ( ! in_array( $plugin_file, $installed_plugins ) ) {
+			continue;
+		}
+
+		$pmpro_license_server_addons[] = $addon;
+	}
+
+	// If there are no license server addons installed, bail.
+	if ( empty( $pmpro_license_server_addons ) ) {
+		return;
+	}
+
+	// Hide on PMPro pages if the notice has been dismissed.
+	if ( $is_pmpro_page ) {
+		$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+
+		if ( ! empty( $archived_notifications ) && in_array( 'pmpro_update_manager_notice', array_keys( $archived_notifications ) ) ) {
+			return;
+		}
+	}
+
+	// We should show a notice. Figure out which one.
+	$is_update_manager_installed = in_array( $manager_update_plugin_file, $installed_plugins );
+	if ( ! $is_update_manager_installed ) {
+		// Not installed. Need to download.
+		$notice_message = esc_html__( 'The Paid Memberships Pro Update Manager plugin is not installed. 
+			You need to install and activate it to properly download and install PMPro Add Ons.', 'paid-memberships-pro' );
+		$link_text = esc_html__( 'Click here to install.', 'paid-memberships-pro' );
+		$link_url = wp_nonce_url(
+			self_admin_url(
+				add_query_arg( array(
+					'action' => 'install-plugin',
+					'plugin' => $manager_update_slug
+				),
+				'update.php'
+				)
+			),
+			'install-plugin_' . $manager_update_slug
+		);
+	} else {
+		// Installed. Need to activate.
+		$notice_message = esc_html__( 'The Paid Memberships Pro Update Manager plugin is installed but not active. 
+			You need to activate it to properly download and install PMPro Add Ons.', 'paid-memberships-pro' );
+			$link_text = esc_html__( 'Click here to activate.', 'paid-memberships-pro' );
+		$link_url = wp_nonce_url(
+			self_admin_url(
+				add_query_arg( array(
+					'action' => 'activate',
+					'plugin' => $manager_update_plugin_file,
+				),
+				'plugins.php'
+			)
+			),
+			'activate-plugin_' . $manager_update_plugin_file
+		);
+	}
+	// Output the notice div.
+	?>
+	<div id="pmpro_update_manager_notice" class="notice notice-warning is-dismissible pmpro-notice">
+	 		<p>
+				<?php echo esc_html( sprintf( __( '%s' , 'paid-memberships-pro'), $notice_message ) );
+				?>
+				<a href="<?php echo esc_url( $link_url ); ?>"><?php echo esc_html( $link_text ); ?></a>
+			</p>
+	</div>
+	<?php 	
+}
+add_action( 'admin_init', 'pmpro_update_manager_notices' );
