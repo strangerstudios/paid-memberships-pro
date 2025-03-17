@@ -82,20 +82,6 @@ function pmpro_compatibility_checker() {
 add_action( 'plugins_loaded', 'pmpro_compatibility_checker' );
 
 /**
- * Load compatibility files for themes that are loaded in the 'after_setup_theme' hook.
- *
- * @since TBD
- */
-function pmpro_check_theme_compats() {
-	if ( class_exists( 'Bricks\Conditions' ) ) {
-		include_once( PMPRO_DIR . '/includes/compatibility/bricks.php' );
-	}
-}
-add_action( 'after_setup_theme', 'pmpro_check_theme_compats' );
-
-
-
-/**
  * Check whether the requirement is met.
  *
  * @since 2.6.4
@@ -141,6 +127,11 @@ function pmpro_compatibility_checker_themes(){
 			'file' => 'divi.php',
 			'check_type' => 'constant',
 			'check_value' => 'ET_BUILDER_THEME' //Adds support for the Divi theme.
+		),
+		array(
+			'file' => 'bricks.php',
+			'check_type' => 'class',
+			'check_value' => 'Bricks\Conditions'
 		)
 	);
 
