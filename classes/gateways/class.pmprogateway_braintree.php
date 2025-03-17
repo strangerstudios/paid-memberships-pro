@@ -1202,8 +1202,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 	public static function supports( $feature ) {
 		$supports = array(
 			'subscription_sync' => true,
-			'payment_method_updates' => 'all',
-			'manage_settings' => true,
+			'payment_method_updates' => 'all'
 		);
 
 		if ( empty( $supports[$feature] ) ) {

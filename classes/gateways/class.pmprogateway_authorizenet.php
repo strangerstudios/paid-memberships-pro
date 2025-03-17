@@ -46,8 +46,7 @@ class PMProGateway_authorizenet extends PMProGateway
 	public static function supports( $feature ) {
 		$supports = array(
 			'subscription_sync' => true,
-			'payment_method_updates' => 'individual',
-			'manage_settings' => true,
+			'payment_method_updates' => 'individual'
 		);
 
 		if ( empty( $supports[$feature] ) ) {

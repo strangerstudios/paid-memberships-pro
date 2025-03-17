@@ -51,8 +51,6 @@
 		public static function supports( $feature ) {
 			$supports = array(
 				'subscription_sync' => false,
-				'payment_method_updates' => 'individual',
-				'manage_settings' => true,
 			);
 
 			if ( empty( $supports[$feature] ) ) {

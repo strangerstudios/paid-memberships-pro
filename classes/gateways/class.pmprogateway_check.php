@@ -51,23 +51,14 @@
 		}
 
 		/**
-		 * Check whether or not a gateway supports a specific feature.
+		 * Get a description for this gateway.
 		 *
 		 * @since TBD
 		 *
-		 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
+		 * @return string
 		 */
-		public static function supports( $feature ) {
-			$supports = array(
-				'description' => esc_html__( 'Allow members to pay by check or other manual payment methods like Bank Transfer or Venmo. After receiving a payment, you must manually update the order status to "success" in order to activate the membership.', 'paid-memberships-pro' ),
-				'manage_settings' => true,
-			);
-
-			if ( empty( $supports[$feature] ) ) {
-				return false;
-			}
-
-			return $supports[$feature];
+		public static function get_description_for_gateway_settings() {
+			return esc_html__( 'Allow members to pay by check or other manual payment methods like Bank Transfer or Venmo. After receiving a payment, you must manually update the order status to "success" in order to activate the membership.', 'paid-memberships-pro' );
 		}
 
 		/**

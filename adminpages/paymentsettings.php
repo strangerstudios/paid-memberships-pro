@@ -197,8 +197,6 @@
 								$gateway_class_name = 'PMProGateway_' . $gateway_slug;
 								if ( class_exists( $gateway_class_name ) && method_exists( $gateway_class_name, 'supports' ) ) {
 									$gateway_instance = new $gateway_class_name();
-									$gateway_description = $gateway_instance->supports( 'description' );
-									$gateway_manage_settings = $gateway_instance->supports( 'manage_settings' );
 								}
 
 								// Add a description for the default gateway.
@@ -206,7 +204,7 @@
 								?>
 								<tr class="gateway gateway_<?php echo esc_attr( $gateway_slug );?>">
 									<td class="column-gateway">
-										<?php echo ! empty( $gateway_manage_settings ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( $gateway_name ) . '</a>' : esc_html__( $gateway_name ); ?>
+										<?php echo ! empty( $gateway_instance ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( $gateway_name ) . '</a>' : esc_html__( $gateway_name ); ?>
 									</td>
 									<td class="column-status">
 										<?php
@@ -226,10 +224,10 @@
 										?>
 										</td>
 									<td class="column-description">
-										<?php echo ! empty( $gateway_description ) ? esc_html( $gateway_description ) : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
+										<?php echo ! empty( $gateway_instance ) ? esc_html( $gateway_instance->get_description_for_gateway_settings() ) : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
 									</td>
 									<td class="column-edit">
-										<?php echo ! empty( $gateway_manage_settings ) ? '<a class="button button-secondary" href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Edit Settings', 'paid-memberships-pro' ) . '</a>' : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
+										<?php echo ! empty( $gateway_instance ) ? '<a class="button button-secondary" href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Edit Settings', 'paid-memberships-pro' ) . '</a>' : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
 									</td>
 								</tr>
 								<?php

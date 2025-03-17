@@ -80,8 +80,6 @@ class PMProGateway_stripe extends PMProGateway {
 			'subscription_sync' => true,
 			'payment_method_updates' => 'individual',
 			'check_token_orders' => true,
-			'description' => esc_html__( 'With Stripe, you can accept membership payment onsite or offsite. The Stripe gateway supports over 135 currencies, built-in tax collection, and multiple payment methods like credit card, Google Pay, Apple Pay, and over 40 region-specific options.', 'paid-memberships-pro' ),
-			'manage_settings' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -229,6 +227,17 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return $gateways;
+	}
+
+	/**
+	 * Get a description for this gateway.
+	 *
+	 * @since TBD
+	 *
+	 * @return string
+	 */
+	public static function get_description_for_gateway_settings() {
+		return esc_html__( 'With Stripe, you can accept membership payment onsite or offsite. The Stripe gateway supports over 135 currencies, built-in tax collection, and multiple payment methods like credit card, Google Pay, Apple Pay, and over 40 region-specific options.', 'paid-memberships-pro' );
 	}
 
 	/**

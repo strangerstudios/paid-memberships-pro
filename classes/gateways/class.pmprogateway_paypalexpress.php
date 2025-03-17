@@ -71,6 +71,17 @@
 		}
 
 		/**
+		 * Get a description for this gateway.
+		 *
+		 * @since TBD
+		 *
+		 * @return string
+		 */
+		public static function get_description_for_gateway_settings() {
+			return esc_html__( 'With PayPal, members can pay with their PayPal balance, credit/debit cards, linked bank accounts, or local payment methods. PayPal is accepted worldwide and offers multi-currency support for 200+ markets and 25+ currencies.', 'paid-memberships-pro' );
+		}
+
+		/**
 		 * Check whether or not a gateway supports a specific feature.
 		 * 
 		 * @since 3.0
@@ -81,8 +92,6 @@
 			$supports = array(
 				'subscription_sync' => true,
 				'payment_method_updates' => false,
-				'description' => esc_html__( 'With PayPal, members can pay with their PayPal balance, credit/debit cards, linked bank accounts, or local payment methods. PayPal is accepted worldwide and offers multi-currency support for 200+ markets and 25+ currencies.', 'paid-memberships-pro' ),
-				'manage_settings' => true,
 			);
 
 			if ( empty( $supports[$feature] ) ) {
