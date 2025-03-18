@@ -159,6 +159,13 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email
 		);
 		return $email_template_variables;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function get_test_email_constructor_args() {
+		return array( );
+	}
 }
 // Register the email template.
 

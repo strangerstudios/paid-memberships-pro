@@ -170,6 +170,13 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 			"membership_level_name" => ( ! empty( $membership_level ) && ! empty( $membership_level->name ) ) ? $membership_level->name : '[' . esc_html( 'deleted', 'paid-memberships-pro' ) . ']',
 		);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function get_test_email_constructor_args() {
+		return array();
+	}
 }
 
 /**

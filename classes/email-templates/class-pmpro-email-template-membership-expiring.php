@@ -176,6 +176,13 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 			"enddate" => date_i18n( get_option('date_format'), $membership_level->enddate ),
 		);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function get_test_email_constructor_args() {
+		return array( );
+	}
 }
 
 /**

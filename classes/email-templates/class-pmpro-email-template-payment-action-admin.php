@@ -153,6 +153,13 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 			"invoice_url" => $order_url, // Legacy purpose, remove in future version
 		);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function get_test_email_constructor_args() {
+		return array();
+	}
 }
 
 /**

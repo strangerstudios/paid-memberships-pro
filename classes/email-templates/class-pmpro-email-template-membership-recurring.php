@@ -154,6 +154,13 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 			'cancel_url' => wp_login_url( pmpro_url( 'cancel' ) ),
 		);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function get_test_email_constructor_args() {
+		return array();
+	}
 }
 
 /**

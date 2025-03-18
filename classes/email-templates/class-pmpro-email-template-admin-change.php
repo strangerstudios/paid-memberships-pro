@@ -145,7 +145,16 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	public function get_recipient_name() {
 		return $this->user->display_name;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function get_test_email_constructor_args() {
+		return array();
+	}
 }
+
+
 
 /**
  * Register the email template.

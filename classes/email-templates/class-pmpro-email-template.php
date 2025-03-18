@@ -90,17 +90,56 @@ abstract class PMPro_Email_Template {
 		return $base_email_template_variables_with_description;
 	}
 
-	/**
+/**
 	 * Send a test email.
 	 *
 	 * @since TBD
 	 *
-	 * @param string $email The email address to send the test email to.
+	 * @param string $test_email_recipient The email address to send the test email to.
 	 * @return bool Whether the email was sent successfully.
 	 */
-	public static function send_test( $email ) {
-		return false;
+	final public static function send_test( $test_email_recipient ) {
+		// Get the test parameters needed to construct the test email (ex test user, order, level, etc).
+		
+		$class_name = get_called_class();
+		$constructor_args = $class_name::get_test_email_constructor_args();
+
+		// Construct the test email using the test parameters.
+		$email = new static( ...$constructor_args );
+
+		// Set the recipient email to the test email address.
+		$pmpro_email_recipient_function = function() use ( $test_email_recipient ) {
+			return $test_email_recipient;
+		};
+		add_filter( 'pmpro_email_recipient', $pmpro_email_recipient_function );
+
+		// Add the test message to the email body.
+		add_filter('pmpro_email_body', 'pmpro_email_templates_test_body', 10, 2);
+
+		$pmpro_email_templates_test_body = function( $body, $email ) {
+			return pmpro_email_templates_test_body( $body );
+		};
+
+		// Send the email.
+		$result = $email->send();
+
+		// Remove the filters.
+		remove_filter('pmpro_email_recipient', $pmpro_email_recipient_function );
+		remove_filter('pmpro_email_body', $pmpro_email_templates_test_body );
+
+		// Return the result.
+		return $result;
 	}
+
+	/**
+	 * Get the test parameters needed to construct the test email (ex test user, order, level, etc).
+	 * These should be in the same order as the constructor for the email template.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The test parameters needed to construct the test email (ex test user, order, level, etc).
+	 */
+	abstract public static function get_test_email_constructor_args();
 
 	/**
 	 * Get the email template slug.
