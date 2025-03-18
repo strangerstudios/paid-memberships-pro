@@ -208,18 +208,23 @@
 									</td>
 									<td class="column-status">
 										<?php
-											$gateway_status_html = pmpro_getOption( 'gateway' ) === $gateway_slug ? '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Set As Primary Gateway', 'paid-memberships-pro' ) . '</span>' : esc_html__( '&#8212;', 'paid-memberships-pro' );
+											$gateway_status_html = pmpro_getOption( 'gateway' ) === $gateway_slug ? '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Enabled (Primary Gateway)', 'paid-memberships-pro' ) . '</span>' : esc_html__( '&#8212;', 'paid-memberships-pro' );
 
-											/**
-											 * Filter the content of the 'status' column of the gateway settings so Add Ons can add additional information.
-											 *
-											 * @since TBD
-											 * @param string $gateway_status_html The HTML content of the 'status' column.
-											 * @param string $gateway_slug The gateway slug.
-											 *
-											 * @return string The HTML content of the 'status' column.
-											 */
-											$gateway_status_html = apply_filters( 'pmpro_gateway_settings_status_column', $gateway_status_html, $gateway_slug );
+											// Special Cases for Add Ons that add secondary gateways. These will be removed when core natively supports multiple gateways.
+											if (
+												( function_exists( 'pmproappe_pmpro_valid_gateways' ) && $gateway_slug === 'paypalexpress' ) || // Add PayPal Express Add On.
+												( defined( 'PMPROPBC_VER' ) && $gateway_slug === 'check' ) // Pay by Check Add On.
+											) {
+												// The Add On is active for the gateway being shown.
+												if ( pmpro_getOption( 'gateway' ) === $gateway_slug ) {
+													// If this is the primary gateway, add an alert.
+													$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-info">' . esc_html__( 'Enabled (Primary Gateway & via Add On)', 'paid-memberships-pro' ) . '</span>';
+												} else {
+													// Show this as a secondary gateway.
+													$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Enabled (via Add On)', 'paid-memberships-pro' ) . '</span>';
+												}	
+											}
+
 											echo wp_kses_post( $gateway_status_html );
 										?>
 										</td>
