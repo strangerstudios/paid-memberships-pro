@@ -326,4 +326,14 @@
 			return $gateway_options;
 		}
 
+		/**
+		 * Get a description for this gateway.
+		 *
+		 * @since TBD
+		 *
+		 * @return string The description for this gateway.
+		 */
+		public static function get_description_for_gateway_settings() {
+			return esc_html__( '&#8212;', 'paid-memberships-pro' );
+		}
 	}

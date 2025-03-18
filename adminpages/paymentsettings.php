@@ -36,20 +36,12 @@
 	if ( ! empty( $_REQUEST['savesettings'] ) ) {
 		// Check whether we are saving the settings for a specific gateway.
 		if ( ! empty( $gateway_class_name ) ) {
-			// Check if this gateway is enabled.
-			if ( ! empty( $_REQUEST['enabled'] ) ) {
-				// This gateway should be enabled.
-				pmpro_setOption( 'gateway', $edit_gateway );
-			} elseif ( pmpro_getOption( 'gateway' ) === $edit_gateway ) {
-				// This gateway is currently enabled, but the user wants to disable it.
-				pmpro_setOption( 'gateway', '' );
-			}
-
 			// Save the settings for the specific gateway.
 			call_user_func( array( $gateway_class_name, 'save_settings_fields' ) );
 		} else {
 			// Save the global settings.
 			$global_settings = array(
+				'gateway',
 				'gateway_environment',
 				'currency',
 				'tax_state',
@@ -70,6 +62,11 @@
 		//assume success
 		$msg = true;
 		$msgt = __("Your payment settings have been updated.", 'paid-memberships-pro' );
+
+		// Append a link to main payments settings page.
+		if ( isset( $_REQUEST['edit_gateway'] ) ) {
+			$msgt .= ' <a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings' ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Return to Payment Settings', 'paid-memberships-pro' ) . '</a>';
+		}
 	}
 
 	/*
@@ -106,59 +103,8 @@
 		if ( empty( $gateway_class_name ) ) {
 			// Show the table of gateways and global settings.
 			?>
-			<h1><?php esc_html_e( 'Payment Gateway', 'paid-memberships-pro' );?></h1>
-			<div id="choose-gateway" class="pmpro_section" data-visibility="shown" data-activated="true">
-				<div class="pmpro_section_toggle">
-					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-						<span class="dashicons dashicons-arrow-up-alt2"></span>
-						<?php esc_html_e( 'Payment Gateways', 'paid-memberships-pro' ); ?>
-					</button>
-				</div>
-				<div class="pmpro_section_inside">
-					<p>
-						<?php			
-						$gateway_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Payment Gateway Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/payment-gateway-settings/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=payment-gateway-settings">' . esc_html__( 'Payment Gateway Settings', 'paid-memberships-pro' ) . '</a>';
-						// translators: %s: Link to Payment Gateway Settings doc.
-						printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $gateway_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						?>
-					</p>
-					<table class="wp-list-table widefat fixed striped">
-						<thead>
-							<tr>
-								<th>
-									<?php esc_html_e( 'Gateway', 'paid-memberships-pro' );?>
-								</th>
-								<th>
-									<?php esc_html_e( 'Enabled?', 'paid-memberships-pro' );?>
-								</th>
-								<th>
-									<?php esc_html_e( 'Edit', 'paid-memberships-pro' );?>
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach ( $pmpro_gateways as $gateway_slug => $gateway_name ) {
-								?>
-								<tr class="gateway gateway_<?php echo esc_attr( $gateway_slug );?>">
-									<td>
-										<?php echo esc_html( $gateway_name );?>
-									</td>
-									<td>
-										<?php echo pmpro_getOption( 'gateway' ) === $gateway_slug ? '<span class="dashicons dashicons-yes"></span>' : ''; ?>
-									</td>
-									<td>
-										<a href="?page=pmpro-paymentsettings&edit_gateway=<?php echo esc_attr( $gateway_slug ); // WPCS: XSS ok. ?>"><?php esc_html_e( 'Edit Settings', 'paid-memberships-pro' );?></a>
-									</td>
-								</tr>
-								<?php
-							}
-							?>
-						</tbody>
-					</table>
-				</div> <!-- end pmpro_section_inside -->
-			</div> <!-- end pmpro_section -->
-			<div id="currency-tax-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
+			<h1><?php esc_html_e( 'Payment Settings', 'paid-memberships-pro' );?></h1>
+			<div id="global-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 				<div class="pmpro_section_toggle">
 					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 						<span class="dashicons dashicons-arrow-up-alt2"></span>
@@ -167,19 +113,150 @@
 				</div>
 				<div class="pmpro_section_inside">
 					<table class="form-table">
+						<tbody>
+							<tr>
+								<th scope="row" valign="top">
+									<label for="gateway"><?php esc_html_e( 'Payment Gateway', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<select id="gateway" name="gateway">
+										<?php
+											foreach ( $pmpro_gateways as $gateway_slug => $gateway_name ) {
+												?>
+												<option value="<?php echo esc_attr( $gateway_slug );?>" <?php selected( pmpro_getOption( 'gateway' ), $gateway_slug ); ?>><?php echo esc_html( $gateway_name );?></option>
+												<?php
+											}
+										?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Select the primary payment gateway for membership checkouts on this site. Before switching, ensure the selected gateway is fully configured for the chosen environment (live or test).', 'paid-memberships-pro' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row" valign="top">
+									<label for="gateway_environment"><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<select id="gateway_environment" name="gateway_environment">
+										<option value="sandbox" <?php if( $gateway_environment == "sandbox") { ?>selected="selected"<?php } ?>><?php esc_html_e('Sandbox', 'paid-memberships-pro' );?></option>
+										<option value="live" <?php if( $gateway_environment == "live") { ?>selected="selected"<?php } ?>><?php esc_html_e('Live', 'paid-memberships-pro' );?></option>
+									</select>
+									<p class="description">
+										<?php esc_html_e( 'Most gateways have a sandbox (test) and live environment. You can test transactions using the sandbox.', 'paid-memberships-pro' ); ?>
+										<?php
+											$gateway_testing_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Testing Your Payment Gateway', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/payment-testing/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=testing-your-payment-gateway">' . esc_html__( 'testing your payment gateway for more information', 'paid-memberships-pro' ) . '</a>';
+											// translators: %s: Link to Testing Your Payment Gateway doc.
+											printf( esc_html__('Gateway settings must be configured for each environment. Refer to our guide on %s.', 'paid-memberships-pro' ), $gateway_testing_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+										?>
+									</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<p class="submit">
+						<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save All Settings', 'paid-memberships-pro' );?>" />
+					</p>
+				</div> <!-- end pmpro_section_inside -->
+			</div> <!-- end pmpro_section -->
+			<div id="choose-gateway" class="pmpro_section" data-visibility="shown" data-activated="true">
+				<div class="pmpro_section_toggle">
+					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+						<span class="dashicons dashicons-arrow-up-alt2"></span>
+						<?php esc_html_e( 'Payment Gateway Settings', 'paid-memberships-pro' ); ?>
+					</button>
+				</div>
+				<div class="pmpro_section_inside">
+					<p>
+						<?php esc_html_e( 'Installed payment gateways are listed below. Select a gateway to manage settings in live or sandbox (test) mode.', 'paid-memberships-pro' ); ?>
+						<?php			
+						$gateway_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Payment Gateway Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/payment-gateway-settings/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=payment-gateway-settings">' . esc_html__( 'Payment Gateway Settings', 'paid-memberships-pro' ) . '</a>';
+						// translators: %s: Link to Payment Gateway Settings doc.
+						printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $gateway_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						?>
+					</p>
+					<table class="wp-list-table widefat striped">
+						<thead>
+							<tr>
+								<th class="manage-column column-gateway" scope="col">
+									<?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?>
+								</th>
+								<th class="manage-column column-status" scope="col">
+									<?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?>
+								</th>
+								<th class="manage-column column-description" scope="col">
+									<?php esc_html_e( 'Description', 'paid-memberships-pro' ); ?>
+								</th>
+								<th class="manage-column column-edit" scope="col">
+									<span class="screen-reader-text"><?php esc_html_e( '', 'paid-memberships-pro' );?>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							foreach ( $pmpro_gateways as $gateway_slug => $gateway_name ) {
+								// Get information about what the gateway 'supports'.
+								$gateway_class_name = 'PMProGateway_' . $gateway_slug;
+								if ( class_exists( $gateway_class_name ) && method_exists( $gateway_class_name, 'supports' ) ) {
+									$gateway_instance = new $gateway_class_name();
+								}
+
+								// Add a description for the default gateway.
+								$gateway_description = $gateway_slug === '' ? esc_html__( 'This gateway is for membership sites with Free levels or for sites that accept payment offline. The default gateway is not connected to a live gateway environment and cannot accept payments.', 'paid-memberships-pro' ) : $gateway_description;
+								?>
+								<tr class="gateway gateway_<?php echo esc_attr( $gateway_slug );?>">
+									<td class="column-gateway">
+										<?php echo ! empty( $gateway_instance ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( $gateway_name ) . '</a>' : esc_html__( $gateway_name ); ?>
+									</td>
+									<td class="column-status">
+										<?php
+											$gateway_status_html = pmpro_getOption( 'gateway' ) === $gateway_slug ? '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Enabled (Primary Gateway)', 'paid-memberships-pro' ) . '</span>' : esc_html__( '&#8212;', 'paid-memberships-pro' );
+
+											// Special Cases for Add Ons that add secondary gateways. These will be removed when core natively supports multiple gateways.
+											if (
+												( function_exists( 'pmproappe_pmpro_valid_gateways' ) && $gateway_slug === 'paypalexpress' ) || // Add PayPal Express Add On.
+												( defined( 'PMPROPBC_VER' ) && $gateway_slug === 'check' ) // Pay by Check Add On.
+											) {
+												// The Add On is active for the gateway being shown.
+												if ( pmpro_getOption( 'gateway' ) === $gateway_slug ) {
+													// If this is the primary gateway, add an alert.
+													$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-info">' . esc_html__( 'Enabled (Primary Gateway & via Add On)', 'paid-memberships-pro' ) . '</span>';
+												} else {
+													// Show this as a secondary gateway.
+													$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Enabled (via Add On)', 'paid-memberships-pro' ) . '</span>';
+												}	
+											}
+
+											echo wp_kses_post( $gateway_status_html );
+										?>
+										</td>
+									<td class="column-description">
+										<?php echo ! empty( $gateway_instance ) ? esc_html( $gateway_instance->get_description_for_gateway_settings() ) : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
+									</td>
+									<td class="column-edit">
+										<?php echo ! empty( $gateway_instance ) ? '<a class="button button-secondary" href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Edit Settings', 'paid-memberships-pro' ) . '</a>' : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
+									</td>
+								</tr>
+								<?php
+								$gateway_class_name = '';
+							}
+							?>
+						</tbody>
+					</table>
+					<br />
+					<p>
+						<a target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-on-category/payment/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=other-payment-gateways"><?php esc_html_e( 'Discover other payment gateways available as Paid Memberships Pro Add Ons', 'paid-memberships-pro' ); ?></a>
+					</p>
+				</div> <!-- end pmpro_section_inside -->
+			</div> <!-- end pmpro_section -->
+			<div id="other-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
+				<div class="pmpro_section_toggle">
+					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+						<span class="dashicons dashicons-arrow-up-alt2"></span>
+						<?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?>
+					</button>
+				</div>
+				<div class="pmpro_section_inside">
+					<table class="form-table">
 					<tbody>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="gateway_environment"><?php esc_html_e('Gateway Environment', 'paid-memberships-pro' );?></label>
-							</th>
-							<td>
-								<select id="gateway_environment" name="gateway_environment">
-									<option value="sandbox" <?php if( $gateway_environment == "sandbox") { ?>selected="selected"<?php } ?>><?php esc_html_e('Sandbox', 'paid-memberships-pro' );?></option>
-									<option value="live" <?php if( $gateway_environment == "live") { ?>selected="selected"<?php } ?>><?php esc_html_e('Live', 'paid-memberships-pro' );?></option>
-								</select>
-								<p class="description"><?php esc_html_e( 'Most gateways have a sandbox (test) and live environment. You can test transactions using the sandbox.', 'paid-memberships-pro' ); ?></p>
-							</td>
-						</tr>
 						<tr>
 							<th scope="row" valign="top">
 								<label for="currency"><?php esc_html_e('Currency', 'paid-memberships-pro' );?></label>
@@ -222,6 +299,17 @@
 						</tr>
 					</tbody>
 					</table>
+					<?php
+						/**
+						 * Fires after the Payment Settings form fields.
+						 *
+						 * @since TBD
+						 */
+						do_action( 'pmpro_after_payment_settings' );
+					?>
+					<p class="submit">
+						<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" />
+					</p>
 				</div> <!-- end pmpro_section_inside -->
 			</div> <!-- end pmpro_section -->
 			
@@ -229,19 +317,25 @@
 		} else {
 			// Show the settings for a specific gateway.
 			?>
-			<h1><?php echo esc_html( $pmpro_gateways[ $edit_gateway ] ); ?></h1>
+			<h1 class="wp-heading-inline">
+				<?php
+					echo sprintf(
+						// translators: %s is the Level ID.
+						esc_html__('Edit Payment Gateway: %s', 'paid-memberships-pro'),
+						esc_html__( $pmpro_gateways[ $edit_gateway ] )
+					);
+				?>
+			</h1>
 			<?php
-			// Show checkbox for whether the gateway is enabled.
+				call_user_func( array( $gateway_class_name, 'show_settings_fields' ) );
 			?>
-			<input type="checkbox" id="enabled" name="enabled" value="1" <?php if ( pmpro_getOption( 'gateway' ) === $edit_gateway ) { ?>checked="checked"<?php } ?> />
-			<label for="enabled"><?php esc_html_e( 'Enabled', 'paid-memberships-pro' ); ?></label>
+			<p class="submit">
+				<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-secondary"><?php esc_html_e( 'Cancel', 'paid-memberships-pro' ); ?></a>
+			</p>
 			<?php
-			call_user_func( array( $gateway_class_name, 'show_settings_fields' ) );
 		}
 		?>
-		<p class="submit">
-			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
-		</p>
 	</form>
 
 <?php
