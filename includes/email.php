@@ -330,6 +330,7 @@ function pmpro_email_templates_send_test() {
 			add_filter( 'pmpro_get_membership_levels_for_user', function() {
 				global $pmpro_conpd_email_test_level;
 				$pmpro_conpd_email_test_level->enddate = date( 'Y-m-d', strtotime( '+1 month' ) );
+				$pmpro_conpd_email_test_level->startdate = date( 'Y-m-d', strtotime( '-1 month' ) );
 				return array( $pmpro_conpd_email_test_level->id => $pmpro_conpd_email_test_level );
 			} );
 			$params = array( $test_user, $pmpro_conpd_email_test_level->id );
