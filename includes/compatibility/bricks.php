@@ -133,6 +133,8 @@ function pmpro_bricks_condition_result( $result, $condition_key, $condition ) {
 /**
  * Helper function to figure out if the condition is met or not.
  *
+ * @since TBD
+ * 
  * @param string $condition_level_id The level ID to check against.
  * @param string $compare The comparison operator, in this case it's either '==' or '!='.
  * @return boolean $condition_met Whether the condition is met.
