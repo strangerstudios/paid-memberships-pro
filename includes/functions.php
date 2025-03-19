@@ -1615,20 +1615,24 @@ function pmpro_getMetavalues( $query ) {
 	return $r;
 }
 
-// function to return the pagination string
-function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $adjacents = 1, $targetpage = '/', $pagestring = '&pn=' ) {
-	// defaults
-	if ( ! $adjacents ) {
-		$adjacents = 1;
-	}
-	if ( ! $limit ) {
-		$limit = 15;
-	}
-	if ( ! $page ) {
-		$page = 1;
-	}
-	if ( ! $targetpage ) {
-		$targetpage = '/';
+/**
+ * Function to return the pagination string
+ *
+ * @since 1.0.0
+ *
+ * @param int    $page       Current page number
+ * @param int    $totalitems Total number of items
+ * @param int    $limit      Items per page
+ * @param int    $adjacents  Number of adjacent pages to show
+ * @param string $targetpage Target page URL
+ * @param string $pagestring Query string parameter for page number
+ * @param string $aria_label  aria-label for the pagination
+ * @return string HTML for pagination
+ */
+function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $adjacents = 1, $targetpage = '/', $pagestring = '&pn=', $aria_label = '' ) {
+
+	if ( ! $aria_label ) {
+		$aria_label = __( 'Pagination', 'paid-memberships-pro' );
 	}
 
 	// other vars
@@ -1637,39 +1641,26 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 	$lastpage = ceil( $totalitems / $limit );             // lastpage is = total items / items per page, rounded up.
 	$lpm1 = $lastpage - 1;                              // last page minus 1
 
-	/*
-		Now we apply our rules and draw the pagination object.
-		We're actually saving the code to a variable in case we want to draw it more than once.
-	*/
 	$pagination = '';
 	if ( $lastpage > 1 ) {
-		$pagination .= '<span class="pmpro_pagination"';
-		if ( ! empty( $margin ) || ! empty( $padding ) ) {
-			$pagination .= ' style="';
-			if ( $margin ) {
-				$pagination .= "margin: $margin;";
-			}
-			if ( $padding ) {
-				$pagination .= "padding: $padding;";
-			}
-			$pagination .= '"';
-		}
-		$pagination .= '>';
+		$pagination .= '<nav class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination' ) ) . '" aria-label="' . esc_attr( $aria_label ) . '">';
 
 		// previous button
 		if ( $page > 1 ) {
-			$pagination .= "<a href=\"$targetpage$pagestring$prev\">&laquo; prev</a>";
+			$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-previous' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $prev ) . '" ';
+			$pagination .= 'aria-label="' . esc_attr__( 'Go to the previous page', 'paid-memberships-pro' ) . '">&laquo; ' . esc_html__( 'Previous', 'paid-memberships-pro' ) . '</a>';
 		} else {
-			$pagination .= '<span class="disabled">&laquo; prev</span>';
+			$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-previous pmpro_pagination-disabled' ) ) . '">&laquo; ' . esc_html__( 'Previous', 'paid-memberships-pro' ) . '</span>';
 		}
 
 		// pages
 		if ( $lastpage < 7 + ( $adjacents * 2 ) ) {
 			for ( $counter = 1; $counter <= $lastpage; $counter++ ) {
 				if ( $counter == $page ) {
-					$pagination .= "<span class=\"current\">$counter</span>";
+					$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 				} else {
-					$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>";
+					$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+					$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 				}
 			}
 		} elseif ( $lastpage >= 7 + ( $adjacents * 2 ) ) {
@@ -1677,39 +1668,50 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 			if ( $page < 1 + ( $adjacents * 3 ) ) {
 				for ( $counter = 1; $counter < 4 + ( $adjacents * 2 ); $counter++ ) {
 					if ( $counter == $page ) {
-						$pagination .= "<span class=\"current\">$counter</span>";
+						$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 					} else {
-						$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>";
+						$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+						$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 					}
 				}
-				$pagination .= '...';
-				$pagination .= '<a href="' . $targetpage . $pagestring . $lpm1 . "\">$lpm1</a>";
-				$pagination .= '<a href="' . $targetpage . $pagestring . $lastpage . "\">$lastpage</a>";
+				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lpm1 ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lpm1 ) ) . '">' . esc_html( $lpm1 ) . '</a>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lastpage ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lastpage ) ) . '">' . esc_html( $lastpage ) . '</a>';
 			} // in middle; hide some front and some back
 			elseif ( $lastpage - ( $adjacents * 2 ) > $page && $page > ( $adjacents * 2 ) ) {
-				$pagination .= '<a href="' . $targetpage . $pagestring . '1">1</a>';
-				$pagination .= '<a href="' . $targetpage . $pagestring . '2">2</a>';
-				$pagination .= '...';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . '1' ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr__( 'Page 1', 'paid-memberships-pro' ) . '">1</a>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . '2' ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr__( 'Page 2', 'paid-memberships-pro' ) . '">2</a>';
+				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
 				for ( $counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++ ) {
 					if ( $counter == $page ) {
-						$pagination .= "<span class=\"current\">$counter</span>";
+						$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 					} else {
-						$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>";
+						$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+						$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 					}
 				}
-				$pagination .= '...';
-				$pagination .= '<a href="' . $targetpage . $pagestring . $lpm1 . "\">$lpm1</a>";
-				$pagination .= '<a href="' . $targetpage . $pagestring . $lastpage . "\">$lastpage</a>";
+				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lpm1 ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lpm1 ) ) . '">' . esc_html( $lpm1 ) . '</a>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lastpage ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lastpage ) ) . '">' . esc_html( $lastpage ) . '</a>';
 			} // close to end; only hide early pages
 			else {
-				$pagination .= '<a href="' . $targetpage . $pagestring . '1">1</a>';
-				$pagination .= '<a href="' . $targetpage . $pagestring . '2">2</a>';
-				$pagination .= '...';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . '1' ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr__( 'Page 1', 'paid-memberships-pro' ) . '">1</a>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . '2' ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr__( 'Page 2', 'paid-memberships-pro' ) . '">2</a>';
+				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
 				for ( $counter = $lastpage - ( 1 + ( $adjacents * 3 ) ); $counter <= $lastpage; $counter++ ) {
 					if ( $counter == $page ) {
-						$pagination .= "<span class=\"current\">$counter</span>";
+						$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 					} else {
-						$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>";
+						$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+						$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 					}
 				}
 			}
@@ -1717,15 +1719,29 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 
 		// next button
 		if ( $page < $counter - 1 ) {
-			$pagination .= '<a href="' . $targetpage . $pagestring . $next . '">next &raquo;</a>';
+			$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-next' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $next ) . '" ';
+			$pagination .= 'aria-label="' . esc_attr__( 'Go to the next page', 'paid-memberships-pro' ) . '">' . esc_html__( 'Next', 'paid-memberships-pro' ) . ' &raquo;</a>';
 		} else {
-			$pagination .= '<span class="disabled">next &raquo;</span>';
+			$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-next pmpro_pagination-disabled' ) ) . '">' . esc_html__( 'Next', 'paid-memberships-pro' ) . ' &raquo;</span>';
 		}
-		$pagination .= "</span>\n";
+		$pagination .= "</nav>\n";
 	}
 
-	return $pagination;
-
+	/**
+	 * Filters the pagination HTML
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $pagination The pagination HTML
+	 * @param int    $page       Current page number
+	 * @param int    $totalitems Total number of items
+	 * @param int    $limit      Items per page
+	 * @param int    $adjacents  Number of adjacent pages to show
+	 * @param string $targetpage Target page URL
+	 * @param string $pagestring Query string parameter for page number
+	 * @return string The filtered pagination HTML
+	 */
+	return apply_filters( 'pmpro_get_pagination_string', $pagination, $page, $totalitems, $limit, $adjacents, $targetpage, $pagestring, $aria_label );
 }
 
 function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
