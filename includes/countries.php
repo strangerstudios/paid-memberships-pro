@@ -255,4 +255,7 @@
 
 	asort($pmpro_countries);
 
+	// Add the blank option at the start of the array, always.
+	$pmpro_countries = array( ''   => __( 'Select Country', 'paid-memberships-pro' ) ) + $pmpro_countries;
+
 	$pmpro_countries = apply_filters("pmpro_countries", $pmpro_countries);
