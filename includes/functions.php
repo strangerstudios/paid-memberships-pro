@@ -4105,6 +4105,10 @@ function pmpro_int_compare( $a, $b, $operator ) {
 		case '==':
 			$r = (int)$a == (int)$b;
 			break;
+		case '!=':
+		case '<>':
+			$r = (int)$a != (int)$b;
+			break;
 		default:
 			$r = null;
 	}
