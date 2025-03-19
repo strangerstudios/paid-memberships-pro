@@ -141,6 +141,9 @@ function pmpro_bricks_condition_result( $result, $condition_key, $condition ) {
  */
 function pmpro_bricks_condition_checker( $condition_level_id, $compare ) {
 
+	// Always cast to an integer, to be safe.
+	$condition_level_id = (int) $condition_level_id;
+
 	if ( $condition_level_id > 0 ) {
 		$user_has_level = pmpro_hasMembershipLevel( $condition_level_id );
 	} elseif ( $condition_level_id === 0 ) {
