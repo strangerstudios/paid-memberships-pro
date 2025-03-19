@@ -26,6 +26,22 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		)
 	);
 
+	// No user_id found, let's bail.
+	if ( ! $user_id ) {
+		return;
+	}
+
+	// Make sure the user_id is of an existing user when not viewing their own information.
+	if ( $user_id !== $current_user->ID ) {
+		$user = get_userdata( $user_id );
+		if ( ! $user ) {
+			return;
+		}
+	} else {
+		$user = $current_user;
+	}
+
+
 	// Bail if there's no field attribute.
 	if ( empty( $field ) ) {
 		return esc_html__( 'The "field" attribute is required in the pmpro_member shortcode.', 'paid-memberships-pro' );
@@ -155,7 +171,6 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		$r = get_user_meta($user_id, $field, true );
 	} elseif ( in_array( $field, $user_column_fields ) ) {
 		// wp_users column.
-		$user = get_userdata( $user_id );
 		$r    = $user->{$field};
 	} elseif ( $field === 'avatar' ) {
 		// Get the user's avatar.
