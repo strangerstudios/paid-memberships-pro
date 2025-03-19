@@ -191,13 +191,6 @@ class PMPro_Email_Template_Billing_Admin extends PMPro_Email_Template {
 		);
 		return $email_template_variables;
 	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public static function get_test_email_constructor_args() {
-		return array();
-	}
 }
 
 /**

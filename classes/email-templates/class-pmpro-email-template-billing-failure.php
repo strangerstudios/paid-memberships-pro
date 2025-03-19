@@ -184,13 +184,6 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 			'expirationyear' => $order->expirationyear,
 		);
 	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public static function get_test_email_constructor_args() {
-		return array();
-	}
 }
 
 /**

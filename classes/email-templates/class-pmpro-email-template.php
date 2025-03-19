@@ -90,7 +90,7 @@ abstract class PMPro_Email_Template {
 		return $base_email_template_variables_with_description;
 	}
 
-/**
+	/**
 	 * Send a test email.
 	 *
 	 * @since TBD
@@ -102,6 +102,11 @@ abstract class PMPro_Email_Template {
 		// Get the test parameters needed to construct the test email (ex test user, order, level, etc).
 		
 		$class_name = get_called_class();
+		//if we haven't implemented the get_test_email_constructor_args method, log something and  return false
+		if ( ! method_exists( $class_name, 'get_test_email_constructor_args' ) ) {
+			error_log( 'The ' . $class_name . ' class did not implement the get_test_email_constructor_args method yet.' ); 
+			return false;
+		}
 		$constructor_args = $class_name::get_test_email_constructor_args();
 
 		// Construct the test email using the test parameters.
@@ -130,16 +135,6 @@ abstract class PMPro_Email_Template {
 		// Return the result.
 		return $result;
 	}
-
-	/**
-	 * Get the test parameters needed to construct the test email (ex test user, order, level, etc).
-	 * These should be in the same order as the constructor for the email template.
-	 *
-	 * @since TBD
-	 *
-	 * @return array The test parameters needed to construct the test email (ex test user, order, level, etc).
-	 */
-	abstract public static function get_test_email_constructor_args();
 
 	/**
 	 * Get the email template slug.

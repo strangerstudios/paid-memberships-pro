@@ -184,13 +184,6 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
-	public static function get_test_email_constructor_args() {
-		return array();
-	}
-
-	/**
 	 * Get the start or end date of the membership level that was cancelled.
 	 *
 	 * @since 3.4

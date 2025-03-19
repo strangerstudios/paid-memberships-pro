@@ -145,13 +145,6 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 		$user = get_user_by( 'email', $this->get_recipient_email() );
 		return empty( $user->display_name ) ? esc_html__( 'Admin', 'paid-memberships-pro' ) : $user->display_name;
 	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public static function get_test_email_constructor_args() {
-		return array();
-	}
 }
 
 /**

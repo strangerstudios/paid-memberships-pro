@@ -149,13 +149,6 @@ class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 			"levels_url" => pmpro_url( 'levels' )
 		);
 	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public static function get_test_email_constructor_args() {
-		return array( );
-	}
 }
 
 /**
