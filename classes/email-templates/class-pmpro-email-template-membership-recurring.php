@@ -154,6 +154,18 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 			'cancel_url' => wp_login_url( pmpro_url( 'cancel' ) ),
 		);
 	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		$test_subscription = new PMPro_Subscription();
+		return array( $test_subscription->get_test_subscription() );
+	}
 }
 
 /**
