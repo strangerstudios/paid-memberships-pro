@@ -4099,7 +4099,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
  * This allows us to pass in a comparison character via the notification rules
  * and get a true/false result.
  *
- * @since TBD Added support for != and <>.
+ * @since 3.4.4 Added support for != and <>.
  *
  * @param int $a First integer to compare.
  * @param int $b Second integer to compare.
