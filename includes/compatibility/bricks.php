@@ -24,12 +24,10 @@ add_filter( 'bricks/conditions/result', 'pmpro_bricks_condition_result', 10, 3 )
  * @return array The modified condition groups.
  */
 function pmpro_bricks_add_condition_group( $groups ) {
-	$new_group = array(
+	$groups[] = array(
 		'name'  => 'pmpro',
 		'label' => esc_html__( 'Paid Memberships Pro', 'paid-memberships-pro' ),
 	);
-
-	array_unshift( $groups, $new_group ); // Insert at the beginning.
 
 	return $groups;
 }
@@ -53,8 +51,8 @@ function pmpro_bricks_add_custom_condition( $options ) {
 		'compare' => array(
 			'type'        => 'select',
 			'options'     => array(
-				'==' => esc_html__( 'Has Membership Level', 'paid-memberships-pro' ),
-				'!=' => esc_html__( 'Does Not Have Membership Level', 'paid-memberships-pro' ),
+				'==' => esc_html__( 'Show content to', 'paid-memberships-pro' ),
+				'!=' => esc_html__( 'Hide content from', 'paid-memberships-pro' ),
 			),
 			'placeholder' => esc_html__( 'Select Comparison', 'paid-memberships-pro' ),
 		),
@@ -81,19 +79,20 @@ function pmpro_bricks_add_custom_condition( $options ) {
 function pmpro_bricks_get_membership_levels() {
 	$pmpro_levels = pmpro_getAllLevels( true );
 
-	$options = array();
+	$levels_options_array = array();
 
-	// Add the membership levels to the options.
+	// Add some custom levels_options_array/values to the level ID array.
+	$levels_options_array[-1] = esc_html__( 'All Members', 'paid-memberships-pro' ); // This gets pushed to the bottom no matter what we do. TODO: Bricks must fix this.
+	$levels_options_array[0] = esc_html__( 'Non Members', 'paid-memberships-pro' );
+
+	// Add the membership levels to the levels_options_array.
 	if ( ! empty( $pmpro_levels ) ) {
 		foreach ( $pmpro_levels as $pmpro_level ) {
-			$options[ (string) $pmpro_level->id ] = esc_html__( $pmpro_level->name );
+			$levels_options_array[ (int) $pmpro_level->id ] = esc_html( $pmpro_level->name );
 		}
-	}
+	};
 
-	//Add a non-members option.
-	$options['0'] = esc_html__( 'Non Members', 'paid-memberships-pro' );
-
-	return $options;
+	return $levels_options_array;
 }
 
 /**
@@ -115,43 +114,54 @@ function pmpro_bricks_condition_result( $result, $condition_key, $condition ) {
 		return $result;
 	}
 
+	// Get the conditional comparison operator.
 	$compare = '==';
 	if ( isset( $condition['compare'] ) ) {
 		$compare = $condition['compare'];
 	}
 
-	$user_value = '';
+	// Get the level ID of the condition.
+	$condition_level_id = '';
 	if ( isset( $condition['value'] ) ) {
-		$user_value = $condition['value'];
+		$condition_level_id = $condition['value'];
 	}
 
-	$user_levels = pmpro_getMembershipLevelsForUser( get_current_user_id() );
+	// Figure out if the member has the relevant condition.
+	return pmpro_bricks_condition_checker( $condition_level_id, $compare );
+}
 
-	// If the user has no levels, treat them as non-members.
-	if ( ! is_array( $user_levels ) ) {
-		$user_levels = array();
+/**
+ * Helper function to figure out if the condition is met or not.
+ *
+ * @param string $condition_level_id The level ID to check against.
+ * @param string $compare The comparison operator, in this case it's either '==' or '!='.
+ * @return boolean $condition_met Whether the condition is met.
+ */
+function pmpro_bricks_condition_checker( $condition_level_id, $compare ) {
+
+	if ( $condition_level_id > 0 ) {
+		$user_has_level = pmpro_hasMembershipLevel( $condition_level_id );
+	} elseif ( $condition_level_id === 0 ) {
+		$user_has_level = ! pmpro_hasMembershipLevel();
+	} elseif ( $condition_level_id === -1 ) {
+		$user_has_level = pmpro_hasMembershipLevel();
 	}
 
-	$user_level_ids = array_map( function( $level ) {
-		return (string) $level->id;
-	}, $user_levels );
-
-	// If the user has no levels, treat them as non-members.
-	if ( empty( $user_level_ids ) ) {
-		// Use array_push to add the non-members level to the user level ids.
-		array_push( $user_level_ids, '0' );
-	}
-
-	// Check if the user has the level.
-	$has_level = in_array( $user_value, $user_level_ids );
-
-	// Determine if the condition is met based on the compare value.
-	$condition_met = false;
+	// Compare the condition we're looking for.
 	if ( $compare === '==' ) {
-		$condition_met = $has_level;
+		$condition_met = $user_has_level;
 	} elseif ( $compare === '!=' ) {
-		$condition_met = ! $has_level;
+		$condition_met = ! $user_has_level;
 	}
 
-	return $condition_met;
+	/**
+	 * Filter to allow bypassing of the condition check for Bricks Builder condition.
+	 * 
+	 * @since TBD
+	 * 
+	 * @param boolean $condition_met Whether the condition is met.
+	 * @param string $condition_level_id The level ID to check against.
+	 * @param string $compare The comparison operator.
+	 */
+	return apply_filters( 'pmpro_bricks_condition_access', $condition_met, $condition_level_id, $compare );
 }
