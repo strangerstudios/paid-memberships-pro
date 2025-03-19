@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.4.3\n"
+"Project-Id-Version: Paid Memberships Pro 3.4.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-06T14:04:39+00:00\n"
+"POT-Creation-Date: 2025-03-19T15:47:36+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -992,6 +992,7 @@ msgstr ""
 #: includes/functions.php:2112
 #: includes/functions.php:2122
 #: includes/functions.php:2131
+#: includes/functions.php:2147
 msgid "This content is for members only. Visit the site and log in/register to read."
 msgstr "‎התכון בעמוד זה זמין למשתמשים בלבד‫.‬ אנא הירשם או התחבר באתר‫.‬"
 
@@ -5249,6 +5250,7 @@ msgstr ""
 #: includes/functions.php:3248
 #: includes/functions.php:3237
 #: includes/functions.php:3246
+#: includes/functions.php:3262
 msgid "Tax"
 msgstr ""
 
@@ -5356,6 +5358,7 @@ msgstr "סכום ההנחה"
 #: shortcodes/pmpro_account.php:346
 #: adminpages/reports/memberships.php:562
 #: includes/functions.php:3267
+#: includes/functions.php:3283
 msgid "Total"
 msgstr "סה’’כ"
 
@@ -8362,6 +8365,7 @@ msgstr "מחיר"
 #: includes/functions.php:3241
 #: includes/functions.php:3230
 #: includes/functions.php:3239
+#: includes/functions.php:3255
 msgid "Subtotal"
 msgstr "סכום לא סופי"
 
@@ -12409,6 +12413,7 @@ msgstr "‎לא נמצאה דרגה זו‫.‬"
 #: includes/functions.php:1898
 #: includes/functions.php:1900
 #: includes/functions.php:1909
+#: includes/functions.php:1925
 msgid "No code was given to check."
 msgstr ""
 
@@ -12445,6 +12450,7 @@ msgstr ""
 #: includes/functions.php:1907
 #: includes/functions.php:1909
 #: includes/functions.php:1918
+#: includes/functions.php:1934
 msgid "The discount code could not be found."
 msgstr "‎הקוד אינו תקין‫.‬"
 
@@ -12481,6 +12487,7 @@ msgstr "‎הקוד אינו תקין‫.‬"
 #: includes/functions.php:1922
 #: includes/functions.php:1924
 #: includes/functions.php:1933
+#: includes/functions.php:1949
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "‎הקוד תקף על %s."
@@ -12518,6 +12525,7 @@ msgstr "‎הקוד תקף על %s."
 #: includes/functions.php:1929
 #: includes/functions.php:1931
 #: includes/functions.php:1940
+#: includes/functions.php:1956
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "‎הקוד פג תוקף ב %s."
@@ -12555,6 +12563,7 @@ msgstr "‎הקוד פג תוקף ב %s."
 #: includes/functions.php:1938
 #: includes/functions.php:1940
 #: includes/functions.php:1949
+#: includes/functions.php:1965
 msgid "This discount code is no longer valid."
 msgstr "‎הקוד אינו תקף יותר‫.‬"
 
@@ -12591,6 +12600,7 @@ msgstr "‎הקוד אינו תקף יותר‫.‬"
 #: includes/functions.php:1959
 #: includes/functions.php:1969
 #: includes/functions.php:1978
+#: includes/functions.php:1994
 msgid "This discount code does not apply to this membership level."
 msgstr "‎הקוד אינו מתאים לדרגה של משתמש זה‫.‬"
 
@@ -12628,6 +12638,7 @@ msgstr "‎הקוד אינו מתאים לדרגה של משתמש זה‫.‬"
 #: includes/functions.php:1997
 #: includes/functions.php:2007
 #: includes/functions.php:2016
+#: includes/functions.php:2032
 msgid "This discount code is okay."
 msgstr "‎הקוד עובד‫.‬"
 
@@ -12666,6 +12677,7 @@ msgstr "‎הקוד עובד‫.‬"
 #: includes/functions.php:2031
 #: includes/functions.php:2041
 #: includes/functions.php:2050
+#: includes/functions.php:2066
 msgid "and"
 msgstr "‎ו"
 
@@ -12708,6 +12720,7 @@ msgstr "‎ו"
 #: includes/functions.php:2759
 #: includes/functions.php:2748
 #: includes/functions.php:2757
+#: includes/functions.php:2773
 msgid "Sign Up for !!name!! Now"
 msgstr "‎הירשם עבור !!name!! עכשיו"
 
@@ -13977,6 +13990,7 @@ msgstr "כבר יש לך משתמש?"
 #: pages/checkout.php:344
 #: includes/functions.php:2207
 #: pages/checkout.php:362
+#: includes/functions.php:2223
 msgid "Log in here"
 msgstr "התחבר כאן"
 
@@ -16613,6 +16627,7 @@ msgstr ""
 #: includes/functions.php:2136
 #: includes/functions.php:2146
 #: includes/functions.php:2155
+#: includes/functions.php:2171
 msgid "View Membership Levels"
 msgstr ""
 
@@ -23707,6 +23722,7 @@ msgstr ""
 #: includes/functions.php:2783
 #: includes/functions.php:2772
 #: includes/functions.php:2781
+#: includes/functions.php:2797
 msgid "Sign Up Now"
 msgstr ""
 
@@ -24017,6 +24033,7 @@ msgstr ""
 #: includes/functions.php:2142
 #: includes/functions.php:2152
 #: includes/functions.php:2161
+#: includes/functions.php:2177
 msgid "Join Now"
 msgstr ""
 
@@ -28857,6 +28874,7 @@ msgstr ""
 #: includes/functions.php:2132
 #: includes/functions.php:2142
 #: includes/functions.php:2151
+#: includes/functions.php:2167
 msgid "Membership Required"
 msgstr ""
 
@@ -32554,6 +32572,7 @@ msgstr ""
 #: shortcodes/pmpro_member.php:20
 #: shortcodes/pmpro_member.php:30
 #: shortcodes/pmpro_member.php:31
+#: shortcodes/pmpro_member.php:47
 msgid "The \"field\" attribute is required in the pmpro_member shortcode."
 msgstr ""
 
@@ -32575,6 +32594,7 @@ msgstr ""
 #: includes/functions.php:4772
 #: includes/functions.php:4764
 #: includes/functions.php:4773
+#: includes/functions.php:4796
 msgid "No file was uploaded."
 msgstr ""
 
@@ -32596,6 +32616,7 @@ msgstr ""
 #: includes/functions.php:4778
 #: includes/functions.php:4770
 #: includes/functions.php:4779
+#: includes/functions.php:4802
 msgid "No file name found."
 msgstr ""
 
@@ -32632,6 +32653,8 @@ msgstr ""
 #: includes/functions.php:4777
 #: includes/functions.php:4792
 #: includes/functions.php:4786
+#: includes/functions.php:4809
+#: includes/functions.php:4824
 msgid "Invalid file type."
 msgstr ""
 
@@ -32652,6 +32675,7 @@ msgstr ""
 #: includes/functions.php:4794
 #: includes/functions.php:4800
 #: includes/functions.php:4786
+#: includes/functions.php:4818
 msgid "Invalid field input."
 msgstr ""
 
@@ -32671,6 +32695,7 @@ msgstr ""
 #: includes/functions.php:4839
 #: includes/functions.php:4845
 #: includes/functions.php:4826
+#: includes/functions.php:4858
 msgid "Invalid file submission."
 msgstr ""
 
@@ -36411,6 +36436,7 @@ msgstr ""
 #: includes/functions.php:2133
 #: includes/functions.php:2143
 #: includes/functions.php:2152
+#: includes/functions.php:2168
 msgid " You must be a member to access this content."
 msgstr ""
 
@@ -36419,6 +36445,7 @@ msgstr ""
 #: includes/functions.php:2139
 #: includes/functions.php:2149
 #: includes/functions.php:2158
+#: includes/functions.php:2174
 msgid "!!levels!! Membership Required"
 msgstr ""
 
@@ -36427,6 +36454,7 @@ msgstr ""
 #: includes/functions.php:2140
 #: includes/functions.php:2150
 #: includes/functions.php:2159
+#: includes/functions.php:2175
 msgid " You must be a !!levels!! member to access this content."
 msgstr ""
 
@@ -36435,6 +36463,7 @@ msgstr ""
 #: includes/functions.php:2188
 #: includes/functions.php:2198
 #: includes/functions.php:2207
+#: includes/functions.php:2223
 msgid "Already a member?"
 msgstr ""
 
@@ -37082,6 +37111,7 @@ msgstr ""
 #: includes/functions.php:4813
 #: includes/functions.php:4819
 #: includes/functions.php:4805
+#: includes/functions.php:4837
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr ""
 
@@ -37090,6 +37120,7 @@ msgstr ""
 #: includes/functions.php:4820
 #: includes/functions.php:4826
 #: includes/functions.php:4812
+#: includes/functions.php:4844
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr ""
 
@@ -37297,6 +37328,7 @@ msgstr ""
 
 #: includes/functions.php:1950
 #: includes/functions.php:1959
+#: includes/functions.php:1975
 msgid "You have already used the discount code provided."
 msgstr ""
 
@@ -37365,18 +37397,21 @@ msgstr ""
 #: includes/functions.php:5020
 #: includes/functions.php:5001
 #: includes/functions.php:5010
+#: includes/functions.php:5033
 msgid "Order not found."
 msgstr ""
 
 #: includes/functions.php:5025
 #: includes/functions.php:5006
 #: includes/functions.php:5015
+#: includes/functions.php:5038
 msgid "Order is not a token order."
 msgstr ""
 
 #: includes/functions.php:5030
 #: includes/functions.php:5011
 #: includes/functions.php:5020
+#: includes/functions.php:5043
 msgid "Order gateway not found."
 msgstr ""
 
@@ -37467,10 +37502,12 @@ msgid "The method %s of PMPro_Field has become private and will not be available
 msgstr ""
 
 #: classes/class-pmpro-field.php:1703
+#: classes/class-pmpro-field.php:1704
 msgid "No file uploaded."
 msgstr ""
 
 #: classes/class-pmpro-field.php:1705
+#: classes/class-pmpro-field.php:1706
 msgid "Invalid file data."
 msgstr ""
 
@@ -38593,6 +38630,7 @@ msgstr ""
 
 #: includes/functions.php:3816
 #: includes/functions.php:3825
+#: includes/functions.php:3841
 msgid "The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class."
 msgstr ""
 
@@ -39268,4 +39306,51 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:163
 msgid "Note: the PayPal Standard gateway has been deprecated. Please switch to using <a href=\"%s\" target=\"_blank\">PayPal Express</a>."
+msgstr ""
+
+#: adminpages/reports/logins.php:300
+msgid "Logins Report Pagination"
+msgstr ""
+
+#: includes/functions.php:1635
+msgid "Pagination"
+msgstr ""
+
+#: includes/functions.php:1651
+msgid "Go to the previous page"
+msgstr ""
+
+#: includes/functions.php:1651
+#: includes/functions.php:1653
+msgid "Previous"
+msgstr ""
+
+#: includes/functions.php:1663
+#: includes/functions.php:1674
+#: includes/functions.php:1679
+#: includes/functions.php:1681
+#: includes/functions.php:1694
+#: includes/functions.php:1699
+#: includes/functions.php:1701
+#: includes/functions.php:1714
+msgid "Page %s"
+msgstr ""
+
+#: includes/functions.php:1685
+#: includes/functions.php:1705
+msgid "Page 1"
+msgstr ""
+
+#: includes/functions.php:1687
+#: includes/functions.php:1707
+msgid "Page 2"
+msgstr ""
+
+#: includes/functions.php:1723
+msgid "Go to the next page"
+msgstr ""
+
+#: includes/functions.php:1723
+#: includes/functions.php:1725
+msgid "Next"
 msgstr ""
