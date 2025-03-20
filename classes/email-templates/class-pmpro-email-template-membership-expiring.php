@@ -139,8 +139,9 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	 */
 	public function get_email_template_variables() {
 		global $wpdb;
+		$membership_id = $this->membership_id;
 		// If we don't have a level ID, query the user's most recently expired level from the database.
-		if ( empty( $this->membership_id ) ) {
+		if ( empty( $membership_id ) ) {
 			$membership_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT membership_id FROM $wpdb->pmpro_memberships_users
@@ -160,9 +161,9 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 
 		// Get the membership level object.
 		if ( empty( $membership_id ) ) {
-			$membership_level = pmpro_getMembershipLevelForUser($this->user->ID);
+			$membership_level = pmpro_getMembershipLevelForUser( $this->user->ID );
 		} else {
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($this->user->ID, $membership_id);
+			$membership_level = pmpro_getSpecificMembershipLevelForUser( $this->user->ID, $membership_id );
 		}
 
 		return array(
