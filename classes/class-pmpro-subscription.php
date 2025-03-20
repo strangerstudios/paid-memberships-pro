@@ -1371,6 +1371,13 @@ class PMPro_Subscription {
 		return count( $orders ) >= $this->billing_limit + 1;
 	}
 
+	/**
+	 * Get a test subscription for test emails template.
+	 *
+	 * @since TBD
+	 *
+	 * @return PMPro_Subscription $this The test subscription object.
+	 */
 	public function get_test_subscription() {
 		global $current_user;
 		$test_user = $current_user;

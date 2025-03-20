@@ -1804,8 +1804,8 @@
 			$this->billing->phone      = '5558675309';
 			$this->gateway_environment = 'sandbox';
 			$this->timestamp		   = time();
-			$this->notes               = __( 'This is a test order used with the PMPro Email Templates addon.', 'paid-memberships-pro' );
-			$this->order_url 		   = "http://www.example-notification-url.com/not-a-real-site";
+			$this->notes			   = __( 'This is a test order created by Paid Memberships Pro.', 'paid-memberships-pro' );
+			$this->order_url 		   = home_url();
 
 			return apply_filters( 'pmpro_test_order_data', $this );
 		}
