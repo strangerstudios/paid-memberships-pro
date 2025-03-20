@@ -135,7 +135,7 @@ function pmpro_bricks_condition_result( $result, $condition_key, $condition ) {
 
 	// Check for logged-in non-members.
 	if ( $condition_key === 'pmpro_membership_level_logged_in_users' ) {
-		$user_value = ! pmpro_hasMembershipLevel();
+		$user_value = pmpro_hasMembershipLevel( 'L' );
 		$has_access = pmpro_int_compare( $user_value, $comparison, $condition_operator );
 	}
 	
