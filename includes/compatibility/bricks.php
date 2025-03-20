@@ -102,14 +102,10 @@ function pmpro_bricks_add_custom_condition( $options ) {
 }
 
 /**
- * Check the result of the PMPro membership level condition.
- *
- * Evaluates whether the current user meets the selected membership level condition.
- * Treats non-members as having a level of "0".
+ * Check if the user or member should or should not have access to the content.
  *
  * @since TBD
  *
- * @see pmpro_getMembershipLevelsForUser()
  * @param bool   $result        The existing result.
  * @param string $condition_key The condition key.
  * @param array  $condition     The condition details, including 'compare' and 'value'.
