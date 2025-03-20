@@ -127,6 +127,11 @@ function pmpro_compatibility_checker_themes(){
 			'file' => 'divi.php',
 			'check_type' => 'constant',
 			'check_value' => 'ET_BUILDER_THEME' //Adds support for the Divi theme.
+		),
+		array(
+			'file' => 'bricks.php',
+			'check_type' => 'class',
+			'check_value' => 'Bricks\Conditions'
 		)
 	);
 
