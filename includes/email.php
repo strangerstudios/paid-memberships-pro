@@ -200,7 +200,10 @@ function pmpro_email_templates_save_template_data() {
 	}
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
-	$subject = sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) );
+	$subject = '';
+	if( isset( $_REQUEST['subject'] ) ) {
+		$subject = sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) );
+	}
 	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ), 'email' );	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 	//update this template's settings
