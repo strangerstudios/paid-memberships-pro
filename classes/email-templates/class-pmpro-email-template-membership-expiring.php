@@ -153,7 +153,7 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 				)
 			);
 
-			// If we still don't have a level ID, bail.
+			// If we still don't have a level ID, set it to no level ID.
 			if ( empty( $membership_id ) ) {
 				$membership_id = 0;
 			}
