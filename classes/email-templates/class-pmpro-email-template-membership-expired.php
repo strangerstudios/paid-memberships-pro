@@ -21,7 +21,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 * @since 3.4
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int $membership_id The membership level id of the membership level that expired.
+	 * @param int $membership_level_id The membership level id of the membership level that expired.
 	 */
 	public function __construct( WP_User $user, int $membership_level_id ) {
 		$this->user = $user;
@@ -138,9 +138,10 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 */
 	public function get_email_template_variables() {
 		global $wpdb;
+		$membership_level_id = $this->membership_level_id;
 		// If we don't have a level ID, query the user's most recently expired level from the database.
-		if ( empty( $this->membership_id ) ) {
-			$membership_id = $wpdb->get_var(
+		if ( empty( $membership_level_id ) ) {
+			$membership_level_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT membership_id FROM $wpdb->pmpro_memberships_users
 					WHERE user_id = %d
@@ -151,14 +152,14 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 				)
 			);
 
-			// If we still don't have a level ID, bail.
-			if ( empty( $membership_id ) ) {
-				$membership_id = 0;
+			// If we still don't have a level ID, set it to no level ID.
+			if ( empty( $membership_level_id ) ) {
+				$membership_level_id = 0;
 			}
 		}
 
 		// Get the membership level object.
-		$membership_level = pmpro_getLevel( $membership_id );
+		$membership_level = pmpro_getLevel( $membership_level_id );
 
 		return array(
 			"subject" => $this->get_default_subject(),
