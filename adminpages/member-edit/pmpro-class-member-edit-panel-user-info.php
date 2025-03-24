@@ -281,6 +281,12 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			}
 		}
 
+		// Save the new avatar, which may return an error string.
+		$avatar_saved = pmpro_save_avatar_field( $user->ID );
+		if ( is_string( $avatar_saved ) ) {
+			$errors['avatar'] = $avatar_saved;
+		}
+
 		if ( ! empty( $errors ) ) {
 			// Set error messages.
 			$error_messages = '<p>' . __( 'There were errors in the form.', 'paid-memberships-pro' ) . '</p>';
@@ -310,9 +316,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			// Add other user meta
 			$user_notes = ! empty( $_POST['user_notes'] ) ? sanitize_textarea_field( $_POST['user_notes'] ) : '';
 			update_user_meta( $user_id, 'user_notes', $user_notes );
-
-			// Save the avatar.
-			pmpro_save_avatar_field( $user_id );
 
 			// Set message and redirect if this is a new user.		
 			if ( $update ) {

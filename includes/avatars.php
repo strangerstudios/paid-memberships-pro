@@ -157,8 +157,18 @@ function pmpro_display_avatar_field( $user_id, $markup ) {
  * @since TBD
  *
  * @param int $user_id The ID of the user to save the avatar for.
+ * @return true|string True if the change was made, an error message if the new value is invalid.
  */
 function pmpro_save_avatar_field( $user_id ) {
+	// If a new avatar was submitted and the new file is not valid, return an error.
+	if ( ! empty( $_FILES['pmpro_avatar'] ) && ! empty( $_FILES['pmpro_avatar']['name'] ) ) {
+		// Check if the file is valid.
+		$upload_check = pmpro_check_upload( 'pmpro_avatar' );
+		if ( is_wp_error( $upload_check ) ) {
+			return $upload_check->get_error_message();
+		}
+	}
+
 	// Before a user switches avatars, we should make sure all custom-sized versions of the previous avatar are unlinked and deleted.
 	$avatar_value = get_user_meta( $user_id, 'pmpro_avatar', true );
 	if ( ! empty($avatar_value ) && is_array( $avatar_value ) ) {
@@ -185,4 +195,6 @@ function pmpro_save_avatar_field( $user_id ) {
 
 	// Save the field.
 	PMPro_Field_Group::get_field( 'pmpro_avatar' )->save_field_for_user( $user_id );
+
+	return true;
 }

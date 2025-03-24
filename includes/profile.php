@@ -1060,6 +1060,12 @@ function pmpro_member_profile_edit_form() {
 			}
 		}
 
+		// Save the new avatar, which may return an error string.
+		$avatar_saved = pmpro_save_avatar_field( $user->ID );
+		if ( is_string( $avatar_saved ) ) {
+			$errors[] = $avatar_saved;
+		}
+
 		/**
 		 * Fires before member profile update errors are returned.
 		 *
@@ -1081,9 +1087,6 @@ function pmpro_member_profile_edit_form() {
 		<?php } else {
 			// Save updated profile fields.
 			wp_update_user( $user );
-
-			// Save updated profile picture.
-			pmpro_save_avatar_field( $user->ID );
 
 			// Profile updated message.
 			?>
