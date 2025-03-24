@@ -112,8 +112,11 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			<tr class="form-field">
 				<th scope="row"><label for="last_name"><?php esc_html_e( 'Last Name', 'paid-memberships-pro' ); ?></label></th>
 				<td><input type="text" name="last_name" id="last_name" autocomplete="off" value="<?php echo esc_attr( $last_name ); ?>" <?php echo esc_attr( $disable_fields ); ?>></td>
-			</tr>						
+			</tr>
 			<?php
+			// Show the avatar field.
+			pmpro_display_avatar_field( $user->ID, 'tr' );
+
 			// Only show for new users.
 			if ( empty( $user->ID ) && current_user_can( 'edit_users' ) ) {
 				?>
@@ -307,6 +310,9 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			// Add other user meta
 			$user_notes = ! empty( $_POST['user_notes'] ) ? sanitize_textarea_field( $_POST['user_notes'] ) : '';
 			update_user_meta( $user_id, 'user_notes', $user_notes );
+
+			// Save the avatar.
+			pmpro_save_avatar_field( $user_id );
 
 			// Set message and redirect if this is a new user.		
 			if ( $update ) {

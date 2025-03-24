@@ -1081,6 +1081,11 @@ function pmpro_member_profile_edit_form() {
 		<?php } else {
 			// Save updated profile fields.
 			wp_update_user( $user );
+
+			// Save updated profile picture.
+			pmpro_save_avatar_field( $user->ID );
+
+			// Profile updated message.
 			?>
 			<div role="alert" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_success', 'pmpro_success' ) ); ?>">
 				<?php esc_html_e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
@@ -1146,6 +1151,10 @@ function pmpro_member_profile_edit_form() {
 										</div>	<!-- end pmpro_form_field -->
 									<?php } ?>
 								</div> <!-- end pmpro_form_fields -->
+								<?php
+								// Show avatar field.
+								pmpro_display_avatar_field( $current_user->ID, 'div' );
+								?>
 							</fieldset> <!-- end pmpro_member_profile_edit-account-information -->
 
 							<?php
