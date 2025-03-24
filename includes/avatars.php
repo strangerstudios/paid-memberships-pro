@@ -94,6 +94,12 @@ add_filter( 'get_avatar_data', 'pmpro_get_avatar_data', 100, 2 );
  * @since TBD
  */
 function pmpro_set_up_avatar_field() {
+	// Avoid setting up this user field on User Fields settings page.
+	// The only reason that we are doing this is to avoid the "This website has additional user fields that are set up with code." warning.
+	if ( is_admin() && isset( $_GET['page'] ) && 'pmpro-userfields' === $_GET['page'] ) {
+		return;
+	}
+
 	// Set up the user field group.
 	$field_group = PMPro_Field_Group::add( 'user_avatar', esc_html__( 'User Avatar', 'paid-memberships-pro' ) );
 
