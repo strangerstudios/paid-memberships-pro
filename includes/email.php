@@ -376,11 +376,11 @@ function pmpro_email_templates_send_test() {
 			break;
 		case 'payment_action':
 			$send_email = 'sendPaymentActionRequiredEmail';
-			$params = array($test_user, $test_order, "http://www.example-notification-url.com/not-a-real-site");
+			$params = array( $test_user, $test_order, get_option( 'siteurl' ) );
 			break;
 		case 'payment_action_admin':
 			$send_email = 'sendPaymentActionRequiredAdminEmail';
-			$params = array($test_user, $test_order, "http://www.example-notification-url.com/not-a-real-site");
+			$params = array( $test_user, $test_order, get_option( 'siteurl' ) );
 			break;
 		case 'refund':
 			$send_email = 'sendRefundedEmail';
@@ -396,7 +396,7 @@ function pmpro_email_templates_send_test() {
       break;
 		case 'credit_card_expiring':
 			$send_email = 'sendCreditCardExpiringEmail';
-			$params = array($test_user, $test_order,  "http://www.example-notification-url.com/not-a-real-site");
+			$params = array( $test_user, $test_order );
 			break;
 		default:
 			$send_email = 'sendEmail';
