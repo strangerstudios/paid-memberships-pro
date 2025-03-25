@@ -13,8 +13,7 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 *
 	 * @since 3.4
 	 *
-	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int $membership_id The membership level id of the membership level that expired.
+	 * @param PMPro_Subscription $subscription_obj The PMPro subscription object.
 	 */
 	public function __construct( PMPro_Subscription $subscription_obj ) {
 		$this->subscription_obj = $subscription_obj;

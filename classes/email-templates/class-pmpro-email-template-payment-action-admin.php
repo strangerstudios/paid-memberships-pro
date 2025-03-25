@@ -20,7 +20,6 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 * @since 3.4
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int $membership_id The membership level id of the membership level that expired.
 	 * @param string $order_url The URL of the order.
 	 */
 	public function __construct( WP_User $user, string $order_url ) {
