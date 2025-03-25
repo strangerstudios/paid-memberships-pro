@@ -2,7 +2,7 @@
 class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 
 	/**
-	 * The user object of the user to send the email to.
+	 * The subscription object relating to this transaction.
 	 *
 	 * @var PMPro_Subscription
 	 */

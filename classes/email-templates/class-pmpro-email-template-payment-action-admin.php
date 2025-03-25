@@ -11,6 +11,7 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	/**
 	 * The URL of the order.
 	 * 
+	 * @var string
 	 */
 	protected $order_url;
 
