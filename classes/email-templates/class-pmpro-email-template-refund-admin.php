@@ -9,7 +9,7 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 	protected $user;
 
 	/**
-	 * The {@link MemberOrder} object of the order that was updated.
+	 * The {@link MemberOrder} object of the order that was refunded.
 	 *
 	 * @var MemberOrder
 	 */

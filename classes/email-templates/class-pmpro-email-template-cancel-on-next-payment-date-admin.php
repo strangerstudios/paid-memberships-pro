@@ -9,11 +9,11 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email
 	protected $user;
 
 	/**
-	 *  The level id object of the level that was cancelled.
+	 *  The level ID of the level that was cancelled.
 	 *
 	 * @var int
 	 */
-	protected $level_id;
+	protected $membership_level_id;
 
 	/**
 	 * Constructor.
@@ -21,11 +21,11 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email
 	 * @since 3.4
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int $level_id The id of the level that was cancelled.
+	 * @param int $membership_level_id The ID of the level that was cancelled.
 	 */
-	public function __construct( WP_User $user,  int $level_id ) {
+	public function __construct( WP_User $user,  int $membership_level_id ) {
 		$this->user = $user;
-		$this->level_id = $level_id;
+		$this->membership_level_id = $membership_level_id;
 	}
 
 	/**
@@ -145,7 +145,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email
 	 */
 	public function get_email_template_variables() {
 		$user = $this->user;
-		$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $this->level_id );
+		$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $this->membership_level_id );
 
 		$email_template_variables = array(
 			'name' => $user->display_name,
