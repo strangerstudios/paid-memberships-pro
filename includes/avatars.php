@@ -135,11 +135,11 @@ function pmpro_display_avatar_field( $user_id, $markup ) {
 	if ( 'tr' === $markup ) {
 		echo '<tr><th>';
 	} else {
-		echo '<div class="pmpro_user_field pmpro_avatar">';
+		echo '<div class="' . pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-file pmpro_form_field-avatar' ) . '">';
 	}
 
 	// Show the label.
-	echo '<label for="pmpro_avatar">' . esc_html__( 'Profile Picture', 'paid-memberships-pro' ) . '</label>';
+	echo '<label class="' . pmpro_get_element_class( 'pmpro_form_label' ) . '" for="pmpro_avatar">' . esc_html__( 'Profile Picture', 'paid-memberships-pro' ) . '</label>';
 
 	// Show the markup between the label and field.
 	if ( 'tr' === $markup ) {
