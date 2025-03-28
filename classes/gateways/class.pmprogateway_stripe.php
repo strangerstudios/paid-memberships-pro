@@ -2952,7 +2952,7 @@ class PMProGateway_stripe extends PMProGateway {
 				),
 			);
 			if ( ! self::using_api_keys() ) {
-				$params['application_fee_percent'] = $this->get_application_fee_percentage();
+		    $subscription_params['application_fee_percent'] = $this->get_application_fee_percentage();
 			}
 			$subscription_params = apply_filters( 'pmpro_stripe_create_subscription_array', $subscription_params );
 			$subscription = Stripe_Subscription::create( $subscription_params );
