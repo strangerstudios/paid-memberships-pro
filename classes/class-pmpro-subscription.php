@@ -1132,6 +1132,9 @@ class PMPro_Subscription {
 
 		if ( $wpdb->insert_id ) {
 			$this->id = $wpdb->insert_id;
+			do_action('pmpro_added_subscription', $this);
+		} else {
+			do_action('pmpro_updated_subscription', $this);
 		}
 
 		// The subscription was not created properly.
