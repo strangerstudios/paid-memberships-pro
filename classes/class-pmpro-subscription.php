@@ -1132,8 +1132,23 @@ class PMPro_Subscription {
 
 		if ( $wpdb->insert_id ) {
 			$this->id = $wpdb->insert_id;
+
+			/**
+			 * Runs when a subscription is added.
+			 *
+			 * @param $this PMPro_Subscription The current subscription object
+			 *
+			 * @since TBD
+			 */
 			do_action('pmpro_added_subscription', $this);
 		} else {
+			/**
+			 * Runs when a subscription is updated.
+			 *
+			 * @param $this PMPro_Subscription The current subscription object
+			 *
+			 * @since TBD
+			 */
 			do_action('pmpro_updated_subscription', $this);
 		}
 
