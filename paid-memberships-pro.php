@@ -121,6 +121,7 @@ require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fie
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cloudflare-turnstile.php' );   // load CloudFlare Turnstile files if needed
 require_once( PMPRO_DIR . '/includes/terms-of-service.php' );       // code to add a terms of service checkbox to checkout
+require_once( PMPRO_DIR . '/includes/tax.php' );                    // code to calculate tax
 require_once( PMPRO_DIR . '/includes/cleanup.php' );                // clean things up when deletes happen, etc.
 require_once( PMPRO_DIR . '/includes/login.php' );                  // code to redirect away from login/register page
 require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PMPro capabilities for roles
