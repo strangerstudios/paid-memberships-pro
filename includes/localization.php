@@ -5,7 +5,7 @@ function pmpro_load_textdomain() {
 
 	//paths to local (plugin) and global (WP) language files
 	$mofile_local  = dirname( __DIR__ ) . '/languages/' . $mofile;
-	$mofile_global = WP_LANG_DIR . '/plugins/paid-memberships-pro/' . $mofile;
+	$mofile_global = WP_LANG_DIR . '/plugins/' . $mofile;
 
 	unload_textdomain( 'paid-memberships-pro' );
 
