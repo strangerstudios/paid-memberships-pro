@@ -45,8 +45,11 @@ function pmpro_get_avatar_data( $args, $id_or_email ) {
 
 	$size = (int) $args['size'];
 
+	// Double the size for retina displays.
+	$size_2x = $size * 2;
+
 	// Generate a new size
-	if ( empty( $avatar_value[ 'resized_' . $size ] ) && ! empty( $avatar_value['fullpath'] ) ) {
+	if ( empty( $avatar_value[ 'resized_' . $size_2x ] ) && ! empty( $avatar_value['fullpath'] ) ) {
 
 		$upload_path      = wp_upload_dir();
 		$avatar_full_path = str_replace( $upload_path['baseurl'], $upload_path['basedir'], $avatar_value['fullpath'] );
@@ -54,30 +57,30 @@ function pmpro_get_avatar_data( $args, $id_or_email ) {
 		$image_sized      = null;
 
 		if ( ! is_wp_error( $image ) ) {
-			$image->resize( $size, $size, true );
-			$image_sized = $image->save();
+			$image->resize( $size_2x, $size_2x, true );
+			$image_sized = $image->save( );
 		}
 
 		// Deal with original being >= to original image (or lack of sizing ability).
 		if ( empty( $image_sized ) || is_wp_error( $image_sized ) ) {
-			$avatar_value[ 'resized_' . $size ] = $avatar_value['fullpath'];
+			$avatar_value[ 'resized_' . $size_2x ] = $avatar_value['fullpath'];
 		} else {
-			$avatar_value[ 'resized_' . $size ] = str_replace( $upload_path['basedir'], $upload_path['baseurl'], $image_sized['path'] );
+			$avatar_value[ 'resized_' . $size_2x ] = str_replace( $upload_path['basedir'], $upload_path['baseurl'], $image_sized['path'] );
 			update_user_meta( $user_id, 'pmpro_avatar', $avatar_value );
 		}
 
 		// Save updated avatar sizes
 		update_user_meta( $user_id, 'pmpro_avatar', $avatar_value );
 
-	} elseif ( ! empty( $avatar_value[ 'resized_' . $size ] ) && substr( $avatar_value[ 'resized_' . $size ], 0, 4 ) != 'http' ) {
-		$avatar_value[ 'resized_' . $size ] = home_url( $avatar_value[ 'resized_' . $size ] );
+	} elseif ( ! empty( $avatar_value[ 'resized_' . $size_2x ] ) && substr( $avatar_value[ 'resized_' . $size_2x ], 0, 4 ) != 'http' ) {
+		$avatar_value[ 'resized_' . $size_2x ] = home_url( $avatar_value[ 'resized_' . $size_2x ] );
 	}
 
-	if ( ! empty( $avatar_value[ 'resized_' . $size ] ) && is_ssl() ) {
-		$avatar_value[ 'resized_' . $size ] = str_replace( 'http:', 'https:', $avatar_value[ 'resized_' . $size ] );
+	if ( ! empty( $avatar_value[ 'resized_' . $size_2x ] ) && is_ssl() ) {
+		$avatar_value[ 'resized_' . $size_2x ] = str_replace( 'http:', 'https:', $avatar_value[ 'resized_' . $size_2x ] );
 	}
 
-	$user_avatar_url = empty( $avatar_value[ 'resized_' . $size ] ) ? null : $avatar_value[ 'resized_' . $size ];
+	$user_avatar_url = empty( $avatar_value[ 'resized_' . $size_2x ] ) ? null : $avatar_value[ 'resized_' . $size_2x ];
 
 	if ( $user_avatar_url ) {
 		$args['url'] = $user_avatar_url;
