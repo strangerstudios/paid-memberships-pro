@@ -457,6 +457,17 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 		}
 	}
 
+	/**
+	 * Allow filtering of the form handler success and error messages. 
+	 * This includes the login form, password reset form, and the lost password form messages.
+	 * 
+	 * @since TBD
+	 * 
+	 * @param string $message The displayed message that is related to the form's response.
+	 * @param string $msgt The message type we can check against to know if it's a success or error message - (pmpro_error or pmpro_success).
+	 */
+	$message = wp_kses( apply_filters( 'pmpro_login_forms_handler_response_message', $message, $msgt ), $allowed_html );
+
 	ob_start();
 	?>
 
