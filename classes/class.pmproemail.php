@@ -480,21 +480,22 @@
 		 * @param object $user The WordPress user object.
 		 * @param MemberOrder $order The order object that is associated with the checkout.
 		 */
-		function sendCheckoutAdminEmail($user = NULL, $order = NULL)
-		{
-			global $wpdb, $current_user, $discount_code;
-			if(!$user)
+		function sendCheckoutAdminEmail( $user = NULL, $order = NULL ) {
+			global $wpdb, $current_user;
+			if ( ! $user ) {
 				$user = $current_user;
+			}
 			
-			if(!$user)
+			if ( ! $user ) {
 				return false;
+			}
 
 			if ( empty( $order->membership_id ) ) {
 				return false;
 			}
 
 			$email = null;
-			if( !empty( $this->template ) ) {
+			if ( ! empty( $this->template ) ) {
 				switch( $this->template ) {
 					case 'checkout_check_admin':
 						$email = new PMPro_Email_Template_Checkout_Check_Admin( $user, $order );
@@ -507,18 +508,20 @@
 						break;
 				}
 			} else {
-				if( ! empty( $order ) && ! pmpro_isLevelFree( $membership_level ) ) {
+				// Get the membership level for this order, to see if it's a free level.
+				$membership_level =  $order->getMembershipLevel();
+				if ( ! empty( $order ) && ! pmpro_isLevelFree( $membership_level ) ) {
 					if( $order->gateway == "check" ) {
 						$email = new PMPro_Email_Template_Checkout_Check_Admin( $user, $order );
 					} else {
 						$email = new PMPro_Email_Template_Checkout_Paid_Admin( $user, $order );
 					}										
-				} elseif( pmpro_isLevelFree( $membership_level ) ) {
+				} elseif ( pmpro_isLevelFree( $membership_level ) ) {
 					$email = new PMPro_Email_Template_Checkout_Free_Admin( $user, $order );
 				}
 			}
 			//Bail if $email is null
-			if( $email == null ) {
+			if ( $email == null ) { 
 				return false;
 			}
 			return $email->send();
