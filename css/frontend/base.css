@@ -400,6 +400,10 @@ button[type="button"]#other_discount_code_toggle:focus {
 	width: 100%;
 }
 
+.pmpro_table-fixed {
+	table-layout: fixed;
+}
+
 /**
  * Tags
  */
@@ -609,6 +613,12 @@ button[type="button"]#other_discount_code_toggle:focus {
 	.pmpro_table tfoot tr td {
 		display: grid;
 		grid-template-columns: 1fr 2fr;
+	}
+
+	.pmpro_table-fixed tbody tr th,
+	.pmpro_table-fixed tbody tr td,
+	.pmpro_table-fixed tfoot tr td {
+		grid-template-columns: 1fr 1fr;
 	}
 
 	.pmpro_table tbody tr th::before,
