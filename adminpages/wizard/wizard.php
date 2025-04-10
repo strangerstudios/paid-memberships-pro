@@ -50,12 +50,12 @@ function pmpro_wizard_get_site_type_hubs() {
 	// These values will all be escaped when displayed.
 	return array(
 		'association'		=> 'https://www.paidmembershipspro.com/associations/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
-		'premium_content'	=> 'https://www.paidmembershipspro.com/restrict-access-wordpress/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'premium_content'	=> 'https://www.paidmembershipspro.com/blog-news/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'community'			=> 'https://www.paidmembershipspro.com/communities/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'courses'			=> 'https://www.paidmembershipspro.com/courses/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'directory'			=> 'https://www.paidmembershipspro.com/add-ons/member-directory/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'newsletter'		=> 'https://www.paidmembershipspro.com/paid-newsletters/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
-		'podcast'			=> 'https://www.paidmembershipspro.com/new-castos-private-podcasting/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'podcast'			=> 'https://www.paidmembershipspro.com/membership-site-podcasting-benefits/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'video'				=> 'https://www.paidmembershipspro.com/private-videos/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 	);
 }
