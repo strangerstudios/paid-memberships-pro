@@ -212,7 +212,7 @@ function pmpro_get_addon_categories() {
 			'pmpro-google-analytics',
 			'pmpro-member-badges',
 			'pmpro-member-homepages',
-			'pmpro-testimoninals',
+			'pmpro-testimonials',
 			'pmpro-user-pages'
 		),
 		'directory' => array(
@@ -222,17 +222,17 @@ function pmpro_get_addon_categories() {
 			'pmpro-member-directory',
 			'pmpro-membership-maps',
 			'pmpro-shipping',
-			'pmpro-testimoninals'
+			'pmpro-testimonials'
 		),
 		'newsletter' => array(
-			'MailPoet-Paid-Memberships-Pro-Add-on',
+			'mailpoet-paid-memberships-pro-add-on',
 			'convertkit-for-paid-memberships-pro',
 			'pmpro-add-name-to-checkout',
 			'pmpro-aweber',
 			'pmpro-google-analytics',
 			'pmpro-keap',
 			'pmpro-mailchimp',
-			'pmpro-testimoninals'
+			'pmpro-testimonials'
 		),
 		'podcast' => array(
 			'pmpro-akismet',
@@ -240,7 +240,7 @@ function pmpro_get_addon_categories() {
 			'pmpro-events',
 			'pmpro-google-analytics',
 			'pmpro-invite-only',
-			'pmpro-testimoninals',
+			'pmpro-testimonials',
 			'seriously-simple-podcasting'
 		),
 		'video' => array(
@@ -249,7 +249,7 @@ function pmpro_get_addon_categories() {
 			'pmpro-events',
 			'pmpro-google-analytics',
 			'pmpro-invite-only',
-			'pmpro-testimoninals'
+			'pmpro-testimonials'
 		),
 	);
 }
