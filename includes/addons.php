@@ -230,6 +230,7 @@ function pmpro_get_addon_categories() {
 			'pmpro-add-name-to-checkout',
 			'pmpro-aweber',
 			'pmpro-google-analytics',
+			'pmpro-keap',
 			'pmpro-mailchimp',
 			'pmpro-testimoninals'
 		),
