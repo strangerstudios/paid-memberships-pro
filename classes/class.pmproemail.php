@@ -731,6 +731,27 @@
 			$email = new PMPro_Email_Template_Membership_Expired( $user, $membership_id );
 			return $email->send();
 		}
+		
+		/**
+		 * Send the member a churned email 30 days after their membership has expired.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param int $membership_id The member's membership level ID.
+		 * @return bool Whether the email was sent successfully.
+		 */
+		function sendMembershipChurnedEmail( $user = NULL, $membership_id = NULL ) {
+			global $current_user;
+			if( !$user ) {
+				$user = $current_user;
+			}
+			//Bail if still we don't have a user.
+			if( !$user ) {
+				return false;
+			}
+
+			$email = new PMPro_Email_Template_Membership_Churned( $user, $membership_id );
+			return $email->send();
+		}
 
 		/**
 		 * Send the member an email when their membership has ended.
