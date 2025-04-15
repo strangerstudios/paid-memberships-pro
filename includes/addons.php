@@ -143,7 +143,6 @@ function pmpro_getAddonBySlug( $slug ) {
 	return false;
 }
 
-
 /**
  * Get the Add On slugs for each category we identify.
  *
@@ -154,85 +153,103 @@ function pmpro_getAddonBySlug( $slug ) {
 function pmpro_get_addon_categories() {
 	return array(
 		'popular' => array(
-			'pmpro-advanced-levels-shortcode',
-			'pmpro-woocommerce',
-			'pmpro-courses',
-			'pmpro-member-directory',
-			'pmpro-subscription-delays',
-			'pmpro-roles',
-			'pmpro-approvals',
+			'pmpro-abandoned-cart-recovery',
 			'pmpro-add-paypal-express',
+			'pmpro-advanced-levels-shortcode',
+			'pmpro-approvals',
+			'pmpro-courses',
+			'pmpro-cpt',
 			'pmpro-group-accounts',
-			'pmpro-signup-shortcode',
+			'pmpro-import-users-from-csv',
+			'pmpro-member-directory',
+			'pmpro-nav-menus',
+			'pmpro-roles',
 			'pmpro-set-expiration-dates',
-			'pmpro-import-users-from-csv'
+			'pmpro-signup-shortcode',
+			'pmpro-subscription-delays'
 		),
 		'association' => array(
-			'pmpro-member-directory',
-			'pmpro-membership-manager-role',
-			'pmpro-import-users-from-csv',
-			'pmpro-approvals',
 			'basic-user-avatars',
-			'pmpro-add-member-admin',
 			'pmpro-add-name-to-checkout',
+			'pmpro-approvals',
 			'pmpro-donations',
 			'pmpro-events',
 			'pmpro-group-accounts',
+			'pmpro-import-users-from-csv',
+			'pmpro-member-directory',
+			'pmpro-membership-card',
+			'pmpro-membership-manager-role',
 			'pmpro-pay-by-check',
-			'pmpro-set-expiration-dates'
+			'pmpro-set-expiration-dates',
+			'pmpro-shipping',
+			'pmpro-subscription-delays'
 		),
 		'premium_content' => array(
-			'pmpro-email-confirmation',
+			'pmpro-abandoned-cart-recovery',
 			'pmpro-cpt',
-			'pmpro-series',
+			'pmpro-email-confirmation',
 			'pmpro-events',
-			'pmpro-addon-packages',
-			'seriously-simple-podcasting',
+			'pmpro-google-analytics',
+			'pmpro-series',
 			'pmpro-user-pages'
 		),
 		'community' => array(
+			'pmpro-abandoned-cart-recovery',
 			'pmpro-approvals',
 			'pmpro-bbpress',
 			'pmpro-buddypress',
-			'pmpro-discord-add-on',
-			'pmpro-invite-only',
 			'pmpro-email-confirmation',
-			'pmpro-import-users-from-csv'
+			'pmpro-import-users-from-csv',
+			'pmpro-invite-only',
+			'pmpro-membership-card'
 		),
 		'courses' => array(
-			'pmpro-courses',
+			'lifterlms',
+			'pmpro-abandoned-cart-recovery',
 			'pmpro-approvals',
+			'pmpro-courses',
 			'pmpro-cpt',
-			'pmpro-user-pages',
+			'pmpro-google-analytics',
 			'pmpro-member-badges',
-			'pmpro-multiple-memberships-per-user'
+			'pmpro-member-homepages',
+			'pmpro-testimonials',
+			'pmpro-user-pages'
 		),
 		'directory' => array(
 			'basic-user-avatars',
+			'pmpro-approvals',
 			'pmpro-member-badges',
 			'pmpro-member-directory',
 			'pmpro-membership-maps',
-			'pmpro-approvals'
+			'pmpro-shipping',
+			'pmpro-testimonials'
 		),
 		'newsletter' => array(
-			'MailPoet-Paid-Memberships-Pro-Add-on',
-			'pmpro-mailchimp',
+			'mailpoet-paid-memberships-pro-add-on',
+			'convertkit-for-paid-memberships-pro',
+			'pmpro-add-name-to-checkout',
 			'pmpro-aweber',
-			'convertkit-for-paid-memberships-pro'
+			'pmpro-google-analytics',
+			'pmpro-keap',
+			'pmpro-mailchimp',
+			'pmpro-testimonials'
 		),
 		'podcast' => array(
-			'seriously-simple-podcasting',
 			'pmpro-akismet',
+			'pmpro-email-confirmation',
 			'pmpro-events',
+			'pmpro-google-analytics',
 			'pmpro-invite-only',
-			'pmpro-email-confirmation'
+			'pmpro-testimonials',
+			'seriously-simple-podcasting'
 		),
 		'video' => array(
 			'pmpro-cpt',
 			'pmpro-email-confirmation',
 			'pmpro-events',
+			'pmpro-google-analytics',
 			'pmpro-invite-only',
-			'pmpro-addon-packages'
+			'pmpro-testimonials'
 		),
 	);
 }
