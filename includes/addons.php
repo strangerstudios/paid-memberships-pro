@@ -516,7 +516,7 @@ function pmpro_admin_init_updating_plugins() {
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
 		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
-			$msg = sprintf( __( 'You must enter a valid PMPro %s License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
+			$msg = sprintf( __( 'You must enter a valid PMPro %s License Key in the PMPro Settings to update this Add On.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
 			echo '<div class="error"><p>' . esc_html( $msg ) . '</p></div>';
 
 			// can exit WP now
