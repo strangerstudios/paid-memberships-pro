@@ -129,20 +129,22 @@ function pmpro_get_add_ons_with_incorrect_folder_names() {
  * @param object $slug  The identifying slug for the addon (typically the directory name)
  * @return object $addon containing plugin information or false if not found
  */
-function pmpro_getAddonBySlug( $slug ) {
-	$addons = pmpro_getAddons();
+if ( ! function_exists( 'pmpro_getAddonBySlug' ) ) {
+	function pmpro_getAddonBySlug( $slug ) {
+		$addons = pmpro_getAddons();
 
-	if ( empty( $addons ) ) {
+		if ( empty( $addons ) ) {
+			return false;
+		}
+
+		foreach ( $addons as $addon ) {
+			if ( $addon['Slug'] == $slug ) {
+				return $addon;
+			}
+		}
+
 		return false;
 	}
-
-	foreach ( $addons as $addon ) {
-		if ( $addon['Slug'] == $slug ) {
-			return $addon;
-		}
-	}
-
-	return false;
 }
 
 /**

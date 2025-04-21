@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.4.5
+Stable tag: 3.4.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,9 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.4.6 - 2025-04-21 =
+* BUG FIX: Fixed fatal error related to redefining `pmpro_getAddonBySlug` when activating PMPro Core with the PMPro Update Manager active. (@ideadude)
+
 = 3.4.5 - 2025-04-21 =
 * ENHANCEMENT: Now including First Name and Last Name in Zapier trigger data. #3356 (@dwanjuki)
 * ENHANCEMENT: Adjusting categories for the Add Ons page and fixing hub links. #3371 (@kimcoleman)

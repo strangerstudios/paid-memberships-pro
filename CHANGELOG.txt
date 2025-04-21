@@ -1,4 +1,7 @@
 == Changelog ==
+= 3.4.6 - 2025-04-21 =
+* BUG FIX: Fixed fatal error related to redefining `pmpro_getAddonBySlug` when activating PMPro Core with the PMPro Update Manager active. (@ideadude)
+
 = 3.4.5 - 2025-04-21 =
 * ENHANCEMENT: Now including First Name and Last Name in Zapier trigger data. #3356 (@dwanjuki)
 * ENHANCEMENT: Adjusting categories for the Add Ons page and fixing hub links. #3371 (@kimcoleman)
