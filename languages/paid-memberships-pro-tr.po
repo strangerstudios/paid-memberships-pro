@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.4.4\n"
+"Project-Id-Version: Paid Memberships Pro 3.4.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-19T15:48:02+00:00\n"
+"POT-Creation-Date: 2025-04-21T14:22:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -580,6 +580,8 @@ msgid "Submit the update profile form"
 msgstr ""
 
 #: includes/login.php:636
+#: includes/scripts.php:41
+#: includes/scripts.php:83
 msgid "Hide Password"
 msgstr ""
 
@@ -590,6 +592,8 @@ msgstr ""
 #: pages/checkout.php:235
 #: pages/checkout.php:262
 #: pages/checkout.php:280
+#: includes/scripts.php:42
+#: includes/scripts.php:84
 msgid "Show Password"
 msgstr ""
 
@@ -3464,39 +3468,48 @@ msgid "We will automatically create frontend pages for your levels, checkout, ac
 msgstr "Seviyeleriniz, ödeme, hesap yönetimi ve daha fazlası için otomatik olarak ön uç sayfaları oluşturacağız."
 
 #: adminpages/wizard/done.php:128
+#: adminpages/wizard/done.php:130
 msgid "View Paid Memberships Pro documentation in a new tab"
 msgstr "Paid Memberships Pro belgelerini yeni bir sekmede görüntüleyin"
 
 #: adminpages/wizard/done.php:124
+#: adminpages/wizard/done.php:126
 msgid "Free membership account required."
 msgstr "Ücretsiz üyelik hesabı gereklidir."
 
 #: adminpages/wizard/done.php:116
+#: adminpages/wizard/done.php:118
 msgid "View payment settings"
 msgstr "Ödeme ayarlarını görüntüle"
 
 #: adminpages/wizard/done.php:80
+#: adminpages/wizard/done.php:82
 msgid "Free Plugin"
 msgstr "Ücretsiz Eklenti"
 
 #: adminpages/wizard/done.php:78
+#: adminpages/wizard/done.php:80
 msgid "Builder Add On"
 msgstr "İnşaatçı Eklentisi"
 
 #: adminpages/wizard/done.php:74
+#: adminpages/wizard/done.php:76
 msgid "Standard Add On"
 msgstr "Standart Eklenti"
 
 #: adminpages/wizard/done.php:46
+#: adminpages/wizard/done.php:48
 msgid "hub"
 msgstr "merkez"
 
 #. translators: %s: URL to the PMPro use case hub for the chosen site type
 #: adminpages/wizard/done.php:45
+#: adminpages/wizard/done.php:47
 msgid "Check out the %s, which guides you through next steps for your unique project."
 msgstr "Benzersiz projeniz için sonraki adımlarda size yol gösteren %s'lere göz atın."
 
 #: adminpages/wizard/done.php:42
+#: adminpages/wizard/done.php:44
 msgid "In step 1, you chose the %s site type."
 msgstr "1. adımda %s site türünü seçtiniz."
 
@@ -4179,55 +4192,68 @@ msgid "Welcome to Your New Membership Site"
 msgstr "Yeni Üyelik Sitenize Hoş Geldiniz"
 
 #: adminpages/wizard/done.php:128
+#: adminpages/wizard/done.php:130
 msgid "View docs"
 msgstr "Belgeleri görüntüle"
 
 #: adminpages/wizard/done.php:123
+#: adminpages/wizard/done.php:125
 msgid "Not sure where to start? Take a look at our documentation."
 msgstr "Nereden başlayacağınızdan emin değil misiniz? Belgelerimize bir göz atın."
 
 #: adminpages/wizard/done.php:113
+#: adminpages/wizard/done.php:115
 msgid "Finish configuring your payment gateway."
 msgstr "Ödeme ağ geçidinizi yapılandırmayı bitirin."
 
 #: adminpages/wizard/done.php:112
 #: adminpages/wizard/wizard.php:73
+#: adminpages/wizard/done.php:114
 msgid "Payments"
 msgstr "Ödemeler"
 
 #: adminpages/wizard/done.php:107
+#: adminpages/wizard/done.php:109
 msgid "View available Add Ons"
 msgstr "Mevcut Eklentileri Görüntüle"
 
 #: adminpages/wizard/done.php:104
+#: adminpages/wizard/done.php:106
 msgid "Add more features to your membership site."
 msgstr "Üyelik sitenize daha fazla özellik ekleyin."
 
 #: adminpages/wizard/done.php:103
+#: adminpages/wizard/done.php:105
 msgid "More functionality"
 msgstr "Daha fazla işlevsellik"
 
 #: adminpages/wizard/done.php:98
+#: adminpages/wizard/done.php:100
 msgid "OR"
 msgstr "VEYA"
 
 #: adminpages/wizard/done.php:56
+#: adminpages/wizard/done.php:58
 msgid "Here are some recommended Add Ons for your business."
 msgstr "İşte işletmeniz için önerilen bazı Eklentiler."
 
 #: adminpages/wizard/done.php:38
+#: adminpages/wizard/done.php:40
 msgid "What's next?"
 msgstr "Sırada ne var?"
 
 #: adminpages/wizard/done.php:35
+#: adminpages/wizard/done.php:37
 msgid "Your membership site is ready."
 msgstr "Üyelik siteniz hazır."
 
 #: adminpages/wizard/done.php:35
+#: adminpages/wizard/done.php:37
 msgid "Congratulations!"
 msgstr "Tebrikler!"
 
 #: adminpages/wizard/done.php:34
+#: adminpages/wizard/done.php:36
 msgid "Setup Complete"
 msgstr "Kurulum tamamlandı"
 
@@ -7453,10 +7479,12 @@ msgid "Required Updates"
 msgstr "Gerekli Güncellemeler"
 
 #: adminpages/wizard/done.php:76
+#: adminpages/wizard/done.php:78
 msgid "Plus Add On"
 msgstr "Artı Eklenti"
 
 #: adminpages/wizard/done.php:72
+#: adminpages/wizard/done.php:74
 msgid "Free Add On"
 msgstr "Ücretsiz Eklenti"
 
@@ -9214,6 +9242,7 @@ msgstr "Destek Al"
 
 #: adminpages/wizard/done.php:122
 #: includes/admin.php:260
+#: adminpages/wizard/done.php:124
 msgid "Documentation"
 msgstr "Dökümantasyon"
 
@@ -11426,6 +11455,7 @@ msgstr "İndirim Kodu"
 #: adminpages/admin_header.php:247
 #: includes/adminpages.php:61
 #: includes/adminpages.php:244
+#: adminpages/reports.php:50
 msgid "Reports"
 msgstr "Raporlar"
 
@@ -11454,11 +11484,13 @@ msgstr "Bu eklentiyi güncellemek için Ayarlar > PMPro Lisansı altında geçer
 
 #: includes/addons.php:492
 #: includes/addons.php:500
+#: includes/addons.php:523
 msgid "Return to the PMPro Add Ons page"
 msgstr "PMPro Eklentileri sayfasına geri dönün"
 
 #: includes/addons.php:489
 #: includes/addons.php:497
+#: includes/addons.php:520
 msgid "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">valid PMPro %s License Key</a> to update PMPro %s add ons."
 msgstr "PMPro %s eklentilerini güncellemek için <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">geçerli bir PMPro %s Lisans Anahtarınız</a> olmalıdır."
 
@@ -11468,11 +11500,13 @@ msgstr "Eklentiyi Güncelle"
 
 #: includes/addons.php:466
 #: includes/addons.php:474
+#: includes/addons.php:497
 msgid "You must have a <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:"
 msgstr "PMPro %s eklentilerini güncellemek için <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">geçerli bir PMPro %s Lisans Anahtarınız</a> olmalıdır. Aşağıdaki eklentiler güncellenmeyecektir:"
 
 #: includes/addons.php:402
 #: includes/addons.php:410
+#: includes/addons.php:432
 msgid "Important: This plugin requires a valid PMPro %s license key to update."
 msgstr "Önemli: Bu eklentinin güncellenmesi için geçerli bir PMPro %s lisans anahtarı gerekir."
 
@@ -11979,6 +12013,7 @@ msgstr "Üyeliğinizi %s sona erdi"
 #: classes/class.pmproemail.php:683
 #: classes/class.pmproemail.php:685
 #: classes/class.pmproemail.php:684
+#: classes/class.pmproemail.php:687
 msgid "Your trial at %s is ending soon"
 msgstr "Deneme süresi %s tarihinde sona eriyor"
 
@@ -12138,6 +12173,7 @@ msgid "Date:"
 msgstr "Tarih:"
 
 #: adminpages/reports.php:42
+#: adminpages/reports.php:46
 msgid "Back to Reports Dashboard"
 msgstr "Raporlar Panosuna Geri Dön"
 
@@ -14223,6 +14259,7 @@ msgstr "Etkin"
 #: blocks/src/component-content-visibility/content-visibility-controls.js:108
 #: blocks/src/sidebar/index.js:125
 #: adminpages/levels/edit-level.php:638
+#: adminpages/reports.php:25
 msgid "All"
 msgstr "Tümü"
 
@@ -16438,4 +16475,13 @@ msgstr ""
 #: includes/functions.php:1723
 #: includes/functions.php:1725
 msgid "Next"
+msgstr ""
+
+#. translators: %s is the Level Name.
+#: adminpages/membershiplevels.php:397
+msgid "Are you sure you want to delete membership level %s? All payment subscriptions for this level will be cancelled."
+msgstr ""
+
+#: includes/addons.php:542
+msgid "You must enter a valid PMPro %s License Key in the PMPro Settings to update this Add On."
 msgstr ""
