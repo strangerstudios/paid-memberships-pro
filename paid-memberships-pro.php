@@ -78,6 +78,7 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-b
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure-admin.php' ); // billing failure email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php' ); //cancel auto renewals email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php' ); //cancel auto renewals admin email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-churned.php' ); //churned member email template
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
