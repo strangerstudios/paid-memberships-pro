@@ -455,6 +455,106 @@ function pmpro_notification_test_site_url_match( $string ) {
 }
 
 /**
+ * Check against the WordPress options table.
+ * @param array $data Array from notification with plugin_file, comparison, and version to check. $data[0] is the option name, $data[1] is the comparison operator, and $data[2] is the value to compare against.
+ * @returns bool true if plugin is active and version comparison is true, false otherwise.
+ */
+function pmpro_notification_test_check_option( $data ) {
+    // Ensure data is a valid array with at least three elements.
+    if ( ! is_array( $data ) || count( $data ) < 3 ) {
+        return false;
+    }
+
+	// Assign the option value, check type, and check value to variables for readability.
+	$option_to_check = $data[0];
+	$check_type      = $data[1];
+	$check_value     = $data[2];
+
+	// Get the option value.
+	if ( strpos( $option_to_check, ':' ) === false ) {
+		// This is the straightforward case where there are no sub-options to check.
+		$option_value = get_option( $option_to_check );
+	} else {
+		// This is the case where we need to dig deeper into the array or object.
+		while ( ! empty( $option_to_check ) ) {
+			// Split the option_to_check into the top level option names and sub-options.
+			list( $current_option_to_check, $option_keys_to_check ) = explode( ':', $option_to_check, 2 );
+
+			// Get the option_value for this layer of the array or object.
+			if ( ! isset( $option_value ) ) {
+				// We have not yet retrieved the top level option value. Do it now.
+				$option_value = get_option( $current_option_to_check );
+			} elseif ( is_array( $option_value ) && isset( $option_value[ $current_option_to_check ] ) ) {
+				// We have the sub_option we want to check.
+				$option_value = $option_value[ $current_option_to_check ];
+			} elseif ( is_object( $option_value ) && isset( $option_value->$current_option_to_check ) ) {
+				// We have the sub_option we want to check.
+				$option_value = $option_value->$current_option_to_check;
+			} else {
+				// If the sub_option doesn't exist, set the option_value to null and break out of the loop.
+				$option_value = null;
+				break;
+			}
+
+				// Update the option_to_check to the sub option or option_key.
+			$option_to_check = $option_keys_to_check;
+		}
+	}
+
+	return pmpro_notification_check_option_helper( $option_value, $check_type, $check_value );
+}
+
+/**
+ * Helper function to check if a value is greater than, less than, greater than or equal to, or less than or equal to another value.
+ *
+ * @since TBD
+ *
+ * @param mixed $option_value The option value to compare.
+ * @param string $check_type The comparison operator.
+ * @param mixed $check_value The value to compare against.
+ * @return bool True if the comparison is true, false otherwise.
+ */
+function pmpro_notification_check_option_helper( $option_value, $check_type, $check_value ) {
+
+	// If the option value is an array, check each element individually and return true if any of them match.
+	if ( is_array( $option_value ) || is_object( $option_value ) ) {
+		foreach ( $option_value as $value ) {
+			if ( pmpro_notification_check_option_helper( $value, $check_type, $check_value ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// We have a single value to compare. Let's do it.
+	switch ( $check_type ) {
+		case '=':
+		case '==':
+			return $option_value == $check_value;
+		case '!=':
+			return $option_value != $check_value;
+		case '>':
+		case '<':
+		case '>=':
+		case '<=':
+			return pmpro_int_compare( $option_value, $check_value, $check_type );
+		case 'contains':
+			// Only proceed if $option_value is a string
+			return is_string( $option_value ) && strpos( $option_value, $check_value ) !== false;
+		case 'notcontains':
+			// If $option_value is not a string and it doesn't contain $check_value, return true.
+			return ! ( is_string( $option_value ) && strpos( $option_value, $check_value ) !== false );
+		case 'empty':
+			return empty( $option_value );
+		case 'notempty':
+			return ! empty( $option_value );
+		default:
+			return false;
+	}
+}
+
+/**
  * Get the max notification priority allowed on this site.
  * Priority is a value from 1 to 5, or 0.
  * 0: No notifications at all.
