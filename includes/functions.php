@@ -4680,26 +4680,32 @@ function pmpro_activating_plugin( $plugin = null ) {
 }
 
 /**
- * Compare the stored site URL with the current site URL
+ * Compare the stored site URL with the current site URL hash
  *
  * @since 2.10
- * @return bool True if the stored and current URL match
+ * @return bool True if the stored and current URL hashes match
  */
 function pmpro_compare_siteurl() {
-	$site_url = get_site_url( null, '', 'https' ); // Always get the https version of the site URL.=
-	$current_url = get_option( 'pmpro_last_known_url' );
+	$site_url = get_site_url( null, '', 'https' ); // Always get the https version of the site URL.
+	$site_url = str_replace( 'http://', 'https://', $site_url ); // We don't want to consider scheme, so just force https for this check.
 
-	// If we don't have a current URL yet, set it to the site URL.
-	if ( empty( $current_url ) ) {
-		update_option( 'pmpro_last_known_url', $site_url );
-		$current_url = $site_url;
+	$site_url_hash = hash( 'sha256', $site_url );
+
+	$current_url_hash = get_option( 'pmpro_last_known_url' );
+
+	// If we don't have a current URL yet, set it to the site URL hash.
+	if ( empty( $current_url_hash ) ) {
+		update_option( 'pmpro_last_known_url', $site_url_hash );
+    return true;
 	}
 
-	// We don't want to consider scheme, so just force https for this check.
-	$site_url = str_replace( 'http://', 'https://', $site_url );
-	$current_url = str_replace( 'http://', 'https://', $current_url );
+  // Check if current value was sha256 encoded; if not, encode it.
+  if ( ! preg_match( '/^[a-f0-9]{64}$/', $current_url_hash ) ) {
+    $current_url_hash = hash( 'sha256', $current_url_hash );
+    update_option( 'pmpro_last_known_url', $current_url_hash );
+  }
 
-	return ( $site_url === $current_url );
+	return ( $site_url_hash === $current_url_hash );
 }
 
 /**
