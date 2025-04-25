@@ -441,6 +441,7 @@ function pmpro_checkForUpgrades() {
 	 * Version 3.4.7
 	 * Update pmpro_last_known_url to use an hash instead of a plain url.
 	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_4_7.php" );
 	if ( $pmpro_db_version < 3.407 ) {
 		pmpro_upgrade_3_4_7();
 		update_option( 'pmpro_db_version', '3.407' );
