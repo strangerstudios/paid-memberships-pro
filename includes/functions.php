@@ -4701,6 +4701,8 @@ function pmpro_compare_siteurl() {
 
   // Check if current value was sha256 encoded; if not, encode it.
   if ( ! preg_match( '/^[a-f0-9]{64}$/', $current_url_hash ) ) {
+	  // Ensure we work with https urls, to standardize comparison.
+	  $current_url_hash = str_replace( 'http://', 'https://', $current_url_hash );
     $current_url_hash = hash( 'sha256', $current_url_hash );
     update_option( 'pmpro_last_known_url', $current_url_hash );
   }
