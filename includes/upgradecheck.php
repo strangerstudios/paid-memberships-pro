@@ -436,6 +436,15 @@ function pmpro_checkForUpgrades() {
 
 		update_option( 'pmpro_db_version', '3.402' );
 	}
+
+	/**
+	 * Version 3.4.7
+	 * Update pmpro_last_known_url to use an hash instead of a plain url.
+	 */
+	if ( $pmpro_db_version < 3.407 ) {
+		pmpro_upgrade_3_4_7();
+		update_option( 'pmpro_db_version', '3.407' );
+	}
 }
 
 function pmpro_db_delta() {
