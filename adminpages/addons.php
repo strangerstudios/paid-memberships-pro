@@ -59,7 +59,10 @@
 			</ul>
 			<div class="search-form">
 				<label class="screen-reader-text" for="search-plugins"><?php esc_html_e( 'Search Add Ons', 'paid-memberships-pro' ); ?></label>
-				<input type="search" name="s" id="search-add-ons" data-search="content" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search Add Ons...', 'paid-memberships-pro' ); ?>">
+				<?php
+					$pmpro_addon_search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+				?>
+				<input type="search" name="s" id="search-add-ons" data-search="content" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search Add Ons...', 'paid-memberships-pro' ); ?>" value="<?php echo esc_attr( $pmpro_addon_search ); ?>">
 			</div>
 		</div> <!-- end wp-filter -->
 		<br class="clear">
@@ -439,6 +442,12 @@
 
 				// check if we should switch Add On content on page loads
 				$( 'a[data-toggle="view"][href="' + window.location.hash + '"]' ).trigger('click');
+
+				// Check if we should switch Add On content on page loads.
+				var $searchInput = $('#search-add-ons');
+				if ($searchInput.val().length > 0) {
+					$searchInput.trigger('keyup');
+				}
 
 			});
 		</script>
