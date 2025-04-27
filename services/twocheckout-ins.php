@@ -200,7 +200,7 @@
 		if(defined('PMPRO_INS_DEBUG') && PMPRO_INS_DEBUG === "log")
 		{
 			//file
-			$logfile = apply_filters( 'pmpro_twocheckout_ins_logfile', dirname( __FILE__ ) . "/../logs/ipn.txt" );
+			$logfile = apply_filters( 'pmpro_twocheckout_ins_logfile', pmpro_get_restricted_file_path( 'logs', 'ipn.txt' ) );
 			$loghandle = fopen( $logfile, "a+" );
 			fwrite($loghandle, $logstr);
 			fclose($loghandle);

@@ -42,7 +42,7 @@
 	if(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && PMPRO_AUTHNET_SILENT_POST_DEBUG === "log")
 	{
 		//file
-		$logfile = apply_filters( 'pmpro_authnet_silent_post_logfile', dirname( __FILE__ ) . "/../logs/authnet-silent-post.txt" );
+		$logfile = apply_filters( 'pmpro_authnet_silent_post_logfile', pmpro_get_restricted_file_path( 'logs', 'authnet-silent-post.txt' ) );
 		$loghandle = fopen( $logfile, "a+" );
 		fwrite($loghandle, $logstr);
 		fclose($loghandle);
