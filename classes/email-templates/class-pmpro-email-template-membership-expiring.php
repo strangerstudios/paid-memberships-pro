@@ -9,7 +9,7 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	protected $user;
 
 	/**
-	 * The membership level that expired.
+	 * The membership level ID of the membership level that is expiring soon.
 	 *
 	 * @var int
 	 */
@@ -21,7 +21,7 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	 * @since 3.4
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int $membership_id The membership level id of the membership level that expired.
+	 * @param int $membership_id The membership level ID of the membership level that is expiring soon.
 	 */
 	public function __construct( WP_User $user, int $membership_id ) {
 		$this->user = $user;

@@ -15,8 +15,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 	 */
 	protected $order;
 
-
-		/**
+	/**
 	 * Constructor.
 	 *
 	 * @since 3.4
