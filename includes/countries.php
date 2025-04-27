@@ -1,8 +1,14 @@
 <?php
-	//thanks JigoShop
-	global $pmpro_countries, $pmpro_default_country;
-	$pmpro_default_country = apply_filters("pmpro_default_country", "US");
 
+/**
+ * Get the list of PMPro countries.
+ *
+ * @since TBD
+ *
+ * @param bool $include_empty Whether to include an empty option in the list. Useful for select fields.
+ * @return array The list of countries with their codes as keys and names as values.
+ */
+function pmpro_get_countries( $include_empty = false ) {
 	$pmpro_countries = array(
 		'AD' => __( 'Andorra', 'paid-memberships-pro' ),
 		'AE' => __( 'United Arab Emirates', 'paid-memberships-pro' ),
@@ -255,4 +261,37 @@
 
 	asort($pmpro_countries);
 
-	$pmpro_countries = apply_filters("pmpro_countries", $pmpro_countries);
+	/**
+	 * Filter the list of countries.
+	 *
+	 * @param array $pmpro_countries The list of countries with their codes as keys and names as values.
+	 */
+	$pmpro_countries = apply_filters( 'pmpro_countries', $pmpro_countries );
+
+	if ( $include_empty ) {
+		$pmpro_countries = array_merge( array( '' => esc_html__( 'Select a country', 'paid-memberships-pro' ) ), $pmpro_countries );
+	}
+
+	return $pmpro_countries;
+}
+
+/**
+ * Get the PMPro default country.
+ *
+ * @since TBD
+ *
+ * @return string The default country code.
+ */
+function pmpro_get_default_country() {
+	/**
+	 * Filter the default country code.
+	 *
+	 * @param string $country_code The default country code.
+	 */
+	return apply_filters( 'pmpro_default_country', 'US' );
+}
+
+// Set up the globals for backwards compatibility.
+global $pmpro_countries, $pmpro_default_country;
+$pmpro_countries = pmpro_get_countries();
+$pmpro_default_country = pmpro_get_default_country();
