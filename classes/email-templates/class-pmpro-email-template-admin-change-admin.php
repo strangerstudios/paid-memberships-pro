@@ -145,6 +145,21 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 		$user = get_user_by( 'email', $this->get_recipient_email() );
 		return empty( $user->display_name ) ? esc_html__( 'Admin', 'paid-memberships-pro' ) : $user->display_name;
 	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+		//Create test order
+		$test_order = new MemberOrder();
+
+		return array( $current_user, $test_order->get_test_order() );
+	}
 }
 
 /**

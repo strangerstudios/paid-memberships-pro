@@ -176,6 +176,21 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 			"enddate" => date_i18n( get_option('date_format'), $membership_level->enddate ),
 		);
 	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+		//Create test order
+		$test_order = new MemberOrder();
+
+		return array( $current_user, $test_order->get_test_order()->membership_id );
+	}
 }
 
 /**
