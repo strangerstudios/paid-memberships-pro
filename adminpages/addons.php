@@ -376,7 +376,9 @@
 					const searchTerms = $input.val().toLowerCase().split( ' ' ).filter( term => term !== '' && term.length >= MIN_SEARCH_LENGTH );
 					$addonsSearch = $( '.addons-search' );
 
-					if (searchTerms.length === 0) {
+					// If the search is empty, clear the search results?
+					// Moved over to getting the raw value as searchTerms value is only true after 3 characters and was causing issues.
+					if ( $input.val().length === 0 ) {
 						clearSearch($( '.addons-search' ));
 						return;
 					}
@@ -413,16 +415,13 @@
 					var view_items = $(`[data-search-${view}]`);
 					var view_val = $(this).data('view');
 
-					// Update the URL hash.
-					$( this ).attr( 'href' ).replace( /#/, '' );
-
 					// Unstyle view links
 					views.find( 'li a' ).removeClass( 'current' );
 					$( this ).addClass( 'current' );
 					views.find('.addons-search').hide();
 
 					// Clear the search input, if full.
-					jQuery( '#search-add-ons' ).value = '';
+					$('#search-add-ons').val('');
 
 					// update the URL
 					if ( history.pushState ) {
