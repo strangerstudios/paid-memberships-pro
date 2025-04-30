@@ -204,6 +204,125 @@ function pmpro_lifter_after_all_membership_level_changes( $pmpro_old_user_levels
 add_action( 'pmpro_after_all_membership_level_changes', 'pmpro_lifter_after_all_membership_level_changes' );
 
 /**
+ * Repair LifterLMS course enrollment when a user visits a single course page.
+ */
+function pmpro_lifter_repair_single_course_enrollment() {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $pmpro_old_user_levels;
+	}
+
+	// Bail if we are not on a single course and have not member to check.
+	if ( ! is_singular( 'course' ) && ! is_user_logged_in() ) {
+		return;
+	}
+
+	$user_id   = get_current_user_id();
+	$course_id = get_the_ID();
+
+	// Check if the course is restricted by a PMPro membership level.
+	$hasaccess = pmpro_has_membership_access( $course_id, $user_id, true );
+
+	if ( is_array( $hasaccess ) ) {
+		$post_membership_levels_ids = $hasaccess[1];
+		$hasaccess = $hasaccess[0];
+
+		// If the user should have access but isn't enrolled, enroll them.
+		if ( $hasaccess && ! llms_is_user_enrolled( $user_id, $course_id ) ) {
+			llms_enroll_student( $user_id, $course_id );
+		}
+
+		// If the user shouldn't have access but is enrolled, unenroll them.
+		if ( ! $hasaccess && llms_is_user_enrolled( $user_id, $course_id ) ) {
+			llms_unenroll_student( $user_id, $course_id );
+		}
+	}
+}
+add_action( 'template_redirect', 'pmpro_lifter_repair_single_course_enrollment' );
+
+/**
+ * Repair LifterLMS course enrollment when a user visits a single course page.
+ */
+function pmpro_lifter_repair_bulk_course_enrollment() {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $pmpro_old_user_levels;
+	}
+
+	// Bail if the user is not logged in.
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
+	global $pmpro_pages;
+
+	$repair_enrollments = false;
+
+	// Set logic for when to process bulk enrollment repair.
+	if (
+			is_post_type_archive( 'course' ) ||
+			is_page( llms_get_page_id( 'courses' ) ) ||
+			is_llms_account_page() ||
+			( ! empty( $pmpro_pages ) && ! empty( $pmpro_pages['account'] ) && is_page( $pmpro_pages['account'] ) )
+		) {
+		$repair_enrollments = true;
+	}
+
+	/**
+	 * Filter to set when to reprocess bulk course enrollments
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $repair_enrollments Define whether to reprocess course enrollment repairs on frontend pages.
+	 */
+	$repair_enrollments = apply_filters( 'pmpro_lifterlms_should_bulk_repair_enrollments', $repair_enrollments );
+
+	if ( ! $repair_enrollments ) {
+		return;
+	}
+
+	$user_id = get_current_user_id();
+
+	// Get the user's current enrollments.
+	$current_courses = array();
+	$student = llms_get_student();
+	if ( $student ) {
+		$current_courses = $student->get_courses(
+			array(
+				'limit' => 5000,
+			)
+		);
+	}
+
+	// Get the user's allowed courses.
+	$current_levels = pmpro_getMembershipLevelsForUser( $user_id );
+	if ( ! empty( $current_levels ) ) {
+		$current_levels = wp_list_pluck( $current_levels, 'ID' );
+	} else {
+		$current_levels = array();
+	}
+	$allowed_courses = pmpro_lifter_get_courses_for_levels( $current_levels );
+
+	// Unenroll the user in any courses they should not have.
+	$courses_to_unenroll = array_diff( $current_courses['results'], $allowed_courses );
+	foreach( $courses_to_unenroll as $course_id ) {
+		if ( llms_is_user_enrolled( $user_id, $course_id ) ) {
+			// Unenroll student
+			llms_unenroll_student( $user_id, $course_id );
+		}
+	}
+
+	// Enroll the user in any courses they should have.
+	$courses_to_enroll = array_diff( $allowed_courses, $current_courses['results'] );
+	foreach( $courses_to_enroll as $course_id ) {
+		if ( ! llms_is_user_enrolled( $user_id, $course_id ) ) {
+			llms_enroll_student( $user_id, $course_id );
+		}
+	}
+}
+add_action( 'template_redirect', 'pmpro_lifter_repair_bulk_course_enrollment' );
+
+/**
  * Hide the LifterLMS Membership menu item from the admin dashboard if streamline is enabled.
  */
 function pmpro_lifter_hide_membership_menu() {
