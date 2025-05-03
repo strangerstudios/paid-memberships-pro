@@ -209,7 +209,7 @@ add_action( 'pmpro_after_all_membership_level_changes', 'pmpro_lifter_after_all_
 function pmpro_lifter_repair_single_course_enrollment() {
 	// Bail if the streamline option is not enabled.
 	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
-		return $pmpro_old_user_levels;
+		return;
 	}
 
 	// Bail if we are not on a single course and have not member to check.
@@ -246,7 +246,7 @@ add_action( 'template_redirect', 'pmpro_lifter_repair_single_course_enrollment' 
 function pmpro_lifter_repair_bulk_course_enrollment() {
 	// Bail if the streamline option is not enabled.
 	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
-		return $pmpro_old_user_levels;
+		return;
 	}
 
 	// Bail if the user is not logged in.
