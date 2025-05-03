@@ -205,6 +205,8 @@ add_action( 'pmpro_after_all_membership_level_changes', 'pmpro_lifter_after_all_
 
 /**
  * Repair LifterLMS course enrollment when a user visits a single course page.
+ *
+ * @since TBD
  */
 function pmpro_lifter_repair_single_course_enrollment() {
 	// Bail if the streamline option is not enabled.
@@ -241,7 +243,9 @@ function pmpro_lifter_repair_single_course_enrollment() {
 add_action( 'template_redirect', 'pmpro_lifter_repair_single_course_enrollment' );
 
 /**
- * Repair LifterLMS course enrollment when a user visits a single course page.
+ * Bulk repair LifterLMS course enrollments when a user visits a course archive or account page.
+ *
+ * @since TBD
  */
 function pmpro_lifter_repair_bulk_course_enrollment() {
 	// Bail if the streamline option is not enabled.
@@ -273,7 +277,7 @@ function pmpro_lifter_repair_bulk_course_enrollment() {
 	 *
 	 * @since TBD
 	 *
-	 * @param bool $repair_enrollments Define whether to reprocess course enrollment repairs on frontend pages.
+	 * @param bool $repair_enrollments Whether to repair enrollments.
 	 */
 	$repair_enrollments = apply_filters( 'pmpro_lifterlms_should_bulk_repair_enrollments', $repair_enrollments );
 
