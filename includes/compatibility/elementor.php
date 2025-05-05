@@ -26,18 +26,19 @@ function pmpro_elementor_compatibility() {
  */
 function pmpro_elementor_get_all_levels() {
 
-	$levels_array = get_transient( 'pmpro_elementor_levels_cache_3_4' );
+	$levels_array = get_transient( 'pmpro_elementor_levels_cache' );
 
 	if ( empty( $levels_array ) ) {
 		$all_levels = pmpro_getAllLevels( true, false );
 
 		$levels_array = array();
 
+		$levels_array[0] = __( 'Non-members', 'paid-memberships-pro' );
 		foreach( $all_levels as $level ) {
 			$levels_array[ $level->id ] = $level->name;
 		}
 
-		set_transient( 'pmpro_elementor_levels_cache_3_4', $levels_array, 1 * DAY_IN_SECONDS );
+		set_transient( 'pmpro_elementor_levels_cache', $levels_array, 1 * DAY_IN_SECONDS );
 	}
 	
 	$levels_array = apply_filters( 'pmpro_elementor_levels_array', $levels_array );
@@ -50,6 +51,5 @@ add_action( 'plugins_loaded', 'pmpro_elementor_compatibility', 15 );
 
 function pmpro_elementor_clear_level_cache( $level_id ) {
 	delete_transient( 'pmpro_elementor_levels_cache' );
-	delete_transient( 'pmpro_elementor_levels_cache_3_4' );
 }
 add_action( 'pmpro_save_membership_level', 'pmpro_elementor_clear_level_cache' );

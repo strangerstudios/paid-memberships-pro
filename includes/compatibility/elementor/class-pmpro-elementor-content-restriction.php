@@ -32,7 +32,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         $element->add_control(
 			'pmpro_enable', array(
 				'type' => \Elementor\Controls_Manager::SWITCHER,
-				'label' => esc_html__( 'Enable Paid Memberships Pro module visibility?', 'textdomain' ),
+				'label' => esc_html__( 'Enable Paid Memberships Pro module visibility?', 'paid-memberships-pro' ),
 				'default' => 'no',
             )
 		);
@@ -41,8 +41,8 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			'pmpro_invert_restrictions', array(
 				'type' => \Elementor\Controls_Manager::SELECT,
 				'options' => array(                
-					'0' => esc_html__( 'Show content to...', 'textdomain' ),
-					'1' => esc_html__( 'Hide content from...', 'textdomain' ),                    
+					'0' => esc_html__( 'Show content to...', 'paid-memberships-pro' ),
+					'1' => esc_html__( 'Hide content from...', 'paid-memberships-pro' ),                    
                 ),
                 'label_block' => 'true',
 				'default' => '0',
@@ -56,9 +56,9 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			'pmpro_segment', array(
 				'type' => \Elementor\Controls_Manager::SELECT,
 				'options' => array(                
-					'all' => esc_html__( 'All Members', 'textdomain' ),
-					'specific' => esc_html__( 'Specific Membership Levels', 'textdomain' ),
-                    'logged_in' => esc_html__( 'Logged-In Users', 'textdomain' ),
+					'all' => esc_html__( 'All Members', 'paid-memberships-pro' ),
+					'specific' => esc_html__( 'Specific Membership Levels', 'paid-memberships-pro' ),
+                    'logged_in' => esc_html__( 'Logged-In Users', 'paid-memberships-pro' ),
                 ),
                 'label_block' => 'true',
 				'default' => 'all',
@@ -171,6 +171,92 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	}
 
 	/**
+	 * Migrate settings from old restriction method (pmpro_require_membership) to new method (pmpro_enable).
+	 *
+	 * @since TBD
+	 */
+	public function migrate_settings() {
+		// Get the post being viewed.
+		$post_id = get_the_ID();
+		if ( empty( $post_id ) ) {
+			return;
+		}
+
+		// Get the _elementor_data for the post.
+		$elementor_data_string = get_post_meta( $post_id, '_elementor_data', true );
+		if ( empty( $elementor_data_string ) ) {
+			return;
+		}
+
+		// Decode the _elementor_data.
+		$elementor_data = json_decode( $elementor_data_string, true );
+		if ( empty( $elementor_data ) ) {
+			return;
+		}
+
+		$migrated = false;
+		// Migrate container settings and any nested element settings.
+		foreach ( $elementor_data as $key => &$container ) {
+		// Container-level settings
+		if ( isset( $container['settings']['pmpro_require_membership'] ) ) {
+			$container['settings'] = $this->migrate_settings_helper( $container['settings'] );
+			$migrated = true;
+		}
+
+		// Nested elements (two levels deep)
+		if ( ! empty( $container['elements'] ) && is_array( $container['elements'] ) ) {
+			foreach ( $container['elements'] as &$section ) {
+				if ( ! empty( $section['elements'] ) && is_array( $section['elements'] ) ) {
+					foreach ( $section['elements'] as &$element ) {
+						if ( isset( $element['settings']['pmpro_require_membership'] ) ) {
+							$element['settings'] = $this->migrate_settings_helper( $element['settings'] );
+							$migrated = true;
+						}
+					}
+					unset( $element );
+				}
+			}
+			unset( $section );
+		}
+	}
+	unset( $container );
+
+	// Only save if something actually changed.
+	if ( $migrated ) {
+		update_post_meta( $post_id, '_elementor_data', wp_json_encode( $elementor_data ) );
+	}
+	}
+
+	/**
+	 * Heloper method for migrating settings from old restriction method (pmpro_require_membership) to new method (pmpro_enable).
+	 *
+	 * @since TBD
+	 *
+	 * @param array $settings The settings array to migrate.
+	 * @return array The migrated settings array.
+	 */
+	private function migrate_settings_helper( $settings ) {
+		// return $settings;
+		// If pmpro_require_membership is not set, bail.
+		if ( ! isset( $settings['pmpro_require_membership'] ) ) {
+			return $settings;
+		}
+
+		// Let's convert the settings to the new format now.
+		$settings['pmpro_enable'] = 'yes';
+		$settings['pmpro_invert_restrictions'] = '0'; // 0 = Show content to members, 1 = Hide content from members.
+		$settings['pmpro_segment'] = 'specific'; // Elementor would always be "specific" during upgrade.
+		$settings['pmpro_levels'] = $settings['pmpro_require_membership'];
+		$settings['pmpro_show_noaccess'] = ! empty( $settings['pmpro_no_access_message'] ) ? $settings['pmpro_no_access_message'] : 'no';
+
+		// Remove the old pmpro_require_membership settings to clean up.
+		unset( $settings['pmpro_require_membership'] );
+		unset( $settings['pmpro_no_access_message'] );
+
+		return $settings;
+	}
+
+	/**
 	 * Figure out if the user has access to restricted content.
 	 * @return bool True or false based if the user has access to the content or not.
 	 * @since 2.3
@@ -198,106 +284,5 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 		return apply_filters( 'pmpro_elementor_has_access', $access, $element, $element_settings['pmpro_levels'] );
 	}
 
-	/**
-	 * Migrate settings from old restriction method (pmpro_require_membership) to new method (pmpro_enable).
-	 *
-	 * @since TBD
-	 */
-	public function migrate_settings() {
-		// Get the post being viewed.
-		$post_id = get_the_ID();
-		if ( empty( $post_id ) ) {
-			return;
-		}
-
-		// Get the _elementor_data for the post.
-		$elementor_data_string = get_post_meta( $post_id, '_elementor_data', true );
-		if ( empty( $elementor_data_string ) ) {
-			return;
-		}
-
-		// Decode the _elementor_data.
-		$elementor_data = json_decode( $elementor_data_string, true );
-		if ( empty( $elementor_data ) ) {
-			return;
-		}
-
-		// Track if we've migrated.
-		$migrated = false;
-
-		// Get the container settings.
-		$container_settings = $elementor_data[0]['settings'];
-		if ( isset( $container_settings['pmpro_require_membership'] ) ) {
-			// Migrate the settings.
-			$elementor_data[0]['settings'] = $this->migrate_settings_helper( $container_settings );
-			$migrated = true;
-		}
-
-		// Loop through each element and migrate the settings.
-		foreach ( $elementor_data[0]['elements'] as $key => $element ) {
-			// Get the element settings.
-			$element_settings = $element['settings'];
-
-			// If the element has the old pmpro_require_membership setting, migrate it.
-			if ( isset( $element_settings['pmpro_require_membership'] ) ) {
-				$elementor_data[0]['elements'][ $key ]['settings'] = $this->migrate_settings_helper( $element_settings );
-				$migrated = true;
-			}
-		}
-
-		// If we've migrated, save the updated _elementor_data.
-		if ( $migrated ) {
-			update_post_meta( $post_id, '_elementor_data', wp_json_encode( $elementor_data ) );
-		}
-	}
-
-	/**
-	 * Heloper method for migrating settings from old restriction method (pmpro_require_membership) to new method (pmpro_enable).
-	 *
-	 * @since TBD
-	 *
-	 * @param array $settings The settings array to migrate.
-	 * @return array The migrated settings array.
-	 */
-	private function migrate_settings_helper( $settings ) {
-		// If pmpro_require_membership is not set, bail.
-		if ( ! isset( $settings['pmpro_require_membership'] ) ) {
-			return $settings;
-		}
-
-		// Figure out how to migrate the settings.
-		$settings['pmpro_enable'] = 'yes';
-		if ( ! in_array( '0', $settings['pmpro_require_membership'] ) ) {
-			// If '0' is not in the array, then we can copy the pmpro_require_membership value and use "restrict to specific levels".
-			$settings['pmpro_levels'] = $settings['pmpro_require_membership'];
-			$settings['pmpro_segment'] = 'specific';
-			$settings['pmpro_invert_restrictions'] = '0';
-			$settings['pmpro_show_noaccess'] = empty( $settings['pmpro_no_access_message'] ) ? 'no' : $settings['pmpro_no_access_message'];
-		} elseif ( 1 === count( $settings['pmpro_require_membership'] ) ) {
-			// '0' is the only value in the array. This means that we should restrict to non-members.
-			$settings['pmpro_levels'] = array();
-			$settings['pmpro_segment'] = 'all';
-			$settings['pmpro_invert_restrictions'] = '1';
-			$settings['pmpro_show_noaccess'] = 'no';
-		} else {
-			// '0' is in the array, but there are other values. This means that we need to block access to all levels that are not in the array.
-			// First, get all PMPro level IDs.
-			$all_levels = pmpro_getAllLevels( true, false );
-			$all_levels_ids = wp_list_pluck( $all_levels, 'id' );
-
-			// Get the levels that are not in the pmpro_require_membership array.
-			$settings['pmpro_levels'] = array_values( array_diff( $all_levels_ids, $settings['pmpro_require_membership'] ) );
-			$settings['pmpro_segment'] = 'specific';
-			$settings['pmpro_invert_restrictions'] = '1';
-			$settings['pmpro_show_noaccess'] = 'no';
-		}
-
-		// Remove the old pmpro_require_membership setting.
-		unset( $settings['pmpro_require_membership'] );
-		unset( $settings['pmpro_no_access_message'] );
-
-		return $settings;
-	}
 }
-
 new PMPro_Elementor_Content_Restriction;
