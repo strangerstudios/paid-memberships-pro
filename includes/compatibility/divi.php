@@ -12,8 +12,17 @@ class PMProDivi{
 		}
 		
 		add_action( 'pmpro_element_class', array( __CLASS__, 'pmpro_element_class' ), 10, 2 );
+		add_action( 'et_pb_module_shortcode_attributes', array( __CLASS__, 'map_pmpro_divi_legacy_settings_on_page_load' ), 10, 3 );
 	}
 
+	/**
+	 * Add "Paid Memberships Pro" toggle to Divi (row and section) settings modal.
+	 *
+	 * @since TBD
+	 * 
+	 * @param array $modules The Divi modules.
+	 * @return array $modules The modified Divi modules.
+	 */
 	public static function toggle( $modules ) {
 
 		if ( isset( $modules['et_pb_row'] ) && is_object( $modules['et_pb_row'] ) ) {
@@ -28,11 +37,20 @@ class PMProDivi{
 
 	}
 
+	/**
+	 * Add settings to the Divi row and section settings modal for Paid Memberships Pro.
+	 *
+	 * @since TBD
+	 * 
+	 * @param array $settings The Divi module settings.
+	 * @return array $settings The modified Divi module settings.
+	 */
 	public static function row_settings( $settings ) {
        
+	
         $settings['pmpro_enable'] = array(
 			'tab_slug' => 'custom_css',
-			'label' => __( 'Enable Paid Memberships Pro module visibility?', 'paid-memberships-pro' ),
+			'label' => __( 'Enable Paid Memberships Pro content visibility?', 'paid-memberships-pro' ),
 			'type' => 'yes_no_button',
 			'options' => array(
 				'off' => __( 'No', 'paid-memberships-pro' ),
@@ -41,13 +59,13 @@ class PMProDivi{
 			'toggle_slug' => 'paid-memberships-pro',
 		);
 
-        $settings['pmpro_visibility'] = array(
+        $settings['pmpro_invert_restrictions'] = array(
 			'tab_slug' => 'custom_css',
 			'label' => __( 'Content Visibility', 'paid-memberships-pro' ),
 			'type' => 'select',
 			'options' => array(
-				'hide' => __( 'Hide', 'paid-memberships-pro' ),
-				'show' => __( 'Show', 'paid-memberships-pro' ),
+				'hide' => __( 'Hide content from...', 'paid-memberships-pro' ),
+				'show' => __( 'Show content to...', 'paid-memberships-pro' ),
 			),
 			'toggle_slug' => 'paid-memberships-pro',
             'show_if'          => array(
@@ -57,7 +75,6 @@ class PMProDivi{
 
         $settings['pmpro_segment'] = array(
 			'tab_slug' => 'custom_css',
-			'label' => __( 'Show Content To', 'paid-memberships-pro' ),			
 			'type' => 'select',
 			'options' => array(
 				'all' => __( 'All Members', 'paid-memberships-pro' ),
@@ -66,30 +83,13 @@ class PMProDivi{
 			),
 			'toggle_slug' => 'paid-memberships-pro',
             'show_if'          => array(
-				'pmpro_enable' => 'on',
-                'pmpro_visibility' => 'show',
+				'pmpro_enable' => 'on'
 			),
 		);
 
-        $settings['pmpro_segment_hide'] = array(
+		$settings['pmpro_levels'] = array(
 			'tab_slug' => 'custom_css',
-			'label' => __( 'Hide Content From', 'paid-memberships-pro' ),
-			'type' => 'select',
-			'options' => array(
-				'all' => __( 'All Members', 'paid-memberships-pro' ),
-				'specific' => __( 'Specific Membership Levels', 'paid-memberships-pro' ),
-                'logged_in' => __( 'Logged-In Users', 'paid-memberships-pro' ),
-			),
-			'toggle_slug' => 'paid-memberships-pro',
-            'show_if'          => array(
-				'pmpro_enable' => 'on',
-                'pmpro_visibility' => 'hide',
-			),
-		);
-
-		$settings['paid-memberships-pro'] = array(
-			'tab_slug' => 'custom_css',
-			'label' => __( 'Show module for specific levels', 'paid-memberships-pro' ),
+			'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 			'description' => __( 'Enter comma-separated level IDs.', 'paid-memberships-pro' ),
 			'type' => 'text',
 			'default' => '',
@@ -101,21 +101,7 @@ class PMProDivi{
 			),
 	    );
 
-        $settings['paid-memberships-pro-hide'] = array(
-			'tab_slug' => 'custom_css',
-			'label' => __( 'Hide module for specific levels', 'paid-memberships-pro' ),
-			'description' => __( 'Enter comma-separated level IDs.', 'paid-memberships-pro' ),
-			'type' => 'text',
-			'default' => '',
-			'option_category' => 'configuration',
-			'toggle_slug' => 'paid-memberships-pro',
-            'show_if'          => array(
-				'pmpro_enable' => 'on',
-                'pmpro_segment_hide' => 'specific',
-			),
-	    );
-
-		$settings['pmpro_show_no_access_message'] = array(
+		$settings['pmpro_show_noaccess'] = array(
 			'tab_slug' => 'custom_css',
 			'label' => __( 'Show no access message', 'paid-memberships-pro' ),
 			'description' => __( 'Displays a no access message to non-members.', 'paid-memberships-pro' ),
@@ -127,158 +113,90 @@ class PMProDivi{
 			'toggle_slug' => 'paid-memberships-pro',
             'show_if'          => array(
 				'pmpro_enable' => 'on',
+				'pmpro_invert_restrictions' => 'show'
 			),
 		);
 
 		return $settings;
 
 	}
-  
-  	public static function restrict_content( $output, $props, $attrs, $slug ) {
-
-	    if ( et_fb_is_enabled() ) {
+	
+	/**
+	 * Restrict Divi content based on PMPro membership levels access.
+	 *
+	 * @since TBD
+	 * 
+	 * @param [type] $output
+	 * @param [type] $props
+	 * @param [type] $attrs
+	 * @param [type] $slug
+	 * 
+	 * @return string $output Returns the output of the content, in some cases it may be a blank string.
+	 */
+	public static function restrict_content( $output, $props, $attrs, $slug ) {
+		// Always allow content in Divi builder mode
+		if ( et_fb_is_enabled() ) {
 			return $output;
-	    }
-        
-        // if ( 'et_pb_row' !== $slug || 'et_pb_section' !== $slug ) {
-        //     return $output;
-        // }
+		}
 
-	    if( !isset( $props['paid-memberships-pro'] ) ){
-	    	return $output;
-	    }
-        
+		// Don't try to run this logic on anything besides a row or section since we only add restrictions to these modules.
+		if ( $slug !== 'et_pb_row' && $slug !== 'et_pb_section' ) {
+			return $output;
+		}
 
-        if( ! isset( $props['pmpro_enable'] ) || 'on' !== $props['pmpro_enable'] ){
-        	return $output;
-        }
+		// If PMPro restriction isn’t turned on, let's migrate some options.
+		if ( ! isset( $props['pmpro_enable'] ) || $props['pmpro_enable'] !== 'on' ) {
+			return $output;
+		}
 
-        if( isset( $props['pmpro_visibility'] ) && 'show' === $props['pmpro_visibility'] ){
+		// Determine if we're in “show” or “hide” mode, defaulting to 'show'.
+		$show_mode = $props['pmpro_invert_restrictions'] ?? 'show';
+		
+		// Pick the right segment key based on mode.
+		$segment = $props['pmpro_segment'] ?? 'all';
+	
+		// If “specific” but no levels provided, just show content
+		if ( $segment === 'specific' ) {
+			$level_string = trim( $props['pmpro_levels'] ?? '' );
+			
+			// If no levels are provided, restrict to all levels
+			if ( $level_string !== '0' && $level_string === '' ) {
+				$levels = array();
+			} else {
+				// Build an array of level IDs from a comma-separated string
+				$levels = strpos( $level_string, ',' ) !== false ? array_map( 'trim', explode( ',', $level_string ) ) : array( $level_string );
+			}
+		} else {
+			$levels = array();
+		}
 
-            if( isset( $props['pmpro_segment'] ) && 'all' === $props['pmpro_segment'] ){
-                
-                if( pmpro_hasMembershipLevel() ){
-                    return $output;
-                } else {
-                    if( isset( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] ){
-                        return pmpro_get_no_access_message( NULL, array() );
-                    } else {
-                        return '';
-                    }
-                }
-                
-            }
-
-            if( isset( $props['pmpro_segment'] ) && 'specific' === $props['pmpro_segment'] ){
-                
-                $level = $props['paid-memberships-pro'];
-                
-                if ( empty( trim( $level ) ) || trim( $level ) === '0' ) {
-                    return $output;
-                }
-                
-                if( strpos( $level, "," ) ) {
-                   //they specified many levels
-                   $levels = explode( ",", $level );
-                } else {
-                   //they specified just one level
-                   $levels = array( $level );
-                }
-
-                if( pmpro_hasMembershipLevel( $levels ) ){
-                    return $output;
-                } else {
-                    if ( ! empty( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] ) {
-                        return pmpro_get_no_access_message( NULL, $levels );
-                    } else {
-                        return '';
-                    }
-                    
-                }
-                
-            }
-
-            if( isset( $props['pmpro_segment'] ) && 'logged_in' === $props['pmpro_segment'] ){
-                
-                if( is_user_logged_in() ){
-                    return $output;
-                } else {
-                    if ( ! empty( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] ) {
-                        return pmpro_get_no_access_message( NULL, $levels );
-                    } else {
-                        return '';
-                    }
-                    
-                }
-                
-            }
-
-        } else {
-
-            if( isset( $props['pmpro_segment_hide'] ) && 'all' === $props['pmpro_segment_hide'] ){
-                
-                if( ! pmpro_hasMembershipLevel() ){
-                    return $output;
-                } else {
-                    if( isset( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] ){
-                        return pmpro_get_no_access_message( NULL, array());
-                    } else {
-                        return '';
-                    }
-                }
-                
-            }
-
-            if( isset( $props['pmpro_segment_hide'] ) && 'specific' === $props['pmpro_segment_hide'] ){
-                
-                $level = $props['paid-memberships-pro'];
-                
-                if ( empty( trim( $level ) ) || trim( $level ) === '0' ) {
-                    return $output;
-                }
-                
-                if( strpos( $level, "," ) ) {
-                   //they specified many levels
-                   $levels = explode( ",", $level );
-                } else {
-                   //they specified just one level
-                   $levels = array( $level );
-                }
-
-                if( ! pmpro_hasMembershipLevel( $levels ) ){
-                    return $output;
-                } else {
-                    if ( ! empty( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] ) {
-                        return pmpro_get_no_access_message( NULL, $levels );
-                    } else {
-                        return '';
-                    }
-                    
-                }
-                
-            }
-
-            if( isset( $props['pmpro_segment_hide'] ) && 'logged_in' === $props['pmpro_segment_hide'] ){
-                
-                if( ! is_user_logged_in() ){
-                    return $output;
-                } else {
-                    if ( ! empty( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] ) {
-                        return pmpro_get_no_access_message( NULL, $levels );
-                    } else {
-                        return '';
-                    }
-                    
-                }
-                
-            }
-
-            return $output;
-
-        }
-
-        return $output;
-
+		//Check access based on segment chosen.
+		switch ( $segment ) {
+			case 'all':
+				$has_access = pmpro_hasMembershipLevel();
+				break;
+			case 'specific':
+				$has_access = pmpro_hasMembershipLevel( $levels );
+				break;
+			case 'logged_in':
+				$has_access = is_user_logged_in();
+				break;
+			default:
+				return $output;
+		}
+		
+		// If in “show” mode & they have access, OR in “hide” mode & they do NOT have access, show the content.
+		if ( ( $show_mode == 'show' && $has_access ) || ( $show_mode == 'hide' && ! $has_access ) ) {
+			return $output;
+		}
+		
+		// Otherwise, they don’t have access—show message or nothing
+		if ( isset( $props['pmpro_show_noaccess'] ) && $props['pmpro_show_noaccess'] === 'on' ) {
+			return pmpro_get_no_access_message( null, $levels );
+		}
+		
+		// In case we ever make it here, just return nothing. This means they don't have access?
+		return '';
 	}
 	
 	/**
@@ -292,5 +210,36 @@ class PMProDivi{
 		}
 		return $class;
 	}
+
+	/**
+	 * Swap out any legacy settings that may happen on page load/frontend.
+	 *
+	 * @since TBD
+	 * 
+	 * @param [type] $props
+	 * @param [type] $atts
+	 * @param [type] $slugs
+	 * @return array $props The shortcode properties with the mapped props.
+	 */
+	static function map_pmpro_divi_legacy_settings_on_page_load( $props, $atts, $slugs ) {
+		if ( isset( $props['pmpro_enable'] ) || ! isset( $props['paid-memberships-pro'] ) ) {
+			return $props;
+		}
+		
+		// Do nothing
+		if ( empty( $props['paid-memberships-pro'] ) ) {
+			return $props;
+		}
+	
+		// Let's convert to the new props based on the old props.
+		$props['pmpro_enable'] = 'on';
+		$props['pmpro_segment'] = 'specific';
+		$props['pmpro_levels'] = $props['paid-memberships-pro'];
+		$props['pmpro_invert_restrictions'] = 'show';
+		$props['pmpro_show_noaccess'] = $props['pmpro_show_no_access_message'] ?? 'off';
+		
+		return $props;
+	}
+	
 }
 new PMProDivi();
