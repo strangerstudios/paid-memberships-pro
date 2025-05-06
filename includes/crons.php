@@ -13,32 +13,32 @@
  * @return array The list of registered crons for Paid Memberships Pro.
  */
 function pmpro_get_crons() {
-	$crons = [
-		'pmpro_cron_expire_memberships'            => [
+	$crons = array(
+		'pmpro_cron_expire_memberships'            => array(
 			'interval' => 'hourly',
-		],
-		'pmpro_cron_expiration_warnings'           => [
+		),
+		'pmpro_cron_expiration_warnings'           => array(
 			'interval'  => 'hourly',
 			'timestamp' => current_time( 'timestamp' ) + 1,
-		],
-		'pmpro_cron_credit_card_expiring_warnings' => [
+		),
+		'pmpro_cron_credit_card_expiring_warnings' => array(
 			'interval' => 'monthly',
-		],
-		'pmpro_cron_admin_activity_email'          => [
+		),
+		'pmpro_cron_admin_activity_email'          => array(
 			'interval'  => 'daily',
 			'timestamp' => strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ),
-		],
-		'pmpro_cron_delete_tmp'          => [
+		),
+		'pmpro_cron_delete_tmp'                    => array(
 			'interval'  => 'daily',
 			'timestamp' => strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ),
-		],
-		'pmpro_license_check_key'                  => [
+		),
+		'pmpro_license_check_key'                  => array(
 			'interval' => 'monthly',
-		],
-		'pmpro_cron_recurring_payment_reminders'  => [
+		),
+		'pmpro_cron_recurring_payment_reminders'   => array(
 			'interval' => 'hourly',
-		],
-	];
+		),
+	);
 
 	/**
 	 * Allow filtering the list of registered crons for Paid Memberships Pro.
@@ -60,7 +60,7 @@ function pmpro_get_crons() {
 		}
 
 		if ( empty( $cron['args'] ) ) {
-			$cron['args'] = [];
+			$cron['args'] = array();
 		}
 
 		$crons[ $hook ] = $cron;
@@ -84,11 +84,12 @@ function pmpro_maybe_schedule_crons() {
 
 /**
  * Clear all PMPro related crons.
+ *
  * @since 2.8.1
  */
-function pmpro_clear_crons() {	
+function pmpro_clear_crons() {
 	$crons = array_keys( pmpro_get_crons() );
-	foreach( $crons as $cron ) {
+	foreach ( $crons as $cron ) {
 		wp_clear_scheduled_hook( $cron );
 	}
 }
@@ -131,7 +132,7 @@ add_filter( 'pre_get_ready_cron_jobs', 'pmpro_handle_schedule_crons_on_cron_read
  *
  * @return bool|WP_Error True when an event is scheduled, WP_Error on failure, and false if the event was already scheduled.
  */
-function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = [] ) {
+function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = array() ) {
 	$next = wp_next_scheduled( $hook, $args );
 
 	if ( empty( $next ) ) {
