@@ -15,21 +15,18 @@
  * GPLv2 Full license details in license.txt
  */
 
-// version constant
+// Version constant
 define( 'PMPRO_VERSION', '3.4.6' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
-define( 'PMPRO_BASE_FILE', __FILE__ );
-define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
 /*
 	Includes
 */
+define( 'PMPRO_BASE_FILE', __FILE__ );
+define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
-
-if ( ! class_exists( \ActionScheduler::class ) ) {
-	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
-}
+require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' );   // handles Action Scheduler for PMPro
 
 require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
 require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP session vars
@@ -43,14 +40,15 @@ require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           // database 
 require_once( PMPRO_DIR . '/includes/deprecated.php' );             // deprecated hooks and functions
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
-	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
+	require_once( PMPRO_DIR . '/includes/license.php' );            		// defines location of addons data and licenses
 }
 
-require_once( PMPRO_DIR . '/includes/crons.php' );                  // cron-related functionality
-require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for expiring members, sending expiration emails, etc
+require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' );    // handles Action Scheduler for PMPro
+require_once( PMPRO_DIR . '/includes/crons.php' );                  		// cron-related functionality
+require_once( PMPRO_DIR . '/scheduled/crons.php' );                 		// crons for expiring members, sending expiration emails, etc
 
-require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
-require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and filter emails sent by PMPro
+require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       		// class to process and save orders
+require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        		// setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
