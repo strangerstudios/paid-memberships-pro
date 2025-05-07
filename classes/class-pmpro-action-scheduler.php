@@ -2,11 +2,11 @@
 /**
  *
  * This class handle tasks added by the core plugin and Add Ons for Action Scheduler (AS).
- * 
+ *
  * It is a wrapper for the Action Scheduler library/plugin, which is a task scheduling library for WordPress.
- * This class provides methods to schedule, manage, and execute tasks asynchronously, and is both a replacement 
+ * This class provides methods to schedule, manage, and execute tasks asynchronously, and is both a replacement
  * for older wp-cron based tasks and a more efficient way to handle background tasks in WordPress.
- * 
+ *
  * Keep in mind that: tasks are handled asynchronously, and queued tasks
  *
  * @package pmpro_plugin
@@ -30,7 +30,6 @@ class PMPro_Action_Scheduler {
 
 		// Support for modifying the AS time limit.
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ) );
-
 	}
 
 	/**
@@ -38,13 +37,13 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
-	 * @param string $hook The hook name for the task.
-	 * @param array $args Arguments passed to the task hook.
-	 * @param string $group The group the task belongs to.
-	 * @param boolean $upcoming True to check pending tasks, false to check completed tasks.
+	 *
+	 * @param string         $hook The hook name for the task.
+	 * @param array          $args Arguments passed to the task hook.
+	 * @param string         $group The group the task belongs to.
+	 * @param boolean        $upcoming True to check pending tasks, false to check completed tasks.
 	 * @param string|boolean $timestamp Optional timestamp to compare with task date.
-	 * 
+	 *
 	 * @return bool True if an existing task is found, false otherwise.
 	 */
 	public function has_existing_task_for( $hook, $args = array(), $group = '', $upcoming = true, $timestamp = false ) {
@@ -59,10 +58,10 @@ class PMPro_Action_Scheduler {
 
 		// If we are looking for a completed task, we need to provide a timestamp.
 		if ( $timestamp ) {
-			$query_args['date'] = $timestamp;
+			$query_args['date']         = $timestamp;
 			$query_args['date_compare'] = '>=';
 		} else {
-			$query_args['date'] = current_time( 'mysql' );
+			$query_args['date']         = current_time( 'mysql' );
 			$query_args['date_compare'] = '<=';
 		}
 
@@ -75,9 +74,9 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access private
 	 * @since 3.5
-	 * 
+	 *
 	 * @param string $group The task group name.
-	 * 
+	 *
 	 * @return int The number of tasks in the queue.
 	 */
 	private function count_existing_tasks_for_group( $group ) {
@@ -93,12 +92,12 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access private
 	 * @since 3.5
-	 * 
-	 * @param string $hook The hook name for the task.
-	 * @param array $args Arguments passed to the task hook.
-	 * @param string $group The group the task belongs to.
+	 *
+	 * @param string   $hook The hook name for the task.
+	 * @param array    $args Arguments passed to the task hook.
+	 * @param string   $group The group the task belongs to.
 	 * @param int|null $timestamp Optional timestamp for scheduling the task.
-	 * 
+	 *
 	 * @return int The scheduled action’s ID.
 	 */
 	private function queue_task( $hook, $args = array(), $group = '', $timestamp = null ) {
@@ -114,13 +113,13 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
-	 * @param string $hook The hook for the task.
-	 * @param mixed $args The data being passed to the task hook.
-	 * @param string $group The group this task should be assigned to.
+	 *
+	 * @param string   $hook The hook for the task.
+	 * @param mixed    $args The data being passed to the task hook.
+	 * @param string   $group The group this task should be assigned to.
 	 * @param int|null $timestamp An pmpro_strtotime datetime.
-	 * @param boolean $run_asap Whether to bypass the count delay and run async asap.
-	 * 
+	 * @param boolean  $run_asap Whether to bypass the count delay and run async asap.
+	 *
 	 * @return void
 	 */
 	public function maybe_add_task( $hook, $args, $group, int $timestamp = null, $run_asap = false ) {
@@ -131,7 +130,7 @@ class PMPro_Action_Scheduler {
 
 		if ( null === $timestamp && false === $run_asap ) {
 			$task_count = $this->count_existing_tasks_for_group( $group );
-			$timestamp = $this->pmpro_strtotime( "+{$task_count} minutes" );
+			$timestamp  = $this->pmpro_strtotime( "+{$task_count} minutes" );
 		}
 
 		$this->queue_task( $hook, $args, $group, $timestamp );
@@ -142,12 +141,12 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
-	 * @param string $hook The hook for the task.
+	 *
+	 * @param string   $hook The hook for the task.
 	 * @param int|null $interval_in_seconds The interval in seconds this recurring task should run.
 	 * @param int|null $first_run_datetime An pmpro_strtotime datetime in the future this task should first run.
-	 * @param string $group The group this task should be assigned to.
-	 * 
+	 * @param string   $group The group this task should be assigned to.
+	 *
 	 * @return void
 	 */
 	public function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = 'recurring_tasks' ) {
@@ -164,10 +163,10 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access private
 	 * @since 3.5
-	 * 
+	 *
 	 * @param int|null $interval_in_seconds The interval in seconds this recurring task should run.
 	 * @param int|null $first_run_datetime The datetime in the future this task should first run.
-	 * 
+	 *
 	 * @return int|WP_Error The scheduled action’s ID or WP_Error on failure.
 	 */
 	private function queue_recurring_task( $interval_in_seconds = null, $first_run_datetime = null ) {
@@ -183,13 +182,13 @@ class PMPro_Action_Scheduler {
 
 	/**
 	 * Clear all tasks in the queue for a given hook.
-	 * 
+	 *
 	 * @access public
 	 * @since 3.5
-	 * 
+	 *
 	 * @param string $hook The hook name for the task.
 	 * @param string $group The group the task belongs to.
-	 * 
+	 *
 	 * @return void
 	 * @throws WP_Error If no hook is provided.
 	 */
@@ -206,11 +205,11 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
+	 *
 	 * @param string $action The action hook name.
 	 * @param string $status The status of the action.
 	 * @param string $message The log message to add.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function add_log_msg( $action, $status, $message = '' ) {
@@ -228,7 +227,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
+	 *
 	 * @return void
 	 */
 	public function add_recurring_hooks() {
@@ -244,7 +243,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
+	 *
 	 * @return void
 	 */
 	public function add_monthly_hook() {
@@ -262,7 +261,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
+	 *
 	 * @return void
 	 */
 	public function handle_monthly_task() {
@@ -287,9 +286,9 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
+	 *
 	 * @param int $batch_size The current batch size.
-	 * 
+	 *
 	 * @return int Modified batch size.
 	 */
 	public function modify_batch_size( $batch_size ) {
@@ -323,14 +322,14 @@ class PMPro_Action_Scheduler {
 	 *
 	 * Action Scheduler provides a default of 30 seconds in which to process actions.
 	 * Increase this for hosts like Pantheon or WP Engine, or allow filtering for others.
-	 * 
+	 *
 	 * For more details, see: https://actionscheduler.org/perf/#increasing-time-limit
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
+	 *
 	 * @param int $time_limit The current time limit in seconds.
-	 * 
+	 *
 	 * @return int Modified time limit in seconds.
 	 */
 	public function modify_batch_time_limit( $time_limit ) {
@@ -356,10 +355,10 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access private
 	 * @since 3.5
-	 * 
-	 * @param string $time_string Time string in 'H:i:s' or 'Y-m-d H:i:s' format. Defaults to 'now'.
+	 *
+	 * @param string      $time_string Time string in 'H:i:s' or 'Y-m-d H:i:s' format. Defaults to 'now'.
 	 * @param string|null $date Optional. If provided, use this date (in Y-m-d format) with the time. Defaults to today.
-	 * 
+	 *
 	 * @return int UTC timestamp suitable for scheduling.
 	 */
 	private function get_local_timestamp( $time_string = 'now', $date = null ) {
