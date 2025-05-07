@@ -28,6 +28,9 @@ class PMPro_Action_Scheduler {
 	public function __construct() {
 		// Add our custom hooks for hourly, daily, weekly and monthly tasks.
 		add_action( 'action_scheduler_init', array( $this, 'add_recurring_hooks' ) );
+
+		// Add dummy callbacks for the scheduled tasks.
+		add_action( 'action_scheduler_init', array( $this, 'add_dummy_callbacks' ) );
 	}
 
 	/**
@@ -256,6 +259,30 @@ class PMPro_Action_Scheduler {
 		if ( ! $this->has_existing_task( 'pmpro_schedule_monthly', array(), 'pmpro_recurring_tasks' ) ) {
 			$first = $this->pmpro_strtotime( 'first day of next month 8:00am' );
 			as_schedule_single_action( $first, 'pmpro_schedule_monthly', array(), 'pmpro_recurring_tasks' );
+		}
+	}
+
+	/**
+	 * Add dummy callbacks for the scheduled tasks.
+	 *
+	 * @access public
+	 * @since 3.5
+	 * @return void
+	 */
+	public function add_dummy_callbacks() {
+		add_action( 'pmpro_schedule_hourly', 'pmpro_dummy_hourly_task' );
+		function pmpro_dummy_hourly_task() {
+			return;
+		}
+
+		add_action( 'pmpro_schedule_weekly', 'pmpro_dummy_weekly_task' );
+		function pmpro_dummy_weekly_task() {
+			return;
+		}
+
+		add_action( 'pmpro_schedule_monthly', 'pmpro_dummy_monthly_task' );
+		function pmpro_dummy_monthly_task() {
+			return;
 		}
 	}
 
