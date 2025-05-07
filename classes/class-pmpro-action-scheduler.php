@@ -3,7 +3,7 @@
  *
  * This class handle tasks added by the core plugin and Add Ons for Action Scheduler (A.S.).
  *
- * @package pb_plugin
+ * @package pmpro_plugin
  */
 
 
@@ -42,7 +42,7 @@ class PMPro_Action_Scheduler {
 	public function __construct() {
 
 		if ( ! class_exists( \ActionScheduler::class ) ) {
-			require_once( PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php' ); // Load our copy of Action Scheduler if needed.
+			require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load our copy of Action Scheduler if needed.
 		}
 
 		// Increase the batch size per queue.
@@ -53,7 +53,6 @@ class PMPro_Action_Scheduler {
 
 		// Reduce retention time.
 		add_filter( 'action_scheduler_retention_period', array( $this, 'modify_retention' ) );
-
 	}
 
 	/**
@@ -139,7 +138,7 @@ class PMPro_Action_Scheduler {
 	 * @param string  $hook The hook for the task.
 	 * @param mixed   $args The data being passed to the task hook.
 	 * @param string  $group The group this task should be assigned to.
-	 * @param ?int    $timestamp An pb_strtotime datetime.
+	 * @param ?int    $timestamp An pmpro_strtotime datetime.
 	 * @param boolean $run_asap Whether to bypass the count delay and run async asap.
 	 * @return void
 	 */
@@ -159,7 +158,7 @@ class PMPro_Action_Scheduler {
 				// The total count of tasks for a group.
 				$task_count = $this->existing_tasks_for_group_count();
 				// Add the count delay to the timestamp.
-				$timestamp = $this->pb_strtotime( "+{$task_count} minutes" );
+				$timestamp = $this->pmpro_strtotime( "+{$task_count} minutes" );
 			}
 
 			$this->queue_task( $timestamp );
@@ -173,7 +172,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @param string $hook  The hook for the task.
 	 * @param int    $interval_in_seconds  The interval in seconds this recurring task should run.
-	 * @param int    $first_run_datetime   An pb_strtotime datetime in the future this task should first run.
+	 * @param int    $first_run_datetime   An pmpro_strtotime datetime in the future this task should first run.
 	 * @param string $group     The group this task should be assigned to.
 	 * @return void
 	 */
@@ -243,23 +242,38 @@ class PMPro_Action_Scheduler {
 	 */
 	public function add_recurring_hooks() {
 		$this->maybe_add_recurring_task( 'pmpro_schedule_daily', DAY_IN_SECONDS, strtotime( 'tomorrow 1am' ) );
-		$this->maybe_add_recurring_task( 'pb_schedule_weekly', WEEK_IN_SECONDS, strtotime( 'next monday 1am' ) );
+		$this->maybe_add_recurring_task( 'pmpro_schedule_weekly', WEEK_IN_SECONDS, strtotime( 'next monday 1am' ) );
 		$this->add_monthly_hook();
 	}
 
 	/**
 	 * Setup our custom monthly hook.
 	 *
-	 * This needs to be a custom recurring hook— since months have different lengths, it will run on the first of the month,
-	 * and each task that is hooked to it should call and re-schedule this task.
-	 * for the first of the next month.
-	 *
 	 * You can use this hook to perform any scheduler task that needs to run monthly on the first day of the month.
 	 *
 	 * @return void
 	 */
 	public function add_monthly_hook() {
-		$this->maybe_add_task( 'pb_schedule_monthly', null, 'recurring_tasks', strtotime( 'first day of next month 1am' ) );
+		add_action( 'pmpro_schedule_monthly', array( $this, 'handle_monthly_task' ) );
+
+		// Schedule the first instance if none exists.
+		if ( ! as_next_scheduled_action( 'pmpro_schedule_monthly' ) ) {
+			$first = strtotime( 'first day of next month 1am', current_time( 'timestamp' ) );
+			as_schedule_single_action( $first, 'pmpro_schedule_monthly', array(), 'recurring_tasks' );
+		}
+	}
+
+	/**
+	 * Handle the monthly task and reschedule the next instance.
+	 */
+	public function handle_monthly_task() {
+		// Run any logic needed for monthly jobs here.
+		do_action( 'pmpro_handle_monthly_task' );
+
+		// Schedule the next run for exactly one calendar month from now.
+		$now  = current_time( 'timestamp' );
+		$next = strtotime( '+1 month', $now );
+		as_schedule_single_action( $next, 'pmpro_schedule_monthly', array(), 'recurring_tasks' );
 	}
 
 	/**
@@ -288,28 +302,57 @@ class PMPro_Action_Scheduler {
 			$batch_size = 5;
 		}
 
-		apply_filters( 'pmpro_action_scheduler_batch_size', $batch_size );
+		/**
+		 * Filter the batch size for Action Scheduler.
+		 *
+		 * @param int $batch_size The batch size.
+		 */
+		$batch_size = apply_filters( 'pmpro_action_scheduler_batch_size', $batch_size );
 
 		return $batch_size;
 	}
 
 	/**
-	 * Action Scheduler provides a default maximum of 30 seconds in which to process actions. Increase this to 120
-	 * seconds for hosts like Pantheon which support such a long time limit, or if you know your PHP and Apache, Nginx
-	 * or other web server configs support a longer time limit.
+	 * Modify the default time limit for processing a batch of actions.
 	 *
-	 * Note, WP Engine only supports a maximum of 60 seconds - if using WP Engine, this will need to be decreased to 60.
+	 * Action Scheduler provides a default of 30 seconds in which to process actions.
+	 * Increase this for hosts like Pantheon or WP Engine, or allow filtering for others.
+	 *
+	 * @return int Time limit in seconds.
 	 */
-	public function modify_batch_time_limit() {
-		return 30;
+	public function modify_batch_time_limit( $time_limit ) {
+		// Set sensible defaults based on known environment limits.
+		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
+			$time_limit = 120;
+		} elseif ( defined( 'WP_ENGINE' ) ) {
+			$time_limit = 60;
+		}
+
+		/**
+		 * Filter the time limit for Action Scheduler batches.
+		 *
+		 * @param int $time_limit The time limit in seconds.
+		 */
+		$time_limit = apply_filters( 'pmpro_action_scheduler_time_limit_seconds', $time_limit );
+
+		return $time_limit;
 	}
 
 	/**
-	 * How long to store completed Action Scheduler items.
-	 * Action Scheduler default is 30 days.
+	 * Get a UTC timestamp for a given local time string, using the site's timezone.
+	 *
+	 * @param string      $time_string  Time string in 'H:i:s' or 'Y-m-d H:i:s' format. Defaults to 'now'.
+	 * @param string|null $date         Optional. If provided, use this date (in Y-m-d format) with the time. Defaults to today.
+	 * @return int UTC timestamp suitable for scheduling.
 	 */
-	public function modify_retention() {
-		// One month.
-		return 30 * DAY_IN_SECONDS;
+	private function pmpro_get_local_timestamp( $time_string = 'now', $date = null ) {
+		$timezone = wp_timezone();
+
+		if ( empty( $date ) ) {
+			$date = ( new DateTime( 'now', $timezone ) )->format( 'Y-m-d' );
+		}
+
+		$datetime = new DateTime( "{$date} {$time_string}", $timezone );
+		return $datetime->getTimestamp();
 	}
 }
