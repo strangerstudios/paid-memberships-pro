@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * This class handle tasks added by the core plugin and Add Ons for Action Scheduler (A.S.).
+ * This class handle tasks added by the core plugin and Add Ons for Action Scheduler (AS).
  *
  * @package pmpro_plugin
  */
@@ -14,7 +14,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @var string $hook The hook A.S. should use to schedule a task, or in searching for a previously scheduled one.
+	 * @var string $hook The hook AS should use to schedule a task, or in searching for a previously scheduled one.
 	 */
 	public string $hook;
 
@@ -23,7 +23,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @var array $args The passed data, default is array(), required by A.S.
+	 * @var array $args The passed data, default is array(), required by AS
 	 */
 	public array $args = array();
 
@@ -45,88 +45,77 @@ class PMPro_Action_Scheduler {
 			require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load our copy of Action Scheduler if needed.
 		}
 
-		// Increase the batch size per queue.
+		// Support for modifying the AS batch size.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ) );
 
-		// Increase queue time limit.
+		// Support for modifying the AS time limit.
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ) );
 
-		// Reduce retention time.
-		add_filter( 'action_scheduler_retention_period', array( $this, 'modify_retention' ) );
 	}
 
 	/**
 	 * Check if AS has an existing task in the upcoming queue (default) or alternatively past completed items
 	 *
 	 * @since 1.0.0
-	 * @access public
-	 * @param boolean        $upcoming
-	 * @param string|boolean $timeframe A unix timestamp.
-	 * @return array|boolean The results (if any), or false.
+	 * @access private
+	 * @param string $hook
+	 * @param array  $args
+	 * @param string $group
+	 * @param boolean $upcoming
+	 * @param string|boolean $timestamp
+	 * @return bool
 	 */
-	private function has_existing_task( $upcoming = true, $timestamp = false ) {
-
+	private function has_existing_task_for( $hook, $args = array(), $group = '', $upcoming = true, $timestamp = false ) {
 		$status = $upcoming ? ActionScheduler_Store::STATUS_PENDING : ActionScheduler_Store::STATUS_COMPLETE;
 
-		$args = array(
-			'hook'   => $this->hook,
-			'args'   => $this->args,
-			'group'  => $this->group,
+		$query_args = array(
+			'hook'   => $hook,
+			'args'   => $args,
+			'group'  => $group,
 			'status' => $status,
 		);
 
-		// Check that the past tasks are in the timeframe provided
 		if ( $timestamp ) {
-			$args['date']         = $timestamp;
-			$args['date_compare'] = '>=';
+			$query_args['date'] = $timestamp;
+			$query_args['date_compare'] = '>=';
 		}
 
-		$results = as_get_scheduled_actions( $args );
-
-		// Return results.
-		if ( ! empty( $results ) ) {
-			return true;
-		}
-
-		return false;
+		$results = as_get_scheduled_actions( $query_args );
+		return ! empty( $results );
 	}
 
 	/**
 	 * Get the count of AS items currently queued for a group
 	 *
-	 * Returned number is used to increment the delay between scheduled tasks to reduce Teamwork API load.
-	 *
 	 * @since 1.0.0
-	 * @access public
+	 * @access private
+	 * @param string $group
 	 * @return int The number of tasks in the queue, if any
 	 */
-	private function existing_tasks_for_group_count() {
+	private function existing_tasks_for_group_count_for( $group ) {
 		$search_args = array(
-			'group'  => $this->group, // Only check against the same group of tasks.
-			'status' => ActionScheduler_Store::STATUS_PENDING, // Only check pending tasks, not complete ones.
+			'group'  => $group,
+			'status' => ActionScheduler_Store::STATUS_PENDING,
 		);
-
-		$results = as_get_scheduled_actions( $search_args );
-
-		// Can use this number to increase the delay in task queuing (see maybe_add_task).
-		return count( $results );
+		return count( as_get_scheduled_actions( $search_args ) );
 	}
 
 	/**
 	 * Add task for AS, optionally as a future task, or recurring task
 	 *
 	 * @since 1.0.0
-	 * @access public
-	 * @param int $timestamp The time in the future this task should run (optional).
+	 * @access private
+	 * @param string $hook
+	 * @param array $args
+	 * @param string $group
+	 * @param int|null $timestamp
 	 * @return int The scheduled action’s ID
 	 */
-	private function queue_task( $timestamp = null ) {
+	private function queue_task( $hook, $args = array(), $group = '', $timestamp = null ) {
 		if ( null !== $timestamp ) {
-			// Run at a future date.
-			return as_schedule_single_action( $timestamp, $this->hook, $this->args, $this->group );
+			return as_schedule_single_action( $timestamp, $hook, $args, $group );
 		} else {
-			// Run as soon as possible.
-			return as_enqueue_async_action( $this->hook, $this->args, $this->group );
+			return as_enqueue_async_action( $hook, $args, $group );
 		}
 	}
 
@@ -143,26 +132,17 @@ class PMPro_Action_Scheduler {
 	 * @return void
 	 */
 	public function maybe_add_task( $hook, $args, $group, int $timestamp = null, $run_asap = false ) {
-		$this->hook  = $hook;
-		$this->args  = array( $args );
-		$this->group = $group;
-
 		// Check for a task in the queue matching this task.
-		if ( $this->has_existing_task() ) {
-			// Logger::info( 'Task already scheduled for ' . $this->hook . ' in the ' . $this->group . ' group' );
+		if ( $this->has_existing_task_for( $hook, $args, $group ) ) {
 			return;
-		} else {
-			// If we don't have an existing task, add it.
-			if ( null === $timestamp && false === $run_asap ) {
-				// Logger::info( 'No timestamp provided, and not set to async.' );
-				// The total count of tasks for a group.
-				$task_count = $this->existing_tasks_for_group_count();
-				// Add the count delay to the timestamp.
-				$timestamp = $this->pmpro_strtotime( "+{$task_count} minutes" );
-			}
-
-			$this->queue_task( $timestamp );
 		}
+
+		if ( null === $timestamp && false === $run_asap ) {
+			$task_count = $this->existing_tasks_for_group_count_for( $group );
+			$timestamp = $this->pmpro_strtotime( "+{$task_count} minutes" );
+		}
+
+		$this->queue_task( $hook, $args, $group, $timestamp );
 	}
 
 	/**
@@ -186,7 +166,7 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Add a recurring task for A.S.
+	 * Add a recurring task for AS
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -229,7 +209,11 @@ class PMPro_Action_Scheduler {
 	 * @access public
 	 * @return void
 	 */
-	public function add_log( $action, $message = 'This is a test' ) {
+	public function add_log( $action, $message = '' ) {
+		if ( empty( $action ) || empty( $message ) ) {
+			// If we don't have a message or action, we can't log anything.
+			return;
+		}
 		$action_id = ActionScheduler::store()->find_action( $action, array( 'status' => ActionScheduler_Store::STATUS_RUNNING ) );
 		ActionScheduler::logger()->log( $action_id, $message );
 	}
@@ -286,7 +270,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * For more details, see: https://actionscheduler.org/perf/#increasing-batch-size
 	 */
-	public function pmpro_modify_batch_size( $batch_size ) {
+	public function modify_batch_size( $batch_size ) {
 
 		// Apple filters here so that others can mofiy these values.
 		// For example, if you are using WP Engine, you may want to set this to 10.
@@ -345,7 +329,7 @@ class PMPro_Action_Scheduler {
 	 * @param string|null $date         Optional. If provided, use this date (in Y-m-d format) with the time. Defaults to today.
 	 * @return int UTC timestamp suitable for scheduling.
 	 */
-	private function pmpro_get_local_timestamp( $time_string = 'now', $date = null ) {
+	private function get_local_timestamp( $time_string = 'now', $date = null ) {
 		$timezone = wp_timezone();
 
 		if ( empty( $date ) ) {
