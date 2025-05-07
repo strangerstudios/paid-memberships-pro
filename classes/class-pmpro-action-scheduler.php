@@ -26,9 +26,7 @@ class PMPro_Action_Scheduler {
 	 * Constructor
 	 */
 	public function __construct() {
-
-		// Add our custom hooks for daily, weekly and monthly tasks.
-		// Defer hook setup until AS is fully loaded.
+		// Add our custom hooks for hourly, daily, weekly and monthly tasks.
 		add_action( 'action_scheduler_init', array( $this, 'add_recurring_hooks' ) );
 	}
 
@@ -197,7 +195,7 @@ class PMPro_Action_Scheduler {
 	 */
 	private function queue_recurring_task( $interval_in_seconds, $first_run_datetime, $hook, $args, $group ) {
 		// Make sure first run datetime has been set.
-		$first_run_datetime = $first_run_datetime ?: strtotime( 'now +5 minutes' );
+		$first_run_datetime = $first_run_datetime ?: $this->pmpro_strtotime( 'now +5 minutes' );
 		// Schedule this task in the future, and make it recurring.
 		if ( ! empty( $interval_in_seconds ) ) {
 			return as_schedule_recurring_action( $first_run_datetime, $interval_in_seconds, $hook, $args, $group );
@@ -234,6 +232,13 @@ class PMPro_Action_Scheduler {
 	 * @return void
 	 */
 	public function add_recurring_hooks() {
+		$this->maybe_add_recurring_task(
+			'pmpro_schedule_hourly',
+			HOUR_IN_SECONDS,
+			$this->pmpro_strtotime( 'now +1 hour' ),
+			'pmpro_recurring_tasks'
+		);
+
 		$this->maybe_add_recurring_task(
 			'pmpro_schedule_daily',
 			DAY_IN_SECONDS,
