@@ -31,6 +31,9 @@ class PMPro_Action_Scheduler {
 
 		// Add dummy callbacks for the scheduled tasks.
 		add_action( 'action_scheduler_init', array( $this, 'add_dummy_callbacks' ) );
+
+		// Handle the monthly tasks.
+		add_action( 'pmpro_trigger_monthly', array( $this, 'handle_monthly_tasks' ) );
 	}
 
 	/**
@@ -256,9 +259,9 @@ class PMPro_Action_Scheduler {
 			'pmpro_recurring_tasks'
 		);
 		// Schedule the first instance of our monthly action if none exists.
-		if ( ! $this->has_existing_task( 'pmpro_schedule_monthly', array(), 'pmpro_recurring_tasks' ) ) {
+		if ( ! $this->has_existing_task( 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' ) ) {
 			$first = $this->pmpro_strtotime( 'first day of next month 8:00am' );
-			as_schedule_single_action( $first, 'pmpro_schedule_monthly', array(), 'pmpro_recurring_tasks' );
+			as_schedule_single_action( $first, 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' );
 		}
 	}
 
@@ -270,20 +273,10 @@ class PMPro_Action_Scheduler {
 	 * @return void
 	 */
 	public function add_dummy_callbacks() {
-		add_action( 'pmpro_schedule_hourly', 'pmpro_dummy_hourly_task' );
-		function pmpro_dummy_hourly_task() {
-			return;
-		}
-
-		add_action( 'pmpro_schedule_weekly', 'pmpro_dummy_weekly_task' );
-		function pmpro_dummy_weekly_task() {
-			return;
-		}
-
-		add_action( 'pmpro_schedule_monthly', 'pmpro_dummy_monthly_task' );
-		function pmpro_dummy_monthly_task() {
-			return;
-		}
+		add_action( 'pmpro_schedule_hourly', function () { return; } );
+		add_action( 'pmpro_schedule_daily', function () { return; } );
+		add_action( 'pmpro_schedule_weekly', function () { return; } );
+		add_action( 'pmpro_trigger_monthly', function () { return; } );
 	}
 
 	/**
@@ -295,11 +288,11 @@ class PMPro_Action_Scheduler {
 	 */
 	public function handle_monthly_tasks() {
 		// Run any logic needed for monthly jobs here.
-		do_action( 'pmpro_monthly_action_scheduler_tasks' );
+		do_action( 'pmpro_schedule_monthly' );
 
 		// Schedule the next run for exactly one calendar month from now.
 		$next_month = $this->pmpro_strtotime( 'first day of next month 8:00am' );
-		as_schedule_single_action( $next_month, 'pmpro_schedule_monthly', array(), 'recurring_tasks' );
+		as_schedule_single_action( $next_month, 'pmpro_trigger_monthly', array(), 'recurring_tasks' );
 	}
 
 	/**
