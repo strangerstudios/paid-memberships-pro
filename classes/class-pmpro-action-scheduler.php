@@ -281,8 +281,10 @@ class PMPro_Action_Scheduler {
 	 * This method increases or decreases it so that more/less actions are processed in each queue, which speeds up the
 	 * overall queue processing time due to latency in requests and the minimum 1 minute between each
 	 * queue being processed.
+	 * 
+	 * You can also set this to a different value using the pmpro_action_scheduler_batch_size filter.
 	 *
-	 * For more details, see: https://actionscheduler.org/perf/#increasing-batch-size
+	 * For more details on Action Scheduler batch sizes, see: https://actionscheduler.org/perf/#increasing-batch-size
 	 *
 	 * @access public
 	 * @since 3.5
@@ -293,22 +295,16 @@ class PMPro_Action_Scheduler {
 	 */
 	public function modify_batch_size( $batch_size ) {
 
-		// Apple filters here so that others can mofiy these values.
-		// For example, if you are using WP Engine, you may want to set this to 10.
-		// If you are using Pantheon, you may want to set this to 50.
-		// If you are using a shared host, you may want to set this to 5.
-		$batch_size = 25;
-
+		// If we are on Pantheon, we can set it to 50.
 		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
 			$batch_size = 50;
+		// If we are on WP Engine, we should set it to 20.
 		} elseif ( defined( 'WP_ENGINE' ) ) {
 			$batch_size = 20;
-		} elseif ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$batch_size = 5;
 		}
 
 		/**
-		 * Filter the batch size for Action Scheduler.
+		 * Public filter for adjusting the batch size in Action Scheduler.
 		 *
 		 * @param int $batch_size The batch size.
 		 */
@@ -321,9 +317,11 @@ class PMPro_Action_Scheduler {
 	 * Modify the default time limit for processing a batch of actions.
 	 *
 	 * Action Scheduler provides a default of 30 seconds in which to process actions.
-	 * Increase this for hosts like Pantheon or WP Engine, or allow filtering for others.
+	 * We can increase this for hosts like Pantheon and WP Engine.
+	 * 
+	 * You can also set this to a different value using the pmpro_action_scheduler_time_limit_seconds filter.
 	 *
-	 * For more details, see: https://actionscheduler.org/perf/#increasing-time-limit
+	 * For more details on the Action Scheduler time limit, see: https://actionscheduler.org/perf/#increasing-time-limit
 	 *
 	 * @access public
 	 * @since 3.5
@@ -333,15 +331,18 @@ class PMPro_Action_Scheduler {
 	 * @return int Modified time limit in seconds.
 	 */
 	public function modify_batch_time_limit( $time_limit ) {
+
 		// Set sensible defaults based on known environment limits.
+		// If we are on Pantheon, we can set it to 120.
 		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
 			$time_limit = 120;
+		// If we are on WP Engine, we can set it to 60.
 		} elseif ( defined( 'WP_ENGINE' ) ) {
 			$time_limit = 60;
 		}
 
 		/**
-		 * Filter the time limit for Action Scheduler batches.
+		 * Public filter for adjusting the time limit for Action Scheduler batches.
 		 *
 		 * @param int $time_limit The time limit in seconds.
 		 */
