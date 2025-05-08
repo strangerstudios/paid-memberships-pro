@@ -44,6 +44,7 @@ if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 // Check if Action Scheduler is already loaded, if not, load our library copy.
 if ( ! class_exists( \ActionScheduler::class ) ) {
 	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load our copy of Action Scheduler if needed.
+	require_once PMPRO_DIR . '/scheduled/recurring-actions.php'; 					// Load our recurring scheduled actions.
 }
 require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' );   			// Our Action Scheduler Manager for PMPro
 require_once( PMPRO_DIR . '/includes/crons.php' );                  				// cron-related functionality
