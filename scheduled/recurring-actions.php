@@ -36,13 +36,10 @@ class PMPro_Scheduled_Actions {
 	public function membership_expiration_reminders() {
 		global $wpdb;
 
-		// Don't let anything run if PMPro is paused
+		// Don't do anything if PMPro is paused
 		if ( pmpro_is_paused() ) {
 			return;
 		}
-
-		// clean up errors in the memberships_users table that could cause problems
-		pmpro_cleanup_memberships_users_table();
 
 		$today = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
 
