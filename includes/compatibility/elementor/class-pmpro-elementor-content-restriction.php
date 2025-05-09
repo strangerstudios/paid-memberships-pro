@@ -127,8 +127,8 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         $apply_block_visibility_params = array(
             'segment' => $element_settings['pmpro_segment'],
             'levels' => $element_settings['pmpro_levels'],
-            'invert_restrictions' => $element_settings['pmpro_invert_restrictions'],
-            'show_noaccess' => ! empty( $element_settings['pmpro_show_noaccess'] ),
+            'invert_restrictions' => filter_var( $element_settings['pmpro_invert_restrictions'], FILTER_VALIDATE_BOOLEAN ),
+            'show_noaccess' => ! empty( $element_settings['pmpro_show_noaccess'] ) ? filter_var( $element_settings['pmpro_show_noaccess'], FILTER_VALIDATE_BOOLEAN ) : false,
         );
         $should_render = ! empty( pmpro_apply_block_visibility( $apply_block_visibility_params, 'sample content' ) );
 		
@@ -163,8 +163,8 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         $apply_block_visibility_params = array(
             'segment' => $widget_settings['pmpro_segment'],
             'levels' => $widget_settings['pmpro_levels'],
-            'invert_restrictions' => $widget_settings['pmpro_invert_restrictions'],
-            'show_noaccess' => $widget_settings['pmpro_show_noaccess'],
+            'invert_restrictions' => filter_var( $widget_settings['pmpro_invert_restrictions'], FILTER_VALIDATE_BOOLEAN ),
+            'show_noaccess' => filter_var( $widget_settings['pmpro_show_noaccess'], FILTER_VALIDATE_BOOLEAN ),
         );
         return pmpro_apply_block_visibility( $apply_block_visibility_params, $content );
 
