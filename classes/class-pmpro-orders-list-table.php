@@ -252,6 +252,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		global $wpdb;
 		$now = current_time( 'timestamp' );
 
+		$search_key = false;
 		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
 		$l = isset( $_REQUEST['l'] ) ? intval( $_REQUEST['l'] ) : false;
 		$discount_code = isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : false;
@@ -374,51 +375,74 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		if ( $s ) {
 
-			$join_with_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
-			
-			if ( $join_with_usermeta ) {
-				$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
+			// If there's a colon in the search, let's split it out.
+			if ( strpos( $s, ':' ) !== false ) {
+				$parts = explode( ':', $s );
+				$search_key = array_shift( $parts );
+				$s = implode( ':', $parts );
 			}
 
-			if ( $filter === 'with-discount-code' ) {
-				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+			if ( $search_key ) {
+				$sqlQuery .= 'WHERE (1=2 ';
+				// If there's a colon in the search string, make the search smarter.
+				if ( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
+					$key_column = 'u.user_' . $search_key; // All search key options above are safe for use in a query.
+					$sqlQuery .= " OR $key_column LIKE '%" . esc_sql( $s ) . "%' ";
+				} else {
+					// Assume order table column.
+					$sqlQuery .= " OR o.$search_key LIKE '%" . esc_sql( $s ) . "%' ";
+				}
+				$sqlQuery .= ') ';
+			} else {
+				$join_with_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
+
+				if ( $join_with_usermeta ) {
+					$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
+				}
+
+				if ( $filter === 'with-discount-code' ) {
+					$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+				}
+
+				$sqlQuery .= 'WHERE (1=2 ';
+
+				$fields = array(
+					'o.id',
+					'o.code',
+					'o.billing_name',
+					'o.billing_street',
+					'o.billing_street2',
+					'o.billing_city',
+					'o.billing_state',
+					'o.billing_zip',
+					'o.billing_country',
+					'o.billing_phone',
+					'o.payment_type',
+					'o.cardtype',
+					'o.accountnumber',
+					'o.status',
+					'o.gateway',
+					'o.gateway_environment',
+					'o.payment_transaction_id',
+					'o.subscription_transaction_id',
+					'o.notes',
+					'u.user_login',
+					'u.user_email',
+					'u.display_name',
+					'ml.name',
+				);
+
+				if ( $join_with_usermeta ) {
+					$fields[] = 'um.meta_value';
+				}
+
+				$fields = apply_filters( 'pmpro_orders_search_fields', $fields );
+
+				foreach ( $fields as $field ) {
+					$sqlQuery .= ' OR ' . esc_sql( $field ) . " LIKE '%" . esc_sql( $s ) . "%' ";
+				}
+				$sqlQuery .= ') ';
 			}
-
-			$sqlQuery .= 'WHERE (1=2 ';
-
-			$fields = array(
-				'o.id',
-				'o.code',
-				'o.billing_name',
-				'o.billing_street',
-				'o.billing_city',
-				'o.billing_state',
-				'o.billing_zip',
-				'o.billing_phone',
-				'o.payment_type',
-				'o.cardtype',
-				'o.accountnumber',
-				'o.status',
-				'o.gateway',
-				'o.gateway_environment',
-				'o.payment_transaction_id',
-				'o.subscription_transaction_id',
-				'u.user_login',
-				'u.user_email',
-				'u.display_name',
-				'ml.name',
-			);
-
-			if ( $join_with_usermeta ) {
-				$fields[] = 'um.meta_value';
-			}
-
-			$fields = apply_filters( 'pmpro_orders_search_fields', $fields );
-
-			foreach ( $fields as $field ) {
-				$sqlQuery .= ' OR ' . esc_sql( $field ) . " LIKE '%" . esc_sql( $s ) . "%' ";
-			}
-			$sqlQuery .= ') ';
 
 			//Not escaping here because we escape the values in the condition statement
 			$sqlQuery .= 'AND ' . $condition . ' ';
