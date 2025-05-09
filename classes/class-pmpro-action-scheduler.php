@@ -230,34 +230,54 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Setup our custom scheduled hooks that run daily & weekly. You can use these hooks to perform any scheduler
+	 * Setup our custom scheduled hooks. You can use these hooks to perform any scheduler
 	 * task that needs to run regularly each day or week, overnight.
+	 *
+	 * You can also use the pmpro_action_scheduler_recurring_schedules filter to change/add schedules
+	 * except for our custom monthly task, which is always scheduled for the first day of the month at 8:00am.
 	 *
 	 * @access public
 	 * @since 3.5
 	 * @return void
 	 */
 	public function add_recurring_hooks() {
-		$this->maybe_add_recurring_task(
-			'pmpro_schedule_hourly',
-			HOUR_IN_SECONDS,
-			$this->pmpro_strtotime( 'now +1 hour' ),
-			'pmpro_recurring_tasks'
+		$schedules = apply_filters(
+			'pmpro_action_scheduler_recurring_schedules',
+			array(
+				array(
+					'hook'     => 'pmpro_schedule_quarter_hourly',
+					'interval' => 15 * MINUTE_IN_SECONDS,
+					'start'    => $this->pmpro_strtotime( 'now +15 minutes' ),
+				),
+				array(
+					'hook'     => 'pmpro_schedule_hourly',
+					'interval' => HOUR_IN_SECONDS,
+					'start'    => $this->pmpro_strtotime( 'now +1 hour' ),
+				),
+				array(
+					'hook'     => 'pmpro_schedule_daily',
+					'interval' => DAY_IN_SECONDS,
+					'start'    => $this->pmpro_strtotime( 'tomorrow 10:30am' ),
+				),
+				array(
+					'hook'     => 'pmpro_schedule_weekly',
+					'interval' => WEEK_IN_SECONDS,
+					'start'    => $this->pmpro_strtotime( 'next sunday 8:00am' ),
+				),
+			)
 		);
 
-		$this->maybe_add_recurring_task(
-			'pmpro_schedule_daily',
-			DAY_IN_SECONDS,
-			$this->pmpro_strtotime( 'tomorrow 10:30am' ),
-			'pmpro_recurring_tasks'
-		);
+		foreach ( $schedules as $schedule ) {
+			if ( ! empty( $schedule['hook'] ) && ! empty( $schedule['interval'] ) ) {
+				$this->maybe_add_recurring_task(
+					$schedule['hook'],
+					$schedule['interval'],
+					! empty( $schedule['start'] ) ? $schedule['start'] : null,
+					'pmpro_recurring_tasks'
+				);
+			}
+		}
 
-		$this->maybe_add_recurring_task(
-			'pmpro_schedule_weekly',
-			WEEK_IN_SECONDS,
-			$this->pmpro_strtotime( 'next sunday 8:00am' ),
-			'pmpro_recurring_tasks'
-		);
 		// Schedule the first instance of our monthly action if none exists.
 		if ( ! $this->has_existing_task( 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' ) ) {
 			$first = $this->pmpro_strtotime( 'first day of next month 8:00am' );
@@ -266,17 +286,43 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Add dummy callbacks for the scheduled tasks.
+	 * Add dummy callbacks for the scheduled tasks to prevent AS from logging failed actions.
 	 *
 	 * @access public
 	 * @since 3.5
 	 * @return void
 	 */
 	public function add_dummy_callbacks() {
-		add_action( 'pmpro_schedule_hourly', function () { return; } );
-		add_action( 'pmpro_schedule_daily', function () { return; } );
-		add_action( 'pmpro_schedule_weekly', function () { return; } );
-		add_action( 'pmpro_trigger_monthly', function () { return; } );
+		$schedules = apply_filters(
+			'pmpro_action_scheduler_recurring_schedules',
+			array(
+				array( 'hook' => 'pmpro_schedule_quarter_hourly' ),
+				array( 'hook' => 'pmpro_schedule_hourly' ),
+				array( 'hook' => 'pmpro_schedule_daily' ),
+				array( 'hook' => 'pmpro_schedule_weekly' ),
+			)
+		);
+
+		// Add dummy callbacks for the scheduled tasks.
+		// This is to prevent PHP notices when the tasks are run.
+		foreach ( $schedules as $schedule ) {
+			if ( ! empty( $schedule['hook'] ) ) {
+				add_action(
+					$schedule['hook'],
+					function () {
+						return;
+					}
+				);
+			}
+		}
+
+		// Ensure our custom monthly task also has a fallback callback.
+		add_action(
+			'pmpro_trigger_monthly',
+			function () {
+				return;
+			}
+		);
 	}
 
 	/**
