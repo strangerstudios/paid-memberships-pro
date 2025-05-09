@@ -79,7 +79,7 @@ class PMPro_Scheduled_Actions {
 		);
 
 		$query_offset = 0;
-		$query_limit = $this->batch_limit;
+		$query_limit  = $this->batch_limit;
 
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
@@ -142,4 +142,5 @@ class PMPro_Scheduled_Actions {
 		// update user meta so we don't email them again
 		update_user_meta( $user_id, 'pmpro_expiration_notice_' . $membership_id, current_time( 'Y-m-d H:i:s' ) );
 	}
+
 }
