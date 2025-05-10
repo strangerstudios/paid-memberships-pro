@@ -12,7 +12,6 @@
  * @package pmpro_plugin
  */
 
-
 class PMPro_Action_Scheduler {
 
 	/**
@@ -21,16 +20,6 @@ class PMPro_Action_Scheduler {
 	 * @var PMPro_Action_Scheduler
 	 */
 	private static $instance = null;
-
-	/**
-	 * The default group for recurring tasks.
-	 */
-	private $pmpro_as_recurring_group = 'pmpro_recurring_tasks';
-
-	/**
-	 * The default group for async tasks.
-	 */
-	private $pmpro_as_group = 'pmpro_async_tasks';
 
 	/**
 	 * The default queue threshold for async tasks.
@@ -52,20 +41,6 @@ class PMPro_Action_Scheduler {
 		 * @param int $queue_limit The default queue limit.
 		 */
 		return apply_filters( 'pmpro_action_scheduler_queue_limit', self::$pmpro_as_queue_limit );
-	}
-
-	/**
-	 * Get the queue limit for async tasks.
-	 *
-	 * @return int The maximum number of tasks that can be queued.
-	 */
-	public function get_queue_limit() {
-		/**
-		 * Filter the queue limit for async tasks.
-		 *
-		 * @param int $queue_limit The default queue limit.
-		 */
-		return apply_filters( 'pmpro_action_scheduler_queue_limit', self::PMPRO_AS_QUEUE_LIMIT );
 	}
 
 	/**
@@ -171,13 +146,13 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @param string          $hook The hook for the task.
 	 * @param mixed           $args The data being passed to the task hook.
-	 * @param string          $group The group this task should be assigned to.
+	 * @param string          $group The group this task should be assigned to. Default is 'pmpro_async_tasks'.
 	 * @param int|string|null $timestamp An pmpro_strtotime datetime or human-readable string.
 	 * @param boolean         $run_asap Whether to bypass the count delay and run async asap.
 	 *
 	 * @return void
 	 */
-	public function maybe_add_task( $hook, $args, $group, $timestamp = null, $run_asap = false ) {
+	public function maybe_add_task( $hook, $args, $group = 'pmpro_async_tasks', $timestamp = null, $run_asap = false ) {
 		// Convert human-readable string to timestamp if needed.
 		if ( ! is_null( $timestamp ) && ! is_int( $timestamp ) ) {
 			$converted = $this->pmpro_strtotime( $timestamp );
@@ -195,12 +170,12 @@ class PMPro_Action_Scheduler {
 		// We're going to add a timestamp
 		if ( null === $timestamp && false === $run_asap ) {
 			$task_count = $this->count_existing_tasks_for_group( $group );
-			// If we have more than self::get_pmpro_as_queue_limit() tasks in the queue, add a delay to the task.
+			// If we have more than self::get_pmpro_as_queue() tasks in the queue, add a delay to the task.
 			// This will space out tasks and prevent overwhelming the server if the tasking is heavy.
 			if ( $task_count > self::get_pmpro_as_queue_limit() ) {
 				$timestamp = $this->pmpro_strtotime( "+{$task_count} seconds" );
 			} else {
-				// Less than $pmpro_as_queue_limit tasks in the queue, queue this task immediately.
+				// Less than self::get_pmpro_as_queue() tasks in the queue, queue this task immediately.
 				$timestamp = $this->pmpro_strtotime( 'now' );
 			}
 		}
@@ -227,7 +202,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @return void
 	 */
-	private function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = $pmpro_as_recurring_group ) {
+	private function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = 'pmpro_recurring_tasks' ) {
 		if ( ! $this->has_existing_task( $hook, array(), $group ) ) {
 			// Make sure first run datetime has been set.
 			$first_run_datetime = $first_run_datetime ?: $this->pmpro_strtotime( 'now +5 minutes' );
@@ -303,15 +278,15 @@ class PMPro_Action_Scheduler {
 					$schedule['hook'],
 					$schedule['interval'],
 					! empty( $schedule['start'] ) ? $schedule['start'] : null,
-					$pmpro_as_recurring_group
+					'pmpro_recurring_tasks'
 				);
 			}
 		}
 
 		// Schedule the first instance of our monthly action if none exists.
-		if ( ! $this->has_existing_task( 'pmpro_trigger_monthly', array(), $pmpro_as_recurring_group ) ) {
+		if ( ! $this->has_existing_task( 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' ) ) {
 			$first = $this->pmpro_strtotime( 'first day of next month 8:00am' );
-			as_schedule_single_action( $first, 'pmpro_trigger_monthly', array(), $pmpro_as_recurring_group );
+			as_schedule_single_action( $first, 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' );
 		}
 	}
 
@@ -471,27 +446,6 @@ class PMPro_Action_Scheduler {
 		$time_limit = apply_filters( 'pmpro_action_scheduler_time_limit_seconds', $time_limit );
 
 		return $time_limit;
-	}
-
-	/**
-	 * Get a UTC timestamp for a given local time string, using the site's timezone.
-	 *
-	 * @access private
-	 * @since 3.5
-	 *
-	 * @param string      $time_string Time string in 'H:i:s' or 'Y-m-d H:i:s' format. Defaults to 'now'.
-	 * @param string|null $date Optional. If provided, use this date (in Y-m-d format) with the time. Defaults to today.
-	 * @return int UTC timestamp suitable for scheduling.
-	 */
-	private function get_local_timestamp( $time_string = 'now', $date = null ) {
-		$timezone = wp_timezone();
-
-		if ( empty( $date ) ) {
-			$date = ( new DateTime( 'now', $timezone ) )->format( 'Y-m-d' );
-		}
-
-		$datetime = new DateTime( "{$date} {$time_string}", $timezone );
-		return $datetime->getTimestamp();
 	}
 
 	/**
