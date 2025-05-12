@@ -16,7 +16,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 
 		// Migrate settings from old restriction method (pmpro_require_membership) to new method (pmpro_enable).
 		add_action( 'wp', array( $this, 'migrate_settings' ) ); // Migrate on frontend (also runs when editing but too late).
-		add_action( 'elementor/editor/before_enqueue_scripts', array( $this, 'migrate_settings' ) ); // Migrate on editor load.
+		add_action( 'elementor/editor/init', array( $this, 'migrate_settings' ) ); // Migrate on editor load.
 
 	}
 
@@ -219,12 +219,12 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			unset( $section );
 		}
 	}
-	unset( $container );
+		unset( $container );
 
-	// Only save if something actually changed.
-	if ( $migrated ) {
-		update_post_meta( $post_id, '_elementor_data', wp_slash( wp_json_encode( $elementor_data ) ) );
-	}
+		// Only save if something actually changed.
+		if ( $migrated ) {
+			update_post_meta( $post_id, '_elementor_data', wp_slash( wp_json_encode( $elementor_data ) ) );
+		}
 	}
 
 	/**
@@ -236,9 +236,8 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	 * @return array The migrated settings array.
 	 */
 	private function migrate_settings_helper( $settings ) {
-		// return $settings;
 		// If pmpro_require_membership is not set, bail.
-		if ( ! isset( $settings['pmpro_require_membership'] ) ) {
+		if ( ! isset( $settings['pmpro_require_membership'] ) || empty( $settings['pmpro_require_membership'] ) ) {
 			return $settings;
 		}
 
