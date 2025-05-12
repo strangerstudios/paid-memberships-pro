@@ -9,8 +9,6 @@
  * Keep in mind that: tasks are handled asynchronously, and queued tasks
  * are not guaranteed to run immediately. Action Scheduler will process tasks in batches.
  *
- * 
- *
  * @package pmpro_plugin
  * @subpackage classes
  * @since 3.5
