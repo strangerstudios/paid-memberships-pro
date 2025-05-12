@@ -223,7 +223,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 
 	// Only save if something actually changed.
 	if ( $migrated ) {
-		update_post_meta( $post_id, '_elementor_data', wp_json_encode( $elementor_data ) );
+		update_post_meta( $post_id, '_elementor_data', wp_slash( wp_json_encode( $elementor_data ) ) );
 	}
 	}
 
