@@ -12,9 +12,16 @@
 class PMPro_Scheduled_Actions {
 
 	/**
+	 * Singleton instance.
+	 *
+	 * @var PMPro_Scheduled_Actions|null
+	 */
+	private static $instance = null;
+
+	/**
 	 * The batch limit for the scheduled actions.
 	 */
-	private $batch_limit;
+	private $query_batch_limit;
 
 	/**
 	 * Constructor.
@@ -22,10 +29,22 @@ class PMPro_Scheduled_Actions {
 	public function __construct() {
 
 		// Inherit the batch limit from the PMPro cron settings or default to 50.
-		$this->batch_limit = defined( 'PMPRO_CRON_LIMIT' ) ? PMPRO_CRON_LIMIT : 50;
+		$this->query_batch_limit = defined( 'PMPRO_CRON_LIMIT' ) ? PMPRO_CRON_LIMIT : 50;
 
 		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ) );
 		add_action( 'pmpro_expiration_reminder_email', array( $this, 'pmpro_send_expiration_notice' ), 10, 2 );
+	}
+
+	/**
+	 * Get the singleton instance.
+	 *
+	 * @return PMPro_Scheduled_Actions
+	 */
+	public static function instance() {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
 	}
 	/**
 	 * Schedule the membership expiration reminder emails.
@@ -34,6 +53,7 @@ class PMPro_Scheduled_Actions {
 	 * @return void
 	 */
 	public function membership_expiration_reminders() {
+
 		global $wpdb;
 
 		// Don't do anything if PMPro is paused
@@ -41,13 +61,15 @@ class PMPro_Scheduled_Actions {
 			return;
 		}
 
-		$today = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
+		$today = date( 'Y-m-d 00:00:00', current_time( 'timestamp' ) );
 
+		// Get the number of days before expiration to send the email. Filterable.
+		// Default is 7 days.
 		$pmpro_email_days_before_expiration = apply_filters( 'pmpro_email_days_before_expiration', 7 );
 
 		// Configure the interval to select records from
 		$interval_start = $today;
-		$interval_end   = date( 'Y-m-d H:i:s', strtotime( "{$today} +{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
+		$interval_end   = date( 'Y-m-d 00:00:00', strtotime( "+{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
 
 		// look for memberships that are going to expire within one week (but we haven't emailed them within a week)
 		$sqlQuery = $wpdb->prepare(
@@ -61,12 +83,12 @@ class PMPro_Scheduled_Actions {
 					LEFT JOIN {$wpdb->usermeta} AS um ON um.user_id = mu.user_id
 					AND um.meta_key = CONCAT( 'pmpro_expiration_notice_', mu.membership_id )
 				WHERE ( um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) < %s )
-					AND ( mu.status = 'active' )
-						AND ( mu.enddate IS NOT NULL )
-						AND ( mu.enddate <> '0000-00-00 00:00:00' )
-						AND ( mu.enddate BETWEEN %s AND %s )
-						AND mu.membership_id IS NOT NULL
-						AND mu.membership_id <> 0
+					AND mu.status = 'active'
+					AND mu.enddate IS NOT NULL
+					AND mu.enddate > '1000-01-01 00:00:00'
+					AND mu.enddate BETWEEN %s AND %s
+					AND mu.membership_id IS NOT NULL
+					AND mu.membership_id <> 0
 				ORDER BY mu.enddate
 				",
 			$pmpro_email_days_before_expiration,
@@ -76,7 +98,7 @@ class PMPro_Scheduled_Actions {
 		);
 
 		$query_offset = 0;
-		$query_limit  = $this->batch_limit;
+		$query_limit  = $this->query_batch_limit;
 
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
@@ -105,14 +127,15 @@ class PMPro_Scheduled_Actions {
 	 * Send the expiration notice email.
 	 *
 	 * @param int    $user_id The user ID.
-	 * @param string $enddate The end date of the membership.
+	 * @param int    $membership_id The membership ID.
 	 *
 	 * @return void
 	 */
-	function pmpro_send_expiration_notice( $args ) {
+	function pmpro_send_expiration_notice( $user_id = null, $membership_id = null ) {
 
-		$user_id       = $args['user_id'] ?? null;
-		$membership_id = $args['membership_id'] ?? null;
+		if ( WP_DEBUG ) {
+			error_log( '[PMPro Notice Args] ' . print_r( compact( 'user_id', 'membership_id' ), true ) );
+		}
 
 		if ( empty( $user_id ) || empty( $membership_id ) ) {
 			return;
@@ -139,5 +162,4 @@ class PMPro_Scheduled_Actions {
 		// update user meta so we don't email them again
 		update_user_meta( $user_id, 'pmpro_expiration_notice_' . $membership_id, current_time( 'Y-m-d H:i:s' ) );
 	}
-
 }

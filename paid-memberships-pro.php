@@ -43,10 +43,11 @@ if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 
 // Check if Action Scheduler is already loaded, if not, load our library copy.
 if ( ! class_exists( \ActionScheduler::class ) ) {
-	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load our copy of Action Scheduler if needed.
-	require_once PMPRO_DIR . '/scheduled/recurring-actions.php'; 					// Load our recurring scheduled actions.
+	require_once( PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php' ); // Load our copy of Action Scheduler if needed.
 }
 require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' );   			// Our Action Scheduler Manager for PMPro
+require_once( PMPRO_DIR . '/scheduled/recurring-actions.php' ); 						// Load our recurring scheduled actions.
+
 require_once( PMPRO_DIR . '/includes/crons.php' );                  				// cron-related functionality
 require_once( PMPRO_DIR . '/scheduled/crons.php' );                 				// crons for expiring members, sending expiration emails, etc
 
@@ -243,6 +244,8 @@ $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true 
 add_action( 'plugins_loaded', function() {
 	global $pmpro_action_scheduler;
 	$pmpro_action_scheduler = PMPro_Action_Scheduler::instance();
+	// Load the scheduled actions.
+	PMPro_Scheduled_Actions::instance();
 } );
 
 /*

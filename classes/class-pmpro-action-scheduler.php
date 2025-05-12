@@ -303,14 +303,14 @@ class PMPro_Action_Scheduler {
 	 * @access public
 	 * @since 3.5
 	 *
-	 * @param string|null $hook The hook name for the task.
-	 * @param array       $args The arguments for the task.
+	 * @param string|null $hook  The hook name for the task.
+	 * @param array       $args  The arguments for the task.
 	 * @param string|null $group The group the task belongs to.
 	 *
-	 * @return void
+	 * @return int Number of tasks deleted.
 	 * @throws WP_Error If no parameters are provided.
 	 */
-	public static function clear_task_queue( $hook = null, $args = array(), $group = null ) {
+	public static function remove_actions( $status = 'completed', $hook = null, $args = array(), $group = null ) {
 		if ( empty( $hook ) && empty( $args ) && empty( $group ) ) {
 			throw new WP_Error(
 				'pmpro_action_scheduler_warning',
@@ -318,7 +318,11 @@ class PMPro_Action_Scheduler {
 			);
 		}
 
-		$search_args = array();
+		// For cases where we're filtering by args or group only
+		$search_args = array(
+			'status'   => self::get_as_status( $status ),
+			'per_page' => 100, // Process in batches
+		);	
 
 		if ( ! empty( $hook ) ) {
 			$search_args['hook'] = $hook;
@@ -332,10 +336,26 @@ class PMPro_Action_Scheduler {
 			$search_args['group'] = $group;
 		}
 
-		$tasks = as_get_scheduled_actions( $search_args );
-		foreach ( $tasks as $task ) {
-			as_unschedule_action( $task->get_hook(), $task->get_args(), $task->get_group() );
+		$count             = 0;
+		$deleted_something = true;
+
+		// Continue deleting in batches until no more actions are found
+		while ( $deleted_something ) {
+			$deleted_something = false;
+			$actions           = as_get_scheduled_actions( $search_args, 'ids' );
+
+			if ( ! empty( $actions ) && is_array( $actions ) ) {
+				foreach ( $actions as $action_id ) {
+					ActionScheduler::store()->delete_action( $action_id );
+					++$count;
+					$deleted_something = true;
+				}
+			} else {
+				break;
+			}
 		}
+
+		return $count;
 	}
 
 	/**
@@ -466,7 +486,7 @@ class PMPro_Action_Scheduler {
 
 		// Schedule the next run for exactly one calendar month from now.
 		$next_month = $this->pmpro_strtotime( 'first day of next month 8:00am' );
-		as_schedule_single_action( $next_month, 'pmpro_trigger_monthly', array(), 'recurring_tasks' );
+		as_schedule_single_action( $next_month, 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' );
 	}
 
 	/**
@@ -559,5 +579,41 @@ class PMPro_Action_Scheduler {
 		$datetime = new DateTimeImmutable( 'now', $timezone );
 		$modified = $datetime->modify( $time_string );
 		return $modified->getTimestamp();
+	}
+
+	/**
+	 * Map a text $status to the Action Scheduler status.
+	 *
+	 * @access private
+	 * @since 3.5
+	 *
+	 * @param string $status The status to map.
+	 * @return string The mapped status.
+	 */
+	public static function get_as_status( $status ){
+		// Map a text $status to the Action Scheduler status.
+		switch ( $status ) {
+			case 'queued':
+			case 'waiting':
+			case 'pending':
+				$status = ActionScheduler_Store::STATUS_PENDING;
+				break;
+			case 'error':
+			case 'failed':
+				$status = ActionScheduler_Store::STATUS_FAILED;
+				break;
+			case 'in-progress':
+			case 'running':
+			case 'processing':
+				$status = ActionScheduler_Store::STATUS_RUNNING;
+				break;
+			case 'incomplete':
+			case 'completed':
+			case 'complete':
+			case 'done':
+			default:
+				$status = ActionScheduler_Store::STATUS_COMPLETE;
+		}
+		return $status;
 	}
 }
