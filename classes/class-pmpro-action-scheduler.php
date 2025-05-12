@@ -298,7 +298,7 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Clear all tasks in the queue for a given hook.
+	 * Clear all tasks in the queue matching the given hook, args, and/or group.
 	 *
 	 * @access public
 	 * @since 3.5
@@ -308,30 +308,33 @@ class PMPro_Action_Scheduler {
 	 * @param string|null $group The group the task belongs to.
 	 *
 	 * @return void
-	 * @throws WP_Error If no hook or group is provided.
+	 * @throws WP_Error If no parameters are provided.
 	 */
 	public static function clear_task_queue( $hook = null, $args = array(), $group = null ) {
-		if ( ! empty( $hook ) ) {
-			// Clear all tasks in the queue for this hook.
-			$search_args = array(
-				'hook'  => $hook,
-				'group' => $group,
+		if ( empty( $hook ) && empty( $args ) && empty( $group ) ) {
+			throw new WP_Error(
+				'pmpro_action_scheduler_warning',
+				__( 'A hook, args, or group is required to clear the Action Scheduler task queue.', 'paid-memberships-pro' )
 			);
-			$tasks       = as_get_scheduled_actions( $search_args );
-			foreach ( $tasks as $task ) {
-				as_unschedule_action( $task->get_hook(), $task->get_args(), $task->get_group() );
-			}
-		} elseif ( ! empty( $args ) ) {
-			return as_unschedule_all_actions( $args );
-		} elseif ( ! empty( $group ) ) {
-			return as_unschedule_all_actions( '', array(), $group );
-		} else {
-			return as_unschedule_all_actions();
 		}
 
-		// If we don't have a hook or group, we can't clear the queue.
-		if ( empty( $hook ) && empty( $group ) ) {
-			throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'A hook or group is required to clear the Action Scheduler task queue.', 'paid-memberships-pro' ) );
+		$search_args = array();
+
+		if ( ! empty( $hook ) ) {
+			$search_args['hook'] = $hook;
+		}
+
+		if ( ! empty( $args ) ) {
+			$search_args['args'] = $args;
+		}
+
+		if ( ! empty( $group ) ) {
+			$search_args['group'] = $group;
+		}
+
+		$tasks = as_get_scheduled_actions( $search_args );
+		foreach ( $tasks as $task ) {
+			as_unschedule_action( $task->get_hook(), $task->get_args(), $task->get_group() );
 		}
 	}
 
