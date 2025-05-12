@@ -32,7 +32,7 @@ class PMPro_Scheduled_Actions {
 		$this->query_batch_limit = defined( 'PMPRO_CRON_LIMIT' ) ? PMPRO_CRON_LIMIT : 50;
 
 		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ) );
-		add_action( 'pmpro_expiration_reminder_email', array( $this, 'pmpro_send_expiration_notice' ), 10, 2 );
+		add_action( 'pmpro_expiration_reminder_email', array( $this, 'pmpro_send_expiration_reminder' ), 10, 2 );
 	}
 
 	/**
@@ -46,6 +46,18 @@ class PMPro_Scheduled_Actions {
 		}
 		return self::$instance;
 	}
+
+	/** Check if we need to fix inactive memberships.
+	 *
+	 * @since 3.5
+	 * @return void
+	 */
+	public function pmpro_check_inactive_memberships() {
+		PMPro_Membership_Level::fix_inactive_memberships();
+	}
+
+
+
 	/**
 	 * Schedule the membership expiration reminder emails.
 	 *
@@ -124,14 +136,14 @@ class PMPro_Scheduled_Actions {
 	}
 
 	/**
-	 * Send the expiration notice email.
+	 * Send the membership expiration reminder email.
 	 *
-	 * @param int    $user_id The user ID.
-	 * @param int    $membership_id The membership ID.
+	 * @param int $user_id The user ID.
+	 * @param int $membership_id The membership ID.
 	 *
 	 * @return void
 	 */
-	function pmpro_send_expiration_notice( $user_id = null, $membership_id = null ) {
+	function pmpro_send_expiration_reminder( $user_id = null, $membership_id = null ) {
 
 		if ( WP_DEBUG ) {
 			error_log( '[PMPro Notice Args] ' . print_r( compact( 'user_id', 'membership_id' ), true ) );
@@ -161,5 +173,55 @@ class PMPro_Scheduled_Actions {
 
 		// update user meta so we don't email them again
 		update_user_meta( $user_id, 'pmpro_expiration_notice_' . $membership_id, current_time( 'Y-m-d H:i:s' ) );
+	}
+
+	function pmpro_expire_memberships() {
+		global $wpdb;
+
+		// Don't let anything run if PMPro is paused
+		if ( pmpro_is_paused() ) {
+			return;
+		}
+
+		// clean up errors in the memberships_users table that could cause problems
+		pmpro_cleanup_memberships_users_table();
+
+		$today = date( 'Y-m-d H:i:00', current_time( 'timestamp' ) );
+
+		// look for memberships that expired before today
+		$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '0000-00-00 00:00:00' AND mu.enddate <= '" . esc_sql( $today ) . "' ORDER BY mu.enddate";
+
+		if ( defined( 'PMPRO_CRON_LIMIT' ) ) {
+			$sqlQuery .= ' LIMIT ' . PMPRO_CRON_LIMIT;
+		}
+		$expired = $wpdb->get_results( $sqlQuery );
+
+		foreach ( $expired as $e ) {
+			do_action( 'pmpro_membership_pre_membership_expiry', $e->user_id, $e->membership_id );
+
+			// remove their membership
+			pmpro_cancelMembershipLevel( $e->membership_id, $e->user_id, 'expired' );
+
+			do_action( 'pmpro_membership_post_membership_expiry', $e->user_id, $e->membership_id );
+
+			if ( get_user_meta( $e->user_id, 'pmpro_disable_notifications', true ) ) {
+				$send_email = false;
+			}
+
+			$send_email = apply_filters( 'pmpro_send_expiration_email', true, $e->user_id );
+
+			if ( $send_email ) {
+				// send an email
+				$pmproemail = new PMProEmail();
+				$euser      = get_userdata( $e->user_id );
+				if ( ! empty( $euser ) ) {
+					$pmproemail->sendMembershipExpiredEmail( $euser, $e->membership_id );
+
+					if ( WP_DEBUG ) {
+						error_log( sprintf( __( 'Membership expired email sent to %s. ', 'paid-memberships-pro' ), $euser->user_email ) );
+					}
+				}
+			}
+		}
 	}
 }

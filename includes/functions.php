@@ -3900,11 +3900,14 @@ function pmpro_getOrderStatuses( $force = false ) {
  * those rows are marked as inactive.
  *
  * @since 1.9.4.4
- * @deprecated 3.5.0 Use PMPro_Membership_Level::fix_inactive_memberships() and PMPro_Membership_Level::resolve_duplicate_active_rows() instead.
+ * @deprecated 3.5 Use PMPro_Membership_Level::fix_inactive_memberships() and PMPro_Membership_Level::resolve_duplicate_active_rows() instead.
  * 
  * @return void
  */
 function pmpro_cleanup_memberships_users_table() {
+	_deprecated_function( __METHOD__, '3.5', 'PMPro_Membership_Level::fix_inactive_memberships()' );
+	_deprecated_function( __METHOD__, '3.5', 'PMPro_Membership_Level::resolve_duplicate_active_rows()' );
+
 	global $wpdb;
 
 	// Fix rows for levels that don't exist
