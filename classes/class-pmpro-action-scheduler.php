@@ -1,15 +1,17 @@
 <?php
 /**
  *
- * This class handle tasks added by the core plugin and Add Ons for Action Scheduler (AS).
+ * Paid Memberships Pro — Action Scheduler (AS).
  *
- * It is a wrapper for the Action Scheduler library/plugin, which is a task scheduling library for WordPress.
  * This class provides methods to schedule, manage, and execute tasks asynchronously, and is both a replacement
  * for older wp-cron based tasks and a more efficient way to handle background tasks in WordPress.
  *
  * Keep in mind that: tasks are handled asynchronously, and queued tasks
+ * are not guaranteed to run immediately. Action Scheduler will process tasks in batches.
  *
  * @package pmpro_plugin
+ * @subpackage classes
+ * @since 3.5
  */
 
 class PMPro_Action_Scheduler {
@@ -18,21 +20,25 @@ class PMPro_Action_Scheduler {
 	 * The single instance of the class.
 	 *
 	 * @var PMPro_Action_Scheduler
+	 * @access protected
+	 * @since 3.5
 	 */
-	private static $instance = null;
+	protected static $instance = null;
 
 	/**
 	 * The default queue threshold for async tasks.
-	 * This is the maximum number of tasks that can be queued before a delay is added to the next task.
-	 * This is to prevent overwhelming the server with too many tasks at once.
+	 * This is the maximum number of async tasks that can be queued before a delay is added to the next task.
+	 * This is to prevent taxing the server with too many tasks that have to be run.
 	 * The default is 250 tasks.
 	 */
-	private static $pmpro_as_queue_limit = 250;
+	public static $pmpro_as_queue_limit = 250;
 
 	/**
 	 * Get the queue limit for async tasks.
 	 *
-	 * @return int The maximum number of tasks that can be queued.
+	 * @return int The maximum number of tasks that can be queued before a delay is added.
+	 * @access public
+	 * @since 3.5
 	 */
 	public static function get_pmpro_as_queue_limit() {
 		/**
@@ -61,6 +67,8 @@ class PMPro_Action_Scheduler {
 	 * Get the single instance of the class.
 	 *
 	 * @return PMPro_Action_Scheduler
+	 * @access public
+	 * @since 3.5
 	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -72,19 +80,31 @@ class PMPro_Action_Scheduler {
 	/**
 	 * Prevent the instance from being cloned.
 	 *
+	 * @access protected
+	 * @since 3.5
+	 *
 	 * @return void
+	 * @throws WP_Error If the instance is cloned.
 	 */
-	private function __clone() {}
+	protected function __clone() {
+		throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'Action Scheduler instance cannot be cloned', 'paid-memberships-pro' ) );
+	}
 
 	/**
 	 * Prevent the instance from being unserialized.
 	 *
+	 * @access protected
+	 * @since 3.5
+	 *
 	 * @return void
+	 * @throws WP_Error If the instance is unserialized.
 	 */
-	private function __wakeup() {}
+	protected function __wakeup() {
+		throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'Action Scheduler instance cannot be unserialized', 'paid-memberships-pro' ) );
+	}
 
 	/**
-	 * Check if AS has an existing task in the pending/completed queue
+	 * Check if AS has an existing task in the pending or completed queue
 	 *
 	 * @access public
 	 * @since 3.5
@@ -92,13 +112,13 @@ class PMPro_Action_Scheduler {
 	 * @param string         $hook The hook name for the task.
 	 * @param array          $args Arguments passed to the task hook.
 	 * @param string         $group The group the task belongs to.
-	 * @param boolean        $upcoming True to check pending tasks, false to check completed tasks.
+	 * @param boolean        $pending True to check pending tasks, false to check completed tasks.
 	 * @param string|boolean $timestamp Optional timestamp to compare with task date.
 	 *
 	 * @return bool True if an existing task is found, false otherwise.
 	 */
-	public function has_existing_task( $hook, $args = array(), $group = '', $upcoming = true, $timestamp = false ) {
-		$status = $upcoming ? ActionScheduler_Store::STATUS_PENDING : ActionScheduler_Store::STATUS_COMPLETE;
+	public function has_existing_task( $hook, $args = array(), $group = '', $pending = true, $timestamp = false ) {
+		$status = $pending ? ActionScheduler_Store::STATUS_PENDING : ActionScheduler_Store::STATUS_COMPLETE;
 
 		$query_args = array(
 			'hook'   => $hook,
@@ -108,10 +128,10 @@ class PMPro_Action_Scheduler {
 		);
 
 		// If we are looking for a completed task, we need to provide a timestamp.
-		if ( ! $upcoming && $timestamp ) {
+		if ( ! $pending && $timestamp ) {
 			$query_args['date']         = $timestamp;
 			$query_args['date_compare'] = '>=';
-		} elseif ( ! $upcoming ) {
+		} elseif ( ! $pending ) {
 			$query_args['date']         = current_time( 'mysql' );
 			$query_args['date_compare'] = '<=';
 		}
@@ -123,14 +143,14 @@ class PMPro_Action_Scheduler {
 	/**
 	 * Get the count of AS items currently queued for a group
 	 *
-	 * @access private
+	 * @access public
 	 * @since 3.5
 	 *
 	 * @param string $group The task group name.
 	 *
 	 * @return int The number of tasks in the queue.
 	 */
-	private function count_existing_tasks_for_group( $group ) {
+	public static function count_existing_tasks_for_group( $group ) {
 		$search_args = array(
 			'group'  => $group,
 			'status' => ActionScheduler_Store::STATUS_PENDING,
@@ -139,7 +159,7 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Check if a task exists in the queue of tasks, add it if not and maybe add a queue delay.
+	 * Check if a task exists in the queue of tasks before adding it; and maybe add a queue delay.
 	 *
 	 * @access public
 	 * @since 3.5
@@ -162,28 +182,30 @@ class PMPro_Action_Scheduler {
 				$timestamp = null;
 			}
 		}
-		// Check for a task in the queue matching this task.
+		// Check for a task in the queue matching this task exactly (hook, args, group).
 		if ( $this->has_existing_task( $hook, $args, $group ) ) {
 			return;
 		}
 
 		// We're going to add a timestamp
 		if ( null === $timestamp && false === $run_asap ) {
-			$task_count = $this->count_existing_tasks_for_group( $group );
+			$task_count = self::count_existing_tasks_for_group( $group );
 			// If we have more than self::get_pmpro_as_queue() tasks in the queue, add a delay to the task.
 			// This will space out tasks and prevent overwhelming the server if the tasking is heavy.
 			if ( $task_count > self::get_pmpro_as_queue_limit() ) {
-				$timestamp = $this->pmpro_strtotime( "+{$task_count} seconds" );
+				$delay = $task_count - self::get_pmpro_as_queue_limit();
+				$timestamp = $this->pmpro_strtotime( "+{$delay} seconds" );
 			} else {
 				// Less than self::get_pmpro_as_queue() tasks in the queue, queue this task immediately.
 				$timestamp = $this->pmpro_strtotime( 'now' );
 			}
 		}
 
+		// If we are running this task immediately, we need to use the async queue.
 		if ( $run_asap ) {
 			return as_enqueue_async_action( $hook, $args, $group );
 		}
-
+		// If we have a timestamp, we will schedule the task for the time provided.
 		if ( null !== $timestamp ) {
 			return as_schedule_single_action( $timestamp, $hook, $args, $group );
 		}
@@ -192,7 +214,7 @@ class PMPro_Action_Scheduler {
 	/**
 	 * Maybe add a recurring task (if not exists)
 	 *
-	 * @access private
+	 * @access public
 	 * @since 3.5
 	 *
 	 * @param string   $hook The hook for the task.
@@ -202,7 +224,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @return void
 	 */
-	private function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = 'pmpro_recurring_tasks' ) {
+	public function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = 'pmpro_recurring_tasks' ) {
 		if ( ! $this->has_existing_task( $hook, array(), $group ) ) {
 			// Make sure first run datetime has been set.
 			$first_run_datetime = $first_run_datetime ?: $this->pmpro_strtotime( 'now +5 minutes' );
@@ -216,21 +238,66 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
+	 * Add the ability to store custom messages with Action Scheduler's logs when running a task.
+	 *
+	 * @access public
+	 * @since 3.5
+	 *
+	 * @param string $action The action hook name.
+	 * @param string $status The status of the action.
+	 * @param string $message The log message to add.
+	 * @return void
+	 */
+	public static function add_task_log( $action, $status, $message = '' ) {
+		if ( empty( $action ) || empty( $message ) ) {
+			// If we don't have a message or action, we can't log anything.
+			return;
+		}
+		$action_id = ActionScheduler::store()->find_action( $action, array( 'status' => ActionScheduler_Store::STATUS_RUNNING ) );
+
+		if ( empty( $action_id ) ) {
+			// If we don't have an action ID, we can't log anything.
+			return;
+		}
+		// Log the message with the action ID when running a task.
+		ActionScheduler::logger()->log( $action_id, $message );
+	}
+
+	/**
 	 * Clear all tasks in the queue for a given hook.
 	 *
 	 * @access public
 	 * @since 3.5
 	 *
-	 * @param string $hook The hook name for the task.
-	 * @param string $group The group the task belongs to.
+	 * @param string|null $hook The hook name for the task.
+	 * @param array $args The arguments for the task.
+	 * @param string|null $group The group the task belongs to.
+	 *
 	 * @return void
-	 * @throws WP_Error If no hook is provided.
+	 * @throws WP_Error If no hook or group is provided.
 	 */
-	public static function clear_task_queue( $hook ) {
+	public static function clear_task_queue( $hook = null, $args = array(), $group = null ) {
 		if ( ! empty( $hook ) ) {
-			return as_unschedule_all_actions( $hook );
+			// Clear all tasks in the queue for this hook.
+			$search_args = array(
+				'hook'  => $hook,
+				'group' => $group,
+			);
+			$tasks = as_get_scheduled_actions( $search_args );
+			foreach ( $tasks as $task ) {
+				as_unschedule_action( $task->get_hook(), $task->get_args(), $task->get_group() );
+			}
+		} elseif ( ! empty( $args ) ) {
+			return as_unschedule_all_actions( $args );
+		} elseif ( ! empty( $group ) ) {
+			return as_unschedule_all_actions( '', array(), $group );
 		} else {
-			throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'No hook provided to clear the Action Scheduler task queue.', 'paid-memberships-pro' ) );
+			return as_unschedule_all_actions();
+		}
+
+		// If we don't have a hook or group, we can't clear the queue.
+		if ( empty( $hook ) && empty( $group ) ) {
+			throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'A hook or group is required to clear the Action Scheduler task queue.', 'paid-memberships-pro' ) );
 		}
 	}
 
@@ -243,6 +310,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
+	 * 
 	 * @return void
 	 */
 	public function add_recurring_hooks() {
@@ -291,10 +359,14 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Add dummy callbacks for the scheduled tasks to prevent AS from logging failed actions.
+	 * Add dummy callbacks for our scheduled tasks to prevent AS from logging failed actions.
+	 *
+	 * NOTE: If you are using a custom schedule, you will need to add a dummy callback for it here. 
+	 * This is only necessary if you are using a custom schedule hook, and it's possible that nothing will be scheduled for it.
 	 *
 	 * @access public
 	 * @since 3.5
+	 * 
 	 * @return void
 	 */
 	public function add_dummy_callbacks() {
@@ -347,32 +419,6 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Add the ability to store custom messages with Action Scheduler's logs when running a task.
-	 *
-	 * @access public
-	 * @since 3.5
-	 *
-	 * @param string $action The action hook name.
-	 * @param string $status The status of the action.
-	 * @param string $message The log message to add.
-	 * @return void
-	 */
-	public function add_log_msg( $action, $status, $message = '' ) {
-		if ( empty( $action ) || empty( $message ) ) {
-			// If we don't have a message or action, we can't log anything.
-			return;
-		}
-		$action_id = ActionScheduler::store()->find_action( $action, array( 'status' => ActionScheduler_Store::STATUS_RUNNING ) );
-
-		if ( empty( $action_id ) ) {
-			// If we don't have an action ID, we can't log anything.
-			return;
-		}
-		// Log the message with the action ID when running a task.
-		ActionScheduler::logger()->log( $action_id, $message );
-	}
-
-	/**
 	 * Action scheduler claims a batch of actions to process in each request. It keeps the batch
 	 * fairly small (by default, 25) in order to prevent errors, like memory exhaustion.
 	 *
@@ -384,13 +430,13 @@ class PMPro_Action_Scheduler {
 	 *
 	 * For more details on Action Scheduler batch sizes, see: https://actionscheduler.org/perf/#increasing-batch-size
 	 *
-	 * @access public
+	 * @access protected
 	 * @since 3.5
 	 *
 	 * @param int $batch_size The current batch size.
 	 * @return int Modified batch size.
 	 */
-	public function modify_batch_size( $batch_size ) {
+	protected function modify_batch_size( $batch_size ) {
 
 		// If we are on Pantheon, we can set it to 50.
 		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
@@ -421,13 +467,13 @@ class PMPro_Action_Scheduler {
 	 *
 	 * For more details on the Action Scheduler time limit, see: https://actionscheduler.org/perf/#increasing-time-limit
 	 *
-	 * @access public
+	 * @access protected
 	 * @since 3.5
 	 *
 	 * @param int $time_limit The current time limit in seconds.
 	 * @return int Modified time limit in seconds.
 	 */
-	public function modify_batch_time_limit( $time_limit ) {
+	protected function modify_batch_time_limit( $time_limit ) {
 
 		// Set sensible defaults based on known environment limits.
 		// If we are on Pantheon, we can set it to 120.
