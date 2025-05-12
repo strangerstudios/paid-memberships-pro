@@ -433,11 +433,10 @@ class PMPro_Action_Scheduler {
 				add_action(
 					$schedule['hook'],
 					function () use ( $schedule ) {
-						PMPro_Action_Scheduler::add_task_log( $schedule['hook'], 'info', 'Dummy callback executed for scheduled hook.' );
+						PMPro_Action_Scheduler::add_task_log( $schedule['hook'], 'info', 'PMPro: Dummy callback executed for ' . $schedule['hook'] . ' scheduled hook.' );
 						return;
 					}
 				);
-				self::add_task_log( $schedule['hook'], 'info', 'Dummy callback registered for scheduled hook.' );
 			}
 		}
 
@@ -445,11 +444,10 @@ class PMPro_Action_Scheduler {
 		add_action(
 			'pmpro_trigger_monthly',
 			function () {
-				PMPro_Action_Scheduler::add_task_log( 'pmpro_trigger_monthly', 'info', 'Dummy callback executed for scheduled hook.' );
+				PMPro_Action_Scheduler::add_task_log( 'pmpro_trigger_monthly', 'info', 'PMPro: Dummy callback executed for monthly scheduled hook.' );
 				return;
 			}
 		);
-		self::add_task_log( 'pmpro_trigger_monthly', 'info', 'Dummy callback registered for scheduled hook.' );
 	}
 
 	/**
