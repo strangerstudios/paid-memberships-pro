@@ -9,6 +9,8 @@
  * Keep in mind that: tasks are handled asynchronously, and queued tasks
  * are not guaranteed to run immediately. Action Scheduler will process tasks in batches.
  *
+ * 
+ *
  * @package pmpro_plugin
  * @subpackage classes
  * @since 3.5
@@ -61,6 +63,10 @@ class PMPro_Action_Scheduler {
 
 		// Handle the monthly tasks.
 		add_action( 'pmpro_trigger_monthly', array( $this, 'handle_monthly_tasks' ) );
+
+		// Add filters to modify the batch size and time limit.
+		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ) );
+		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ) );
 	}
 
 	/**
@@ -193,7 +199,7 @@ class PMPro_Action_Scheduler {
 			// If we have more than self::get_pmpro_as_queue() tasks in the queue, add a delay to the task.
 			// This will space out tasks and prevent overwhelming the server if the tasking is heavy.
 			if ( $task_count > self::get_pmpro_as_queue_limit() ) {
-				$delay = $task_count - self::get_pmpro_as_queue_limit();
+				$delay     = $task_count - self::get_pmpro_as_queue_limit();
 				$timestamp = $this->pmpro_strtotime( "+{$delay} seconds" );
 			} else {
 				// Less than self::get_pmpro_as_queue() tasks in the queue, queue this task immediately.
@@ -243,17 +249,19 @@ class PMPro_Action_Scheduler {
 	 * @access public
 	 * @since 3.5
 	 *
-	 * @param string $action The action hook name.
+	 * @param string $hook The hook name.
 	 * @param string $status The status of the action.
 	 * @param string $message The log message to add.
 	 * @return void
 	 */
-	public static function add_task_log( $action, $status, $message = '' ) {
-		if ( empty( $action ) || empty( $message ) ) {
-			// If we don't have a message or action, we can't log anything.
+	public static function add_task_log( $hook, $status, $message = '' ) {
+		if ( empty( $hook ) || empty( $message ) ) {
+			// If we don't have a message or hook, we can't log anything.
 			return;
 		}
-		$action_id = ActionScheduler::store()->find_action( $action, array( 'status' => ActionScheduler_Store::STATUS_RUNNING ) );
+		// We have to use ActionScheduler::store()->find_action() to get the action ID.
+		// This is because the action ID is not available in the context of the task.
+		$action_id = ActionScheduler::store()->find_action( $hook, array( 'status' => ActionScheduler_Store::STATUS_RUNNING ) );
 
 		if ( empty( $action_id ) ) {
 			// If we don't have an action ID, we can't log anything.
@@ -264,13 +272,41 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
+	 * List all tasks in the queue for a given group.
+	 *
+	 * @access public
+	 * @since 3.5
+	 *
+	 * @param string $group The task group name.
+	 *
+	 * @return array The list of tasks in the queue.
+	 */
+	public static function list_tasks_by_group( $group ) {
+		return as_get_scheduled_actions( array( 'group' => $group ) );
+	}
+
+	/**
+	 * List all tasks in the queue for a given hook.
+	 *
+	 * @access public
+	 * @since 3.5
+	 *
+	 * @param string $hook The task hook name.
+	 *
+	 * @return array The list of tasks in the queue.
+	 */
+	public static function list_tasks_by_hook( $hook ) {
+		return as_get_scheduled_actions( array( 'hook' => $hook ) );
+	}
+
+	/**
 	 * Clear all tasks in the queue for a given hook.
 	 *
 	 * @access public
 	 * @since 3.5
 	 *
 	 * @param string|null $hook The hook name for the task.
-	 * @param array $args The arguments for the task.
+	 * @param array       $args The arguments for the task.
 	 * @param string|null $group The group the task belongs to.
 	 *
 	 * @return void
@@ -283,7 +319,7 @@ class PMPro_Action_Scheduler {
 				'hook'  => $hook,
 				'group' => $group,
 			);
-			$tasks = as_get_scheduled_actions( $search_args );
+			$tasks       = as_get_scheduled_actions( $search_args );
 			foreach ( $tasks as $task ) {
 				as_unschedule_action( $task->get_hook(), $task->get_args(), $task->get_group() );
 			}
@@ -302,16 +338,24 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Setup our custom scheduled hooks. You can use these hooks to perform any scheduler
-	 * task that needs to run regularly each day or week, overnight.
+	 * Registers PMPro recurring scheduled hooks and ensures they are scheduled if not already.
 	 *
-	 * You can also use the pmpro_action_scheduler_recurring_schedules filter to change/add schedules
-	 * except for our custom monthly task, which is always scheduled for the first day of the month at 8:00am.
+	 * The following hooks are scheduled via Action Scheduler, using the 'pmpro_recurring_tasks' group:
+	 * - pmpro_schedule_quarter_hourly: Runs every 15 minutes.
+	 * - pmpro_schedule_hourly: Runs every hour.
+	 * - pmpro_schedule_daily: Runs daily at 10:30am.
+	 * - pmpro_schedule_weekly: Runs every Sunday at 8:00am.
+	 * - pmpro_trigger_monthly: Runs on the first day of each month at 8:00am.
+	 *
+	 * Filters:
+	 * - `pmpro_action_scheduler_recurring_schedules`: Modify or extend the recurring schedule definitions.
+	 *
+	 * Notes:
+	 * - Each hook gets a dummy callback (see `add_dummy_callbacks()`) to prevent logging failures for unhandled actions.
+	 * - The `pmpro_trigger_monthly` task is handled by `handle_monthly_tasks()` and automatically reschedules itself.
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
-	 * @return void
 	 */
 	public function add_recurring_hooks() {
 		$schedules = apply_filters(
@@ -361,12 +405,16 @@ class PMPro_Action_Scheduler {
 	/**
 	 * Add dummy callbacks for our scheduled tasks to prevent AS from logging failed actions.
 	 *
-	 * NOTE: If you are using a custom schedule, you will need to add a dummy callback for it here. 
-	 * This is only necessary if you are using a custom schedule hook, and it's possible that nothing will be scheduled for it.
+	 * This ensures that scheduled hooks without real handlers do not trigger "no callback" errors in the Action Scheduler log.
+	 *
+	 * NOTE: If you are using a custom schedule, you will need to add a dummy callback for it here.
+	 *
+	 * Filters:
+	 * - `pmpro_action_scheduler_recurring_schedules`: Allows you to modify or extend the list of recurring hooks needing dummy callbacks.
 	 *
 	 * @access public
 	 * @since 3.5
-	 * 
+	 *
 	 * @return void
 	 */
 	public function add_dummy_callbacks() {
@@ -386,10 +434,12 @@ class PMPro_Action_Scheduler {
 			if ( ! empty( $schedule['hook'] ) ) {
 				add_action(
 					$schedule['hook'],
-					function () {
+					function () use ( $schedule ) {
+						PMPro_Action_Scheduler::add_task_log( $schedule['hook'], 'info', 'Dummy callback executed for scheduled hook.' );
 						return;
 					}
 				);
+				self::add_task_log( $schedule['hook'], 'info', 'Dummy callback registered for scheduled hook.' );
 			}
 		}
 
@@ -397,9 +447,11 @@ class PMPro_Action_Scheduler {
 		add_action(
 			'pmpro_trigger_monthly',
 			function () {
+				PMPro_Action_Scheduler::add_task_log( 'pmpro_trigger_monthly', 'info', 'Dummy callback executed for scheduled hook.' );
 				return;
 			}
 		);
+		self::add_task_log( 'pmpro_trigger_monthly', 'info', 'Dummy callback registered for scheduled hook.' );
 	}
 
 	/**
@@ -430,13 +482,13 @@ class PMPro_Action_Scheduler {
 	 *
 	 * For more details on Action Scheduler batch sizes, see: https://actionscheduler.org/perf/#increasing-batch-size
 	 *
-	 * @access protected
+	 * @access public
 	 * @since 3.5
 	 *
 	 * @param int $batch_size The current batch size.
 	 * @return int Modified batch size.
 	 */
-	protected function modify_batch_size( $batch_size ) {
+	public function modify_batch_size( $batch_size ) {
 
 		// If we are on Pantheon, we can set it to 50.
 		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
@@ -467,13 +519,13 @@ class PMPro_Action_Scheduler {
 	 *
 	 * For more details on the Action Scheduler time limit, see: https://actionscheduler.org/perf/#increasing-time-limit
 	 *
-	 * @access protected
+	 * @access public
 	 * @since 3.5
 	 *
 	 * @param int $time_limit The current time limit in seconds.
 	 * @return int Modified time limit in seconds.
 	 */
-	protected function modify_batch_time_limit( $time_limit ) {
+	public function modify_batch_time_limit( $time_limit ) {
 
 		// Set sensible defaults based on known environment limits.
 		// If we are on Pantheon, we can set it to 120.
