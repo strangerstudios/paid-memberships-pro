@@ -436,6 +436,16 @@ function pmpro_checkForUpgrades() {
 
 		update_option( 'pmpro_db_version', '3.402' );
 	}
+
+	/**
+	 * Version 3.5
+	 * Moving from WP Cron to WP Scheduled Actions via Action Scheduler.
+	 */
+	if ( $pmpro_db_version < 3.5 ) {
+		// Remove Crons Previously Registered by PMPro.
+		pmpro_clear_crons();
+		update_option( 'pmpro_db_version', '3.5' );
+	}
 }
 
 function pmpro_db_delta() {

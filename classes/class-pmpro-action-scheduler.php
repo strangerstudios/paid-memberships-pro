@@ -66,9 +66,9 @@ class PMPro_Action_Scheduler {
 		// Handle the monthly tasks.
 		add_action( 'pmpro_trigger_monthly', array( $this, 'handle_monthly_tasks' ) );
 
-		// Add filters to modify the batch size and time limit.
-		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ) );
-		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ) );
+		// Add late filters to modify the batch size and time limit.
+		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
+		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
 	}
 
 	/**

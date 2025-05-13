@@ -111,7 +111,7 @@ function pmpro_handle_schedule_crons_on_cron_ready_check( $pre ) {
 	return $pre;
 }
 
-add_filter( 'pre_get_ready_cron_jobs', 'pmpro_handle_schedule_crons_on_cron_ready_check' );
+// add_filter( 'pre_get_ready_cron_jobs', 'pmpro_handle_schedule_crons_on_cron_ready_check' );
 
 /**
  * Schedule a periodic event unless one with the same hook is already scheduled.
