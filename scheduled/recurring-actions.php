@@ -28,8 +28,12 @@ class PMPro_Scheduled_Actions {
 	 */
 	public function __construct() {
 
-		// Inherit the batch limit from the PMPro cron settings or default to 50.
+		// Inherit the batch limit from the former PMPro cron settings or default to 50.
 		$this->query_batch_limit = defined( 'PMPRO_CRON_LIMIT' ) ? PMPRO_CRON_LIMIT : 50;
+
+		// Schedule cleanup actions previously handled by pmpro_cleanup_memberships_users_table()
+		add_action( 'pmpro_schedule_weekly', array( $this, 'pmpro_check_inactive_memberships' ) );
+		add_action( 'pmpro_schedule_weekly', array( $this, 'resolve_duplicate_active_rows' ) );
 
 		// Membership expiration reminders
 		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ) );
@@ -39,9 +43,6 @@ class PMPro_Scheduled_Actions {
 		add_action( 'pmpro_schedule_daily', array( $this, 'pmpro_expire_memberships' ) );
 		add_action( 'pmpro_membership_expired_email', array( $this, 'pmpro_send_membership_expired_email' ), 10, 2 );
 
-		// Schedule cleanup actions previously handled by pmpro_cleanup_memberships_users_table()
-		add_action( 'pmpro_schedule_weekly', array( $this, 'pmpro_check_inactive_memberships' ) );
-		add_action( 'pmpro_schedule_weekly', array( $this, 'resolve_duplicate_active_rows' ) );
 	}
 
 	/**
