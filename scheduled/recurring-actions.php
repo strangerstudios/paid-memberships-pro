@@ -31,8 +31,13 @@ class PMPro_Scheduled_Actions {
 		// Inherit the batch limit from the PMPro cron settings or default to 50.
 		$this->query_batch_limit = defined( 'PMPRO_CRON_LIMIT' ) ? PMPRO_CRON_LIMIT : 50;
 
+		// Membership expiration reminders
 		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ) );
 		add_action( 'pmpro_expiration_reminder_email', array( $this, 'pmpro_send_expiration_reminder' ), 10, 2 );
+
+		// Expired Membership Routines
+		add_action( 'pmpro_schedule_daily', array( $this, 'pmpro_expire_memberships' ) );
+		add_action( 'pmpro_membership_expired_email', array( $this, 'pmpro_send_membership_expired_email' ), 10, 2 );
 
 		// Schedule cleanup actions previously handled by pmpro_cleanup_memberships_users_table()
 		add_action( 'pmpro_schedule_weekly', array( $this, 'pmpro_check_inactive_memberships' ) );
@@ -52,7 +57,7 @@ class PMPro_Scheduled_Actions {
 	}
 
 	/** Check if we need to fix inactive memberships.
-	 * 
+	 *
 	 * This function is called weekly to fix any inactive memberships.
 	 *
 	 * @since 3.5
@@ -68,9 +73,9 @@ class PMPro_Scheduled_Actions {
 	/**
 	 * Check for duplicate active rows in the memberships_users table.
 	 *
-	 * This function is called weekly to resolve any duplicate active rows 
+	 * This function is called weekly to resolve any duplicate active rows
 	 * in the memberships_users table.
-	 * 
+	 *
 	 * @since 3.5
 	 * @return void
 	 */
@@ -92,11 +97,7 @@ class PMPro_Scheduled_Actions {
 	public function membership_expiration_reminders() {
 
 		global $wpdb;
-
-		// Don't do anything if PMPro is paused
-		if ( pmpro_is_paused() ) {
-			return;
-		}
+		global $pmpro_action_scheduler;
 
 		$today = date( 'Y-m-d 00:00:00', current_time( 'timestamp' ) );
 
@@ -146,7 +147,7 @@ class PMPro_Scheduled_Actions {
 			}
 
 			foreach ( $expiring_soon as $e ) {
-				PMPro_Action_Scheduler::instance()->maybe_add_task(
+				$pmpro_action_scheduler->maybe_add_task(
 					'pmpro_expiration_reminder_email',
 					array(
 						'user_id'       => $e->user_id,
@@ -200,51 +201,90 @@ class PMPro_Scheduled_Actions {
 		update_user_meta( $user_id, 'pmpro_expiration_notice_' . $membership_id, current_time( 'Y-m-d H:i:s' ) );
 	}
 
-	function pmpro_expire_memberships() {
+	/**
+	 * Check for expired memberships and send emails.
+	 *
+	 * This function is called daily.
+	 *
+	 * @since 3.5
+	 * @return void
+	 */
+	public function pmpro_expire_memberships() {
 		global $wpdb;
-
-		// Don't let anything run if PMPro is paused
-		if ( pmpro_is_paused() ) {
-			return;
-		}
-
-		// clean up errors in the memberships_users table that could cause problems
-		pmpro_cleanup_memberships_users_table();
+		global $pmpro_action_scheduler;
 
 		$today = date( 'Y-m-d H:i:00', current_time( 'timestamp' ) );
 
-		// look for memberships that expired before today
-		$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '0000-00-00 00:00:00' AND mu.enddate <= '" . esc_sql( $today ) . "' ORDER BY mu.enddate";
+		$sqlQuery = $wpdb->prepare(
+			"SELECT mu.user_id, mu.membership_id
+	         FROM {$wpdb->pmpro_memberships_users} mu
+	         WHERE mu.status = 'active'
+	           AND mu.enddate IS NOT NULL
+	           AND mu.enddate > '1000-01-01 00:00:00'
+	           AND mu.enddate <= %s
+	         ORDER BY mu.enddate",
+			$today
+		);
 
-		if ( defined( 'PMPRO_CRON_LIMIT' ) ) {
-			$sqlQuery .= ' LIMIT ' . PMPRO_CRON_LIMIT;
-		}
-		$expired = $wpdb->get_results( $sqlQuery );
+		$query_offset = 0;
+		$query_limit  = $this->query_batch_limit;
 
-		foreach ( $expired as $e ) {
-			do_action( 'pmpro_membership_pre_membership_expiry', $e->user_id, $e->membership_id );
+		do {
+			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
+			$expired       = $wpdb->get_results( $batched_query );
 
-			// remove their membership
-			pmpro_cancelMembershipLevel( $e->membership_id, $e->user_id, 'expired' );
-
-			do_action( 'pmpro_membership_post_membership_expiry', $e->user_id, $e->membership_id );
-
-			if ( get_user_meta( $e->user_id, 'pmpro_disable_notifications', true ) ) {
-				$send_email = false;
+			if ( empty( $expired ) ) {
+				break;
 			}
 
-			$send_email = apply_filters( 'pmpro_send_expiration_email', true, $e->user_id );
+			foreach ( $expired as $e ) {
+				$pmpro_action_scheduler->maybe_add_task(
+					'pmpro_membership_expired_email',
+					array(
+						'user_id'       => $e->user_id,
+						'membership_id' => $e->membership_id,
+					),
+					'pmpro_expiration_tasks'
+				);
+			}
 
-			if ( $send_email ) {
-				// send an email
-				$pmproemail = new PMProEmail();
-				$euser      = get_userdata( $e->user_id );
-				if ( ! empty( $euser ) ) {
-					$pmproemail->sendMembershipExpiredEmail( $euser, $e->membership_id );
+			$query_offset += $query_limit;
+		} while ( count( $expired ) === $query_limit );
+	}
 
-					if ( WP_DEBUG ) {
-						error_log( sprintf( __( 'Membership expired email sent to %s. ', 'paid-memberships-pro' ), $euser->user_email ) );
-					}
+	/**
+	 * Send the membership expired email.
+	 *
+	 * @access public
+	 * @since 3.5
+	 * @param object $e The expired membership object.
+	 *
+	 * @return void
+	 */
+	public function pmpro_send_membership_expired_email( $user_id, $membership_id ) {
+
+		do_action( 'pmpro_membership_pre_membership_expiry', $user_id, $membership_id );
+
+		// remove their membership
+		pmpro_cancelMembershipLevel( $membership_id, $user_id, 'expired' );
+
+		do_action( 'pmpro_membership_post_membership_expiry', $user_id, $membership_id );
+
+		if ( get_user_meta( $user_id, 'pmpro_disable_notifications', true ) ) {
+			$send_email = false;
+		}
+
+		$send_email = apply_filters( 'pmpro_send_expiration_email', true, $user_id );
+
+		if ( $send_email ) {
+			// send an email
+			$pmproemail = new PMProEmail();
+			$euser      = get_userdata( $user_id );
+			if ( ! empty( $euser ) ) {
+				$pmproemail->sendMembershipExpiredEmail( $euser, $membership_id );
+
+				if ( WP_DEBUG ) {
+					error_log( sprintf( __( 'Membership expired email sent to %s. ', 'paid-memberships-pro' ), $euser->user_email ) );
 				}
 			}
 		}
