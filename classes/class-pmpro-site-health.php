@@ -133,10 +133,6 @@ class PMPro_Site_Health {
 					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
 					'value' => self::get_pause_mode_state(),
 				],
-				'pmpro-action-scheduler' => [
-					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
-					'value' => self::get_pause_mode_state(),
-				],
 			],
 		];
 
