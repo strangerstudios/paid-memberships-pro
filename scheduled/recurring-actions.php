@@ -97,7 +97,6 @@ class PMPro_Scheduled_Actions {
 	public function membership_expiration_reminders() {
 
 		global $wpdb;
-		global $pmpro_action_scheduler;
 
 		$today = date( 'Y-m-d 00:00:00', current_time( 'timestamp' ) );
 
@@ -147,7 +146,7 @@ class PMPro_Scheduled_Actions {
 			}
 
 			foreach ( $expiring_soon as $e ) {
-				$pmpro_action_scheduler->maybe_add_task(
+				PMPro_Action_Scheduler::instance()->maybe_add_task(
 					'pmpro_expiration_reminder_email',
 					array(
 						'user_id'       => $e->user_id,
@@ -211,7 +210,6 @@ class PMPro_Scheduled_Actions {
 	 */
 	public function pmpro_expire_memberships() {
 		global $wpdb;
-		global $pmpro_action_scheduler;
 
 		$today = date( 'Y-m-d H:i:00', current_time( 'timestamp' ) );
 
@@ -238,7 +236,7 @@ class PMPro_Scheduled_Actions {
 			}
 
 			foreach ( $expired as $e ) {
-				$pmpro_action_scheduler->maybe_add_task(
+				PMPro_Action_Scheduler::instance()->maybe_add_task(
 					'pmpro_membership_expired_email',
 					array(
 						'user_id'       => $e->user_id,
@@ -257,7 +255,9 @@ class PMPro_Scheduled_Actions {
 	 *
 	 * @access public
 	 * @since 3.5
-	 * @param object $e The expired membership object.
+	 *
+	 * @param int    $user_id The user ID.
+	 * @param int    $membership_id The membership ID.
 	 *
 	 * @return void
 	 */
