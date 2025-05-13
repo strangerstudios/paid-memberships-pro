@@ -53,6 +53,10 @@ class PMPro_Action_Scheduler {
 	 * Constructor
 	 */
 	public function __construct() {
+
+		// Add the action to handle the pause status of PMPro.
+		add_action( 'pmpro_pause_status_changed', array( $this, 'handle_pmpro_pause' ) );
+
 		// Add our custom hooks for hourly, daily, weekly and monthly tasks.
 		add_action( 'action_scheduler_init', array( $this, 'add_recurring_hooks' ) );
 
@@ -322,7 +326,7 @@ class PMPro_Action_Scheduler {
 		$search_args = array(
 			'status'   => self::get_as_status( $status ),
 			'per_page' => 100, // Process in batches
-		);	
+		);
 
 		if ( ! empty( $hook ) ) {
 			$search_args['hook'] = $hook;
@@ -590,7 +594,7 @@ class PMPro_Action_Scheduler {
 	 * @param string $status The status to map.
 	 * @return string The mapped status.
 	 */
-	public static function get_as_status( $status ){
+	public static function get_as_status( $status ) {
 		// Map a text $status to the Action Scheduler status.
 		switch ( $status ) {
 			case 'queued':
@@ -615,5 +619,59 @@ class PMPro_Action_Scheduler {
 				$status = ActionScheduler_Store::STATUS_COMPLETE;
 		}
 		return $status;
+	}
+
+	/**
+	 * Suspend or resume Action Scheduler based on PMPro's pause status (pmpro_is_paused()).
+	 *
+	 * This method adds filters to Action Scheduler's queue runner
+	 * to set the batch size and concurrent batches to 0.
+	 *
+	 * @return void
+	 */
+	public function handle_pmpro_pause() {
+		// Only proceed if the PMPro function exists
+		if ( ! function_exists( 'pmpro_is_paused' ) ) {
+			return;
+		}
+
+		// Check if static variable is set to avoid duplicate hook management
+		static $hooks_managed = false;
+
+		if ( $hooks_managed ) {
+			return;
+		}
+
+		// Define the callback function for filtering batch size & queue runner
+		$batch_size_callback = function ( $batch_size, $context ) {
+			return 0;
+		};
+
+		// If PMPro is paused, add our filters
+		if ( pmpro_is_paused() ) {
+			add_filter( 'action_scheduler_queue_runner_batch_size', $batch_size_callback, 999, 2 );
+			add_filter( 'action_scheduler_queue_runner_concurrent_batches', $batch_size_callback, 999, 2 );
+		}
+
+		// Mark that we've managed the hooks
+		$hooks_managed = true;
+
+		// Add listener for pause/unpause status changes
+		add_action(
+			'pmpro_pause_status_changed',
+			function ( $is_paused ) use ( $batch_size_callback ) {
+				if ( $is_paused ) {
+					// Add filters when paused
+					add_filter( 'action_scheduler_queue_runner_batch_size', $batch_size_callback, 999, 2 );
+					add_filter( 'action_scheduler_queue_runner_concurrent_batches', $batch_size_callback, 999, 2 );
+				} else {
+					// Remove filters when unpaused
+					remove_filter( 'action_scheduler_queue_runner_batch_size', $batch_size_callback, 999 );
+					remove_filter( 'action_scheduler_queue_runner_concurrent_batches', $batch_size_callback, 999 );
+				}
+			},
+			10,
+			1
+		);
 	}
 }

@@ -33,6 +33,10 @@ class PMPro_Scheduled_Actions {
 
 		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ) );
 		add_action( 'pmpro_expiration_reminder_email', array( $this, 'pmpro_send_expiration_reminder' ), 10, 2 );
+
+		// Schedule cleanup actions previously handled by pmpro_cleanup_memberships_users_table()
+		add_action( 'pmpro_schedule_weekly', array( $this, 'pmpro_check_inactive_memberships' ) );
+		add_action( 'pmpro_schedule_weekly', array( $this, 'resolve_duplicate_active_rows' ) );
 	}
 
 	/**
@@ -48,15 +52,36 @@ class PMPro_Scheduled_Actions {
 	}
 
 	/** Check if we need to fix inactive memberships.
+	 * 
+	 * This function is called weekly to fix any inactive memberships.
 	 *
 	 * @since 3.5
 	 * @return void
 	 */
 	public function pmpro_check_inactive_memberships() {
+		if ( pmpro_is_paused() ) {
+			return;
+		}
 		PMPro_Membership_Level::fix_inactive_memberships();
 	}
 
+	/**
+	 * Check for duplicate active rows in the memberships_users table.
+	 *
+	 * This function is called weekly to resolve any duplicate active rows 
+	 * in the memberships_users table.
+	 * 
+	 * @since 3.5
+	 * @return void
+	 */
+	public function resolve_duplicate_active_rows() {
+		// Don't let anything run if PMPro is paused
+		if ( pmpro_is_paused() ) {
+			return;
+		}
 
+		PMPro_Membership_Level::resolve_duplicate_active_rows();
+	}
 
 	/**
 	 * Schedule the membership expiration reminder emails.
