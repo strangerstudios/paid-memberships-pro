@@ -242,9 +242,9 @@ $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true 
 
 // Load the PMPro Action Scheduler.
 add_action( 'plugins_loaded', function() {
-	global $pmpro_action_scheduler;
-	$pmpro_action_scheduler = PMPro_Action_Scheduler::instance();
-	// Load the scheduled actions.
+	// Load our Action Scheduler class.
+	PMPro_Action_Scheduler::instance();
+	// Add our scheduled actions.
 	PMPro_Scheduled_Actions::instance();
 } );
 
