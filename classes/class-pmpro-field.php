@@ -1003,7 +1003,7 @@ class PMPro_Field {
 
 			//build multi select
 			$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name );
-			if(empty($this->select2options) || !preg_match('/multiple: *false/', $this->select2options)) {
+			if( empty( $this->select2options ) || ! preg_match( '/multiple: *false/', $this->select2options ) ) {
 				// backwards compatible - default to multi-select
 				$r .= '[]" multiple="multiple" ';
 			} else {
@@ -1026,15 +1026,15 @@ class PMPro_Field {
 				$r .= $this->getHTMLAttributes();
 			$r .= '>';
 
-			if(false !== strpos($this->select2options, 'ajax:') && !empty($value) && !empty($value[0]))
+			if( false !== strpos( $this->select2options, 'ajax:' ) && ! empty( $value ) && ! empty( $value[0] ) )
 			{
 				// add selected option(s) if results are fetched remotely
-				if(empty($this->options)) {
+				if( empty( $this->options ) ) {
 					$this->options = [];
 				}
-				foreach($value as $v)
+				foreach( $value as $v )
 				{
-					$this->options[$v] = $v; // we don't know the label so just use value for now
+					$this->options[$v] = $v; // we don't know the label at this point so just use value for now
 				}
 			}
 
