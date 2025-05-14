@@ -35,14 +35,16 @@ class PMPro_Scheduled_Actions {
 		add_action( 'pmpro_schedule_weekly', array( $this, 'pmpro_check_inactive_memberships' ) );
 		add_action( 'pmpro_schedule_weekly', array( $this, 'resolve_duplicate_active_rows' ) );
 
-		// Membership expiration reminders
+		// Membership expiration reminders (Daily)
 		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ) );
 		add_action( 'pmpro_expiration_reminder_email', array( $this, 'pmpro_send_expiration_reminder' ), 10, 2 );
 
-		// Expired Membership Routines
+		// Expired Membership Routines (Daily)
 		add_action( 'pmpro_schedule_daily', array( $this, 'pmpro_expire_memberships' ) );
 		add_action( 'pmpro_membership_expired_email', array( $this, 'pmpro_send_membership_expired_email' ), 10, 2 );
 
+		// Admin activity emails (Conditionally Hooked)
+		$this->conditionally_hook_admin_activity_email();
 	}
 
 	/**
@@ -257,8 +259,8 @@ class PMPro_Scheduled_Actions {
 	 * @access public
 	 * @since 3.5
 	 *
-	 * @param int    $user_id The user ID.
-	 * @param int    $membership_id The membership ID.
+	 * @param int $user_id The user ID.
+	 * @param int $membership_id The membership ID.
 	 *
 	 * @return void
 	 */
@@ -289,5 +291,55 @@ class PMPro_Scheduled_Actions {
 				}
 			}
 		}
+	}
+
+	public function pmpro_admin_activity_email() {
+
+		// Check if the admin activity email is enabled.
+		if ( ! get_option( 'pmpro_activity_email_enabled' ) ) {
+			return;
+		}
+
+		$pmproemail = new PMPro_Admin_Activity_Email();
+		$pmproemail->sendAdminActivity();
+
+		if ( WP_DEBUG ) {
+			error_log( sprintf( __( 'Admin activity email sent to %s. ', 'paid-memberships-pro' ), $user->user_email ) );
+		}
+	}
+
+	/**
+	 * Conditionally hook pmpro_admin_activity_email to scheduled tasks.
+	 *
+	 * @since 3.5
+	 * @return void
+	 */
+	private function conditionally_hook_admin_activity_email() {
+		add_action(
+			'pmpro_schedule_daily',
+			function () {
+				if ( get_option( 'pmpro_activity_email_frequency' ) === 'day' ) {
+					$this->pmpro_admin_activity_email();
+				}
+			}
+		);
+
+		add_action(
+			'pmpro_schedule_weekly',
+			function () {
+				if ( get_option( 'pmpro_activity_email_frequency' ) === 'week' ) {
+					$this->pmpro_admin_activity_email();
+				}
+			}
+		);
+
+		add_action(
+			'pmpro_schedule_monthly',
+			function () {
+				if ( get_option( 'pmpro_activity_email_frequency' ) === 'month' ) {
+					$this->pmpro_admin_activity_email();
+				}
+			}
+		);
 	}
 }
