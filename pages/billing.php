@@ -70,12 +70,14 @@
 					<?php
 						// Check if the gateway for this subscription updates a single subscription at once or all subscriptions at once.
 						$subscription_gateway_obj = $pmpro_billing_subscription->get_gateway_object();
-						if ( 'individual' === $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
+
+						// If it's an individual subscription, or the gateway doesn't support payment method updates, show the level name and cost text for this subscription. We will show text on how to update in the future.
+						if ( 'individual' === $subscription_gateway_obj->supports( 'payment_method_updates' ) || ! $subscription_gateway_obj->supports( 'payment_method_updates' )  ) {
 							// Show the cost text for the subscription.
 							?>
 							<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain pmpro_list-with-labels pmpro_cols-2' ) ); ?>">
 								<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
-									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e('Level', 'paid-memberships-pro' );?></span>
+									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Level', 'paid-memberships-pro' );?></span>
 									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo esc_html( $pmpro_billing_level->name ); ?></span>
 								</li>
 								<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
@@ -85,6 +87,11 @@
 								<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
 									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Next payment on', 'paid-memberships-pro' ); ?></span>
 									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo esc_html( $pmpro_billing_subscription->get_next_payment_date( get_option( 'date_format' ) ) ); ?></span>
+								</li>
+								<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
+									<?php $pmpro_gateways = pmpro_gateways(); ?>
+									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></span>
+									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo esc_html( $pmpro_gateways[$subscription_gateway_obj->gateway] ); ?></span>
 								</li>
 							</ul> <!-- end pmpro_list -->
 							<?php
@@ -161,7 +168,7 @@
 					<?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?>
 				</h2>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-					<p><?php esc_html_e( 'Your billing information cannot be updated at this time.', 'paid-memberships-pro' ); ?></p>
+					<p><?php echo sprintf( esc_html__( 'To change your billing information, log in to your payment gateway dashboard or complete checkout again for your current membership level: %s.', 'paid-memberships-pro' ), "<a href='$checkout_url'>$checkout_url</a>" ); ?></p>
 				</div> <!-- end pmpro_card_content -->
 			</div> <!-- end pmpro_card -->
 		<?php } else {
@@ -384,7 +391,7 @@
 	<?php } elseif ( pmpro_hasMembershipLevel() ) {
 		// User's level must not be recurring.
 		?>
-		<p><?php esc_html_e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
+		<p><?php esc_html_e( "This subscription is not recurring. You don't need to update your billing information.", 'paid-memberships-pro' );?></p>
 		<?php
 	} else {
 		// User does not have a membership level.
