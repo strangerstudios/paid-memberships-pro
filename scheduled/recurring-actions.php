@@ -45,6 +45,24 @@ class PMPro_Scheduled_Actions {
 
 		// Admin activity emails (Conditionally Hooked)
 		$this->conditionally_hook_admin_activity_email();
+
+		// Schedule recurring payment reminder tasks.
+		add_action( 'pmpro_schedule_daily', array( $this, 'schedule_recurring_payment_reminder_tasks' ) );
+
+		// Register admin activity email hook.
+		add_action( 'pmpro_admin_activity_email', array( $this, 'pmpro_admin_activity_email' ) );
+
+		// Register recurring payment reminder email hook.
+		add_action( 'pmpro_recurring_payment_reminder_email', array( $this, 'send_recurring_payment_reminder_email' ), 10, 3 );
+
+		// Backwards compatibility for the old cron hooks.
+		add_action( 'pmpro_cron_expire_memberships', array( $this, 'pmpro_expire_memberships' ) );
+		add_action( 'pmpro_cron_expiration_reminder_email', array( $this, 'pmpro_send_membership_expired_email' ), 10, 2 );
+		add_action( 'pmpro_cron_membership_expiration_reminders', array( $this, 'membership_expiration_reminders' ) );
+		add_action( 'pmpro_cron_send_expiration_reminder', array( $this, 'pmpro_send_expiration_reminder' ), 10, 2 );
+		add_action( 'pmpro_cron_admin_activity_email', array( $this, 'pmpro_admin_activity_email' ) );
+		add_action( 'pmpro_cron_recurring_payment_reminders', 'pmpro_cron_recurring_payment_reminders' );
+
 	}
 
 	/**
@@ -293,6 +311,12 @@ class PMPro_Scheduled_Actions {
 		}
 	}
 
+	/**
+	 * Send the admin activity email.
+	 *
+	 * @since 3.5
+	 * @return void
+	 */
 	public function pmpro_admin_activity_email() {
 
 		// Check if the admin activity email is enabled.
@@ -341,5 +365,114 @@ class PMPro_Scheduled_Actions {
 				}
 			}
 		);
+	}
+
+	/**
+	 * Schedule recurring payment reminder tasks.
+	 *
+	 * @return void
+	 */
+	public function schedule_recurring_payment_reminder_tasks() {
+		global $wpdb;
+
+		$emails = apply_filters(
+			'pmpro_upcoming_recurring_payment_reminder',
+			array( 7 => 'membership_recurring' )
+		);
+		ksort( $emails, SORT_NUMERIC );
+
+		$previous_days = 0;
+		foreach ( $emails as $days => $template ) {
+			$sqlQuery = $wpdb->prepare(
+				"SELECT subscription.*
+				FROM {$wpdb->pmpro_subscriptions} subscription
+				LEFT JOIN {$wpdb->pmpro_subscriptionmeta} last_next_payment_date 
+					ON subscription.id = last_next_payment_date.pmpro_subscription_id
+					AND last_next_payment_date.meta_key = 'pmprorm_last_next_payment_date'
+				LEFT JOIN {$wpdb->pmpro_subscriptionmeta} last_days
+					ON subscription.id = last_days.pmpro_subscription_id
+					AND last_days.meta_key = 'pmprorm_last_days'
+				WHERE subscription.status = 'active'
+				AND subscription.next_payment_date >= %s
+				AND subscription.next_payment_date < %s
+				AND ( last_next_payment_date.meta_value IS NULL
+					OR last_next_payment_date.meta_value != subscription.next_payment_date
+					OR last_days.meta_value > %d
+				)",
+				date_i18n( 'Y-m-d', strtotime( "+{$previous_days} days", current_time( 'timestamp' ) ) ),
+				date_i18n( 'Y-m-d', strtotime( "+{$days} days", current_time( 'timestamp' ) ) ),
+				$days
+			);
+
+			$subscriptions_to_notify = $wpdb->get_results( $sqlQuery );
+			if ( is_wp_error( $subscriptions_to_notify ) ) {
+				continue;
+			}
+
+			foreach ( $subscriptions_to_notify as $subscription_to_notify ) {
+				PMPro_Action_Scheduler::instance()->maybe_add_task(
+					'pmpro_recurring_payment_reminder_email',
+					array(
+						'subscription_id' => $subscription_to_notify->id,
+						'template'        => $template,
+						'days'            => $days,
+					),
+					'pmpro_async_tasks'
+				);
+			}
+			$previous_days = $days;
+		}
+	}
+
+	/**
+	 * Send recurring payment reminder email.
+	 *
+	 * @param int    $subscription_id The subscription ID.
+	 * @param string $template The template name.
+	 * @param int    $days The number of days before payment.
+	 * @return void
+	 */
+	public function send_recurring_payment_reminder_email( $subscription_id, $template, $days ) {
+		$subscription_obj = new PMPro_Subscription( $subscription_id );
+		$user             = get_userdata( $subscription_obj->get_user_id() );
+
+		if ( empty( $user ) ) {
+			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date() );
+			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
+			return;
+		}
+
+		$send_email  = apply_filters( 'pmpro_send_recurring_payment_reminder_email', true, $subscription_obj, $days );
+		$send_emails = apply_filters_deprecated( 'pmprorm_send_reminder_to_user', array( $send_email, $user, null ), '3.2' );
+
+		if ( $send_emails && 'membership_recurring' == $template ) {
+			$pmproemail = new PMPro_Email_Template_Membership_Recurring( $subscription_obj );
+			$pmproemail->send();
+		} elseif ( $send_emails ) {
+			$membership_level     = pmpro_getLevel( $subscription_obj->get_membership_level_id() );
+			$pmproemail           = new PMProEmail();
+			$pmproemail->email    = $user->user_email;
+			$pmproemail->template = $template;
+			$pmproemail->data     = array(
+				'subject'               => $pmproemail->subject,
+				'name'                  => $user->display_name,
+				'user_login'            => $user->user_login,
+				'sitename'              => get_option( 'blogname' ),
+				'membership_id'         => $subscription_obj->get_membership_level_id(),
+				'membership_level_name' => empty( $membership_level ) ? sprintf( esc_html__( '[Deleted level #%d]', 'pmpro-recurring-emails' ), $subscription_obj->get_membership_level_id() ) : $membership_level->name,
+				'membership_cost'       => $subscription_obj->get_cost_text(),
+				'billing_amount'        => pmpro_formatPrice( $subscription_obj->get_billing_amount() ),
+				'renewaldate'           => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
+				'siteemail'             => get_option( 'pmpro_from_email' ),
+				'login_link'            => wp_login_url(),
+				'display_name'          => $user->display_name,
+				'user_email'            => $user->user_email,
+				'cancel_link'           => wp_login_url( pmpro_url( 'cancel' ) ),
+			);
+			$pmproemail->sendEmail();
+		}
+
+		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date() );
+		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
 	}
 }
