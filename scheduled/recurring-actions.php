@@ -55,6 +55,9 @@ class PMPro_Scheduled_Actions {
 		// Register recurring payment reminder email hook.
 		add_action( 'pmpro_recurring_payment_reminder_email', array( $this, 'send_recurring_payment_reminder_email' ), 10, 3 );
 
+		// Temporary file cleanup (Daily)
+		add_action( 'pmpro_schedule_daily', array( $this, 'pmpro_delete_tmp' ) );
+
 		// Backwards compatibility for the old cron hooks.
 		add_action( 'pmpro_cron_expire_memberships', array( $this, 'pmpro_expire_memberships' ) );
 		add_action( 'pmpro_cron_expiration_reminder_email', array( $this, 'pmpro_send_membership_expired_email' ), 10, 2 );
@@ -62,7 +65,6 @@ class PMPro_Scheduled_Actions {
 		add_action( 'pmpro_cron_send_expiration_reminder', array( $this, 'pmpro_send_expiration_reminder' ), 10, 2 );
 		add_action( 'pmpro_cron_admin_activity_email', array( $this, 'pmpro_admin_activity_email' ) );
 		add_action( 'pmpro_cron_recurring_payment_reminders', 'pmpro_cron_recurring_payment_reminders' );
-
 	}
 
 	/**
@@ -474,5 +476,41 @@ class PMPro_Scheduled_Actions {
 
 		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date() );
 		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
+	}
+
+	/**
+	 * Delete old files in wp-content/uploads/pmpro-register-helper/tmp.
+	 *
+	 * @since 3.5
+	 * @return void
+	 */
+	public function pmpro_delete_tmp() {
+		$upload_dir  = wp_upload_dir();
+		$pmprorh_dir = trailingslashit( $upload_dir['basedir'] ) . 'paid-memberships-pro/tmp/';
+
+		if ( ! file_exists( $pmprorh_dir ) || ! is_dir( $pmprorh_dir ) ) {
+			return;
+		}
+
+		if ( $handle = opendir( $pmprorh_dir ) ) {
+			while ( false !== ( $file = readdir( $handle ) ) ) {
+				$filepath = $pmprorh_dir . $file;
+
+				// Skip special directories.
+				if ( in_array( $file, array( '.', '..' ), true ) ) {
+					continue;
+				}
+
+				// Only delete real files older than an hour.
+				if ( is_file( $filepath ) && ! is_link( $filepath ) && ( time() - filemtime( $filepath ) ) > HOUR_IN_SECONDS ) {
+					unlink( $filepath );
+
+					if ( WP_DEBUG ) {
+						error_log( '[PMPro] Deleted temp file: ' . $filepath );
+					}
+				}
+			}
+			closedir( $handle );
+		}
 	}
 }
