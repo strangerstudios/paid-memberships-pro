@@ -32,6 +32,22 @@ add_action( 'pmpro_checkout_before_submit_button', 'pmpro_cloudflare_turnstile_g
 add_action( 'pmpro_billing_before_submit_button', 'pmpro_cloudflare_turnstile_get_html' );
 
 /**
+ * Adds Turnstile to the PMPro login form
+ *
+ * @since TBD
+ */
+function pmpro_filter_cloudflare_turnstile_get_html($login_form, $args){
+
+    ob_start();
+    pmpro_cloudflare_turnstile_get_html();
+    $pmpro_turnstile = ob_get_contents();
+    ob_end_clean();
+    return $login_form . $pmpro_turnstile;
+    
+}
+add_filter( 'login_form_middle', 'pmpro_filter_cloudflare_turnstile_get_html', 10, 2 );
+
+/**
  * Registration check to make sure the Turnstile passes.
  *
  * @return void

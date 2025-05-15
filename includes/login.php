@@ -1013,6 +1013,45 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 	if ( is_a( $user, 'WP_User' ) ) {
 		return $user;
 	}
+    
+    // If CloudFlare Turnstile is not enabled, bail.
+	if ( empty( get_option( 'pmpro_cloudflare_turnstile' ) ) ) {
+		return $user;
+	}
+    
+	// Don't show it more than once on a screen. This is for "PayPal Express".
+	if ( pmpro_get_session_var( 'pmpro_cloudflare_turnstile_validated' ) ) {
+		return $user;
+	}
+
+	// If the Turnstile is not passed, show an error.
+	if ( empty( $_POST['cf-turnstile-response'] ) ) {
+        $user = new WP_Error( 'turnstile-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+	}
+    
+	// Verify the turnstile check.
+	$headers = array(
+		'body' => array(
+			'secret'   => get_option( 'pmpro_cloudflare_turnstile_secret_key', '' ),
+			'response' => pmpro_getParam( 'cf-turnstile-response' ),
+		),
+	);
+	$verify   = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', $headers );
+	$verify   = wp_remote_retrieve_body( $verify );
+	$response = json_decode( $verify );
+    
+	// If the check failed, show an error.
+	if ( empty( $response->success ) || ! $response->success ) {
+        
+		$error_messages    = pmpro_cloudflare_turnstile_get_error_message();
+		$error_code        = $response->{'error-codes'}[0];
+		$displayed_message = isset( $error_messages[ $error_code ] ) ? $error_messages[ $error_code ] : esc_html__( 'An error occurred while validating the security check.', 'paid-memberships-pro' );
+
+        $user = new WP_Error( 'turnstile-failed', $displayed_message );
+		
+	}
+    
+	pmpro_set_session_var( 'pmpro_cloudflare_turnstile_validated', true );
 
 	// For some reason, WP core doesn't recognize this error.
 	if ( ! empty( $username ) && empty( $password ) ) {
@@ -1021,8 +1060,7 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 
 	// check what page the login attempt is coming from
 	$referrer = wp_get_referer();
-
-	if ( !empty( $referrer ) && is_wp_error( $user ) ) {
+	if ( is_wp_error( $user ) ) {
 
 		$error = $user->get_error_code();
 
@@ -1030,16 +1068,18 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 				$error_args = array(
 					'action' => urlencode( $error ),
 					'username' => sanitize_text_field( $username )
-				);
+				);                
 				wp_redirect( add_query_arg( $error_args, pmpro_login_url() ) );
+                exit();
 			} else {
 				wp_redirect( pmpro_login_url() );
+                exit();
 			}
 	}
 
 	return $user;
 }
-add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
+add_filter( 'authenticate', 'pmpro_authenticate_username_password', 10, 3);
 
 /**
  * Redirect failed login to referrer for frontend user login.
