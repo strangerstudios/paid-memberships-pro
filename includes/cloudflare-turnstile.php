@@ -9,7 +9,7 @@
 function pmpro_cloudflare_turnstile_get_html() {
 
 	// If CloudFlare Turnstile is not enabled, bail.
-	if ( empty( get_option( 'pmpro_cloudflare_turnstile' ) ) ) {
+	if ( pmpro_captcha() !== 'turnstile' ) {
 		return;
 	}
 
@@ -36,7 +36,11 @@ add_action( 'pmpro_billing_before_submit_button', 'pmpro_cloudflare_turnstile_ge
  *
  * @since TBD
  */
-function pmpro_filter_cloudflare_turnstile_get_html($login_form, $args){
+function pmpro_login_form_turnstile($login_form, $args){
+
+    if( pmpro_captcha() != 'turnstile' ) {
+        return $login_form;
+    }
 
     ob_start();
     pmpro_cloudflare_turnstile_get_html();
@@ -45,7 +49,20 @@ function pmpro_filter_cloudflare_turnstile_get_html($login_form, $args){
     return $login_form . $pmpro_turnstile;
     
 }
-add_filter( 'login_form_middle', 'pmpro_filter_cloudflare_turnstile_get_html', 10, 2 );
+add_filter( 'login_form_middle', 'pmpro_login_form_turnstile', 10, 2 );
+
+function pmpro_wp_login_form_turnstile( $login_form ){
+
+    if( pmpro_captcha() != 'turnstile' ) {
+        return $login_form;
+    }
+    
+    pmpro_cloudflare_turnstile_get_html();
+    
+}
+add_action( 'login_form', 'pmpro_wp_login_form_turnstile', 10 );
+add_action( 'lostpassword_form', 'pmpro_wp_login_form_turnstile', 10 );
+add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_wp_login_form_turnstile', 10 );
 
 /**
  * Registration check to make sure the Turnstile passes.
@@ -108,27 +125,15 @@ add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validatio
  */
 function pmpro_cloudflare_turnstile_settings() {
 	// Get the options
-	$cloudflare_turnstile  = get_option( 'pmpro_cloudflare_turnstile', '0' );
+	$cloudflare_turnstile  = pmpro_captcha();
 	$cloudflare_site_key = get_option( 'pmpro_cloudflare_turnstile_site_key', '' );
 	$cloudflare_secret_key = get_option( 'pmpro_cloudflare_turnstile_secret_key', '' );
 
 	// If CloudFlare Turnstile is not enabled, hide some settings by default.
-	$tr_style = empty( $cloudflare_turnstile ) ? 'display: none;' : '';
+	$tr_style = ( $cloudflare_turnstile !== 'turnstile' ) ? 'display: none;' : '';
 
 	// Output settings
-	?>
-	<tr>
-		<th scope="row" valign="top">
-			<label for="cloudflare_turnstile"><?php esc_html_e( 'Use CloudFlare Turnstile?', 'paid-memberships-pro' ); ?></label>
-		</th>
-		<td>
-			<select id="cloudflare_turnstile" name="cloudflare_turnstile">
-				<option value="0" <?php selected( $cloudflare_turnstile, 0 ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-				<option value="1" <?php selected( $cloudflare_turnstile, 1 ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
-			</select>
-			<p class="description"><?php esc_html_e( 'A free CloudFlare Turnstile key is required.', 'paid-memberships-pro' ); ?> <a href="https://www.cloudflare.com/products/turnstile/" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Click here to signup for CloudFlare Turnstile', 'paid-memberships-pro' ); ?></a>.</p>
-		</td>
-	</tr>
+	?>	
    <tr class='pmpro_cloudflare_turnstile_settings' style='<?php esc_attr_e( $tr_style ); ?>'>
 		<th scope="row"><label for="cloudflare_turnstile_site_key"><?php esc_html_e( 'Turnstile Site Key', 'paid-memberships-pro' ); ?>:</label></th>
 		<td>
@@ -143,8 +148,8 @@ function pmpro_cloudflare_turnstile_settings() {
 	</tr>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery('#cloudflare_turnstile').change(function() {
-				if(jQuery(this).val() == '1') {
+			jQuery('#captcha').change(function() {
+				if(jQuery(this).val() == 'turnstile') {
 					jQuery('.pmpro_cloudflare_turnstile_settings').show();
 				} else {
 					jQuery('.pmpro_cloudflare_turnstile_settings').hide();

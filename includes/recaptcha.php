@@ -7,8 +7,9 @@ function pmpro_init_recaptcha() {
 	// global $recaptcha for backwards compatibility.
 	// TODO: Remove this in a future version.
 	global $recaptcha;
-	$recaptcha = get_option( 'pmpro_recaptcha' );
-	if ( empty( $recaptcha ) ) {
+    $recaptcha = get_captcha();
+    
+	if ( empty( $recaptcha ) || $recaptcha !== 'recaptcha' ) {
 		return;
 	}
 
@@ -19,6 +20,7 @@ function pmpro_init_recaptcha() {
 
 	// Set up form submission JS code.
 	$recaptcha_version = get_option( 'pmpro_recaptcha_version' );
+    
 	if( $recaptcha_version == '3_invisible' ) {
 		wp_register_script( 'pmpro-recaptcha-v3', plugins_url( 'js/pmpro-recaptcha-v3.js', PMPRO_BASE_FILE ), array( 'jquery' ), PMPRO_VERSION );
 		$localize_vars = array(
@@ -68,7 +70,7 @@ function pmpro_recaptcha_get_html() {
 	}
 
 	// If ReCAPTCHA is not enabled, bail.
-	if ( empty( get_option( 'pmpro_recaptcha' ) ) ) {
+	if ( pmpro_captcha() !== 'recaptcha' ) {
 		return;
 	}
 
@@ -124,28 +126,79 @@ function pmpro_recaptcha_get_html() {
 add_action( 'pmpro_checkout_before_submit_button', 'pmpro_recaptcha_get_html' );
 add_action( 'pmpro_billing_before_submit_button', 'pmpro_recaptcha_get_html' );
 
+/**
+ * Adds Turnstile to the PMPro login form
+ *
+ * @since TBD
+ */
+function pmpro_login_form_recaptcha($login_form, $args){
+
+    if( pmpro_captcha() !== 'recaptcha' ) {
+        return $login_form;
+    }
+
+    ob_start();
+    pmpro_recaptcha_get_html();
+    $pmpro_recaptcha = ob_get_contents();
+    ob_end_clean();
+    return $login_form . $pmpro_recaptcha;
+    
+}
+add_filter( 'login_form_middle', 'pmpro_login_form_recaptcha', 10, 2 );
+
+/**
+ * Adds Turnstile to the WP login form
+ *
+ * @since TBD
+ */
+function pmpro_wp_login_form_recaptcha(){
+
+    if( pmpro_captcha() === 'recaptcha' ) {
+        pmpro_recaptcha_get_html();
+    }
+    
+}
+add_action( 'login_form', 'pmpro_wp_login_form_recaptcha', 10 );
+add_action( 'lostpassword_form', 'pmpro_wp_login_form_recaptcha', 10 );
+add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_wp_login_form_recaptcha', 10 );
+
 
 /**
  * AJAX Method to Validate a ReCAPTCHA Response Token
  */
 function pmpro_wp_ajax_validate_recaptcha() {
-	require_once( PMPRO_DIR . '/includes/lib/recaptchalib.php' );
 	
-	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
-	
-	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-	$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $_REQUEST['g-recaptcha-response'] ) );
-	if ( $resp->success ) {
-	    pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
-		echo "1";
-	} else {
-		echo "0";
-	}
-	
+    $response = pmpro_validate_recaptcha( $_POST['g-recaptcha-response'] );
+    if( $response ) {
+        echo '1';
+    } else {
+        echo '0';
+    }
+
 	exit;	
 } 
 add_action( 'wp_ajax_nopriv_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptcha' );
 add_action( 'wp_ajax_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptcha' );
+
+/**
+ * Validates the reCAPTCHA response
+ */
+function pmpro_validate_recaptcha( $response ) {
+
+    require_once( PMPRO_DIR . '/includes/lib/recaptchalib.php' );
+	
+	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
+	
+	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
+	$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $response ) );
+	if ( $resp->success ) {
+	    pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
+		return true;
+	} else {
+		return false;
+	}
+
+}
 
 function pmpro_after_checkout_reset_recaptcha() {
     pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
@@ -242,29 +295,17 @@ add_filter( 'pmpro_billing_update_checks', 'pmpro_recaptcha_validation_check', 1
  */
 function pmpro_recaptcha_settings() {
 	// Get the current options.
-	$recaptcha = get_option( 'pmpro_recaptcha' );
+	$recaptcha = pmpro_captcha();
 	$recaptcha_version = get_option( 'pmpro_recaptcha_version' );
 	$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
 	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 
 	// If reCAPTCHA is not enabled, hide some settings by default.
-	$tr_style = empty( $recaptcha ) ? 'display: none;' : '';
+	$tr_style = ( $recaptcha !== 'recaptcha' ) ? 'display: none;' : '';
 
 	// Output settings fields.
 	?>
-	<tr>
-		<th scope="row" valign="top">
-			<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?></label>
-		</th>
-		<td>
-			<select id="recaptcha" name="recaptcha">
-				<option value="0" <?php if( !$recaptcha ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' );?></option>
-				<!-- For reference, removed the Yes - Free memberships only. option -->
-				<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes - All memberships.', 'paid-memberships-pro' );?></option>
-			</select>
-			<p class="description"><?php esc_html_e( 'A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
-		</td>
-	</tr>
+	
 	<tr class='pmpro_recaptcha_settings' style='<?php esc_attr_e( $tr_style); ?>'>
 		<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label></th>
 		<td>					
@@ -289,8 +330,8 @@ function pmpro_recaptcha_settings() {
 	</tr>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery('#recaptcha').change(function() {
-				if(jQuery(this).val() == '2') {
+			jQuery('#captcha').change(function() {
+				if(jQuery(this).val() == 'recaptcha') {
 					jQuery('.pmpro_recaptcha_settings').show();
 				} else {
 					jQuery('.pmpro_recaptcha_settings').hide();
