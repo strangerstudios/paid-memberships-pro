@@ -454,6 +454,10 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				$message = esc_html__( 'The email could not be sent. This site may not be correctly configured to send emails.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
+            case 'captcha-failed':
+				$message = wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) );
+				$msgt = 'pmpro_error';
+				break;
 		}
 	}
 
@@ -881,6 +885,89 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 }
 
 /**
+ * Allows us to check if you're human on the password reset form
+ */
+function pmpro_password_reset_captcha(){
+
+    if( ! empty( $_POST['woocommerce-lost-password-nonce'] ) ) {
+        return;
+    }
+    
+    $captcha = pmpro_captcha();    
+
+    //Check if reCAPTCHA has been filled in
+    if( $captcha == 'recaptcha' && empty( $_POST['g-recaptcha-response'] ) ) {
+        $recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
+        if( empty( $recaptcha_validated ) ) {
+            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+        }        
+    }
+
+	//Check if Turnstile has been filled in
+	if ( $captcha == 'turnstile' && empty( $_POST['cf-turnstile-response'] ) ) {
+        $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+	}
+
+    if( $captcha == 'recaptcha' ) {  
+
+        $validated = pmpro_validate_recaptcha( $_POST['g-recaptcha-response'] ); 
+        
+        if ( ! $validated ) {            
+            $user = new WP_Error( 'captcha-failed', __( 'reCAPTCHA Validation Failed', 'paid-memberships-pro' ) );
+        }
+
+    }
+    
+    if( $captcha == 'turnstile' ) {
+            
+        // Verify the turnstile check.
+        $headers = array(
+            'body' => array(
+                'secret'   => get_option( 'pmpro_cloudflare_turnstile_secret_key', '' ),
+                'response' => pmpro_getParam( 'cf-turnstile-response' ),
+            ),
+        );
+        $verify   = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', $headers );
+        $verify   = wp_remote_retrieve_body( $verify );
+        $response = json_decode( $verify );
+        
+        // If the check failed, show an error.
+        if ( empty( $response->success ) || ! $response->success ) {
+            
+            $error_messages    = pmpro_cloudflare_turnstile_get_error_message();
+            $error_code        = $response->{'error-codes'}[0];
+            $displayed_message = isset( $error_messages[ $error_code ] ) ? $error_messages[ $error_code ] : esc_html__( 'An error occurred while validating the security check.', 'paid-memberships-pro' );
+
+            $user = new WP_Error( 'captcha-failed', $displayed_message );
+            
+        }
+        
+        pmpro_set_session_var( 'pmpro_cloudflare_turnstile_validated', true );
+
+    }
+
+    if ( ! empty( $user ) && is_wp_error( $user ) ) {
+
+		$error = $user->get_error_code();
+        
+		if ( $error ) {
+            $error_args = array(
+                'action' => 'reset_pass',
+                'errors' => urlencode( $error ),                
+            );                
+            wp_redirect( add_query_arg( $error_args, pmpro_lostpassword_url() ) );
+            exit();
+        } else {
+            wp_redirect( pmpro_lostpassword_url() );
+            exit();
+        }
+	}
+
+
+}
+add_action( 'lostpassword_post', 'pmpro_password_reset_captcha' );
+
+/**
  * Function to handle the actually password reset and update password.
  * @since 2.3
  */
@@ -1004,13 +1091,74 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
  */
  function pmpro_authenticate_username_password( $user, $username, $password ) {
 
-	// Only work when the PMPro login form is used.
-	if ( empty( $_REQUEST['pmpro_login_form_used'] ) ) {
+	// Already logged in.
+	if ( is_a( $user, 'WP_User' ) ) {
 		return $user;
 	}
 
-	// Already logged in.
-	if ( is_a( $user, 'WP_User' ) ) {
+    $captcha = pmpro_captcha();
+
+    // Don't show it more than once on a screen. This is for "PayPal Express".
+	if ( $captcha == 'turnstile' && pmpro_get_session_var( 'pmpro_cloudflare_turnstile_validated' ) ) {
+		return $user;
+	}
+
+    //Check if reCAPTCHA has been filled in
+    if( $captcha == 'recaptcha' && empty( $_POST['g-recaptcha-response'] ) ) {
+        $recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
+        if( empty( $recaptcha_validated ) ) {
+            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+        }
+    }
+
+	//Check if Turnstile has been filled in
+	if ( $captcha == 'turnstile' && empty( $_POST['cf-turnstile-response'] ) ) {
+        $turnstile_validated = pmpro_get_session_var( 'pmpro_cloudflare_turnstile_validated' );
+        if( empty( $turnstile_validated ) ) {
+            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+        }
+	}
+
+    if( $captcha == 'recaptcha' && ! empty( $_POST['g-recaptcha-response'] ) ) {        
+
+        $validated = pmpro_validate_recaptcha( $_POST['g-recaptcha-response'] ); 
+        
+        if ( ! $validated ) {            
+            $user = new WP_Error( 'captcha-failed', __( 'reCAPTCHA Validation Failed', 'paid-memberships-pro' ) );
+        }
+
+    }
+    
+    if( $captcha == 'turnstile' ) {
+            
+        // Verify the turnstile check.
+        $headers = array(
+            'body' => array(
+                'secret'   => get_option( 'pmpro_cloudflare_turnstile_secret_key', '' ),
+                'response' => pmpro_getParam( 'cf-turnstile-response' ),
+            ),
+        );
+        $verify   = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', $headers );
+        $verify   = wp_remote_retrieve_body( $verify );
+        $response = json_decode( $verify );
+        
+        // If the check failed, show an error.
+        if ( empty( $response->success ) || ! $response->success ) {
+            
+            $error_messages    = pmpro_cloudflare_turnstile_get_error_message();
+            $error_code        = $response->{'error-codes'}[0];
+            $displayed_message = isset( $error_messages[ $error_code ] ) ? $error_messages[ $error_code ] : esc_html__( 'An error occurred while validating the security check.', 'paid-memberships-pro' );
+
+            $user = new WP_Error( 'captcha-failed', $displayed_message );
+            
+        }
+        
+        pmpro_set_session_var( 'pmpro_cloudflare_turnstile_validated', true );
+
+    }
+
+    // Only work when the PMPro login form is used.
+	if ( empty( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return $user;
 	}
 
@@ -1022,7 +1170,7 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 	// check what page the login attempt is coming from
 	$referrer = wp_get_referer();
 
-	if ( !empty( $referrer ) && is_wp_error( $user ) ) {
+	if ( is_wp_error( $user ) ) {
 
 		$error = $user->get_error_code();
 
@@ -1030,16 +1178,18 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 				$error_args = array(
 					'action' => urlencode( $error ),
 					'username' => sanitize_text_field( $username )
-				);
+				);                
 				wp_redirect( add_query_arg( $error_args, pmpro_login_url() ) );
+                exit();
 			} else {
 				wp_redirect( pmpro_login_url() );
+                exit();
 			}
 	}
 
 	return $user;
 }
-add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
+add_filter( 'authenticate', 'pmpro_authenticate_username_password', 10, 3);
 
 /**
  * Redirect failed login to referrer for frontend user login.

@@ -28,6 +28,9 @@
 			$nuclear_HTTPS = 0;
 		}
 		pmpro_setOption( "nuclear_HTTPS", $nuclear_HTTPS );
+        if( isset( $_POST['captcha'] ) ) {
+            update_option( 'pmpro_captcha', sanitize_text_field( $_POST['captcha'] ) );
+        }
 
 		/**
 		 * Fires after security settings are saved.
@@ -46,6 +49,7 @@
 	$spamprotection = get_option( 'pmpro_spamprotection' );
 	$use_ssl = get_option( 'pmpro_use_ssl' );
 	$nuclear_HTTPS = get_option( 'pmpro_nuclear_HTTPS' );
+    $captcha = pmpro_captcha();
 
 	// Create an array of plugin files to check.
 	$plugin_files['pmpro-akismet'] = 'pmpro-akismet/pmpro-akismet.php';
@@ -159,6 +163,20 @@
 									<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
 								</select>
 								<p class="description"><?php printf( esc_html__( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
+							</td>
+						</tr>
+                        <tr>
+							<th scope="row" valign="top">
+								<label for="captcha"><?php esc_html_e( 'Use Captcha', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<select id="captcha" name="captcha">
+									<option value="" <?php selected( $captcha, false ); ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
+									<!-- For reference, removed the Yes - Free memberships only. option -->
+									<option value="recaptcha" <?php selected( $captcha, 'recaptcha', true ); ?>><?php esc_html_e('Use Google reCAPTCHA', 'paid-memberships-pro' );?></option>
+                                    <option value="turnstile" <?php selected( $captcha, 'turnstile', true ); ?>><?php esc_html_e('Use CloudFlare Turnstile', 'paid-memberships-pro' );?></option>
+								</select>
+								<p class="description"><?php printf( esc_html__( 'Protect your Checkout and Login forms with Google reCAPTCHA or CloudFlare Turnstile.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
 							</td>
 						</tr>
 						<?php
