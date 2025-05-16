@@ -388,11 +388,166 @@
 			</div> <!-- end pmpro_level-ID -->
 		<?php } ?>
 
-	<?php } elseif ( pmpro_hasMembershipLevel() ) {
-		// User's level must not be recurring.
+	<?php } elseif ( pmpro_hasMembershipLevel() ) {	
+
+		// Okay they have a level, let's list out all their active levels.
+
+		$memberships_for_user = pmpro_getMembershipLevelsForUser( $current_user->ID );
+
+		// Show active "paid levels" only.
 		?>
-		<p><?php esc_html_e( "This subscription is not recurring. You don't need to update your billing information.", 'paid-memberships-pro' );?></p>
+		<section id="pmpro_billing-memberships" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section' ) ); ?>">
+			<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_title pmpro_font-x-large' ) ); ?>"><?php esc_html_e( 'My Memberships', 'paid-memberships-pro' ); ?></h2>
+			<div class="pmpro_section_content">
 		<?php
+		foreach( $memberships_for_user as $membership ) {
+
+			// Get the subscription for this particular membership.
+			$subscription = null;
+			$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID, $membership->id );
+			if ( ! empty( $membership->name ) ) {
+				?>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+					<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php echo esc_html( $membership->name ); ?></h2>
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+						<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain pmpro_list-with-labels pmpro_cols-3' ) ); ?>">
+								<?php if ( ! empty( $subscriptions[0] ) ) {
+									$subscription = $subscriptions[0];
+								?>
+									<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
+										<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?></span>
+										<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo esc_html( $subscription->get_cost_text() ); ?></span>
+									</li>
+									<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
+										<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Next payment on', 'paid-memberships-pro' ); ?></span>
+										<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo esc_html( $subscription->get_next_payment_date( get_option( 'date_format' ) ) ); ?></span>
+									</li>
+								<?php }
+								
+								if ( $membership->enddate ) { 
+									$expiration_text = pmpro_get_membership_expiration_text( $membership, $current_user, '' );
+										if ( ! empty( $expiration_text ) ) {
+										?>
+										<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
+											<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Expires', 'paid-memberships-pro' ); ?></span>
+											<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo esc_html( $expiration_text ); ?></span>
+										</li>
+								<?php 
+										} // End for expiration text.
+									}
+								
+								// If there's nothing attached to the level, then we can just ignore it.
+								if ( ! $subscription && empty( $membership->enddate ) ) {
+									esc_html_e( "This membership is not recurring. You don't need to update your billing information.", 'paid-memberships-pro' );
+								}
+								?>
+								
+						</ul>		
+					</div> <!-- end pmpro_card_content -->
+						<?php
+						if ( $subscription ) {
+						?>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
+						<?php 
+							$subscription_id = $subscription->get_id() ?? '';
+							if ( ! empty( $subscription_id ) ) {
+								$billing_url = add_query_arg( 'pmpro_subscription_id', $subscription_id, pmpro_url( 'billing' ) );
+								?><a href="<?php echo esc_url( $billing_url ); ?>"><?php esc_html_e( 'View Billing Information', 'paid-memberships-pro' ); ?></a><?php
+							}
+						?>					
+						</div> <!-- end pmpro_card_actions -->
+ 						<?php
+						} elseif ( ! empty( $membership->enddate ) && pmpro_isLevelExpiringSoon( $membership ) ) { ?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
+							<a id="pmpro_actionlink-renew"
+							   href="<?php echo esc_url( add_query_arg( 'pmpro_level', $membership->id, pmpro_url( 'checkout', '', 'https' ) ) ); ?>"
+							   aria-label="<?php echo esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ); ?>">
+								<?php esc_html_e( 'Renew', 'paid-memberships-pro' ); ?>
+							</a>
+						</div>
+						<?php } ?>
+				</div> <!-- end pmpro_card -->
+				<?php
+			}
+		}
+		?>			
+		</div>
+		</section>
+		<?php
+		// Get all previous memberships, this includes cancelled and 'active' memberships.
+		$previous_memberships = pmpro_getMembershipLevelsForUser( $current_user->ID, true );
+
+		// Let's remove active ones from the list before looping through.
+		$previous_memberships = array_filter( $previous_memberships, function( $membership ) {
+			return ! ( $membership->status == 'active' || pmpro_hasMembershipLevel( $membership->id ) );
+		} );
+		
+		if ( ! empty( $previous_memberships ) ) {
+			// Array to keep track of shown ID's
+			$shown_levels = array();
+		?>
+		<section id="pmpro_billing-history" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section' ) ); ?>">
+			<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_title pmpro_font-x-large' ) ); ?>"><?php esc_html_e( 'Previous Memberships', 'paid-memberships-pro' ); ?></h2>
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+					<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table pmpro_table_past_memberships', 'pmpro_table_past_memberships' ) ); ?>">
+						<thead>
+							<tr>
+								<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-level' ) ); ?>"><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+								<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-status' ) ); ?>"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+								<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-date' ) ); ?>"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+								<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-renew' ) ); ?>"><?php echo ''; ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							// Get "OLD or Cancelled" memberships.
+								foreach ( $previous_memberships as $key => $previous_membership ) {
+									if ( in_array( $previous_membership->id, $shown_levels ) ) {
+										continue;
+									}
+									// Add it to "shown levels" array to not show it again.
+									$shown_levels[] = $previous_membership->id;
+									
+									?>
+									<tr>
+										<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-level' ) ); ?>">
+											<?php echo esc_html( $previous_membership->name ); ?>
+										</td>
+										<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-status' ) ); ?>">
+											<?php echo esc_html( $previous_membership->status ); ?>
+										</td>
+										<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-date' ) ); ?>">
+											<?php
+												echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $previous_membership->enddate ) ) );
+											?>
+										</td>
+										<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-renew' ) ); ?>">
+											<?php
+											if ( $previous_membership->allow_signups ) {
+												?>
+												<a href="<?php echo esc_url( add_query_arg( 'pmpro_level', $previous_membership->id, pmpro_url( 'checkout', '', 'https' ) ) ); ?>"><?php esc_html_e( 'Renew', 'paid-memberships-pro' ); ?></a>
+												<?php
+											} else {
+												echo esc_html__( '-', 'paid-memberships-pro' );
+											}
+											?>
+										</td>
+									</tr>
+									<?php
+								}
+							}
+							?>
+						</tbody>							
+					</table>
+				</div> <!-- end pmpro_card_content -->
+		</section>
+		<!-- <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div> -->
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
+				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
+			</div>
+		<?php
+		// esc_html_e( "This subscription is not recurring. You don't need to update your billing information.", 'paid-memberships-pro' );
 	} else {
 		// User does not have a membership level.
 		$allowed_html = array(

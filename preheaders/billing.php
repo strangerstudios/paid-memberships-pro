@@ -21,8 +21,15 @@ if ( ! empty( $_REQUEST['pmpro_subscription_id'] ) ) {
 	}
 }
 
+if ( empty( $pmpro_billing_subscription ) ) {
+    // Get the user's last active membership?
+    $membership_level_id = pmpro_getMembershipLevelForUser( $current_user->ID );
+} else {
+    $membership_level_id = $pmpro_billing_subscription->get_membership_level_id();
+}
+
 // Get the user's current membership level.
-$pmpro_billing_level            = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $pmpro_billing_subscription->get_membership_level_id() );
+$pmpro_billing_level            = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $membership_level_id );
 $current_user->membership_level = $pmpro_billing_level;
 
 //need to be secure?
