@@ -54,19 +54,19 @@ class PMPro_Action_Scheduler {
 	 */
 	public function __construct() {
 
-		// Add the action to handle the pause status of PMPro.
-		add_action( 'pmpro_pause_status_changed', array( $this, 'handle_pmpro_pause' ) );
-
-		// Add our custom hooks for hourly, daily, weekly and monthly tasks.
+		// Add custom hooks for quarter-hourly, hourly, daily and weekly tasks.
 		add_action( 'action_scheduler_init', array( $this, 'add_recurring_hooks' ) );
 
-		// Add dummy callbacks for the scheduled tasks.
-		add_action( 'action_scheduler_init', array( $this, 'add_dummy_callbacks' ) );
-
-		// Handle the monthly tasks.
+		// Handle the monthly
 		add_action( 'pmpro_trigger_monthly', array( $this, 'handle_monthly_tasks' ) );
 
-		// Add late filters to modify the batch size and time limit.
+		// Add dummy callbacks for scheduled tasks that may not have a handler.
+		add_action( 'action_scheduler_init', array( $this, 'add_dummy_callbacks' ) );
+
+		// Handle the pause status of PMPro by pausing Action Scheduler.
+		add_action( 'pmpro_pause_status_changed', array( $this, 'handle_pmpro_pause' ) );
+
+		// Add late filters to modify the AS batch size and time limit.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
 	}
@@ -90,7 +90,6 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access protected
 	 * @since 3.5
-	 *
 	 * @return void
 	 * @throws WP_Error If the instance is cloned.
 	 */
@@ -103,7 +102,6 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access protected
 	 * @since 3.5
-	 *
 	 * @return void
 	 * @throws WP_Error If the instance is unserialized.
 	 */
@@ -116,13 +114,11 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 *
 	 * @param string         $hook The hook name for the task.
 	 * @param array          $args Arguments passed to the task hook.
 	 * @param string         $group The group the task belongs to.
 	 * @param boolean        $pending True to check pending tasks, false to check completed tasks.
 	 * @param string|boolean $timestamp Optional timestamp to compare with task date.
-	 *
 	 * @return bool True if an existing task is found, false otherwise.
 	 */
 	public function has_existing_task( $hook, $args = array(), $group = '', $pending = true, $timestamp = false ) {
@@ -135,7 +131,7 @@ class PMPro_Action_Scheduler {
 			'status' => $status,
 		);
 
-		// If we are looking for a completed task, we need to provide a timestamp.
+		// If we are looking for a task that's not in the future, we must provide a timestamp.
 		if ( ! $pending && $timestamp ) {
 			$query_args['date']         = $timestamp;
 			$query_args['date_compare'] = '>=';
@@ -153,9 +149,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 *
 	 * @param string $group The task group name.
-	 *
 	 * @return int The number of tasks in the queue.
 	 */
 	public static function count_existing_tasks_for_group( $group ) {
@@ -171,13 +165,11 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 *
 	 * @param string          $hook The hook for the task.
 	 * @param mixed           $args The data being passed to the task hook.
 	 * @param string          $group The group this task should be assigned to. Default is 'pmpro_async_tasks'.
 	 * @param int|string|null $timestamp An pmpro_strtotime datetime or human-readable string.
 	 * @param boolean         $run_asap Whether to bypass the count delay and run async asap.
-	 *
 	 * @return void
 	 */
 	public function maybe_add_task( $hook, $args, $group = 'pmpro_async_tasks', $timestamp = null, $run_asap = false ) {
@@ -224,12 +216,10 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 *
 	 * @param string   $hook The hook for the task.
 	 * @param int|null $interval_in_seconds The interval in seconds this recurring task should run.
 	 * @param int|null $first_run_datetime An pmpro_strtotime datetime in the future this task should first run.
 	 * @param string   $group The group this task should be assigned to.
-	 *
 	 * @return void
 	 */
 	public function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = 'pmpro_recurring_tasks' ) {
@@ -250,7 +240,6 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 *
 	 * @param string $hook The hook name.
 	 * @param string $status The status of the action.
 	 * @param string $message The log message to add.
@@ -278,9 +267,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 *
 	 * @param string $group The task group name.
-	 *
 	 * @return array The list of tasks in the queue.
 	 */
 	public static function list_tasks_by_group( $group ) {
@@ -292,9 +279,7 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 *
 	 * @param string $hook The task hook name.
-	 *
 	 * @return array The list of tasks in the queue.
 	 */
 	public static function list_tasks_by_hook( $hook ) {
@@ -306,12 +291,10 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 *
 	 * @param string|null $hook  The hook name for the task.
 	 * @param array       $args  The arguments for the task.
 	 * @param string|null $group The group the task belongs to.
 	 * @param string      $status The status of the task to delete (default: 'completed').
-	 *
 	 * @return int Number of tasks deleted.
 	 * @throws WP_Error If no parameters are provided.
 	 */
@@ -434,7 +417,6 @@ class PMPro_Action_Scheduler {
 	 *
 	 * @access public
 	 * @since 3.5
-	 *
 	 * @return void
 	 */
 	public function add_dummy_callbacks() {
@@ -489,134 +471,6 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Action scheduler claims a batch of actions to process in each request. It keeps the batch
-	 * fairly small (by default, 25) in order to prevent errors, like memory exhaustion.
-	 *
-	 * This method increases or decreases it so that more/less actions are processed in each queue, which speeds up the
-	 * overall queue processing time due to latency in requests and the minimum 1 minute between each
-	 * queue being processed.
-	 *
-	 * You can also set this to a different value using the pmpro_action_scheduler_batch_size filter.
-	 *
-	 * For more details on Action Scheduler batch sizes, see: https://actionscheduler.org/perf/#increasing-batch-size
-	 *
-	 * @access public
-	 * @since 3.5
-	 *
-	 * @param int $batch_size The current batch size.
-	 * @return int Modified batch size.
-	 */
-	public function modify_batch_size( $batch_size ) {
-
-		// If we are on Pantheon, we can set it to 50.
-		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
-			$batch_size = 50;
-			// If we are on WP Engine, we should set it to 20.
-		} elseif ( defined( 'WP_ENGINE' ) ) {
-			$batch_size = 20;
-		}
-
-		/**
-		 * Public filter for adjusting the batch size in Action Scheduler.
-		 *
-		 * @param int $batch_size The batch size.
-		 */
-		$batch_size = apply_filters( 'pmpro_action_scheduler_batch_size', $batch_size );
-
-		return $batch_size;
-	}
-
-
-	/**
-	 * Modify the default time limit for processing a batch of actions.
-	 *
-	 * Action Scheduler provides a default of 30 seconds in which to process actions.
-	 * We can increase this for hosts like Pantheon and WP Engine.
-	 *
-	 * You can also set this to a different value using the pmpro_action_scheduler_time_limit_seconds filter.
-	 *
-	 * For more details on the Action Scheduler time limit, see: https://actionscheduler.org/perf/#increasing-time-limit
-	 *
-	 * @access public
-	 * @since 3.5
-	 *
-	 * @param int $time_limit The current time limit in seconds.
-	 * @return int Modified time limit in seconds.
-	 */
-	public function modify_batch_time_limit( $time_limit ) {
-
-		// Set sensible defaults based on known environment limits.
-		// If we are on Pantheon, we can set it to 120.
-		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
-			$time_limit = 120;
-			// If we are on WP Engine, we can set it to 60.
-		} elseif ( defined( 'WP_ENGINE' ) ) {
-			$time_limit = 60;
-		}
-
-		/**
-		 * Public filter for adjusting the time limit for Action Scheduler batches.
-		 *
-		 * @param int $time_limit The time limit in seconds.
-		 */
-		$time_limit = apply_filters( 'pmpro_action_scheduler_time_limit_seconds', $time_limit );
-
-		return $time_limit;
-	}
-
-	/**
-	 * Convert a relative or absolute time string into a timestamp using the site's timezone.
-	 *
-	 * @access private
-	 * @since 3.5
-	 *
-	 * @param string $time_string A string like "+10 minutes" or "tomorrow 5pm".
-	 * @return int UTC timestamp adjusted to the WordPress timezone.
-	 */
-	private function pmpro_strtotime( $time_string ) {
-		$timezone = wp_timezone();
-		$datetime = new DateTimeImmutable( 'now', $timezone );
-		$modified = $datetime->modify( $time_string );
-		return $modified->getTimestamp();
-	}
-
-	/**
-	 * Map a text $status to the Action Scheduler status.
-	 *
-	 * @access private
-	 * @since 3.5
-	 *
-	 * @param string $status The status to map.
-	 * @return string The mapped status.
-	 */
-	public static function get_as_status( $status ) {
-		// Map a text $status to the Action Scheduler status.
-		switch ( $status ) {
-			case 'queued':
-			case 'waiting':
-			case 'pending':
-				$status = ActionScheduler_Store::STATUS_PENDING;
-				break;
-			case 'error':
-			case 'failed':
-				$status = ActionScheduler_Store::STATUS_FAILED;
-				break;
-			case 'in-progress':
-			case 'running':
-			case 'processing':
-				$status = ActionScheduler_Store::STATUS_RUNNING;
-				break;
-			case 'incomplete':
-			case 'completed':
-			case 'complete':
-			case 'done':
-			default:
-				$status = ActionScheduler_Store::STATUS_COMPLETE;
-		}
-		return $status;
-	}
-
-	/**
 	 * Suspend or resume Action Scheduler based on PMPro's pause status (pmpro_is_paused()).
 	 *
 	 * This method adds filters to Action Scheduler's queue runner
@@ -668,5 +522,129 @@ class PMPro_Action_Scheduler {
 			10,
 			1
 		);
+	}
+
+	/**
+	 * Action scheduler claims a batch of actions to process in each request. It keeps the batch
+	 * fairly small (by default, 25) in order to prevent errors, like memory exhaustion.
+	 *
+	 * This method increases or decreases it so that more/less actions are processed in each queue, which speeds up the
+	 * overall queue processing time due to latency in requests and the minimum 1 minute between each
+	 * queue being processed.
+	 *
+	 * You can also set this to a different value using the pmpro_action_scheduler_batch_size filter.
+	 *
+	 * For more details on Action Scheduler batch sizes, see: https://actionscheduler.org/perf/#increasing-batch-size
+	 *
+	 * @access public
+	 * @since 3.5
+	 * @param int $batch_size The current batch size.
+	 * @return int Modified batch size.
+	 */
+	public function modify_batch_size( $batch_size ) {
+
+		// If we are on Pantheon, we can set it to 50.
+		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
+			$batch_size = 50;
+			// If we are on WP Engine, we should set it to 20.
+		} elseif ( defined( 'WP_ENGINE' ) ) {
+			$batch_size = 20;
+		}
+
+		/**
+		 * Public filter for adjusting the batch size in Action Scheduler.
+		 *
+		 * @param int $batch_size The batch size.
+		 */
+		$batch_size = apply_filters( 'pmpro_action_scheduler_batch_size', $batch_size );
+
+		return $batch_size;
+	}
+
+
+	/**
+	 * Modify the default time limit for processing a batch of actions.
+	 *
+	 * Action Scheduler provides a default of 30 seconds in which to process actions.
+	 * We can increase this for hosts like Pantheon and WP Engine.
+	 *
+	 * You can also set this to a different value using the pmpro_action_scheduler_time_limit_seconds filter.
+	 *
+	 * For more details on the Action Scheduler time limit, see: https://actionscheduler.org/perf/#increasing-time-limit
+	 *
+	 * @access public
+	 * @since 3.5
+	 * @param int $time_limit The current time limit in seconds.
+	 * @return int Modified time limit in seconds.
+	 */
+	public function modify_batch_time_limit( $time_limit ) {
+
+		// Set sensible defaults based on known environment limits.
+		// If we are on Pantheon, we can set it to 120.
+		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
+			$time_limit = 120;
+			// If we are on WP Engine, we can set it to 60.
+		} elseif ( defined( 'WP_ENGINE' ) ) {
+			$time_limit = 60;
+		}
+
+		/**
+		 * Public filter for adjusting the time limit for Action Scheduler batches.
+		 *
+		 * @param int $time_limit The time limit in seconds.
+		 */
+		$time_limit = apply_filters( 'pmpro_action_scheduler_time_limit_seconds', $time_limit );
+
+		return $time_limit;
+	}
+
+	/**
+	 * Map a text $status to the Action Scheduler status.
+	 *
+	 * @access private
+	 * @since 3.5
+	 * @param string $status The status to map.
+	 * @return string The mapped status.
+	 */
+	public static function get_as_status( $status ) {
+		// Map a text $status to the Action Scheduler status.
+		switch ( $status ) {
+			case 'queued':
+			case 'waiting':
+			case 'pending':
+				$status = ActionScheduler_Store::STATUS_PENDING;
+				break;
+			case 'error':
+			case 'failed':
+				$status = ActionScheduler_Store::STATUS_FAILED;
+				break;
+			case 'in-progress':
+			case 'running':
+			case 'processing':
+				$status = ActionScheduler_Store::STATUS_RUNNING;
+				break;
+			case 'incomplete':
+			case 'completed':
+			case 'complete':
+			case 'done':
+			default:
+				$status = ActionScheduler_Store::STATUS_COMPLETE;
+		}
+		return $status;
+	}
+
+	/**
+	 * Convert a relative or absolute time string into a timestamp using the site's timezone.
+	 *
+	 * @access private
+	 * @since 3.5
+	 * @param string $time_string A string like "+10 minutes" or "tomorrow 5pm".
+	 * @return int UTC timestamp adjusted to the WordPress timezone.
+	 */
+	private function pmpro_strtotime( $time_string ) {
+		$timezone = wp_timezone();
+		$datetime = new DateTimeImmutable( 'now', $timezone );
+		$modified = $datetime->modify( $time_string );
+		return $modified->getTimestamp();
 	}
 }
