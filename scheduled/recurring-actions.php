@@ -61,10 +61,10 @@ class PMPro_Scheduled_Actions {
 		// Backwards compatibility for the old cron hooks.
 		add_action( 'pmpro_cron_expire_memberships', array( $this, 'pmpro_expire_memberships' ) );
 		add_action( 'pmpro_cron_expiration_reminder_email', array( $this, 'pmpro_send_membership_expired_email' ), 10, 2 );
-		add_action( 'pmpro_cron_membership_expiration_reminders', array( $this, 'membership_expiration_reminders' ) );
+		add_action( 'pmpro_cron_expiration_warnings', array( $this, 'membership_expiration_reminders' ) );
 		add_action( 'pmpro_cron_send_expiration_reminder', array( $this, 'pmpro_send_expiration_reminder' ), 10, 2 );
 		add_action( 'pmpro_cron_admin_activity_email', array( $this, 'pmpro_admin_activity_email' ) );
-		add_action( 'pmpro_cron_recurring_payment_reminders', 'pmpro_cron_recurring_payment_reminders' );
+		add_action( 'pmpro_cron_recurring_payment_reminders', array( $this, 'schedule_recurring_payment_reminder_tasks' ) );
 	}
 
 	/**

@@ -310,17 +310,12 @@ class PMPro_Action_Scheduler {
 	 * @param string|null $hook  The hook name for the task.
 	 * @param array       $args  The arguments for the task.
 	 * @param string|null $group The group the task belongs to.
+	 * @param string      $status The status of the task to delete (default: 'completed').
 	 *
 	 * @return int Number of tasks deleted.
 	 * @throws WP_Error If no parameters are provided.
 	 */
-	public static function remove_actions( $status = 'completed', $hook = null, $args = array(), $group = null ) {
-		if ( empty( $hook ) && empty( $args ) && empty( $group ) ) {
-			throw new WP_Error(
-				'pmpro_action_scheduler_warning',
-				__( 'A hook, args, or group is required to clear the Action Scheduler task queue.', 'paid-memberships-pro' )
-			);
-		}
+	public static function remove_actions( $hook = null, $args = array(), $group = null, $status = 'completed' ) {
 
 		// For cases where we're filtering by args or group only
 		$search_args = array(
