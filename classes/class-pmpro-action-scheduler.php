@@ -4,10 +4,11 @@
  * Paid Memberships Pro — Action Scheduler (AS).
  *
  * This class provides methods to schedule, manage, and execute tasks asynchronously, and is both a replacement
- * for older wp-cron based tasks and a more efficient way to handle background tasks in WordPress.
+ * for older wp-cron based tasks and a more efficient and performant way to handle background and asynchronous tasks in WordPress.
  *
- * Keep in mind that: tasks are handled asynchronously, and queued tasks
- * are not guaranteed to run immediately. Action Scheduler will process tasks in batches.
+ * Keep in mind that: tasks are always handled asynchronously;
+ * Queued tasks are not guaranteed to run immediately;
+ * Action Scheduler always processes tasks in batches with potentially different sizes.
  *
  * @package pmpro_plugin
  * @subpackage classes
@@ -24,6 +25,14 @@ class PMPro_Action_Scheduler {
 	 * @since 3.5
 	 */
 	protected static $instance = null;
+
+	/**
+	 * Callback for batch size/concurrent batches filter when paused.
+	 *
+	 * @var callable|null
+	 * @access protected
+	 */
+	protected $batch_size_callback = null;
 
 	/**
 	 * The default queue threshold for async tasks.
@@ -64,7 +73,7 @@ class PMPro_Action_Scheduler {
 		add_action( 'action_scheduler_init', array( $this, 'add_dummy_callbacks' ) );
 
 		// Handle the pause status of PMPro by pausing Action Scheduler.
-		add_action( 'pmpro_pause_status_changed', array( $this, 'handle_pmpro_pause' ) );
+		add_action( 'pmpro_pause_status_changed', array( $this, 'pause_as_queue' ) );
 
 		// Add late filters to modify the AS batch size and time limit.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
@@ -471,52 +480,39 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Suspend or resume Action Scheduler based on PMPro's pause status (pmpro_is_paused()).
+	 * Suspend or resume Action Scheduler. Happens automatically if pmpro_is_paused() is true.
 	 *
 	 * This method adds filters to Action Scheduler's queue runner
 	 * to set the batch size and concurrent batches to 0.
 	 *
 	 * @return void
 	 */
-	public function handle_pmpro_pause() {
-		// Only proceed if the PMPro function exists
-		if ( ! function_exists( 'pmpro_is_paused' ) ) {
-			return;
+	public function pause_as_queue() {
+
+		// Initialize the callback only if not already set
+		if ( $this->batch_size_callback === null ) {
+			$this->batch_size_callback = function ( $batch_size, $context ) {
+				return 0;
+			};
 		}
-
-		// Check if static variable is set to avoid duplicate hook management
-		static $hooks_managed = false;
-
-		if ( $hooks_managed ) {
-			return;
-		}
-
-		// Define the callback function for filtering batch size & queue runner
-		$batch_size_callback = function ( $batch_size, $context ) {
-			return 0;
-		};
+		$callback = $this->batch_size_callback;
 
 		// If PMPro is paused, add our filters
 		if ( pmpro_is_paused() ) {
-			add_filter( 'action_scheduler_queue_runner_batch_size', $batch_size_callback, 999, 2 );
-			add_filter( 'action_scheduler_queue_runner_concurrent_batches', $batch_size_callback, 999, 2 );
+			add_filter( 'action_scheduler_queue_runner_batch_size', $callback, 999, 2 );
+			add_filter( 'action_scheduler_queue_runner_concurrent_batches', $callback, 999, 2 );
 		}
-
-		// Mark that we've managed the hooks
-		$hooks_managed = true;
 
 		// Add listener for pause/unpause status changes
 		add_action(
-			'pmpro_pause_status_changed',
-			function ( $is_paused ) use ( $batch_size_callback ) {
+			'pmpro_as_pause_status_changed',
+			function ( $is_paused ) use ( $callback ) {
 				if ( $is_paused ) {
-					// Add filters when paused
-					add_filter( 'action_scheduler_queue_runner_batch_size', $batch_size_callback, 999, 2 );
-					add_filter( 'action_scheduler_queue_runner_concurrent_batches', $batch_size_callback, 999, 2 );
+					add_filter( 'action_scheduler_queue_runner_batch_size', $callback, 999, 2 );
+					add_filter( 'action_scheduler_queue_runner_concurrent_batches', $callback, 999, 2 );
 				} else {
-					// Remove filters when unpaused
-					remove_filter( 'action_scheduler_queue_runner_batch_size', $batch_size_callback, 999 );
-					remove_filter( 'action_scheduler_queue_runner_concurrent_batches', $batch_size_callback, 999 );
+					remove_filter( 'action_scheduler_queue_runner_batch_size', $callback, 999 );
+					remove_filter( 'action_scheduler_queue_runner_concurrent_batches', $callback, 999 );
 				}
 			},
 			10,
@@ -599,16 +595,19 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Map a text $status to the Action Scheduler status.
+	 * Map text $status to the Action Scheduler status.
+	 *
+	 * Accepts fuzzy matches for the following statuses: queue, queued, waiting, pending | error, failed | in-progress, running, processing | completed, complete, done.
 	 *
 	 * @access private
 	 * @since 3.5
-	 * @param string $status The status to map.
+	 * @param string $status The text status to map to AS status.
 	 * @return string The mapped status.
 	 */
 	public static function get_as_status( $status ) {
 		// Map a text $status to the Action Scheduler status.
 		switch ( $status ) {
+			case 'queue':
 			case 'queued':
 			case 'waiting':
 			case 'pending':
@@ -623,7 +622,6 @@ class PMPro_Action_Scheduler {
 			case 'processing':
 				$status = ActionScheduler_Store::STATUS_RUNNING;
 				break;
-			case 'incomplete':
 			case 'completed':
 			case 'complete':
 			case 'done':
@@ -646,5 +644,56 @@ class PMPro_Action_Scheduler {
 		$datetime = new DateTimeImmutable( 'now', $timezone );
 		$modified = $datetime->modify( $time_string );
 		return $modified->getTimestamp();
+	}
+
+	/**
+	 * Pause Action Scheduler.
+	 *
+	 * Sets the 'pmpro_paused' option to true and fires the 'pmpro_pause_status_changed' action.
+	 *
+	 * @access public
+	 * @since 3.5
+	 * @return void
+	 */
+	public static function pause() {
+		update_option( 'pmpro_as_paused', true );
+		/**
+		 * Fires when PMPro pause status is changed.
+		 *
+		 * @param bool $is_paused Whether PMPro is paused.
+		 */
+		do_action( 'pmpro_as_pause_status_changed', true );
+	}
+
+	/**
+	 * Unpause Action Scheduler.
+	 *
+	 * Sets the 'pmpro_as_paused' option to false and fires the 'pmpro_as_pause_status_changed' action.
+	 *
+	 * @access public
+	 * @since 3.5
+	 * @return void
+	 */
+	public static function unpause() {
+		update_option( 'pmpro_as_paused', false );
+		/**
+		 * Fires when PMPro pause status is changed.
+		 *
+		 * @param bool $is_paused Whether PMPro is paused.
+		 */
+		do_action( 'pmpro_as_pause_status_changed', false );
+	}
+
+	/**
+	 * Check if Action Scheduler is paused.
+	 *
+	 * Returns the value of the 'pmpro_as_paused' option as a boolean.
+	 *
+	 * @access public
+	 * @since 3.5
+	 * @return bool True if paused, false otherwise.
+	 */
+	public static function is_paused() {
+		return (bool) get_option( 'pmpro_as_paused', false );
 	}
 }

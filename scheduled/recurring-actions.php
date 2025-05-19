@@ -168,6 +168,12 @@ class PMPro_Scheduled_Actions {
 				break;
 			}
 
+			// If Action Scheduler is not paused, pause it to prevent other tasks if there are a lot of expiring memberships.
+			$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
+			if ( !$is_paused && count( $expiring_soon ) > 250 ) {
+				PMPro_Action_Scheduler::instance()->pause();
+			}
+
 			foreach ( $expiring_soon as $e ) {
 				PMPro_Action_Scheduler::instance()->maybe_add_task(
 					'pmpro_expiration_reminder_email',
@@ -181,6 +187,11 @@ class PMPro_Scheduled_Actions {
 
 			$query_offset += $query_limit;
 		} while ( count( $expiring_soon ) === $query_limit );
+
+		// If we paused the Action Scheduler, unpause it now.
+		if ( $is_paused ) {
+			PMPro_Action_Scheduler::instance()->unpause();
+		}
 	}
 
 	/**
@@ -258,6 +269,13 @@ class PMPro_Scheduled_Actions {
 				break;
 			}
 
+			// If Action Scheduler is not paused, pause it to prevent other tasks from running 
+			// if there are a lot of expired memberships.
+			$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
+			if ( !$is_paused && count( $expired ) > 250 ) {
+				PMPro_Action_Scheduler::instance()->pause();
+			}
+
 			foreach ( $expired as $e ) {
 				PMPro_Action_Scheduler::instance()->maybe_add_task(
 					'pmpro_membership_expired_email',
@@ -271,6 +289,11 @@ class PMPro_Scheduled_Actions {
 
 			$query_offset += $query_limit;
 		} while ( count( $expired ) === $query_limit );
+
+		// If we paused the Action Scheduler, unpause it now.
+		if ( $is_paused ) {
+			PMPro_Action_Scheduler::instance()->unpause();
+		}
 	}
 
 	/**
@@ -411,6 +434,13 @@ class PMPro_Scheduled_Actions {
 				continue;
 			}
 
+			// If Action Scheduler is not paused, pause it to prevent other tasks from running
+			// if there are a lot of subscriptions to notify.
+			$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
+			if ( !$is_paused && count( $subscriptions_to_notify ) > 250 ) {
+				PMPro_Action_Scheduler::instance()->pause();
+			}
+
 			foreach ( $subscriptions_to_notify as $subscription_to_notify ) {
 				PMPro_Action_Scheduler::instance()->maybe_add_task(
 					'pmpro_recurring_payment_reminder_email',
@@ -423,6 +453,11 @@ class PMPro_Scheduled_Actions {
 				);
 			}
 			$previous_days = $days;
+
+			// If we paused the Action Scheduler, unpause it now.
+			if ( $is_paused ) {
+				PMPro_Action_Scheduler::instance()->unpause();
+			}
 		}
 	}
 
