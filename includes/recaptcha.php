@@ -7,7 +7,7 @@ function pmpro_init_recaptcha() {
 	// global $recaptcha for backwards compatibility.
 	// TODO: Remove this in a future version.
 	global $recaptcha;
-    $recaptcha = get_captcha();
+    $recaptcha = pmpro_captcha();
     
 	if ( empty( $recaptcha ) || $recaptcha !== 'recaptcha' ) {
 		return;
