@@ -171,6 +171,16 @@ require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-integration.php';
 $wisdom_integration = PMPro_Wisdom_Integration::instance();
 $wisdom_integration->setup_wisdom();
 
+// Setup our PMPro Action Scheduler.
+add_action( 'plugins_loaded', function() {
+
+	// Load our Action Scheduler class.
+	PMPro_Action_Scheduler::instance();
+
+	// Add our recurring actions.
+	PMPro_Scheduled_Actions::instance();
+} );
+
 /*
 	Setup the DB and check for upgrades
 */
@@ -242,15 +252,6 @@ $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true 
 /*
 	Activation/Deactivation
 */
-// we need monthly crons
-function pmpro_cron_schedules_monthly( $schedules ) {
-	$schedules['monthly'] = array(
-		'interval' => 2635200,
-		'display' => esc_html__( 'Once a month', 'paid-memberships-pro' ),
-	);
-	return $schedules;
-}
-add_filter( 'cron_schedules', 'pmpro_cron_schedules_monthly' );
 
 // activation
 function pmpro_activation() {

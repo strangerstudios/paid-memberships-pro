@@ -437,7 +437,7 @@ function pmpro_checkForUpgrades() {
 
 	if ( $pmpro_db_version < 3.490 ) {
 		// Clear old crons out.
-		PMPro_Action_scheduler::getInstance()->check_and_remove_existing_crons();
+		PMPro_Action_Scheduler::instance()->check_and_remove_existing_crons();
 		pmpro_db_delta();
 		update_option( 'pmpro_db_version', '3.490' );
 	}
