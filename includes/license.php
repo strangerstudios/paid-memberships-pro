@@ -90,7 +90,7 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 */
 //activation
 function pmpro_license_activation() {
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_license_check_key' );
+	function_exists( 'pmpro_maybe_schedule_event' ) && pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_license_check_key' );
 }
 add_action( 'activate_paid-memberships-pro', 'pmpro_license_activation' );
 

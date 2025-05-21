@@ -28,6 +28,11 @@ class PMPro_Scheduled_Actions {
 	 */
 	public function __construct() {
 
+		// Check if Action Scheduler is installed and activated.
+		if ( ! class_exists( \ActionScheduler::class ) ) {
+			return;
+		}
+
 		// Inherit the batch limit from the former PMPro cron settings or default to 50.
 		$this->query_batch_limit = defined( 'PMPRO_CRON_LIMIT' ) ? PMPRO_CRON_LIMIT : 50;
 
@@ -35,36 +40,32 @@ class PMPro_Scheduled_Actions {
 		add_action( 'pmpro_schedule_weekly', array( $this, 'pmpro_check_inactive_memberships' ) );
 		add_action( 'pmpro_schedule_weekly', array( $this, 'resolve_duplicate_active_rows' ) );
 
-		// Membership expiration reminders (Daily)
-		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ) );
-		add_action( 'pmpro_expiration_reminder_email', array( $this, 'pmpro_send_expiration_reminder' ), 10, 2 );
-
 		// Expired Membership Routines (Daily)
 		add_action( 'pmpro_schedule_daily', array( $this, 'pmpro_expire_memberships' ) );
 		add_action( 'pmpro_membership_expired_email', array( $this, 'pmpro_send_membership_expired_email' ), 10, 2 );
 
-		// Admin activity emails (Conditionally Hooked)
+		// Membership expiration reminders (Daily)
+		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ), 99 );
+		add_action( 'pmpro_expiration_reminder_email', array( $this, 'pmpro_send_expiration_reminder_email' ), 99, 2 );
+
+		// Admin activity emails (Conditionally Hooked based on frequency)
 		$this->conditionally_hook_admin_activity_email();
 
-		// Schedule recurring payment reminder tasks.
-		add_action( 'pmpro_schedule_daily', array( $this, 'schedule_recurring_payment_reminder_tasks' ) );
-
-		// Register admin activity email hook.
-		add_action( 'pmpro_admin_activity_email', array( $this, 'pmpro_admin_activity_email' ) );
-
-		// Register recurring payment reminder email hook.
+		// Register recurring payment reminders.
+		add_action( 'pmpro_schedule_daily', array( $this, 'recurring_payment_reminders' ), );
 		add_action( 'pmpro_recurring_payment_reminder_email', array( $this, 'send_recurring_payment_reminder_email' ), 10, 3 );
 
 		// Temporary file cleanup (Daily)
-		add_action( 'pmpro_schedule_daily', array( $this, 'pmpro_delete_tmp' ) );
+		add_action( 'pmpro_schedule_daily', array( $this, 'delete_temp_files' ) );
+
+		// License check (Monthly)
+		add_action( 'pmpro_schedule_monthly', 'pmpro_license_check_key' );
 
 		// Backwards compatibility for the old cron hooks.
 		add_action( 'pmpro_cron_expire_memberships', array( $this, 'pmpro_expire_memberships' ) );
-		add_action( 'pmpro_cron_expiration_reminder_email', array( $this, 'pmpro_send_membership_expired_email' ), 10, 2 );
 		add_action( 'pmpro_cron_expiration_warnings', array( $this, 'membership_expiration_reminders' ) );
-		add_action( 'pmpro_cron_send_expiration_reminder', array( $this, 'pmpro_send_expiration_reminder' ), 10, 2 );
 		add_action( 'pmpro_cron_admin_activity_email', array( $this, 'pmpro_admin_activity_email' ) );
-		add_action( 'pmpro_cron_recurring_payment_reminders', array( $this, 'schedule_recurring_payment_reminder_tasks' ) );
+		add_action( 'pmpro_cron_recurring_payment_reminders', array( $this, 'recurring_payment_reminders' ) );
 	}
 
 	/**
@@ -168,7 +169,7 @@ class PMPro_Scheduled_Actions {
 				break;
 			}
 
-			// If Action Scheduler is not paused, pause it to prevent other tasks if there are a lot of expiring memberships.
+			// If Action Scheduler is not paused, pause it to prevent running tasks while loading the queue.
 			$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
 			if ( !$is_paused && count( $expiring_soon ) > 250 ) {
 				PMPro_Action_Scheduler::instance()->pause();
@@ -202,7 +203,7 @@ class PMPro_Scheduled_Actions {
 	 *
 	 * @return void
 	 */
-	function pmpro_send_expiration_reminder( $user_id = null, $membership_id = null ) {
+	function pmpro_send_expiration_reminder_email( $user_id = null, $membership_id = null ) {
 
 		if ( WP_DEBUG ) {
 			error_log( '[PMPro Notice Args] ' . print_r( compact( 'user_id', 'membership_id' ), true ) );
@@ -227,10 +228,7 @@ class PMPro_Scheduled_Actions {
 			}
 		}
 
-		// delete all user meta for this key to prevent duplicate user meta rows
-		delete_user_meta( $user_id, 'pmpro_expiration_notice' );
-
-		// update user meta so we don't email them again
+		// Update user meta so we don't email them again
 		update_user_meta( $user_id, 'pmpro_expiration_notice_' . $membership_id, current_time( 'Y-m-d H:i:s' ) );
 	}
 
@@ -328,7 +326,8 @@ class PMPro_Scheduled_Actions {
 			$euser      = get_userdata( $user_id );
 			if ( ! empty( $euser ) ) {
 				$pmproemail->sendMembershipExpiredEmail( $euser, $membership_id );
-
+				// Delete the expiration notice for this membership
+				delete_user_meta( $user_id, 'pmpro_expiration_notice_' . $membership_id );
 				if ( WP_DEBUG ) {
 					error_log( sprintf( __( 'Membership expired email sent to %s. ', 'paid-memberships-pro' ), $euser->user_email ) );
 				}
@@ -397,7 +396,7 @@ class PMPro_Scheduled_Actions {
 	 *
 	 * @return void
 	 */
-	public function schedule_recurring_payment_reminder_tasks() {
+	public function recurring_payment_reminders() {
 		global $wpdb;
 
 		$emails = apply_filters(
@@ -421,7 +420,7 @@ class PMPro_Scheduled_Actions {
 				AND subscription.next_payment_date >= %s
 				AND subscription.next_payment_date < %s
 				AND ( last_next_payment_date.meta_value IS NULL
-					OR last_next_payment_date.meta_value != subscription.next_payment_date
+					OR last_next_payment_date.meta_value != DATE(subscription.next_payment_date)
 					OR last_days.meta_value > %d
 				)",
 				date_i18n( 'Y-m-d', strtotime( "+{$previous_days} days", current_time( 'timestamp' ) ) ),
@@ -434,8 +433,7 @@ class PMPro_Scheduled_Actions {
 				continue;
 			}
 
-			// If Action Scheduler is not paused, pause it to prevent other tasks from running
-			// if there are a lot of subscriptions to notify.
+			// If Action Scheduler is not paused, pause it to prevent running tasks while loading the queue.
 			$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
 			if ( !$is_paused && count( $subscriptions_to_notify ) > 250 ) {
 				PMPro_Action_Scheduler::instance()->pause();
@@ -474,7 +472,7 @@ class PMPro_Scheduled_Actions {
 		$user             = get_userdata( $subscription_obj->get_user_id() );
 
 		if ( empty( $user ) ) {
-			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date() );
+			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date('Y-m-d') );
 			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
 			return;
 		}
@@ -509,7 +507,7 @@ class PMPro_Scheduled_Actions {
 			$pmproemail->sendEmail();
 		}
 
-		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date() );
+		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date('Y-m-d') );
 		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
 	}
 
@@ -519,7 +517,7 @@ class PMPro_Scheduled_Actions {
 	 * @since 3.5
 	 * @return void
 	 */
-	public function pmpro_delete_tmp() {
+	public function delete_temp_files() {
 		$upload_dir  = wp_upload_dir();
 		$pmprorh_dir = trailingslashit( $upload_dir['basedir'] ) . 'paid-memberships-pro/tmp/';
 

@@ -42,24 +42,28 @@ if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
 }
 
+require_once( PMPRO_DIR . '/includes/crons.php' );                  				// cron-related functionality
+
+// New in 3.5: You can use Action Scheduler instead of WP Cron.
+// WP Cron usage will be deprecated in a future version.
 // Check if Action Scheduler is already loaded, if not, load our library copy.
-if ( ! class_exists( \ActionScheduler::class ) ) {
+if ( defined( 'PMPRO_USE_ACTION_SCHEDULER' ) && ! class_exists( \ActionScheduler::class ) ) {
 	require_once( PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php' ); // Load our copy of Action Scheduler if needed.
 }
+if ( defined( 'PMPRO_USE_ACTION_SCHEDULER' ) && PMPRO_USE_ACTION_SCHEDULER ) {
+	require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' );   			// Our Action Scheduler Manager for PMPro
+	require_once( PMPRO_DIR . '/scheduled/recurring-actions.php' ); 					// Load our recurring scheduled actions.
+} else {
+	require_once( PMPRO_DIR . '/scheduled/crons.php' );                 				// Crons for expiring members, sending expiration emails, etc
+}
 
-require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' );   			// Our Action Scheduler Manager for PMPro
-require_once( PMPRO_DIR . '/scheduled/recurring-actions.php' ); 						// Load our recurring scheduled actions.
-
-require_once( PMPRO_DIR . '/includes/crons.php' );                  				// cron-related functionality
-require_once( PMPRO_DIR . '/scheduled/crons.php' );                 				// crons for expiring members, sending expiration emails, etc
-
-require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       				// class to process and save orders
-require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        				// setup and filter emails sent by PMPro
+require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       			// class to process and save orders
+require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        			// setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
-require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
+require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );	// setup the admin activity email
 
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template.php' ); // base class for email templates
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel.php' ); // cancel email template
@@ -242,13 +246,16 @@ global $all_membership_levels;
 global $membership_levels;
 $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 
-// Load the PMPro Action Scheduler.
-add_action( 'plugins_loaded', function() {
-	// Load our Action Scheduler class.
-	PMPro_Action_Scheduler::instance();
-	// Add our scheduled actions.
-	PMPro_Scheduled_Actions::instance();
-} );
+// Load our PMPro Action Scheduler code if it's available.
+if ( defined( 'PMPRO_USE_ACTION_SCHEDULER' ) && PMPRO_USE_ACTION_SCHEDULER ) {
+	add_action( 'plugins_loaded', function() {
+
+		// Load our Action Scheduler class.
+		PMPro_Action_Scheduler::instance();
+		// Add our scheduled actions.
+		PMPro_Scheduled_Actions::instance();
+	} );
+}
 
 /*
 	Activation/Deactivation
@@ -265,7 +272,7 @@ add_filter( 'cron_schedules', 'pmpro_cron_schedules_monthly' );
 
 // activation
 function pmpro_activation() {
-	pmpro_maybe_schedule_crons();
+	!defined( 'PMPRO_USE_ACTION_SCHEDULER' ) || !PMPRO_USE_ACTION_SCHEDULER ? pmpro_maybe_schedule_crons() : pmpro_clear_crons();
 	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
 	do_action( 'pmpro_activation' );
 }

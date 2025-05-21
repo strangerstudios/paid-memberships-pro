@@ -21,9 +21,6 @@ function pmpro_get_crons() {
 			'interval'  => 'hourly',
 			'timestamp' => current_time( 'timestamp' ) + 1,
 		),
-		'pmpro_cron_credit_card_expiring_warnings' => array(
-			'interval' => 'monthly',
-		),
 		'pmpro_cron_admin_activity_email'          => array(
 			'interval'  => 'daily',
 			'timestamp' => strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ),
