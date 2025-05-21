@@ -161,18 +161,18 @@ class PMPro_Scheduled_Actions {
 		$query_offset = 0;
 		$query_limit  = $this->query_batch_limit;
 
+		// If Action Scheduler is not paused, pause it to prevent running tasks while loading the queue.
+		$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
+		if ( !$is_paused && $this->query_batch_limit > 50 ) {
+			PMPro_Action_Scheduler::instance()->pause();
+		}
+
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
 			$expiring_soon = $wpdb->get_results( $batched_query );
 
 			if ( empty( $expiring_soon ) ) {
 				break;
-			}
-
-			// If Action Scheduler is not paused, pause it to prevent running tasks while loading the queue.
-			$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
-			if ( !$is_paused && count( $expiring_soon ) > 250 ) {
-				PMPro_Action_Scheduler::instance()->pause();
 			}
 
 			foreach ( $expiring_soon as $e ) {
@@ -259,19 +259,20 @@ class PMPro_Scheduled_Actions {
 		$query_offset = 0;
 		$query_limit  = $this->query_batch_limit;
 
+		// If Action Scheduler is not paused, pause it to prevent other tasks from running 
+		// if there are a lot of expired memberships.
+		$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
+
+		if ( !$is_paused && $this->query_batch_limit > 50 ) {
+			PMPro_Action_Scheduler::instance()->pause();
+		}
+
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
 			$expired       = $wpdb->get_results( $batched_query );
 
 			if ( empty( $expired ) ) {
 				break;
-			}
-
-			// If Action Scheduler is not paused, pause it to prevent other tasks from running 
-			// if there are a lot of expired memberships.
-			$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
-			if ( !$is_paused && count( $expired ) > 250 ) {
-				PMPro_Action_Scheduler::instance()->pause();
 			}
 
 			foreach ( $expired as $e ) {

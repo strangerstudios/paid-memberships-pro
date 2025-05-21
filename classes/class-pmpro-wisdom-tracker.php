@@ -99,8 +99,6 @@ class PMPro_Wisdom_Tracker {
 		// Hook our do_tracking function to Action Scheduler
 		$this->schedule_tracking();
 
-		add_action( $hook, [ $this, 'do_tracking' ] );
-
 		// Use this action for local testing
 		// add_action( 'admin_init', array( $this, 'do_tracking' ) );
 
@@ -124,22 +122,21 @@ class PMPro_Wisdom_Tracker {
 	 * @modified 3.5 Now with Action Scheduler support
 	 */
 	public function schedule_tracking() {
-			$schedule = $this->get_schedule();
-			switch ( $schedule ) {
-				case 'daily':
-					$hook = 'pmpro_schedule_daily';
-					break;
-				case 'weekly':
-					$hook = 'pmpro_schedule_weekly';
-					break;
-				case 'monthly':
-					$hook = 'pmpro_schedule_monthly';
-					break;
-				default:
-					$hook = 'pmpro_schedule_monthly';
-			}
-			add_action( $hook, [ $this, 'do_tracking' ] );
-		$this->do_tracking( true );
+		$schedule = $this->get_schedule();
+		switch ( $schedule ) {
+			case 'daily':
+				$hook = 'pmpro_schedule_daily';
+				break;
+			case 'weekly':
+				$hook = 'pmpro_schedule_weekly';
+				break;
+			case 'monthly':
+				$hook = 'pmpro_schedule_monthly';
+				break;
+			default:
+				$hook = 'pmpro_schedule_monthly';
+		}
+		add_action( $hook, [ $this, 'do_tracking' ] );
 	}
 
 	/**
@@ -165,6 +162,7 @@ class PMPro_Wisdom_Tracker {
 	 * @param $force    Force tracking if it's not time
 	 */
 	public function do_tracking( $force = false ) {
+		error_log( 'do_tracking triggered' );
 		// If the home site hasn't been defined, we just drop out. Nothing much we can do.
 		if ( ! $this->home_url ) {
 			return;
