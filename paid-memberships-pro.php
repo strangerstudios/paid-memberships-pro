@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.4.6
+ * Version: 3.5
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -15,8 +15,8 @@
  * GPLv2 Full license details in license.txt
  */
 
-// version constant
-define( 'PMPRO_VERSION', '3.4.6' );
+// Version constant
+define( 'PMPRO_VERSION', '3.5' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -45,11 +45,18 @@ if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
 }
 
-require_once( PMPRO_DIR . '/includes/crons.php' );                  // cron-related functionality
-require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for expiring members, sending expiration emails, etc
+// Check if Action Scheduler is already loaded, if not, load our library copy.
+if ( ! class_exists( \ActionScheduler::class ) ) {
+	require_once( PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php' ); // Load our copy of Action Scheduler if needed.
+}
+require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' );   			// Our Action Scheduler Manager for PMPro
+require_once( PMPRO_DIR . '/scheduled/recurring-actions.php' ); 						// Load our recurring scheduled actions.
 
-require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
-require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and filter emails sent by PMPro
+require_once( PMPRO_DIR . '/includes/crons.php' );                  				// cron-related functionality
+require_once( PMPRO_DIR . '/scheduled/crons.php' );                 				// crons for expiring members, sending expiration emails, etc
+
+require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       				// class to process and save orders
+require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        				// setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
@@ -171,9 +178,8 @@ $wisdom_integration = PMPro_Wisdom_Integration::instance();
 $wisdom_integration->setup_wisdom();
 
 /*
-	Setup the DB and check for upgrades
+	Check for upgrades
 */
-global $wpdb;
 
 // check if the DB needs to be upgraded
 if ( is_admin() || defined('WP_CLI') ) {
@@ -237,6 +243,14 @@ global $all_membership_levels;
 // DEPRECATED: Remove this in v3.0.
 global $membership_levels;
 $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
+
+// Load the PMPro Action Scheduler.
+add_action( 'plugins_loaded', function() {
+	// Load our Action Scheduler class.
+	PMPro_Action_Scheduler::instance();
+	// Add our scheduled actions.
+	PMPro_Scheduled_Actions::instance();
+} );
 
 /*
 	Activation/Deactivation

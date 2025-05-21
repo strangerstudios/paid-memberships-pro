@@ -65,6 +65,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Cron Job Status', 'paid-memberships-pro' ),
 					'value' => self::get_cron_jobs(),
 				],
+				'pmpro-action-scheduler' => [
+					'label' => __( 'Action Scheduler Enabled', 'paid-memberships-pro' ),
+					'value' => self::get_action_scheduler_state(),
+				],
 				'pmpro-gateway'              => [
 					'label' => __( 'Payment Gateway', 'paid-memberships-pro' ),
 					'value' => self::get_gateway(),
@@ -419,6 +423,34 @@ class PMPro_Site_Health {
 		}
 
 		return implode( " | \n", $cron_information );
+	}
+
+	/**
+	 * Get the action scheduler state.
+	 *
+	 * @access public
+	 * @since 3.5
+	 *
+	 * @return string The action scheduler state.
+	 */
+	public function get_action_scheduler_state() {
+		if ( ! class_exists( 'ActionScheduler' ) ) {
+			return __( 'Not Installed', 'paid-memberships-pro' );
+		}
+
+		if ( ! ActionScheduler::is_enabled() ) {
+			return __( 'Disabled', 'paid-memberships-pro' );
+		}
+
+		if ( ! ActionScheduler::is_installed() ) {
+			return __( 'Not Installed', 'paid-memberships-pro' );
+		}
+
+		if ( ! ActionScheduler::is_ready() ) {
+			return __( 'Not Ready', 'paid-memberships-pro' );
+		}
+
+		return __( 'Enabled', 'paid-memberships-pro' );
 	}
 
 	/**

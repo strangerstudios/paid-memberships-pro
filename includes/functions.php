@@ -3900,11 +3900,17 @@ function pmpro_getOrderStatuses( $force = false ) {
  * those rows are marked as inactive.
  *
  * @since 1.9.4.4
+ * @deprecated 3.5 Use PMPro_Membership_Level::fix_inactive_memberships() and PMPro_Membership_Level::resolve_duplicate_active_rows() instead.
+ * 
+ * @return void
  */
 function pmpro_cleanup_memberships_users_table() {
+	_deprecated_function( __METHOD__, '3.5', 'PMPro_Membership_Level::fix_inactive_memberships()' );
+	_deprecated_function( __METHOD__, '3.5', 'PMPro_Membership_Level::resolve_duplicate_active_rows()' );
+
 	global $wpdb;
 
-	// fix rows for levels that don't exists
+	// Fix rows for levels that don't exist
 	$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users mu
 					LEFT JOIN $wpdb->pmpro_membership_levels l ON mu.membership_id = l.id
 				SET mu.status = 'inactive'
@@ -3912,7 +3918,7 @@ function pmpro_cleanup_memberships_users_table() {
 					AND l.id IS NULL";
 	$wpdb->query( $sqlQuery );
 
-	// fix rows where there is more than one active status for the same user/level
+	// Fix rows where there is more than one active status for the same user/level
 	$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users t1
 					INNER JOIN (SELECT mu1.id as id
 				FROM $wpdb->pmpro_memberships_users mu1, $wpdb->pmpro_memberships_users mu2
@@ -3924,7 +3930,7 @@ function pmpro_cleanup_memberships_users_table() {
 				GROUP BY mu1.id
 				ORDER BY mu1.user_id, mu1.id DESC) t2
 				ON t1.id = t2.id
-				SET status = 'inactive'";
+				SET t1.status = 'inactive'";
 	$wpdb->query( $sqlQuery );
 }
 

@@ -1,85 +1,103 @@
 <?php
-/*
-	Expiring Memberships
-*/	
-add_action("pmpro_cron_expire_memberships", "pmpro_cron_expire_memberships");
-function pmpro_cron_expire_memberships()
-{
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Expiring Memberships
+ *
+ * @deprecated 3.5
+ * @since 1.8.5
+ * @since 3.0 moved to pmpro_cron_expire_memberships
+ * @since 3.5 moved to PMPro_Scheduled_Actions->pmpro_expire_memberships()
+ * @global object $wpdb
+ * @return void
+ */
+function pmpro_cron_expire_memberships() {
 	global $wpdb;
 
-	//Don't let anything run if PMPro is paused
-	if( pmpro_is_paused() ) {
+	// Don't let anything run if PMPro is paused
+	if ( pmpro_is_paused() ) {
 		return;
 	}
 
-	//clean up errors in the memberships_users table that could cause problems
+	// clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
 
-	$today = date("Y-m-d H:i:00", current_time("timestamp"));
+	$today = date( 'Y-m-d H:i:00', current_time( 'timestamp' ) );
 
-	//look for memberships that expired before today
+	// look for memberships that expired before today
 	$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '0000-00-00 00:00:00' AND mu.enddate <= '" . esc_sql( $today ) . "' ORDER BY mu.enddate";
 
-	if(defined('PMPRO_CRON_LIMIT'))
-		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
-	$expired = $wpdb->get_results($sqlQuery);
+	if ( defined( 'PMPRO_CRON_LIMIT' ) ) {
+		$sqlQuery .= ' LIMIT ' . PMPRO_CRON_LIMIT;
+	}
+	$expired = $wpdb->get_results( $sqlQuery );
 
-	foreach($expired as $e)
-	{
-		do_action("pmpro_membership_pre_membership_expiry", $e->user_id, $e->membership_id );		
+	foreach ( $expired as $e ) {
+		do_action( 'pmpro_membership_pre_membership_expiry', $e->user_id, $e->membership_id );
 
-		//remove their membership
+		// remove their membership
 		pmpro_cancelMembershipLevel( $e->membership_id, $e->user_id, 'expired' );
 
-		do_action("pmpro_membership_post_membership_expiry", $e->user_id, $e->membership_id );
+		do_action( 'pmpro_membership_post_membership_expiry', $e->user_id, $e->membership_id );
 
-		if( get_user_meta( $e->user_id, 'pmpro_disable_notifications', true ) ){
+		if ( get_user_meta( $e->user_id, 'pmpro_disable_notifications', true ) ) {
 			$send_email = false;
 		}
-		
-		$send_email = apply_filters("pmpro_send_expiration_email", true, $e->user_id);
 
-		if($send_email)
-		{
-			//send an email
+		$send_email = apply_filters( 'pmpro_send_expiration_email', true, $e->user_id );
+
+		if ( $send_email ) {
+			// send an email
 			$pmproemail = new PMProEmail();
-			$euser = get_userdata($e->user_id);
+			$euser      = get_userdata( $e->user_id );
 			if ( ! empty( $euser ) ) {
 				$pmproemail->sendMembershipExpiredEmail( $euser, $e->membership_id );
 
 				if ( WP_DEBUG ) {
-					error_log( sprintf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
+					error_log( sprintf( __( 'Membership expired email sent to %s. ', 'paid-memberships-pro' ), $euser->user_email ) );
 				}
 			}
 		}
 	}
 }
+add_action( 'pmpro_cron_expire_memberships', 'pmpro_cron_expire_memberships' );
 
-/*
-	Expiration Warning Emails
-*/
-add_action("pmpro_cron_expiration_warnings", "pmpro_cron_expiration_warnings");
-function pmpro_cron_expiration_warnings()
-{
+/**
+ * Expiration Warning Emails
+ *
+ * @deprecated 3.5
+ * @since 1.8.5
+ * @since 3.0 moved to pmpro_cron_expiration_warnings
+ * @since 3.5 moved to PMPro_Scheduled_Actions->membership_expiration_reminders()
+ * @global object $wpdb
+ * @return void
+ */
+function pmpro_cron_expiration_warnings() {
+	_deprecated_function( __METHOD__, '3.5', 'PMPro_Scheduled_Actions->membership_expiration_reminders()' );
+
 	global $wpdb;
 
-	//Don't let anything run if PMPro is paused
-	if( pmpro_is_paused() ) {
+	// Don't let anything run if PMPro is paused
+	if ( pmpro_is_paused() ) {
 		return;
 	}
 
-	//clean up errors in the memberships_users table that could cause problems
+	// clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
 
-	$today = date("Y-m-d H:i:s", current_time("timestamp"));
+	$today = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
 
-	$pmpro_email_days_before_expiration = apply_filters("pmpro_email_days_before_expiration", 7);
+	$pmpro_email_days_before_expiration = apply_filters( 'pmpro_email_days_before_expiration', 7 );
 
 	// Configure the interval to select records from
 	$interval_start = $today;
-	$interval_end = date( 'Y-m-d H:i:s', strtotime( "{$today} +{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
+	$interval_end   = date( 'Y-m-d H:i:s', strtotime( "{$today} +{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
 
-	//look for memberships that are going to expire within one week (but we haven't emailed them within a week)
+	// look for memberships that are going to expire within one week (but we haven't emailed them within a week)
 	$sqlQuery = $wpdb->prepare(
 		"SELECT DISTINCT
   				mu.user_id,
@@ -104,55 +122,59 @@ function pmpro_cron_expiration_warnings()
 		$interval_end
 	);
 
-	if(defined('PMPRO_CRON_LIMIT'))
-		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
+	if ( defined( 'PMPRO_CRON_LIMIT' ) ) {
+		$sqlQuery .= ' LIMIT ' . PMPRO_CRON_LIMIT;
+	}
 
-	$expiring_soon = $wpdb->get_results($sqlQuery);
+	$expiring_soon = $wpdb->get_results( $sqlQuery );
 
-	foreach($expiring_soon as $e)
-	{
-		$send_email = apply_filters("pmpro_send_expiration_warning_email", true, $e->user_id);
-		if($send_email)
-		{
-			//send an email
+	foreach ( $expiring_soon as $e ) {
+		$send_email = apply_filters( 'pmpro_send_expiration_warning_email', true, $e->user_id );
+		if ( $send_email ) {
+			// send an email
 			$pmproemail = new PMProEmail();
-			$euser = get_userdata($e->user_id);
+			$euser      = get_userdata( $e->user_id );
 			if ( ! empty( $euser ) ) {
-				$pmproemail->sendMembershipExpiringEmail( $euser, $e->membership_id);
+				$pmproemail->sendMembershipExpiringEmail( $euser, $e->membership_id );
 
 				if ( WP_DEBUG ) {
-					error_log( sprintf( esc_html__("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
+					error_log( sprintf( esc_html__( 'Membership expiring email sent to %s. ', 'paid-memberships-pro' ), $euser->user_email ) );
 				}
 			}
 		}
 
-		//delete all user meta for this key to prevent duplicate user meta rows
+		// delete all user meta for this key to prevent duplicate user meta rows
 		delete_user_meta( $e->user_id, 'pmpro_expiration_notice' );
 
-		//update user meta so we don't email them again
+		// update user meta so we don't email them again
 		update_user_meta( $e->user_id, 'pmpro_expiration_notice_' . $e->membership_id, $today );
 	}
 }
+add_action( 'pmpro_cron_expiration_warnings', 'pmpro_cron_expiration_warnings' );
 
-/*
-	Credit Card Expiring Warnings
-	@deprecated 3.0
-*/
+/**
+ * Credit Card Expiring Warnings
+ *
+ * @deprecated 3.0
+ * @since 1.8.5
+ * @global object $wpdb
+ * @return void
+ */
 function pmpro_cron_credit_card_expiring_warnings() {
 	global $wpdb;
 
 	_deprecated_function( __FUNCTION__, '3.0' );
 
-	//Don't let anything run if PMPro is paused
-	if( pmpro_is_paused() ) {
+	// Don't let anything run if PMPro is paused
+	if ( pmpro_is_paused() ) {
 		return;
 	}
 
-	//clean up errors in the memberships_users table that could cause problems
+	// clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
 
-	$next_month_date = date("Y-m-01", strtotime("+2 months", current_time("timestamp")));
-			
+	$next_month_date = date( 'Y-m-01', strtotime( '+2 months', current_time( 'timestamp' ) ) );
+
 	$sqlQuery = "SELECT mu.user_id
 					FROM  $wpdb->pmpro_memberships_users mu
 						LEFT JOIN $wpdb->usermeta um1 ON mu.user_id = um1.user_id
@@ -169,27 +191,25 @@ function pmpro_cron_credit_card_expiring_warnings() {
 						AND (um3.meta_value IS NULL OR CONCAT(um2.meta_value, '-', um1.meta_value, '-01') <> um3.meta_value)
 				";
 
-	if(defined('PMPRO_CRON_LIMIT'))
-		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
+	if ( defined( 'PMPRO_CRON_LIMIT' ) ) {
+		$sqlQuery .= ' LIMIT ' . PMPRO_CRON_LIMIT;
+	}
 
-	$cc_expiring_user_ids = $wpdb->get_col($sqlQuery);
+	$cc_expiring_user_ids = $wpdb->get_col( $sqlQuery );
 
-	if(!empty($cc_expiring_user_ids))
-	{
-		require_once(ABSPATH . 'wp-includes/pluggable.php');
+	if ( ! empty( $cc_expiring_user_ids ) ) {
+		require_once ABSPATH . 'wp-includes/pluggable.php';
 
-		foreach($cc_expiring_user_ids as $user_id)
-		{
-			//get user
-			$euser = get_userdata($user_id);
+		foreach ( $cc_expiring_user_ids as $user_id ) {
+			// get user
+			$euser = get_userdata( $user_id );
 			if ( empty( $euser ) ) {
 				continue;
 			}
 
-			//make sure their level doesn't have a billing limit that's been reached
-			$euser->membership_level = pmpro_getMembershipLevelForUser($euser->ID);
-			if(!empty($euser->membership_level->billing_limit))
-			{
+			// make sure their level doesn't have a billing limit that's been reached
+			$euser->membership_level = pmpro_getMembershipLevelForUser( $euser->ID );
+			if ( ! empty( $euser->membership_level->billing_limit ) ) {
 				/*
 					There is a billing limit on this level, skip for now.
 					We should figure out how to tell if the limit has been reached
@@ -198,37 +218,51 @@ function pmpro_cron_credit_card_expiring_warnings() {
 				continue;
 			}
 
-			//make sure they are using a credit card type billing method for their current membership level (check the last order)
+			// make sure they are using a credit card type billing method for their current membership level (check the last order)
 			$last_order = new MemberOrder();
-			$last_order->getLastMemberOrder($euser->ID);
-			if(empty($last_order->accountnumber) || (!empty($last_order->accountnumber) && 'XXXXXXXXXXXXXXXX' == $last_order->accountnumber))
+			$last_order->getLastMemberOrder( $euser->ID );
+			if ( empty( $last_order->accountnumber ) || ( ! empty( $last_order->accountnumber ) && 'XXXXXXXXXXXXXXXX' == $last_order->accountnumber ) ) {
 				continue;
-
-			//okay send them an email
-			$send_email = apply_filters("pmpro_send_credit_card_expiring_email", true, $euser->ID);
-
-			if($send_email)
-			{
-				//send an email
-				$pmproemail = new PMProEmail();
-				$pmproemail->sendCreditCardExpiringEmail($euser,$last_order);
-
-				if ( WP_DEBUG ) {
-					error_log( sprintf( esc_html__("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
-				}
 			}
 
+			// okay send them an email
+			$send_email = apply_filters( 'pmpro_send_credit_card_expiring_email', true, $euser->ID );
+
+			if ( $send_email ) {
+				// send an email
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendCreditCardExpiringEmail( $euser, $last_order );
+
+				if ( WP_DEBUG ) {
+					error_log( sprintf( esc_html__( 'Credit card expiring email sent to %s. ', 'paid-memberships-pro' ), $euser->user_email ) );
+				}
+			}
 		}
 	}
 }
 
-add_action( 'pmpro_cron_admin_activity_email', 'pmpro_cron_admin_activity_email' );
+/**
+ * Send admin activity email.
+ *
+ * @deprecated 3.5
+ * @since 2.0
+ * @since 2.0.1 added pmpro_cron_admin_activity_email filter
+ * @since 2.0.2 added pmpro_cron_admin_activity_email_frequency filter
+ * @since 2.0.3 added pmpro_cron_admin_activity_email_frequency default
+ * @since 3.5 moved to PMPro_Scheduled_Actions->pmpro_admin_activity_email()
+ *
+ * @global object $wpdb
+ * @return void
+ */
 function pmpro_cron_admin_activity_email() {
-	//Don't let anything run if PMPro is paused
-	if( pmpro_is_paused() ) {
+
+	_deprecated_function( __METHOD__, '3.5', 'PMPro_Scheduled_Actions->pmpro_admin_activity_email()' );
+
+	// Don't let anything run if PMPro is paused
+	if ( pmpro_is_paused() ) {
 		return;
 	}
-	
+
 	$frequency = get_option( 'pmpro_activity_email_frequency' );
 	if ( empty( $frequency ) ) {
 		$frequency = 'week';
@@ -243,13 +277,28 @@ function pmpro_cron_admin_activity_email() {
 		$pmproemail->sendAdminActivity();
 	}
 }
+add_action( 'pmpro_cron_admin_activity_email', 'pmpro_cron_admin_activity_email' );
 
-add_action( 'pmpro_cron_recurring_payment_reminders', 'pmpro_cron_recurring_payment_reminders' );
+/**
+ * Send recurring payment reminders.
+ *
+ * @deprecated 3.5
+ * @since 1.8.5
+ * @since 3.0 moved to pmpro_cron_recurring_payment_reminders
+ * @since 3.5 moved to PMPro_Scheduled_Actions->schedule_recurring_payment_reminder_tasks()
+ *
+ * @global object $wpdb
+ *
+ * @return void
+ */
 function pmpro_cron_recurring_payment_reminders() {
+
+	_deprecated_function( __METHOD__, '3.5', 'PMPro_Scheduled_Actions->schedule_recurring_payment_reminder_tasks()' );
+
 	global $wpdb;
 
-	//Don't let anything run if PMPro is paused
-	if( pmpro_is_paused() ) {
+	// Don't let anything run if PMPro is paused
+	if ( pmpro_is_paused() ) {
 		return;
 	}
 
@@ -264,9 +313,12 @@ function pmpro_cron_recurring_payment_reminders() {
 	 * @param   array $reminders key = # of days before payment will be charged (7 => 'membership_recurring')
 	 *                                  value = name of template to use w/o extension (membership_recurring.html)
 	 */
-	$emails = apply_filters( 'pmpro_upcoming_recurring_payment_reminder', array(
-		7 => 'membership_recurring',
-	) );
+	$emails = apply_filters(
+		'pmpro_upcoming_recurring_payment_reminder',
+		array(
+			7 => 'membership_recurring',
+		)
+	);
 	ksort( $emails, SORT_NUMERIC );
 
 	// Loop through each reminder and send reminders, keeping track of the previous $days value.
@@ -304,7 +356,6 @@ function pmpro_cron_recurring_payment_reminders() {
 			continue;
 		}
 
-
 		// Loop through each subscription and send reminder.
 		foreach ( $subscriptions_to_notify as $subscription_to_notify ) {
 			// Get the subscription object.
@@ -340,19 +391,18 @@ function pmpro_cron_recurring_payment_reminders() {
 			 * @param       MembershipOrder $lastorder - Deprecated. Now passing null.
 			 */
 			$send_emails = apply_filters_deprecated( 'pmprorm_send_reminder_to_user', array( $send_email, $user, null ), '3.2' );
- 
 
 			if ( $send_emails && 'membership_recurring' == $template ) {
 				// This is the default email. Use the email template class.
 				$pmproemail = new PMPro_Email_Template_Membership_Recurring( $subscription_obj );
 				$pmproemail->send();
-			} else if ( $send_emails ) {
+			} elseif ( $send_emails ) {
 				// This is not the default email. Build the email from scratch.
 				// Get the level info.
 				$membership_level = pmpro_getLevel( $subscription_obj->get_membership_level_id() );
 
 				// Send the email.
-				$pmproemail = new PMProEmail();
+				$pmproemail           = new PMProEmail();
 				$pmproemail->email    = $user->user_email;
 				$pmproemail->template = $template;
 				$pmproemail->data     = array(
@@ -365,7 +415,7 @@ function pmpro_cron_recurring_payment_reminders() {
 					'membership_cost'       => $subscription_obj->get_cost_text(),
 					'billing_amount'        => pmpro_formatPrice( $subscription_obj->get_billing_amount() ),
 					'renewaldate'           => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
-					'siteemail'             => get_option( "pmpro_from_email" ),
+					'siteemail'             => get_option( 'pmpro_from_email' ),
 					'login_link'            => wp_login_url(),
 					'display_name'          => $user->display_name,
 					'user_email'            => $user->user_email,
@@ -383,27 +433,36 @@ function pmpro_cron_recurring_payment_reminders() {
 		$previous_days = $days;
 	}
 }
+add_action( 'pmpro_cron_recurring_payment_reminders', 'pmpro_cron_recurring_payment_reminders' );
 
 /**
  * Delete old files in wp-content/uploads/pmpro-register-helper/tmp every day.
+ * 
+ * @deprecated 3.5
+ * @since 1.8.5
+ * @since 3.0 moved to pmpro_cron_delete_tmp
+ * @since 3.5 moved to PMPro_Scheduled_Actions->pmpro_delete_tmp()
+ * @global object $wpdb
+ * @return void
  */
 function pmpro_cron_delete_tmp() {
-	$upload_dir = wp_upload_dir();
-	$pmprorh_dir = $upload_dir['basedir'] . "/paid-memberships-pro/tmp/";
 
-	if(file_exists($pmprorh_dir) && $handle = opendir($pmprorh_dir))
-	{
-		while(false !== ($file = readdir($handle)))
-		{
-			$file = $pmprorh_dir . $file;
-			$filelastmodified = filemtime($file);
-			if(is_file($file) && (time() - $filelastmodified) > 3600)
-			{
-				unlink($file);
+	_deprecated_function( __METHOD__, '3.5', 'PMPro_Scheduled_Actions->pmpro_delete_tmp()' );
+
+
+	$upload_dir  = wp_upload_dir();
+	$pmprorh_dir = $upload_dir['basedir'] . '/paid-memberships-pro/tmp/';
+
+	if ( file_exists( $pmprorh_dir ) && $handle = opendir( $pmprorh_dir ) ) {
+		while ( false !== ( $file = readdir( $handle ) ) ) {
+			$file             = $pmprorh_dir . $file;
+			$filelastmodified = filemtime( $file );
+			if ( is_file( $file ) && ( time() - $filelastmodified ) > 3600 ) {
+				unlink( $file );
 			}
 		}
 
-		closedir($handle);
+		closedir( $handle );
 	}
 
 	exit;
