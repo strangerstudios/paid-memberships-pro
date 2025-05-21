@@ -162,7 +162,6 @@ class PMPro_Wisdom_Tracker {
 	 * @param $force    Force tracking if it's not time
 	 */
 	public function do_tracking( $force = false ) {
-		error_log( 'do_tracking triggered' );
 		// If the home site hasn't been defined, we just drop out. Nothing much we can do.
 		if ( ! $this->home_url ) {
 			return;
