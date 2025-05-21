@@ -292,8 +292,6 @@ function pmpro_checkForUpgrades() {
 	 * Reload crons to get correct intervals.
 	 */
 	if ( $pmpro_db_version < 2.81 ) {
-		pmpro_clear_crons();
-		pmpro_maybe_schedule_crons();
 		update_option( 'pmpro_db_version', '2.81' );
 	}
 	
@@ -436,6 +434,15 @@ function pmpro_checkForUpgrades() {
 
 		update_option( 'pmpro_db_version', '3.402' );
 	}
+
+	if ( $pmpro_db_version < 3.490 ) {
+		// Clear old crons out.
+		PMPro_Action_scheduler::getInstance()->check_and_remove_existing_crons();
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.490' );
+	}
+
+
 }
 
 function pmpro_db_delta() {

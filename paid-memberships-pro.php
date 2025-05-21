@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.4.6
+ * Version: 3.49.0
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -26,6 +26,14 @@ define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
+if ( ! class_exists( \ActionScheduler::class ) ) {
+	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
+}
+
+// New in 3.5: We now use Action Scheduler instead of WP Cron.
+require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' ); 	// Our Action Scheduler Manager for PMPro
+require_once( PMPRO_DIR . '/scheduled/recurring-actions.php' ); 			// Load our recurring scheduled actions.
+
 require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
 require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP session vars
 
@@ -40,14 +48,6 @@ require_once( PMPRO_DIR . '/includes/deprecated.php' );             // deprecate
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
 }
-
-if ( ! class_exists( \ActionScheduler::class ) ) {
-	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
-}
-
-// New in 3.5: We now use Action Scheduler instead of WP Cron.
-require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' ); 	// Our Action Scheduler Manager for PMPro
-require_once( PMPRO_DIR . '/scheduled/recurring-actions.php' ); 			// Load our recurring scheduled actions.
 
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       		// class to process and save orders
 require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        		// setup and filter emails sent by PMPro
@@ -254,20 +254,16 @@ add_filter( 'cron_schedules', 'pmpro_cron_schedules_monthly' );
 
 // activation
 function pmpro_activation() {
-	pmpro_maybe_schedule_crons();
 	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
 	do_action( 'pmpro_activation' );
 }
+register_activation_hook( __FILE__, 'pmpro_activation' );
 
 // deactivation
 function pmpro_deactivation() {	
-	// remove crons
-	pmpro_clear_crons();
-
 	// remove caps from admin role
 	pmpro_set_capabilities_for_role( 'administrator', 'disable' );
 
 	do_action( 'pmpro_deactivation' );
 }
-register_activation_hook( __FILE__, 'pmpro_activation' );
 register_deactivation_hook( __FILE__, 'pmpro_deactivation' );

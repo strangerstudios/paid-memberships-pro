@@ -66,9 +66,6 @@ class PMPro_Action_Scheduler {
 		// Check if Action Scheduler is installed and activated.
 		if ( ! class_exists( \ActionScheduler::class ) ) {
 			return;
-		} else {
-			// Check for existing crons and remove them.
-			self::check_and_remove_existing_crons();
 		}
 
 		// Add custom hooks for quarter-hourly, hourly, daily and weekly tasks.
@@ -111,17 +108,17 @@ class PMPro_Action_Scheduler {
 	 * @return void
 	 */
 	public static function check_and_remove_existing_crons() {
-	$crons = _get_cron_array();
-	$removed = array();
-	foreach ( $crons as $timestamp => $cron ) {
-		foreach ( $cron as $hook => $events ) {
-			if ( strpos( $hook, 'pmpro_' ) === 0 ) {
-				// Remove all events for this hook (regardless of args)
-				wp_clear_scheduled_hook( $hook );
-				$removed[] = $hook;
+		$crons   = _get_cron_array();
+		$removed = array();
+		foreach ( $crons as $timestamp => $cron ) {
+			foreach ( $cron as $hook => $events ) {
+				if ( strpos( $hook, 'pmpro_' ) === 0 ) {
+					// Remove all events for this hook (regardless of args)
+					wp_clear_scheduled_hook( $hook );
+					$removed[] = $hook;
+				}
 			}
 		}
-	}
 		if ( ! empty( $removed ) && WP_DEBUG ) {
 			// Log the removed crons for debugging.
 			$removed = implode( ', ', $removed );
