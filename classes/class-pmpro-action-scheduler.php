@@ -63,6 +63,11 @@ class PMPro_Action_Scheduler {
 	 */
 	public function __construct() {
 
+		// Check if Action Scheduler is installed and activated.
+		if ( ! class_exists( \ActionScheduler::class ) ) {
+			return;
+		}
+
 		// Add custom hooks for quarter-hourly, hourly, daily and weekly tasks.
 		add_action( 'action_scheduler_init', array( $this, 'add_recurring_hooks' ) );
 
