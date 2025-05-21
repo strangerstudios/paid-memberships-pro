@@ -47,10 +47,8 @@ require_once( PMPRO_DIR . '/includes/crons.php' );                  				// cron-
 // New in 3.5: You can use Action Scheduler instead of WP Cron.
 // WP Cron usage will be deprecated in a future version.
 // Check if Action Scheduler is already loaded, if not, load our library copy.
-if ( defined( 'PMPRO_USE_ACTION_SCHEDULER' ) && ! class_exists( \ActionScheduler::class ) ) {
+if ( defined( 'PMPRO_USE_ACTION_SCHEDULER' ) && PMPRO_USE_ACTION_SCHEDULER && ! class_exists( \ActionScheduler::class ) ) {
 	require_once( PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php' ); // Load our copy of Action Scheduler if needed.
-}
-if ( defined( 'PMPRO_USE_ACTION_SCHEDULER' ) && PMPRO_USE_ACTION_SCHEDULER ) {
 	require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' );   			// Our Action Scheduler Manager for PMPro
 	require_once( PMPRO_DIR . '/scheduled/recurring-actions.php' ); 					// Load our recurring scheduled actions.
 } else {
