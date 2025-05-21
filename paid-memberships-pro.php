@@ -26,6 +26,10 @@ define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
+if ( ! class_exists( \ActionScheduler::class ) ) {
+	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
+}
+
 require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
 require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP session vars
 
