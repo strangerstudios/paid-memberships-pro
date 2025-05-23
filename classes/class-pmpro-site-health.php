@@ -61,10 +61,6 @@ class PMPro_Site_Health {
 			'label'       => 'Paid Memberships Pro',
 			'description' => __( 'This debug information for your Paid Memberships Pro installation can assist you in getting support.', 'paid-memberships-pro' ),
 			'fields'      => [
-				'pmpro-cron-jobs'            => [
-					'label' => __( 'Cron Job Status', 'paid-memberships-pro' ),
-					'value' => self::get_cron_jobs(),
-				],
 				'pmpro-gateway'              => [
 					'label' => __( 'Payment Gateway', 'paid-memberships-pro' ),
 					'value' => self::get_gateway(),
@@ -376,49 +372,6 @@ class PMPro_Site_Health {
 		}
 
 		return $custom_templates;
-	}
-
-	/**
-	 * Get the cron job information.
-	 *
-	 * @since 2.6.2
-	 *
-	 * @return string The cron job information.
-	 */
-	public function get_cron_jobs() {
-		$crons = _get_cron_array();
-
-		$cron_times = [];
-
-		// These are our crons.
-		$expected_crons = array_keys( pmpro_get_crons() );
-
-		// Find any of our crons and when their next run is.
-		if ( $crons ) {
-			foreach ( $crons as $time => $cron ) {
-				$keys    = array_keys( $cron );
-				$matches = array_intersect( $expected_crons, $keys );
-
-				foreach ( $matches as $cron_hook ) {
-					$cron_times[ $cron_hook ] = date( 'Y-m-d H:i:s', $time );
-				}
-			}
-		}
-
-		$missing_crons = array_diff( $expected_crons, array_keys( $cron_times ) );
-
-		$cron_information = [];
-
-		foreach ( $missing_crons as $cron_hook ) {
-			$cron_information[] = $cron_hook . ' (' . __( 'missing', 'paid-memberships-pro' ) . ')';
-		}
-
-		// Build the information of what crons are missing and what crons are going to run.
-		foreach ( $cron_times as $cron_hook => $next_run ) {
-			$cron_information[] = $cron_hook . ' (' . $next_run . ')';
-		}
-
-		return implode( " | \n", $cron_information );
 	}
 
 	/**

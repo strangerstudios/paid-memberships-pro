@@ -96,10 +96,8 @@ class PMPro_Wisdom_Tracker {
 			$this->do_tracking();
 		}
 
-		// Hook our do_tracking function to the weekly action
-		add_filter( 'cron_schedules', [ $this, 'schedule_weekly_event' ] );
-		// It's called weekly, but in fact it could be daily, weekly or monthly
-		add_action( 'put_do_weekly_action', [ $this, 'do_tracking' ] );
+		// Hook our do_tracking function to Action Scheduler
+		$this->schedule_tracking();
 
 		// Use this action for local testing
 		// add_action( 'admin_init', array( $this, 'do_tracking' ) );
@@ -121,31 +119,24 @@ class PMPro_Wisdom_Tracker {
 	 * And check if tracking is enabled - perhaps the plugin has been reactivated
 	 *
 	 * @since 1.0.0
+	 * @modified 3.5 Now with Action Scheduler support
 	 */
 	public function schedule_tracking() {
-		if ( ! wp_next_scheduled( 'put_do_weekly_action' ) ) {
-			$schedule = $this->get_schedule();
-			wp_schedule_event( time(), $schedule, 'put_do_weekly_action' );
+		$schedule = $this->get_schedule();
+		switch ( $schedule ) {
+			case 'daily':
+				$hook = 'pmpro_schedule_daily';
+				break;
+			case 'weekly':
+				$hook = 'pmpro_schedule_weekly';
+				break;
+			case 'monthly':
+				$hook = 'pmpro_schedule_monthly';
+				break;
+			default:
+				$hook = 'pmpro_schedule_monthly';
 		}
-		$this->do_tracking( true );
-	}
-
-	/**
-	 * Create weekly schedule
-	 *
-	 * @since 1.2.3
-	 */
-	public function schedule_weekly_event( $schedules ) {
-		$schedules['weekly']  = [
-			'interval' => 604800,
-			'display'  => esc_html__( 'Once Weekly', 'paid-memberships-pro' ),
-		];
-		$schedules['monthly'] = [
-			'interval' => 2635200,
-			'display'  => esc_html__( 'Once Monthly', 'paid-memberships-pro' ),
-		];
-
-		return $schedules;
+		add_action( $hook, [ $this, 'do_tracking' ] );
 	}
 
 	/**
