@@ -27,6 +27,9 @@ composer.lock
 # Temporary files
 *~
 
+# Composer files
+libraries/banner-notifications
+
 # Log files
 log/*.log
 log/*.txt
