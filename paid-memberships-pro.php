@@ -27,26 +27,28 @@ define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
 if ( ! class_exists( \ActionScheduler::class ) ) {
-	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
+	require_once ( PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php' ); // Load Action Scheduler if it is not already loaded.
 }
 
 // New in 3.5: We now use Action Scheduler instead of WP Cron.
 require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' ); 	// Our Action Scheduler Manager for PMPro
 require_once( PMPRO_DIR . '/scheduled/recurring-actions.php' ); 			// Load our recurring scheduled actions.
+// Old cron includes for backwards compatibility.
+require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
-require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP session vars
+require_once( PMPRO_DIR . '/includes/sessions.php' );               		// start/close PHP session vars
 
-require_once( PMPRO_DIR . '/includes/localization.php' );           // localization functions
-require_once( PMPRO_DIR . '/includes/lib/glotpress-helper.php' );   // handles translation updates logic from our own server.
-require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        // parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
-require_once( PMPRO_DIR . '/includes/functions.php' );              // misc functions used by the plugin
-require_once( PMPRO_DIR . '/includes/updates.php' );                // database and other updates
-require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           // database and other updates
-require_once( PMPRO_DIR . '/includes/deprecated.php' );             // deprecated hooks and functions
+require_once( PMPRO_DIR . '/includes/localization.php' );           		// localization functions
+require_once( PMPRO_DIR . '/includes/lib/glotpress-helper.php' );   		// handles translation updates logic from our own server.
+require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        		// parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
+require_once( PMPRO_DIR . '/includes/functions.php' );              		// misc functions used by the plugin
+require_once( PMPRO_DIR . '/includes/updates.php' );                		// database and other updates
+require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           		// database and other updates
+require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// deprecated hooks and functions
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
-	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
+	require_once( PMPRO_DIR . '/includes/license.php' );            		// defines location of addons data and licenses
 }
 
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       		// class to process and save orders
