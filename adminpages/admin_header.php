@@ -166,6 +166,8 @@
 
 <div class="wrap pmpro_admin <?php echo 'pmpro_admin-' . esc_attr( $view ); ?>">
     <?php
+    global $pmpro_banner_notifications;
+
 		// Default to showing notification banners.
 		$show_notifications = true;
 
@@ -176,7 +178,7 @@
 		}
 
 		// Hide notifications if the user has disabled them.
-		if( pmpro_get_max_notification_priority() < 1 ) {
+		if ( $pmpro_banner_notifications->get_max_notification_priority() < 1 ) {
 			$show_notifications = false;
 		}
 
