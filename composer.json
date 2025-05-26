@@ -6,12 +6,6 @@
     "WordPress",
     "memberships"
   ],
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/gocodebox/banner-notifications"
-    }
-  ],
   "homepage": "https://www.paidmembershipspro.com/",
   "license": "GPL-2.0-or-later",
   "authors": [
@@ -29,7 +23,7 @@
   },
   "require": {
     "composer/installers": "^1.9",
-    "gocodebox/banner-notifications": "dev-dev",
+    "gocodebox/banner-notifications": "^1.0",
     "php": ">=7.4"
   },
   "minimum-stability": "stable",
