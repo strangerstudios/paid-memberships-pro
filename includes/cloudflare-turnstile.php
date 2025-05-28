@@ -4,15 +4,9 @@
  */
 
 /**
- * Show CloudFlare Turnstile on the checkout page.
+ * Generate the CloudFlare Turnstile HTML/Challenge for displaying in various places.
  */
 function pmpro_cloudflare_turnstile_get_html() {
-
-	// If CloudFlare Turnstile is not enabled, bail.
-	if ( pmpro_captcha() !== 'turnstile' ) {
-		return;
-	}
-
 	/**
 	 * Filter the CloudFlare Turnstile theme.
 	 *
@@ -24,39 +18,60 @@ function pmpro_cloudflare_turnstile_get_html() {
 	}
 	?>
 	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-	<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( get_option( 'pmpro_cloudflare_turnstile_site_key' ) ); ?>" data-theme="<?php echo esc_attr( $cf_theme ); ?>"></div>
+	<div class="pmpro-cloudflare-turnstile-wrapper">
+		<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( get_option( 'pmpro_cloudflare_turnstile_site_key' ) ); ?>" data-theme="<?php echo esc_attr( $cf_theme ); ?>" data-language="auto" data-size="normal"></div>
+	</div>
 	<?php
 
 }
-add_action( 'pmpro_checkout_before_submit_button', 'pmpro_cloudflare_turnstile_get_html' );
-add_action( 'pmpro_billing_before_submit_button', 'pmpro_cloudflare_turnstile_get_html' );
+
+/**
+ * Display the CloudFlare Turnstile HTML at checkout and billing pages.
+ */
+function pmpro_cloudflare_turnstile_display_at_checkout_and_billing() {
+	// If CloudFlare Turnstile is not enabled, bail.
+	if ( pmpro_captcha() != 'turnstile' ) {
+		return;
+	}
+
+	// Display the Turnstile HTML.
+	pmpro_cloudflare_turnstile_get_html();
+}
+add_action( 'pmpro_checkout_before_submit_button', 'pmpro_cloudflare_turnstile_display_at_checkout_and_billing' );
+add_action( 'pmpro_billing_before_submit_button', 'pmpro_cloudflare_turnstile_display_at_checkout_and_billing' );
 
 /**
  * Adds Turnstile to the PMPro login form
  *
  * @since TBD
  */
-function pmpro_login_form_turnstile($login_form, $args) {
+function pmpro_cloudflare_turnstile_login_form_middle( $login_form, $args ) {
 
-    if ( pmpro_captcha() != 'turnstile' ) {
-        return $login_form;
-    }
+	// Let's bail if we're not loading our version of the login form.
+	if ( ! isset( $args['pmpro_login_form'] ) ) {
+		return $login_form;
+	}
 
-    ob_start();
-    pmpro_cloudflare_turnstile_get_html();
-    $pmpro_turnstile = ob_get_contents();
-    ob_end_clean();
-    return $login_form . $pmpro_turnstile;
-    
+	// Turnstile is not enabled, bail.
+	if ( pmpro_captcha() != 'turnstile' ) {
+		return $login_form;
+	}
+
+	ob_start();
+	pmpro_cloudflare_turnstile_get_html();
+	$pmpro_turnstile = ob_get_contents();
+	ob_end_clean();
+
+	return $login_form . $pmpro_turnstile; 
 }
-add_filter( 'login_form_middle', 'pmpro_login_form_turnstile', 10, 2 );
+add_filter( 'login_form_middle', 'pmpro_cloudflare_turnstile_login_form_middle', 10, 2 );
 
 /**
- * Adds Turnstile to the WP login form
+ * Adds Turnstile to the WordPress login (wp-login.php) and the password reset forms.
  *
  * @since TBD
  */
-function pmpro_wp_login_form_turnstile( $login_form ){
+function pmpro_cloudflare_turnstile_login_and_password_form( $login_form ){
 
     if ( pmpro_captcha() != 'turnstile' ) {
         return $login_form;
@@ -65,9 +80,9 @@ function pmpro_wp_login_form_turnstile( $login_form ){
     pmpro_cloudflare_turnstile_get_html();
     
 }
-add_action( 'login_form', 'pmpro_wp_login_form_turnstile', 10 );
-add_action( 'lostpassword_form', 'pmpro_wp_login_form_turnstile', 10 );
-add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_wp_login_form_turnstile', 10 );
+add_action( 'login_form', 'pmpro_cloudflare_turnstile_login_and_password_form', 10 );
+add_action( 'lostpassword_form', 'pmpro_cloudflare_turnstile_login_and_password_form', 10 );
+add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_cloudflare_turnstile_login_and_password_form', 10 );
 
 /**
  * Registration check to make sure the Turnstile passes.
@@ -199,7 +214,7 @@ function pmpro_cloudflare_turnstile_get_error_message() {
 }
 
 /**
- * Clear the CloudFlare Turnstile session variable after checkout.
+ * Clear the CloudFlare Turnstile session variable after checkout or billing update.
  * @since 3.3.3
  */
 function pmpro_after_checkout_reset_cloudflare_turnstile() {

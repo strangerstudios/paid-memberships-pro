@@ -511,6 +511,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 										$login_form_array = array(
 											'value_username' => esc_html( $username ),
 											'redirect' => $redirect_to,
+											'pmpro_login_form' => true, // This custom argument is used to help us identify our form in generic hooks such as login_form_middle that may be used by other plugins or themes.
 										);
 										pmpro_login_form( $login_form_array );
 									?>
