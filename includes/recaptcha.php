@@ -87,8 +87,8 @@ function pmpro_recaptcha_get_html() {
 
 	// Figure out language.
 	$locale = get_locale();
-	if(!empty($locale)) {
-		$parts = explode("_", $locale);
+	if ( ! empty( $locale ) ) {
+		$parts = explode( "_", $locale );
 		$lang = $parts[0];
 	} else {
 		$lang = "en";	
@@ -127,13 +127,13 @@ add_action( 'pmpro_checkout_before_submit_button', 'pmpro_recaptcha_get_html' );
 add_action( 'pmpro_billing_before_submit_button', 'pmpro_recaptcha_get_html' );
 
 /**
- * Adds Turnstile to the PMPro login form
+ * Adds reCAPTCHA to the PMPro login form
  *
  * @since TBD
  */
-function pmpro_login_form_recaptcha($login_form, $args){
+function pmpro_login_form_recaptcha( $login_form, $args ) {
 
-    if( pmpro_captcha() !== 'recaptcha' ) {
+    if ( pmpro_captcha() !== 'recaptcha' ) {
         return $login_form;
     }
 
@@ -147,11 +147,11 @@ function pmpro_login_form_recaptcha($login_form, $args){
 add_filter( 'login_form_middle', 'pmpro_login_form_recaptcha', 10, 2 );
 
 /**
- * Adds Turnstile to the WP login form
+ * Adds reCAPTCHA to the WP login form
  *
  * @since TBD
  */
-function pmpro_wp_login_form_recaptcha(){
+function pmpro_wp_login_form_recaptcha() {
 
     if( pmpro_captcha() === 'recaptcha' ) {
         pmpro_recaptcha_get_html();
@@ -167,9 +167,10 @@ add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_wp_login_form_rec
  * AJAX Method to Validate a ReCAPTCHA Response Token
  */
 function pmpro_wp_ajax_validate_recaptcha() {
-	
-    $response = pmpro_validate_recaptcha( $_POST['g-recaptcha-response'] );
-    if( $response ) {
+
+    $response = pmpro_validate_recaptcha( $_REQUEST['g-recaptcha-response'] );
+
+    if ( $response ) {
         echo '1';
     } else {
         echo '0';
@@ -182,6 +183,8 @@ add_action( 'wp_ajax_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptch
 
 /**
  * Validates the reCAPTCHA response
+ * 
+ * @since TBD
  */
 function pmpro_validate_recaptcha( $response ) {
 
@@ -191,6 +194,7 @@ function pmpro_validate_recaptcha( $response ) {
 	
 	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
 	$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $response ) );
+    
 	if ( $resp->success ) {
 	    pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
 		return true;

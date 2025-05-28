@@ -887,16 +887,16 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 /**
  * Allows us to check if you're human on the password reset form
  */
-function pmpro_password_reset_captcha(){
+function pmpro_password_reset_captcha() {
 
-    if( ! empty( $_POST['woocommerce-lost-password-nonce'] ) ) {
+    if ( ! empty( $_POST['woocommerce-lost-password-nonce'] ) ) {
         return;
     }
     
     $captcha = pmpro_captcha();    
 
     //Check if reCAPTCHA has been filled in
-    if( $captcha == 'recaptcha' && empty( $_POST['g-recaptcha-response'] ) ) {
+    if ( $captcha == 'recaptcha' && empty( $_POST['g-recaptcha-response'] ) ) {
         $recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
         if( empty( $recaptcha_validated ) ) {
             $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
@@ -908,7 +908,7 @@ function pmpro_password_reset_captcha(){
         $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
 	}
 
-    if( $captcha == 'recaptcha' ) {  
+    if ( $captcha == 'recaptcha' ) {  
 
         $validated = pmpro_validate_recaptcha( $_POST['g-recaptcha-response'] ); 
         
@@ -918,7 +918,7 @@ function pmpro_password_reset_captcha(){
 
     }
     
-    if( $captcha == 'turnstile' ) {
+    if ( $captcha == 'turnstile' ) {
             
         // Verify the turnstile check.
         $headers = array(
@@ -1119,7 +1119,7 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
         }
 	}
 
-    if( $captcha == 'recaptcha' && ! empty( $_POST['g-recaptcha-response'] ) ) {        
+    if ( $captcha == 'recaptcha' && ! empty( $_POST['g-recaptcha-response'] ) ) {        
 
         $validated = pmpro_validate_recaptcha( $_POST['g-recaptcha-response'] ); 
         
@@ -1129,7 +1129,7 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 
     }
     
-    if( $captcha == 'turnstile' ) {
+    if ( $captcha == 'turnstile' ) {
             
         // Verify the turnstile check.
         $headers = array(

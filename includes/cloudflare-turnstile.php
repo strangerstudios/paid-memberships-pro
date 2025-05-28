@@ -36,9 +36,9 @@ add_action( 'pmpro_billing_before_submit_button', 'pmpro_cloudflare_turnstile_ge
  *
  * @since TBD
  */
-function pmpro_login_form_turnstile($login_form, $args){
+function pmpro_login_form_turnstile($login_form, $args) {
 
-    if( pmpro_captcha() != 'turnstile' ) {
+    if ( pmpro_captcha() != 'turnstile' ) {
         return $login_form;
     }
 
@@ -51,9 +51,14 @@ function pmpro_login_form_turnstile($login_form, $args){
 }
 add_filter( 'login_form_middle', 'pmpro_login_form_turnstile', 10, 2 );
 
+/**
+ * Adds Turnstile to the WP login form
+ *
+ * @since TBD
+ */
 function pmpro_wp_login_form_turnstile( $login_form ){
 
-    if( pmpro_captcha() != 'turnstile' ) {
+    if ( pmpro_captcha() != 'turnstile' ) {
         return $login_form;
     }
     

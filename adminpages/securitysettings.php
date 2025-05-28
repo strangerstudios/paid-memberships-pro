@@ -166,19 +166,18 @@
 							</td>
 						</tr>
                         <tr>
-							<th scope="row" valign="top">
-								<label for="captcha"><?php esc_html_e( 'Use Captcha', 'paid-memberships-pro' );?></label>
-							</th>
-							<td>
-								<select id="captcha" name="captcha">
-									<option value="" <?php selected( $captcha, false ); ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
-									<!-- For reference, removed the Yes - Free memberships only. option -->
-									<option value="recaptcha" <?php selected( $captcha, 'recaptcha', true ); ?>><?php esc_html_e('Use Google reCAPTCHA', 'paid-memberships-pro' );?></option>
-                                    <option value="turnstile" <?php selected( $captcha, 'turnstile', true ); ?>><?php esc_html_e('Use CloudFlare Turnstile', 'paid-memberships-pro' );?></option>
-								</select>
-								<p class="description"><?php printf( esc_html__( 'Protect your Checkout and Login forms with Google reCAPTCHA or CloudFlare Turnstile.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
-							</td>
-						</tr>
+                            <th scope="row" valign="top">
+                                <label for="captcha"><?php esc_html_e( 'Use Captcha', 'paid-memberships-pro' );?></label>
+                            </th>
+                            <td>
+                                <select id="captcha" name="captcha">
+                                    <option value="" <?php selected( $captcha, false ); ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>                                    
+                                    <option value="recaptcha" <?php selected( $captcha, 'recaptcha', true ); ?>><?php esc_html_e( 'Use Google reCAPTCHA', 'paid-memberships-pro' );?></option>
+                                    <option value="turnstile" <?php selected( $captcha, 'turnstile', true ); ?>><?php esc_html_e( 'Use CloudFlare Turnstile', 'paid-memberships-pro' );?></option>
+                                </select>
+                                <p class="description"><?php printf( esc_html__( 'Protect your Checkout and Login forms with Google reCAPTCHA or CloudFlare Turnstile.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
+                            </td>
+                        </tr>
 						<?php
 						/**
 						 * Fires after the spam protection settings are displayed.

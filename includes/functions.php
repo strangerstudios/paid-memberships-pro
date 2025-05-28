@@ -5064,23 +5064,25 @@ add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_
 
 /**
  * Determine which Captcha option has been enabled 
+ * 
+ * @since TBD
  */
-function pmpro_captcha(){
+function pmpro_captcha() {
 
     $captcha = get_option( 'pmpro_captcha' );
 
-    if( ! $captcha ) {
+    if ( ! $captcha ) {
 
         //Backwards compat with the old settings
         $recaptcha = get_option( 'pmpro_recaptcha' );
         $turnstile = get_option( 'pmpro_cloudflare_turnstile' );
         
-        if( $recaptcha && $turnstile ) {
+        if ( $recaptcha && $turnstile ) {
             //Make reCAPTCHA priority if both are enabled
             $captcha = 'recaptcha';
-        } else if( $recaptcha ) {
+        } elseif ( $recaptcha ) {
             $captcha = 'recaptcha';
-        } else if( $turnstile ) {
+        } elseif ( $turnstile ) {
             $captcha = 'turnstile';
         } else {
             $captcha = '';
