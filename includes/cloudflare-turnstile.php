@@ -71,11 +71,26 @@ add_filter( 'login_form_middle', 'pmpro_cloudflare_turnstile_login_form_middle',
  *
  * @since TBD
  */
-function pmpro_cloudflare_turnstile_login_and_password_form( $login_form ){
-
-    if ( pmpro_captcha() != 'turnstile' ) {
+function pmpro_cloudflare_turnstile_login_and_password_form( $login_form ) {
+	
+	// If not using turnstile, let's bail.
+	if ( pmpro_captcha() != 'turnstile' ) {
         return $login_form;
     }
+
+	// Custom CSS for the PMPro reset password form, or default to CSS for the default login pages to style the challenge better.
+	?>
+	<style>
+		.pmpro-cloudflare-turnstile-wrapper {
+	<?php if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] === 'reset_pass' ) { ?> 
+			margin-top: 25px; 
+			<?php } else { ?> 
+			margin-bottom: 10px;
+			margin-left: -15px;
+			<?php } ?>
+		}
+	</style>
+	<?php
     
     pmpro_cloudflare_turnstile_get_html();
     
