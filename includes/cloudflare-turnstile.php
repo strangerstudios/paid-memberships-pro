@@ -139,10 +139,11 @@ function pmpro_cloudflare_turnstile_settings() {
 
 	// Output settings
 	?>	
-   <tr class='pmpro_cloudflare_turnstile_settings' style='<?php esc_attr_e( $tr_style ); ?>'>
+    <tr class='pmpro_cloudflare_turnstile_settings' style='<?php esc_attr_e( $tr_style ); ?>'>
 		<th scope="row"><label for="cloudflare_turnstile_site_key"><?php esc_html_e( 'Turnstile Site Key', 'paid-memberships-pro' ); ?>:</label></th>
 		<td>
 			<input type="text" id="cloudflare_turnstile_site_key" name="cloudflare_turnstile_site_key" value="<?php echo esc_attr( $cloudflare_site_key ); ?>" class="regular-text code" />
+            <p class="description"><?php esc_html_e( 'A free CloudFlare Turnstile key is required.', 'paid-memberships-pro' ); ?> <a href="https://www.cloudflare.com/products/turnstile/" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Click here to signup for CloudFlare Turnstile', 'paid-memberships-pro' ); ?></a>.</p>
 		</td>
 	</tr>
 	<tr class='pmpro_cloudflare_turnstile_settings' style='<?php esc_attr_e( $tr_style ); ?>'>
