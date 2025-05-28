@@ -28,9 +28,11 @@
 			$nuclear_HTTPS = 0;
 		}
 		pmpro_setOption( "nuclear_HTTPS", $nuclear_HTTPS );
-        if ( isset( $_POST['captcha'] ) ) {
-            update_option( 'pmpro_captcha', sanitize_text_field( $_POST['captcha'] ) );
-        }
+		
+		// If there is a captcha option, save it.
+		if ( isset( $_POST['captcha'] ) ) {
+			update_option( 'pmpro_captcha', sanitize_text_field( $_POST['captcha'] ) );
+		}
 
 		/**
 		 * Fires after security settings are saved.
