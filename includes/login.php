@@ -362,6 +362,10 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				$message = _wp_privacy_account_request_confirmed_message( $request_id );
 				$msgt = 'pmpro_success';
 				break;
+			case 'captcha-failed':
+				$message = wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) );
+				$msgt = 'pmpro_error';
+				break;
 		}
 	}
 
@@ -511,7 +515,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 										$login_form_array = array(
 											'value_username' => esc_html( $username ),
 											'redirect' => $redirect_to,
-											'pmpro_login_form' => true, // This custom argument is used to help us identify our form in generic hooks such as login_form_middle that may be used by other plugins or themes.
+											'pmpro_login_form_used' => true, // This custom argument is used to help us identify our form in generic hooks such as login_form_middle that may be used by other plugins or themes.
 										);
 										pmpro_login_form( $login_form_array );
 									?>
@@ -890,19 +894,20 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
  */
 function pmpro_password_reset_captcha() {
 
-    if ( ! empty( $_POST['woocommerce-lost-password-nonce'] ) ) {
-        return;
-    }
+	// Don't run on WooCommerce pages.
+	if ( ! empty( $_POST['woocommerce-lost-password-nonce'] ) ) {
+		return;
+	}
     
-    $captcha = pmpro_captcha();    
+	$captcha = pmpro_captcha();    
 
-    //Check if reCAPTCHA has been filled in
-    if ( $captcha == 'recaptcha' && empty( $_POST['g-recaptcha-response'] ) ) {
-        $recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
-        if( empty( $recaptcha_validated ) ) {
-            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
-        }        
-    }
+	//Check if reCAPTCHA has been filled in
+	if ( $captcha == 'recaptcha' && empty( $_POST['g-recaptcha-response'] ) ) {
+		$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
+		if( empty( $recaptcha_validated ) ) {
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}        
+	}
 
 	//Check if Turnstile has been filled in
 	if ( $captcha == 'turnstile' && empty( $_POST['cf-turnstile-response'] ) ) {

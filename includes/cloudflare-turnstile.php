@@ -16,6 +16,7 @@ function pmpro_cloudflare_turnstile_get_html() {
 	if ( $cf_theme !== 'light' ) {
 		$cf_theme = 'dark';
 	}
+
 	?>
 	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 	<div class="pmpro-cloudflare-turnstile-wrapper">
@@ -48,10 +49,9 @@ add_action( 'pmpro_billing_before_submit_button', 'pmpro_cloudflare_turnstile_di
 function pmpro_cloudflare_turnstile_login_form_middle( $login_form, $args ) {
 
 	// Let's bail if we're not loading our version of the login form.
-	if ( ! isset( $args['pmpro_login_form'] ) ) {
+	if ( ! isset( $args['pmpro_login_form_used'] ) ) {
 		return $login_form;
 	}
-
 	// Turnstile is not enabled, bail.
 	if ( pmpro_captcha() != 'turnstile' ) {
 		return $login_form;

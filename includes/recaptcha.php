@@ -1,8 +1,10 @@
 <?php
 /**
  * Sets up our JS code to validate ReCAPTCHA on form submission if needed.
+ * 
+ * @param string $submit_button_id The ID of the submit button to attach the ReCAPTCHA validation to, this helps for compatibility for different areas.
  */
-function pmpro_init_recaptcha() {
+function pmpro_init_recaptcha( $submit_button_id ) {
 	// If ReCAPTCHA is not enabled, don't do anything.
 	// global $recaptcha for backwards compatibility.
 	// TODO: Remove this in a future version.
@@ -27,13 +29,15 @@ function pmpro_init_recaptcha() {
 			'admin_ajax_url' => esc_url( admin_url( 'admin-ajax.php' ) ),
 			'error_message' => esc_attr__( 'ReCAPTCHA validation failed. Try again.', 'paid-memberships-pro' ),
 			'public_key' => esc_html( get_option( 'pmpro_recaptcha_publickey' ) ),
+			'submit_button_id' => esc_html( $submit_button_id )
 		);
 		wp_localize_script( 'pmpro-recaptcha-v3', 'pmpro_recaptcha_v3', $localize_vars );
 		wp_enqueue_script( 'pmpro-recaptcha-v3' );
 	} else {
 		wp_register_script( 'pmpro-recaptcha-v2', plugins_url( 'js/pmpro-recaptcha-v2.js', PMPRO_BASE_FILE ), array( 'jquery' ), PMPRO_VERSION );
 		$localize_vars = array(
-			'error_message' => esc_attr__( 'Please check the ReCAPTCHA box to confirm you are not a bot.', 'paid-memberships-pro' )
+			'error_message' => esc_attr__( 'Please check the ReCAPTCHA box to confirm you are not a bot.', 'paid-memberships-pro' ),
+			'submit_button_id' => esc_html( $submit_button_id )
 		);
 		wp_localize_script( 'pmpro-recaptcha-v2', 'pmpro_recaptcha_v2', $localize_vars );
 		wp_enqueue_script( 'pmpro-recaptcha-v2' );
@@ -60,10 +64,16 @@ add_action( 'pmpro_billing_preheader', 'pmpro_init_recaptcha', 9 ); // Run befor
 
 /**
  * Outputs the HTML needed to display ReCAPTCHA in a form.
+ * 
+ * @param $submit_button_id The ID of the submit button to attach the ReCAPTCHA validation to, this helps for compatibility for different areas.
+ * 
  */
-function pmpro_recaptcha_get_html() {
+function pmpro_recaptcha_get_html( $submit_button_id = 'pmpro_btn-submit' ) {
 	static $already_shown = false;
 
+	// Init?
+	pmpro_init_recaptcha( $submit_button_id );
+	
 	// Make sure that we only show the captcha once.
 	if ( $already_shown ) {
 		return;
@@ -101,13 +111,13 @@ function pmpro_recaptcha_get_html() {
 
 		// Check which version of ReCAPTCHA we are using.
 		$recaptcha_version = get_option( 'pmpro_recaptcha_version' ); 
-		if( $recaptcha_version == '3_invisible' ) { ?>
+		if ( $recaptcha_version == '3_invisible' ) { ?>
 			<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>" data-size="invisible" data-callback="onSubmit"></div>
 				<script type="text/javascript"
 					src="https://www.google.com/recaptcha/api.js?onload=pmpro_recaptcha_onloadCallback&hl=<?php echo esc_attr( $lang );?>&render=explicit" async defer>
 				</script>
 		<?php } else { ?>
-			<div class="g-recaptcha" data-callback="pmpro_recaptcha_validatedCallback" data-expired-callback="pmpro_recaptcha_expiredCallback" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>"></div>
+			<div class="g-recaptcha" data-callback="pmpro_recaptcha_validatedCallback" data-expired-callback="pmpro_recaptcha_expiredCallback" data-sitekey="<?php echo esc_attr( $recaptcha_publickey ); ?>"></div>
 			<script type="text/javascript"
 				src="https://www.google.com/recaptcha/api.js?hl=<?php echo esc_attr( $lang );?>">
 			</script>
@@ -133,12 +143,18 @@ add_action( 'pmpro_billing_before_submit_button', 'pmpro_recaptcha_get_html' );
  */
 function pmpro_login_form_recaptcha( $login_form, $args ) {
 
+	// Let's bail if we're not loading our version of the login form.
+	if ( ! isset( $args['pmpro_login_form_used'] ) ) {
+		return $login_form;
+	}
+
+	// If this isn't reCAPTCHA, don't load it.
     if ( pmpro_captcha() !== 'recaptcha' ) {
         return $login_form;
     }
 
     ob_start();
-    pmpro_recaptcha_get_html();
+    pmpro_recaptcha_get_html( 'wp-submit' );
     $pmpro_recaptcha = ob_get_contents();
     ob_end_clean();
     return $login_form . $pmpro_recaptcha;
@@ -153,8 +169,9 @@ add_filter( 'login_form_middle', 'pmpro_login_form_recaptcha', 10, 2 );
  */
 function pmpro_wp_login_form_recaptcha() {
 
-    if( pmpro_captcha() === 'recaptcha' ) {
-        pmpro_recaptcha_get_html();
+	// Enable reCAPTCHA
+    if ( pmpro_captcha() === 'recaptcha' ) {
+        pmpro_recaptcha_get_html( 'wp-submit' );
     }
     
 }
@@ -162,6 +179,36 @@ add_action( 'login_form', 'pmpro_wp_login_form_recaptcha', 10 );
 add_action( 'lostpassword_form', 'pmpro_wp_login_form_recaptcha', 10 );
 add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_wp_login_form_recaptcha', 10 );
 
+/**
+ * Apply custom CSS to the ReCAPTCHA element on the WP login page. For V2 reCAPTCHA only.
+ * This is used to fix the alignment of the ReCAPTCHA element on the default login and password reset page.
+ * 
+ * @since TBD
+ * 
+ */
+function pmpro_wp_login_style_v2_recaptcha() {
+	// If ReCAPTCHA is not enabled, don't do anything.
+	if ( pmpro_captcha() !== 'recaptcha' ) {
+		return;
+	}
+	
+	// No need to load this for V3 reCAPTCHA.
+	$recaptcha_version = get_option( 'pmpro_recaptcha_version' ); 
+	if ( $recaptcha_version === '3_invisible' ) {
+		return;
+	}
+
+	// Style the RECAPTCHA.
+	?>
+	<style>
+		.pmpro_captcha {
+			margin-left: -15px !important;
+			margin-bottom: 10px;
+		}
+	</style>
+	<?php
+}
+add_action( 'login_head', 'pmpro_wp_login_style_v2_recaptcha' );
 
 /**
  * AJAX Method to Validate a ReCAPTCHA Response Token
@@ -204,11 +251,15 @@ function pmpro_validate_recaptcha( $response ) {
 
 }
 
+/**
+ * Clear the reCAPTCHA validation session variable after checkout or billing update or login.
+ */
 function pmpro_after_checkout_reset_recaptcha() {
-    pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
+	pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
 }
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_recaptcha' );
 add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha' );
+add_action( 'wp_login', 'pmpro_after_checkout_reset_recaptcha' );
 
 /**
  * Check if ReCAPTCHA is validated.
