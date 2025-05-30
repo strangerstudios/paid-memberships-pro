@@ -1,14 +1,17 @@
 <?php
 /**
  * Sets up our JS code to validate ReCAPTCHA on form submission if needed.
+ * 
+ * @param string $submit_button_id The ID of the submit button to attach the ReCAPTCHA validation to, this helps for compatibility for different areas.
  */
-function pmpro_init_recaptcha() {
+function pmpro_init_recaptcha( $submit_button_id ) {
 	// If ReCAPTCHA is not enabled, don't do anything.
 	// global $recaptcha for backwards compatibility.
 	// TODO: Remove this in a future version.
 	global $recaptcha;
-	$recaptcha = get_option( 'pmpro_recaptcha' );
-	if ( empty( $recaptcha ) ) {
+	$recaptcha = pmpro_captcha();
+		
+	if ( empty( $recaptcha ) || $recaptcha !== 'recaptcha' ) {
 		return;
 	}
 
@@ -19,19 +22,22 @@ function pmpro_init_recaptcha() {
 
 	// Set up form submission JS code.
 	$recaptcha_version = get_option( 'pmpro_recaptcha_version' );
+		
 	if( $recaptcha_version == '3_invisible' ) {
 		wp_register_script( 'pmpro-recaptcha-v3', plugins_url( 'js/pmpro-recaptcha-v3.js', PMPRO_BASE_FILE ), array( 'jquery' ), PMPRO_VERSION );
 		$localize_vars = array(
 			'admin_ajax_url' => esc_url( admin_url( 'admin-ajax.php' ) ),
-			'error_message' => esc_attr__( 'ReCAPTCHA validation failed. Try again.', 'paid-memberships-pro' ),
+			'error_message' => esc_attr__( 'ReCAPTCHA validation failed. Please try again.', 'paid-memberships-pro' ),
 			'public_key' => esc_html( get_option( 'pmpro_recaptcha_publickey' ) ),
+			'submit_button_id' => esc_html( $submit_button_id )
 		);
 		wp_localize_script( 'pmpro-recaptcha-v3', 'pmpro_recaptcha_v3', $localize_vars );
 		wp_enqueue_script( 'pmpro-recaptcha-v3' );
 	} else {
 		wp_register_script( 'pmpro-recaptcha-v2', plugins_url( 'js/pmpro-recaptcha-v2.js', PMPRO_BASE_FILE ), array( 'jquery' ), PMPRO_VERSION );
 		$localize_vars = array(
-			'error_message' => esc_attr__( 'Please check the ReCAPTCHA box to confirm you are not a bot.', 'paid-memberships-pro' )
+			'error_message' => esc_attr__( 'Please check the ReCAPTCHA box to confirm you are not a bot.', 'paid-memberships-pro' ),
+			'submit_button_id' => esc_html( $submit_button_id )
 		);
 		wp_localize_script( 'pmpro-recaptcha-v2', 'pmpro_recaptcha_v2', $localize_vars );
 		wp_enqueue_script( 'pmpro-recaptcha-v2' );
@@ -53,22 +59,31 @@ function pmpro_init_recaptcha() {
 		}
 	}
 }
-add_action( 'pmpro_checkout_preheader', 'pmpro_init_recaptcha' );
-add_action( 'pmpro_billing_preheader', 'pmpro_init_recaptcha', 9 ); // Run before the Stripe class loads pmpro-stripe.js
 
 /**
  * Outputs the HTML needed to display ReCAPTCHA in a form.
+ * 
+ * @param $submit_button_id The ID of the submit button to attach the ReCAPTCHA validation to, this helps for compatibility for different areas.
+ * 
  */
-function pmpro_recaptcha_get_html() {
+function pmpro_recaptcha_get_html( $submit_button_id = 'pmpro_btn-submit-checkout' ) {
 	static $already_shown = false;
 
+	// If it's not a string let's set it to a string.
+	if ( ! is_string( $submit_button_id ) ) {
+		$submit_button_id = 'pmpro_btn-submit-checkout';
+	}
+
+	// Initialize the reCAPTCHA? Do we _really_ need this I think so. /// FIX eventually.
+	pmpro_init_recaptcha( $submit_button_id );
+	
 	// Make sure that we only show the captcha once.
 	if ( $already_shown ) {
 		return;
 	}
 
 	// If ReCAPTCHA is not enabled, bail.
-	if ( empty( get_option( 'pmpro_recaptcha' ) ) ) {
+	if ( pmpro_captcha() !== 'recaptcha' ) {
 		return;
 	}
 
@@ -85,8 +100,8 @@ function pmpro_recaptcha_get_html() {
 
 	// Figure out language.
 	$locale = get_locale();
-	if(!empty($locale)) {
-		$parts = explode("_", $locale);
+	if ( ! empty( $locale ) ) {
+		$parts = explode( "_", $locale );
 		$lang = $parts[0];
 	} else {
 		$lang = "en";	
@@ -99,13 +114,13 @@ function pmpro_recaptcha_get_html() {
 
 		// Check which version of ReCAPTCHA we are using.
 		$recaptcha_version = get_option( 'pmpro_recaptcha_version' ); 
-		if( $recaptcha_version == '3_invisible' ) { ?>
+		if ( $recaptcha_version == '3_invisible' ) { ?>
 			<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>" data-size="invisible" data-callback="onSubmit"></div>
 				<script type="text/javascript"
 					src="https://www.google.com/recaptcha/api.js?onload=pmpro_recaptcha_onloadCallback&hl=<?php echo esc_attr( $lang );?>&render=explicit" async defer>
 				</script>
 		<?php } else { ?>
-			<div class="g-recaptcha" data-callback="pmpro_recaptcha_validatedCallback" data-expired-callback="pmpro_recaptcha_expiredCallback" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>"></div>
+			<div class="g-recaptcha" data-callback="pmpro_recaptcha_validatedCallback" data-expired-callback="pmpro_recaptcha_expiredCallback" data-sitekey="<?php echo esc_attr( $recaptcha_publickey ); ?>"></div>
 			<script type="text/javascript"
 				src="https://www.google.com/recaptcha/api.js?hl=<?php echo esc_attr( $lang );?>">
 			</script>
@@ -121,37 +136,174 @@ function pmpro_recaptcha_get_html() {
 
 	$already_shown = true;
 }
+
+/**
+ * Load the reCAPTCHA HTML and logic on the checkout and billing pages.
+ *
+ * @param object $level The membership level object.
+ * @return string $recaptcha_html The HTML for the ReCAPTCHA.
+ */
+function pmpro_checkout_form_recaptcha( $level ) {
+	// If ReCAPTCHA is not enabled, don't do anything.
+	if ( pmpro_captcha() !== 'recaptcha' ) {
+		return;
+	}
+
+	// If ReCAPTCHA has already been validated, return.
+	if ( true === pmpro_recaptcha_is_validated() ) {
+		return;
+	}
+
+	// Output the ReCAPTCHA HTML.
+	pmpro_recaptcha_get_html( 'abcdef' );
+}
 add_action( 'pmpro_checkout_before_submit_button', 'pmpro_recaptcha_get_html' );
 add_action( 'pmpro_billing_before_submit_button', 'pmpro_recaptcha_get_html' );
 
+/**
+ * Adds reCAPTCHA to the PMPro login form
+ *
+ * @since TBD
+ */
+function pmpro_login_form_recaptcha( $login_form, $args ) {
+
+	// Let's bail if we're not loading our version of the login form.
+	if ( ! isset( $args['pmpro_login_form_used'] ) ) {
+		return $login_form;
+	}
+
+	// If this isn't reCAPTCHA, don't load it.
+	if ( pmpro_captcha() !== 'recaptcha' ) {
+		return $login_form;
+	}
+
+
+	ob_start();
+	pmpro_recaptcha_get_html( 'wp-submit' );
+	$pmpro_recaptcha = ob_get_contents();
+	ob_end_clean();
+	return $login_form . $pmpro_recaptcha;
+		
+}
+add_filter( 'login_form_middle', 'pmpro_login_form_recaptcha', 10, 2 );
+
+/**
+ * Adds reCAPTCHA to the WP login form
+ *
+ * @since TBD
+ */
+function pmpro_wp_login_form_recaptcha() {
+
+	// Enable reCAPTCHA
+	if ( pmpro_captcha() === 'recaptcha' ) {
+		pmpro_recaptcha_get_html( 'wp-submit' );
+	}
+}
+add_action( 'login_form', 'pmpro_wp_login_form_recaptcha', 10 );
+add_action( 'lostpassword_form', 'pmpro_wp_login_form_recaptcha', 10 );
+
+// This is for PMPro Lost Password form, since the button is different.
+function pmpro_lost_password_form_recaptcha() {
+
+	// Enable reCAPTCHA
+	if ( pmpro_captcha() === 'recaptcha' ) {
+		pmpro_recaptcha_get_html( 'pmpro_btn-submit' );
+	}
+}
+add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_lost_password_form_recaptcha', 10 );
+
+/**
+ * Apply custom CSS to the ReCAPTCHA element on the WP login page. For V2 reCAPTCHA only.
+ * This is used to fix the alignment of the ReCAPTCHA element on the default login and password reset page.
+ * 
+ * @since TBD
+ * 
+ */
+function pmpro_wp_login_style_v2_recaptcha() {
+	// If ReCAPTCHA is not enabled, don't do anything.
+	if ( pmpro_captcha() !== 'recaptcha' ) {
+		return;
+	}
+	
+	// No need to load this for V3 reCAPTCHA.
+	$recaptcha_version = get_option( 'pmpro_recaptcha_version' ); 
+	if ( $recaptcha_version === '3_invisible' ) {
+		return;
+	}
+
+	// Style the RECAPTCHA.
+	?>
+	<style>
+		.pmpro_captcha {
+			margin-left: -15px !important;
+			margin-bottom: 10px;
+		}
+	</style>
+	<?php
+}
+add_action( 'login_head', 'pmpro_wp_login_style_v2_recaptcha' );
 
 /**
  * AJAX Method to Validate a ReCAPTCHA Response Token
  */
 function pmpro_wp_ajax_validate_recaptcha() {
-	require_once( PMPRO_DIR . '/includes/lib/recaptchalib.php' );
-	
-	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
-	
-	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-	$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $_REQUEST['g-recaptcha-response'] ) );
-	if ( $resp->success ) {
-	    pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
-		echo "1";
+
+	// Try to get the repsone.
+	$response = isset( $_REQUEST['g-recaptcha-response'] ) ? pmpro_validate_recaptcha( $_REQUEST['g-recaptcha-response'] ) : false;
+
+	if ( $response ) {
+		echo '1';
 	} else {
-		echo "0";
+		echo '0';
 	}
-	
+
 	exit;	
 } 
 add_action( 'wp_ajax_nopriv_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptcha' );
 add_action( 'wp_ajax_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptcha' );
 
+/**
+ * Validates the reCAPTCHA response
+ * 
+ * @since TBD
+ */
+function pmpro_validate_recaptcha( $response ) {
+
+	// If the user has already been validated, return true.
+	if ( pmpro_get_session_var( 'pmpro_recaptcha_validated' ) ) {
+		return true;
+	}
+
+	// An empty response means the user did not complete the reCAPTCHA challenge.
+	if ( empty( $response ) ) {
+		return false;
+	}
+
+	require_once( PMPRO_DIR . '/includes/lib/recaptchalib.php' );
+	
+	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
+	
+	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
+	$resp	  = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $response ) );
+		
+	if ( $resp->success ) {
+		pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
+		return true;
+	} else {
+		return false;
+	}
+
+}
+
+/**
+ * Clear the reCAPTCHA validation session variable after checkout or billing update or login.
+ */
 function pmpro_after_checkout_reset_recaptcha() {
-    pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
+	pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
 }
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_recaptcha' );
 add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha' );
+add_action( 'wp_login', 'pmpro_after_checkout_reset_recaptcha' );
 
 /**
  * Check if ReCAPTCHA is validated.
@@ -159,7 +311,8 @@ add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha'
  * @return true|string True if validated, error message if not.
  */
 function pmpro_recaptcha_is_validated() {
-	// Check if the user has already been validated.
+	
+	// Check if the user has already been validated. Let's return true and clear the session variable.
 	$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
 	if ( ! empty( $recaptcha_validated ) ) {
 		return true;
@@ -188,7 +341,7 @@ function pmpro_recaptcha_is_validated() {
 		// earlier. We should remove/refactor this code.
 		require_once(PMPRO_DIR . '/includes/lib/recaptchalib.php' );
 		$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-		$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), $_POST["g-recaptcha-response"] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$resp	  = $reCaptcha->verifyResponse( pmpro_get_ip(), $_POST["g-recaptcha-response"] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		$recaptcha_valid  = $resp->success;
 		$recaptcha_errors = $resp->errorCodes;
@@ -217,8 +370,10 @@ function pmpro_recaptcha_validation_check( $continue = true ) {
 		return false;
 	}
 
+	$captcha = pmpro_captcha();
+
 	// If ReCAPTCHA is not enabled, return.
-	if ( empty( get_option( 'pmpro_recaptcha' ) ) ) {
+	if ( $captcha !== 'recaptcha' ) {
 		return true;
 	}
 
@@ -242,29 +397,17 @@ add_filter( 'pmpro_billing_update_checks', 'pmpro_recaptcha_validation_check', 1
  */
 function pmpro_recaptcha_settings() {
 	// Get the current options.
-	$recaptcha = get_option( 'pmpro_recaptcha' );
+	$recaptcha = pmpro_captcha();
 	$recaptcha_version = get_option( 'pmpro_recaptcha_version' );
 	$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
 	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 
 	// If reCAPTCHA is not enabled, hide some settings by default.
-	$tr_style = empty( $recaptcha ) ? 'display: none;' : '';
+	$tr_style = ( $recaptcha !== 'recaptcha' ) ? 'display: none;' : '';
 
 	// Output settings fields.
 	?>
-	<tr>
-		<th scope="row" valign="top">
-			<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?></label>
-		</th>
-		<td>
-			<select id="recaptcha" name="recaptcha">
-				<option value="0" <?php if( !$recaptcha ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' );?></option>
-				<!-- For reference, removed the Yes - Free memberships only. option -->
-				<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes - All memberships.', 'paid-memberships-pro' );?></option>
-			</select>
-			<p class="description"><?php esc_html_e( 'A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
-		</td>
-	</tr>
+	
 	<tr class='pmpro_recaptcha_settings' style='<?php esc_attr_e( $tr_style); ?>'>
 		<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label></th>
 		<td>					
@@ -272,7 +415,7 @@ function pmpro_recaptcha_settings() {
 				<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php esc_html_e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
 				<option value="3_invisible" <?php selected( '3_invisible', $recaptcha_version ); ?>><?php esc_html_e( 'v3 - Invisible', 'paid-memberships-pro' ); ?></option>
 			</select>
-			<p class="description"><?php esc_html_e( 'Changing your version will require new API keys.', 'paid-memberships-pro' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Changing your version will require new API keys. A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>			
 		</td>
 	</tr>
 	<tr class='pmpro_recaptcha_settings' style='<?php esc_attr_e( $tr_style); ?>'>
@@ -289,8 +432,8 @@ function pmpro_recaptcha_settings() {
 	</tr>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery('#recaptcha').change(function() {
-				if(jQuery(this).val() == '2') {
+			jQuery('#captcha').change(function() {
+				if(jQuery(this).val() == 'recaptcha') {
 					jQuery('.pmpro_recaptcha_settings').show();
 				} else {
 					jQuery('.pmpro_recaptcha_settings').hide();
