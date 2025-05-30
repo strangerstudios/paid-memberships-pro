@@ -106,8 +106,10 @@ add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_cloudflare_turnst
  */
 function pmpro_cloudflare_turnstile_validation( ) {
 	
+    $captcha = pmpro_captcha();
+
 	// If CloudFlare Turnstile is not enabled, bail.
-	if ( empty( get_option( 'pmpro_cloudflare_turnstile' ) ) ) {
+	if ( $captcha !== 'turnstile' ) {
 		return true;
 	}
 

@@ -370,8 +370,10 @@ function pmpro_recaptcha_validation_check( $continue = true ) {
 		return false;
 	}
 
+    $captcha = pmpro_captcha();
+
 	// If ReCAPTCHA is not enabled, return.
-	if ( empty( get_option( 'pmpro_recaptcha' ) ) ) {
+	if ( $captcha !== 'recaptcha' ) {
 		return true;
 	}
 

@@ -920,6 +920,15 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
  */
 function pmpro_password_reset_captcha() {
 
+    global $wp;
+
+    if( empty( $_REQUEST['action'] ) ){
+        return;        
+    }
+
+    //lostpassword is used for the WP password reset page. Otherwise we're using PMPro's password reset
+    $redirect_url = ( $_REQUEST['action'] == 'lostpassword' ) ? wp_login_url() : pmpro_login_url();
+
 	// Don't run on WooCommerce pages.
 	if ( ! empty( $_POST['woocommerce-lost-password-nonce'] ) ) {
 		return;
@@ -942,12 +951,13 @@ function pmpro_password_reset_captcha() {
 	//Check if Turnstile has been filled in
 	if ( $captcha == 'turnstile' && ! empty( $_POST['user_login'] ) ) {
        // Validate the reCAPTCHA response here. If it's empty, assume it failed.
-		$validated = pmpro_cloudflare_turnstile_validation( $recaptcha_response ); 
+		$validated = pmpro_cloudflare_turnstile_validation(); 
+
         if ( ! $validated ) {            
 			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
         }
 	}
-
+    
 	// If there is an error with the $user object, let's show that.
     if ( ! empty( $user ) && is_wp_error( $user ) ) {
 
@@ -955,16 +965,18 @@ function pmpro_password_reset_captcha() {
         
 		if ( $error ) {
             $error_args = array(
-                'action' => 'reset_pass',
+                'action' => ( ! empty( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'reset_pass' ),
                 'errors' => urlencode( $error ),                
             );                
-            wp_redirect( add_query_arg( $error_args, pmpro_lostpassword_url() ) );
+            wp_redirect( add_query_arg( $error_args, $redirect_url ) );
             exit();
         } else {
-            wp_redirect( pmpro_lostpassword_url() );
+            wp_redirect( $redirect_url );
             exit();
         }
 	}
+
+    
 }
 add_action( 'lostpassword_post', 'pmpro_password_reset_captcha', 20 );
 
@@ -1166,7 +1178,7 @@ function pmpro_authenticate_captcha_for_login( $user, $password ) {
 	//Check if Turnstile has been filled in
 	if ( $captcha == 'turnstile' && ! empty( $password ) ) {
        // Validate the reCAPTCHA response here. If it's empty, assume it failed.
-		$validated = pmpro_cloudflare_turnstile_validation( $recaptcha_response ); 
+		$validated = pmpro_cloudflare_turnstile_validation(); 
         if ( ! $validated ) {            
 			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
         }
