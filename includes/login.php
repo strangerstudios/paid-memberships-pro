@@ -710,11 +710,6 @@ function pmpro_lost_password_redirect() {
 	}
 
 	$captcha = pmpro_captcha();
-
-	// If no captcha is set, just return the user object.
-	if ( empty( $captcha ) ) {
-		return $user;
-	}
     
 	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
     if ( $captcha == 'recaptcha' && ! empty( $password ) ) {
@@ -746,8 +741,11 @@ function pmpro_lost_password_redirect() {
 		$redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( 'reset_pass' ) ), $redirect_url );
 	} else {
 		$redirect_url = add_query_arg( array( 'checkemail' => urlencode( 'confirm' ) ), $redirect_url );
-
 	}
+
+	// Clear any captcha sessions before redirecting.
+	pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
+	pmpro_unset_session_var( 'pmpro_turnstile_validated' );
 
 	wp_redirect( $redirect_url );
 	exit;
@@ -929,11 +927,6 @@ function pmpro_password_reset_captcha() {
     
 	$captcha = pmpro_captcha();  
 
-	// If no captcha is set, just return the user object.
-	if ( empty( $captcha ) ) {
-		return;
-	}
-    
 	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
     if ( $captcha == 'recaptcha' && ! empty( $_POST['user_login'] ) ) {
 		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
@@ -943,7 +936,7 @@ function pmpro_password_reset_captcha() {
         if ( ! $validated ) {            
 			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
         }
-		
+
     }
 
 	//Check if Turnstile has been filled in
@@ -1183,6 +1176,7 @@ function pmpro_authenticate_captcha_for_login( $user, $password ) {
     
 }
 add_filter( 'wp_authenticate_user', 'pmpro_authenticate_captcha_for_login', 10, 2 );
+
 /**
  * Redirect failed login to referrer for frontend user login.
  *
