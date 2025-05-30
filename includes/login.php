@@ -966,7 +966,7 @@ function pmpro_password_reset_captcha() {
         }
 	}
 }
-add_action( 'lostpassword_post', 'pmpro_password_reset_captcha' );
+add_action( 'lostpassword_post', 'pmpro_password_reset_captcha', 20 );
 
 /**
  * Function to handle the actually password reset and update password.
