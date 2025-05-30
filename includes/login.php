@@ -938,27 +938,27 @@ function pmpro_password_reset_captcha() {
     
 	$captcha = pmpro_captcha();  
 
-    //Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
+	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
     if ( $captcha == 'recaptcha' && ! empty( $_POST['user_login'] ) ) {
-        $recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
-        
-        // Validate the reCAPTCHA response here. If it's empty, assume it failed.
-        $validated = pmpro_validate_recaptcha( $recaptcha_response ); 
+		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
+		
+		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
         if ( ! $validated ) {            
-            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
         }
 
     }
 
-    //Check if Turnstile has been filled in
-    if ( $captcha == 'turnstile' && ! empty( $_POST['user_login'] ) ) {
-        // Validate the reCAPTCHA response here. If it's empty, assume it failed.
-        $validated = pmpro_cloudflare_turnstile_validation(); 
+	//Check if Turnstile has been filled in
+	if ( $captcha == 'turnstile' && ! empty( $_POST['user_login'] ) ) {
+       // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_cloudflare_turnstile_validation(); 
 
         if ( ! $validated ) {            
-            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
         }
-    }
+	}
     
 	// If there is an error with the $user object, let's show that.
     if ( ! empty( $user ) && is_wp_error( $user ) ) {
