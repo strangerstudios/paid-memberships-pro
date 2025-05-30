@@ -920,14 +920,16 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
  */
 function pmpro_password_reset_captcha() {
 
-    global $wp;
-
     if( empty( $_REQUEST['action'] ) ){
         return;        
     }
 
     //lostpassword is used for the WP password reset page. Otherwise we're using PMPro's password reset
-    $redirect_url = ( $_REQUEST['action'] == 'lostpassword' ) ? wp_login_url() : pmpro_login_url();
+    if ( $_REQUEST['action'] == 'lostpassword' ) {
+        $redirect_url = wp_login_url();
+    } else {
+        $redirect_url = pmpro_login_url();
+    }
 
 	// Don't run on WooCommerce pages.
 	if ( ! empty( $_POST['woocommerce-lost-password-nonce'] ) ) {
