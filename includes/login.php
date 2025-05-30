@@ -713,23 +713,23 @@ function pmpro_lost_password_redirect() {
     
 	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
     if ( $captcha == 'recaptcha' && ! empty( $password ) ) {
-		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
-		
-		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
-		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
+        $recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
+        
+        // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+        $validated = pmpro_validate_recaptcha( $recaptcha_response ); 
         if ( ! $validated ) {            
-			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
         }
     }
 
-	//Check if Turnstile has been filled in
-	if ( $captcha == 'turnstile' && ! empty( $password ) ) {
-       // Validate the reCAPTCHA response here. If it's empty, assume it failed.
-		$validated = pmpro_cloudflare_turnstile_validation( $recaptcha_response ); 
+    //Check if Turnstile has been filled in
+    if ( $captcha == 'turnstile' && ! empty( $password ) ) {
+        // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+        $validated = pmpro_cloudflare_turnstile_validation( $recaptcha_response ); 
         if ( ! $validated ) {            
-			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
         }
-	}
+    }
 
 	// Don't redirect if we're not on the PMPro form.
 	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
