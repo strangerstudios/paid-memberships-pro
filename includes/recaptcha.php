@@ -27,7 +27,7 @@ function pmpro_init_recaptcha( $submit_button_id ) {
 		wp_register_script( 'pmpro-recaptcha-v3', plugins_url( 'js/pmpro-recaptcha-v3.js', PMPRO_BASE_FILE ), array( 'jquery' ), PMPRO_VERSION );
 		$localize_vars = array(
 			'admin_ajax_url' => esc_url( admin_url( 'admin-ajax.php' ) ),
-			'error_message' => esc_attr__( 'ReCAPTCHA validation failed. Try again.', 'paid-memberships-pro' ),
+			'error_message' => esc_attr__( 'ReCAPTCHA validation failed. Please try again.', 'paid-memberships-pro' ),
 			'public_key' => esc_html( get_option( 'pmpro_recaptcha_publickey' ) ),
 			'submit_button_id' => esc_html( $submit_button_id )
 		);
@@ -59,8 +59,6 @@ function pmpro_init_recaptcha( $submit_button_id ) {
 		}
 	}
 }
-add_action( 'pmpro_checkout_preheader', 'pmpro_init_recaptcha' );
-add_action( 'pmpro_billing_preheader', 'pmpro_init_recaptcha', 9 ); // Run before the Stripe class loads pmpro-stripe.js
 
 /**
  * Outputs the HTML needed to display ReCAPTCHA in a form.
@@ -68,10 +66,15 @@ add_action( 'pmpro_billing_preheader', 'pmpro_init_recaptcha', 9 ); // Run befor
  * @param $submit_button_id The ID of the submit button to attach the ReCAPTCHA validation to, this helps for compatibility for different areas.
  * 
  */
-function pmpro_recaptcha_get_html( $submit_button_id = 'pmpro_btn-submit' ) {
+function pmpro_recaptcha_get_html( $submit_button_id = 'pmpro_btn-submit-checkout' ) {
 	static $already_shown = false;
 
-	// Init?
+	// If it's not a string let's set it to a string.
+	if ( ! is_string( $submit_button_id ) ) {
+		$submit_button_id = 'pmpro_btn-submit-checkout';
+	}
+
+	// Initialize the reCAPTCHA? Do we _really_ need this I think so. /// FIX eventually.
 	pmpro_init_recaptcha( $submit_button_id );
 	
 	// Make sure that we only show the captcha once.
@@ -133,6 +136,27 @@ function pmpro_recaptcha_get_html( $submit_button_id = 'pmpro_btn-submit' ) {
 
 	$already_shown = true;
 }
+
+/**
+ * Load the reCAPTCHA HTML and logic on the checkout and billing pages.
+ *
+ * @param object $level The membership level object.
+ * @return string $recaptcha_html The HTML for the ReCAPTCHA.
+ */
+function pmpro_checkout_form_recaptcha( $level ) {
+	// If ReCAPTCHA is not enabled, don't do anything.
+	if ( pmpro_captcha() !== 'recaptcha' ) {
+		return;
+	}
+
+	// If ReCAPTCHA has already been validated, return.
+	if ( true === pmpro_recaptcha_is_validated() ) {
+		return;
+	}
+
+	// Output the ReCAPTCHA HTML.
+	pmpro_recaptcha_get_html( 'abcdef' );
+}
 add_action( 'pmpro_checkout_before_submit_button', 'pmpro_recaptcha_get_html' );
 add_action( 'pmpro_billing_before_submit_button', 'pmpro_recaptcha_get_html' );
 
@@ -153,6 +177,7 @@ function pmpro_login_form_recaptcha( $login_form, $args ) {
         return $login_form;
     }
 
+
     ob_start();
     pmpro_recaptcha_get_html( 'wp-submit' );
     $pmpro_recaptcha = ob_get_contents();
@@ -171,13 +196,21 @@ function pmpro_wp_login_form_recaptcha() {
 
 	// Enable reCAPTCHA
     if ( pmpro_captcha() === 'recaptcha' ) {
-        pmpro_recaptcha_get_html( 'wp-submit' );
+    	pmpro_recaptcha_get_html( 'wp-submit' );
     }
-    
 }
 add_action( 'login_form', 'pmpro_wp_login_form_recaptcha', 10 );
 add_action( 'lostpassword_form', 'pmpro_wp_login_form_recaptcha', 10 );
-add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_wp_login_form_recaptcha', 10 );
+
+// This is for PMPro Lost Password form, since the button is different.
+function pmpro_lost_password_form_recaptcha() {
+
+	// Enable reCAPTCHA
+	if ( pmpro_captcha() === 'recaptcha' ) {
+		pmpro_recaptcha_get_html( 'pmpro_btn-submit' );
+	}
+}
+add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_lost_password_form_recaptcha', 10 );
 
 /**
  * Apply custom CSS to the ReCAPTCHA element on the WP login page. For V2 reCAPTCHA only.
@@ -215,7 +248,8 @@ add_action( 'login_head', 'pmpro_wp_login_style_v2_recaptcha' );
  */
 function pmpro_wp_ajax_validate_recaptcha() {
 
-    $response = pmpro_validate_recaptcha( $_REQUEST['g-recaptcha-response'] );
+	// Try to get the repsone.
+    $response = isset( $_REQUEST['g-recaptcha-response'] ) ? pmpro_validate_recaptcha( $_REQUEST['g-recaptcha-response'] ) : false;
 
     if ( $response ) {
         echo '1';
@@ -234,6 +268,16 @@ add_action( 'wp_ajax_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptch
  * @since TBD
  */
 function pmpro_validate_recaptcha( $response ) {
+
+	// If the user has already been validated, return true.
+	if ( pmpro_get_session_var( 'pmpro_recaptcha_validated' ) ) {
+		return true;
+	}
+
+	// An empty response means the user did not complete the reCAPTCHA challenge.
+	if ( empty( $response ) ) {
+		return false;
+	}
 
     require_once( PMPRO_DIR . '/includes/lib/recaptchalib.php' );
 	
@@ -267,7 +311,8 @@ add_action( 'wp_login', 'pmpro_after_checkout_reset_recaptcha' );
  * @return true|string True if validated, error message if not.
  */
 function pmpro_recaptcha_is_validated() {
-	// Check if the user has already been validated.
+	
+	// Check if the user has already been validated. Let's return true and clear the session variable.
 	$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
 	if ( ! empty( $recaptcha_validated ) ) {
 		return true;

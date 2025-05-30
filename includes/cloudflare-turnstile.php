@@ -104,25 +104,20 @@ add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_cloudflare_turnst
  *
  * @return void
  */
-function pmpro_cloudflare_turnstile_validation( $okay ) {
-	// If checkout is already halted, bail.
-	if ( ! $okay ) {
-		return $okay;
-	}
-
+function pmpro_cloudflare_turnstile_validation( ) {
+	
 	// If CloudFlare Turnstile is not enabled, bail.
 	if ( empty( get_option( 'pmpro_cloudflare_turnstile' ) ) ) {
-		return $okay;
+		return true;
 	}
 
 	// Don't show it more than once on a screen. This is for "PayPal Express".
 	if ( pmpro_get_session_var( 'pmpro_cloudflare_turnstile_validated' ) ) {
-		return $okay;
+		return true;
 	}
 
 	// If the Turnstile is not passed, show an error.
 	if ( empty( $_POST['cf-turnstile-response'] ) ) {
-		pmpro_setMessage( __( 'Please complete the security check.', 'paid-memberships-pro' ), 'pmpro_error' );
 		return false;
 	}
 
@@ -137,7 +132,7 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 	$verify   = wp_remote_retrieve_body( $verify );
 	$response = json_decode( $verify );
 
-	// If the check failed, show an error.
+	// If the check failed, show an error. /// Fix this.
 	if ( empty( $response->success ) ) {
 		$error_messages    = pmpro_cloudflare_turnstile_get_error_message();
 		$error_code        = $response->{'error-codes'}[0];
@@ -149,6 +144,25 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 
 	pmpro_set_session_var( 'pmpro_cloudflare_turnstile_validated', true );
 	return $okay;
+}
+
+// Validate checkout and billing yo!
+function pmpro_cloudflare_validate_turnstile_at_checkout( $okay ) {
+	// If checkout is already halted, bail.
+	if ( ! $okay ) {
+		return $okay;
+	}
+
+	// Let's validate the Turnstile and return a message or not. /// Fix this.
+	$okay = pmpro_cloudflare_turnstile_validation();
+	if ( ! $okay ) {
+		// If the validation failed, set the error message.
+		pmpro_setMessage( __( 'Please complete the security check.', 'paid-memberships-pro' ), 'pmpro_error' );
+		return $okay;
+	}
+
+	return $okay;
+
 }
 add_action( 'pmpro_checkout_checks', 'pmpro_cloudflare_turnstile_validation' );
 add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validation' );
@@ -237,3 +251,4 @@ function pmpro_after_checkout_reset_cloudflare_turnstile() {
 }
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
 add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
+add_action( 'wp_login', 'pmpro_after_checkout_reset_cloudflare_turnstile' );

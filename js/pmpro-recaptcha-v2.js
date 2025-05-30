@@ -3,7 +3,7 @@ var submit_button_id = pmpro_recaptcha_v2.submit_button_id; // This is without t
 var form_id = 'loginform';
 
 // If it's tied to a PMPro button, let's add multiple button selectors and tweak the form ID to be pmpro_form.
-if ( submit_button_id == 'pmpro_btn-submit' ) {
+if ( submit_button_id == 'pmpro_btn-submit' || submit_button_id == 'pmpro_btn-submit-checkout' ) {
     submit_button_id = '.pmpro_btn-submit-checkout,.pmpro_btn-submit';
     form_id = 'pmpro_form';
 }

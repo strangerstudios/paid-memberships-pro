@@ -459,7 +459,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				$msgt = 'pmpro_error';
 				break;
             case 'captcha-failed':
-				$message = wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) );
+				$message = wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) );
 				$msgt = 'pmpro_error';
 				break;
 		}
@@ -709,6 +709,33 @@ function pmpro_lost_password_redirect() {
 		return;
 	}
 
+	$captcha = pmpro_captcha();
+
+	// If no captcha is set, just return the user object.
+	if ( empty( $captcha ) ) {
+		return $user;
+	}
+    
+	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
+    if ( $captcha == 'recaptcha' && ! empty( $password ) ) {
+		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
+		
+		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
+        if ( ! $validated ) {            
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+        }
+    }
+
+	//Check if Turnstile has been filled in
+	if ( $captcha == 'turnstile' && ! empty( $password ) ) {
+       // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_cloudflare_turnstile_validation( $recaptcha_response ); 
+        if ( ! $validated ) {            
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+        }
+	}
+
 	// Don't redirect if we're not on the PMPro form.
 	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return;
@@ -719,6 +746,7 @@ function pmpro_lost_password_redirect() {
 		$redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( 'reset_pass' ) ), $redirect_url );
 	} else {
 		$redirect_url = add_query_arg( array( 'checkemail' => urlencode( 'confirm' ) ), $redirect_url );
+
 	}
 
 	wp_redirect( $redirect_url );
@@ -899,59 +927,35 @@ function pmpro_password_reset_captcha() {
 		return;
 	}
     
-	$captcha = pmpro_captcha();    
+	$captcha = pmpro_captcha();  
 
-	//Check if reCAPTCHA has been filled in
-	if ( $captcha == 'recaptcha' && empty( $_POST['g-recaptcha-response'] ) ) {
-		$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
-		if( empty( $recaptcha_validated ) ) {
-			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
-		}        
+	// If no captcha is set, just return the user object.
+	if ( empty( $captcha ) ) {
+		return;
 	}
+    
+	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
+    if ( $captcha == 'recaptcha' && ! empty( $_POST['user_login'] ) ) {
+		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
+		
+		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
+        if ( ! $validated ) {            
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+        }
+		
+    }
 
 	//Check if Turnstile has been filled in
-	if ( $captcha == 'turnstile' && empty( $_POST['cf-turnstile-response'] ) ) {
-        $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+	if ( $captcha == 'turnstile' && ! empty( $_POST['user_login'] ) ) {
+       // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_cloudflare_turnstile_validation( $recaptcha_response ); 
+        if ( ! $validated ) {            
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+        }
 	}
 
-    if ( $captcha == 'recaptcha' ) {  
-
-        $validated = pmpro_validate_recaptcha( $_POST['g-recaptcha-response'] ); 
-        
-        if ( ! $validated ) {            
-            $user = new WP_Error( 'captcha-failed', __( 'reCAPTCHA Validation Failed', 'paid-memberships-pro' ) );
-        }
-
-    }
-    
-    if ( $captcha == 'turnstile' ) {
-            
-        // Verify the turnstile check.
-        $headers = array(
-            'body' => array(
-                'secret'   => get_option( 'pmpro_cloudflare_turnstile_secret_key', '' ),
-                'response' => pmpro_getParam( 'cf-turnstile-response' ),
-            ),
-        );
-        $verify   = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', $headers );
-        $verify   = wp_remote_retrieve_body( $verify );
-        $response = json_decode( $verify );
-        
-        // If the check failed, show an error.
-        if ( empty( $response->success ) || ! $response->success ) {
-            
-            $error_messages    = pmpro_cloudflare_turnstile_get_error_message();
-            $error_code        = $response->{'error-codes'}[0];
-            $displayed_message = isset( $error_messages[ $error_code ] ) ? $error_messages[ $error_code ] : esc_html__( 'An error occurred while validating the security check.', 'paid-memberships-pro' );
-
-            $user = new WP_Error( 'captcha-failed', $displayed_message );
-            
-        }
-        
-        pmpro_set_session_var( 'pmpro_cloudflare_turnstile_validated', true );
-
-    }
-
+	// If there is an error with the $user object, let's show that.
     if ( ! empty( $user ) && is_wp_error( $user ) ) {
 
 		$error = $user->get_error_code();
@@ -968,8 +972,6 @@ function pmpro_password_reset_captcha() {
             exit();
         }
 	}
-
-
 }
 add_action( 'lostpassword_post', 'pmpro_password_reset_captcha' );
 
@@ -1090,78 +1092,18 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 20
 add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter', 10, 3 );
 
 /**
- * Authenticate the frontend user login.
+ * Authenticate the frontend user login (password and username)
+ * See pmpro_authenticate_captcha_for_login for captcha authentication.
  *
  * @since 2.3
  *
  */
  function pmpro_authenticate_username_password( $user, $username, $password ) {
 
-	// Already logged in.
+	// Already logged in, bail.
 	if ( is_a( $user, 'WP_User' ) ) {
 		return $user;
 	}
-
-    $captcha = pmpro_captcha();
-
-    // Don't show it more than once on a screen. This is for "PayPal Express".
-	if ( $captcha == 'turnstile' && pmpro_get_session_var( 'pmpro_cloudflare_turnstile_validated' ) ) {
-		return $user;
-	}
-
-    //Check if reCAPTCHA has been filled in
-    if( $captcha == 'recaptcha' && empty( $_POST['g-recaptcha-response'] ) ) {
-        $recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
-        if( empty( $recaptcha_validated ) ) {
-            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
-        }
-    }
-
-	//Check if Turnstile has been filled in
-	if ( $captcha == 'turnstile' && empty( $_POST['cf-turnstile-response'] ) ) {
-        $turnstile_validated = pmpro_get_session_var( 'pmpro_cloudflare_turnstile_validated' );
-        if( empty( $turnstile_validated ) ) {
-            $user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Please complete the security check.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
-        }
-	}
-
-    if ( $captcha == 'recaptcha' && ! empty( $_POST['g-recaptcha-response'] ) ) {        
-
-        $validated = pmpro_validate_recaptcha( $_POST['g-recaptcha-response'] ); 
-        
-        if ( ! $validated ) {            
-            $user = new WP_Error( 'captcha-failed', __( 'reCAPTCHA Validation Failed', 'paid-memberships-pro' ) );
-        }
-
-    }
-    
-    if ( $captcha == 'turnstile' ) {
-            
-        // Verify the turnstile check.
-        $headers = array(
-            'body' => array(
-                'secret'   => get_option( 'pmpro_cloudflare_turnstile_secret_key', '' ),
-                'response' => pmpro_getParam( 'cf-turnstile-response' ),
-            ),
-        );
-        $verify   = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', $headers );
-        $verify   = wp_remote_retrieve_body( $verify );
-        $response = json_decode( $verify );
-        
-        // If the check failed, show an error.
-        if ( empty( $response->success ) || ! $response->success ) {
-            
-            $error_messages    = pmpro_cloudflare_turnstile_get_error_message();
-            $error_code        = $response->{'error-codes'}[0];
-            $displayed_message = isset( $error_messages[ $error_code ] ) ? $error_messages[ $error_code ] : esc_html__( 'An error occurred while validating the security check.', 'paid-memberships-pro' );
-
-            $user = new WP_Error( 'captcha-failed', $displayed_message );
-            
-        }
-        
-        pmpro_set_session_var( 'pmpro_cloudflare_turnstile_validated', true );
-
-    }
 
     // Only work when the PMPro login form is used.
 	if ( empty( $_REQUEST['pmpro_login_form_used'] ) ) {
@@ -1197,6 +1139,50 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 }
 add_filter( 'authenticate', 'pmpro_authenticate_username_password', 10, 3);
 
+
+/**
+ * Validate the reCAPTCHA response for both CloudFlare and reCAPTCHA.
+ * This uses 'wp_authenticate_user' filter to allow us to validate additional requirements and security checks.
+ *
+ * @since TBD
+ * 
+ * @param WP_User $user The WordPress user object.
+ * @param string $password The user's password.
+ * @return void
+ */
+function pmpro_authenticate_captcha_for_login( $user, $password ) {
+	
+    $captcha = pmpro_captcha();
+
+	// If no captcha is set, just return the user object.
+	if ( empty( $captcha ) ) {
+		return $user;
+	}
+    
+	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
+    if ( $captcha == 'recaptcha' && ! empty( $password ) ) {
+		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
+		
+		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
+        if ( ! $validated ) {            
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+        }
+    }
+
+	//Check if Turnstile has been filled in
+	if ( $captcha == 'turnstile' && ! empty( $password ) ) {
+       // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_cloudflare_turnstile_validation( $recaptcha_response ); 
+        if ( ! $validated ) {            
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+        }
+	}
+
+	return $user;
+    
+}
+add_filter( 'wp_authenticate_user', 'pmpro_authenticate_captcha_for_login', 10, 2 );
 /**
  * Redirect failed login to referrer for frontend user login.
  *
