@@ -250,7 +250,7 @@
 	$theusers = $wpdb->get_col($sqlQuery);
 
 	//if no records just transmit file with only CSV header as content
-	if (empty($theusers)) {
+	if (empty($theusers) && empty($_REQUEST['pmpro_no_download'])) {
 
 		// send the data to the remote browser
 		pmpro_transmit_content($csv_fh, $filename, $headers);
@@ -518,8 +518,10 @@
 	// free memory
 	$usr_data = null;
 
-	// send the data to the remote browser
-	pmpro_transmit_content($csv_fh, $filename, $headers);
+	// send the data to the remote browser, if this was not run via the Toolkit API
+	if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
+		pmpro_transmit_content($csv_fh, $filename, $headers);
+	}
 
 	exit;
 
