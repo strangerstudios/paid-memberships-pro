@@ -521,9 +521,9 @@
 	// send the data to the remote browser, if this was not run via the Toolkit API
 	if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
 		pmpro_transmit_content($csv_fh, $filename, $headers);
+		exit;
 	}
 
-	exit;
 
 	function pmpro_enclose($s)
 	{
