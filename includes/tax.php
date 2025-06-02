@@ -20,10 +20,11 @@ function pmpro_calculate_inclusive_tax( MemberOrder $order ) {
 		return $order;
 	}
 
-	// Get the tax rate for the order.
+	// Get the combined tax rate for the order.
+	$combined_tax_rate = 0;
 	foreach( $tax_rates as $tax_rate ) {
 		// Check the country.
-		if ( strtolower( $tax_rate['country'] ) !== strtolower( $order->billing->country ) ) {
+		if ( '*' !== $tax_rate['country'] && strtolower( $tax_rate['country'] ) !== strtolower( $order->billing->country ) ) {
 			continue;
 		}
 
@@ -42,17 +43,18 @@ function pmpro_calculate_inclusive_tax( MemberOrder $order ) {
 			continue;
 		}
 
-		// This is the tax rate for the order.
-		$tax_rate = $tax_rate['rate'];
+		// If we get here, the tax rate matches the order. Add it to the combined rate.
+		$combined_tax_rate += $tax_rate['rate'];
+	}
 
+	// If we have a combined tax rate, calculate the tax.
+	if ( $combined_tax_rate > 0 ) {
 		// Right now, the order total is right and we need to go backwards to get the tax and subtotal.
-		$order->subtotal = $order->total / ( 1 + $tax_rate );
+		$order->subtotal = $order->total / ( 1 + ( (float)$combined_tax_rate / 100 ) );
 		$order->tax = $order->total - $order->subtotal;
 
 		// Save the order.
 		$order->saveOrder();
-
-		return $order;
 	}
 
 	return $order;

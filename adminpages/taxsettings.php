@@ -23,30 +23,23 @@ if( ! empty( $_REQUEST['savesettings'] ) ) {
 	// Validate the tax rates.
 	foreach( $tax_rates as $tax_rate ) {
 		// Validate the tax rate.
-		if( empty( $tax_rate['country'] ) ) {
-			continue;
-		}
-
+		$tax_rate['country'] = empty( $tax_rate['country'] ) ? '*' : sanitize_text_field( $tax_rate['country'] );
 		$tax_rate['state'] = empty( $tax_rate['state'] ) ? '*' : sanitize_text_field( $tax_rate['state'] );
 		$tax_rate['city'] = empty( $tax_rate['city'] ) ? '*' : sanitize_text_field( $tax_rate['city'] );
 		$tax_rate['zip'] = empty( $tax_rate['zip'] ) ? '*' : sanitize_text_field( $tax_rate['zip'] );
 		$tax_rate['rate'] = empty( $tax_rate['rate'] ) ? 0 : (float) $tax_rate['rate'];
-
-		if( $tax_rate['rate'] > 1 ) {
-			$tax_rate['rate'] = $tax_rate['rate'] / 100;
-		}
 
 		$validated_tax_rates[] = $tax_rate;
 	}
 
 	// Sort the tax rates making sure that wildcard tax rates are at the end.
 	usort( $validated_tax_rates, function( $a, $b ) {
-		$order = [
-			'country' => strcmp($a['country'], $b['country']),
-			'state'   => ($a['state'] === '*') - ($b['state'] === '*') ?: strcmp($a['state'], $b['state']),
-			'city'    => ($a['city'] === '*') - ($b['city'] === '*') ?: strcmp($a['city'], $b['city']),
-			'zip'     => ($a['zip'] === '*') - ($b['zip'] === '*') ?: strcmp($a['zip'], $b['zip']),
-		];
+		$order = array(
+			strcmp( $a['country'], $b['country'] ),
+			strcmp( $a['state'], $b['state'] ),
+			strcmp( $a['city'], $b['city'] ),
+			strcmp( $a['zip'], $b['zip'] ),
+		);
 	
 		// Return the first nonzero comparison result
 		foreach ($order as $cmp) {
@@ -109,6 +102,7 @@ require_once( dirname(__FILE__) . '/admin_header.php' );
 						<tr>
 							<td>
 								<select name="tax_rates[<?php echo esc_attr( $index ); ?>][country]">
+									<option value="*"><?php esc_html_e( 'All Countries', 'paid-memberships-pro' ); ?></option>
 									<?php foreach( $pmpro_countries as $country_code => $country_name ) { ?>
 										<option value="<?php echo esc_attr( $country_code ); ?>" <?php selected( $tax_rate['country'], $country_code ); ?>><?php echo esc_html( $country_name ); ?></option>
 									<?php } ?>
@@ -117,7 +111,7 @@ require_once( dirname(__FILE__) . '/admin_header.php' );
 							<td><input type="text" name="tax_rates[<?php echo esc_attr( $index ); ?>][state]" value="<?php echo esc_attr( $tax_rate['state'] ); ?>" /></td>
 							<td><input type="text" name="tax_rates[<?php echo esc_attr( $index ); ?>][city]" value="<?php echo esc_attr( $tax_rate['city'] ); ?>" /></td>
 							<td><input type="text" name="tax_rates[<?php echo esc_attr( $index ); ?>][zip]" value="<?php echo esc_attr( $tax_rate['zip'] ); ?>" /></td>
-							<td><input type="text" name="tax_rates[<?php echo esc_attr( $index ); ?>][rate]" value="<?php echo esc_attr( $tax_rate['rate'] ); ?>" /></td>
+							<td><input type="text" name="tax_rates[<?php echo esc_attr( $index ); ?>][rate]" value="<?php echo esc_attr( $tax_rate['rate'] ); ?>" />%</td>
 							<td><button type="button" class="button pmpro-tax-button-remove"><?php esc_html_e( 'Remove', 'paid-memberships-pro' ); ?></button></td>
 						</tr>
 						<?php
@@ -141,7 +135,7 @@ require_once( dirname(__FILE__) . '/admin_header.php' );
 						var lastIndex = <?php echo intval( $max_index ); ?>;
 
 						// Build the country options once so that we can use it for all new rows.
-						var countryOptions = '<option value=""><?php esc_html_e( 'Select a country', 'paid-memberships-pro' ); ?></option>';
+						var countryOptions = '<option value="*"><?php esc_html_e( 'All Countries', 'paid-memberships-pro' ); ?></option>';
 						<?php foreach( $pmpro_countries as $country_code => $country_name ) { ?>
 							countryOptions += '<option value="<?php echo esc_attr( $country_code ); ?>"><?php echo esc_html( $country_name ); ?></option>';
 						<?php } ?>
