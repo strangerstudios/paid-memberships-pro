@@ -262,35 +262,9 @@ if ( in_array( $txn_type, $failed_payment_txn_types ) ) {
 }
 
 // Recurring Payment Profile Cancelled (PayPal Express)
-if ( $txn_type == 'recurring_payment_profile_cancel' ) {
+if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
 	// Find subscription.
 	ipnlog( pmpro_handle_subscription_cancellation_at_gateway( $recurring_payment_id, 'paypalexpress', $gateway_environment ) );
-	pmpro_ipnExit();
-}
-
-// All payment collection retries have failed (PayPal Express)
-if ( $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
-	/**
-	 * If we get here, PayPal has decided to give up on trying to collect a payment, though the subscription in PayPal could still be:
-	 * - active (if the payment was skipped)
-	 * - suspended (if the payment was suspended due to max failed payments)
-	 *
-	 * To handle this, we will first process the subscription cancellation, and then ensure that the subscription is canceled in PayPal.
-	 */
-	// Process the subscription cancellation.
-	ipnlog( pmpro_handle_subscription_cancellation_at_gateway( $recurring_payment_id, 'paypalexpress', $gateway_environment ) );
-
-	// Try to cancel the subscription in PayPal.
-	$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $recurring_payment_id, 'paypalexpress', $gateway_environment );
-	if ( empty( $subscription ) ) {
-		ipnlog( 'ERROR: Could not find subscription with subscription ID ' . $recurring_payment_id . ' after failed payment attempts.' );
-	} elseif ( ! $subscription->cancel_at_gateway() ) {
-		// If we couldn't cancel the subscription, log an error.
-		ipnlog( 'ERROR: Could not cancel subscription with subscription ID ' . $recurring_payment_id . ' after failed payment attempts.' );
-	} else {
-		// If we successfully cancelled the subscription, log a success message.
-		ipnlog( 'Successfully cancelled subscription with subscription ID ' . $recurring_payment_id . ' after failed payment attempts.' );
-	}
 	pmpro_ipnExit();
 }
 
