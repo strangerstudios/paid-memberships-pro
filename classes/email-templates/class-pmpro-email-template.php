@@ -112,18 +112,17 @@ abstract class PMPro_Email_Template {
 		// Construct the test email using the test parameters.
 		$email = new static( ...$constructor_args );
 
-		// Set the recipient email to the test email address.
+		// Set the recipient email to the test email address and the body to include a test message.
 		$pmpro_email_recipient_function = function() use ( $test_email_recipient ) {
 			return $test_email_recipient;
 		};
-		add_filter( 'pmpro_email_recipient', $pmpro_email_recipient_function );
-
-		// Add the test message to the email body.
-		add_filter('pmpro_email_body', 'pmpro_email_templates_test_body', 10, 2);
-
 		$pmpro_email_templates_test_body = function( $body, $email ) {
 			return pmpro_email_templates_test_body( $body );
 		};
+
+		// Add the test filters.
+		add_filter( 'pmpro_email_recipient', $pmpro_email_recipient_function );
+		add_filter('pmpro_email_body', $pmpro_email_templates_test_body, 10, 2);
 
 		// Send the email.
 		$result = $email->send();
