@@ -276,6 +276,12 @@ class PMPro_Scheduled_Actions {
 			}
 
 			foreach ( $expired as $e ) {
+				do_action( 'pmpro_membership_pre_membership_expiry', $user_id, $membership_id );
+				// Remove their membership
+				pmpro_cancelMembershipLevel( $membership_id, $user_id, 'expired' );
+				do_action( 'pmpro_membership_post_membership_expiry', $user_id, $membership_id );
+
+				// Add the task to send the membership expired email.
 				PMPro_Action_Scheduler::instance()->maybe_add_task(
 					'pmpro_membership_expired_email',
 					array(
@@ -307,13 +313,6 @@ class PMPro_Scheduled_Actions {
 	 * @return void
 	 */
 	public function pmpro_send_membership_expired_email( $user_id, $membership_id ) {
-
-		do_action( 'pmpro_membership_pre_membership_expiry', $user_id, $membership_id );
-
-		// remove their membership
-		pmpro_cancelMembershipLevel( $membership_id, $user_id, 'expired' );
-
-		do_action( 'pmpro_membership_post_membership_expiry', $user_id, $membership_id );
 
 		if ( get_user_meta( $user_id, 'pmpro_disable_notifications', true ) ) {
 			$send_email = false;
