@@ -1805,7 +1805,6 @@
 			$this->gateway_environment = 'sandbox';
 			$this->timestamp		   = time();
 			$this->notes			   = __( 'This is a test order created by Paid Memberships Pro.', 'paid-memberships-pro' );
-			$this->order_url 		   = home_url();
 
 			return apply_filters( 'pmpro_test_order_data', $this );
 		}

@@ -172,7 +172,10 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	public static function get_test_email_constructor_args() {
 		global $current_user;
 
-		return array( $current_user, $current_user->membership_level->id );
+		$all_levels = pmpro_getAllLevels( true );
+		$test_level = current( $all_levels );
+
+		return array( $current_user, $test_level->id );
 	}
 }
 

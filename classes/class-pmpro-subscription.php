@@ -1,4 +1,4 @@
- <?php
+<?php
 
 /**
  * The PMPro Subscription object.

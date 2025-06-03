@@ -162,7 +162,7 @@ class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 		//Create test order
 		$test_order = new MemberOrder();
 
-		return array( $current_user, $test_order->get_test_order()->order_url );
+		return array( $current_user, home_url() );
 	}
 }
 
