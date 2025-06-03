@@ -281,9 +281,8 @@ function pmpro_email_templates_send_test() {
 	}
 
 	//figure out PMPro_Email_Template class from template slug
-	$pmpro_email_template = PMPro_Email_Template::get_email_template(
-		str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) ) );
-
+	$pmpro_email_template = PMPro_Email_Template::get_email_template( str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) ) );
+  
 	//it's a class name, not an instance and method is static. Call it directly.
 	$response = $pmpro_email_template::send_test( sanitize_email( $_REQUEST['email'] ) );
 

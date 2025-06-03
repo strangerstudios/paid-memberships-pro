@@ -9,7 +9,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	protected $user;
 
 	/**
-	 * The membership level that expired.
+	 * The membership level ID that expired.
 	 *
 	 * @var int
 	 */
