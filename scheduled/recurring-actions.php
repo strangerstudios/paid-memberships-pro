@@ -351,9 +351,6 @@ class PMPro_Scheduled_Actions {
 		$pmproemail = new PMPro_Admin_Activity_Email();
 		$pmproemail->sendAdminActivity();
 
-		if ( WP_DEBUG ) {
-			error_log( sprintf( __( 'Admin activity email sent to %s. ', 'paid-memberships-pro' ), $user->user_email ) );
-		}
 	}
 
 	/**
