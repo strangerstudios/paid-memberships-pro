@@ -304,28 +304,32 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * List all tasks in the queue for a given group.
+	 * List all tasks in the queue for a given group or hook.
+	 *
+	 * At least one of $group or $hook must be provided.
 	 *
 	 * @access public
-	 * @since 3.5
-	 * @param string $group The task group name.
+	 * @since 3.5.x
+	 * @param string|null $group The task group name.
+	 * @param string|null $hook The task hook name.
 	 * @return array The list of tasks in the queue.
+	 * @throws WP_Error If neither $group nor $hook is provided.
 	 */
-	public static function list_tasks_by_group( $group ) {
-		return as_get_scheduled_actions( array( 'group' => $group ) );
+	public static function list_tasks( $group = null, $hook = null ) {
+		$args = array();
+		if ( ! empty( $group ) ) {
+			$args['group'] = $group;
+		}
+		if ( ! empty( $hook ) ) {
+			$args['hook'] = $hook;
+		}
+		if ( empty( $args ) ) {
+			// If neither group nor hook is provided, we cannot list tasks.
+			throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'You must provide either a group or a hook to list tasks.', 'paid-memberships-pro' ) );
+		}
+		return as_get_scheduled_actions( $args );
 	}
 
-	/**
-	 * List all tasks in the queue for a given hook.
-	 *
-	 * @access public
-	 * @since 3.5
-	 * @param string $hook The task hook name.
-	 * @return array The list of tasks in the queue.
-	 */
-	public static function list_tasks_by_hook( $hook ) {
-		return as_get_scheduled_actions( array( 'hook' => $hook ) );
-	}
 
 	/**
 	 * Clear all tasks in the queue matching the given hook, args, and/or group.
