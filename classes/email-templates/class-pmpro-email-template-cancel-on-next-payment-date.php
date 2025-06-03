@@ -165,9 +165,19 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 * @return array The arguments to send the test email from the abstract class.
 	 */
 	public static function get_test_email_constructor_args() {
-		global $current_user;
+		global $current_user, $pmpro_conpd_email_test_level;
 
-		return array( $current_user, $current_user->membership_level->id );
+		// Set up a mock level for the test email.
+		$levels = pmpro_getAllLevels( true );
+		$pmpro_conpd_email_test_level = current( $levels );
+		add_filter( 'pmpro_get_membership_levels_for_user', function() {
+			global $pmpro_conpd_email_test_level;
+			$pmpro_conpd_email_test_level->startdate = strtotime( current_time( 'timestamp' ) );
+ 			$pmpro_conpd_email_test_level->enddate = strtotime( '+1 month' );
+			return array( $pmpro_conpd_email_test_level->id => $pmpro_conpd_email_test_level );
+		} );
+
+		return array( $current_user, $pmpro_conpd_email_test_level->id );
 	}
 }
 
