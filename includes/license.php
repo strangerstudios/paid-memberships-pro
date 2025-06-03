@@ -94,7 +94,6 @@ function pmpro_license_activation() {
 	return;
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_license_check_key' );
 }
-add_action( 'activate_paid-memberships-pro', 'pmpro_license_activation' );
 
 //deactivation
 function pmpro_license_deactivation() {
@@ -102,7 +101,6 @@ function pmpro_license_deactivation() {
 	return;
 	wp_clear_scheduled_hook( 'pmpro_license_check_key' );
 }
-add_action( 'deactivate_paid-memberships-pro', 'pmpro_license_deactivation' );
 
 /**
  * Check a key against the PMPro license server.
