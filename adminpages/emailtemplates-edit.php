@@ -215,9 +215,7 @@
 									<?php if ( ! $pmpro_template_can_send_test_email ) { ?> disabled="disabled" <?php } ?> />
 							<p class="description">
 								<?php
-									if ( $pmpro_template_can_send_test_email ) {
-										esc_html_e( 'Your current membership will be used for any membership level data.', 'paid-memberships-pro' );
-									} else {
+									if ( ! $pmpro_template_can_send_test_email ) {
 										esc_html_e( "This template does not support test emails.", 'paid-memberships-pro' );
 									}
 								?>
