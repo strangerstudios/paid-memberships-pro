@@ -241,7 +241,7 @@ class PMPro_Membership_Level{
     }
 
    /**
-	 * This disables memberships linked to deleted levels.
+	 * Disable memberships referencing non-existent levels.
 	 *
 	 * @since 3.5
      * @global object $wpdb
@@ -250,27 +250,12 @@ class PMPro_Membership_Level{
 	 */
 	public static function fix_inactive_memberships() {
 		global $wpdb;
-
-        // Check for duplicate active memberships.
-        $duplicate_count = (int) $wpdb->get_var(
-            "SELECT COUNT(*) FROM (
-                SELECT user_id, membership_id
-                FROM {$wpdb->pmpro_memberships_users}
-                WHERE status = 'active'
-                GROUP BY user_id, membership_id
-                HAVING COUNT(*) > 1
-            ) AS duplicates"
-        );
-        
-        // If there are duplicate active memberships, set them to inactive.
-        if ( $duplicate_count > 0 ) {
-            $sqlQuery = "UPDATE $wpdb->pmpro_memberships_users mu
-            LEFT JOIN $wpdb->pmpro_membership_levels l ON mu.membership_id = l.id 
-                SET mu.status = 'inactive' 
-                WHERE mu.status = 'active' 
-                AND l.id IS NULL";
-            $wpdb->query( $sqlQuery );
-        }
+        $sql_query = "UPDATE {$wpdb->pmpro_memberships_users} mu
+            LEFT JOIN {$wpdb->pmpro_membership_levels} l ON mu.membership_id = l.id 
+            SET mu.status = 'inactive' 
+            WHERE mu.status = 'active' 
+            AND l.id IS NULL";
+        $wpdb->query( $sql_query );
 	}
 
     /**
