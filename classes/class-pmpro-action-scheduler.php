@@ -78,7 +78,7 @@ class PMPro_Action_Scheduler {
 		add_action( 'action_scheduler_init', array( $this, 'add_dummy_callbacks' ) );
 
 		// Handle the pause status of PMPro by pausing Action Scheduler.
-		add_action( 'pmpro_pause_status_changed', array( $this, 'pause_as_queue' ) );
+		add_action( 'pmpro_as_pause_status_changed', array( $this, 'pause_as_queue' ) );
 
 		// Add late filters to modify the AS batch size and time limit.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
@@ -529,13 +529,13 @@ class PMPro_Action_Scheduler {
 		}
 		$callback = $this->batch_size_callback;
 
-		// If PMPro is paused, add our filters
+		// If pmpro_is_paused() is true, add our filters for sure.
 		if ( pmpro_is_paused() ) {
 			add_filter( 'action_scheduler_queue_runner_batch_size', $callback, 999, 2 );
 			add_filter( 'action_scheduler_queue_runner_concurrent_batches', $callback, 999, 2 );
 		}
 
-		// Add listener for pause/unpause status changes
+		// Add listener for AS pause/unpause status changes
 		add_action(
 			'pmpro_as_pause_status_changed',
 			function ( $is_paused ) use ( $callback ) {

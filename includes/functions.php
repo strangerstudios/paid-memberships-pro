@@ -4711,6 +4711,8 @@ function pmpro_compare_siteurl() {
 function pmpro_is_paused() {
 	// If the current site URL is different than the last known URL, then we are in pause mode.
 	if ( ! pmpro_compare_siteurl() ) {
+		// Tell Action Scheduler that the pause status has changed.
+		do_action('pmpro_as_pause_status_changed', true);
 		return true;
 	}
 
