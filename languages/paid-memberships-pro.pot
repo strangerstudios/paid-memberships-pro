@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.4.4\n"
+"Project-Id-Version: Paid Memberships Pro 3.4.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-19T15:46:46+00:00\n"
+"POT-Creation-Date: 2025-04-21T14:21:40+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -120,7 +120,7 @@ msgstr ""
 
 #: adminpages/addons.php:55
 #: adminpages/levels/edit-level.php:638
-#: adminpages/reports.php:21
+#: adminpages/reports.php:25
 #: classes/class-pmpro-orders-list-table.php:558
 #: includes/metaboxes.php:19
 #: includes/terms.php:29
@@ -383,7 +383,7 @@ msgid "Subscriptions"
 msgstr ""
 
 #: adminpages/admin_header.php:247
-#: adminpages/reports.php:46
+#: adminpages/reports.php:50
 #: includes/adminpages.php:61
 #: includes/adminpages.php:244
 msgid "Reports"
@@ -2932,8 +2932,6 @@ msgid "Generate password"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:136
-#: includes/scripts.php:41
-#: includes/scripts.php:83
 msgid "Hide password"
 msgstr ""
 
@@ -3108,7 +3106,7 @@ msgstr ""
 
 #. translators: %s is the Level Name.
 #: adminpages/membershiplevels.php:397
-msgid "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active."
+msgid "Are you sure you want to delete membership level %s? All payment subscriptions for this level will be cancelled."
 msgstr ""
 
 #: adminpages/membershiplevels.php:432
@@ -3908,7 +3906,7 @@ msgstr ""
 msgid "US only. If values are given, tax will be applied for any members ordering from the selected state. For non-US or more complex tax rules, use the %s."
 msgstr ""
 
-#: adminpages/reports.php:42
+#: adminpages/reports.php:46
 msgid "Back to Reports Dashboard"
 msgstr ""
 
@@ -4977,106 +4975,106 @@ msgstr ""
 msgid "Skip"
 msgstr ""
 
-#: adminpages/wizard/done.php:34
+#: adminpages/wizard/done.php:36
 msgid "Setup Complete"
 msgstr ""
 
-#: adminpages/wizard/done.php:35
+#: adminpages/wizard/done.php:37
 msgid "Congratulations!"
 msgstr ""
 
-#: adminpages/wizard/done.php:35
+#: adminpages/wizard/done.php:37
 msgid "Your membership site is ready."
 msgstr ""
 
-#: adminpages/wizard/done.php:38
+#: adminpages/wizard/done.php:40
 msgid "What's next?"
 msgstr ""
 
-#: adminpages/wizard/done.php:42
+#: adminpages/wizard/done.php:44
 msgid "In step 1, you chose the %s site type."
 msgstr ""
 
 #. translators: %s: URL to the PMPro use case hub for the chosen site type
-#: adminpages/wizard/done.php:45
+#: adminpages/wizard/done.php:47
 msgid "Check out the %s, which guides you through next steps for your unique project."
 msgstr ""
 
-#: adminpages/wizard/done.php:46
+#: adminpages/wizard/done.php:48
 msgid "hub"
 msgstr ""
 
-#: adminpages/wizard/done.php:56
+#: adminpages/wizard/done.php:58
 msgid "Here are some recommended Add Ons for your business."
 msgstr ""
 
-#: adminpages/wizard/done.php:72
+#: adminpages/wizard/done.php:74
 msgid "Free Add On"
 msgstr ""
 
-#: adminpages/wizard/done.php:74
+#: adminpages/wizard/done.php:76
 msgid "Standard Add On"
 msgstr ""
 
-#: adminpages/wizard/done.php:76
+#: adminpages/wizard/done.php:78
 msgid "Plus Add On"
 msgstr ""
 
-#: adminpages/wizard/done.php:78
+#: adminpages/wizard/done.php:80
 msgid "Builder Add On"
 msgstr ""
 
-#: adminpages/wizard/done.php:80
+#: adminpages/wizard/done.php:82
 msgid "Free Plugin"
 msgstr ""
 
-#: adminpages/wizard/done.php:98
+#: adminpages/wizard/done.php:100
 msgid "OR"
 msgstr ""
 
-#: adminpages/wizard/done.php:103
+#: adminpages/wizard/done.php:105
 msgid "More functionality"
 msgstr ""
 
-#: adminpages/wizard/done.php:104
+#: adminpages/wizard/done.php:106
 msgid "Add more features to your membership site."
 msgstr ""
 
-#: adminpages/wizard/done.php:107
+#: adminpages/wizard/done.php:109
 msgid "View available Add Ons"
 msgstr ""
 
-#: adminpages/wizard/done.php:112
+#: adminpages/wizard/done.php:114
 #: adminpages/wizard/wizard.php:73
 msgid "Payments"
 msgstr ""
 
-#: adminpages/wizard/done.php:113
+#: adminpages/wizard/done.php:115
 msgid "Finish configuring your payment gateway."
 msgstr ""
 
-#: adminpages/wizard/done.php:116
+#: adminpages/wizard/done.php:118
 msgid "View payment settings"
 msgstr ""
 
-#: adminpages/wizard/done.php:122
+#: adminpages/wizard/done.php:124
 #: includes/admin.php:260
 msgid "Documentation"
 msgstr ""
 
-#: adminpages/wizard/done.php:123
+#: adminpages/wizard/done.php:125
 msgid "Not sure where to start? Take a look at our documentation."
 msgstr ""
 
-#: adminpages/wizard/done.php:124
+#: adminpages/wizard/done.php:126
 msgid "Free membership account required."
 msgstr ""
 
-#: adminpages/wizard/done.php:128
+#: adminpages/wizard/done.php:130
 msgid "View Paid Memberships Pro documentation in a new tab"
 msgstr ""
 
-#: adminpages/wizard/done.php:128
+#: adminpages/wizard/done.php:130
 msgid "View docs"
 msgstr ""
 
@@ -6129,7 +6127,7 @@ msgstr ""
 msgid "The $user parameter should be a WP_User object."
 msgstr ""
 
-#: classes/class.pmproemail.php:684
+#: classes/class.pmproemail.php:687
 msgid "Your trial at %s is ending soon"
 msgstr ""
 
@@ -8637,24 +8635,24 @@ msgstr ""
 msgid "These are users who were created during the Paid Memberships Pro checkout process but haven't yet completed checkout or performed any other action on your site. You should periodically delete users from this list if the Registered date is more than a few days old."
 msgstr ""
 
-#: includes/addons.php:410
+#: includes/addons.php:432
 msgid "Important: This plugin requires a valid PMPro %s license key to update."
 msgstr ""
 
-#: includes/addons.php:474
+#: includes/addons.php:497
 msgid "You must have a <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:"
 msgstr ""
 
-#: includes/addons.php:497
+#: includes/addons.php:520
 msgid "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">valid PMPro %s License Key</a> to update PMPro %s add ons."
 msgstr ""
 
-#: includes/addons.php:500
+#: includes/addons.php:523
 msgid "Return to the PMPro Add Ons page"
 msgstr ""
 
-#: includes/addons.php:519
-msgid "You must enter a valid PMPro %s License Key under Settings > PMPro License to update this add on."
+#: includes/addons.php:542
+msgid "You must enter a valid PMPro %s License Key in the PMPro Settings to update this Add On."
 msgstr ""
 
 #: includes/admin.php:154
@@ -10784,11 +10782,15 @@ msgstr ""
 #: includes/login.php:645
 #: includes/login.php:814
 #: includes/profile.php:1283
+#: includes/scripts.php:42
+#: includes/scripts.php:84
 #: pages/checkout.php:280
 msgid "Show Password"
 msgstr ""
 
 #: includes/login.php:636
+#: includes/scripts.php:41
+#: includes/scripts.php:83
 msgid "Hide Password"
 msgstr ""
 
@@ -11203,11 +11205,6 @@ msgstr ""
 
 #: includes/recaptcha.php:285
 msgid "reCAPTCHA Secret Key"
-msgstr ""
-
-#: includes/scripts.php:42
-#: includes/scripts.php:84
-msgid "Show password"
 msgstr ""
 
 #: includes/spam.php:195

@@ -38,8 +38,8 @@ function pmpro_enqueue_scripts() {
 				'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ),
 				'sensitiveCheckoutRequestVars' => pmpro_get_sensitive_checkout_request_vars(),
 				'update_nonce' => apply_filters( 'pmpro_update_nonce_at_checkout', false ),
-				'hide_password_text' =>  __( 'Hide password', 'paid-memberships-pro' ),
-				'show_password_text' =>  __( 'Show password', 'paid-memberships-pro' ),
+				'hide_password_text' =>  __( 'Hide Password', 'paid-memberships-pro' ),
+				'show_password_text' =>  __( 'Show Password', 'paid-memberships-pro' ),
 			)
 		);
 		wp_enqueue_script( 'pmpro_checkout' );
@@ -80,8 +80,8 @@ function pmpro_enqueue_scripts() {
 				'pmpro_login_page' => 'changepassword',
 				'strength_indicator_text' => __( 'Strength Indicator', 'paid-memberships-pro' ),
 				'allow_weak_passwords' => $allow_weak_passwords,
-				'hide_password_text' =>  __( 'Hide password', 'paid-memberships-pro' ),
-				'show_password_text' =>  __( 'Show password', 'paid-memberships-pro' )
+				'hide_password_text' =>  __( 'Hide Password', 'paid-memberships-pro' ),
+				'show_password_text' =>  __( 'Show Password', 'paid-memberships-pro' )
 			)
 		);
 		wp_enqueue_script( 'pmpro_login' );

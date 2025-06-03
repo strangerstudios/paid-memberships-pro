@@ -21,62 +21,64 @@ add_action( 'admin_init', 'pmpro_setupAddonUpdateInfo' );
  *
  * @since  1.8.5
  */
-function pmpro_getAddons() {
-	// check if forcing a pull from the server
-	$addons = get_option( 'pmpro_addons', array() );
-	$addons_timestamp = get_option( 'pmpro_addons_timestamp', 0 );
+if ( ! function_exists( 'pmpro_getAddons' ) ) {
+	function pmpro_getAddons() {
+		// check if forcing a pull from the server
+		$addons = get_option( 'pmpro_addons', array() );
+		$addons_timestamp = get_option( 'pmpro_addons_timestamp', 0 );
 
-	// if no addons locally, we need to hit the server
-	if ( empty( $addons ) || ! empty( $_REQUEST['force-check'] ) || current_time( 'timestamp' ) > $addons_timestamp + 86400 ) {
-		/**
-		 * Filter to change the timeout for this wp_remote_get() request.
-		 *
-		 * @since 1.8.5.1
-		 *
-		 * @param int $timeout The number of seconds before the request times out
-		 */
-		$timeout = apply_filters( 'pmpro_get_addons_timeout', 5 );
+		// if no addons locally, we need to hit the server
+		if ( empty( $addons ) || ! empty( $_REQUEST['force-check'] ) || current_time( 'timestamp' ) > $addons_timestamp + 86400 ) {
+			/**
+			 * Filter to change the timeout for this wp_remote_get() request.
+			 *
+			 * @since 1.8.5.1
+			 *
+			 * @param int $timeout The number of seconds before the request times out
+			 */
+			$timeout = apply_filters( 'pmpro_get_addons_timeout', 5 );
 
-		// get em
-		$remote_addons = wp_remote_get( PMPRO_LICENSE_SERVER . 'addons/', $timeout );
+			// get em
+			$remote_addons = wp_remote_get( PMPRO_LICENSE_SERVER . 'addons/', $timeout );
 
-		// make sure we have at least an array to pass back
-		if ( empty( $addons ) ) {
-			$addons = array();
-		}
-
-		// test response
-		if ( is_wp_error( $remote_addons ) ) {
-			// error
-			pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
-		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
-			// Update addons in cache.
-			$addons = json_decode( wp_remote_retrieve_body( $remote_addons ), true );
-
-			// If we don't have any addons, bail.
+			// make sure we have at least an array to pass back
 			if ( empty( $addons ) ) {
-				return array();
+				$addons = array();
 			}
 
-			// Create a short name for each Add On.
-			foreach ( $addons as $key => $value ) {
-				$addons[$key]['ShortName'] = trim( str_replace( array( 'Add On', 'Paid Memberships Pro - ' ), '', $addons[$key]['Title'] ) );
+			// test response
+			if ( is_wp_error( $remote_addons ) ) {
+				// error
+				pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
+			} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
+				// Update addons in cache.
+				$addons = json_decode( wp_remote_retrieve_body( $remote_addons ), true );
+
+				// If we don't have any addons, bail.
+				if ( empty( $addons ) ) {
+					return array();
+				}
+
+				// Create a short name for each Add On.
+				foreach ( $addons as $key => $value ) {
+					$addons[$key]['ShortName'] = trim( str_replace( array( 'Add On', 'Paid Memberships Pro - ' ), '', $addons[$key]['Title'] ) );
+				}
+
+				// Alphabetize the list by ShortName.
+				$short_names = array_column( $addons, 'ShortName' );
+				array_multisort( $short_names, SORT_ASC, SORT_STRING | SORT_FLAG_CASE, $addons );
+
+				delete_option( 'pmpro_addons' );
+				add_option( 'pmpro_addons', $addons, null, 'no' );
 			}
 
-			// Alphabetize the list by ShortName.
-			$short_names = array_column( $addons, 'ShortName' );
-			array_multisort( $short_names, SORT_ASC, SORT_STRING | SORT_FLAG_CASE, $addons );
-
-			delete_option( 'pmpro_addons' );
-			add_option( 'pmpro_addons', $addons, null, 'no' );
+			// save timestamp of last update
+			delete_option( 'pmpro_addons_timestamp' );
+			add_option( 'pmpro_addons_timestamp', current_time( 'timestamp' ), null, 'no' );
 		}
 
-		// save timestamp of last update
-		delete_option( 'pmpro_addons_timestamp' );
-		add_option( 'pmpro_addons_timestamp', current_time( 'timestamp' ), null, 'no' );
+		return $addons;
 	}
-
-	return $addons;
 }
 
 /**
@@ -127,22 +129,23 @@ function pmpro_get_add_ons_with_incorrect_folder_names() {
  * @param object $slug  The identifying slug for the addon (typically the directory name)
  * @return object $addon containing plugin information or false if not found
  */
-function pmpro_getAddonBySlug( $slug ) {
-	$addons = pmpro_getAddons();
+if ( ! function_exists( 'pmpro_getAddonBySlug' ) ) {
+	function pmpro_getAddonBySlug( $slug ) {
+		$addons = pmpro_getAddons();
 
-	if ( empty( $addons ) ) {
+		if ( empty( $addons ) ) {
+			return false;
+		}
+
+		foreach ( $addons as $addon ) {
+			if ( $addon['Slug'] == $slug ) {
+				return $addon;
+			}
+		}
+
 		return false;
 	}
-
-	foreach ( $addons as $addon ) {
-		if ( $addon['Slug'] == $slug ) {
-			return $addon;
-		}
-	}
-
-	return false;
 }
-
 
 /**
  * Get the Add On slugs for each category we identify.
@@ -154,85 +157,103 @@ function pmpro_getAddonBySlug( $slug ) {
 function pmpro_get_addon_categories() {
 	return array(
 		'popular' => array(
-			'pmpro-advanced-levels-shortcode',
-			'pmpro-woocommerce',
-			'pmpro-courses',
-			'pmpro-member-directory',
-			'pmpro-subscription-delays',
-			'pmpro-roles',
-			'pmpro-approvals',
+			'pmpro-abandoned-cart-recovery',
 			'pmpro-add-paypal-express',
+			'pmpro-advanced-levels-shortcode',
+			'pmpro-approvals',
+			'pmpro-courses',
+			'pmpro-cpt',
 			'pmpro-group-accounts',
-			'pmpro-signup-shortcode',
+			'pmpro-import-users-from-csv',
+			'pmpro-member-directory',
+			'pmpro-nav-menus',
+			'pmpro-roles',
 			'pmpro-set-expiration-dates',
-			'pmpro-import-users-from-csv'
+			'pmpro-signup-shortcode',
+			'pmpro-subscription-delays'
 		),
 		'association' => array(
-			'pmpro-member-directory',
-			'pmpro-membership-manager-role',
-			'pmpro-import-users-from-csv',
-			'pmpro-approvals',
 			'basic-user-avatars',
-			'pmpro-add-member-admin',
 			'pmpro-add-name-to-checkout',
+			'pmpro-approvals',
 			'pmpro-donations',
 			'pmpro-events',
 			'pmpro-group-accounts',
+			'pmpro-import-users-from-csv',
+			'pmpro-member-directory',
+			'pmpro-membership-card',
+			'pmpro-membership-manager-role',
 			'pmpro-pay-by-check',
-			'pmpro-set-expiration-dates'
+			'pmpro-set-expiration-dates',
+			'pmpro-shipping',
+			'pmpro-subscription-delays'
 		),
 		'premium_content' => array(
-			'pmpro-email-confirmation',
+			'pmpro-abandoned-cart-recovery',
 			'pmpro-cpt',
-			'pmpro-series',
+			'pmpro-email-confirmation',
 			'pmpro-events',
-			'pmpro-addon-packages',
-			'seriously-simple-podcasting',
+			'pmpro-google-analytics',
+			'pmpro-series',
 			'pmpro-user-pages'
 		),
 		'community' => array(
+			'pmpro-abandoned-cart-recovery',
 			'pmpro-approvals',
 			'pmpro-bbpress',
 			'pmpro-buddypress',
-			'pmpro-discord-add-on',
-			'pmpro-invite-only',
 			'pmpro-email-confirmation',
-			'pmpro-import-users-from-csv'
+			'pmpro-import-users-from-csv',
+			'pmpro-invite-only',
+			'pmpro-membership-card'
 		),
 		'courses' => array(
-			'pmpro-courses',
+			'lifterlms',
+			'pmpro-abandoned-cart-recovery',
 			'pmpro-approvals',
+			'pmpro-courses',
 			'pmpro-cpt',
-			'pmpro-user-pages',
+			'pmpro-google-analytics',
 			'pmpro-member-badges',
-			'pmpro-multiple-memberships-per-user'
+			'pmpro-member-homepages',
+			'pmpro-testimonials',
+			'pmpro-user-pages'
 		),
 		'directory' => array(
 			'basic-user-avatars',
+			'pmpro-approvals',
 			'pmpro-member-badges',
 			'pmpro-member-directory',
 			'pmpro-membership-maps',
-			'pmpro-approvals'
+			'pmpro-shipping',
+			'pmpro-testimonials'
 		),
 		'newsletter' => array(
-			'MailPoet-Paid-Memberships-Pro-Add-on',
-			'pmpro-mailchimp',
+			'mailpoet-paid-memberships-pro-add-on',
+			'convertkit-for-paid-memberships-pro',
+			'pmpro-add-name-to-checkout',
 			'pmpro-aweber',
-			'convertkit-for-paid-memberships-pro'
+			'pmpro-google-analytics',
+			'pmpro-keap',
+			'pmpro-mailchimp',
+			'pmpro-testimonials'
 		),
 		'podcast' => array(
-			'seriously-simple-podcasting',
 			'pmpro-akismet',
+			'pmpro-email-confirmation',
 			'pmpro-events',
+			'pmpro-google-analytics',
 			'pmpro-invite-only',
-			'pmpro-email-confirmation'
+			'pmpro-testimonials',
+			'seriously-simple-podcasting'
 		),
 		'video' => array(
 			'pmpro-cpt',
 			'pmpro-email-confirmation',
 			'pmpro-events',
+			'pmpro-google-analytics',
 			'pmpro-invite-only',
-			'pmpro-addon-packages'
+			'pmpro-testimonials'
 		),
 	);
 }
@@ -361,57 +382,59 @@ function pmpro_plugins_api( $api, $action = '', $args = null ) {
  *
  * @since  1.8.5
  */
-function pmpro_getPluginAPIObjectFromAddon( $addon ) {
-	$api                        = new stdClass();
+if ( ! function_exists( 'pmpro_getPluginAPIObjectFromAddon' ) ) {
+	function pmpro_getPluginAPIObjectFromAddon( $addon ) {
+		$api                        = new stdClass();
 
-	if ( empty( $addon ) ) {
+		if ( empty( $addon ) ) {
+			return $api;
+		}
+
+		// add info
+		$api->name                  = isset( $addon['Name'] ) ? $addon['Name'] : '';
+		$api->slug                  = isset( $addon['Slug'] ) ? $addon['Slug'] : '';
+		$api->plugin                = isset( $addon['plugin'] ) ? $addon['plugin'] : '';
+		$api->version               = isset( $addon['Version'] ) ? $addon['Version'] : '';
+		$api->author                = isset( $addon['Author'] ) ? $addon['Author'] : '';
+		$api->author_profile        = isset( $addon['AuthorURI'] ) ? $addon['AuthorURI'] : '';
+		$api->requires              = isset( $addon['Requires'] ) ? $addon['Requires'] : '';
+		$api->tested                = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
+		$api->last_updated          = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
+		$api->homepage              = isset( $addon['URI'] ) ? $addon['URI'] : '';
+		$api->download_link         = isset( $addon['Download'] ) ? $addon['Download'] : '';
+		$api->package               = isset( $addon['Download'] ) ? $addon['Download'] : '';
+
+		// add sections
+		if ( !empty( $addon['Description'] ) ) {
+			$api->sections['description'] = $addon['Description'];
+		}
+		if ( !empty( $addon['Installation'] ) ) {
+			$api->sections['installation'] = $addon['Installation'];
+		}
+		if ( !empty( $addon['FAQ'] ) ) {
+			$api->sections['faq'] = $addon['FAQ'];
+		}
+		if ( !empty( $addon['Changelog'] ) ) {
+			$api->sections['changelog'] = $addon['Changelog'];
+		}
+
+		// get license key if one is available
+		$key = get_option( 'pmpro_license_key', '' );
+		if ( ! empty( $key ) && ! empty( $api->download_link ) ) {
+			$api->download_link = add_query_arg( 'key', $key, $api->download_link );
+		}
+		if ( ! empty( $key ) && ! empty( $api->package ) ) {
+			$api->package = add_query_arg( 'key', $key, $api->package );
+		}
+		
+		if ( empty( $api->upgrade_notice ) && pmpro_license_type_is_premium( $addon['License'] ) ) {
+			if ( ! pmpro_license_isValid( null, $addon['License'] ) ) {
+				$api->upgrade_notice = sprintf( __( 'Important: This plugin requires a valid PMPro %s license key to update.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
+			}
+		}	
+
 		return $api;
 	}
-
-	// add info
-	$api->name                  = isset( $addon['Name'] ) ? $addon['Name'] : '';
-	$api->slug                  = isset( $addon['Slug'] ) ? $addon['Slug'] : '';
-	$api->plugin                = isset( $addon['plugin'] ) ? $addon['plugin'] : '';
-	$api->version               = isset( $addon['Version'] ) ? $addon['Version'] : '';
-	$api->author                = isset( $addon['Author'] ) ? $addon['Author'] : '';
-	$api->author_profile        = isset( $addon['AuthorURI'] ) ? $addon['AuthorURI'] : '';
-	$api->requires              = isset( $addon['Requires'] ) ? $addon['Requires'] : '';
-	$api->tested                = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
-	$api->last_updated          = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
-	$api->homepage              = isset( $addon['URI'] ) ? $addon['URI'] : '';
-	$api->download_link         = isset( $addon['Download'] ) ? $addon['Download'] : '';
-	$api->package               = isset( $addon['Download'] ) ? $addon['Download'] : '';
-
-	// add sections
-	if ( !empty( $addon['Description'] ) ) {
-		$api->sections['description'] = $addon['Description'];
-	}
-	if ( !empty( $addon['Installation'] ) ) {
-		$api->sections['installation'] = $addon['Installation'];
-	}
-	if ( !empty( $addon['FAQ'] ) ) {
-		$api->sections['faq'] = $addon['FAQ'];
-	}
-	if ( !empty( $addon['Changelog'] ) ) {
-		$api->sections['changelog'] = $addon['Changelog'];
-	}
-
-	// get license key if one is available
-	$key = get_option( 'pmpro_license_key', '' );
-	if ( ! empty( $key ) && ! empty( $api->download_link ) ) {
-		$api->download_link = add_query_arg( 'key', $key, $api->download_link );
-	}
-	if ( ! empty( $key ) && ! empty( $api->package ) ) {
-		$api->package = add_query_arg( 'key', $key, $api->package );
-	}
-	
-	if ( empty( $api->upgrade_notice ) && pmpro_license_type_is_premium( $addon['License'] ) ) {
-		if ( ! pmpro_license_isValid( null, $addon['License'] ) ) {
-			$api->upgrade_notice = sprintf( __( 'Important: This plugin requires a valid PMPro %s license key to update.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
-		}
-	}	
-
-	return $api;
 }
 
 /**
@@ -516,7 +539,7 @@ function pmpro_admin_init_updating_plugins() {
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
 		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
-			$msg = sprintf( __( 'You must enter a valid PMPro %s License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
+			$msg = sprintf( __( 'You must enter a valid PMPro %s License Key in the PMPro Settings to update this Add On.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
 			echo '<div class="error"><p>' . esc_html( $msg ) . '</p></div>';
 
 			// can exit WP now

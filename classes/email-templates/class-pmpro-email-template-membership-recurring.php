@@ -153,6 +153,22 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 			'cancel_url' => wp_login_url( pmpro_url( 'cancel' ) ),
 		);
 	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+		$test_user = $current_user;
+		$all_levels = pmpro_getAllLevels( true );
+		$test_user->membership_level = array_pop( $all_levels );
+		$test_subscription = new PMPro_Subscription( array( 'user_id' => $test_user->ID, 'membership_level_id' => $test_user->membership_level->id, 'next_payment_date' => date( 'Y-m-d', strtotime( '+1 month' )  ) )  );
+		return array( $test_subscription );
+	}
 }
 
 /**

@@ -394,7 +394,7 @@
 												$delete_text = esc_html(
 													sprintf(
 														// translators: %s is the Level Name.
-														__( "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active.", 'paid-memberships-pro' ),
+														__( "Are you sure you want to delete membership level %s? All payment subscriptions for this level will be cancelled.", 'paid-memberships-pro' ),
 														$level->name
 													)
 												);
