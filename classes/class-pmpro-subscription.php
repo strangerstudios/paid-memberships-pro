@@ -1371,27 +1371,6 @@ class PMPro_Subscription {
 		return count( $orders ) >= $this->billing_limit + 1;
 	}
 
-	/**
-	 * Get a test subscription for test emails template.
-	 *
-	 * @since TBD
-	 *
-	 * @return PMPro_Subscription $this The test subscription object.
-	 */
-	public function get_test_subscription() {
-		global $current_user;
-		$test_user = $current_user;
-		// Grab the first membership level defined as a "test level" to use
-		$all_levels = pmpro_getAllLevels( true );
-		$test_user->membership_level = array_pop( $all_levels );
-
-		$this->user_id = $test_user->ID;
-		$this->membership_level_id = $test_user->membership_level->id;
-		$this->next_payment_date = date( 'Y-m-d', strtotime( '+1 month' ) );
-
-		return apply_filters( 'pmpro_test_subscription_data', $this );
-	}
-
 } // end of class
 
 // @todo Move this into another location outside of the bottom of the class file.
