@@ -209,18 +209,15 @@
 						<div class="pmpro_send_test_email">
 							<?php $pmpro_template_can_send_test_email =  $email_template_class && method_exists( $email_template_class, 'get_test_email_constructor_args' ); ?>
 							<label for="test_email_address"><?php esc_html_e( 'Send a test email to', 'paid-memberships-pro' ); ?></label>
-							<input id="test_email_address" name="test_email_address" type="email" value="<?php echo esc_attr( $current_user->user_email ); ?>"
-							<?php if ( ! $pmpro_template_can_send_test_email ) { ?> disabled="disabled" <?php } ?> />
-								<input id="send_test_email" class="button" name="send_test_email" value="<?php esc_attr_e( 'Save Template and Send Email', 'paid-memberships-pro' ); ?>" type="button"
-									<?php if ( ! $pmpro_template_can_send_test_email ) { ?> disabled="disabled" <?php } ?> />
-							<p class="description">
-								<?php
-									if ( ! $pmpro_template_can_send_test_email ) {
-										esc_html_e( "This template does not support test emails.", 'paid-memberships-pro' );
-									}
+							<input id="test_email_address" name="test_email_address" type="email" value="<?php echo esc_attr( $current_user->user_email ); ?>" <?php if ( ! $pmpro_template_can_send_test_email ) { ?> disabled="disabled" <?php } ?> />
+							<input id="send_test_email" class="button" name="send_test_email" value="<?php esc_attr_e( 'Save Template and Send Email', 'paid-memberships-pro' ); ?>" type="button" <?php if ( ! $pmpro_template_can_send_test_email ) { ?> disabled="disabled" <?php } ?> />
+							<?php 
+							if ( ! $pmpro_template_can_send_test_email ) {
 								?>
-							</p>
-						</div>
+								<p class="description"><?php esc_html_e( 'This template does not support test emails.', 'paid-memberships-pro' ); ?></p>
+								<?php
+							}
+						?>
 					</div>
 				</div>
 			</div>
