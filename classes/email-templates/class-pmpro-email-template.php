@@ -129,7 +129,7 @@ abstract class PMPro_Email_Template {
 
 		// Remove the filters.
 		remove_filter('pmpro_email_recipient', $pmpro_email_recipient_function );
-		remove_filter('pmpro_email_body', $pmpro_email_templates_test_body );
+		remove_filter('pmpro_email_body', $pmpro_email_templates_test_body, 10, 2 );
 
 		// Return the result.
 		return $result;
