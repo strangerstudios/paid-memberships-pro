@@ -28,11 +28,11 @@ class PMPro_Action_Scheduler {
 
 	/**
 	 * The default queue threshold for async tasks.
-	 * This is the maximum number of async tasks that can be queued before a delay is added to the next task.
-	 * This is to prevent taxing the server with too many tasks that have to be run.
-	 * The default is 250 tasks.
+	 * This is the maximum number of async tasks that can be queued before a delay is added to incoming tasks.
+	 * This prevent overly taxing a server with task running over longer periods of time.
+	 * The default is 500 tasks.
 	 */
-	public static $pmpro_as_queue_limit = 250;
+	public static $pmpro_as_queue_limit = 500;
 
 	/**
 	 * Get the queue limit for async tasks.
@@ -69,7 +69,8 @@ class PMPro_Action_Scheduler {
 		// Add dummy callbacks for scheduled tasks that may not have a handler.
 		add_action( 'action_scheduler_init', array( $this, 'add_dummy_callbacks' ) );
 
-		// Add late filters to modify the AS batch size and time limit.
+		// Add late filters to modify the AS batch size and time limit. We effectively control the batch size and time limit, 
+		// which is intentional since some of our tasks can be heavy and we want to ensure they run smoothly and don't slow down a site.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
 	}
