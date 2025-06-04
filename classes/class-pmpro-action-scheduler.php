@@ -264,7 +264,7 @@ class PMPro_Action_Scheduler {
 	 * @return void
 	 */
 	public function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = 'pmpro_recurring_tasks' ) {
-		if ( ! $this->has_existing_task( $hook, array(), $group ) ) {
+		if ( ! as_next_scheduled_action( $hook, array(), $group ) ) {
 			// Make sure first run datetime has been set.
 			$first_run_datetime = $first_run_datetime ?: $this->pmpro_strtotime( 'now +5 minutes' );
 			// Schedule this task in the future, and make it recurring.
