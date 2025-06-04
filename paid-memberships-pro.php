@@ -26,6 +26,17 @@ define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
+if ( ! class_exists( \ActionScheduler::class ) ) {
+	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
+} else {
+	// Another plugin loaded ActionScheduler.
+	// Let's log the current info so that we know where to look if we need to troubleshoot library conflicts.
+	$action_scheduler_version = \ActionScheduler::version();
+	$previously_loaded_class = new ReflectionClass( \ActionScheduler::class );
+	pmpro_track_library_conflict( 'action-scheduler', $previously_loaded_class->getFileName(), $action_scheduler_version );
+
+}
+
 require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
 require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP session vars
 
