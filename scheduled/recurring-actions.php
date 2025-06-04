@@ -33,20 +33,21 @@ class PMPro_Scheduled_Actions {
 			return;
 		}
 
-		// Inherit the batch limit from the former PMPro cron settings or default to 50.
-		$this->query_batch_limit = defined( 'PMPRO_CRON_LIMIT' ) ? PMPRO_CRON_LIMIT : 50;
+		// Inherit the batch limit from the former PMPro cron constant, or default to 250.
+		$this->query_batch_limit = defined( 'PMPRO_CRON_LIMIT' ) ? PMPRO_CRON_LIMIT : 250;
 
 		// Schedule cleanup actions previously handled by pmpro_cleanup_memberships_users_table()
-		add_action( 'pmpro_schedule_weekly', array( $this, 'pmpro_check_inactive_memberships' ) );
+		add_action( 'pmpro_schedule_weekly', array( $this, 'check_inactive_memberships' ) );
 		add_action( 'pmpro_schedule_weekly', array( $this, 'resolve_duplicate_active_rows' ) );
 
 		// Expired Membership Routines (Daily)
-		add_action( 'pmpro_schedule_daily', array( $this, 'pmpro_expire_memberships' ) );
-		add_action( 'pmpro_membership_expired_email', array( $this, 'pmpro_send_membership_expired_email' ), 10, 2 );
+		add_action( 'pmpro_schedule_daily', array( $this, 'check_for_expired_memberships' ) );
+		add_action( 'pmpro_expire_memberships', array( $this, 'expire_memberships' ), 10, 2 );
+		add_action( 'pmpro_membership_expired_email', array( $this, 'send_membership_expired_email' ), 10, 2 );
 
 		// Membership expiration reminders (Daily)
 		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ), 99 );
-		add_action( 'pmpro_expiration_reminder_email', array( $this, 'pmpro_send_expiration_reminder_email' ), 99, 2 );
+		add_action( 'pmpro_expiration_reminder_email', array( $this, 'send_expiration_reminder_email' ), 99, 2 );
 
 		// Admin activity emails (Conditionally Hooked based on frequency)
 		$this->conditionally_hook_admin_activity_email();
@@ -62,9 +63,9 @@ class PMPro_Scheduled_Actions {
 		add_action( 'pmpro_schedule_monthly', 'pmpro_license_check_key' );
 
 		// Backwards compatibility for the old cron hooks.
-		add_action( 'pmpro_cron_expire_memberships', array( $this, 'pmpro_expire_memberships' ) );
+		add_action( 'pmpro_cron_expire_memberships', array( $this, 'check_for_expired_memberships' ) );
 		add_action( 'pmpro_cron_expiration_warnings', array( $this, 'membership_expiration_reminders' ) );
-		add_action( 'pmpro_cron_admin_activity_email', array( $this, 'pmpro_admin_activity_email' ) );
+		add_action( 'pmpro_cron_admin_activity_email', array( $this, 'admin_activity_email' ) );
 		add_action( 'pmpro_cron_recurring_payment_reminders', array( $this, 'recurring_payment_reminders' ) );
 	}
 
@@ -84,10 +85,11 @@ class PMPro_Scheduled_Actions {
 	 *
 	 * This function is called weekly to fix any inactive memberships.
 	 *
+	 * @access public
 	 * @since 3.5
 	 * @return void
 	 */
-	public function pmpro_check_inactive_memberships() {
+	public function check_inactive_memberships() {
 		if ( pmpro_is_paused() ) {
 			return;
 		}
@@ -100,6 +102,7 @@ class PMPro_Scheduled_Actions {
 	 * This function is called weekly to resolve any duplicate active rows
 	 * in the memberships_users table.
 	 *
+	 * @access public
 	 * @since 3.5
 	 * @return void
 	 */
@@ -115,6 +118,7 @@ class PMPro_Scheduled_Actions {
 	/**
 	 * Schedule the membership expiration reminder emails.
 	 *
+	 * @access public
 	 * @since 3.5
 	 * @return void
 	 */
@@ -161,11 +165,6 @@ class PMPro_Scheduled_Actions {
 		$query_offset = 0;
 		$query_limit  = $this->query_batch_limit;
 
-		// If Action Scheduler is not paused, pause it to prevent running tasks while loading the queue.
-		if ( $this->query_batch_limit > 50 ) {
-			PMPro_Action_Scheduler::instance()->halt();
-		}
-
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
 			$expiring_soon = $wpdb->get_results( $batched_query );
@@ -173,6 +172,9 @@ class PMPro_Scheduled_Actions {
 			if ( empty( $expiring_soon ) ) {
 				break;
 			}
+
+			// Halt Action Scheduler processing to wait until we finish adding tasks.
+			PMPro_Action_Scheduler::instance()->halt();
 
 			foreach ( $expiring_soon as $e ) {
 				PMPro_Action_Scheduler::instance()->maybe_add_task(
@@ -195,12 +197,13 @@ class PMPro_Scheduled_Actions {
 	/**
 	 * Send the membership expiration reminder email.
 	 *
+	 * @access public
+	 * @since 3.5
 	 * @param int $user_id The user ID.
 	 * @param int $membership_id The membership ID.
-	 *
 	 * @return void
 	 */
-	function pmpro_send_expiration_reminder_email( $user_id = null, $membership_id = null ) {
+	public function send_expiration_reminder_email( $user_id = null, $membership_id = null ) {
 
 		if ( WP_DEBUG ) {
 			error_log( '[PMPro Notice Args] ' . print_r( compact( 'user_id', 'membership_id' ), true ) );
@@ -230,14 +233,15 @@ class PMPro_Scheduled_Actions {
 	}
 
 	/**
-	 * Check for expired memberships and send emails.
+	 * Check for expired memberships, remove them, and send emails.
 	 *
 	 * This function is called daily.
 	 *
+	 * @access public
 	 * @since 3.5
 	 * @return void
 	 */
-	public function pmpro_expire_memberships() {
+	public function check_for_expired_memberships() {
 		global $wpdb;
 
 		$today = date( 'Y-m-d H:i:00', current_time( 'timestamp' ) );
@@ -256,12 +260,6 @@ class PMPro_Scheduled_Actions {
 		$query_offset = 0;
 		$query_limit  = $this->query_batch_limit;
 
-		// If Action Scheduler is not paused, pause it to prevent other tasks from running 
-		// if there are a lot of expired memberships.
-		if ( $this->query_batch_limit > 50 ) {
-			PMPro_Action_Scheduler::instance()->halt();
-		}
-
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
 			$expired       = $wpdb->get_results( $batched_query );
@@ -270,15 +268,13 @@ class PMPro_Scheduled_Actions {
 				break;
 			}
 
-			foreach ( $expired as $e ) {
-				do_action( 'pmpro_membership_pre_membership_expiry', $user_id, $membership_id );
-				// Remove their membership
-				pmpro_cancelMembershipLevel( $membership_id, $user_id, 'expired' );
-				do_action( 'pmpro_membership_post_membership_expiry', $user_id, $membership_id );
+			// Halt Action Scheduler processing to wait until we finish adding tasks.
+			PMPro_Action_Scheduler::instance()->halt();
 
+			foreach ( $expired as $e ) {
 				// Add the task to send the membership expired email.
 				PMPro_Action_Scheduler::instance()->maybe_add_task(
-					'pmpro_membership_expired_email',
+					'pmpro_expire_memberships',
 					array(
 						'user_id'       => $e->user_id,
 						'membership_id' => $e->membership_id,
@@ -295,8 +291,8 @@ class PMPro_Scheduled_Actions {
 	}
 
 	/**
-	 * Send the membership expired email.
-	 *
+	 * Expire memberships for a user and send an email.
+	 * 
 	 * @access public
 	 * @since 3.5
 	 *
@@ -305,7 +301,26 @@ class PMPro_Scheduled_Actions {
 	 *
 	 * @return void
 	 */
-	public function pmpro_send_membership_expired_email( $user_id, $membership_id ) {
+	public function expire_memberships( $user_id, $membership_id  ) {
+		do_action( 'pmpro_membership_pre_membership_expiry', $user_id, $membership_id );
+		// Remove their membership
+		pmpro_cancelMembershipLevel( $membership_id, $user_id, 'expired' );
+		do_action( 'pmpro_membership_post_membership_expiry', $user_id, $membership_id );
+		$this->send_membership_expired_email( $user_id, $membership_id );
+	}
+
+	/**
+	 * Send the membership expired email.
+	 *
+	 * @access private
+	 * @since 3.5
+	 *
+	 * @param int $user_id The user ID.
+	 * @param int $membership_id The membership ID.
+	 *
+	 * @return void
+	 */
+	private function send_membership_expired_email( $user_id, $membership_id ) {
 
 		if ( get_user_meta( $user_id, 'pmpro_disable_notifications', true ) ) {
 			$send_email = false;
@@ -331,10 +346,11 @@ class PMPro_Scheduled_Actions {
 	/**
 	 * Send the admin activity email.
 	 *
+	 * @access public
 	 * @since 3.5
 	 * @return void
 	 */
-	public function pmpro_admin_activity_email() {
+	public function send_admin_activity_email() {
 
 		// Check if the admin activity email is enabled.
 		if ( ! get_option( 'pmpro_activity_email_enabled' ) ) {
@@ -347,8 +363,9 @@ class PMPro_Scheduled_Actions {
 	}
 
 	/**
-	 * Conditionally hook pmpro_admin_activity_email to scheduled tasks.
+	 * Conditionally hook admin_activity_email to scheduled tasks.
 	 *
+	 * @access private
 	 * @since 3.5
 	 * @return void
 	 */
@@ -357,7 +374,7 @@ class PMPro_Scheduled_Actions {
 			'pmpro_schedule_daily',
 			function () {
 				if ( get_option( 'pmpro_activity_email_frequency' ) === 'day' ) {
-					$this->pmpro_admin_activity_email();
+					$this->admin_activity_email();
 				}
 			}
 		);
@@ -366,7 +383,7 @@ class PMPro_Scheduled_Actions {
 			'pmpro_schedule_weekly',
 			function () {
 				if ( get_option( 'pmpro_activity_email_frequency' ) === 'week' ) {
-					$this->pmpro_admin_activity_email();
+					$this->admin_activity_email();
 				}
 			}
 		);
@@ -375,7 +392,7 @@ class PMPro_Scheduled_Actions {
 			'pmpro_schedule_monthly',
 			function () {
 				if ( get_option( 'pmpro_activity_email_frequency' ) === 'month' ) {
-					$this->pmpro_admin_activity_email();
+					$this->admin_activity_email();
 				}
 			}
 		);
@@ -384,6 +401,8 @@ class PMPro_Scheduled_Actions {
 	/**
 	 * Schedule recurring payment reminder tasks.
 	 *
+	 * @access public
+	 * @since 3.5
 	 * @return void
 	 */
 	public function recurring_payment_reminders() {
@@ -448,6 +467,8 @@ class PMPro_Scheduled_Actions {
 	/**
 	 * Send recurring payment reminder email.
 	 *
+	 * @access public
+	 * @since 3.5
 	 * @param int    $subscription_id The subscription ID.
 	 * @param string $template The template name.
 	 * @param int    $days The number of days before payment.
@@ -500,6 +521,7 @@ class PMPro_Scheduled_Actions {
 	/**
 	 * Delete old files in wp-content/uploads/pmpro-register-helper/tmp.
 	 *
+	 * @access public
 	 * @since 3.5
 	 * @return void
 	 */
