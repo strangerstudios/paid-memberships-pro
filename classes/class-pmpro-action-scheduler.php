@@ -69,7 +69,7 @@ class PMPro_Action_Scheduler {
 		// Add dummy callbacks for scheduled tasks that may not have a handler.
 		add_action( 'action_scheduler_init', array( $this, 'add_dummy_callbacks' ) );
 
-		// Add late filters to modify the AS batch size and time limit. We effectively control the batch size and time limit, 
+		// Add late filters to modify the AS batch size and time limit. We effectively control the batch size and time limit,
 		// which is intentional since some of our tasks can be heavy and we want to ensure they run smoothly and don't slow down a site.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
@@ -112,7 +112,7 @@ class PMPro_Action_Scheduler {
 		if ( ! empty( $removed ) && WP_DEBUG ) {
 			// Log the removed crons for debugging.
 			$removed = implode( ', ', $removed );
-			error_log( 'Removed PMPro scheduled crons: ' . $removed );
+			error_log( esc_html( 'Removed PMPro scheduled crons: ' . $removed ) );
 		}
 	}
 
@@ -122,10 +122,10 @@ class PMPro_Action_Scheduler {
 	 * @access protected
 	 * @since 3.5
 	 * @return void
-	 * @throws WP_Error If the instance is cloned.
+	 * @throws Exception If the instance is cloned.
 	 */
 	protected function __clone() {
-		throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'Action Scheduler instance cannot be cloned', 'paid-memberships-pro' ) );
+		throw new Exception( __( 'Action Scheduler instance cannot be cloned', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -134,10 +134,10 @@ class PMPro_Action_Scheduler {
 	 * @access protected
 	 * @since 3.5
 	 * @return void
-	 * @throws WP_Error If the instance is unserialized.
+	 * @throws Exception If the instance is unserialized.
 	 */
 	protected function __wakeup() {
-		throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'Action Scheduler instance cannot be unserialized', 'paid-memberships-pro' ) );
+		throw new Exception( __( 'Action Scheduler instance cannot be unserialized', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -199,14 +199,14 @@ class PMPro_Action_Scheduler {
 	 * @param string          $hook The hook for the task.
 	 * @param mixed           $args The data being passed to the task hook.
 	 * @param string          $group The group this task should be assigned to. Default is 'pmpro_async_tasks'.
-	 * @param int|string|null $timestamp An pmpro_strtotime datetime or human-readable string.
+	 * @param int|string|null $timestamp An as_strtotime datetime or human-readable string.
 	 * @param boolean         $run_asap Whether to bypass the count delay and run async asap.
 	 * @return void
 	 */
 	public function maybe_add_task( $hook, $args, $group = 'pmpro_async_tasks', $timestamp = null, $run_asap = false ) {
 		// Convert human-readable string to timestamp if needed.
 		if ( ! is_null( $timestamp ) && ! is_int( $timestamp ) ) {
-			$converted = $this->pmpro_strtotime( $timestamp );
+			$converted = self::as_strtotime( $timestamp );
 			if ( $converted !== false ) {
 				$timestamp = $converted;
 			} else {
@@ -225,10 +225,10 @@ class PMPro_Action_Scheduler {
 			// This will space out tasks and prevent overwhelming the server if the tasking is heavy.
 			if ( $task_count > self::get_pmpro_as_queue_limit() ) {
 				$delay     = $task_count - self::get_pmpro_as_queue_limit();
-				$timestamp = $this->pmpro_strtotime( "+{$delay} seconds" );
+				$timestamp = self::as_strtotime( "+{$delay} seconds" );
 			} else {
 				// Less than self::get_pmpro_as_queue() tasks in the queue, queue this task immediately.
-				$timestamp = $this->pmpro_strtotime( 'now' );
+				$timestamp = self::as_strtotime( 'now' );
 			}
 		}
 
@@ -249,14 +249,14 @@ class PMPro_Action_Scheduler {
 	 * @since 3.5
 	 * @param string   $hook The hook for the task.
 	 * @param int|null $interval_in_seconds The interval in seconds this recurring task should run.
-	 * @param int|null $first_run_datetime An pmpro_strtotime datetime in the future this task should first run.
+	 * @param int|null $first_run_datetime An as_strtotime datetime in the future this task should first run.
 	 * @param string   $group The group this task should be assigned to.
 	 * @return void
 	 */
 	public function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = 'pmpro_recurring_tasks' ) {
 		if ( ! as_next_scheduled_action( $hook, array(), $group ) ) {
 			// Make sure first run datetime has been set.
-			$first_run_datetime = $first_run_datetime ?: $this->pmpro_strtotime( 'now +5 minutes' );
+			$first_run_datetime = $first_run_datetime ?: self::as_strtotime( 'now +5 minutes' );
 			// Schedule this task in the future, and make it recurring.
 			if ( ! empty( $interval_in_seconds ) ) {
 				return as_schedule_recurring_action( $first_run_datetime, $interval_in_seconds, $hook, array(), $group );
@@ -402,22 +402,22 @@ class PMPro_Action_Scheduler {
 				array(
 					'hook'     => 'pmpro_schedule_quarter_hourly',
 					'interval' => 15 * MINUTE_IN_SECONDS,
-					'start'    => $this->pmpro_strtotime( 'now +15 minutes' ),
+					'start'    => self::as_strtotime( 'now +15 minutes' ),
 				),
 				array(
 					'hook'     => 'pmpro_schedule_hourly',
 					'interval' => HOUR_IN_SECONDS,
-					'start'    => $this->pmpro_strtotime( 'now +1 hour' ),
+					'start'    => self::as_strtotime( 'now +1 hour' ),
 				),
 				array(
 					'hook'     => 'pmpro_schedule_daily',
 					'interval' => DAY_IN_SECONDS,
-					'start'    => $this->pmpro_strtotime( 'tomorrow 10:30am' ),
+					'start'    => self::as_strtotime( 'tomorrow 10:30am' ),
 				),
 				array(
 					'hook'     => 'pmpro_schedule_weekly',
 					'interval' => WEEK_IN_SECONDS,
-					'start'    => $this->pmpro_strtotime( 'next sunday 8:00am' ),
+					'start'    => self::as_strtotime( 'next sunday 8:00am' ),
 				),
 			)
 		);
@@ -435,7 +435,7 @@ class PMPro_Action_Scheduler {
 
 		// Schedule the first instance of our monthly action if none exists.
 		if ( ! $this->has_existing_task( 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' ) ) {
-			$first = $this->pmpro_strtotime( 'first day of next month 8:00am' );
+			$first = self::as_strtotime( 'first day of next month 8:00am' );
 			as_schedule_single_action( $first, 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' );
 		}
 	}
@@ -501,7 +501,7 @@ class PMPro_Action_Scheduler {
 		do_action( 'pmpro_schedule_monthly' );
 
 		// Schedule the next run for exactly one calendar month from now.
-		$next_month = $this->pmpro_strtotime( 'first day of next month 8:00am' );
+		$next_month = self::as_strtotime( 'first day of next month 8:00am' );
 		as_schedule_single_action( $next_month, 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' );
 	}
 
@@ -648,7 +648,7 @@ class PMPro_Action_Scheduler {
 	 * @param string $time_string A string like "+10 minutes" or "tomorrow 5pm".
 	 * @return int UTC timestamp adjusted to the WordPress timezone.
 	 */
-	private function pmpro_strtotime( $time_string ) {
+	private static function as_strtotime( $time_string ) {
 		$timezone = wp_timezone();
 		$datetime = new DateTimeImmutable( 'now', $timezone );
 		$modified = $datetime->modify( $time_string );
@@ -657,8 +657,6 @@ class PMPro_Action_Scheduler {
 
 	/**
 	 * Halt Action Scheduler.
-	 *
-	 * Sets the 'pmpro_paused' option to true and fires the 'pmpro_pause_status_changed' action.
 	 *
 	 * @access public
 	 * @since 3.5
@@ -669,7 +667,7 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Resumes the Action Scheduler.
+	 * Resume Action Scheduler.
 	 *
 	 * @access public
 	 * @since 3.5
