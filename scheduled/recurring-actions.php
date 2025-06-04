@@ -162,9 +162,8 @@ class PMPro_Scheduled_Actions {
 		$query_limit  = $this->query_batch_limit;
 
 		// If Action Scheduler is not paused, pause it to prevent running tasks while loading the queue.
-		$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
-		if ( !$is_paused && $this->query_batch_limit > 50 ) {
-			PMPro_Action_Scheduler::instance()->pause();
+		if ( $this->query_batch_limit > 50 ) {
+			PMPro_Action_Scheduler::instance()->halt();
 		}
 
 		do {
@@ -190,9 +189,7 @@ class PMPro_Scheduled_Actions {
 		} while ( count( $expiring_soon ) === $query_limit );
 
 		// If we paused the Action Scheduler, unpause it now.
-		if ( $is_paused ) {
-			PMPro_Action_Scheduler::instance()->unpause();
-		}
+		PMPro_Action_Scheduler::instance()->resume();
 	}
 
 	/**
@@ -261,10 +258,8 @@ class PMPro_Scheduled_Actions {
 
 		// If Action Scheduler is not paused, pause it to prevent other tasks from running 
 		// if there are a lot of expired memberships.
-		$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
-
-		if ( !$is_paused && $this->query_batch_limit > 50 ) {
-			PMPro_Action_Scheduler::instance()->pause();
+		if ( $this->query_batch_limit > 50 ) {
+			PMPro_Action_Scheduler::instance()->halt();
 		}
 
 		do {
@@ -296,9 +291,7 @@ class PMPro_Scheduled_Actions {
 		} while ( count( $expired ) === $query_limit );
 
 		// If we paused the Action Scheduler, unpause it now.
-		if ( $is_paused ) {
-			PMPro_Action_Scheduler::instance()->unpause();
-		}
+		PMPro_Action_Scheduler::instance()->resume();
 	}
 
 	/**
@@ -430,10 +423,8 @@ class PMPro_Scheduled_Actions {
 				continue;
 			}
 
-			// If Action Scheduler is not paused, pause it to prevent running tasks while loading the queue.
-			$is_paused = PMPro_Action_Scheduler::instance()->is_paused();
-			if ( !$is_paused && count( $subscriptions_to_notify ) > 250 ) {
-				PMPro_Action_Scheduler::instance()->pause();
+			if ( count( $subscriptions_to_notify ) > 250 ) {
+				PMPro_Action_Scheduler::instance()->halt();
 			}
 
 			foreach ( $subscriptions_to_notify as $subscription_to_notify ) {
@@ -450,9 +441,7 @@ class PMPro_Scheduled_Actions {
 			$previous_days = $days;
 
 			// If we paused the Action Scheduler, unpause it now.
-			if ( $is_paused ) {
-				PMPro_Action_Scheduler::instance()->unpause();
-			}
+			PMPro_Action_Scheduler::instance()->resume();
 		}
 	}
 

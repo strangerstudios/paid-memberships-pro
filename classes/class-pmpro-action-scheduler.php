@@ -653,4 +653,28 @@ class PMPro_Action_Scheduler {
 		$modified = $datetime->modify( $time_string );
 		return $modified->getTimestamp();
 	}
+
+	/**
+	 * Halt Action Scheduler.
+	 *
+	 * Sets the 'pmpro_paused' option to true and fires the 'pmpro_pause_status_changed' action.
+	 *
+	 * @access public
+	 * @since 3.5
+	 * @return void
+	 */
+	public static function halt() {
+		update_option( 'pmpro_as_halted', true );
+	}
+
+	/**
+	 * Resumes the Action Scheduler.
+	 *
+	 * @access public
+	 * @since 3.5
+	 * @return void
+	 */
+	public static function resume() {
+		update_option( 'pmpro_as_paused', false );
+	}
 }
