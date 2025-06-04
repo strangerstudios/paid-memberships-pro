@@ -675,6 +675,6 @@ class PMPro_Action_Scheduler {
 	 * @return void
 	 */
 	public static function resume() {
-		update_option( 'pmpro_as_paused', false );
+		update_option( 'pmpro_as_halted', false );
 	}
 }
