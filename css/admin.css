@@ -902,7 +902,7 @@ td > .pmpro_tag {
 }
 
 /* Responsive breakpoints */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
 	#dashboard-widgets.metabox-holder {
 		grid-template-columns: 1fr;
 		gap: 15px;
@@ -980,14 +980,6 @@ td > .pmpro_tag {
 /* Ensure proper spacing inside metaboxes */
 #dashboard-widgets .postbox .inside {
 	padding: 12px;
-}
-
-/* Hide the default WordPress metabox containers and placeholder text */
-#dashboard-widgets #postbox-container-1,
-#dashboard-widgets #postbox-container-2, 
-#dashboard-widgets #postbox-container-3,
-#dashboard-widgets #postbox-container-4 {
-	display: none !important;
 }
 
 /* Fix any floating issues */
@@ -3598,10 +3590,10 @@ button.pmpro_report_th_closed:before {
 .pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
 	display: grid;
 	grid-gap: 2rem;
-	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr;
 }
 
-.pmpro_admin #pmpro_dashboard_welcome h3 {
+.pmpro_admin #dashboard-widgets h3 {
 	font-size: 18px;
 	font-weight: 600;
 	margin: 1rem 0 0;
@@ -3779,22 +3771,6 @@ button.pmpro_report_th_closed:before {
 	.pmpro-new-install .button-primary,
 	.pmpro-new-install .button {
 		display: block;
-	}
-
-	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
-		display: block;
-	}
-
-	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column {
-		border-bottom: 1px solid #CCC;
-		margin-bottom: 2em;
-		padding-bottom: 2em;
-	}
-
-	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column:last-child {
-		border: none;
-		margin: 0;
-		padding: 0;
 	}
 
 	.pmpro_admin-pmpro-membershiplevels .membership-levels tr th:first-child:before,
