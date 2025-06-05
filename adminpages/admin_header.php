@@ -176,7 +176,8 @@
 		}
 
 		// Hide notifications if the user has disabled them.
-		if( pmpro_get_max_notification_priority() < 1 ) {
+		$notification_handler = pmpro_get_gocodebox_banner_notifier();
+		if( $notification_handler->get_max_notification_priority() < 1 ) {
 			$show_notifications = false;
 		}
 
