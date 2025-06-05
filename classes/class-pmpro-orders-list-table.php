@@ -372,70 +372,92 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		$sqlQuery = "SELECT $calculation_function o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' WHEN o.status = 'error' THEN '$error_string' ELSE '$cancelled_string' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID ";
 
+		// If we are filtering by discount code, we need to pull that information into the query.
+		if ( $filter === 'with-discount-code' ) {
+			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+		}
+
 		if ( $s ) {
+			// Check if we are searching by a specific key or generally.
+			if ( strpos( $s, ':' ) !== false ) {
+				// Get the search key and value.
+				$parts = explode( ':', $s );
+				$search_key = array_shift( $parts );
+				$s = implode( ':', $parts );
 
-			$join_with_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
-			
-			if ( $join_with_usermeta ) {
-				$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
+				$sqlQuery .= 'WHERE (1=2 ';
+				// If there's a colon in the search string, make the search smarter.
+				if ( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
+					$key_column = 'u.user_' . $search_key; // All search key options above are safe for use in a query.
+					$sqlQuery .= " OR $key_column LIKE '%" . esc_sql( $s ) . "%' ";
+				} else {
+					// Assume order table column.
+					$sqlQuery .= " OR o.$search_key LIKE '%" . esc_sql( $s ) . "%' ";
+				}
+				$sqlQuery .= ') ';
+			} else {
+				$join_with_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
+
+				if ( $join_with_usermeta ) {
+					$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
+				}
+
+
+				$sqlQuery .= 'WHERE (1=2 ';
+
+				$fields = array(
+					'o.id',
+					'o.code',
+					'o.billing_name',
+					'o.billing_street',
+					'o.billing_street2',
+					'o.billing_city',
+					'o.billing_state',
+					'o.billing_zip',
+					'o.billing_country',
+					'o.billing_phone',
+					'o.payment_type',
+					'o.cardtype',
+					'o.accountnumber',
+					'o.status',
+					'o.gateway',
+					'o.gateway_environment',
+					'o.payment_transaction_id',
+					'o.subscription_transaction_id',
+					'o.notes',
+					'u.user_login',
+					'u.user_email',
+					'u.display_name',
+					'ml.name',
+				);
+
+				if ( $join_with_usermeta ) {
+					$fields[] = 'um.meta_value';
+				}
+
+				$fields = apply_filters( 'pmpro_orders_search_fields', $fields );
+
+				foreach ( $fields as $field ) {
+					$sqlQuery .= ' OR ' . esc_sql( $field ) . " LIKE '%" . esc_sql( $s ) . "%' ";
+				}
+				$sqlQuery .= ') ';
 			}
-
-			if ( $filter === 'with-discount-code' ) {
-				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
-			}
-
-			$sqlQuery .= 'WHERE (1=2 ';
-
-			$fields = array(
-				'o.id',
-				'o.code',
-				'o.billing_name',
-				'o.billing_street',
-				'o.billing_city',
-				'o.billing_state',
-				'o.billing_zip',
-				'o.billing_phone',
-				'o.payment_type',
-				'o.cardtype',
-				'o.accountnumber',
-				'o.status',
-				'o.gateway',
-				'o.gateway_environment',
-				'o.payment_transaction_id',
-				'o.subscription_transaction_id',
-				'u.user_login',
-				'u.user_email',
-				'u.display_name',
-				'ml.name',
-			);
-
-			if ( $join_with_usermeta ) {
-				$fields[] = 'um.meta_value';
-			}
-
-			$fields = apply_filters( 'pmpro_orders_search_fields', $fields );
-
-			foreach ( $fields as $field ) {
-				$sqlQuery .= ' OR ' . esc_sql( $field ) . " LIKE '%" . esc_sql( $s ) . "%' ";
-			}
-			$sqlQuery .= ') ';
 
 			//Not escaping here because we escape the values in the condition statement
 			$sqlQuery .= 'AND ' . $condition . ' ';
-
-			if( ! $count ) {
-				$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
-			}
 			
 		} else {
 
-			if ( $filter === 'with-discount-code' ) {
-				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
-			}
 			//Not escaping here because we escape the values in the condition statement
-			$sqlQuery .= "WHERE " . $condition . ' ' . $order_query . ' ';
+			$sqlQuery .= "WHERE " . $condition . ' ';
 
 		}
+
+		// Add the group by and order by.
+		if( ! $count ) {
+			$sqlQuery .= 'GROUP BY o.id ';
+		}
+		$sqlQuery .= $order_query . ' ';
 
 		if( $count ) {
 			return $wpdb->get_var( $sqlQuery );    
