@@ -252,7 +252,6 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		global $wpdb;
 		$now = current_time( 'timestamp' );
 
-		$search_key = false;
 		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
 		$l = isset( $_REQUEST['l'] ) ? intval( $_REQUEST['l'] ) : false;
 		$discount_code = isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : false;
@@ -373,16 +372,19 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		$sqlQuery = "SELECT $calculation_function o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' WHEN o.status = 'error' THEN '$error_string' ELSE '$cancelled_string' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID ";
 
-		if ( $s ) {
+		// If we are filtering by discount code, we need to pull that information into the query.
+		if ( $filter === 'with-discount-code' ) {
+			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+		}
 
-			// If there's a colon in the search, let's split it out.
+		if ( $s ) {
+			// Check if we are searching by a specific key or generally.
 			if ( strpos( $s, ':' ) !== false ) {
+				// Get the search key and value.
 				$parts = explode( ':', $s );
 				$search_key = array_shift( $parts );
 				$s = implode( ':', $parts );
-			}
 
-			if ( $search_key ) {
 				$sqlQuery .= 'WHERE (1=2 ';
 				// If there's a colon in the search string, make the search smarter.
 				if ( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
@@ -400,9 +402,6 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 					$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
 				}
 
-				if ( $filter === 'with-discount-code' ) {
-					$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
-				}
 
 				$sqlQuery .= 'WHERE (1=2 ';
 
@@ -446,20 +445,19 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 			//Not escaping here because we escape the values in the condition statement
 			$sqlQuery .= 'AND ' . $condition . ' ';
-
-			if( ! $count ) {
-				$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
-			}
 			
 		} else {
 
-			if ( $filter === 'with-discount-code' ) {
-				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
-			}
 			//Not escaping here because we escape the values in the condition statement
-			$sqlQuery .= "WHERE " . $condition . ' ' . $order_query . ' ';
+			$sqlQuery .= "WHERE " . $condition . ' ';
 
 		}
+
+		// Add the group by and order by.
+		if( ! $count ) {
+			$sqlQuery .= 'GROUP BY o.id ';
+		}
+		$sqlQuery .= $order_query . ' ';
 
 		if( $count ) {
 			return $wpdb->get_var( $sqlQuery );    
