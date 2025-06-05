@@ -3,6 +3,11 @@
  * The Memberships Dashboard admin page for Paid Memberships Pro
  * @since 2.0
  */
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Add all the meta boxes for the dashboard.
@@ -15,53 +20,78 @@
  * 
  * @param array $pmpro_dashboard_meta_boxes Array of meta boxes to display on the dashboard. Hint: Use the associative array key as the meta box ID.
  */
+// The meta boxes array for the dashboard.
 $pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array(
+	// Row 1 (Welcome, spans all 4 columns)
 	'pmpro_dashboard_welcome' => array(
 		'title'    => esc_html__( 'Welcome to Paid Memberships Pro', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_dashboard_welcome_callback',
-		'context'  => 'normal',
+		'context'  => 'grid',
 		'capability' => '',
+		'columns' => 4,
+		'grid_column_start' => 1,
 	),
+	// Row 2
 	'pmpro_dashboard_report_sales' => array(
 		'title'    => esc_html__( 'Sales and Revenue', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_report_sales_widget',
-		'context'  => 'advanced',
-		'capability' => 'pmpro_reports'
-	),
-	'pmpro_dashboard_report_membership_stats' => array(
-		'title'    => esc_html__( 'Membership Stats', 'paid-memberships-pro' ),
-		'callback' => 'pmpro_report_memberships_widget',
-		'context'  => 'advanced',
-		'capability' => ''
-	),
-	'pmpro_dashboard_report_logins' => array(
-		'title'    => esc_html__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
-		'callback' => 'pmpro_report_login_widget',
-		'context'  => 'advanced',
-		'capability' => ''
+		'context'  => 'grid',
+		'capability' => 'pmpro_reports',
+		'columns' => 1,
+		'grid_column_start' => 1,
 	),
 	'pmpro_dashboard_report_recent_members' => array(
 		'title'    => esc_html__( 'Recent Members', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_dashboard_report_recent_members_callback',
-		'context'  => 'side',
-		'capability' => 'pmpro_memberslist'
+		'context'  => 'grid',
+		'capability' => 'pmpro_memberslist',
+		'columns' => 2,
+		'grid_column_start' => 2,
+	),
+	'pmpro_dashboard_report_membership_stats' => array(
+		'title'    => esc_html__( 'Membership Stats', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_report_memberships_widget',
+		'context'  => 'grid',
+		'capability' => '',
+		'columns' => 1,
+		'grid_column_start' => 4,
+	),
+	// Row 3
+	'pmpro_dashboard_report_logins' => array(
+		'title'    => esc_html__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_report_login_widget',
+		'context'  => 'grid',
+		'capability' => '',
+		'columns' => 1,
+		'grid_column_start' => 1,
 	),
 	'pmpro_dashboard_report_recent_orders' => array(
 		'title'    => esc_html__( 'Recent Orders', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_dashboard_report_recent_orders_callback',
-		'context'  => 'side',
-		'capability' => 'pmpro_orders'
+		'context'  => 'grid',
+		'capability' => 'pmpro_orders',
+		'columns' => 2,
+		'grid_column_start' => 2,
 	),
 	'pmpro_dashboard_news_updates' => array(
 		'title'    => esc_html__( 'Paid Memberships Pro News and Updates', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_dashboard_news_updates_callback',
-		'context'  => 'side',
-		'capability' => ''
+		'context'  => 'grid',
+		'capability' => '',
+		'columns' => 1,
+		'grid_column_start' => 4,
 	),
-) );
+));
 
+
+
+// Add the meta boxes to the dashboard (non-grid only).
 foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
-	if ( empty( $meta_box['capability'] ) || current_user_can( $meta_box['capability'] ) ) {
+	if (
+		( empty( $meta_box['capability'] ) || current_user_can( $meta_box['capability'] ) )
+		&& isset( $meta_box['context'] )
+		&& $meta_box['context'] !== 'grid'
+	) {
 		add_meta_box(
 			$id,
 			$meta_box['title'],
@@ -72,43 +102,199 @@ foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
 	}
 }
 
+
+/**
+ * Helper function to render dashboard grid meta boxes with correct classes.
+ */
+function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
+    foreach ( $meta_boxes as $id => $meta_box ) {
+        if ( $meta_box['context'] !== 'grid' ) {
+            continue;
+        }
+        if ( ! empty( $meta_box['capability'] ) && ! current_user_can( $meta_box['capability'] ) ) {
+            continue;
+        }
+        
+        // Sanitize and validate column span (1-4)
+        $span = isset( $meta_box['columns'] ) ? max( 1, min( intval( $meta_box['columns'] ), 4 ) ) : 1;
+        
+        // Sanitize and validate grid start position (1-4)
+        $start = isset( $meta_box['grid_column_start'] ) ? max( 1, min( intval( $meta_box['grid_column_start'] ), 4 ) ) : 'auto';
+        
+        // Build the CSS classes
+        $classes = array(
+            'postbox',
+            'pmpro-colspan-' . $span
+        );
+        
+        // Only add grid-start class if explicitly set
+        if ( $start !== 'auto' ) {
+            $classes[] = 'pmpro-grid-start-' . $start;
+        }
+        
+        $class_string = implode( ' ', $classes );
+        
+        echo '<div id="' . esc_attr( $id ) . '" class="' . esc_attr( $class_string ) . '">';
+        
+        // Simplified metabox header - just title and drag handle (no collapse button)
+        echo '<div class="postbox-header">';
+        echo '<h2 class="hndle ui-sortable-handle">' . esc_html( $meta_box['title'] ) . '</h2>';
+        echo '</div>';
+        
+        echo '<div class="inside">';
+        if ( is_callable( $meta_box['callback'] ) ) {
+            call_user_func( $meta_box['callback'] );
+        }
+        echo '</div>';
+        echo '</div>';
+    }
+}
+
 /**
  * Load the Paid Memberships Pro dashboard-area header
  */
 require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
+
 <hr class="wp-header-end">
 <form id="pmpro-dashboard-form" method="post" action="admin-post.php">
-
 	<div class="dashboard-widgets-wrap">
 		<div id="dashboard-widgets" class="metabox-holder">
-
-			<?php do_meta_boxes( 'toplevel_page_pmpro-dashboard', 'normal', '' ); ?>
-
+			<?php pmpro_render_dashboard_grid_metaboxes( $pmpro_dashboard_meta_boxes, 'toplevel_page_pmpro-dashboard' ); ?>
 			<div id="postbox-container-1" class="postbox-container">
+				<?php do_meta_boxes( 'toplevel_page_pmpro-dashboard', 'normal', '' ); ?>
+			</div>
+			<div id="postbox-container-2" class="postbox-container">
 				<?php do_meta_boxes( 'toplevel_page_pmpro-dashboard', 'advanced', '' ); ?>
 			</div>
-
-			<div id="postbox-container-2" class="postbox-container">
+			<div id="postbox-container-3" class="postbox-container">
 				<?php do_meta_boxes( 'toplevel_page_pmpro-dashboard', 'side', '' ); ?>
 			</div>
-
-		<br class="clear">
-
+			<div id="postbox-container-4" class="postbox-container">
+				<!-- You may add additional containers for classic metabox compatibility if needed -->
+			</div>
+			<br class="clear">
 		</div> <!-- end dashboard-widgets -->
-
 		<?php wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false ); ?>
 		<?php wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false ); ?>
-
 	</div> <!-- end dashboard-widgets-wrap -->
 </form>
 <script type="text/javascript">
 	//<![CDATA[
-	jQuery(document).ready( function($) {
-		// close postboxes that should be closed
-		$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
-		// postboxes setup
-		postboxes.add_postbox_toggles('toplevel_page_pmpro-dashboard');
+jQuery(document).ready( function($) {
+	// Custom grid-aware sortable implementation
+	var gridOrder = [];
+	var $container = $('#dashboard-widgets');
+	
+	// Initialize sortable with better grid compatibility
+	$container.sortable({
+		items: '.postbox',
+		handle: '.hndle',
+		cursor: 'move',
+		placeholder: 'postbox ui-sortable-placeholder',
+		forcePlaceholderSize: true,
+		tolerance: 'pointer',
+		containment: '#dashboard-widgets',
+		helper: 'clone',
+		appendTo: 'body',
+		zIndex: 9999,
+		start: function(event, ui) {
+			// Store original grid positions
+			gridOrder = [];
+			$container.find('.postbox').each(function(index) {
+				gridOrder.push({
+					id: $(this).attr('id'),
+					originalIndex: index
+				});
+			});
+			
+			// Style the helper
+			ui.helper.addClass('ui-sortable-helper').css({
+				'transform': 'rotate(3deg)',
+				'box-shadow': '0 8px 25px rgba(0,0,0,0.3)',
+				'opacity': '0.9'
+			});
+			
+			// Style the placeholder to match grid
+			ui.placeholder.css({
+				'border': '2px dashed #007cba',
+				'background': 'rgba(0, 123, 186, 0.1)',
+				'margin': '0',
+				'height': ui.item.outerHeight() + 'px'
+			});
+		},
+		sort: function(event, ui) {
+			// Ensure placeholder respects grid constraints
+			var $placeholder = ui.placeholder;
+			var $items = $container.find('.postbox:not(.ui-sortable-helper)');
+			
+			// Recalculate grid positions during sort
+			$items.each(function(index) {
+				if (this !== $placeholder[0]) {
+					$(this).css('order', index);
+				}
+			});
+		},
+		stop: function(event, ui) {
+			// Clean up helper styling
+			ui.item.removeClass('ui-sortable-helper').css({
+				'transform': '',
+				'box-shadow': '',
+				'opacity': ''
+			});
+			
+			// Get new order
+			var newOrder = $container.sortable('toArray');
+			
+			// Only save if order actually changed
+			var orderChanged = false;
+			if (newOrder.length === gridOrder.length) {
+				for (var i = 0; i < newOrder.length; i++) {
+					if (newOrder[i] !== gridOrder[i].id) {
+						orderChanged = true;
+						break;
+					}
+				}
+			} else {
+				orderChanged = true;
+			}
+			
+			if (orderChanged) {
+				// Apply visual order using CSS order property
+				$container.find('.postbox').each(function() {
+					var index = newOrder.indexOf($(this).attr('id'));
+					$(this).css('order', index);
+				});
+				
+				// Save to WordPress
+				$.post(ajaxurl, {
+					action: 'meta-box-order',
+					_ajax_nonce: $('#meta-box-order-nonce').val(),
+					page: 'toplevel_page_pmpro-dashboard',
+					order: {
+						'grid': newOrder.join(',')
+					}
+				}).done(function(response) {
+					console.log('Metabox order saved successfully');
+				}).fail(function() {
+					console.log('Failed to save metabox order');
+				});
+			}
+		}
 	});
+	
+	// Disable conflicting WordPress postbox functionality
+	if (typeof postboxes !== 'undefined') {
+		postboxes.handle_click = function() { return false; };
+		postboxes.add_postbox_toggles = function() { return false; };
+	}
+	
+	// Prevent default collapse behavior
+	$container.on('click', '.handlediv', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	});
+});
 	//]]>
 </script>
 <?php
@@ -118,6 +304,19 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
  */
 function pmpro_dashboard_welcome_callback() { ?>
 	<div class="pmpro-dashboard-welcome-columns">
+		<div class="pmpro-dashboard-welcome-column">
+			<h3><?php esc_html_e( 'Get Started', 'paid-memberships-pro' ); ?></h3>
+
+			<p class="text-center">
+				<p>
+					<iframe width="560" height="315" src="https://www.youtube.com/embed/IZpS9Mx76mw?si=A6OKdMHT6eBRIs9y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+				</p>
+				<p>
+					<?php echo esc_html( __( 'For guidance as your begin these steps:', 'paid-memberships-pro' ) ); ?>
+					<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=documentation&utm_content=initial-plugin-setup" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'view the Initial Setup Guide and Docs.', 'paid-memberships-pro' ); ?></a>
+				</p>
+			</p>
+		</div>
 		<div class="pmpro-dashboard-welcome-column">
 			<?php global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready; ?>
 			<h3><?php esc_html_e( 'Initial Setup', 'paid-memberships-pro' ); ?></h3>
@@ -180,11 +379,6 @@ function pmpro_dashboard_welcome_callback() { ?>
 					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-addons' ) );?>"><i class="dashicons dashicons-admin-plugins"></i> <?php esc_html_e( 'Explore Add Ons for Additional Features', 'paid-memberships-pro' ); ?></a></li>
 				<?php } ?>
 			</ul>
-			<hr />
-			<p class="text-center">
-				<?php echo esc_html( __( 'For guidance as your begin these steps,', 'paid-memberships-pro' ) ); ?>
-				<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=documentation&utm_content=initial-plugin-setup" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'view the Initial Setup Video and Docs.', 'paid-memberships-pro' ); ?></a>
-			</p>
 		</div> <!-- end pmpro-dashboard-welcome-column -->
 		<div class="pmpro-dashboard-welcome-column">
 			<h3><?php esc_html_e( 'Support License', 'paid-memberships-pro' ); ?></h3>
@@ -214,8 +408,7 @@ function pmpro_dashboard_welcome_callback() { ?>
 			<?php } ?>
 			<hr />
 			<p><?php echo wp_kses_post( sprintf( __( 'Paid Memberships Pro and our Add Ons are distributed under the <a target="_blank" href="%s">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), 'http://www.gnu.org/licenses/gpl-2.0.html' ) ); ?></p>
-		</div> <!-- end pmpro-dashboard-welcome-column -->
-		<div class="pmpro-dashboard-welcome-column">
+
 			<h3><?php esc_html_e( 'Get Involved', 'paid-memberships-pro' ); ?></h3>
 			<p><?php esc_html_e( 'There are many ways you can help support Paid Memberships Pro.', 'paid-memberships-pro' ); ?></p>
 			<p><?php esc_html_e( 'Get involved with our plugin development via GitHub.', 'paid-memberships-pro' ); ?> <a href="https://github.com/strangerstudios/paid-memberships-pro" target="_blank"><?php esc_html_e( 'View on GitHub', 'paid-memberships-pro' ); ?></a></p>
@@ -376,7 +569,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
 								echo '(test)';
 							} ?>
 							<?php if ( ! empty( $order->status ) ) {
-								echo '<br />(' . esc_html( $order->status ) . ')'; 
+								echo '(' . esc_html( $order->status ) . ')'; 
 							} ?>
 						</td>
 						<td><?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?></td>
