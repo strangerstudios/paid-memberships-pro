@@ -250,17 +250,12 @@ jQuery(document).ready(function($) {
 function pmpro_dashboard_welcome_callback() { ?>
 	<div class="pmpro-dashboard-welcome-columns">
 		<div class="pmpro-dashboard-welcome-column">
-			<h3><?php esc_html_e( 'Get Started', 'paid-memberships-pro' ); ?></h3>
-
-			<p class="text-center">
-				<p>
+			<br />
 					<iframe width="560" height="315" src="https://www.youtube.com/embed/IZpS9Mx76mw?si=A6OKdMHT6eBRIs9y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-				</p>
 				<p>
-					<?php echo esc_html( __( 'For guidance as your begin these steps:', 'paid-memberships-pro' ) ); ?>
+					<?php echo esc_html( __( 'For more guidance as your begin these steps:', 'paid-memberships-pro' ) ); ?>
 					<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=documentation&utm_content=initial-plugin-setup" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'view the Initial Setup Guide and Docs.', 'paid-memberships-pro' ); ?></a>
 				</p>
-			</p>
 		</div>
 		<div class="pmpro-dashboard-welcome-column">
 			<?php global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready; ?>

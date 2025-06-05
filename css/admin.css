@@ -839,155 +839,6 @@ td > .pmpro_tag {
 }
 
 /**
- * Dashboard Widget Grid (PMPro)
- */
-#dashboard-widgets.metabox-holder {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 20px;
-	width: 100%;
-}
-
-/* Hide the default postbox containers since we're using grid directly */
-#dashboard-widgets .postbox-container {
-	display: contents;
-}
-
-/* Default postbox styling for grid */
-#dashboard-widgets .postbox {
-	grid-column: span 1; /* Default to 1 column */
-	margin: 0; /* Remove default margins since we're using gap */
-}
-
-/* Combined grid positioning - this is more specific and handles both start and span */
-#dashboard-widgets .postbox.pmpro-colspan-1.pmpro-grid-start-1 { 
-	grid-column: 1 / span 1; 
-}
-#dashboard-widgets .postbox.pmpro-colspan-2.pmpro-grid-start-2 { 
-	grid-column: 2 / span 2; 
-}
-#dashboard-widgets .postbox.pmpro-colspan-1.pmpro-grid-start-4 { 
-	grid-column: 4 / span 1; 
-}
-#dashboard-widgets .postbox.pmpro-colspan-4.pmpro-grid-start-1 { 
-	grid-column: 1 / span 4; 
-}
-
-/* Fallback column span classes (lower specificity) */
-#dashboard-widgets .postbox.pmpro-colspan-1 { 
-	grid-column: span 1; 
-}
-#dashboard-widgets .postbox.pmpro-colspan-2 { 
-	grid-column: span 2; 
-}
-#dashboard-widgets .postbox.pmpro-colspan-3 { 
-	grid-column: span 3; 
-}
-#dashboard-widgets .postbox.pmpro-colspan-4 { 
-	grid-column: span 4; 
-}
-
-/* Fallback grid start position classes (lower specificity) */
-#dashboard-widgets .postbox.pmpro-grid-start-1 { 
-	grid-column-start: 1; 
-}
-#dashboard-widgets .postbox.pmpro-grid-start-2 { 
-	grid-column-start: 2; 
-}
-#dashboard-widgets .postbox.pmpro-grid-start-3 { 
-	grid-column-start: 3; 
-}
-#dashboard-widgets .postbox.pmpro-grid-start-4 { 
-	grid-column-start: 4; 
-}
-
-/* Responsive breakpoints */
-@media (max-width: 1400px) {
-	#dashboard-widgets.metabox-holder {
-		grid-template-columns: 1fr;
-		gap: 15px;
-	}
-	
-	/* All metaboxes span full width at this breakpoint - clean and simple */
-	#dashboard-widgets .postbox {
-		grid-column: 1 / -1 !important;
-		grid-column-start: auto !important;
-	}
-	
-	/* Adjust padding inside metaboxes for smaller screens */
-	#dashboard-widgets .postbox .inside {
-		padding: 10px;
-	}
-	
-	/* Make welcome box columns stack on smaller screens */
-	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
-		display: block !important;
-	}
-	
-	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column {
-		margin-bottom: 2rem;
-	}
-	
-	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column:last-child {
-		margin-bottom: 0;
-	}
-}
-
-@media (max-width: 900px) {
-	#dashboard-widgets.metabox-holder {
-		gap: 12px;
-	}
-	
-	/* Tighter spacing for welcome columns on mobile */
-	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column {
-		margin-bottom: 1.5rem;
-	}
-	
-	/* Make tables more mobile-friendly */
-	#dashboard-widgets .wp-list-table {
-		font-size: 14px;
-	}
-	
-	#dashboard-widgets .wp-list-table th,
-	#dashboard-widgets .wp-list-table td {
-		padding: 6px 4px;
-	}
-}
-
-/* Additional responsive helper for very small screens */
-@media (max-width: 600px) {
-	#dashboard-widgets.metabox-holder {
-		gap: 10px;
-	}
-	
-	#dashboard-widgets .postbox .inside {
-		padding: 8px;
-	}
-	
-	/* Even tighter spacing for welcome columns on very small screens */
-	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column {
-		margin-bottom: 1rem;
-	}
-	
-	/* Stack table content more aggressively on very small screens */
-	#dashboard-widgets .wp-list-table th,
-	#dashboard-widgets .wp-list-table td {
-		padding: 4px 2px;
-		font-size: 12px;
-	}
-}
-
-/* Ensure proper spacing inside metaboxes */
-#dashboard-widgets .postbox .inside {
-	padding: 12px;
-}
-
-/* Fix any floating issues */
-#dashboard-widgets .clear {
-	display: none;
-}
-
-/**
  * Settings pages sections styles
  */
 .pmpro_admin .pmpro_section {
@@ -3589,8 +3440,8 @@ button.pmpro_report_th_closed:before {
 
 .pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
 	display: grid;
-	grid-gap: 2rem;
-	grid-template-columns: 1fr 1fr;
+	grid-gap: 4rem;
+	grid-template-columns: 1.25fr .75fr;
 }
 
 .pmpro_admin #dashboard-widgets h3 {
@@ -3673,6 +3524,156 @@ button.pmpro_report_th_closed:before {
 	margin-bottom: .5rem;
 	padding: .75em 1.5em;
 }
+
+/**
+ * Dashboard Metabox Grid
+ */
+#dashboard-widgets.metabox-holder {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 20px;
+	width: 100%;
+}
+
+/* Hide the default postbox containers since we're using grid directly */
+#dashboard-widgets .postbox-container {
+	display: contents;
+}
+
+/* Default postbox styling for grid */
+#dashboard-widgets .postbox {
+	grid-column: span 1; /* Default to 1 column */
+	margin: 0; /* Remove default margins since we're using gap */
+	overflow: hidden;
+}
+
+#dashboard-widgets .postbox iframe {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9; /* Adjust ratio as needed */
+    border: none;
+}
+
+/* Fallback for older browsers that don't support aspect-ratio */
+@supports not (aspect-ratio: 16 / 9) {
+    #dashboard-widgets .postbox .iframe-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        overflow: hidden;
+    }
+    
+    #dashboard-widgets .postbox .iframe-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+/* Column spans for specific postboxes */
+#dashboard-widgets .postbox.pmpro-colspan-1 { 
+	grid-column: span 1; 
+}
+#dashboard-widgets .postbox.pmpro-colspan-2 { 
+	grid-column: span 2; 
+}
+#dashboard-widgets .postbox.pmpro-colspan-3 { 
+	grid-column: span 3; 
+}
+#dashboard-widgets .postbox.pmpro-colspan-4 { 
+	grid-column: span 4; 
+}
+
+
+/* Responsive breakpoints */
+@media (max-width: 1400px) {
+	#dashboard-widgets.metabox-holder {
+		grid-template-columns: 1fr;
+		gap: 15px;
+	}
+	
+	/* All metaboxes span full width at this breakpoint - clean and simple */
+	#dashboard-widgets .postbox {
+		grid-column: 1 / -1 !important;
+		grid-column-start: auto !important;
+	}
+	
+	/* Adjust padding inside metaboxes for smaller screens */
+	#dashboard-widgets .postbox .inside {
+		padding: 10px;
+	}
+	
+	/* Make welcome box columns stack on smaller screens */
+	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
+		display: block !important;
+	}
+	
+	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column {
+		margin-bottom: 2rem;
+	}
+	
+	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column:last-child {
+		margin-bottom: 0;
+	}
+}
+
+@media (max-width: 900px) {
+	#dashboard-widgets.metabox-holder {
+		gap: 12px;
+	}
+	
+	/* Tighter spacing for welcome columns on mobile */
+	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column {
+		margin-bottom: 1.5rem;
+	}
+	
+	/* Make tables more mobile-friendly */
+	#dashboard-widgets .wp-list-table {
+		font-size: 14px;
+	}
+	
+	#dashboard-widgets .wp-list-table th,
+	#dashboard-widgets .wp-list-table td {
+		padding: 6px 4px;
+	}
+}
+
+/* Additional responsive helper for very small screens */
+@media (max-width: 600px) {
+	#dashboard-widgets.metabox-holder {
+		gap: 10px;
+	}
+	
+	#dashboard-widgets .postbox .inside {
+		padding: 8px;
+	}
+	
+	/* Even tighter spacing for welcome columns on very small screens */
+	.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column {
+		margin-bottom: 1rem;
+	}
+	
+	/* Stack table content more aggressively on very small screens */
+	#dashboard-widgets .wp-list-table th,
+	#dashboard-widgets .wp-list-table td {
+		padding: 4px 2px;
+		font-size: 12px;
+	}
+}
+
+/* Ensure proper spacing inside metaboxes */
+#dashboard-widgets .postbox .inside {
+	padding: 12px;
+}
+
+/* Fix any floating issues */
+#dashboard-widgets .clear {
+	display: none;
+}
+/* End Dashboard Meta Box Styles */
 
 /**
  * Responsive Styles
