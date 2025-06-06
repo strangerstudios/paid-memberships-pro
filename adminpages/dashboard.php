@@ -26,9 +26,9 @@ $pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array
 		'columns' => 3,
 		'grid_column_start' => 1,
 	),
-	'pmpro_dashboard_license_status' => array(
-		'title'    => esc_html__( 'License Status', 'paid-memberships-pro' ),
-		'callback' => 'pmpro_dashboard_license_status_callback',
+	'pmpro_dashboard_welcome_side' => array(
+		'title'    => esc_html__( 'License & Community', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_dashboard_welcome_side_callback',
 		'context'  => 'grid',
 		'capability' => '',
 		'columns' => 1,
@@ -40,24 +40,32 @@ $pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array
 		'callback' => 'pmpro_report_sales_widget',
 		'context'  => 'grid',
 		'capability' => 'pmpro_reports',
-		'columns' => 2,
+		'columns' => 1,
 		'grid_column_start' => 1,
 	),
-	'pmpro_dashboard_report_membership_stats' => array(
-		'title'    => esc_html__( 'Membership Stats', 'paid-memberships-pro' ),
-		'callback' => 'pmpro_report_memberships_widget',
-		'context'  => 'grid',
-		'capability' => '',
-		'columns' => 2,
-		'grid_column_start' => 3,
-	),
-	// Row 3
 	'pmpro_dashboard_report_recent_members' => array(
 		'title'    => esc_html__( 'Recent Members', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_dashboard_report_recent_members_callback',
 		'context'  => 'grid',
 		'capability' => 'pmpro_memberslist',
 		'columns' => 2,
+		'grid_column_start' => 2,
+	),
+	'pmpro_dashboard_report_membership_stats' => array(
+		'title'    => esc_html__( 'Membership Stats', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_report_memberships_widget',
+		'context'  => 'grid',
+		'capability' => '',
+		'columns' => 1,
+		'grid_column_start' => 4,
+	),
+	// Row 3
+	'pmpro_dashboard_report_logins' => array(
+		'title'    => esc_html__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_report_login_widget',
+		'context'  => 'grid',
+		'capability' => '',
+		'columns' => 1,
 		'grid_column_start' => 1,
 	),
 	'pmpro_dashboard_report_recent_orders' => array(
@@ -66,35 +74,10 @@ $pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array
 		'context'  => 'grid',
 		'capability' => 'pmpro_orders',
 		'columns' => 2,
-		'grid_column_start' => 3,
-	),
-	// Row 4
-	'pmpro_dashboard_get_involved' => array(
-		'title'    => esc_html__( 'Get Involved', 'paid-memberships-pro' ),
-		'callback' => 'pmpro_dashboard_get_involved_callback',
-		'context'  => 'grid',
-		'capability' => '',
-		'columns' => 1,
-		'grid_column_start' => 1,
-	),
-	'pmpro_dashboard_follow_us' => array(
-		'title'    => esc_html__( 'Follow Us', 'paid-memberships-pro' ),
-		'callback' => 'pmpro_dashboard_follow_us_callback',
-		'context'  => 'grid',
-		'capability' => '',
-		'columns' => 1,
 		'grid_column_start' => 2,
 	),
-	'pmpro_dashboard_events' => array(
-		'title'    => esc_html__( 'Upcoming Events', 'paid-memberships-pro' ),
-		'callback' => 'pmpro_dashboard_events_callback',
-		'context'  => 'grid',
-		'capability' => '',
-		'columns' => 1,
-		'grid_column_start' => 3,
-	),
 	'pmpro_dashboard_news_updates' => array(
-		'title'    => esc_html__( 'News and Updates', 'paid-memberships-pro' ),
+		'title'    => esc_html__( 'Paid Memberships Pro News and Updates', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_dashboard_news_updates_callback',
 		'context'  => 'grid',
 		'capability' => '',
@@ -270,7 +253,7 @@ function pmpro_dashboard_welcome_callback() { ?>
 			<br />
 					<iframe width="560" height="315" src="https://www.youtube.com/embed/IZpS9Mx76mw?si=A6OKdMHT6eBRIs9y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 				<p>
-					<?php echo esc_html( __( 'For more guidance as you begin these steps,', 'paid-memberships-pro' ) ); ?>
+					<?php echo esc_html( __( 'For more guidance as your begin these steps:', 'paid-memberships-pro' ) ); ?>
 					<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=documentation&utm_content=initial-plugin-setup" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'view the Initial Setup Guide and Docs.', 'paid-memberships-pro' ); ?></a>
 				</p>
 		</div>
@@ -281,9 +264,9 @@ function pmpro_dashboard_welcome_callback() { ?>
 				<?php if ( current_user_can( 'pmpro_membershiplevels' ) ) { ?>
 					<li>
 						<?php if ( empty( $pmpro_level_ready ) ) { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&showpopup=1' ) );?>"><i class="dashicons dashicons-marker"></i> <?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&showpopup=1' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
 						<?php } else { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"><i class="dashicons dashicons-yes-alt"></i> <?php esc_html_e( 'View Membership Levels', 'paid-memberships-pro' ); ?></a>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php esc_html_e( 'View Membership Levels', 'paid-memberships-pro' ); ?></a>
 						<?php } ?>
 					</li>
 				<?php } ?>
@@ -291,9 +274,9 @@ function pmpro_dashboard_welcome_callback() { ?>
 				<?php if ( current_user_can( 'pmpro_pagesettings' ) ) { ?>
 					<li>
 						<?php if ( empty( $pmpro_pages_ready ) ) { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-marker"></i> <?php esc_html_e( 'Generate Membership Pages', 'paid-memberships-pro' ); ?></a>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php esc_html_e( 'Generate Membership Pages', 'paid-memberships-pro' ); ?></a>
 						<?php } else { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-yes-alt"></i> <?php esc_html_e( 'Manage Membership Pages', 'paid-memberships-pro' ); ?>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php esc_html_e( 'Manage Membership Pages', 'paid-memberships-pro' ); ?>
 						<?php } ?>
 					</li>
 				<?php } ?>
@@ -301,31 +284,39 @@ function pmpro_dashboard_welcome_callback() { ?>
 				<?php if ( current_user_can( 'pmpro_pagesettings' ) ) { ?>
 					<li>
 						<?php if ( empty( $pmpro_gateway_ready ) ) { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-marker"></i> <?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-cart"></i> <?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
 						<?php } else { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-yes-alt"></i> <?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-cart"></i> <?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
 						<?php } ?>
 					</li>
 				<?php } ?>
-			</ul>
-			<h3><?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?></h3>
-			<ul class="pmpro-dashboard-list-icons">
+
 				<?php if ( current_user_can( 'pmpro_userfields' ) ) { ?>
 				<li>
-					<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ) ); ?>"><?php esc_attr_e( 'Manage User Fields', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ) ); ?>"><i class="dashicons dashicons-id"></i> <?php esc_attr_e( 'Manage User Fields', 'paid-memberships-pro' ); ?></a>
 				</li>
+				<?php } ?>
+			</ul>
+			<h3><?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?></h3>
+			<ul>
+				<?php if ( current_user_can( 'pmpro_emailsettings' ) ) { ?>
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailsettings' ) );?>"><i class="dashicons dashicons-email"></i> <?php esc_html_e( 'Confirm Email Settings', 'paid-memberships-pro' );?></a></li>
 				<?php } ?>
 
 				<?php if ( current_user_can( 'pmpro_emailtemplates' ) ) { ?>
-					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailtemplates' ) );?>"><?php esc_html_e( 'Customize Email Templates', 'paid-memberships-pro' );?></a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailtemplates' ) );?>"><i class="dashicons dashicons-editor-spellcheck"></i> <?php esc_html_e( 'Customize Email Templates', 'paid-memberships-pro' );?></a></li>
 				<?php } ?>
 
 				<?php if ( current_user_can( 'pmpro_designsettings' ) ) { ?>
-					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-designsettings' ) );?>"><?php esc_html_e( 'View Design Settings', 'paid-memberships-pro' ); ?></a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-designsettings' ) );?>"><i class="dashicons dashicons-art"></i> <?php esc_html_e( 'View Design Settings', 'paid-memberships-pro' ); ?></a></li>
+				<?php } ?>
+
+				<?php if ( current_user_can( 'pmpro_advancedsettings' ) ) { ?>
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) );?>"><i class="dashicons dashicons-admin-settings"></i> <?php esc_html_e( 'View Advanced Settings', 'paid-memberships-pro' ); ?></a></li>
 				<?php } ?>
 
 				<?php if ( current_user_can( 'pmpro_addons' ) ) { ?>
-					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-addons' ) );?>"><?php esc_html_e( 'Explore Add Ons for Additional Features', 'paid-memberships-pro' ); ?></a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-addons' ) );?>"><i class="dashicons dashicons-admin-plugins"></i> <?php esc_html_e( 'Explore Add Ons for Additional Features', 'paid-memberships-pro' ); ?></a></li>
 				<?php } ?>
 			</ul>
 		</div> <!-- end pmpro-dashboard-welcome-column -->
@@ -336,7 +327,7 @@ function pmpro_dashboard_welcome_callback() { ?>
 /**
  * Callback function for pmpro_dashboard_welcome meta box (side)
  */
-function pmpro_dashboard_license_status_callback() { ?>
+function pmpro_dashboard_welcome_side_callback() { ?>
 	<?php
 		// Get saved license.
 		$key = get_option( 'pmpro_license_key', '' );
@@ -351,24 +342,31 @@ function pmpro_dashboard_license_status_callback() { ?>
 		<p class="pmpro_message pmpro_alert">
 			<strong><?php esc_html_e( 'Your license is invalid or expired.', 'paid-memberships-pro' ); ?></strong><br />
 			<?php echo wp_kses_post( sprintf(__( '<a href="%s">View your membership account</a> to verify your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-dashboard%26utm_campaign%3Dmembership-account%26utm_content%3Dverify-license-key' ) );?>
-		</p>
-		<p><a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dview-account" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Manage My Account', 'paid-memberships-pro' ); ?></a></p>
 	<?php } elseif ( pmpro_license_isValid() && ! pmpro_license_isValid( $key, pmpro_license_get_premium_types() ) ) { ?>
 		<p class="pmpro_message pmpro_alert"><?php echo wp_kses_post( sprintf(__('Your <strong>%1$s</strong> key is active. %1$s accounts include access to documentation and free downloads.', 'paid-memberships-pro' ), ucwords( $pmpro_license_check['license'] ) ) );?></p>
-		<p><a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dview-account" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Manage My Account', 'paid-memberships-pro' ); ?></a></p>
 	<?php } else { ?>
 		<p class="pmpro_message pmpro_success"><?php echo wp_kses_post( sprintf(__( '<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.', 'paid-memberships-pro' ), ucwords($pmpro_license_check['license'])));?></p>
-		<p><a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dview-account" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Manage My Account', 'paid-memberships-pro' ); ?></a></p>
-		<p><a class="button button-hero" href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fnew-topic%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dsupport%26utm_content%3Dnew-support-ticket" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open Support Ticket', 'paid-memberships-pro' ); ?></a></p>
 	<?php } ?>
 
 	<?php if ( ! pmpro_license_isValid() || pmpro_license_isValid() && ! pmpro_license_isValid( $key, pmpro_license_get_premium_types() ) ) { ?>
-		<hr />
 		<p><?php esc_html_e( 'An annual support license is recommended for websites running Paid Memberships Pro.', 'paid-memberships-pro' ); ?></p>
-		<p><a href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=pricing&utm_content=upgrade" target="_blank" rel="noopener noreferrer" class="button button-hero"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a></p>
+		<p><a href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=pricing&utm_content=upgrade" target="_blank" rel="noopener noreferrer" class="button button-primary button-hero"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a>
 	<?php } ?>
-	<?php
+	<hr />
+	<p><?php echo wp_kses_post( sprintf( __( 'Paid Memberships Pro and our Add Ons are distributed under the <a target="_blank" href="%s">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), 'http://www.gnu.org/licenses/gpl-2.0.html' ) ); ?></p>
+
+	<h3><?php esc_html_e( 'Get Involved', 'paid-memberships-pro' ); ?></h3>
+	<p><?php esc_html_e( 'There are many ways you can help support Paid Memberships Pro.', 'paid-memberships-pro' ); ?></p>
+	<p><?php esc_html_e( 'Get involved with our plugin development via GitHub.', 'paid-memberships-pro' ); ?> <a href="https://github.com/strangerstudios/paid-memberships-pro" target="_blank"><?php esc_html_e( 'View on GitHub', 'paid-memberships-pro' ); ?></a></p>
+	<ul>
+		<li><a href="https://www.youtube.com/channel/UCFtMIeYJ4_YVidi1aq9kl5g/" target="_blank"><i class="dashicons dashicons-format-video"></i> <?php esc_html_e( 'Subscribe to our YouTube Channel.', 'paid-memberships-pro' ); ?></a></li>
+		<li><a href="https://www.facebook.com/PaidMembershipsPro" target="_blank"><i class="dashicons dashicons-facebook"></i> <?php esc_html_e( 'Follow us on Facebook.', 'paid-memberships-pro' ); ?></a></li>
+		<li><a href="https://twitter.com/pmproplugin" target="_blank"><i class="dashicons dashicons-twitter"></i> <?php esc_html_e( 'Follow @pmproplugin on Twitter.', 'paid-memberships-pro' ); ?></a></li>
+		<li><a href="https://www.paidmembershipspro.com/submit-testimonial/" target="_blank"><i class="dashicons dashicons-star-filled"></i> <?php esc_html_e( 'Share an honest review.', 'paid-memberships-pro' ); ?></a></li>
+	</ul>
+<?php
 }
+
 
 /*
  * Callback function for pmpro_dashboard_report_recent_members meta box to show last 5 recent members and a link to the Members List.
@@ -534,38 +532,6 @@ function pmpro_dashboard_report_recent_orders_callback() {
 	<?php
 }
 
-
-/**
- * Callback function for pmpro_dashboard_get_involved meta box
- */
-function pmpro_dashboard_get_involved_callback() { ?>
-	<p><?php esc_html_e( 'Join the PMPro Slack community to connect with other PMPro users and developers.', 'paid-memberships-pro' ); ?></p>
-	<p><a href="https://www.paidmembershipspro.com/slack/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=slack&utm_content=join-community" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Join the Community', 'paid-memberships-pro' ); ?></a></p>
-	<?php
-}
-
-/**
- * Callback function for pmpro_dashboard_follow_us meta box
- */
-function pmpro_dashboard_follow_us_callback() { ?>
-	<ul class="pmpro-dashboard-list-icons">
-		<li><a href="https://github.com/strangerstudios/paid-memberships-pro" target="_blank"><img src="<?php echo esc_url( PMPRO_URL . '/images/github.svg' ); ?>" /> <?php esc_html_e( 'GitHub', 'paid-memberships-pro' ); ?></a></li>
-		<li><a href="https://www.youtube.com/channel/UCFtMIeYJ4_YVidi1aq9kl5g/" target="_blank"><img src="<?php echo esc_url( PMPRO_URL . '/images/youtube.svg' ); ?>" /> <?php esc_html_e( 'YouTube', 'paid-memberships-pro' ); ?></a></li>
-		<li><a href="https://www.facebook.com/PaidMembershipsPro" target="_blank"><img src="<?php echo esc_url( PMPRO_URL . '/images/facebook.svg' ); ?>" /> <?php esc_html_e( 'Facebook', 'paid-memberships-pro' ); ?></a></li>
-		<li><a href="https://x.com/pmproplugin" target="_blank"><img src="<?php echo esc_url( PMPRO_URL . '/images/twitter-x.svg' ); ?>" /> <?php esc_html_e( '@pmproplugin on X', 'paid-memberships-pro' ); ?></a></li>
-	</ul>
-	<?php
-}
-
-/**
- * Callback function for pmpro_dashboard_events meta box
- */
-function pmpro_dashboard_events_callback() { ?>
-	<p><?php esc_html_e( 'Join us for a masterclass, open office hours, or virtual Q&A session to get help building and growing your membership business.', 'paid-memberships-pro' ); ?></p>
-	<p><a href="https://www.paidmembershipspro.com/live/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=slack&utm_content=events" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View the Event Calendar', 'paid-memberships-pro' ); ?></a></p>
-	<?php
-}
-
 /*
  * Callback function for pmpro_dashboard_news_updates meta box to show RSS Feed from Paid Memberships Pro blog.
  */
@@ -587,8 +553,6 @@ function pmpro_dashboard_news_updates_callback() {
 		// Build an array of all the items, starting with element 0 (first element).
 		$rss_items = $rss->get_items( 0, $maxitems );
 
-		// Shuffle the order and get a random one item to display.
-		shuffle( $rss_items );
 	endif;
 	?>
 
@@ -596,16 +560,19 @@ function pmpro_dashboard_news_updates_callback() {
 		<?php if ( $maxitems == 0 ) : ?>
 			<li><?php esc_html_e( 'No news found.', 'paid-memberships-pro' ); ?></li>
 		<?php else : ?>
-			<li>
-				<a href="<?php echo esc_url( $rss_items[0]->get_permalink() ); ?>"
-					title="<?php echo esc_attr( sprintf( __( 'Posted %s', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $rss_items[0]->get_date( 'U' ) ) ) ); ?>">
-					<?php echo esc_html( $rss_items[0]->get_title() ); ?>
-				</a>
-				<?php echo esc_html( date_i18n( get_option( 'date_format' ), $rss_items[0]->get_date( 'U' ) ) ); ?>
-			</li>
+			<?php // Loop through each feed item and display each item as a hyperlink. ?>
+			<?php foreach ( $rss_items as $item ) : ?>
+				<li>
+					<a href="<?php echo esc_url( $item->get_permalink() ); ?>"
+						title="<?php echo esc_attr( sprintf( __( 'Posted %s', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ) ); ?>">
+						<?php echo esc_html( $item->get_title() ); ?>
+					</a>
+					<?php echo esc_html( date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ); ?>
+				</li>
+			<?php endforeach; ?>
 		<?php endif; ?>
 	</ul>
-	<p><a href="https://www.paidmembershipspro.com/blog/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=news-updates-metabox"><?php esc_html_e( 'Read the Blog', 'paid-memberships-pro' ); ?></a></p>
+	<p class="pmpro_report-button"><a class="button button-primary" href="https://www.paidmembershipspro.com/blog/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=news-updates-metabox"><?php esc_html_e( 'View More', 'paid-memberships-pro' ); ?></a></p>
 	<?php
 }
 
