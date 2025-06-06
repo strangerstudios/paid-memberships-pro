@@ -91,15 +91,11 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 //activation
 function pmpro_license_activation() {
 	_deprecated_function( 'pmpro_license_activation', '3.5', 'PMPro_Scheduled_Actions()' );
-	return;
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_license_check_key' );
 }
 
 //deactivation
 function pmpro_license_deactivation() {
 	_deprecated_function( 'pmpro_license_deactivation', '3.5', 'PMPro_Scheduled_Actions()' );
-	return;
-	wp_clear_scheduled_hook( 'pmpro_license_check_key' );
 }
 
 /**

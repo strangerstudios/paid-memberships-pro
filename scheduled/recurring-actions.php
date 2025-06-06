@@ -61,12 +61,6 @@ class PMPro_Scheduled_Actions {
 
 		// License check (Monthly)
 		add_action( 'pmpro_schedule_monthly', 'pmpro_license_check_key' );
-
-		// Backwards compatibility for the old cron hooks.
-		add_action( 'pmpro_cron_expire_memberships', array( $this, 'check_for_expired_memberships' ) );
-		add_action( 'pmpro_cron_expiration_warnings', array( $this, 'membership_expiration_reminders' ) );
-		add_action( 'pmpro_cron_admin_activity_email', array( $this, 'admin_activity_email' ) );
-		add_action( 'pmpro_cron_recurring_payment_reminders', array( $this, 'recurring_payment_reminders' ) );
 	}
 
 	/**
@@ -374,7 +368,7 @@ class PMPro_Scheduled_Actions {
 			'pmpro_schedule_daily',
 			function () {
 				if ( get_option( 'pmpro_activity_email_frequency' ) === 'day' ) {
-					$this->admin_activity_email();
+					$this->send_admin_activity_email();
 				}
 			}
 		);
@@ -383,7 +377,7 @@ class PMPro_Scheduled_Actions {
 			'pmpro_schedule_weekly',
 			function () {
 				if ( get_option( 'pmpro_activity_email_frequency' ) === 'week' ) {
-					$this->admin_activity_email();
+					$this->send_admin_activity_email();
 				}
 			}
 		);
@@ -392,7 +386,7 @@ class PMPro_Scheduled_Actions {
 			'pmpro_schedule_monthly',
 			function () {
 				if ( get_option( 'pmpro_activity_email_frequency' ) === 'month' ) {
-					$this->admin_activity_email();
+					$this->send_admin_activity_email();
 				}
 			}
 		);
