@@ -36,11 +36,4 @@ function pmpro_upgrade_2_6() {
 	if ( empty( $admin_billing ) ) {
 		update_option( 'pmpro_email_billing_admin_disabled', 'true' );
 	}
-
-	// Reschedule cron job for hourly checks.
-	$next = wp_next_scheduled( 'pmpro_cron_expire_memberships' );
-	if ( ! empty( $next ) ) {
-		wp_unschedule_event( $next, 'pmpro_cron_expire_memberships' );
-	}
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'hourly', 'pmpro_cron_expire_memberships' );
 }
