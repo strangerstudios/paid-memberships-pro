@@ -4703,6 +4703,42 @@ function pmpro_compare_siteurl() {
 }
 
 /**
+ * When the pmpro_last_known_url option is updated, base64 encode it to
+ * prevent string replacements from changing it when the site is migrated.
+ *
+ * @since TBD
+ *
+ * @param string $new_value The new value for the option.
+ * @return string The encoded value for the option.
+ */
+function pmpro_encode_last_known_url( $new_value ) {
+	// Only encode non-empty values.
+	if ( ! empty( $new_value ) ) {
+		$new_value = 'b64:' . base64_encode( $new_value );
+	}
+	return $new_value;
+}
+add_filter( 'pre_update_option_pmpro_last_known_url', 'pmpro_encode_last_known_url' );
+
+/**
+ * When the pmpro_last_known_url option is retrieved, if it
+ * is base64 encoded, decode it.
+ *
+ * @since TBD
+ *
+ * @param string $value The value of the option.
+ * @return string The decoded value of the option.
+ */
+function pmpro_decode_last_known_url( $value ) {
+	// Check if the value is base64 encoded.
+	if ( strpos( $value, 'b64:' ) === 0 ) {
+		$value = base64_decode( substr( $value, 4 ) );
+	}
+	return $value;
+}
+add_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
+
+/**
  * Determine if the site is in pause mode or not
  *
  * @since 2.10
