@@ -206,6 +206,20 @@ class PMPro_Recurring_Actions {
 			return;
 		}
 
+		// Double-check: Only send if the user still meets the requirements.
+		// There may be a gap between the time we check and the time we actually send them.
+		$membership = pmpro_getMembershipLevelForUser( $user_id );
+		if (
+		empty( $membership ) ||
+		$membership->id != $membership_id ||
+		$membership->status !== 'active' ||
+		empty( $membership->enddate ) ||
+		strtotime( $membership->enddate ) <= current_time( 'timestamp' )
+		) {
+			// User is not eligible for a reminder email.
+			return;
+		}
+
 		$send_email = apply_filters( 'pmpro_send_expiration_warning_email', true, $user_id );
 
 		if ( $send_email ) {
@@ -285,7 +299,7 @@ class PMPro_Recurring_Actions {
 
 	/**
 	 * Expire memberships for a user and send an email.
-	 * 
+	 *
 	 * @access public
 	 * @since 3.5
 	 *
@@ -294,7 +308,23 @@ class PMPro_Recurring_Actions {
 	 *
 	 * @return void
 	 */
-	public function expire_memberships( $user_id, $membership_id  ) {
+	public function expire_memberships( $user_id, $membership_id ) {
+
+		// Double-check: Only expire if the user still meets the requirements for expiration.
+		// There may be a gap between the time we check for expired memberships and the time we actually expire them.
+		$membership = pmpro_getMembershipLevelForUser( $user_id );
+		if (
+			empty( $membership ) ||
+			$membership->id != $membership_id ||
+			$membership->status !== 'active' ||
+			empty( $membership->enddate ) ||
+			// Check if the membership end date is in the future
+			strtotime( $membership->enddate ) > current_time( 'timestamp' )
+		) {
+			// User is not eligible for expiration.
+			return;
+		}
+
 		do_action( 'pmpro_membership_pre_membership_expiry', $user_id, $membership_id );
 		// Remove their membership
 		pmpro_cancelMembershipLevel( $membership_id, $user_id, 'expired' );
@@ -352,7 +382,6 @@ class PMPro_Recurring_Actions {
 
 		$pmproemail = new PMPro_Admin_Activity_Email();
 		$pmproemail->sendAdminActivity();
-
 	}
 
 	/**
@@ -472,7 +501,7 @@ class PMPro_Recurring_Actions {
 		$user             = get_userdata( $subscription_obj->get_user_id() );
 
 		if ( empty( $user ) ) {
-			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date('Y-m-d') );
+			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d' ) );
 			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
 			return;
 		}
@@ -507,7 +536,7 @@ class PMPro_Recurring_Actions {
 			$pmproemail->sendEmail();
 		}
 
-		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date('Y-m-d') );
+		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d' ) );
 		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
 	}
 
