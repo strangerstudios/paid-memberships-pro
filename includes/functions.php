@@ -4733,6 +4733,9 @@ function pmpro_decode_last_known_url( $value ) {
 	// Check if the value is base64 encoded.
 	if ( strpos( $value, 'b64:' ) === 0 ) {
 		$value = base64_decode( substr( $value, 4 ) );
+	} else {
+		// If the value is not encoded, then it is an old value. Encode it now.
+		update_option( 'pmpro_last_known_url', $value );
 	}
 	return $value;
 }
