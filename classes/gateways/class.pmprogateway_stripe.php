@@ -2906,7 +2906,7 @@ class PMProGateway_stripe extends PMProGateway {
 								</td>
 							</tr>
 						<?php } ?>
-						<?php if ( self::using_legacy_keys() && ! self::has_connect_credentials( $environment ) ) { ?>
+						<?php if ( self::using_legacy_keys() && ! self::has_connect_credentials( $environment ) && $active_environment ) { ?>
 							<tr class="gateway gateway_stripe_<?php echo esc_attr( $environment ); ?>">
 								<td colspan="2">
 									<div class="notice notice-large notice-warning inline">
@@ -2918,7 +2918,7 @@ class PMProGateway_stripe extends PMProGateway {
 									</div>
 								</td>
 							</tr>
-						<?php } elseif ( self::using_api_keys() && self::has_connect_credentials( $environment ) ) {  ?>
+						<?php } elseif ( self::using_api_keys() && self::has_connect_credentials( $environment ) && $active_environment ) {  ?>
 							<tr class="gateway gateway_stripe_<?php echo esc_attr( $environment ); ?>">
 								<td colspan="2">
 									<div class="notice notice-large notice-warning inline">
