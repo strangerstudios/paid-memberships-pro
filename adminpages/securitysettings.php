@@ -174,6 +174,29 @@
 				</table>
 			</div>
 		</div>
+		<?php
+		// Check if this is an nginx setup.
+		if ( ( ! empty( $GLOBALS['is_nginx'] && $GLOBALS['is_nginx'] ) ) || ( function_exists( 'is_wpe' ) && is_wpe() ) ) {
+			// Show a "Restricted Files" section linking to our docs on setting up restricted files on nginx.
+			?>
+			<div class="pmpro_section" data-visibility="hidden" data-activated="false">
+				<div class="pmpro_section_toggle">
+					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+						<span class="dashicons dashicons-arrow-up-alt2"></span>
+						<?php esc_html_e( 'Restricted Files', 'paid-memberships-pro' ); ?>
+					</button>
+				</div>
+				<div class="pmpro_section_inside">
+					<p><?php
+						$restricted_files_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Restricted Files', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/placeholder_url">' . esc_html__( 'manually set up an nginx rewrite rule', 'paid-memberships-pro' ) . '</a>';
+						// translators: %s: Link to Restricted Files doc.
+						printf( esc_html__( 'Files that contain potentially sensitive information are placed in the %s directory. If your site is running on nginx, you will need to %s to protect these files.', 'paid-memberships-pro' ), '<code>' . pmpro_get_restricted_file_path() . '</code>', $restricted_files_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?></p>
+				</div> <!-- end pmpro_section_inside -->
+			</div> <!-- end pmpro_section -->
+			<?php
+		}
+		?>
 		<div class="pmpro_section" data-visibility="hidden" data-activated="false">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
