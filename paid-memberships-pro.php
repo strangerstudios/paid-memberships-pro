@@ -32,7 +32,7 @@ if ( ! class_exists( \ActionScheduler::class ) ) {
 
 // New in 3.5: We now use Action Scheduler instead of WP Cron.
 require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' ); 	// Our Action Scheduler Manager for PMPro
-require_once( PMPRO_DIR . '/scheduled/recurring-actions.php' ); 			// Load our recurring scheduled actions.
+require_once( PMPRO_DIR . '/classes/class-pmpro-recurring-actions.php' ); 			// Load our recurring scheduled actions.
 // Old cron includes for backwards compatibility.
 require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
