@@ -240,48 +240,4 @@ class PMPro_Membership_Level{
 
     }
 
-   /**
-	 * Disable memberships referencing non-existent levels.
-	 *
-	 * @since 3.5
-     * @global object $wpdb
-	 *
-	 * @return void
-	 */
-	public static function fix_inactive_memberships() {
-		global $wpdb;
-        $sql_query = "UPDATE {$wpdb->pmpro_memberships_users} mu
-            LEFT JOIN {$wpdb->pmpro_membership_levels} l ON mu.membership_id = l.id 
-            SET mu.status = 'inactive' 
-            WHERE mu.status = 'active' 
-            AND l.id IS NULL";
-        $wpdb->query( $sql_query );
-	}
-
-    /**
-     * Resolves duplicate active rows for a single user and membership level.
-     * 
-     * @since 3.5
-     * @global object $wpdb
-     * 
-     * @return void
-     */
-    public static function resolve_duplicate_active_rows() {
-        global $wpdb;
-        // Fix rows where there is more than one active status for the same user/level
-        $sqlQuery = "UPDATE $wpdb->pmpro_memberships_users t1
-                INNER JOIN (SELECT mu1.id as id
-                FROM $wpdb->pmpro_memberships_users mu1, $wpdb->pmpro_memberships_users mu2
-                WHERE mu1.id < mu2.id
-                    AND mu1.user_id = mu2.user_id
-                    AND mu1.membership_id = mu2.membership_id
-                    AND mu1.status = 'active'
-                    AND mu2.status = 'active'
-                GROUP BY mu1.id
-                ORDER BY mu1.user_id, mu1.id DESC) t2
-                ON t1.id = t2.id
-                SET t1.status = 'inactive'";
-        $wpdb->query( $sqlQuery );
-    }
-
 } // end of class

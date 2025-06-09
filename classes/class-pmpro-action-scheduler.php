@@ -90,53 +90,26 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Check for crons that are sheduled and being with 'pmpro_' prefix, and remove them.
-	 * This is to prevent conflicts with Action Scheduler.
+	 * Prevent the instance from being cloned.
 	 *
 	 * @access public
 	 * @since 3.5
 	 * @return void
-	 */
-	public static function check_and_remove_existing_crons() {
-		$crons   = _get_cron_array();
-		$removed = array();
-		foreach ( $crons as $timestamp => $cron ) {
-			foreach ( $cron as $hook => $events ) {
-				if ( strpos( $hook, 'pmpro_' ) === 0 ) {
-					// Remove all events for this hook (regardless of args)
-					wp_clear_scheduled_hook( $hook );
-					$removed[] = $hook;
-				}
-			}
-		}
-		if ( ! empty( $removed ) && WP_DEBUG ) {
-			// Log the removed crons for debugging.
-			$removed = implode( ', ', $removed );
-			error_log( esc_html( 'Removed PMPro scheduled crons: ' . $removed ) );
-		}
-	}
-
-	/**
-	 * Prevent the instance from being cloned.
-	 *
-	 * @access protected
-	 * @since 3.5
-	 * @return void
 	 * @throws Exception If the instance is cloned.
 	 */
-	protected function __clone() {
+	public function __clone() {
 		throw new Exception( __( 'Action Scheduler instance cannot be cloned', 'paid-memberships-pro' ) );
 	}
 
 	/**
 	 * Prevent the instance from being unserialized.
 	 *
-	 * @access protected
+	 * @access public
 	 * @since 3.5
 	 * @return void
 	 * @throws Exception If the instance is unserialized.
 	 */
-	protected function __wakeup() {
+	public function __wakeup() {
 		throw new Exception( __( 'Action Scheduler instance cannot be unserialized', 'paid-memberships-pro' ) );
 	}
 

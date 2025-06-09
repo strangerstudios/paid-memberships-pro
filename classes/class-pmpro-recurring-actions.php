@@ -1,20 +1,19 @@
 <?php
 
-// This is a new class which registers all the scheduled actions (formerly crons) for PMPro.
-// It is a replacement for the old crons.php file.
-// The class is instantiated in the pmpro_init function.
+// This is a new class which registers all the Action Scheduler recurring actions (formerly crons) for PMPro.
+// The class is instantiated/hooked on plugins_loaded in paid-memberships-pro.php.
 
 /**
- * Class PMPro_Scheduled_Actions
+ * Class PMPro_Recurring_Actions
  *
  * @since 2.8
  */
-class PMPro_Scheduled_Actions {
+class PMPro_Recurring_Actions {
 
 	/**
 	 * Singleton instance.
 	 *
-	 * @var PMPro_Scheduled_Actions|null
+	 * @var PMPro_Recurring_Actions|null
 	 */
 	private static $instance = null;
 
@@ -22,6 +21,16 @@ class PMPro_Scheduled_Actions {
 	 * The batch limit for the scheduled actions.
 	 */
 	private $query_batch_limit;
+
+	/**
+	 * The minimum date used for PMPro magic dates.
+	 *
+	 * This is used to ensure that we don't have any invalid dates in the database.
+	 * It is also used as a default value for end dates in the memberships_users table.
+	 *
+	 * @since 3.5
+	 */
+	const PMPRO_MAGIC_MIN_DATE = '1000-01-01 00:00:00';
 
 	/**
 	 * Constructor.
@@ -38,7 +47,7 @@ class PMPro_Scheduled_Actions {
 
 		// Schedule cleanup actions previously handled by pmpro_cleanup_memberships_users_table()
 		add_action( 'pmpro_schedule_weekly', array( $this, 'check_inactive_memberships' ) );
-		add_action( 'pmpro_schedule_weekly', array( $this, 'resolve_duplicate_active_rows' ) );
+		add_action( 'pmpro_schedule_weekly', array( $this, 'check_duplicate_active_rows' ) );
 
 		// Expired Membership Routines (Daily)
 		add_action( 'pmpro_schedule_daily', array( $this, 'check_for_expired_memberships' ) );
@@ -66,7 +75,7 @@ class PMPro_Scheduled_Actions {
 	/**
 	 * Get the singleton instance.
 	 *
-	 * @return PMPro_Scheduled_Actions
+	 * @return PMPro_Recurring_Actions
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
@@ -87,7 +96,7 @@ class PMPro_Scheduled_Actions {
 		if ( pmpro_is_paused() ) {
 			return;
 		}
-		PMPro_Membership_Level::fix_inactive_memberships();
+		self::fix_inactive_memberships();
 	}
 
 	/**
@@ -100,13 +109,13 @@ class PMPro_Scheduled_Actions {
 	 * @since 3.5
 	 * @return void
 	 */
-	public function resolve_duplicate_active_rows() {
+	public function check_duplicate_active_rows() {
 		// Don't let anything run if PMPro is paused
 		if ( pmpro_is_paused() ) {
 			return;
 		}
 
-		PMPro_Membership_Level::resolve_duplicate_active_rows();
+		self::resolve_duplicate_active_rows();
 	}
 
 	/**
@@ -144,7 +153,7 @@ class PMPro_Scheduled_Actions {
 				WHERE ( um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) < %s )
 					AND mu.status = 'active'
 					AND mu.enddate IS NOT NULL
-					AND mu.enddate > '1000-01-01 00:00:00'
+					AND mu.enddate > self::PMPRO_MAGIC_MIN_DATE
 					AND mu.enddate BETWEEN %s AND %s
 					AND mu.membership_id IS NOT NULL
 					AND mu.membership_id <> 0
@@ -207,6 +216,20 @@ class PMPro_Scheduled_Actions {
 			return;
 		}
 
+		// Double-check: Only send if the user still meets the requirements.
+		// There may be a gap between the time we check and the time we actually send them.
+		$membership = pmpro_getSpecificMembershipLevelForUser( $user_id, $membership_id );
+		if (
+		empty( $membership ) ||
+		$membership->id != $membership_id ||
+		$membership->status !== 'active' ||
+		empty( $membership->enddate ) ||
+		strtotime( $membership->enddate ) <= current_time( 'timestamp' )
+		) {
+			// User is not eligible for a reminder email.
+			return;
+		}
+
 		$send_email = apply_filters( 'pmpro_send_expiration_warning_email', true, $user_id );
 
 		if ( $send_email ) {
@@ -245,7 +268,7 @@ class PMPro_Scheduled_Actions {
 	         FROM {$wpdb->pmpro_memberships_users} mu
 	         WHERE mu.status = 'active'
 	           AND mu.enddate IS NOT NULL
-	           AND mu.enddate > '1000-01-01 00:00:00'
+	           AND mu.enddate > self::PMPRO_MAGIC_MIN_DATE
 	           AND mu.enddate <= %s
 	         ORDER BY mu.enddate",
 			$today
@@ -286,7 +309,7 @@ class PMPro_Scheduled_Actions {
 
 	/**
 	 * Expire memberships for a user and send an email.
-	 * 
+	 *
 	 * @access public
 	 * @since 3.5
 	 *
@@ -295,7 +318,23 @@ class PMPro_Scheduled_Actions {
 	 *
 	 * @return void
 	 */
-	public function expire_memberships( $user_id, $membership_id  ) {
+	public function expire_memberships( $user_id, $membership_id ) {
+
+		// Double-check: Only expire if the user still meets the requirements for expiration.
+		// There may be a gap between the time we check for expired memberships and the time we actually expire them.
+		$membership = pmpro_getSpecificMembershipLevelForUser( $user_id, $membership_id );
+		if (
+			empty( $membership ) ||
+			$membership->id != $membership_id ||
+			$membership->status !== 'active' ||
+			empty( $membership->enddate ) ||
+			// Check if the membership end date is in the future
+			strtotime( $membership->enddate ) > current_time( 'timestamp' )
+		) {
+			// User is not eligible for expiration.
+			return;
+		}
+
 		do_action( 'pmpro_membership_pre_membership_expiry', $user_id, $membership_id );
 		// Remove their membership
 		pmpro_cancelMembershipLevel( $membership_id, $user_id, 'expired' );
@@ -316,10 +355,13 @@ class PMPro_Scheduled_Actions {
 	 */
 	private function send_membership_expired_email( $user_id, $membership_id ) {
 
+		$send_email = true;
+
 		if ( get_user_meta( $user_id, 'pmpro_disable_notifications', true ) ) {
 			$send_email = false;
 		}
 
+		// Allow filtering of the email sending.
 		$send_email = apply_filters( 'pmpro_send_expiration_email', true, $user_id );
 
 		if ( $send_email ) {
@@ -353,7 +395,6 @@ class PMPro_Scheduled_Actions {
 
 		$pmproemail = new PMPro_Admin_Activity_Email();
 		$pmproemail->sendAdminActivity();
-
 	}
 
 	/**
@@ -473,7 +514,7 @@ class PMPro_Scheduled_Actions {
 		$user             = get_userdata( $subscription_obj->get_user_id() );
 
 		if ( empty( $user ) ) {
-			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date('Y-m-d') );
+			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d' ) );
 			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
 			return;
 		}
@@ -508,7 +549,7 @@ class PMPro_Scheduled_Actions {
 			$pmproemail->sendEmail();
 		}
 
-		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date('Y-m-d') );
+		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d' ) );
 		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
 	}
 
@@ -547,5 +588,51 @@ class PMPro_Scheduled_Actions {
 			}
 			closedir( $handle );
 		}
+	}
+
+	/**
+	 * Disable memberships referencing non-existent levels.
+	 *
+	 * @access private
+	 * @since 3.5
+	 * @global object $wpdb
+	 *
+	 * @return void
+	 */
+	private static function fix_inactive_memberships() {
+		global $wpdb;
+		$sql_query = "UPDATE {$wpdb->pmpro_memberships_users} mu
+            LEFT JOIN {$wpdb->pmpro_membership_levels} l ON mu.membership_id = l.id 
+            SET mu.status = 'inactive' 
+            WHERE mu.status = 'active' 
+            AND l.id IS NULL";
+		$wpdb->query( $sql_query );
+	}
+
+	/**
+	 * Resolves duplicate active rows for a single user and membership level.
+	 *
+	 * @access private
+	 * @since 3.5
+	 * @global object $wpdb
+	 *
+	 * @return void
+	 */
+	private static function resolve_duplicate_active_rows() {
+		global $wpdb;
+		// Fix rows where there is more than one active status for the same user/level
+		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users t1
+                INNER JOIN (SELECT mu1.id as id
+                FROM $wpdb->pmpro_memberships_users mu1, $wpdb->pmpro_memberships_users mu2
+                WHERE mu1.id < mu2.id
+                    AND mu1.user_id = mu2.user_id
+                    AND mu1.membership_id = mu2.membership_id
+                    AND mu1.status = 'active'
+                    AND mu2.status = 'active'
+                GROUP BY mu1.id
+                ORDER BY mu1.user_id, mu1.id DESC) t2
+                ON t1.id = t2.id
+                SET t1.status = 'inactive'";
+		$wpdb->query( $sqlQuery );
 	}
 }
