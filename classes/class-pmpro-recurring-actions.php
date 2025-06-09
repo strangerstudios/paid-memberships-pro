@@ -1,7 +1,6 @@
 <?php
 
 // This is a new class which registers all the scheduled actions (formerly crons) for PMPro.
-// It is a replacement for the old crons.php file.
 // The class is instantiated in the pmpro_init function.
 
 /**
