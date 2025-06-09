@@ -180,7 +180,7 @@ add_action( 'plugins_loaded', function() {
 	PMPro_Action_Scheduler::instance();
 
 	// Add our recurring actions.
-	PMPro_Scheduled_Actions::instance();
+	PMPro_Recurring_Actions::instance();
 } );
 
 /*

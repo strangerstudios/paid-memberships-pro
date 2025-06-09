@@ -1,19 +1,19 @@
 <?php
 
-// This is a new class which registers all the scheduled actions (formerly crons) for PMPro.
-// The class is instantiated in the pmpro_init function.
+// This is a new class which registers all the Action Scheduler recurring actions (formerly crons) for PMPro.
+// The class is instantiated/hooked on plugins_loaded in paid-memberships-pro.php.
 
 /**
- * Class PMPro_Scheduled_Actions
+ * Class PMPro_Recurring_Actions
  *
  * @since 2.8
  */
-class PMPro_Scheduled_Actions {
+class PMPro_Recurring_Actions {
 
 	/**
 	 * Singleton instance.
 	 *
-	 * @var PMPro_Scheduled_Actions|null
+	 * @var PMPro_Recurring_Actions|null
 	 */
 	private static $instance = null;
 
@@ -65,7 +65,7 @@ class PMPro_Scheduled_Actions {
 	/**
 	 * Get the singleton instance.
 	 *
-	 * @return PMPro_Scheduled_Actions
+	 * @return PMPro_Recurring_Actions
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {

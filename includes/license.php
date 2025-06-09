@@ -90,12 +90,12 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 */
 //activation
 function pmpro_license_activation() {
-	_deprecated_function( 'pmpro_license_activation', '3.5', 'PMPro_Scheduled_Actions()' );
+	_deprecated_function( 'pmpro_license_activation', '3.5', 'PMPro_Recurring_Actions()' );
 }
 
 //deactivation
 function pmpro_license_deactivation() {
-	_deprecated_function( 'pmpro_license_deactivation', '3.5', 'PMPro_Scheduled_Actions()' );
+	_deprecated_function( 'pmpro_license_deactivation', '3.5', 'PMPro_Recurring_Actions()' );
 }
 
 /**
