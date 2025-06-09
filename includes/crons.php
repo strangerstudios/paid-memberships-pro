@@ -13,35 +13,8 @@
  * @return array The list of registered crons for Paid Memberships Pro.
  */
 function pmpro_get_crons() {
-	$crons = [
-		'pmpro_cron_expire_memberships'            => [
-			'interval' => 'hourly',
-		],
-		'pmpro_cron_expiration_warnings'           => [
-			'interval'  => 'hourly',
-			'timestamp' => current_time( 'timestamp' ) + 1,
-		],
-		'pmpro_cron_credit_card_expiring_warnings' => [
-			'interval' => 'monthly',
-		],
-		'pmpro_cron_admin_activity_email'          => [
-			'interval'  => 'daily',
-			'timestamp' => strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ),
-		],
-		'pmpro_cron_delete_tmp'          => [
-			'interval'  => 'daily',
-			'timestamp' => strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ),
-		],
-		'pmpro_license_check_key'                  => [
-			'interval' => 'monthly',
-		],
-		'pmpro_cron_recurring_payment_reminders'  => [
-			'interval' => 'hourly',
-		],
-	];
-
 	/**
-	 * Allow filtering the list of registered crons for Paid Memberships Pro.
+	 * Allow filtering registered crons for Paid Memberships Pro.
 	 *
 	 * @since 2.8
 	 *
