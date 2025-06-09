@@ -783,6 +783,7 @@ class PMProGateway_stripe extends PMProGateway {
 									$working_webhooks = array();
 									// For sites that tracked "last webhook received" before we started tracking webhook events individually,
 									// we want to ignore events that were sent by Stripe before site was updated to start tracking individual events.
+									$environment = get_option( 'pmpro_gateway_environment' );
 									$legacy_last_webhook_received_timestamp = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
 									foreach ( $required_webhook_events as $required_webhook_event ) {
 										$event_data = array( 'name' => $required_webhook_event );
