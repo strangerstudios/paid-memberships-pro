@@ -181,6 +181,7 @@ add_action( 'plugins_loaded', function() {
 
 	// Add our recurring actions.
 	PMPro_Recurring_Actions::instance();
+
 } );
 
 /*

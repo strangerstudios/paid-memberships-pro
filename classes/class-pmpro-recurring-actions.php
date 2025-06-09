@@ -23,6 +23,16 @@ class PMPro_Recurring_Actions {
 	private $query_batch_limit;
 
 	/**
+	 * The minimum date used for PMPro magic dates.
+	 *
+	 * This is used to ensure that we don't have any invalid dates in the database.
+	 * It is also used as a default value for end dates in the memberships_users table.
+	 *
+	 * @since 3.5
+	 */
+	const PMPRO_MAGIC_MIN_DATE = '1000-01-01 00:00:00';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -86,7 +96,7 @@ class PMPro_Recurring_Actions {
 		if ( pmpro_is_paused() ) {
 			return;
 		}
-		PMPro_Membership_Level::fix_inactive_memberships();
+		self::fix_inactive_memberships();
 	}
 
 	/**
@@ -105,7 +115,7 @@ class PMPro_Recurring_Actions {
 			return;
 		}
 
-		PMPro_Membership_Level::resolve_duplicate_active_rows();
+		self::resolve_duplicate_active_rows();
 	}
 
 	/**
@@ -143,7 +153,7 @@ class PMPro_Recurring_Actions {
 				WHERE ( um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) < %s )
 					AND mu.status = 'active'
 					AND mu.enddate IS NOT NULL
-					AND mu.enddate > '1000-01-01 00:00:00'
+					AND mu.enddate > self::PMPRO_MAGIC_MIN_DATE
 					AND mu.enddate BETWEEN %s AND %s
 					AND mu.membership_id IS NOT NULL
 					AND mu.membership_id <> 0
@@ -258,7 +268,7 @@ class PMPro_Recurring_Actions {
 	         FROM {$wpdb->pmpro_memberships_users} mu
 	         WHERE mu.status = 'active'
 	           AND mu.enddate IS NOT NULL
-	           AND mu.enddate > '1000-01-01 00:00:00'
+	           AND mu.enddate > self::PMPRO_MAGIC_MIN_DATE
 	           AND mu.enddate <= %s
 	         ORDER BY mu.enddate",
 			$today
@@ -345,10 +355,13 @@ class PMPro_Recurring_Actions {
 	 */
 	private function send_membership_expired_email( $user_id, $membership_id ) {
 
+		$send_email = true;
+		
 		if ( get_user_meta( $user_id, 'pmpro_disable_notifications', true ) ) {
 			$send_email = false;
 		}
 
+		// Allow filtering of the email sending.
 		$send_email = apply_filters( 'pmpro_send_expiration_email', true, $user_id );
 
 		if ( $send_email ) {
@@ -575,5 +588,51 @@ class PMPro_Recurring_Actions {
 			}
 			closedir( $handle );
 		}
+	}
+
+	/**
+	 * Disable memberships referencing non-existent levels.
+	 *
+	 * @access private
+	 * @since 3.5
+	 * @global object $wpdb
+	 *
+	 * @return void
+	 */
+	private static function fix_inactive_memberships() {
+		global $wpdb;
+		$sql_query = "UPDATE {$wpdb->pmpro_memberships_users} mu
+            LEFT JOIN {$wpdb->pmpro_membership_levels} l ON mu.membership_id = l.id 
+            SET mu.status = 'inactive' 
+            WHERE mu.status = 'active' 
+            AND l.id IS NULL";
+		$wpdb->query( $sql_query );
+	}
+
+	/**
+	 * Resolves duplicate active rows for a single user and membership level.
+	 *
+	 * @access private
+	 * @since 3.5
+	 * @global object $wpdb
+	 *
+	 * @return void
+	 */
+	private static function resolve_duplicate_active_rows() {
+		global $wpdb;
+		// Fix rows where there is more than one active status for the same user/level
+		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users t1
+                INNER JOIN (SELECT mu1.id as id
+                FROM $wpdb->pmpro_memberships_users mu1, $wpdb->pmpro_memberships_users mu2
+                WHERE mu1.id < mu2.id
+                    AND mu1.user_id = mu2.user_id
+                    AND mu1.membership_id = mu2.membership_id
+                    AND mu1.status = 'active'
+                    AND mu2.status = 'active'
+                GROUP BY mu1.id
+                ORDER BY mu1.user_id, mu1.id DESC) t2
+                ON t1.id = t2.id
+                SET t1.status = 'inactive'";
+		$wpdb->query( $sqlQuery );
 	}
 }
