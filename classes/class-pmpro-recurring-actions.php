@@ -47,7 +47,7 @@ class PMPro_Recurring_Actions {
 
 		// Schedule cleanup actions previously handled by pmpro_cleanup_memberships_users_table()
 		add_action( 'pmpro_schedule_weekly', array( $this, 'check_inactive_memberships' ) );
-		add_action( 'pmpro_schedule_weekly', array( $this, 'resolve_duplicate_active_rows' ) );
+		add_action( 'pmpro_schedule_weekly', array( $this, 'check_duplicate_active_rows' ) );
 
 		// Expired Membership Routines (Daily)
 		add_action( 'pmpro_schedule_daily', array( $this, 'check_for_expired_memberships' ) );
@@ -109,7 +109,7 @@ class PMPro_Recurring_Actions {
 	 * @since 3.5
 	 * @return void
 	 */
-	public function resolve_duplicate_active_rows() {
+	public function check_duplicate_active_rows() {
 		// Don't let anything run if PMPro is paused
 		if ( pmpro_is_paused() ) {
 			return;
