@@ -89,46 +89,6 @@ class PMPro_Action_Scheduler {
 		return self::$instance;
 	}
 
-/**
- * Check for specific crons that are scheduled and remove them.
- * This is to prevent conflicts with Action Scheduler.
- *
- * @access public
- * @since 3.5
- * @return void
- */
-public static function check_and_remove_existing_crons() {
-	
-	$old_crons = array(
-		'pmpro_cron_expire_memberships',
-		'pmpro_cron_expiration_warnings',
-		'pmpro_cron_credit_card_expiring_warnings',
-		'pmpro_cron_admin_activity_email',
-		'pmpro_cron_recurring_payment_reminders',
-		'pmpro_cron_delete_tmp',
-		'pmpro_license_check_key',
-	);
-
-	$crons   = _get_cron_array();
-	$removed = array();
-	
-	foreach ( $crons as $timestamp => $cron ) {
-		foreach ( $cron as $hook => $events ) {
-			if ( in_array( $hook, $old_crons, true ) ) {
-				// Remove all events for this hook (regardless of args)
-				wp_clear_scheduled_hook( $hook );
-				$removed[] = $hook;
-			}
-		}
-	}
-	
-	if ( ! empty( $removed ) && WP_DEBUG ) {
-		// Log the removed crons for debugging.
-		$removed_list = implode( ', ', $removed );
-		error_log( esc_html( 'Removed PMPro scheduled crons: ' . $removed_list ) );
-	}
-}
-
 	/**
 	 * Prevent the instance from being cloned.
 	 *

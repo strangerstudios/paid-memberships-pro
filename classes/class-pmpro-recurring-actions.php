@@ -218,7 +218,7 @@ class PMPro_Recurring_Actions {
 
 		// Double-check: Only send if the user still meets the requirements.
 		// There may be a gap between the time we check and the time we actually send them.
-		$membership = pmpro_getMembershipLevelForUser( $user_id );
+		$membership = pmpro_getSpecificMembershipLevelForUser( $user_id, $membership_id );
 		if (
 		empty( $membership ) ||
 		$membership->id != $membership_id ||
@@ -322,7 +322,7 @@ class PMPro_Recurring_Actions {
 
 		// Double-check: Only expire if the user still meets the requirements for expiration.
 		// There may be a gap between the time we check for expired memberships and the time we actually expire them.
-		$membership = pmpro_getMembershipLevelForUser( $user_id );
+		$membership = pmpro_getSpecificMembershipLevelForUser( $user_id, $membership_id );
 		if (
 			empty( $membership ) ||
 			$membership->id != $membership_id ||
@@ -356,7 +356,7 @@ class PMPro_Recurring_Actions {
 	private function send_membership_expired_email( $user_id, $membership_id ) {
 
 		$send_email = true;
-		
+
 		if ( get_user_meta( $user_id, 'pmpro_disable_notifications', true ) ) {
 			$send_email = false;
 		}
