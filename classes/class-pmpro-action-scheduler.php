@@ -119,24 +119,24 @@ class PMPro_Action_Scheduler {
 	/**
 	 * Prevent the instance from being cloned.
 	 *
-	 * @access protected
+	 * @access public
 	 * @since 3.5
 	 * @return void
 	 * @throws Exception If the instance is cloned.
 	 */
-	protected function __clone() {
+	public function __clone() {
 		throw new Exception( __( 'Action Scheduler instance cannot be cloned', 'paid-memberships-pro' ) );
 	}
 
 	/**
 	 * Prevent the instance from being unserialized.
 	 *
-	 * @access protected
+	 * @access public
 	 * @since 3.5
 	 * @return void
 	 * @throws Exception If the instance is unserialized.
 	 */
-	protected function __wakeup() {
+	public function __wakeup() {
 		throw new Exception( __( 'Action Scheduler instance cannot be unserialized', 'paid-memberships-pro' ) );
 	}
 
