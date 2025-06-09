@@ -13,6 +13,7 @@
  * @return array The list of registered crons for Paid Memberships Pro.
  */
 function pmpro_get_crons() {
+	
 	/**
 	 * Allow filtering registered crons for Paid Memberships Pro.
 	 *
@@ -20,7 +21,7 @@ function pmpro_get_crons() {
 	 *
 	 * @param array $crons The list of registered crons for Paid Memberships Pro.
 	 */
-	$crons = (array) apply_filters( 'pmpro_registered_crons', $crons );
+	$crons = (array) apply_filters( 'pmpro_registered_crons', array() );
 
 	// Set up the default information for each cron if not set.
 	foreach ( $crons as $hook => $cron ) {
