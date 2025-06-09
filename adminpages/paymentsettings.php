@@ -137,8 +137,8 @@
 								</th>
 								<td>
 									<select id="gateway_environment" name="gateway_environment">
-										<option value="sandbox" <?php if( $gateway_environment == "sandbox") { ?>selected="selected"<?php } ?>><?php esc_html_e('Sandbox', 'paid-memberships-pro' );?></option>
-										<option value="live" <?php if( $gateway_environment == "live") { ?>selected="selected"<?php } ?>><?php esc_html_e('Live', 'paid-memberships-pro' );?></option>
+										<option value="sandbox" <?php if( $gateway_environment == "sandbox") { ?>selected="selected"<?php } ?>><?php esc_html_e('Sandbox/Testing', 'paid-memberships-pro' );?></option>
+										<option value="live" <?php if( $gateway_environment == "live") { ?>selected="selected"<?php } ?>><?php esc_html_e('Live/Production', 'paid-memberships-pro' );?></option>
 									</select>
 									<p class="description">
 										<?php esc_html_e( 'Most gateways have a sandbox (test) and live environment. You can test transactions using the sandbox.', 'paid-memberships-pro' ); ?>
@@ -208,7 +208,7 @@
 									</td>
 									<td class="column-status">
 										<?php
-											$gateway_status_html = pmpro_getOption( 'gateway' ) === $gateway_slug ? '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Enabled (Primary Gateway)', 'paid-memberships-pro' ) . '</span>' : esc_html__( '&#8212;', 'paid-memberships-pro' );
+											$gateway_status_html = pmpro_getOption( 'gateway' ) === $gateway_slug ? '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-info">' . esc_html__( 'Enabled (Primary Gateway)', 'paid-memberships-pro' ) . '</span>' : esc_html__( '&#8212;', 'paid-memberships-pro' );
 
 											// Special Cases for Add Ons that add secondary gateways. These will be removed when core natively supports multiple gateways.
 											if (
@@ -221,7 +221,7 @@
 													$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-info">' . esc_html__( 'Enabled (Primary Gateway & via Add On)', 'paid-memberships-pro' ) . '</span>';
 												} else {
 													// Show this as a secondary gateway.
-													$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Enabled (via Add On)', 'paid-memberships-pro' ) . '</span>';
+													$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-info">' . esc_html__( 'Enabled (via Add On)', 'paid-memberships-pro' ) . '</span>';
 												}	
 											}
 
