@@ -2111,7 +2111,7 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
  * Design Settings
  */
 .pmpro_style_variation_items {
-    display: grid;
+	display: grid;
 	gap: var(--pmpro--spacing--medium);
 	grid-template-columns: repeat(3, 1fr);
 }
@@ -2120,7 +2120,7 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	background-color: var(--pmpro--color--blue-medium);
 	border: 2px solid var(--pmpro--color--blue-medium);
 	border-radius: var(--pmpro--border--radius);
-    box-sizing: border-box;
+	box-sizing: border-box;
 	cursor: pointer;
 	padding: var(--pmpro--spacing--medium);
 }
@@ -3186,7 +3186,7 @@ tr.pmpro_alert {
 
 .pmpro_divider {
 	border-top: 1px solid var(--pmpro--border--color);
-    color: inherit;
+	color: inherit;
 	height: 0;
 	margin: 0;
 }
@@ -3528,21 +3528,21 @@ button.pmpro_report_th_closed:before {
 
 /* Fallback for older browsers that don't support aspect-ratio */
 @supports not (aspect-ratio: 16 / 9) {
-    #pmpro-dashboard-form #dashboard-widgets .postbox .iframe-container {
-        height: 0;
-        overflow: hidden;
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
-        position: relative;
-        width: 100%;
-    }
+	#pmpro-dashboard-form #dashboard-widgets .postbox .iframe-container {
+		height: 0;
+		overflow: hidden;
+		padding-bottom: 56.25%; /* 16:9 aspect ratio */
+		position: relative;
+		width: 100%;
+	}
 
-    #pmpro-dashboard-form #dashboard-widgets .postbox .iframe-container iframe {
-        height: 100%;
-        left: 0;
-        position: absolute;
-        top: 0;
-        width: 100%;
-    }
+	#pmpro-dashboard-form #dashboard-widgets .postbox .iframe-container iframe {
+		height: 100%;
+		left: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;
+	}
 }
 
 #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-1 { 
