@@ -4707,6 +4707,7 @@ function pmpro_compare_siteurl() {
  * prevent string replacements from changing it when the site is migrated.
  *
  * @since TBD
+ * @link https://developer.wordpress.org/reference/hooks/pre_update_option_option/
  *
  * @param string $new_value The new value for the option.
  * @return string The encoded value for the option.
@@ -4725,6 +4726,7 @@ add_filter( 'pre_update_option_pmpro_last_known_url', 'pmpro_encode_last_known_u
  * is base64 encoded, decode it.
  *
  * @since TBD
+ * @link https://developer.wordpress.org/reference/hooks/option_option/
  *
  * @param string $value The value of the option.
  * @return string The decoded value of the option.
