@@ -3437,6 +3437,14 @@ button.pmpro_report_th_closed:before {
 	width: 100%;
 }
 
+#pmpro-dashboard-form .ui-sortable-placeholder {
+	background: var(--pmpro--color--blue-lightest);
+	border: 4px dashed var(--pmpro--border--color);
+	border-radius: var(--pmpro--border--radius);
+	margin: 0;
+	padding: calc( var(--pmpro--spacing--medium) / 2 );
+}
+
 .pmpro_admin #pmpro-dashboard-form {
 	margin-top: var(--pmpro--spacing--medium);
 }
