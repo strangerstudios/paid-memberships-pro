@@ -92,6 +92,7 @@
 
 	// Get a list of all gateways with human readable names.
 	$pmpro_gateways = pmpro_gateways();
+	$deprecated_gateways = pmpro_get_deprecated_gateways();
 
 	require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
@@ -225,6 +226,11 @@
 												}	
 											}
 
+											// Special case for deprecated gateways.
+											if ( in_array( $gateway_slug, $deprecated_gateways, true ) && $gateway_slug === pmpro_getOption( 'gateway' ) ) {
+												$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Enabled (Not Supported)', 'paid-memberships-pro' ) . '</span>';
+											}
+
 											echo wp_kses_post( $gateway_status_html );
 										?>
 										</td>
@@ -327,7 +333,24 @@
 				?>
 			</h1>
 			<?php
-				call_user_func( array( $gateway_class_name, 'show_settings_fields' ) );
+			// If this gateway is deprecated, show a warning.
+			if ( in_array( $edit_gateway, $deprecated_gateways, true ) ) {
+				?>
+				<div class="notice notice-alt notice-error inline">
+					<p>
+						<?php
+						// translators: %s is the gateway name.
+						printf(
+							esc_html__('The %s gateway is deprecated and no longer supported. Please consider switching to a different gateway.', 'paid-memberships-pro'),
+							esc_html( $pmpro_gateways[ $edit_gateway ] )
+						);
+						?>
+				</div>
+				<?php
+			}
+
+			// Show the settings for the specific gateway.
+			call_user_func( array( $gateway_class_name, 'show_settings_fields' ) );
 			?>
 			<p class="submit">
 				<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
