@@ -616,7 +616,7 @@
 				Stripe_Invoice::update(
 					$invoice->id,
 					array(
-						'application_fee_amount' => $invoice->amount_due * $application_fee / 100,
+						'application_fee_amount' => floor( $invoice->amount_due * ( $application_fee / 100 ) ),
 					)
 				);
 				$logstr .= "Updated application fee for invoice " . $invoice->id . " to " . $application_fee . "%.";
