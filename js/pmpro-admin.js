@@ -1034,7 +1034,20 @@ jQuery(document).ready(function () {
         opacity: 0.8,
         placeholder: 'ui-sortable-placeholder',
         tolerance: 'pointer',
+		start: function(event, ui) {
+			// Add a class to the item being dragged
+			ui.item.addClass('pmpro-dragging');
+		}, 
         stop: function(event, ui) {
+			// Remove the dragging class when done
+			ui.item.removeClass('pmpro-dragging');
+
+			// Add a class for drop animation
+			ui.item.addClass('pmpro-just-dropped');
+			setTimeout(function() {
+				ui.item.removeClass('pmpro-just-dropped');
+			}, 250);
+
             // Get all metabox IDs in their new order
             var newOrder = [];
             jQuery('#dashboard-widgets .postbox', '#pmpro-dashboard-form').each(function() {
