@@ -3430,6 +3430,11 @@ button.pmpro_report_th_closed:before {
 /**
  * Dashboard admin page
  */
+
+.pmpro_admin #pmpro-dashboard-form {
+	margin-top: var(--pmpro--spacing--medium);
+}
+
 #pmpro-dashboard-form #dashboard-widgets.metabox-holder {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
@@ -3442,35 +3447,28 @@ button.pmpro_report_th_closed:before {
 	border: 4px dashed var(--pmpro--border--color);
 	border-radius: var(--pmpro--border--radius);
 	margin: 0;
+	opacity: 0.98;
 	padding: calc( var(--pmpro--spacing--medium) / 2 );
+	transition: background 0.2s, border 0.2s;
 }
 
 /* Dashboard Widget Drag Animation */
 #pmpro-dashboard-form #dashboard-widgets .postbox {
-    transition: transform 0.25s cubic-bezier(.4,0,.2,1), box-shadow 0.2s;
-    will-change: transform;
-}
-
-#pmpro-dashboard-form .ui-sortable-placeholder {
-    opacity: 0.7;
-    transition: background 0.2s, border 0.2s;
+	transition: transform 0.33s cubic-bezier(.4,0,.2,1), box-shadow 0.2s;
+	will-change: transform;
 }
 
 /* Optional: Add a shadow to the dragging widget */
 #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-dragging {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 1.5px 4px rgba(0,0,0,0.12);
-    transform: scale(1.025) rotate(-.5deg);
-    z-index: 10;
+	box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 1.5px 4px rgba(0,0,0,0.12);
+	transform: scale(1.025) rotate(-.5deg);
+	z-index: 10;
 }
 
 #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-just-dropped {
-    z-index: 10;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    transform: scale(1.025);
-}
-
-.pmpro_admin #pmpro-dashboard-form {
-	margin-top: var(--pmpro--spacing--medium);
+	z-index: 10;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+	transform: scale(1.025);
 }
 
 .pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
