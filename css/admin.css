@@ -3449,10 +3449,8 @@ button.pmpro_report_th_closed:before {
 	box-sizing: border-box !important;
 	display: block !important; /* Force visibility */
 	grid-column: span 1;
-	margin: 0 !important;
 	min-height: 100%; /* Ensure adequate drop zone height */
 	opacity: 0.8;
-	padding: 0 !important;
 	transition: all 0.2s ease;
 }
 
