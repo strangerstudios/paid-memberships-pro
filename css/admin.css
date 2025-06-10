@@ -3444,31 +3444,38 @@ button.pmpro_report_th_closed:before {
 
 #pmpro-dashboard-form .ui-sortable-placeholder {
 	background: var(--pmpro--color--blue-lightest);
-	border: 4px dashed var(--pmpro--border--color);
+	border: 3px dashed var(--pmpro--border--color);
 	border-radius: var(--pmpro--border--radius);
-	margin: 0;
-	opacity: 0.98;
-	padding: calc( var(--pmpro--spacing--medium) / 2 );
-	transition: background 0.2s, border 0.2s;
+	box-sizing: border-box !important;
+	display: block !important; /* Force visibility */
+	grid-column: span 1;
+	margin: 0 !important;
+	min-height: 100%; /* Ensure adequate drop zone height */
+	opacity: 0.8;
+	padding: 0 !important;
+	transition: all 0.2s ease;
 }
 
 /* Dashboard Widget Drag Animation */
 #pmpro-dashboard-form #dashboard-widgets .postbox {
-	transition: transform 0.33s cubic-bezier(.4,0,.2,1), box-shadow 0.2s;
+	transition: transform 0.5s cubic-bezier(.4,0,.2,1), box-shadow 0.2s;
 	will-change: transform;
 }
 
 /* Optional: Add a shadow to the dragging widget */
 #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-dragging {
-	box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 1.5px 4px rgba(0,0,0,0.12);
-	transform: scale(1.025) rotate(-.5deg);
-	z-index: 10;
+	box-shadow: 0 12px 32px rgba(0,0,0,0.24), 0 2px 8px rgba(0,0,0,0.12);
+	opacity: 0.9;
+	transform: scale(1.03) rotate(-1deg);
+	z-index: 1000;
 }
 
+
+
 #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-just-dropped {
-	z-index: 10;
 	box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 	transform: scale(1.025);
+	z-index: 10;
 }
 
 .pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
@@ -3575,19 +3582,19 @@ button.pmpro_report_th_closed:before {
 	}
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-1 { 
+#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-1, #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-1 { 
 	grid-column: span 1; 
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-2 { 
+#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-2, #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-2 { 
 	grid-column: span 2; 
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-3 { 
+#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-3, #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-3 { 
 	grid-column: span 3; 
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-4 { 
+#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-4, #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-4 { 
 	grid-column: span 4; 
 }
 
