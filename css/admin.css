@@ -3491,9 +3491,9 @@ button.pmpro_report_th_closed:before {
 }
 
 #pmpro_dashboard_follow_us ul li img {
-	width: 20px;
 	height: 20px;
 	margin-right: var(--pmpro--spacing--small);
+	width: 20px;
 }
 
 #pmpro_dashboard_news_updates ul li a {
@@ -3520,28 +3520,28 @@ button.pmpro_report_th_closed:before {
 }
 
 #pmpro-dashboard-form #dashboard-widgets .postbox iframe {
-	width: 100%;
-	height: auto;
 	aspect-ratio: 16 / 9; /* Adjust ratio as needed */
 	border: none;
+	height: auto;
+	width: 100%;
 }
 
 /* Fallback for older browsers that don't support aspect-ratio */
 @supports not (aspect-ratio: 16 / 9) {
     #pmpro-dashboard-form #dashboard-widgets .postbox .iframe-container {
+        height: 0;
+        overflow: hidden;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
         position: relative;
         width: 100%;
-        height: 0;
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
-        overflow: hidden;
     }
 
     #pmpro-dashboard-form #dashboard-widgets .postbox .iframe-container iframe {
+        height: 100%;
+        left: 0;
         position: absolute;
         top: 0;
-        left: 0;
         width: 100%;
-        height: 100%;
     }
 }
 
@@ -3564,8 +3564,8 @@ button.pmpro_report_th_closed:before {
 /* Responsive breakpoints */
 @media (max-width: 1200px) {
 	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
-		grid-template-columns: 1fr;
 		gap: 15px;
+		grid-template-columns: 1fr;
 	}
 	
 	/* All metaboxes span full width at this breakpoint - clean and simple */
@@ -3609,6 +3609,7 @@ button.pmpro_report_th_closed:before {
 #pmpro-dashboard-form .clear {
 	display: none;
 }
+/* End Admin Dashboard Styling */
 
 /**
  * General Admin Styles
