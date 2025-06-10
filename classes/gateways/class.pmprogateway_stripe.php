@@ -3076,6 +3076,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private static function webhook_events() {
 		$events = array(
+			'invoice.created',
 			'invoice.payment_succeeded',
 			'invoice.payment_action_required',
 			'customer.subscription.deleted',
@@ -3599,7 +3600,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return int percentage to charge for application fee.
 	 */
-	private function get_application_fee_percentage() {
+	public function get_application_fee_percentage() {
 		if ( self::using_api_keys() ) {
 			return 0;
 		}
