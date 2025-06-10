@@ -1087,14 +1087,10 @@ jQuery(document).ready(function () {
 		cursor: 'move',
 		opacity: 0.8,
 		placeholder: 'ui-sortable-placeholder',
-		tolerance: 'pointer', // Changed back to 'pointer' for more generous detection
-		distance: 10, // Reduced distance for easier drag initiation
-		delay: 10, // Reduced delay for more responsive feel
-		// containment: 'parent', // Less restrictive containment
-		scroll: true, // Re-enable scroll for better edge detection
-		scrollSensitivity: 10, // How close to edge before scrolling
-		scrollSpeed: 20, // Scroll speed
-
+		tolerance: 'pointer',
+		distance: 10, // Reduce distance for easier drag initiation
+		delay: 10, // Reduce delay for more responsive feel
+		containment: 'parent', // Less restrictive containment
 		start: function(event, ui) {
 			// Store positions before drag starts
 			storePositions();
