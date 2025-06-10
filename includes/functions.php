@@ -4737,7 +4737,9 @@ function pmpro_decode_last_known_url( $value ) {
 		$value = base64_decode( substr( $value, 4 ) );
 	} else {
 		// If the value is not encoded, then it is an old value. Encode it now.
+		remove_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
 		update_option( 'pmpro_last_known_url', $value );
+		add_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
 	}
 	return $value;
 }
