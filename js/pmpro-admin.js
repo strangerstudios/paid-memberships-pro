@@ -1019,3 +1019,64 @@ function pmpro_changeTabs( e, inputChanged ) {
 jQuery(document).ready(function () {
 	jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
 });
+
+/**
+ * Dashboard Widgets
+ * This code allows users to reorder dashboard widgets via drag and drop.
+ * It also disables the default WordPress postbox functionality to prevent conflicts.
+ */
+jQuery(document).ready(function () {    
+    // Very simple sortable implementation
+    jQuery('#dashboard-widgets', '#pmpro-dashboard-form').sortable({
+        items: '.postbox',
+        handle: '.hndle',
+        cursor: 'move',
+        opacity: 0.8,
+        placeholder: 'ui-sortable-placeholder',
+        tolerance: 'pointer',
+        stop: function(event, ui) {
+            // Get all metabox IDs in their new order
+            var newOrder = [];
+            jQuery('#dashboard-widgets .postbox', '#pmpro-dashboard-form').each(function() {
+                var id = jQuery(this).attr('id');
+                if (id) {
+                    newOrder.push(id);
+                }
+            });
+                        
+            // Save the new order via AJAX
+            if (newOrder.length > 0) {
+                var nonceValue = jQuery('#pmpro_metabox_nonce').val();
+
+                if (!nonceValue) {
+                    console.error('Nonce field not found or empty');
+                    return;
+                }
+                
+                var data = {
+                    action: 'pmpro_save_metabox_order',
+                    pmpro_metabox_nonce: nonceValue,
+                    order: newOrder.join(',')
+                };
+
+                jQuery.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    timeout: 10000,
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error - Status:', status);
+                        console.error('AJAX Error - Error:', error);
+                    }
+                });
+            }
+        }
+    });
+    
+    // Disable WordPress postbox functionality completely
+    if (typeof postboxes !== 'undefined') {
+        postboxes.handle_click = function() { return false; };
+        postboxes.add_postbox_toggles = function() { return false; };
+    }
+});
