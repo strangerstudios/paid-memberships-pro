@@ -222,7 +222,11 @@
 			}
 		}
 		elseif($pmpro_stripe_event->type == "invoice.payment_action_required") {
-			$invoice = $pmpro_stripe_event->data->object;
+			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id, array(
+				'expand' => array(
+					'payments', // This ensures that $invoice->payment_intent is available.
+				),
+			) );
 
 			// Get the last order for this invoice's subscription.
 			$subscription_id = pmpro_stripe_get_subscription_id_from_invoice( $invoice );
