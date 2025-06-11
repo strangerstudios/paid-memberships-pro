@@ -448,7 +448,7 @@ function pmpro_report_sales_page()
 		}
 	} elseif ( $report_unit == 'YEAR' ) {
 		// Loop through all the years since the first year that we have data for.
-	  $start_year = ! empty( $dates ) ? min( array_keys( $dates ) ) : date( 'Y' );
+		$start_year = ! empty( $dates ) ? min( array_keys( $dates ) ) : date( 'Y' );
 		$end_year   = date( 'Y' );
 		for ( $year = $start_year; $year <= $end_year; $year++ ) {
 			// If we don't have data for this year, add it.
