@@ -111,9 +111,10 @@
 
 				//no? create it
 				if(empty($order->id))
-				{				
+				{
+					$subscription_id = pmpro_stripe_get_subscription_id_from_invoice( $pmpro_stripe_event->data->object );
 					$old_order = new MemberOrder();
-					$old_order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->subscription);
+					$old_order->getLastMemberOrderBySubscriptionTransactionID( $subscription_id );
 					
 					//still can't find the order
 					if(empty($old_order) || empty($old_order->id))
@@ -131,7 +132,11 @@
 					}
 					$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 
-					$invoice = $pmpro_stripe_event->data->object;
+					$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id, array(
+						'expand' => array(
+							'payments', // This ensures that $invoice->payment_intent is available.
+						),
+					) );
 
 					//alright. create a new order
 					$morder = new MemberOrder();
@@ -161,7 +166,7 @@
 					}
 
 					$morder->payment_transaction_id = $invoice->id;
-					$morder->subscription_transaction_id = $invoice->subscription;
+					$morder->subscription_transaction_id = $subscription_id;
 
 					$morder->gateway = $old_order->gateway;
 					$morder->gateway_environment = $old_order->gateway_environment;
@@ -220,9 +225,10 @@
 			$invoice = $pmpro_stripe_event->data->object;
 
 			// Get the last order for this invoice's subscription.
-			if ( ! empty( $invoice->subscription ) ) {
+			$subscription_id = pmpro_stripe_get_subscription_id_from_invoice( $invoice );
+			if ( ! empty( $subscription_id ) ) {
 				$old_order = new MemberOrder();
-				$old_order->getLastMemberOrderBySubscriptionTransactionID( $invoice->subscription );
+				$old_order->getLastMemberOrderBySubscriptionTransactionID( $subscription_id );
 			}
 
 			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
@@ -297,7 +303,7 @@
 
 			// If we have an invoice, try to get the subscription ID from it.
 			if ( ! empty( $invoice ) ) {
-				$subscription_id = $invoice->subscription;
+				$subscription_id = pmpro_stripe_get_subscription_id_from_invoice( $invoice );
 			} else {
 				$subscription_id = null;
 			}
@@ -748,4 +754,26 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 			$order->find_billing_address();
 		}
 	}
+}
+
+/**
+ * Get the subscription ID for a Stripe Invoice object.
+ *
+ * @since TBD
+ *
+ * @param object $invoice The Stripe Invoice object.
+ * @return string|null The subscription ID or null if not found.
+ */
+function pmpro_stripe_get_subscription_id_from_invoice( $invoice ) {
+	// Check structure for new API versions.
+	if ( ! empty( $invoice->parent->subscription_details->subscription ) ) {
+		return $invoice->parent->subscription_details->subscription;
+	}
+
+	// Check structure for old API versions.
+	if ( ! empty( $invoice->subscription ) ) {
+		return $invoice->subscription;
+	}
+
+	return null;
 }
