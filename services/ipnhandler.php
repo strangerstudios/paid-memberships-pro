@@ -263,7 +263,12 @@ if ( in_array( $txn_type, $failed_payment_txn_types ) ) {
 
 // Recurring Payment Profile Cancelled (PayPal Express)
 if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
-	// Find subscription.
+	// If the subscription was cancelled due to failed payments, make sure that we don't "cancel on next payment date".
+	if ( $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
+		add_filter( 'pmpro_cancel_on_next_payment_date', '__return_false' );
+	}
+
+	// Handle the cancellation.
 	ipnlog( pmpro_handle_subscription_cancellation_at_gateway( $recurring_payment_id, 'paypalexpress', $gateway_environment ) );
 	pmpro_ipnExit();
 }
