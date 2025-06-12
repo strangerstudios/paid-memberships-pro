@@ -43,11 +43,11 @@ $wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
 			<label for="wisdom_opt_out" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Enable Plugin Usage Data Sharing', 'paid-memberships-pro' ); ?>
 			</label>
+			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'Sharing non-sensitive plugin settings data with us helps us better understand how our plugin is meeting your needs and helps us identify opportunities to improve. This can be turned off anytime under Advanced settings.', 'paid-memberships-pro' ); ?></p>
 			<select name="wisdom_opt_out" id="wisdom_opt_out" class="pmpro-wizard__field-block">
 				<option value="0" <?php selected( 0, $wisdom_tracking ); ?>><?php esc_html_e( 'Yes - Allow usage of Paid Memberships Pro to be shared with us.', 'paid-memberships-pro' ); ?></option>
 				<option value="1" <?php selected( 1, $wisdom_tracking ); ?>><?php esc_html_e( 'No - Do not share usage data for Paid Memberships Pro on my site.', 'paid-memberships-pro' ); ?></option>
 			</select>
-			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'Sharing non-sensitive plugin settings data with us helps us better understand how our plugin is meeting your needs and helps us identify opportunities to improve. This can be turned off anytime under Advanced settings.', 'paid-memberships-pro' ); ?></p>
 		</div>
 
 		<p class="pmpro_wizard__submit">
