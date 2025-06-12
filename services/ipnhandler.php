@@ -390,7 +390,7 @@ function pmpro_ipnExit() {
 				//should avoid counterintuitive interpretation of false.
 			} elseif ( PMPRO_IPN_DEBUG === "log" ) {
 				//file
-				$logfile = apply_filters( 'pmpro_ipn_logfile', dirname( __FILE__ ) . "/../logs/ipn.txt" );
+				$logfile = apply_filters( 'pmpro_ipn_logfile', pmpro_get_restricted_file_path( 'logs', 'ipn.txt' ) );
 				$loghandle = fopen( $logfile, "a+" );
 				fwrite( $loghandle, $logstr );
 				fclose( $loghandle );

@@ -137,6 +137,7 @@ require_once( PMPRO_DIR . '/includes/spam.php' );					// code to combat spam of 
 require_once( PMPRO_DIR . '/includes/abandoned-signups.php' );		// track users who were created at checkout but did not complete checkout.
 require_once( PMPRO_DIR . '/includes/checkout.php' );		        // Common functions used at checkout.
 require_once( PMPRO_DIR . '/includes/level-groups.php' );		    // Common functions for level groups.
+require_once( PMPRO_DIR . '/includes/restricted-files.php' );		// Restrict access to files.
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
