@@ -2,16 +2,16 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.4.6\n"
+"Project-Id-Version: Paid Memberships Pro 3.4.7\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-21T14:21:45+00:00\n"
+"POT-Creation-Date: 2025-06-12T14:51:51+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
 
 #: scheduled/crons.php:358
@@ -36,6 +36,7 @@ msgid "Checkout checks failed."
 msgstr ""
 
 #: includes/updates/upgrade_3_2.php:47
+#, php-format
 msgid "In previous versions of PMPro, PayPal Express was automatically added as a second payment option on the checkout page when using the Website Payments Pro gateway. This feature has been removed in PMPro v3.2 but can be added back using the PMPro Add PayPal Express Option at Checkout Add On. For more information, read our <a href=\"%s\">v3.2 release notes post here</a>."
 msgstr ""
 
@@ -49,6 +50,7 @@ msgstr ""
 #: includes/functions.php:4826
 #: includes/functions.php:4812
 #: includes/functions.php:4844
+#, php-format
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr ""
 
@@ -58,6 +60,7 @@ msgstr ""
 #: includes/functions.php:4819
 #: includes/functions.php:4805
 #: includes/functions.php:4837
+#, php-format
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr ""
 
@@ -68,6 +71,7 @@ msgstr ""
 
 #: includes/fields.php:1514
 #: adminpages/user-fields/field-settings.php:165
+#, php-format
 msgid "Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s."
 msgstr ""
 
@@ -380,6 +384,7 @@ msgstr ""
 #: adminpages/emailtemplates-edit.php:74
 #: adminpages/emailtemplates-edit.php:83
 #: adminpages/emailtemplates-edit.php:88
+#, php-format
 msgid "Edit Email Template: %s"
 msgstr ""
 
@@ -483,11 +488,13 @@ msgid "&larr; View All Orders"
 msgstr ""
 
 #: pages/invoice.php:235
+#, php-format
 msgid "%1$s paid on %2$s"
 msgstr "%1$s pagada el %2$s"
 
 #. translators: %s: level ID
 #: pages/invoice.php:223
+#, php-format
 msgid "Level ID %s"
 msgstr ""
 
@@ -502,10 +509,12 @@ msgstr ""
 
 #: pages/confirmation.php:42
 #: pages/confirmation.php:44
+#, php-format
 msgid "Thank you for your membership to %1$s. Your %2$s membership will be activated once the payment has been completed."
 msgstr ""
 
 #: includes/terms-of-service.php:80
+#, php-format
 msgid "I agree to the <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
 msgstr ""
 
@@ -532,6 +541,7 @@ msgid "Your membership will be cancelled immediately."
 msgstr ""
 
 #: pages/cancel.php:79
+#, php-format
 msgid "Your subscription will be cancelled. You will not be billed again. Your membership will remain active until %s. "
 msgstr ""
 
@@ -551,6 +561,7 @@ msgid "Next payment on"
 msgstr ""
 
 #: includes/updates/upgrade_3_1.php:71
+#, php-format
 msgid "In previous versions of PMPro, we discovered an issue where subscriptions were not linked to the correct user ID in the database. The current version you are running has resolved this issue, however we detect that some of your subscriptions need to be manually corrected. For more information and steps to resolve this for your site, read our <a href=\"%s\">v3.1 release notes post here</a>."
 msgstr ""
 
@@ -678,6 +689,7 @@ msgstr "Informació de facturació actualitzada"
 
 #: includes/deprecated.php:1129
 #: includes/deprecated.php:1130
+#, php-format
 msgid "Paid Memberships Pro detected that you were using a custom override for the frontend stylesheet. As of v3.1 and later, we no longer load your custom stylesheet. For more information, read our <a href=\"%s\">v3.1 release notes post here</a>."
 msgstr ""
 
@@ -707,10 +719,12 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:548
 #: classes/gateways/class.pmprogateway_paypalstandard.php:166
 #: classes/gateways/class.pmprogateway_paypalexpress.php:553
+#, php-format
 msgid "Check Out With %s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_check.php:195
+#, php-format
 msgid "Payment Instructions: %s"
 msgstr "Instruccions de pagament: %s"
 
@@ -756,23 +770,27 @@ msgid "Save"
 msgstr ""
 
 #: adminpages/templates/orders-print.php:246
+#, php-format
 msgid "Discount Code: %s"
 msgstr ""
 
 #: adminpages/templates/orders-print.php:209
 #: pages/invoice.php:284
+#, php-format
 msgid "%1$s to %2$s"
 msgstr ""
 
 #. translators: 1: user display name, 2: user email
 #: adminpages/templates/orders-print.php:196
 #: pages/invoice.php:271
+#, php-format
 msgid "Account: %1$s (%2$s)"
 msgstr ""
 
 #. translators: 1: level name, 2: order code
 #: adminpages/templates/orders-print.php:185
 #: pages/invoice.php:260
+#, php-format
 msgid "%1$s for order #%2$s"
 msgstr ""
 
@@ -793,6 +811,7 @@ msgstr ""
 
 #: adminpages/templates/orders-print.php:72
 #: pages/invoice.php:39
+#, php-format
 msgid "Order #%s"
 msgstr ""
 
@@ -810,6 +829,7 @@ msgstr ""
 
 #. translators: %s: Link to install MalCare security plugin.
 #: adminpages/securitysettings.php:345
+#, php-format
 msgid "We do not detect an active security plugin on your site. <a href=\"%s\">Install MalCare for free now</a> to protect your site. MalCare protects your site without slowing it down."
 msgstr ""
 
@@ -835,6 +855,7 @@ msgid "WordPress Security Plugins"
 msgstr ""
 
 #: adminpages/securitysettings.php:268
+#, php-format
 msgid "Consider setting up the <a href=\"%s\" target=\"_blank\">Cloudflare DNS firewall</a> to protect your site."
 msgstr ""
 
@@ -863,6 +884,7 @@ msgid "Checkout Spam Protection"
 msgstr ""
 
 #: adminpages/securitysettings.php:147
+#, php-format
 msgid "With the Akismet Integration for Paid Memberships Pro, the same comment spam filters built into Akismet are used to detect and prevent membership checkout form abuse. This integration requires both the <a href=\"%1$s\" target=\"_blank\">Akismet plugin</a> and the <a href=\"%2$s\" target=\"_blank\">Akismet Integration for Paid Memberships Pro</a>."
 msgstr ""
 
@@ -881,6 +903,7 @@ msgid "Akismet Integration"
 msgstr "Integració amb Akismet"
 
 #: adminpages/securitysettings.php:102
+#, php-format
 msgid "To ensure your site is as protected as possible, we recommend setting up several spam protection methods. Read our full guide on <a href=\"%s\" target=\"_blank\">how to stop spam in your membership site</a> for more information about these options."
 msgstr ""
 
@@ -922,18 +945,22 @@ msgstr ""
 #. translators: %s is the order code.
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:744
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:881
+#, php-format
 msgid "There was an error refunding order #%s. None of the submitted changes to this membership have been made. Please check the order notes for more information."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:387
+#, php-format
 msgid "This change will remove the following membership level: %s."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:299
+#, php-format
 msgid "This change will permanently cancel the following membership level: %s."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:211
+#, php-format
 msgid "You are editing the following membership level: %s."
 msgstr ""
 
@@ -1099,6 +1126,8 @@ msgid "Membership Orders"
 msgstr ""
 
 #: adminpages/membershiplevels.php:345
+#: adminpages/membershiplevels.php:348
+#, php-format
 msgid "ID: %d"
 msgstr "Identificador: %d"
 
@@ -1118,15 +1147,18 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1010
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1011
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1002
 msgid "Subscription transaction ID is empty."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1005
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1006
+#: classes/gateways/class.pmprogateway_paypalexpress.php:997
 msgid "PayPal login credentials are not set."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:179
+#, php-format
 msgid "Roles can be changed from the %s page."
 msgstr ""
 
@@ -1152,6 +1184,7 @@ msgstr ""
 
 #. translators: %1$s is the opening anchor tag, %2$s is the closing anchor tag.
 #: classes/class-pmpro-admin-activity-email.php:283
+#, php-format
 msgid "It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made %1$svia the WordPress Dashboard%2$s."
 msgstr ""
 
@@ -1173,16 +1206,19 @@ msgstr ""
 
 #. translators: %s: The custom page template name.
 #: adminpages/pagesettings.php:683
+#, php-format
 msgid "Core: Always use the core PMPro %s template."
 msgstr ""
 
 #. translators: %s: The custom page template name.
 #: adminpages/pagesettings.php:677
+#, php-format
 msgid "Fallback: Use the core PMPro template if my custom %s template is not compatible."
 msgstr ""
 
 #. translators: %s: The custom page template name.
 #: adminpages/pagesettings.php:671
+#, php-format
 msgid "Custom: Always use my custom %s template."
 msgstr ""
 
@@ -1190,11 +1226,13 @@ msgstr ""
 #. plugin folder name of the loaded file.
 #. translators: %1$s: The source type of the loaded file. %2$s: The theme or plugin folder name of the loaded file.
 #: adminpages/pagesettings.php:660
+#, php-format
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
 #. translators: %1$s: The Paid Memberships Pro plugin folder name.
 #: adminpages/pagesettings.php:646
+#, php-format
 msgid "Plugin: %1$s"
 msgstr "Extensió: %1$s"
 
@@ -2038,6 +2076,7 @@ msgstr ""
 
 #. translators: %s: membership expiration date
 #: preheaders/cancel.php:140
+#, php-format
 msgid "Your recurring subscription has been cancelled. Your active membership will expire on %s."
 msgstr ""
 
@@ -2060,12 +2099,14 @@ msgstr ""
 #: pages/checkout.php:100
 #: pages/checkout.php:109
 #: pages/checkout.php:127
+#, php-format
 msgid "Your current membership level of %s will be removed when you complete your purchase."
 msgstr ""
 
 #: pages/checkout.php:76
 #: pages/checkout.php:85
 #: pages/checkout.php:103
+#, php-format
 msgid "You have selected the %s membership level."
 msgstr ""
 
@@ -2097,6 +2138,7 @@ msgid "The user has a subscription for this level, but does not have a membershi
 msgstr ""
 
 #: includes/profile.php:298
+#, php-format
 msgid "The user has an active subscription for the %s level. The subscription should be cancelled using the Member History tool below."
 msgstr ""
 
@@ -2104,6 +2146,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:439
 #: includes/profile.php:279
 #: includes/profile.php:385
+#, php-format
 msgid "Refund the last payment (%s)."
 msgstr ""
 
@@ -2122,6 +2165,7 @@ msgstr ""
 
 #. translators: %1$s is the link to the single member dashboard.
 #: includes/profile.php:36
+#, php-format
 msgid "This section shows an overview of active membership levels for this member. Use the %1$s to manage this member."
 msgstr ""
 
@@ -2193,6 +2237,7 @@ msgstr ""
 
 #. translators: 1: the old hook name
 #: includes/deprecated.php:41
+#, php-format
 msgid "The %1$s hook has been deprecated in Paid Memberships Pro and may not be available in future versions."
 msgstr ""
 
@@ -2250,14 +2295,17 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1051
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1052
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1043
 msgid "Subscription could not be found."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_check.php:166
+#, php-format
 msgid "Pay by %s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_check.php:120
+#, php-format
 msgid "Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and order pages."
 msgstr ""
 
@@ -2270,6 +2318,7 @@ msgid "Gateway Label"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_check.php:102
+#, php-format
 msgid "Pay by %s Settings"
 msgstr ""
 
@@ -2365,12 +2414,14 @@ msgstr ""
 #. translators: %1$s - price, %2$d - number, %3$s - period.
 #: classes/class-pmpro-subscription.php:1016
 #: classes/class-pmpro-subscription.php:999
+#, php-format
 msgid "%1$s every %2$d %3$s"
 msgstr "%1$s cada %2$d %3$s"
 
 #. translators: %1$s - price, %2$s - period.
 #: classes/class-pmpro-subscription.php:1013
 #: classes/class-pmpro-subscription.php:996
+#, php-format
 msgid "%1$s per %2$s"
 msgstr ""
 
@@ -2381,12 +2432,14 @@ msgstr ""
 #. translators: %s is the subscription transaction ID.
 #: classes/class-pmpro-orders-list-table.php:1221
 #: classes/class-pmpro-orders-list-table.php:1230
+#, php-format
 msgid "Subscription: %s"
 msgstr "Subscripció: %s"
 
 #. translators: %s is the payment transaction ID.
 #: classes/class-pmpro-orders-list-table.php:1211
 #: classes/class-pmpro-orders-list-table.php:1220
+#, php-format
 msgid "Payment: %s"
 msgstr "Pagament: %s"
 
@@ -2469,6 +2522,7 @@ msgstr ""
 #: adminpages/subscriptions.php:390
 #: adminpages/subscriptions.php:405
 #: adminpages/subscriptions.php:408
+#, php-format
 msgid "Member: %s"
 msgstr "Membre: %s"
 
@@ -2514,6 +2568,7 @@ msgstr ""
 
 #. translators: %s: Link to Frontend Page Templates docs.
 #: adminpages/pagesettings.php:226
+#, php-format
 msgid "Click here for documentation on %s beyond the block or shortcode settings."
 msgstr ""
 
@@ -2546,6 +2601,7 @@ msgstr ""
 
 #: adminpages/orders.php:436
 #: adminpages/orders.php:457
+#, php-format
 msgid "ID %d [deleted]"
 msgstr ""
 
@@ -2560,45 +2616,59 @@ msgstr "Afegiu un nou membre"
 
 #. translators: a plus sign dashicon
 #: adminpages/membershiplevels.php:548
+#: adminpages/membershiplevels.php:551
+#, php-format
 msgid "%s Add New Group"
 msgstr ""
 
 #. translators: %s is the Group Name.
 #: adminpages/membershiplevels.php:530
+#: adminpages/membershiplevels.php:533
+#, php-format
 msgid "Are you sure you want to delete membership level group: %s?"
 msgstr ""
 
 #: adminpages/membershiplevels.php:523
+#: adminpages/membershiplevels.php:526
 msgid "Move levels to another group to enable group deletion."
 msgstr ""
 
 #: adminpages/membershiplevels.php:519
+#: adminpages/membershiplevels.php:522
 msgid "Edit Group"
 msgstr "Edita el grup"
 
 #. translators: a plus sign dashicon
 #: adminpages/membershiplevels.php:515
+#: adminpages/membershiplevels.php:518
+#, php-format
 msgid "%s Add New Level"
 msgstr ""
 
 #: adminpages/membershiplevels.php:380
+#: adminpages/membershiplevels.php:383
 msgid "No membership levels found."
 msgstr ""
 
 #. translators: %s is the search term.
 #: adminpages/membershiplevels.php:376
+#: adminpages/membershiplevels.php:379
+#, php-format
 msgid "No membership levels found for search term: \"%s\"."
 msgstr ""
 
 #: adminpages/membershiplevels.php:354
+#: adminpages/membershiplevels.php:357
 msgid "Users can only choose one level from this group."
 msgstr ""
 
 #: adminpages/membershiplevels.php:352
+#: adminpages/membershiplevels.php:355
 msgid "Users can choose multiple levels from this group."
 msgstr ""
 
 #: adminpages/membershiplevels.php:292
+#: adminpages/membershiplevels.php:295
 msgid "Drag and drop membership levels within the group to reorder them on the Membership Levels page. Reorder groups using the up/down arrows."
 msgstr ""
 
@@ -2607,6 +2677,7 @@ msgid "There were errors in the form."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:274
+#, php-format
 msgid "A user with email address %1$s already exists. <a href=\"%2$s\">Click here to edit this member</a>."
 msgstr ""
 
@@ -2619,6 +2690,7 @@ msgid "Sorry, that username is not allowed."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:252
+#, php-format
 msgid "A user with username %1$s already exists. <a href=\"%2$s\">Click here to edit this member</a>."
 msgstr ""
 
@@ -2783,6 +2855,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:128
 #: adminpages/subscriptions.php:313
 #: adminpages/subscriptions.php:328
+#, php-format
 msgid "Level ID: %d [deleted]"
 msgstr ""
 
@@ -2809,11 +2882,13 @@ msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:45
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:49
+#, php-format
 msgid "Cancelled Subscriptions (%d)"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:26
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:30
+#, php-format
 msgid "Active Subscriptions (%d)"
 msgstr "Subscripcions actives (%d)"
 
@@ -2962,6 +3037,7 @@ msgstr "Cancel·la la subscripció"
 
 #. translators: %s is the next payment date.
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:242
+#, php-format
 msgid "Note: The next payment date for this level is %s."
 msgstr ""
 
@@ -2995,6 +3071,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:152
 #: classes/class-pmpro-members-list-table.php:674
 #: includes/profile.php:88
+#, php-format
 msgid "This user has %1$d active subscription for this level. %2$s"
 msgid_plural "This user has %1$d active subscriptions for this level. %2$s"
 msgstr[0] ""
@@ -3044,6 +3121,7 @@ msgstr "Afegeix un membre"
 #: adminpages/member-edit.php:88
 #: includes/adminpages.php:151
 #: adminpages/member-edit.php:96
+#, php-format
 msgid "Edit Member: %s"
 msgstr ""
 
@@ -3074,22 +3152,27 @@ msgstr ""
 
 #: adminpages/groups/edit-group.php:54
 #: adminpages/membershiplevels.php:310
+#: adminpages/membershiplevels.php:313
 msgid "This warning is shown because you have more than one level group or a level group that allows multiple selections. To continue using these Add Ons, you should move all levels to a single \"one level per\" group."
 msgstr ""
 
 #. translators: %s is the list of incompatible add ons.
 #: adminpages/groups/edit-group.php:47
 #: adminpages/membershiplevels.php:303
+#: adminpages/membershiplevels.php:306
+#, php-format
 msgid "The following active Add Ons are not compatible with your membership level setup: %s"
 msgstr ""
 
 #: adminpages/groups/edit-group.php:36
 #: adminpages/membershiplevels.php:237
+#: adminpages/membershiplevels.php:240
 msgid "Add New Group"
 msgstr "Afegeix un nou grup"
 
 #. translators: %s is the group ID.
 #: adminpages/groups/edit-group.php:32
+#, php-format
 msgid "Edit Group ID: %s"
 msgstr ""
 
@@ -3264,6 +3347,7 @@ msgstr "Webhooks"
 #: classes/gateways/class.pmprogateway_stripe.php:1338
 #: classes/gateways/class.pmprogateway_stripe.php:1334
 #: classes/gateways/class.pmprogateway_stripe.php:1335
+#, php-format
 msgid "Open the %s page in your Stripe dashboard"
 msgstr "Obriu la pàgina %s al vostre tauler de Stripe"
 
@@ -3309,28 +3393,34 @@ msgstr "No es mostrarà cap títol."
 
 #: shortcodes/pmpro_account.php:261
 #: shortcodes/pmpro_account.php:270
+#, php-format
 msgid "Cancel %1$s Membership"
 msgstr "Cancel·la l'afiliació %1$s"
 
 #: shortcodes/pmpro_account.php:257
 #: shortcodes/pmpro_account.php:266
+#, php-format
 msgid "Change %1$s Membership"
 msgstr "Canvia l'afiliació %1$s"
 
 #: shortcodes/pmpro_account.php:219
 #: shortcodes/pmpro_account.php:228
+#, php-format
 msgid "Renew %1$s Membership"
 msgstr "Renova l'afiliació %1$s"
 
 #: pages/levels.php:128
+#, php-format
 msgid "View your %s membership account"
 msgstr ""
 
 #: pages/levels.php:124
+#, php-format
 msgid "Renew your %s membership level"
 msgstr "Renoveu el vostre nivell d'afiliació %s"
 
 #: pages/levels.php:118
+#, php-format
 msgid "Select the %s membership level"
 msgstr "Seleccioneu el nivell d'afiliació %s"
 
@@ -3392,6 +3482,7 @@ msgid "Token"
 msgstr "Testimoni"
 
 #: adminpages/wizard/wizard.php:98
+#, php-format
 msgid "%s Active Step"
 msgstr "Pas actiu %s"
 
@@ -3429,6 +3520,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:93
 #: adminpages/securitysettings.php:188
 #: adminpages/wizard/memberships.php:86
+#, php-format
 msgid "Learn more about %s."
 msgstr "Més informació sobre la %s."
 
@@ -3494,11 +3586,13 @@ msgstr ""
 #. translators: %s: URL to the PMPro use case hub for the chosen site type
 #: adminpages/wizard/done.php:45
 #: adminpages/wizard/done.php:47
+#, php-format
 msgid "Check out the %s, which guides you through next steps for your unique project."
 msgstr "Feu una ullada a %s, que us guiarà pels propers passos per al vostre projecte únic."
 
 #: adminpages/wizard/done.php:42
 #: adminpages/wizard/done.php:44
+#, php-format
 msgid "In step 1, you chose the %s site type."
 msgstr "Al pas 1, heu escollit el tipus de lloc web %s."
 
@@ -3506,6 +3600,7 @@ msgstr "Al pas 1, heu escollit el tipus de lloc web %s."
 #: adminpages/reports/sales.php:859
 #: adminpages/reports/sales.php:862
 #: adminpages/reports/sales.php:917
+#, php-format
 msgid "%1$s %2$s"
 msgstr "%1$s %2$s"
 
@@ -3515,6 +3610,7 @@ msgstr "%1$s %2$s"
 #: adminpages/reports/sales.php:856
 #: adminpages/reports/sales.php:859
 #: adminpages/reports/sales.php:914
+#, php-format
 msgid "%1$s %2$s for %3$s"
 msgstr "%1$s %2$s per a %3$s"
 
@@ -3526,11 +3622,13 @@ msgstr "Seleccioneu les dades de l'informe que voleu incloure"
 
 #: adminpages/reports/sales.php:92
 #: adminpages/reports/sales.php:95
+#, php-format
 msgid "Orders %s at %s price"
 msgstr "Comandes de %s al preu %s"
 
 #: adminpages/reports/sales.php:74
 #: adminpages/reports/sales.php:77
+#, php-format
 msgid "Toggle orders by price for %s"
 msgstr ""
 
@@ -3612,6 +3710,7 @@ msgstr "Seleccioneu un nivell d'afiliació per personalitzar aquest informe"
 #: adminpages/reports/members-per-level.php:35
 #: adminpages/reports/memberships.php:98
 #: adminpages/reports/sales.php:109
+#, php-format
 msgid "View the full %s report"
 msgstr "Visualitza l'informe complet de %s"
 
@@ -3620,6 +3719,7 @@ msgid "View Support License Options"
 msgstr "Visualitza les opcions de llicència de suport"
 
 #: adminpages/dashboard.php:199
+#, php-format
 msgid "<a href=\"%s\">Enter your key here</a>"
 msgstr "<a href=\"%s\">Introduïu la vostra clau aquí</a>"
 
@@ -3689,6 +3789,7 @@ msgstr "Període anterior"
 #: adminpages/reports/sales.php:519
 #: adminpages/reports/sales.php:522
 #: adminpages/reports/sales.php:549
+#, php-format
 msgid "Renewal %s"
 msgstr ""
 
@@ -3701,24 +3802,28 @@ msgstr ""
 #: adminpages/reports/sales.php:527
 #: adminpages/reports/sales.php:529
 #: adminpages/reports/sales.php:531
+#, php-format
 msgid "Previous Year: %s"
 msgstr "Any anterior: %s"
 
 #: adminpages/reports/sales.php:492
 #: adminpages/reports/sales.php:495
 #: adminpages/reports/sales.php:522
+#, php-format
 msgid "Total: %s"
 msgstr "Total: %s"
 
 #: adminpages/reports/sales.php:488
 #: adminpages/reports/sales.php:491
 #: adminpages/reports/sales.php:518
+#, php-format
 msgid "New: %s"
 msgstr "Nova: %s"
 
 #: adminpages/reports/sales.php:484
 #: adminpages/reports/sales.php:487
 #: adminpages/reports/sales.php:514
+#, php-format
 msgid "Renewals: %s"
 msgstr "Renovacions: %s"
 
@@ -3782,6 +3887,7 @@ msgid "Customize Report"
 msgstr "Personalitza l'informe"
 
 #: pages/billing.php:67
+#, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href=\"%s\">log out now</a>."
 msgstr "Esteu connectats com a <strong>%s</strong>. Si voleu actualitzar la informació de facturació d'un compte diferent, <a href=\"%s\">sortiu</a>."
 
@@ -3790,6 +3896,7 @@ msgid "For more information, read our post here"
 msgstr "Per a més informació, llegiu la nostra entrada aquí"
 
 #: includes/updates/upgrade_2_10_6.php:118
+#, php-format
 msgid "%d order was affected by the 2.10.6 update."
 msgid_plural "%d orders were affected by the 2.10.6 update."
 msgstr[0] ""
@@ -3800,6 +3907,7 @@ msgid "Cleaned Fields (2.10.6)"
 msgstr "Camps netejats (2.10.6)"
 
 #: includes/updates/upgrade_2_10_6.php:41
+#, php-format
 msgid "Paid Memberships Pro has detected potentially sensitive customer information in the PMPro order meta table. This information will be safely removed from your database. For more information, read our <a href=\"%s\">post here</a>."
 msgstr "Paid Memberships Pro ha detectat informació potencialment sensible del client a la taula de metadades de les comandes del PMPro. Aquesta informació se suprimirà de la base de dades de manera segura. Per obtenir més informació, llegiu la nostra <a href=\"%s\">entrada aquí</a>."
 
@@ -3816,6 +3924,7 @@ msgid "Deprecated"
 msgstr "Obsolet"
 
 #: includes/deprecated.php:848
+#, php-format
 msgid "Restricting members by username or email was not merged into Paid Memberships Pro. If this feature was being used, a <a href=\"%s\" target=\"_blank\">code recipe</a> will be needed to continue using this functionality."
 msgstr "La restricció de membres per nom d'usuari o correu electrònic no s'ha fusionat amb el Paid Memberships Pro. Si s'estava utilitzant aquesta característica, es necessitarà un <a href=\"%s\" target=\"_blank\">codi</a> per continuar utilitzant aquesta funcionalitat."
 
@@ -3862,6 +3971,7 @@ msgstr "Heu oblidat la contrasenya?"
 
 #. translators: %s: User name.
 #: includes/login.php:348
+#, php-format
 msgid "<strong>Error:</strong> The password you entered for the username %s is incorrect."
 msgstr "<strong>Error:</strong> la contrasenya que heu introduït per a l'usuari %s és incorrecta."
 
@@ -3880,6 +3990,7 @@ msgstr "Adreça de correu electrònic desconeguda. Comproveu-ho de nou i proveu 
 
 #. translators: %s: User name.
 #: includes/login.php:328
+#, php-format
 msgid "<strong>Error:</strong> The username <strong>%s</strong> is not registered on this site. If you are unsure of your username, try your email address instead."
 msgstr "<strong>Error:</strong> el nom d'usuari <strong>%s</strong> no està registrat en aquest lloc web. Si no esteu segurs del vostre nom d'usuari, proveu amb l'adreça electrònica."
 
@@ -3916,6 +4027,7 @@ msgid "Dismiss notice and keep all services paused"
 msgstr "Descarta l'avís i manté tots els serveis en pausa"
 
 #: includes/admin.php:160
+#, php-format
 msgid "<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL."
 msgstr "<strong>Avís:</strong> hem detectat que l'URL del vostre lloc web ha canviat. S'han desactivat totes les tasques Cron i els serveis automatitzats relacionats amb PMPro. Paid Memberships Pro considera que %s és l'URL del lloc web."
 
@@ -4095,6 +4207,7 @@ msgid "Other/Setup Later"
 msgstr "Altres/Configura més tard"
 
 #: adminpages/wizard/payments.php:45
+#, php-format
 msgid "After connecting to Stripe, it is important to <a href=\"%s\" target=\"_blank\">set up your Stripe webhooks</a> to make sure that PMPro is notified of events that happen in Stripe."
 msgstr "Després de connectar-vos a Stripe, és important <a href=\"%s\" target=\"_blank\">configurar els vostres webhooks de Stripe</a> per assegurar-vos que el PMPro rep una notificació dels esdeveniments que succeeixen a Stripe."
 
@@ -4311,6 +4424,7 @@ msgstr "<a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">Poseu-nos
 #: services/applydiscountcode.php:133
 #: pages/checkout.php:136
 #: pages/checkout.php:154
+#, php-format
 msgid "The %s code has been applied to your order."
 msgstr "El codi %s s'ha aplicat a la vostra comanda."
 
@@ -4321,6 +4435,7 @@ msgstr "És obligatori al pagament?"
 
 #: classes/class-pmpro-field.php:610
 #: classes/class-pmpro-field.php:819
+#, php-format
 msgid "Sorry, the file %s was not uploaded."
 msgstr "El fitxer %s no s'ha penjat."
 
@@ -4337,6 +4452,7 @@ msgstr "Selecció / Desplegable"
 #: adminpages/membershiplevels.php:537
 #: includes/fields.php:1325
 #: adminpages/user-fields/group-settings.php:121
+#: adminpages/membershiplevels.php:540
 msgid "Delete Group"
 msgstr "Suprimeix el grup"
 
@@ -4517,6 +4633,7 @@ msgstr "Mou el camp cap amunt"
 #. translators: a plus sign dashicon
 #: includes/fields.php:1322
 #: adminpages/user-fields/group-settings.php:118
+#, php-format
 msgid "%s Add Field"
 msgstr "%s Afegeix un camp"
 
@@ -4576,6 +4693,7 @@ msgstr "Nom del grup"
 #: adminpages/membershiplevels.php:340
 #: includes/fields.php:1235
 #: adminpages/user-fields/group-settings.php:37
+#: adminpages/membershiplevels.php:343
 msgid "Move Group Down"
 msgstr "Mou el grup cap avall"
 
@@ -4584,12 +4702,14 @@ msgstr "Mou el grup cap avall"
 #: includes/fields.php:1382
 #: adminpages/user-fields/field-settings.php:47
 #: adminpages/user-fields/group-settings.php:34
+#: adminpages/membershiplevels.php:340
 msgid "Move down"
 msgstr "Mou cap avall"
 
 #: adminpages/membershiplevels.php:335
 #: includes/fields.php:1230
 #: adminpages/user-fields/group-settings.php:32
+#: adminpages/membershiplevels.php:338
 msgid "Move Group Up"
 msgstr "Mou el grup cap amunt"
 
@@ -4598,6 +4718,7 @@ msgstr "Mou el grup cap amunt"
 #: includes/fields.php:1377
 #: adminpages/user-fields/field-settings.php:42
 #: adminpages/user-fields/group-settings.php:29
+#: adminpages/membershiplevels.php:335
 msgid "Move up"
 msgstr "Mou cap amunt"
 
@@ -4609,62 +4730,74 @@ msgstr "Camps addicionals:"
 #: includes/fields.php:539
 #: includes/fields.php:417
 #: includes/fields.php:521
+#, php-format
 msgid "The %s fields are required."
 msgstr "Els camps %s són obligatoris."
 
 #: includes/fields.php:536
 #: includes/fields.php:414
 #: includes/fields.php:518
+#, php-format
 msgid "The %s field is required."
 msgstr "El camp %s és obligatori."
 
 #: includes/fields.php:151
 #: includes/fields.php:98
+#, php-format
 msgid "Choose from the most popular %s"
 msgstr "Trieu entre els %s més populars"
 
 #: includes/fields.php:150
 #: includes/fields.php:97
+#, php-format
 msgid "Add or remove %s"
 msgstr "Afegeix o suprimeix %s"
 
 #: includes/fields.php:149
 #: includes/fields.php:96
+#, php-format
 msgid "Separate %s with commas"
 msgstr "Separa %s amb comes"
 
 #: includes/fields.php:148
 #: includes/fields.php:95
+#, php-format
 msgid "New %s Name"
 msgstr "Nom del nou %s"
 
 #: includes/fields.php:147
 #: includes/fields.php:94
+#, php-format
 msgid "Add New %s"
 msgstr "Afegeix nou %s"
 
 #: includes/fields.php:146
 #: includes/fields.php:93
+#, php-format
 msgid "Update %s"
 msgstr "Actualitza %s"
 
 #: includes/fields.php:145
 #: includes/fields.php:92
+#, php-format
 msgid "Edit %s"
 msgstr "Edita %s"
 
 #: includes/fields.php:144
 #: includes/fields.php:91
+#, php-format
 msgid "All %s"
 msgstr "Tots els %s"
 
 #: includes/fields.php:143
 #: includes/fields.php:90
+#, php-format
 msgid "Popular %s"
 msgstr "%s populars"
 
 #: includes/fields.php:142
 #: includes/fields.php:89
+#, php-format
 msgid "Search %s"
 msgstr "Cerca %s"
 
@@ -4684,6 +4817,7 @@ msgstr "Sessions de PHP"
 #: classes/class-pmpro-field.php:1434
 #: classes/class-pmpro-field.php:1166
 #: classes/class-pmpro-field.php:1168
+#, php-format
 msgid "Current File: %s"
 msgstr "Fitxer actual: %s"
 
@@ -4695,6 +4829,7 @@ msgstr "Trieu-ne un o més."
 #. translators: a plus sign dashicon
 #: adminpages/userfields.php:132
 #: adminpages/userfields.php:134
+#, php-format
 msgid "%s Add Field Group"
 msgstr "%s Afegeix un grup de camps"
 
@@ -4728,15 +4863,18 @@ msgid "Error finding report data. Make sure transients are working."
 msgstr "S'ha produït un error en cercar les dades de l'informe. Assegureu-vos que les dades transitòries funcionin."
 
 #: adminpages/membershiplevels.php:579
+#: adminpages/membershiplevels.php:582
 msgid "Add On"
 msgstr "Complement"
 
 #: adminpages/membershiplevels.php:561
+#: adminpages/membershiplevels.php:564
 msgid "What type of membership level do you want to create?"
 msgstr "Quin tipus de nivell d'afiliació voleu crear?"
 
 #: adminpages/levels/edit-level.php:682
 #: adminpages/levels/edit-level.php:701
+#, php-format
 msgid "Protect access to other content including custom post types (CPTs), courses, events, products, communities, podcasts, and more. <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">Read our documentation on restricting content</a>."
 msgstr "Protegiu l'accés a altres continguts, inclosos els tipus de contingut personalitzat (CPT), cursos, esdeveniments, productes, comunitats, podcasts i altres. <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">Llegiu la nostra documentació sobre la restricció de continguts</a>."
 
@@ -4747,6 +4885,7 @@ msgstr "Altres tipus de contingut"
 
 #: adminpages/levels/edit-level.php:676
 #: adminpages/levels/edit-level.php:695
+#, php-format
 msgid "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single page to protect it."
 msgstr "<a target=\"_blank\" href=\"%1$s\">Afegeix</a> o <a target=\"_blank\" href=\"%2$s\">edita</a> una pàgina individual per protegir-la."
 
@@ -4757,6 +4896,7 @@ msgstr "Pàgines individuals"
 
 #: adminpages/levels/edit-level.php:670
 #: adminpages/levels/edit-level.php:689
+#, php-format
 msgid "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single post to protect it."
 msgstr "<a target=\"_blank\" href=\"%1$s\">Afegeix</a> o <a target=\"_blank\" href=\"%2$s\">edita</a> una entrada individual per protegir-la."
 
@@ -4772,6 +4912,7 @@ msgstr "Seleccioneu categories per protegir entrades en massa."
 
 #: adminpages/levels/edit-level.php:613
 #: adminpages/levels/edit-level.php:632
+#, php-format
 msgid "Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">read our documentation on restricting content</a>."
 msgstr "Protegiu l'accés a entrades, pàgines i seccions de contingut mitjançant les característiques integrades de PMPro. Si voleu protegir més tipus de continguts, <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">llegiu la nostra documentació sobre la restricció de continguts</a>."
 
@@ -4787,6 +4928,7 @@ msgstr "Establiu el preu d'afiliació per a aquest nivell. El pagament inicial e
 
 #: adminpages/levels/edit-level.php:268
 #: adminpages/levels/edit-level.php:280
+#, php-format
 msgid "Use the placeholder variable <code>%1$s</code> in your checkout <a href=\"%2$s\" title=\"Edit Membership Email Templates\">email templates</a> to include this information."
 msgstr "Utilitzeu la variable <code>%1$s</code> a les <a href=\"%2$s\" title=\"Edita les plantilles de correu electrònic d'afiliació\">plantilles de correu electrònic</a> de pagament per incloure aquesta informació."
 
@@ -4808,6 +4950,7 @@ msgstr "Visualitza al pagament"
 #. translators: %s is the Level ID.
 #: adminpages/levels/edit-level.php:186
 #: adminpages/levels/edit-level.php:193
+#, php-format
 msgid "Edit Level ID: %s"
 msgstr "Edita l'identificador de nivell: %s"
 
@@ -4881,10 +5024,12 @@ msgid "User Fields"
 msgstr "Camps d'usuari"
 
 #: adminpages/addons.php:454
+#, php-format
 msgid "Already purchased? <a href=\"%s\">Enter your license key here</a>"
 msgstr "Ja l'heu comprada? <a href=\"%s\">Introduïu la vostra clau de llicència aquí</a>"
 
 #: adminpages/addons.php:452
+#, php-format
 msgid "Get %s and more with a %s license."
 msgstr "Obteniu %s i més amb una llicència %s."
 
@@ -4893,6 +5038,7 @@ msgstr "Obteniu %s i més amb una llicència %s."
 #: classes/gateways/class.pmprogateway_stripe.php:1326
 #: classes/gateways/class.pmprogateway_stripe.php:1322
 #: classes/gateways/class.pmprogateway_stripe.php:1323
+#: adminpages/membershiplevels.php:563
 msgid "Close Popup"
 msgstr "Tanca la finestra emergent"
 
@@ -4906,11 +5052,13 @@ msgstr "Actualitza ara"
 
 #. translators: %s - Add On status label.
 #: adminpages/addons.php:242
+#, php-format
 msgid "Status: %s"
 msgstr "Estat: %s"
 
 #. translators: %s - Add On license label.
 #: adminpages/addons.php:220
+#, php-format
 msgid "License: %s"
 msgstr "Llicència: %s"
 
@@ -4966,6 +5114,7 @@ msgid "In order to complete the transition to using Stripe API keys, please clic
 msgstr ""
 
 #: adminpages/orders.php:23
+#, php-format
 msgid "Order %s deleted successfully."
 msgstr "Comanda %s suprimida correctament."
 
@@ -5073,6 +5222,7 @@ msgid "Dynamic page section that displays a list of the last 5 membership orders
 msgstr ""
 
 #: includes/license.php:143
+#, php-format
 msgid "Bad response code %s."
 msgstr "Codi de resposta incorrecta %s."
 
@@ -5230,6 +5380,7 @@ msgstr "No, no recullis identificadors fiscals."
 #: classes/gateways/class.pmprogateway_stripe.php:639
 #: classes/gateways/class.pmprogateway_stripe.php:635
 #: classes/gateways/class.pmprogateway_stripe.php:636
+#, php-format
 msgid "Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target=\"_blank\" href=\"%s\">activate Stripe Tax</a> in your Stripe dashboard. <a target=\"_blank\" href=\"%s\">More information about Stripe Tax »</a>"
 msgstr "Stripe Tax només està disponible quan s'utilitza Stripe Checkout (la pàgina de pagament allotjada a Stripe). Heu d'<a target=\"_blank\" href=\"%s\">activar Stripe Tax</a> al vostre tauler de Stripe. <a target=\"_blank\" href=\"%s\">Més informació sobre Stripe Tax »</a>"
 
@@ -5290,6 +5441,8 @@ msgstr "Flux de pagament"
 #. translators: %1$s is the Transaction ID. %1$s is the Gateway Error
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1299
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1300
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1291
+#, php-format
 msgid "Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s."
 msgstr "Administració: Hi ha hagut un problema en processar un reemborsament per a l'identificador de transacció %1$s. Error de passarel·la: %2$s."
 
@@ -5303,6 +5456,8 @@ msgstr "Administració: Hi ha hagut un problema en processar un reemborsament pe
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1285
 #: classes/gateways/class.pmprogateway_stripe.php:3864
 #: classes/gateways/class.pmprogateway_stripe.php:3865
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1276
+#, php-format
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr "Administració: Comanda reemborsada correctament el %1$s per a l'identificador de transacció %2$s per %3$s."
 
@@ -5375,6 +5530,7 @@ msgid "Yes Please"
 msgstr "Sí"
 
 #: classes/class-pmpro-wisdom-tracker.php:886
+#, php-format
 msgid "Thank you for opting in to tracking. Would you like to receive occasional news about this %s, including details of new features and special offers?"
 msgstr "Gràcies per participar al seguiment. Us agradaria rebre notícies ocasionals sobre aquest %s, inclosos detalls de noves característiques i ofertes especials?"
 
@@ -5387,10 +5543,12 @@ msgid "Allow"
 msgstr "Permet"
 
 #: classes/class-pmpro-wisdom-tracker.php:841
+#, php-format
 msgid "Thank you for installing our %1$s. We'd like your permission to track its usage on your site and subscribe you to our newsletter. We won\\'t record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional."
 msgstr "Gràcies per instal·lar la nostra %1$s. Ens agradaria tenir el vostre permís per fer un seguiment del seu ús al vostre lloc web i subscriure-us al nostre butlletí. No registrem cap dada sensible, només informació sobre l'entorn de WordPress i les opcions de %1$s, que utilitzarem per ajudar-nos a realitzar millores a %1$s. El seguiment és completament opcional."
 
 #: classes/class-pmpro-wisdom-tracker.php:838
+#, php-format
 msgid "Thank you for installing our %1$s. We would like to track its usage on your site. We don't record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional."
 msgstr "Gràcies per instal·lar la nostra %1$s. Ens agradaria fer un seguiment del seu ús al vostre lloc web. No registrem cap dada sensible, només informació sobre l'entorn de WordPress i les opcions de %1$s, que farem servir per ajudar-nos a realitzar millores a l'%1$s. El seguiment és completament opcional."
 
@@ -5446,6 +5604,7 @@ msgstr "Cerca"
 
 #. translators: %s: A link to the docs for the pmpro_tax filter.
 #: adminpages/paymentsettings.php:213
+#, php-format
 msgid "US only. If values are given, tax will be applied for any members ordering from the selected state. For non-US or more complex tax rules, use the %s."
 msgstr "Només per als Estats Units. Si es proporcionen valors, s'aplicaran impostos a tots els membres que facin comandes des de l'estat seleccionat. Per a regles d'impostos no nord-americans o més complexes, utilitzeu el %s."
 
@@ -5495,6 +5654,7 @@ msgstr "Paid Memberships Pro - Opcions de la passarel·la de pagament"
 #: adminpages/subscriptions.php:498
 #: adminpages/subscriptions.php:511
 #: adminpages/subscriptions.php:525
+#, php-format
 msgid "%1$s at %2$s"
 msgstr "%1$s a les %2$s"
 
@@ -5560,6 +5720,7 @@ msgstr "Visualitza"
 #: adminpages/orders.php:272
 #: classes/class-pmpro-orders-list-table.php:934
 #: adminpages/orders.php:293
+#, php-format
 msgid "Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?"
 msgstr "Reemborseu la comanda %s a la passarel·la de pagament. Aquesta acció és permanent. L'usuari i l'administrador rebran una confirmació per correu electrònic després de processar el reemborsament. Segur que voleu reemborsar aquesta comanda?"
 
@@ -5581,11 +5742,13 @@ msgid "Manage My Account"
 msgstr "Gestiona el meu compte"
 
 #: adminpages/license.php:56
+#, php-format
 msgid "<strong>Enter your support license key</strong>. Your license key can be found in your membership email receipt or in your <a href=\"%s\" target=\"_blank\">Membership Account</a>."
 msgstr "<strong>Introduïu la vostra clau de llicència de suport</strong>. Podeu trobar la clau de llicència al vostre rebut de correu electrònic d'afiliació o al vostre <a href=\"%s\" target=\"_blank\">compte de membre</a>."
 
 #: adminpages/license.php:54
 #: adminpages/license.php:58
+#, php-format
 msgid "Visit the PMPro <a href=\"%s\" target=\"_blank\">Membership Account</a> page to confirm that your account is active and to find your license key."
 msgstr "Visiteu la pàgina del <a href=\"%s\" target=\"_blank\">compte d'afiliació</a> de PMPro per confirmar que el vostre compte està actiu i trobar la clau de llicència."
 
@@ -5597,6 +5760,7 @@ msgstr "Visiteu la pàgina del <a href=\"%s\" target=\"_blank\">compte d'afiliac
 #: includes/profile.php:747
 #: adminpages/reports/logins.php:252
 #: adminpages/reports/logins.php:251
+#, php-format
 msgid "ID: %s"
 msgstr "Identificador: %s"
 
@@ -5671,12 +5835,14 @@ msgstr "Nou:"
 #: adminpages/reports/sales.php:559
 #: adminpages/reports/sales.php:562
 #: adminpages/reports/sales.php:589
+#, php-format
 msgid "Average %s"
 msgstr "Mitjana de %s"
 
 #: adminpages/reports/sales.php:530
 #: adminpages/reports/sales.php:533
 #: adminpages/reports/sales.php:560
+#, php-format
 msgid "New %s"
 msgstr "Nou %s"
 
@@ -5689,6 +5855,7 @@ msgstr "Renovació"
 
 #: adminpages/dashboard.php:206
 #: adminpages/license.php:60
+#, php-format
 msgid "Your <strong>%1$s</strong> key is active. %1$s accounts include access to documentation and free downloads."
 msgstr "La vostra clau <strong>%1$s</strong> està activa. Els comptes %1$s inclouen accés a documentació i baixades gratuïtes."
 
@@ -5779,6 +5946,7 @@ msgid "View Plans and Pricing"
 msgstr "Visualitza els plans i els preus"
 
 #: adminpages/securitysettings.php:161
+#, php-format
 msgid "Block IPs from checkout if there are more than %d failures within %d minutes."
 msgstr "Bloqueja les IPs del pagament si hi ha més de %d errors en %d minuts."
 
@@ -5895,6 +6063,7 @@ msgid "Missing key."
 msgstr "Falta la clau."
 
 #: adminpages/license.php:54
+#, php-format
 msgid "There was an issue validating your license key: %s"
 msgstr "S'ha produït un problema en validar la vostra clau de llicència: %s"
 
@@ -5911,6 +6080,7 @@ msgstr "falta"
 #. translators: %s: The environment name that is not registered.
 #: classes/class-pmpro-site-health.php:287
 #: classes/class-pmpro-site-health.php:291
+#, php-format
 msgid "%s (environment not registered)"
 msgstr "%s (l'entorn no està registrat)"
 
@@ -5928,11 +6098,13 @@ msgstr "Claus heretades"
 
 #. translators: %s: The gateway name that is not registered.
 #: classes/class-pmpro-site-health.php:237
+#, php-format
 msgid "%s (gateway not registered)"
 msgstr "%s (la passarel·la no està registrada)"
 
 #. translators: %d: The total count of orders.
 #: classes/class-pmpro-site-health.php:220
+#, php-format
 msgid "%d order"
 msgid_plural "%d orders"
 msgstr[0] ""
@@ -5940,6 +6112,7 @@ msgstr[1] ""
 
 #. translators: %d: The total count of discount codes.
 #: classes/class-pmpro-site-health.php:204
+#, php-format
 msgid "%d discount code"
 msgid_plural "%d discount codes"
 msgstr[0] ""
@@ -6373,6 +6546,7 @@ msgstr "Pagament - Gratuït"
 
 #: includes/email-templates.php:195
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:62
+#, php-format
 msgid "This is the membership confirmation email sent to the site administrator for every membership checkout using the \"%s (Pay by Check)\" gateway."
 msgstr ""
 
@@ -6692,6 +6866,7 @@ msgid "An email from !!sitename!!"
 msgstr "Un correu electrònic de !!sitename!!"
 
 #: includes/deprecated.php:941
+#, php-format
 msgid "Some Add Ons are now merged into the Paid Memberships Pro core plugin. The features of the following plugins are now included in PMPro by default. You should <strong>delete these unnecessary plugins</strong> from your site: <em><strong>%s</strong></em>."
 msgstr "Alguns complements ara s'han incorporat a l'extensió bàsica de Paid Memberships Pro. Les característiques de les següents extensions s'inclouen ara a PMPro per defecte. Heu de <strong>suprimir aquestes extensions innecessàries</strong> del vostre lloc: <em><strong>%s</strong></em>."
 
@@ -6699,6 +6874,7 @@ msgstr "Alguns complements ara s'han incorporat a l'extensió bàsica de Paid Me
 #: classes/gateways/class.pmprogateway_stripe.php:1197
 #: classes/gateways/class.pmprogateway_stripe.php:1193
 #: classes/gateways/class.pmprogateway_stripe.php:1194
+#, php-format
 msgid "<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s"
 msgstr "<strong>Error:</strong> PMPro no s'ha pogut desconnectar de l'API de Stripe. Motiu: %s"
 
@@ -6706,6 +6882,7 @@ msgstr "<strong>Error:</strong> PMPro no s'ha pogut desconnectar de l'API de Str
 #: classes/gateways/class.pmprogateway_stripe.php:1156
 #: classes/gateways/class.pmprogateway_stripe.php:1152
 #: classes/gateways/class.pmprogateway_stripe.php:1153
+#, php-format
 msgid "<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s"
 msgstr "<strong>Error:</strong> PMPro no s'ha pogut connectar a l'API de Stripe. Motiu: %s"
 
@@ -6733,6 +6910,7 @@ msgstr "Mode de proves:"
 #: classes/gateways/class.pmprogateway_stripe.php:2394
 #: classes/gateways/class.pmprogateway_stripe.php:2395
 #: classes/gateways/class.pmprogateway_stripe.php:2396
+#, php-format
 msgid "Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license."
 msgstr "Nota: Esteu utilitzant la integració gratuïta de la passarel·la de pagament Stripe. Això inclou una quota addicional de l'1% pel processament dels pagaments. Aquesta quota s'elimina activant una llicència PMPro prèmium."
 
@@ -7075,6 +7253,7 @@ msgid "Email Templates"
 msgstr "Plantilles de correu electrònic"
 
 #: classes/class-pmpro-discount-code-list-table.php:371
+#, php-format
 msgid "Edit Code: %s"
 msgstr "Edita el codi: %s"
 
@@ -7093,10 +7272,12 @@ msgid "Password Reset"
 msgstr "Reinicialitza la contrasenya"
 
 #: services/braintree-webhook.php:382
+#, php-format
 msgid "A member's Braintree subscription has expired at %s"
 msgstr "La subscripció a Braintree d'un membre ha caducat a %s"
 
 #: services/braintree-webhook.php:380
+#, php-format
 msgid "<p>A member's Braintree subscription has expired at your site. This typically happens if you've set up billing limits on your levels.</p><p>We have not removed the user's membership level.</p><p>You can view details on this user here: %s</p>"
 msgstr "<p>La subscripció a Braintree d'un membre ha caducat al vostre lloc. Això sol passar si heu establert límits de facturació als vostres nivells.</p><p>No hem eliminat el nivell d'afiliació de l'usuari.</p><p>Podeu veure els detalls d'aquest usuari aquí: %s</p>"
 
@@ -7155,18 +7336,21 @@ msgstr "La creació del webhook ha fallat. Actualitzeu i torneu-ho a provar."
 #: classes/gateways/class.pmprogateway_stripe.php:596
 #: classes/gateways/class.pmprogateway_stripe.php:592
 #: classes/gateways/class.pmprogateway_stripe.php:593
+#, php-format
 msgid "Your domain could not be registered with Apple to enable Apple Pay. Please try <a target=\"_blank\" href=\"%s\" title=\"Apple Pay Settings Page in Stripe\">registering your domain manually from the Apple Pay settings page in Stripe</a>."
 msgstr "El vostre domini no s'ha pogut registrar amb Apple per activar Apple Pay. Proveu de <a target=\"_blank\" href=\"%s\" title=\"Pàgina d'opcions d'Apple Pay a Stripe\">registrar el vostre domini manualment a la pàgina d'opcions d'Apple Pay a Stripe</a>."
 
 #: classes/gateways/class.pmprogateway_stripe.php:594
 #: classes/gateways/class.pmprogateway_stripe.php:590
 #: classes/gateways/class.pmprogateway_stripe.php:591
+#, php-format
 msgid "This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target=\"_blank\" href=\"%s\" title=\"Configuring WordPress to Always Use HTTPS/SSL\">set up WordPress to always use HTTPS</a>."
 msgstr "Aquesta web es publica a través d'HTTP, però el botó de sol·licitud de pagament de Stripe només funcionarà a les pàgines que es serveixen mitjançant HTTPS. Per resoldre-ho, heu de <a target=\"_blank\" href=\"%s\" title=\"Configurar WordPress perquè utilitzi sempre HTTPS/SSL\">configurar WordPress perquè utilitzi sempre HTTPS</a>."
 
 #: classes/gateways/class.pmprogateway_stripe.php:581
 #: classes/gateways/class.pmprogateway_stripe.php:577
 #: classes/gateways/class.pmprogateway_stripe.php:578
+#, php-format
 msgid "Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target=\"_blank\" href=\"%s\" title=\"More Information about the domain association file for Apple Pay\">More Information</a>"
 msgstr "Permeteu als usuaris pagar amb Apple Pay, Google Pay o Microsoft Pay en funció del seu navegador. Quan estigui activat, el vostre domini es registrarà automàticament a Apple i s'allotjarà un fitxer d'associació de domini al vostre lloc. <a target=\"_blank\" href=\"%s\" title=\"Més informació sobre el fitxer d'associació de domini per a Apple Pay\">Més informació</a>"
 
@@ -7251,6 +7435,7 @@ msgid "Other Email Settings"
 msgstr "Altres opcions de correu electrònic"
 
 #: adminpages/emailsettings.php:162
+#, php-format
 msgid "Please enable email sending inside %s."
 msgstr "Activa l'enviament de correu electrònic dins de %s."
 
@@ -7271,6 +7456,7 @@ msgid "Connect to SendWP"
 msgstr "Connecta a SendWP"
 
 #: adminpages/emailsettings.php:145
+#, php-format
 msgid "If you are having issues with email delivery from your server, <a href=\"%s\" title=\"Paid Memberships Pro - Subscription Delays Add On\" target=\"_blank\" rel=\"nofollow noopener\">please read our email troubleshooting guide</a>. As an alternative, Paid Memberships Pro offers built-in integration for SendWP. <em>Optional: SendWP is a third-party service for transactional email in WordPress. <a href=\"%s\" title=\"Documentation on SendWP and Paid Memberships Pro\" target=\"_blank\" rel=\"nofollow noopener\">Click here to learn more about SendWP and Paid Memberships Pro</a></em>."
 msgstr "Si teniu problemes amb l'entrega de correu electrònic des del vostre servidor, <a href=\"%s\" title=\"Paid Memberships Pro - Subscription Delays Add On\" target=\"_blank\" rel=\"nofollow noopener\">consulteu la nostra guia de diagnòstic de problemes amb el correu electrònic</a>. Com a alternativa, Paid Memberships Pro ofereix integració de sèrie amb SendWP. <em>Opcional: SendWP és un servei de tercers per a correu electrònic transaccional a WordPress. <a href=\"%s\" title=\"Documentació sobre SendWP i Paid Memberships Pro\" target=\"_blank\" rel=\"nofollow noopener\">Feu clic aquí per obtenir més informació sobre SendWP i Paid Memberships Pro</a></em>."
 
@@ -7359,6 +7545,7 @@ msgstr "Voleu desinstal·lar PMPro en suprimir-lo?"
 
 #: classes/class-pmpro-admin-activity-email.php:420
 #: classes/class-pmpro-admin-activity-email.php:430
+#, php-format
 msgid "[%1$s] PMPro Activity for %2$s: %3$s"
 msgstr "[%1$s] Activitat de PMPro per a %2$s: %3$s"
 
@@ -7418,6 +7605,7 @@ msgstr "Formulari d'entrada"
 #. translators: %s is the attributes for the admin advanced settings link.
 #: classes/class-pmpro-admin-activity-email.php:382
 #: classes/class-pmpro-admin-activity-email.php:386
+#, php-format
 msgid "To adjust the frequency of this message or disable these emails completely, you can <a %s>update the \"Activity Email Frequency\" setting here</a>."
 msgstr "Per ajustar la freqüència d'aquest missatge o desactivar completament aquests correus electrònics, podeu <a %s>actualitzar l'opció «Freqüència del correu electrònic d'activitat» aquí</a>."
 
@@ -7444,6 +7632,7 @@ msgid "PMPro News and Updates"
 msgstr "Notícies i actualitzacions de PMPro"
 
 #: classes/class-pmpro-admin-activity-email.php:326
+#, php-format
 msgid "...and that is perfectly OK! PMPro is free to use for as long as you want for membership sites of all sizes. Interested in unlimited support, access to over 70 featured-enhancing Add Ons and instant installs and updates? <a %s>Check out our paid plans to learn more</a>."
 msgstr "...i això és perfecte! PMPro es pot utilitzar gratuïtament durant el temps que vulgueu per a llocs d'afiliació de totes les mides. Us interessa un suport il·limitat, l'accés a més de 70 complements que milloren les característiques i instal·lacions i actualitzacions instantànies? <a %s>Consulta els nostres plans de pagament per obtenir més informació</a>."
 
@@ -7486,16 +7675,19 @@ msgstr "Complements actius"
 #. translators: %1$s is the attributes for the anchor tag, %2$s is the term being used.
 #: classes/class-pmpro-admin-activity-email.php:233
 #: classes/class-pmpro-admin-activity-email.php:234
+#, php-format
 msgid "No <a %1$s>Discount Codes</a> were used %2$s."
 msgstr "No s'ha utilitzat cap <a %1$s>codi de descompte</a> %2$s."
 
 #: classes/class-pmpro-admin-activity-email.php:208
 #: classes/class-pmpro-admin-activity-email.php:209
+#, php-format
 msgid "<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:"
 msgstr "<strong>%1$d comandes</strong> han utilitzat un <a %2$s>codi de descompte</a> al pagament. Aquí teniu un desglossament dels vostres codis més utilitzats:"
 
 #: classes/class-pmpro-admin-activity-email.php:206
 #: classes/class-pmpro-admin-activity-email.php:207
+#, php-format
 msgid "<strong>%1$d order</strong> used a <a %2$s>Discount Code</a> at checkout:"
 msgstr "<strong>%1$d comanda</strong> ha utilitzat un <a %2$s>codi de descompte</a> al pagament:"
 
@@ -7511,6 +7703,7 @@ msgstr "Visualitza l'informe de registres i cancel·lacions"
 
 #: classes/class-pmpro-admin-activity-email.php:151
 #: classes/class-pmpro-admin-activity-email.php:152
+#, php-format
 msgid "Here is a summary of your top %d most popular levels:"
 msgstr "Aquí teniu un resum dels vostres %d nivells més populars:"
 
@@ -7521,11 +7714,13 @@ msgstr "Registres i cancel·lacions"
 
 #: classes/class-pmpro-admin-activity-email.php:104
 #: classes/class-pmpro-admin-activity-email.php:105
+#, php-format
 msgid "Your membership site made <strong>%1$s</strong> in revenue %2$s."
 msgstr "El vostre lloc d'afiliació ha obtingut <strong>%1$s</strong> d'ingressos %2$s."
 
 #: classes/class-pmpro-admin-activity-email.php:84
 #: classes/class-pmpro-admin-activity-email.php:85
+#, php-format
 msgid "Here's a summary of what happened in your Paid Memberships Pro site %s."
 msgstr "Aquí teniu un resum del que ha passat al vostre lloc de Paid Memberships Pro %s."
 
@@ -7547,10 +7742,12 @@ msgid "at"
 msgstr "a les"
 
 #: adminpages/pagesettings.php:444
+#, php-format
 msgid "Include the shortcode %s or the Member Profile Edit block."
 msgstr "Inclou el codi de substitució %s o el bloc Edició del perfil de membre."
 
 #: adminpages/pagesettings.php:415
+#, php-format
 msgid "Include the shortcode %s or the Log In Form block."
 msgstr "Inclou el codi de substitució %s o el bloc Formulari d'entrada."
 
@@ -7564,10 +7761,12 @@ msgid "Log In Page"
 msgstr "Pàgina d'entrada"
 
 #: adminpages/pagesettings.php:153
+#, php-format
 msgid "Error generating the %s page. You will have to choose or create one manually."
 msgstr "S'ha produït un error en generar la pàgina %s. Haureu de triar o crear-ne una manualment."
 
 #: adminpages/pagesettings.php:150
+#, php-format
 msgid "Found an existing version of the %s page and used that one."
 msgstr "S'ha trobat una versió existent de la pàgina %s i s'ha fet servir."
 
@@ -7616,6 +7815,7 @@ msgid "Restrict Dashboard Access"
 msgstr "Restringeix l'accés al tauler"
 
 #: includes/widgets.php:125
+#, php-format
 msgid "Customize this menu per level using the <a href=\"%s\" title=\"Paid Memberships Pro - Nav Menus Add On\" target=\"_blank\">Nav Menus Add On</a>. Assign the menu under Appearance > Menus."
 msgstr "Personalitzeu aquest menú per nivell mitjançant el <a href=\"%s\" title=\"Paid Memberships Pro - Nav Menus Add On\" target=\"_blank\">complement Nav Menus</a>. Assigneu el menú a Aparença > Menús."
 
@@ -7743,6 +7943,7 @@ msgstr "Surt"
 #: pages/confirmation.php:100
 #: shortcodes/pmpro_account.php:75
 #: pages/confirmation.php:102
+#, php-format
 msgid "Welcome, %s"
 msgstr "Benvingut/da, %s"
 
@@ -7998,6 +8199,7 @@ msgstr "Error"
 #: classes/class-pmpro-subscriptions-list-table.php:635
 #: classes/class-pmpro-subscriptions-list-table.php:659
 #: classes/class-pmpro-subscriptions-list-table.php:676
+#: adminpages/membershiplevels.php:491
 msgid "&#8212;"
 msgstr "&#8212;"
 
@@ -8058,6 +8260,7 @@ msgid "<strong>Paid Memberships Pro offers plans for automatic updates of Add On
 msgstr "<strong>Paid Memberships Pro ofereix plans per a actualitzacions automàtiques de complements i suport prèmium.</strong> Aquests plans inclouen una clau de llicència que recomanem per a tots els llocs web públics amb Paid Memberships Pro. Una clau de llicència us permet instal·lar automàticament els complements inclosos al vostre pla i actualitzar els complements actius inclosos al vostre pla quan es publica una de correcció de seguretat, d'errors o una millora de característiques."
 
 #: adminpages/license.php:99
+#, php-format
 msgid "Paid Memberships Pro and our Add Ons are distributed under the <a href=\"%s\" target=\"_blank\">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge."
 msgstr "Paid Memberships Pro i els nostres complements es distribueixen sota la <a href=\"%s\" target=\"_blank\">llicència GPLv2</a>. Això significa, entre altres coses, que podeu utilitzar el programari en aquest lloc web o qualsevol altre de manera gratuïta."
 
@@ -8066,14 +8269,17 @@ msgid "Validate Key"
 msgstr "Valida la clau"
 
 #: includes/admin.php:277
+#, php-format
 msgid "<a class=\"pmpro_license_tag pmpro_license_tag-invalid\" href=\"%s\">No License</a>"
 msgstr "<a class=\"pmpro_license_tag pmpro_license_tag-invalid\" href=\"%s\">Sense llicència</a>"
 
 #: includes/admin.php:275
+#, php-format
 msgid "<a class=\"pmpro_license_tag pmpro_license_tag-valid\" href=\"%s\">Valid License</a>"
 msgstr "<a class=\"pmpro_license_tag pmpro_license_tag-valid\" href=\"%s\">Llicència vàlida</a>"
 
 #: classes/gateways/class.pmprogateway_payflowpro.php:161
+#, php-format
 msgid "Payflow does not use IPN. To sync recurring subscriptions, please see the <a target=\"_blank\" href=\"%s\" title=\"the Payflow Recurring Orders Add On\">Payflow Recurring Orders Add On</a>."
 msgstr "Payflow no fa servir IPN. Per sincronitzar les subscripcions recurrents, feu una ullada al <a target=\"_blank\" href=\"%s\" title=\"Complement Payflow Recurring Orders\">complement Payflow Recurring Orders</a>."
 
@@ -8084,20 +8290,24 @@ msgstr "Nota: No recomanem utilitzar PayPal Standard. Us suggerim que utilitzeu 
 #: classes/gateways/class.pmprogateway_stripe.php:666
 #: classes/gateways/class.pmprogateway_stripe.php:662
 #: classes/gateways/class.pmprogateway_stripe.php:663
+#, php-format
 msgid "Optional: Offer PayPal Express as an option at checkout using the <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">Add PayPal Express Add On</a>."
 msgstr "Opcional: Oferiu PayPal Express com a opció a l'hora de pagar mitjançant el <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">complement Add PayPal Express</a>."
 
 #: adminpages/levels/edit-level.php:541
 #: adminpages/levels/edit-level.php:560
+#, php-format
 msgid "Optional: Allow more customizable expiration dates using the <a href=\"%s\" title=\"Paid Memberships Pro - Set Expiration Date Add On\" target=\"_blank\" rel=\"nofollow noopener\">Set Expiration Date Add On</a>."
 msgstr "Opcional: Permeteu dates de caducitat més personalitzables mitjançant el <a href=\"%s\" title=\"Paid Memberships Pro - Set Expiration Date Add On\" target=\"_blank\" rel=\"nofollow noopener\">complement Set Expiration Date</a>."
 
 #: adminpages/levels/edit-level.php:326
 #: adminpages/levels/edit-level.php:345
+#, php-format
 msgid "Optional: Allow more customizable trial periods and renewal dates using the <a href=\"%s\" title=\"Paid Memberships Pro - Subscription Delays Add On\" target=\"_blank\" rel=\"nofollow noopener\">Subscription Delays Add On</a>."
 msgstr "Opcional: Permeteu períodes de prova i dates de renovació més personalitzables mitjançant el <a href=\"%s\" title=\"Paid Memberships Pro - Subscription Delays Add On\" target=\"_blank\" rel=\"nofollow noopener\">complement Subscription Delays</a>."
 
 #: adminpages/pagesettings.php:385
+#, php-format
 msgid "Optional: Customize your Membership Levels page using the <a href=\"%s\" title=\"Paid Memberships Pro - Advanced Levels Page Add On\" target=\"_blank\">Advanced Levels Page Add On</a>."
 msgstr "Opcional: Personalitzeu la vostra pàgina de nivells d'afiliació mitjançant el <a href=\"%s\" title=\"Paid Memberships Pro - Advanced Levels Page Add On\" target=\"_blank\">complement Advanced Levels Page</a>."
 
@@ -8121,6 +8331,7 @@ msgstr "Per defecte"
 #: pages/billing.php:408
 #: shortcodes/pmpro_account.php:159
 #: pages/billing.php:399
+#, php-format
 msgid "You do not have an active membership. <a href='%s'>Choose a membership level.</a>"
 msgstr "No teniu una subscripció activa. <a href='%s'>Trieu un nivell d'afiliació.</a>"
 
@@ -8426,16 +8637,19 @@ msgstr "S'ha produït un error en validar el tipus de targeta de crèdit. Assegu
 
 #: adminpages/levels/edit-level.php:660
 #: adminpages/levels/edit-level.php:679
+#, php-format
 msgid "Non-members will see the title only for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 msgstr "Els no membres veuran el títol només de les entrades d'aquestes categories. Podeu <a href=\"%s\" title=\"Opcions avançades\" target=\"_blank\">actualitzar aquesta opció aquí</a>."
 
 #: adminpages/levels/edit-level.php:657
 #: adminpages/levels/edit-level.php:676
+#, php-format
 msgid "Non-members will see the title and excerpt for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 msgstr "Els no membres veuran el títol i l'extracte de les entrades d'aquestes categories. Podeu <a href=\"%s\" title=\"Opcions avançades\" target=\"_blank\">actualitzar aquesta opció aquí</a>."
 
 #: adminpages/levels/edit-level.php:653
 #: adminpages/levels/edit-level.php:672
+#, php-format
 msgid "Non-members will not see posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 msgstr "Els no membres no veuran entrades d'aquestes categories. Podeu <a href=\"%s\" title=\"Opcions avançades\" target=\"_blank\">actualitzar aquesta opció aquí</a>."
 
@@ -8451,6 +8665,8 @@ msgstr "Visualitza les comandes"
 #: classes/class-pmpro-discount-code-list-table.php:425
 #: classes/class-pmpro-orders-list-table.php:974
 #: classes/class-pmpro-orders-list-table.php:985
+#: adminpages/membershiplevels.php:435
+#: adminpages/membershiplevels.php:446
 msgid "Copy"
 msgstr "Copia"
 
@@ -8467,6 +8683,8 @@ msgstr "Copia"
 #: includes/fields.php:1391
 #: includes/profile.php:752
 #: adminpages/user-fields/field-settings.php:56
+#: adminpages/membershiplevels.php:421
+#: adminpages/membershiplevels.php:431
 msgid "Edit"
 msgstr "Edita"
 
@@ -8542,6 +8760,7 @@ msgid "Close"
 msgstr "Tanca"
 
 #: includes/pointers.php:32
+#, php-format
 msgid "The Memberships menu has moved. Check out the new dashboard. The Membership Levels and Discount Codes pages can now be found under <a href=\"%s\">Settings</a>."
 msgstr "El menú d'afiliacions s'ha mogut. Feu una ullada al nou tauler. Les pàgines de nivells d'afiliació i codis de descompte ara es poden trobar a <a href=\"%s\">Opcions</a>."
 
@@ -8559,6 +8778,7 @@ msgstr "Registreu-vos ara"
 
 #. translators: 1: the old hook name, 2: the new or replacement hook name
 #: includes/deprecated.php:30
+#, php-format
 msgid "The %1$s hook has been deprecated in Paid Memberships Pro. Please use the %2$s hook instead."
 msgstr "El ganxo %1$s ha quedat obsolet a Paid Memberships Pro. Utilitzeu el ganxo %2$s."
 
@@ -8569,6 +8789,7 @@ msgstr "Mostra'n més"
 
 #: adminpages/dashboard.php:431
 #: adminpages/dashboard.php:429
+#, php-format
 msgid "Posted %s"
 msgstr "Publicat el %s"
 
@@ -8621,6 +8842,7 @@ msgid "Get Involved"
 msgstr "Impliqueu-vos"
 
 #: adminpages/dashboard.php:216
+#, php-format
 msgid "Paid Memberships Pro and our Add Ons are distributed under the <a target=\"_blank\" href=\"%s\">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge."
 msgstr "Paid Memberships Pro i els nostres complements es distribueixen sota la <a target=\"_blank\" href=\"%s\">llicència GPLv2</a>. Això significa, entre altres coses, que podeu utilitzar el programari en aquest lloc o qualsevol altre de manera gratuïta."
 
@@ -8631,10 +8853,12 @@ msgstr "Es recomana una llicència de suport anual per als llocs web amb Paid Me
 
 #: adminpages/dashboard.php:208
 #: adminpages/license.php:62
+#, php-format
 msgid "<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site."
 msgstr "<strong>Gràcies!</strong> S'ha utilitzat una clau de llicència <strong>%s</strong> vàlida per activar la vostra llicència de suport en aquest lloc."
 
 #: adminpages/dashboard.php:204
+#, php-format
 msgid "<a href=\"%s\">View your membership account</a> to verify your license key."
 msgstr "<a href=\"%s\">Consulteu el vostre compte de membre</a> per verificar la vostra clau de llicència."
 
@@ -8790,20 +9014,24 @@ msgid "All Paid Levels"
 msgstr "Tots els nivells de pagament"
 
 #: adminpages/membershiplevels.php:217
+#: adminpages/membershiplevels.php:220
 msgid "Video: Membership Levels"
 msgstr "Vídeo: Nivells d'afiliació"
 
 #: adminpages/dashboard.php:128
 #: adminpages/membershiplevels.php:216
+#: adminpages/membershiplevels.php:219
 msgid "Create a Membership Level"
 msgstr "Crea un nivell d'afiliació"
 
 #: adminpages/membershiplevels.php:215
+#: adminpages/membershiplevels.php:218
 msgid "No Membership Levels Found"
 msgstr "No s'ha trobat cap nivell d'afiliació."
 
 #: adminpages/levels/edit-level.php:504
 #: adminpages/levels/edit-level.php:523
+#, php-format
 msgid "WARNING: This level is set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a certain number of payments. For more information, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">see our post here</a>."
 msgstr "AVÍS: S'ha establert aquest nivell amb un import de facturació recurrent i una data de caducitat. Només cal que establiu un d'aquests tret que realment vulgueu que aquesta afiliació caduqui després d'un nombre determinat de pagaments. Per obtenir més informació, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">consulteu la nostra entrada aquí</a>."
 
@@ -8816,6 +9044,7 @@ msgstr "Marqueu això per incloure aquest missatge al correu electrònic de conf
 #: adminpages/levels/save-level.php:127
 #: adminpages/discountcodes.php:353
 #: adminpages/levels/save-level.php:133
+#, php-format
 msgid "WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">see our post here</a>."
 msgstr "AVÍS: S'ha establert un nivell amb un import de facturació recurrent i una data de caducitat. Només cal que establiu un d'aquests tret que realment vulgueu que aquesta afiliació caduqui després d'un període de temps específic. Per obtenir més informació, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">consulteu la nostra entrada aquí</a>."
 
@@ -8887,6 +9116,7 @@ msgstr "Pagat"
 
 #: classes/gateways/class.pmprogateway_braintree.php:1037
 #: classes/gateways/class.pmprogateway_braintree.php:1048
+#, php-format
 msgid "Could not find the subscription. %s"
 msgstr "No s'ha trobat la subscripció. %s"
 
@@ -8950,6 +9180,7 @@ msgid "That post has since been updated."
 msgstr "Aquesta entrada s'ha actualitzat des de llavors."
 
 #: includes/terms-of-service.php:287
+#, php-format
 msgid "%s agreed to %s (ID #%d, last modified %s) on %s."
 msgstr "%s va acceptar %s (ID #%d, darrera modificació %s) el %s."
 
@@ -9038,6 +9269,7 @@ msgstr "Historial d'afiliació de Paid Memberships Pro"
 #: adminpages/membershiplevels.php:363
 #: includes/privacy.php:198
 #: includes/profile.php:886
+#: adminpages/membershiplevels.php:366
 msgid "Level Cost"
 msgstr "Cost del nivell"
 
@@ -9082,6 +9314,7 @@ msgid "Please note that data erasure will not cancel a user's membership level o
 msgstr "Tingueu en compte que l'esborrat de dades no cancel·larà el nivell d'afiliació d'un usuari ni cap subscripció activa. Editeu o suprimiu l'usuari mitjançant el tauler de WordPress."
 
 #: includes/privacy.php:83
+#, php-format
 msgid "%d PMPro orders were retained for business records."
 msgstr "S'han conservat %d comandes de PMPro per als registres de l'empresa."
 
@@ -9205,6 +9438,7 @@ msgid "Security Code (CVC)"
 msgstr "Codi de seguretat (CVC)"
 
 #: classes/gateways/class.pmprogateway_braintree.php:779
+#, php-format
 msgid "Failed to update customer: %s"
 msgstr "No s'ha pogut actualitzar el client: %s"
 
@@ -9213,10 +9447,12 @@ msgid "Problem accessing the Braintree Gateway. Please verify your PMPro Payment
 msgstr "Hi ha un problema en accedir a la passarel·la Braintree. Comproveu les vostres opcions de pagament de PMPro (Claus, etc.)."
 
 #: classes/gateways/class.pmprogateway_braintree.php:151
+#, php-format
 msgid "Problem loading plans: %s"
 msgstr "S'ha produït un problema en carregar els plans: %s"
 
 #: classes/gateways/class.pmprogateway_braintree.php:51
+#, php-format
 msgid "Attempting to load Braintree gateway: %s"
 msgstr "S'està intentant carregar la passarel·la de Braintree: %s"
 
@@ -9251,11 +9487,13 @@ msgstr "Esteu segur que voleu fer això? Torneu-ho a provar."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:831
 #: classes/gateways/class.pmprogateway_paypalexpress.php:832
+#, php-format
 msgid "Profile Start Date Issue Detected and Fixed at %s"
 msgstr "Problema amb la data d'inici del perfil detectat i corregit a %s"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:829
 #: classes/gateways/class.pmprogateway_paypalexpress.php:830
+#, php-format
 msgid "User: %1$s<br />Email: %2$s<br />Membership Level: %3$s<br />Order #: %4$s<br />Original Profile Start Date: %5$s<br />Adjusted Profile Start Date: %6$s<br />Trial Period: %7$s<br />Trial Frequency: %8$s<br />"
 msgstr "Usuari: %1$s<br />Correu electrònic: %2$s<br />Nivell d'afiliació: %3$s<br />Comanda #: %4$s<br />Data d'inici del perfil original: %5$s<br />Data d'inici del perfil ajustat: %6$s<br />Període de prova: %7$s<br />Freqüència del període de prova: %8$s<br />"
 
@@ -10253,6 +10491,7 @@ msgid "Andorra"
 msgstr "Andorra"
 
 #: classes/class-deny-network-activation.php:53
+#, php-format
 msgid "The %s plugin should not be network activated. Activate on each individual site's plugin page."
 msgstr "L'extensió %s no s'hauria d'activar a nivell de xarxa. Activeu-la a la pàgina d'extensions de cada lloc individual."
 
@@ -10350,14 +10589,17 @@ msgid "<p>A payment is being held for review within Authorize.net.</p><p>Payment
 msgstr "<p>S'està revisant un pagament a Authorize.net.</p><p>Informació de pagament d'Authorize.net"
 
 #: scheduled/crons.php:217
+#, php-format
 msgid "Credit card expiring email sent to %s. "
 msgstr "Correu electrònic de caducitat de targeta de crèdit enviat a %s. "
 
 #: scheduled/crons.php:124
+#, php-format
 msgid "Membership expiring email sent to %s. "
 msgstr "Correu electrònic d'afiliació caducada enviat a %s. "
 
 #: scheduled/crons.php:51
+#, php-format
 msgid "Membership expired email sent to %s. "
 msgstr "Correu electrònic d'afiliació caducada enviat a %s. "
 
@@ -10368,6 +10610,7 @@ msgstr "S'ha de configurar una passarel·la de pagament abans de processar quals
 
 #: preheaders/checkout.php:674
 #: preheaders/checkout.php:689
+#, php-format
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr "Heu de <a href=\"%s\">configurar una passarel·la de pagament</a> abans de processar cap pagament."
 
@@ -10392,6 +10635,7 @@ msgid "Payment accepted."
 msgstr "Pagament acceptat."
 
 #: includes/recaptcha.php:231
+#, php-format
 msgid "reCAPTCHA failed. (%s) Please try again."
 msgstr "reCAPTCHA ha fallat. (%s) Torneu-ho a provar."
 
@@ -10408,6 +10652,7 @@ msgid "Are you a spammer?"
 msgstr "Sou un spammer?"
 
 #: includes/terms-of-service.php:172
+#, php-format
 msgid "Please check the box to agree to the %s."
 msgstr "Marqueu la casella per acceptar els %s."
 
@@ -10451,6 +10696,7 @@ msgstr "S'ha produït un error en actualitzar la informació de facturació."
 
 #: preheaders/billing.php:302
 #: preheaders/billing.php:299
+#, php-format
 msgid "Information updated. <a href=\"%s\">&laquo; back to my account</a>"
 msgstr "Informació actualitzada. <a href=\"%s\">&laquo; torna al meu compte</a>"
 
@@ -10534,6 +10780,7 @@ msgstr "Selecciona"
 #: adminpages/wizard/save-steps.php:166
 #: includes/functions.php:344
 #: includes/functions.php:349
+#: adminpages/membershiplevels.php:484
 msgid "Free"
 msgstr "Gratuït"
 
@@ -10558,6 +10805,7 @@ msgstr "Pendent"
 
 #: pages/confirmation.php:57
 #: pages/confirmation.php:59
+#, php-format
 msgid "Below are details about your membership account. A welcome email has been sent to %s."
 msgstr "A sota es mostren els detalls del vostre compte de membre. S'ha enviat a %s un correu electrònic de benvinguda."
 
@@ -10586,11 +10834,13 @@ msgstr "Imprimeix"
 
 #: pages/confirmation.php:55
 #: pages/confirmation.php:57
+#, php-format
 msgid "Below are details about your membership account and a receipt for your initial membership order. A welcome email with a copy of your initial membership order has been sent to %s."
 msgstr ""
 
 #: pages/confirmation.php:44
 #: pages/confirmation.php:46
+#, php-format
 msgid "Thank you for your membership to %s. Your %s membership is now active."
 msgstr "Moltes gràcies per la vostra afiliació a %s. La vostra afiliació %s ja està activa."
 
@@ -10609,6 +10859,7 @@ msgstr "Completa el pagament"
 #: pages/checkout.php:310
 #: pages/checkout.php:337
 #: pages/checkout.php:355
+#, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr "Esteu connectat com a <strong>%s</strong>. Si voleu utilitzar un compte diferent per a aquesta afiliació, <a href=\"%s\">sortiu ara mateix</a>."
 
@@ -10710,6 +10961,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: pages/cancel.php:55
+#, php-format
 msgid "Are you sure you want to cancel your %s membership?"
 msgid_plural "Are you sure you want to cancel your %s memberships?"
 msgstr[0] ""
@@ -10868,6 +11120,7 @@ msgstr "Totes les actualitzacions de Paid Memberships Pro han finalitzat."
 
 #. translators: %s: URL to the updates page.
 #: includes/updates.php:111
+#, php-format
 msgid "(1) <a target=\"_blank\" href=\"%s\">Backup your WordPress database</a></strong> and then (2) <a href=\"%s\">click here to start the update</a>."
 msgstr "(1) <a target=\"_blank\" href=\"%s\">Feu una còpia de seguretat de la vostra base de dades de WordPress</a></strong> i, a continuació, (2) <a href=\"%s\">feu clic aquí per iniciar l'actualització</a>."
 
@@ -11014,12 +11267,14 @@ msgstr "Aquest codi de descompte ja no és vàlid."
 #: includes/functions.php:1931
 #: includes/functions.php:1940
 #: includes/functions.php:1956
+#, php-format
 msgid "This discount code expired on %s."
 msgstr "Aquest codi de descompte ha caducat el %s."
 
 #: includes/functions.php:1924
 #: includes/functions.php:1933
 #: includes/functions.php:1949
+#, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "Aquest codi de descompte serà efectiu el %s."
 
@@ -11044,6 +11299,7 @@ msgstr "No s'ha trobat el nivell d'afiliació."
 
 #: includes/functions.php:1294
 #: includes/functions.php:1303
+#, php-format
 msgid "Error interacting with database: %s"
 msgstr "S'ha produït un error en interactuar amb la base de dades: %s"
 
@@ -11066,16 +11322,19 @@ msgstr "No s'ha trobat l'identificador d'usuari."
 
 #: includes/functions.php:551
 #: includes/functions.php:560
+#, php-format
 msgid "%1$s membership expires after %2$d %3$s"
 msgstr "L'afiliació %1$s caduca després de %2$d %3$s"
 
 #: includes/functions.php:532
 #: includes/functions.php:541
+#, php-format
 msgid "Membership expires after %1$d %2$s."
 msgstr "L'afiliació caduca després de %1$d %2$s."
 
 #: includes/functions.php:506
 #: includes/functions.php:511
+#, php-format
 msgid "Trial pricing has been applied to the first %d payments."
 msgstr "S'ha aplicat el preu del període de prova als primers %d pagaments."
 
@@ -11086,26 +11345,31 @@ msgstr "S'ha aplicat el preu del període de prova al primer pagament."
 
 #: includes/functions.php:482
 #: includes/functions.php:487
+#, php-format
 msgid "<strong>%1$s every %2$d %3$s</strong>"
 msgstr "<strong>%1$s cada %2$d %3$s</strong>"
 
 #: includes/functions.php:480
 #: includes/functions.php:485
+#, php-format
 msgid "<strong>%1$s every %2$s</strong>"
 msgstr "<strong>%1$s cada %2$s</strong>"
 
 #: includes/functions.php:477
 #: includes/functions.php:482
+#, php-format
 msgid "<strong>%1$s after %2$d %3$s</strong>"
 msgstr "<strong>%1$s després de %2$d %3$s</strong>"
 
 #: includes/functions.php:474
 #: includes/functions.php:479
+#, php-format
 msgid "<strong>%1$s every %2$d %3$s for %4$d more payments</strong>"
 msgstr "<strong>%1$s cada %2$d %3$s per %4$d pagaments més</strong>"
 
 #: includes/functions.php:472
 #: includes/functions.php:477
+#, php-format
 msgid "<strong>%1$s per %2$s for %3$d more %4$s</strong>"
 msgstr "<strong>%1$s per %2$s per %3$d %4$s més</strong>"
 
@@ -11113,21 +11377,25 @@ msgstr "<strong>%1$s per %2$s per %3$d %4$s més</strong>"
 #: includes/functions.php:515
 #: includes/functions.php:417
 #: includes/functions.php:520
+#, php-format
 msgid "Customers in %1$s will be charged %2$s%% tax."
 msgstr "Als clients de %1$s se'ls cobrarà el %2$s%% d'impostos."
 
 #: includes/functions.php:402
 #: includes/functions.php:407
+#, php-format
 msgid "After your initial payment, your first %1$d payments will cost %2$s."
 msgstr "Després del pagament inicial, els vostres primers %1$d pagaments costaran %2$s."
 
 #: includes/functions.php:400
 #: includes/functions.php:405
+#, php-format
 msgid "After your initial payment, your first payment will cost %s."
 msgstr "Després del pagament inicial, el vostre primer pagament serà de %s."
 
 #: includes/functions.php:396
 #: includes/functions.php:401
+#, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr "Després del pagament inicial, els vostres primers %d pagaments són gratuïts."
 
@@ -11138,46 +11406,55 @@ msgstr "Després del pagament inicial, el vostre primer pagament és gratuït."
 
 #: includes/functions.php:379
 #: includes/functions.php:384
+#, php-format
 msgid " and then <strong>%1$s every %2$d %3$s</strong>."
 msgstr " i llavors <strong>%1$s cada %2$d %3$s</strong>."
 
 #: includes/functions.php:377
 #: includes/functions.php:382
+#, php-format
 msgid " and then <strong>%1$s per %2$s</strong>."
 msgstr " i llavors <strong>%1$s per %2$s</strong>."
 
 #: includes/functions.php:372
 #: includes/functions.php:377
+#, php-format
 msgid "<strong>%1$s every %2$d %3$s</strong>."
 msgstr "<strong>%1$s cada %2$d %3$s</strong>."
 
 #: includes/functions.php:370
 #: includes/functions.php:375
+#, php-format
 msgid "The price for membership is <strong>%1$s every %2$d %3$s</strong>."
 msgstr "El preu de l'afiliació és de <strong>%1$s cada %2$d %3$s</strong>."
 
 #: includes/functions.php:366
 #: includes/functions.php:371
+#, php-format
 msgid "<strong>%1$s per %2$s</strong>."
 msgstr "<strong>%1$s per %2$s</strong>."
 
 #: includes/functions.php:364
 #: includes/functions.php:369
+#, php-format
 msgid "The price for membership is <strong>%1$s per %2$s</strong>."
 msgstr "El preu de l'afiliació és de <strong>%1$s per %2$s</strong>."
 
 #: includes/functions.php:359
 #: includes/functions.php:364
+#, php-format
 msgid " and then <strong>%1$s after %2$d %3$s</strong>."
 msgstr " i llavors <strong>%1$s després de %2$d %3$s</strong>."
 
 #: includes/functions.php:356
 #: includes/functions.php:361
+#, php-format
 msgid " and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>."
 msgstr " i llavors <strong>%1$s cada %2$d %3$s per %4$d pagaments més</strong>."
 
 #: includes/functions.php:354
 #: includes/functions.php:359
+#, php-format
 msgid " and then <strong>%1$s per %2$s for %3$d more %4$s</strong>."
 msgstr " i llavors <strong>%1$s per %2$s per %3$d %4$s més</strong>."
 
@@ -11185,6 +11462,7 @@ msgstr " i llavors <strong>%1$s per %2$s per %3$d %4$s més</strong>."
 #: includes/functions.php:461
 #: includes/functions.php:351
 #: includes/functions.php:466
+#, php-format
 msgid "<strong>%s</strong> now"
 msgstr "<strong>%s</strong> ara"
 
@@ -11192,6 +11470,7 @@ msgstr "<strong>%s</strong> ara"
 #: includes/functions.php:459
 #: includes/functions.php:346
 #: includes/functions.php:464
+#, php-format
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr "El preu de l'afiliació és de <strong>%s</strong> ara"
 
@@ -11480,6 +11759,7 @@ msgstr "Torna a la pàgina de complements de PMPro"
 #: includes/addons.php:489
 #: includes/addons.php:497
 #: includes/addons.php:520
+#, php-format
 msgid "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">valid PMPro %s License Key</a> to update PMPro %s add ons."
 msgstr "Heu de tenir una <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">clau de llicència PMPro %s vàlida</a> per actualitzar els complements de PMPro %s."
 
@@ -11490,12 +11770,14 @@ msgstr "Actualitza l'extensió"
 #: includes/addons.php:466
 #: includes/addons.php:474
 #: includes/addons.php:497
+#, php-format
 msgid "You must have a <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:"
 msgstr "Heu de tenir una <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">clau de llicència de PMPro %s vàlida</a> per actualitzar els complements de PMPro %s. Les següents extensions no s'actualitzaran:"
 
 #: includes/addons.php:402
 #: includes/addons.php:410
 #: includes/addons.php:432
+#, php-format
 msgid "Important: This plugin requires a valid PMPro %s license key to update."
 msgstr "Important: Aquesta extensió requereix una clau de llicència PMPro %s vàlida per actualitzar-se."
 
@@ -11637,6 +11919,7 @@ msgstr "PayPal Express"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:946
 #: classes/gateways/class.pmprogateway_paypalstandard.php:525
 #: classes/gateways/class.pmprogateway_paypalexpress.php:947
+#: classes/gateways/class.pmprogateway_paypalexpress.php:938
 msgid "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 msgstr "Poseu-vos en contacte amb l'administrador del lloc o cancel·leu la vostra subscripció a PayPal per assegurar-vos que no se us cobrarà d'ara endavant."
 
@@ -11767,10 +12050,12 @@ msgid "Could not find the subscription."
 msgstr "No s'ha trobat la subscripció."
 
 #: classes/gateways/class.pmprogateway_braintree.php:966
+#, php-format
 msgid "Failed to subscribe with Braintree: %s"
 msgstr "No s'ha pogut realitzar la subscripció amb Braintree: %s"
 
 #: classes/gateways/class.pmprogateway_braintree.php:951
+#, php-format
 msgid "Error subscribing customer to plan with Braintree: %s (%s)"
 msgstr "S'ha produït un error en subscriure el client al pla amb Braintree: %s (%s)"
 
@@ -11895,6 +12180,7 @@ msgstr "Pagaments de Braintree"
 #: classes/gateways/class.pmprogateway_stripe.php:1465
 #: classes/gateways/class.pmprogateway_stripe.php:1461
 #: classes/gateways/class.pmprogateway_stripe.php:1462
+#, php-format
 msgid "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it."
 msgstr "La passarel·la %s depèn de l'extensió %s de PHP. Activeu-la o demaneu al vostre proveïdor d'allotjament que l'activi."
 
@@ -11977,12 +12263,14 @@ msgstr "Aquesta afiliació no caduca."
 
 #. translators: %s: level name
 #: preheaders/cancel.php:133
+#, php-format
 msgid "Your %s membership has been cancelled."
 msgstr "La vostra afiliació a %s s'ha cancel·lat."
 
 #: includes/email.php:466
 #: includes/email.php:486
 #: includes/email.php:485
+#, php-format
 msgid "The new level is %s."
 msgstr "El nou nivell és %s."
 
@@ -12003,6 +12291,7 @@ msgstr "La vostra afiliació a %s ha finalitzat"
 #: classes/class.pmproemail.php:685
 #: classes/class.pmproemail.php:684
 #: classes/class.pmproemail.php:687
+#, php-format
 msgid "Your trial at %s is ending soon"
 msgstr "El vostre període de prova a %s s'acaba aviat"
 
@@ -12053,6 +12342,7 @@ msgstr "Pagament del membre per %s a %s"
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:170
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:167
 #: classes/email-templates/class-pmpro-email-template-invoice.php:198
+#, php-format
 msgid "This membership will expire on %s."
 msgstr "Aquesta afiliació caducarà el %s."
 
@@ -12107,6 +12397,7 @@ msgstr "Codi de descompte"
 
 #: classes/class.pmproemail.php:671
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:73
+#, php-format
 msgid "Your membership confirmation for %s"
 msgstr "Confirmació per a la vostra afiliació a %s"
 
@@ -12119,6 +12410,7 @@ msgid "Your membership at %s has been CANCELLED"
 msgstr "La vostra afiliació a %s s'ha CANCEL·LAT"
 
 #: classes/class.pmproemail.php:120
+#, php-format
 msgid "An Email From %s"
 msgstr "Un correu electrònic de %s"
 
@@ -12647,6 +12939,7 @@ msgstr "No s'han trobat comandes."
 
 #. translators: %s is the Order Code.
 #: classes/class-pmpro-orders-list-table.php:899
+#, php-format
 msgid "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?"
 msgstr "La supressió de comandes és permanent i pot afectar els usuaris actius. Esteu segur que voleu suprimir la comanda %s?"
 
@@ -13260,10 +13553,12 @@ msgid "Members List"
 msgstr "Llistat de membres"
 
 #: adminpages/membershiplevels.php:490
+#: adminpages/membershiplevels.php:493
 msgid "After"
 msgstr "Després"
 
 #: adminpages/membershiplevels.php:365
+#: adminpages/membershiplevels.php:368
 msgid "Allow Signups"
 msgstr "Permet registres"
 
@@ -13275,15 +13570,18 @@ msgstr "Permet registres"
 #: pages/cancel.php:135
 #: pages/cancel.php:147
 #: adminpages/orders.php:747
+#: adminpages/membershiplevels.php:367
 msgid "Expiration"
 msgstr "Caducitat"
 
 #: adminpages/membershiplevels.php:283
 #: adminpages/membershiplevels.php:286
+#: adminpages/membershiplevels.php:289
 msgid "Search Levels"
 msgstr "Cerca nivells"
 
 #: adminpages/membershiplevels.php:230
+#: adminpages/membershiplevels.php:233
 msgid "Add New Level"
 msgstr "Afegeix un nou nivell"
 
@@ -13372,6 +13670,7 @@ msgstr "La integració amb 2Checkout no suporta períodes de prova personalitzat
 
 #: adminpages/levels/edit-level.php:400
 #: adminpages/levels/edit-level.php:419
+#, php-format
 msgid "You will need to create a \"Plan\" in your Braintree dashboard with the same settings and the \"Plan ID\" set to %s."
 msgstr "Haureu de crear un «Plan» al vostre tauler de Braintree amb les mateixes opcions i el «Plan ID» establert a %s."
 
@@ -13420,6 +13719,7 @@ msgstr "Missatge de confirmació"
 #: adminpages/levels/edit-level.php:234
 #: adminpages/user-fields/field-settings.php:74
 #: adminpages/user-fields/group-settings.php:97
+#: adminpages/membershiplevels.php:365
 msgid "Name"
 msgstr "Nom"
 
@@ -13442,6 +13742,7 @@ msgid "Membership level deleted successfully."
 msgstr "El nivell de membre s'ha suprimit correctament."
 
 #: adminpages/levels/delete-level.php:37
+#, php-format
 msgid "There was an error removing the membership level for user with ID=%d. You will want to check your payment gateway to see if their subscription is still active."
 msgstr ""
 
@@ -13475,6 +13776,7 @@ msgid "Admin Change"
 msgstr "Canvi d'administrador"
 
 #: adminpages/emailsettings.php:119
+#, php-format
 msgid "If unchecked, all emails from \"WordPress &lt;%s&gt;\" will be filtered to use the above settings."
 msgstr "Si no està marcada, tots els correus electrònics de «WordPress &lt;%s&gt;» es filtraran per utilitzar les opcions anteriors."
 
@@ -13504,6 +13806,7 @@ msgstr "Opcions de correu electrònic"
 
 #. translators: %s is the Discount Code.
 #: classes/class-pmpro-discount-code-list-table.php:377
+#, php-format
 msgid "Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore."
 msgstr "Esteu segur que vols suprimir el codi de descompte %s ? Les subscripcions dels usuaris existents no canviaran, però els nous usuaris no podran utilitzar aquest codi mai més."
 
@@ -13771,6 +14074,7 @@ msgstr "Això es generarà quan deseu."
 #: adminpages/discountcodes.php:446
 #: adminpages/subscriptions.php:249
 #: adminpages/subscriptions.php:257
+#: adminpages/membershiplevels.php:364
 msgid "ID"
 msgstr "ID"
 
@@ -13803,6 +14107,7 @@ msgstr "S'ha produït un error en suprimir el codi de descompte. El codi només 
 
 #: adminpages/discountcodes.php:327
 #: adminpages/discountcodes.php:330
+#, php-format
 msgid "Code %s deleted successfully."
 msgstr "El codi %s s'ha suprimit correctament."
 
@@ -13813,6 +14118,7 @@ msgstr "S'han produït errors en actualitzar els valors del nivell: "
 
 #: adminpages/discountcodes.php:279
 #: adminpages/discountcodes.php:282
+#, php-format
 msgid "Error saving values for the %s level."
 msgstr "S'ha produït un error en desar els valors per al nivell %s."
 
@@ -13898,6 +14204,8 @@ msgstr "Voleu utilitzar reCAPTCHA?"
 #: adminpages/user-fields/group-settings.php:57
 #: adminpages/user-fields/group-settings.php:65
 #: classes/class-pmpro-field.php:1673
+#: adminpages/membershiplevels.php:499
+#: adminpages/membershiplevels.php:501
 msgid "Yes"
 msgstr "Sí"
 
@@ -13956,6 +14264,7 @@ msgstr "Amaga els anuncis a tots els membres"
 #: adminpages/user-fields/group-settings.php:58
 #: adminpages/user-fields/group-settings.php:67
 #: classes/class-pmpro-field.php:1673
+#: adminpages/membershiplevels.php:504
 msgid "No"
 msgstr "No"
 
@@ -14049,15 +14358,18 @@ msgstr "Pàgines"
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:106
 #: blocks/src/sidebar/index.js:230
+#: adminpages/membershiplevels.php:224
 msgid "Membership Levels"
 msgstr "Nivells d'afiliació"
 
 #: adminpages/admin_header.php:159
+#, php-format
 msgid "We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 msgstr "Us recomanem que actualitzeu a PHP %s o superior. Demaneu al vostre proveïdor que l'actualitzi."
 
 #: adminpages/admin_header.php:153
 #: classes/gateways/class.pmprogateway_braintree.php:73
+#, php-format
 msgid "The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 msgstr "La passarel·la de Braintree requereix PHP 5.4.45 o superior. Recomanem actualitzar a PHP %s o superior. Demaneu al vostre proveïdor que l'actualitzi."
 
@@ -14065,6 +14377,7 @@ msgstr "La passarel·la de Braintree requereix PHP 5.4.45 o superior. Recomanem 
 #: classes/gateways/class.pmprogateway_stripe.php:1450
 #: classes/gateways/class.pmprogateway_stripe.php:1446
 #: classes/gateways/class.pmprogateway_stripe.php:1447
+#, php-format
 msgid "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 msgstr "El passarel·la de Stripe requereix PHP 5.3.29 o superior. Recomanem actualitzar a PHP %s o superior. Demaneu al vostre proveïdor que l'actualitzi."
 
@@ -14179,6 +14492,8 @@ msgstr "N/A"
 #: includes/fields.php:1393
 #: adminpages/user-fields/field-settings.php:58
 #: classes/class-pmpro-field.php:1178
+#: adminpages/membershiplevels.php:450
+#: adminpages/membershiplevels.php:452
 msgid "Delete"
 msgstr "Suprimeix"
 
@@ -14257,6 +14572,7 @@ msgid "Check Again"
 msgstr "Comprova de nou"
 
 #: adminpages/addons.php:46
+#, php-format
 msgid "Last checked on %s at %s."
 msgstr "Darrera comprovació:  %s a %s."
 
@@ -14309,6 +14625,7 @@ msgstr ""
 
 #. translators: $1$s - Paid Memberships Pro plugin name; $2$s - testimonial link.
 #: includes/admin.php:301
+#, php-format
 msgid "Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">submit a testimonial</a> to help others find %2$s. Thank you from the %3$s team!"
 msgstr ""
 
@@ -14519,10 +14836,12 @@ msgid "Global Variables"
 msgstr ""
 
 #: adminpages/emailtemplates-edit.php:66
+#, php-format
 msgid "%s Variables"
 msgstr ""
 
 #: adminpages/levels/edit-level.php:259
+#, php-format
 msgid "This text appears at checkout and on the pricing page if using the %s. Use it to provide a brief overview of the membership level, highlighting key features and benefits to potential members."
 msgstr ""
 
@@ -14581,10 +14900,12 @@ msgid "Renewals"
 msgstr ""
 
 #: classes/class-pmpro-field.php:302
+#, php-format
 msgid "The property %s is not valid for the field type %s."
 msgstr ""
 
 #: classes/class-pmpro-field.php:306
+#, php-format
 msgid "The property %s does not exist."
 msgstr ""
 
@@ -14593,18 +14914,22 @@ msgid "PMPro_Field properties should not be modified directly and may break in a
 msgstr ""
 
 #: classes/class-pmpro-field.php:344
+#, php-format
 msgid "The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the $args property of the constructor when creating a new PMPro_Field object."
 msgstr ""
 
 #: classes/class-pmpro-field.php:349
+#, php-format
 msgid "The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the save_field_for_user method of the PMPro_Field object."
 msgstr ""
 
 #: classes/class-pmpro-field.php:353
+#, php-format
 msgid "The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the display() method of the PMPro_Field object."
 msgstr ""
 
 #: classes/class-pmpro-field.php:356
+#, php-format
 msgid "The method %s of PMPro_Field has become private and will not be available in a future version."
 msgstr ""
 
@@ -15732,10 +16057,12 @@ msgid "Discount codes should be set on the $pmpro_level object."
 msgstr ""
 
 #: includes/fields.php:231
+#, php-format
 msgid "The group %s should not be passed into %s. Use PMPro_Field_Group::display() instead."
 msgstr ""
 
 #: includes/fields.php:234
+#, php-format
 msgid "The scope %s should not be passed into %s. Use PMPro_Field_Group::display() instead."
 msgstr ""
 
@@ -16416,6 +16743,7 @@ msgid "Join the PMPro User Community on Slack"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:163
+#, php-format
 msgid "Note: the PayPal Standard gateway has been deprecated. Please switch to using <a href=\"%s\" target=\"_blank\">PayPal Express</a>."
 msgstr ""
 
@@ -16444,6 +16772,7 @@ msgstr ""
 #: includes/functions.php:1699
 #: includes/functions.php:1701
 #: includes/functions.php:1714
+#, php-format
 msgid "Page %s"
 msgstr ""
 
@@ -16468,9 +16797,12 @@ msgstr ""
 
 #. translators: %s is the Level Name.
 #: adminpages/membershiplevels.php:397
+#: adminpages/membershiplevels.php:400
+#, php-format
 msgid "Are you sure you want to delete membership level %s? All payment subscriptions for this level will be cancelled."
 msgstr ""
 
 #: includes/addons.php:542
+#, php-format
 msgid "You must enter a valid PMPro %s License Key in the PMPro Settings to update this Add On."
 msgstr ""
