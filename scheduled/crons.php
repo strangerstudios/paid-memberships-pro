@@ -385,6 +385,92 @@ function pmpro_cron_recurring_payment_reminders() {
 }
 
 /**
+ * Churned Member Emails
+ * Sends win-back emails to members whose memberships expired a certain number of days ago.
+ */
+function pmpro_cron_churned_emails() {
+	global $wpdb;
+
+	// Don't let anything run if PMPro is paused
+	if ( pmpro_is_paused() ) {
+		return;
+	}
+	
+	// Set default value to true (disabled) if the option doesn't exist yet
+	add_option( 'pmpro_email_membership_churned_disabled', true );
+	
+	// Check if churned emails are disabled
+	if ( filter_var( get_option( 'pmpro_email_membership_churned_disabled' ), FILTER_VALIDATE_BOOLEAN ) ) {
+		// Feature is disabled, exit early
+		return;
+	}
+
+	// Clean up errors in the memberships_users table that could cause problems
+	pmpro_cleanup_memberships_users_table();
+
+	// The current date
+	$today = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
+
+	// Get the configurable days setting (default 30)
+	$churned_days = intval(get_option("pmpro_churned_email_days", 30));
+	
+	// The date N days ago based on the setting
+	$churned_date = date( 'Y-m-d H:i:s', strtotime( '-' . $churned_days . ' days', current_time( 'timestamp' ) ) );
+	$interval = date( 'Y-m-d 00:00:00', strtotime( $churned_date ) );
+
+	// Look for users whose membership expired N days ago and who haven't been sent a churned email yet
+	$sqlQuery = $wpdb->prepare(
+		"SELECT DISTINCT
+			mu.user_id,
+			mu.membership_id,
+			mu.startdate,
+			mu.enddate,
+			um.meta_value AS notice
+		FROM {$wpdb->pmpro_memberships_users} AS mu
+		LEFT JOIN {$wpdb->usermeta} AS um ON um.user_id = mu.user_id
+			AND um.meta_key = CONCAT( 'pmpro_churned_notice_', mu.membership_id )
+		WHERE ( um.meta_value IS NULL )
+			AND ( mu.status = 'expired' )
+			AND ( mu.enddate IS NOT NULL )
+			AND ( mu.enddate <> '0000-00-00 00:00:00' )
+			AND ( mu.enddate <= %s )
+			AND ( mu.membership_id <> 0 OR mu.membership_id <> NULL )
+		ORDER BY mu.enddate",
+		$interval,
+	);
+
+	if ( defined( 'PMPRO_CRON_LIMIT' ) ) {
+		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
+	}
+
+	$expired_users = $wpdb->get_results( $sqlQuery );
+
+	foreach( $expired_users as $user_data ) {
+		$send_email = apply_filters( 'pmpro_send_churned_email', true, $user_data->user_id );
+		
+		if ( $send_email ) {
+			// Send the churned email
+			$pmproemail = new PMProEmail();
+			$user = get_userdata( $user_data->user_id );
+			
+			if ( ! empty( $user ) ) {
+				$pmproemail->sendMembershipChurnedEmail( $user, $user_data->membership_id );
+				
+				if ( WP_DEBUG ) {
+					error_log( sprintf( esc_html__( "Churned member email sent to %s.", 'paid-memberships-pro' ), $user->user_email ) );
+				}
+			}
+		}
+
+		// Delete any old user meta for this key to prevent duplicate user meta rows
+		delete_user_meta( $user_data->user_id, 'pmpro_churned_notice' );
+
+		// Update user meta so we don't email them again
+		update_user_meta( $user_data->user_id, 'pmpro_churned_notice_' . $user_data->membership_id, $today );
+	}
+}
+
+/**
  * Delete old files in wp-content/uploads/pmpro-register-helper/tmp every day.
  */
 function pmpro_cron_delete_tmp() {

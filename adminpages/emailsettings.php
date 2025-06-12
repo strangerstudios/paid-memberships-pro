@@ -33,6 +33,8 @@
 		
 		pmpro_setOption("email_member_notification");
 		
+		pmpro_setOption("churned_email_days", null, 'intval');
+		
 		//assume success
 		$msg = true;
 		$msgt = "Your email settings have been updated.";		
@@ -48,6 +50,8 @@
 	$email_admin_billing = get_option( "pmpro_email_admin_billing");	
 	
 	$email_member_notification = get_option( "pmpro_email_member_notification");
+	
+	$churned_email_days = get_option("pmpro_churned_email_days", 30);
 	
 	if(empty($from_email))
 	{
@@ -184,6 +188,18 @@
 							<input type="checkbox" id="email_member_notification" name="email_member_notification" value="1" <?php if(!empty($email_member_notification)) { ?>checked="checked"<?php } ?> />
 							<label for="email_member_notification"><?php esc_html_e('Default WP notification email.', 'paid-memberships-pro' );?></label>
 							<p class="description"><?php esc_html_e( 'Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="churned_email_days"><?php esc_html_e("Churned Member Email Delay", "paid-memberships-pro" );?>:</label>
+						</th>
+						<td>
+							<input type="number" id="churned_email_days" name="churned_email_days" value="<?php echo esc_attr($churned_email_days); ?>" min="1" max="365" class="small-text" /> <?php esc_html_e("days", "paid-memberships-pro" );?>
+							<p class="description">
+								<?php esc_html_e( "Number of days after a membership expires before sending a win-back email to churned members.", "paid-memberships-pro" ); ?>
+								<?php printf( esc_html__( 'You can %scustomize or disable this email%s from the Email Templates page.', 'paid-memberships-pro' ), '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-emailtemplates' ) ) . '">', '</a>' ); ?>
+							</p>
 						</td>
 					</tr>
 				</tbody>
