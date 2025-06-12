@@ -26,14 +26,6 @@ define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
-// New in 3.5: We now use Action Scheduler instead of WP Cron.
-if ( ! class_exists( \ActionScheduler::class ) ) {
-	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
-}
-require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' ); 	// Our Action Scheduler Manager for PMPro
-require_once( PMPRO_DIR . '/classes/class-pmpro-recurring-actions.php' ); 			// Load our recurring scheduled actions.
-// Old cron includes for backwards compatibility.
-require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
 require_once( PMPRO_DIR . '/includes/sessions.php' );               		// start/close PHP session vars
@@ -45,6 +37,7 @@ require_once( PMPRO_DIR . '/includes/functions.php' );              		// misc fu
 require_once( PMPRO_DIR . '/includes/updates.php' );                		// database and other updates
 require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           		// database and other updates
 require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// deprecated hooks and functions
+require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 	require_once( PMPRO_DIR . '/includes/license.php' );            		// defines location of addons data and licenses
@@ -57,6 +50,14 @@ require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
+
+
+// New in 3.5: We now use Action Scheduler instead of WP Cron.
+if ( ! class_exists( \ActionScheduler::class ) ) {
+	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
+}
+require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' ); 	// Our Action Scheduler Manager for PMPro
+require_once( PMPRO_DIR . '/classes/class-pmpro-recurring-actions.php' ); 			// Load our recurring scheduled actions.
 
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template.php' ); // base class for email templates
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel.php' ); // cancel email template
