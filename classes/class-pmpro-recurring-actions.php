@@ -222,10 +222,8 @@ class PMPro_Recurring_Actions {
 		$membership = pmpro_getSpecificMembershipLevelForUser( $user_id, $membership_id );
 		if (
 		empty( $membership ) ||
-		$membership->id != $membership_id ||
-		$membership->status !== 'active' ||
 		empty( $membership->enddate ) ||
-		strtotime( $membership->enddate ) <= current_time( 'timestamp' )
+		$membership->enddate <= current_time( 'timestamp' )
 		) {
 			// User is not eligible for a reminder email.
 			return;
@@ -327,11 +325,9 @@ class PMPro_Recurring_Actions {
 		$membership = pmpro_getSpecificMembershipLevelForUser( $user_id, $membership_id );
 		if (
 			empty( $membership ) ||
-			$membership->id != $membership_id ||
-			$membership->status !== 'active' ||
 			empty( $membership->enddate ) ||
 			// Check if the membership end date is in the future
-			strtotime( $membership->enddate ) > current_time( 'timestamp' )
+			$membership->enddate > current_time( 'timestamp' )
 		) {
 			// User is not eligible for expiration.
 			return;
@@ -489,7 +485,6 @@ class PMPro_Recurring_Actions {
 					array(
 						'subscription_id' => $subscription_to_notify->id,
 						'template'        => $template,
-						'days'            => $days,
 					),
 					'pmpro_async_tasks'
 				);
@@ -511,9 +506,12 @@ class PMPro_Recurring_Actions {
 	 * @param int    $days The number of days before payment.
 	 * @return void
 	 */
-	public function send_recurring_payment_reminder_email( $subscription_id, $template, $days ) {
+	public function send_recurring_payment_reminder_email( $subscription_id, $template ) {
 		$subscription_obj = new PMPro_Subscription( $subscription_id );
 		$user             = get_userdata( $subscription_obj->get_user_id() );
+
+		// Calculate the days until the next payment.
+		$days = floor( ( strtotime( $subscription_obj->get_next_payment_date() ) - current_time( 'timestamp' ) ) / DAY_IN_SECONDS );
 
 		if ( empty( $user ) ) {
 			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d' ) );
