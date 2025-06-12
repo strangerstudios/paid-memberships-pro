@@ -1038,15 +1038,6 @@
 			// Always cancel the order locally even if PayPal might fail
 			$order->updateStatus("cancelled");
 
-			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.
-			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) ||
-				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) {
-				// recurring_payment_failed transaction still need to be cancelled
-				if ( $_POST['txn_type'] !== 'recurring_payment_failed' ) {
-					return true;
-				}
-			}
-
 			// Cancel at gateway
 			return $this->cancelSubscriptionAtGateway($order);
 		}
