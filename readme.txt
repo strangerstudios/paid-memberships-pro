@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.4.6
+Stable tag: 3.4.7
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,12 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.4.7 - 2025-06-12 =
+* BUG FIX/ENHANCEMENT: Now explicitly setting the Stripe API version when processing Stripe webhook events. #3409 (@dparker1005)
+* BUG FIX: Fixed an issue where recurring Stripe orders may not be recorded on sites connecting with API keys if the Stripe account was created or its API version was updated after 2025-03-31 (Stripe API version 2025-03-31.basil or later). #3409 (@dparker1005)
+* BUG FIX: Fixed an issue where membership levels could be moved to the first level group when using the search function on the Membership Levels settings page. #3407 (@dparker1005)
+* BUG FIX: Fixed an issue where users may not receive cancellation emails after a PayPal subscription is cancelled due to failed payments. #3395 (@dparker1005)
+
 = 3.4.6 - 2025-04-21 =
 * BUG FIX: Fixed fatal error related to redefining `pmpro_getAddonBySlug` when activating PMPro Core with the PMPro Update Manager active. (@ideadude)
 

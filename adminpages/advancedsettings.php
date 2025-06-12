@@ -55,7 +55,7 @@
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("uninstall");		
 
-		// Set up Wisdom tracking cron if needed.
+		// Set up Wisdom tracking if needed.
 		if ( (int)get_option( "pmpro_wisdom_opt_out") === 0 ) {
 			$wisdom_integration = PMPro_Wisdom_Integration::instance();
 			$wisdom_integration->wisdom_tracker->schedule_tracking();

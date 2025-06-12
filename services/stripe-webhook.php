@@ -12,15 +12,16 @@
 	// For compatibility with old library (Namespace Alias)
 	use Stripe\Invoice as Stripe_Invoice;
 	use Stripe\Subscription as Stripe_Subscription;
+	use Stripe\Charge as Stripe_Charge;
 	use Stripe\Event as Stripe_Event;
 	use Stripe\PaymentMethod as Stripe_PaymentMethod;
 	use Stripe\Customer as Stripe_Customer;
+	use Stripe\Checkout\Session as Stripe_Checkout_Session;
 
 	global $logstr;	
 
-	if(!class_exists("Stripe\Stripe")) {
-		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
-	}
+	// Make sure that Stripe is loaded and is the correct API version.
+	$stripe = new PMProGateway_stripe();
 
 	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
 	pmpro_doing_webhook( 'stripe', true );
@@ -104,17 +105,20 @@
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{
-			if($pmpro_stripe_event->data->object->amount_due > 0)
+			// Make sure we have the invoice in the desired API version.
+			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+
+			if($invoice->amount_due > 0)
 			{
 				//do we have this order yet? (check status too)
 				$order = new MemberOrder();
-				$order->getMemberOrderByPaymentTransactionID( $pmpro_stripe_event->data->object->id );
+				$order->getMemberOrderByPaymentTransactionID( $invoice->id );
 
 				//no? create it
 				if(empty($order->id))
 				{				
 					$old_order = new MemberOrder();
-					$old_order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->subscription);
+					$old_order->getLastMemberOrderBySubscriptionTransactionID($invoice->subscription);
 					
 					//still can't find the order
 					if(empty($old_order) || empty($old_order->id))
@@ -131,8 +135,6 @@
 						pmpro_stripeWebhookExit();
 					}
 					$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
-
-					$invoice = $pmpro_stripe_event->data->object;
 
 					//alright. create a new order
 					$morder = new MemberOrder();
@@ -218,7 +220,8 @@
 			}
 		}
 		elseif($pmpro_stripe_event->type == "invoice.payment_action_required") {
-			$invoice = $pmpro_stripe_event->data->object;
+			// Make sure we have the invoice in the desired API version.
+			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
 
 			// Get the last order for this invoice's subscription.
 			if ( ! empty( $invoice->subscription ) ) {
@@ -279,12 +282,13 @@
 			else
 			{
 				$logstr .= "Could not find the related subscription for event with ID #" . $pmpro_stripe_event->id . ".";
-				if(!empty($pmpro_stripe_event->data->object->customer))
+				if(!empty($invoice->customer))
 					$logstr .= " Customer ID #" . $invoice->customer . ".";
 				pmpro_stripeWebhookExit();
 			}
 		} elseif($pmpro_stripe_event->type == "charge.failed") {
-			$charge = $pmpro_stripe_event->data->object;
+			// Make sure we have the charge in the desired API version.
+			$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->id );
 
 			// Get the invoice for this charge if it exists.
 			if ( ! empty( $charge->invoice ) ) {
@@ -328,7 +332,7 @@
 				
 				// Find the payment intent.
 				$payment_intent_args = array(
-					'id'     => $pmpro_stripe_event->data->object->payment_intent,
+					'id'     => $charge->payment_intent,
 					'expand' => array(
 						'payment_method',
 						'latest_charge',
@@ -345,7 +349,7 @@
 					$payment_method = $payment_intent->latest_charge->payment_method_details;
 				}				
 				if ( empty( $payment_method ) ) {
-					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id . ".";
+					$logstr .= "Could not find payment method for charge " . $charge->id . ".";
 				}
 				// Update payment method and billing address on order.
 				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );
@@ -364,8 +368,8 @@
 			else
 			{
 				$logstr .= "Could not find the related subscription for event with ID #" . $pmpro_stripe_event->id . ".";
-				if(!empty($pmpro_stripe_event->data->object->customer))
-					$logstr .= " Customer ID #" . $pmpro_stripe_event->data->object->customer . ".";
+				if(!empty($charge->customer))
+					$logstr .= " Customer ID #" . $charge->customer . ".";
 				pmpro_stripeWebhookExit();
 			}
 		}
@@ -375,14 +379,17 @@
 			pmpro_stripeWebhookExit();
 		}
 		elseif( $pmpro_stripe_event->type == "charge.refunded" )
-		{			
-			$payment_transaction_id = $pmpro_stripe_event->data->object->id;
+		{
+			// Make sure we have the charge in the desired API version.
+			$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->id );
+
+			$payment_transaction_id = $charge->id;
 			$morder = new MemberOrder();
       		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
 		
 			// Initial payment orders are stored using the invoice ID, so check that value too.
-			if ( empty( $morder->id ) && ! empty( $pmpro_stripe_event->data->object->invoice ) ) {
-				$payment_transaction_id = $pmpro_stripe_event->data->object->invoice;
+			if ( empty( $morder->id ) && ! empty( $charge->invoice ) ) {
+				$payment_transaction_id = $charge->invoice;
 				$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
 			}
 
@@ -436,8 +443,8 @@
 		}
 		elseif($pmpro_stripe_event->type == "checkout.session.completed")
 		{
-			// First, let's get the checkout session.
-			$checkout_session = $pmpro_stripe_event->data->object;
+			// Make sure we have the checkout session in the desired API version.
+			$checkout_session = Stripe_Checkout_Session::retrieve( $pmpro_stripe_event->data->object->id );
 
 			// Let's then find the PMPro order for the checkout session.
 			$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT pmpro_membership_order_id FROM $wpdb->pmpro_membership_ordermeta WHERE meta_key = 'stripe_checkout_session_id' AND meta_value = %s LIMIT 1", $checkout_session->id ) );
@@ -538,8 +545,8 @@
 		}
 		elseif($pmpro_stripe_event->type == "checkout.session.async_payment_succeeded")
 		{
-			// First, let's get the checkout session.
-			$checkout_session = $pmpro_stripe_event->data->object;
+			// Make sure we have the checkout session in the desired API version.
+			$checkout_session = Stripe_Checkout_Session::retrieve( $pmpro_stripe_event->data->object->id );
 
 			// Let's then find the PMPro order for the checkout session.
 			$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT pmpro_membership_order_id FROM $wpdb->pmpro_membership_ordermeta WHERE meta_key = 'stripe_checkout_session_id' AND meta_value = %s LIMIT 1", $checkout_session->id ) );
@@ -570,8 +577,8 @@
 		}
 		elseif($pmpro_stripe_event->type == "checkout.session.async_payment_failed")
 		{
-			// First, let's get the checkout session.
-			$checkout_session = $pmpro_stripe_event->data->object;
+			// Make sure we have the checkout session in the desired API version.
+			$checkout_session = Stripe_Checkout_Session::retrieve( $pmpro_stripe_event->data->object->id );
 
 			// Let's then find the PMPro order for the checkout session.
 			$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT pmpro_membership_order_id FROM $wpdb->pmpro_membership_ordermeta WHERE meta_key = 'stripe_checkout_session_id' AND meta_value = %s LIMIT 1", $checkout_session->id ) );
@@ -600,10 +607,8 @@
 			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
 			pmpro_stripeWebhookExit();
 		} elseif ( $pmpro_stripe_event->type == 'invoice.created' ) {
-			// If this is a draft invoice, make sure that the application fee is correct.
-			$stripe_gateway = new PMProGateway_stripe();
-			$application_fee = $stripe_gateway->get_application_fee_percentage();
-			$invoice = $pmpro_stripe_event->data->object;
+      // Make sure we have the invoice in the desired API version.
+			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
 
 			// If the invoice is not in draft status, we don't need to do anything.
 			if ( $invoice->status !== 'draft' ) {
@@ -612,6 +617,7 @@
 			}
 
 			// Update the application fee.
+      $application_fee = $stripe_gateway->get_application_fee_percentage();
 			try {
 				Stripe_Invoice::update(
 					$invoice->id,
@@ -624,19 +630,11 @@
 				$logstr .= "Could not update application fee for invoice " . $invoice->id . ". " . $e->getMessage();
 			}
 
-			// Check if the invoice has a subscription.
-			$subscription = null;
-			if ( ! empty( $invoice->subscription ) ) {
-				$subscription = $invoice->subscription;
-			} elseif ( ! empty( $invoice->parent->subscription_details->subscription ) ) {
-				$subscription = $invoice->parent->subscription_details->subscription;
-			}
-
 			// If we have a subscription, update the application fee.
-			if ( ! empty( $subscription ) ) {
+			if ( ! empty( $invoice->subscription ) ) {
 				try {
 					Stripe_Subscription::update(
-						$subscription,
+						$invoice->subscription,
 						array(
 							'application_fee_percent' => $application_fee,
 						)

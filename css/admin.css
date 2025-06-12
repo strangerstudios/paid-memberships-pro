@@ -1654,13 +1654,25 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	max-width: none;
 }
 
+.pmpro_admin-pmpro-paymentsettings .wp-list-table .column-gateway a {
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.pmpro_admin-pmpro-paymentsettings .wp-list-table .column-gateway a:hover {
+	text-decoration: underline;
+}
+
+.pmpro_admin-pmpro-paymentsettings .wp-list-table .column-description {
+	width: 40%;
+}
+
 .pmpro_admin-pmpro-paymentsettings span.pmpro_gateway-mode {
 	border: 1px solid transparent;
 	border-radius: 3px;
 	display: inline-block;
 	font-size: 14px;
 	font-weight: 500;
-	margin-left: 5px;
 	padding: .25em .5em;
 }
 
