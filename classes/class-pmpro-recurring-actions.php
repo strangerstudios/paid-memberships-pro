@@ -49,6 +49,9 @@ class PMPro_Recurring_Actions {
 		add_action( 'pmpro_schedule_weekly', array( $this, 'check_inactive_memberships' ) );
 		add_action( 'pmpro_schedule_weekly', array( $this, 'check_duplicate_active_rows' ) );
 
+		// Make sure that the restricted files directory is set up.
+		add_action( 'pmpro_schedule_daily', 'pmpro_set_up_restricted_files_directory' );
+
 		// Expired Membership Routines (Daily)
 		add_action( 'pmpro_schedule_daily', array( $this, 'check_for_expired_memberships' ) );
 		add_action( 'pmpro_expire_memberships', array( $this, 'expire_memberships' ), 10, 2 );
