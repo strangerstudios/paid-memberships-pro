@@ -26,42 +26,38 @@ define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
-if ( ! class_exists( \ActionScheduler::class ) ) {
-	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
-} else {
-	// Another plugin loaded ActionScheduler.
-	// Let's log the current info so that we know where to look if we need to troubleshoot library conflicts.
-	$action_scheduler_version = \ActionScheduler::version();
-	$previously_loaded_class = new ReflectionClass( \ActionScheduler::class );
-	pmpro_track_library_conflict( 'action-scheduler', $previously_loaded_class->getFileName(), $action_scheduler_version );
-
-}
 
 require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
-require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP session vars
+require_once( PMPRO_DIR . '/includes/sessions.php' );               		// start/close PHP session vars
 
-require_once( PMPRO_DIR . '/includes/localization.php' );           // localization functions
-require_once( PMPRO_DIR . '/includes/lib/glotpress-helper.php' );   // handles translation updates logic from our own server.
-require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        // parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
-require_once( PMPRO_DIR . '/includes/functions.php' );              // misc functions used by the plugin
-require_once( PMPRO_DIR . '/includes/updates.php' );                // database and other updates
-require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           // database and other updates
-require_once( PMPRO_DIR . '/includes/deprecated.php' );             // deprecated hooks and functions
+require_once( PMPRO_DIR . '/includes/localization.php' );           		// localization functions
+require_once( PMPRO_DIR . '/includes/lib/glotpress-helper.php' );   		// handles translation updates logic from our own server.
+require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        		// parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
+require_once( PMPRO_DIR . '/includes/functions.php' );              		// misc functions used by the plugin
+require_once( PMPRO_DIR . '/includes/updates.php' );                		// database and other updates
+require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           		// database and other updates
+require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// deprecated hooks and functions
+require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
-	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
+	require_once( PMPRO_DIR . '/includes/license.php' );            		// defines location of addons data and licenses
 }
 
-require_once( PMPRO_DIR . '/includes/crons.php' );                  // cron-related functionality
-require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for expiring members, sending expiration emails, etc
-
-require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
-require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and filter emails sent by PMPro
+require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       		// class to process and save orders
+require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        		// setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
+
+
+// New in 3.5: We now use Action Scheduler instead of WP Cron.
+if ( ! class_exists( \ActionScheduler::class ) ) {
+	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
+}
+require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' ); 	// Our Action Scheduler Manager for PMPro
+require_once( PMPRO_DIR . '/classes/class-pmpro-recurring-actions.php' ); 			// Load our recurring scheduled actions.
 
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template.php' ); // base class for email templates
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel.php' ); // cancel email template
@@ -177,6 +173,17 @@ require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-integration.php';
 $wisdom_integration = PMPro_Wisdom_Integration::instance();
 $wisdom_integration->setup_wisdom();
 
+// Setup our PMPro Action Scheduler.
+add_action( 'plugins_loaded', function() {
+
+	// Load our Action Scheduler class.
+	PMPro_Action_Scheduler::instance();
+
+	// Add our recurring actions.
+	PMPro_Recurring_Actions::instance();
+
+} );
+
 /*
 	Setup the DB and check for upgrades
 */
@@ -248,32 +255,19 @@ $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true 
 /*
 	Activation/Deactivation
 */
-// we need monthly crons
-function pmpro_cron_schedules_monthly( $schedules ) {
-	$schedules['monthly'] = array(
-		'interval' => 2635200,
-		'display' => esc_html__( 'Once a month', 'paid-memberships-pro' ),
-	);
-	return $schedules;
-}
-add_filter( 'cron_schedules', 'pmpro_cron_schedules_monthly' );
 
 // activation
 function pmpro_activation() {
-	pmpro_maybe_schedule_crons();
 	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
 	do_action( 'pmpro_activation' );
 }
+register_activation_hook( __FILE__, 'pmpro_activation' );
 
 // deactivation
 function pmpro_deactivation() {	
-	// remove crons
-	pmpro_clear_crons();
-
 	// remove caps from admin role
 	pmpro_set_capabilities_for_role( 'administrator', 'disable' );
 
 	do_action( 'pmpro_deactivation' );
 }
-register_activation_hook( __FILE__, 'pmpro_activation' );
 register_deactivation_hook( __FILE__, 'pmpro_deactivation' );
