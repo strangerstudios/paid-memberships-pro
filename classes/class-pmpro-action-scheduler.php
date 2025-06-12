@@ -60,6 +60,9 @@ class PMPro_Action_Scheduler {
 			return;
 		}
 
+		// Track library conflicts if detected.
+		self::track_library_conflicts();
+
 		// Add custom hooks for quarter-hourly, hourly, daily and weekly tasks.
 		add_action( 'action_scheduler_init', array( $this, 'add_recurring_hooks' ) );
 
@@ -73,6 +76,20 @@ class PMPro_Action_Scheduler {
 		// which is intentional since some of our tasks can be heavy and we want to ensure they run smoothly and don't slow down a site.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
+	}
+
+	/**
+	 * Load the Action Scheduler library.
+	 *
+	 * @since TBD
+	 */
+	private static function track_library_conflicts() {
+		// Get the version of Action Scheduler that is currently loaded and the plugin file it was loaded from.
+		$action_scheduler_version = ActionScheduler_Versions::instance()->latest_version(); // This is only available after plugins_loaded priority 0 which is why we do this here.
+		$previously_loaded_class = ActionScheduler_SystemInformation::active_source_path();
+
+		// If we loaded Action Scheduler, this will do nothing.
+		pmpro_track_library_conflict( 'action-scheduler', $previously_loaded_class, $action_scheduler_version );
 	}
 
 	/**

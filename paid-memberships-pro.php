@@ -26,18 +26,10 @@ define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
+// New in 3.5: We now use Action Scheduler instead of WP Cron.
 if ( ! class_exists( \ActionScheduler::class ) ) {
 	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
-} else {
-	// Another plugin loaded ActionScheduler.
-	// Let's log the current info so that we know where to look if we need to troubleshoot library conflicts.
-	$action_scheduler_version = \ActionScheduler::version();
-	$previously_loaded_class = new ReflectionClass( \ActionScheduler::class );
-	pmpro_track_library_conflict( 'action-scheduler', $previously_loaded_class->getFileName(), $action_scheduler_version );
-
 }
-
-// New in 3.5: We now use Action Scheduler instead of WP Cron.
 require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' ); 	// Our Action Scheduler Manager for PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-recurring-actions.php' ); 			// Load our recurring scheduled actions.
 // Old cron includes for backwards compatibility.
