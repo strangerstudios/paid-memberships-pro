@@ -322,7 +322,7 @@ add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
  * @since 3.0
  */
 function pmpro_hide_non_pmpro_notices() {
-    global $wp_filter;
+	global $wp_filter;
 
 	// Make sure we're on a PMPro page.
 	if ( ! isset( $_REQUEST['page'] )
@@ -331,10 +331,10 @@ function pmpro_hide_non_pmpro_notices() {
 	}
 
 	// Handle notices added through these hooks.
-    $hooks = ['admin_notices', 'all_admin_notices'];
+	$hooks = ['admin_notices', 'all_admin_notices'];
 
-    foreach ($hooks as $hook) {
-        // If no callbacks are registered, skip.
+	foreach ($hooks as $hook) {
+		// If no callbacks are registered, skip.
 		if ( ! isset( $wp_filter[$hook] ) ) {
 			continue;
 		}
@@ -370,6 +370,59 @@ function pmpro_hide_non_pmpro_notices() {
 				}
 			}
 		}
-    }
+	}
 }
 add_action( 'in_admin_header', 'pmpro_hide_non_pmpro_notices' );
+
+/**
+ * AJAX handler to install and activate plugins in the wizard.
+ *
+ * @since TBD
+ */
+add_action( 'wp_ajax_pmpro_install_and_activate', function() {
+	// Check if the user has permission to install plugins and verify the nonce.
+	if ( ! current_user_can( 'install_plugins' ) || ! check_ajax_referer( 'pmpro_um_install', 'nonce', false ) ) {
+		wp_send_json_error( array( 'message' => __( 'Permission denied.', 'pmpro' ) ) );
+	}
+
+	// Start output buffering to suppress HTML output from the upgrader.
+	ob_start();
+
+	require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+	$zip_url = esc_url_raw( $_POST['zip_url'] ?? '' );
+	$plugin_slug = sanitize_text_field( $_POST['plugin_slug'] ?? 'pmpro-update-manager/pmpro-update-manager.php' );
+
+	// If zip_url is empty, just try to activate.
+	if ( empty( $zip_url ) ) {
+		$activate = activate_plugin( $plugin_slug );
+		ob_end_clean();
+		
+		if ( is_wp_error( $activate ) ) {
+			wp_send_json_error( array( 'message' => $activate->get_error_message() ) );
+		}
+		
+		wp_send_json_success( array( 'message' => __( 'Plugin activated successfully.', 'paid-memberships-pro' ) ) );
+	}
+
+	// Install the plugin.
+	$upgrader = new Plugin_Upgrader();
+	$result = $upgrader->install( $zip_url );
+
+	// Clean any output before sending JSON.
+	ob_end_clean();
+
+	if ( is_wp_error( $result ) ) {
+		wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+	}
+
+	// Activate plugin.
+	$activate = activate_plugin( $plugin_slug );
+
+	if ( is_wp_error( $activate ) ) {
+		wp_send_json_error( array( 'message' => $activate->get_error_message() ) );
+	}
+
+	wp_send_json_success( array( 'message' => __( 'Plugin installed and activated successfully.', 'paid-memberships-pro' ) ) );
+});
