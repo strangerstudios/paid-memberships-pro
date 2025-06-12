@@ -9,11 +9,11 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	protected $user;
 
 	/**
-	 * The membership level that expired.
+	 * The membership level ID of the membership level that is expiring soon.
 	 *
 	 * @var int
 	 */
-	protected $membership_id;
+	protected $membership_level_id;
 
 	/**
 	 * Constructor.
@@ -21,11 +21,11 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	 * @since 3.4
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int $membership_id The membership level id of the membership level that expired.
+	 * @param int $membership_level_id The membership level id of the membership level that expired.
 	 */
-	public function __construct( WP_User $user, int $membership_id ) {
+	public function __construct( WP_User $user, int $membership_level_id ) {
 		$this->user = $user;
-		$this->membership_id = $membership_id;
+		$this->membership_level_id = $membership_level_id;
 	}
 
 	/**
@@ -121,7 +121,6 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
 			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
@@ -140,9 +139,10 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	 */
 	public function get_email_template_variables() {
 		global $wpdb;
+		$membership_level_id = $this->membership_level_id;
 		// If we don't have a level ID, query the user's most recently expired level from the database.
-		if ( empty( $this->membership_id ) ) {
-			$membership_id = $wpdb->get_var(
+		if ( empty( $membership_level_id ) ) {
+			$membership_level_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT membership_id FROM $wpdb->pmpro_memberships_users
 					WHERE user_id = %d
@@ -153,17 +153,17 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 				)
 			);
 
-			// If we still don't have a level ID, bail.
-			if ( empty( $membership_id ) ) {
-				$membership_id = 0;
+			// If we still don't have a level ID, set it to no level ID.
+			if ( empty( $membership_level_id ) ) {
+				$membership_level_id = 0;
 			}
 		}
 
 		// Get the membership level object.
-		if ( empty( $membership_id ) ) {
-			$membership_level = pmpro_getMembershipLevelForUser($this->user->ID);
+		if ( empty( $membership_level_id ) ) {
+			$membership_level = pmpro_getMembershipLevelForUser( $this->user->ID );
 		} else {
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($this->user->ID, $membership_id);
+			$membership_level = pmpro_getSpecificMembershipLevelForUser( $this->user->ID, $membership_level_id );
 		}
 
 		return array(
@@ -176,6 +176,29 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 			"membership_level_name" => ( ! empty( $membership_level ) && ! empty( $membership_level->name ) ) ? $membership_level->name : '[' . esc_html( 'deleted', 'paid-memberships-pro' ) . ']',
 			"enddate" => date_i18n( get_option('date_format'), $membership_level->enddate ),
 		);
+	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user, $pmpro_email_test_level;
+
+		// Set up a mock level for the test email.
+		$levels = pmpro_getAllLevels( true );
+		$pmpro_email_test_level = current( $levels );
+		add_filter( 'pmpro_get_membership_levels_for_user', function() {
+			global $pmpro_email_test_level;
+			$pmpro_email_test_level->startdate = strtotime( current_time( 'timestamp' ) );
+ 			$pmpro_email_test_level->enddate = strtotime( '+1 month' );
+			return array( $pmpro_email_test_level->id => $pmpro_email_test_level );
+		} );
+
+		return array( $current_user, $pmpro_email_test_level->id );
 	}
 }
 

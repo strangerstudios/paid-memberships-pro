@@ -877,6 +877,70 @@
 	}
 
 	/**
+	 * Pagination
+	 */
+	.pmpro_pagination {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: var(--pmpro--base--spacing--small);
+		margin: var(--pmpro--base--spacing--medium) 0;
+
+		a {
+			background-color: var(--pmpro--color--base);
+			border: 1px solid var(--pmpro--color--border--variation);
+			color: var(--pmpro--color--contrast);
+			padding: 2px var(--pmpro--base--spacing--small);
+			text-decoration: none;
+			transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+
+			&:hover {
+				background-color: var(--pmpro--color--accent--variation);
+				border-color: var(--pmpro--color--accent--variation);
+				color: var(--pmpro--color--base);
+			}
+		}
+
+		span {
+			background-color: var(--pmpro--color--base);
+			border: 1px solid var(--pmpro--color--border--variation);
+			color: var(--pmpro--color--contrast);
+			padding: 2px var(--pmpro--base--spacing--small);
+		}
+
+		.pmpro_pagination-current {
+			background-color: var(--pmpro--color--accent);
+			color: var(--pmpro--color--base);
+			cursor: default;
+			font-weight: 700;
+		}
+
+		.pmpro_pagination-disabled {
+			background-color: var(--pmpro--color--base--variation);
+			border-color: var(--pmpro--color--border--variation);
+			color: var(--pmpro--color--contrast--variation);
+			cursor: not-allowed;
+			opacity: 0.7;
+		}
+
+		.pmpro_pagination-dots {
+			background: none;
+			border: none;
+			color: var(--pmpro--color--contrast--variation);
+			padding: 0;
+		}
+
+		.pmpro_pagination-previous {
+			margin-right: 0;
+		}
+
+		.pmpro_pagination-next {
+			margin-left: 0;
+		}
+
+	}
+
+	/**
 	 * Misc
 	 */
 	.avatar {
@@ -908,18 +972,22 @@
 
 	.pmpro_font-x-large {
 		font-size: 32px;
+		line-height: 1.4;
 	}
 
 	.pmpro_font-large {
 		font-size: 24px;
+		line-height: 1.5;
 	}
 
 	.pmpro_font-medium {
 		font-size: 16px;
+		line-height: 1.6;
 	}
 
 	.pmpro_font-small {
 		font-size: 14px;
+		line-height: 1.5;
 	}
 
 	.pmpro_tag-discount-code {
@@ -1009,6 +1077,25 @@
  */
 @media screen and (max-width: 767px) {
 	.pmpro {
+
+		.pmpro_table {
+
+			tbody tr th:first-child,
+			tbody tr td:first-child {
+				border-top-width: 4px;
+				padding-top: var(--pmpro--base--spacing--large);
+			}
+
+			tbody tr th:last-child,
+			tbody tr td:last-child {
+				padding-bottom: var(--pmpro--base--spacing--large);
+			}
+
+			tbody tr:first-child th:first-child,
+			tbody tr:first-child td:first-child {
+				border-top: none;
+			}
+		}
 
 		#pmpro_order_single {
 

@@ -448,7 +448,7 @@ function pmpro_report_sales_page()
 		}
 	} elseif ( $report_unit == 'YEAR' ) {
 		// Loop through all the years since the first year that we have data for.
-		$start_year = min( array_keys( $dates ) );
+		$start_year = ! empty( $dates ) ? min( array_keys( $dates ) ) : date( 'Y' );
 		$end_year   = date( 'Y' );
 		for ( $year = $start_year; $year <= $end_year; $year++ ) {
 			// If we don't have data for this year, add it.
@@ -953,10 +953,10 @@ function pmpro_report_sales_page()
 			</tbody>
 			<tfoot>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></td>
-					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'total' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'total' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'new' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'new' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'renewals' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'renewals' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					<th scope="row"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
+					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'total' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'total' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'new' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'new' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'renewals' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'renewals' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
 				</tr>
 			</tfoot>
 		</table>

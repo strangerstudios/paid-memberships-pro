@@ -135,12 +135,22 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 							</strong>
 							<?php
 							// Show warning if the user does not have the level for this subscription.
-							if ( $showing_active_subscriptions && ! in_array( $subscription->get_membership_level_id(), $user_level_ids ) ) {
-								?>
-								<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
-									<?php esc_html_e( 'Membership Ended', 'paid-memberships-pro' ); ?>
-								</span>
-								<?php
+							if ( $showing_active_subscriptions ) {
+								if( $subscription->get_membership_level_id() > 0 ) {
+									if( ! in_array( $subscription->get_membership_level_id(), $user_level_ids ) ){
+										?>
+										<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+										<?php esc_html_e( 'Membership Ended', 'paid-memberships-pro' ); ?>
+										</span>
+										<?php
+									}
+								} else {
+									?>
+									<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+										<?php esc_html_e( 'No Level', 'paid-memberships-pro' ); ?>
+									</span>
+									<?php
+								}
 							}
 
 							// Show warning if the subscription had an error when trying to sync.

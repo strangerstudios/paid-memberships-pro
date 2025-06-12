@@ -9,7 +9,7 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 	protected $user;
 
 	/**
-	 * The {@link MemberOrder} object of the order that was updated.
+	 * The {@link MemberOrder} object of the order that was refunded.
 	 *
 	 * @var MemberOrder
 	 */
@@ -174,7 +174,7 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 			'membership_id' => $order->membership_id,
 			'membership_level_name' => $level->name,
 			'order_id' => $order->code,
-			'order_total' => $order->total,
+			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->timestamp ),
 			'refund_date' => date_i18n( get_option( 'date_format' ), current_time( 'timestamp' ) ),
 			'billing_name' => $order->billing->name,
@@ -204,6 +204,21 @@ class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 		);
 
 		return $email_template_variables;
+	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+		//Create test order
+		$test_order = new MemberOrder();
+
+		return array( $current_user, $test_order->get_test_order() );
 	}
 }
 

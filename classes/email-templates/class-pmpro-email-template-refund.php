@@ -9,7 +9,7 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 	protected $user;
 
 	/**
-	 * The {@link MemberOrder} object of the order that was updated.
+	 * The {@link MemberOrder} object of the order that was refunded.
 	 *
 	 * @var MemberOrder
 	 */
@@ -109,7 +109,7 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
 			'!!order_id!!' => esc_html__( 'The order ID.', 'paid-memberships-pro' ),
 			'!!order_total!!' => esc_html__( 'The total amount of the order.', 'paid-memberships-pro' ),
 			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
@@ -174,7 +174,7 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 			'membership_id' => $order->membership_id,
 			'membership_level_name' => $level->name,
 			'order_id' => $order->code,
-			'order_total' => $order->total,
+			'order_total' => $order->get_formatted_total(),
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->timestamp ),
 			'refund_date' => date_i18n( get_option( 'date_format' ), current_time( 'timestamp' ) ),
 			'billing_name' => $order->billing->name,
@@ -206,6 +206,22 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 		return $email_template_variables;
 
 	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+		//Create test order
+		$test_order = new MemberOrder();
+
+		return array( $current_user, $test_order->get_test_order() );
+	}
+
 }
 
 /**

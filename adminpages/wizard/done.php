@@ -8,10 +8,12 @@
 	$addon_cats = pmpro_get_addon_categories();
 	if ( ! empty( $addon_cats[$site_type] ) && $addon_cats[$site_type] ) {
 		$addon_slug_list = $addon_cats[$site_type];
-		$addon_slug_list = array_slice( $addon_slug_list, 0, 4 );
+		shuffle( $addon_slug_list );
+		$addon_slug_list = array_slice( $addon_slug_list, 0, 6 );
 	} else {
 		$addon_slug_list = $addon_cats['popular'];
-		$addon_slug_list = array_slice( $addon_slug_list, 0, 4 );
+		shuffle( $addon_slug_list );
+		$addon_slug_list = array_slice( $addon_slug_list, 0, 6 );
 	}
 
 	$addon_list = array();
@@ -49,7 +51,7 @@
 			?>
 		</p>
 		<?php
-		if ( ! empty( $addon_list) ) {
+		if ( ! empty( $addon_list ) ) {
 			?>
 			<p>
 				<?php

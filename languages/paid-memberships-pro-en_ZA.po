@@ -2,16 +2,16 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.4.2\n"
+"Project-Id-Version: Paid Memberships Pro 3.4.7\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-02-18T17:28:16+00:00\n"
+"POT-Creation-Date: 2025-06-12T14:52:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
 
 #: scheduled/crons.php:358
@@ -36,6 +36,7 @@ msgid "Checkout checks failed."
 msgstr "Checkout checks failed."
 
 #: includes/updates/upgrade_3_2.php:47
+#, php-format
 msgid "In previous versions of PMPro, PayPal Express was automatically added as a second payment option on the checkout page when using the Website Payments Pro gateway. This feature has been removed in PMPro v3.2 but can be added back using the PMPro Add PayPal Express Option at Checkout Add On. For more information, read our <a href=\"%s\">v3.2 release notes post here</a>."
 msgstr ""
 
@@ -48,6 +49,8 @@ msgstr "Important Notice: Paid Memberships Pro v3.2 Update"
 #: includes/functions.php:4820
 #: includes/functions.php:4826
 #: includes/functions.php:4812
+#: includes/functions.php:4844
+#, php-format
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr "File size is too large for %s. Please upload files smaller than %dMB."
 
@@ -56,6 +59,8 @@ msgstr "File size is too large for %s. Please upload files smaller than %dMB."
 #: includes/functions.php:4813
 #: includes/functions.php:4819
 #: includes/functions.php:4805
+#: includes/functions.php:4837
+#, php-format
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr "Invalid file type. Please try uploading the file type(s): %s"
 
@@ -66,6 +71,7 @@ msgstr "Default Value (optional)"
 
 #: includes/fields.php:1514
 #: adminpages/user-fields/field-settings.php:165
+#, php-format
 msgid "Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s."
 msgstr "Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s."
 
@@ -336,6 +342,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:133
 #: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:115
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:153
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:146
 msgid "Admin"
 msgstr ""
 
@@ -351,27 +358,33 @@ msgstr ""
 
 #: adminpages/emailtemplates-edit.php:123
 #: adminpages/emailtemplates-edit.php:132
+#: adminpages/emailtemplates-edit.php:137
 msgid "Check this box to disable this email template. Emails with a disabled template will not be sent."
 msgstr ""
 
 #: adminpages/emailtemplates-edit.php:112
 #: adminpages/emailtemplates-edit.php:121
+#: adminpages/emailtemplates-edit.php:126
 msgid "Disable email footer for all PMPro emails?"
 msgstr ""
 
 #: adminpages/emailtemplates-edit.php:110
 #: adminpages/emailtemplates-edit.php:119
+#: adminpages/emailtemplates-edit.php:124
 msgid "Disable email header for all PMPro emails?"
 msgstr ""
 
 #: adminpages/emailtemplates-edit.php:79
 #: adminpages/emailtemplates-edit.php:88
+#: adminpages/emailtemplates-edit.php:93
 msgid "View All Email Templates"
 msgstr ""
 
 #. translators: %s is the Email Template Description.
 #: adminpages/emailtemplates-edit.php:74
 #: adminpages/emailtemplates-edit.php:83
+#: adminpages/emailtemplates-edit.php:88
+#, php-format
 msgid "Edit Email Template: %s"
 msgstr ""
 
@@ -475,11 +488,13 @@ msgid "&larr; View All Orders"
 msgstr "&larr; View All Orders"
 
 #: pages/invoice.php:235
+#, php-format
 msgid "%1$s paid on %2$s"
 msgstr "%1$s paid on %2$s"
 
 #. translators: %s: level ID
 #: pages/invoice.php:223
+#, php-format
 msgid "Level ID %s"
 msgstr "Level ID %s"
 
@@ -494,10 +509,12 @@ msgstr "We are waiting for your payment to be completed."
 
 #: pages/confirmation.php:42
 #: pages/confirmation.php:44
+#, php-format
 msgid "Thank you for your membership to %1$s. Your %2$s membership will be activated once the payment has been completed."
 msgstr "Thank you for your membership to %1$s. Your %2$s membership will be activated once the payment has been completed."
 
 #: includes/terms-of-service.php:80
+#, php-format
 msgid "I agree to the <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
 msgstr "I agree to the <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
 
@@ -524,6 +541,7 @@ msgid "Your membership will be cancelled immediately."
 msgstr "Your membership will be cancelled immediately."
 
 #: pages/cancel.php:79
+#, php-format
 msgid "Your subscription will be cancelled. You will not be billed again. Your membership will remain active until %s. "
 msgstr "Your subscription will be cancelled. You will not be billed again. Your membership will remain active until %s. "
 
@@ -543,6 +561,7 @@ msgid "Next payment on"
 msgstr "Next payment on"
 
 #: includes/updates/upgrade_3_1.php:71
+#, php-format
 msgid "In previous versions of PMPro, we discovered an issue where subscriptions were not linked to the correct user ID in the database. The current version you are running has resolved this issue, however we detect that some of your subscriptions need to be manually corrected. For more information and steps to resolve this for your site, read our <a href=\"%s\">v3.1 release notes post here</a>."
 msgstr "In previous versions of PMPro, we discovered an issue where subscriptions were not linked to the correct user ID in the database. The current version you are running has resolved this issue, however we detect that some of your subscriptions need to be manually corrected. For more information and steps to resolve this for your site, read our <a href=\"%s\">v3.1 release notes post here</a>."
 
@@ -572,6 +591,8 @@ msgid "Submit the update profile form"
 msgstr "Submit the update profile form"
 
 #: includes/login.php:636
+#: includes/scripts.php:41
+#: includes/scripts.php:83
 msgid "Hide Password"
 msgstr "Hide Password"
 
@@ -582,30 +603,36 @@ msgstr "Hide Password"
 #: pages/checkout.php:235
 #: pages/checkout.php:262
 #: pages/checkout.php:280
+#: includes/scripts.php:42
+#: includes/scripts.php:84
 msgid "Show Password"
 msgstr "Show Password"
 
 #: includes/functions.php:2188
 #: includes/functions.php:2198
 #: includes/functions.php:2207
+#: includes/functions.php:2223
 msgid "Already a member?"
 msgstr "Already a member?"
 
 #: includes/functions.php:2140
 #: includes/functions.php:2150
 #: includes/functions.php:2159
+#: includes/functions.php:2175
 msgid " You must be a !!levels!! member to access this content."
 msgstr " You must be a !!levels!! member to access this content."
 
 #: includes/functions.php:2139
 #: includes/functions.php:2149
 #: includes/functions.php:2158
+#: includes/functions.php:2174
 msgid "!!levels!! Membership Required"
 msgstr "!!levels!! Membership Required"
 
 #: includes/functions.php:2133
 #: includes/functions.php:2143
 #: includes/functions.php:2152
+#: includes/functions.php:2168
 msgid " You must be a member to access this content."
 msgstr " You must be a member to access this content."
 
@@ -662,6 +689,7 @@ msgstr "Billing Information Updated"
 
 #: includes/deprecated.php:1129
 #: includes/deprecated.php:1130
+#, php-format
 msgid "Paid Memberships Pro detected that you were using a custom override for the frontend stylesheet. As of v3.1 and later, we no longer load your custom stylesheet. For more information, read our <a href=\"%s\">v3.1 release notes post here</a>."
 msgstr "Paid Memberships Pro detected that you were using a custom override for the frontend stylesheet. As of v3.1 and later, we no longer load your custom stylesheet. For more information, read our <a href=\"%s\">v3.1 release notes post here</a>."
 
@@ -691,10 +719,12 @@ msgstr "Go to Security Settings"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:548
 #: classes/gateways/class.pmprogateway_paypalstandard.php:166
 #: classes/gateways/class.pmprogateway_paypalexpress.php:553
+#, php-format
 msgid "Check Out With %s"
 msgstr "Check Out With %s"
 
 #: classes/gateways/class.pmprogateway_check.php:195
+#, php-format
 msgid "Payment Instructions: %s"
 msgstr "Payment Instructions: %s"
 
@@ -740,23 +770,27 @@ msgid "Save"
 msgstr "Save"
 
 #: adminpages/templates/orders-print.php:246
+#, php-format
 msgid "Discount Code: %s"
 msgstr "Discount Code: %s"
 
 #: adminpages/templates/orders-print.php:209
 #: pages/invoice.php:284
+#, php-format
 msgid "%1$s to %2$s"
 msgstr "%1$s to %2$s"
 
 #. translators: 1: user display name, 2: user email
 #: adminpages/templates/orders-print.php:196
 #: pages/invoice.php:271
+#, php-format
 msgid "Account: %1$s (%2$s)"
 msgstr "Account: %1$s (%2$s)"
 
 #. translators: 1: level name, 2: order code
 #: adminpages/templates/orders-print.php:185
 #: pages/invoice.php:260
+#, php-format
 msgid "%1$s for order #%2$s"
 msgstr "%1$s for order #%2$s"
 
@@ -777,6 +811,7 @@ msgstr "Order date"
 
 #: adminpages/templates/orders-print.php:72
 #: pages/invoice.php:39
+#, php-format
 msgid "Order #%s"
 msgstr "Order #%s"
 
@@ -794,6 +829,7 @@ msgstr "Multiple Security Plugins Active"
 
 #. translators: %s: Link to install MalCare security plugin.
 #: adminpages/securitysettings.php:345
+#, php-format
 msgid "We do not detect an active security plugin on your site. <a href=\"%s\">Install MalCare for free now</a> to protect your site. MalCare protects your site without slowing it down."
 msgstr "We do not detect an active security plugin on your site. <a href=\"%s\">Install MalCare for free now</a> to protect your site. MalCare protects your site without slowing it down."
 
@@ -819,6 +855,7 @@ msgid "WordPress Security Plugins"
 msgstr "WordPress Security Plugins"
 
 #: adminpages/securitysettings.php:268
+#, php-format
 msgid "Consider setting up the <a href=\"%s\" target=\"_blank\">Cloudflare DNS firewall</a> to protect your site."
 msgstr "Consider setting up the <a href=\"%s\" target=\"_blank\">Cloudflare DNS firewall</a> to protect your site."
 
@@ -847,6 +884,7 @@ msgid "Checkout Spam Protection"
 msgstr "Checkout Spam Protection"
 
 #: adminpages/securitysettings.php:147
+#, php-format
 msgid "With the Akismet Integration for Paid Memberships Pro, the same comment spam filters built into Akismet are used to detect and prevent membership checkout form abuse. This integration requires both the <a href=\"%1$s\" target=\"_blank\">Akismet plugin</a> and the <a href=\"%2$s\" target=\"_blank\">Akismet Integration for Paid Memberships Pro</a>."
 msgstr "With the Akismet Integration for Paid Memberships Pro, the same comment spam filters built into Akismet are used to detect and prevent membership checkout form abuse. This integration requires both the <a href=\"%1$s\" target=\"_blank\">Akismet plugin</a> and the <a href=\"%2$s\" target=\"_blank\">Akismet Integration for Paid Memberships Pro</a>."
 
@@ -865,6 +903,7 @@ msgid "Akismet Integration"
 msgstr "Akismet Integration"
 
 #: adminpages/securitysettings.php:102
+#, php-format
 msgid "To ensure your site is as protected as possible, we recommend setting up several spam protection methods. Read our full guide on <a href=\"%s\" target=\"_blank\">how to stop spam in your membership site</a> for more information about these options."
 msgstr "To ensure your site is as protected as possible, we recommend setting up several spam protection methods. Read our full guide on <a href=\"%s\" target=\"_blank\">how to stop spam in your membership site</a> for more information about these options."
 
@@ -894,6 +933,7 @@ msgstr "Orders Page"
 #: adminpages/subscriptions.php:85
 #: adminpages/subscriptions.php:355
 #: adminpages/subscriptions.php:370
+#: adminpages/subscriptions.php:373
 msgid "Edit Customer in Stripe"
 msgstr "Edit Customer in Stripe"
 
@@ -905,18 +945,22 @@ msgstr "View Order"
 #. translators: %s is the order code.
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:744
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:881
+#, php-format
 msgid "There was an error refunding order #%s. None of the submitted changes to this membership have been made. Please check the order notes for more information."
 msgstr "There was an error refunding order #%s. None of the submitted changes to this membership have been made. Please check the order notes for more information."
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:387
+#, php-format
 msgid "This change will remove the following membership level: %s."
 msgstr "This change will remove the following membership level: %s."
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:299
+#, php-format
 msgid "This change will permanently cancel the following membership level: %s."
 msgstr "This change will permanently cancel the following membership level: %s."
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:211
+#, php-format
 msgid "You are editing the following membership level: %s."
 msgstr "You are editing the following membership level: %s."
 
@@ -1082,6 +1126,8 @@ msgid "Membership Orders"
 msgstr "Membership Orders"
 
 #: adminpages/membershiplevels.php:345
+#: adminpages/membershiplevels.php:348
+#, php-format
 msgid "ID: %d"
 msgstr "ID: %d"
 
@@ -1101,15 +1147,18 @@ msgstr "Stripe login credentials are not set."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1010
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1011
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1002
 msgid "Subscription transaction ID is empty."
 msgstr "Subscription transaction ID is empty."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1005
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1006
+#: classes/gateways/class.pmprogateway_paypalexpress.php:997
 msgid "PayPal login credentials are not set."
 msgstr "PayPal login credentials are not set."
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:179
+#, php-format
 msgid "Roles can be changed from the %s page."
 msgstr "Roles can be changed from the %s page."
 
@@ -1135,6 +1184,7 @@ msgstr "Level Groups"
 
 #. translators: %1$s is the opening anchor tag, %2$s is the closing anchor tag.
 #: classes/class-pmpro-admin-activity-email.php:283
+#, php-format
 msgid "It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made %1$svia the WordPress Dashboard%2$s."
 msgstr "It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made %1$svia the WordPress Dashboard%2$s."
 
@@ -1156,16 +1206,19 @@ msgstr "Disable Outdated Template Warning"
 
 #. translators: %s: The custom page template name.
 #: adminpages/pagesettings.php:683
+#, php-format
 msgid "Core: Always use the core PMPro %s template."
 msgstr "Core: Always use the core PMPro %s template."
 
 #. translators: %s: The custom page template name.
 #: adminpages/pagesettings.php:677
+#, php-format
 msgid "Fallback: Use the core PMPro template if my custom %s template is not compatible."
 msgstr "Fallback: Use the core PMPro template if my custom %s template is not compatible."
 
 #. translators: %s: The custom page template name.
 #: adminpages/pagesettings.php:671
+#, php-format
 msgid "Custom: Always use my custom %s template."
 msgstr "Custom: Always use my custom %s template."
 
@@ -1173,11 +1226,13 @@ msgstr "Custom: Always use my custom %s template."
 #. plugin folder name of the loaded file.
 #. translators: %1$s: The source type of the loaded file. %2$s: The theme or plugin folder name of the loaded file.
 #: adminpages/pagesettings.php:660
+#, php-format
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
 #. translators: %1$s: The Paid Memberships Pro plugin folder name.
 #: adminpages/pagesettings.php:646
+#, php-format
 msgid "Plugin: %1$s"
 msgstr "Plugin: %1$s"
 
@@ -1205,6 +1260,7 @@ msgstr "Core PMPro Version"
 #: adminpages/emailtemplates-edit.php:88
 #: adminpages/pagesettings.php:608
 #: adminpages/emailtemplates-edit.php:97
+#: adminpages/emailtemplates-edit.php:102
 msgid "Template"
 msgstr "Template"
 
@@ -2020,6 +2076,7 @@ msgstr "Nonce security check failed."
 
 #. translators: %s: membership expiration date
 #: preheaders/cancel.php:140
+#, php-format
 msgid "Your recurring subscription has been cancelled. Your active membership will expire on %s."
 msgstr "Your recurring subscription has been cancelled. Your active membership will expire on %s."
 
@@ -2042,12 +2099,14 @@ msgstr "There was an error retrieving your order. Please contact the site owner.
 #: pages/checkout.php:100
 #: pages/checkout.php:109
 #: pages/checkout.php:127
+#, php-format
 msgid "Your current membership level of %s will be removed when you complete your purchase."
 msgstr "Your current membership level of %s will be removed when you complete your purchase."
 
 #: pages/checkout.php:76
 #: pages/checkout.php:85
 #: pages/checkout.php:103
+#, php-format
 msgid "You have selected the %s membership level."
 msgstr "You have selected the %s membership level."
 
@@ -2079,6 +2138,7 @@ msgid "The user has a subscription for this level, but does not have a membershi
 msgstr "The user has a subscription for this level, but does not have a membership for this level. Old payment subscriptions should be cancelled using the Member History tool below."
 
 #: includes/profile.php:298
+#, php-format
 msgid "The user has an active subscription for the %s level. The subscription should be cancelled using the Member History tool below."
 msgstr "The user has an active subscription for the %s level. The subscription should be cancelled using the Member History tool below."
 
@@ -2086,6 +2146,7 @@ msgstr "The user has an active subscription for the %s level. The subscription s
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:439
 #: includes/profile.php:279
 #: includes/profile.php:385
+#, php-format
 msgid "Refund the last payment (%s)."
 msgstr "Refund the last payment (%s)."
 
@@ -2104,6 +2165,7 @@ msgstr "single member dashboard"
 
 #. translators: %1$s is the link to the single member dashboard.
 #: includes/profile.php:36
+#, php-format
 msgid "This section shows an overview of active membership levels for this member. Use the %1$s to manage this member."
 msgstr "This section shows an overview of active membership levels for this member. Use the %1$s to manage this member."
 
@@ -2186,6 +2248,7 @@ msgstr "Your payment subscription at !!sitename!! has been CANCELLED"
 
 #. translators: 1: the old hook name
 #: includes/deprecated.php:41
+#, php-format
 msgid "The %1$s hook has been deprecated in Paid Memberships Pro and may not be available in future versions."
 msgstr "The %1$s hook has been deprecated in Paid Memberships Pro and may not be available in future versions."
 
@@ -2243,14 +2306,17 @@ msgstr "I Have Set Up My Webhooks"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1051
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1052
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1043
 msgid "Subscription could not be found."
 msgstr "Subscription could not be found."
 
 #: classes/gateways/class.pmprogateway_check.php:166
+#, php-format
 msgid "Pay by %s"
 msgstr "Pay by %s"
 
 #: classes/gateways/class.pmprogateway_check.php:120
+#, php-format
 msgid "Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and order pages."
 msgstr "Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and order pages."
 
@@ -2263,6 +2329,7 @@ msgid "Gateway Label"
 msgstr "Gateway Label"
 
 #: classes/gateways/class.pmprogateway_check.php:102
+#, php-format
 msgid "Pay by %s Settings"
 msgstr "Pay by %s Settings"
 
@@ -2358,12 +2425,14 @@ msgstr "There was an error saving the subscription."
 #. translators: %1$s - price, %2$d - number, %3$s - period.
 #: classes/class-pmpro-subscription.php:1016
 #: classes/class-pmpro-subscription.php:999
+#, php-format
 msgid "%1$s every %2$d %3$s"
 msgstr "%1$s every %2$d %3$s"
 
 #. translators: %1$s - price, %2$s - period.
 #: classes/class-pmpro-subscription.php:1013
 #: classes/class-pmpro-subscription.php:996
+#, php-format
 msgid "%1$s per %2$s"
 msgstr "%1$s per %2$s"
 
@@ -2374,12 +2443,14 @@ msgstr "Could not find gateway class."
 #. translators: %s is the subscription transaction ID.
 #: classes/class-pmpro-orders-list-table.php:1221
 #: classes/class-pmpro-orders-list-table.php:1230
+#, php-format
 msgid "Subscription: %s"
 msgstr "Subscription: %s"
 
 #. translators: %s is the payment transaction ID.
 #: classes/class-pmpro-orders-list-table.php:1211
 #: classes/class-pmpro-orders-list-table.php:1220
+#, php-format
 msgid "Payment: %s"
 msgstr "Payment: %s"
 
@@ -2404,6 +2475,7 @@ msgstr "Discount codes per page"
 #: adminpages/subscriptions.php:548
 #: classes/class-pmpro-subscriptions-list-table.php:144
 #: adminpages/subscriptions.php:563
+#: adminpages/subscriptions.php:566
 msgid "Subscription ID"
 msgstr "Subscription ID"
 
@@ -2417,6 +2489,7 @@ msgstr[1] ""
 #: includes/profile.php:838
 #: adminpages/subscriptions.php:488
 #: adminpages/subscriptions.php:503
+#: adminpages/subscriptions.php:506
 msgid "Next Payment Date"
 msgstr "Next Payment Date"
 
@@ -2427,6 +2500,7 @@ msgstr "Update Subscription Level"
 #: adminpages/subscriptions.php:186
 #: adminpages/subscriptions.php:448
 #: adminpages/subscriptions.php:463
+#: adminpages/subscriptions.php:466
 msgid "This user does not have the membership level that this subscription is for."
 msgstr "This user does not have the membership level that this subscription is for."
 
@@ -2437,6 +2511,7 @@ msgstr "Change Subscription Level"
 #: adminpages/subscriptions.php:157
 #: adminpages/subscriptions.php:427
 #: adminpages/subscriptions.php:442
+#: adminpages/subscriptions.php:445
 msgid "Unknown Member"
 msgstr "Unknown Member"
 
@@ -2450,12 +2525,15 @@ msgstr "Unknown Member"
 #: includes/adminpages.php:741
 #: adminpages/subscriptions.php:412
 #: includes/adminpages.php:745
+#: adminpages/subscriptions.php:415
 msgid "Edit Member"
 msgstr "Edit Member"
 
 #: adminpages/subscriptions.php:120
 #: adminpages/subscriptions.php:390
 #: adminpages/subscriptions.php:405
+#: adminpages/subscriptions.php:408
+#, php-format
 msgid "Member: %s"
 msgstr "Member: %s"
 
@@ -2463,12 +2541,14 @@ msgstr "Member: %s"
 #: adminpages/subscriptions.php:380
 #: adminpages/subscriptions.php:250
 #: adminpages/subscriptions.php:395
+#: adminpages/subscriptions.php:398
 msgid "Subscription Information"
 msgstr "Subscription Information"
 
 #: adminpages/subscriptions.php:70
 #: adminpages/subscriptions.php:340
 #: adminpages/subscriptions.php:355
+#: adminpages/subscriptions.php:358
 msgid "Please confirm that you want to cancel this subscription. This action stops any future charges at the gateway but does not cancel the corresponding membership level."
 msgstr "Please confirm that you want to cancel this subscription. This action stops any future charges at the gateway but does not cancel the corresponding membership level."
 
@@ -2478,6 +2558,8 @@ msgstr "Please confirm that you want to cancel this subscription. This action st
 #: adminpages/subscriptions.php:331
 #: adminpages/subscriptions.php:344
 #: adminpages/subscriptions.php:346
+#: adminpages/subscriptions.php:347
+#: adminpages/subscriptions.php:349
 msgid "Sync With Gateway"
 msgstr "Sync With Gateway"
 
@@ -2497,6 +2579,7 @@ msgstr "This report offers a detailed view of data points by user and member. Fo
 
 #. translators: %s: Link to Frontend Page Templates docs.
 #: adminpages/pagesettings.php:226
+#, php-format
 msgid "Click here for documentation on %s beyond the block or shortcode settings."
 msgstr "Click here for documentation on %s beyond the block or shortcode settings."
 
@@ -2529,6 +2612,7 @@ msgstr "Only the last 4 digits are stored in this site to use as a reference wit
 
 #: adminpages/orders.php:436
 #: adminpages/orders.php:457
+#, php-format
 msgid "ID %d [deleted]"
 msgstr "ID %d [deleted]"
 
@@ -2543,45 +2627,59 @@ msgstr "Add New Member"
 
 #. translators: a plus sign dashicon
 #: adminpages/membershiplevels.php:548
+#: adminpages/membershiplevels.php:551
+#, php-format
 msgid "%s Add New Group"
 msgstr "%s Add New Group"
 
 #. translators: %s is the Group Name.
 #: adminpages/membershiplevels.php:530
+#: adminpages/membershiplevels.php:533
+#, php-format
 msgid "Are you sure you want to delete membership level group: %s?"
 msgstr "Are you sure you want to delete membership level group: %s?"
 
 #: adminpages/membershiplevels.php:523
+#: adminpages/membershiplevels.php:526
 msgid "Move levels to another group to enable group deletion."
 msgstr "Move levels to another group to enable group deletion."
 
 #: adminpages/membershiplevels.php:519
+#: adminpages/membershiplevels.php:522
 msgid "Edit Group"
 msgstr "Edit Group"
 
 #. translators: a plus sign dashicon
 #: adminpages/membershiplevels.php:515
+#: adminpages/membershiplevels.php:518
+#, php-format
 msgid "%s Add New Level"
 msgstr "%s Add New Level"
 
 #: adminpages/membershiplevels.php:380
+#: adminpages/membershiplevels.php:383
 msgid "No membership levels found."
 msgstr "No membership levels found."
 
 #. translators: %s is the search term.
 #: adminpages/membershiplevels.php:376
+#: adminpages/membershiplevels.php:379
+#, php-format
 msgid "No membership levels found for search term: \"%s\"."
 msgstr "No membership levels found for search term: \"%s\"."
 
 #: adminpages/membershiplevels.php:354
+#: adminpages/membershiplevels.php:357
 msgid "Users can only choose one level from this group."
 msgstr "Users can only choose one level from this group."
 
 #: adminpages/membershiplevels.php:352
+#: adminpages/membershiplevels.php:355
 msgid "Users can choose multiple levels from this group."
 msgstr "Users can choose multiple levels from this group."
 
 #: adminpages/membershiplevels.php:292
+#: adminpages/membershiplevels.php:295
 msgid "Drag and drop membership levels within the group to reorder them on the Membership Levels page. Reorder groups using the up/down arrows."
 msgstr "Drag and drop membership levels within the group to reorder them on the Membership Levels page. Reorder groups using the up/down arrows."
 
@@ -2590,6 +2688,7 @@ msgid "There were errors in the form."
 msgstr "There were errors in the form."
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:274
+#, php-format
 msgid "A user with email address %1$s already exists. <a href=\"%2$s\">Click here to edit this member</a>."
 msgstr "A user with email address %1$s already exists. <a href=\"%2$s\">Click here to edit this member</a>."
 
@@ -2602,6 +2701,7 @@ msgid "Sorry, that username is not allowed."
 msgstr "Sorry, that username is not allowed."
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:252
+#, php-format
 msgid "A user with username %1$s already exists. <a href=\"%2$s\">Click here to edit this member</a>."
 msgstr "A user with username %1$s already exists. <a href=\"%2$s\">Click here to edit this member</a>."
 
@@ -2749,6 +2849,7 @@ msgstr "Terms of Service"
 #: classes/class-pmpro-subscriptions-list-table.php:395
 #: adminpages/subscriptions.php:482
 #: classes/class-pmpro-subscriptions-list-table.php:397
+#: adminpages/subscriptions.php:485
 msgid "Sync Error"
 msgstr "Sync Error"
 
@@ -2765,6 +2866,7 @@ msgstr "Membership Ended"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:128
 #: adminpages/subscriptions.php:313
 #: adminpages/subscriptions.php:328
+#, php-format
 msgid "Level ID: %d [deleted]"
 msgstr "Level ID: %d [deleted]"
 
@@ -2780,6 +2882,7 @@ msgstr "Next Payment"
 #: adminpages/subscriptions.php:475
 #: classes/class-pmpro-subscriptions-list-table.php:150
 #: adminpages/subscriptions.php:490
+#: adminpages/subscriptions.php:493
 msgid "Created"
 msgstr "Created"
 
@@ -2790,11 +2893,13 @@ msgstr "This user does not have any subscriptions."
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:45
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:49
+#, php-format
 msgid "Cancelled Subscriptions (%d)"
 msgstr "Cancelled Subscriptions (%d)"
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:26
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:30
+#, php-format
 msgid "Active Subscriptions (%d)"
 msgstr "Active Subscriptions (%d)"
 
@@ -2806,6 +2911,7 @@ msgstr "Active Subscriptions (%d)"
 #: includes/adminpages.php:60
 #: includes/adminpages.php:232
 #: adminpages/subscriptions.php:583
+#: adminpages/subscriptions.php:586
 msgid "Subscriptions"
 msgstr "Subscriptions"
 
@@ -2935,11 +3041,14 @@ msgstr "Cancel the user's subscription for this level."
 #: adminpages/subscriptions.php:341
 #: adminpages/subscriptions.php:352
 #: adminpages/subscriptions.php:356
+#: adminpages/subscriptions.php:355
+#: adminpages/subscriptions.php:359
 msgid "Cancel Subscription"
 msgstr "Cancel Subscription"
 
 #. translators: %s is the next payment date.
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:242
+#, php-format
 msgid "Note: The next payment date for this level is %s."
 msgstr "Note: The next payment date for this level is %s."
 
@@ -2973,6 +3082,7 @@ msgstr "View Subscriptions"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:152
 #: classes/class-pmpro-members-list-table.php:674
 #: includes/profile.php:88
+#, php-format
 msgid "This user has %1$d active subscription for this level. %2$s"
 msgid_plural "This user has %1$d active subscriptions for this level. %2$s"
 msgstr[0] ""
@@ -3022,6 +3132,7 @@ msgstr "Add Member"
 #: adminpages/member-edit.php:88
 #: includes/adminpages.php:151
 #: adminpages/member-edit.php:96
+#, php-format
 msgid "Edit Member: %s"
 msgstr "Edit Member: %s"
 
@@ -3052,22 +3163,27 @@ msgstr "Allow Multiple Selections"
 
 #: adminpages/groups/edit-group.php:54
 #: adminpages/membershiplevels.php:310
+#: adminpages/membershiplevels.php:313
 msgid "This warning is shown because you have more than one level group or a level group that allows multiple selections. To continue using these Add Ons, you should move all levels to a single \"one level per\" group."
 msgstr "This warning is shown because you have more than one level group or a level group that allows multiple selections. To continue using these Add Ons, you should move all levels to a single \"one level per\" group."
 
 #. translators: %s is the list of incompatible add ons.
 #: adminpages/groups/edit-group.php:47
 #: adminpages/membershiplevels.php:303
+#: adminpages/membershiplevels.php:306
+#, php-format
 msgid "The following active Add Ons are not compatible with your membership level setup: %s"
 msgstr "The following active Add Ons are not compatible with your membership level setup: %s"
 
 #: adminpages/groups/edit-group.php:36
 #: adminpages/membershiplevels.php:237
+#: adminpages/membershiplevels.php:240
 msgid "Add New Group"
 msgstr "Add New Group"
 
 #. translators: %s is the group ID.
 #: adminpages/groups/edit-group.php:32
+#, php-format
 msgid "Edit Group ID: %s"
 msgstr "Edit Group ID: %s"
 
@@ -3104,6 +3220,7 @@ msgstr "Memberships Area Menu"
 #: includes/functions.php:4845
 #: includes/functions.php:4826
 #: includes/functions.php:4835
+#: includes/functions.php:4858
 msgid "Invalid file submission."
 msgstr "Invalid file submission."
 
@@ -3112,6 +3229,7 @@ msgstr "Invalid file submission."
 #: includes/functions.php:4794
 #: includes/functions.php:4800
 #: includes/functions.php:4786
+#: includes/functions.php:4818
 msgid "Invalid field input."
 msgstr "Invalid field input."
 
@@ -3126,6 +3244,8 @@ msgstr "Invalid field input."
 #: includes/functions.php:4777
 #: includes/functions.php:4792
 #: includes/functions.php:4786
+#: includes/functions.php:4809
+#: includes/functions.php:4824
 msgid "Invalid file type."
 msgstr "Invalid file type."
 
@@ -3135,6 +3255,7 @@ msgstr "Invalid file type."
 #: includes/functions.php:4778
 #: includes/functions.php:4770
 #: includes/functions.php:4779
+#: includes/functions.php:4802
 msgid "No file name found."
 msgstr "No file name found."
 
@@ -3144,10 +3265,12 @@ msgstr "No file name found."
 #: includes/functions.php:4772
 #: includes/functions.php:4764
 #: includes/functions.php:4773
+#: includes/functions.php:4796
 msgid "No file was uploaded."
 msgstr "No file was uploaded."
 
 #: shortcodes/pmpro_member.php:31
+#: shortcodes/pmpro_member.php:47
 msgid "The \"field\" attribute is required in the pmpro_member shortcode."
 msgstr "The \"field\" attribute is required in the pmpro_member shortcode."
 
@@ -3235,6 +3358,7 @@ msgstr "Webhooks"
 #: classes/gateways/class.pmprogateway_stripe.php:1338
 #: classes/gateways/class.pmprogateway_stripe.php:1334
 #: classes/gateways/class.pmprogateway_stripe.php:1335
+#, php-format
 msgid "Open the %s page in your Stripe dashboard"
 msgstr "Open the %s page in your Stripe dashboard"
 
@@ -3280,28 +3404,34 @@ msgstr "No title will be shown."
 
 #: shortcodes/pmpro_account.php:261
 #: shortcodes/pmpro_account.php:270
+#, php-format
 msgid "Cancel %1$s Membership"
 msgstr "Cancel %1$s Membership"
 
 #: shortcodes/pmpro_account.php:257
 #: shortcodes/pmpro_account.php:266
+#, php-format
 msgid "Change %1$s Membership"
 msgstr "Change %1$s Membership"
 
 #: shortcodes/pmpro_account.php:219
 #: shortcodes/pmpro_account.php:228
+#, php-format
 msgid "Renew %1$s Membership"
 msgstr "Renew %1$s Membership"
 
 #: pages/levels.php:128
+#, php-format
 msgid "View your %s membership account"
 msgstr "View your %s membership account"
 
 #: pages/levels.php:124
+#, php-format
 msgid "Renew your %s membership level"
 msgstr "Renew your %s membership level"
 
 #: pages/levels.php:118
+#, php-format
 msgid "Select the %s membership level"
 msgstr "Select the %s membership level"
 
@@ -3363,6 +3493,7 @@ msgid "Token"
 msgstr "Token"
 
 #: adminpages/wizard/wizard.php:98
+#, php-format
 msgid "%s Active Step"
 msgstr "%s Active Step"
 
@@ -3400,6 +3531,7 @@ msgstr "restricting WordPress content here"
 #: adminpages/paymentsettings.php:93
 #: adminpages/securitysettings.php:188
 #: adminpages/wizard/memberships.php:86
+#, php-format
 msgid "Learn more about %s."
 msgstr "Learn more about %s."
 
@@ -3428,39 +3560,50 @@ msgid "We will automatically create frontend pages for your levels, checkout, ac
 msgstr "We will automatically create frontend pages for your levels, checkout, account management, and more."
 
 #: adminpages/wizard/done.php:128
+#: adminpages/wizard/done.php:130
 msgid "View Paid Memberships Pro documentation in a new tab"
 msgstr "View Paid Memberships Pro documentation in a new tab"
 
 #: adminpages/wizard/done.php:124
+#: adminpages/wizard/done.php:126
 msgid "Free membership account required."
 msgstr "Free membership account required."
 
 #: adminpages/wizard/done.php:116
+#: adminpages/wizard/done.php:118
 msgid "View payment settings"
 msgstr "View payment settings"
 
 #: adminpages/wizard/done.php:80
+#: adminpages/wizard/done.php:82
 msgid "Free Plugin"
 msgstr "Free Plugin"
 
 #: adminpages/wizard/done.php:78
+#: adminpages/wizard/done.php:80
 msgid "Builder Add On"
 msgstr "Builder Add On"
 
 #: adminpages/wizard/done.php:74
+#: adminpages/wizard/done.php:76
 msgid "Standard Add On"
 msgstr "Standard Add On"
 
 #: adminpages/wizard/done.php:46
+#: adminpages/wizard/done.php:48
 msgid "hub"
 msgstr "hub"
 
 #. translators: %s: URL to the PMPro use case hub for the chosen site type
 #: adminpages/wizard/done.php:45
+#: adminpages/wizard/done.php:47
+#, php-format
 msgid "Check out the %s, which guides you through next steps for your unique project."
 msgstr "Check out the %s, which guides you through next steps for your unique project."
 
 #: adminpages/wizard/done.php:42
+#: adminpages/wizard/done.php:44
+#, php-format
 msgid "In step 1, you chose the %s site type."
 msgstr "In step 1, you chose the %s site type."
 
@@ -3468,6 +3611,7 @@ msgstr "In step 1, you chose the %s site type."
 #: adminpages/reports/sales.php:859
 #: adminpages/reports/sales.php:862
 #: adminpages/reports/sales.php:917
+#, php-format
 msgid "%1$s %2$s"
 msgstr "%1$s %2$s"
 
@@ -3477,6 +3621,7 @@ msgstr "%1$s %2$s"
 #: adminpages/reports/sales.php:856
 #: adminpages/reports/sales.php:859
 #: adminpages/reports/sales.php:914
+#, php-format
 msgid "%1$s %2$s for %3$s"
 msgstr "%1$s %2$s for %3$s"
 
@@ -3488,11 +3633,13 @@ msgstr "Select report data to include"
 
 #: adminpages/reports/sales.php:92
 #: adminpages/reports/sales.php:95
+#, php-format
 msgid "Orders %s at %s price"
 msgstr "Orders %s at %s price"
 
 #: adminpages/reports/sales.php:74
 #: adminpages/reports/sales.php:77
+#, php-format
 msgid "Toggle orders by price for %s"
 msgstr "Toggle orders by price for %s"
 
@@ -3574,6 +3721,7 @@ msgstr "Select a membership level to customise this report"
 #: adminpages/reports/members-per-level.php:35
 #: adminpages/reports/memberships.php:98
 #: adminpages/reports/sales.php:109
+#, php-format
 msgid "View the full %s report"
 msgstr "View the full %s report"
 
@@ -3582,6 +3730,7 @@ msgid "View Support License Options"
 msgstr "View Support License Options"
 
 #: adminpages/dashboard.php:199
+#, php-format
 msgid "<a href=\"%s\">Enter your key here</a>"
 msgstr "<a href=\"%s\">Enter your key here</a>"
 
@@ -3651,6 +3800,7 @@ msgstr "Previous Period"
 #: adminpages/reports/sales.php:519
 #: adminpages/reports/sales.php:522
 #: adminpages/reports/sales.php:549
+#, php-format
 msgid "Renewal %s"
 msgstr "Renewal %s"
 
@@ -3663,24 +3813,28 @@ msgstr "Renewal %s"
 #: adminpages/reports/sales.php:527
 #: adminpages/reports/sales.php:529
 #: adminpages/reports/sales.php:531
+#, php-format
 msgid "Previous Year: %s"
 msgstr "Previous Year: %s"
 
 #: adminpages/reports/sales.php:492
 #: adminpages/reports/sales.php:495
 #: adminpages/reports/sales.php:522
+#, php-format
 msgid "Total: %s"
 msgstr "Total: %s"
 
 #: adminpages/reports/sales.php:488
 #: adminpages/reports/sales.php:491
 #: adminpages/reports/sales.php:518
+#, php-format
 msgid "New: %s"
 msgstr "New: %s"
 
 #: adminpages/reports/sales.php:484
 #: adminpages/reports/sales.php:487
 #: adminpages/reports/sales.php:514
+#, php-format
 msgid "Renewals: %s"
 msgstr "Renewals: %s"
 
@@ -3744,6 +3898,7 @@ msgid "Customize Report"
 msgstr "Customise Report"
 
 #: pages/billing.php:67
+#, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href=\"%s\">log out now</a>."
 msgstr "You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href=\"%s\">log out now</a>."
 
@@ -3752,6 +3907,7 @@ msgid "For more information, read our post here"
 msgstr "For more information, read our post here"
 
 #: includes/updates/upgrade_2_10_6.php:118
+#, php-format
 msgid "%d order was affected by the 2.10.6 update."
 msgid_plural "%d orders were affected by the 2.10.6 update."
 msgstr[0] ""
@@ -3762,6 +3918,7 @@ msgid "Cleaned Fields (2.10.6)"
 msgstr "Cleaned Fields (2.10.6)"
 
 #: includes/updates/upgrade_2_10_6.php:41
+#, php-format
 msgid "Paid Memberships Pro has detected potentially sensitive customer information in the PMPro order meta table. This information will be safely removed from your database. For more information, read our <a href=\"%s\">post here</a>."
 msgstr "Paid Memberships Pro has detected potentially sensitive customer information in the PMPro order meta table. This information will be safely removed from your database. For more information, read our <a href=\"%s\">post here</a>."
 
@@ -3778,6 +3935,7 @@ msgid "Deprecated"
 msgstr "Deprecated"
 
 #: includes/deprecated.php:848
+#, php-format
 msgid "Restricting members by username or email was not merged into Paid Memberships Pro. If this feature was being used, a <a href=\"%s\" target=\"_blank\">code recipe</a> will be needed to continue using this functionality."
 msgstr "Restricting members by username or email was not merged into Paid Memberships Pro. If this feature was being used, a <a href=\"%s\" target=\"_blank\">code recipe</a> will be needed to continue using this functionality."
 
@@ -3824,6 +3982,7 @@ msgstr "Lost your password?"
 
 #. translators: %s: User name.
 #: includes/login.php:348
+#, php-format
 msgid "<strong>Error:</strong> The password you entered for the username %s is incorrect."
 msgstr "<strong>Error:</strong> The password you entered for the username %s is incorrect."
 
@@ -3842,6 +4001,7 @@ msgstr "Unknown email address. Check again or try your username."
 
 #. translators: %s: User name.
 #: includes/login.php:328
+#, php-format
 msgid "<strong>Error:</strong> The username <strong>%s</strong> is not registered on this site. If you are unsure of your username, try your email address instead."
 msgstr "<strong>Error:</strong> The username <strong>%s</strong> is not registered on this site. If you are unsure of your username, try your email address instead."
 
@@ -3878,6 +4038,7 @@ msgid "Dismiss notice and keep all services paused"
 msgstr "Dismiss notice and keep all services paused"
 
 #: includes/admin.php:160
+#, php-format
 msgid "<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL."
 msgstr "<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL."
 
@@ -3981,6 +4142,7 @@ msgstr "Webhook Status"
 #: classes/class-pmpro-site-health.php:666
 #: classes/class-pmpro-site-health.php:670
 #: adminpages/emailtemplates-edit.php:108
+#: adminpages/emailtemplates-edit.php:113
 msgid "Disabled"
 msgstr "Disabled"
 
@@ -3989,6 +4151,7 @@ msgstr "Disabled"
 #: classes/class-pmpro-site-health.php:663
 #: classes/class-pmpro-site-health.php:667
 #: adminpages/emailtemplates-edit.php:110
+#: adminpages/emailtemplates-edit.php:115
 msgid "Enabled"
 msgstr "Enabled"
 
@@ -4055,6 +4218,7 @@ msgid "Other/Setup Later"
 msgstr "Other/Setup Later"
 
 #: adminpages/wizard/payments.php:45
+#, php-format
 msgid "After connecting to Stripe, it is important to <a href=\"%s\" target=\"_blank\">set up your Stripe webhooks</a> to make sure that PMPro is notified of events that happen in Stripe."
 msgstr "After connecting to Stripe, it is important to <a href=\"%s\" target=\"_blank\">set up your Stripe webhooks</a> to make sure that PMPro is notified of events that happen in Stripe."
 
@@ -4141,55 +4305,68 @@ msgid "Welcome to Your New Membership Site"
 msgstr "Welcome to Your New Membership Site"
 
 #: adminpages/wizard/done.php:128
+#: adminpages/wizard/done.php:130
 msgid "View docs"
 msgstr "View docs"
 
 #: adminpages/wizard/done.php:123
+#: adminpages/wizard/done.php:125
 msgid "Not sure where to start? Take a look at our documentation."
 msgstr "Not sure where to start? Take a look at our documentation."
 
 #: adminpages/wizard/done.php:113
+#: adminpages/wizard/done.php:115
 msgid "Finish configuring your payment gateway."
 msgstr "Finish configuring your payment gateway."
 
 #: adminpages/wizard/done.php:112
 #: adminpages/wizard/wizard.php:73
+#: adminpages/wizard/done.php:114
 msgid "Payments"
 msgstr "Payments"
 
 #: adminpages/wizard/done.php:107
+#: adminpages/wizard/done.php:109
 msgid "View available Add Ons"
 msgstr "View available Add Ons"
 
 #: adminpages/wizard/done.php:104
+#: adminpages/wizard/done.php:106
 msgid "Add more features to your membership site."
 msgstr "Add more features to your membership site."
 
 #: adminpages/wizard/done.php:103
+#: adminpages/wizard/done.php:105
 msgid "More functionality"
 msgstr "More functionality"
 
 #: adminpages/wizard/done.php:98
+#: adminpages/wizard/done.php:100
 msgid "OR"
 msgstr "OR"
 
 #: adminpages/wizard/done.php:56
+#: adminpages/wizard/done.php:58
 msgid "Here are some recommended Add Ons for your business."
 msgstr "Here are some recommended Add Ons for your business."
 
 #: adminpages/wizard/done.php:38
+#: adminpages/wizard/done.php:40
 msgid "What's next?"
 msgstr "What's next?"
 
 #: adminpages/wizard/done.php:35
+#: adminpages/wizard/done.php:37
 msgid "Your membership site is ready."
 msgstr "Your membership site is ready."
 
 #: adminpages/wizard/done.php:35
+#: adminpages/wizard/done.php:37
 msgid "Congratulations!"
 msgstr "Congratulations!"
 
 #: adminpages/wizard/done.php:34
+#: adminpages/wizard/done.php:36
 msgid "Setup Complete"
 msgstr "Setup Complete"
 
@@ -4258,6 +4435,7 @@ msgstr "Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">ra
 #: services/applydiscountcode.php:133
 #: pages/checkout.php:136
 #: pages/checkout.php:154
+#, php-format
 msgid "The %s code has been applied to your order."
 msgstr "The %s code has been applied to your order."
 
@@ -4268,6 +4446,7 @@ msgstr "Required at Checkout?"
 
 #: classes/class-pmpro-field.php:610
 #: classes/class-pmpro-field.php:819
+#, php-format
 msgid "Sorry, the file %s was not uploaded."
 msgstr "Sorry, the file %s was not uploaded."
 
@@ -4284,6 +4463,7 @@ msgstr "Select / Dropdown"
 #: adminpages/membershiplevels.php:537
 #: includes/fields.php:1325
 #: adminpages/user-fields/group-settings.php:121
+#: adminpages/membershiplevels.php:540
 msgid "Delete Group"
 msgstr "Delete Group"
 
@@ -4464,6 +4644,7 @@ msgstr "Move Field Up"
 #. translators: a plus sign dashicon
 #: includes/fields.php:1322
 #: adminpages/user-fields/group-settings.php:118
+#, php-format
 msgid "%s Add Field"
 msgstr "%s Add Field"
 
@@ -4523,6 +4704,7 @@ msgstr "Group Name"
 #: adminpages/membershiplevels.php:340
 #: includes/fields.php:1235
 #: adminpages/user-fields/group-settings.php:37
+#: adminpages/membershiplevels.php:343
 msgid "Move Group Down"
 msgstr "Move Group Down"
 
@@ -4531,12 +4713,14 @@ msgstr "Move Group Down"
 #: includes/fields.php:1382
 #: adminpages/user-fields/field-settings.php:47
 #: adminpages/user-fields/group-settings.php:34
+#: adminpages/membershiplevels.php:340
 msgid "Move down"
 msgstr "Move down"
 
 #: adminpages/membershiplevels.php:335
 #: includes/fields.php:1230
 #: adminpages/user-fields/group-settings.php:32
+#: adminpages/membershiplevels.php:338
 msgid "Move Group Up"
 msgstr "Move Group Up"
 
@@ -4545,6 +4729,7 @@ msgstr "Move Group Up"
 #: includes/fields.php:1377
 #: adminpages/user-fields/field-settings.php:42
 #: adminpages/user-fields/group-settings.php:29
+#: adminpages/membershiplevels.php:335
 msgid "Move up"
 msgstr "Move up"
 
@@ -4556,62 +4741,74 @@ msgstr "Extra Fields:"
 #: includes/fields.php:539
 #: includes/fields.php:417
 #: includes/fields.php:521
+#, php-format
 msgid "The %s fields are required."
 msgstr "The %s fields are required."
 
 #: includes/fields.php:536
 #: includes/fields.php:414
 #: includes/fields.php:518
+#, php-format
 msgid "The %s field is required."
 msgstr "The %s field is required."
 
 #: includes/fields.php:151
 #: includes/fields.php:98
+#, php-format
 msgid "Choose from the most popular %s"
 msgstr "Choose from the most popular %s"
 
 #: includes/fields.php:150
 #: includes/fields.php:97
+#, php-format
 msgid "Add or remove %s"
 msgstr "Add or remove %s"
 
 #: includes/fields.php:149
 #: includes/fields.php:96
+#, php-format
 msgid "Separate %s with commas"
 msgstr "Separate %s with commas"
 
 #: includes/fields.php:148
 #: includes/fields.php:95
+#, php-format
 msgid "New %s Name"
 msgstr "New %s Name"
 
 #: includes/fields.php:147
 #: includes/fields.php:94
+#, php-format
 msgid "Add New %s"
 msgstr "Add New %s"
 
 #: includes/fields.php:146
 #: includes/fields.php:93
+#, php-format
 msgid "Update %s"
 msgstr "Update %s"
 
 #: includes/fields.php:145
 #: includes/fields.php:92
+#, php-format
 msgid "Edit %s"
 msgstr "Edit %s"
 
 #: includes/fields.php:144
 #: includes/fields.php:91
+#, php-format
 msgid "All %s"
 msgstr "All %s"
 
 #: includes/fields.php:143
 #: includes/fields.php:90
+#, php-format
 msgid "Popular %s"
 msgstr "Popular %s"
 
 #: includes/fields.php:142
 #: includes/fields.php:89
+#, php-format
 msgid "Search %s"
 msgstr "Search %s"
 
@@ -4631,6 +4828,7 @@ msgstr "PHP Sessions"
 #: classes/class-pmpro-field.php:1434
 #: classes/class-pmpro-field.php:1166
 #: classes/class-pmpro-field.php:1168
+#, php-format
 msgid "Current File: %s"
 msgstr "Current File: %s"
 
@@ -4642,6 +4840,7 @@ msgstr "Choose one or more."
 #. translators: a plus sign dashicon
 #: adminpages/userfields.php:132
 #: adminpages/userfields.php:134
+#, php-format
 msgid "%s Add Field Group"
 msgstr "%s Add Field Group"
 
@@ -4675,15 +4874,18 @@ msgid "Error finding report data. Make sure transients are working."
 msgstr "Error finding report data. Make sure transients are working."
 
 #: adminpages/membershiplevels.php:579
+#: adminpages/membershiplevels.php:582
 msgid "Add On"
 msgstr "Add On"
 
 #: adminpages/membershiplevels.php:561
+#: adminpages/membershiplevels.php:564
 msgid "What type of membership level do you want to create?"
 msgstr "What type of membership level do you want to create?"
 
 #: adminpages/levels/edit-level.php:682
 #: adminpages/levels/edit-level.php:701
+#, php-format
 msgid "Protect access to other content including custom post types (CPTs), courses, events, products, communities, podcasts, and more. <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">Read our documentation on restricting content</a>."
 msgstr "Protect access to other content including custom post types (CPTs), courses, events, products, communities, podcasts, and more. <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">Read our documentation on restricting content</a>."
 
@@ -4694,6 +4896,7 @@ msgstr "Other Content Types"
 
 #: adminpages/levels/edit-level.php:676
 #: adminpages/levels/edit-level.php:695
+#, php-format
 msgid "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single page to protect it."
 msgstr "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single page to protect it."
 
@@ -4704,6 +4907,7 @@ msgstr "Single Pages"
 
 #: adminpages/levels/edit-level.php:670
 #: adminpages/levels/edit-level.php:689
+#, php-format
 msgid "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single post to protect it."
 msgstr "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single post to protect it."
 
@@ -4719,6 +4923,7 @@ msgstr "Select categories to bulk protect posts."
 
 #: adminpages/levels/edit-level.php:613
 #: adminpages/levels/edit-level.php:632
+#, php-format
 msgid "Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">read our documentation on restricting content</a>."
 msgstr "Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">read our documentation on restricting content</a>."
 
@@ -4734,6 +4939,7 @@ msgstr "Set the member pricing for this level. The initial payment is collected 
 
 #: adminpages/levels/edit-level.php:268
 #: adminpages/levels/edit-level.php:280
+#, php-format
 msgid "Use the placeholder variable <code>%1$s</code> in your checkout <a href=\"%2$s\" title=\"Edit Membership Email Templates\">email templates</a> to include this information."
 msgstr "Use the placeholder variable <code>%1$s</code> in your checkout <a href=\"%2$s\" title=\"Edit Membership Email Templates\">email templates</a> to include this information."
 
@@ -4755,6 +4961,7 @@ msgstr "View at Checkout"
 #. translators: %s is the Level ID.
 #: adminpages/levels/edit-level.php:186
 #: adminpages/levels/edit-level.php:193
+#, php-format
 msgid "Edit Level ID: %s"
 msgstr "Edit Level ID: %s"
 
@@ -4828,10 +5035,12 @@ msgid "User Fields"
 msgstr "User Fields"
 
 #: adminpages/addons.php:454
+#, php-format
 msgid "Already purchased? <a href=\"%s\">Enter your license key here</a>"
 msgstr "Already purchased? <a href=\"%s\">Enter your license key here</a>"
 
 #: adminpages/addons.php:452
+#, php-format
 msgid "Get %s and more with a %s license."
 msgstr "Get %s and more with a %s license."
 
@@ -4840,6 +5049,7 @@ msgstr "Get %s and more with a %s license."
 #: classes/gateways/class.pmprogateway_stripe.php:1326
 #: classes/gateways/class.pmprogateway_stripe.php:1322
 #: classes/gateways/class.pmprogateway_stripe.php:1323
+#: adminpages/membershiplevels.php:563
 msgid "Close Popup"
 msgstr "Close Popup"
 
@@ -4853,11 +5063,13 @@ msgstr "Update Now"
 
 #. translators: %s - Add On status label.
 #: adminpages/addons.php:242
+#, php-format
 msgid "Status: %s"
 msgstr "Status: %s"
 
 #. translators: %s - Add On license label.
 #: adminpages/addons.php:220
+#, php-format
 msgid "License: %s"
 msgstr "License: %s"
 
@@ -4913,12 +5125,14 @@ msgid "In order to complete the transition to using Stripe API keys, please clic
 msgstr "In order to complete the transition to using Stripe API keys, please click the \"Disconnect from Stripe\" button below."
 
 #: adminpages/orders.php:23
+#, php-format
 msgid "Order %s deleted successfully."
 msgstr "Order %s deleted successfully."
 
 #: includes/functions.php:2132
 #: includes/functions.php:2142
 #: includes/functions.php:2151
+#: includes/functions.php:2167
 msgid "Membership Required"
 msgstr "Membership Required"
 
@@ -5019,6 +5233,7 @@ msgid "Dynamic page section that displays a list of the last 5 membership orders
 msgstr "Dynamic page section that displays a list of the last 5 membership orders for the active member."
 
 #: includes/license.php:143
+#, php-format
 msgid "Bad response code %s."
 msgstr "Bad response code %s."
 
@@ -5197,6 +5412,7 @@ msgstr "No, do not collect tax IDs."
 #: classes/gateways/class.pmprogateway_stripe.php:639
 #: classes/gateways/class.pmprogateway_stripe.php:635
 #: classes/gateways/class.pmprogateway_stripe.php:636
+#, php-format
 msgid "Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target=\"_blank\" href=\"%s\">activate Stripe Tax</a> in your Stripe dashboard. <a target=\"_blank\" href=\"%s\">More information about Stripe Tax »</a>"
 msgstr "Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target=\"_blank\" href=\"%s\">activate Stripe Tax</a> in your Stripe dashboard. <a target=\"_blank\" href=\"%s\">More information about Stripe Tax »</a>"
 
@@ -5257,6 +5473,8 @@ msgstr "Payment Flow"
 #. translators: %1$s is the Transaction ID. %1$s is the Gateway Error
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1299
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1300
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1291
+#, php-format
 msgid "Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s."
 msgstr "Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s."
 
@@ -5270,6 +5488,8 @@ msgstr "Admin: There was a problem processing a refund for transaction ID %1$s. 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1285
 #: classes/gateways/class.pmprogateway_stripe.php:3864
 #: classes/gateways/class.pmprogateway_stripe.php:3865
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1276
+#, php-format
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 
@@ -5342,6 +5562,7 @@ msgid "Yes Please"
 msgstr "Yes Please"
 
 #: classes/class-pmpro-wisdom-tracker.php:886
+#, php-format
 msgid "Thank you for opting in to tracking. Would you like to receive occasional news about this %s, including details of new features and special offers?"
 msgstr "Thank you for opting in to tracking. Would you like to receive occasional news about this %s, including details of new features and special offers?"
 
@@ -5354,10 +5575,12 @@ msgid "Allow"
 msgstr "Allow"
 
 #: classes/class-pmpro-wisdom-tracker.php:841
+#, php-format
 msgid "Thank you for installing our %1$s. We'd like your permission to track its usage on your site and subscribe you to our newsletter. We won\\'t record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional."
 msgstr "Thank you for installing our %1$s. We'd like your permission to track its usage on your site and subscribe you to our newsletter. We won\\'t record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional."
 
 #: classes/class-pmpro-wisdom-tracker.php:838
+#, php-format
 msgid "Thank you for installing our %1$s. We would like to track its usage on your site. We don't record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional."
 msgstr "Thank you for installing our %1$s. We would like to track its usage on your site. We don't record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional."
 
@@ -5413,6 +5636,7 @@ msgstr "Search"
 
 #. translators: %s: A link to the docs for the pmpro_tax filter.
 #: adminpages/paymentsettings.php:213
+#, php-format
 msgid "US only. If values are given, tax will be applied for any members ordering from the selected state. For non-US or more complex tax rules, use the %s."
 msgstr "US only. If values are given, tax will be applied for any members ordering from the selected state. For non-US or more complex tax rules, use the %s."
 
@@ -5459,6 +5683,10 @@ msgstr "Paid Memberships Pro - Payment Gateway Settings"
 #: classes/class-pmpro-subscriptions-list-table.php:629
 #: classes/class-pmpro-subscriptions-list-table.php:653
 #: includes/functions.php:650
+#: adminpages/subscriptions.php:498
+#: adminpages/subscriptions.php:511
+#: adminpages/subscriptions.php:525
+#, php-format
 msgid "%1$s at %2$s"
 msgstr "%1$s at %2$s"
 
@@ -5476,6 +5704,7 @@ msgstr "Additional Order Information"
 #: adminpages/subscriptions.php:543
 #: adminpages/orders.php:860
 #: classes/class-pmpro-orders-list-table.php:1264
+#: adminpages/subscriptions.php:546
 msgid "View all orders for this subscription"
 msgstr "View all orders for this subscription"
 
@@ -5484,6 +5713,7 @@ msgstr "View all orders for this subscription"
 #: adminpages/subscriptions.php:541
 #: adminpages/subscriptions.php:556
 #: adminpages/orders.php:786
+#: adminpages/subscriptions.php:559
 msgid "Payment Gateway Information"
 msgstr "Payment Gateway Information"
 
@@ -5522,6 +5752,7 @@ msgstr "View"
 #: adminpages/orders.php:272
 #: classes/class-pmpro-orders-list-table.php:934
 #: adminpages/orders.php:293
+#, php-format
 msgid "Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?"
 msgstr "Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?"
 
@@ -5543,11 +5774,13 @@ msgid "Manage My Account"
 msgstr "Manage My Account"
 
 #: adminpages/license.php:56
+#, php-format
 msgid "<strong>Enter your support license key</strong>. Your license key can be found in your membership email receipt or in your <a href=\"%s\" target=\"_blank\">Membership Account</a>."
 msgstr "<strong>Enter your support license key</strong>. Your license key can be found in your membership email receipt or in your <a href=\"%s\" target=\"_blank\">Membership Account</a>."
 
 #: adminpages/license.php:54
 #: adminpages/license.php:58
+#, php-format
 msgid "Visit the PMPro <a href=\"%s\" target=\"_blank\">Membership Account</a> page to confirm that your account is active and to find your license key."
 msgstr "Visit the PMPro <a href=\"%s\" target=\"_blank\">Membership Account</a> page to confirm that your account is active and to find your license key."
 
@@ -5559,6 +5792,7 @@ msgstr "Visit the PMPro <a href=\"%s\" target=\"_blank\">Membership Account</a> 
 #: includes/profile.php:747
 #: adminpages/reports/logins.php:252
 #: adminpages/reports/logins.php:251
+#, php-format
 msgid "ID: %s"
 msgstr "ID: %s"
 
@@ -5604,6 +5838,7 @@ msgid "Premium License Status: None"
 msgstr "Premium License Status: None"
 
 #: classes/class-pmpro-admin-activity-email.php:252
+#: classes/class-pmpro-admin-activity-email.php:253
 msgid "Paid Memberships Pro Add Ons"
 msgstr "Paid Memberships Pro Add Ons"
 
@@ -5632,12 +5867,14 @@ msgstr "New:"
 #: adminpages/reports/sales.php:559
 #: adminpages/reports/sales.php:562
 #: adminpages/reports/sales.php:589
+#, php-format
 msgid "Average %s"
 msgstr "Average %s"
 
 #: adminpages/reports/sales.php:530
 #: adminpages/reports/sales.php:533
 #: adminpages/reports/sales.php:560
+#, php-format
 msgid "New %s"
 msgstr "New %s"
 
@@ -5650,6 +5887,7 @@ msgstr "Renewal"
 
 #: adminpages/dashboard.php:206
 #: adminpages/license.php:60
+#, php-format
 msgid "Your <strong>%1$s</strong> key is active. %1$s accounts include access to documentation and free downloads."
 msgstr "Your <strong>%1$s</strong> key is active. %1$s accounts include access to documentation and free downloads."
 
@@ -5740,6 +5978,7 @@ msgid "View Plans and Pricing"
 msgstr "View Plans and Pricing"
 
 #: adminpages/securitysettings.php:161
+#, php-format
 msgid "Block IPs from checkout if there are more than %d failures within %d minutes."
 msgstr "Block IPs from checkout if there are more than %d failures within %d minutes."
 
@@ -5856,6 +6095,7 @@ msgid "Missing key."
 msgstr "Missing key."
 
 #: adminpages/license.php:54
+#, php-format
 msgid "There was an issue validating your license key: %s"
 msgstr "There was an issue validating your license key: %s"
 
@@ -5872,6 +6112,7 @@ msgstr "missing"
 #. translators: %s: The environment name that is not registered.
 #: classes/class-pmpro-site-health.php:287
 #: classes/class-pmpro-site-health.php:291
+#, php-format
 msgid "%s (environment not registered)"
 msgstr "%s (environment not registered)"
 
@@ -5889,11 +6130,13 @@ msgstr "Legacy Keys"
 
 #. translators: %s: The gateway name that is not registered.
 #: classes/class-pmpro-site-health.php:237
+#, php-format
 msgid "%s (gateway not registered)"
 msgstr "%s (gateway not registered)"
 
 #. translators: %d: The total count of orders.
 #: classes/class-pmpro-site-health.php:220
+#, php-format
 msgid "%d order"
 msgid_plural "%d orders"
 msgstr[0] ""
@@ -5901,6 +6144,7 @@ msgstr[1] ""
 
 #. translators: %d: The total count of discount codes.
 #: classes/class-pmpro-site-health.php:204
+#, php-format
 msgid "%d discount code"
 msgid_plural "%d discount codes"
 msgstr[0] ""
@@ -6400,6 +6644,7 @@ msgstr "Checkout - Free"
 
 #: includes/email-templates.php:195
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:62
+#, php-format
 msgid "This is the membership confirmation email sent to the site administrator for every membership checkout using the \"%s (Pay by Check)\" gateway."
 msgstr "This is the membership confirmation email sent to the site administrator for every membership checkout using the \"%s (Pay by Check)\" gateway."
 
@@ -6763,6 +7008,7 @@ msgid "An email from !!sitename!!"
 msgstr "An email from !!sitename!!"
 
 #: includes/deprecated.php:941
+#, php-format
 msgid "Some Add Ons are now merged into the Paid Memberships Pro core plugin. The features of the following plugins are now included in PMPro by default. You should <strong>delete these unnecessary plugins</strong> from your site: <em><strong>%s</strong></em>."
 msgstr "Some Add Ons are now merged into the Paid Memberships Pro core plugin. The features of the following plugins are now included in PMPro by default. You should <strong>delete these unnecessary plugins</strong> from your site: <em><strong>%s</strong></em>."
 
@@ -6770,6 +7016,7 @@ msgstr "Some Add Ons are now merged into the Paid Memberships Pro core plugin. T
 #: classes/gateways/class.pmprogateway_stripe.php:1197
 #: classes/gateways/class.pmprogateway_stripe.php:1193
 #: classes/gateways/class.pmprogateway_stripe.php:1194
+#, php-format
 msgid "<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s"
 msgstr "<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s"
 
@@ -6777,6 +7024,7 @@ msgstr "<strong>Error:</strong> PMPro could not disconnect from the Stripe API. 
 #: classes/gateways/class.pmprogateway_stripe.php:1156
 #: classes/gateways/class.pmprogateway_stripe.php:1152
 #: classes/gateways/class.pmprogateway_stripe.php:1153
+#, php-format
 msgid "<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s"
 msgstr "<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s"
 
@@ -6804,6 +7052,7 @@ msgstr "Test Mode:"
 #: classes/gateways/class.pmprogateway_stripe.php:2394
 #: classes/gateways/class.pmprogateway_stripe.php:2395
 #: classes/gateways/class.pmprogateway_stripe.php:2396
+#, php-format
 msgid "Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license."
 msgstr "Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license."
 
@@ -7063,41 +7312,49 @@ msgstr "General Settings / Membership Info"
 
 #: adminpages/emailtemplates-edit.php:167
 #: adminpages/emailtemplates-edit.php:176
+#: adminpages/emailtemplates-edit.php:181
 msgid "Use the placeholder variables below to customize your member and admin emails with specific user or membership data."
 msgstr "Use the placeholder variables below to customise your member and admin emails with specific user or membership data."
 
 #: adminpages/emailtemplates-edit.php:163
 #: adminpages/emailtemplates-edit.php:172
+#: adminpages/emailtemplates-edit.php:177
 msgid "Variable Reference"
 msgstr "Variable Reference"
 
 #: adminpages/emailtemplates-edit.php:153
 #: adminpages/emailtemplates-edit.php:162
+#: adminpages/emailtemplates-edit.php:167
 msgid "Reset Template"
 msgstr "Reset Template"
 
 #: adminpages/emailtemplates-edit.php:152
 #: adminpages/emailtemplates-edit.php:161
+#: adminpages/emailtemplates-edit.php:166
 msgid "Save Template"
 msgstr "Save Template"
 
 #: adminpages/emailtemplates-edit.php:213
 #: adminpages/emailtemplates-edit.php:210
+#: adminpages/emailtemplates-edit.php:215
 msgid "Your current membership will be used for any membership level data."
 msgstr "Your current membership will be used for any membership level data."
 
 #: adminpages/emailtemplates-edit.php:211
 #: adminpages/emailtemplates-edit.php:208
+#: adminpages/emailtemplates-edit.php:213
 msgid "Save Template and Send Email"
 msgstr "Save Template and Send Email"
 
 #: adminpages/emailtemplates-edit.php:209
 #: adminpages/emailtemplates-edit.php:206
+#: adminpages/emailtemplates-edit.php:211
 msgid "Send a test email to"
 msgstr "Send a test email to"
 
 #: adminpages/emailtemplates-edit.php:142
 #: adminpages/emailtemplates-edit.php:151
+#: adminpages/emailtemplates-edit.php:156
 msgid "Body"
 msgstr "Body"
 
@@ -7105,11 +7362,13 @@ msgstr "Body"
 #: adminpages/emailtemplates.php:34
 #: adminpages/emailtemplates.php:142
 #: adminpages/emailtemplates-edit.php:142
+#: adminpages/emailtemplates-edit.php:147
 msgid "Subject"
 msgstr "Subject"
 
 #: adminpages/emailtemplates-edit.php:114
 #: adminpages/emailtemplates-edit.php:123
+#: adminpages/emailtemplates-edit.php:128
 msgid "Disable this email?"
 msgstr "Disable this email?"
 
@@ -7136,6 +7395,7 @@ msgid "Email Templates"
 msgstr "Email Templates"
 
 #: classes/class-pmpro-discount-code-list-table.php:371
+#, php-format
 msgid "Edit Code: %s"
 msgstr "Edit Code: %s"
 
@@ -7154,10 +7414,12 @@ msgid "Password Reset"
 msgstr "Password Reset"
 
 #: services/braintree-webhook.php:382
+#, php-format
 msgid "A member's Braintree subscription has expired at %s"
 msgstr "A member's Braintree subscription has expired at %s"
 
 #: services/braintree-webhook.php:380
+#, php-format
 msgid "<p>A member's Braintree subscription has expired at your site. This typically happens if you've set up billing limits on your levels.</p><p>We have not removed the user's membership level.</p><p>You can view details on this user here: %s</p>"
 msgstr "<p>A member's Braintree subscription has expired at your site. This typically happens if you've set up billing limits on your levels.</p><p>We have not removed the user's membership level.</p><p>You can view details on this user here: %s</p>"
 
@@ -7216,18 +7478,21 @@ msgstr "Webhook creation failed. Please refresh and try again."
 #: classes/gateways/class.pmprogateway_stripe.php:596
 #: classes/gateways/class.pmprogateway_stripe.php:592
 #: classes/gateways/class.pmprogateway_stripe.php:593
+#, php-format
 msgid "Your domain could not be registered with Apple to enable Apple Pay. Please try <a target=\"_blank\" href=\"%s\" title=\"Apple Pay Settings Page in Stripe\">registering your domain manually from the Apple Pay settings page in Stripe</a>."
 msgstr "Your domain could not be registered with Apple to enable Apple Pay. Please try <a target=\"_blank\" href=\"%s\" title=\"Apple Pay Settings Page in Stripe\">registering your domain manually from the Apple Pay settings page in Stripe</a>."
 
 #: classes/gateways/class.pmprogateway_stripe.php:594
 #: classes/gateways/class.pmprogateway_stripe.php:590
 #: classes/gateways/class.pmprogateway_stripe.php:591
+#, php-format
 msgid "This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target=\"_blank\" href=\"%s\" title=\"Configuring WordPress to Always Use HTTPS/SSL\">set up WordPress to always use HTTPS</a>."
 msgstr "This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target=\"_blank\" href=\"%s\" title=\"Configuring WordPress to Always Use HTTPS/SSL\">set up WordPress to always use HTTPS</a>."
 
 #: classes/gateways/class.pmprogateway_stripe.php:581
 #: classes/gateways/class.pmprogateway_stripe.php:577
 #: classes/gateways/class.pmprogateway_stripe.php:578
+#, php-format
 msgid "Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target=\"_blank\" href=\"%s\" title=\"More Information about the domain association file for Apple Pay\">More Information</a>"
 msgstr "Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target=\"_blank\" href=\"%s\" title=\"More Information about the domain association file for Apple Pay\">More Information</a>"
 
@@ -7312,6 +7577,7 @@ msgid "Other Email Settings"
 msgstr "Other Email Settings"
 
 #: adminpages/emailsettings.php:162
+#, php-format
 msgid "Please enable email sending inside %s."
 msgstr "Please enable email sending inside %s."
 
@@ -7332,6 +7598,7 @@ msgid "Connect to SendWP"
 msgstr "Connect to SendWP"
 
 #: adminpages/emailsettings.php:145
+#, php-format
 msgid "If you are having issues with email delivery from your server, <a href=\"%s\" title=\"Paid Memberships Pro - Subscription Delays Add On\" target=\"_blank\" rel=\"nofollow noopener\">please read our email troubleshooting guide</a>. As an alternative, Paid Memberships Pro offers built-in integration for SendWP. <em>Optional: SendWP is a third-party service for transactional email in WordPress. <a href=\"%s\" title=\"Documentation on SendWP and Paid Memberships Pro\" target=\"_blank\" rel=\"nofollow noopener\">Click here to learn more about SendWP and Paid Memberships Pro</a></em>."
 msgstr "If you are having issues with email delivery from your server, <a href=\"%s\" title=\"Paid Memberships Pro - Subscription Delays Add On\" target=\"_blank\" rel=\"nofollow noopener\">please read our email troubleshooting guide</a>. As an alternative, Paid Memberships Pro offers built-in integration for SendWP. <em>Optional: SendWP is a third-party service for transactional email in WordPress. <a href=\"%s\" title=\"Documentation on SendWP and Paid Memberships Pro\" target=\"_blank\" rel=\"nofollow noopener\">Click here to learn more about SendWP and Paid Memberships Pro</a></em>."
 
@@ -7402,6 +7669,7 @@ msgid "Webhook"
 msgstr "Webhook"
 
 #: classes/class-pmpro-admin-activity-email.php:135
+#: classes/class-pmpro-admin-activity-email.php:136
 msgid " Total Members"
 msgstr " Total Members"
 
@@ -7418,6 +7686,8 @@ msgid "Uninstall PMPro on deletion?"
 msgstr "Uninstall PMPro on deletion?"
 
 #: classes/class-pmpro-admin-activity-email.php:420
+#: classes/class-pmpro-admin-activity-email.php:430
+#, php-format
 msgid "[%1$s] PMPro Activity for %2$s: %3$s"
 msgstr "[%1$s] PMPro Activity for %2$s: %3$s"
 
@@ -7474,15 +7744,20 @@ msgstr "Display 'Welcome' content when logged in."
 msgid "Log in Form"
 msgstr "Log in Form"
 
+#. translators: %s is the attributes for the admin advanced settings link.
 #: classes/class-pmpro-admin-activity-email.php:382
+#: classes/class-pmpro-admin-activity-email.php:386
+#, php-format
 msgid "To adjust the frequency of this message or disable these emails completely, you can <a %s>update the \"Activity Email Frequency\" setting here</a>."
 msgstr "To adjust the frequency of this message or disable these emails completely, you can <a %s>update the \"Activity Email Frequency\" setting here</a>."
 
 #: classes/class-pmpro-admin-activity-email.php:381
+#: classes/class-pmpro-admin-activity-email.php:380
 msgid "This email is automatically generated by your WordPress site and sent to your Administration Email Address set under Settings > General in your WordPress dashboard."
 msgstr "This email is automatically generated by your WordPress site and sent to your Administration Email Address set under Settings > General in your WordPress dashboard."
 
 #: classes/class-pmpro-admin-activity-email.php:369
+#: classes/class-pmpro-admin-activity-email.php:368
 msgid "Subscribe to our YouTube Channel"
 msgstr "Subscribe to our YouTube Channel"
 
@@ -7499,6 +7774,7 @@ msgid "PMPro News and Updates"
 msgstr "PMPro News and Updates"
 
 #: classes/class-pmpro-admin-activity-email.php:326
+#, php-format
 msgid "...and that is perfectly OK! PMPro is free to use for as long as you want for membership sites of all sizes. Interested in unlimited support, access to over 70 featured-enhancing Add Ons and instant installs and updates? <a %s>Check out our paid plans to learn more</a>."
 msgstr "...and that is perfectly OK! PMPro is free to use for as long as you want for membership sites of all sizes. Interested in unlimited support, access to over 70 featured-enhancing Add Ons and instant installs and updates? <a %s>Check out our paid plans to learn more</a>."
 
@@ -7523,10 +7799,12 @@ msgid "Required Updates"
 msgstr "Required Updates"
 
 #: adminpages/wizard/done.php:76
+#: adminpages/wizard/done.php:78
 msgid "Plus Add On"
 msgstr "Plus Add On"
 
 #: adminpages/wizard/done.php:72
+#: adminpages/wizard/done.php:74
 msgid "Free Add On"
 msgstr "Free Add On"
 
@@ -7538,38 +7816,53 @@ msgstr "Active Add Ons"
 #. being used.
 #. translators: %1$s is the attributes for the anchor tag, %2$s is the term being used.
 #: classes/class-pmpro-admin-activity-email.php:233
+#: classes/class-pmpro-admin-activity-email.php:234
+#, php-format
 msgid "No <a %1$s>Discount Codes</a> were used %2$s."
 msgstr "No <a %1$s>Discount Codes</a> were used %2$s."
 
 #: classes/class-pmpro-admin-activity-email.php:208
+#: classes/class-pmpro-admin-activity-email.php:209
+#, php-format
 msgid "<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:"
 msgstr "<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:"
 
 #: classes/class-pmpro-admin-activity-email.php:206
+#: classes/class-pmpro-admin-activity-email.php:207
+#, php-format
 msgid "<strong>%1$d order</strong> used a <a %2$s>Discount Code</a> at checkout:"
 msgstr "<strong>%1$d order</strong> used a <a %2$s>Discount Code</a> at checkout:"
 
 #: classes/class-pmpro-admin-activity-email.php:175
+#: classes/class-pmpro-admin-activity-email.php:176
 msgid "Discount Code Usage"
 msgstr "Discount Code Usage"
 
 #: classes/class-pmpro-admin-activity-email.php:165
+#: classes/class-pmpro-admin-activity-email.php:166
 msgid "View Signups and Cancellations Report"
 msgstr "View Signups and Cancellations Report"
 
 #: classes/class-pmpro-admin-activity-email.php:151
+#: classes/class-pmpro-admin-activity-email.php:152
+#, php-format
 msgid "Here is a summary of your top %d most popular levels:"
 msgstr "Here is a summary of your top %d most popular levels:"
 
 #: classes/class-pmpro-admin-activity-email.php:106
+#: classes/class-pmpro-admin-activity-email.php:107
 msgid "Signups and Cancellations"
 msgstr "Signups and Cancellations"
 
 #: classes/class-pmpro-admin-activity-email.php:104
+#: classes/class-pmpro-admin-activity-email.php:105
+#, php-format
 msgid "Your membership site made <strong>%1$s</strong> in revenue %2$s."
 msgstr "Your membership site made <strong>%1$s</strong> in revenue %2$s."
 
 #: classes/class-pmpro-admin-activity-email.php:84
+#: classes/class-pmpro-admin-activity-email.php:85
+#, php-format
 msgid "Here's a summary of what happened in your Paid Memberships Pro site %s."
 msgstr "Here's a summary of what happened in your Paid Memberships Pro site %s."
 
@@ -7591,10 +7884,12 @@ msgid "at"
 msgstr "at"
 
 #: adminpages/pagesettings.php:444
+#, php-format
 msgid "Include the shortcode %s or the Member Profile Edit block."
 msgstr "Include the shortcode %s or the Member Profile Edit block."
 
 #: adminpages/pagesettings.php:415
+#, php-format
 msgid "Include the shortcode %s or the Log In Form block."
 msgstr "Include the shortcode %s or the Log In Form block."
 
@@ -7608,10 +7903,12 @@ msgid "Log In Page"
 msgstr "Log In Page"
 
 #: adminpages/pagesettings.php:153
+#, php-format
 msgid "Error generating the %s page. You will have to choose or create one manually."
 msgstr "Error generating the %s page. You will have to choose or create one manually."
 
 #: adminpages/pagesettings.php:150
+#, php-format
 msgid "Found an existing version of the %s page and used that one."
 msgstr "Found an existing version of the %s page and used that one."
 
@@ -7660,6 +7957,7 @@ msgid "Restrict Dashboard Access"
 msgstr "Restrict Dashboard Access"
 
 #: includes/widgets.php:125
+#, php-format
 msgid "Customize this menu per level using the <a href=\"%s\" title=\"Paid Memberships Pro - Nav Menus Add On\" target=\"_blank\">Nav Menus Add On</a>. Assign the menu under Appearance > Menus."
 msgstr "Customise this menu per level using the <a href=\"%s\" title=\"Paid Memberships Pro - Nav Menus Add On\" target=\"_blank\">Nav Menus Add On</a>. Assign the menu under Appearance > Menus."
 
@@ -7787,6 +8085,7 @@ msgstr "Log Out"
 #: pages/confirmation.php:100
 #: shortcodes/pmpro_account.php:75
 #: pages/confirmation.php:102
+#, php-format
 msgid "Welcome, %s"
 msgstr "Welcome, %s"
 
@@ -7806,6 +8105,7 @@ msgstr "Register"
 #: includes/login.php:856
 #: includes/functions.php:2152
 #: includes/functions.php:2161
+#: includes/functions.php:2177
 msgid "Join Now"
 msgstr "Join Now"
 
@@ -8004,6 +8304,7 @@ msgstr "Edit Order"
 #: adminpages/subscriptions.php:402
 #: adminpages/subscriptions.php:417
 #: classes/class-pmpro-subscription.php:1209
+#: adminpages/subscriptions.php:420
 msgid "Edit User"
 msgstr "Edit User"
 
@@ -8040,6 +8341,7 @@ msgstr "Error"
 #: classes/class-pmpro-subscriptions-list-table.php:635
 #: classes/class-pmpro-subscriptions-list-table.php:659
 #: classes/class-pmpro-subscriptions-list-table.php:676
+#: adminpages/membershiplevels.php:491
 msgid "&#8212;"
 msgstr "&#8212;"
 
@@ -8100,6 +8402,7 @@ msgid "<strong>Paid Memberships Pro offers plans for automatic updates of Add On
 msgstr "<strong>Paid Memberships Pro offers plans for automatic updates of Add Ons and premium support.</strong> These plans include a license key which we recommend for all public websites running Paid Memberships Pro. A license key allows you to automatically install Add Ons included in your plan and update active Add Ons included in your plan when a new security, bug fix, or feature enhancement is released."
 
 #: adminpages/license.php:99
+#, php-format
 msgid "Paid Memberships Pro and our Add Ons are distributed under the <a href=\"%s\" target=\"_blank\">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge."
 msgstr "Paid Memberships Pro and our Add Ons are distributed under the <a href=\"%s\" target=\"_blank\">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge."
 
@@ -8108,14 +8411,17 @@ msgid "Validate Key"
 msgstr "Validate Key"
 
 #: includes/admin.php:277
+#, php-format
 msgid "<a class=\"pmpro_license_tag pmpro_license_tag-invalid\" href=\"%s\">No License</a>"
 msgstr "<a class=\"pmpro_license_tag pmpro_license_tag-invalid\" href=\"%s\">No License</a>"
 
 #: includes/admin.php:275
+#, php-format
 msgid "<a class=\"pmpro_license_tag pmpro_license_tag-valid\" href=\"%s\">Valid License</a>"
 msgstr "<a class=\"pmpro_license_tag pmpro_license_tag-valid\" href=\"%s\">Valid License</a>"
 
 #: classes/gateways/class.pmprogateway_payflowpro.php:161
+#, php-format
 msgid "Payflow does not use IPN. To sync recurring subscriptions, please see the <a target=\"_blank\" href=\"%s\" title=\"the Payflow Recurring Orders Add On\">Payflow Recurring Orders Add On</a>."
 msgstr "Payflow does not use IPN. To sync recurring subscriptions, please see the <a target=\"_blank\" href=\"%s\" title=\"the Payflow Recurring Orders Add On\">Payflow Recurring Orders Add On</a>."
 
@@ -8126,20 +8432,24 @@ msgstr "Note: We do not recommend using PayPal Standard. We suggest using PayPal
 #: classes/gateways/class.pmprogateway_stripe.php:666
 #: classes/gateways/class.pmprogateway_stripe.php:662
 #: classes/gateways/class.pmprogateway_stripe.php:663
+#, php-format
 msgid "Optional: Offer PayPal Express as an option at checkout using the <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">Add PayPal Express Add On</a>."
 msgstr "Optional: Offer PayPal Express as an option at checkout using the <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">Add PayPal Express Add On</a>."
 
 #: adminpages/levels/edit-level.php:541
 #: adminpages/levels/edit-level.php:560
+#, php-format
 msgid "Optional: Allow more customizable expiration dates using the <a href=\"%s\" title=\"Paid Memberships Pro - Set Expiration Date Add On\" target=\"_blank\" rel=\"nofollow noopener\">Set Expiration Date Add On</a>."
 msgstr "Optional: Allow more customisable expiration dates using the <a href=\"%s\" title=\"Paid Memberships Pro - Set Expiration Date Add On\" target=\"_blank\" rel=\"nofollow noopener\">Set Expiration Date Add On</a>."
 
 #: adminpages/levels/edit-level.php:326
 #: adminpages/levels/edit-level.php:345
+#, php-format
 msgid "Optional: Allow more customizable trial periods and renewal dates using the <a href=\"%s\" title=\"Paid Memberships Pro - Subscription Delays Add On\" target=\"_blank\" rel=\"nofollow noopener\">Subscription Delays Add On</a>."
 msgstr "Optional: Allow more customisable trial periods and renewal dates using the <a href=\"%s\" title=\"Paid Memberships Pro - Subscription Delays Add On\" target=\"_blank\" rel=\"nofollow noopener\">Subscription Delays Add On</a>."
 
 #: adminpages/pagesettings.php:385
+#, php-format
 msgid "Optional: Customize your Membership Levels page using the <a href=\"%s\" title=\"Paid Memberships Pro - Advanced Levels Page Add On\" target=\"_blank\">Advanced Levels Page Add On</a>."
 msgstr "Optional: Customise your Membership Levels page using the <a href=\"%s\" title=\"Paid Memberships Pro - Advanced Levels Page Add On\" target=\"_blank\">Advanced Levels Page Add On</a>."
 
@@ -8156,12 +8466,14 @@ msgstr "License"
 #: paid-memberships-pro.php:198
 #: paid-memberships-pro.php:200
 #: paid-memberships-pro.php:219
+#: paid-memberships-pro.php:217
 msgid "Default"
 msgstr "Default"
 
 #: pages/billing.php:408
 #: shortcodes/pmpro_account.php:159
 #: pages/billing.php:399
+#, php-format
 msgid "You do not have an active membership. <a href='%s'>Choose a membership level.</a>"
 msgstr "You do not have an active membership. <a href='%s'>Choose a membership level.</a>"
 
@@ -8467,16 +8779,19 @@ msgstr "Error validating credit card type. Make sure your credit card number is 
 
 #: adminpages/levels/edit-level.php:660
 #: adminpages/levels/edit-level.php:679
+#, php-format
 msgid "Non-members will see the title only for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 msgstr "Non-members will see the title only for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 
 #: adminpages/levels/edit-level.php:657
 #: adminpages/levels/edit-level.php:676
+#, php-format
 msgid "Non-members will see the title and excerpt for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 msgstr "Non-members will see the title and excerpt for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 
 #: adminpages/levels/edit-level.php:653
 #: adminpages/levels/edit-level.php:672
+#, php-format
 msgid "Non-members will not see posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 msgstr "Non-members will not see posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 
@@ -8492,6 +8807,8 @@ msgstr "View Orders"
 #: classes/class-pmpro-discount-code-list-table.php:425
 #: classes/class-pmpro-orders-list-table.php:974
 #: classes/class-pmpro-orders-list-table.php:985
+#: adminpages/membershiplevels.php:435
+#: adminpages/membershiplevels.php:446
 msgid "Copy"
 msgstr "Copy"
 
@@ -8508,6 +8825,8 @@ msgstr "Copy"
 #: includes/fields.php:1391
 #: includes/profile.php:752
 #: adminpages/user-fields/field-settings.php:56
+#: adminpages/membershiplevels.php:421
+#: adminpages/membershiplevels.php:431
 msgid "Edit"
 msgstr "Edit"
 
@@ -8583,6 +8902,7 @@ msgid "Close"
 msgstr "Close"
 
 #: includes/pointers.php:32
+#, php-format
 msgid "The Memberships menu has moved. Check out the new dashboard. The Membership Levels and Discount Codes pages can now be found under <a href=\"%s\">Settings</a>."
 msgstr "The Memberships menu has moved. Check out the new dashboard. The Membership Levels and Discount Codes pages can now be found under <a href=\"%s\">Settings</a>."
 
@@ -8594,11 +8914,13 @@ msgstr "PMPro v2.0 Update"
 #: includes/functions.php:2783
 #: includes/functions.php:2772
 #: includes/functions.php:2781
+#: includes/functions.php:2797
 msgid "Sign Up Now"
 msgstr "Sign Up Now"
 
 #. translators: 1: the old hook name, 2: the new or replacement hook name
 #: includes/deprecated.php:30
+#, php-format
 msgid "The %1$s hook has been deprecated in Paid Memberships Pro. Please use the %2$s hook instead."
 msgstr "The %1$s hook has been deprecated in Paid Memberships Pro. Please use the %2$s hook instead."
 
@@ -8609,6 +8931,7 @@ msgstr "View More"
 
 #: adminpages/dashboard.php:431
 #: adminpages/dashboard.php:429
+#, php-format
 msgid "Posted %s"
 msgstr "Posted %s"
 
@@ -8661,6 +8984,7 @@ msgid "Get Involved"
 msgstr "Get Involved"
 
 #: adminpages/dashboard.php:216
+#, php-format
 msgid "Paid Memberships Pro and our Add Ons are distributed under the <a target=\"_blank\" href=\"%s\">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge."
 msgstr "Paid Memberships Pro and our Add Ons are distributed under the <a target=\"_blank\" href=\"%s\">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge."
 
@@ -8671,10 +8995,12 @@ msgstr "An annual support license is recommended for websites running Paid Membe
 
 #: adminpages/dashboard.php:208
 #: adminpages/license.php:62
+#, php-format
 msgid "<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site."
 msgstr "<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site."
 
 #: adminpages/dashboard.php:204
+#, php-format
 msgid "<a href=\"%s\">View your membership account</a> to verify your license key."
 msgstr "<a href=\"%s\">View your membership account</a> to verify your license key."
 
@@ -8723,6 +9049,7 @@ msgstr "Generate Membership Pages"
 #: includes/functions.php:2136
 #: includes/functions.php:2146
 #: includes/functions.php:2155
+#: includes/functions.php:2171
 msgid "View Membership Levels"
 msgstr "View Membership Levels"
 
@@ -8829,20 +9156,24 @@ msgid "All Paid Levels"
 msgstr "All Paid Levels"
 
 #: adminpages/membershiplevels.php:217
+#: adminpages/membershiplevels.php:220
 msgid "Video: Membership Levels"
 msgstr "Video: Membership Levels"
 
 #: adminpages/dashboard.php:128
 #: adminpages/membershiplevels.php:216
+#: adminpages/membershiplevels.php:219
 msgid "Create a Membership Level"
 msgstr "Create a Membership Level"
 
 #: adminpages/membershiplevels.php:215
+#: adminpages/membershiplevels.php:218
 msgid "No Membership Levels Found"
 msgstr "No Membership Levels Found"
 
 #: adminpages/levels/edit-level.php:504
 #: adminpages/levels/edit-level.php:523
+#, php-format
 msgid "WARNING: This level is set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a certain number of payments. For more information, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">see our post here</a>."
 msgstr "WARNING: This level is set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a certain number of payments. For more information, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">see our post here</a>."
 
@@ -8855,6 +9186,7 @@ msgstr "Check to include this message in the membership confirmation email."
 #: adminpages/levels/save-level.php:127
 #: adminpages/discountcodes.php:353
 #: adminpages/levels/save-level.php:133
+#, php-format
 msgid "WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">see our post here</a>."
 msgstr "WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">see our post here</a>."
 
@@ -8926,6 +9258,7 @@ msgstr "Paid"
 
 #: classes/gateways/class.pmprogateway_braintree.php:1037
 #: classes/gateways/class.pmprogateway_braintree.php:1048
+#, php-format
 msgid "Could not find the subscription. %s"
 msgstr "Could not find the subscription. %s"
 
@@ -8989,6 +9322,7 @@ msgid "That post has since been updated."
 msgstr "That post has since been updated."
 
 #: includes/terms-of-service.php:287
+#, php-format
 msgid "%s agreed to %s (ID #%d, last modified %s) on %s."
 msgstr "%s agreed to %s (ID #%d, last modified %s) on %s."
 
@@ -9077,6 +9411,7 @@ msgstr "Paid Memberships Pro Membership History"
 #: adminpages/membershiplevels.php:363
 #: includes/privacy.php:198
 #: includes/profile.php:886
+#: adminpages/membershiplevels.php:366
 msgid "Level Cost"
 msgstr "Level Cost"
 
@@ -9121,6 +9456,7 @@ msgid "Please note that data erasure will not cancel a user's membership level o
 msgstr "Please note that data erasure will not cancel a user's membership level or any active subscriptions. Please edit or delete the user through the WordPress dashboard."
 
 #: includes/privacy.php:83
+#, php-format
 msgid "%d PMPro orders were retained for business records."
 msgstr "%d PMPro orders were retained for business records."
 
@@ -9188,6 +9524,7 @@ msgstr "Your Publishable Key appears incorrect."
 
 #: classes/class-pmpro-admin-activity-email.php:120
 #: classes/class-pmpro-members-list-table.php:156
+#: classes/class-pmpro-admin-activity-email.php:121
 msgid "Expired"
 msgstr "Expired"
 
@@ -9198,6 +9535,7 @@ msgstr "Expired"
 #: classes/class-pmpro-subscriptions-list-table.php:579
 #: classes/class-pmpro-subscriptions-list-table.php:396
 #: classes/class-pmpro-subscriptions-list-table.php:581
+#: classes/class-pmpro-admin-activity-email.php:122
 msgid "Cancelled"
 msgstr "Cancelled"
 
@@ -9242,6 +9580,7 @@ msgid "Security Code (CVC)"
 msgstr "Security Code (CVC)"
 
 #: classes/gateways/class.pmprogateway_braintree.php:779
+#, php-format
 msgid "Failed to update customer: %s"
 msgstr "Failed to update customer: %s"
 
@@ -9250,10 +9589,12 @@ msgid "Problem accessing the Braintree Gateway. Please verify your PMPro Payment
 msgstr "Problem accessing the Braintree Gateway. Please verify your PMPro Payment Settings (Keys, etc)."
 
 #: classes/gateways/class.pmprogateway_braintree.php:151
+#, php-format
 msgid "Problem loading plans: %s"
 msgstr "Problem loading plans: %s"
 
 #: classes/gateways/class.pmprogateway_braintree.php:51
+#, php-format
 msgid "Attempting to load Braintree gateway: %s"
 msgstr "Attempting to load Braintree gateway: %s"
 
@@ -9268,6 +9609,7 @@ msgstr "Get Support"
 
 #: adminpages/wizard/done.php:122
 #: includes/admin.php:260
+#: adminpages/wizard/done.php:124
 msgid "Documentation"
 msgstr "Documentation"
 
@@ -9287,11 +9629,13 @@ msgstr "Are you sure you want to do that? Try again."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:831
 #: classes/gateways/class.pmprogateway_paypalexpress.php:832
+#, php-format
 msgid "Profile Start Date Issue Detected and Fixed at %s"
 msgstr "Profile Start Date Issue Detected and Fixed at %s"
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:829
 #: classes/gateways/class.pmprogateway_paypalexpress.php:830
+#, php-format
 msgid "User: %1$s<br />Email: %2$s<br />Membership Level: %3$s<br />Order #: %4$s<br />Original Profile Start Date: %5$s<br />Adjusted Profile Start Date: %6$s<br />Trial Period: %7$s<br />Trial Frequency: %8$s<br />"
 msgstr "User: %1$s<br />Email: %2$s<br />Membership Level: %3$s<br />Order #: %4$s<br />Original Profile Start Date: %5$s<br />Adjusted Profile Start Date: %6$s<br />Trial Period: %7$s<br />Trial Frequency: %8$s<br />"
 
@@ -10289,6 +10633,7 @@ msgid "Andorra"
 msgstr "Andorra"
 
 #: classes/class-deny-network-activation.php:53
+#, php-format
 msgid "The %s plugin should not be network activated. Activate on each individual site's plugin page."
 msgstr "The %s plugin should not be network activated. Activate on each individual site's plugin page."
 
@@ -10386,14 +10731,17 @@ msgid "<p>A payment is being held for review within Authorize.net.</p><p>Payment
 msgstr "<p>A payment is being held for review within Authorize.net.</p><p>Payment Information From Authorize.net"
 
 #: scheduled/crons.php:217
+#, php-format
 msgid "Credit card expiring email sent to %s. "
 msgstr "Credit card expiring email sent to %s. "
 
 #: scheduled/crons.php:124
+#, php-format
 msgid "Membership expiring email sent to %s. "
 msgstr "Membership expiring email sent to %s. "
 
 #: scheduled/crons.php:51
+#, php-format
 msgid "Membership expired email sent to %s. "
 msgstr "Membership expired email sent to %s. "
 
@@ -10404,6 +10752,7 @@ msgstr "A Payment Gateway must be set up before any payments will be processed."
 
 #: preheaders/checkout.php:674
 #: preheaders/checkout.php:689
+#, php-format
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 
@@ -10428,6 +10777,7 @@ msgid "Payment accepted."
 msgstr "Payment accepted."
 
 #: includes/recaptcha.php:231
+#, php-format
 msgid "reCAPTCHA failed. (%s) Please try again."
 msgstr "reCAPTCHA failed. (%s) Please try again."
 
@@ -10444,6 +10794,7 @@ msgid "Are you a spammer?"
 msgstr "Are you a spammer?"
 
 #: includes/terms-of-service.php:172
+#, php-format
 msgid "Please check the box to agree to the %s."
 msgstr "Please check the box to agree to the %s."
 
@@ -10487,6 +10838,7 @@ msgstr "Error updating billing information."
 
 #: preheaders/billing.php:302
 #: preheaders/billing.php:299
+#, php-format
 msgid "Information updated. <a href=\"%s\">&laquo; back to my account</a>"
 msgstr "Information updated. <a href=\"%s\">&laquo; back to my account</a>"
 
@@ -10524,6 +10876,7 @@ msgstr "Please complete all required fields."
 #: paid-memberships-pro.php:225
 #: paid-memberships-pro.php:227
 #: paid-memberships-pro.php:246
+#: paid-memberships-pro.php:244
 msgid "Once a month"
 msgstr "Once a month"
 
@@ -10537,6 +10890,7 @@ msgstr "PayPal Payflow Pro/PayPal Pro"
 #: paid-memberships-pro.php:188
 #: paid-memberships-pro.php:190
 #: paid-memberships-pro.php:212
+#: paid-memberships-pro.php:210
 msgid "Testing Only"
 msgstr "Testing Only"
 
@@ -10568,6 +10922,7 @@ msgstr "Select"
 #: adminpages/wizard/save-steps.php:166
 #: includes/functions.php:344
 #: includes/functions.php:349
+#: adminpages/membershiplevels.php:484
 msgid "Free"
 msgstr "Free"
 
@@ -10592,6 +10947,7 @@ msgstr "Pending"
 
 #: pages/confirmation.php:57
 #: pages/confirmation.php:59
+#, php-format
 msgid "Below are details about your membership account. A welcome email has been sent to %s."
 msgstr "Below are details about your membership account. A welcome email has been sent to %s."
 
@@ -10620,11 +10976,13 @@ msgstr "Print"
 
 #: pages/confirmation.php:55
 #: pages/confirmation.php:57
+#, php-format
 msgid "Below are details about your membership account and a receipt for your initial membership order. A welcome email with a copy of your initial membership order has been sent to %s."
 msgstr "Below are details about your membership account and a receipt for your initial membership order. A welcome email with a copy of your initial membership order has been sent to %s."
 
 #: pages/confirmation.php:44
 #: pages/confirmation.php:46
+#, php-format
 msgid "Thank you for your membership to %s. Your %s membership is now active."
 msgstr "Thank you for your membership to %s. Your %s membership is now active."
 
@@ -10643,6 +11001,7 @@ msgstr "Complete Payment"
 #: pages/checkout.php:310
 #: pages/checkout.php:337
 #: pages/checkout.php:355
+#, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 
@@ -10679,6 +11038,7 @@ msgstr "Confirm Password"
 #: pages/checkout.php:344
 #: includes/functions.php:2207
 #: pages/checkout.php:362
+#: includes/functions.php:2223
 msgid "Log in here"
 msgstr "Log in here"
 
@@ -10743,6 +11103,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: pages/cancel.php:55
+#, php-format
 msgid "Are you sure you want to cancel your %s membership?"
 msgid_plural "Are you sure you want to cancel your %s memberships?"
 msgstr[0] ""
@@ -10901,6 +11262,7 @@ msgstr "All Paid Memberships Pro updates have finished."
 
 #. translators: %s: URL to the updates page.
 #: includes/updates.php:111
+#, php-format
 msgid "(1) <a target=\"_blank\" href=\"%s\">Backup your WordPress database</a></strong> and then (2) <a href=\"%s\">click here to start the update</a>."
 msgstr "(1) <a target=\"_blank\" href=\"%s\">Backup your WordPress database</a></strong> and then (2) <a href=\"%s\">click here to start the update</a>."
 
@@ -11013,49 +11375,60 @@ msgstr "None"
 #: includes/functions.php:2759
 #: includes/functions.php:2748
 #: includes/functions.php:2757
+#: includes/functions.php:2773
 msgid "Sign Up for !!name!! Now"
 msgstr "Sign Up for !!name!! Now"
 
 #: includes/functions.php:2031
 #: includes/functions.php:2041
 #: includes/functions.php:2050
+#: includes/functions.php:2066
 msgid "and"
 msgstr "and"
 
 #: includes/functions.php:1997
 #: includes/functions.php:2007
 #: includes/functions.php:2016
+#: includes/functions.php:2032
 msgid "This discount code is okay."
 msgstr "This discount code is okay."
 
 #: includes/functions.php:1959
 #: includes/functions.php:1969
 #: includes/functions.php:1978
+#: includes/functions.php:1994
 msgid "This discount code does not apply to this membership level."
 msgstr "This discount code does not apply to this membership level."
 
 #: includes/functions.php:1940
 #: includes/functions.php:1949
+#: includes/functions.php:1965
 msgid "This discount code is no longer valid."
 msgstr "This discount code is no longer valid."
 
 #: includes/functions.php:1931
 #: includes/functions.php:1940
+#: includes/functions.php:1956
+#, php-format
 msgid "This discount code expired on %s."
 msgstr "This discount code expired on %s."
 
 #: includes/functions.php:1924
 #: includes/functions.php:1933
+#: includes/functions.php:1949
+#, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "This discount code goes into effect on %s."
 
 #: includes/functions.php:1909
 #: includes/functions.php:1918
+#: includes/functions.php:1934
 msgid "The discount code could not be found."
 msgstr "The discount code could not be found."
 
 #: includes/functions.php:1900
 #: includes/functions.php:1909
+#: includes/functions.php:1925
 msgid "No code was given to check."
 msgstr "No code was given to check."
 
@@ -11068,6 +11441,7 @@ msgstr "Membership level not found."
 
 #: includes/functions.php:1294
 #: includes/functions.php:1303
+#, php-format
 msgid "Error interacting with database: %s"
 msgstr "Error interacting with database: %s"
 
@@ -11090,16 +11464,19 @@ msgstr "User ID not found."
 
 #: includes/functions.php:551
 #: includes/functions.php:560
+#, php-format
 msgid "%1$s membership expires after %2$d %3$s"
 msgstr "%1$s membership expires after %2$d %3$s"
 
 #: includes/functions.php:532
 #: includes/functions.php:541
+#, php-format
 msgid "Membership expires after %1$d %2$s."
 msgstr "Membership expires after %1$d %2$s."
 
 #: includes/functions.php:506
 #: includes/functions.php:511
+#, php-format
 msgid "Trial pricing has been applied to the first %d payments."
 msgstr "Trial pricing has been applied to the first %d payments."
 
@@ -11110,26 +11487,31 @@ msgstr "Trial pricing has been applied to the first payment."
 
 #: includes/functions.php:482
 #: includes/functions.php:487
+#, php-format
 msgid "<strong>%1$s every %2$d %3$s</strong>"
 msgstr "<strong>%1$s every %2$d %3$s</strong>"
 
 #: includes/functions.php:480
 #: includes/functions.php:485
+#, php-format
 msgid "<strong>%1$s every %2$s</strong>"
 msgstr "<strong>%1$s every %2$s</strong>"
 
 #: includes/functions.php:477
 #: includes/functions.php:482
+#, php-format
 msgid "<strong>%1$s after %2$d %3$s</strong>"
 msgstr "<strong>%1$s after %2$d %3$s</strong>"
 
 #: includes/functions.php:474
 #: includes/functions.php:479
+#, php-format
 msgid "<strong>%1$s every %2$d %3$s for %4$d more payments</strong>"
 msgstr "<strong>%1$s every %2$d %3$s for %4$d more payments</strong>"
 
 #: includes/functions.php:472
 #: includes/functions.php:477
+#, php-format
 msgid "<strong>%1$s per %2$s for %3$d more %4$s</strong>"
 msgstr "<strong>%1$s per %2$s for %3$d more %4$s</strong>"
 
@@ -11137,21 +11519,25 @@ msgstr "<strong>%1$s per %2$s for %3$d more %4$s</strong>"
 #: includes/functions.php:515
 #: includes/functions.php:417
 #: includes/functions.php:520
+#, php-format
 msgid "Customers in %1$s will be charged %2$s%% tax."
 msgstr "Customers in %1$s will be charged %2$s%% tax."
 
 #: includes/functions.php:402
 #: includes/functions.php:407
+#, php-format
 msgid "After your initial payment, your first %1$d payments will cost %2$s."
 msgstr "After your initial payment, your first %1$d payments will cost %2$s."
 
 #: includes/functions.php:400
 #: includes/functions.php:405
+#, php-format
 msgid "After your initial payment, your first payment will cost %s."
 msgstr "After your initial payment, your first payment will cost %s."
 
 #: includes/functions.php:396
 #: includes/functions.php:401
+#, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr "After your initial payment, your first %d payments are Free."
 
@@ -11162,46 +11548,55 @@ msgstr "After your initial payment, your first payment is Free."
 
 #: includes/functions.php:379
 #: includes/functions.php:384
+#, php-format
 msgid " and then <strong>%1$s every %2$d %3$s</strong>."
 msgstr " and then <strong>%1$s every %2$d %3$s</strong>."
 
 #: includes/functions.php:377
 #: includes/functions.php:382
+#, php-format
 msgid " and then <strong>%1$s per %2$s</strong>."
 msgstr " and then <strong>%1$s per %2$s</strong>."
 
 #: includes/functions.php:372
 #: includes/functions.php:377
+#, php-format
 msgid "<strong>%1$s every %2$d %3$s</strong>."
 msgstr "<strong>%1$s every %2$d %3$s</strong>."
 
 #: includes/functions.php:370
 #: includes/functions.php:375
+#, php-format
 msgid "The price for membership is <strong>%1$s every %2$d %3$s</strong>."
 msgstr "The price for membership is <strong>%1$s every %2$d %3$s</strong>."
 
 #: includes/functions.php:366
 #: includes/functions.php:371
+#, php-format
 msgid "<strong>%1$s per %2$s</strong>."
 msgstr "<strong>%1$s per %2$s</strong>."
 
 #: includes/functions.php:364
 #: includes/functions.php:369
+#, php-format
 msgid "The price for membership is <strong>%1$s per %2$s</strong>."
 msgstr "The price for membership is <strong>%1$s per %2$s</strong>."
 
 #: includes/functions.php:359
 #: includes/functions.php:364
+#, php-format
 msgid " and then <strong>%1$s after %2$d %3$s</strong>."
 msgstr " and then <strong>%1$s after %2$d %3$s</strong>."
 
 #: includes/functions.php:356
 #: includes/functions.php:361
+#, php-format
 msgid " and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>."
 msgstr " and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>."
 
 #: includes/functions.php:354
 #: includes/functions.php:359
+#, php-format
 msgid " and then <strong>%1$s per %2$s for %3$d more %4$s</strong>."
 msgstr " and then <strong>%1$s per %2$s for %3$d more %4$s</strong>."
 
@@ -11209,6 +11604,7 @@ msgstr " and then <strong>%1$s per %2$s for %3$d more %4$s</strong>."
 #: includes/functions.php:461
 #: includes/functions.php:351
 #: includes/functions.php:466
+#, php-format
 msgid "<strong>%s</strong> now"
 msgstr "<strong>%s</strong> now"
 
@@ -11216,6 +11612,7 @@ msgstr "<strong>%s</strong> now"
 #: includes/functions.php:459
 #: includes/functions.php:346
 #: includes/functions.php:464
+#, php-format
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr "The price for membership is <strong>%s</strong> now"
 
@@ -11468,6 +11865,7 @@ msgstr "Discount Codes"
 #: adminpages/admin_header.php:247
 #: includes/adminpages.php:61
 #: includes/adminpages.php:244
+#: adminpages/reports.php:50
 msgid "Reports"
 msgstr "Reports"
 
@@ -11496,11 +11894,14 @@ msgstr "You must enter a valid PMPro %s License Key under Settings > PMPro Licen
 
 #: includes/addons.php:492
 #: includes/addons.php:500
+#: includes/addons.php:523
 msgid "Return to the PMPro Add Ons page"
 msgstr "Return to the PMPro Add Ons page"
 
 #: includes/addons.php:489
 #: includes/addons.php:497
+#: includes/addons.php:520
+#, php-format
 msgid "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">valid PMPro %s License Key</a> to update PMPro %s add ons."
 msgstr "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">valid PMPro %s License Key</a> to update PMPro %s add ons."
 
@@ -11510,11 +11911,15 @@ msgstr "Update Plugin"
 
 #: includes/addons.php:466
 #: includes/addons.php:474
+#: includes/addons.php:497
+#, php-format
 msgid "You must have a <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:"
 msgstr "You must have a <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:"
 
 #: includes/addons.php:402
 #: includes/addons.php:410
+#: includes/addons.php:432
+#, php-format
 msgid "Important: This plugin requires a valid PMPro %s license key to update."
 msgstr "Important: This plugin requires a valid PMPro %s license key to update."
 
@@ -11619,6 +12024,7 @@ msgstr "Secret Key"
 #: paid-memberships-pro.php:192
 #: classes/gateways/class.pmprogateway_stripe.php:233
 #: paid-memberships-pro.php:214
+#: paid-memberships-pro.php:212
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -11647,6 +12053,7 @@ msgstr "To fully integrate with PayPal, be sure to set your IPN Handler URL to "
 #: paid-memberships-pro.php:191
 #: paid-memberships-pro.php:193
 #: paid-memberships-pro.php:215
+#: paid-memberships-pro.php:213
 msgid "PayPal Express"
 msgstr "PayPal Express"
 
@@ -11654,6 +12061,7 @@ msgstr "PayPal Express"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:946
 #: classes/gateways/class.pmprogateway_paypalstandard.php:525
 #: classes/gateways/class.pmprogateway_paypalexpress.php:947
+#: classes/gateways/class.pmprogateway_paypalexpress.php:938
 msgid "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 msgstr "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 
@@ -11774,6 +12182,8 @@ msgstr "Instructions"
 #: paid-memberships-pro.php:205
 #: paid-memberships-pro.php:213
 #: paid-memberships-pro.php:224
+#: paid-memberships-pro.php:211
+#: paid-memberships-pro.php:222
 msgid "Pay by Check"
 msgstr "Pay by Check"
 
@@ -11782,10 +12192,12 @@ msgid "Could not find the subscription."
 msgstr "Could not find the subscription."
 
 #: classes/gateways/class.pmprogateway_braintree.php:966
+#, php-format
 msgid "Failed to subscribe with Braintree: %s"
 msgstr "Failed to subscribe with Braintree: %s"
 
 #: classes/gateways/class.pmprogateway_braintree.php:951
+#, php-format
 msgid "Error subscribing customer to plan with Braintree: %s (%s)"
 msgstr "Error subscribing customer to plan with Braintree: %s (%s)"
 
@@ -11910,6 +12322,7 @@ msgstr "Braintree Payments"
 #: classes/gateways/class.pmprogateway_stripe.php:1465
 #: classes/gateways/class.pmprogateway_stripe.php:1461
 #: classes/gateways/class.pmprogateway_stripe.php:1462
+#, php-format
 msgid "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it."
 msgstr "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it."
 
@@ -11999,12 +12412,14 @@ msgstr "This membership does not expire."
 
 #. translators: %s: level name
 #: preheaders/cancel.php:133
+#, php-format
 msgid "Your %s membership has been cancelled."
 msgstr "Your %s membership has been cancelled."
 
 #: includes/email.php:466
 #: includes/email.php:486
 #: includes/email.php:485
+#, php-format
 msgid "The new level is %s."
 msgstr "The new level is %s."
 
@@ -12024,6 +12439,8 @@ msgstr "Your membership at %s has ended"
 #: classes/class.pmproemail.php:683
 #: classes/class.pmproemail.php:685
 #: classes/class.pmproemail.php:684
+#: classes/class.pmproemail.php:687
+#, php-format
 msgid "Your trial at %s is ending soon"
 msgstr "Your trial at %s is ending soon"
 
@@ -12070,6 +12487,11 @@ msgstr "Member checkout for %s at %s"
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:164
 #: classes/email-templates/class-pmpro-email-template-invoice.php:199
 #: includes/email.php:492
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:186
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:170
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:167
+#: classes/email-templates/class-pmpro-email-template-invoice.php:198
+#, php-format
 msgid "This membership will expire on %s."
 msgstr "This membership will expire on %s."
 
@@ -12114,11 +12536,17 @@ msgstr "This membership will expire on %s."
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:169
 #: classes/email-templates/class-pmpro-email-template-invoice.php:191
 #: classes/email-templates/class-pmpro-email-template-invoice.php:193
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:181
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:175
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:172
+#: classes/email-templates/class-pmpro-email-template-invoice.php:190
+#: classes/email-templates/class-pmpro-email-template-invoice.php:192
 msgid "Discount Code"
 msgstr "Discount Code"
 
 #: classes/class.pmproemail.php:671
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:73
+#, php-format
 msgid "Your membership confirmation for %s"
 msgstr "Your membership confirmation for %s"
 
@@ -12131,6 +12559,7 @@ msgid "Your membership at %s has been CANCELLED"
 msgstr "Your membership at %s has been CANCELLED"
 
 #: classes/class.pmproemail.php:120
+#, php-format
 msgid "An Email From %s"
 msgstr "An Email From %s"
 
@@ -12151,6 +12580,7 @@ msgstr "Updating Paid Memberships Pro"
 #: includes/functions.php:3241
 #: includes/functions.php:3230
 #: includes/functions.php:3239
+#: includes/functions.php:3255
 msgid "Subtotal"
 msgstr "Subtotal"
 
@@ -12173,6 +12603,7 @@ msgid "Date:"
 msgstr "Date:"
 
 #: adminpages/reports.php:42
+#: adminpages/reports.php:46
 msgid "Back to Reports Dashboard"
 msgstr "Back to Reports Dashboard"
 
@@ -12219,6 +12650,7 @@ msgstr "Sales"
 #: adminpages/reports/sales.php:17
 #: adminpages/reports/sales.php:593
 #: adminpages/reports/sales.php:620
+#: classes/class-pmpro-admin-activity-email.php:104
 msgid "Sales and Revenue"
 msgstr "Sales and Revenue"
 
@@ -12656,6 +13088,7 @@ msgstr "No orders found."
 
 #. translators: %s is the Order Code.
 #: classes/class-pmpro-orders-list-table.php:899
+#, php-format
 msgid "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?"
 msgstr "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?"
 
@@ -12702,6 +13135,7 @@ msgstr "Transaction IDs"
 #: adminpages/subscriptions.php:282
 #: adminpages/subscriptions.php:447
 #: pages/confirmation.php:110
+#: adminpages/subscriptions.php:450
 msgid "Membership Level"
 msgstr "Membership Level"
 
@@ -12779,6 +13213,8 @@ msgstr "Add New Order"
 #: classes/class-pmpro-subscriptions-list-table.php:153
 #: adminpages/subscriptions.php:537
 #: adminpages/orders.php:960
+#: adminpages/subscriptions.php:540
+#: classes/class-pmpro-admin-activity-email.php:222
 msgid "Orders"
 msgstr "Orders"
 
@@ -12888,6 +13324,7 @@ msgstr "Sandbox/Testing"
 #: adminpages/subscriptions.php:272
 #: adminpages/subscriptions.php:571
 #: adminpages/orders.php:816
+#: adminpages/subscriptions.php:574
 msgid "Gateway Environment"
 msgstr "Gateway Environment"
 
@@ -12908,6 +13345,7 @@ msgstr "Gateway Environment"
 #: adminpages/subscriptions.php:567
 #: adminpages/orders.php:793
 #: classes/class-pmpro-subscription.php:1206
+#: adminpages/subscriptions.php:570
 msgid "Gateway"
 msgstr "Gateway"
 
@@ -12940,6 +13378,8 @@ msgstr "Gateway"
 #: adminpages/emailtemplates-edit.php:104
 #: shortcodes/pmpro_account.php:347
 #: shortcodes/pmpro_account.php:384
+#: adminpages/emailtemplates-edit.php:109
+#: adminpages/subscriptions.php:474
 msgid "Status"
 msgstr "Status"
 
@@ -13003,6 +13443,7 @@ msgstr "Payment Type"
 #: shortcodes/pmpro_account.php:346
 #: adminpages/reports/memberships.php:562
 #: includes/functions.php:3267
+#: includes/functions.php:3283
 msgid "Total"
 msgstr "Total"
 
@@ -13014,6 +13455,7 @@ msgstr "Total"
 #: includes/functions.php:3248
 #: includes/functions.php:3237
 #: includes/functions.php:3246
+#: includes/functions.php:3262
 msgid "Tax"
 msgstr "Tax"
 
@@ -13090,6 +13532,7 @@ msgstr "New Order"
 #: classes/class-pmpro-admin-activity-email.php:219
 #: includes/fields.php:1299
 #: adminpages/user-fields/group-settings.php:95
+#: classes/class-pmpro-admin-activity-email.php:220
 msgid "Order"
 msgstr "Order"
 
@@ -13137,6 +13580,7 @@ msgstr "No members found."
 #: adminpages/subscriptions.php:501
 #: classes/class-pmpro-subscriptions-list-table.php:152
 #: adminpages/subscriptions.php:516
+#: adminpages/subscriptions.php:519
 msgid "Ended"
 msgstr "Ended"
 
@@ -13146,6 +13590,7 @@ msgstr "Ended"
 #: adminpages/dashboard.php:255
 #: adminpages/reports/logins.php:210
 #: adminpages/reports/logins.php:209
+#: classes/class-pmpro-admin-activity-email.php:120
 msgid "Joined"
 msgstr "Joined"
 
@@ -13156,6 +13601,7 @@ msgstr "Joined"
 #: adminpages/subscriptions.php:516
 #: classes/class-pmpro-subscriptions-list-table.php:147
 #: adminpages/subscriptions.php:531
+#: adminpages/subscriptions.php:534
 msgid "Fee"
 msgstr "Fee"
 
@@ -13256,10 +13702,12 @@ msgid "Members List"
 msgstr "Members List"
 
 #: adminpages/membershiplevels.php:490
+#: adminpages/membershiplevels.php:493
 msgid "After"
 msgstr "After"
 
 #: adminpages/membershiplevels.php:365
+#: adminpages/membershiplevels.php:368
 msgid "Allow Signups"
 msgstr "Allow Signups"
 
@@ -13271,15 +13719,18 @@ msgstr "Allow Signups"
 #: pages/cancel.php:135
 #: pages/cancel.php:147
 #: adminpages/orders.php:747
+#: adminpages/membershiplevels.php:367
 msgid "Expiration"
 msgstr "Expiration"
 
 #: adminpages/membershiplevels.php:283
 #: adminpages/membershiplevels.php:286
+#: adminpages/membershiplevels.php:289
 msgid "Search Levels"
 msgstr "Search Levels"
 
 #: adminpages/membershiplevels.php:230
+#: adminpages/membershiplevels.php:233
 msgid "Add New Level"
 msgstr "Add New Level"
 
@@ -13368,6 +13819,7 @@ msgstr "2Checkout integration does not support custom trials. You can do one per
 
 #: adminpages/levels/edit-level.php:400
 #: adminpages/levels/edit-level.php:419
+#, php-format
 msgid "You will need to create a \"Plan\" in your Braintree dashboard with the same settings and the \"Plan ID\" set to %s."
 msgstr "You will need to create a \"Plan\" in your Braintree dashboard with the same settings and the \"Plan ID\" set to %s."
 
@@ -13416,6 +13868,7 @@ msgstr "Confirmation Message"
 #: adminpages/levels/edit-level.php:234
 #: adminpages/user-fields/field-settings.php:74
 #: adminpages/user-fields/group-settings.php:97
+#: adminpages/membershiplevels.php:365
 msgid "Name"
 msgstr "Name"
 
@@ -13438,6 +13891,7 @@ msgid "Membership level deleted successfully."
 msgstr "Membership level deleted successfully."
 
 #: adminpages/levels/delete-level.php:37
+#, php-format
 msgid "There was an error removing the membership level for user with ID=%d. You will want to check your payment gateway to see if their subscription is still active."
 msgstr "There was an error removing the membership level for user with ID=%d. You will want to check your payment gateway to see if their subscription is still active."
 
@@ -13471,6 +13925,7 @@ msgid "Admin Change"
 msgstr "Admin Change"
 
 #: adminpages/emailsettings.php:119
+#, php-format
 msgid "If unchecked, all emails from \"WordPress &lt;%s&gt;\" will be filtered to use the above settings."
 msgstr "If unchecked, all emails from \"WordPress &lt;%s&gt;\" will be filtered to use the above settings."
 
@@ -13500,6 +13955,7 @@ msgstr "Email Settings"
 
 #. translators: %s is the Discount Code.
 #: classes/class-pmpro-discount-code-list-table.php:377
+#, php-format
 msgid "Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore."
 msgstr "Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore."
 
@@ -13767,6 +14223,7 @@ msgstr "This will be generated when you save."
 #: adminpages/discountcodes.php:446
 #: adminpages/subscriptions.php:249
 #: adminpages/subscriptions.php:257
+#: adminpages/membershiplevels.php:364
 msgid "ID"
 msgstr "ID"
 
@@ -13799,6 +14256,7 @@ msgstr "Error deleting discount code. The code was only partially deleted. Pleas
 
 #: adminpages/discountcodes.php:327
 #: adminpages/discountcodes.php:330
+#, php-format
 msgid "Code %s deleted successfully."
 msgstr "Code %s deleted successfully."
 
@@ -13809,6 +14267,7 @@ msgstr "There were errors updating the level values: "
 
 #: adminpages/discountcodes.php:279
 #: adminpages/discountcodes.php:282
+#, php-format
 msgid "Error saving values for the %s level."
 msgstr "Error saving values for the %s level."
 
@@ -13894,6 +14353,8 @@ msgstr "Use reCAPTCHA?"
 #: adminpages/user-fields/group-settings.php:57
 #: adminpages/user-fields/group-settings.php:65
 #: classes/class-pmpro-field.php:1673
+#: adminpages/membershiplevels.php:499
+#: adminpages/membershiplevels.php:501
 msgid "Yes"
 msgstr "Yes"
 
@@ -13952,6 +14413,7 @@ msgstr "Hide Ads From All Members"
 #: adminpages/user-fields/group-settings.php:58
 #: adminpages/user-fields/group-settings.php:67
 #: classes/class-pmpro-field.php:1673
+#: adminpages/membershiplevels.php:504
 msgid "No"
 msgstr "No"
 
@@ -13998,6 +14460,7 @@ msgstr "Advanced Settings"
 #: includes/functions.php:2112
 #: includes/functions.php:2122
 #: includes/functions.php:2131
+#: includes/functions.php:2147
 msgid "This content is for members only. Visit the site and log in/register to read."
 msgstr "This content is for members only. Visit the site and log in/register to read."
 
@@ -14044,15 +14507,18 @@ msgstr "Pages"
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:106
 #: blocks/src/sidebar/index.js:230
+#: adminpages/membershiplevels.php:224
 msgid "Membership Levels"
 msgstr "Membership Levels"
 
 #: adminpages/admin_header.php:159
+#, php-format
 msgid "We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 msgstr "We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 
 #: adminpages/admin_header.php:153
 #: classes/gateways/class.pmprogateway_braintree.php:73
+#, php-format
 msgid "The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 msgstr "The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 
@@ -14060,6 +14526,7 @@ msgstr "The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgra
 #: classes/gateways/class.pmprogateway_stripe.php:1450
 #: classes/gateways/class.pmprogateway_stripe.php:1446
 #: classes/gateways/class.pmprogateway_stripe.php:1447
+#, php-format
 msgid "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 msgstr "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 
@@ -14159,6 +14626,8 @@ msgstr "By %s"
 #: adminpages/orders.php:636
 #: classes/gateways/class.pmprogateway_stripe.php:485
 #: shortcodes/pmpro_account.php:380
+#: adminpages/memberslist-csv.php:434
+#: adminpages/memberslist-csv.php:439
 msgid "N/A"
 msgstr "N/A"
 
@@ -14172,6 +14641,8 @@ msgstr "N/A"
 #: includes/fields.php:1393
 #: adminpages/user-fields/field-settings.php:58
 #: classes/class-pmpro-field.php:1178
+#: adminpages/membershiplevels.php:450
+#: adminpages/membershiplevels.php:452
 msgid "Delete"
 msgstr "Delete"
 
@@ -14241,6 +14712,7 @@ msgstr "Active"
 #: blocks/src/component-content-visibility/content-visibility-controls.js:108
 #: blocks/src/sidebar/index.js:125
 #: adminpages/levels/edit-level.php:638
+#: adminpages/reports.php:25
 msgid "All"
 msgstr "All"
 
@@ -14249,6 +14721,7 @@ msgid "Check Again"
 msgstr "Check Again"
 
 #: adminpages/addons.php:46
+#, php-format
 msgid "Last checked on %s at %s."
 msgstr "Last checked on %s at %s."
 
@@ -14301,6 +14774,7 @@ msgstr ""
 
 #. translators: $1$s - Paid Memberships Pro plugin name; $2$s - testimonial link.
 #: includes/admin.php:301
+#, php-format
 msgid "Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">submit a testimonial</a> to help others find %2$s. Thank you from the %3$s team!"
 msgstr ""
 
@@ -14332,6 +14806,8 @@ msgstr ""
 #: adminpages/subscriptions.php:574
 #: adminpages/subscriptions.php:587
 #: adminpages/subscriptions.php:589
+#: adminpages/subscriptions.php:590
+#: adminpages/subscriptions.php:592
 msgid "Link Subscription"
 msgstr ""
 
@@ -14389,6 +14865,7 @@ msgstr ""
 
 #: adminpages/subscriptions.php:590
 #: adminpages/subscriptions.php:605
+#: adminpages/subscriptions.php:608
 msgid "Search Subscriptions"
 msgstr ""
 
@@ -14415,6 +14892,7 @@ msgstr ""
 
 #: includes/functions.php:1950
 #: includes/functions.php:1959
+#: includes/functions.php:1975
 msgid "You have already used the discount code provided."
 msgstr ""
 
@@ -14483,30 +14961,36 @@ msgstr ""
 #: includes/functions.php:5020
 #: includes/functions.php:5001
 #: includes/functions.php:5010
+#: includes/functions.php:5033
 msgid "Order not found."
 msgstr ""
 
 #: includes/functions.php:5025
 #: includes/functions.php:5006
 #: includes/functions.php:5015
+#: includes/functions.php:5038
 msgid "Order is not a token order."
 msgstr ""
 
 #: includes/functions.php:5030
 #: includes/functions.php:5011
 #: includes/functions.php:5020
+#: includes/functions.php:5043
 msgid "Order gateway not found."
 msgstr ""
 
 #: adminpages/emailtemplates-edit.php:65
+#: adminpages/emailtemplates-edit.php:71
 msgid "Global Variables"
 msgstr ""
 
 #: adminpages/emailtemplates-edit.php:66
+#, php-format
 msgid "%s Variables"
 msgstr ""
 
 #: adminpages/levels/edit-level.php:259
+#, php-format
 msgid "This text appears at checkout and on the pricing page if using the %s. Use it to provide a brief overview of the membership level, highlighting key features and benefits to potential members."
 msgstr ""
 
@@ -14565,10 +15049,12 @@ msgid "Renewals"
 msgstr ""
 
 #: classes/class-pmpro-field.php:302
+#, php-format
 msgid "The property %s is not valid for the field type %s."
 msgstr ""
 
 #: classes/class-pmpro-field.php:306
+#, php-format
 msgid "The property %s does not exist."
 msgstr ""
 
@@ -14577,26 +15063,32 @@ msgid "PMPro_Field properties should not be modified directly and may break in a
 msgstr ""
 
 #: classes/class-pmpro-field.php:344
+#, php-format
 msgid "The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the $args property of the constructor when creating a new PMPro_Field object."
 msgstr ""
 
 #: classes/class-pmpro-field.php:349
+#, php-format
 msgid "The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the save_field_for_user method of the PMPro_Field object."
 msgstr ""
 
 #: classes/class-pmpro-field.php:353
+#, php-format
 msgid "The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the display() method of the PMPro_Field object."
 msgstr ""
 
 #: classes/class-pmpro-field.php:356
+#, php-format
 msgid "The method %s of PMPro_Field has become private and will not be available in a future version."
 msgstr ""
 
 #: classes/class-pmpro-field.php:1703
+#: classes/class-pmpro-field.php:1704
 msgid "No file uploaded."
 msgstr ""
 
 #: classes/class-pmpro-field.php:1705
+#: classes/class-pmpro-field.php:1706
 msgid "Invalid file data."
 msgstr ""
 
@@ -14702,6 +15194,22 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:123
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:105
 #: classes/email-templates/class-pmpro-email-template-refund.php:108
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:118
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:120
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:104
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:126
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:125
+#: classes/email-templates/class-pmpro-email-template-billing.php:112
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:210
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:139
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:133
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:130
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:218
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:222
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:136
+#: classes/email-templates/class-pmpro-email-template-invoice.php:139
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:124
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:128
 msgid "The display name of the user."
 msgstr ""
 
@@ -14743,6 +15251,19 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-membership-recurring.php:121
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:108
 #: classes/email-templates/class-pmpro-email-template-refund.php:111
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:107
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:128
+#: classes/email-templates/class-pmpro-email-template-billing.php:115
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:213
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:142
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:136
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:133
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:221
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:225
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:139
+#: classes/email-templates/class-pmpro-email-template-invoice.php:142
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:127
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:127
 msgid "The ID of the membership level."
 msgstr ""
 
@@ -14786,6 +15307,19 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-membership-recurring.php:122
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:109
 #: classes/email-templates/class-pmpro-email-template-refund.php:112
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:108
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:129
+#: classes/email-templates/class-pmpro-email-template-billing.php:116
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:214
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:143
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:137
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:134
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:222
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:226
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:140
+#: classes/email-templates/class-pmpro-email-template-invoice.php:143
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:128
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:128
 msgid "The name of the membership level."
 msgstr ""
 
@@ -14825,6 +15359,22 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:124
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:106
 #: classes/email-templates/class-pmpro-email-template-refund.php:109
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:119
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:121
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:127
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:126
+#: classes/email-templates/class-pmpro-email-template-billing.php:113
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:211
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:140
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:134
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:131
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:219
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:223
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:137
+#: classes/email-templates/class-pmpro-email-template-invoice.php:140
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:125
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:125
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:129
 msgid "The username of the user."
 msgstr ""
 
@@ -14860,6 +15410,23 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:125
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:107
 #: classes/email-templates/class-pmpro-email-template-refund.php:110
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:120
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:122
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:128
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:127
+#: classes/email-templates/class-pmpro-email-template-billing.php:114
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:212
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:141
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:135
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:132
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:220
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:224
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:138
+#: classes/email-templates/class-pmpro-email-template-invoice.php:141
+#: classes/email-templates/class-pmpro-email-template-membership-expired.php:126
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:126
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:130
+#: classes/email-templates/class-pmpro-email-template-payment-action.php:124
 msgid "The email address of the user."
 msgstr ""
 
@@ -14915,6 +15482,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:158
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:123
 #: classes/email-templates/class-pmpro-email-template-refund.php:126
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:140
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:139
+#: classes/email-templates/class-pmpro-email-template-billing.php:126
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:239
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:243
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:150
+#: classes/email-templates/class-pmpro-email-template-invoice.php:157
 msgid "The type of credit card used."
 msgstr ""
 
@@ -14930,6 +15504,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:159
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:124
 #: classes/email-templates/class-pmpro-email-template-refund.php:127
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:141
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:140
+#: classes/email-templates/class-pmpro-email-template-billing.php:127
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:240
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:244
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:151
+#: classes/email-templates/class-pmpro-email-template-invoice.php:158
 msgid "The last four digits of the credit card number."
 msgstr ""
 
@@ -14945,6 +15526,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:160
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:125
 #: classes/email-templates/class-pmpro-email-template-refund.php:128
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:142
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:141
+#: classes/email-templates/class-pmpro-email-template-billing.php:128
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:241
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:245
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:152
+#: classes/email-templates/class-pmpro-email-template-invoice.php:159
 msgid "The expiration month of the credit card."
 msgstr ""
 
@@ -14960,6 +15548,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:161
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:126
 #: classes/email-templates/class-pmpro-email-template-refund.php:129
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:143
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:142
+#: classes/email-templates/class-pmpro-email-template-billing.php:129
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:242
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:246
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:153
+#: classes/email-templates/class-pmpro-email-template-invoice.php:160
 msgid "The expiration year of the credit card."
 msgstr ""
 
@@ -15149,6 +15744,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:136
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:224
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:228
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:215
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:144
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:138
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:135
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:223
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:227
 msgid "The confirmation message for the membership level."
 msgstr ""
 
@@ -15166,6 +15767,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:225
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:229
 #: classes/email-templates/class-pmpro-email-template-membership-recurring.php:123
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:216
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:145
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:139
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:136
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:224
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:228
 msgid "The cost of the membership level."
 msgstr ""
 
@@ -15203,6 +15810,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:226
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:230
 #: classes/email-templates/class-pmpro-email-template-invoice.php:163
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:217
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:137
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:229
+#: classes/email-templates/class-pmpro-email-template-invoice.php:162
+#: classes/email-templates/class-pmpro-email-template-membership-expiring.php:129
 msgid "The expiration date of the membership level."
 msgstr ""
 
@@ -15224,6 +15837,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:139
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:227
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:218
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:147
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:141
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:138
 msgid "The ID of the order."
 msgstr ""
 
@@ -15241,6 +15858,11 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:147
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:112
 #: classes/email-templates/class-pmpro-email-template-refund.php:115
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:219
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:148
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:142
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:139
+#: classes/email-templates/class-pmpro-email-template-invoice.php:146
 msgid "The date of the order."
 msgstr ""
 
@@ -15251,6 +15873,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:221
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:229
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:220
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:149
 msgid "The total cost of the order."
 msgstr ""
 
@@ -15264,6 +15888,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:148
 #: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:132
 #: classes/email-templates/class-pmpro-email-template-refund.php:130
+#: classes/email-templates/class-pmpro-email-template-invoice.php:147
 msgid "The URL of the order."
 msgstr ""
 
@@ -15274,6 +15899,7 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:128
 #: classes/email-templates/class-pmpro-email-template-payment-action.php:127
+#: classes/email-templates/class-pmpro-email-template-payment-action.php:126
 msgid "The URL of the membership levels page."
 msgstr ""
 
@@ -15282,6 +15908,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:145
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:110
 #: classes/email-templates/class-pmpro-email-template-refund.php:113
+#: classes/email-templates/class-pmpro-email-template-invoice.php:144
 msgid "The order ID."
 msgstr ""
 
@@ -15290,6 +15917,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:146
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:111
 #: classes/email-templates/class-pmpro-email-template-refund.php:114
+#: classes/email-templates/class-pmpro-email-template-invoice.php:145
 msgid "The total amount of the order."
 msgstr ""
 
@@ -15367,6 +15995,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:230
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:234
 #: classes/email-templates/class-pmpro-email-template-invoice.php:162
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:221
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:150
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:143
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:140
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
+#: classes/email-templates/class-pmpro-email-template-invoice.php:161
 msgid "The discount code used for the order."
 msgstr ""
 
@@ -15571,15 +16206,18 @@ msgid "Discount codes should be set on the $pmpro_level object."
 msgstr ""
 
 #: includes/fields.php:231
+#, php-format
 msgid "The group %s should not be passed into %s. Use PMPro_Field_Group::display() instead."
 msgstr ""
 
 #: includes/fields.php:234
+#, php-format
 msgid "The scope %s should not be passed into %s. Use PMPro_Field_Group::display() instead."
 msgstr ""
 
 #: includes/functions.php:3816
 #: includes/functions.php:3825
+#: includes/functions.php:3841
 msgid "The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class."
 msgstr ""
 
@@ -15598,6 +16236,8 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:122
 #: classes/email-templates/class-pmpro-email-template-admin-change.php:124
+#: classes/email-templates/class-pmpro-email-template-admin-change-admin.php:121
+#: classes/email-templates/class-pmpro-email-template-admin-change.php:123
 msgid "A message indicating the change in membership."
 msgstr ""
 
@@ -15643,6 +16283,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:149
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:114
 #: classes/email-templates/class-pmpro-email-template-refund.php:117
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:109
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:131
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:130
+#: classes/email-templates/class-pmpro-email-template-billing.php:117
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:222
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:151
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:234
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:141
+#: classes/email-templates/class-pmpro-email-template-invoice.php:148
 msgid "The complete billing address of the order."
 msgstr ""
 
@@ -15658,6 +16308,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:150
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:115
 #: classes/email-templates/class-pmpro-email-template-refund.php:118
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:110
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:132
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:131
+#: classes/email-templates/class-pmpro-email-template-billing.php:118
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:223
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:152
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:235
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:142
+#: classes/email-templates/class-pmpro-email-template-invoice.php:149
 msgid "The billing name of the order."
 msgstr ""
 
@@ -15673,6 +16333,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:151
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:116
 #: classes/email-templates/class-pmpro-email-template-refund.php:119
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:111
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:133
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:132
+#: classes/email-templates/class-pmpro-email-template-billing.php:119
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:224
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:153
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:232
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:236
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:143
+#: classes/email-templates/class-pmpro-email-template-invoice.php:150
 msgid "The billing street of the order."
 msgstr ""
 
@@ -15688,6 +16358,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:152
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:117
 #: classes/email-templates/class-pmpro-email-template-refund.php:120
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:112
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:134
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:133
+#: classes/email-templates/class-pmpro-email-template-billing.php:120
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:154
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:233
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:237
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:144
+#: classes/email-templates/class-pmpro-email-template-invoice.php:151
 msgid "The billing street line 2 of the order."
 msgstr ""
 
@@ -15703,6 +16383,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:153
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:118
 #: classes/email-templates/class-pmpro-email-template-refund.php:121
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:113
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:135
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:134
+#: classes/email-templates/class-pmpro-email-template-billing.php:121
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:226
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:155
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:234
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:238
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:145
+#: classes/email-templates/class-pmpro-email-template-invoice.php:152
 msgid "The billing city of the order."
 msgstr ""
 
@@ -15718,6 +16408,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:154
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:119
 #: classes/email-templates/class-pmpro-email-template-refund.php:122
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:114
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:136
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:135
+#: classes/email-templates/class-pmpro-email-template-billing.php:122
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:227
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:156
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:235
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:239
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:146
+#: classes/email-templates/class-pmpro-email-template-invoice.php:153
 msgid "The billing state of the order."
 msgstr ""
 
@@ -15733,6 +16433,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:155
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:120
 #: classes/email-templates/class-pmpro-email-template-refund.php:123
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:115
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:137
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:136
+#: classes/email-templates/class-pmpro-email-template-billing.php:123
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:228
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:157
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:236
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:240
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:147
+#: classes/email-templates/class-pmpro-email-template-invoice.php:154
 msgid "The billing ZIP code of the order."
 msgstr ""
 
@@ -15748,6 +16458,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:156
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:121
 #: classes/email-templates/class-pmpro-email-template-refund.php:124
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:116
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:138
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:137
+#: classes/email-templates/class-pmpro-email-template-billing.php:124
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:158
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:237
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:241
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:148
+#: classes/email-templates/class-pmpro-email-template-invoice.php:155
 msgid "The billing country of the order."
 msgstr ""
 
@@ -15763,6 +16483,16 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-invoice.php:157
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:122
 #: classes/email-templates/class-pmpro-email-template-refund.php:125
+#: classes/email-templates/class-pmpro-email-template-billing-admin.php:117
+#: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:139
+#: classes/email-templates/class-pmpro-email-template-billing-failure.php:138
+#: classes/email-templates/class-pmpro-email-template-billing.php:125
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:159
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:238
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:242
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:149
+#: classes/email-templates/class-pmpro-email-template-invoice.php:156
 msgid "The billing phone number of the order."
 msgstr ""
 
@@ -15886,6 +16616,7 @@ msgid ""
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:232
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:231
 msgid "The default or custom label for the check gateway."
 msgstr ""
 
@@ -15915,6 +16646,7 @@ msgid ""
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:161
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:160
 msgid "Payment instructions for the user to complete their purchase (defined in Payment Gateway settings)."
 msgstr ""
 
@@ -16153,4 +16885,73 @@ msgstr ""
 
 #: includes/currencies.php:19
 msgid "Albanian Lek (Lekë)"
+msgstr ""
+
+#: classes/class-pmpro-admin-activity-email.php:367
+msgid "Join the PMPro User Community on Slack"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_paypalexpress.php:163
+#, php-format
+msgid "Note: the PayPal Standard gateway has been deprecated. Please switch to using <a href=\"%s\" target=\"_blank\">PayPal Express</a>."
+msgstr ""
+
+#: adminpages/reports/logins.php:300
+msgid "Logins Report Pagination"
+msgstr ""
+
+#: includes/functions.php:1635
+msgid "Pagination"
+msgstr ""
+
+#: includes/functions.php:1651
+msgid "Go to the previous page"
+msgstr ""
+
+#: includes/functions.php:1651
+#: includes/functions.php:1653
+msgid "Previous"
+msgstr ""
+
+#: includes/functions.php:1663
+#: includes/functions.php:1674
+#: includes/functions.php:1679
+#: includes/functions.php:1681
+#: includes/functions.php:1694
+#: includes/functions.php:1699
+#: includes/functions.php:1701
+#: includes/functions.php:1714
+#, php-format
+msgid "Page %s"
+msgstr ""
+
+#: includes/functions.php:1685
+#: includes/functions.php:1705
+msgid "Page 1"
+msgstr ""
+
+#: includes/functions.php:1687
+#: includes/functions.php:1707
+msgid "Page 2"
+msgstr ""
+
+#: includes/functions.php:1723
+msgid "Go to the next page"
+msgstr ""
+
+#: includes/functions.php:1723
+#: includes/functions.php:1725
+msgid "Next"
+msgstr ""
+
+#. translators: %s is the Level Name.
+#: adminpages/membershiplevels.php:397
+#: adminpages/membershiplevels.php:400
+#, php-format
+msgid "Are you sure you want to delete membership level %s? All payment subscriptions for this level will be cancelled."
+msgstr ""
+
+#: includes/addons.php:542
+#, php-format
+msgid "You must enter a valid PMPro %s License Key in the PMPro Settings to update this Add On."
 msgstr ""

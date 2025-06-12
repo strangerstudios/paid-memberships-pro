@@ -101,16 +101,6 @@ function pmpro_checkForUpgrades() {
 		$pmpro_db_version = 1.71;
 	}
 
-	//schedule the credit card expiring cron
-	if($pmpro_db_version < 1.72)
-	{
-		//schedule the credit card expiring cron
-		pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
-
-		update_option("pmpro_db_version", "1.72");
-		$pmpro_db_version = 1.72;
-	}
-
 	//register capabilities required for menus now
 	if($pmpro_db_version < 1.79)
 	{
@@ -139,15 +129,8 @@ function pmpro_checkForUpgrades() {
 		$pmpro_db_version = pmpro_upgrade_1_8_6_9();
 	}
 
-	//Remove extra cron jobs inserted in version 1.8.7 and 1.8.7.1
-	if($pmpro_db_version < 1.87) {
-		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_7.php");
-		$pmpro_db_version = pmpro_upgrade_1_8_7();
-	}
-
 	/*
 		v1.8.8
-		* Running the cron job cleanup again.
 		* Fixing old $0 Stripe orders.
 		* Fixing old Authorize.net orders with empty status.
 	*/
@@ -233,11 +216,6 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '2.1' );
 	}
 
-	if ( $pmpro_db_version < 2.3 ) {
-		pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
-		update_option( 'pmpro_db_version', '2.3' );
-	}
-
 	/**
 	 * Version 2.4
 	 * Fixing subscription_transaction_id
@@ -285,16 +263,6 @@ function pmpro_checkForUpgrades() {
 	if ( $pmpro_db_version < 2.8 ) {
 		update_option('pmpro_wisdom_opt_out', 1);
 		update_option( 'pmpro_db_version', '2.8' );
-	}
-	
-	/**
-	 * Version 2.8.1
-	 * Reload crons to get correct intervals.
-	 */
-	if ( $pmpro_db_version < 2.81 ) {
-		pmpro_clear_crons();
-		pmpro_maybe_schedule_crons();
-		update_option( 'pmpro_db_version', '2.81' );
 	}
 	
 	/**
@@ -437,14 +405,45 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.402' );
 	}
 
-	/**
-	 * Version 3.5
-	 * Set up the restricted files directory.
-	 */
 	if ( $pmpro_db_version < 3.5 ) {
+		// Clear old crons out.
+		$old_crons = array(
+		'pmpro_cron_expire_memberships',
+		'pmpro_cron_expiration_warnings',
+		'pmpro_cron_credit_card_expiring_warnings',
+		'pmpro_cron_admin_activity_email',
+		'pmpro_cron_recurring_payment_reminders',
+		'pmpro_cron_delete_tmp',
+		'pmpro_license_check_key',
+		);
+
+		$crons   = _get_cron_array();
+		$removed = array();
+		
+		foreach ( $crons as $timestamp => $cron ) {
+			foreach ( $cron as $hook => $events ) {
+				if ( in_array( $hook, $old_crons, true ) ) {
+					// Remove all events for this hook (regardless of args)
+					wp_clear_scheduled_hook( $hook );
+					$removed[] = $hook;
+				}
+			}
+		}
+	
+		if ( ! empty( $removed ) && WP_DEBUG ) {
+			// Log the removed crons for debugging.
+			$removed_list = implode( ', ', $removed );
+			error_log( esc_html( 'Removed PMPro scheduled crons: ' . $removed_list ) );
+		}
+
+		pmpro_db_delta();
+
 		pmpro_set_up_restricted_files_directory();
+
 		update_option( 'pmpro_db_version', '3.5' );
 	}
+
+
 }
 
 function pmpro_db_delta() {

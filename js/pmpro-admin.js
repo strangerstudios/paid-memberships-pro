@@ -99,10 +99,12 @@ jQuery(document).on('click', function (e) {
 jQuery(document).ready(function () {
 	jQuery(document).on('click', '.pmpro-notice-button.notice-dismiss', function () {
 		var notification_id = jQuery(this).val();
+		var nonce = jQuery(this).data('nonce');
 
 		var postData = {
 			action: 'pmpro_hide_notice',
-			notification_id: notification_id
+			notification_id: notification_id,
+			nonce: nonce
 		}
 
 		jQuery.ajax({

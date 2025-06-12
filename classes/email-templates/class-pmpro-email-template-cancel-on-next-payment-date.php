@@ -10,13 +10,11 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	protected $user;
 
 	/**
-	 *  The level id object of the level that was cancelled.
+	 *  The level ID of the level that was cancelled.
 	 *
 	 * @var int
 	 */
-	protected $level_id;
-
-
+	protected $membership_level_id;
 
 	/**
 	 * Constructor.
@@ -24,11 +22,11 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 * @since 3.4
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int $level_id The id of the level that was cancelled.
+	 * @param int $membership_level_id The ID of the level that was cancelled.
 	 */
-	public function __construct( WP_User $user,  int $level_id ) {
+	public function __construct( WP_User $user,  int $membership_level_id ) {
 		$this->user = $user;
-		$this->level_id = $level_id;
+		$this->membership_level_id = $membership_level_id;
 	}
 
 	/**
@@ -142,7 +140,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 */
 	public function get_email_template_variables() {
 		$user = $this->user;
-		$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $this->level_id );
+		$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $this->membership_level_id );
 
 		$email_template_variables = array(
 			'name' => $user->display_name,
@@ -155,6 +153,29 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 			'enddate' => date_i18n( get_option( 'date_format' ), $level->enddate ),
 		);
 		return $email_template_variables;
+	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user, $pmpro_conpd_email_test_level;
+
+		// Set up a mock level for the test email.
+		$levels = pmpro_getAllLevels( true );
+		$pmpro_conpd_email_test_level = current( $levels );
+		add_filter( 'pmpro_get_membership_levels_for_user', function() {
+			global $pmpro_conpd_email_test_level;
+			$pmpro_conpd_email_test_level->startdate = strtotime( current_time( 'timestamp' ) );
+ 			$pmpro_conpd_email_test_level->enddate = strtotime( '+1 month' );
+			return array( $pmpro_conpd_email_test_level->id => $pmpro_conpd_email_test_level );
+		} );
+
+		return array( $current_user, $pmpro_conpd_email_test_level->id );
 	}
 }
 
