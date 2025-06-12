@@ -11,6 +11,7 @@
 
 	// For compatibility with old library (Namespace Alias)
 	use Stripe\Invoice as Stripe_Invoice;
+	use Stripe\Subscription as Stripe_Subscription;
 	use Stripe\Charge as Stripe_Charge;
 	use Stripe\Event as Stripe_Event;
 	use Stripe\PaymentMethod as Stripe_PaymentMethod;
@@ -604,6 +605,45 @@
 			$pmproemail->sendBillingFailureAdminEmail( get_bloginfo( 'admin_email'), $order );
 
 			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
+			pmpro_stripeWebhookExit();
+		} elseif ( $pmpro_stripe_event->type == 'invoice.created' ) {
+      // Make sure we have the invoice in the desired API version.
+			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+
+			// If the invoice is not in draft status, we don't need to do anything.
+			if ( $invoice->status !== 'draft' ) {
+				$logstr .= "Invoice " . $invoice->id . " is not in draft status. No action taken.";
+				pmpro_stripeWebhookExit();
+			}
+
+			// Update the application fee.
+      $application_fee = $stripe_gateway->get_application_fee_percentage();
+			try {
+				Stripe_Invoice::update(
+					$invoice->id,
+					array(
+						'application_fee_amount' => floor( $invoice->amount_due * ( $application_fee / 100 ) ),
+					)
+				);
+				$logstr .= "Updated application fee for invoice " . $invoice->id . " to " . $application_fee . "%.";
+			} catch ( Exception $e ) {
+				$logstr .= "Could not update application fee for invoice " . $invoice->id . ". " . $e->getMessage();
+			}
+
+			// If we have a subscription, update the application fee.
+			if ( ! empty( $invoice->subscription ) ) {
+				try {
+					Stripe_Subscription::update(
+						$invoice->subscription,
+						array(
+							'application_fee_percent' => $application_fee,
+						)
+					);
+					$logstr .= "Updated application fee for subscription " . $subscription . " to " . $application_fee . "%.";
+				} catch ( Exception $e ) {
+					$logstr .= "Could not update application fee for subscription " . $subscription . ". " . $e->getMessage();
+				}
+			}
 			pmpro_stripeWebhookExit();
 		}
 
