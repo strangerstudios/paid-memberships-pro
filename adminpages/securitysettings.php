@@ -176,7 +176,7 @@
 		</div>
 		<?php
 		// Check if this is an nginx setup.
-		if ( ( ! empty( $GLOBALS['is_nginx'] && $GLOBALS['is_nginx'] ) ) || ( function_exists( 'is_wpe' ) && is_wpe() ) ) {
+		if ( ( ! empty( $GLOBALS['is_nginx'] && $GLOBALS['is_nginx'] ) ) || ( function_exists( 'is_wpe' ) && is_wpe() ) || true) {
 			// Show a "Restricted Files" section linking to our docs on setting up restricted files on nginx.
 			?>
 			<div class="pmpro_section" data-visibility="hidden" data-activated="false">
@@ -187,11 +187,18 @@
 					</button>
 				</div>
 				<div class="pmpro_section_inside">
-					<p><?php
-						$restricted_files_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Restricted Files', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/placeholder_url">' . esc_html__( 'manually set up an nginx rewrite rule', 'paid-memberships-pro' ) . '</a>';
-						// translators: %s: Link to Restricted Files doc.
-						printf( esc_html__( 'Files that contain potentially sensitive information are placed in the %s directory. If your site is running on nginx, you will need to %s to protect these files.', 'paid-memberships-pro' ), '<code>' . pmpro_get_restricted_file_path() . '</code>', $restricted_files_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					?></p>
+					<p>
+						<?php
+						// translators: %s: Restricted file path.
+						printf( esc_html__( 'Files that contain potentially sensitive information are placed in the %s directory. If your site is hosted on an NGINX server, you will need to manually add this code to your NGINX config file to protect these files:', 'paid-memberships-pro' ), '<code>' . pmpro_get_restricted_file_path() . '</code>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						?>
+					</p>
+					<textarea readonly rows="4" cols="50" class="pmpro_restricted_files_code">
+location ~ ^/wp-content/uploads/pmpro/ {
+	deny all;
+	return 403;
+}
+					</textarea>
 				</div> <!-- end pmpro_section_inside -->
 			</div> <!-- end pmpro_section -->
 			<?php
