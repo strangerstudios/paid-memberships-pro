@@ -1107,7 +1107,7 @@ function pmpro_load_user_fields_from_settings() {
                         $parts = explode( ':', $settings_option );
                         $options[trim( $parts[0] )] = trim( $parts[1] );
                     } else {
-                        $options[] = $settings_option;
+                        $options[] = trim( $settings_option );
                     }
                 }
             } else {
