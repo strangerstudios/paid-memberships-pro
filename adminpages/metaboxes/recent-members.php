@@ -15,13 +15,41 @@ function pmpro_dashboard_report_recent_members_callback() {
 	global $wpdb;
 
 	// Check if we have a cache.
-	$theusers = get_transient( 'pmpro_dashboard_report_recent_members' );
-	if ( false === $theusers ) {
+	if ( false === ( $theusers = get_transient( 'pmpro_dashboard_report_recent_members' ) ) ) {
 		// No cached value. Get the users.
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP( CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone) ) as startdate, UNIX_TIMESTAMP( CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone) ) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.membership_id > 0 AND mu.status = 'active' GROUP BY u.ID ORDER BY u.user_registered DESC LIMIT 5";
+		$sqlQuery = "SELECT
+			u.ID,
+			u.user_login,
+			u.user_email,
+			UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate,
+			mu.membership_id,
+			mu.initial_payment,
+			mu.billing_amount,
+			mu.cycle_period,
+			mu.cycle_number,
+			mu.billing_limit,
+			mu.trial_amount,
+			mu.trial_limit,
+			UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
+			UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate,
+			m.name as membership
+		FROM wp_users u
+		INNER JOIN wp_pmpro_memberships_users mu
+			ON u.ID = mu.user_id
+			AND mu.status = 'active'
+		INNER JOIN wp_pmpro_membership_levels m
+			ON mu.membership_id = m.id
+		INNER JOIN (
+			SELECT user_id, MAX(startdate) AS max_startdate
+			FROM wp_pmpro_memberships_users
+			WHERE status = 'active'
+			GROUP BY user_id
+		) mu2 ON mu.user_id = mu2.user_id AND mu.startdate = mu2.max_startdate
+		ORDER BY u.user_registered DESC
+		LIMIT 5";
 		$sqlQuery = apply_filters( 'pmpro_members_list_sql', $sqlQuery );
 		$theusers = $wpdb->get_results( $sqlQuery );
-		set_transient( 'pmpro_dashboard_report_recent_members', $theusers, 3600 * 24 );
+		set_transient( 'pmpro_dashboard_report_recent_members', $theusers, DAY_IN_SECONDS ); 
 	}
 	?>
 	<span id="pmpro_report_members" class="pmpro_report-holder">

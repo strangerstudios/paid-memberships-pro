@@ -3428,7 +3428,7 @@ button.pmpro_report_th_closed:before {
 }
 
 /**
- * Dashboard admin page
+ * Dashboard admin page - Updated for 3-column grid
  */
 
 .pmpro_admin #pmpro-dashboard-form {
@@ -3437,7 +3437,7 @@ button.pmpro_report_th_closed:before {
 
 #pmpro-dashboard-form #dashboard-widgets.metabox-holder {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(3, 1fr); /* Changed from 4 to 3 */
 	gap: var(--pmpro--spacing--medium);
 	width: 100%;
 }
@@ -3573,27 +3573,36 @@ button.pmpro_report_th_closed:before {
 	}
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-1, #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-1 { 
+/* Updated column span classes for 3-column grid */
+#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-1, 
+#pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-1 { 
 	grid-column: span 1; 
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-2, #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-2 { 
+#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-2, 
+#pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-2 { 
 	grid-column: span 2; 
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-3, #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-3 { 
-	grid-column: span 3; 
+#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-3, 
+#pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-3 { 
+	grid-column: span 3; /* Full width in 3-column grid */
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-4, #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-4 { 
-	grid-column: span 4; 
+/* Remove 4-column support since we're now using 3 columns */
+/* #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-4 is no longer needed */
+
+/* Responsive breakpoints - adjust for better 3-column experience */
+@media (max-width: 1400px) {
+	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
+		grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+	}
 }
 
-/* Responsive breakpoints */
-@media (max-width: 1200px) {
+@media (max-width: 1000px) {
 	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
 		gap: 15px;
-		grid-template-columns: 1fr;
+		grid-template-columns: 1fr; /* Single column on smaller screens */
 	}
 	
 	/* All metaboxes span full width at this breakpoint - clean and simple */
@@ -3630,14 +3639,12 @@ button.pmpro_report_th_closed:before {
 	#pmpro-dashboard-form .postbox .inside {
 		padding: var(--pmpro--spacing--small);
 	}
-
 }
 
 /* Fix any floating issues */
 #pmpro-dashboard-form .clear {
 	display: none;
 }
-/* End Admin Dashboard Styling */
 
 /**
  * General Admin Styles

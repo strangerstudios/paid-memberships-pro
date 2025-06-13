@@ -1,6 +1,7 @@
 <?php
 /**
  * The Memberships Dashboard admin page for Paid Memberships Pro
+ * Updated for 3-column grid layout
  * @since 2.0
  */
 // Exit if accessed directly.
@@ -27,15 +28,15 @@ foreach ( $metaboxes_files as $file ) {
  * 
  * @param array $pmpro_dashboard_meta_boxes Array of meta boxes to display on the dashboard. Hint: Use the associative array key as the meta box ID.
  */
-// The meta boxes array for the dashboard.
+// The meta boxes array for the dashboard - Updated for 3-column grid
 $pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array(
-	// Row 1 (Welcome, spans 3 columns), side column
+	// Row 1 (Welcome, spans 2 columns), side column (spans 1)
 	'pmpro_dashboard_welcome' => array(
 		'title'    => esc_html__( 'Welcome to Paid Memberships Pro', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_dashboard_welcome_callback',
 		'context'  => 'grid',
 		'capability' => '',
-		'columns' => 3,
+		'columns' => 2, // Changed from 3 to 2 for better layout in 3-column grid
 		'grid_column_start' => 1,
 	),
 	'pmpro_dashboard_welcome_side' => array(
@@ -44,9 +45,9 @@ $pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array
 		'context'  => 'grid',
 		'capability' => '',
 		'columns' => 1,
-		'grid_column_start' => 4,
+		'grid_column_start' => 3, // Changed from 4 to 3
 	),
-	// Row 2
+	// Row 2 - Now fits perfectly in 3 columns
 	'pmpro_dashboard_report_sales' => array(
 		'title'    => esc_html__( 'Sales and Revenue', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_report_sales_widget',
@@ -55,23 +56,15 @@ $pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array
 		'columns' => 1,
 		'grid_column_start' => 1,
 	),
-	'pmpro_dashboard_report_recent_members' => array(
-		'title'    => esc_html__( 'Recent Members', 'paid-memberships-pro' ),
-		'callback' => 'pmpro_dashboard_report_recent_members_callback',
-		'context'  => 'grid',
-		'capability' => 'pmpro_memberslist',
-		'columns' => 2,
-		'grid_column_start' => 2,
-	),
 	'pmpro_dashboard_report_membership_stats' => array(
 		'title'    => esc_html__( 'Membership Stats', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_report_memberships_widget',
 		'context'  => 'grid',
 		'capability' => '',
 		'columns' => 1,
-		'grid_column_start' => 4,
+		'grid_column_start' => 3, // Changed from 4 to 3
 	),
-	// Row 3
+	// Row 3 - Now fits perfectly in 3 columns
 	'pmpro_dashboard_report_logins' => array(
 		'title'    => esc_html__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_report_login_widget',
@@ -88,13 +81,29 @@ $pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array
 		'columns' => 2,
 		'grid_column_start' => 2,
 	),
+	'pmpro_dashboard_report_recent_members' => array(
+		'title'    => esc_html__( 'Recent Members', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_dashboard_report_recent_members_callback',
+		'context'  => 'grid',
+		'capability' => 'pmpro_memberslist',
+		'columns' => 2, // Changed from 2 to 1 to fit in 3-column layout
+		'grid_column_start' => 1,
+	),
 	'pmpro_dashboard_news_updates' => array(
 		'title'    => esc_html__( 'Paid Memberships Pro News and Updates', 'paid-memberships-pro' ),
 		'callback' => 'pmpro_dashboard_news_updates_callback',
 		'context'  => 'grid',
 		'capability' => '',
 		'columns' => 1,
-		'grid_column_start' => 4,
+		'grid_column_start' => 3, // Changed from 4 to 3
+	),
+	'pmpro_dashboard_release_notes' => array(
+		'title'    => esc_html__( 'Release Notes', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_dashboard_release_notes_callback',
+		'context'  => 'grid',
+		'capability' => '',
+		'columns' => 1,
+		'grid_column_start' => 2, // Changed from 3 to 2
 	),
 ));
 
@@ -120,6 +129,7 @@ foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
 /**
  * Render dashboard metaboxes in the grid layout.
  * This function will reorder the metaboxes based on the saved user preferences.
+ * Updated for 3-column grid support.
  * 
  * @since 3.5
  * @param array $meta_boxes Array of metaboxes to render.
@@ -127,6 +137,10 @@ foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
  * @return void
  */
 function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
+
+	// Delete any existing settings for the current user
+	delete_user_meta( get_current_user_id(), 'pmpro_dashboard_metabox_order' );
+
     // Get saved order for current user
     $saved_order = get_user_meta( get_current_user_id(), 'pmpro_dashboard_metabox_order', true );
     
@@ -161,8 +175,8 @@ function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
             continue;
         }
         
-        // Sanitize and validate column span (1-4)
-        $span = isset( $meta_box['columns'] ) ? max( 1, min( intval( $meta_box['columns'] ), 4 ) ) : 1;
+        // Sanitize and validate column span (1-3 for 3-column grid)
+        $span = isset( $meta_box['columns'] ) ? max( 1, min( intval( $meta_box['columns'] ), 3 ) ) : 1;
         
         // Build the CSS classes
         $classes = array(
@@ -223,3 +237,11 @@ add_action( 'pmpro_after_change_membership_level', 'pmpro_report_dashboard_delet
  * Load the Paid Memberships Pro dashboard-area footer
  */
 require_once( dirname( __FILE__ ) . '/admin_footer.php' );
+
+wp_register_script(
+	'pmpro_dashboard',
+	plugins_url( 'js/pmpro-dashboard.js', PMPRO_BASE_FILE ),
+	array( 'jquery' ),
+	PMPRO_VERSION
+);
+wp_enqueue_script( 'pmpro_dashboard' );
