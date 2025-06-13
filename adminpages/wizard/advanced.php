@@ -6,73 +6,22 @@ $hide_toolbar = get_option( 'pmpro_hide_toolbar' );
 $block_dashboard = get_option( 'pmpro_block_dashboard' );
 $wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
 
-// Update Manager one-click install.
-$um_slug         = 'pmpro-update-manager';
-$um_plugin_file  = $um_slug . '/' . $um_slug . '.php';
-$um_zip_url      = 'https://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-update-manager.zip';
-$um_installed    = file_exists( ABSPATH . 'wp-content/plugins/' . $um_plugin_file );
-$um_active       = is_plugin_active( $um_plugin_file );
-$um_install_url  = null;
-$um_activate_url = null;
-
-if ( ! $um_installed ) {
-	$um_install_url = wp_nonce_url(
-		self_admin_url(
-			add_query_arg(
-				array(
-					'action'     => 'install-plugin',
-					'plugin'     => $um_slug,
-					'plugin_url' => urlencode( $um_zip_url ),
-				),
-				'update.php'
-			)
-		),
-		'install-plugin_' . $um_slug
-	);
-} elseif ( ! $um_active ) {
-	$um_activate_url = wp_nonce_url(
-		self_admin_url(
-			add_query_arg(
-				array(
-					'action' => 'activate',
-					'plugin' => $um_plugin_file,
-				),
-				'plugins.php'
-			)
-		),
-		'activate-plugin_' . $um_plugin_file
-	);
-}
-
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 	<form action="" method="post">
 		<div class="pmpro-wizard__step-header">
 			<h2><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h2>
 			<p><?php esc_html_e( 'Configure advanced settings relating to your membership site. You can configure additional settings later.', 'paid-memberships-pro' ); ?></p>
-		</div>
+		</div>		
 		<div class="pmpro-wizard__field">
 			<h3><?php esc_html_e( 'Update Manager', 'paid-memberships-pro' ); ?></h3>
 			<p><?php esc_html_e( 'Keep your Paid Memberships Pro add ons up to date with the Update Manager plugin.', 'paid-memberships-pro' ); ?></p>
-			<?php if ( ! $um_installed ) : ?>
-				<button type="button"
-					id="pmpro-install-um-btn"
-					class="button button-primary"
-					data-zip-url="<?php echo esc_url( $um_zip_url ); ?>">
-					<?php esc_html_e( 'Install & Activate Update Manager', 'paid-memberships-pro' ); ?>
-				</button>
-			<?php elseif ( ! $um_active ) : ?>
-				<button type="button"
-					id="pmpro-activate-um-btn"
-					class="button button-primary">
-					<?php esc_html_e( 'Activate Update Manager', 'paid-memberships-pro' ); ?>
-				</button>
-			<?php else : ?>
-				<span class="button button-disabled" disabled="disabled">
-					<?php esc_html_e( 'Update Manager is Active', 'paid-memberships-pro' ); ?>
-				</span>
-			<?php endif; ?>
-		</div>		
+			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'Update Manager is necessary to ensure all updates come directly from the official Paid Memberships Pro license server.', 'paid-memberships-pro' ); ?></p>
+			<select name="updatemanager" id="updatemanager" class="pmpro-wizard__field-block">
+				<option value="0"><?php esc_html_e( 'Yes - Install and activate the Update Manager for me.', 'paid-memberships-pro' ); ?></option>
+				<option value="1"><?php esc_html_e( 'No - I\'ll install and activate it manually later.', 'paid-memberships-pro' ); ?></option>
+			</select><br><br>
+		</div>
 		<div class="pmpro-wizard__field">
 			<label for="filterqueries" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Filter searches and archives?', 'paid-memberships-pro' ); ?>
@@ -118,63 +67,3 @@ if ( ! $um_installed ) {
 		</p>
 	</form>
 </div> <!-- end pmpro-wizard__step-4 -->
-
-<script>
-jQuery(document).ready(function($){
-	// Generic function to handle plugin install/activate
-	function handlePluginAction($btn, action, zipUrl, pluginSlug) {
-		var originalText = $btn.text();
-		var loadingText = action === 'install' ? 'Installing...' : 'Activating...';
-		
-		$btn.prop('disabled', true).text(loadingText);
-
-		var postData = {
-			action: 'pmpro_install_and_activate',
-			nonce: '<?php echo wp_create_nonce('pmpro_um_install'); ?>',
-			zip_url: zipUrl || ''
-		};
-
-		// Add plugin_slug if provided
-		if (pluginSlug) {
-			postData.plugin_slug = pluginSlug;
-		}
-
-		$.post(ajaxurl, postData, function(response){
-			console.log(response);
-			if(response.success){
-				$btn.text('Activated');
-			} else {
-				$btn.text('Error');
-				$btn.prop('disabled', false).text(originalText);
-			}
-		});
-	}
-
-	// Install & Activate button
-	$('#pmpro-install-um-btn').on('click', function(){
-		var $btn = $(this);
-		var zipUrl = $btn.data('zip-url');
-		var pluginSlug = $btn.data('plugin-slug'); // Optional
-		
-		handlePluginAction($btn, 'install', zipUrl, pluginSlug);
-	});
-
-	// Activate only button
-	$('#pmpro-activate-um-btn').on('click', function(){
-		var $btn = $(this);
-		var pluginSlug = $btn.data('plugin-slug'); // Optional
-		
-		handlePluginAction($btn, 'activate', '', pluginSlug);
-	});
-
-	// Generic handler for any plugin install/activate button
-	$(document).on('click', '[data-pmpro-plugin-action]', function(){
-		var $btn = $(this);
-		var action = $btn.data('pmpro-plugin-action'); // 'install' or 'activate'
-		var zipUrl = $btn.data('zip-url') || '';
-		var pluginSlug = $btn.data('plugin-slug');
-		
-		handlePluginAction($btn, action, zipUrl, pluginSlug);
-	});
-});
-</script>
