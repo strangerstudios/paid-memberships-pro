@@ -322,7 +322,7 @@ add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
  * @since 3.0
  */
 function pmpro_hide_non_pmpro_notices() {
-    global $wp_filter;
+	global $wp_filter;
 
 	// Make sure we're on a PMPro page.
 	if ( ! isset( $_REQUEST['page'] )
@@ -331,10 +331,10 @@ function pmpro_hide_non_pmpro_notices() {
 	}
 
 	// Handle notices added through these hooks.
-    $hooks = ['admin_notices', 'all_admin_notices'];
+	$hooks = ['admin_notices', 'all_admin_notices'];
 
-    foreach ($hooks as $hook) {
-        // If no callbacks are registered, skip.
+	foreach ($hooks as $hook) {
+		// If no callbacks are registered, skip.
 		if ( ! isset( $wp_filter[$hook] ) ) {
 			continue;
 		}
@@ -370,6 +370,6 @@ function pmpro_hide_non_pmpro_notices() {
 				}
 			}
 		}
-    }
+	}
 }
 add_action( 'in_admin_header', 'pmpro_hide_non_pmpro_notices' );

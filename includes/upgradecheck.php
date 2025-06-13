@@ -261,7 +261,7 @@ function pmpro_checkForUpgrades() {
 	 * Default option for Wisdom tracking.
 	 */
 	if ( $pmpro_db_version < 2.8 ) {
-		update_option('pmpro_wisdom_opt_out', 1);
+		update_option('pmpro_wisdom_opt_out', 0);
 		update_option( 'pmpro_db_version', '2.8' );
 	}
 	
