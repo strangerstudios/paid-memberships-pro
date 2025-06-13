@@ -38,12 +38,12 @@ function pmpro_dashboard_news_updates_callback() {
 		<?php else : ?>
 			<?php // Loop through each feed item and display each item as a hyperlink. ?>
 			<?php foreach ( $rss_items as $item ) : ?>
-				<li>
+				<li><?php echo esc_html( date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ); ?><br>
+
 					<a href="<?php echo esc_url( $item->get_permalink() ); ?>"
 						title="<?php echo esc_attr( sprintf( __( 'Posted %s', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ) ); ?>">
 						<?php echo esc_html( $item->get_title() ); ?>
 					</a>
-					<?php echo esc_html( date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ); ?>
 				</li>
 			<?php endforeach; ?>
 		<?php endif; ?>
