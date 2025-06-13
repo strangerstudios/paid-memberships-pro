@@ -299,35 +299,6 @@ function pmpro_init_save_wizard_data() {
 }
 add_action( 'admin_init', 'pmpro_init_save_wizard_data' );
 
-
-/**
- * 
- * A silent upgrader skin for the WordPress Upgrader.
- * 
- * The WP skin will always echo during the call, 
- * so unless we start buffering before any output (including possibly in other hooks/callbacks/core), 
- * HTML will slip through.
- * 
- * WordPress has no filter/action to disable that HTML. 
- * We can’t control what’s echoed by the default skin.
- * A silent skin is the only WordPress-native, robust way.
- */
-if ( ! class_exists( 'PMPro_Silent_Upgrader_Skin' ) ) {
-	// Check if the WP_Upgrader_Skin class exists before defining our own skin.
-	if ( ! class_exists( 'WP_Upgrader_Skin' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-	}
-
-	class PMPro_Silent_Upgrader_Skin extends WP_Upgrader_Skin {
-		public function header() {}
-		public function footer() {}
-		public function feedback( $string, ...$args ) {}
-		public function error( $errors ) {}
-		public function before() {}
-		public function after() {}
-	}
-}
-
 /**
  * Install and activate the Update Manager plugin.
  *
@@ -363,7 +334,33 @@ function pmpro_wizard_handle_update_manager() {
 	// Need to install first, then activate.
 	require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
-	
+
+	/**
+	* A silent upgrader skin for the WordPress Upgrader.
+	* 
+	* The WP skin will always echo during the call, so unless we start buffering 
+	* before any output (including possibly in other hooks/callbacks/core), 
+	* HTML will slip through.
+	* 
+	* WordPress has no filter/action to disable that HTML. 
+	* We can’t control what’s echoed by the default skin.
+	* A silent skin is the only WordPress-native, robust way.
+	*/
+	if ( ! class_exists( 'PMPro_Silent_Upgrader_Skin' ) ) {
+		// Check if the WP_Upgrader_Skin class exists before defining our own skin.
+		if ( ! class_exists( 'WP_Upgrader_Skin' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		}
+		class PMPro_Silent_Upgrader_Skin extends WP_Upgrader_Skin {
+			public function header() {}
+			public function footer() {}
+			public function feedback( $string, ...$args ) {}
+			public function error( $errors ) {}
+			public function before() {}
+			public function after() {}
+		}
+	}
+
 	$upgrader = new Plugin_Upgrader( new PMPro_Silent_Upgrader_Skin() );
 	$install_result = $upgrader->install( $um_zip_url );
 
