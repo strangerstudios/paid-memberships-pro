@@ -14,9 +14,10 @@ $wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
 			<p><?php esc_html_e( 'Configure advanced settings relating to your membership site. You can configure additional settings later.', 'paid-memberships-pro' ); ?></p>
 		</div>		
 		<div class="pmpro-wizard__field">
-			<h3><?php esc_html_e( 'Update Manager', 'paid-memberships-pro' ); ?></h3>
-			<p><?php esc_html_e( 'Keep your Paid Memberships Pro add ons up to date with the Update Manager plugin.', 'paid-memberships-pro' ); ?></p>
-			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'Update Manager is necessary to ensure all updates come directly from the official Paid Memberships Pro license server.', 'paid-memberships-pro' ); ?></p>
+			<label for ="updatemanager" class="pmpro-wizard__label-block">
+				<?php esc_html_e( 'Install Update Manager', 'paid-memberships-pro' ); ?>
+			</label>
+			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'The Update Manager is a required plugin that enables automatic updates for Paid Memberships Pro and its Add Ons, delivered securely from our official license server.', 'paid-memberships-pro' ); ?></p>
 			<select name="updatemanager" id="updatemanager" class="pmpro-wizard__field-block">
 				<option value="0"><?php esc_html_e( 'Yes - Install and activate the Update Manager for me.', 'paid-memberships-pro' ); ?></option>
 				<option value="1"><?php esc_html_e( 'No - I\'ll install and activate it manually later.', 'paid-memberships-pro' ); ?></option>
