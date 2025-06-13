@@ -14,26 +14,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function pmpro_dashboard_news_updates_callback() {
 
 	// Get RSS Feed(s)
-	include_once( ABSPATH . WPINC . '/feed.php' );
+	if ( ! function_exists( 'fetch_feed' ) ) {
+		include_once( ABSPATH . WPINC . '/feed.php' );
+	}
 
-	// Get a SimplePie feed object from the specified feed source.
+	$rss_items = array();
+	$maxitems  = 0;
+
 	$rss = fetch_feed( 'https://www.paidmembershipspro.com/feed/' );
 
-	$maxitems = 0;
-
-	if ( ! is_wp_error( $rss ) ) : // Checks that the object is created correctly
-
-		// Figure out how many total items there are, but limit it to 5.
-		$maxitems = $rss->get_item_quantity( 5 );
-
-		// Build an array of all the items, starting with element 0 (first element).
+	if ( ! is_wp_error( $rss ) && $rss ) {
+		$maxitems  = $rss->get_item_quantity( 5 );
 		$rss_items = $rss->get_items( 0, $maxitems );
-
-	endif;
+	}
 	?>
 
+	<!-- News Updates -->
 	<ul>
-		<?php if ( $maxitems == 0 ) : ?>
+		<?php if ( empty( $rss_items ) ) : ?>
 			<li><?php esc_html_e( 'No news found.', 'paid-memberships-pro' ); ?></li>
 		<?php else : ?>
 			<?php // Loop through each feed item and display each item as a hyperlink. ?>
@@ -49,5 +47,6 @@ function pmpro_dashboard_news_updates_callback() {
 		<?php endif; ?>
 	</ul>
 	<p class="pmpro_report-button"><a class="button button-primary" href="https://www.paidmembershipspro.com/blog/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=news-updates-metabox"><?php esc_html_e( 'View More', 'paid-memberships-pro' ); ?></a></p>
+	
 	<?php
 }
