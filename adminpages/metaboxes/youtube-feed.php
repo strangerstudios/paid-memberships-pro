@@ -1,6 +1,6 @@
 <?php
 /**
- * Paid Memberships Pro Dashboard News Updates Meta Box
+ * Paid Memberships Pro Dashboard YouTube Feed Meta Box
  *
  * @package PaidMembershipsPro
  * @subpackage AdminPages
@@ -11,9 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-function pmpro_dashboard_news_updates_callback() {
+function pmpro_dashboard_youtube_feed_callback() {
 
-	$url = 'https://www.paidmembershipspro.com/';
+	$url = 'https://www.youtube.com/feeds/videos.xml?channel_id=UCFtMIeYJ4_YVidi1aq9kl5g';
 
 	// Get RSS Feed(s)
 	if ( ! function_exists( 'fetch_feed' ) ) {
@@ -23,7 +23,7 @@ function pmpro_dashboard_news_updates_callback() {
 	$rss_items = array();
 	$maxitems  = 0;
 
-	$rss = fetch_feed( $url . 'feed/' );
+	$rss = fetch_feed( $url );
 
 	if ( ! is_wp_error( $rss ) && $rss ) {
 		$maxitems  = $rss->get_item_quantity( 5 );
@@ -31,7 +31,7 @@ function pmpro_dashboard_news_updates_callback() {
 	}
 	?>
 
-	<!-- News Updates -->
+	<!-- YouTube Feed -->
 	<ul>
 		<?php if ( empty( $rss_items ) ) : ?>
 			<li><?php esc_html_e( 'No news found.', 'paid-memberships-pro' ); ?></li>

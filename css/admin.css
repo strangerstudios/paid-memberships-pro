@@ -3535,10 +3535,6 @@ button.pmpro_report_th_closed:before {
 	width: 20px;
 }
 
-#pmpro_dashboard_news_updates ul li a {
-	text-decoration: underline;
-}
-
 /* Hide the default postbox containers since we're using grid directly */
 #pmpro-dashboard-form #dashboard-widgets .postbox-container {
 	display: contents;

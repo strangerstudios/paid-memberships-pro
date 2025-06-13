@@ -31,7 +31,7 @@ function pmpro_dashboard_release_notes_callback() {
 	}
 	?>
 
-	<!-- News Updates -->
+	<!-- Release Notes -->
 	<ul>
 		<?php if ( empty( $release_notes ) ) : ?>
 			<li><?php esc_html_e( 'No release notes found.', 'paid-memberships-pro' ); ?></li>
@@ -40,7 +40,7 @@ function pmpro_dashboard_release_notes_callback() {
 			<?php foreach ( $release_notes as $item ) : ?>
 				<li><?php echo esc_html( date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ); ?><br>
 
-					<a href="<?php echo esc_url( $item->get_permalink() ); ?>"
+					<a target="_blank" href="<?php echo esc_url( $item->get_permalink() ); ?>"
 						title="<?php echo esc_attr( sprintf( __( 'Posted %s', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ) ); ?>">
 						<?php echo esc_html( $item->get_title() ); ?>
 					</a>
@@ -48,7 +48,6 @@ function pmpro_dashboard_release_notes_callback() {
 			<?php endforeach; ?>
 		<?php endif; ?>
 	</ul>
-	<p class="pmpro_report-button"><a class="button button-primary" href="<?php echo esc_url( $url ); ?>?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=release-notes-metabox"><?php esc_html_e( 'View More', 'paid-memberships-pro' ); ?></a></p>
 
 	<?php
 }

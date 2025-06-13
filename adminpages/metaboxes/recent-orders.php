@@ -96,8 +96,5 @@ function pmpro_dashboard_report_recent_orders_callback() {
 			</tbody>
 		</table>
 	</span>
-	<?php if ( ! empty( $order_ids ) ) { ?>
-		<p class="pmpro_report-button"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-orders' ) ); ?>"><?php esc_html_e( 'View All Orders ', 'paid-memberships-pro' ); ?></a></p>
-	<?php } ?>
 	<?php
 }

@@ -98,8 +98,5 @@ function pmpro_dashboard_report_recent_members_callback() {
 			</tbody>
 		</table>
 	</span>
-	<?php if ( ! empty( $theusers ) ) { ?>
-		<p class="pmpro_report-button"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) ); ?>"><?php esc_html_e( 'View All Members ', 'paid-memberships-pro' ); ?></a></p>
-	<?php } ?>
 	<?php
 }
