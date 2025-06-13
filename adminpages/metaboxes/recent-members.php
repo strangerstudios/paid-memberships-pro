@@ -49,17 +49,16 @@ function pmpro_dashboard_report_recent_members_callback() {
 		LIMIT 5";
 		$sqlQuery = apply_filters( 'pmpro_members_list_sql', $sqlQuery );
 		$theusers = $wpdb->get_results( $sqlQuery );
-		set_transient( 'pmpro_dashboard_report_recent_members', $theusers, DAY_IN_SECONDS ); 
+		set_transient( 'pmpro_dashboard_report_recent_members', $theusers, 12 * HOUR_IN_SECONDS ); 
 	}
 	?>
 	<span id="pmpro_report_members" class="pmpro_report-holder">
 		<table class="wp-list-table widefat fixed striped">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Username', 'paid-memberships-pro' );?></th>
+					<th colspan="2"><?php esc_html_e( 'Username', 'paid-memberships-pro' );?></th>
 					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' );?></th>
 					<th><?php esc_html_e( 'Joined', 'paid-memberships-pro' );?></th>
-					<th><?php esc_html_e( 'Expires', 'paid-memberships-pro' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -79,11 +78,11 @@ function pmpro_dashboard_report_recent_members_callback() {
 					}
 					?>
 					<tr>
-						<td class="username column-username">
+						<td class="username column-username" colspan="2">
 							<?php echo get_avatar($theuser->ID, 32)?>
 							<strong>
 								<?php
-									$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
+									$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
 									$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, $theuser );
 									echo wp_kses_post( $userlink );
 								?>
@@ -91,7 +90,6 @@ function pmpro_dashboard_report_recent_members_callback() {
 						</td>
 						<td><?php echo esc_html( $auser->membership ); ?></td>
 						<td><?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ) ); ?></td>
-						<td><?php echo wp_kses_post( pmpro_get_membership_expiration_text( $auser->membership_id, $theuser ) ); ?></td>
 					</tr>
 					<?php
 				}

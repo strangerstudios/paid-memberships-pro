@@ -267,6 +267,8 @@ body[class*="memberships_page_pmpro-"] {
 }
 
 .pmpro_admin .pmpro-nav-primary a.current {
+	/* add a drop shadow */
+	box-shadow: 0 -2px 2px rgba(0, 0, 0, 0.08);
 	background-color: var(--pmpro--color--blue-lightest);
 	border-bottom: 1px solid var(--pmpro--color--blue-lightest);
 	margin-bottom: -1px;
@@ -3432,13 +3434,13 @@ button.pmpro_report_th_closed:before {
  */
 
 .pmpro_admin #pmpro-dashboard-form {
-	margin-top: var(--pmpro--spacing--medium);
+	margin-top: var(--pmpro--spacing--small);
 }
 
 #pmpro-dashboard-form #dashboard-widgets.metabox-holder {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr); /* Changed from 4 to 3 */
-	gap: var(--pmpro--spacing--medium);
+	gap: calc(var(--pmpro--spacing--medium) / 1.5);
 	width: 100%;
 }
 
@@ -3458,6 +3460,15 @@ button.pmpro_report_th_closed:before {
 #pmpro-dashboard-form #dashboard-widgets .postbox {
 	transition: transform 0.5s cubic-bezier(.4,0,.2,1), box-shadow 0.2s;
 	will-change: transform;
+}
+
+#pmpro-dashboard-form #dashboard-widgets .postbox-header {
+	/* create a cross-browser gradient from --pmpro--color--blue-medium-transparent */
+	background: linear-gradient(
+		to right,
+		white 0%,
+		var(--pmpro--border--color) 200%
+	);
 }
 
 #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-dragging {

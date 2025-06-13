@@ -86,7 +86,7 @@ $pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array
 		'callback' => 'pmpro_dashboard_report_recent_members_callback',
 		'context'  => 'grid',
 		'capability' => 'pmpro_memberslist',
-		'columns' => 2, // Changed from 2 to 1 to fit in 3-column layout
+		'columns' => 1, // Changed from 2 to 1 to fit in 3-column layout
 		'grid_column_start' => 1,
 	),
 	'pmpro_dashboard_news_updates' => array(
