@@ -33,7 +33,6 @@ foreach ( $metaboxes_files as $file ) {
 $pmpro_dashboard_meta_boxes = apply_filters(
 	'pmpro_dashboard_meta_boxes',
 	array(
-		// Row 1 (Welcome, spans 2 columns), side column (spans 1)
 		'pmpro_dashboard_welcome'        => array(
 			'title'             => esc_html__( 'Welcome to Paid Memberships Pro', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_dashboard_welcome_callback',
@@ -41,20 +40,29 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 			'capability'        => '',
 			'header_link'       => '',
 			'header_link_text'  => '',
-			'columns'           => 2, // Changed from 3 to 2 for better layout in 3-column grid
+			'columns'           => 4,
 			'grid_column_start' => 1,
 		),
-		'pmpro_dashboard_welcome_side'   => array(
-			'title'             => esc_html__( 'License & Community', 'paid-memberships-pro' ),
-			'callback'          => 'pmpro_dashboard_welcome_side_callback',
+		'pmpro_dashboard_quick_links'   => array(
+			'title'             => esc_html__( 'Quick Links', 'paid-memberships-pro' ),
+			'callback'          => 'pmpro_dashboard_quick_links_callback',
+			'context'           => 'grid',
+			'capability'        => '',
+			'header_link'       => '',
+			'header_link_text'  => '',
+			'columns'           => 3,
+			'grid_column_start' => 1,
+		),
+		'pmpro_dashboard_license_status'   => array(
+			'title'             => esc_html__( 'License Status', 'paid-memberships-pro' ),
+			'callback'          => 'pmpro_dashboard_license_status_callback',
 			'context'           => 'grid',
 			'capability'        => '',
 			'header_link'       => '',
 			'header_link_text'  => '',
 			'columns'           => 1,
-			'grid_column_start' => 3, // Changed from 4 to 3
+			'grid_column_start' => 4,
 		),
-		// Row 2 - Now fits perfectly in 3 columns
 		'pmpro_dashboard_report_sales'   => array(
 			'title'             => esc_html__( 'Sales and Revenue', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_report_sales_widget',
@@ -62,7 +70,7 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 			'capability'        => 'pmpro_reports',
 			'header_link'       => esc_url( admin_url( 'admin.php?page=pmpro-reports&report=sales' ) ),
 			'header_link_text'  => esc_html__( 'View All Sales', 'paid-memberships-pro' ),
-			'columns'           => 1,
+			'columns'           => 2,
 			'grid_column_start' => 1,
 		),
 		'pmpro_dashboard_report_stats'   => array(
@@ -72,19 +80,8 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 			'capability'        => '',
 			'header_link'       => esc_url( admin_url( 'admin.php?page=pmpro-reports&report=memberships' ) ),
 			'header_link_text'  => esc_html__( 'View All Memberships', 'paid-memberships-pro' ),
-			'columns'           => 1,
-			'grid_column_start' => 3, // Changed from 4 to 3
-		),
-		// Row 3 - Now fits perfectly in 3 columns
-		'pmpro_dashboard_report_logins'  => array(
-			'title'             => esc_html__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
-			'callback'          => 'pmpro_report_login_widget',
-			'context'           => 'grid',
-			'capability'        => '',
-			'header_link'       => esc_url( admin_url( 'admin.php?page=pmpro-reports&report=logins' ) ),
-			'header_link_text'  => esc_html__( 'View All Logins', 'paid-memberships-pro' ),
-			'columns'           => 1,
-			'grid_column_start' => 1,
+			'columns'           => 2,
+			'grid_column_start' => 3,
 		),
 		'pmpro_dashboard_recent_orders'  => array(
 			'title'             => esc_html__( 'Recent Orders', 'paid-memberships-pro' ),
@@ -103,38 +100,48 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 			'capability'        => 'pmpro_memberslist',
 			'header_link'       => esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) ),
 			'header_link_text'  => esc_html__( 'View All Members', 'paid-memberships-pro' ),
-			'columns'           => 1, // Changed from 2 to 1 to fit in 3-column layout
+			'columns'           => 2,
 			'grid_column_start' => 1,
 		),
+		'pmpro_dashboard_get_involved' => array(
+			'title'             => esc_html__( 'Get Involved', 'paid-memberships-pro' ),
+			'callback'          => 'pmpro_dashboard_get_involved_callback',
+			'context'           => 'grid',
+			'capability'        => '',
+			'header_link'       => '',
+			'header_link_text'  => '',
+			'columns'           => 1,
+			'grid_column_start' => 1,
+		),
+		'pmpro_dashboard_follow_us' => array(
+			'title'             => esc_html__( 'Follow Us', 'paid-memberships-pro' ),
+			'callback'          => 'pmpro_dashboard_follow_us_callback',
+			'context'           => 'grid',
+			'capability'        => '',
+			'header_link'       => '',
+			'header_link_text'  => '',
+			'columns'           => 1,
+			'grid_column_start' => 2,
+		),
+		'pmpro_dashboard_events' => array(
+			'title'              => esc_html__( 'Upcoming Events', 'paid-memberships-pro' ),
+			'callback'           => 'pmpro_dashboard_events_callback',
+			'context'            => 'grid',
+			'capability'         => '',
+			'header_link'        => '',
+			'header_link_text'   => '',
+			'columns'            => 1,
+			'grid_column_start'  => 3,
+		),
 		'pmpro_dashboard_news_updates'   => array(
-			'title'             => esc_html__( 'Paid Memberships Pro News & Updates', 'paid-memberships-pro' ),
-			'callback'          => 'pmpro_dashboard_news_updates_callback',
-			'context'           => 'grid',
-			'capability'        => '',
-			'header_link'       => esc_url( 'https://www.paidmembershipspro.com/blog/' ) . '?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=news-updates-metabox',
-			'header_link_text'  => esc_html__( 'View More', 'paid-memberships-pro' ),
-			'columns'           => 1,
-			'grid_column_start' => 3, // Changed from 4 to 3
-		),
-		'pmpro_dashboard_release_notes'  => array(
-			'title'             => esc_html__( 'Release Notes', 'paid-memberships-pro' ),
-			'callback'          => 'pmpro_dashboard_release_notes_callback',
-			'context'           => 'grid',
-			'capability'        => '',
-			'header_link'       => esc_url( 'https://www.paidmembershipspro.com/category/release-notes/' ) . '?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=release-notes-metabox',
-			'header_link_text'  => esc_html__( 'View More', 'paid-memberships-pro' ),
-			'columns'           => 1,
-			'grid_column_start' => 2, // Changed from 3 to 2
-		),
-		'pmpro_dashboard_youtube_feed'   => array(
-			'title'             => esc_html__( 'YouTube Feed', 'paid-memberships-pro' ),
-			'callback'          => 'pmpro_dashboard_youtube_feed_callback',
-			'context'           => 'grid',
-			'capability'        => '',
-			'header_link'       => esc_url( 'https://www.youtube.com/@StrangerStudios/videos' ) . '?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=youtube-feed-metabox',
-			'header_link_text'  => esc_html__( 'Visit Channel', 'paid-memberships-pro' ),
-			'columns'           => 1,
-			'grid_column_start' => 3, // Changed from 4 to 3
+			'title'              => esc_html__( 'News and Updates', 'paid-memberships-pro' ),
+			'callback'           => 'pmpro_dashboard_news_updates_callback',
+			'context'            => 'grid',
+			'capability'         => '',
+			'header_link'        => '',
+			'header_link_text'   => '',
+			'columns'            => 1,
+			'grid_column_start'  => 4,
 		),
 	)
 );
@@ -207,8 +214,8 @@ function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 			continue;
 		}
 
-		// Sanitize and validate column span (1-3 for 3-column grid)
-		$span = isset( $meta_box['columns'] ) ? max( 1, min( intval( $meta_box['columns'] ), 3 ) ) : 1;
+		// Sanitize and validate column span (1-4 for 4-column grid)
+		$span = isset( $meta_box['columns'] ) ? max( 1, min( intval( $meta_box['columns'] ), 4 ) ) : 1;
 
 		// Build the CSS classes
 		$classes = array(
@@ -227,7 +234,7 @@ function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 		// If a header link is provided, display it
 		if ( ! empty( $meta_box['header_link'] ) && ! empty( $meta_box['header_link_text'] ) ) {
 			echo '<p class="pmpro_report-button">';
-			echo '<a target="_blank" class="button button-secondary" style="text-decoration: none;" href="' . esc_url( $meta_box['header_link'] ) . '">' . esc_html( $meta_box['header_link_text'] ) . '&nbsp;&rarr;</a>';
+			echo '<a class="button button-secondary" style="text-decoration: none;" href="' . esc_url( $meta_box['header_link'] ) . '">' . esc_html( $meta_box['header_link_text'] ) . '&nbsp;&rarr;</a>';
 			echo '</p>';
 		}
 		echo '</h2>';

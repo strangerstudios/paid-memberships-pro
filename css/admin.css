@@ -267,8 +267,6 @@ body[class*="memberships_page_pmpro-"] {
 }
 
 .pmpro_admin .pmpro-nav-primary a.current {
-	/* add a drop shadow */
-	box-shadow: 0 -2px 2px rgba(0, 0, 0, 0.08);
 	background-color: var(--pmpro--color--blue-lightest);
 	border-bottom: 1px solid var(--pmpro--color--blue-lightest);
 	margin-bottom: -1px;
@@ -566,6 +564,55 @@ td > .pmpro_tag {
 
 .pmpro_tag-info.pmpro_tag-has_icon:before {
 	content: "\f111";
+}
+
+/**
+ * Boxes
+ */
+.pmpro_box {
+	background: var(--pmpro--color--blue-lightest);
+	border-radius: 10px;
+	border: 1px solid var(--pmpro--border--color);
+	padding: var(--pmpro--spacing--medium);
+	position: relative;
+}
+
+.pmpro_box-clickable {
+	display: block;
+	text-decoration: none;
+	transition: transform .2s;
+}
+
+.pmpro_box-clickable:hover {
+	background: #FFF;
+	box-shadow: 1px 1px 3px #FAFAFA;
+	transform: scale(1.05);
+}
+
+.pmpro_box .pmpro_box-title {
+	display: block;
+	font-size: 18px;
+	font-weight: 700;
+	margin-bottom: calc( var(--pmpro--spacing--small) / 2 );
+}
+
+.pmpro_box .pmpro_box-title-has-icon {
+	align-items: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	gap: var(--pmpro--spacing--small);
+}
+
+.pmpro_box .pmpro_box-title-has-icon img {
+	height: 20px;
+	width: 20px;
+}
+
+.pmpro_box .pmpro_box-description {
+	color: var(--pmpro--color--almost-black);
+	font-weight: 400;
+	margin: 0;
 }
 
 /**
@@ -3286,6 +3333,16 @@ tr.pmpro_alert {
 	color: #2c3338;
 }
 
+@media only screen and (min-width: 1500px) and (max-width:1800px) {
+    #wpbody-content .pmpro_admin-pmpro-reports #dashboard-widgets .postbox-container {
+        width: 50%
+    }
+
+    #wpbody-content .pmpro_admin-pmpro-reports #dashboard-widgets #postbox-container-1 {
+        width: 50%;
+    }
+}
+
 /* Reports individual page view styles */
 #visits-views-logins-form {
 	margin-top: var(--pmpro--spacing--medium);
@@ -3331,8 +3388,6 @@ tr.pmpro_alert {
 #pmpro_report_memberships .wp-list-table tbody tr.pmpro_report_tr td,
 #pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td:not(#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td:first-child),
 #pmpro_report_sales .wp-list-table tfoot td {
-	font-size: 1.1rem;
-	font-weight: bold;
 	vertical-align: top;
 }
 
@@ -3430,16 +3485,15 @@ button.pmpro_report_th_closed:before {
 }
 
 /**
- * Dashboard admin page - Updated for 3-column grid
+ * Dashboard admin page
  */
-
 .pmpro_admin #pmpro-dashboard-form {
 	margin-top: var(--pmpro--spacing--small);
 }
 
 #pmpro-dashboard-form #dashboard-widgets.metabox-holder {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr); /* Changed from 4 to 3 */
+	grid-template-columns: repeat(4, 1fr);
 	gap: calc(var(--pmpro--spacing--medium) / 1.5);
 	width: 100%;
 }
@@ -3462,15 +3516,6 @@ button.pmpro_report_th_closed:before {
 	will-change: transform;
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox-header {
-	/* create a cross-browser gradient from --pmpro--color--blue-medium-transparent */
-	background: linear-gradient(
-		to right,
-		white 0%,
-		var(--pmpro--border--color) 200%
-	);
-}
-
 #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-dragging {
 	box-shadow: 0 12px 32px rgba(0,0,0,0.24), 0 2px 8px rgba(0,0,0,0.12);
 	opacity: 0.9;
@@ -3486,8 +3531,8 @@ button.pmpro_report_th_closed:before {
 
 .pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
 	display: grid;
-	grid-gap: 4rem;
-	grid-template-columns: 1.25fr .75fr;
+	grid-gap: var(--pmpro--spacing--large);
+	grid-template-columns: 1.25fr .75fr .75fr;
 }
 
 #pmpro-dashboard-form h3 {
@@ -3497,8 +3542,32 @@ button.pmpro_report_th_closed:before {
 	margin: var(--pmpro--spacing--medium) 0 var(--pmpro--spacing--small) 0;
 }
 
-#pmpro-dashboard-form ul, #pmpro-dashboard-form h3:first-child {
+#pmpro-dashboard-form ul.pmpro-dashboard-list-icons li a {
+	align-items: center;
+	display: flex;
+	justify-content: flex-start;
+}
+
+#pmpro-dashboard-form #dashboard-widgets li a {
+	text-decoration: underline;
+}
+
+#pmpro-dashboard-form #dashboard-widgets .pmpro-dashboard-welcome-steps li a {
+	text-decoration: none;
+}
+
+#pmpro-dashboard-form #dashboard-widgets .pmpro-dashboard-welcome-steps li a span {
+	text-decoration: underline;
+}
+
+#pmpro-dashboard-form ul,
+#pmpro-dashboard-form h3:first-child {
 	margin-top: 0;
+}
+
+#pmpro-dashboard-form p:has(.dashicons) {
+	align-items: center;
+	display: flex;
 }
 
 #pmpro-dashboard-form .button {
@@ -3514,13 +3583,6 @@ button.pmpro_report_th_closed:before {
 #pmpro-dashboard-form #dashboard-widgets ul li {
 	margin-bottom: var(--pmpro--spacing--small);
 }
-
-#pmpro-dashboard-form ul.pmpro-dashboard-list-icons li a {
-	align-items: center;
-	display: flex;
-	justify-content: flex-start;
-}
-
 #pmpro-dashboard-form .dashicons-marker {
 	color: var(--pmpro--color--blue-darkest);
 }
@@ -3529,10 +3591,16 @@ button.pmpro_report_th_closed:before {
 	color: var(--pmpro--color--success-text);
 }
 
+#pmpro_dashboard_quick_links .inside {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: var(--pmpro--spacing--small);
+}
+
 #pmpro_dashboard_follow_us ul li img {
+	width: 20px;
 	height: 20px;
 	margin-right: var(--pmpro--spacing--small);
-	width: 20px;
 }
 
 /* Hide the default postbox containers since we're using grid directly */
@@ -3555,9 +3623,10 @@ button.pmpro_report_th_closed:before {
 }
 
 #pmpro-dashboard-form #dashboard-widgets .postbox iframe {
-	aspect-ratio: 16 / 9; /* Adjust ratio as needed */
+	aspect-ratio: 16 / 9;
 	border: none;
 	height: auto;
+	margin-bottom: var(--pmpro--spacing--small);
 	width: 100%;
 }
 
@@ -3566,7 +3635,7 @@ button.pmpro_report_th_closed:before {
 	#pmpro-dashboard-form #dashboard-widgets .postbox .iframe-container {
 		height: 0;
 		overflow: hidden;
-		padding-bottom: 56.25%; /* 16:9 aspect ratio */
+		padding-bottom: 56.25%;
 		position: relative;
 		width: 100%;
 	}
@@ -3580,7 +3649,6 @@ button.pmpro_report_th_closed:before {
 	}
 }
 
-/* Updated column span classes for 3-column grid */
 #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-1, 
 #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-1 { 
 	grid-column: span 1; 
@@ -3593,13 +3661,14 @@ button.pmpro_report_th_closed:before {
 
 #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-3, 
 #pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-3 { 
-	grid-column: span 3; /* Full width in 3-column grid */
+	grid-column: span 3;
 }
 
-/* Remove 4-column support since we're now using 3 columns */
-/* #pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-4 is no longer needed */
+#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-4 {
+	grid-column: span 4;
+}
 
-/* Responsive breakpoints - adjust for better 3-column experience */
+/* Responsive breakpoints */
 @media (max-width: 1400px) {
 	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
 		grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
