@@ -53,7 +53,8 @@
 		pmpro_setOption("wisdom_opt_out");
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
-		pmpro_setOption("uninstall");		
+		pmpro_setOption("uninstall");
+		pmpro_setOption("site_type");
 
 		// Set up Wisdom tracking cron if needed.
 		if ( (int)get_option( "pmpro_wisdom_opt_out") === 0 ) {
@@ -112,6 +113,7 @@
 		$redirecttosubscription = get_option( "pmpro_redirecttosubscription");
 	}
 	$uninstall = get_option( 'pmpro_uninstall');
+	$site_type = get_option( 'pmpro_site_type' );
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
@@ -574,6 +576,35 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 								<option value="1" <?php if ( $uninstall == 1 ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' );?></option>
 							</select>
 							<p class="description"><?php esc_html_e( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="site_type"><?php esc_html_e('What type of membership site are you creating?', 'paid-memberships-pro' );?></label>
+						</th>
+						<td>
+							<select id="site_type" name="site_type" class="pmpro-wizard__field-block">
+								<option value=""><?php esc_html_e( '-- Select --', 'paid-memberships-pro' ); ?></option>
+								<?php
+								$site_types = array(
+									'association'		=> __( 'Association', 'paid-memberships-pro' ),
+									'premium_content'	=> __( 'Blog/News', 'paid-memberships-pro' ),
+									'community'			=> __( 'Community', 'paid-memberships-pro' ),
+									'courses'			=> __( 'Courses', 'paid-memberships-pro' ),
+									'directory'			=> __( 'Directory/Listings', 'paid-memberships-pro' ),
+									'newsletter'		=> __( 'Paid Newsletter', 'paid-memberships-pro' ),
+									'podcast'			=> __( 'Podcast', 'paid-memberships-pro' ),
+									'video'				=> __( 'Video', 'paid-memberships-pro' ),
+									'other'				=> __( 'Other', 'paid-memberships-pro' ),
+								);
+								foreach ( $site_types as $site_type_key => $name ) {
+									?>
+									<option value="<?php echo esc_attr( $site_type_key ); ?>" <?php selected( $site_type_key, $site_type ); ?>><?php echo esc_html( $name ); ?></option>
+									<?php
+								}
+								?>
+							</select>
+							<p class="description"><?php esc_html_e( 'Choose the answer that best fits the primary value of your membership site.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 				</tbody>
