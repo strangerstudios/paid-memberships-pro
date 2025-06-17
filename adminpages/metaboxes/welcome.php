@@ -45,7 +45,7 @@ function pmpro_dashboard_welcome_callback() {
 					</li>
 				<?php } ?>
 
-				<?php if ( current_user_can( 'pmpro_pagesettings' ) ) { ?>
+				<?php if ( current_user_can( 'pmpro_paymentsettings' ) ) { ?>
 					<li>
 						<?php if ( empty( $pmpro_gateway_ready ) ) { ?>
 							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-marker"></i> <span><?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></span></a>
