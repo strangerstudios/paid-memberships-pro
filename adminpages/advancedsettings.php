@@ -586,17 +586,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 							<select id="site_type" name="site_type" class="pmpro-wizard__field-block">
 								<option value=""><?php esc_html_e( '-- Select --', 'paid-memberships-pro' ); ?></option>
 								<?php
-								$site_types = array(
-									'association'		=> __( 'Association', 'paid-memberships-pro' ),
-									'premium_content'	=> __( 'Blog/News', 'paid-memberships-pro' ),
-									'community'			=> __( 'Community', 'paid-memberships-pro' ),
-									'courses'			=> __( 'Courses', 'paid-memberships-pro' ),
-									'directory'			=> __( 'Directory/Listings', 'paid-memberships-pro' ),
-									'newsletter'		=> __( 'Paid Newsletter', 'paid-memberships-pro' ),
-									'podcast'			=> __( 'Podcast', 'paid-memberships-pro' ),
-									'video'				=> __( 'Video', 'paid-memberships-pro' ),
-									'other'				=> __( 'Other', 'paid-memberships-pro' ),
-								);
+								$site_types = pmpro_get_site_types();
 								foreach ( $site_types as $site_type_key => $name ) {
 									?>
 									<option value="<?php echo esc_attr( $site_type_key ); ?>" <?php selected( $site_type_key, $site_type ); ?>><?php echo esc_html( $name ); ?></option>
