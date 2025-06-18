@@ -1019,7 +1019,7 @@ add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 
  * @since TBD
  */
 function pmpro_get_deprecated_gateways() {
-	return array(
+	return apply_filters( 'pmpro_deprecated_gateways', array(
 		'twocheckout',
 		'cybersource',
 		'paypal',
@@ -1027,7 +1027,7 @@ function pmpro_get_deprecated_gateways() {
 		'payflowpro',
 		'paypalstandard',
 		'braintree',
-	);
+	) );
 }
 
 /**
