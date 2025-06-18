@@ -287,7 +287,7 @@
 				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>" class="<?php if($view == 'pmpro-paymentsettings') { ?>current<?php } ?>"><?php esc_html_e( 'Payments', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
-			<?php if(current_user_can('pmpro_taxsettings')) { ?>
+			<?php if( ! empty( get_option( 'pmpro_tax_settings_beta' ) ) && current_user_can('pmpro_taxsettings')) { ?>
 				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-taxsettings' ) );?>" class="<?php if($view == 'pmpro-taxsettings') { ?>current<?php } ?>"><?php esc_html_e('Tax', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
