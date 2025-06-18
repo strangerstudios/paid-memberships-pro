@@ -393,6 +393,25 @@
 				<tbody>
 					<tr>
 						<th scope="row" valign="top">
+							<label for="site_type"><?php esc_html_e('What type of membership site are you creating?', 'paid-memberships-pro' );?></label>
+						</th>
+						<td>
+							<select id="site_type" name="site_type" class="pmpro-wizard__field-block">
+								<option value=""><?php esc_html_e( '-- Select --', 'paid-memberships-pro' ); ?></option>
+								<?php
+								$site_types = pmpro_get_site_types();
+								foreach ( $site_types as $site_type_key => $name ) {
+									?>
+									<option value="<?php echo esc_attr( $site_type_key ); ?>" <?php selected( $site_type_key, $site_type ); ?>><?php echo esc_html( $name ); ?></option>
+									<?php
+								}
+								?>
+							</select>
+							<p class="description"><?php esc_html_e( 'Choose the answer that best fits the primary value of your membership site.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top">
 							<label for="pmpro-hideads"><?php esc_html_e("Hide Ads From Members?", 'paid-memberships-pro' );?></label>
 						</th>
 						<td>
@@ -576,25 +595,6 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 								<option value="1" <?php if ( $uninstall == 1 ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' );?></option>
 							</select>
 							<p class="description"><?php esc_html_e( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="site_type"><?php esc_html_e('What type of membership site are you creating?', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select id="site_type" name="site_type" class="pmpro-wizard__field-block">
-								<option value=""><?php esc_html_e( '-- Select --', 'paid-memberships-pro' ); ?></option>
-								<?php
-								$site_types = pmpro_get_site_types();
-								foreach ( $site_types as $site_type_key => $name ) {
-									?>
-									<option value="<?php echo esc_attr( $site_type_key ); ?>" <?php selected( $site_type_key, $site_type ); ?>><?php echo esc_html( $name ); ?></option>
-									<?php
-								}
-								?>
-							</select>
-							<p class="description"><?php esc_html_e( 'Choose the answer that best fits the primary value of your membership site.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 				</tbody>
