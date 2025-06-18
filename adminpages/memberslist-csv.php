@@ -30,8 +30,12 @@
 	 * @since 1.8.7
 	 */
 	//set the number of users we'll load to try and protect ourselves from OOM errors
-	$max_users_per_loop = apply_filters('pmpro_set_max_user_per_export_loop', 2000);
+	$max_users_per_loop = intval( apply_filters( 'pmpro_set_max_user_per_export_loop', 2000 ) );
 
+	//If the filter returns odd value, reset to default.
+	if ( $max_users_per_loop < 1 ) {
+		$max_users_per_loop = 2000;
+	}
 	global $wpdb;
 
 	//get users (search input field)
@@ -309,16 +313,11 @@
 
 		$start = current_time('timestamp');
 
-		// Get the last record to output, will depend on which iteration we're on.
-		if ( $ic != $iterations ) {
-			$i_end = ($i_start + ( $max_users_per_loop - 1));
-		} else {
-			// Final iteration, so last UID is the last record in the users array
-			$i_end = ($users_found - 1);
-		}
-		$spl = array_slice($theusers, $i_start, $i_end + 1);
+		$i_end = min( $i_start + $max_users_per_loop - 1, $users_found - 1 );
+
+		$spl = array_slice( $theusers, $i_start, $i_end - $i_start + 1 );
 		//increment starting position
-		$i_start += $max_users_per_loop;
+		$i_start = $i_end + 1;
 
 		//escape the % for LIKE comparison with $wpdb
 		if(!empty($search))
@@ -446,7 +445,7 @@
 				foreach($extra_columns as $heading => $callback)
 				{
 					$val = call_user_func($callback, $theuser, $heading);
-					$val = !empty($val) ? $val : null;
+					$val = ( is_string( $val ) || ! empty($val) ) ? $val : null;
 					array_push( $csvoutput, pmpro_enclose($val) );
 				}
 			}

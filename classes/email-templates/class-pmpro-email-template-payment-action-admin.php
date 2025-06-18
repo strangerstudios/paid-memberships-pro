@@ -11,6 +11,7 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	/**
 	 * The URL of the order.
 	 * 
+	 * @var string
 	 */
 	protected $order_url;
 
@@ -20,7 +21,6 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 * @since 3.4
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int $membership_id The membership level id of the membership level that expired.
 	 * @param string $order_url The URL of the order.
 	 */
 	public function __construct( WP_User $user, string $order_url ) {
@@ -125,7 +125,6 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!subject!!' => esc_html__( 'The default subject for the email. This will be removed in a future version.', 'paid-memberships-pro' ),
 			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
@@ -153,6 +152,19 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 			"order_url" => $order_url,
 			"invoice_url" => $order_url, // Legacy purpose, remove in future version
 		);
+	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+
+		return array( $current_user, home_url() );
 	}
 }
 

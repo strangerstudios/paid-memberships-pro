@@ -80,8 +80,14 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 		}
 	}
 
-	// Filter the $hasaccess so we can overwrite this for other add ons.
-	$hasaccess = apply_filters( 'pmpro_member_shortcode_access', $hasaccess, $content, $levels, $delay );
+	/**
+	 * Legacy filter to change the access to the content for the [membership] shortcode. Use the
+	 * pmpro_has_membership_level filter instead.
+	 *
+	 * @deprecated 3.4.3
+	 */
+	$hasaccess = apply_filters_deprecated( 'pmpro_member_shortcode_access',
+		array( $hasaccess, $content, $levels, $delay ), '3.4.3', 'pmpro_has_membership_level' );
 
 	//to show or not to show
 	if($hasaccess)

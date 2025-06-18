@@ -176,7 +176,8 @@
 		}
 
 		// Hide notifications if the user has disabled them.
-		if( pmpro_get_max_notification_priority() < 1 ) {
+		$notification_handler = pmpro_get_gocodebox_banner_notifier();
+		if( $notification_handler->get_max_notification_priority() < 1 ) {
 			$show_notifications = false;
 		}
 
@@ -283,7 +284,7 @@
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_paymentsettings')) { ?>
-				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>" class="<?php if($view == 'pmpro-paymentsettings') { ?>current<?php } ?>"><?php esc_html_e('Payment Gateway', 'paid-memberships-pro' );?></a></li>
+				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>" class="<?php if($view == 'pmpro-paymentsettings') { ?>current<?php } ?>"><?php esc_html_e( 'Payments', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_taxsettings')) { ?>

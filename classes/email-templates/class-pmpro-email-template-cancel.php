@@ -161,6 +161,22 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 
 		return $email_template_variables;
 	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+
+		$all_levels = pmpro_getAllLevels( true );
+		$test_level = current( $all_levels );
+
+		return array( $current_user, $test_level->id );
+	}
 }
 
 /**

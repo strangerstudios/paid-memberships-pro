@@ -1414,8 +1414,8 @@ class PMPro_Field {
 							$binds[] = "#" . esc_html( $field_id );
 							break;
 						case 'radio':
-							$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . " input[type=radio][value=" . esc_js( $check['value'] ) . "]:checked').length > 0";
-							$binds[] = "#" . esc_html( $field_id ) . " input[type=radio][name=" . esc_js( $field_id ) . "]";
+							$checks_escaped[] = "jQuery('input[name=\"" . esc_js( $field_id ) . "\"][value=\"" . esc_js( $check['value'] ) . "\"]:checked').length > 0";
+							$binds[] = "input[type=radio][name=\"" . esc_js( $field_id ) . "\"]";
 							break;
 						default:
 							$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode( $check['value'] ) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode( $check['value'] ) . ") > -1";
@@ -1677,7 +1677,8 @@ class PMPro_Field {
 					$output = is_numeric( $value ) ? number_format_i18n( $value ) : '';
 					break;
 			case 'date':
-				$output = date_i18n( get_option( 'date_format' ), $value );
+				$timestamp = strtotime( $value );
+				$output = $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : '';
 				break;
 			case 'select':
 			case 'multiselect':

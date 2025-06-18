@@ -12,6 +12,16 @@ $wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
 		<div class="pmpro-wizard__step-header">
 			<h2><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h2>
 			<p><?php esc_html_e( 'Configure advanced settings relating to your membership site. You can configure additional settings later.', 'paid-memberships-pro' ); ?></p>
+		</div>		
+		<div class="pmpro-wizard__field">
+			<label for ="updatemanager" class="pmpro-wizard__label-block">
+				<?php esc_html_e( 'Install Update Manager', 'paid-memberships-pro' ); ?>
+			</label>
+			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'The Update Manager is a required plugin that enables automatic updates for Paid Memberships Pro and its Add Ons, delivered securely from our official license server.', 'paid-memberships-pro' ); ?></p>
+			<select name="updatemanager" id="updatemanager" class="pmpro-wizard__field-block">
+				<option value="0"><?php esc_html_e( 'Yes - Install and activate the Update Manager for me.', 'paid-memberships-pro' ); ?></option>
+				<option value="1"><?php esc_html_e( 'No - I\'ll install and activate it manually later.', 'paid-memberships-pro' ); ?></option>
+			</select><br><br>
 		</div>
 		<div class="pmpro-wizard__field">
 			<label for="filterqueries" class="pmpro-wizard__label-block">
@@ -41,13 +51,16 @@ $wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
 		</div>
 		<div class="pmpro-wizard__field">
 			<label for="wisdom_opt_out" class="pmpro-wizard__label-block">
-				<?php esc_html_e( 'Enable Tracking?', 'paid-memberships-pro' ); ?>
+				<?php esc_html_e( 'Enable Plugin Usage Data Sharing', 'paid-memberships-pro' ); ?>
 			</label>
+			<p class="pmpro-wizard__field-description">
+				<?php esc_html_e( 'Share non-sensitive, anonymized usage data to help us improve Paid Memberships Pro. You can disable this anytime in Advanced Settings.', 'paid-memberships-pro' ); ?>
+				<a aria-label="<?php esc_attr_e( 'View Paid Memberships Pro Usage Tracking documentation in a new tab', 'paid-memberships-pro' ); ?>" href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-advanced&utm_content=data-collection" target="_blank"><?php esc_html_e( 'Learn more about what data we collect', 'paid-memberships-pro' ); ?></a>
+			</p>
 			<select name="wisdom_opt_out" id="wisdom_opt_out" class="pmpro-wizard__field-block">
-				<option value="0" <?php selected( 0, $wisdom_tracking ); ?>><?php esc_html_e( 'Yes - Allow usage of Paid Memberships Pro to be tracked.', 'paid-memberships-pro' ); ?></option>
-				<option value="1" <?php selected( 1, $wisdom_tracking ); ?>><?php esc_html_e( 'No - Do not track usage of Paid Memberships Pro on my site.', 'paid-memberships-pro' ); ?></option>
+				<option value="0" <?php selected( 0, $wisdom_tracking ); ?>><?php esc_html_e( 'Yes - Allow usage of Paid Memberships Pro to be shared with us.', 'paid-memberships-pro' ); ?></option>
+				<option value="1" <?php selected( 1, $wisdom_tracking ); ?>><?php esc_html_e( 'No - Do not share usage data for Paid Memberships Pro on my site.', 'paid-memberships-pro' ); ?></option>
 			</select>
-			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'Sharing non-sensitive membership site data helps us analyze how our plugin is meeting your needs and identify opportunities to improve. Can be turned off under "Advanced" Settings.', 'paid-memberships-pro' ); ?></p>
 		</div>
 
 		<p class="pmpro_wizard__submit">
