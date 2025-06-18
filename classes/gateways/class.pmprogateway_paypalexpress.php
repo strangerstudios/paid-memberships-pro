@@ -599,7 +599,7 @@
 				$nvpStr .= "&PROFILESTARTDATE=" . $profile_start_date;
 			if(!empty($level->cycle_number))
 				$nvpStr .= "&BILLINGPERIOD=" . $level->cycle_period . "&BILLINGFREQUENCY=" . $level->cycle_number . "&AUTOBILLOUTAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
-			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr( trim( $order->membership_level->name ) . " at " . trim( get_bloginfo( "name" ) ), 0, 127 ), $order->membership_level->name, $order, get_bloginfo("name")) );
+			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr( trim( $order->membership_level->name ) . " at " . trim( get_bloginfo( "name" ) ), 0, 127 ), trim( $order->membership_level->name ), $order, trim( get_bloginfo( "name" ) ) ) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ) ) . "&L_PAYMENTTYPE0=Any";
 
