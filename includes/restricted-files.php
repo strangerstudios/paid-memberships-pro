@@ -6,7 +6,7 @@
  * @since TBD
  */
 function pmpro_set_up_restricted_files_directory() {
-	// Create wp-content/uploads/pmpro folder if it doesn't exist.
+	// Create restricted folder if it doesn't exist.
 	$restricted_file_directory = pmpro_get_restricted_file_path();
 	if ( ! file_exists( $restricted_file_directory ) ) {
 		wp_mkdir_p( $restricted_file_directory );
@@ -39,6 +39,14 @@ function pmpro_restricted_files_check_request() {
 	// Get the requested file.
 	$file = basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file'] ) ) );
 	$file_dir = basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file_dir'] ) ) );
+
+	/* 
+ 		Remove ../-like strings from the URI. 
+ 		Actually removes any combination of two or more ., /, and \. 
+ 		This will prevent traversal attacks and loading hidden files. 
+ 	*/
+	$file = preg_replace("/[\.\/\\\\]{2,}/", "", $file);
+	$file_dir = preg_replace("/[\.\/\\\\]{2,}/", "", $file_dir);
 
 	/**
 	 * Filter to check if a user can access a restricted file.
@@ -97,9 +105,16 @@ add_filter( 'pmpro_can_access_restricted_file', 'pmpro_can_access_restricted_fil
  * @return string           Path to the restricted file.
  */
 function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
-	$uploads_dir = trailingslashit( wp_upload_dir()['basedir'] );
-	$restricted_file_path = $uploads_dir . 'pmpro/';
+	// Get a random string to prevent directory traversal attacks.
+	$random_string = get_option( 'pmpro_restricted_files_random_string', '' );
+	if ( empty( $random_string ) ) {
+		$random_string = wp_generate_password( 12, false );
+		update_option( 'pmpro_restricted_files_random_string', $random_string );
+	}
+
 	// Get the directory path.
+	$uploads_dir = trailingslashit( wp_upload_dir()['basedir'] );
+	$restricted_file_path = $uploads_dir . 'pmpro-' . $random_string . '/';
 	if ( ! empty( $file_dir ) ) {
 		$restricted_file_path .= $file_dir . '/';
 

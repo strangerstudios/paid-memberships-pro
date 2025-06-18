@@ -178,6 +178,7 @@
 		// Check if this is an nginx setup.
 		if ( ( ! empty( $GLOBALS['is_nginx'] && $GLOBALS['is_nginx'] ) ) || ( function_exists( 'is_wpe' ) && is_wpe() ) || true) {
 			// Show a "Restricted Files" section linking to our docs on setting up restricted files on nginx.
+			$restricted_file_path = pmpro_get_restricted_file_path();
 			?>
 			<div class="pmpro_section" data-visibility="hidden" data-activated="false">
 				<div class="pmpro_section_toggle">
@@ -190,11 +191,11 @@
 					<p>
 						<?php
 						// translators: %s: Restricted file path.
-						printf( esc_html__( 'Files that contain potentially sensitive information are placed in the %s directory. If your site is hosted on an NGINX server, you will need to manually add this code to your NGINX config file to protect these files:', 'paid-memberships-pro' ), '<code>' . pmpro_get_restricted_file_path() . '</code>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						printf( esc_html__( 'Files that contain potentially sensitive information are placed in the %s directory. If your site is hosted on an NGINX server, you will need to manually add this code to your NGINX config file to protect these files:', 'paid-memberships-pro' ), '<code>' . $restricted_file_path . '</code>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						?>
 					</p>
 					<textarea readonly rows="4" cols="50" class="pmpro_restricted_files_code">
-location ~ ^/wp-content/uploads/pmpro/ {
+location ~ ^<?php echo esc_html( strstr( $restricted_file_path, '/wp-content/uploads/' ) ) ?> {
 	deny all;
 	return 403;
 }
