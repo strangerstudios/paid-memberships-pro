@@ -436,6 +436,10 @@ function pmpro_checkForUpgrades() {
 		error_log( esc_html( 'Removed PMPro scheduled crons: ' . $removed_list ) );
 	}
 
+		// Update Stripe webhook events.
+		$stripe = new PMProGateway_Stripe();
+		$stripe->update_webhook_events();
+
 		pmpro_db_delta();
 		update_option( 'pmpro_db_version', '3.5' );
 	}

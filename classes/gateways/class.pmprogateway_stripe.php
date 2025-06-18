@@ -3850,7 +3850,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
 	 */
-	private function update_webhook_events() {
+	public function update_webhook_events() {
 		// Also checks database to see if it's been saved.
 		$webhook = $this->does_webhook_exist();
 
@@ -4277,7 +4277,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Check if we have a valid license key.
 		$application_fee_percentage = pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ? 0 : $application_fee_percentage;
-		$application_fee_percentage = apply_filters_deprecated( 'pmpro_set_application_fee_percentage', array( $application_fee_percentage ), 'TBD' );
+
+		// If the site has adknowledged the application fee percentage, we can skip the filter.
+		if ( empty( get_option( 'pmpro_stripe_connect_acknowledged_fee' ) ) ) {
+			$application_fee_percentage = apply_filters_deprecated( 'pmpro_set_application_fee_percentage', array( $application_fee_percentage ), 'TBD' );
+		}
 
 		return round( floatval( $application_fee_percentage ), 2 );
 	}
