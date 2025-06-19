@@ -338,7 +338,7 @@ if ( empty( $default_gateway ) ) {
 
 									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_hidden' ) ); ?>">
 										<label for="fullname"><?php esc_html_e('Full Name', 'paid-memberships-pro' );?></label>
-										<input id="fullname" name="fullname" type="text" value="" autocomplete="off"/> <strong><?php esc_html_e('LEAVE THIS BLANK', 'paid-memberships-pro' );?></strong>
+										<input id="fullname" name="fullname" type="text" value="" autocomplete="off" aria-hidden="true" aria-label="<?php esc_html_e( 'Do not fill this field out. leave this blank.', 'paid-memberships-pro'); ?>"/> <strong><?php esc_html_e('LEAVE THIS BLANK', 'paid-memberships-pro' );?></strong>
 									</div> <!-- end pmpro_hidden -->
 								</div>  <!-- end pmpro_form_fields -->
 							<?php } else { ?>
