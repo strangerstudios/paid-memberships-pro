@@ -318,4 +318,65 @@
 	</nav>
 	<?php } ?>
 
-	<?php } ?>
+	<?php
+	}
+
+	// Check if the site is using Stripe with a lowered Connect fee.
+	// Check if Stripe is the gateway.
+	if ( 'stripe' === get_option( 'pmpro_gateway' ) ) {
+		// Check if the user is not paying for a license.
+		if ( ! pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) {
+			// Check if the user selected to acknowledge the 2% fee.
+			if ( ! empty( $_REQUEST['acknowledge_stripe_connect_fee'] ) && '1' === $_REQUEST['acknowledge_stripe_connect_fee'] ) {
+				// Delete the option to acknowledge the fee.
+				delete_option( 'pmpro_stripe_connect_reduced_application_fee' );
+
+				// Add option to acknowledge the fee.
+				update_option( 'pmpro_stripe_connect_acknowledged_fee', true );
+			}
+
+			// Check if the site is using a lowered Connect fee.
+			$reduced_fee = get_option( 'pmpro_stripe_connect_reduced_application_fee' );
+			$filtered_fee = apply_filters( 'pmpro_set_application_fee_percentage', 2 );
+			if ( ! empty( $reduced_fee ) && 2 != $reduced_fee ) {
+				?>
+				<div class="notice notice-large notice-warning inline">
+					<h3><?php esc_html_e( 'Important Stripe Connect Fee Notice', 'paid-memberships-pro' ); ?></h3>
+					<p><?php esc_html_e( 'Websites connected through Stripe Connect require a 2% fee on all transactions OR a premium PMPro license.', 'paid-memberships-pro' ); ?></p>
+					<p><?php echo esc_html( sprintf( esc_html__( 'Your site is currently paying a %d%% fee.'), $reduced_fee ) . ' ' . esc_html__( 'This is a lower fee that was in place at the time you connected.', 'paid-memberships-pro' ) ); ?></p>
+					<p><?php esc_html_e( 'To reduce the fee to 0%, you may either:', 'paid-memberships-pro' ); ?></p>
+					<ol>
+						<li><?php esc_html_e( 'Purchase a premium PMPro license and activate it on your site.', 'paid-memberships-pro' ); ?></li>
+						<li><?php esc_html_e( 'Disconnect your site from Stripe Connect and set up your own restricted keys.', 'paid-memberships-pro' ); ?></li>
+					</ol>
+					<p><?php esc_html_e( 'If you would like to continue using Stripe Connect at a 2% fee, please click the button below.', 'paid-memberships-pro' ); ?></p>
+					<p>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings&acknowledge_stripe_connect_fee=1' ) ); ?>" class="button button-primary">
+							<?php esc_html_e( 'Continue With 2% Fee', 'paid-memberships-pro' ); ?>
+						</a>
+					</p>
+				</div>
+				<?php
+			} elseif( empty( get_option( 'pmpro_stripe_connect_acknowledged_fee' ) ) && 2 != $filtered_fee ) {
+				?>
+				<div class="notice notice-large notice-warning inline">
+					<h3><?php esc_html_e( 'Important Stripe Connect Fee Notice', 'paid-memberships-pro' ); ?></h3>
+					<p><?php esc_html_e( 'Websites connected through Stripe Connect require a 2% fee on all transactions OR a premium PMPro license.', 'paid-memberships-pro' ); ?></p>
+					<p><?php echo wp_kses_post( sprintf( esc_html__( 'Your site is currently paying a %d%% fee.'), $reduced_fee ) . ' ' . __( 'This is due to custom code on your website. <strong>Sites that continue using a reduced fee risk being disconnected from Stripe Connect.</strong>', 'paid-memberships-pro' ) ); ?></p>
+					<p><?php esc_html_e( 'To reduce the fee to 0%, you may either:', 'paid-memberships-pro' ); ?></p>
+					<ol>
+						<li><?php esc_html_e( 'Purchase a premium PMPro license and activate it on your site.', 'paid-memberships-pro' ); ?></li>
+						<li><?php esc_html_e( 'Disconnect your site from Stripe Connect and set up your own restricted keys.', 'paid-memberships-pro' ); ?></li>
+					</ol>
+					<p><?php esc_html_e( 'If you would like to continue using Stripe Connect at a 2% fee, please click the button below.', 'paid-memberships-pro' ); ?></p>
+					<p>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings&acknowledge_stripe_connect_fee=1' ) ); ?>" class="button button-primary">
+							<?php esc_html_e( 'Continue With 2% Fee', 'paid-memberships-pro' ); ?>
+						</a>
+					</p>
+				</div>
+				<?php
+
+			}
+		}
+	}
