@@ -36,27 +36,24 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 		'pmpro_dashboard_welcome'        => array(
 			'title'             => esc_html__( 'Welcome to Paid Memberships Pro', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_dashboard_welcome_callback',
-			'context'           => 'grid',
 			'capability'        => '',
 			'header_link'       => '',
 			'header_link_text'  => '',
 			'columns'           => 4,
 			'grid_column_start' => 1,
 		),
-		'pmpro_dashboard_quick_links'   => array(
+		'pmpro_dashboard_quick_links'    => array(
 			'title'             => esc_html__( 'Quick Links', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_dashboard_quick_links_callback',
-			'context'           => 'grid',
 			'capability'        => '',
 			'header_link'       => '',
 			'header_link_text'  => '',
 			'columns'           => 3,
 			'grid_column_start' => 1,
 		),
-		'pmpro_dashboard_license_status'   => array(
+		'pmpro_dashboard_license_status' => array(
 			'title'             => esc_html__( 'License Status', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_dashboard_license_status_callback',
-			'context'           => 'grid',
 			'capability'        => '',
 			'header_link'       => '',
 			'header_link_text'  => '',
@@ -66,7 +63,6 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 		'pmpro_dashboard_report_sales'   => array(
 			'title'             => esc_html__( 'Sales and Revenue', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_report_sales_widget',
-			'context'           => 'grid',
 			'capability'        => 'pmpro_reports',
 			'header_link'       => esc_url( admin_url( 'admin.php?page=pmpro-reports&report=sales' ) ),
 			'header_link_text'  => esc_html__( 'View All Sales', 'paid-memberships-pro' ),
@@ -76,7 +72,6 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 		'pmpro_dashboard_report_stats'   => array(
 			'title'             => esc_html__( 'Membership Stats', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_report_memberships_widget',
-			'context'           => 'grid',
 			'capability'        => '',
 			'header_link'       => esc_url( admin_url( 'admin.php?page=pmpro-reports&report=memberships' ) ),
 			'header_link_text'  => esc_html__( 'View All Memberships', 'paid-memberships-pro' ),
@@ -86,7 +81,6 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 		'pmpro_dashboard_recent_orders'  => array(
 			'title'             => esc_html__( 'Recent Orders', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_dashboard_report_recent_orders_callback',
-			'context'           => 'grid',
 			'capability'        => 'pmpro_orders',
 			'header_link'       => esc_url( admin_url( 'admin.php?page=pmpro-orders' ) ),
 			'header_link_text'  => esc_html__( 'View All Orders', 'paid-memberships-pro' ),
@@ -96,52 +90,47 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 		'pmpro_dashboard_recent_members' => array(
 			'title'             => esc_html__( 'Recent Members', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_dashboard_report_recent_members_callback',
-			'context'           => 'grid',
 			'capability'        => 'pmpro_memberslist',
 			'header_link'       => esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) ),
 			'header_link_text'  => esc_html__( 'View All Members', 'paid-memberships-pro' ),
 			'columns'           => 2,
 			'grid_column_start' => 1,
 		),
-		'pmpro_dashboard_get_involved' => array(
+		'pmpro_dashboard_get_involved'   => array(
 			'title'             => esc_html__( 'Get Involved', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_dashboard_get_involved_callback',
-			'context'           => 'grid',
 			'capability'        => '',
 			'header_link'       => '',
 			'header_link_text'  => '',
 			'columns'           => 1,
 			'grid_column_start' => 1,
 		),
-		'pmpro_dashboard_follow_us' => array(
+		'pmpro_dashboard_follow_us'      => array(
 			'title'             => esc_html__( 'Follow Us', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_dashboard_follow_us_callback',
-			'context'           => 'grid',
 			'capability'        => '',
 			'header_link'       => '',
 			'header_link_text'  => '',
 			'columns'           => 1,
 			'grid_column_start' => 2,
 		),
-		'pmpro_dashboard_events' => array(
-			'title'              => esc_html__( 'Upcoming Events', 'paid-memberships-pro' ),
-			'callback'           => 'pmpro_dashboard_events_callback',
-			'context'            => 'grid',
-			'capability'         => '',
-			'header_link'        => '',
-			'header_link_text'   => '',
-			'columns'            => 1,
-			'grid_column_start'  => 3,
+		'pmpro_dashboard_events'         => array(
+			'title'             => esc_html__( 'Upcoming Events', 'paid-memberships-pro' ),
+			'callback'          => 'pmpro_dashboard_events_callback',
+			'capability'        => '',
+			'header_link'       => '',
+			'header_link_text'  => '',
+			'columns'           => 1,
+			'grid_column_start' => 3,
 		),
 		'pmpro_dashboard_news_updates'   => array(
-			'title'              => esc_html__( 'News and Updates', 'paid-memberships-pro' ),
-			'callback'           => 'pmpro_dashboard_news_updates_callback',
-			'context'            => 'grid',
-			'capability'         => '',
-			'header_link'        => '',
-			'header_link_text'   => '',
-			'columns'            => 1,
-			'grid_column_start'  => 4,
+			'title'             => esc_html__( 'News and Updates', 'paid-memberships-pro' ),
+			'callback'          => 'pmpro_dashboard_news_updates_callback',
+			'capability'        => '',
+			'header_link'       => '',
+			'header_link_text'  => '',
+			'columns'           => 1,
+			'grid_column_start' => 4,
 		),
 	)
 );
@@ -152,8 +141,6 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
 	if (
 		( empty( $meta_box['capability'] ) || current_user_can( $meta_box['capability'] ) )
-		&& isset( $meta_box['context'] )
-		&& $meta_box['context'] !== 'grid'
 	) {
 		add_meta_box(
 			$id,
@@ -176,9 +163,6 @@ foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
  * @return void
  */
 function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
-
-	// Delete any existing settings for the current user
-	delete_user_meta( get_current_user_id(), 'pmpro_dashboard_metabox_order' );
 
 	// Get saved order for current user
 	$saved_order = get_user_meta( get_current_user_id(), 'pmpro_dashboard_metabox_order', true );
@@ -207,9 +191,6 @@ function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 
 	// Render the metaboxes in order
 	foreach ( $meta_boxes as $id => $meta_box ) {
-		if ( $meta_box['context'] !== 'grid' ) {
-			continue;
-		}
 		if ( ! empty( $meta_box['capability'] ) && ! current_user_can( $meta_box['capability'] ) ) {
 			continue;
 		}
