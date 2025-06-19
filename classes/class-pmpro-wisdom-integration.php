@@ -48,6 +48,7 @@ class PMPro_Wisdom_Integration {
 		'pmpro-discountcodes'    => true,
 		'pmpro-pagesettings'     => true,
 		'pmpro-paymentsettings'  => true,
+		'pmpro-taxsettings'      => true,
 		'pmpro-securitysettings' => true,
 		'pmpro-emailsettings'    => true,
 		'pmpro-emailtemplates'   => true,
