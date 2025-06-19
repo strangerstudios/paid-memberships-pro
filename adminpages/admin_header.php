@@ -343,7 +343,7 @@
 				<div class="notice notice-large notice-warning inline">
 					<h3><?php esc_html_e( 'Important Stripe Connect Fee Notice', 'paid-memberships-pro' ); ?></h3>
 					<p><?php esc_html_e( 'Websites connected through Stripe Connect require a 2% fee on all transactions OR a premium PMPro license.', 'paid-memberships-pro' ); ?></p>
-					<p><?php echo esc_html( sprintf( esc_html__( 'Your site is currently paying a %d%% fee.'), $reduced_fee ) . ' ' . esc_html__( 'This is a lower fee that was in place at the time you connected.', 'paid-memberships-pro' ) ); ?></p>
+					<p><?php echo esc_html( sprintf( esc_html__( 'Your site is currently paying a %d%% fee.'), $reduced_fee ) . ' ' . esc_html__( 'This is a lower fee that was in place at the time you connected and that will be removed in a future update.', 'paid-memberships-pro' ) ); ?></p>
 					<p><?php esc_html_e( 'To reduce the fee to 0%, you may either:', 'paid-memberships-pro' ); ?></p>
 					<ol>
 						<li><?php esc_html_e( 'Purchase a premium PMPro license and activate it on your site.', 'paid-memberships-pro' ); ?></li>
