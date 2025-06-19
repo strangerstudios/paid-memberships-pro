@@ -3704,6 +3704,10 @@ button.pmpro_report_th_closed:before {
 	#pmpro-dashboard-form #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column:last-child {
 		margin-bottom: 0;
 	}
+
+	#pmpro_dashboard_quick_links .inside {
+		grid-template-columns: 1fr; /* Stack quick links on smaller screens */
+	}
 }
 
 /* Additional responsive helper for very small screens */
