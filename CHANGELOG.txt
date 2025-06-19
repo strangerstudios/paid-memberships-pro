@@ -17,7 +17,7 @@
 * ENHANCEMENT: Added a new filter `pmpro_deprecated_gateways` to allow developers to filter the list of deprecated gateways. #3404 (@dparker1005)
 * ENHANCEMENT: Updated the PMPro_Email_Template class to streamline the process of sending test emails for each email template. #3340 (@MaximilianoRicoTabo)
 * ENHANCEMENT: Updated Wisdom data sharing to be an opt-out system. This will not change the selected option for existing sites. #3411 (@dalemugford)
-* ENHANCEMENT: Added a new `pmpro_no_download` parameter to CSV exports to prevent downloading the CSV file. #3417 (@dalemugford)
+* ENHANCEMENT: Added a new `pmpro_no_download` parameter to CSV exports to prevent downloading the CSV file during Toolkit tests. #3417 (@dalemugford)
 * BUG FIX/ENHANCEMENT: Now syncing application fees with Stripe before recurring payments are charged to ensure that fees reflect whether the site has an active license key. #3403 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Improved accessibility for the hidden honeypot field on the checkout page. #3416 (@andrewlimaza)
 * BUG FIX/ENHANCEMENT: Now using a MutationObserver instead of the deprecated `DOMSubtreeModified` event to detect changes to the checkout message container. #3386 (@getjohn)
