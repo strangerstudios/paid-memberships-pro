@@ -430,13 +430,16 @@ function pmpro_checkForUpgrades() {
 			}
 		}
 	
-	if ( ! empty( $removed ) && WP_DEBUG ) {
-		// Log the removed crons for debugging.
-		$removed_list = implode( ', ', $removed );
-		error_log( esc_html( 'Removed PMPro scheduled crons: ' . $removed_list ) );
-	}
+		if ( ! empty( $removed ) && WP_DEBUG ) {
+			// Log the removed crons for debugging.
+			$removed_list = implode( ', ', $removed );
+			error_log( esc_html( 'Removed PMPro scheduled crons: ' . $removed_list ) );
+		}
 
 		pmpro_db_delta();
+
+		pmpro_set_up_restricted_files_directory();
+
 		update_option( 'pmpro_db_version', '3.5' );
 	}
 
