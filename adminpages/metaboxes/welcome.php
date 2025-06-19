@@ -27,31 +27,36 @@ function pmpro_dashboard_welcome_callback() {
 			<ul class="pmpro-dashboard-welcome-steps">
 				<?php if ( current_user_can( 'pmpro_membershiplevels' ) ) { ?>
 					<li>
-						<?php if ( empty( $pmpro_level_ready ) ) { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&showpopup=1' ) );?>"><i class="dashicons dashicons-marker"></i> <span><?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></span></a>
-						<?php } else { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"><i class="dashicons dashicons-yes-alt"></i> <span><?php esc_html_e( 'View Membership Levels', 'paid-memberships-pro' ); ?></span></a>
-						<?php } ?>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' . ( empty( $pmpro_level_ready ) ? '&showpopup=1' : '' ) ) ); ?>">
+							<i class="dashicons <?php echo empty( $pmpro_level_ready ) ? 'dashicons-marker' : 'dashicons-yes-alt'; ?>"></i>
+							<span>
+								<?php echo empty( $pmpro_level_ready )
+									? esc_html__( 'Create a Membership Level', 'paid-memberships-pro' )
+									: esc_html__( 'View Membership Levels', 'paid-memberships-pro' ); ?>
+							</span>
+						</a>
 					</li>
 				<?php } ?>
 
 				<?php if ( current_user_can( 'pmpro_pagesettings' ) ) { ?>
 					<li>
-						<?php if ( empty( $pmpro_pages_ready ) ) { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-marker"></i> <span><?php esc_html_e( 'Generate Membership Pages', 'paid-memberships-pro' ); ?></span></a>
-						<?php } else { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-yes-alt"></i> <span><?php esc_html_e( 'Manage Membership Pages', 'paid-memberships-pro' ); ?></span></a>
-						<?php } ?>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>">
+							<i class="dashicons <?php echo empty( $pmpro_pages_ready ) ? 'dashicons-marker' : 'dashicons-yes-alt'; ?>"></i>
+							<span>
+								<?php echo empty( $pmpro_pages_ready )
+									? esc_html__( 'Generate Membership Pages', 'paid-memberships-pro' )
+									: esc_html__( 'Manage Membership Pages', 'paid-memberships-pro' ); ?>
+							</span>
+						</a>
 					</li>
 				<?php } ?>
 
 				<?php if ( current_user_can( 'pmpro_paymentsettings' ) ) { ?>
 					<li>
-						<?php if ( empty( $pmpro_gateway_ready ) || empty( $pmpro_level_ready ) ) { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-marker"></i> <span><?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></span></a>
-						<?php } else { ?>
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-yes-alt"></i> <span><?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></span></a>
-						<?php } ?>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>">
+							<i class="dashicons <?php echo ( empty( $pmpro_gateway_ready ) || empty( $pmpro_level_ready ) ) ? 'dashicons-marker' : 'dashicons-yes-alt'; ?>"></i>
+							<span><?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></span>
+						</a>
 					</li>
 				<?php } ?>
 			</ul>
