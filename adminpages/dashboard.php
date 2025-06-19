@@ -164,6 +164,8 @@ foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
  */
 function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 
+	delete_user_meta( get_current_user_id(), 'pmpro_dashboard_metabox_order' );
+
 	// Get saved order for current user
 	$saved_order = get_user_meta( get_current_user_id(), 'pmpro_dashboard_metabox_order', true );
 
