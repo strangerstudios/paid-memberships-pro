@@ -9,6 +9,21 @@
 
 jQuery(document).ready(function () {
 
+	// ARIA live region helper for announcements
+	function ensureLiveRegion() {
+		if (!jQuery('#pmpro-dashboard-live-region').length) {
+			jQuery('body').append('<div id="pmpro-dashboard-live-region" role="status" aria-live="polite" aria-atomic="true" style="position:absolute;left:-9999px;height:1px;width:1px;overflow:hidden;"></div>');
+		}
+	}
+
+	// Function to announce drag actions
+	function announceDrag($item, action) {
+		ensureLiveRegion();
+		const label = $item.find('.hndle').text().trim() || $item.attr('id');
+		const text = label + ' ' + action;
+		jQuery('#pmpro-dashboard-live-region').text(text);
+	}
+
 	let pmproDashboardPositions = {};
 	let isAnimating = false;
 	
@@ -63,19 +78,21 @@ jQuery(document).ready(function () {
 	}
 
 	dashboardForm.sortable({
-		items: '.postbox',
+		items: '.postbox[role="listitem"]',
 		handle: '.hndle',
 		cursor: 'move',
 		opacity: 0.8,
 		placeholder: 'ui-sortable-placeholder',
 		tolerance: 'pointer',
 		distance: 10, // Reduce distance for easier drag initiation
-		delay: 10, // Reduce delay for more responsive feel
+		delay: 8, // Reduce delay for more responsive feel
 		containment: 'parent', // Less restrictive containment
 		start: function(event, ui) {
 			// Store positions before drag starts
 			storePositions();
 			ui.item.addClass('pmpro-dragging');
+			ui.item.attr('aria-grabbed', 'true');
+			announceDrag(ui.item, 'picked up');
 			
 			// Copy grid column span from dragged item to placeholder
 			const columnSpan = ui.item.css('grid-column');
@@ -130,6 +147,8 @@ jQuery(document).ready(function () {
 
 		stop: function(event, ui) {
 			ui.item.removeClass('pmpro-dragging');
+			ui.item.attr('aria-grabbed', 'false');
+			announceDrag(ui.item, 'dropped');
 			
 			// Clean up placeholder classes and styles - Updated for 3-column grid
 			ui.placeholder.removeClass(function (index, className) {
@@ -167,31 +186,119 @@ jQuery(document).ready(function () {
 					console.error('Nonce field not found or empty');
 					return;
 				}
-				
-				var data = {
-					action: 'pmpro_save_metabox_order',
-					pmpro_metabox_nonce: nonceValue,
-					order: newOrder.join(',')
-				};
 
-				jQuery.ajax({
-					url: ajaxurl,
-					type: 'POST',
-					data: data,
-					dataType: 'json',
-					timeout: 5000,
-					error: function(xhr, status, error) {
-						console.error('AJAX Error - Status:', status);
-						console.error('AJAX Error - Error:', error);
-					}
-				});
+				// Save the new sort order
+				savePosition(newOrder, nonceValue);
 			}
 		}
 	});
+
+	/**
+	 * Keyboard Accessibility for Dragging
+	 * Allows users to pick up, move, and drop items using keyboard keys.
+	 * Uses space/enter to pick up and drop, arrow keys to move.
+	 */
+	let $dragged = null;
+
+	jQuery('#dashboard-widgets').on('keydown', '.hndle', function(e) {
+		const $item = jQuery(this).closest('.postbox[role="listitem"]');
+
+		if (($dragged === null) && (e.key === ' ' || e.key === 'Enter')) {
+			// Pick up the item
+			e.preventDefault();
+			$dragged = $item;
+			$item.attr('aria-grabbed', 'true').addClass('pmpro-dragged-by-keyboard');
+			announceDrag($item, 'Picked up (use arrows to move, enter/space to drop)');
+		} else if ($dragged && $item[0] === $dragged[0]) {
+			// While holding an item, allow up/down/left/right to move
+			if (['ArrowUp', 'ArrowLeft'].includes(e.key)) {
+				e.preventDefault();
+				let $prev = $item.prevAll('.postbox[role="listitem"]').first();
+				if ($prev.length) {
+					$prev.before($item);
+					announceDrag($item, 'moved');
+					$item.find('.hndle').focus();
+				}
+			} else if (['ArrowDown', 'ArrowRight'].includes(e.key)) {
+				e.preventDefault();
+				let $next = $item.nextAll('.postbox[role="listitem"]').first();
+				if ($next.length) {
+					$next.after($item);
+					announceDrag($item, 'moved');
+					$item.find('.hndle').focus();
+				}
+			} else if (e.key === ' ' || e.key === 'Enter') {
+				// Drop
+				e.preventDefault();
+				$item.attr('aria-grabbed', 'false').removeClass('pmpro-dragged-by-keyboard');
+				announceDrag($item, 'dropped');
+				$dragged = null;
+				// Optionally: trigger your save order logic here (AJAX)
+				var newOrder = [];
+				jQuery('.postbox[role="listitem"]', dashboardForm).each(function() {
+					var id = jQuery(this).attr('id');
+					if (id) {
+						newOrder.push(id);
+					}
+				});
+				if (newOrder.length > 0) {
+					var nonceValue = jQuery('#pmpro_metabox_nonce').val();
+					if (nonceValue) {
+						// Save the new sort order
+						savePosition(newOrder, nonceValue);
+					}
+				}
+			} else if (e.key === 'Escape') {
+				// Cancel
+				e.preventDefault();
+				$item.attr('aria-grabbed', 'false').removeClass('pmpro-dragged-by-keyboard');
+				announceDrag($item, 'cancelled');
+				$dragged = null;
+			}
+		}
+	});
+
+	// Visual focus for grabbed item
+	jQuery(document).on('focusin focusout', '.hndle', function(event) {
+		jQuery(this).closest('.postbox[role="listitem"]').toggleClass('pmpro-keyboard-focus', event.type === 'focusin');
+	});
+
+	// Add minimal CSS dynamically here for keyboard drag outline and focus
+	if (!jQuery('#pmpro-dashboard-keyboard-css').length) {
+		const style = `
+			.pmpro-dragged-by-keyboard {
+				outline: 3px solid #0073aa !important;
+				background: #e9f5ff !important;
+			}
+			.pmpro-keyboard-focus {
+				box-shadow: 0 0 0 2px #2271b1;
+			}
+		`;
+		jQuery('<style id="pmpro-dashboard-keyboard-css"></style>').text(style).appendTo('head');
+	}
 
 	// Disable WordPress postbox functionality completely
 	if (typeof postboxes !== 'undefined') {
 		postboxes.handle_click = function() { return false; };
 		postboxes.add_postbox_toggles = function() { return false; };
+	}
+
+	// Save the new order via AJAX
+	function savePosition( newOrder, nonceValue ) {
+		jQuery.ajax({
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'pmpro_save_metabox_order',
+				pmpro_metabox_nonce: nonceValue,
+				order: newOrder.join(',')
+			},
+			dataType: 'json',
+			timeout: 5000,
+			error: function(xhr, status, error) {
+				console.error('AJAX Error - Status:', status);
+				console.error('AJAX Error - Error:', error);
+			}
+	});
 	}
 });
