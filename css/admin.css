@@ -3666,7 +3666,6 @@ button.pmpro_report_th_closed:before {
 }
 
 /* Accessibility */
-/* Note: Additional minor accessibility styling is added in pmpro-dashboard.js dynamically */
 #pmpro-dashboard-form #dashboard-widgets .pmpro-drag-handle:focus, #pmpro-dashboard-form #dashboard-widgets .pmpro-drag-handle:focus-visible {
 	color: #2170B1 !important;
 	outline: 0 !important;
@@ -3681,6 +3680,17 @@ button.pmpro_report_th_closed:before {
 
 #pmpro-dashboard_form #dashboard-widgets .pmpro-dashboard-card[aria-grabbed="true"] {
 	box-shadow: 0 0 0 4px #2170B1;
+}
+
+/* Focus style for keyboard navigation (when the handle is focused) */
+.pmpro-keyboard-focus {
+    box-shadow: 0 0 0 2px #2271b1;
+}
+
+/* Highlight metabox when being dragged or picked up by keyboard */
+.pmpro-dragged-by-keyboard {
+    outline: 3px solid #0073aa !important;
+    background: #e9f5ff !important;
 }
 
 /* Responsive breakpoints */

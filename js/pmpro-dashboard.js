@@ -263,28 +263,25 @@ jQuery(document).ready(function () {
 		jQuery(this).closest('.postbox[role="listitem"]').toggleClass('pmpro-keyboard-focus', event.type === 'focusin');
 	});
 
-	// Add minimal CSS dynamically here for keyboard drag outline and focus
-	if (!jQuery('#pmpro-dashboard-keyboard-css').length) {
-		const style = `
-			.pmpro-dragged-by-keyboard {
-				outline: 3px solid #0073aa !important;
-				background: #e9f5ff !important;
-			}
-			.pmpro-keyboard-focus {
-				box-shadow: 0 0 0 2px #2271b1;
-			}
-		`;
-		jQuery('<style id="pmpro-dashboard-keyboard-css"></style>').text(style).appendTo('head');
-	}
-
-	// Disable WordPress postbox functionality completely
+	// Disable WordPress postbox functionality here
+	// This prevents conflicts with our custom drag-and-drop functionality.
 	if (typeof postboxes !== 'undefined') {
 		postboxes.handle_click = function() { return false; };
 		postboxes.add_postbox_toggles = function() { return false; };
 	}
 
-	// Save the new order via AJAX
+	// Helper function to save the new order via AJAX
 	function savePosition( newOrder, nonceValue ) {
+		if (typeof ajaxurl === 'undefined') {
+			console.error('AJAX URL is not defined. Ensure that the script is enqueued properly.');
+			return;
+		}
+		// Ensure nonce value is valid
+		if (!nonceValue || nonceValue === '') {
+			console.error('Nonce value is not defined or empty. Ensure the nonce field exists in the form.');
+			return;
+		}
+		// Make the AJAX request to save the new order
 		jQuery.ajax({
 			url: ajaxurl,
 			type: 'POST',
