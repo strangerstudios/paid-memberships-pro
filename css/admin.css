@@ -3544,7 +3544,8 @@ button.pmpro_report_th_closed:before {
 	grid-column: span 3;
 }
 
-#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-4 {
+#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-colspan-4, 
+#pmpro-dashboard-form .ui-sortable-placeholder.pmpro-colspan-4 {
 	grid-column: span 4;
 }
 

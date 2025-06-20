@@ -100,7 +100,7 @@ jQuery(document).ready(function () {
 			
 			if (spanClass) {
 				// Ensure we don't exceed 3 columns in the new grid
-				const spanValue = Math.min(parseInt(spanClass[1]), 3);
+				const spanValue = Math.min(parseInt(spanClass[1]));
 				ui.placeholder.addClass('pmpro-colspan-' + spanValue);
 			} else if (columnSpan && columnSpan !== 'auto') {
 				ui.placeholder.css('grid-column', columnSpan);
