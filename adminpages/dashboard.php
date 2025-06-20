@@ -164,8 +164,6 @@ foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
  */
 function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 
-	delete_user_meta( get_current_user_id(), 'pmpro_dashboard_metabox_order' );
-
 	// Get saved order for current user
 	$saved_order = get_user_meta( get_current_user_id(), 'pmpro_dashboard_metabox_order', true );
 
@@ -208,13 +206,12 @@ function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 
 		$class_string = implode( ' ', $classes );
 
-		echo '<div id="' . esc_attr( $id ) . '" class="' . esc_attr( $class_string ) . '">';
+		echo '<div id="' . esc_attr( $id ) . '" class="' . esc_attr( $class_string ) . '" role="listitem" aria-grabbed="false">';
 
 		// Simplified metabox header - just title and drag handle
 		echo '<div class="postbox-header">';
-		echo '<h2 class="hndle ui-sortable-handle">';
-		echo esc_html( $meta_box['title'] );
-		// If a header link is provided, display it
+		echo '<span class="screen-reader-text">' . esc_html__( 'Spacebar to pickup. Use arrow keys to move. Press Enter to drop.', 'paid-memberships-pro' ) . '</span>';
+echo '<h2 class="hndle ui-sortable-handle pmpro-drag-handle" tabindex="0" role="button" aria-label="' . esc_attr__( 'Move ', 'paid-memberships-pro' ) . esc_attr( $meta_box['title'] ) . '"><span>' . esc_html( $meta_box['title'] ) . '</span></h2>';		// If a header link is provided, display it
 		if ( ! empty( $meta_box['header_link'] ) && ! empty( $meta_box['header_link_text'] ) ) {
 			echo '<p class="pmpro_report-button">';
 			echo '<a class="button button-secondary" style="text-decoration: none;" href="' . esc_url( $meta_box['header_link'] ) . '">' . esc_html( $meta_box['header_link_text'] ) . '&nbsp;&rarr;</a>';
@@ -251,9 +248,8 @@ require_once __DIR__ . '/admin_header.php'; ?>
 <hr class="wp-header-end">
 <form id="pmpro-dashboard-form" method="post" action="admin-post.php">
 	<div class="dashboard-widgets-wrap">
-		<div id="dashboard-widgets" class="metabox-holder">
+		<div id="dashboard-widgets" class="metabox-holder" role="list">
 			<?php pmpro_render_dashboard_grid_metaboxes( $pmpro_dashboard_meta_boxes, 'toplevel_page_pmpro-dashboard' ); ?>
-			<br class="clear">
 		</div> <!-- end dashboard-widgets -->
 		<?php wp_nonce_field( 'pmpro_metabox_order', 'pmpro_metabox_nonce' ); ?>
 	</div> <!-- end dashboard-widgets-wrap -->
