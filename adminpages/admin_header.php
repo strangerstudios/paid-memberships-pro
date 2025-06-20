@@ -214,7 +214,6 @@
 			'pmpro-discountcodes',
 			'pmpro-pagesettings',
 			'pmpro-paymentsettings',
-			'pmpro-taxsettings',
 			'pmpro-securitysettings',
 			'pmpro-emailsettings',
 			'pmpro-userfields',
@@ -250,7 +249,7 @@
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_membershiplevels')) { ?>
-				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"<?php if( in_array( $view, array( 'pmpro-membershiplevels', 'pmpro-discountcodes', 'pmpro-pagesettings', 'pmpro-paymentsettings', 'pmpro-taxsettings', 'pmpro-securitysettings', 'pmpro-emailsettings', 'pmpro-emailtemplates', 'pmpro-designsettings', 'pmpro-advancedsettings' ) ) ) { ?> class="current"<?php } ?>"><?php esc_html_e('Settings', 'paid-memberships-pro' );?></a></li>
+				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"<?php if( in_array( $view, array( 'pmpro-membershiplevels', 'pmpro-discountcodes', 'pmpro-pagesettings', 'pmpro-paymentsettings', 'pmpro-securitysettings', 'pmpro-emailsettings', 'pmpro-emailtemplates', 'pmpro-designsettings', 'pmpro-advancedsettings' ) ) ) { ?> class="current"<?php } ?>"><?php esc_html_e('Settings', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_addons')) { ?>
@@ -267,7 +266,7 @@
 		</ul>
 	</nav>
 
-	<?php if( $view == 'pmpro-membershiplevels' || $view == 'pmpro-discountcodes' || $view == 'pmpro-pagesettings' || $view == 'pmpro-paymentsettings' || $view == 'pmpro-taxsettings' || $view == 'pmpro-securitysettings' || $view == 'pmpro-emailsettings' || $view == 'pmpro-emailtemplates' || $view == 'pmpro-userfields' || $view == 'pmpro-designsettings' || $view == 'pmpro-advancedsettings' ) { ?>
+	<?php if( $view == 'pmpro-membershiplevels' || $view == 'pmpro-discountcodes' || $view == 'pmpro-pagesettings' || $view == 'pmpro-paymentsettings'  || $view == 'pmpro-securitysettings' || $view == 'pmpro-emailsettings' || $view == 'pmpro-emailtemplates' || $view == 'pmpro-userfields' || $view == 'pmpro-designsettings' || $view == 'pmpro-advancedsettings' ) { ?>
 	<nav class="pmpro-nav-secondary" aria-labelledby="pmpro-settings-menu">
 		<h2 id="pmpro-settings-menu" class="screen-reader-text"><?php esc_html_e( 'Membership Settings Menu', 'paid-memberships-pro' ); ?></h2>
 		<ul>
@@ -285,10 +284,6 @@
 
 			<?php if(current_user_can('pmpro_paymentsettings')) { ?>
 				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>" class="<?php if($view == 'pmpro-paymentsettings') { ?>current<?php } ?>"><?php esc_html_e( 'Payments', 'paid-memberships-pro' );?></a></li>
-			<?php } ?>
-
-			<?php if( ! empty( get_option( 'pmpro_tax_settings_beta' ) ) && current_user_can('pmpro_taxsettings')) { ?>
-				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-taxsettings' ) );?>" class="<?php if($view == 'pmpro-taxsettings') { ?>current<?php } ?>"><?php esc_html_e('Tax', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_securitysettings')) { ?>

@@ -3,7 +3,6 @@
 * FEATURE: Now using Action Scheduler to handle scheduled tasks. #3393 (@dalemugford)
 * FEATURE: Now allowing files to be restricted using the new `pmpro_can_access_restricted_file` filter. This is currently used to ensure that log files generated during gateway webhook handlers can only be viewed by administrators. #3308 (@dparker1005)
 * FEATURE: Added content restriction settings when using Bricks Builder. #3342 (@MaximilianoRicoTabo)
-* FEATURE: Added support for setting custom inclusive tax rates by location. This feature is currently in beta and can be enabled from the Memberships > Settings > Payments settings page. #3329 (@dparker1005)
 * ENHANCEMENT: Added additional widgets to the Memberships > Dashboard page and updated the layout to be more customizable. #3412 (@dalemugford)
 * ENHANCEMENT: Updated the Memberships > Settings > Payments settings page UI to have a separate page for each gateway. #3398 (@dparker1005, @kimcoleman)
 * ENHANCEMENT: Updated orders search to support searching by specific properties using [property]:[value]. #3382 (@kimcoleman)

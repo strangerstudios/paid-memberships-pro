@@ -128,7 +128,6 @@ require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fie
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cloudflare-turnstile.php' );   // load CloudFlare Turnstile files if needed
 require_once( PMPRO_DIR . '/includes/terms-of-service.php' );       // code to add a terms of service checkbox to checkout
-require_once( PMPRO_DIR . '/includes/tax.php' );                    // code to calculate tax
 require_once( PMPRO_DIR . '/includes/cleanup.php' );                // clean things up when deletes happen, etc.
 require_once( PMPRO_DIR . '/includes/login.php' );                  // code to redirect away from login/register page
 require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PMPro capabilities for roles
@@ -273,3 +272,69 @@ function pmpro_deactivation() {
 	do_action( 'pmpro_deactivation' );
 }
 register_deactivation_hook( __FILE__, 'pmpro_deactivation' );
+
+
+/**
+ * This recipe adds a sortable column to the member list. 
+ * 
+ * This assumes that a 'country' User Field has been created. 
+ * 
+ * You can add this recipe to your site by creating a custom plugin
+ * or using the Code Snippets plugin available for free in the WordPress repository.
+ * Read this companion article for step-by-step directions on either method.
+ * https://www.paidmembershipspro.com/create-a-plugin-for-pmpro-customizations/
+ */
+ 
+ function mypmpro_custom_sortable_memberlist_col( $columns ) {
+
+    $columns["pmpro_bcountry"] = "Country";
+    return $columns;
+
+}
+add_filter('manage_memberships_page_pmpro-memberslist_columns', 'mypmpro_custom_sortable_memberlist_col');
+add_filter('manage_memberships_page_pmpro-memberslist_sortable_columns', 'mypmpro_custom_sortable_memberlist_col');
+
+function mypmpro_country_column( $colname, $user_id ) {
+	
+	if ( $colname == 'pmpro_bcountry'){
+		
+		$country = get_user_meta( $user_id, 'pmpro_bcountry', true );
+
+		if( empty( $country ) ) {
+			echo " - ";
+		} else {
+			echo $country;
+		}
+		
+		
+	}
+	
+}
+add_action('pmpro_manage_memberslist_custom_column', 'mypmpro_country_column', 10, 2);
+
+function mypmpro_sortable_country_col( $query ) {
+
+	global $wpdb;
+
+	if( ! empty( $_REQUEST['only'] ) ) {
+		$country = "AND umh.meta_value = '".sanitize_text_field( $_REQUEST['only'] )."' ";
+	} else {
+		$country = '';
+	}
+	
+	//Change pmpro_bcountry to the relevant field name
+	$query = str_replace( "WHERE mu.membership_id > 0  AND mu.status = 'active'", "LEFT JOIN $wpdb->usermeta umh ON umh.meta_key = 'pmpro_bcountry' AND u.ID = umh.user_id WHERE mu.membership_id > 0  AND mu.status = 'active' ".$country, $query );
+
+	return $query;
+
+}
+add_filter( 'pmpro_members_list_sql', 'mypmpro_sortable_country_col', 10, 1 );
+
+function mypmro_allowed_country_orderby( $allowed ) {
+
+	$allowed['Country'] = 'umh.meta_value';
+
+	return $allowed;
+
+}
+add_filter( 'pmpro_memberslist_allowed_orderbys', 'mypmro_allowed_country_orderby', 10, 1 );

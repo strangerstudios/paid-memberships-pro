@@ -304,16 +304,6 @@
 								</p>
 							</td>
 						</tr>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="tax_settings_beta"><?php esc_html_e('Tax Rate Table (Beta)', 'paid-memberships-pro' );?></label>
-							</th>
-							<td>
-								<input type="checkbox" id="tax_settings_beta" name="tax_settings_beta" value="1" <?php checked( get_option( 'pmpro_tax_settings_beta' ), 1 ); ?> />
-								<label for="tax_settings_beta"><?php esc_html_e('Set different tax rates depending on the customer\'s billing address.', 'paid-memberships-pro' );?></label>
-								<p class="description"><?php esc_html_e('This feature is currently in beta. Once activated, you can manage tax rates in the "Tax" section of the Memberships > Settings page.', 'paid-memberships-pro' ); ?></p>
-							</td>
-						</tr>
 					</tbody>
 					</table>
 					<?php
