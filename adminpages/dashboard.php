@@ -147,7 +147,6 @@ foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
 			$meta_box['title'],
 			$meta_box['callback'],
 			'toplevel_page_pmpro-dashboard',
-			$meta_box['context']
 		);
 	}
 }
