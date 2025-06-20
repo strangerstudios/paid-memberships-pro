@@ -211,7 +211,7 @@ function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 		// Simplified metabox header - just title and drag handle
 		echo '<div class="postbox-header">';
 		echo '<span class="screen-reader-text">' . esc_html__( 'Spacebar to pickup. Use arrow keys to move. Press Enter to drop.', 'paid-memberships-pro' ) . '</span>';
-echo '<h2 class="hndle ui-sortable-handle pmpro-drag-handle" tabindex="0" role="button" aria-label="' . esc_attr__( 'Move ', 'paid-memberships-pro' ) . esc_attr( $meta_box['title'] ) . '"><span>' . esc_html( $meta_box['title'] ) . '</span></h2>';		// If a header link is provided, display it
+		echo '<h2 class="hndle ui-sortable-handle pmpro-drag-handle" tabindex="0" role="button" aria-label="' . esc_attr__( 'Move ', 'paid-memberships-pro' ) . esc_attr( $meta_box['title'] ) . '"><span>' . esc_html( $meta_box['title'] ) . '</span></h2>';      // If a header link is provided, display it
 		if ( ! empty( $meta_box['header_link'] ) && ! empty( $meta_box['header_link_text'] ) ) {
 			echo '<p class="pmpro_report-button">';
 			echo '<a class="button button-secondary" style="text-decoration: none;" href="' . esc_url( $meta_box['header_link'] ) . '">' . esc_html( $meta_box['header_link_text'] ) . '&nbsp;&rarr;</a>';
@@ -226,7 +226,7 @@ echo '<h2 class="hndle ui-sortable-handle pmpro-drag-handle" tabindex="0" role="
 			call_user_func( $meta_box['callback'] );
 			$output = ob_get_clean();
 
-			// Remove the "Details" button if it exists, we now use the header link
+			// Remove "Details" button if it exists, we now use the header link from $pmpro_dashboard_meta_boxes
 			$output = preg_replace(
 				'#<p class="pmpro_report-button">.*?</p>#is',
 				'',
@@ -250,9 +250,9 @@ require_once __DIR__ . '/admin_header.php'; ?>
 	<div class="dashboard-widgets-wrap">
 		<div id="dashboard-widgets" class="metabox-holder" role="list">
 			<?php pmpro_render_dashboard_grid_metaboxes( $pmpro_dashboard_meta_boxes, 'toplevel_page_pmpro-dashboard' ); ?>
-		</div> <!-- end dashboard-widgets -->
+		</div>
 		<?php wp_nonce_field( 'pmpro_metabox_order', 'pmpro_metabox_nonce' ); ?>
-	</div> <!-- end dashboard-widgets-wrap -->
+	</div>
 </form>
 
 <?php
