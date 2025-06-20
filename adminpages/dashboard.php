@@ -136,22 +136,6 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 );
 
 /**
- * Add all the meta boxes for the PMPro dashboard.
- */
-foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
-	if (
-		( empty( $meta_box['capability'] ) || current_user_can( $meta_box['capability'] ) )
-	) {
-		add_meta_box(
-			$id,
-			$meta_box['title'],
-			$meta_box['callback'],
-			'toplevel_page_pmpro-dashboard',
-		);
-	}
-}
-
-/**
  * Render dashboard metaboxes in the grid layout.
  * This function will reorder the metaboxes based on the saved user preferences.
  * Updated for 3-column grid support.
