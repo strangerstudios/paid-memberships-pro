@@ -275,6 +275,7 @@ add_action( 'pmpro_after_change_membership_level', 'pmpro_report_dashboard_delet
  */
 require_once __DIR__ . '/admin_footer.php';
 
+// Register and enqueue the dashboard script.
 wp_register_script(
 	'pmpro_dashboard',
 	plugins_url( 'js/pmpro-dashboard.js', PMPRO_BASE_FILE ),
