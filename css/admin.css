@@ -3694,6 +3694,14 @@ button.pmpro_report_th_closed:before {
     background: #e9f5ff !important;
 }
 
+/* Reduced motion styles */
+@media (prefers-reduced-motion: reduce) {
+	#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-dragging,
+	#pmpro-dashboard-form #dashboard-widgets .postbox.pmpro-just-dropped {
+		transition: none; /* Disable transitions for reduced motion */
+	}
+}
+
 /* Responsive breakpoints */
 @media (max-width: 1380px) {
 	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
