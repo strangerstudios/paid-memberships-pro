@@ -525,8 +525,8 @@
 	}
 
 
-	function pmpro_enclose($s)
-	{
+	function pmpro_enclose($s) {
+		$s = (string) $s;
 		return "\"" . str_replace("\"", "\\\"", $s) . "\"";
 	}
 
