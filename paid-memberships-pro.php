@@ -133,6 +133,7 @@ require_once( PMPRO_DIR . '/includes/login.php' );                  // code to r
 require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PMPro capabilities for roles
 require_once( PMPRO_DIR . '/includes/privacy.php' );                // code to aid with user data privacy, e.g. GDPR compliance
 require_once( PMPRO_DIR . '/includes/pointers.php' );				// popover help pointers
+require_once( PMPRO_DIR . '/includes/site-types.php' );             // site types and hubs for PMPro
 require_once( PMPRO_DIR . '/includes/spam.php' );					// code to combat spam of various kinds
 require_once( PMPRO_DIR . '/includes/abandoned-signups.php' );		// track users who were created at checkout but did not complete checkout.
 require_once( PMPRO_DIR . '/includes/checkout.php' );		        // Common functions used at checkout.

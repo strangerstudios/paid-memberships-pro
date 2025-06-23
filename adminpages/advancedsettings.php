@@ -53,7 +53,8 @@
 		pmpro_setOption("wisdom_opt_out");
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
-		pmpro_setOption("uninstall");		
+		pmpro_setOption("uninstall");
+		pmpro_setOption("site_type");
 
 		// Set up Wisdom tracking if needed.
 		if ( (int)get_option( "pmpro_wisdom_opt_out") === 0 ) {
@@ -112,6 +113,7 @@
 		$redirecttosubscription = get_option( "pmpro_redirecttosubscription");
 	}
 	$uninstall = get_option( 'pmpro_uninstall');
+	$site_type = get_option( 'pmpro_site_type' );
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
@@ -389,6 +391,25 @@
 			<div class="pmpro_section_inside">
 				<table class="form-table">
 				<tbody>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="site_type"><?php esc_html_e('What type of membership site are you creating?', 'paid-memberships-pro' );?></label>
+						</th>
+						<td>
+							<select id="site_type" name="site_type" class="pmpro-wizard__field-block">
+								<option value=""><?php esc_html_e( '-- Select --', 'paid-memberships-pro' ); ?></option>
+								<?php
+								$site_types = pmpro_get_site_types();
+								foreach ( $site_types as $site_type_key => $name ) {
+									?>
+									<option value="<?php echo esc_attr( $site_type_key ); ?>" <?php selected( $site_type_key, $site_type ); ?>><?php echo esc_html( $name ); ?></option>
+									<?php
+								}
+								?>
+							</select>
+							<p class="description"><?php esc_html_e( 'Choose the answer that best fits the primary value of your membership site.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
 					<tr>
 						<th scope="row" valign="top">
 							<label for="pmpro-hideads"><?php esc_html_e("Hide Ads From Members?", 'paid-memberships-pro' );?></label>
