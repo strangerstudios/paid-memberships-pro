@@ -108,7 +108,7 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
 	// Get a random string to prevent directory traversal attacks.
 	$random_string = get_option( 'pmpro_restricted_files_random_string', '' );
 	if ( empty( $random_string ) ) {
-		$random_string = wp_generate_password( 12, false );
+		$random_string = substr( md5( rand() ), 0, 10 );
 		update_option( 'pmpro_restricted_files_random_string', $random_string );
 	}
 
