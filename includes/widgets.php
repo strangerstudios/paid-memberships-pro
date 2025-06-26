@@ -26,8 +26,15 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 
 	function widget( $args, $instance ) {
 		$cache = array();
+		$cache_key_parts = array(
+			'args'            => $args,
+			'logged_in'       => is_user_logged_in(),
+			'current_user_id' => get_current_user_id(),
+			'is_login_page'   => pmpro_is_login_page(),
+		);
+		$cache_key = 'pml_' . md5( wp_json_encode( $cache_key_parts ) );
 		if ( ! $this->is_preview() ) {
-			$cache = wp_cache_get( 'widget_pmpro_member_login', 'widget' );
+			$cache = wp_cache_get( $cache_key, 'pmpro_widget_member_login' );
 		}
 
 		if ( ! is_array( $cache ) ) {
@@ -39,12 +46,11 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 		}
 
 		if ( isset( $cache[ $args['widget_id'] ] ) ) {
-			echo wp_kses_post( $cache[ $args['widget_id'] ] );
+			echo $cache[ $args['widget_id'] ];
 			return;
 		}
 
 		ob_start(); ?>
-		
 		<?php
 			// Get widget settings for this instance.
 			extract( $args );
@@ -69,7 +75,7 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 			
 		<?php if ( ! $this->is_preview() ) {
 			$cache[ $args['widget_id'] ] = ob_get_flush();
-			wp_cache_set( 'widget_pmpro_member_login', $cache, 'widget' );
+			wp_cache_set( $cache_key, $cache, 'widget' );
 		} else {
 			ob_end_flush();
 		}
@@ -83,16 +89,11 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 
 		$this->flush_widget_cache();
 
-		$alloptions = wp_cache_get( 'alloptions', 'options' );
-		if ( isset( $alloptions['widget_pmpro_member_login'] ) ) {
-			delete_option( 'widget_pmpro_member_login' );
-		}
-
 		return $instance;
 	}
 
 	function flush_widget_cache() {
-		wp_cache_delete( 'widget_pmpro_member_login', 'widget' );
+		wp_cache_flush_group( 'pmpro_widget_member_login' );
 	}
 
 	function form( $instance ) { 
