@@ -176,7 +176,7 @@
 		</div>
 		<?php
 		// Check if this is an nginx setup.
-		if ( ( ! empty( $GLOBALS['is_nginx'] && $GLOBALS['is_nginx'] ) ) || ( function_exists( 'is_wpe' ) && is_wpe() ) || true) {
+		if ( ( ! empty( $GLOBALS['is_nginx'] && $GLOBALS['is_nginx'] ) ) || ( function_exists( 'is_wpe' ) && is_wpe() ) ) {
 			// Show a "Restricted Files" section linking to our docs on setting up restricted files on nginx.
 			$restricted_file_path = pmpro_get_restricted_file_path();
 			?>
