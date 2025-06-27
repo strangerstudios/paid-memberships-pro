@@ -58,7 +58,7 @@ You can also browse [Case Studies for successful membership sites that are using
 
 ### Built-in Ecommerce & Recurring Payments Features
 
-All of our payment gateways are included in the plugin. Choose from [Stripe](https://www.paidmembershipspro.com/gateway/stripe/), [PayPal](https://www.paidmembershipspro.com/gateway/paypal/), or [Braintree](https://www.paidmembershipspro.com/gateway/braintree/). You can offer multiple gateway options at checkout including [PayPal Express](https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/) or [manual and offline payments, like Bank Transfer, Check, and Venmo](https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/).
+All of our payment gateways are included in the plugin. Choose from [Stripe](https://www.paidmembershipspro.com/gateway/stripe/) or [PayPal](https://www.paidmembershipspro.com/gateway/paypal/). You can offer multiple gateway options at checkout including [PayPal Express](https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/) or [manual and offline payments, like Bank Transfer, Check, and Venmo](https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/).
 
 * **Flexible Pricing:** Configure free, one-time payment, or recurring subscription levels
 * **Multiple Gateways:** Integrate with Stripe, PayPal, and more
@@ -100,7 +100,7 @@ Extend functionality with affiliates, page builders, themes, and landing pages.
 
 ### Documentation, Support, Localization
 
-Reach out on our [contact form](https://www.paidmembershipspro.com/contact/) for free support. Refer to our information on [premium support](https://www.paidmembershipspro.com/support/) if you would like more help.
+Reach out on our [contact form](https://www.paidmembershipspro.com/contact/) for sales inquiries. Refer to our information on [other ways to get support](https://www.paidmembershipspro.com/support/) if you would like more help.
 
 Our website has extensive [documentation](https://www.paidmembershipspro.com/documentation/) to assist you in building your membership site.
 
@@ -112,7 +112,7 @@ Open source, REST API support, extensive hooks, and tools for easy customization
 Our website offers over 310 examples on how to use our action and filter hooks to customize your membership site.
 
 ### Free WordPress Theme
-Our official theme, [Memberlite](https://memberlitetheme.com), is built specifically for membership sites. Memberlite has deep integration with Paid Memberships Pro to offer advanced features for logged-in/out users and works alongside your favorite page builders, like the Block Editor and Elementor.
+Our official theme, [Memberlite](https://www.paidmembershipspro.com/themes/memberlite), is built specifically for membership sites. Memberlite has deep integration with Paid Memberships Pro to offer advanced features for logged-in/out users and works alongside your favorite page builders, like the Block Editor and Elementor.
 
 ### Popular Add Ons
 
@@ -190,7 +190,7 @@ Our [Multisite Membership Add On](https://www.paidmembershipspro.com/add-ons/pmp
 If you would like more help using PMPro on a network install, [reach our via our contact page](https://www.paidmembershipspro.com/contact/).
 
 = I need help installing, configuring, or customizing Paid Memberships Pro. =
-Please visit [our support site](https://www.paidmembershipspro.com/support/) for more documentation and our support forums.
+Please visit [our support site](https://www.paidmembershipspro.com/support/) for more documentation and ways to get support.
 
 = I found a bug in Paid Memberships Pro. =
 Please reach out using our [contact form](https://www.paidmembershipspro.com/contact/) and we'll fix it right away. Thanks for helping.

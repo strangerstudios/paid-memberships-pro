@@ -17,7 +17,7 @@ For more information please visit [the Paid Memberships Pro website](https://www
 
 Paid Memberships Pro is distributed under the GPLv2 license. This means, among other things, that you may use the software on any site free of charge.
 
-An annual support license is recommended for websites running Paid Memberships Pro. Support licenses include access to our technical support team in the Member Support Area, as well as one-click installation and updates for feature-enhancing Add Ons based on your level. All of our paid  memberships are backed by a 30-day, no questions asked, refund guarantee.
+An annual [support](https://www.paidmembershipspro.com/support/)  license is recommended for websites running Paid Memberships Pro. Support licenses include access to our technical support team in the Member Support Area, as well as one-click installation and updates for feature-enhancing Add Ons based on your level. Purchases are backed by a 100 day, no questions asked refund policy.
 
 [View Plans and Pricing »](https://www.paidmembershipspro.com/pricing/)
 
@@ -32,7 +32,7 @@ For detailed installation steps, visit the [documentation on installing the plug
 If you find an issue/bug, let us know by [creating a detailed GitHub issue](https://github.com/strangerstudios/paid-memberships-pro/issues/new/choose).
 
 ## Support ##
-This is a developer's portal for Paid Memberships Pro. We do not offer support on this channel. **Any support related questions should be directed to [paidmembershipspro.com](https://www.paidmembershipspro.com).**
+This is a developer's portal for Paid Memberships Pro. We do not offer support on this channel. **Any support related questions should be directed to [paidmembershipspro.com](https://www.paidmembershipspro.com/support/).**
 
 ## Contributing to Paid Memberships Pro ##
 We encourage and welcome any contribution to Paid Memberships Pro. Please read the [guidelines for contributing](https://github.com/strangerstudios/paid-memberships-pro/blob/dev/.github/CONTRIBUTING.md) to this repository.
