@@ -166,6 +166,12 @@ Refer to our [Initial Setup Tutorial](https://www.paidmembershipspro.com/documen
 
 == Frequently Asked Questions ==
 
+= Should I use WordPress or a hosted SaaS platform for memberships? =
+Both WordPress and SaaS (Software as a Service) platforms, like Kajabi or Podia, have their strengths, but they represent two very different approaches. Read our guide to determine which is best for you: [WordPress vs SaaS For Membership Sites: Real Costs, Pros & Cons, and Who Actually Wins](https://www.paidmembershipspro.com/wordpress-vs-saas/).
+
+= What is the best WordPress membership plugin? = 
+We published a guide on the [4 best WordPress membership plugins](https://www.paidmembershipspro.com/best-wordpress-membership-plugins-compared/). You can read this guide to help you decide if Paid Memberships Pro is the right solution for you.
+
 = Do I need to know any coding to use this plugin? =
 No, Paid Memberships Pro does not require any coding knowledge. The plugin is designed to meet all levels of WordPress experience. At the same time, our plugin is very developer-friendly and extendible.
 
