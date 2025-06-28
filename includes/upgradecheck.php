@@ -444,9 +444,6 @@ function pmpro_checkForUpgrades() {
 
 		pmpro_set_up_restricted_files_directory();
 
-		// Remove the reduced Stripe application fee, if set.
-		delete_option( 'pmpro_stripe_connect_reduced_application_fee' );
-
 		update_option( 'pmpro_db_version', '3.5' );
 	}
 
