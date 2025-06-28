@@ -25,7 +25,7 @@
 		elseif($pmpro_level_ready && !$pmpro_pages_ready && $view != "pmpro-pagesettings")
 			$msgt .= " <strong>" . __( 'Next step:', 'paid-memberships-pro' ) . "</strong> <a href=\"" . admin_url('admin.php?page=pmpro-pagesettings') . "\">" . __("Set up the membership pages", 'paid-memberships-pro' ) . "</a>.";
 		elseif($pmpro_level_ready && $pmpro_pages_ready && !$pmpro_gateway_ready && $view != "pmpro-paymentsettings" && ! pmpro_onlyFreeLevels())
-			$msgt .= " <strong>" . __( 'Next step:', 'paid-memberships-pro' ) . "</strong> <a href=\"" . admin_url('admin.php?page=pmpro-paymentsettings') . "\">" . __("Set up your SSL certificate and payment gateway", 'paid-memberships-pro' ) . "</a>.";
+			$msgt .= " <strong>" . __( 'Next step:', 'paid-memberships-pro' ) . "</strong> <a href=\"" . admin_url('admin.php?page=pmpro-paymentsettings') . "\">" . __("Set up your payment gateway", 'paid-memberships-pro' ) . "</a>.";
 
 		if(empty($msgt))
 			$msg = false;
@@ -353,14 +353,14 @@
 						</li>
 						<li>
 							<?php
-								$pmpro_premium_license_link_escaped = '<a href="' . esc_url( admin_url( add_query_arg( array( 'page' => 'pmpro-license#pmpro-license-settings' ), 'admin.php' ) ) ) . '">' . esc_html( 'PMPro Premium license', 'paid-memberships-pro' ) . '</a>';
+								$pmpro_premium_license_link_escaped = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-license#pmpro-license-settings' ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( 'PMPro Premium license', 'paid-memberships-pro' ) . '</a>';
 								// translators: %s is a link to the PMPro Premium license page.
 								printf( esc_html__( 'Activate a %s to waive the fee.', 'paid-memberships-pro' ), $pmpro_premium_license_link_escaped ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							?>
 						</li>
 					</ol>
 					<p>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings&acknowledge_stripe_connect_fee=1' ) ); ?>" class="button button-primary">
+						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'acknowledge_stripe_connect_fee' => '1' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-primary">
 							<?php esc_html_e( 'Dismiss this Notice', 'paid-memberships-pro' ); ?>
 						</a>
 					</p>
@@ -383,14 +383,14 @@
 						</li>
 						<li>
 							<?php
-								$pmpro_premium_license_link_escaped = '<a href="' . esc_url( admin_url( add_query_arg( array( 'page' => 'pmpro-license#pmpro-license-settings' ), 'admin.php' ) ) ) . '">' . esc_html( 'PMPro Premium license', 'paid-memberships-pro' ) . '</a>';
+								$pmpro_premium_license_link_escaped = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-license#pmpro-license-settings' ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( 'PMPro Premium license', 'paid-memberships-pro' ) . '</a>';
 								// translators: %s is a link to the PMPro Premium license page.
 								printf( esc_html__( 'Activate a %s to waive the fee.', 'paid-memberships-pro' ), $pmpro_premium_license_link_escaped ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							?>
 						</li>
 					</ol>
 					<p>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings&acknowledge_stripe_connect_fee=1' ) ); ?>" class="button button-primary">
+						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'acknowledge_stripe_connect_fee' => '1' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-primary">
 							<?php esc_html_e( 'Accept and Continue With 2% Fee', 'paid-memberships-pro' ); ?>
 						</a>
 					</p>

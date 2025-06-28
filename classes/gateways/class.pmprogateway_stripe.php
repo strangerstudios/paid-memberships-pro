@@ -1702,7 +1702,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 					esc_html_e( 'A valid Stripe webhook is required for your membership checkout to communicate with your payment gateway. We have detected that your Stripe webhook is either disabled or not configured for this website.', 'paid-memberships-pro' );
 					echo ' ';
-					echo '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) . '">' . esc_html__( 'Set up webhooks now', 'paid-memberships-pro' ) . '</a>';
+					echo '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe#pmpro_stripe_webhook' ) ), admin_url(  'admin.php' ) ) . '">' . esc_html__( 'Set up webhooks now', 'paid-memberships-pro' ) . '</a>';
 					?>
 				</p>
 			</div>
@@ -1716,7 +1716,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 					esc_html_e( 'In order for Stripe to function properly, there must be a Stripe Webhook configured for this website.', 'paid-memberships-pro' );
 					echo ' ';
-					echo '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) . '">' . esc_html__( 'Enable webhooks now', 'paid-memberships-pro' ) . '</a>';
+					echo '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe#pmpro_stripe_webhook' ) ), admin_url(  'admin.php' ) ) . '">' . esc_html__( 'Enable webhooks now', 'paid-memberships-pro' ) . '</a>';
 					?>
 				</p>
 			</div>
