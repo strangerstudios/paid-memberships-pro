@@ -3606,12 +3606,6 @@ button.pmpro_report_th_closed:before {
 	margin-bottom: var(--pmpro--spacing--small);
 }
 
-#pmpro_dashboard_welcome ul.pmpro-dashboard-list-icons li a {
-	align-items: center;
-	display: flex;
-	justify-content: flex-start;
-}
-
 #pmpro_dashboard_welcome .pmpro-dashboard-welcome-steps li a {
 	text-decoration: none;
 }
@@ -3646,10 +3640,29 @@ button.pmpro_report_th_closed:before {
 }
 
 /* Follow Us Metabox */
+#pmpro_dashboard_follow_us ul {
+	margin: 0;
+}
+
+#pmpro_dashboard_follow_us ul li:not(:last-child) {
+	margin-bottom: calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+#pmpro_dashboard_follow_us ul li a {
+	align-items: center;
+	display: flex;
+	justify-content: flex-start;
+}
+
 #pmpro_dashboard_follow_us ul li img {
 	height: 20px;
 	margin-right: var(--pmpro--spacing--small);
 	width: 20px;
+}
+
+/* News and Updates Metabox */
+#pmpro_dashboard_news_updates ul {
+	margin: 0 0 var(--pmpro--spacing--small) 0;
 }
 
 /* Drag and Drop */
