@@ -1541,11 +1541,10 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 /**
  * pmpro_getMembershipCategories() returns the categories for a given level
  *
- * @param int $level_id is a valid membership level ID
- *
- * @return int[]
+ * @param int $level_id The membership level ID.
+ * @return array List of category IDs.
  */
-function pmpro_getMembershipCategories( $level_id ) {
+function pmpro_get_membership_categories( $level_id ) {
 	static $cache = array();
 
 	$level_id = intval( $level_id );
@@ -1564,6 +1563,7 @@ function pmpro_getMembershipCategories( $level_id ) {
 	);
 
 	$cache[ $level_id ] = $categories;
+
 	return $categories;
 }
 
