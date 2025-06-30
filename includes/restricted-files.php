@@ -3,7 +3,7 @@
 /**
  * Set up restriction directories.
  *
- * @since TBD
+ * @since 3.5
  */
 function pmpro_set_up_restricted_files_directory() {
 	// Create restricted folder if it doesn't exist.
@@ -29,7 +29,7 @@ function pmpro_set_up_restricted_files_directory() {
  * If a restricted file is requested, check if the user has access.
  * If so, serve the file.
  *
- * @since TBD
+ * @since 3.5
  */
 function pmpro_restricted_files_check_request() {
 	if ( empty( $_REQUEST['pmpro_restricted_file'] ) || empty( $_REQUEST['pmpro_restricted_file_dir'] ) ) {
@@ -51,7 +51,7 @@ function pmpro_restricted_files_check_request() {
 	/**
 	 * Filter to check if a user can access a restricted file.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 *
 	 * @param bool   $can_access Whether the user can access the file.
 	 * @param string $file_dir   Directory of the restricted file.
@@ -80,7 +80,7 @@ add_action( 'init', 'pmpro_restricted_files_check_request' );
 /**
  * Add a filter to allow access to restricted files for core use-cases.
  *
- * @since TBD
+ * @since 3.5
  *
  * @param  bool   $can_access Whether the user can access the file.
  * @param  string $file_dir   Directory of the restricted file.
@@ -98,7 +98,7 @@ add_filter( 'pmpro_can_access_restricted_file', 'pmpro_can_access_restricted_fil
 /**
  * Get the path to a restricted file.
  *
- * @since TBD
+ * @since 3.5
  *
  * @param  string $file_dir Directory of the restricted file.
  * @param  string $file     Name of the restricted file.

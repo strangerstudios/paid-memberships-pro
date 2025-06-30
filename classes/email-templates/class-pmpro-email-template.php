@@ -93,7 +93,7 @@ abstract class PMPro_Email_Template {
 	/**
 	 * Send a test email.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 *
 	 * @param string $test_email_recipient The email address to send the test email to.
 	 * @return bool Whether the email was sent successfully.

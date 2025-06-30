@@ -79,7 +79,7 @@ function pmpro_block_dashboard() {
  *
  * Saves the order of dashboard metaboxes for the current user.
  *
- * @since TBD
+ * @since 3.5
  * @return void
  */
 function pmpro_save_metabox_order() {

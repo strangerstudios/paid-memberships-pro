@@ -302,7 +302,7 @@ add_action( 'admin_init', 'pmpro_init_save_wizard_data' );
 /**
  * Install and activate the Update Manager plugin.
  *
- * @since TBD
+ * @since 3.5
  * @return true|WP_Error True on success, WP_Error on failure.
  */
 function pmpro_wizard_handle_update_manager() {

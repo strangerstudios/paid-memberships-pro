@@ -60,11 +60,11 @@
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.5
 		 */
 		static function getGatewayOptions()
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.5' );
 			$options = array(
 				'gateway_environment',
 				'gateway_email',
@@ -90,11 +90,11 @@
 		 * Set payment options for payment settings page.
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.5
 		 */
 		static function pmpro_payment_options($options)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.5' );
 			//get options
 			$paypal_options = PMProGateway_paypal::getGatewayOptions();
 
@@ -118,7 +118,7 @@
 		/**
 		 * Display fields for PayPal options.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 */
 		public static function show_settings_fields() {
 			?>
@@ -194,7 +194,7 @@
 		/**
 		 * Save settings for PayPal.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 */
 		public static function save_settings_fields() {
 			$settings_to_save = array(

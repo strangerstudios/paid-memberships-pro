@@ -202,7 +202,7 @@
 					/**
 					 * Filter to determine if the site is using NGINX.
 					 *
-					 * @since TBD
+					 * @since 3.5
 					 *
 					 * @param bool $is_nginx Whether the site is using NGINX.
 					 */

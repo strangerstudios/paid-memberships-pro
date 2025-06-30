@@ -4706,7 +4706,7 @@ function pmpro_compare_siteurl() {
  * When the pmpro_last_known_url option is updated, base64 encode it to
  * prevent string replacements from changing it when the site is migrated.
  *
- * @since TBD
+ * @since 3.5
  * @link https://developer.wordpress.org/reference/hooks/pre_update_option_option/
  *
  * @param string $new_value The new value for the option.
@@ -4725,7 +4725,7 @@ add_filter( 'pre_update_option_pmpro_last_known_url', 'pmpro_encode_last_known_u
  * When the pmpro_last_known_url option is retrieved, if it
  * is base64 encoded, decode it.
  *
- * @since TBD
+ * @since 3.5
  * @link https://developer.wordpress.org/reference/hooks/option_option/
  *
  * @param string $value The value of the option.

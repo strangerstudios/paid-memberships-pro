@@ -310,7 +310,7 @@
 						/**
 						 * Fires after the Payment Settings form fields.
 						 *
-						 * @since TBD
+						 * @since 3.5
 						 */
 						do_action( 'pmpro_after_payment_settings' );
 					?>

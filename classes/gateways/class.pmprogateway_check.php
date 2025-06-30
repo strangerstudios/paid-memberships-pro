@@ -53,7 +53,7 @@
 		/**
 		 * Get a description for this gateway.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 *
 		 * @return string
 		 */
@@ -65,11 +65,11 @@
 		 * Get a list of payment options that the Check gateway needs/supports.
 		 *		 
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.5
 		 */
 		static function getGatewayOptions()
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.5' );
 			$options = array(
 				'gateway_environment',
 				'instructions',
@@ -86,11 +86,11 @@
 		 * Set payment options for payment settings page.
 		 *		 
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.5
 		 */
 		static function pmpro_payment_options($options)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.5' );
 
 			//get check gateway options
 			$check_options = PMProGateway_check::getGatewayOptions();
@@ -105,11 +105,11 @@
 		 * Display fields for Check options.
 		 *		 
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.5
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.5' );
 			$check_gateway_label = ! empty( $values['check_gateway_label'] ) ? $values['check_gateway_label'] : __( 'Check', 'paid-memberships-pro' );
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
@@ -143,7 +143,7 @@
 		/**
 		 * Display fields for Check options.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 */
 		public static function show_settings_fields() {
 			$check_gateway_label = get_option( 'pmpro_check_gateway_label', __( 'Check', 'paid-memberships-pro' ) );
@@ -211,7 +211,7 @@
 		/**
 		 * Save settings for Check options.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 */
 		public static function save_settings_fields() {
 			if ( isset( $_REQUEST['check_gateway_label'] ) ) {

@@ -132,7 +132,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         );
         $should_render = ! empty( pmpro_apply_block_visibility( $apply_block_visibility_params, 'sample content' ) );
 		
-		return apply_filters_deprecated( 'pmpro_elementor_section_access', array( $should_render, $element ), 'TBD' );
+		return apply_filters_deprecated( 'pmpro_elementor_section_access', array( $should_render, $element ), '3.5' );
 	}
 
 	/**
@@ -173,7 +173,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	/**
 	 * Migrate settings from old restriction method (pmpro_require_membership) to new method (pmpro_enable).
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 */
 	public function migrate_settings() {
 		// Get the post being viewed.
@@ -230,7 +230,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	/**
 	 * Heloper method for migrating settings from old restriction method (pmpro_require_membership) to new method (pmpro_enable).
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 *
 	 * @param array $settings The settings array to migrate.
 	 * @return array The migrated settings array.
@@ -259,10 +259,10 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	 * Figure out if the user has access to restricted content.
 	 * @return bool True or false based if the user has access to the content or not.
 	 * @since 2.3
-     * @deprecated TBD
+     * @deprecated 3.5
 	 */
 	public function pmpro_elementor_has_access( $element ) {
-        _deprecated_function( __METHOD__, 'TBD' );
+        _deprecated_function( __METHOD__, '3.5' );
 
 		$element_settings = $element->get_active_settings();
 

@@ -224,7 +224,7 @@
 		 * method is not overriden, we will find the method hooked into pmpro_payment_option_fields
 		 * and use that instead.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 */
 		public static function show_settings_fields() {
 			global $wp_filter;
@@ -275,7 +275,7 @@
 		 * method is not overriden, we will get the list of options that need to be saved and
 		 * save them.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 */
 		public static function save_settings_fields() {
 			// Get the legacy gateway options to save.
@@ -290,7 +290,7 @@
 		/**
 		 * Helper function to get the legacy gateway option values.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 *
 		 * @return array The legacy gateway options.
 		 */
@@ -329,7 +329,7 @@
 		/**
 		 * Get a description for this gateway.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 *
 		 * @return string The description for this gateway.
 		 */

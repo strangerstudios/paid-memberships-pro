@@ -4,7 +4,7 @@
  *
  * @package PaidMembershipsPro
  * @subpackage AdminPages
- * @since TBD
+ * @since 3.5
  */
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

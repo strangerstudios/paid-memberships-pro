@@ -232,7 +232,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get a description for this gateway.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 *
 	 * @return string
 	 */
@@ -244,10 +244,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get a list of payment options that the Stripe gateway needs/supports.
 	 *
 	 * @since 1.8
-	 * @deprecated TBD
+	 * @deprecated 3.5
 	 */
 	public static function getGatewayOptions() {
-		_deprecated_function( __METHOD__, 'TBD' );
+		_deprecated_function( __METHOD__, '3.5' );
 		$options = array(
 			'gateway_environment',
 			'stripe_secretkey',
@@ -277,10 +277,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Set payment options for payment settings page.
 	 *
 	 * @since 1.8
-	 * @deprecated TBD
+	 * @deprecated 3.5
 	 */
 	public static function pmpro_payment_options( $options ) {
-		_deprecated_function( __METHOD__, 'TBD' );
+		_deprecated_function( __METHOD__, '3.5' );
 		//get stripe options
 		$stripe_options = self::getGatewayOptions();
 
@@ -294,10 +294,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Display fields for Stripe options.
 	 *
 	 * @since 1.8
-	 * @deprecated TBD
+	 * @deprecated 3.5
 	 */
 	public static function pmpro_payment_option_fields( $values, $gateway ) {
-		_deprecated_function( __METHOD__, 'TBD', 'PMProGateway_stripe::show_settings_fields()' );
+		_deprecated_function( __METHOD__, '3.5', 'PMProGateway_stripe::show_settings_fields()' );
 		$stripe = new PMProGateway_stripe();
 
 		// Show connect fields.
@@ -677,7 +677,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Display fields for Stripe options.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 */
 	public static function show_settings_fields() {
 		$stripe = new PMProGateway_stripe();
@@ -1083,7 +1083,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Save settings for Stripe.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 */
 	public static function save_settings_fields() {
 		$settings_to_save = array(
@@ -2724,14 +2724,14 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Shows settings for connecting to Stripe.
 	 *
 	 * @since 2.7.0.
-	 * @deprecated TBD
+	 * @deprecated 3.5
 	 *
 	 * @param bool $livemode True if live credentials, false if sandbox.
 	 * @param array $values Current settings.
 	 * @param string $gateway currently being shown.
 	 */
 	private function show_connect_payment_option_fields( $livemode, $values, $gateway ) {
-		_deprecated_function( __METHOD__, 'TBD' );
+		_deprecated_function( __METHOD__, '3.5' );
 		$gateway_environment = $this->gateway_environment;
 
 		$environment = $livemode ? 'live' : 'sandbox';
@@ -2855,7 +2855,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Shows the settings section for the live or sandbox connections.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 *
 	 * @param bool $livemode True if showing live credentials, false if sandbox.
 	 */
@@ -4277,7 +4277,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// If the site has acknowledged the application fee percentage, we can skip the filter.
 		if ( empty( get_option( 'pmpro_stripe_connect_acknowledged_fee' ) ) ) {
-			$application_fee_percentage = apply_filters_deprecated( 'pmpro_set_application_fee_percentage', array( $application_fee_percentage ), 'TBD' );
+			$application_fee_percentage = apply_filters_deprecated( 'pmpro_set_application_fee_percentage', array( $application_fee_percentage ), '3.5' );
 		}
 
 		return round( floatval( $application_fee_percentage ), 2 );

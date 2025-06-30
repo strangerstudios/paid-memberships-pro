@@ -1121,7 +1121,7 @@ class PMPro_Subscription {
 			 *
 			 * @param $this PMPro_Subscription The current subscription object
 			 *
-			 * @since TBD
+			 * @since 3.5
 			 */
 			do_action('pmpro_added_subscription', $this);
 		} else {
@@ -1130,7 +1130,7 @@ class PMPro_Subscription {
 			 *
 			 * @param $this PMPro_Subscription The current subscription object
 			 *
-			 * @since TBD
+			 * @since 3.5
 			 */
 			do_action('pmpro_updated_subscription', $this);
 		}
