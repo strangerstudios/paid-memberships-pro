@@ -337,15 +337,21 @@
 			// If this gateway is deprecated, show a warning.
 			if ( in_array( $edit_gateway, $deprecated_gateways, true ) ) {
 				?>
-				<div class="notice notice-alt notice-error inline">
+				<div class="pmpro_message pmpro_error">
+					<p><strong><?php esc_html_e('Notice: You Are Using a Deprecated Gateway', 'paid-memberships-pro' ); ?></strong></p>
 					<p>
 						<?php
 						// translators: %s is the gateway name.
 						printf(
-							esc_html__('The %s gateway is deprecated and no longer supported. Please consider switching to a different gateway.', 'paid-memberships-pro'),
+							esc_html__('The %s gateway has been deprecated and will not receive updates or support. To ensure your payments continue running smoothly, switch to a supported payment gateway.', 'paid-memberships-pro'),
 							esc_html( $pmpro_gateways[ $edit_gateway ] )
 						);
 						?>
+					</p>
+					<p>
+						<a class="button button-secondary" href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e('About Deprecated Gateways', 'paid-memberships-pro' ); ?></a>
+						<a class="button" href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e('How to Switch Payment Gateways', 'paid-memberships-pro' ); ?></a>
+					</p>
 				</div>
 				<?php
 			}

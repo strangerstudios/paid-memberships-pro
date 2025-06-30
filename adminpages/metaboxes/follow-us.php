@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function pmpro_dashboard_follow_us_callback() { ?>
-	<ul class="pmpro-dashboard-list-icons">
+	<ul>
 		<li><a href="https://github.com/strangerstudios/paid-memberships-pro" target="_blank"><img alt="GitHub" src="<?php echo esc_url( PMPRO_URL . '/images/github.svg' ); ?>" /><?php esc_html_e( 'GitHub', 'paid-memberships-pro' ); ?></a></li>
 		<li><a href="https://www.youtube.com/channel/UCFtMIeYJ4_YVidi1aq9kl5g/" target="_blank"><img alt="YouTube" src="<?php echo esc_url( PMPRO_URL . '/images/youtube.svg' ); ?>" /><?php esc_html_e( 'YouTube', 'paid-memberships-pro' ); ?></a></li>
 		<li><a href="https://www.facebook.com/PaidMembershipsPro" target="_blank"><img alt="Facebook" src="<?php echo esc_url( PMPRO_URL . '/images/facebook.svg' ); ?>" /><?php esc_html_e( 'Facebook', 'paid-memberships-pro' ); ?></a></li>

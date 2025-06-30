@@ -128,6 +128,11 @@
 		<?php wp_nonce_field('savesettings', 'pmpro_advancedsettings_nonce');?>
 		<hr class="wp-header-end">
 		<h1><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
+		<p><?php
+			$advanced_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Advanced Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/advanced-settings/?utm_source=plugin&utm_medium=pmpro-advancedsettings&utm_campaign=documentation&utm_content=advanced-settings">' . esc_html__( 'Advanced Settings', 'paid-memberships-pro' ) . '</a>';
+			// translators: %s: Link to Advanced Settings doc.
+			printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $advanced_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?></p>
 		<div id="restrict-dashboard-access-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">

@@ -698,7 +698,7 @@ if (!empty($page_msg)) { ?>
 					<tr class="membership_posts">
 						<th scope="row" valign="top"><label><?php esc_html_e('Other Content Types', 'paid-memberships-pro'); ?></label></th>
 						<td>
-							<p><?php echo sprintf(wp_kses(__('Protect access to other content including custom post types (CPTs), courses, events, products, communities, podcasts, and more. <a href="%s" rel="nofollow noopener" target="_blank">Read our documentation on restricting content</a>.', 'paid-memberships-pro'), $allowed_html), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings'); ?></p>
+							<p><?php echo sprintf(wp_kses(__('Protect access to other content including custom post types (CPTs), courses, events, products, communities, podcasts, and more. <a href="%s" rel="nofollow noopener" target="_blank">Read our documentation on restricting content</a>.', 'paid-memberships-pro'), $allowed_html), 'https://www.paidmembershipspro.com/restrict-access-wordpress/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=pmpro-content-settings'); ?></p>
 						</td>
 				</tbody>
 			</table>

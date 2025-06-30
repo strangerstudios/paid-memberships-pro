@@ -83,6 +83,11 @@
 		<?php wp_nonce_field('savesettings', 'pmpro_emailsettings_nonce');?>
 		<hr class="wp-header-end">
 		<h1><?php esc_html_e( 'Email Settings', 'paid-memberships-pro' ); ?></h1>
+		<p><?php
+			$email_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Email Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/email-settings/?utm_source=plugin&utm_medium=pmpro-emailsettings&utm_campaign=documentation&utm_content=email-settings">' . esc_html__( 'Email Settings', 'paid-memberships-pro' ) . '</a>';
+			// translators: %s: Link to Email Settings doc.
+			printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $email_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?></p>
 		<div id="send-emails-from-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
