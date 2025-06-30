@@ -326,8 +326,11 @@
 				// Delete the option to acknowledge the fee.
 				delete_option( 'pmpro_stripe_connect_reduced_application_fee' );
 
-				// Add option to acknowledge the fee.
-				update_option( 'pmpro_stripe_connect_acknowledged_fee', true );
+				// Add option to acknowledge the fee. Include the user ID and timestamp.
+				update_option( 'pmpro_stripe_connect_acknowledged_fee', array(
+					'user_id' => get_current_user_id(),
+					'timestamp' => date_i18n( 'Y-m-d H:i:s' ),
+				) );
 			}
 
 			// Check if the site is using a lowered Connect fee.
