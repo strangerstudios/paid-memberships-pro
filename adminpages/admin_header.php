@@ -336,7 +336,37 @@
 			// Check if the site is using a lowered Connect fee.
 			$reduced_fee = get_option( 'pmpro_stripe_connect_reduced_application_fee' );
 			$filtered_fee = apply_filters( 'pmpro_set_application_fee_percentage', 2 );
-			if ( ! empty( $reduced_fee ) && 2 != $reduced_fee ) {
+			if ( empty( get_option( 'pmpro_stripe_connect_acknowledged_fee' ) ) && 2 != $filtered_fee ) {
+				?>
+				<div class="notice notice-large notice-warning inline">
+					<h3><?php esc_html_e( 'Action Required: Your Stripe Connect Fees', 'paid-memberships-pro' ); ?></h3>
+					<p><?php esc_html_e( 'Your site is using a custom filter to adjust the Paid Memberships Pro Stripe Connect application fee.', 'paid-memberships-pro' ); ?> <strong><?php esc_html_e( 'Sites that continue using a reduced fee risk being disconnected from Stripe.', 'paid-memberships-pro' ); ?></strong></p>
+					<p><?php esc_html_e( 'If you would like to continue using Stripe Connect, please click the button below to accept the 2% application fee.', 'paid-memberships-pro' ); ?></p>
+					<p><?php esc_html_e( 'Or, to reduce the fee to 0%, you may either:', 'paid-memberships-pro' ); ?></p>
+					<ol>
+						<li>
+							<?php
+								$pmpro_stripe_restricted_key_docs_escaped = '<a target="_blank" href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=pmpro&utm_medium=plugin&utm_campaign=documentation&utm_content=stripe-restricted-key-setup#h-stripe-restricted-keys-alternative-to-stripe-connect">' . esc_html( 'by following this documentation', 'paid-memberships-pro' ) . '</a>';
+								// translators: %s is a link to the PMPro documentation for switching to Stripe Restricted API keys.
+								printf( esc_html__( 'Switch to using your own Stripe Restricted API keys %s (bypassing Stripe Connect).', 'paid-memberships-pro' ), $pmpro_stripe_restricted_key_docs_escaped ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							?>
+						</li>
+						<li>
+							<?php
+								$pmpro_premium_license_link_escaped = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-license#pmpro-license-settings' ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( 'PMPro Premium license', 'paid-memberships-pro' ) . '</a>';
+								// translators: %s is a link to the PMPro Premium license page.
+								printf( esc_html__( 'Activate a %s to waive the fee.', 'paid-memberships-pro' ), $pmpro_premium_license_link_escaped ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							?>
+						</li>
+					</ol>
+					<p>
+						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'acknowledge_stripe_connect_fee' => '1' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-primary">
+							<?php esc_html_e( 'Accept and Continue With 2% Fee', 'paid-memberships-pro' ); ?>
+						</a>
+					</p>
+				</div>
+				<?php
+			} elseif ( ! empty( $reduced_fee ) && 2 != $reduced_fee ) {
 				?>
 				<div class="notice notice-large notice-warning inline">
 					<h3><?php esc_html_e( 'Important: Stripe Connect Fee Updated', 'paid-memberships-pro' ); ?></h3>
@@ -365,36 +395,6 @@
 					<p>
 						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'acknowledge_stripe_connect_fee' => '1' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-primary">
 							<?php esc_html_e( 'Dismiss this Notice', 'paid-memberships-pro' ); ?>
-						</a>
-					</p>
-				</div>
-				<?php
-			} elseif( empty( get_option( 'pmpro_stripe_connect_acknowledged_fee' ) ) && 2 != $filtered_fee ) {
-				?>
-				<div class="notice notice-large notice-warning inline">
-					<h3><?php esc_html_e( 'Action Required: Your Stripe Connect Fees', 'paid-memberships-pro' ); ?></h3>
-					<p><?php esc_html_e( 'Your site is using a custom filter to adjust the Paid Memberships Pro Stripe Connect application fee.', 'paid-memberships-pro' ); ?> <strong><?php esc_html_e( 'Sites that continue using a reduced fee risk being disconnected from Stripe.', 'paid-memberships-pro' ); ?></strong></p>
-					<p><?php esc_html_e( 'If you would like to continue using Stripe Connect, please click the button below to accept the 2% application fee.', 'paid-memberships-pro' ); ?></p>
-					<p><?php esc_html_e( 'Or, to reduce the fee to 0%, you may either:', 'paid-memberships-pro' ); ?></p>
-					<ol>
-						<li>
-							<?php
-								$pmpro_stripe_restricted_key_docs_escaped = '<a target="_blank" href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=pmpro&utm_medium=plugin&utm_campaign=documentation&utm_content=stripe-restricted-key-setup#h-stripe-restricted-keys-alternative-to-stripe-connect">' . esc_html( 'by following this documentation', 'paid-memberships-pro' ) . '</a>';
-								// translators: %s is a link to the PMPro documentation for switching to Stripe Restricted API keys.
-								printf( esc_html__( 'Switch to using your own Stripe Restricted API keys %s (bypassing Stripe Connect).', 'paid-memberships-pro' ), $pmpro_stripe_restricted_key_docs_escaped ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-							?>
-						</li>
-						<li>
-							<?php
-								$pmpro_premium_license_link_escaped = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-license#pmpro-license-settings' ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( 'PMPro Premium license', 'paid-memberships-pro' ) . '</a>';
-								// translators: %s is a link to the PMPro Premium license page.
-								printf( esc_html__( 'Activate a %s to waive the fee.', 'paid-memberships-pro' ), $pmpro_premium_license_link_escaped ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-							?>
-						</li>
-					</ol>
-					<p>
-						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'acknowledge_stripe_connect_fee' => '1' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-primary">
-							<?php esc_html_e( 'Accept and Continue With 2% Fee', 'paid-memberships-pro' ); ?>
 						</a>
 					</p>
 				</div>
