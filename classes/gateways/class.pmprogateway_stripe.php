@@ -232,7 +232,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get a description for this gateway.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 *
 	 * @return string
 	 */
@@ -244,10 +244,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get a list of payment options that the Stripe gateway needs/supports.
 	 *
 	 * @since 1.8
-	 * @deprecated TBD
+	 * @deprecated 3.5
 	 */
 	public static function getGatewayOptions() {
-		_deprecated_function( __METHOD__, 'TBD' );
+		_deprecated_function( __METHOD__, '3.5' );
 		$options = array(
 			'gateway_environment',
 			'stripe_secretkey',
@@ -277,10 +277,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Set payment options for payment settings page.
 	 *
 	 * @since 1.8
-	 * @deprecated TBD
+	 * @deprecated 3.5
 	 */
 	public static function pmpro_payment_options( $options ) {
-		_deprecated_function( __METHOD__, 'TBD' );
+		_deprecated_function( __METHOD__, '3.5' );
 		//get stripe options
 		$stripe_options = self::getGatewayOptions();
 
@@ -294,10 +294,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Display fields for Stripe options.
 	 *
 	 * @since 1.8
-	 * @deprecated TBD
+	 * @deprecated 3.5
 	 */
 	public static function pmpro_payment_option_fields( $values, $gateway ) {
-		_deprecated_function( __METHOD__, 'TBD', 'PMProGateway_stripe::show_settings_fields()' );
+		_deprecated_function( __METHOD__, '3.5', 'PMProGateway_stripe::show_settings_fields()' );
 		$stripe = new PMProGateway_stripe();
 
 		// Show connect fields.
@@ -677,7 +677,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Display fields for Stripe options.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 */
 	public static function show_settings_fields() {
 		$stripe = new PMProGateway_stripe();
@@ -1083,7 +1083,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Save settings for Stripe.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 */
 	public static function save_settings_fields() {
 		$settings_to_save = array(
@@ -1702,7 +1702,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 					esc_html_e( 'A valid Stripe webhook is required for your membership checkout to communicate with your payment gateway. We have detected that your Stripe webhook is either disabled or not configured for this website.', 'paid-memberships-pro' );
 					echo ' ';
-					echo '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) . '">' . esc_html__( 'Set up webhooks now', 'paid-memberships-pro' ) . '</a>';
+					echo '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe#pmpro_stripe_webhook' ) ), admin_url(  'admin.php' ) ) . '">' . esc_html__( 'Set up webhooks now', 'paid-memberships-pro' ) . '</a>';
 					?>
 				</p>
 			</div>
@@ -1716,7 +1716,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 					esc_html_e( 'In order for Stripe to function properly, there must be a Stripe Webhook configured for this website.', 'paid-memberships-pro' );
 					echo ' ';
-					echo '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) . '">' . esc_html__( 'Enable webhooks now', 'paid-memberships-pro' ) . '</a>';
+					echo '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe#pmpro_stripe_webhook' ) ), admin_url(  'admin.php' ) ) . '">' . esc_html__( 'Enable webhooks now', 'paid-memberships-pro' ) . '</a>';
 					?>
 				</p>
 			</div>
@@ -2724,14 +2724,14 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Shows settings for connecting to Stripe.
 	 *
 	 * @since 2.7.0.
-	 * @deprecated TBD
+	 * @deprecated 3.5
 	 *
 	 * @param bool $livemode True if live credentials, false if sandbox.
 	 * @param array $values Current settings.
 	 * @param string $gateway currently being shown.
 	 */
 	private function show_connect_payment_option_fields( $livemode, $values, $gateway ) {
-		_deprecated_function( __METHOD__, 'TBD' );
+		_deprecated_function( __METHOD__, '3.5' );
 		$gateway_environment = $this->gateway_environment;
 
 		$environment = $livemode ? 'live' : 'sandbox';
@@ -2841,7 +2841,7 @@ class PMProGateway_stripe extends PMProGateway {
 							}
 							
 						}
-						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More', 'paid-memberships-pro' ) . '</a>';
+						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/gateway-overview/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More', 'paid-memberships-pro' ) . '</a>';
 					?>
 				</p>
 				<input type='hidden' name='<?php echo esc_attr( $environment ); ?>_stripe_connect_user_id' id='<?php echo esc_attr( $environment ); ?>_stripe_connect_user_id' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_user_id'] ) ?>'/>
@@ -2855,7 +2855,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Shows the settings section for the live or sandbox connections.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 *
 	 * @param bool $livemode True if showing live credentials, false if sandbox.
 	 */
@@ -2990,7 +2990,7 @@ class PMProGateway_stripe extends PMProGateway {
 												}
 												
 											}
-											echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More', 'paid-memberships-pro' ) . '</a>';
+											echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/gateway-overview/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More', 'paid-memberships-pro' ) . '</a>';
 										?>
 									</p>
 									<?php
@@ -4269,18 +4269,15 @@ class PMProGateway_stripe extends PMProGateway {
 			return 0;
 		}
 
-		// Check if we specified a reduced application fee for this website.
-		$application_fee_percentage = get_option( 'pmpro_stripe_connect_reduced_application_fee' );
-		if ( empty( $application_fee_percentage ) ) {
-			$application_fee_percentage = 2; // 2% is the default.
-		}
+		// Set the default 2% Stripe application fee for this website.
+		$application_fee_percentage = 2;
 
 		// Check if we have a valid license key.
 		$application_fee_percentage = pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ? 0 : $application_fee_percentage;
 
-		// If the site has adknowledged the application fee percentage, we can skip the filter.
+		// If the site has acknowledged the application fee percentage, we can skip the filter.
 		if ( empty( get_option( 'pmpro_stripe_connect_acknowledged_fee' ) ) ) {
-			$application_fee_percentage = apply_filters_deprecated( 'pmpro_set_application_fee_percentage', array( $application_fee_percentage ), 'TBD' );
+			$application_fee_percentage = apply_filters_deprecated( 'pmpro_set_application_fee_percentage', array( $application_fee_percentage ), '3.5' );
 		}
 
 		return round( floatval( $application_fee_percentage ), 2 );

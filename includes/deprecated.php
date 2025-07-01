@@ -1016,7 +1016,7 @@ add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 
  * Authorize.net was deprecated in 3.2.
  * PayFlow, PayPal Standard, and Braintree were deprecated in 3.4.
  *
- * @since TBD
+ * @since 3.5
  */
 function pmpro_get_deprecated_gateways() {
 	return apply_filters( 'pmpro_deprecated_gateways', array(

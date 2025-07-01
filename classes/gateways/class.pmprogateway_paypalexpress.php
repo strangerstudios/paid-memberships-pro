@@ -73,7 +73,7 @@
 		/**
 		 * Get a description for this gateway.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 *
 		 * @return string
 		 */
@@ -105,11 +105,11 @@
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.5
 		 */
 		static function getGatewayOptions()
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.5' );
 			$options = array(
 				'gateway_environment',
 				'gateway_email',
@@ -129,11 +129,11 @@
 		 * Set payment options for payment settings page.
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.5
 		 */
 		static function pmpro_payment_options($options)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.5' );
 			//get options
 			$paypal_options = PMProGateway_paypalexpress::getGatewayOptions();
 
@@ -147,11 +147,11 @@
 		 * Display fields for this gateway's options.
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.5
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
-			_deprecated_function( __METHOD__, 'TBD' );
+			_deprecated_function( __METHOD__, '3.5' );
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
@@ -235,7 +235,7 @@
 		/**
 		 * Display fields for PayPal options.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 */
 		public static function show_settings_fields() {
 			?>
@@ -323,7 +323,7 @@
 		/**
 		 * Save settings for PayPal.
 		 *
-		 * @since TBD
+		 * @since 3.5
 		 */
 		public static function save_settings_fields() {
 			$settings_to_save = array(

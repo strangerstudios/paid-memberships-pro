@@ -2,13 +2,13 @@
 /**
  * Code to aid with personalization based on chosen site types.
  * 
- * @since TBD
+ * @since 3.5
  */
 
 /**
  * Helper function to get all site types and their human-readable labels.
  *
- * @since TBD
+ * @since 3.5
  *
  * @return array
  */
@@ -30,7 +30,7 @@ function pmpro_get_site_types() {
 /**
  * Helper function to get the hub links based on site type.
  *
- * @since TBD
+ * @since 3.5
  *
  * @return array
  */

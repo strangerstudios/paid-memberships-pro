@@ -81,7 +81,7 @@ class PMPro_Action_Scheduler {
 	/**
 	 * Load the Action Scheduler library.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 */
 	private static function track_library_conflicts() {
 		// Get the version of Action Scheduler that is currently loaded and the plugin file it was loaded from.

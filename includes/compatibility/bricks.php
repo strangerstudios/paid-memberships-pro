@@ -4,7 +4,7 @@
  *
  * Adds custom conditions for Bricks Builder based on PMPro membership levels.
  *
- * @since TBD
+ * @since 3.5
  *
  * @link https://academy.bricksbuilder.io/article/element-conditions/
  */
@@ -18,7 +18,7 @@ add_filter( 'bricks/conditions/result', 'pmpro_bricks_condition_result', 10, 3 )
  *
  * Inserts the Paid Memberships Pro (PMPro) condition group at the top of the list.
  *
- * @since TBD
+ * @since 3.5
  *
  * @param array $groups The existing condition groups.
  * @return array The modified condition groups.
@@ -38,7 +38,7 @@ function pmpro_bricks_add_condition_group( $groups ) {
  * Registers a new condition that allows users to check if a user
  * has a specific membership level in Paid Memberships Pro (PMPro).
  *
- * @since TBD
+ * @since 3.5
  *
  * @param array $options The existing condition options.
  * @return array The modified condition options.
@@ -104,7 +104,7 @@ function pmpro_bricks_add_custom_condition( $options ) {
 /**
  * Check if the user or member should or should not have access to the content.
  *
- * @since TBD
+ * @since 3.5
  *
  * @param bool   $result        The existing result.
  * @param string $condition_key The condition key.

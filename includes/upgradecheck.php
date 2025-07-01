@@ -406,44 +406,9 @@ function pmpro_checkForUpgrades() {
 	}
 
 	if ( $pmpro_db_version < 3.5 ) {
-		// Clear old crons out.
-		$old_crons = array(
-		'pmpro_cron_expire_memberships',
-		'pmpro_cron_expiration_warnings',
-		'pmpro_cron_credit_card_expiring_warnings',
-		'pmpro_cron_admin_activity_email',
-		'pmpro_cron_recurring_payment_reminders',
-		'pmpro_cron_delete_tmp',
-		'pmpro_license_check_key',
-		);
-
-		$crons   = _get_cron_array();
-		$removed = array();
-		
-		foreach ( $crons as $timestamp => $cron ) {
-			foreach ( $cron as $hook => $events ) {
-				if ( in_array( $hook, $old_crons, true ) ) {
-					// Remove all events for this hook (regardless of args)
-					wp_clear_scheduled_hook( $hook );
-					$removed[] = $hook;
-				}
-			}
-		}
-	
-		if ( ! empty( $removed ) && WP_DEBUG ) {
-			// Log the removed crons for debugging.
-			$removed_list = implode( ', ', $removed );
-			error_log( esc_html( 'Removed PMPro scheduled crons: ' . $removed_list ) );
-		}
-
-		// Update Stripe webhook events.
-		$stripe = new PMProGateway_Stripe();
-		$stripe->update_webhook_events();
-
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_5.php" );
 		pmpro_db_delta();
-
-		pmpro_set_up_restricted_files_directory();
-
+		pmpro_upgrade_3_5(); // This function will update the db version.
 		update_option( 'pmpro_db_version', '3.5' );
 	}
 

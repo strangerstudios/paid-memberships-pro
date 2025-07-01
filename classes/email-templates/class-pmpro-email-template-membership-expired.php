@@ -175,7 +175,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	/**
 	 * Returns the arguments to send the test email from the abstract class.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 *
 	 * @return array The arguments to send the test email from the abstract class.
 	 */

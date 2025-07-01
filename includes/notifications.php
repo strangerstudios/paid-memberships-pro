@@ -4,7 +4,7 @@
  * Initialize a Gocodebox_Banner_Notifier object for PMPro.
  * This replaces the old PMPro notifications system.
  *
- * @since TBD
+ * @since 3.5
  */
 function pmpro_get_gocodebox_banner_notifier() {
 	static $cached_notifier = null;

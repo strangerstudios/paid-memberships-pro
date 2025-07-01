@@ -158,7 +158,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	/**
 	 * Returns the arguments to send the test email from the abstract class.
 	 *
-	 * @since TBD
+	 * @since 3.5
 	 *
 	 * @return array The arguments to send the test email from the abstract class.
 	 */

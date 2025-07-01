@@ -3,7 +3,7 @@
 /**
  * Get the list of PMPro countries.
  *
- * @since TBD
+ * @since 3.5
  *
  * @param bool $include_empty Whether to include an empty option in the list. Useful for select fields.
  * @return array The list of countries with their codes as keys and names as values.
@@ -278,7 +278,7 @@ function pmpro_get_countries( $include_empty = false ) {
 /**
  * Get the PMPro default country.
  *
- * @since TBD
+ * @since 3.5
  *
  * @return string The default country code.
  */
