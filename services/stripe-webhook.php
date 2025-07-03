@@ -607,12 +607,18 @@
 			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
 			pmpro_stripeWebhookExit();
 		} elseif ( $pmpro_stripe_event->type == 'invoice.created' ) {
-      // Make sure we have the invoice in the desired API version.
+			// Make sure we have the invoice in the desired API version.
 			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
 
 			// If the invoice is not in draft status, we don't need to do anything.
 			if ( $invoice->status !== 'draft' ) {
 				$logstr .= "Invoice " . $invoice->id . " is not in draft status. No action taken.";
+				pmpro_stripeWebhookExit();
+			}
+
+			// If the site is using API keys, we don't need to update the application fee.
+			if ( $stripe->using_api_keys() ) {
+				$logstr .= "Using API keys, so not updating application fee for invoice " . $invoice->id . ".";
 				pmpro_stripeWebhookExit();
 			}
 
