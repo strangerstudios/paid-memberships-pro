@@ -617,7 +617,7 @@
 			}
 
 			// Update the application fee.
-      $application_fee = $stripe_gateway->get_application_fee_percentage();
+			$application_fee = $stripe->get_application_fee_percentage();
 			try {
 				Stripe_Invoice::update(
 					$invoice->id,
