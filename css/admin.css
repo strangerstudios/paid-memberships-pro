@@ -3728,7 +3728,7 @@ button.pmpro_report_th_closed:before {
 }
 
 /* Responsive breakpoints */
-@media (max-width: 1380px) {
+@media (max-width: 768px) {
 	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
 		grid-template-columns: 1fr; /* Single column on smaller screens */
 	}
@@ -3754,10 +3754,41 @@ button.pmpro_report_th_closed:before {
 	}
 }
 
+/* min width 1024px, max width 1380px */
+@media (min-width: 768px) and (max-width: 1380px) {
+	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
+		grid-template-columns: 1fr; /* Single column on smaller screens */
+	}
+	/* All metaboxes span full width at this breakpoint - clean and simple */
+	#pmpro-dashboard-form #dashboard-widgets .postbox {
+		grid-column: 1 / -1 !important;
+		grid-column-start: auto !important;
+	}
+
+	#pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
+		grid-template-columns:  2fr 2fr; /* Stack columns on smaller screens */
+	}
+	/* Make the last item span full width if it's the odd one out */
+	#pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns > :last-child:nth-child(odd) {
+	    grid-column: span 2;
+	}
+
+	#pmpro_dashboard_quick_links .inside {
+		grid-template-columns: 2fr 2fr; /* Stack quick links on smaller screens */
+	}
+}
+
 /* Additional responsive helper for very small screens */
 @media (max-width: 600px) {
 	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
 		gap: var(--pmpro--spacing--small);
+	}
+	#pmpro-dashboard-form #dashboard-widgets .postbox-header .button {
+		margin-top: 3px;
+		margin-right: 8px;
+		padding: 8px !important;
+		line-height: normal !important;
+		min-height: auto;
 	}
 }
 
