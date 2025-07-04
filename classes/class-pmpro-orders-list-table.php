@@ -891,6 +891,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	public function column_order_code( $item ) {
 		?>
 		<strong><a href="admin.php?page=pmpro-orders&order=<?php echo esc_attr( $item->id ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
+		<button title="<?php echo esc_attr__('Copy code to the clipboard', 'paid-memberships-pro' ) ?>" type="button"
+			class="pmpro_copy_order_id pmpro_copy_to_clipboard button-link edit-filters" style="display:block">
+			<span class="dashicons dashicons-clipboard" aria-hidden="true"></span>
+		</button>
 		<div class="row-actions">
 			<?php
 			$delete_text = esc_html(
@@ -1239,7 +1243,18 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		// Echo the data for this column.
 		foreach( $column_value as $key => $value ) {
-			echo '<p>' . wp_kses_post( $value ) . '</p>';
+			echo '<p>' .
+				wp_kses_post( $value );
+				//we don't want to show the copy button for the empty  column
+				if( $key !== 'none') {
+				?>
+			<button title="<?php echo esc_attr( sprintf( __( 'Copy the %s to the clipboard', 'paid-memberships-pro' ), $key ) ) ?>" type="button"
+				class="pmpro_copy_<? echo esc_attr( $key ) ?> pmpro_copy_to_clipboard button-link edit-filters" style="display:none">
+				<span class="dashicons dashicons-clipboard" aria-hidden="true"></span>
+			</button>
+			<?php
+				}
+			echo '</p>';
 		}
 	}
 

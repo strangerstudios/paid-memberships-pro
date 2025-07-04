@@ -1019,3 +1019,89 @@ function pmpro_changeTabs( e, inputChanged ) {
 jQuery(document).ready(function () {
 	jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
 });
+
+/**
+ * Copy to the clipboard for discount codes, order ids, payment ids, etc.
+ */
+jQuery(document).ready(function ($) {
+
+	//get all the buttons
+	const $allButtons = $( '.pmpro_copy_to_clipboard' );
+
+	//get all table rows
+	const $allTableRows = $( 'table.discountcodes tr, table.subscriptions tr, table.orders tr' );
+
+	//get all anchors in the same table cell
+	const $allAnchors = $( 'td.column-discount_code a, td.column-subscription_id a, td.column-order_id a' );
+
+	// Bail if Clipboard API isn't supported
+	if ( ! navigator.clipboard ) {
+		//hide all buttons. Iterate over the jquery elements array and hide them all.
+		$allButtons.each( function () {
+			$( this ).remove();
+		});
+	}
+
+	/**
+	 * If it's mouseenter show the clipboard icon hider otherwise
+	 *
+	 * @param {Event} evt The event object
+	 * @returns {void}
+	 * @since TBD
+	 */
+	$( $allTableRows ).on( "mouseenter mouseleave focus", function ( evt ) {
+		const button = $( this ).find( '.pmpro_copy_to_clipboard' );
+		button.hide();
+
+		if ( evt.type === 'mouseenter' || evt.type === 'focus' ) {
+			button.show();
+		}
+	});
+
+	/**
+	 * If focus on the code show the clipboard icon for accessibility sake
+	 *
+	 * @param {Event} evt The event object
+	 * @returns {void}
+	 * @since TBD
+	 */
+	$( $allAnchors ).on( "focus", function ( evt ) {
+		$(this).closest('td').find('.pmpro_copy_to_clipboard').show();
+	});
+
+	/**
+	 * Copy  to Clipboard different codes across the site. Check the class pmpro_copy_to_clipboard to find where it's used.
+	 *
+	 * @param {Event} evt The click event
+	 * @returns {void}
+	 * @since TBD
+	 */
+	$('.pmpro_copy_to_clipboard').on('click', function ( evt ) {
+        // Find first link text
+        let code = $(this).closest('td').find('a').first().text();
+		//if it's a payment transaction id, we need to get the text from the first anchor
+		if( $(this).hasClass('pmpro_copy_payment_transaction_id') ) {
+			code = $(this).closest('td').find('p').first().text().split(":")[1].trim();
+		}
+
+        // Create a new Blob object with the discount code
+        const blob = new Blob([code], { type: 'text/plain' });
+
+        // Create a ClipboardItem object and write the Blob to the clipboard
+        navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })])
+            .then(() => {
+                // Hide copy button and show success message
+                $(this).hide();
+                $(this).after('<span class="success-message">Copied!</span>');
+
+                // Remove success message and show copy button after a delay
+                setTimeout(() => {
+                    $('.success-message').remove();
+                    $('.pmpro_copy_to_clipboard').show();
+                }, 3000);
+            })
+            .catch(err => {
+                console.error('Failed to copy code:', err);
+            });
+    });
+});

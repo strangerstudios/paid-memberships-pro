@@ -451,6 +451,10 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	public function column_id( $item ) {
 		?>
 		<strong><a href="admin.php?page=pmpro-subscriptions&id=<?php echo esc_attr( $item->get_id() ); ?>"><?php echo esc_html( $item->get_subscription_transaction_id() ); ?></a></strong>
+		<button title="<?php echo esc_attr__('Copy subscription ID to the clipboard', 'paid-memberships-pro' ) ?>" type="button"
+			class="pmpro_copy_subscription_id pmpro_copy_to_clipboard button-link edit-filters" style="display:none">
+			<span class="dashicons dashicons-clipboard" aria-hidden="true"></span>
+		</button>
 		<div class="row-actions">
 			<?php
 			$actions = [
