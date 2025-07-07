@@ -1,5 +1,5 @@
 == Changelog ==
-= 3.5 RC1 - 2025-06-30 =
+= 3.5 - 2025-07-07 =
 * FEATURE: Now using Action Scheduler to handle scheduled tasks. #3393 (@dalemugford)
 * FEATURE: Now allowing files to be restricted using the new `pmpro_can_access_restricted_file` filter. This is currently used to ensure that log files generated during gateway webhook handlers can only be viewed by administrators. #3308 (@dparker1005)
 * FEATURE: Added content restriction settings when using Bricks Builder. #3342 (@MaximilianoRicoTabo)

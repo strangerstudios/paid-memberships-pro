@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.4.99
+Stable tag: 3.5
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,7 +210,7 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
-= 3.5 RC1 - 2025-06-30 =
+= 3.5 - 2025-07-07 =
 * FEATURE: Now using Action Scheduler to handle scheduled tasks. #3393 (@dalemugford)
 * FEATURE: Now allowing files to be restricted using the new `pmpro_can_access_restricted_file` filter. This is currently used to ensure that log files generated during gateway webhook handlers can only be viewed by administrators. #3308 (@dparker1005)
 * FEATURE: Added content restriction settings when using Bricks Builder. #3342 (@MaximilianoRicoTabo)
