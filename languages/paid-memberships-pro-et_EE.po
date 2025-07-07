@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.4.99\n"
+"Project-Id-Version: Paid Memberships Pro 3.5\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-06-30T15:37:52+00:00\n"
+"POT-Creation-Date: 2025-07-07T16:02:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -25064,21 +25064,25 @@ msgstr ""
 
 #: includes/widgets.php:104
 #: includes/widgets.php:105
+#: includes/widgets.php:75
 msgid "Display \"Welcome\" content when logged in."
 msgstr ""
 
 #: includes/widgets.php:109
 #: includes/widgets.php:110
+#: includes/widgets.php:80
 msgid "Display a \"Log Out\" link."
 msgstr ""
 
 #: includes/widgets.php:114
 #: includes/widgets.php:115
+#: includes/widgets.php:85
 msgid "Display the \"Log In Widget\" menu."
 msgstr ""
 
 #: includes/widgets.php:124
 #: includes/widgets.php:125
+#: includes/widgets.php:95
 #, php-format
 msgid "Customize this menu per level using the <a href=\"%s\" title=\"Paid Memberships Pro - Nav Menus Add On\" target=\"_blank\">Nav Menus Add On</a>. Assign the menu under Appearance > Menus."
 msgstr ""
@@ -34430,6 +34434,7 @@ msgstr ""
 #: adminpages/subscriptions.php:412
 #: includes/adminpages.php:745
 #: adminpages/subscriptions.php:415
+#: classes/class-pmpro-subscription.php:1227
 msgid "Edit Member"
 msgstr ""
 
@@ -40779,18 +40784,22 @@ msgid "Permission denied."
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:118
+#: classes/class-pmpro-action-scheduler.php:174
 msgid "Action Scheduler instance cannot be cloned"
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:130
+#: classes/class-pmpro-action-scheduler.php:186
 msgid "Action Scheduler instance cannot be unserialized"
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:254
+#: classes/class-pmpro-action-scheduler.php:310
 msgid "An interval is required to queue an Action Scheduler recurring task."
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:308
+#: classes/class-pmpro-action-scheduler.php:364
 msgid "You must provide either a group or a hook to list tasks."
 msgstr ""
 
@@ -40944,4 +40953,18 @@ msgstr ""
 
 #: pages/checkout.php:341
 msgid "Do not fill this field out. Leave this blank."
+msgstr ""
+
+#: classes/class-pmpro-action-scheduler.php:125
+msgid "Important Notice: An Outdated Version of Action Scheduler is Loaded"
+msgstr ""
+
+#: classes/class-pmpro-action-scheduler.php:130
+#, php-format
+msgid "An outdated version of Action Scheduler (version %s) is being loaded by %s which may affect Paid Memberships Pro functionalilty on this website."
+msgstr ""
+
+#: classes/class-pmpro-action-scheduler.php:141
+#, php-format
+msgid "For more information, please <a href=\"%s\" target=\"_blank\">review our documentation</a> on how to resolve library conflicts."
 msgstr ""
