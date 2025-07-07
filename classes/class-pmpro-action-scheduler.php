@@ -37,7 +37,7 @@ class PMPro_Action_Scheduler {
 	/**
 	 * The minimum version of Action Scheduler required for PMPro.
 	 */
-	private static $required_as_version = '3.9.2';
+	private static $required_as_version = '3.9';
 
 	/**
 	 * Get the queue limit for async tasks.
@@ -94,7 +94,7 @@ class PMPro_Action_Scheduler {
 	private static function track_library_conflicts() {
 		// Get the version of Action Scheduler that is currently loaded and the plugin file it was loaded from.
 		$action_scheduler_version = ActionScheduler_Versions::instance()->latest_version(); // This is only available after plugins_loaded priority 0 which is why we do this here.
-		$previously_loaded_class = ActionScheduler_SystemInformation::active_source_path();
+		$previously_loaded_class = self::get_active_source_path();
 
 		// If we loaded Action Scheduler, this will do nothing.
 		pmpro_track_library_conflict( 'action-scheduler', $previously_loaded_class, $action_scheduler_version );
@@ -129,7 +129,7 @@ class PMPro_Action_Scheduler {
 					sprintf(
 						__( 'An outdated version of Action Scheduler (version %s) is being loaded by %s which may affect Paid Memberships Pro functionalilty on this website.', 'paid-memberships-pro' ),
 						$action_scheduler_version,
-						'<code>' . ActionScheduler_SystemInformation::active_source_path() . '</code>'
+						'<code>' . self::get_active_source_path() . '</code>'
 					)
 				)
 				?>
@@ -721,5 +721,21 @@ class PMPro_Action_Scheduler {
 	 */
 	public static function resume() {
 		update_option( 'pmpro_as_halted', false );
+	}
+
+	/**
+	 * Get the active source path for Action Scheduler.
+	 *
+	 * @access private
+	 * @since 3.5
+	 * @return string The path to the active source of Action Scheduler.
+	 */
+	public static function get_active_source_path() {
+		if ( class_exists( \ActionScheduler_SystemInformation::class ) ) {
+			return ActionScheduler_SystemInformation::active_source_path();
+		} else {
+			// This was deprecated in Action Scheduler v3.9,2 when the SystemInformation class was introduced.
+			return ActionScheduler_Versions::instance()->active_source_path();
+		}
 	}
 }
