@@ -731,7 +731,7 @@ class PMPro_Action_Scheduler {
 	 * @return string The path to the active source of Action Scheduler.
 	 */
 	public static function get_active_source_path() {
-		if ( class_exists( \ActionScheduler_SystemInformation::class ) ) {
+		if ( class_exists( '\ActionScheduler_SystemInformation' ) ) {
 			return ActionScheduler_SystemInformation::active_source_path();
 		} else {
 			// This was deprecated in Action Scheduler v3.9,2 when the SystemInformation class was introduced.
