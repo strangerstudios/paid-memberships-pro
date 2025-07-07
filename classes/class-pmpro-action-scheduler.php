@@ -35,6 +35,11 @@ class PMPro_Action_Scheduler {
 	public static $pmpro_as_queue_limit = 500;
 
 	/**
+	 * The minimum version of Action Scheduler required for PMPro.
+	 */
+	private static $required_as_version = '3.9.2';
+
+	/**
 	 * Get the queue limit for async tasks.
 	 *
 	 * @return int The maximum number of tasks that can be queued before a delay is added.
@@ -63,6 +68,9 @@ class PMPro_Action_Scheduler {
 		// Track library conflicts if detected.
 		self::track_library_conflicts();
 
+		// Show admin notice if Action Scheduler is out of date.
+		add_action( 'admin_notices', array( $this, 'show_outdated_notice' ) );
+
 		// Add custom hooks for quarter-hourly, hourly, daily and weekly tasks.
 		add_action( 'action_scheduler_init', array( $this, 'add_recurring_hooks' ) );
 
@@ -90,6 +98,54 @@ class PMPro_Action_Scheduler {
 
 		// If we loaded Action Scheduler, this will do nothing.
 		pmpro_track_library_conflict( 'action-scheduler', $previously_loaded_class, $action_scheduler_version );
+	}
+
+	/**
+	 * Show an admin notice if Action Scheduler is out of date.
+	 *
+	 * @since 3.5
+	 */
+	public static function show_outdated_notice() {
+		// Only show on PMPro admin pages.
+		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+			return;
+		}
+	
+		// Get the loaded version of Action Scheduler.
+		$action_scheduler_version = ActionScheduler_Versions::instance()->latest_version();
+
+		// If the version is current, we don't need to show the notice.
+		if ( version_compare( $action_scheduler_version, self::$required_as_version, '>=' ) ) {
+			return;
+		}
+
+		// If the version is outdated, show the notice.
+		?>
+		<div class="notice notice-error">
+			<p><strong><?php esc_html_e( 'Important Notice: An Outdated Version of Action Scheduler is Loaded', 'paid-memberships-pro' ); ?></strong></p>
+			<p>
+				<?php
+				echo wp_kses_post(
+					sprintf(
+						__( 'An outdated version of Action Scheduler (version %s) is being loaded by %s which may affect Paid Memberships Pro functionalilty on this website.', 'paid-memberships-pro' ),
+						$action_scheduler_version,
+						'<code>' . ActionScheduler_SystemInformation::active_source_path() . '</code>'
+					)
+				)
+				?>
+			</p>
+			<p>
+				<?php
+				echo wp_kses_post(
+					sprintf(
+						__( 'For more information, please <a href="%s" target="_blank">review our documentation</a> on how to resolve library conflicts.', 'paid-memberships-pro' ),
+						'https://www.paidmembershipspro.com/fix-library-conflict/?utm_source=pmpro&utm_medium=plugin&utm_campaign=blog&utm_content=action-scheduler-plugin-conflict'
+					)
+				);
+				?>
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
