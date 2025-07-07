@@ -126,7 +126,7 @@ p.pmpro_meta_notice {
 	display: flex;
 	justify-content: center;
 	gap: var(--pmpro--spacing--small);
-}	
+}
 
 .pmpro_banner .pmpro_logo h1 {
 	margin: 0;
@@ -214,7 +214,7 @@ p.pmpro_meta_notice {
 	.pmpro_banner .pmpro_banner_wrapper {
 		align-items: center;
 		display: flex;
-		gap: calc( var(--pmpro--spacing--medium) / 2 );	
+		gap: calc( var(--pmpro--spacing--medium) / 2 );
 	}
 
 	.pmpro_banner .pmpro_meta {
@@ -1095,9 +1095,9 @@ td > .pmpro_tag {
 	outline: 2px solid rgba(0,0,0,.6)
 }
 
-.pmpro_admin-pmpro-member nav button:disabled {	
+.pmpro_admin-pmpro-member nav button:disabled {
 	color: #777;
-	cursor: not-allowed;	
+	cursor: not-allowed;
 }
 
 .pmpro_admin-pmpro-member nav .pmpro_divider {
@@ -2102,7 +2102,7 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	margin-right: var(--pmpro--spacing--small);
 }
 
-.pmpro_admin-pmpro-userfields .pmpro_userfield-field-actions {	
+.pmpro_admin-pmpro-userfields .pmpro_userfield-field-actions {
 	width: 100%;
 	padding: var(--pmpro--spacing--small);
 }
@@ -3728,29 +3728,89 @@ button.pmpro_report_th_closed:before {
 }
 
 /* Responsive breakpoints */
-@media (max-width: 1380px) {
+@media (max-width: 768px) {
 	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
 		grid-template-columns: 1fr; /* Single column on smaller screens */
 	}
-	
+
 	/* All metaboxes span full width at this breakpoint - clean and simple */
 	#pmpro-dashboard-form #dashboard-widgets .postbox {
 		grid-column: 1 / -1 !important;
 		grid-column-start: auto !important;
 	}
-	
+
 	/* Adjust padding inside metaboxes for smaller screens */
 	#pmpro-dashboard-form #dashboard-widgets .postbox .inside {
 		padding: var(--pmpro--spacing--small);
 	}
-	
+
 	/* Make welcome box columns wrap on smaller screens */
 	#pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
 		grid-template-columns: 1fr; /* Stack columns on smaller screens */
 	}
 
+	#pmpro-dashboard-form .button-hero {
+		display: inline-block;
+	}
+
 	#pmpro_dashboard_quick_links .inside {
 		grid-template-columns: 1fr; /* Stack quick links on smaller screens */
+	}
+
+	#pmpro_dashboard_follow_us ul {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: var(--pmpro--spacing--medium);
+	}
+
+	#pmpro_dashboard_follow_us ul li:not(:last-child) {
+		margin: 0;
+	}
+}
+
+/* min width 1024px, max width 1380px */
+@media (min-width: 768px) and (max-width: 1380px) {
+	#pmpro-dashboard-form #dashboard-widgets.metabox-holder {
+		grid-template-columns: 1fr; /* Single column on smaller screens */
+	}
+
+	/* All metaboxes span full width at this breakpoint - clean and simple */
+	#pmpro-dashboard-form #dashboard-widgets .postbox {
+		grid-column: 1 / -1 !important;
+		grid-column-start: auto !important;
+	}
+
+	#pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
+		grid-template-columns:  2fr 2fr; /* Stack columns on smaller screens */
+	}
+
+	/* Make the last item span full width if it's the odd one out */
+	#pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns > :last-child:nth-child(odd) {
+	    grid-column: span 2;
+	}
+
+	#pmpro-dashboard-form .button-hero {
+		display: inline-block;
+	}
+
+	#pmpro_dashboard_quick_links .inside {
+		grid-template-columns: 2fr 2fr; /* Stack quick links on smaller screens */
+	}
+}
+
+/* Fixing core WP UI button styles */
+@media (max-width: 782px) {
+	#pmpro-dashboard-form .pmpro_admin p.pmpro_report-button {
+		margin-top: 3px;
+		margin-bottom: 3px;
+	}
+
+	#pmpro-dashboard-form #dashboard-widgets .postbox-header .button {
+		padding: 8px;
+		line-height: normal;
+		margin-bottom: 0;
+		min-height: auto;
 	}
 }
 
