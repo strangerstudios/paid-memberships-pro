@@ -645,9 +645,9 @@
 							'application_fee_percent' => $application_fee,
 						)
 					);
-					$logstr .= "Updated application fee for subscription " . $subscription . " to " . $application_fee . "%.";
+					$logstr .= "Updated application fee for subscription " . $invoice->subscription . " to " . $application_fee . "%.";
 				} catch ( Exception $e ) {
-					$logstr .= "Could not update application fee for subscription " . $subscription . ". " . $e->getMessage();
+					$logstr .= "Could not update application fee for subscription " . $invoice->subscription . ". " . $e->getMessage();
 				}
 			}
 			pmpro_stripeWebhookExit();
