@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.5\n"
+"Project-Id-Version: Paid Memberships Pro 3.5.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-07T16:02:03+00:00\n"
+"POT-Creation-Date: 2025-07-09T17:36:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -1025,6 +1025,7 @@ msgstr "Παρακαλώ <a href=\"%s\">συνδεθείτε</a> για να δ�
 #: includes/functions.php:2122
 #: includes/functions.php:2131
 #: includes/functions.php:2147
+#: includes/functions.php:2184
 msgid "This content is for members only. Visit the site and log in/register to read."
 msgstr "Το περιεχόμενο είναι διαθέσιμο μόνο για συνδρομητές. Επισκεφθείτε τον ιστότοπο, συνδεθείτε/εγγραφείτε για να το δείτε."
 
@@ -5364,6 +5365,7 @@ msgstr "Υπό Σύνολο"
 #: includes/functions.php:3237
 #: includes/functions.php:3246
 #: includes/functions.php:3262
+#: includes/functions.php:3299
 msgid "Tax"
 msgstr "Φόρος"
 
@@ -5473,6 +5475,7 @@ msgstr "Ποσό Κουπονιού"
 #: includes/functions.php:3267
 #: includes/functions.php:3283
 #: adminpages/metaboxes/recent-orders.php:33
+#: includes/functions.php:3320
 msgid "Total"
 msgstr "Σύνολο"
 
@@ -8538,6 +8541,7 @@ msgstr "Τιμή"
 #: includes/functions.php:3230
 #: includes/functions.php:3239
 #: includes/functions.php:3255
+#: includes/functions.php:3292
 msgid "Subtotal"
 msgstr "Σύνολο"
 
@@ -12756,6 +12760,7 @@ msgstr "Δεν βρέθηκε το Επίπεδο Συνδρομής"
 #: includes/functions.php:1900
 #: includes/functions.php:1909
 #: includes/functions.php:1925
+#: includes/functions.php:1962
 msgid "No code was given to check."
 msgstr "Δεν δόθηκε κωδικός προς έλεγχο."
 
@@ -12794,6 +12799,7 @@ msgstr "Δεν δόθηκε κωδικός προς έλεγχο."
 #: includes/functions.php:1909
 #: includes/functions.php:1918
 #: includes/functions.php:1934
+#: includes/functions.php:1971
 msgid "The discount code could not be found."
 msgstr "Δεν βρέθηκε ο παρών κωδικός έκπτωσης."
 
@@ -12832,6 +12838,7 @@ msgstr "Δεν βρέθηκε ο παρών κωδικός έκπτωσης."
 #: includes/functions.php:1924
 #: includes/functions.php:1933
 #: includes/functions.php:1949
+#: includes/functions.php:1986
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "Ο παρών κωδικός έκπτωσης μπαίνει σε λειτουργία στις %s."
@@ -12871,6 +12878,7 @@ msgstr "Ο παρών κωδικός έκπτωσης μπαίνει σε λει
 #: includes/functions.php:1931
 #: includes/functions.php:1940
 #: includes/functions.php:1956
+#: includes/functions.php:1993
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "Ο παρών κωδικός έκπτωσης έληξε στις %s."
@@ -12910,6 +12918,7 @@ msgstr "Ο παρών κωδικός έκπτωσης έληξε στις %s."
 #: includes/functions.php:1940
 #: includes/functions.php:1949
 #: includes/functions.php:1965
+#: includes/functions.php:2002
 msgid "This discount code is no longer valid."
 msgstr "Ο παρών κωδικός έκπτωσης δεν είναι πλέον έγκυρος."
 
@@ -12948,6 +12957,7 @@ msgstr "Ο παρών κωδικός έκπτωσης δεν είναι πλέο
 #: includes/functions.php:1969
 #: includes/functions.php:1978
 #: includes/functions.php:1994
+#: includes/functions.php:2031
 msgid "This discount code does not apply to this membership level."
 msgstr "Ο παρών κωδικός έκπτωσης δεν εφαρμόζεται σε αυτό το επίπεδο συνδρομής."
 
@@ -12987,6 +12997,7 @@ msgstr "Ο παρών κωδικός έκπτωσης δεν εφαρμόζετ�
 #: includes/functions.php:2007
 #: includes/functions.php:2016
 #: includes/functions.php:2032
+#: includes/functions.php:2069
 msgid "This discount code is okay."
 msgstr "Ο παρών κωδικός έκπτωσης είναι εντάξει."
 
@@ -13027,6 +13038,7 @@ msgstr "Ο παρών κωδικός έκπτωσης είναι εντάξει.
 #: includes/functions.php:2041
 #: includes/functions.php:2050
 #: includes/functions.php:2066
+#: includes/functions.php:2103
 msgid "and"
 msgstr "και"
 
@@ -13071,6 +13083,7 @@ msgstr "και"
 #: includes/functions.php:2748
 #: includes/functions.php:2757
 #: includes/functions.php:2773
+#: includes/functions.php:2810
 msgid "Sign Up for !!name!! Now"
 msgstr "Εγγραφείτε για !!name!! Τώρα"
 
@@ -14373,6 +14386,7 @@ msgstr "Έχετε ήδη λογαριασμό;"
 #: includes/functions.php:2207
 #: pages/checkout.php:362
 #: includes/functions.php:2223
+#: includes/functions.php:2260
 msgid "Log in here"
 msgstr "Συνδεθείτε εδώ"
 
@@ -17079,6 +17093,7 @@ msgstr ""
 #: includes/functions.php:2155
 #: includes/functions.php:2171
 #: adminpages/metaboxes/welcome.php:36
+#: includes/functions.php:2208
 msgid "View Membership Levels"
 msgstr ""
 
@@ -18798,6 +18813,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1209
 #: adminpages/subscriptions.php:420
 #: classes/class-pmpro-subscription.php:1227
+#: classes/class-pmpro-members-list-table.php:585
 msgid "Edit User"
 msgstr ""
 
@@ -24619,6 +24635,7 @@ msgstr ""
 #: includes/functions.php:2772
 #: includes/functions.php:2781
 #: includes/functions.php:2797
+#: includes/functions.php:2834
 msgid "Sign Up Now"
 msgstr ""
 
@@ -24930,6 +24947,7 @@ msgstr ""
 #: includes/functions.php:2152
 #: includes/functions.php:2161
 #: includes/functions.php:2177
+#: includes/functions.php:2214
 msgid "Join Now"
 msgstr ""
 
@@ -29937,6 +29955,7 @@ msgstr ""
 #: includes/functions.php:2142
 #: includes/functions.php:2151
 #: includes/functions.php:2167
+#: includes/functions.php:2204
 msgid "Membership Required"
 msgstr ""
 
@@ -33892,6 +33911,7 @@ msgstr ""
 #: includes/functions.php:4773
 #: includes/functions.php:4796
 #: includes/functions.php:4839
+#: includes/functions.php:4876
 msgid "No file was uploaded."
 msgstr ""
 
@@ -33915,6 +33935,7 @@ msgstr ""
 #: includes/functions.php:4779
 #: includes/functions.php:4802
 #: includes/functions.php:4845
+#: includes/functions.php:4882
 msgid "No file name found."
 msgstr ""
 
@@ -33955,6 +33976,8 @@ msgstr ""
 #: includes/functions.php:4824
 #: includes/functions.php:4852
 #: includes/functions.php:4867
+#: includes/functions.php:4889
+#: includes/functions.php:4904
 msgid "Invalid file type."
 msgstr ""
 
@@ -33977,6 +34000,7 @@ msgstr ""
 #: includes/functions.php:4786
 #: includes/functions.php:4818
 #: includes/functions.php:4861
+#: includes/functions.php:4898
 msgid "Invalid field input."
 msgstr ""
 
@@ -33998,6 +34022,7 @@ msgstr ""
 #: includes/functions.php:4826
 #: includes/functions.php:4858
 #: includes/functions.php:4901
+#: includes/functions.php:4938
 msgid "Invalid file submission."
 msgstr ""
 
@@ -34156,6 +34181,7 @@ msgstr ""
 #: includes/profile.php:88
 #: classes/class-pmpro-members-list-table.php:689
 #: classes/class-pmpro-members-list-table.php:674
+#: classes/class-pmpro-members-list-table.php:684
 #, php-format
 msgid "This user has %1$d active subscription for this level. %2$s"
 msgid_plural "This user has %1$d active subscriptions for this level. %2$s"
@@ -34170,6 +34196,7 @@ msgstr[1] ""
 #: includes/profile.php:98
 #: classes/class-pmpro-members-list-table.php:699
 #: classes/class-pmpro-members-list-table.php:684
+#: classes/class-pmpro-members-list-table.php:694
 msgid "View Subscriptions"
 msgstr ""
 
@@ -34190,6 +34217,7 @@ msgstr ""
 #: classes/class-pmpro-subscriptions-list-table.php:459
 #: classes/class-pmpro-subscriptions-list-table.php:469
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:172
+#: classes/class-pmpro-members-list-table.php:707
 msgid "View Details"
 msgstr ""
 
@@ -35022,6 +35050,7 @@ msgstr ""
 #: includes/adminpages.php:745
 #: adminpages/subscriptions.php:415
 #: classes/class-pmpro-subscription.php:1227
+#: classes/class-pmpro-members-list-table.php:580
 msgid "Edit Member"
 msgstr ""
 
@@ -37924,6 +37953,7 @@ msgstr ""
 #: includes/functions.php:2143
 #: includes/functions.php:2152
 #: includes/functions.php:2168
+#: includes/functions.php:2205
 msgid " You must be a member to access this content."
 msgstr ""
 
@@ -37933,6 +37963,7 @@ msgstr ""
 #: includes/functions.php:2149
 #: includes/functions.php:2158
 #: includes/functions.php:2174
+#: includes/functions.php:2211
 msgid "!!levels!! Membership Required"
 msgstr ""
 
@@ -37942,6 +37973,7 @@ msgstr ""
 #: includes/functions.php:2150
 #: includes/functions.php:2159
 #: includes/functions.php:2175
+#: includes/functions.php:2212
 msgid " You must be a !!levels!! member to access this content."
 msgstr ""
 
@@ -37951,6 +37983,7 @@ msgstr ""
 #: includes/functions.php:2198
 #: includes/functions.php:2207
 #: includes/functions.php:2223
+#: includes/functions.php:2260
 msgid "Already a member?"
 msgstr ""
 
@@ -38641,6 +38674,7 @@ msgstr ""
 #: includes/functions.php:4805
 #: includes/functions.php:4837
 #: includes/functions.php:4880
+#: includes/functions.php:4917
 #, php-format
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr ""
@@ -38652,6 +38686,7 @@ msgstr ""
 #: includes/functions.php:4812
 #: includes/functions.php:4844
 #: includes/functions.php:4887
+#: includes/functions.php:4924
 #, php-format
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr ""
@@ -38877,6 +38912,7 @@ msgstr ""
 #: includes/functions.php:1950
 #: includes/functions.php:1959
 #: includes/functions.php:1975
+#: includes/functions.php:2012
 msgid "You have already used the discount code provided."
 msgstr ""
 
@@ -38956,6 +38992,7 @@ msgstr ""
 #: includes/functions.php:5010
 #: includes/functions.php:5033
 #: includes/functions.php:5076
+#: includes/functions.php:5113
 msgid "Order not found."
 msgstr ""
 
@@ -38964,6 +39001,7 @@ msgstr ""
 #: includes/functions.php:5015
 #: includes/functions.php:5038
 #: includes/functions.php:5081
+#: includes/functions.php:5118
 msgid "Order is not a token order."
 msgstr ""
 
@@ -38972,6 +39010,7 @@ msgstr ""
 #: includes/functions.php:5020
 #: includes/functions.php:5043
 #: includes/functions.php:5086
+#: includes/functions.php:5123
 msgid "Order gateway not found."
 msgstr ""
 
@@ -40220,6 +40259,7 @@ msgstr ""
 #: includes/functions.php:3816
 #: includes/functions.php:3825
 #: includes/functions.php:3841
+#: includes/functions.php:3878
 msgid "The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class."
 msgstr ""
 
@@ -40909,15 +40949,19 @@ msgid "Logins Report Pagination"
 msgstr ""
 
 #: includes/functions.php:1635
+#: includes/functions.php:1672
 msgid "Pagination"
 msgstr ""
 
 #: includes/functions.php:1651
+#: includes/functions.php:1688
 msgid "Go to the previous page"
 msgstr ""
 
 #: includes/functions.php:1651
 #: includes/functions.php:1653
+#: includes/functions.php:1688
+#: includes/functions.php:1690
 msgid "Previous"
 msgstr ""
 
@@ -40929,26 +40973,41 @@ msgstr ""
 #: includes/functions.php:1699
 #: includes/functions.php:1701
 #: includes/functions.php:1714
+#: includes/functions.php:1700
+#: includes/functions.php:1711
+#: includes/functions.php:1716
+#: includes/functions.php:1718
+#: includes/functions.php:1731
+#: includes/functions.php:1736
+#: includes/functions.php:1738
+#: includes/functions.php:1751
 #, php-format
 msgid "Page %s"
 msgstr ""
 
 #: includes/functions.php:1685
 #: includes/functions.php:1705
+#: includes/functions.php:1722
+#: includes/functions.php:1742
 msgid "Page 1"
 msgstr ""
 
 #: includes/functions.php:1687
 #: includes/functions.php:1707
+#: includes/functions.php:1724
+#: includes/functions.php:1744
 msgid "Page 2"
 msgstr ""
 
 #: includes/functions.php:1723
+#: includes/functions.php:1760
 msgid "Go to the next page"
 msgstr ""
 
 #: includes/functions.php:1723
 #: includes/functions.php:1725
+#: includes/functions.php:1760
+#: includes/functions.php:1762
 msgid "Next"
 msgstr ""
 

@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.5\n"
+"Project-Id-Version: Paid Memberships Pro 3.5.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-07T16:02:48+00:00\n"
+"POT-Creation-Date: 2025-07-09T17:37:02+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -51,6 +51,7 @@ msgstr "Notícia importante: Atualização do Paid Memberships Pro v3.2"
 #: includes/functions.php:4812
 #: includes/functions.php:4844
 #: includes/functions.php:4887
+#: includes/functions.php:4924
 #, php-format
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr "O tamanho do arquivo é muito grande para %s. Envie arquivos menores do que %d MB."
@@ -62,6 +63,7 @@ msgstr "O tamanho do arquivo é muito grande para %s. Envie arquivos menores do 
 #: includes/functions.php:4805
 #: includes/functions.php:4837
 #: includes/functions.php:4880
+#: includes/functions.php:4917
 #, php-format
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr "Tipo inválido de arquivo. Tente enviar arquivos do(s) tipo(s): %s"
@@ -651,6 +653,7 @@ msgstr "Exibir a senha"
 #: includes/functions.php:2198
 #: includes/functions.php:2207
 #: includes/functions.php:2223
+#: includes/functions.php:2260
 msgid "Already a member?"
 msgstr "Já se associou?"
 
@@ -658,6 +661,7 @@ msgstr "Já se associou?"
 #: includes/functions.php:2150
 #: includes/functions.php:2159
 #: includes/functions.php:2175
+#: includes/functions.php:2212
 msgid " You must be a !!levels!! member to access this content."
 msgstr " Você precisa ser um associado !!levels!! para acessar este conteúdo."
 
@@ -665,6 +669,7 @@ msgstr " Você precisa ser um associado !!levels!! para acessar este conteúdo."
 #: includes/functions.php:2149
 #: includes/functions.php:2158
 #: includes/functions.php:2174
+#: includes/functions.php:2211
 msgid "!!levels!! Membership Required"
 msgstr "Associação !!levels!! Obrigatória"
 
@@ -672,6 +677,7 @@ msgstr "Associação !!levels!! Obrigatória"
 #: includes/functions.php:2143
 #: includes/functions.php:2152
 #: includes/functions.php:2168
+#: includes/functions.php:2205
 msgid " You must be a member to access this content."
 msgstr " Você precisa ser associado para ter acesso a este conteúdo."
 
@@ -2661,6 +2667,7 @@ msgstr "Associado desconhecido"
 #: includes/adminpages.php:745
 #: adminpages/subscriptions.php:415
 #: classes/class-pmpro-subscription.php:1227
+#: classes/class-pmpro-members-list-table.php:580
 msgid "Edit Member"
 msgstr "Editar associado"
 
@@ -3212,6 +3219,7 @@ msgstr "Nenhuma assinatura foi encontrada."
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:162
 #: classes/class-pmpro-members-list-table.php:684
 #: includes/profile.php:98
+#: classes/class-pmpro-members-list-table.php:694
 msgid "View Subscriptions"
 msgstr "Ver Assinaturas"
 
@@ -3221,6 +3229,7 @@ msgstr "Ver Assinaturas"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:152
 #: classes/class-pmpro-members-list-table.php:674
 #: includes/profile.php:88
+#: classes/class-pmpro-members-list-table.php:684
 #, php-format
 msgid "This user has %1$d active subscription for this level. %2$s"
 msgid_plural "This user has %1$d active subscriptions for this level. %2$s"
@@ -3364,6 +3373,7 @@ msgstr "Menu da Área de Associações"
 #: includes/functions.php:4835
 #: includes/functions.php:4858
 #: includes/functions.php:4901
+#: includes/functions.php:4938
 msgid "Invalid file submission."
 msgstr "Envio de arquivo inválido."
 
@@ -3374,6 +3384,7 @@ msgstr "Envio de arquivo inválido."
 #: includes/functions.php:4786
 #: includes/functions.php:4818
 #: includes/functions.php:4861
+#: includes/functions.php:4898
 msgid "Invalid field input."
 msgstr "Entrada inválida no campo."
 
@@ -3392,6 +3403,8 @@ msgstr "Entrada inválida no campo."
 #: includes/functions.php:4824
 #: includes/functions.php:4852
 #: includes/functions.php:4867
+#: includes/functions.php:4889
+#: includes/functions.php:4904
 msgid "Invalid file type."
 msgstr "Tipo de arquivo inválido."
 
@@ -3403,6 +3416,7 @@ msgstr "Tipo de arquivo inválido."
 #: includes/functions.php:4779
 #: includes/functions.php:4802
 #: includes/functions.php:4845
+#: includes/functions.php:4882
 msgid "No file name found."
 msgstr "Nenhum nome de arquivo foi encontrado."
 
@@ -3414,6 +3428,7 @@ msgstr "Nenhum nome de arquivo foi encontrado."
 #: includes/functions.php:4773
 #: includes/functions.php:4796
 #: includes/functions.php:4839
+#: includes/functions.php:4876
 msgid "No file was uploaded."
 msgstr "Nenhum arquivo foi enviado."
 
@@ -5415,6 +5430,7 @@ msgstr "Pedido %s excluído com sucesso."
 #: includes/functions.php:2142
 #: includes/functions.php:2151
 #: includes/functions.php:2167
+#: includes/functions.php:2204
 msgid "Membership Required"
 msgstr "Associação Obrigatória"
 
@@ -8612,6 +8628,7 @@ msgstr "Cadastrar-se"
 #: includes/functions.php:2152
 #: includes/functions.php:2161
 #: includes/functions.php:2177
+#: includes/functions.php:2214
 msgid "Join Now"
 msgstr "Associe-se Agora"
 
@@ -8816,6 +8833,7 @@ msgstr "Editar ordem"
 #: classes/class-pmpro-subscription.php:1209
 #: adminpages/subscriptions.php:420
 #: classes/class-pmpro-subscription.php:1227
+#: classes/class-pmpro-members-list-table.php:585
 msgid "Edit User"
 msgstr "Editar usuário"
 
@@ -9460,6 +9478,7 @@ msgstr "Atualização PMPro v2.0"
 #: includes/functions.php:2772
 #: includes/functions.php:2781
 #: includes/functions.php:2797
+#: includes/functions.php:2834
 msgid "Sign Up Now"
 msgstr "Registre-se agora"
 
@@ -9607,6 +9626,7 @@ msgstr "Gerar as páginas de associação"
 #: includes/functions.php:2155
 #: includes/functions.php:2171
 #: adminpages/metaboxes/welcome.php:36
+#: includes/functions.php:2208
 msgid "View Membership Levels"
 msgstr "Ver os níveis de associação"
 
@@ -11890,6 +11910,7 @@ msgstr "Confirme a senha"
 #: includes/functions.php:2207
 #: pages/checkout.php:362
 #: includes/functions.php:2223
+#: includes/functions.php:2260
 msgid "Log in here"
 msgstr "Acesse aqui"
 
@@ -12230,6 +12251,7 @@ msgstr "Nenhum"
 #: includes/functions.php:2748
 #: includes/functions.php:2757
 #: includes/functions.php:2773
+#: includes/functions.php:2810
 msgid "Sign Up for !!name!! Now"
 msgstr "Registre-se já em !!name!!"
 
@@ -12237,6 +12259,7 @@ msgstr "Registre-se já em !!name!!"
 #: includes/functions.php:2041
 #: includes/functions.php:2050
 #: includes/functions.php:2066
+#: includes/functions.php:2103
 msgid "and"
 msgstr "e"
 
@@ -12244,6 +12267,7 @@ msgstr "e"
 #: includes/functions.php:2007
 #: includes/functions.php:2016
 #: includes/functions.php:2032
+#: includes/functions.php:2069
 msgid "This discount code is okay."
 msgstr "Este código de desconto está ok."
 
@@ -12251,18 +12275,21 @@ msgstr "Este código de desconto está ok."
 #: includes/functions.php:1969
 #: includes/functions.php:1978
 #: includes/functions.php:1994
+#: includes/functions.php:2031
 msgid "This discount code does not apply to this membership level."
 msgstr "Este código de desconto não se aplica a esse nível de associação."
 
 #: includes/functions.php:1940
 #: includes/functions.php:1949
 #: includes/functions.php:1965
+#: includes/functions.php:2002
 msgid "This discount code is no longer valid."
 msgstr "Este código de desconto não é mais válido."
 
 #: includes/functions.php:1931
 #: includes/functions.php:1940
 #: includes/functions.php:1956
+#: includes/functions.php:1993
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "Este código de desconto expirou em %s."
@@ -12270,6 +12297,7 @@ msgstr "Este código de desconto expirou em %s."
 #: includes/functions.php:1924
 #: includes/functions.php:1933
 #: includes/functions.php:1949
+#: includes/functions.php:1986
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "Este código de desconto entra em efeito em %s."
@@ -12277,12 +12305,14 @@ msgstr "Este código de desconto entra em efeito em %s."
 #: includes/functions.php:1909
 #: includes/functions.php:1918
 #: includes/functions.php:1934
+#: includes/functions.php:1971
 msgid "The discount code could not be found."
 msgstr "Não foi possível encontrar o código de desconto."
 
 #: includes/functions.php:1900
 #: includes/functions.php:1909
 #: includes/functions.php:1925
+#: includes/functions.php:1962
 msgid "No code was given to check."
 msgstr "Nenhum código foi informado para verificar."
 
@@ -13524,6 +13554,7 @@ msgstr "Atualizando o Paid Memberships Pro"
 #: includes/functions.php:3230
 #: includes/functions.php:3239
 #: includes/functions.php:3255
+#: includes/functions.php:3292
 msgid "Subtotal"
 msgstr "Subtotal"
 
@@ -14441,6 +14472,7 @@ msgstr "Tipo de pagamento"
 #: includes/functions.php:3267
 #: includes/functions.php:3283
 #: adminpages/metaboxes/recent-orders.php:33
+#: includes/functions.php:3320
 msgid "Total"
 msgstr "Total"
 
@@ -14453,6 +14485,7 @@ msgstr "Total"
 #: includes/functions.php:3237
 #: includes/functions.php:3246
 #: includes/functions.php:3262
+#: includes/functions.php:3299
 msgid "Tax"
 msgstr "Impostos"
 
@@ -14639,16 +14672,19 @@ msgstr "Pesquisar associados"
 
 #: classes/class-pmpro-members-list-table.php:304
 #: classes/class-pmpro-members-list-table.php:793
+#: classes/class-pmpro-members-list-table.php:803
 msgid "Old Members"
 msgstr "Associados antigos"
 
 #: classes/class-pmpro-members-list-table.php:303
 #: classes/class-pmpro-members-list-table.php:792
+#: classes/class-pmpro-members-list-table.php:802
 msgid "Expired Members"
 msgstr "Associados expirados"
 
 #: classes/class-pmpro-members-list-table.php:302
 #: classes/class-pmpro-members-list-table.php:791
+#: classes/class-pmpro-members-list-table.php:801
 msgid "Cancelled Members"
 msgstr "Associados cancelados"
 
@@ -14671,6 +14707,7 @@ msgstr "Associados cancelados"
 #: classes/class-pmpro-subscriptions-list-table.php:386
 #: classes/email-templates/class-pmpro-email-template-cancel-admin.php:160
 #: classes/email-templates/class-pmpro-email-template-cancel.php:153
+#: classes/class-pmpro-members-list-table.php:791
 msgid "All Levels"
 msgstr "Todos os níveis"
 
@@ -14682,6 +14719,7 @@ msgstr "Todos os níveis"
 #: classes/class-pmpro-subscriptions-list-table.php:382
 #: classes/class-pmpro-subscriptions-list-table.php:384
 #: classes/class-pmpro-orders-list-table.php:578
+#: classes/class-pmpro-members-list-table.php:789
 msgid "Show"
 msgstr "Exibir"
 
@@ -15520,6 +15558,7 @@ msgstr "Configurações avançadas"
 #: includes/functions.php:2122
 #: includes/functions.php:2131
 #: includes/functions.php:2147
+#: includes/functions.php:2184
 msgid "This content is for members only. Visit the site and log in/register to read."
 msgstr "Este conteúdo é apenas para associados. Visite o site e acesse/cadastre-se para ler."
 
@@ -15664,6 +15703,7 @@ msgstr "Adicione um nível de associação para começar."
 #: classes/class-pmpro-subscriptions-list-table.php:459
 #: classes/class-pmpro-subscriptions-list-table.php:469
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:172
+#: classes/class-pmpro-members-list-table.php:707
 msgid "View Details"
 msgstr "Ver detalhes"
 
@@ -15985,6 +16025,7 @@ msgstr ""
 #: includes/functions.php:1950
 #: includes/functions.php:1959
 #: includes/functions.php:1975
+#: includes/functions.php:2012
 msgid "You have already used the discount code provided."
 msgstr ""
 
@@ -16064,6 +16105,7 @@ msgstr ""
 #: includes/functions.php:5010
 #: includes/functions.php:5033
 #: includes/functions.php:5076
+#: includes/functions.php:5113
 msgid "Order not found."
 msgstr ""
 
@@ -16072,6 +16114,7 @@ msgstr ""
 #: includes/functions.php:5015
 #: includes/functions.php:5038
 #: includes/functions.php:5081
+#: includes/functions.php:5118
 msgid "Order is not a token order."
 msgstr ""
 
@@ -16080,6 +16123,7 @@ msgstr ""
 #: includes/functions.php:5020
 #: includes/functions.php:5043
 #: includes/functions.php:5086
+#: includes/functions.php:5123
 msgid "Order gateway not found."
 msgstr ""
 
@@ -17341,6 +17385,7 @@ msgstr ""
 #: includes/functions.php:3816
 #: includes/functions.php:3825
 #: includes/functions.php:3841
+#: includes/functions.php:3878
 msgid "The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class."
 msgstr ""
 
@@ -18030,15 +18075,19 @@ msgid "Logins Report Pagination"
 msgstr ""
 
 #: includes/functions.php:1635
+#: includes/functions.php:1672
 msgid "Pagination"
 msgstr ""
 
 #: includes/functions.php:1651
+#: includes/functions.php:1688
 msgid "Go to the previous page"
 msgstr ""
 
 #: includes/functions.php:1651
 #: includes/functions.php:1653
+#: includes/functions.php:1688
+#: includes/functions.php:1690
 msgid "Previous"
 msgstr ""
 
@@ -18050,26 +18099,41 @@ msgstr ""
 #: includes/functions.php:1699
 #: includes/functions.php:1701
 #: includes/functions.php:1714
+#: includes/functions.php:1700
+#: includes/functions.php:1711
+#: includes/functions.php:1716
+#: includes/functions.php:1718
+#: includes/functions.php:1731
+#: includes/functions.php:1736
+#: includes/functions.php:1738
+#: includes/functions.php:1751
 #, php-format
 msgid "Page %s"
 msgstr ""
 
 #: includes/functions.php:1685
 #: includes/functions.php:1705
+#: includes/functions.php:1722
+#: includes/functions.php:1742
 msgid "Page 1"
 msgstr ""
 
 #: includes/functions.php:1687
 #: includes/functions.php:1707
+#: includes/functions.php:1724
+#: includes/functions.php:1744
 msgid "Page 2"
 msgstr ""
 
 #: includes/functions.php:1723
+#: includes/functions.php:1760
 msgid "Go to the next page"
 msgstr ""
 
 #: includes/functions.php:1723
 #: includes/functions.php:1725
+#: includes/functions.php:1760
+#: includes/functions.php:1762
 msgid "Next"
 msgstr ""
 
