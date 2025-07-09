@@ -1,4 +1,10 @@
 == Changelog ==
+= 3.5.1 - 2025-07-09 =
+* ENHANCEMENT: Added caching to the `pmpro_getMembershipCategories()` function to improve performance. #3421 (@dalemugford)
+* ENHANCEMENT: Optimized the query used to retrieve the list of members to show in the Members List table. #3413 (@dalemugford, @dparker1005)
+* BUG FIX: Removed code added in 3.5 that would slow down the query to retrieve the list of members to show in the Members List table. #3430 (@dparker1005)
+* BUG FIX: Fixed an issue where the subscription ID may not be shown in some Stripe webhook log messages. #3429 (@dwanjuki)
+
 = 3.5 - 2025-07-07 =
 * FEATURE: Now using Action Scheduler to handle scheduled tasks. #3393 (@dalemugford)
 * FEATURE: Now allowing files to be restricted using the new `pmpro_can_access_restricted_file` filter. This is currently used to ensure that log files generated during gateway webhook handlers can only be viewed by administrators. #3308 (@dparker1005)

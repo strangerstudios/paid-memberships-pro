@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.5
+Stable tag: 3.5.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,12 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.5.1 - 2025-07-09 =
+* ENHANCEMENT: Added caching to the `pmpro_getMembershipCategories()` function to improve performance. #3421 (@dalemugford)
+* ENHANCEMENT: Optimized the query used to retrieve the list of members to show in the Members List table. #3413 (@dalemugford, @dparker1005)
+* BUG FIX: Removed code added in 3.5 that would slow down the query to retrieve the list of members to show in the Members List table. #3430 (@dparker1005)
+* BUG FIX: Fixed an issue where the subscription ID may not be shown in some Stripe webhook log messages. #3429 (@dwanjuki)
+
 = 3.5 - 2025-07-07 =
 * FEATURE: Now using Action Scheduler to handle scheduled tasks. #3393 (@dalemugford)
 * FEATURE: Now allowing files to be restricted using the new `pmpro_can_access_restricted_file` filter. This is currently used to ensure that log files generated during gateway webhook handlers can only be viewed by administrators. #3308 (@dparker1005)
@@ -384,43 +390,6 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Updated translation files bundled with the plugin. #3168 (@MaximilianoRicoTabo)
 * BUG FIX/ENHANCEMENT: Improved the padding around list tables on large screens. #3169 (@kimcoleman)
 * BUG FIX: Fixed a PHP warning in the `pmpro_use_default_login_for_confirm_admin_email()` function. #3162 (@MaximilianoRicoTabo)
-
-= 3.2.2 - 2024-10-12 =
-* ENHANCEMENT: Added screen reader text to identify an empty header row on levels table output. #3161 (@kimcoleman)
-* BUG FIX: Fixed issue where some third party gateways were no longer cancelling subscriptions at the gateway when cancelled locally in WP/PMPro. If you were using a gateway that is not included with the core PMPro plugin, please double check all recent cancellations to make sure they were sync'd to your gateway. If not, you will have to cancel those subscriptions at the gateway manually. #3164 (@ideadude)
-
-= 3.2.1 - 2024-10-08 =
-* ENHANCEMENT: Improved the print styles for frontend pages. #3158 (@kimcoleman)
-* BUG FIX: Fixed an issue where payments would not complete when Stripe 3DS was triggered. #3157 (@dparker1005)
-* BUG FIX: Fixed an issue where "file" user fields would not allow uploads if the file restrictions setting was empty. #3156 (@andrewlimaza)
-* BUG FIX: Fixed a deprecation warning when using Stripe Checkout. #3160 (@dparker1005)
-* BUG FIX: Fixed an issue where the "street2" billing address field may not be saved for Stripe payments. (@dparker1005)
-
-= 3.2 - 2024-10-02 =
-* FEATURE: Users will now receive a notification email when they have an upcoming subscription payment. #3109 (@dparker1005)
-* FEATURE: Added integration with Cloudflare Turnstile. #3123 (@andrewlimaza)
-* ENHANCEMENT: The business address for the website can now be set on the Advanced Settings page and will be shown on invoices. #3134 (@MaximilianoRicoTabo)
-* ENHANCEMENT: Added a table view on the Email Templates settings page. #3128 (@kimcoleman)
-* ENHANCEMENT: Added the Checkbox Group user field type. #3126 (@andrewlimaza)
-* ENHANCEMENT: A default value can now be set for user fields that do not allow multiselect or file uploads. #3132 (@andrewlimaza)
-* ENHANCEMENT: Allowed file types and maximum file sizes can now be set for "File" user fields. #3133 (@andrewlimaza)
-* ENHANCEMENT: Added three new filters at checkout to allow checks at different parts of the checkout process: `pmpro_checkout_checks`, `pmpro_checkout_user_creation_checks`, and `pmpro_checkout_order_creation_checks`. #3137 (@dparker1005)
-* ENHANCEMENT: Now creating a user at checkout even when order creation checks fail. #3137 (@dparker1005)
-* ENHANCEMENT: Memberships on the Membership Account page will now be shown in the order set on the Membership Levels settings page. #3112 (@kimcoleman)
-* ENHANCEMENT: Updated the wording around "legacy keys" and "restricted keys" for the Stripe gateway. #3151 (@dparker1005)
-* BUG FIX/ENHANCEMENT: Street2 billing address lines are now stored separately in the MemberOrder object. #3122 (@dparker1005)
-* BUG FIX: Fixed an issue where payment fields on the update billing page might be wrapped in nested cards. #3143 (@kimcoleman)
-* REFACTOR: Abstracted all "Terms of Service" logic into a single file. #3119 (@dparker1005)
-* REFACTOR: Abstracted all reCAPTCHA logic into a single file. #3105 (@dparker1005)
-* REFACTOR: Cleaned up the checkout preheader flow including deprecating the `pmpro_build_order_for_checkout()` function in favor of inline logic. #3129 (@dparker1005)
-* REFACTOR: Updated the PayPal Express integration to run checkout logic in its `process()` method instead of on actions that are being deprecated. #3116 (@dparker1005)
-* REFACTOR: Updated the Stripe  integration to send users to Stripe Checkout in the `process()` method instead of during the `pmpro_checkout_before_change_membership_level` hook. #3104 (@dparker1005)
-* DEPRECATED: Marking the Authorize.net gateway integration as deprecated. Websites that are already using Authorize.net can continue using that gateway, but new sites will not be shown Authorize.net as a gateway option. #3150 (@dparker1005)
-* DEPRECATED: PayPal Express will no longer automatically be enabled as a second payment option when using the deprecated Website Payments Pro gateway. This functionality can be restored by using the Add PayPal Express Add On. #3114 (@dparker1005)
-* DEPRECATED: Marked the following filters at checkout as deprecated: `pmpro_checkout_oldemail`, `pmpro_new_user`, `pmpro_require_billing`, and `pmpro_checkout_confirmed`. #3137 (@dparker1005)
-* DEPRECATED: Now throwing deprecation warnings for dynamic order properties that were previously used at by gateways at checkout. #3122 (@dparker1005)
-* DEPRECATED: Marked the `getGatewaySubscriptionStatus()`, `getGatewayTransactionStatus()`, and `confirm()` MemberOrder methods as deprecated. #3129, #3116 (@dparker1005)
-* DEPRECATED: Removed sample code from methods in the `PMProGateway` class and marked sample helper methods as deprecated. #3129 (@dparker1005)
 
 == Upgrade Notice ==
 = 3.0 =
