@@ -10,12 +10,14 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 function pmpro_dashboard_report_recent_members_callback() {
 	global $wpdb;
 
 	// Check if we have a cache.
 	if ( false === ( $theusers = get_transient( 'pmpro_dashboard_report_recent_members' ) ) ) {
+		$users_table_name = $wpdb->prefix . 'users';
+		$pmpro_users_table_name = $wpdb->prefix . 'pmpro_memberships_users';
+		$pmpro_levels_table_name = $wpdb->prefix . 'pmpro_membership_levels';
 		// No cached value. Get the users.
 		$sqlQuery = "SELECT
 			u.ID,
@@ -34,14 +36,14 @@ function pmpro_dashboard_report_recent_members_callback() {
 			UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate,
 			m.name as membership
 		FROM wp_users u
-		INNER JOIN wp_pmpro_memberships_users mu
+		INNER JOIN $pmpro_users_table_name mu
 			ON u.ID = mu.user_id
 			AND mu.status = 'active'
-		INNER JOIN wp_pmpro_membership_levels m
+		INNER JOIN $pmpro_levels_table_name m
 			ON mu.membership_id = m.id
 		INNER JOIN (
 			SELECT user_id, MAX(startdate) AS max_startdate
-			FROM wp_pmpro_memberships_users
+			FROM $pmpro_users_table_name
 			WHERE status = 'active'
 			GROUP BY user_id
 		) mu2 ON mu.user_id = mu2.user_id AND mu.startdate = mu2.max_startdate
