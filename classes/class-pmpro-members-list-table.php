@@ -415,9 +415,13 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				// Don't check user meta at all on big sites.
 				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";
 			} else {
-				// Default search checks a few fields.
-				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
-				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' OR ( s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND s.status = 'active' ) ) ";
+				// Search specific meta values
+				$meta_keys = array('first_name', 'last_name', 'billing_phone', 'billing_company');
+				$meta_conditions = array();
+				foreach( $meta_keys as $key ) {
+					$meta_conditions[] = "(um.meta_key = '$key' AND um.meta_value LIKE '%" . esc_sql($s) . "%')";
+				}
+				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' OR (" . implode(' OR ', $meta_conditions) . "))";			
 			}
 		}
 
