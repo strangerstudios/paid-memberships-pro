@@ -382,7 +382,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$sqlQuery .=
 			"	
 			FROM $wpdb->users u 
-			LEFT JOIN $wpdb->pmpro_memberships_users mu
+			INNER JOIN $wpdb->pmpro_memberships_users mu
 			ON u.ID = mu.user_id
 			LEFT JOIN $wpdb->pmpro_membership_levels m
 			ON mu.membership_id = m.id
