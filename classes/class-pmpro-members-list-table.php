@@ -386,11 +386,14 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			ON u.ID = mu.user_id
 			LEFT JOIN $wpdb->pmpro_membership_levels m
 			ON mu.membership_id = m.id
-			LEFT JOIN $wpdb->pmpro_subscriptions s
-			ON mu.user_id = s.user_id
 			";
 
 		if ( !empty( $s ) ) {
+			$sqlQuery .=
+				"	
+				LEFT JOIN $wpdb->pmpro_subscriptions s
+				ON mu.user_id = s.user_id
+				";
 			if ( ! empty( $search_key ) ) {
 				// If there's a colon in the search string, make the search smarter.
 				if( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
