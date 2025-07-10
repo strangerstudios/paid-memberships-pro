@@ -261,6 +261,13 @@
 								?>
 							</tbody>
 						</table>
+						<script>
+							// Show the settings for this gateway.
+							jQuery(document).ready(function() {
+								jQuery('.gateway_<?php echo esc_js( $gateway_name ); ?>').show();
+								jQuery('.gateway_<?php echo esc_js( strtolower( $gateway_name ) ); ?>').show();
+							});
+						</script>
 						<?php
 						return;
 					}
