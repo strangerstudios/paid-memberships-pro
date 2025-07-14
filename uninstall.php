@@ -64,4 +64,8 @@ if ( get_option( 'pmpro_uninstall', 0 ) ) {
 	global $wpdb;
 	$sqlQuery = "DELETE FROM $wpdb->options WHERE option_name LIKE 'pmpro_%'";
 	$wpdb->query($sqlQuery);
+
+	//  Delete all Action Scheduler scheduled actions
+	$wpdb->query("DELETE FROM {$wpdb->prefix}actionscheduler_actions WHERE hook LIKE 'pmpro_%'");
+
 }

@@ -74,6 +74,9 @@ class PMPro_Action_Scheduler {
 		// Add custom hooks for quarter-hourly, hourly, daily and weekly tasks.
 		add_action( 'action_scheduler_init', array( $this, 'add_recurring_hooks' ) );
 
+		// Remove recurring hooks if PMPro is deactivated.
+		add_action( 'pmpro_deactivation', array( $this, 'remove_recurring_hooks' ) );
+
 		// Handle the monthly
 		add_action( 'pmpro_trigger_monthly', array( $this, 'handle_monthly_tasks' ) );
 
@@ -483,6 +486,29 @@ class PMPro_Action_Scheduler {
 		if ( ! $this->has_existing_task( 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' ) ) {
 			$first = self::as_strtotime( 'first day of next month 8:00am' );
 			as_schedule_single_action( $first, 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' );
+		}
+	}
+
+	/**
+	 * Remove all recurring hooks from Action Scheduler.
+	 *
+	 * This method unschedules all recurring tasks that were registered by PMPro.
+	 *
+	 * @access public
+	 * @since 3.5.3
+	 */
+	public function remove_recurring_hooks(){
+		// Find all hooks that belong to the group 'pmpro_recurring_tasks'.
+		$hooks = as_get_scheduled_actions(
+			array(
+				'group' => 'pmpro_recurring_tasks',
+				'status' => ActionScheduler_Store::STATUS_PENDING,
+			),
+			ARRAY_A
+		);
+
+		foreach ( $hooks as $hook ) {
+			as_unschedule_all_actions( $hook, array(), 'pmpro_recurring_tasks' );
 		}
 	}
 
