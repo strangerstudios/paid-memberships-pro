@@ -30,9 +30,6 @@
 			//make sure PayPal Express is a gateway option
 			add_filter('pmpro_gateways', array('PMProGateway_paypalstandard', 'pmpro_gateways'));
 
-			//add fields to payment settings
-			add_filter('pmpro_payment_options', array('PMProGateway_paypalstandard', 'pmpro_payment_options'));
-
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalstandard")
@@ -68,9 +65,11 @@
 		 * @return array
          *
 		 * @since 1.8
+		 * @deprecated 3.5
 		 */
 		static function getGatewayOptions()
 		{
+			_deprecated_function( __METHOD__, '3.5' );
 			$options = array(
 				'gateway_environment',
 				'gateway_email',
@@ -90,9 +89,11 @@
          * @return array
          *
 		 * @since 1.8
+		 * @deprecated 3.5
 		 */
 		static function pmpro_payment_options($options)
 		{
+			_deprecated_function( __METHOD__, '3.5' );
 			//get stripe options
 			$paypal_options = PMProGateway_paypalexpress::getGatewayOptions();
 
@@ -111,6 +112,82 @@
 		static function pmpro_payment_option_fields($values, $gateway) {
 			_deprecated_function( __FUNCTION__, '3.1', 'PMProGateway_paypalexpress::pmpro_payment_option_fields()' );
 			PMProGateway_paypalexpress::pmpro_payment_option_fields( $values, $gateway );
+		}
+
+		/**
+		 * Display fields for PayPal options.
+		 *
+		 * @since 3.5
+		 */
+		public static function show_settings_fields() {
+			?>
+			<div id="pmpro_paypal" class="pmpro_section" data-visibility="shown" data-activated="true">
+				<div class="pmpro_section_toggle">
+					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+						<span class="dashicons dashicons-arrow-up-alt2"></span>
+						<?php esc_html_e( 'Settings', 'paid-memberships-pro' ); ?>
+					</button>
+				</div>
+				<div class="pmpro_section_inside">
+					<table class="form-table">
+						<tbody>
+							<tr class="gateway gateway_paypalstandard">
+								<td colspan="2" style="padding: 0px;">
+									<div class="notice error inline">
+										<p>
+										<?php
+											$allowed_message_html = array (
+												'a' => array (
+													'href' => array(),
+													'target' => array(),
+													'title' => array(),
+												),
+											);
+											echo sprintf( wp_kses( __( 'Note: We do not recommend using PayPal Standard. We suggest using PayPal Express, Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target="_blank" href="%s" title="More information on why can be found here">More information on why can be found here</a>.', 'paid-memberships-pro' ), $allowed_message_html ), 'https://www.paidmembershipspro.com/read-using-paypal-standard-paid-memberships-pro/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=read-using-paypal-standard-paid-memberships-pro' );
+										?>
+										</p>
+									</div>
+								</td>
+							</tr>
+							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+								<th scope="row" valign="top">
+									<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr( get_option( 'pmpro_gateway_email' ) ); ?>" class="regular-text code" />
+								</td>
+							</tr>
+							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+								<th scope="row" valign="top">
+									<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<p class="description"><?php esc_html_e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?></p>
+									<p><code><?php echo esc_html( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );?></code></p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<?php
+		}
+
+		/**
+		 * Save settings for PayPal.
+		 *
+		 * @since 3.5
+		 */
+		public static function save_settings_fields() {
+			$settings_to_save = array(
+				'gateway_email',
+			);
+
+			foreach ( $settings_to_save as $setting ) {
+				if ( isset( $_REQUEST[ $setting ] ) ) {
+					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
+				}
+			}
 		}
 
 		/**

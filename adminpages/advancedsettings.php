@@ -53,9 +53,10 @@
 		pmpro_setOption("wisdom_opt_out");
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
-		pmpro_setOption("uninstall");		
+		pmpro_setOption("uninstall");
+		pmpro_setOption("site_type");
 
-		// Set up Wisdom tracking cron if needed.
+		// Set up Wisdom tracking if needed.
 		if ( (int)get_option( "pmpro_wisdom_opt_out") === 0 ) {
 			$wisdom_integration = PMPro_Wisdom_Integration::instance();
 			$wisdom_integration->wisdom_tracker->schedule_tracking();
@@ -106,12 +107,13 @@
 
 	// Other settings.
 	$hideads = get_option( "pmpro_hideads");
-	$wisdom_opt_out = (int)get_option( "pmpro_wisdom_opt_out");
+	$wisdom_opt_out = (int) get_option( "pmpro_wisdom_opt_out");
 	$hideadslevels = get_option( "pmpro_hideadslevels");
 	if( is_multisite() ) {
 		$redirecttosubscription = get_option( "pmpro_redirecttosubscription");
 	}
 	$uninstall = get_option( 'pmpro_uninstall');
+	$site_type = get_option( 'pmpro_site_type' );
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
@@ -126,6 +128,11 @@
 		<?php wp_nonce_field('savesettings', 'pmpro_advancedsettings_nonce');?>
 		<hr class="wp-header-end">
 		<h1><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
+		<p><?php
+			$advanced_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Advanced Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/advanced-settings/?utm_source=plugin&utm_medium=pmpro-advancedsettings&utm_campaign=documentation&utm_content=advanced-settings">' . esc_html__( 'Advanced Settings', 'paid-memberships-pro' ) . '</a>';
+			// translators: %s: Link to Advanced Settings doc.
+			printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $advanced_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?></p>
 		<div id="restrict-dashboard-access-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
@@ -391,6 +398,25 @@
 				<tbody>
 					<tr>
 						<th scope="row" valign="top">
+							<label for="site_type"><?php esc_html_e('What type of membership site are you creating?', 'paid-memberships-pro' );?></label>
+						</th>
+						<td>
+							<select id="site_type" name="site_type" class="pmpro-wizard__field-block">
+								<option value=""><?php esc_html_e( '-- Select --', 'paid-memberships-pro' ); ?></option>
+								<?php
+								$site_types = pmpro_get_site_types();
+								foreach ( $site_types as $site_type_key => $name ) {
+									?>
+									<option value="<?php echo esc_attr( $site_type_key ); ?>" <?php selected( $site_type_key, $site_type ); ?>><?php echo esc_html( $name ); ?></option>
+									<?php
+								}
+								?>
+							</select>
+							<p class="description"><?php esc_html_e( 'Choose the answer that best fits the primary value of your membership site.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top">
 							<label for="pmpro-hideads"><?php esc_html_e("Hide Ads From Members?", 'paid-memberships-pro' );?></label>
 						</th>
 						<td>
@@ -542,20 +568,20 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 					<tr>
 						<th scope="row" valign="top">
 							<label for="wisdom_opt_out">
-								<?php esc_html_e( 'Enable Tracking', 'paid-memberships-pro' ); ?>
+								<?php esc_html_e( 'Enable Plugin Usage Data Sharing', 'paid-memberships-pro' ); ?>
 							</label>
 						</th>
 						<td>
 							<p>
 								<label>								
 									<input name="wisdom_opt_out" type="radio" value="0"<?php checked( 0, $wisdom_opt_out ); ?> />
-									<?php esc_html_e( 'Allow usage of Paid Memberships Pro to be tracked.', 'paid-memberships-pro' );?>
+									<?php esc_html_e( 'Allow usage of Paid Memberships Pro to be shared with us.', 'paid-memberships-pro' );?>
 								</label>
 							</p>
 							<p>
 								<label>
 									<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $wisdom_opt_out ); ?> />
-									<?php esc_html_e( 'Do not track usage of Paid Memberships Pro on my site.', 'paid-memberships-pro' );?>
+									<?php esc_html_e( 'Do not share usage of Paid Memberships Pro on my site.', 'paid-memberships-pro' );?>
 								</label>
 							</p>
 							<p class="description">

@@ -91,6 +91,51 @@ abstract class PMPro_Email_Template {
 	}
 
 	/**
+	 * Send a test email.
+	 *
+	 * @since 3.5
+	 *
+	 * @param string $test_email_recipient The email address to send the test email to.
+	 * @return bool Whether the email was sent successfully.
+	 */
+	final public static function send_test( $test_email_recipient ) {
+		// Get the test parameters needed to construct the test email (ex test user, order, level, etc).
+		
+		$class_name = get_called_class();
+		//if we haven't implemented the get_test_email_constructor_args method, log something and  return false
+		if ( ! method_exists( $class_name, 'get_test_email_constructor_args' ) ) {
+			error_log( 'The ' . $class_name . ' class did not implement the get_test_email_constructor_args method yet.' ); 
+			return false;
+		}
+		$constructor_args = $class_name::get_test_email_constructor_args();
+
+		// Construct the test email using the test parameters.
+		$email = new static( ...$constructor_args );
+
+		// Set the recipient email to the test email address and the body to include a test message.
+		$pmpro_email_recipient_function = function() use ( $test_email_recipient ) {
+			return $test_email_recipient;
+		};
+		$pmpro_email_templates_test_body = function( $body, $email ) {
+			return pmpro_email_templates_test_body( $body );
+		};
+
+		// Add the test filters.
+		add_filter( 'pmpro_email_recipient', $pmpro_email_recipient_function );
+		add_filter('pmpro_email_body', $pmpro_email_templates_test_body, 10, 2);
+
+		// Send the email.
+		$result = $email->send();
+
+		// Remove the filters.
+		remove_filter('pmpro_email_recipient', $pmpro_email_recipient_function );
+		remove_filter('pmpro_email_body', $pmpro_email_templates_test_body, 10, 2 );
+
+		// Return the result.
+		return $result;
+	}
+
+	/**
 	 * Get the email template slug.
 	 *
 	 * @since 3.4

@@ -2,7 +2,7 @@
 class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 
 	/**
-	 * The user object of the user to send the email to.
+	 * The subscription object relating to this transaction.
 	 *
 	 * @var PMPro_Subscription
 	 */
@@ -13,8 +13,7 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 *
 	 * @since 3.4
 	 *
-	 * @param WP_User $user The user object of the user to send the email to.
-	 * @param int $membership_id The membership level id of the membership level that expired.
+	 * @param PMPro_Subscription $subscription_obj The PMPro subscription object.
 	 */
 	public function __construct( PMPro_Subscription $subscription_obj ) {
 		$this->subscription_obj = $subscription_obj;
@@ -153,6 +152,22 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 			'cancel_link' => wp_login_url( pmpro_url( 'cancel' ) ),
 			'cancel_url' => wp_login_url( pmpro_url( 'cancel' ) ),
 		);
+	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since 3.5
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+		$test_user = $current_user;
+		$all_levels = pmpro_getAllLevels( true );
+		$test_user->membership_level = array_pop( $all_levels );
+		$test_subscription = new PMPro_Subscription( array( 'user_id' => $test_user->ID, 'membership_level_id' => $test_user->membership_level->id, 'next_payment_date' => date( 'Y-m-d', strtotime( '+1 month' )  ) )  );
+		return array( $test_subscription );
 	}
 }
 

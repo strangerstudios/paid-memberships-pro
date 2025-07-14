@@ -222,19 +222,8 @@ if ( $txn_type == "recurring_payment" ) {
 		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
 			// Check if the subscription has been suspended/paused in PPE.
 			if ( $profile_status == "suspended") {
-				// Subscription was suspended. Let's remove the user's membership level, which will also cancel the subscription.
-				$subscription = $last_subscription_order->get_subscription();
-				if ( ! empty( $subscription ) ) {
-					$user = get_userdata( $subscription->get_user_id() );
-					if ( ! empty( $user ) ) {
-						pmpro_cancelMembershipLevel( $subscription->get_membership_level_id(), $user->ID );
-						ipnlog( 'Subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscr_id . ' was cancelled after payment failure.' );
-					} else {
-						ipnlog( 'ERROR: Could not cancel membership level for user with subscription transaction id = ' . $subscr_id . ' after payment failure. No user attached to subscription.' );
-					}
-				} else {
-					ipnlog( 'ERROR: Could not find this subscription to cancel after payment failure (subscription_transaction_id=' . $subscr_id . ').' );
-				}
+				// Subscription was suspended. This should trigger another IPN message which should treat this as a cancellation (recurring_payment_suspended_due_to_max_failed_payment).
+				ipnlog( 'Subscription is suspended. Waiting for another IPN message to handle this.' );
 			} else {
 				// Subscription is not suspended. Send failed payment email.
 				pmpro_ipnFailedPayment( $last_subscription_order );
@@ -273,41 +262,14 @@ if ( in_array( $txn_type, $failed_payment_txn_types ) ) {
 }
 
 // Recurring Payment Profile Cancelled (PayPal Express)
-if ( $txn_type == 'recurring_payment_profile_cancel' ) {
-	// Find subscription.
+if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
+	// If the subscription was cancelled due to failed payments, make sure that we don't "cancel on next payment date".
+	if ( $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
+		add_filter( 'pmpro_cancel_on_next_payment_date', '__return_false' );
+	}
+
+	// Handle the cancellation.
 	ipnlog( pmpro_handle_subscription_cancellation_at_gateway( $recurring_payment_id, 'paypalexpress', $gateway_environment ) );
-	pmpro_ipnExit();
-}
-
-// All payment collection retries have failed (PayPal Express)
-if ( $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
-	// Find subscription.
-	$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $recurring_payment_id, 'paypalexpress', $gateway_environment );
-	if ( empty( $subscription ) ) {
-		// The subscription does not exist on this site. Bail.
-		ipnlog( 'ERROR: Could not find this subscription to cancel after failed payment attempts (subscription_transaction_id=' . $recurring_payment_id . ').' );
-		pmpro_ipnExit();
-	}
-
-	// Get the user associated with the subscription.
-	$user = get_userdata( $subscription->get_user_id() );
-	if ( empty( $user ) ) {
-		// The user for this subscription does not exist. Let's just cancel the subscription.
-		$subscription->cancel_at_gateway();
-		ipnlog( 'ERROR: Could not cancel subscription after failed payment attempts. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $recurring_payment_id . '.' );
-		pmpro_ipnExit();
-	}
-
-	// Cancel the user's membership level which will also cancel the subscription.
-	if ( ! pmpro_cancelMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
-		// User didn't have the level. Let's just cancel the subscription.
-		$subscription->cancel_at_gateway();
-		ipnlog( 'ERROR: Could not cancel membership level for user ' . $user->user_email . ' after failed payment attempts. Subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $recurring_payment_id . ' was cancelled.' );
-		pmpro_ipnExit();
-	}
-
-	// Cancellation was successful.
-	ipnlog( 'Subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $recurring_payment_id . ' was cancelled after failed payment attempts.' );
 	pmpro_ipnExit();
 }
 
@@ -428,7 +390,7 @@ function pmpro_ipnExit() {
 				//should avoid counterintuitive interpretation of false.
 			} elseif ( PMPRO_IPN_DEBUG === "log" ) {
 				//file
-				$logfile = apply_filters( 'pmpro_ipn_logfile', dirname( __FILE__ ) . "/../logs/ipn.txt" );
+				$logfile = apply_filters( 'pmpro_ipn_logfile', pmpro_get_restricted_file_path( 'logs', 'ipn.txt' ) );
 				$loghandle = fopen( $logfile, "a+" );
 				fwrite( $loghandle, $logstr );
 				fclose( $loghandle );
