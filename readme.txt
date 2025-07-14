@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.5.1
+Stable tag: 3.5.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,13 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.5.2 - 2025-07-14 =
+* BUG FIX: Fixed an issue where members may receive multiple recurring payment reminder emails for the same payment. #3437 (@mircobabini)
+* BUG FIX: Fixed an issue where gateway settings may not show for some gateways. #3436 (@dparker1005)
+* BUG FIX: Fixed an issue where "Recent Members" metabox may not show correctly on websites using custom database table prefixes. #3434 (@jeiseman)
+* BUG FIX: Fixed a PHP error that would occur when the `post__not_in` parameter of `WP_Query` is not an array. #3438 (@dparker1005)
+* BUG FIX: Added back a missing argument for the deprecated `pmpro_email_template` filter. #3432 (@dparker1005)
+
 = 3.5.1 - 2025-07-09 =
 * ENHANCEMENT: Added caching to the `pmpro_getMembershipCategories()` function to improve performance. #3421 (@dalemugford)
 * ENHANCEMENT: Optimized the query used to retrieve the list of members to show in the Members List table. #3413 (@dalemugford, @dparker1005)
