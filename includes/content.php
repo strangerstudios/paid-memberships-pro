@@ -580,7 +580,7 @@ add_filter( 'body_class', 'pmpro_body_classes' );
 /**
  * Helper function to get the post__not_in array from a WP_Query object ensuring it is an array.
  *
- * @since TBD
+ * @since 3.5.2
  *
  * @param WP_Query $query The WP_Query object.
  * @return array The post__not_in array.
