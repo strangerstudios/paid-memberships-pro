@@ -18,45 +18,59 @@
 
 	// Email variables.
 	$email_variables = [
-		'general' => [
-			'!!name!!'                  => __( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
-			'!!user_login!!'            => __( 'Username', 'paid-memberships-pro' ),
-			'!!sitename!!'              => __( 'Site Title', 'paid-memberships-pro' ),
-			'!!siteemail!!'             => __( 'Site Email Address (General Settings > Email OR Memberships > Settings > Email Settings)', 'paid-memberships-pro' ),
-			'!!membership_id!!'         => __( 'Membership Level ID', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => __( 'Membership Level Name', 'paid-memberships-pro' ),
-			'!!membership_change!!'     => __( 'Membership Level Change', 'paid-memberships-pro' ),
-			'!!membership_expiration!!' => __( 'Membership Level Expiration', 'paid-memberships-pro' ),
-			'!!startdate!!'             => __( 'Membership Start Date', 'paid-memberships-pro' ),
-			'!!enddate!!'               => __( 'Membership End Date', 'paid-memberships-pro' ),
-			'!!display_name!!'          => __( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
-			'!!user_email!!'            => __( 'User Email', 'paid-memberships-pro' ),
-			'!!login_url!!'            => __( 'Login URL', 'paid-memberships-pro' ),
-			'!!levels_url!!'           => __( 'Membership Levels Page URL', 'paid-memberships-pro' ),
+		esc_html__( 'General Settings / Membership Info', 'paid-memberships-pro' ) => [
+			'!!name!!'                  => esc_html__( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
+			'!!user_login!!'            => esc_html__( 'Username', 'paid-memberships-pro' ),
+			'!!sitename!!'              => esc_html__( 'Site Title', 'paid-memberships-pro' ),
+			'!!siteemail!!'             => esc_html__( 'Site Email Address (General Settings > Email OR Memberships > Settings > Email Settings)', 'paid-memberships-pro' ),
+			'!!membership_id!!'         => esc_html__( 'Membership Level ID', 'paid-memberships-pro' ),
+			'!!membership_level_name!!' => esc_html__( 'Membership Level Name', 'paid-memberships-pro' ),
+			'!!membership_change!!'     => esc_html__( 'Membership Level Change', 'paid-memberships-pro' ),
+			'!!membership_expiration!!' => esc_html__( 'Membership Level Expiration', 'paid-memberships-pro' ),
+			'!!startdate!!'             => esc_html__( 'Membership Start Date', 'paid-memberships-pro' ),
+			'!!enddate!!'               => esc_html__( 'Membership End Date', 'paid-memberships-pro' ),
+			'!!display_name!!'          => esc_html__( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
+			'!!user_email!!'            => esc_html__( 'User Email', 'paid-memberships-pro' ),
+			'!!login_url!!'            => esc_html__( 'Login URL', 'paid-memberships-pro' ),
+			'!!levels_url!!'           => esc_html__( 'Membership Levels Page URL', 'paid-memberships-pro' ),
 		],
-		'billing' => [
-			'!!billing_address!!' => __( 'Billing Info Complete Address', 'paid-memberships-pro' ),
-			'!!billing_name!!'    => __( 'Billing Info Name', 'paid-memberships-pro' ),
-			'!!billing_street!!'  => __( 'Billing Info Street Address', 'paid-memberships-pro' ),
-			'!!billing_city!!'    => __( 'Billing Info City', 'paid-memberships-pro' ),
-			'!!billing_state!!'   => __( 'Billing Info State', 'paid-memberships-pro' ),
-			'!!billing_zip!!'     => __( 'Billing Info ZIP Code', 'paid-memberships-pro' ),
-			'!!billing_country!!' => __( 'Billing Info Country', 'paid-memberships-pro' ),
-			'!!billing_phone!!'   => __( 'Billing Info Phone #', 'paid-memberships-pro' ),
-			'!!cardtype!!'        => __( 'Credit Card Type', 'paid-memberships-pro' ),
-			'!!accountnumber!!'   => __( 'Credit Card Number (last 4 digits)', 'paid-memberships-pro' ),
-			'!!expirationmonth!!' => __( 'Credit Card Expiration Month (mm format)', 'paid-memberships-pro' ),
-			'!!expirationyear!!'  => __( 'Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro' ),
-			'!!membership_cost!!' => __( 'Membership Level Cost Text', 'paid-memberships-pro' ),
-			'!!instructions!!'    => __( 'Payment Instructions (used in Checkout - Email Template)', 'paid-memberships-pro' ),
-			'!!order_id!!'        => __( 'Order ID', 'paid-memberships-pro' ),
-			'!!order_total!!'   => __( 'Order Total', 'paid-memberships-pro' ),
-			'!!order_date!!'      => __( 'Order Date', 'paid-memberships-pro' ),
-			'!!order_url!!'       => __( 'Order Page URL', 'paid-memberships-pro' ),
-			'!!discount_code!!'   => __( 'Discount Code Applied', 'paid-memberships-pro' ),
-			'!!membership_level_confirmation_message!!' => __( 'Custom Level Confirmation Message', 'paid-memberships-pro' ),
+		esc_html__( 'Billing Information', 'paid-memberships-pro' ) => [
+			'!!billing_address!!' => esc_html__( 'Billing Info Complete Address', 'paid-memberships-pro' ),
+			'!!billing_name!!'    => esc_html__( 'Billing Info Name', 'paid-memberships-pro' ),
+			'!!billing_street!!'  => esc_html__( 'Billing Info Street Address', 'paid-memberships-pro' ),
+			'!!billing_city!!'    => esc_html__( 'Billing Info City', 'paid-memberships-pro' ),
+			'!!billing_state!!'   => esc_html__( 'Billing Info State', 'paid-memberships-pro' ),
+			'!!billing_zip!!'     => esc_html__( 'Billing Info ZIP Code', 'paid-memberships-pro' ),
+			'!!billing_country!!' => esc_html__( 'Billing Info Country', 'paid-memberships-pro' ),
+			'!!billing_phone!!'   => esc_html__( 'Billing Info Phone #', 'paid-memberships-pro' ),
+			'!!cardtype!!'        => esc_html__( 'Credit Card Type', 'paid-memberships-pro' ),
+			'!!accountnumber!!'   => esc_html__( 'Credit Card Number (last 4 digits)', 'paid-memberships-pro' ),
+			'!!expirationmonth!!' => esc_html__( 'Credit Card Expiration Month (mm format)', 'paid-memberships-pro' ),
+			'!!expirationyear!!'  => esc_html__( 'Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro' ),
+			'!!membership_cost!!' => esc_html__( 'Membership Level Cost Text', 'paid-memberships-pro' ),
+			'!!instructions!!'    => esc_html__( 'Payment Instructions (used in Checkout - Email Template)', 'paid-memberships-pro' ),
+			'!!order_id!!'        => esc_html__( 'Order ID', 'paid-memberships-pro' ),
+			'!!order_total!!'   => esc_html__( 'Order Total', 'paid-memberships-pro' ),
+			'!!order_date!!'      => esc_html__( 'Order Date', 'paid-memberships-pro' ),
+			'!!order_url!!'       => esc_html__( 'Order Page URL', 'paid-memberships-pro' ),
+			'!!discount_code!!'   => esc_html__( 'Discount Code Applied', 'paid-memberships-pro' ),
+			'!!membership_level_confirmation_message!!' => esc_html__( 'Custom Level Confirmation Message', 'paid-memberships-pro' ),
 		]
 	];
+
+	// If we have a PMPro_Email_Template class for this template, use those variables instead.
+	$email_template_class = PMPro_Email_Template::get_email_template( $edit );
+	if ( $email_template_class ) {
+		$email_variables = array(
+			esc_html__( 'Global Variables', 'paid-memberships-pro' ) => PMPro_Email_Template::get_base_email_template_variables_with_description(),
+			sprintf( esc_html__( '%s Variables', 'paid-memberships-pro' ), $email_template_class::get_template_name() ) => $email_template_class::get_email_template_variables_with_description(),
+		);
+	} elseif ( in_array( $edit, array( 'header', 'footer' ) ) ) {
+		// The header and footer templates are special cases. Just show the globals.
+		$email_variables = array(
+			esc_html__( 'Global Variables', 'paid-memberships-pro' ) => PMPro_Email_Template::get_base_email_template_variables_with_description(),
+		);
+	}
 ?>
 <hr class="wp-header-end">
 <div id="poststuff">
@@ -165,57 +179,49 @@
 					</div>
 					<div class="pmpro_section_inside">
 						<p><?php esc_html_e( 'Use the placeholder variables below to customize your member and admin emails with specific user or membership data.', 'paid-memberships-pro' ); ?></p>
-						<h3><?php esc_html_e('General Settings / Membership Info', 'paid-memberships-pro'); ?></h3>
-						<table class="widefat fixed striped">
-							<tbody>
-								<?php
-									foreach ( $email_variables['general'] as $email_variable => $description ) {
-										?>
-										<tr>
-											<th><code><?php echo esc_html( $email_variable ); ?></code></th>
-											<td><?php echo esc_html( $description ); ?></td>
-										</tr>
-										<?php
-								}
-								?>
-							</tbody>
-						</table>
-
-						<h3><?php esc_html_e( 'Billing Information', 'paid-memberships-pro' ); ?></h3>
-						<table class="widefat fixed striped">
-							<tbody>
-								<?php
-									foreach ( $email_variables['billing'] as $email_variable => $description ) {
-										?>
-										<tr>
-											<th>
-												<code><?php echo esc_html( $email_variable ); ?></code>
-											</th>
-											<td><?php echo esc_html( $description ); ?></td>
-										</tr>
-										<?php
-									}
-								?>
-							</tbody>
-						</table>
+						<?php
+						foreach ( $email_variables as $section => $variables ) {
+							?>
+							<h3><?php echo esc_html( $section ); ?></h3>
+							<table class="widefat fixed striped">
+								<tbody>
+									<?php
+										foreach ( $variables as $email_variable => $description ) {
+											?>
+											<tr>
+												<th><code><?php echo esc_html( $email_variable ); ?></code></th>
+												<td><?php echo esc_html( $description ); ?></td>
+											</tr>
+											<?php
+										}
+									?>
+								</tbody>
+							</table>
+							<?php
+						}
+						?>
 					</div> <!-- end pmpro_section_inside -->
 				</div> <!-- end pmpro_section -->
 			</div>
-
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="pmpro_section">
 					<div class="pmpro_section_inside">
 						<div class="pmpro_send_test_email">
+							<?php $pmpro_template_can_send_test_email =  $email_template_class && method_exists( $email_template_class, 'get_test_email_constructor_args' ); ?>
 							<label for="test_email_address"><?php esc_html_e( 'Send a test email to', 'paid-memberships-pro' ); ?></label>
-							<input id="test_email_address" name="test_email_address" type="email" value="<?php echo esc_attr( $current_user->user_email ); ?> "/>
-							<input id="send_test_email" class="button" name="send_test_email" value="<?php esc_attr_e( 'Save Template and Send Email', 'paid-memberships-pro' ); ?>" type="button" />
-							<p class="description">
-								<?php esc_html_e( 'Your current membership will be used for any membership level data.', 'paid-memberships-pro' ); ?>
-							</p>
-						</div>
+							<input id="test_email_address" name="test_email_address" type="email" value="<?php echo esc_attr( $current_user->user_email ); ?>" <?php if ( ! $pmpro_template_can_send_test_email ) { ?> disabled="disabled" <?php } ?> />
+							<input id="send_test_email" class="button" name="send_test_email" value="<?php esc_attr_e( 'Save Template and Send Email', 'paid-memberships-pro' ); ?>" type="button" <?php if ( ! $pmpro_template_can_send_test_email ) { ?> disabled="disabled" <?php } ?> />
+							<?php 
+							if ( ! $pmpro_template_can_send_test_email ) {
+								?>
+								<p class="description"><?php esc_html_e( 'This template does not support test emails.', 'paid-memberships-pro' ); ?></p>
+								<?php
+							}
+						?>
 					</div>
 				</div>
 			</div>
+
 		
 		<?php wp_nonce_field( 'pmproet', 'security' ); ?>
 

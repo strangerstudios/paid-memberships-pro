@@ -300,8 +300,10 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	$user_list = null;
 	wp_cache_flush();
 }
-pmpro_transmit_report_data( $csv_fh, $filename, $headers );
-
+// If this was run via Toolkit API, we don't have to output the CSV file.
+if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
+	pmpro_transmit_report_data( $csv_fh, $filename, $headers );
+}
 
 /**
  * Enclose items passed through to ensure data structure is valid for export CSV.

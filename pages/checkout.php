@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Checkout
- * Version: 3.2
+ * Version: 3.5
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.2
+ * @version 3.5
  *
  * @author Paid Memberships Pro
  */
@@ -15,6 +15,24 @@ global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb
 global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 
 $pmpro_levels = pmpro_getAllLevels();
+
+//If global $pmpro_level is null, let's instantiate a dummy level object to avoid errors.
+if ( ! isset( $pmpro_level ) ) {
+	$pmpro_level = new PMPro_Membership_Level();
+	$pmpro_level->id = 0;
+	$pmpro_level->name = __( 'Invalid Level', 'paid-memberships-pro' );
+	$pmpro_level->description = $pmpro_level->name;
+	$pmpro_level->confirmation = '';
+	$pmpro_level->initial_payment = 0;
+	$pmpro_level->billing_amount = 0;
+	$pmpro_level->cycle_number = 0;
+	$pmpro_level->cycle_period = 'Month';
+	$pmpro_level->billing_limit = 0;
+	$pmpro_level->trial_amount = 0;
+	$pmpro_level->trial_limit = 0;
+	$pmpro_level->expiration_number = 0;
+	$pmpro_level->expiration_period = 'Month';
+ }
 
 /**
  * Filter to set if PMPro uses email or text as the type for email field inputs.
@@ -36,13 +54,22 @@ if ( empty( $default_gateway ) ) {
 
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 
-	<?php do_action( 'pmpro_checkout_before_form' ); ?>
+	<?php
+	/**
+	 * Fires before the checkout form.
+	 *
+	 * @since 3.4 Added $pmpro_level as a parameter.
+	 *
+	 * @param object $pmpro_level The PMPro Level object being purchased.
+	 */
+	do_action( 'pmpro_checkout_before_form', $pmpro_level );
+	?>
 
 	<section id="pmpro_level-<?php echo intval( $pmpro_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_checkout_gateway_class, 'pmpro_level-' . $pmpro_level->id ) ); ?>">
 
-		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php if(!empty($_REQUEST['review'])) echo esc_url( pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id) ); ?>" method="post">
+		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php if(!empty($_REQUEST['review'])) echo esc_url( pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id ) ); ?>" method="post">
 
-			<input type="hidden" id="pmpro_level" name="pmpro_level" value="<?php echo esc_attr($pmpro_level->id) ?>" />
+			<input type="hidden" id="pmpro_level" name="pmpro_level" value="<?php echo esc_attr( $pmpro_level->id ) ?>" />
 			<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />
 			<?php if ($discount_code && $pmpro_review) { ?>
 				<input class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_alter_price', 'pmpro_discount_code' ) ); ?>" id="pmpro_discount_code" name="pmpro_discount_code" type="hidden" value="<?php echo esc_attr($discount_code) ?>" />
@@ -111,7 +138,7 @@ if ( empty( $default_gateway ) ) {
 							 * @param string $description The level description.
 							 * @param object $pmpro_level The PMPro Level object.
 							 */
-							$level_description = apply_filters('pmpro_level_description', $pmpro_level->description, $pmpro_level);
+							$level_description = apply_filters( 'pmpro_level_description', $pmpro_level->description, $pmpro_level );
 							if ( ! empty( $level_description ) ) { ?>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_description_text' ) );?>">
 									<?php echo wp_kses_post( $level_description ); ?>
@@ -148,7 +175,16 @@ if ( empty( $default_gateway ) ) {
 							?>
 						</div> <!-- end #pmpro_level_cost -->
 
-						<?php do_action( 'pmpro_checkout_after_level_cost' ); ?>
+						<?php
+						/**
+						 * Fires after the level cost text is shown.
+						 *
+						 * @since 3.4 Added $pmpro_level as a parameter.
+						 *
+						 * @param object $pmpro_level The PMPro Level object being purchased.
+						 */
+						do_action( 'pmpro_checkout_after_level_cost', $pmpro_level );
+						?>
 
 					</div> <!-- end pmpro_card_content -->
 					<?php if ( $pmpro_show_discount_code ) { ?>
@@ -174,7 +210,16 @@ if ( empty( $default_gateway ) ) {
 				} // if ( $include_pricing_fields )
 			?>
 
-			<?php do_action( 'pmpro_checkout_after_pricing_fields' ); ?>
+			<?php
+			/**
+			 * Fires after the pricing fields are shown.
+			 *
+			 * @since 3.4 Added $pmpro_level as a parameter.
+			 *
+			 * @param object $pmpro_level The PMPro Level object being purchased.
+			 */
+			do_action( 'pmpro_checkout_after_pricing_fields', $pmpro_level );
+			?>
 
 			<?php
 			// Define whether we should show the Account Information box.
@@ -206,9 +251,9 @@ if ( empty( $default_gateway ) ) {
 										$discount_code_link = ! empty( $discount_code) ? '&pmpro_discount_code=' . $discount_code : '';
 									?>
 
-									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-username pmpro_form_field-required', 'pmpro_form_field-username' ) ); ?>">
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-username', 'pmpro_form_field-username' ) ); ?>">
 										<label for="username" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Username', 'paid-memberships-pro' );?></label>
-										<input id="username" name="username" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_form_input-required', 'username' ) ); ?>" autocomplete="username" value="<?php echo esc_attr($username); ?>" />
+										<input id="username" name="username" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'username' ) ); ?>" autocomplete="username" value="<?php echo esc_attr( $username ); ?>" />
 									</div> <!-- end pmpro_form_field-username -->
 
 									<?php do_action( 'pmpro_checkout_after_username' ); ?>
@@ -224,11 +269,11 @@ if ( empty( $default_gateway ) ) {
 										echo $pmpro_checkout_confirm_password ? '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ) . '">' : '';
 									?>
 
-									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required' ) ); ?>">
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password' ) ); ?>">
 										<label for="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
 											<?php esc_html_e( 'Password', 'paid-memberships-pro' );?>
 										</label>
-										<input type="password" name="password" id="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password); ?>" />
+										<input type="password" name="password" id="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password', 'password' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr( $password ); ?>" />
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
 											<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0">
 												<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
@@ -240,9 +285,9 @@ if ( empty( $default_gateway ) ) {
 									<?php
 										if ( $pmpro_checkout_confirm_password ) {
 											?>
-											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required', 'pmpro_form_field-password2' ) ); ?>">
+											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password', 'pmpro_form_field-password2' ) ); ?>">
 												<label for="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Password', 'paid-memberships-pro' );?></label>
-												<input type="password" name="password2" id="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password2' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password2); ?>" />
+												<input type="password" name="password2" id="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password', 'password2' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr( $password2 ); ?>" />
 											</div> <!-- end pmpro_form_field-password2 -->
 											<?php
 										} else {
@@ -267,17 +312,17 @@ if ( empty( $default_gateway ) ) {
 										echo $pmpro_checkout_confirm_email ? '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ) . '">' : '';
 									?>
 
-									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bemail pmpro_form_field-required', 'pmpro_form_field-bemail' ) ); ?>">
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bemail', 'pmpro_form_field-bemail' ) ); ?>">
 										<label for="bemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Email Address', 'paid-memberships-pro' );?></label>
-										<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email pmpro_form_input-required', 'bemail' ) ); ?>" value="<?php echo esc_attr($bemail); ?>" />
+										<input id="bemail" name="bemail" type="<?php echo ( $pmpro_email_field_type ? 'email' : 'text' ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', 'bemail' ) ); ?>" value="<?php echo esc_attr( $bemail ); ?>" />
 									</div> <!-- end pmpro_form_field-bemail -->
 
 									<?php
 										if ( $pmpro_checkout_confirm_email ) {
 											?>
-											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bconfirmemail pmpro_form_field-required', 'pmpro_form_field-bconfirmemail' ) ); ?>">
+											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bconfirmemail', 'pmpro_form_field-bconfirmemail' ) ); ?>">
 												<label for="bconfirmemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Email Address', 'paid-memberships-pro' );?></label>
-												<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email pmpro_form_input-required', 'bconfirmemail' ) ); ?>" value="<?php echo esc_attr($bconfirmemail); ?>" />
+												<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ( $pmpro_email_field_type ? 'email' : 'text' ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', 'bconfirmemail' ) ); ?>" value="<?php echo esc_attr( $bconfirmemail ); ?>" />
 											</div> <!-- end pmpro_form_field-bconfirmemail -->
 											<?php
 										} else {
@@ -293,7 +338,7 @@ if ( empty( $default_gateway ) ) {
 
 									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_hidden' ) ); ?>">
 										<label for="fullname"><?php esc_html_e('Full Name', 'paid-memberships-pro' );?></label>
-										<input id="fullname" name="fullname" type="text" value="" autocomplete="off"/> <strong><?php esc_html_e('LEAVE THIS BLANK', 'paid-memberships-pro' );?></strong>
+										<input id="fullname" name="fullname" type="text" value="" autocomplete="off" aria-hidden="true" aria-label="<?php esc_html_e( 'Do not fill this field out. Leave this blank.', 'paid-memberships-pro'); ?>"/> <strong><?php esc_html_e('LEAVE THIS BLANK', 'paid-memberships-pro' );?></strong>
 									</div> <!-- end pmpro_hidden -->
 								</div>  <!-- end pmpro_form_fields -->
 							<?php } else { ?>
@@ -323,7 +368,16 @@ if ( empty( $default_gateway ) ) {
 
 			<?php do_action( 'pmpro_checkout_after_user_fields' ); ?>
 
-			<?php do_action( 'pmpro_checkout_boxes' ); ?>
+			<?php
+			/**
+			 * Add additional checkout boxes to the checkout page.
+			 *
+			 * @since 3.4 Added $pmpro_level as a parameter.
+			 *
+			 * @param object $pmpro_level The PMPro Level object being purchased.
+			 */
+			do_action( 'pmpro_checkout_boxes', $pmpro_level );
+			?>
 
 			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
@@ -503,8 +557,23 @@ if ( empty( $default_gateway ) ) {
 			?>
 
 			<?php
-      do_action( 'pmpro_checkout_after_payment_information_fields' );
-			do_action( 'pmpro_checkout_before_submit_button' );
+			/**
+			 * Fires after the payment information fields on the checkout page.
+			 *
+			 * @since 3.4 Added $pmpro_level as a parameter.
+			 *
+			 * @param object $pmpro_level The PMPro Level object being purchased.
+			 */
+      		do_action( 'pmpro_checkout_after_payment_information_fields', $pmpro_level );
+
+			/**
+			 * Fires before the submit button on the checkout page.
+			 *
+			 * @since 3.4 Added $pmpro_level as a parameter.
+			 *
+			 * @param object $pmpro_level The PMPro Level object being purchased.
+			 */
+			do_action( 'pmpro_checkout_before_submit_button', $pmpro_level );
 
 			// Add nonce.
 			wp_nonce_field( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' );
@@ -560,7 +629,16 @@ if ( empty( $default_gateway ) ) {
 
 		</form> <!-- end pmpro_form -->
 
-		<?php do_action( 'pmpro_checkout_after_form' ); ?>
+		<?php
+		/**
+		 * Fires after the submit button on the checkout page.
+		 *
+		 * @since 3.4 Added $pmpro_level as a parameter.
+		 *
+		 * @param object $pmpro_level The PMPro Level object being purchased.
+		 */
+		do_action( 'pmpro_checkout_after_form', $pmpro_level );
+		?>
 
 	</section> <!-- end pmpro_level-ID -->
 

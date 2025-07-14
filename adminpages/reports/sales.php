@@ -120,10 +120,10 @@ function pmpro_report_sales_data( $args ){
 
 	$type_function = ! empty( $args['type_function'] ) ? $args['type_function'] : '';
 	$report_unit = ! empty( $args['report_unit'] ) ? $args['report_unit'] : '';
-	$discount_code = ! empty( $args['discount_code'] ) ? $args['discount_code'] : '';
+	$discount_code = ! empty( $args['discount_code'] ) ? $args['discount_code'] : array();
 	$startdate = ! empty( $args['startdate'] ) ? $args['startdate'] : '';
 	$enddate = ! empty( $args['enddate'] ) ? $args['enddate'] : '';
-	$l = ! empty( $args['l'] ) ? (int) $args['l'] : '';
+	$l = ! empty( $args['l'] ) ? $args['l'] : array();
 
 	//testing or live data
 	$gateway_environment = get_option( "pmpro_gateway_environment");
@@ -168,11 +168,22 @@ function pmpro_report_sales_data( $args ){
 	if(!empty($enddate))
 		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '" . esc_sql( $enddate ) . " 23:59:59' , INTERVAL - " . esc_sql( $tz_offset ) . " SECOND )";
 
-	if(!empty($l))
-		$sqlQuery .= "AND mo1.membership_id IN(" . $l . ") "; // $l is already escaped. See declaration.
+	if ( ! empty( $l ) ) {
+		if ( is_array( $l ) ) {
+			$l_escaped = implode( ',', array_map( 'intval', $l ) );
+		} else {
+			$l_escaped = (int) $l;
+		}
+		$sqlQuery .= "AND mo1.membership_id IN(" . $l_escaped . ") "; // $l_escaped is already escaped. See above.
+	}
 
 	if ( ! empty( $discount_code ) ) {
-		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
+		if ( is_array( $discount_code ) ) {
+			$discount_code_escaped = implode( ',', array_map( 'intval', $discount_code ) );
+		} else {
+			$discount_code_escaped = (int) $discount_code;
+		}
+		$sqlQuery .= "AND dc.code_id IN(" . $discount_code_escaped . ") "; // $discount_code_escaped is already escaped. See above.
 	}
 
 	$sqlQuery .= " GROUP BY mo1.id ";
@@ -217,15 +228,23 @@ function pmpro_report_sales_page()
 	}
 
 	if( ! empty( $_REQUEST['level'] ) ) {
-		$l = intval($_REQUEST['level']);
+		if ( is_array( $_REQUEST['level'] ) ) {
+			$l = array_map( 'intval', $_REQUEST['level'] );
+		} else {
+			$l = array( intval( $_REQUEST['level'] ) );
+		}
 	} else {
-		$l = "";
+		$l = array();
 	}
 
-	if ( ! empty( $_REQUEST[ 'discount_code' ] ) ) {
-		$discount_code = intval( $_REQUEST[ 'discount_code' ] );
+	if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
+		if ( is_array( $_REQUEST[ 'discount_code' ] ) ) {
+			$discount_code = array_map( 'intval', $_REQUEST[ 'discount_code' ] );
+		} else {
+			$discount_code = array( intval( $_REQUEST[ 'discount_code' ] ) );
+		}
 	} else {
-		$discount_code = '';
+		$discount_code = array();
 	}
 
 	if ( isset( $_REQUEST[ 'show_parts' ] ) ) {
@@ -278,6 +297,14 @@ function pmpro_report_sales_page()
 		$startdate = date( 'Y-m-01', strtotime( current_time( 'mysql' ) . ' -12 month' ) );
 		// Set the end date to the last day of the previous month.
 		$enddate = date('Y-m-t', strtotime( current_time( 'mysql' ) . ' -1 month' ) );
+	} else if ( $period === 'custom' ) {
+		// Set up the report unit to use.
+		$report_unit = 'DAY';
+		$axis_date_format = 'd';
+		$tooltip_date_format = get_option( 'date_format' );
+		// Set up the start and end dates.
+		$startdate = sanitize_text_field( $_REQUEST['custom_start_date'] );
+		$enddate = sanitize_text_field( $_REQUEST['custom_end_date'] );
 	} else {
 		// Set up the report unit to use.
 		$report_unit = 'YEAR';
@@ -363,7 +390,7 @@ function pmpro_report_sales_page()
 				'date'     => $loop_date,
 				'total'    => $dates[ $loop_date ]->value,
 				'new'      => $dates[ $loop_date ]->value - $dates[ $loop_date ]->renewals,
-				'renewals' => $dates[ $loop_date ]->renewals,
+				'renewals' => $dates[ $loop_date ]->renewals ?: 0,
 			);
 
 			// Increment the loop timestamp.
@@ -421,7 +448,7 @@ function pmpro_report_sales_page()
 		}
 	} elseif ( $report_unit == 'YEAR' ) {
 		// Loop through all the years since the first year that we have data for.
-		$start_year = min( array_keys( $dates ) );
+		$start_year = ! empty( $dates ) ? min( array_keys( $dates ) ) : date( 'Y' );
 		$end_year   = date( 'Y' );
 		for ( $year = $start_year; $year <= $end_year; $year++ ) {
 			// If we don't have data for this year, add it.
@@ -459,7 +486,7 @@ function pmpro_report_sales_page()
 	ksort( $dates );
 	
 	// Save a transient for each combo of params. Expires in 1 hour.
-	$param_array = array( $period, $type, $month, $year, $l, $discount_code );
+	$param_array = array( $period, $type, $month, $year, implode( ',', $l ), implode( ',', $discount_code ) );
 	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
 	set_transient( 'pmpro_sales_data_' . $param_hash, $csvdata, HOUR_IN_SECONDS );
 
@@ -598,7 +625,7 @@ function pmpro_report_sales_page()
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
 		<div class="tablenav top">
-			<span><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></span>
+			<span class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></span>
 			<label for="period" class="screen-reader-text"><?php esc_html_e( 'Select report time period', 'paid-memberships-pro' ); ?></label>
 			<select id="period" name="period">
 				<option value="daily" <?php selected($period, "daily");?>><?php esc_html_e('Daily', 'paid-memberships-pro' );?></option>
@@ -607,13 +634,14 @@ function pmpro_report_sales_page()
 				<option value='7days' <?php selected( $period, '7days' ); ?>><?php esc_html_e( 'Last 7 Days', 'paid-memberships-pro' ); ?></option>
 				<option value='30days' <?php selected( $period, '30days' ); ?>><?php esc_html_e( 'Last 30 Days', 'paid-memberships-pro' ); ?></option>
 				<option value='12months' <?php selected( $period, '12months' ); ?>><?php esc_html_e( 'Last 12 Months', 'paid-memberships-pro' ); ?></option>
+				<option value='custom' <?php selected( $period, 'custom' ); ?>><?php esc_html_e( 'Custom Range', 'paid-memberships-pro' ); ?></option>
 			</select>
 			<label for="type" class="screen-reader-text"><?php esc_html_e( 'Select report type', 'paid-memberships-pro' ); ?></label>
 			<select id="type" name="type">
 				<option value="revenue" <?php selected($type, "revenue");?>><?php esc_html_e('Revenue', 'paid-memberships-pro' );?></option>
 				<option value="sales" <?php selected($type, "sales");?>><?php esc_html_e('Sales', 'paid-memberships-pro' );?></option>
 			</select>
-			<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
+			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 			<label for="month" class="screen-reader-text"><?php esc_html_e( 'Select report month', 'paid-memberships-pro' ); ?></label>
 			<select id="month" name="month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
@@ -626,45 +654,63 @@ function pmpro_report_sales_page()
 					<option value="<?php echo esc_attr( $i );?>" <?php selected($year, $i);?>><?php echo esc_html( $i );?></option>
 				<?php } ?>
 			</select>
-			<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
+			<span class="pmpro_report-filter-text pmpro-sales-report-custom"><?php esc_html_e('from', 'paid-memberships-pro' )?></span>
+			<label for="custom_start_date" class="screen-reader-text pmpro-sales-report-custo"><?php esc_html_e( 'Select report start date', 'paid-memberships-pro' ); ?></label>
+			<input type="date" id="custom_start_date" name="custom_start_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( $startdate ); ?>" />
+			<span class="pmpro_report-filter-text pmpro-sales-report-custom"><?php esc_html_e('to', 'paid-memberships-pro' )?></span>
+			<label for="custom_end_date" class="screen-reader-text pmpro-sales-report-custo"><?php esc_html_e( 'Select report end date', 'paid-memberships-pro' ); ?></label>
+			<input type="date" id="custom_end_date" name="custom_end_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( $enddate ); ?>" />
+			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 			<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
-			<select id="level" name="level">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
+			<select id="level" name="level[]" multiple>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					$levels = pmpro_sort_levels_by_order( $levels );
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?php echo esc_attr( $level->id ); ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name); ?></option>
+					<option value="<?php echo esc_attr( $level->id ); ?>" <?php if ( in_array( $level->id, $l ) ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name); ?></option>
 				<?php
 					}
 				?>
-			</select>		
+			</select>
 			<?php
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
 			$sqlQuery .= "ORDER BY id DESC ";
 			$codes = $wpdb->get_results($sqlQuery, OBJECT);
 			if ( ! empty( $codes ) ) { ?>
 			<label for="discount_code" class="screen-reader-text"><?php esc_html_e( 'Filter report by discount code', 'paid-memberships-pro' ); ?></label>
-			<select id="discount_code" name="discount_code">
-				<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Codes', 'paid-memberships-pro' );?></option>
+			<select id="discount_code" name="discount_code[]" multiple>
 				<?php foreach ( $codes as $code ) { ?>
-					<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
+					<option value="<?php echo esc_attr( $code->id ); ?>" <?php if ( in_array( $code->id, $discount_code ) ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $code->code ); ?></option>
 				<?php } ?>
 			</select>
 			<?php } ?>
+			<script>
+				// Make the level and discount code fields select2.
+				jQuery(document).ready(function() {
+					jQuery('#level').select2({
+						placeholder: '<?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?>',
+						allowClear: true,
+						width: '200px'
+					});
+					jQuery('#discount_code').select2({
+						placeholder: '<?php esc_html_e( 'All Codes', 'paid-memberships-pro' ); ?>',
+						allowClear: true,
+						width: '200px'
+					});
+				});
+			</script>
 			<label for="show_parts" class="screen-reader-text"><?php esc_html_e( 'Select report data to include', 'paid-memberships-pro' ); ?></label>
 			<select id="show_parts" name="show_parts">
 				<option value='new_renewals' <?php selected( $new_renewals, 'new_renewals' ); ?> ><?php esc_html_e( 'Show New and Renewals', 'paid-memberships-pro' ); ?></option>
 				<option value='only_new' <?php selected( $new_renewals, 'only_new' ); ?> ><?php esc_html_e( 'Show Only New', 'paid-memberships-pro' ); ?></option>
 				<option value='only_renewals' <?php selected( $new_renewals, 'only_renewals' ); ?> ><?php esc_html_e( 'Show Only Renewals', 'paid-memberships-pro' ); ?></option>
 			</select>
-			<input type="hidden" name="page" value="pmpro-reports" />
-			<input type="hidden" name="report" value="sales" />
-			<input type="submit" class="button button-primary action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
-			<br class="clear" />
 		</div> <!-- end tablenav -->
+		<input type="hidden" name="page" value="pmpro-reports" />
+		<input type="hidden" name="report" value="sales" />
+		<input type="submit" class="button button-primary action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div> <!-- end pmpro_report-filters -->
 	<div class="pmpro_chart_area">
 		<div id="chart_div"></div>
@@ -686,18 +732,27 @@ function pmpro_report_sales_page()
 				jQuery('#for').show();
 				jQuery('#month').show();
 				jQuery('#year').show();
+				jQuery('.pmpro-sales-report-custom').hide();
 			}
 			else if(period == 'monthly')
 			{
 				jQuery('#for').show();
 				jQuery('#month').hide();
 				jQuery('#year').show();
+				jQuery('.pmpro-sales-report-custom').hide();
+			}
+			else if ( period == 'custom' ) {
+				jQuery('.pmpro-sales-report-custom').show();
+				jQuery('#for').hide();
+				jQuery('#month').hide();
+				jQuery('#year').hide();
 			}
 			else
 			{
 				jQuery('#for').hide();
 				jQuery('#month').hide();
 				jQuery('#year').hide();
+				jQuery('.pmpro-sales-report-custom').hide();
 			}
 		}
 
@@ -868,6 +923,44 @@ function pmpro_report_sales_page()
 	</script>
 
 	</form>
+	<?php
+	// Show a table with all of the raw data.
+	?>
+	<div class="pmpro_table_area">
+		<table class="widefat striped">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'New', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Renewals', 'paid-memberships-pro' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach ( $csvdata as $row ) {
+					// If the row date is numeric (YEAR report unit), we'll just use the year.
+					$row_date = is_numeric( $row->date ) ? $row->date : date_i18n( $tooltip_date_format, strtotime( $row->date ) );
+					?>
+						<th scope="row"><?php echo esc_html( $row_date ); ?></th>
+						<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->total ) ) : esc_html( $row->total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></td>
+						<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->new ) ) : esc_html( $row->new ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+						<td><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( $row->renewals ) ) : esc_html( $row->renewals); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					</tr>
+					<?php
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
+					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'total' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'total' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'new' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'new' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+					<th><?php echo $type === 'revenue' ? pmpro_escape_price( pmpro_formatPrice( array_sum( wp_list_pluck( $csvdata, 'renewals' ) ) ) ) : array_sum( wp_list_pluck( $csvdata, 'renewals' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
 	<?php
 }
 

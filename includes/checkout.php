@@ -15,8 +15,14 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 	// Get the checkout level.
 	$level = $order->getMembershipLevelAtCheckout();
 
-	// Calculate the profile start date.
-	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $level->cycle_number . ' ' . $level->cycle_period ) );
+	// If the level already has a profile start date set, use it. Otherwise, calculate it based on the cycle number and period.
+	if ( ! empty( $level->profile_start_date ) ) {
+		// Use the profile start date that is already set.
+		$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( $level->profile_start_date ) );
+	} else {
+		// Calculate the profile start date based on the cycle number and period.
+		$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $level->cycle_number . ' ' . $level->cycle_period ) );
+	}
 
 	// Filter the profile start date if needed.
 	if ( $filter ) {
@@ -28,13 +34,14 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 		 * to use that format in case we update this code in the future.
 		 *
 		 * @since 1.4
+		 * @deprecated 3.4 Set the 'profile_start_date' property on the checkout level object instead.
 		 *
 		 * @param string $profile_start_date The profile start date in UTC YYYY-MM-DD HH:MM:SS format.
 		 * @param MemberOrder $order         The order that the profile start date is being calculated for.
 		 *
 		 * @return string The profile start date in UTC YYYY-MM-DD HH:MM:SS format.
 		 */
-		$profile_start_date = apply_filters( 'pmpro_profile_start_date', $profile_start_date, $order );
+		$profile_start_date = apply_filters_deprecated( 'pmpro_profile_start_date', array( $profile_start_date, $order ), '3.4', 'pmpro_checkout_level' );
 	}
 
 	// Convert $profile_start_date to correct format.
@@ -69,6 +76,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 	update_pmpro_membership_order_meta( $order->id, 'checkout_level', $pmpro_level_arr );
 
 	// Save the discount code.
+	// @TODO: Remove this in v4.0. Discount codes should be set on the level object.
 	update_pmpro_membership_order_meta( $order->id, 'checkout_discount_code', $discount_code );
 
 	// Save any files that were uploaded.
@@ -156,6 +164,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	$pmpro_level = (object) $checkout_level_arr;
 
 	// Set $discount_code_id.
+	// @TODO: Remove this in v4.0. Discount codes should be set on the level object.
 	$discount_code = get_pmpro_membership_order_meta( $order->id, 'checkout_discount_code', true );
 	
 	// Set $_REQUEST.
@@ -218,7 +227,13 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $order->user_id, $pmpro_level, $startdate );
 
 	// If we have a discount code but not the ID, get the ID.
-	if ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
+	if ( ! empty( $pmpro_level->discount_code ) ) {
+		$discount_code = $pmpro_level->discount_code;
+		$discount_code_id = empty( $pmpro_level->code_id ) ? $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" ) : $pmpro_level->code_id;
+	} elseif ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
+		// Throw a doing it wrong warning. If a discount code is being used, it should be set on the level.
+		// @TODO: Remove this in v4.0 along with references to the discount code globals. Discount codes should be set on the level object.
+		_doing_it_wrong( __FUNCTION__, __( 'Discount codes should be set on the $pmpro_level object.', 'paid-memberships-pro' ), '3.4' );
 		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 	}
 

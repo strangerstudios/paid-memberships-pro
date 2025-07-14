@@ -33,20 +33,28 @@ if( ! empty( $_REQUEST['year'] ) ) {
 	$year = $thisyear;
 }
 
-if ( ! empty( $_REQUEST['level'] ) ) {
-	$l = intval($_REQUEST['level']);
+if( ! empty( $_REQUEST['level'] ) ) {
+	if ( is_array( $_REQUEST['level'] ) ) {
+		$l = array_map( 'intval', $_REQUEST['level'] );
+	} else {
+		$l = array( intval( $_REQUEST['level'] ) );
+	}
 } else {
-	$l = "";
+	$l = array();
 }
 
-if ( ! empty( $_REQUEST['discount_code'] ) ) {
-	$discount_code = intval( $_REQUEST[ 'discount_code' ] );
+if( ! empty( $_REQUEST['discount_code'] ) ) {
+	if ( is_array( $_REQUEST['discount_code'] ) ) {
+		$discount_code = array_map( 'intval', $_REQUEST['discount_code'] );
+	} else {
+		$discount_code = array( intval( $_REQUEST['discount_code'] ) );
+	}
 } else {
-	$discount_code = '';
+	$discount_code = array();
 }
 
 // Same param hash as found in reports/sales.php.
-$param_array = array( $period, $type, $month, $year, $l, $discount_code );
+$param_array = array( $period, $type, $month, $year, implode( ',', $l ), implode( ',', $discount_code ) );
 $param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
 $sales_data = get_transient( 'pmpro_sales_data_' . $param_hash );
 
@@ -69,10 +77,10 @@ if ( $period == 'monthly' ) {
 	$filename .= '_' . $year;
 }
 if ( ! empty( $l ) ) {
-	$filename .= "_level" . $l;
+	$filename .= "_level" . implode( '-', $l );
 }
 if ( ! empty( $discount_code ) ) {
-	$filename .= "_" . $discount_code;
+	$filename .= "_dc" . implode( '-', $discount_code );
 }
 $filename .= ".csv";
 /*
@@ -164,7 +172,10 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 
 	wp_cache_flush();
 }
-pmpro_transmit_report_data( $csv_fh, $filename, $headers );
+// If this was run via Toolkit API, we don't have to output the CSV file.
+if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
+	pmpro_transmit_report_data( $csv_fh, $filename, $headers );
+}
 
 function pmpro_enclose( $s ) {
 	return "\"" . str_replace( "\"", "\\\"", $s ) . "\"";

@@ -5,16 +5,13 @@ function pmpro_load_textdomain() {
 
 	//paths to local (plugin) and global (WP) language files
 	$mofile_local  = dirname( __DIR__ ) . '/languages/' . $mofile;
-	$mofile_global = WP_LANG_DIR . '/pmpro/' . $mofile;
-	$mofile_global2 = WP_LANG_DIR . '/paid-memberships-pro/' . $mofile;
+	$mofile_global = WP_LANG_DIR . '/plugins/' . $mofile;
 
 	unload_textdomain( 'paid-memberships-pro' );
 
 	//load global first    
 	if ( file_exists( $mofile_global ) ) {
 		load_textdomain( 'paid-memberships-pro', $mofile_global );
-	} elseif ( file_exists( $mofile_global2 ) ) {
-		load_textdomain( 'paid-memberships-pro', $mofile_global2 );
 	}
 
 	//load local second
@@ -56,3 +53,41 @@ function pmpro_translate_billing_period($period, $number = 1)
 			return __("Years", 'paid-memberships-pro' );
 	}
 }
+
+/**
+ * Handle translation updates from our own translation server.
+ * @since 3.4
+ */
+function pmpro_check_for_translations() {
+	// Run it only on a PMPro page in the admin.
+	if ( ! current_user_can( 'update_plugins' ) ) {
+		return;
+	}
+
+	$is_pmpro_admin = ! empty( $_REQUEST['page'] ) && strpos( $_REQUEST['page'], 'pmpro' ) !== false;
+	$is_update_or_plugins_page = strpos( $_SERVER['REQUEST_URI'], 'update-core.php' ) !== false || strpos( $_SERVER['REQUEST_URI'], 'plugins.php' ) !== false;
+
+	// Only run this check when we're in the PMPro Page or plugins/update page to save some resources.
+	if ( ! $is_pmpro_admin && ! $is_update_or_plugins_page ) {
+		return;
+	}
+
+	$pmpro_add_ons = pmpro_getAddOns();
+	foreach( $pmpro_add_ons as $add_on ) {
+		// Skip if the plugin isn't active.
+		if ( ! pmpro_is_plugin_active( $add_on['plugin'] ) ) {
+			continue;
+		}
+
+		$plugin_slug = $add_on['Slug'];
+
+		// This uses the Traduttore plugin to check for translations for locales etc.
+		PMPro\Required\Traduttore_Registry\add_project(
+			'plugin',
+			$plugin_slug,
+			'https://translate.strangerstudios.com/api/translations/' . $plugin_slug
+		);
+	}
+	
+}
+add_action( 'admin_init', 'pmpro_check_for_translations' );

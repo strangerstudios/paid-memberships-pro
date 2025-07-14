@@ -337,7 +337,9 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			$subscription_data = array();
 			foreach ( $subscription_ids as $subscription_id ) {
 				$subscription = PMPro_Subscription::get_subscription( $subscription_id );
-				$subscription_data[] = $subscription;
+				if ( ! empty( $subscription ) ) {
+					$subscription_data[] = $subscription;
+				}
 			}
 			return $subscription_data;
 		}
@@ -517,19 +519,27 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		if ( ! empty( $level ) ) {
 			echo esc_html( $level->name );
 		} elseif ( $item->get_membership_level_id() > 0 ) {
-			echo '['. esc_html( 'deleted', 'paid-memberships-pro' ).']';
+			echo '['. esc_html__( 'deleted', 'paid-memberships-pro' ).']';
 		} else {
 			esc_html_e( '&#8212;', 'paid-memberships-pro' );
 		}
 
 		// If the subscription is active and the user does not have the level that the subscription is for, show a message.
 		if ( 'active' === $item->get_status() ) {
-			$user_levels    = pmpro_getMembershipLevelsForUser( $item->get_user_id() );
-			$user_level_ids = wp_list_pluck( $user_levels, 'id' );
-			if ( ! in_array( $item->get_membership_level_id(), $user_level_ids ) ) {
+			if( $item->get_membership_level_id() > 0 ) {
+				$user_levels    = pmpro_getMembershipLevelsForUser( $item->get_user_id() );
+				$user_level_ids = wp_list_pluck( $user_levels, 'id' );
+				if ( ! in_array( $item->get_membership_level_id(), $user_level_ids ) ) {
+					?>
+					<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+						<?php esc_html_e( 'Membership Ended', 'paid-memberships-pro' ); ?>
+					</span>
+					<?php
+				}
+			} else {
 				?>
 				<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
-					<?php esc_html_e( 'Membership Ended', 'paid-memberships-pro' ); ?>
+					<?php esc_html_e( 'No Level', 'paid-memberships-pro' ); ?>
 				</span>
 				<?php
 			}

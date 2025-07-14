@@ -185,6 +185,11 @@
 	margin-right: var(--pmpro--base--spacing--small);
 }
 
+.pmpro_form_field-file-preview img {
+	height: auto;
+	width: 200px;
+}
+
 /* Checkout and Billing forms */
 #pmpro_payment_information_fields .pmpro_form_fields label {
 	display: block;
@@ -368,6 +373,31 @@ button[type="button"]#other_discount_code_toggle:focus {
 	min-height: 30px;
 }
 
+/* Special Fields */
+.pmpro_form_field-password-toggle button,
+.pmpro_form_field-password-toggle button:hover,
+.pmpro_form_field-password-toggle button:focus,
+.pmpro_form_field-password-toggle button:active {
+	align-items: center;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	box-sizing: border-box;
+	color: var(--pmpro--color--contrast);
+	display: flex;
+	flex-direction: row;
+	gap: calc( var(--pmpro--base--spacing--small) / 2 );
+	line-height: 1;
+	margin: 0;
+	min-height: 1px;
+	padding: 0;
+}
+
+.pmpro_form_field-password-toggle button:focus,
+.pmpro_form_field-password-toggle button:active {
+	color: var(--pmpro--color--contrast);
+}
+
 /* Hide the Edge "reveal password" native button */
 .wp-pwd input::-ms-reveal {
 	display: none;
@@ -393,6 +423,10 @@ button[type="button"]#other_discount_code_toggle:focus {
 	border-collapse: collapse;
 	margin: 0;
 	width: 100%;
+}
+
+.pmpro_table-fixed {
+	table-layout: fixed;
 }
 
 /**
@@ -604,6 +638,12 @@ button[type="button"]#other_discount_code_toggle:focus {
 	.pmpro_table tfoot tr td {
 		display: grid;
 		grid-template-columns: 1fr 2fr;
+	}
+
+	.pmpro_table-fixed tbody tr th,
+	.pmpro_table-fixed tbody tr td,
+	.pmpro_table-fixed tfoot tr td {
+		grid-template-columns: 1fr 1fr;
 	}
 
 	.pmpro_table tbody tr th::before,

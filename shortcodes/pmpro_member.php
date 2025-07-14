@@ -26,6 +26,22 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		)
 	);
 
+	// No user_id found, let's bail.
+	if ( ! $user_id ) {
+		return;
+	}
+
+	// Make sure the user_id is of an existing user when not viewing their own information.
+	if ( $user_id !== $current_user->ID ) {
+		$user = get_userdata( $user_id );
+		if ( ! $user ) {
+			return;
+		}
+	} else {
+		$user = $current_user;
+	}
+
+
 	// Bail if there's no field attribute.
 	if ( empty( $field ) ) {
 		return esc_html__( 'The "field" attribute is required in the pmpro_member shortcode.', 'paid-memberships-pro' );
@@ -99,7 +115,7 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		'trial_amount',
 	);
 
-	if ( in_array( $field, $pmpro_level_fields ) || in_array( $field, $pmpro_subscription_fields ) ) {
+	if ( in_array( $field, $pmpro_level_fields ) || in_array( $field, $pmpro_subscription_fields ) || 'level_meta_' === substr( $field, 0, 11 ) ) {
 		// Fields about the user's membership or subscription.
 		// Get the membership level to show.
 		$membership_level = null;
@@ -138,6 +154,9 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 				$field = str_replace( 'membership_', '', $field );
 				$r     = $membership_level->{$field};
 			}
+		} elseif( 'level_meta_' === substr( $field, 0, 11 ) ) {
+			// Membership level meta fields.
+			$r = get_pmpro_membership_level_meta( $membership_level->id, substr( $field, 11 ), true );
 		} else {
 			// Subscription fields.
 			$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $membership_level->id );
@@ -155,7 +174,6 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		$r = get_user_meta($user_id, $field, true );
 	} elseif ( in_array( $field, $user_column_fields ) ) {
 		// wp_users column.
-		$user = get_userdata( $user_id );
 		$r    = $user->{$field};
 	} elseif ( $field === 'avatar' ) {
 		// Get the user's avatar.
@@ -185,20 +203,11 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		}
 	}
 
-	// Check for files to reformat them.
-	if ( is_array( $r ) && ! empty( $r['fullurl'] ) ) {
-		$file_field = pmpro_get_user_field( $field );
-		if ( ! empty( $file_field ) ) {
-			$file_field->file = $r;
-			$file_field->readonly = true;
-			$r = $file_field->displayValue( $r['fullurl'], false ); // False to not echo.
-		} else {
-			$r = '<a href="' . esc_url( $r['fullurl'] ) . '">' . esc_html( basename($r['fullurl'] ) ) . '</a>';
-		}
+	// If this is a user field, get the display value.
+	$user_field = PMPro_Field_Group::get_field( $field );
+	if ( ! empty( $user_field ) ) {
+		$r = $user_field->displayValue( $r, false );
 	}
-
-	// If this is a user field with an associative array of options, get the label(s) for the value(s).
-	$r = pmpro_get_label_for_user_field_value( $field, $r );
 
 	// Check for arrays to reformat them.
 	if ( is_array( $r ) ) {

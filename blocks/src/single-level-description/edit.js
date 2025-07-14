@@ -26,7 +26,7 @@ import { Fragment, RawHTML } from '@wordpress/element';
 export default function Edit(props) {
 	const getDescriptionText = (level) => {
 		return pmpro.all_levels_formatted_text[level]
-			? pmpro.all_levels_formatted_text[level].description
+			? pmpro.all_levels_formatted_text[level].formatted_description
 			: null;
 	};
 

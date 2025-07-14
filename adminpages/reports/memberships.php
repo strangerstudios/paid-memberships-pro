@@ -196,7 +196,7 @@ function pmpro_report_memberships_page() {
 	}
 
 	$sqlQuery .= "WHERE mu.startdate >= '" . esc_sql( $startdate ) . "' ";
-	$sqlQuery .= "AND mu.startdate <= '" . esc_sql( $enddate ) . "' ";
+	$sqlQuery .= "AND mu.startdate <= '" . esc_sql( $enddate ) . " 23:59:59' ";
 
 	if ( ! empty( $l ) ) {
 		$sqlQuery .= 'AND mu.membership_id IN(' . $l . ') '; // $l is already escaped for SQL. See declaration.
@@ -279,7 +279,8 @@ function pmpro_report_memberships_page() {
 	}
 
 	$sqlQuery .= "AND mu1.enddate >= '" . esc_sql( $startdate ) . "'
-	AND mu1.enddate < '" . esc_sql( $enddate ) . "' ";
+	AND mu1.enddate <= '" . $enddate . " 23:59:59' ";
+
 
 	// restrict by level
 	if ( ! empty( $l ) ) {
@@ -344,7 +345,7 @@ function pmpro_report_memberships_page() {
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro' ); ?></h3>
 		<div class="tablenav top">
-			<span><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></span>
+			<span class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></span>
 			<label for="period" class="screen-reader-text"><?php esc_html_e( 'Select report time period', 'paid-memberships-pro' ); ?></label>
 			<select id="period" name="period">
 				<option value="daily" <?php selected( $period, 'daily' ); ?>><?php esc_html_e( 'Daily', 'paid-memberships-pro' ); ?></option>
@@ -357,7 +358,7 @@ function pmpro_report_memberships_page() {
 				<option value="signup_v_cancel" <?php selected( $type, 'signup_v_cancel' ); ?>><?php esc_html_e( 'Signups vs. Cancellations', 'paid-memberships-pro' ); ?></option>
 				<option value="signup_v_expiration" <?php selected( $type, 'signup_v_expiration' ); ?>><?php esc_html_e( 'Signups vs. Expirations', 'paid-memberships-pro' ); ?></option>
 			</select>
-			<span id="for"><?php esc_html_e( 'for', 'paid-memberships-pro' ); ?></span>
+			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e( 'for', 'paid-memberships-pro' ); ?></span>
 			<label for="month" class="screen-reader-text"><?php esc_html_e( 'Select report month', 'paid-memberships-pro' ); ?></label>
 			<select id="month" name="month">
 				<?php for ( $i = 1; $i < 13; $i++ ) { ?>
@@ -370,7 +371,7 @@ function pmpro_report_memberships_page() {
 					<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $year, $i ); ?>><?php echo esc_html( $i ); ?></option>
 				<?php } ?>
 			</select>
-			<span id="for"><?php esc_html_e( 'for', 'paid-memberships-pro' ); ?></span>
+			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e( 'for', 'paid-memberships-pro' ); ?></span>
 			<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
 			<select id="level" name="level">
 				<option value="" 
@@ -422,11 +423,10 @@ function pmpro_report_memberships_page() {
 				<?php } ?>
 			</select>
 			<?php } ?>
-			<input type="hidden" name="page" value="pmpro-reports" />
-			<input type="hidden" name="report" value="memberships" />
-			<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Generate Report', 'paid-memberships-pro' ); ?>" />
-			<br class="clear" />
 		</div> <!-- end tablenav -->
+		<input type="hidden" name="page" value="pmpro-reports" />
+		<input type="hidden" name="report" value="memberships" />
+		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Generate Report', 'paid-memberships-pro' ); ?>" />
 	</div> <!-- end pmpro_report-filters -->
 	<div class="pmpro_chart_area">
 		<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
@@ -531,9 +531,9 @@ function pmpro_report_memberships_page() {
 		<table class="widefat striped">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Signups', 'paid-memberships-pro' ); ?></th>
-					<th><?php echo esc_html( $cancellations_label ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Signups', 'paid-memberships-pro' ); ?></th>
+					<th scope="col"><?php echo esc_html( $cancellations_label ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -543,9 +543,9 @@ function pmpro_report_memberships_page() {
 					<tr>
 						<th scope="row"><?php
 							if ( $period == 'monthly' ) {
-								echo esc_html( date_i18n( 'F Y', mktime( 0, 0, 0, $value->date, 2 ) ) );
+								echo esc_html( date_i18n( 'F Y', mktime( 0, 0, 0, $value->date, 1, $year ) ) );
 							} elseif ( $period == 'daily' ) {
-								echo esc_html( $key );
+								echo esc_html( date_i18n( get_option( 'date_format' ), mktime( 0, 0, 0, $month, $key, $year ) ) );
 							} else {
 								echo esc_html( $value->date );
 							}

@@ -37,3 +37,10 @@ function pmpro_wpe_fix_resetpass( $url, $path ) {
 	return $url;
 }
 add_filter( 'site_url', 'pmpro_wpe_fix_resetpass', 10, 2 );
+
+/**
+ * Assume sites on WPEngine are using NGINX.
+ *
+ * @since 3.5
+ */
+add_filter( 'pmpro_is_nginx', '__return_true' );

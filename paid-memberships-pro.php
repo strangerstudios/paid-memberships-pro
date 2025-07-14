@@ -3,20 +3,20 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.3.3
+ * Version: 3.5.1
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
  * Domain Path: /languages
  */
 /**
- * Copyright 2011-2024	Stranger Studios
+ * Copyright 2011-2025	Stranger Studios
  * (email : info@paidmembershipspro.com)
  * GPLv2 Full license details in license.txt
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.3.3' );
+define( 'PMPRO_VERSION', '3.5.1' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -26,29 +26,65 @@ define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
-require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
-require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP session vars
 
-require_once( PMPRO_DIR . '/includes/localization.php' );           // localization functions
-require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        // parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
-require_once( PMPRO_DIR . '/includes/functions.php' );              // misc functions used by the plugin
-require_once( PMPRO_DIR . '/includes/updates.php' );                // database and other updates
-require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           // database and other updates
-require_once( PMPRO_DIR . '/includes/deprecated.php' );             // deprecated hooks and functions
+require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
+require_once( PMPRO_DIR . '/includes/sessions.php' );               		// start/close PHP session vars
+
+require_once( PMPRO_DIR . '/includes/localization.php' );           		// localization functions
+require_once( PMPRO_DIR . '/includes/lib/glotpress-helper.php' );   		// handles translation updates logic from our own server.
+require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        		// parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
+require_once( PMPRO_DIR . '/includes/functions.php' );              		// misc functions used by the plugin
+require_once( PMPRO_DIR . '/includes/updates.php' );                		// database and other updates
+require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           		// database and other updates
+require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// deprecated hooks and functions
+require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
-	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
+	require_once( PMPRO_DIR . '/includes/license.php' );            		// defines location of addons data and licenses
 }
 
-require_once( PMPRO_DIR . '/includes/crons.php' );                  // cron-related functionality
-require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for expiring members, sending expiration emails, etc
-
-require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
-require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and filter emails sent by PMPro
+require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       		// class to process and save orders
+require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        		// setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
+require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
+
+
+// New in 3.5: We now use Action Scheduler instead of WP Cron.
+if ( ! class_exists( \ActionScheduler::class ) ) {
+	require_once PMPRO_DIR . '/includes/lib/action-scheduler/action-scheduler.php'; // Load Action Scheduler if it is not already loaded.
+}
+require_once( PMPRO_DIR . '/classes/class-pmpro-action-scheduler.php' ); 	// Our Action Scheduler Manager for PMPro
+require_once( PMPRO_DIR . '/classes/class-pmpro-recurring-actions.php' ); 			// Load our recurring scheduled actions.
+
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template.php' ); // base class for email templates
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel.php' ); // cancel email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-admin.php' ); // cancel email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-admin-change-admin.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-refund.php' ); // refund email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-refund-admin.php' ); // refund email admin template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action.php' ); // expiration email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-payment-action-admin.php' ); // expiration email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-invoice.php' ); // invoice email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-recurring.php' ); // recurring payment email reminder template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expiring.php' ); // expiring email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-membership-expired.php' ); // change email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-credit-card-expiring.php' ); // credit card expiring email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-check.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-check-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-free.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-free-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-paid.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php' );
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing.php' ); // update billing email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-admin.php' ); // update billing admin email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure.php' ); // billing failure email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure-admin.php' ); // billing failure email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php' ); //cancel auto renewals email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php' ); //cancel auto renewals admin email template
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
@@ -97,10 +133,12 @@ require_once( PMPRO_DIR . '/includes/login.php' );                  // code to r
 require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PMPro capabilities for roles
 require_once( PMPRO_DIR . '/includes/privacy.php' );                // code to aid with user data privacy, e.g. GDPR compliance
 require_once( PMPRO_DIR . '/includes/pointers.php' );				// popover help pointers
+require_once( PMPRO_DIR . '/includes/site-types.php' );             // site types and hubs for PMPro
 require_once( PMPRO_DIR . '/includes/spam.php' );					// code to combat spam of various kinds
 require_once( PMPRO_DIR . '/includes/abandoned-signups.php' );		// track users who were created at checkout but did not complete checkout.
 require_once( PMPRO_DIR . '/includes/checkout.php' );		        // Common functions used at checkout.
 require_once( PMPRO_DIR . '/includes/level-groups.php' );		    // Common functions for level groups.
+require_once( PMPRO_DIR . '/includes/restricted-files.php' );		// Restrict access to files.
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
@@ -120,17 +158,10 @@ require_once( PMPRO_DIR . '/includes/blocks.php' ); // Set up blocks.
 // load gateway
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway.php' ); // loaded by memberorder class when needed
 
-// load payment gateway class
-if ( version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {
-	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_braintree.php' );
-}
-
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-codes.php' ); // loaded by memberorder class when needed
 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_payflowpro.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.php' );
 
 pmpro_check_for_deprecated_gateways();
 
@@ -144,6 +175,17 @@ require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-integration.php';
 $wisdom_integration = PMPro_Wisdom_Integration::instance();
 $wisdom_integration->setup_wisdom();
 
+// Setup our PMPro Action Scheduler.
+add_action( 'plugins_loaded', function() {
+
+	// Load our Action Scheduler class.
+	PMPro_Action_Scheduler::instance();
+
+	// Add our recurring actions.
+	PMPro_Recurring_Actions::instance();
+
+} );
+
 /*
 	Setup the DB and check for upgrades
 */
@@ -155,9 +197,7 @@ if ( is_admin() || defined('WP_CLI') ) {
 }
 
 // load plugin updater
-if ( is_admin() ) {
-	require_once( PMPRO_DIR . '/includes/addons.php' );
-}
+require_once( PMPRO_DIR . '/includes/addons.php' );
 
 /*
 	Definitions
@@ -187,22 +227,19 @@ $gateway_environment = get_option( 'pmpro_gateway_environment' );
 // Returns a list of all available gateway
 function pmpro_gateways() {
 	$pmpro_gateways = array(
-		''                  => __( 'Testing Only', 'paid-memberships-pro' ),
-		'check'             => __( 'Pay by Check', 'paid-memberships-pro' ),
-		'stripe'            => __( 'Stripe', 'paid-memberships-pro' ),
-		'paypalexpress'     => __( 'PayPal Express', 'paid-memberships-pro' ),
-		'payflowpro'        => __( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
-		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
-		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
+		''                  => esc_html__( 'Testing Only', 'paid-memberships-pro' ),
+		'check'             => esc_html__( 'Pay by Check', 'paid-memberships-pro' ),
+		'stripe'            => esc_html__( 'Stripe', 'paid-memberships-pro' ),
+		'paypalexpress'     => esc_html__( 'PayPal Express', 'paid-memberships-pro' ),
 	);
 
 	if ( pmpro_onlyFreeLevels() ) {
-		$pmpro_gateways[''] = __( 'Default', 'paid-memberships-pro' );
+		$pmpro_gateways[''] = esc_html__( 'Default', 'paid-memberships-pro' );
 	}
 
 	$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
 	if ( ! empty( $check_gateway_label ) ) {
-		$pmpro_gateways['check'] =  esc_html( $check_gateway_label . ' (' . __( 'Pay by Check', 'paid-memberships-pro' ) . ')' );
+		$pmpro_gateways['check'] =  esc_html( $check_gateway_label . ' (' . esc_html__( 'Pay by Check', 'paid-memberships-pro' ) . ')' );
 	}
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );
@@ -220,32 +257,19 @@ $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true 
 /*
 	Activation/Deactivation
 */
-// we need monthly crons
-function pmpro_cron_schedules_monthly( $schedules ) {
-	$schedules['monthly'] = array(
-		'interval' => 2635200,
-		'display' => __( 'Once a month', 'paid-memberships-pro' ),
-	);
-	return $schedules;
-}
-add_filter( 'cron_schedules', 'pmpro_cron_schedules_monthly' );
 
 // activation
 function pmpro_activation() {
-	pmpro_maybe_schedule_crons();
 	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
 	do_action( 'pmpro_activation' );
 }
+register_activation_hook( __FILE__, 'pmpro_activation' );
 
 // deactivation
 function pmpro_deactivation() {	
-	// remove crons
-	pmpro_clear_crons();
-
 	// remove caps from admin role
 	pmpro_set_capabilities_for_role( 'administrator', 'disable' );
 
 	do_action( 'pmpro_deactivation' );
 }
-register_activation_hook( __FILE__, 'pmpro_activation' );
 register_deactivation_hook( __FILE__, 'pmpro_deactivation' );

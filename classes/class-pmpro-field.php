@@ -10,7 +10,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $name = '';
+	private $name = '';
 
 	/**
 	 * The type of field that this is.
@@ -19,7 +19,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $type = '';
+	private $type = '';
 
 	/**
 	 * The meta key for this field.
@@ -30,7 +30,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $meta_key = '';
+	private $meta_key = '';
 
 	/**
 	 * The label of the field.
@@ -41,7 +41,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $label = '';
+	private $label = '';
 
 	/**
 	 * Whether the label should be shown.
@@ -50,7 +50,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $showmainlabel = true;
+	private $showmainlabel = true;
 
 	/**
 	 * A hint to be displayed with the field.
@@ -59,7 +59,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $hint = '';
+	private $hint = '';
 
 	/**
 	 * The membership levels that this field should be displayed for.
@@ -68,7 +68,7 @@ class PMPro_Field {
 	 *
 	 * @var array
 	 */
-	public $levels = array();
+	private $levels = array();
 
 	/**
 	 * Whether the field is required.
@@ -77,7 +77,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $required = false;
+	private $required = false;
 
 	/**
 	 * Whether the field should be shown as required if $required is set to true.
@@ -86,7 +86,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $showrequired = true;
+	private $showrequired = true;
 
 	/**
 	 * Where this field should be shown.
@@ -97,7 +97,7 @@ class PMPro_Field {
 	 *
 	 * @var mixed
 	 */
-	public $profile = true;
+	private $profile = true;
 
 	/**
 	 * Whether the field is readonly.
@@ -106,7 +106,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $readonly = false;
+	private $readonly = false;
 
 	/**
 	 * Array to define conditions when a field should be shown or hidden.
@@ -115,7 +115,7 @@ class PMPro_Field {
 	 *
 	 * @var array
 	 */
-	public $depends = array();
+	private $depends = array();
 
 	/**
 	 * Flag to determine if depends conditions should be ANDed or ORed together.
@@ -124,7 +124,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $depends_or = false;
+	private $depends_or = false;
 
 	/**
 	 * Whether the field value should be sanitized before saving.
@@ -133,7 +133,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $sanitize = true;
+	private $sanitize = true;
 
 	/**
 	 * The ID to show for the field.
@@ -142,7 +142,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $id = '';
+	private $id = '';
 
 	/**
 	 * Class for the input field.
@@ -151,7 +151,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $class = '';
+	private $class = '';
 
 	/**
 	 * Class for the div wrapper for the input field.
@@ -160,7 +160,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $divclass = '';
+	private $divclass = '';
 
 	/**
 	 * Whether this field should be included in a members list CSV export.
@@ -169,7 +169,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $memberslistcsv = false;
+	private $memberslistcsv = false;
 
 	/**
 	 * The save function that should be used for this field.
@@ -180,7 +180,7 @@ class PMPro_Field {
 	 *
 	 * @var callable
 	 */
-	public $save_function = null;
+	private $save_function = null;
 
 	/**
 	 * Whether this field should be shown when adding a member using
@@ -190,7 +190,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $addmember = false;
+	private $addmember = false;
 
 	/**
 	 * The size attribute when using a text input field type.
@@ -199,7 +199,7 @@ class PMPro_Field {
 	 *
 	 * @var int
 	 */
-	public $size = 30;
+	private $size = 30;
 
 	/**
 	 * The number of rows to show when using a textarea field type.
@@ -208,7 +208,7 @@ class PMPro_Field {
 	 *
 	 * @var int
 	 */
-	public $rows = 5;
+	private $rows = 5;
 
 	/**
 	 * The number of columns to show when using a textarea field type.
@@ -217,7 +217,7 @@ class PMPro_Field {
 	 *
 	 * @var int
 	 */
-	public $cols = 80;
+	private $cols = 80;
 
 	/**
 	 * The options for a select, select2, multiselect, checkbox_grouped, or radio field type.
@@ -226,7 +226,7 @@ class PMPro_Field {
 	 *
 	 * @var array
 	 */
-	public $options = array();
+	private $options = array();
 
 	/**
 	 * Whether multiple options should be selectable when using a select, select2, or multiselect field type.
@@ -235,7 +235,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $multiple = false;
+	private $multiple = false;
 
 	/**
 	 * The text to show next to a checkbox when using a checkbox field type.
@@ -244,7 +244,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $text = '';
+	private $text = '';
 
 	/**
 	 * The HTML to show for an HTML field type.
@@ -253,7 +253,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $html = '';
+	private $html = '';
 
 	/**
 	 * The default value for a field.
@@ -262,7 +262,7 @@ class PMPro_Field {
 	 *
 	 * @var string
 	 */
-	public $default = '';
+	private $default = '';
 
 	/**
 	 * File upload types.
@@ -272,7 +272,7 @@ class PMPro_Field {
 	 * @var string
 	 *
 	 */
-	public $allowed_file_types = '';
+	private $allowed_file_types = '';
 
 	/**
 	 * File upload limit
@@ -281,13 +281,144 @@ class PMPro_Field {
 	 * 
 	 * @var int
 	 */
-	public $max_file_size = '';
+	private $max_file_size = '';
 
 	function __construct($name = NULL, $type = NULL, $attr = NULL) {
 		if ( ! empty( $name ) )
 			return $this->set( $name, $type, $attr );
 		else
 			return true;
+	}
+
+	/**
+	 * Magic getter to allow reading private class properties.
+	 *
+	 * @param string $name The property name.
+	 * @return mixed The property value.
+	 */
+	function __get( $name ) {
+		if ( isset( $this->$name ) ) {
+			if ( ! $this->is_valid_property( $name ) ) {
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s is not valid for the field type %s.', 'paid-memberships-pro' ), $name, $this->type ), '3.4' );
+			}
+			return $this->$name;
+		} else {
+			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s does not exist.', 'paid-memberships-pro' ), $name ), '3.4' );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Magic setter to allow setting private class properties and
+	 * throwing warnings when we want to phase out a property.
+	 *
+	 * @param string $name The property name.
+	 * @param mixed $value The property value.
+	 */
+	function __set( $name, $value ) {
+		if ( 'type' === $name ) {
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'PMPro_Field properties should not be modified directly and may break in a future version. Instead, create a new PMPro_Field object.', 'paid-memberships-pro' ), '3.4' );
+		}
+
+		$this->$name = $value;
+	}
+	
+	/**
+	 * Magic isset to check if a private class property is set.
+	 *
+	 * @param string $name The property name.
+	 * @return bool Whether the property is set.
+	 */
+	function __isset( $name ) {
+		return isset( $this->$name );
+	}
+
+	/**
+	 * Magic __call to allow calling private class methods and throwing warnings
+	 * when we want to phase out a method.
+	 */
+	function __call( $name, $arguments ) {
+		switch( $name ) {
+			case 'set':
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the $args property of the constructor when creating a new PMPro_Field object.', 'paid-memberships-pro' ), $name ), '3.4' );
+				break;
+			case 'saveUsersTable':
+			case 'saveTermRelationshipsTable':
+			case 'saveFile':
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the save_field_for_user method of the PMPro_Field object.', 'paid-memberships-pro' ), $name ), '3.4' );
+				break;
+			case 'getHTML':
+			case 'getDependenciesJS':
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the display() method of the PMPro_Field object.', 'paid-memberships-pro' ), $name ), '3.4' );
+				break;
+			default:
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version.', 'paid-memberships-pro' ), $name ), '3.4' );
+				break;
+		}
+		return call_user_func( array( $this, $name ), $arguments );
+	}
+
+	/**
+	 * Check if a property should be present for the current field type.
+	 *
+	 * @since 3.4
+	 *
+	 * @param string $property The property to check.
+	 * return bool Whether the property is valid for the field type.
+	 */
+	private function is_valid_property( $property ) {
+		switch ( $property ) {
+			case 'name':
+			case 'type':
+			case 'meta_key':
+			case 'label':
+			case 'showmainlabel':
+			case 'hint':
+			case 'levels':
+			case 'required':
+			case 'showrequired':
+			case 'profile':
+			case 'readonly':
+			case 'depends':
+			case 'depends_or':
+			case 'sanitize':
+			case 'id':
+			case 'class':
+			case 'divclass':
+			case 'memberslistcsv':
+			case 'save_function':
+			case 'addmember':
+			case 'default':
+				return true;
+				break;
+			case 'size':
+				return in_array( $this->type, array( 'text', 'number' ) );
+				break;
+			case 'rows':
+			case 'cols':
+				return 'textarea' === $this->type;
+				break;
+			case 'options':
+				return in_array( $this->type, array( 'select', 'multiselect', 'select2', 'radio', 'checkbox_grouped' ) );
+				break;
+			case 'multiple':
+				return in_array( $this->type, array( 'select', 'select2', 'multiselect' ) );
+				break;
+			case 'text':
+				return 'checkbox' === $this->type;
+				break;
+			case 'html':
+				return 'html' === $this->type;
+				break;
+			case 'allowed_file_types':
+			case 'max_file_size':
+				return 'file' === $this->type;
+				break;
+			default:
+				return false;
+				break;
+		}
 	}
 
 	/*
@@ -300,7 +431,7 @@ class PMPro_Field {
 		- just_profile = bool (not required. true means only show field in profile)
 		- class = string (class to add to html element)
 	*/
-	function set($name, $type, $attr = array())
+	private function set($name, $type, $attr = array())
 	{
 		$this->name = $name;
 		$this->type = $type;
@@ -468,8 +599,86 @@ class PMPro_Field {
 		return true;
 	}
 
+	/**
+	 * Get the field value from $_REQEUST or $_SESSION.
+	 * The value will be sanitized if the field has the sanitize property set to true.
+	 *
+	 * @since 3.4
+	 *
+	 * @return mixed The value of the field or null if not found.
+	 */
+	function get_value_from_request() {
+		if ( isset( $_REQUEST[ $this->name ] ) ) {
+			$value = $_REQUEST[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		} elseif ( isset( $_REQUEST[ $this->name . '_checkbox' ] ) && $this->type == 'checkbox' ) {
+			// Empty checkbox.
+			$value = 0;
+		} elseif ( ! empty( $_REQUEST[ $this->name . '_checkbox' ] ) && in_array( $this->type, array( 'checkbox_grouped', 'select2' ) ) )	{
+			// Empty group checkboxes or select2.
+			$value = array();
+		} elseif ( isset( $_FILES[$this->name] ) && $this->type == 'file' ) {
+			// File field.
+			$value = $_FILES[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		}  elseif ( isset( $_SESSION[$this->name] ) ) {
+			// Value stored in session.
+			if ( is_array( $_SESSION[$this->name] ) && isset( $_SESSION[$this->name]['name'] ) ) {
+				// File field in session.
+				$_FILES[$this->name] = $_SESSION[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$value = $_SESSION[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			} else {
+				// Other field in session.
+				$value = $_SESSION[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			}
+
+			// Clean up session.
+			unset($_SESSION[$this->name]);
+		} else {
+			// No value found.
+			return null;
+		}
+
+		// Sanitize the value if needed.
+		if ( ! empty( $field->sanitize ) ) {
+			if ( $this->type == 'textarea' ) {
+				$value = sanitize_textarea_field( $value );
+			} elseif ( is_array( $value ) ) {
+				$value = array_map( 'sanitize_text_field', $value );
+			} else {
+				$value = sanitize_text_field( $value );
+			}
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Save the field for a user.
+	 *
+	 * @since 3.4
+	 *
+	 * @param int $user_id The user ID to save the field for.
+	 */
+	function save_field_for_user( int $user_id ) {
+		// Get the value of the field.
+		$value = $this->get_value_from_request();
+
+		// If field was not submitted, bail.
+		if ( null === $value ) {
+			return;
+		}
+
+		// Check if we have a save function.
+		if ( ! empty( $this->save_function ) ) {
+			// Call the save function.
+			call_user_func( $this->save_function, $user_id, $this->name, $value, $this );
+		} else {
+			// Save the value to usermeta.
+			update_user_meta($user_id, $this->meta_key, $value);
+		}
+	}
+
 	// Save function for users table field.
-	function saveUsersTable( $user_id, $name, $value ) {
+	private function saveUsersTable( $user_id, $name, $value ) {
 		// Special sanitization needed for certain user fields.
 		if ( $name === 'user_url' ) {
 			$value = esc_url_raw( $value );
@@ -483,7 +692,7 @@ class PMPro_Field {
 	}
 
 	// Save function for user taxonomy field.
-	function saveTermRelationshipsTable( $user_id, $name, $value ) {
+	private function saveTermRelationshipsTable( $user_id, $name, $value ) {
 		// Get the taxonomy to save for.
 		if ( isset( $this->taxonomy ) ) {
 			$taxonomy = $this->taxonomy;
@@ -512,7 +721,7 @@ class PMPro_Field {
 	}
 
 	//save function for files
-	function saveFile($user_id, $name, $value)
+	private function saveFile($user_id, $name, $value)
 	{
 		//setup some vars
 		$user = get_userdata($user_id);
@@ -607,7 +816,7 @@ class PMPro_Field {
 		{
 			// Make sure file was uploaded.
 			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-				pmpro_setMessage( sprintf( __( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
+				pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
 				return false;
 			}
 
@@ -619,7 +828,7 @@ class PMPro_Field {
 		if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
 			$preview_file = wp_get_image_editor( $file_path );
 			if ( ! is_wp_error( $preview_file ) ) {
-				$preview_file->resize( 200, NULL, false );
+				$preview_file->resize( 400, 400, false );
 				$preview_file->generate_filename( 'pmpro_file_preview' );
 				$preview_file = $preview_file->save();
 			}
@@ -649,15 +858,17 @@ class PMPro_Field {
 		update_user_meta($user_id, $meta_key, $file_meta_value_array );
 	}
 
-	//echo the HTML for the field
-	function display($value = NULL)
-	{
-		echo $this->getHTML($value); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	/**
+	 * Display the field.
+	 */
+	function display( $value = NULL ) {
+		echo $this->getHTML( $value ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$this->getDependenciesJS();
 		return;
 	}
 
 	//get HTML for the field
-	function getHTML($value = "")
+	private function getHTML($value = "")
 	{
 		// Vars to store HTML to be added to the beginning or end.
 		$r_beginning = '';
@@ -683,7 +894,7 @@ class PMPro_Field {
 
 		if($this->type == "text")
 		{
-			$r = '<input type="text" id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '" value="' . esc_attr(wp_unslash($value)) . '" ';
+			$r = '<input type="text" id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '" value="' . ( is_string( $value ) ? esc_attr(wp_unslash($value) ) : '' ) . '" ';
 			if(!empty($this->size))
 				$r .= 'size="' . esc_attr( $this->size ) . '" ';
 			if(!empty($this->class))
@@ -798,7 +1009,7 @@ class PMPro_Field {
 					$this->select2options = 'placeholder: "' . esc_attr($this->placeholder) . '"';
 				}
 			} else {
-				$r .= 'placeholder="' . __('Choose one or more.', 'paid-memberships-pro') . '" ';
+				$r .= 'placeholder="' . esc_html__('Choose one or more.', 'paid-memberships-pro') . '" ';
 			}
 			if(!empty($this->class))
 				$r .= 'class="' . esc_attr( $this->class ) . '" ';
@@ -909,7 +1120,7 @@ class PMPro_Field {
 				$r .= 'readonly="readonly" ';
 			if(!empty($this->html_attributes))
 				$r .= $this->getHTMLAttributes();
-			$r .= '>' . esc_textarea(wp_unslash($value)) . '</textarea>';
+				$r .= '>' . ( ( is_string( $value ) ) ? esc_textarea(wp_unslash($value) ) : '' ) . '</textarea>';
 		}
 		elseif($this->type == "hidden")
 		{
@@ -934,91 +1145,92 @@ class PMPro_Field {
 		{
 			$r = '';
 
-			//old value
-			if(is_user_logged_in())
-			{
-				global $current_user;
-				$old_value = get_user_meta($current_user->ID, $this->meta_key, true);
-				if(!empty($old_value))
-					$r .= '<input type="hidden" name="' . $this->name . '_old" value="' . esc_attr($old_value['filename']) . '" />';
-			}
-
 			// Show the existing file with a preview and allow user to delete or replace.
-			if ( ! empty( $value ) ) {
+			if ( ! empty( $value ) && ( is_array( $value ) || ! empty( $this->file ) ) ) {
+				if ( is_array( $value ) ) {
+					$file = $value;
+				} elseif ( ! empty( $this->file ) ) {
+					// Legacy support for $this->file.
+					$file = $this->file;
+				}
 
 				// Show a preview of existing file if image type.
-				if ( ( ! empty( $this->preview ) ) && ! empty( $this->file['previewurl'] ) ) {
-					$filetype = wp_check_filetype( basename( $this->file['previewurl'] ), null );
+				if ( ( ! empty( $this->preview ) ) && ! empty( $file['previewurl'] ) ) {
+					$filetype = wp_check_filetype( basename( $file['previewurl'] ), null );
 					if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
-						$r_beginning .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-file-preview' ) ) . '"><img src="' . esc_url( $this->file['previewurl'] ) . '" alt="' . esc_attr( basename($value) ) . '" /></div>';
+						$r_beginning .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-file-preview' ) ) . '"><img src="' . esc_url( $file['previewurl'] ) . '" alt="' . esc_attr( basename($file['filename']) ) . '" /></div>';
 					}
 				}
 
-				if( ! empty( $this->file['fullurl'] ) ) {
-					$r_beginning .= '<div class="pmpro_form_field-file-name pmpro_file_' . esc_attr( $this->name ) . '_name">' . sprintf(__('Current File: %s', 'paid-memberships-pro' ), '<a target="_blank" href="' . esc_url( $this->file['fullurl'] ) . '">' . esc_html( basename($value) ) . '</a>' ) . '</div>';
-				} else {
+				if( ! empty( $file['fullurl'] ) ) {
+					$r_beginning .= '<div class="pmpro_form_field-file-name pmpro_file_' . esc_attr( $this->name ) . '_name">' . sprintf(__('Current File: %s', 'paid-memberships-pro' ), '<a target="_blank" href="' . esc_url( $file['fullurl'] ) . '">' . esc_html( basename($file['filename']) ) . '</a>' ) . '</div>';
+				} elseif( is_string( $value ) ) {
 					$r_beginning .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
 				}
 
 				$r_beginning .= '<div class="pmpro_form_field-file-actions">';
 				// Allow user to delete the uploaded file if we know the full location. 
-				if ( ( ! empty( $this->allow_delete ) ) && ! empty( $this->file['fullurl'] ) ) {
+				if ( ( ! empty( $this->allow_delete ) ) && ! empty( $file['fullurl'] ) ) {
 					// Check whether the current user can delete the uploaded file based on the field attribute 'allow_delete'.
 					if ( $this->allow_delete === true || 
 						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options' ) )
 					) {
-						$r_beginning .= '<button class="button is-destructive pmpro_btn pmpro_btn-delete" id="pmpro_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Delete', 'paid-memberships-pro' ) . '</button>';
+						$r_beginning .= '<button class="button is-destructive pmpro_btn pmpro_btn-delete" id="pmpro_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . esc_html__( 'Delete', 'paid-memberships-pro' ) . '</button>';
 					}
 				}
 
 				if( empty( $this->readonly ) ) {
-					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-secondary" id="pmpro_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Replace', 'paid-memberships-pro' ) . '</button>';
-					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-cancel" id="pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
+					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-secondary" id="pmpro_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . esc_html__( 'Replace', 'paid-memberships-pro' ) . '</button>';
+					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-cancel" id="pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</button>';
 					$r_beginning .= '<input id="pmpro_delete_file_' . esc_attr( $this->name ) . '_field" name="pmpro_delete_file_' . esc_attr( $this->name ) . '_field" type="hidden" value="0" />';
 				}
 				$r_beginning .= '</div>';
+				//include script to change enctype of the form and allow deletion
+				$r .= '
+				<script>
+					jQuery(document).ready(function() {
+						jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
+							jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_field").val("' . esc_attr( basename( $file['filename'] ) ) . '");
+							jQuery(".pmpro_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "line-through");
+							jQuery("#pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button").show();
+							jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_button").hide();
+							jQuery("#pmpro_replace_file_' . esc_attr( $this->name ) . '_button").hide();
+							jQuery("#pmpro_file_' . esc_attr( $this->id ) . '_upload").hide();
+						});
+
+						jQuery("#pmpro_replace_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
+							jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_field").val("' . esc_attr( basename( $file['filename'] ) ) . '");
+							jQuery(".pmpro_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "line-through");
+							jQuery("#pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button").show();
+							jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_button").hide();
+							jQuery("#pmpro_replace_file_' . esc_attr( $this->name ) . '_button").hide();
+							jQuery("#pmpro_file_' . esc_attr( $this->id ) . '_upload").show();
+						});
+
+						jQuery("#pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
+							jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_field").val(0);
+							// set file input field to empty.
+							jQuery("#' . esc_attr( $this->id ) . '").val("");
+							jQuery(".pmpro_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "none");
+							jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_button").show();
+							jQuery("#pmpro_replace_file_' . esc_attr( $this->name ) . '_button").show();
+							jQuery("#pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button").hide();
+							jQuery("#pmpro_file_' . esc_attr( $this->id ) . '_upload").hide();
+						});
+
+					});
+				</script>
+				';
 			}
 
-			//include script to change enctype of the form and allow deletion
 			$r .= '
-			<script>
-				jQuery(document).ready(function() {
-					jQuery("#' . esc_attr( $this->id ) . '").closest("form").attr("enctype", "multipart/form-data");
-
-					jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
-						jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_field").val("' . esc_attr( basename($value) ) . '");
-						jQuery(".pmpro_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "line-through");
-						jQuery("#pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button").show();
-						jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_button").hide();
-						jQuery("#pmpro_replace_file_' . esc_attr( $this->name ) . '_button").hide();
-						jQuery("#pmpro_file_' . esc_attr( $this->id ) . '_upload").hide();
+				<script>
+					jQuery(document).ready(function() {
+						jQuery("#' . esc_attr( $this->id ) . '").closest("form").attr("enctype", "multipart/form-data");
 					});
-
-					jQuery("#pmpro_replace_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
-						jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_field").val("' . esc_attr( basename($value) ) . '");
-						jQuery(".pmpro_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "line-through");
-						jQuery("#pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button").show();
-						jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_button").hide();
-						jQuery("#pmpro_replace_file_' . esc_attr( $this->name ) . '_button").hide();
-						jQuery("#pmpro_file_' . esc_attr( $this->id ) . '_upload").show();
-					});
-
-					jQuery("#pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
-						jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_field").val(0);
-						// set file input field to empty.
-						jQuery("#' . esc_attr( $this->id ) . '").val("");
-						jQuery(".pmpro_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "none");
-						jQuery("#pmpro_delete_file_' . esc_attr( $this->name ) . '_button").show();
-						jQuery("#pmpro_replace_file_' . esc_attr( $this->name ) . '_button").show();
-						jQuery("#pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button").hide();
-						jQuery("#pmpro_file_' . esc_attr( $this->id ) . '_upload").hide();
-					});
-
-				});
-			</script>
-			';
-
-			$r .= '<div id="pmpro_file_' . esc_attr( $this->id ) . '_upload" class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-file-upload' ) ) . '" ' . (empty($value) ? '' : 'style="display: none;"') . '>';
+				</script>
+				';
+			$r .= '<div id="pmpro_file_' . esc_attr( $this->id ) . '_upload" class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-file-upload' ) ) . '" ' . ((empty($value) || is_string($value)) ? '' : 'style="display: none;"') . '>';
 			$r .= '<input type="file" id="' . esc_attr( $this->id ) . '" ';
 			
 			if ( ! empty( $this->allowed_file_types ) ) {
@@ -1164,7 +1376,7 @@ class PMPro_Field {
 		return $html;
 	}
 
-	function getDependenciesJS()
+	private function getDependenciesJS()
 	{
 		global $pmpro_user_fields;
 		//dependencies
@@ -1172,27 +1384,44 @@ class PMPro_Field {
 		{
 			//build the checks
 			$checks_escaped = array();
+			$binds = array();
 			foreach($this->depends as $check)
 			{
 				if(!empty($check['id']))
 				{
 					// If checking checkbox_grouped, need to update the $check['id'] with index of option.
 					$field_id = $check['id'];
-					$depends_checkout_box = PMPro_Field::get_checkout_box_name_for_field( $field_id );
-					if ( empty( $depends_checkout_box ) ) {
+					$depends_field = PMPro_Field_Group::get_field( $field_id );
+					if ( empty( $depends_field ) ) {
 						continue;
 					}
-					foreach ( $pmpro_user_fields[ $depends_checkout_box ] as $field ) {
-						if ( $field->type === 'checkbox_grouped' && $field->name === $field_id && ! empty( $field->options ) ) {
-							$field_id = $field_id . '_' . intval( array_search( $check['value'], array_keys( $field->options ) )+1 );
-						}
+				
+					$depends_field_group = PMPro_Field_Group::get_group_for_field( $depends_field );
+					if ( empty( $depends_field_group ) ) {
+						continue;
 					}
 
-					$checks_escaped[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
-					 ."? jQuery('#" . esc_html( $field_id ) . ":checked').length > 0"
-					 .":(jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode($check['value']) . ") > -1)) ||"."(jQuery(\"input:radio[name='". esc_html( $check['id'] ) ."']:checked\").val() == ".json_encode($check['value'])." || jQuery.inArray(".json_encode($check['value']).", jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()) > -1)";
-
-					$binds[] = "#" . esc_html( $field_id ) .",input:radio[name=". esc_html( $field_id ) ."]";
+					// Let's simplify.
+					switch ( $depends_field->type ) {
+						case 'checkbox_grouped':
+							// Find an input with the name of the field and the value of the option, then check if it is selected.
+							// Don't use the ID.
+							$checks_escaped[] = "jQuery('input[name=\"" . esc_js( $field_id ) . "[]\"][value=" . esc_js( $check['value'] ) . "]:checked').length > 0";
+							$binds[] = "input[name=\"" . esc_js( $field_id ) . "[]\"]";
+							break;
+						case 'checkbox':
+							$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').is(':checked') == " . ( empty( $check['value'] ) ? 'false' : 'true' );
+							$binds[] = "#" . esc_html( $field_id );
+							break;
+						case 'radio':
+							$checks_escaped[] = "jQuery('input[name=\"" . esc_js( $field_id ) . "\"][value=\"" . esc_js( $check['value'] ) . "\"]:checked').length > 0";
+							$binds[] = "input[type=radio][name=\"" . esc_js( $field_id ) . "\"]";
+							break;
+						default:
+							$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode( $check['value'] ) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode( $check['value'] ) . ") > -1";
+							$binds[] = "#" . esc_html( $field_id );
+							break;
+					}
 				}
 			}
 
@@ -1245,33 +1474,20 @@ class PMPro_Field {
 		}
 	}
 
+	/**
+	 * Display the field at checkout.
+	 *
+	 * @deprecated 3.4 Use PMPro_Field_Group::display() instead.
+	 */
 	function displayAtCheckout()
 	{
+		_deprecated_function( __METHOD__, '3.4', 'PMPro_Field_Group::display()' );
 		global $current_user;
 
-		if(isset($_REQUEST[$this->name])) {
-			$value = pmpro_sanitize( $_REQUEST[$this->name], $this );
-		} elseif(isset($_SESSION[$this->name])) {
-			//file or value?
-			if(is_array($_SESSION[$this->name]) && !empty($_SESSION[$this->name]['name']))
-			{
-				$_FILES[$this->name] = $_SESSION[$this->name];
-				$this->file = pmpro_sanitize( $_SESSION[$this->name]['name'], $this );
-				$value = pmpro_sanitize( $_SESSION[$this->name]['name'], $this );
-			} else {
-				$value = pmpro_sanitize( $_SESSION[$this->name], $this );
-			}
-		}
-		elseif(!empty($current_user->ID) && metadata_exists("user", $current_user->ID, $this->meta_key))
-		{
-			$meta = get_user_meta($current_user->ID, $this->meta_key, true);
-			if(is_array($meta) && !empty($meta['filename']))
-			{
-				$this->file = get_user_meta($current_user->ID, $this->meta_key, true);
-				$value = $this->file['filename'];
-			} else {
-				$value = $meta;
-			}
+		if( null !== $this->get_value_from_request() ) {
+			$value = $this->get_value_from_request();
+		} elseif(!empty($current_user->ID) && metadata_exists("user", $current_user->ID, $this->meta_key)) {
+			$value = get_user_meta($current_user->ID, $this->meta_key, true);
 		} elseif ( ! empty( $current_user->ID ) ) {
 			$userdata = get_userdata( $current_user->ID );
 			if ( ! empty( $userdata->{$this->name} ) ) {
@@ -1333,23 +1549,18 @@ class PMPro_Field {
 			<?php } ?>
 		</div>
 		<?php
-
-		$this->getDependenciesJS();
 	}
 
+	/**
+	 * @deprecated 3.4 Use PMPro_Field_Group::display() instead.
+	 */
 	function displayInProfile($user_id, $edit = NULL)
 	{
+		_deprecated_function( __METHOD__, '3.4', 'PMPro_Field_Group::display()' );
 		global $current_user;
 		if(metadata_exists("user", $user_id, $this->meta_key))
 		{
-			$meta = get_user_meta($user_id, $this->meta_key, true);
-			if(is_array($meta) && !empty($meta['filename']))
-			{
-				$this->file = get_user_meta($user_id, $this->meta_key, true);
-				$value = $this->file['filename'];
-			}
-			else
-				$value = $meta;
+			$value = get_user_meta($user_id, $this->meta_key, true);
 		}
 		elseif(!empty($this->value))
 			$value = $this->value;
@@ -1375,8 +1586,6 @@ class PMPro_Field {
 			</td>
 		</tr>
 		<?php
-
-		$this->getDependenciesJS();
 	}
 
 	/**
@@ -1387,54 +1596,204 @@ class PMPro_Field {
 	 * @since 3.0 Shows files as links and added echo parameter.
 	 */
 	function displayValue( $value, $echo = true ) {
+		// Build the output.
 		$output = '';
 		$allowed_html = array();
 
-		if(is_array( $value ) && ! empty( $this->options ) ) {
-			$labels = array();
-			foreach( $value as $item ) {
-				$labels[] = $this->options[$item];
-			}
-			$output .= implode( ', ', $labels);
-		} elseif( is_array( $value ) ) {
-			$output .= implode( ', ', $value );
-		} elseif( ! empty( $this->options ) && isset( $this->options[$value] ) ) {
-			$output .= $this->options[$value];
-		} elseif ( $this->type == 'checkbox' ) {
-			$output .= $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
-		} elseif ( $this->type == 'file' ) {
-			// Show a preview of existing file if image type.
-			if ( ( ! empty( $this->preview ) ) && ! empty( $value ) && ! empty( $this->file['previewurl'] ) ) {
-				$filetype = wp_check_filetype( basename( $this->file['previewurl'] ), null );
-				if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
-					$output .= '<div class="pmpro_file_preview"><img src="' . $this->file['previewurl'] . '" alt="' . basename($value) . '" /></div>';
-				}
-				$allowed_html['div'] = array(
-					'class' => array(),
-				);
-				$allowed_html['img'] = array(
-					'src' => array(),
-					'alt' => array(),
-				);
-			}
+		// Switch on the type of field.
+		switch( $this->type ) {
+			case 'text':
+			case 'textarea':
+				// Make sure that the value is a string.
+				$output = is_string( $value ) ? $value : '';
 
-			// Show link to file if available, or name if not.
-			if( ! empty( $this->file ) && ! empty( $this->file['fullurl'] ) ) {
-				$output .= '<span class="pmpro_file_' . $this->name . '_name"><a target="_blank" href="' . esc_url( $this->file['fullurl'] ) . '">' . basename($value) . '</a></span>';
-				$allowed_html['span'] = array(
-					'class' => array(),
-				);
-				$allowed_html['a'] = array(
-					'href' => array(),
-					'target' => array(),
-				);
-			} elseif( empty( $value ) ) {
-				$output .= esc_html__( 'N/A', 'paid-memberships-pro' );
-			} else {
-				$output .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
-			}
-		} else {
-			$output .= $value;
+				// If the field is a URL, check if we should try to embed it or show it as a link.
+				if ( wp_http_validate_url( $value ) ) {
+					/**
+					 * Filter whether links should be clickable, embedded, or shown as plain text.
+					 *
+					 * @since 3.4
+					 *
+					 * @param string $link_display_type The type of link display. Accepts 'embedded', 'clickable_link', 'clickable_label', or 'text'.
+					 * @param string $value             The value to be shown.
+					 * @param PMPro_Field $field	    Field object that the value is for.
+					 */
+					$link_display_type = apply_filters( 'pmpro_field_value_link_display_type', 'embedded', $value, $this );
+					switch ( $link_display_type ) {
+						case 'embedded':
+							$url_embed = wp_oembed_get( $value );
+							if ( ! empty( $url_embed ) ) {
+								// Oembed returned a value.
+								$output = $url_embed;
+								$allowed_html = array(
+									'iframe' => array(
+										'src'             => true,
+										'height'          => true,
+										'width'           => true,
+										'frameborder'     => true,
+										'allowfullscreen' => true,
+										'allow'           => true,
+									),
+									'script' => array(
+										'type' => true,
+										'src'  => true,
+									),
+								);
+								break;
+							}
+							// If we got here, we can't embed. Fall through to clickable link.
+						case 'clickable_link':
+							$output = '<a href="' . esc_url( $value ) . '" target="_blank">' . esc_html( $value ) . '</a>';
+							$allowed_html = array(
+								'a' => array(
+									'href'   => true,
+									'target' => true,
+								),
+							);
+							break;
+						case 'clickable_label':
+							$output = '<a href="' . esc_url( $value ) . '" target="_blank">' . esc_html( $this->label ) . '</a>';
+							$allowed_html = array(
+								'a' => array(
+									'href'   => true,
+									'target' => true,
+								),
+							);
+							break;
+						default:
+							// Do nothing. The value is already set.
+							$output = $value;
+							break;
+					}
+				} else {
+					$output = $value;
+				}
+				break;
+			case 'checkbox':
+				$output = $value ? esc_html__( 'Yes', 'paid-memberships-pro' ) : esc_html__( 'No', 'paid-memberships-pro' );
+				break;
+			case 'number':
+					// Make sure that the value is a number.
+					$output = is_numeric( $value ) ? number_format_i18n( $value ) : '';
+					break;
+			case 'date':
+				$timestamp = strtotime( $value );
+				$output = $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : '';
+				break;
+			case 'select':
+			case 'multiselect':
+			case 'select2':
+			case 'radio':
+			case 'checkbox_grouped':
+				// For simplicity, make sure that $value and $this->options are arrays.
+				if ( ! is_array( $value ) ) {
+					$value = array( $value );
+				}
+				if ( ! is_array( $this->options ) ) {
+					$this->options = array();
+				}
+				$labels = array();
+				foreach( $value as $item ) {
+					$labels[] = array_key_exists( $item, $this->options ) ? $this->options[ $item ] : $item;
+				}
+				$output = implode( ', ', $labels );
+				break;
+			case 'file':
+				// Validate the value.
+				if ( empty( $value ) ) {
+					$output = esc_html__( 'No file uploaded.', 'paid-memberships-pro' );
+				} elseif ( ! is_array( $value ) || empty( $value['fullurl'] ) ) {
+					$output = esc_html__( 'Invalid file data.', 'paid-memberships-pro' );
+				} else {
+					// We have a file. Determine how to display it.
+					$file_type = wp_check_filetype($value['fullurl']);
+					switch ( $file_type['type'] ) {
+						case 'image/jpeg':
+						case 'image/png':
+						case 'image/gif':
+							$output = '<div class="' . pmpro_get_element_class( 'pmpro_form_field-file-preview' ) . '"><img class="' . pmpro_get_element_class( 'pmpro_form_field-file-subtype_' . $file_type['ext'] ) . '" alt="" src="' . $value['previewurl'] . '"><div class="' . pmpro_get_element_class( 'pmpro_form_field-file-name' ) . '"><a href="' . $value['fullurl'] . '" target="_blank">' . $value['filename'] . '</a></div></div>';
+							$allowed_html = array(
+								'a' => array(
+									'href' => array(),
+									'title' => array(),
+									'target' => array(),
+								),
+								'div' => array(
+									'class' => array(),
+								),
+								'img' => array(
+									'alt' => array(),
+									'class' => array(),
+									'src' => array(),
+								),
+								'span' => array(
+									'class' => array(),
+								),
+							);
+							break;
+						case 'video/mpeg':
+						case 'video/mp4':
+							$output = do_shortcode('[video src="' . $value['fullurl'] . '"]');
+							$allowed_html = array(
+								'video' => array(
+									'src'       => true,
+									'poster'    => true,
+									'width'     => true,
+									'height'    => true,
+									'preload'   => true,
+									'controls'  => true,
+									'autoplay'  => true,
+									'loop'      => true,
+									'muted'     => true,
+								),
+								'source' => array(
+									'src'   => true,
+									'type'  => true,
+								),
+							);
+							break;
+						case 'audio/mpeg':
+						case 'audio/wav':
+							$output = do_shortcode('[audio src="' . $value['fullurl'] . '"]');
+							$allowed_html = array(
+								'audio' => array(
+									'src'       => true,
+									'controls'  => true,
+									'autoplay'  => true,
+									'loop'      => true,
+									'muted'     => true,
+									'preload'   => true,
+								),
+								'source' => array(
+									'src'   => true,
+									'type'  => true,
+								),
+							);
+							break;
+						default:
+							$output = '<a href="' . $value['fullurl'] . '" target="_blank"><img class="' . pmpro_get_element_class( 'pmpro_form_field-file-subtype_' . $file_type['ext'] ) . '" src="' . wp_mime_type_icon( $file_type['type'] ) . '"><div class="' . pmpro_get_element_class( 'pmpro_form_field-file-name' ) . '">' . $value['filename'] . '</div></a>';
+							$allowed_html = array(
+								'a' => array(
+									'href' => array(),
+									'target' => array(),
+								),
+								'img' => array(
+									'class' => array(),
+									'src' => array(),
+								),
+								'div' => array(
+									'class' => array(),
+								),
+							);
+							break;
+					}
+					// Wrap the output in a div.
+					$output = '<div class="' . pmpro_get_element_class( 'pmpro_form_field-file-' . $file_type['ext'] ) . '">' . $output . '</div>';
+				}
+				break;
+			default:
+				$output = (string) $value;
+				break;
 		}
 
 		// Enforce string as output.
@@ -1445,7 +1804,6 @@ class PMPro_Field {
 		} else {
 			return wp_kses( $output, $allowed_html );
 		}
-
 	}
 
 	/**
@@ -1456,28 +1814,34 @@ class PMPro_Field {
 	 * @param array $array The array to check if it is associative.
 	 * @return bool True if the array is associative, false otherwise.
 	 */
-	function is_assoc( $array ) {
+	private function is_assoc( $array ) {
 		if ( empty( $array ) ) {
 			return false;
 		}
 		return array_keys( $array ) !== range( 0, count( $array ) - 1) ;
 	}
 
+	/**
+	 * @deprecated 3.4 Use PMPro_Field_Group::get_group_for_field() instead.
+	 */
 	static function get_checkout_box_name_for_field( $field_name ) {
-		global $pmpro_user_fields;
-		foreach( $pmpro_user_fields as $checkout_box_name => $fields ) {
-			foreach($fields as $field) {
-				if( $field->name == $field_name ) {
-					return $checkout_box_name;
-				}
-			}
+		_deprecated_function( __METHOD__, '3.4', 'PMPro_Field_Group::get_group_for_field()' );
+		$field = PMPro_Field_Group::get_field( $field_name );
+		if ( empty( $field ) ) {
+			return '';
 		}
-		return '';
+	
+		$field_group = PMPro_Field_Group::get_group_for_field( $field );
+		return $field_group ? $field_group->name : '';
 	}
 
+	/**
+	 * @deprecated 3.4
+	 */
 	function was_present_on_checkout_page() {
+		_deprecated_function( __METHOD__, '3.4' );
 		// Check if checkout box that field is in is on page.
-		$checkout_box = PMPro_Field::get_checkout_box_name_for_field( $this->name );
+		$checkout_box = PMPro_Field_Group::get_group_for_field( $this );
 		if ( empty( $checkout_box ) ) {
 			// Checkout box does not exist.
 			return false;
@@ -1489,7 +1853,7 @@ class PMPro_Field {
 			'after_email',
 			'after_captcha',
 		);
-		if ( is_user_logged_in() && in_array( $checkout_box, $user_fields_locations ) ) {
+		if ( is_user_logged_in() && in_array( $checkout_box->name, $user_fields_locations ) ) {
 			// User is logged in and field is only for new users.
 			return false;
 		}
@@ -1532,23 +1896,70 @@ class PMPro_Field {
 		return true;
 	}
 
+	/**
+	 * Check if the field was filled if needed.
+	 */
 	function was_filled_if_needed() {
-		// If field is never required or is not present on checkout page, return true.
-		if ( ! $this->required || ! $this->was_present_on_checkout_page() ) {
+		// If the field is not required, skip it.
+		if ( empty( $this->required ) ) {
 			return true;
 		}
 
-		// Return whether the field is filled.
+		// If this field has a 'depends` attribute, check if the field was actually shown.
+		if ( ! empty( $this->depends ) ) {
+			foreach ( $this->depends as $check ) {
+				// If the $check object isn't valid, skip it.
+				if ( ! isset( $check->id ) || ! isset( $check->value ) ) {
+					return true;
+				}
+
+				// Get the field to check.
+				$check_field = PMPro_Field_Group::get_field( $check->id );
+				if ( empty( $check_field ) ) {
+					// The check field doesn't exist, so this field wasn't shown.
+					return true;
+				}
+
+				// Get the value of the field.
+				$check_field_value = $check_field->get_value_from_request();
+				if ( null === $check_field_value ) {
+					// The check field wasn't submitted, so this field wasn't shown.
+					return true;
+				}
+
+				// If $check['value'] doesn't match the value of the field, skip this field.
+				if ( is_array( $check_field_value ) ) {
+					if ( ! in_array( $check->value, $check_field_value ) ) {
+						return true;
+					}
+				} else {
+					if ( $check->value !== $check_field_value ) {
+						return true;
+					}
+				}
+			}
+		}
+
+		// At this point, we know that the field needs to be filled.
+		$value = $this->get_value_from_request();
 		switch ( $this->type ) {
 			case 'text':
 			case 'textarea':
 			case 'number':
-				$filled = ( isset( $_REQUEST[$this->name] ) && '' !== trim( $_REQUEST[$this->name] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$filled = ( null !== $value && '' !== trim( $value ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				break;
+			case 'file':
+				if ( ! empty( $_FILES[ $this->name ]['name'] ) ) {
+					$filled = true;
+				} elseif ( ! empty( get_user_meta( get_current_user_id(), $this->name, true ) ) && empty( $_REQUEST['pmpro_delete_file_' . $this->name . '_field'] ) ) {
+					$filled = true;
+				} else {
+					$filled = false;
+				}
 				break;
 			default:
-				$filled = ! ( empty( $_REQUEST[$this->name] ) && empty( $_FILES[$this->name]['name'] ) && empty( $_REQUEST[$this->name.'_old'] ) );
+				$filled = ! empty( $value );
 		}
-
 		return $filled;
 	}
 }

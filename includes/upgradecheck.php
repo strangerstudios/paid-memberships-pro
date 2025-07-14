@@ -101,16 +101,6 @@ function pmpro_checkForUpgrades() {
 		$pmpro_db_version = 1.71;
 	}
 
-	//schedule the credit card expiring cron
-	if($pmpro_db_version < 1.72)
-	{
-		//schedule the credit card expiring cron
-		pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
-
-		update_option("pmpro_db_version", "1.72");
-		$pmpro_db_version = 1.72;
-	}
-
 	//register capabilities required for menus now
 	if($pmpro_db_version < 1.79)
 	{
@@ -139,15 +129,8 @@ function pmpro_checkForUpgrades() {
 		$pmpro_db_version = pmpro_upgrade_1_8_6_9();
 	}
 
-	//Remove extra cron jobs inserted in version 1.8.7 and 1.8.7.1
-	if($pmpro_db_version < 1.87) {
-		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_7.php");
-		$pmpro_db_version = pmpro_upgrade_1_8_7();
-	}
-
 	/*
 		v1.8.8
-		* Running the cron job cleanup again.
 		* Fixing old $0 Stripe orders.
 		* Fixing old Authorize.net orders with empty status.
 	*/
@@ -233,11 +216,6 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '2.1' );
 	}
 
-	if ( $pmpro_db_version < 2.3 ) {
-		pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
-		update_option( 'pmpro_db_version', '2.3' );
-	}
-
 	/**
 	 * Version 2.4
 	 * Fixing subscription_transaction_id
@@ -283,18 +261,8 @@ function pmpro_checkForUpgrades() {
 	 * Default option for Wisdom tracking.
 	 */
 	if ( $pmpro_db_version < 2.8 ) {
-		update_option('pmpro_wisdom_opt_out', 1);
+		update_option('pmpro_wisdom_opt_out', 0);
 		update_option( 'pmpro_db_version', '2.8' );
-	}
-	
-	/**
-	 * Version 2.8.1
-	 * Reload crons to get correct intervals.
-	 */
-	if ( $pmpro_db_version < 2.81 ) {
-		pmpro_clear_crons();
-		pmpro_maybe_schedule_crons();
-		update_option( 'pmpro_db_version', '2.81' );
 	}
 	
 	/**
@@ -401,6 +369,50 @@ function pmpro_checkForUpgrades() {
 		pmpro_db_delta();
 		update_option( 'pmpro_db_version', '3.3' );
 	}
+
+	/**
+	 * Version 3.4
+	 * Allowing subscription transaction IDs up to 64 characters.
+	 */
+	if ( $pmpro_db_version < 3.4 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.4' );
+	}
+
+	/**
+	 * Version 3.4.2
+	 * Fixing broken Payflow deprecation.
+	 */
+	if ( $pmpro_db_version < 3.402 ) {
+		// Check if there are any Payflow settings.
+		if ( ! empty( get_option( 'pmpro_payflow_partner' ) ) ) {
+			// Get the current list of undeprecated gateways.
+			$undeprecated_gateways = get_option( 'pmpro_undeprecated_gateways' );
+			if ( empty( $undeprecated_gateways ) ) {
+				$undeprecated_gateways = array();
+			} elseif ( is_string( $undeprecated_gateways ) ) {
+				// pmpro_setOption turns this into a comma separated string
+				$undeprecated_gateways = explode( ',', $undeprecated_gateways );
+			}
+
+			// If Payflow isn't in the list, add it.
+			if ( ! in_array( 'payflowpro', $undeprecated_gateways ) ) {
+				$undeprecated_gateways[] = 'payflowpro';
+				update_option( 'pmpro_undeprecated_gateways', $undeprecated_gateways );
+			}
+		}
+
+		update_option( 'pmpro_db_version', '3.402' );
+	}
+
+	if ( $pmpro_db_version < 3.5 ) {
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_5.php" );
+		pmpro_db_delta();
+		pmpro_upgrade_3_5(); // This function will update the db version.
+		update_option( 'pmpro_db_version', '3.5' );
+	}
+
+
 }
 
 function pmpro_db_delta() {
@@ -492,7 +504,7 @@ function pmpro_db_delta() {
 		  `gateway` varchar(64) NOT NULL,
 		  `gateway_environment` varchar(64) NOT NULL,
 		  `payment_transaction_id` varchar(64) NOT NULL,
-		  `subscription_transaction_id` varchar(32) NOT NULL,
+		  `subscription_transaction_id` varchar(64) NOT NULL,
 		  `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 		  `affiliate_id` varchar(32) NOT NULL,
 		  `affiliate_subid` varchar(32) NOT NULL,
@@ -642,7 +654,7 @@ function pmpro_db_delta() {
 			`membership_level_id` int(11) unsigned NOT NULL,
 			`gateway` varchar(64) NOT NULL,
 			`gateway_environment` varchar(64) NOT NULL,
-			`subscription_transaction_id` varchar(32) NOT NULL,
+			`subscription_transaction_id` varchar(64) NOT NULL,
 			`status` varchar(20) NOT NULL DEFAULT 'active',
 			`startdate` datetime DEFAULT NULL,
 			`enddate` datetime DEFAULT NULL,
