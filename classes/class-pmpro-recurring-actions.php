@@ -514,7 +514,7 @@ class PMPro_Recurring_Actions {
 		$user             = get_userdata( $subscription_obj->get_user_id() );
 
 		// Calculate the days until the next payment.
-		$days = floor( ( strtotime( $subscription_obj->get_next_payment_date() ) - current_time( 'timestamp' ) ) / DAY_IN_SECONDS );
+		$days = floor( ( $subscription_obj->get_next_payment_date() - current_time( 'timestamp' ) ) / DAY_IN_SECONDS );
 
 		if ( empty( $user ) ) {
 			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d' ) );
