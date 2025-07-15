@@ -33,7 +33,7 @@ function pmpro_dashboard_report_recent_members_callback() {
 			UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
 			UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate,
 			m.name as membership
-		FROM wp_users u
+		FROM $wpdb->users u
 		INNER JOIN $wpdb->pmpro_memberships_users mu
 			ON u.ID = mu.user_id
 			AND mu.status = 'active'
