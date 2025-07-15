@@ -388,14 +388,7 @@ class PMPro_Recurring_Actions {
 	 * @return void
 	 */
 	public function send_admin_activity_email() {
-
-		// Check if the admin activity email is enabled.
-		if ( ! get_option( 'pmpro_activity_email_enabled' ) ) {
-			return;
-		}
-
-		$pmproemail = new PMPro_Admin_Activity_Email();
-		$pmproemail->sendAdminActivity();
+		(new PMPro_Admin_Activity_Email())->sendAdminActivity();
 	}
 
 	/**
