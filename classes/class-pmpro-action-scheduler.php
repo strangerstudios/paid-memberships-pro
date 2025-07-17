@@ -84,6 +84,9 @@ class PMPro_Action_Scheduler {
 		// which is intentional since some of our tasks can be heavy and we want to ensure they run smoothly and don't slow down a site.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
+
+		// Handle plugin updates.
+		add_action( 'upgrader_process_complete', array( self::class, 'handle_plugin_update' ), 10, 2 );
 	}
 
 	/**
@@ -305,7 +308,7 @@ class PMPro_Action_Scheduler {
 			$first_run_datetime = $first_run_datetime ?: self::as_strtotime( 'now +5 minutes' );
 			// Schedule this task in the future, and make it recurring.
 			if ( ! empty( $interval_in_seconds ) ) {
-				return as_schedule_recurring_action( $first_run_datetime, $interval_in_seconds, $hook, array(), $group );
+				return as_schedule_recurring_action( $first_run_datetime, $interval_in_seconds, $hook, array(), $group, true );
 			} else {
 				throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'An interval is required to queue an Action Scheduler recurring task.', 'paid-memberships-pro' ) );
 			}
@@ -473,7 +476,7 @@ class PMPro_Action_Scheduler {
 				$this->maybe_add_recurring_task(
 					$schedule['hook'],
 					$schedule['interval'],
-					! empty( $schedule['start'] ) ? $schedule['start'] : null,
+					$schedule['start'],
 					'pmpro_recurring_tasks'
 				);
 			}
@@ -736,6 +739,31 @@ class PMPro_Action_Scheduler {
 		} else {
 			// This was deprecated in Action Scheduler v3.9,2 when the SystemInformation class was introduced.
 			return ActionScheduler_Versions::instance()->active_source_path();
+		}
+	}
+
+	/**
+	 * Handle plugin updates and remove scheduled recurring tasks.
+	 *
+	 * This method is hooked into the 'upgrader_process_complete' action to clean up recurring tasks
+	 * when the Paid Memberships Pro plugin is updated.
+	 *
+	 * @access public
+	 * @since 3.5.3
+	 * @param object $upgrader_object The upgrader object.
+	 * @param array  $hook_extra Extra data passed to the hook.
+	 */
+	public static function handle_plugin_update( $upgrader_object, $hook_extra ) {
+		// Only run for plugin updates.
+		if (
+			isset( $hook_extra['action'], $hook_extra['type'], $hook_extra['plugins'] )
+			&& 'update' === $hook_extra['action']
+			&& 'plugin' === $hook_extra['type']
+			&& is_array( $hook_extra['plugins'] )
+			&& in_array( 'paid-memberships-pro/paid-memberships-pro.php', $hook_extra['plugins'], true )
+		) {
+			// Remove our previous scheduled recurring tasks.
+			$count = self::remove_actions( null, array(), 'pmpro_recurring_tasks', 'pending' );
 		}
 	}
 }
