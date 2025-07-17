@@ -763,7 +763,7 @@ class PMPro_Action_Scheduler {
 			&& in_array( 'paid-memberships-pro/paid-memberships-pro.php', $hook_extra['plugins'], true )
 		) {
 			// Remove our previous scheduled recurring tasks.
-			$count = self::remove_actions( null, array(), 'pmpro_recurring_tasks', 'pending' );
+			self::remove_actions( null, array(), 'pmpro_recurring_tasks', 'pending' );
 		}
 	}
 }
