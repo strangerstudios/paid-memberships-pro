@@ -194,7 +194,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 		}
 
 		// If the data is still empty after decoding, bail.
-		if ( empty( $elementor_data ) ) {
+		if ( empty( $elementor_data ) || ! is_array( $elementor_data ) ) {
 			return;
 		}
 
