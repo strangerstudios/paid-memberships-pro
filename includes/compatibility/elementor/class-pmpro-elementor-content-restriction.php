@@ -183,13 +183,17 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 		}
 
 		// Get the _elementor_data for the post.
-		$elementor_data_string = get_post_meta( $post_id, '_elementor_data', true );
-		if ( empty( $elementor_data_string ) ) {
+		$elementor_data = get_post_meta( $post_id, '_elementor_data', true );
+		if ( empty( $elementor_data ) ) {
 			return;
 		}
 
-		// Decode the _elementor_data.
-		$elementor_data = json_decode( $elementor_data_string, true );
+		// Decode the _elementor_data if needed.
+		if ( is_string( $elementor_data ) ) {
+			$elementor_data = json_decode( $elementor_data, true );
+		}
+
+		// If the data is still empty after decoding, bail.
 		if ( empty( $elementor_data ) ) {
 			return;
 		}
