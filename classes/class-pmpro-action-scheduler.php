@@ -84,7 +84,6 @@ class PMPro_Action_Scheduler {
 		// which is intentional since some of our tasks can be heavy and we want to ensure they run smoothly and don't slow down a site.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
-	
 	}
 
 	/**
@@ -95,7 +94,7 @@ class PMPro_Action_Scheduler {
 	private static function track_library_conflicts() {
 		// Get the version of Action Scheduler that is currently loaded and the plugin file it was loaded from.
 		$action_scheduler_version = ActionScheduler_Versions::instance()->latest_version(); // This is only available after plugins_loaded priority 0 which is why we do this here.
-		$previously_loaded_class = self::get_active_source_path();
+		$previously_loaded_class  = self::get_active_source_path();
 
 		// If we loaded Action Scheduler, this will do nothing.
 		pmpro_track_library_conflict( 'action-scheduler', $previously_loaded_class, $action_scheduler_version );
@@ -111,7 +110,7 @@ class PMPro_Action_Scheduler {
 		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
 			return;
 		}
-	
+
 		// Get the loaded version of Action Scheduler.
 		$action_scheduler_version = ActionScheduler_Versions::instance()->latest_version();
 
@@ -128,7 +127,7 @@ class PMPro_Action_Scheduler {
 				<?php
 				echo wp_kses_post(
 					sprintf(
-						__( 'An outdated version of Action Scheduler (version %s) is being loaded by %s which may affect Paid Memberships Pro functionalilty on this website.', 'paid-memberships-pro' ),
+						__( 'An outdated version of Action Scheduler (version %1$s) is being loaded by %2$s which may affect Paid Memberships Pro functionalilty on this website.', 'paid-memberships-pro' ),
 						$action_scheduler_version,
 						'<code>' . self::get_active_source_path() . '</code>'
 					)
