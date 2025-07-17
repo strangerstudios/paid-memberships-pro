@@ -94,7 +94,7 @@ class PMPro_Action_Scheduler {
 	private static function track_library_conflicts() {
 		// Get the version of Action Scheduler that is currently loaded and the plugin file it was loaded from.
 		$action_scheduler_version = ActionScheduler_Versions::instance()->latest_version(); // This is only available after plugins_loaded priority 0 which is why we do this here.
-		$previously_loaded_class = self::get_active_source_path();
+		$previously_loaded_class  = self::get_active_source_path();
 
 		// If we loaded Action Scheduler, this will do nothing.
 		pmpro_track_library_conflict( 'action-scheduler', $previously_loaded_class, $action_scheduler_version );
@@ -110,7 +110,7 @@ class PMPro_Action_Scheduler {
 		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
 			return;
 		}
-	
+
 		// Get the loaded version of Action Scheduler.
 		$action_scheduler_version = ActionScheduler_Versions::instance()->latest_version();
 
@@ -127,7 +127,7 @@ class PMPro_Action_Scheduler {
 				<?php
 				echo wp_kses_post(
 					sprintf(
-						__( 'An outdated version of Action Scheduler (version %s) is being loaded by %s which may affect Paid Memberships Pro functionalilty on this website.', 'paid-memberships-pro' ),
+						__( 'An outdated version of Action Scheduler (version %1$s) is being loaded by %2$s which may affect Paid Memberships Pro functionalilty on this website.', 'paid-memberships-pro' ),
 						$action_scheduler_version,
 						'<code>' . self::get_active_source_path() . '</code>'
 					)
@@ -305,7 +305,7 @@ class PMPro_Action_Scheduler {
 			$first_run_datetime = $first_run_datetime ?: self::as_strtotime( 'now +5 minutes' );
 			// Schedule this task in the future, and make it recurring.
 			if ( ! empty( $interval_in_seconds ) ) {
-				return as_schedule_recurring_action( $first_run_datetime, $interval_in_seconds, $hook, array(), $group );
+				return as_schedule_recurring_action( $first_run_datetime, $interval_in_seconds, $hook, array(), $group, true );
 			} else {
 				throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'An interval is required to queue an Action Scheduler recurring task.', 'paid-memberships-pro' ) );
 			}
@@ -473,7 +473,7 @@ class PMPro_Action_Scheduler {
 				$this->maybe_add_recurring_task(
 					$schedule['hook'],
 					$schedule['interval'],
-					! empty( $schedule['start'] ) ? $schedule['start'] : null,
+					$schedule['start'],
 					'pmpro_recurring_tasks'
 				);
 			}
@@ -737,5 +737,17 @@ class PMPro_Action_Scheduler {
 			// This was deprecated in Action Scheduler v3.9,2 when the SystemInformation class was introduced.
 			return ActionScheduler_Versions::instance()->active_source_path();
 		}
+	}
+
+	/**
+	 * Clear scheduled recurring tasks.
+	 *
+	 * This method is used to clear any previously scheduled recurring tasks, typically when the plugin is updated.
+	 *
+	 * @access public
+	 * @since 3.5.3
+	 */
+	public static function clear_recurring_tasks() {
+		self::remove_actions( null, array(), 'pmpro_recurring_tasks', 'pending' );
 	}
 }
