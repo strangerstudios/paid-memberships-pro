@@ -102,7 +102,7 @@
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
 
 	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined";
+	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined,started";
 
 	if($l == "oldmembers")
 		$csv_file_header .= ",ended";
@@ -336,6 +336,7 @@
 				u.user_status,
 				u.display_name,
 				mu.membership_id,
+				UNIX_TIMESTAMP(CONVERT_TZ(min(mu.startdate), '+00:00', @@global.time_zone)) as startdate,
 				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate,
 				m.name as membership
 			FROM {$wpdb->users} u
@@ -423,20 +424,19 @@
 			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_cycle_period() ) ) );
 			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : date_i18n($dateformat, $subscriptions[0]->get_next_payment_date() ) ) ) );
 
-			//joindate and enddate
+			//joindate, startdate, and enddate
 			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
 
-			if ( $theuser->membership_id ) {
-				// We are no longer filtering the expiration date text for performance reasons.
-				if ( $theuser->enddate ) {
-					array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->enddate ) ) );
-				} else {
-					array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
-				}
-			} elseif($l == "oldmembers" && $theuser->enddate) {
-				array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->enddate)));
+			if ( $theuser->startdate ) {
+				array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->startdate ) ) );
 			} else {
-				array_push($csvoutput, __('N/A', 'paid-memberships-pro'));
+				array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
+			}
+			// We are no longer filtering the expiration date text for performance reasons.
+			if ( $theuser->enddate ) {
+				array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->enddate ) ) );
+			} else {
+				array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
 			}
 
 			//any extra columns
