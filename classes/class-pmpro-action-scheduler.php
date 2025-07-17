@@ -84,9 +84,7 @@ class PMPro_Action_Scheduler {
 		// which is intentional since some of our tasks can be heavy and we want to ensure they run smoothly and don't slow down a site.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
-
-		// Handle plugin updates.
-		add_action( 'upgrader_process_complete', array( self::class, 'handle_plugin_update' ), 10, 2 );
+	
 	}
 
 	/**
@@ -743,27 +741,14 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
-	 * Handle plugin updates and remove scheduled recurring tasks.
+	 * Clear scheduled recurring tasks.
 	 *
-	 * This method is hooked into the 'upgrader_process_complete' action to clean up recurring tasks
-	 * when the Paid Memberships Pro plugin is updated.
+	 * This method is used to clear any previously scheduled recurring tasks, typically when the plugin is updated.
 	 *
 	 * @access public
 	 * @since 3.5.3
-	 * @param object $upgrader_object The upgrader object.
-	 * @param array  $hook_extra Extra data passed to the hook.
 	 */
-	public static function handle_plugin_update( $upgrader_object, $hook_extra ) {
-		// Only run for plugin updates.
-		if (
-			isset( $hook_extra['action'], $hook_extra['type'], $hook_extra['plugins'] )
-			&& 'update' === $hook_extra['action']
-			&& 'plugin' === $hook_extra['type']
-			&& is_array( $hook_extra['plugins'] )
-			&& in_array( 'paid-memberships-pro/paid-memberships-pro.php', $hook_extra['plugins'], true )
-		) {
-			// Remove our previous scheduled recurring tasks.
-			self::remove_actions( null, array(), 'pmpro_recurring_tasks', 'pending' );
-		}
+	public static function clear_recurring_tasks() {
+		self::remove_actions( null, array(), 'pmpro_recurring_tasks', 'pending' );
 	}
 }
