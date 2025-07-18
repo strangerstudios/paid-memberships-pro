@@ -70,10 +70,8 @@ class PMPro_Wisdom_Tracker {
 		// Schedule / deschedule tracking when activated / deactivated
 		if ( $this->what_am_i == 'theme' ) {
 			// Need to think about scheduling for sites that have already activated the theme
-			add_action( 'after_switch_theme', [ $this, 'schedule_tracking' ] );
 			add_action( 'switch_theme', [ $this, 'deactivate_this_plugin' ] );
 		} else {
-			register_activation_hook( $this->plugin_file, [ $this, 'schedule_tracking' ] );
 			register_deactivation_hook( $this->plugin_file, [ $this, 'deactivate_this_plugin' ] );
 		}
 
@@ -97,7 +95,7 @@ class PMPro_Wisdom_Tracker {
 		}
 
 		// Hook our do_tracking function to Action Scheduler
-		$this->schedule_tracking();
+		add_action( 'pmpro_schedule_daily', [ $this, 'do_tracking' ] );
 
 		// Use this action for local testing
 		// add_action( 'admin_init', array( $this, 'do_tracking' ) );
@@ -119,24 +117,12 @@ class PMPro_Wisdom_Tracker {
 	 * And check if tracking is enabled - perhaps the plugin has been reactivated
 	 *
 	 * @since 1.0.0
+	 * @deprecated TBD - This is now handled by Action Scheduler.
+	 *
 	 * @modified 3.5 Now with Action Scheduler support
 	 */
 	public function schedule_tracking() {
-		$schedule = $this->get_schedule();
-		switch ( $schedule ) {
-			case 'daily':
-				$hook = 'pmpro_schedule_daily';
-				break;
-			case 'weekly':
-				$hook = 'pmpro_schedule_weekly';
-				break;
-			case 'monthly':
-				$hook = 'pmpro_schedule_monthly';
-				break;
-			default:
-				$hook = 'pmpro_schedule_monthly';
-		}
-		add_action( $hook, [ $this, 'do_tracking' ] );
+		_deprecated_function( __METHOD__, 'TBD' );
 	}
 
 	/**
