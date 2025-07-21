@@ -321,7 +321,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			$sqlQuery .= 'AND ' . $condition . ' ';
 
 			if( ! $count ) {
-				$sqlQuery .= 'GROUP BY s.id ORDER BY s.id DESC, s.startdate DESC ';
+				$sqlQuery .= 'GROUP BY s.id ' . $subscription_query . ' ';
 			}
 		} else {
 			//Not escaping here because we escape the values in the condition statement
