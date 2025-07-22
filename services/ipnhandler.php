@@ -667,7 +667,7 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	//create a blank order for the email
 	$morder          = new MemberOrder();
 	$morder->user_id = empty( $subscription ) ? $last_order->user_id : $subscription->get_user_id();
-	$morder->membership_id = empty( $subscription ) ? $last_order->membership_id : $subscription->get_membership_id();
+	$morder->membership_id = empty( $subscription ) ? $last_order->membership_id : $subscription->get_membership_level_id();
 
 	$user                   = new WP_User( $morder->user_id );
 
@@ -731,7 +731,7 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		//save order
 		$morder                              = new MemberOrder();
 		$morder->user_id                     = empty( $subscription ) ? $last_order->user_id : $subscription->get_user_id();
-		$morder->membership_id               = empty( $subscription ) ? $last_order->membership_id : $subscription->get_membership_id();
+		$morder->membership_id               = empty( $subscription ) ? $last_order->membership_id : $subscription->get_membership_level_id();
 		$morder->payment_transaction_id      = $txn_id;
 		$morder->subscription_transaction_id = $last_order->subscription_transaction_id;
 		$morder->gateway                     = $last_order->gateway;

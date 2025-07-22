@@ -135,7 +135,7 @@
 					//alright. create a new order
 					$morder = new MemberOrder();
 					$morder->user_id = $user_id;
-					$morder->membership_id = $subscription->get_membership_id();
+					$morder->membership_id = $subscription->get_membership_level_id();
 					$morder->timestamp = $invoice->created;
 					
 					global $pmpro_currency;
@@ -319,7 +319,7 @@
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
-				$morder->membership_id = $subscription->get_membership_id();
+				$morder->membership_id = $subscription->get_membership_level_id();
 				
 				// Find the payment intent.
 				$payment_intent_args = array(
