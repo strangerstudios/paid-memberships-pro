@@ -661,12 +661,15 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	//hook to do other stuff when payments fail
 	do_action( "pmpro_subscription_payment_failed", $last_order );
 
+	// Get the subscription object.
+	$subscription = $last_order->get_subscription();
+
 	//create a blank order for the email
 	$morder          = new MemberOrder();
-	$morder->user_id = $last_order->user_id;
-	$morder->membership_id = $last_order->membership_id;
+	$morder->user_id = empty( $subscription ) ? $last_order->user_id : $subscription->get_user_id();
+	$morder->membership_id = empty( $subscription ) ? $last_order->membership_id : $subscription->get_membership_id();
 
-	$user                   = new WP_User( $last_order->user_id );
+	$user                   = new WP_User( $morder->user_id );
 
 	//add billing information if appropriate
 	if ( $last_order->gateway == "paypal" )        //website payments pro
@@ -722,10 +725,13 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 	$old_txn = $wpdb->get_var( $wpdb->prepare( "SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = %s LIMIT 1", $txn_id ) );
 
 	if ( empty( $old_txn ) ) {
+		// Get the subscription object.
+		$subscription = $last_order->get_subscription();
+
 		//save order
 		$morder                              = new MemberOrder();
-		$morder->user_id                     = $last_order->user_id;
-		$morder->membership_id               = $last_order->membership_id;
+		$morder->user_id                     = empty( $subscription ) ? $last_order->user_id : $subscription->get_user_id();
+		$morder->membership_id               = empty( $subscription ) ? $last_order->membership_id : $subscription->get_membership_id();
 		$morder->payment_transaction_id      = $txn_id;
 		$morder->subscription_transaction_id = $last_order->subscription_transaction_id;
 		$morder->gateway                     = $last_order->gateway;
@@ -799,7 +805,7 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 
 		//email the user their order
 		$pmproemail = new PMProEmail();
-		$pmproemail->sendInvoiceEmail( get_userdata( $last_order->user_id ), $morder );
+		$pmproemail->sendInvoiceEmail( get_userdata( empty( $subscription ) ? $last_order->user_id : $subscription->get_user_id() ), $morder );
 
 		//hook for successful subscription payments
 		do_action( "pmpro_subscription_payment_completed", $morder );
