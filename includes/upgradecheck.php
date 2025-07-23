@@ -412,6 +412,13 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.5' );
 	}
 
+	if ( $pmpro_db_version < 3.53 ) {
+		// Clear out any scheduled recurring tasks.
+		add_action( 'action_scheduler_init', function() {
+			PMPro_Action_Scheduler::clear_recurring_tasks();
+		});
+		update_option( 'pmpro_db_version', '3.53' );
+	}
 
 }
 
