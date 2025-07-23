@@ -56,12 +56,6 @@
 		pmpro_setOption("uninstall");
 		pmpro_setOption("site_type");
 
-		// Set up Wisdom tracking if needed.
-		if ( (int)get_option( "pmpro_wisdom_opt_out") === 0 ) {
-			$wisdom_integration = PMPro_Wisdom_Integration::instance();
-			$wisdom_integration->wisdom_tracker->schedule_tracking();
-		}
-
         /**
          * Filter to add custom settings to the advanced settings page.
          * @param array $settings Array of settings, each setting an array with keys field_name, field_type, label, description.
