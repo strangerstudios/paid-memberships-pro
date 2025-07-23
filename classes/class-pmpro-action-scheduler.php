@@ -508,7 +508,7 @@ class PMPro_Action_Scheduler {
 		);
 
 		foreach ( $hooks as $hook ) {
-			as_unschedule_all_actions( $hook, array(), 'pmpro_recurring_tasks' );
+			as_unschedule_all_actions( $hook['hook'], array(), 'pmpro_recurring_tasks' );
 		}
 	}
 
