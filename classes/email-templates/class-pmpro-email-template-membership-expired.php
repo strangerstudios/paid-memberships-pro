@@ -126,6 +126,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'!!renew_url!!' => esc_html__( 'The URL of the Membership Checkout page for the expired level.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -169,6 +170,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 			"user_email" => $this->user->user_email,
 			"membership_id" => ( ! empty( $membership_level ) && ! empty( $membership_level->id ) ) ? $membership_level->id : 0,
 			"membership_level_name" => ( ! empty( $membership_level ) && ! empty( $membership_level->name ) ) ? $membership_level->name : '[' . esc_html( 'deleted', 'paid-memberships-pro' ) . ']',
+			"renew_url" => ( ! empty( $membership_level ) && ! empty( $membership_level->id ) ) ? pmpro_url( 'checkout', '?pmpro_level=' . $membership_level->id ) : pmpro_url( 'levels' ),
 		);
 	}
 
