@@ -267,7 +267,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		// Filters.
 		$condition = '1=1';
 		if ( ! empty( $level ) ) {
-			$condition .= ' AND s.membership_level_id = ' . esc_sql( $level );
+			$condition .= ' AND s.membership_level_id = ' . intval( $level );
 		}
 		if ( ! empty( $status ) ) {
 			if ( $status === 'sync_error' ) {
@@ -280,8 +280,8 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$orderby = '';
 
 		if ( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) && ! $count ) {
-			$order = $_REQUEST['order'] == 'asc' ? 'ASC' : 'DESC';
-			$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+			$order         = $_REQUEST['order'] == 'asc' ? 'ASC' : 'DESC';
+			$orderby       = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
 			$orderby_query = "ORDER BY $orderby $order";
 		} else {
 			$orderby_query = 'ORDER BY id DESC';
@@ -315,13 +315,15 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			}
 			$sqlQuery .= ') ';
 
-			$sqlQuery .= 'AND ' . esc_sql( $condition ). ' ';
+			//Not escaping here because we escape the values in the condition statement
+			$sqlQuery .= 'AND ' . $condition . ' ';
 
 			if ( ! $count ) {
-				$sqlQuery .= 'GROUP BY s.id ' . esc_sql( $orderby_query ) . ' ';
+				$sqlQuery .= 'GROUP BY s.id ' . $orderby_query . ' ';
 			}
 		} else {
-			$sqlQuery .= "WHERE " . esc_sql( $condition ) . ' ' . esc_sql( $orderby_query ) . ' ';
+			//Not escaping here because we escape the values in the condition statement
+			$sqlQuery .= "WHERE " . $condition . ' ' .  $orderby_query . ' ';
 
 		}
 
