@@ -38,7 +38,7 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return esc_html__( 'Membership Recurring', 'paid-memberships-pro' );
+		return esc_html__( 'Recurring Payment Reminder', 'paid-memberships-pro' );
 	}
 
 	/**
