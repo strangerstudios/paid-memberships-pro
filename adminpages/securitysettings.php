@@ -155,7 +155,7 @@
 						</tr>
 						<tr>
 							<th scope="row" valign="top">
-								<label for="spamprotection"><?php esc_html_e( 'Checkout Spam Protection', 'paid-memberships-pro' );?></label>
+								<label for="spamprotection"><?php esc_html_e( 'Spam Protection', 'paid-memberships-pro' );?></label>
 							</th>
 							<td>
 								<select id="spamprotection" name="spamprotection">
@@ -163,7 +163,7 @@
 									<!-- For reference, removed the Yes - Free memberships only. option -->
 									<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
 								</select>
-								<p class="description"><?php printf( esc_html__( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
+								<p class="description"><?php printf( esc_html__( 'Block IPs from checkout and login if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
 							</td>
 						</tr>
 						<?php

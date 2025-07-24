@@ -225,3 +225,49 @@ function pmpro_check_discount_code_spam_check( $okay, $dbcode ) {
 	return $okay;
 }
 add_filter( 'pmpro_check_discount_code', 'pmpro_check_discount_code_spam_check', 10, 2 );
+
+/**
+ * Track failed login attempts as spam.
+ * @param string $username The username that failed to login.
+ */
+function pmpro_track_login_spam( $username ) {
+	// Bail if Spam Protection is disabled.
+	$spamprotection = get_option( 'pmpro_spamprotection' );
+	if ( empty( $spamprotection ) ) {
+		return;
+	}
+
+	// Okay, track the spam.
+	pmpro_track_spam_activity();
+}
+add_action( 'wp_login_failed', 'pmpro_track_login_spam', 9, 1 ); // Priority 9 to run before pmpro_login_failed()
+
+/**
+ * Block spammers from logging in.
+ * @param string $user_login The username that is trying to login.
+ * @param string $user The WP_User object for the user.
+ */
+function pmpro_block_spammers_from_login( $user_login, $user_password ) {
+	// Bail if no information was submitted.
+	if ( empty( $user_login ) && empty( $user_password ) ) {
+		return;
+	}
+
+	// Bail if Spam Protection is disabled.
+	$spamprotection = get_option( 'pmpro_spamprotection' );
+	if ( empty( $spamprotection ) ) {
+		return;
+	}
+
+	// Bail if the bypass constant is set.
+	if ( defined( 'PMPRO_BYPASS_LOGIN_BLOCK' ) && PMPRO_BYPASS_LOGIN_BLOCK ) {
+		return;
+	}
+
+	// Check if the user is a spammer.
+	if ( pmpro_is_spammer() ) {
+		// Throw a PHP notice.
+		die( esc_html__( 'Suspicious activity detected. Try again in a few minutes.', 'paid-memberships-pro' ) );
+	}
+}
+add_action( 'wp_authenticate', 'pmpro_block_spammers_from_login', 1, 2 );
