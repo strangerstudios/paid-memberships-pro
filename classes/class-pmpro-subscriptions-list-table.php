@@ -280,13 +280,11 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$orderby = '';
 
 		if ( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) && ! $count ) {
-
-			$order = strtoupper( esc_sql( $_REQUEST['order'] ) );
-			$orderby = ( $_REQUEST['orderby'] );
-
-			$subscription_query = "ORDER BY $orderby $order";
+			$order = $_REQUEST['order'] == 'asc' ? 'ASC' : 'DESC';
+			$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+			$orderby_query = "ORDER BY $orderby $order";
 		} else {
-			$subscription_query = 'ORDER BY id DESC';
+			$orderby_query = 'ORDER BY id DESC';
 		}
 
 		if( $count ) {
@@ -317,15 +315,13 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			}
 			$sqlQuery .= ') ';
 
-			//Not escaping here because we escape the values in the condition statement
-			$sqlQuery .= 'AND ' . $condition . ' ';
+			$sqlQuery .= 'AND ' . esc_sql( $condition ). ' ';
 
-			if( ! $count ) {
-				$sqlQuery .= 'GROUP BY s.id ' . $subscription_query . ' ';
+			if ( ! $count ) {
+				$sqlQuery .= 'GROUP BY s.id ' . esc_sql( $orderby_query ) . ' ';
 			}
 		} else {
-			//Not escaping here because we escape the values in the condition statement
-			$sqlQuery .= "WHERE " . $condition . ' ' . $subscription_query . ' ';
+			$sqlQuery .= "WHERE " . esc_sql( $condition ) . ' ' . esc_sql( $orderby_query ) . ' ';
 
 		}
 
@@ -411,22 +407,14 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return string The sanitized value.
 	 */
 	function sanitize_orderby( $orderby ) {
+		$allowed_orderbys = array( 's.id','s.user_id','s.startdate','s.enddate','s.next_payment_date' );
 
-		$allowed_orderbys = array(
-			'id' => 's.id',
-			'user' => 's.user_id',
-			'startdate' => 's.startdate',
-			'enddate' => 's.enddate',
-			'next_payment_date' => 's.next_payment_date',
-		);
-
-	 	if ( ! empty( $allowed_orderbys[$orderby] ) ) {
-			$orderby = $allowed_orderbys[$orderby];
-		} else {
-			$orderby = false;
+		// Sanitize the orderby value to support one of our predefined orderby values OR default to next_payment_date.
+		if ( ! in_array( $orderby, $allowed_orderbys, true ) ) {
+			$orderby = 's.next_payment_date';
 		}
 
-		return $allowed_orderbys;
+		return $orderby;
 	}
 
 	/**
