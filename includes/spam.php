@@ -245,7 +245,7 @@ add_action( 'wp_login_failed', 'pmpro_track_login_spam', 9, 1 ); // Priority 9 t
 /**
  * Block spammers from logging in.
  * @param string $user_login The username that is trying to login.
- * @param string $user The WP_User object for the user.
+ * @param string $user_password The password provided by the user.
  */
 function pmpro_block_spammers_from_login( $user_login, $user_password ) {
 	// Bail if no information was submitted.
