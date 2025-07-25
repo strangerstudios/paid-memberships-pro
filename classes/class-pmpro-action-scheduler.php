@@ -497,7 +497,7 @@ class PMPro_Action_Scheduler {
 	 * @access public
 	 * @since 3.5.3
 	 */
-	public function remove_recurring_hooks(){
+	public function remove_recurring_hooks() {
 		// Find all hooks that belong to the group 'pmpro_recurring_tasks'.
 		$hooks = as_get_scheduled_actions(
 			array(
@@ -773,5 +773,71 @@ class PMPro_Action_Scheduler {
 	 */
 	public static function clear_recurring_tasks() {
 		self::remove_actions( null, array(), 'pmpro_recurring_tasks', 'pending' );
+	}
+
+	/**
+	 * Check if Action Scheduler has any health issues.
+	 *
+	 * @since 3.5.3
+	 * @return array Array of issues found, empty if no issues.
+	 */
+	public static function check_action_scheduler_table_health() {
+		global $wpdb;
+
+		$issues = array();
+
+		// List of required Action Scheduler tables
+		$required_tables = array(
+			'actionscheduler_actions',
+			'actionscheduler_claims',
+			'actionscheduler_groups',
+			'actionscheduler_logs',
+		);
+
+		// Check if each table exists
+		foreach ( $required_tables as $table ) {
+			$full_table_name    = $wpdb->prefix . $table;
+			$escaped_table_name = $wpdb->esc_like( $full_table_name );
+
+			$table_exists = $wpdb->get_var(
+				$wpdb->prepare(
+					'SHOW TABLES LIKE %s',
+					$escaped_table_name
+				)
+			);
+
+			if ( $table_exists !== $full_table_name ) {
+				$issues[] = sprintf( __( 'Missing table: %s', 'paid-memberships-pro' ), $full_table_name );
+			}
+		}
+
+		// Check for 'priority' column in 'actionscheduler_actions' table (3.6+ requirement)
+		$actions_table         = $wpdb->prefix . 'actionscheduler_actions';
+		$escaped_actions_table = $wpdb->esc_like( $actions_table );
+
+		$actions_table_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SHOW TABLES LIKE %s',
+				$escaped_actions_table
+			)
+		);
+
+		if ( $actions_table_exists === $actions_table ) {
+			$priority_column = $wpdb->get_results(
+				$wpdb->prepare(
+					"SHOW COLUMNS FROM `{$actions_table}` LIKE %s",
+					'priority'
+				)
+			);
+
+			if ( empty( $priority_column ) ) {
+				$issues[] = __( 'Missing priority column in actionscheduler_actions table (required for Action Scheduler 3.6+)', 'paid-memberships-pro' );
+			}
+		} else {
+			// Already flagged as missing earlier, but could be handled separately if needed
+			// $issues[] = __( 'actionscheduler_actions table does not exist.', 'paid-memberships-pro' );
+		}
+
+		return $issues;
 	}
 }
