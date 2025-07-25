@@ -796,7 +796,8 @@ class PMPro_Action_Scheduler {
 
 		foreach ( $required_tables as $table ) {
 			$full_table_name = $wpdb->prefix . $table;
-			if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $full_table_name ) ) !== $full_table_name ) {
+			$escaped_table_name = $wpdb->esc_like( $full_table_name );
+			if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $escaped_table_name ) ) !== $full_table_name ) {
 				$issues[] = sprintf( __( 'Missing table: %s', 'paid-memberships-pro' ), $full_table_name );
 			}
 		}
