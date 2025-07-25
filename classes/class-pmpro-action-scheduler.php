@@ -803,12 +803,17 @@ class PMPro_Action_Scheduler {
 		}
 
 		// Check for priority column (required in 3.6+)
-		$priority_column = $wpdb->get_results(
-			$wpdb->prepare(
-				"SHOW COLUMNS FROM {$wpdb->prefix}actionscheduler_actions LIKE %s",
-				'priority'
-			)
-		);
+		$table_name = $wpdb->prefix . 'actionscheduler_actions';
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) === $table_name ) {
+			$priority_column = $wpdb->get_results(
+				$wpdb->prepare(
+					"SHOW COLUMNS FROM {$table_name} LIKE %s",
+					'priority'
+				)
+			);
+		} else {
+			$priority_column = array(); // Table does not exist, return empty result.
+		}
 
 		if ( empty( $priority_column ) ) {
 			$issues[] = __( 'Missing priority column in actionscheduler_actions table (required for Action Scheduler 3.6+)', 'paid-memberships-pro' );
