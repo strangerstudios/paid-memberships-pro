@@ -117,12 +117,12 @@ class PMPro_Wisdom_Tracker {
 	 * And check if tracking is enabled - perhaps the plugin has been reactivated
 	 *
 	 * @since 1.0.0
-	 * @deprecated TBD - This is now handled by Action Scheduler.
+	 * @deprecated 3.5.3 - This is now handled by Action Scheduler.
 	 *
 	 * @modified 3.5 Now with Action Scheduler support
 	 */
 	public function schedule_tracking() {
-		_deprecated_function( __METHOD__, 'TBD' );
+		_deprecated_function( __METHOD__, '3.5.3' );
 	}
 
 	/**

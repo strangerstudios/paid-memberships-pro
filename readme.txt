@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.5.2
+Stable tag: 3.5.3
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,21 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.5.3 - 2025-07-25 =
+* ENHANCEMENT: Added a new `!!renew_url!!` email template variable to expiration and cancellation email templates. #3448 (@kimcoleman)
+* ENHANCEMENT: Extended the checkout spam protection setting to also protect the login form. #3450 (@ideadude)
+* ENHANCEMENT: Added a `startdate` column to the Members List CSV export. #3443 (@dparker1005)
+* ENHANCEMENT: Changed the name of the "Membership Recurring" email template to "Recurring Payment Reminder". #3451 (@kimwhite)
+* ENHANCEMENT: Added an "Action Scheduler Health" section to the PMPro Site Health report. #3453 (@dalemugford)
+* ENHANCEMENT: Now cleaning up PMPro Action Scheduler scheduled tasks when the plugin is deactivated or uninstalled. #3440 (@dalemugford)
+* BUG FIX/ENHANCEMENT: Now avoiding cases where duplicate PMPro Action Scheduler scheduled tasks may be created. #3444 (@dalemugford)
+* BUG FIX: Fixed an issue where the Admin Activity Email would not be sent. #3441 (@dalemugford)
+* BUG FIX: Fixed an issue where "Recent Members" metabox may not show correctly on websites using custom database table prefixes. #3442 (@dparker1005)
+* BUG FIX: Fixed an issue where an incorrect level name may be sent in renewal emails when level for the associated subscription had changed. #3449 (@dparker1005)
+* BUG FIX: Fixed an issue where sorting columns on the Subscriptions List Table would not work when a search term was set. #3447 (@dparker1005)
+* BUG FIX: Fixed a rare plugin conflict that could prevent Elementor data from completing the migration included in PMPro v3.5. #3445 (@dparker1005)
+* BUG FIX: Fixed an issue where Wisdom data would only ever be sent on the first day of each month. #3446 (@dparker1005)
+
 = 3.5.2 - 2025-07-14 =
 * BUG FIX: Fixed an issue where members may receive multiple recurring payment reminder emails for the same payment. #3437 (@mircobabini)
 * BUG FIX: Fixed an issue where gateway settings may not show for some gateways. #3436 (@dparker1005)
