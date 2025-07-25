@@ -781,62 +781,63 @@ public static function clear_recurring_tasks() {
 	 * @since 3.5.3
 	 * @return array Array of issues found, empty if no issues.
 	 */
-public static function check_action_scheduler_table_health() {
-	global $wpdb;
+	public static function check_action_scheduler_table_health() {
+		global $wpdb;
 
-	$issues = array();
+		$issues = array();
 
-	// List of required Action Scheduler tables
-	$required_tables = array(
-		'actionscheduler_actions',
-		'actionscheduler_claims',
-		'actionscheduler_groups',
-		'actionscheduler_logs',
-	);
+		// List of required Action Scheduler tables
+		$required_tables = array(
+			'actionscheduler_actions',
+			'actionscheduler_claims',
+			'actionscheduler_groups',
+			'actionscheduler_logs',
+		);
 
-	// Check if each table exists
-	foreach ( $required_tables as $table ) {
-		$full_table_name    = $wpdb->prefix . $table;
-		$escaped_table_name = $wpdb->esc_like( $full_table_name );
+		// Check if each table exists
+		foreach ( $required_tables as $table ) {
+			$full_table_name    = $wpdb->prefix . $table;
+			$escaped_table_name = $wpdb->esc_like( $full_table_name );
 
-		$table_exists = $wpdb->get_var(
+			$table_exists = $wpdb->get_var(
+				$wpdb->prepare(
+					'SHOW TABLES LIKE %s',
+					$escaped_table_name
+				)
+			);
+
+			if ( $table_exists !== $full_table_name ) {
+				$issues[] = sprintf( __( 'Missing table: %s', 'paid-memberships-pro' ), $full_table_name );
+			}
+		}
+
+		// Check for 'priority' column in 'actionscheduler_actions' table (3.6+ requirement)
+		$actions_table         = $wpdb->prefix . 'actionscheduler_actions';
+		$escaped_actions_table = $wpdb->esc_like( $actions_table );
+
+		$actions_table_exists = $wpdb->get_var(
 			$wpdb->prepare(
 				'SHOW TABLES LIKE %s',
-				$escaped_table_name
+				$escaped_actions_table
 			)
 		);
 
-		if ( $table_exists !== $full_table_name ) {
-			$issues[] = sprintf( __( 'Missing table: %s', 'paid-memberships-pro' ), $full_table_name );
+		if ( $actions_table_exists === $actions_table ) {
+			$priority_column = $wpdb->get_results(
+				$wpdb->prepare(
+					"SHOW COLUMNS FROM `{$actions_table}` LIKE %s",
+					'priority'
+				)
+			);
+
+			if ( empty( $priority_column ) ) {
+				$issues[] = __( 'Missing priority column in actionscheduler_actions table (required for Action Scheduler 3.6+)', 'paid-memberships-pro' );
+			}
+		} else {
+			// Already flagged as missing earlier, but could be handled separately if needed
+			// $issues[] = __( 'actionscheduler_actions table does not exist.', 'paid-memberships-pro' );
 		}
+
+		return $issues;
 	}
-
-	// Check for 'priority' column in 'actionscheduler_actions' table (3.6+ requirement)
-	$actions_table         = $wpdb->prefix . 'actionscheduler_actions';
-	$escaped_actions_table = $wpdb->esc_like( $actions_table );
-
-	$actions_table_exists = $wpdb->get_var(
-		$wpdb->prepare(
-			'SHOW TABLES LIKE %s',
-			$escaped_actions_table
-		)
-	);
-
-	if ( $actions_table_exists === $actions_table ) {
-		$priority_column = $wpdb->get_results(
-			$wpdb->prepare(
-				"SHOW COLUMNS FROM `{$actions_table}` LIKE %s",
-				'priority'
-			)
-		);
-
-		if ( empty( $priority_column ) ) {
-			$issues[] = __( 'Missing priority column in actionscheduler_actions table (required for Action Scheduler 3.6+)', 'paid-memberships-pro' );
-		}
-	} else {
-		// Already flagged as missing earlier, but could be handled separately if needed
-		// $issues[] = __( 'actionscheduler_actions table does not exist.', 'paid-memberships-pro' );
-	}
-
-	return $issues;
 }
