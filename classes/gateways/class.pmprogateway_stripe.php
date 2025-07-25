@@ -2384,6 +2384,20 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Create/Update Stripe customer for a user.
 	 *
 	 * @since 2.7.0
+	 * @deprecated TBD
+	 *
+	 * @param int $user_id to create/update Stripe customer for.
+	 * @return Stripe_Customer|false
+	 */
+	public function update_customer_from_user( $user_id ) {
+		_deprecated_function( __METHOD__, 'TBD', 'PMProGateway_stripe::update_customer_for_user()' );
+		return self::update_customer_for_user( $user_id );
+	}
+
+	/**
+	 * Create/Update Stripe customer for a user.
+	 *
+	 * @since TBD
 	 *
 	 * @param int $user_id to create/update Stripe customer for.
 	 * @return Stripe_Customer|false
