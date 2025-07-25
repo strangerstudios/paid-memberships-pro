@@ -774,4 +774,45 @@ class PMPro_Action_Scheduler {
 	public static function clear_recurring_tasks() {
 		self::remove_actions( null, array(), 'pmpro_recurring_tasks', 'pending' );
 	}
+
+	/**
+	 * Check if Action Scheduler has any health issues.
+	 *
+	 * @since 3.5.3
+	 * @return array Array of issues found, empty if no issues.
+	 */
+	public static function check_action_scheduler_table_health() {
+		global $wpdb;
+
+		$issues = array();
+
+		// Check if tables exist
+		$required_tables = array(
+			'actionscheduler_actions',
+			'actionscheduler_claims',
+			'actionscheduler_groups',
+			'actionscheduler_logs',
+		);
+
+		foreach ( $required_tables as $table ) {
+			$full_table_name = $wpdb->prefix . $table;
+			if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $full_table_name ) ) !== $full_table_name ) {
+				$issues[] = sprintf( __( 'Missing table: %s', 'paid-memberships-pro' ), $full_table_name );
+			}
+		}
+
+		// Check for priority column (required in 3.6+)
+		$priority_column = $wpdb->get_results(
+			$wpdb->prepare(
+				"SHOW COLUMNS FROM {$wpdb->prefix}actionscheduler_actions LIKE %s",
+				'priority'
+			)
+		);
+
+		if ( empty( $priority_column ) ) {
+			$issues[] = __( 'Missing priority column in actionscheduler_actions table (required for Action Scheduler 3.6+)', 'paid-memberships-pro' );
+		}
+
+		return $issues;
+	}
 }
