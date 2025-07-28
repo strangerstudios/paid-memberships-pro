@@ -2300,13 +2300,14 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7.0
 	 *
 	 * @param int $user_id to get Stripe_Customer for.
+	 * @param bool $find_existing If true, will try to find an existing customer for the user if one does not exist in user meta.
 	 * @return Stripe_Customer|null
 	 */
-	public function get_customer_for_user( $user_id ) {
+	public function get_customer_for_user( $user_id, $find_existing = true ) {
 		// Pull Stripe customer ID from user meta.
 		$customer_id = get_user_meta( $user_id, 'pmpro_stripe_customerid', true );
 
-		if ( empty( $customer_id ) ) {
+		if ( empty( $customer_id ) && $find_existing ) {
 			// Try to figure out the customer ID from their subscription.
 			$subscription_search_params = array(
 				'user_id' => $user_id,
@@ -2413,7 +2414,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$stripe = new PMProGateway_stripe();
 
 		// Get the existing customer from Stripe.
-		$customer = $stripe->get_customer_for_user( $user_id );
+		$customer = $stripe->get_customer_for_user( $user_id, false ); // False to improve performance if customer ID does not exist in user meta.
 		if ( empty( $customer ) ) {
 			// If we don't have a customer, don't update.
 			// This is important in case Stripe isn't used on the site.
