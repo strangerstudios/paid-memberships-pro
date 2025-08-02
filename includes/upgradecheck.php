@@ -742,12 +742,14 @@ function pmpro_db_delta() {
 		  `event_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  `event_type` varchar(64) NOT NULL,
 		  `user_id` bigint(20) unsigned DEFAULT NULL,
-		  `object_id` bigint(20) unsigned NOT NULL,
+		  `target_user_id` bigint(20) unsigned DEFAULT NULL,
+		  `object_id` bigint(20) unsigned DEFAULT NULL,
 		  `event_description` text NOT NULL,
 		  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		  PRIMARY KEY (`event_id`),
 		  KEY `event_type` (`event_type`),
 		  KEY `user_id` (`user_id`),
+		  KEY `target_user_id` (`target_user_id`),
 		  KEY `object_id` (`object_id`),
 		  KEY `timestamp` (`timestamp`)
 		) $collate;

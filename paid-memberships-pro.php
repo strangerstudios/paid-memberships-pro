@@ -139,6 +139,7 @@ require_once( PMPRO_DIR . '/includes/abandoned-signups.php' );		// track users w
 require_once( PMPRO_DIR . '/includes/checkout.php' );		        // Common functions used at checkout.
 require_once( PMPRO_DIR . '/includes/level-groups.php' );		    // Common functions for level groups.
 require_once( PMPRO_DIR . '/includes/restricted-files.php' );		// Restrict access to files.
+require_once( PMPRO_DIR . '/includes/activity.php' );               // Activity logging
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
