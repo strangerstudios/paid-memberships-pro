@@ -222,9 +222,9 @@ function pmpro_checkForUpgrades() {
 	 * for orders created through a Stripe Update.
 	 */
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_4.php" );
- 	if($pmpro_db_version < 2.4) {
- 		$pmpro_db_version = pmpro_upgrade_2_4();
- 	}
+	if($pmpro_db_version < 2.4) {
+		$pmpro_db_version = pmpro_upgrade_2_4();
+	}
 
 	/**
 	 * Version 2.5
@@ -252,9 +252,9 @@ function pmpro_checkForUpgrades() {
 	 * Running pmpro_db_delta to fix the primary key in a couple tables.
 	 */
 	 if( $pmpro_db_version < 2.71 ) {
- 		pmpro_db_delta();
- 		update_option( 'pmpro_db_version', '2.71' );
- 	}
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '2.71' );
+	}
 
 	/**
 	 * Version 2.8
@@ -427,20 +427,21 @@ function pmpro_db_delta() {
 
 	global $wpdb;
 	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
-	$wpdb->pmpro_memberships_users = $wpdb->prefix . 'pmpro_memberships_users';
-	$wpdb->pmpro_memberships_categories = $wpdb->prefix . 'pmpro_memberships_categories';
-	$wpdb->pmpro_memberships_pages = $wpdb->prefix . 'pmpro_memberships_pages';
-	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
+	$wpdb->pmpro_activity_log = $wpdb->prefix . 'pmpro_activity_log';
 	$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
-	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
-	$wpdb->pmpro_subscriptions = $wpdb->prefix . 'pmpro_subscriptions';
-	$wpdb->pmpro_membership_ordermeta = $wpdb->prefix . 'pmpro_membership_ordermeta';
-	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
+	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
+	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
+	$wpdb->pmpro_membership_ordermeta = $wpdb->prefix . 'pmpro_membership_ordermeta';
+	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
+	$wpdb->pmpro_memberships_categories = $wpdb->prefix . 'pmpro_memberships_categories';
+	$wpdb->pmpro_memberships_pages = $wpdb->prefix . 'pmpro_memberships_pages';
+	$wpdb->pmpro_memberships_users = $wpdb->prefix . 'pmpro_memberships_users';
+	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
+	$wpdb->pmpro_subscriptions = $wpdb->prefix . 'pmpro_subscriptions';
 
 	$collate = '';
 	if ( $wpdb->has_cap( 'collation' ) ) {
@@ -731,6 +732,24 @@ function pmpro_db_delta() {
 		 PRIMARY KEY (`id`),
 		 KEY `level` (`level`),
 		 KEY `group` (`group`)
+		) $collate;
+	";
+	dbDelta($sqlQuery);
+
+	// pmpro_activity_log
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->prefix . "pmpro_activity_log` (
+		  `event_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `event_type` varchar(64) NOT NULL,
+		  `user_id` bigint(20) unsigned DEFAULT NULL,
+		  `object_id` bigint(20) unsigned NOT NULL,
+		  `event_description` text NOT NULL,
+		  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		  PRIMARY KEY (`event_id`),
+		  KEY `event_type` (`event_type`),
+		  KEY `user_id` (`user_id`),
+		  KEY `object_id` (`object_id`),
+		  KEY `timestamp` (`timestamp`)
 		) $collate;
 	";
 	dbDelta($sqlQuery);
