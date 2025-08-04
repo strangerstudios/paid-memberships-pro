@@ -1,4 +1,3 @@
-
 <?php
 
 /**
@@ -74,7 +73,7 @@ function pmpro_activity_log_on_level_change( $new_level_id, $user_id, $cancel_le
     // If there is a cancelled level, log removal.
     if ( !empty( $cancel_level ) ) {
         $description = sprintf(
-            '%s removed level %s from %s'
+            '%s removed level %s from %s',
             $current_user ? $current_user->user_login : 'System',
             $cancel_level,
             $target_user ? $target_user->user_login : $user_id
