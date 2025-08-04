@@ -4,6 +4,11 @@
 
 namespace Stripe\Service\Issuing;
 
+/**
+ * @phpstan-import-type RequestOptionsArray from \Stripe\Util\RequestOptions
+ *
+ * @psalm-import-type RequestOptionsArray from \Stripe\Util\RequestOptions
+ */
 class AuthorizationService extends \Stripe\Service\AbstractService
 {
     /**
@@ -11,12 +16,12 @@ class AuthorizationService extends \Stripe\Service\AbstractService
      * sorted in descending order by creation date, with the most recently created
      * object appearing first.
      *
-     * @param null|array $params
-     * @param null|array|\Stripe\Util\RequestOptions $opts
-     *
-     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     * @param null|array{card?: string, cardholder?: string, created?: array|int, ending_before?: string, expand?: string[], limit?: int, starting_after?: string, status?: string} $params
+     * @param null|RequestOptionsArray|\Stripe\Util\RequestOptions $opts
      *
      * @return \Stripe\Collection<\Stripe\Issuing\Authorization>
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
      */
     public function all($params = null, $opts = null)
     {
@@ -24,20 +29,22 @@ class AuthorizationService extends \Stripe\Service\AbstractService
     }
 
     /**
-     * Approves a pending Issuing <code>Authorization</code> object. This request
-     * should be made within the timeout window of the <a
+     * [Deprecated] Approves a pending Issuing <code>Authorization</code> object. This
+     * request should be made within the timeout window of the <a
      * href="/docs/issuing/controls/real-time-authorizations">real-time
-     * authorization</a> flow.  You can also respond directly to the webhook request to
-     * approve an authorization (preferred). More details can be found <a
-     * href="https://site-admin.stripe.com/docs/issuing/controls/real-time-authorizations#authorization-handling">here</a>.
+     * authorization</a> flow.  This method is deprecated. Instead, <a
+     * href="/docs/issuing/controls/real-time-authorizations#authorization-handling">respond
+     * directly to the webhook request to approve an authorization</a>.
+     *
+     * @deprecated  this method is deprecated, please refer to the description for details
      *
      * @param string $id
-     * @param null|array $params
-     * @param null|array|\Stripe\Util\RequestOptions $opts
-     *
-     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     * @param null|array{amount?: int, expand?: string[], metadata?: null|array<string, string>} $params
+     * @param null|RequestOptionsArray|\Stripe\Util\RequestOptions $opts
      *
      * @return \Stripe\Issuing\Authorization
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
      */
     public function approve($id, $params = null, $opts = null)
     {
@@ -45,20 +52,22 @@ class AuthorizationService extends \Stripe\Service\AbstractService
     }
 
     /**
-     * Declines a pending Issuing <code>Authorization</code> object. This request
-     * should be made within the timeout window of the <a
+     * [Deprecated] Declines a pending Issuing <code>Authorization</code> object. This
+     * request should be made within the timeout window of the <a
      * href="/docs/issuing/controls/real-time-authorizations">real time
-     * authorization</a> flow. You can also respond directly to the webhook request to
-     * decline an authorization (preferred). More details can be found <a
-     * href="https://site-admin.stripe.com/docs/issuing/controls/real-time-authorizations#authorization-handling">here</a>.
+     * authorization</a> flow. This method is deprecated. Instead, <a
+     * href="/docs/issuing/controls/real-time-authorizations#authorization-handling">respond
+     * directly to the webhook request to decline an authorization</a>.
+     *
+     * @deprecated  this method is deprecated, please refer to the description for details
      *
      * @param string $id
-     * @param null|array $params
-     * @param null|array|\Stripe\Util\RequestOptions $opts
-     *
-     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     * @param null|array{expand?: string[], metadata?: null|array<string, string>} $params
+     * @param null|RequestOptionsArray|\Stripe\Util\RequestOptions $opts
      *
      * @return \Stripe\Issuing\Authorization
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
      */
     public function decline($id, $params = null, $opts = null)
     {
@@ -69,12 +78,12 @@ class AuthorizationService extends \Stripe\Service\AbstractService
      * Retrieves an Issuing <code>Authorization</code> object.
      *
      * @param string $id
-     * @param null|array $params
-     * @param null|array|\Stripe\Util\RequestOptions $opts
-     *
-     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     * @param null|array{expand?: string[]} $params
+     * @param null|RequestOptionsArray|\Stripe\Util\RequestOptions $opts
      *
      * @return \Stripe\Issuing\Authorization
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
      */
     public function retrieve($id, $params = null, $opts = null)
     {
@@ -87,12 +96,12 @@ class AuthorizationService extends \Stripe\Service\AbstractService
      * unchanged.
      *
      * @param string $id
-     * @param null|array $params
-     * @param null|array|\Stripe\Util\RequestOptions $opts
-     *
-     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     * @param null|array{expand?: string[], metadata?: null|array<string, string>} $params
+     * @param null|RequestOptionsArray|\Stripe\Util\RequestOptions $opts
      *
      * @return \Stripe\Issuing\Authorization
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
      */
     public function update($id, $params = null, $opts = null)
     {

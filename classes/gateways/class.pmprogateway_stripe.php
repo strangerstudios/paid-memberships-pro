@@ -16,7 +16,7 @@ use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 use Stripe\Account as Stripe_Account;
 use Stripe\Checkout\Session as Stripe_Checkout_Session;
 
-define( "PMPRO_STRIPE_API_VERSION", "2022-11-15" );
+define( "PMPRO_STRIPE_API_VERSION", "2025-07-30.basil" );
 
 //include pmprogateway
 require_once( dirname( __FILE__ ) . "/class.pmprogateway.php" );

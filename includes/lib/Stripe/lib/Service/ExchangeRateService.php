@@ -4,18 +4,23 @@
 
 namespace Stripe\Service;
 
-class ExchangeRateService extends \Stripe\Service\AbstractService
+/**
+ * @phpstan-import-type RequestOptionsArray from \Stripe\Util\RequestOptions
+ *
+ * @psalm-import-type RequestOptionsArray from \Stripe\Util\RequestOptions
+ */
+class ExchangeRateService extends AbstractService
 {
     /**
      * Returns a list of objects that contain the rates at which foreign currencies are
      * converted to one another. Only shows the currencies for which Stripe supports.
      *
-     * @param null|array $params
-     * @param null|array|\Stripe\Util\RequestOptions $opts
-     *
-     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     * @param null|array{ending_before?: string, expand?: string[], limit?: int, starting_after?: string} $params
+     * @param null|RequestOptionsArray|\Stripe\Util\RequestOptions $opts
      *
      * @return \Stripe\Collection<\Stripe\ExchangeRate>
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
      */
     public function all($params = null, $opts = null)
     {
@@ -27,12 +32,12 @@ class ExchangeRateService extends \Stripe\Service\AbstractService
      * currency.
      *
      * @param string $id
-     * @param null|array $params
-     * @param null|array|\Stripe\Util\RequestOptions $opts
-     *
-     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     * @param null|array{expand?: string[]} $params
+     * @param null|RequestOptionsArray|\Stripe\Util\RequestOptions $opts
      *
      * @return \Stripe\ExchangeRate
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
      */
     public function retrieve($id, $params = null, $opts = null)
     {
