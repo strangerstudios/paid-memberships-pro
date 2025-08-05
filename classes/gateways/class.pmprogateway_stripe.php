@@ -4037,7 +4037,8 @@ class PMProGateway_stripe extends PMProGateway {
 			// Find any open invoices for this subscription and forgive them.
 			if ( ! empty( $invoices ) ) {
 				foreach ( $invoices->data as $invoice ) {
-					if ( 'open' == $invoice->status && $invoice->subscription == $subscription->id ) {
+					$invoice_subscription_id = ! empty( $invoice->parent->subscription_details->subscription ) ? $invoice->parent->subscription_details->subscription : null;
+					if ( 'open' == $invoice->status && $invoice_subscription_id == $subscription->id ) {
 						$invoice->voidInvoice();
 					}
 				}

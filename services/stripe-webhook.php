@@ -106,7 +106,14 @@
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{
 			// Make sure we have the invoice in the desired API version.
-			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			$invoice = Stripe_Invoice::retrieve(
+				array(
+					'id' => $pmpro_stripe_event->data->object->id,
+					'expand' => array(
+						'payments',
+					)
+				)
+			);
 
 			if($invoice->amount_due > 0)
 			{
@@ -116,11 +123,19 @@
 
 				//no? create it
 				if(empty($order->id))
-				{				
+				{
+					// Get the subscription ID for this invoice.
+					if ( ! empty( $invoice->parent->subscription_details->subscription ) ) {
+						$subscription_id = $invoice->parent->subscription_details->subscription;
+					} else {
+						$logstr .= "Could not find subscription ID for invoice " . $invoice->id . ".";
+						pmpro_stripeWebhookExit();
+					}
+
 					// Get the subscription from the invoice.
-					$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $invoice->subscription, 'stripe', $livemode ? 'live' : 'sandbox' );
+					$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_id, 'stripe', $livemode ? 'live' : 'sandbox' );
 					if ( empty( $subscription ) ) {
-						$logstr .= "Couldn't find the original subscription.";
+						$logstr .= "Couldn't find subscription ID " . $subscription_id . " for invoice " . $invoice->id . ".";
 						pmpro_stripeWebhookExit();
 					}
 
@@ -166,7 +181,7 @@
 
 					// Find the payment intent.
 					$payment_intent_args = array(
-						'id'     => $invoice->payment_intent,
+						'id'     => $invoice->payments->data[0]->payment->payment_intent,
 						'expand' => array(
 							'payment_method',
 							'latest_charge',
@@ -218,8 +233,16 @@
 			// Make sure we have the invoice in the desired API version.
 			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
 
+			// Get the subscription ID for this invoice.
+			if ( ! empty( $invoice->parent->subscription_details->subscription ) ) {
+				$subscription_id = $invoice->parent->subscription_details->subscription;
+			} else {
+				$logstr .= "Could not find subscription ID for invoice " . $invoice->id . ".";
+				pmpro_stripeWebhookExit();
+			}
+
 			// Get the subscription from the invoice.
-			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $invoice->subscription, 'stripe', $livemode ? 'live' : 'sandbox' );
+			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_id, 'stripe', $livemode ? 'live' : 'sandbox' );
 			if( ! empty( $subscription ) ) {
 				$user_id = $subscription->get_user_id();
 				$user = get_userdata($user_id);
@@ -231,29 +254,6 @@
 				// Prep order for emails.
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
-
-				// Find the payment intent.
-		        $payment_intent_args = array(
-		          'id'     => $invoice->payment_intent,
-		          'expand' => array(
-		            'payment_method',
-					'latest_charge',
-		          ),
-		        );
-		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
-				// Find the payment method.
-				$payment_method = null;
-				if ( ! empty( $payment_intent->payment_method ) ) {
-					$payment_method = $payment_intent->payment_method;
-				} elseif( ! empty( $payment_intent->latest_charge ) ) {
-					// If we didn't get a payment method, check the charge.
-					$payment_method = $payment_intent->latest_charge->payment_method_details;
-				}
-				if ( empty( $payment_method ) ) {		       	
-					$logstr .= "Could not find payment method for invoice " . $invoice->id;					
-				}
-				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );
 
 				// Add invoice link to the order.
 				$morder->invoice_url = $invoice->hosted_invoice_url;
@@ -282,18 +282,23 @@
 			$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->id );
 
 			// Get the invoice for this charge if it exists.
-			if ( ! empty( $charge->invoice ) ) {
-				try {
-					$invoice = Stripe_Invoice::retrieve( $charge->invoice );
-				} catch ( Exception $e ) {
-					error_log( 'Unable to fetch Stripe Invoice object: ' . $e->getMessage() );
-					$invoice = null;
-				}
+			if ( ! empty( $charge->payment_intent ) ) {
+				$invoice_payment = \Stripe\InvoicePayment::all( array(
+					'payment' => array(
+						'type' => 'payment_intent',
+						'payment_intent' => $charge->payment_intent,
+					),
+					'expand' => array(
+						'data.invoice'
+					)
+				) );
+				$invoice = empty($invoice_payment->data[0]->invoice) ? null : $invoice_payment->data[0]->invoice;
 			}
 
 			// If we have an invoice, try to get the subscription ID from it.
-			if ( ! empty( $invoice ) ) {
-				$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $invoice->subscription, 'stripe', $livemode ? 'live' : 'sandbox' );
+			if ( ! empty( $invoice ) && ! empty( $invoice->parent->subscription_details->subscription ) ) {
+				$subscription_id = $invoice->parent->subscription_details->subscription;
+				$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_id, 'stripe', $livemode ? 'live' : 'sandbox' );
 			} else {
 				$subscription = null;
 			}
@@ -379,8 +384,15 @@
       		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
 		
 			// Initial payment orders are stored using the invoice ID, so check that value too.
-			if ( empty( $morder->id ) && ! empty( $charge->invoice ) ) {
-				$payment_transaction_id = $charge->invoice;
+			if ( empty( $morder->id ) && ! empty( $charge->payment_intent ) ) {
+				// Get the invoice for this charge if it exists.
+				$invoice_payment = \Stripe\InvoicePayment::all( array(
+					'payment' => array(
+						'type' => 'payment_intent',
+						'payment_intent' => $charge->payment_intent,
+					),
+				) );
+				$payment_transaction_id = empty($invoice_payment->data[0]->invoice) ? null : $invoice_payment->data[0]->invoice;
 				$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
 			}
 
@@ -628,17 +640,18 @@
 			}
 
 			// If we have a subscription, update the application fee.
-			if ( ! empty( $invoice->subscription ) ) {
+			if ( ! empty( $invoice->parent->subscription_details->subscription ) ) {
+				$subscription_id = $invoice->parent->subscription_details->subscription;
 				try {
 					Stripe_Subscription::update(
-						$invoice->subscription,
+						$subscription_id,
 						array(
 							'application_fee_percent' => $application_fee,
 						)
 					);
-					$logstr .= "Updated application fee for subscription " . $invoice->subscription . " to " . $application_fee . "%.";
+					$logstr .= "Updated application fee for subscription " . $subscription_id . " to " . $application_fee . "%.";
 				} catch ( Exception $e ) {
-					$logstr .= "Could not update application fee for subscription " . $invoice->subscription . ". " . $e->getMessage();
+					$logstr .= "Could not update application fee for subscription " . $subscription_id . ". " . $e->getMessage();
 				}
 			}
 			pmpro_stripeWebhookExit();
