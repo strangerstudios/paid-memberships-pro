@@ -5163,13 +5163,19 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
 	$level_ids_to_remove = array_diff( $current_level_ids, $level_ids );
 	if ( ! empty( $level_ids_to_remove ) ) {
 		// Delete the restrictions for the levels that are being removed.
-		$wpdb->query( $wpdb->prepare(
-			"DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d AND membership_id IN (" . implode( ',', array_fill( 0, count( $level_ids_to_remove ), '%d' ) ) . ")",
-			array(
-				intval( $post_id ),
-				...array_map( 'intval', $level_ids_to_remove )
-			)
-		) );
+		foreach( $level_ids_to_remove as $level_id ) {
+			$wpdb->delete(
+				$wpdb->pmpro_memberships_pages,
+				array(
+					'membership_id' => intval( $level_id ),
+					'page_id'       => intval( $post_id ),
+				),
+				array(
+					'%d',
+					'%d',
+				)
+			);
+		}
 	}
 
 	// Get the list of level IDs to insert.
