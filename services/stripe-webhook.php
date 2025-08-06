@@ -181,7 +181,7 @@
 
 					// Find the payment intent.
 					$payment_intent_args = array(
-						'id'     => $invoice->payments->data[0]->payment->payment_intent,
+						'id'     => $invoice->payments->data[0]->payment->payment_intent, // Safe to use data[0] as the first payment has just succeeded for this invoice (we don't have the order on the site yet).
 						'expand' => array(
 							'payment_method',
 							'latest_charge',
@@ -292,8 +292,7 @@
 						'data.invoice'
 					)
 				) );
-				$invoice = empty($invoice_payment->data[0]->invoice) ? null : $invoice_payment->data[0]->invoice;
-			}
+				$invoice = empty($invoice_payment->data[0]->invoice) ? null : $invoice_payment->data[0]->invoice; // Using data[0] as only one invoice payment should match a search passing a specific payment intent ID.
 
 			// If we have an invoice, try to get the subscription ID from it.
 			if ( ! empty( $invoice ) && ! empty( $invoice->parent->subscription_details->subscription ) ) {
@@ -392,7 +391,7 @@
 						'payment_intent' => $charge->payment_intent,
 					),
 				) );
-				$payment_transaction_id = empty($invoice_payment->data[0]->invoice) ? null : $invoice_payment->data[0]->invoice;
+				$payment_transaction_id = empty($invoice_payment->data[0]->invoice) ? null : $invoice_payment->data[0]->invoice; // Using data[0] as only one invoice payment should match a search passing a specific payment intent ID.
 				$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
 			}
 
