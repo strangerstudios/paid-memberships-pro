@@ -227,7 +227,12 @@ function pmpro_lifter_repair_course_enrollments( $user_id ) {
 
 	// Get all the courses that the user is currently enrolled in.
 	$student          = new LLMS_Student( $user_id );
-	$enrolled_courses = $student->get_courses();
+	$enrolled_courses = ( $student->get_courses( array( 'status' => 'enrolled' ) ) )['results'];
+
+	// Make sure all arrays are ints only to avoid type issues during comparisons.
+	$all_level_courses     = array_map( 'intval', $all_level_courses );
+	$current_level_courses = array_map( 'intval', $current_level_courses );
+	$enrolled_courses      = array_map( 'intval', $enrolled_courses );
 
 	// Unenroll from courses that are no longer associated with the user's levels.
 	$courses_for_other_levels = array_diff( $all_level_courses, $current_level_courses );
@@ -302,8 +307,9 @@ function pmpro_lifter_repair_all_course_enrollments() {
 		'pmpro_async_tasks'
 	);
 }
- 
-/**
+add_action( 'pmpro_after_updating_post_level_restrictions', 'pmpro_lifter_repair_all_course_enrollments' );
+
+ /**
  * Hide the LifterLMS Membership menu item from the admin dashboard if streamline is enabled.
  */
 function pmpro_lifter_hide_membership_menu() {
