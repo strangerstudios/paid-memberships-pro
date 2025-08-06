@@ -5141,3 +5141,23 @@ function pmpro_display_member_account_level_message( $level ) {
 	}
 }
 add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );
+
+/**
+ * Update the level restrictions for a post.
+ *
+ * @since TBD
+ *
+ * @param int $post_id The ID of the post to update.
+ * @param array $level_ids The IDs of the levels to restrict the post to.
+ */
+function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
+	global $wpdb;
+
+	// Delete existing restrictions.
+	$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post_id ) . "'" );
+
+	// Add new restrictions.
+	foreach ( $level_ids as $level_id ) {
+		$wpdb->query( "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval( $level_id ) . "', '" . intval( $post_id ) . "')" );
+	}
+}

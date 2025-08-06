@@ -32,8 +32,10 @@ function pmpro_lifter_streamline_advanced_setting( $settings ) {
 add_filter( 'pmpro_custom_advanced_settings', 'pmpro_lifter_streamline_advanced_setting' );
 
 /**
- * Add Require Membership box to LifterLMS courses.
+ * Unhooks the LifterLMS Membership Access metaboxes.
+ *
  * @since 2.12.2 Removing lifterlms-membership-access metaboxes too.
+ * @since TBD Now only removes the default LifterLMS metaboxes.
  */
 function pmpro_lifter_meta_boxes() {
 	// Bail if the streamline option is not enabled.
@@ -41,10 +43,30 @@ function pmpro_lifter_meta_boxes() {
 		return;
 	}
 	
-	add_meta_box( 'pmpro_page_meta', esc_html__( 'Require Membership', 'pmpro-courses' ), 'pmpro_page_meta', 'course', 'side' );
 	remove_meta_box( 'lifterlms-membership-access', array(), 'side' );
 }
 add_action( 'add_meta_boxes', 'pmpro_lifter_meta_boxes', 20 );
+
+/**
+ * Add courses to the list of "restrictable post types" so that the
+ * Require Membership metabox shows on courses.
+ *
+ * @since TBD
+ *
+ * @param array $post_types Array of post types that can be restricted.
+ * @return array Modified array of post types.
+ */
+function pmpro_lifter_restrictable_post_types( $post_types ) {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $post_types;
+	}
+	
+	$post_types[] = 'course';
+	$post_types = array_unique( $post_types );
+	return $post_types;
+}
+add_filter( 'pmpro_restrictable_post_types', 'pmpro_lifter_restrictable_post_types' );
 
 /**
  * Remove the LifterLMS Require Access Metaboxes.
@@ -224,6 +246,7 @@ function pmpro_lifter_repair_course_enrollments( $user_id ) {
 		$student->enroll( $course_id, 'pmpro' );
 	}
 }
+add_action( 'pmpro_lifter_repair_course_enrollments', 'pmpro_lifter_repair_course_enrollments', 10, 1 );
 
 /**
  * When users change levels, enroll/unenroll them from
@@ -241,6 +264,45 @@ function pmpro_lifter_after_all_membership_level_changes( $pmpro_old_user_levels
 }
 add_action( 'pmpro_after_all_membership_level_changes', 'pmpro_lifter_after_all_membership_level_changes' );
 
+/**
+ * Callback to queue repair of each individual user's course enrollments.
+ */
+function pmpro_lifter_repair_all_course_enrollments_callback() {
+	// Halt Action Scheduler processing to wait until we finish adding tasks.
+	PMPro_Action_Scheduler::instance()->halt();
+
+	$all_user_ids = get_users(
+		array(
+			'fields' => 'ID',
+		)
+	);
+	foreach ( $all_user_ids as $user_id ) {
+		PMPro_Action_Scheduler::instance()->maybe_add_task(
+			'pmpro_lifter_repair_course_enrollments',
+			array( 'user_id' => $user_id ),
+			'pmpro_async_tasks'
+		);
+	}
+
+	// Resume Action Scheduler processing.
+	PMPro_Action_Scheduler::instance()->resume();
+}
+add_action( 'pmpro_lifter_repair_all_course_enrollments_callback', 'pmpro_lifter_repair_all_course_enrollments_callback' );
+
+/**
+ * Queue Action Scheduler to repair course enrollments for all users.
+ *
+ * @since TBD
+ */
+function pmpro_lifter_repair_all_course_enrollments() {
+	// Halt Action Scheduler processing to wait until we finish adding tasks.
+	PMPro_Action_Scheduler::instance()->maybe_add_task(
+		'pmpro_lifter_repair_all_course_enrollments_callback',
+		array(),
+		'pmpro_async_tasks'
+	);
+}
+ 
 /**
  * Hide the LifterLMS Membership menu item from the admin dashboard if streamline is enabled.
  */

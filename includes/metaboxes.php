@@ -106,14 +106,9 @@ function pmpro_page_save( $post_id ) {
 		$mydata = NULL;
 	}
 
-	// Remove all memberships for this page.
-	$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post_id ) . "'" );
-
 	// Add new memberships for this page.
 	if( is_array( $mydata ) ) {
-		foreach( $mydata as $level ) {
-			$wpdb->query( "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval( $level ) . "', '" . intval( $post_id ) . "')" );
-		}
+		pmpro_update_post_level_restrictions( $post_id, $mydata );
 	}
 
 	return $mydata;
