@@ -276,18 +276,25 @@ function pmpro_lifter_repair_all_course_enrollments_callback() {
 	// Halt Action Scheduler processing to wait until we finish adding tasks.
 	PMPro_Action_Scheduler::instance()->halt();
 
-	$all_user_ids = get_users(
-		array(
-			'fields' => 'ID',
-		)
-	);
-	foreach ( $all_user_ids as $user_id ) {
-		PMPro_Action_Scheduler::instance()->maybe_add_task(
-			'pmpro_lifter_repair_course_enrollments',
-			array( 'user_id' => $user_id ),
-			'pmpro_async_tasks'
+	$batch_size = 500;
+	$offset = 0;
+	do {
+		$user_ids = get_users(
+			array(
+				'fields' => 'ID',
+				'number' => $batch_size,
+				'offset' => $offset,
+			)
 		);
-	}
+		foreach ( $user_ids as $user_id ) {
+			PMPro_Action_Scheduler::instance()->maybe_add_task(
+				'pmpro_lifter_repair_course_enrollments',
+				array( 'user_id' => $user_id ),
+				'pmpro_async_tasks'
+			);
+		}
+		$offset += $batch_size;
+	} while ( count( $user_ids ) === $batch_size );
 
 	// Resume Action Scheduler processing.
 	PMPro_Action_Scheduler::instance()->resume();
