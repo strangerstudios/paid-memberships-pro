@@ -78,6 +78,9 @@ function pmpro_compatibility_checker() {
 			include_once( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
 		}
 	}
+
+    include_once( PMPRO_DIR . '/includes/compatibility/wp-fusion.php' );
+
 }
 add_action( 'plugins_loaded', 'pmpro_compatibility_checker' );
 
