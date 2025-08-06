@@ -276,7 +276,7 @@ function pmpro_lifter_repair_all_course_enrollments_callback() {
 	// Halt Action Scheduler processing to wait until we finish adding tasks.
 	PMPro_Action_Scheduler::instance()->halt();
 
-	$batch_size = 500;
+	$batch_size = 250;
 	$offset = 0;
 	do {
 		$user_ids = get_users(
