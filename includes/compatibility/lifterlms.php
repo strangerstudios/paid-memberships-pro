@@ -300,6 +300,11 @@ add_action( 'pmpro_lifter_repair_all_course_enrollments_callback', 'pmpro_lifter
  * @since TBD
  */
 function pmpro_lifter_repair_all_course_enrollments() {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return;
+	}
+
 	// Halt Action Scheduler processing to wait until we finish adding tasks.
 	PMPro_Action_Scheduler::instance()->maybe_add_task(
 		'pmpro_lifter_repair_all_course_enrollments_callback',
@@ -307,7 +312,29 @@ function pmpro_lifter_repair_all_course_enrollments() {
 		'pmpro_async_tasks'
 	);
 }
-add_action( 'pmpro_after_updating_post_level_restrictions', 'pmpro_lifter_repair_all_course_enrollments' );
+
+/**
+ * When the level restrictions for a post are updated, if the post was a course, repair the course enrollments for all users.
+ *
+ * @since TBD
+ *
+ * @param int $post_id The ID of the post whose level restrictions were updated.
+ */
+function pmpro_lifter_after_updating_post_level_restrictions( $post_id ) {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return;
+	}
+
+	// Check if the post is a course.
+	if ( get_post_type( $post_id ) !== 'course' ) {
+		return;
+	}
+
+	// Queue the repair of course enrollments for all users.
+	pmpro_lifter_repair_all_course_enrollments();
+}
+add_action( 'pmpro_after_updating_post_level_restrictions', 'pmpro_lifter_after_updating_post_level_restrictions' );
 
  /**
  * Hide the LifterLMS Membership menu item from the admin dashboard if streamline is enabled.
