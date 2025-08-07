@@ -167,18 +167,22 @@ function pmpro_lifter_get_courses_for_levels( $level_ids ) {
  * @return array<int> An array of course IDs.
  */
 function pmpro_lifter_get_courses_for_all_levels() {
-	global $wpdb;
+	static $course_ids = null;
 
-	$course_ids = $wpdb->get_col(
-		"
-			SELECT mp.page_id 
-			FROM $wpdb->pmpro_memberships_pages mp 
-			LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID 
-			WHERE p.post_type = 'course' 
-			AND p.post_status = 'publish' 
-			GROUP BY mp.page_id
-		"
-	);
+	// If we don't have a cached value, query the database.
+	if ( $course_ids == null ) {
+		global $wpdb;
+		$course_ids = $wpdb->get_col(
+			"
+				SELECT mp.page_id 
+				FROM $wpdb->pmpro_memberships_pages mp 
+				LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID 
+				WHERE p.post_type = 'course' 
+				AND p.post_status = 'publish' 
+				GROUP BY mp.page_id
+			"
+		);
+	}	
 
 	return $course_ids;
 }
