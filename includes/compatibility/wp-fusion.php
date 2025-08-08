@@ -2,7 +2,7 @@
 /**
  * WP Fusion Compatibility
  * This file runs in the plugins_loaded hook to ensure WP Fusion is loaded.
- * 
+ *  
  * @since TBD
  */
 
