@@ -171,6 +171,7 @@ class PMProGateway_stripe extends PMProGateway {
 			} else {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
+				add_filter( 'pmpro_order_action_links', array( 'PMProGateway_stripe', 'pmpro_order_action_links' ), 10, 2 );
 			}
 		}
 
@@ -4666,5 +4667,48 @@ class PMProGateway_stripe extends PMProGateway {
 		// Clear the global.
 		global $pmpro_review;
 		$pmpro_review = false;
+	}
+
+	/**
+	 * Show a link to the Stripe Invoice for an order.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $action_links The action links for the order.
+	 * @param MemberOrder $order The MemberOrder object.
+	 * @return array The action links with the Stripe Invoice link added.
+	 */
+	public static function pmpro_order_action_links( $action_links, $order ) {
+		// If this is not a Stripe order, bail.
+		if ( 'stripe' !== $order->gateway ) {
+			return $action_links;
+		}
+
+		// Try to get the invoice for this order.
+		try {
+			$invoice = Stripe_Invoice::retrieve( $order->payment_transaction_id );
+		} catch ( \Throwable $e ) {
+			// If we can't get the invoice, bail.
+			return $action_links;
+		} catch ( \Exception $e ) {
+			// If we can't get the invoice, bail.
+			return $action_links;
+		}
+
+		// Add the Stripe Invoice link if we have one.
+		if ( ! empty( $invoice->hosted_invoice_url ) ) {
+			$action_links['stripe_invoice'] = sprintf(
+				'<a href="%s" target="_blank">%s</a>',
+				esc_url( $invoice->hosted_invoice_url ),
+				esc_html__( 'Download Invoice', 'paid-memberships-pro' )
+			);
+
+			// Remove the original "print" link.
+			if ( isset( $action_links['print'] ) ) {
+				unset( $action_links['print'] );
+			}
+		}
+
+		return $action_links;
 	}
 }

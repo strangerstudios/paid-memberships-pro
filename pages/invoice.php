@@ -29,10 +29,69 @@
 		<section id="pmpro_order_single" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_order_single' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-					<button class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn-plain pmpro_btn-print' ) ); ?>" onclick="window.print()">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-						<?php esc_html_e( 'Print or Save as PDF', 'paid-memberships-pro' ); ?>
-					</button>
+					<?php
+					$pmpro_order_action_links = array();
+					$pmpro_order_action_links['print'] = '<button class="' . esc_attr( pmpro_get_element_class( 'pmpro_btn-plain pmpro_btn-print' ) ) . '" onclick="window.print()">' .
+						'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>' .
+						esc_html__( 'Print or Save as PDF', 'paid-memberships-pro' ) .
+					'</button>';
+					/**
+					 * Filter the order action links.
+					 *
+					 * @since TBD
+					 *
+					 * @param array $pmpro_order_action_links Array of actions to display.
+					 * @param MemberOrder $pmpro_invoice The PMPro Invoice/Order object.
+					 */
+					$pmpro_order_action_links = apply_filters( 'pmpro_order_action_links', $pmpro_order_action_links, $pmpro_invoice );
+					$allowed_html = array(
+						'a' => array (
+							'class' => array(),
+							'href' => array(),
+							'id' => array(),
+							'target' => array(),
+							'title' => array(),
+							'aria-label' => array(),
+						),
+						'button' => array(
+							'class' => array(),
+							'onclick' => array(),
+						),
+						'path' => array(
+							'd' => array(),
+							'fill' => array(),
+							'stroke' => array(),
+							'stroke-width' => array(),
+							'stroke-linecap' => array(),
+							'stroke-linejoin' => array(),
+						),
+						'polyline' => array(
+							'points' => array(),
+						),
+						'rect' => array(
+							'x' => array(),
+							'y' => array(),
+							'width' => array(),
+							'height' => array(),
+						),
+						'span' => array(
+							'class' => array(),
+						),
+						'svg' => array(
+							'xmlns' => array(),
+							'width' => array(),
+							'height' => array(),
+							'viewbox' => array(),
+							'fill' => array(),
+							'stroke' => array(),
+							'stroke-width' => array(),
+							'stroke-linecap' => array(),
+							'stroke-linejoin' => array(),
+							'class' => array(),
+						),
+					);
+					echo wp_kses( implode( '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_action_separator' ) ) . '">' . pmpro_actions_nav_separator() . '</span>', $pmpro_order_action_links ), $allowed_html );
+					?>
 				</div> <!-- end pmpro_card_actions -->
 				<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-x-large' ) ); ?>">
 					<?php echo esc_html( sprintf(
