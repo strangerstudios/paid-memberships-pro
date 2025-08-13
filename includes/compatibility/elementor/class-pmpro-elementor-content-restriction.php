@@ -198,65 +198,67 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			return;
 		}
 
-		$migrated = false;
-		// Migrate container settings and any nested element settings.
+		$migrated_data = false;
 		foreach ( $elementor_data as $key => &$container ) {
-		// Container-level settings
-		if ( isset( $container['settings']['pmpro_require_membership'] ) ) {
-			$container['settings'] = $this->migrate_settings_helper( $container['settings'] );
-			$migrated = true;
-		}
-
-		// Nested elements (two levels deep)
-		if ( ! empty( $container['elements'] ) && is_array( $container['elements'] ) ) {
-			foreach ( $container['elements'] as &$section ) {
-				if ( ! empty( $section['elements'] ) && is_array( $section['elements'] ) ) {
-					foreach ( $section['elements'] as &$element ) {
-						if ( isset( $element['settings']['pmpro_require_membership'] ) ) {
-							$element['settings'] = $this->migrate_settings_helper( $element['settings'] );
-							$migrated = true;
-						}
-					}
-					unset( $element );
-				}
+			// Migrate the settings for this container.
+			$migrated_settings = $this->migrate_settings_helper( $container );
+			if ( ! empty( $migrated_settings ) ) {
+				$elementor_data[ $key ]['settings'] = $migrated_settings['settings'];
+				$elementor_data[ $key ]['elements'] = $migrated_settings['elements'] ?? array();
+				// Track that we made changes.
+				$migrated_data = true;
 			}
-			unset( $section );
 		}
-	}
-		unset( $container );
 
 		// Only save if something actually changed.
-		if ( $migrated ) {
+		if ( ! empty( $migrated_data ) ) {
 			update_post_meta( $post_id, '_elementor_data', wp_slash( wp_json_encode( $elementor_data ) ) );
 		}
 	}
 
 	/**
-	 * Heloper method for migrating settings from old restriction method (pmpro_require_membership) to new method (pmpro_enable).
+	 * Helper method for migrating settings from old restriction method (pmpro_require_membership) to new method (pmpro_enable).
 	 *
 	 * @since 3.5
 	 *
-	 * @param array $settings The settings array to migrate.
-	 * @return array The migrated settings array.
+	 * @param array $container An elementor container possibly containing $settings and $elements arrays to migrate.
+	 * @return array|null Returns the updated settings array if changes were made, or null if no changes were needed.
 	 */
-	private function migrate_settings_helper( $settings ) {
+	private function migrate_settings_helper( $container ) {
+		// Track whether we made any changes for child elements.
+		$migrated_child_elements = false;
+
+		// Loop through the elements and call this method recursively.
+		if ( ! empty( $container['elements'] ) && is_array( $container['elements'] ) ) {
+			foreach ( $container['elements'] as &$element ) {
+				$migrated_settings = $this->migrate_settings_helper( $element );
+				if ( ! empty( $migrated_settings ) ) {
+					$element['settings'] = $migrated_settings['settings'];
+					$element['elements'] = $migrated_settings['elements'] ?? array();
+					$migrated_child_elements = true;
+				}
+			}
+			unset( $element );
+		}
+
+		// Migrate the the settings for this container.
 		// If pmpro_require_membership is not set, bail.
-		if ( ! isset( $settings['pmpro_require_membership'] ) || empty( $settings['pmpro_require_membership'] ) ) {
-			return $settings;
+		if ( ! isset( $container['settings']['pmpro_require_membership'] ) || empty( $container['settings']['pmpro_require_membership'] ) ) {
+			return $migrated_child_elements ? $container : null;
 		}
 
 		// Let's convert the settings to the new format now.
-		$settings['pmpro_enable'] = 'yes';
-		$settings['pmpro_invert_restrictions'] = '0'; // 0 = Show content to members, 1 = Hide content from members.
-		$settings['pmpro_segment'] = 'specific'; // Elementor would always be "specific" during upgrade.
-		$settings['pmpro_levels'] = $settings['pmpro_require_membership'];
-		$settings['pmpro_show_noaccess'] = ! empty( $settings['pmpro_no_access_message'] ) ? $settings['pmpro_no_access_message'] : 'no';
+		$container['settings']['pmpro_enable'] = 'yes';
+		$container['settings']['pmpro_invert_restrictions'] = '0'; // 0 = Show content to members, 1 = Hide content from members.
+		$container['settings']['pmpro_segment'] = 'specific'; // Elementor would always be "specific" during upgrade.
+		$container['settings']['pmpro_levels'] = $container['settings']['pmpro_require_membership'];
+		$container['settings']['pmpro_show_noaccess'] = ! empty( $container['settings']['pmpro_no_access_message'] ) ? $container['settings']['pmpro_no_access_message'] : 'no';
 
 		// Remove the old pmpro_require_membership settings to clean up.
-		unset( $settings['pmpro_require_membership'] );
-		unset( $settings['pmpro_no_access_message'] );
+		unset( $container['settings']['pmpro_require_membership'] );
+		unset( $container['settings']['pmpro_no_access_message'] );
 
-		return $settings;
+		return $container;
 	}
 
 	/**
