@@ -13,10 +13,14 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 <hr class="wp-header-end">
 
 <?php
-// View a single report if requested.
+$report_exists = false;
 if ( ! empty( $_REQUEST[ 'report' ] ) ) {
-	// Get the report we are viewing.
-	$report = sanitize_text_field( $_REQUEST[ 'report' ] ); ?>
+	$report = sanitize_text_field( $_REQUEST[ 'report' ] );
+	$report_function = 'pmpro_report_' . $report . '_page';
+	$report_exists = function_exists( $report_function ) ? true : false;
+}
+
+if ( $report_exists ) { ?>
 	<ul class="subsubsub">
 		<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports' ) ); ?>"><?php esc_html_e('All', 'paid-memberships-pro' ); ?></a></li>
 		<?php
@@ -37,8 +41,8 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 	<br class="clear" />
 	<?php
 		// View a single report
-		call_user_func( 'pmpro_report_' . $report . '_page' );
-	?>
+		call_user_func( $report_function );
+    ?>
 	<p><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports' ) );?>"><?php esc_html_e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a></p>
 
 	<?php

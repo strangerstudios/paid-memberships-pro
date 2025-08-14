@@ -99,10 +99,12 @@ jQuery(document).on('click', function (e) {
 jQuery(document).ready(function () {
 	jQuery(document).on('click', '.pmpro-notice-button.notice-dismiss', function () {
 		var notification_id = jQuery(this).val();
+		var nonce = jQuery(this).data('nonce');
 
 		var postData = {
 			action: 'pmpro_hide_notice',
-			notification_id: notification_id
+			notification_id: notification_id,
+			nonce: nonce
 		}
 
 		jQuery.ajax({
@@ -315,11 +317,11 @@ function pmpro_userfields_prep_click_events() {
 		}
 	});
 
-	// Toggle groups.    
+	// Toggle groups.
 	jQuery('button.pmpro_userfield-group-buttons-button-toggle-group, div.pmpro_userfield-group-header h3').unbind('click').on('click', function (event) {
 		event.preventDefault();
 
-		// Ignore if the text field was clicked.        
+		// Ignore if the text field was clicked.
 		if (jQuery(event.target).prop('nodeName') === 'INPUT') {
 			return;
 		}
@@ -418,15 +420,29 @@ function pmpro_userfields_prep_click_events() {
 		pmpro_userfields_made_a_change();
 	});
 
+	// Toggle required at checkout field settings based on group settings.
+	jQuery('select[name="pmpro_userfields_group_checkout"]').unbind('change').on('change', function () {
+		var groupContainer = jQuery(this).closest('.pmpro_userfield-inside');
+		var fieldSettings = groupContainer.find('.pmpro_userfield-group-fields');
+		var requiredFields = fieldSettings.find('#pmpro_userfield-field-setting_required');
+
+		// Toggle visibility based on group setting.
+		if (jQuery(this).val() === 'yes') {
+			requiredFields.show();
+		} else {
+			requiredFields.hide();
+		}
+	}).trigger('change');
+
 	// Toggle field settings based on type.
 	jQuery('select[name=pmpro_userfields_field_type]').on('change', function (event) {
 		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
 		var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
 		var fieldtype = jQuery(this).val();
 
-		var fieldoptions = fieldsettings.find('textarea[name=pmpro_userfields_field_options]').parents('.pmpro_userfield-field-setting');
-		var fieldfiles = fieldsettings.find('input[name=pmpro_userfields_field_max_file_size]').parents('.pmpro_userfield-field-setting');
-		var fielddefault = fieldsettings.find('input[name=pmpro_userfields_field_default]').parents('.pmpro_userfield-field-setting');
+		var fieldoptions = fieldsettings.find('#pmpro_userfield-field-setting_options');
+		var fieldfiles = fieldsettings.find('#pmpro_userfield-row-settings_files');
+		var fielddefault = fieldsettings.find('#pmpro_userfield-field-setting_default');
 
 		// Hide all the field settings.
 		fieldoptions.hide();
@@ -496,7 +512,7 @@ function pmpro_userfields_prep_click_events() {
 			let group_profile = jQuery(this).find('select[name=pmpro_userfields_group_profile]').val();
 			let group_description = jQuery(this).find('textarea[name=pmpro_userfields_group_description]').val();
 
-			// Get level ids.            
+			// Get level ids.
 			let group_levels = [];
 			jQuery(this).find('input[name="pmpro_userfields_group_membership[]"]:checked').each(function () {
 				group_levels.push(parseInt(jQuery(this).attr('id').replace('pmpro_userfields_group_membership_', '')));
@@ -519,7 +535,7 @@ function pmpro_userfields_prep_click_events() {
 				let field_max_file_size = jQuery(this).find('input[name=pmpro_userfields_field_max_file_size]').val();
 				let field_default = jQuery(this).find('input[name=pmpro_userfields_field_default]').val();
 
-				// Get level ids.            
+				// Get level ids.
 				let field_levels = [];
 				jQuery(this).find('input[name="pmpro_userfields_field_levels[]"]:checked').each(function () {
 					field_levels.push(parseInt(jQuery(this).attr('id').replace('pmpro_userfields_field_levels_', '')));
@@ -837,18 +853,21 @@ jQuery(document).ready(function () {
 					// If user just installed, give them the option to activate.
 					// TODO: Also give option to activate after update, but this is harder.
 					if ('install' === action) {
+						// Find the buttons that could be the activate button.
 						var primaryButtons = responseElement.find('.button-primary');
-						if (primaryButtons.length > 0) {
-							var activateButton = primaryButtons[0];
-							var activateButtonHref = activateButton.getAttribute('href');
-							if (activateButtonHref) {
+
+						// Loop through the buttons to find the activate button.
+						for (var i = 0; i < primaryButtons.length; i++) {
+							// If there is a href element beginning with plugins.php?action=activate&plugin=[plugin_slug], then it is very likely the activate button.
+							if ( primaryButtons[i].getAttribute('href') && primaryButtons[i].getAttribute('href').indexOf('plugins.php?action=activate&plugin=') > -1 ) {
 								// Wait 1 second before showing the activate button.
 								setTimeout(function () {
 									button.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
-									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val(activateButtonHref);
+									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val( primaryButtons[i].getAttribute('href') );
 									button.html('Activate');
 									button.removeClass('disabled');
 								}, 1000);
+								break;
 							}
 						}
 					}

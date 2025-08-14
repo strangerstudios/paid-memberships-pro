@@ -59,7 +59,10 @@
 			</ul>
 			<div class="search-form">
 				<label class="screen-reader-text" for="search-plugins"><?php esc_html_e( 'Search Add Ons', 'paid-memberships-pro' ); ?></label>
-				<input type="search" name="s" id="search-add-ons" data-search="content" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search Add Ons...', 'paid-memberships-pro' ); ?>">
+				<?php
+					$pmpro_addon_search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+				?>
+				<input type="search" name="s" id="search-add-ons" data-search="content" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search Add Ons...', 'paid-memberships-pro' ); ?>" value="<?php echo esc_attr( $pmpro_addon_search ); ?>">
 			</div>
 		</div> <!-- end wp-filter -->
 		<br class="clear">
@@ -160,14 +163,14 @@
 							?>
 							<?php if ( ! empty( $addon['plugin_icon_src'] ) ) { ?>
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
-									<a target="_blank" href="<?php echo esc_url( $plugin_link ); ?>">
+									<a class="add-on-icon" target="_blank" href="<?php echo esc_url( $plugin_link ); ?>">
 								<?php } ?>
 								<img src="<?php echo esc_url( $addon['plugin_icon_src'] ); ?>" alt="<?php echo esc_attr( $addon['Name'] ); ?>">
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									</a>
 								<?php } ?>
 							<?php } ?>
-							<h5 class="add-on-name">
+							<div class="add-on-name">
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									<a target="_blank" href="<?php echo esc_url( $plugin_link ); ?>">
 								<?php } ?>
@@ -175,7 +178,7 @@
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									</a>
 								<?php } ?>
-							</h5> <!-- end add-on-name -->
+							</div> <!-- end add-on-name -->
 							<div class="add-on-description">
 								<p><?php echo esc_html( $addon['Description'] ); ?></p>
 								<p>
@@ -313,7 +316,7 @@
 									} elseif ( $addon['status'] === 'active' ) {
 										$actions = apply_filters( 'plugin_action_links_' . $plugin_file, array(), $plugin_file, $addon, $addon['status'] );
 										if ( ! empty( $actions ) ) {
-											$action_button = str_replace( '<a ', '<a class="button" ', $actions[0] );
+											$action_button = str_replace( '<a ', '<a class="button" ', reset( $actions ) );
 										} else {
 											$action_button['label'] = __( 'Active', 'paid-memberships-pro' );
 											$action_button['style'] .= ' disabled';
@@ -322,7 +325,7 @@
 
 									if ( is_array( $action_button ) ) {
 										?>
-										<a class="<?php echo esc_attr( $action_button['style'] ); ?>" ><?php echo esc_html( $action_button['label'] ); ?></a>
+										<button class="<?php echo esc_attr( $action_button['style'] ); ?>" ><?php echo esc_html( $action_button['label'] ); ?></button>
 										<?php
 										if ( ! empty( $action_button['hidden_fields'] ) ) {
 											foreach ( $action_button['hidden_fields'] as $name => $value ) {
@@ -373,7 +376,9 @@
 					const searchTerms = $input.val().toLowerCase().split( ' ' ).filter( term => term !== '' && term.length >= MIN_SEARCH_LENGTH );
 					$addonsSearch = $( '.addons-search' );
 
-					if (searchTerms.length === 0) {
+					// If the search is empty, clear the search results?
+					// Moved over to getting the raw value as searchTerms value is only true after 3 characters and was causing issues.
+					if ( $input.val().length === 0 ) {
 						clearSearch($( '.addons-search' ));
 						return;
 					}
@@ -410,16 +415,13 @@
 					var view_items = $(`[data-search-${view}]`);
 					var view_val = $(this).data('view');
 
-					// Update the URL hash.
-					$( this ).attr( 'href' ).replace( /#/, '' );
-
 					// Unstyle view links
 					views.find( 'li a' ).removeClass( 'current' );
 					$( this ).addClass( 'current' );
 					views.find('.addons-search').hide();
 
 					// Clear the search input, if full.
-					jQuery( '#search-add-ons' ).value = '';
+					$('#search-add-ons').val('');
 
 					// update the URL
 					if ( history.pushState ) {
@@ -439,6 +441,12 @@
 
 				// check if we should switch Add On content on page loads
 				$( 'a[data-toggle="view"][href="' + window.location.hash + '"]' ).trigger('click');
+
+				// Check if we should switch Add On content on page loads.
+				var $searchInput = $('#search-add-ons');
+				if ($searchInput.val().length > 0) {
+					$searchInput.trigger('keyup');
+				}
 
 			});
 		</script>

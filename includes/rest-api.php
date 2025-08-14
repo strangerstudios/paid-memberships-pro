@@ -1009,9 +1009,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$sql = "
 				SELECT
-					`mu`.`user_id` as `id`,
+					`mu`.`user_id` AS `id`,
 					`u`.`user_email`,
 					`u`.`user_nicename`,
+					`umf`.`meta_value` AS first_name,
+					`uml`.`meta_value` AS last_name,
 					`mu`.`membership_id`,
 					`ml`.`name` as membership_name,
 					`mu`.`status`,
@@ -1021,6 +1023,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					ON `mu`.`user_id` = `u`.`id`
 				LEFT JOIN `{$wpdb->pmpro_membership_levels}` AS `ml`
 					ON `ml`.`id` = `mu`.`membership_id`
+				LEFT JOIN `{$wpdb->usermeta}` AS `umf`
+					ON `umf`.`meta_key` = 'first_name'
+					AND `umf`.`user_id` = `u`.`id`
+				LEFT JOIN `{$wpdb->usermeta}` AS `uml`
+					ON `uml`.`meta_key` = 'last_name'
+					AND `uml`.`user_id` = `u`.`id`
 				WHERE
 					`mu`.`status` IN ( {$level_status_placeholders} ) 
 				ORDER BY
@@ -1066,6 +1074,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					`u`.`ID` AS `user_id`,
 					`u`.`user_email`,
 					`u`.`user_nicename`,
+					`umf`.`meta_value` AS first_name,
+					`uml`.`meta_value` AS last_name,
 					`o`.`membership_id`,
 					`o`.`billing_name`,
 					`o`.`billing_street`,
@@ -1084,6 +1094,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				FROM `{$wpdb->pmpro_membership_orders}` AS `o`
 				LEFT JOIN `{$wpdb->users}` AS `u`
 					ON `o`.`user_id` = `u`.`ID`
+				LEFT JOIN `{$wpdb->usermeta}` AS `umf`
+					ON `umf`.`meta_key` = 'first_name'
+					AND `umf`.`user_id` = `u`.`ID`
+				LEFT JOIN `{$wpdb->usermeta}` AS `uml`
+					ON `uml`.`meta_key` = 'last_name'
+					AND `uml`.`user_id` = `u`.`ID`
 				ORDER BY
 					`o`.`timestamp` DESC
 				LIMIT %d

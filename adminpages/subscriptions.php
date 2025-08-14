@@ -338,7 +338,10 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 		<?php esc_html_e( 'Edit Subscription', 'paid-memberships-pro' ); ?>
 	</a>
 
-	<?php if ( $subscription->get_gateway_object()->supports( 'subscription_sync' ) ) { ?>
+	<?php
+	$gateway_object = $subscription->get_gateway_object();
+	if ( ! empty( $gateway_object ) && method_exists( $gateway_object, 'supports' ) && $gateway_object->supports( 'subscription_sync' ) ) {
+	?>
 		<a
 			href="<?php echo ( esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'update' => '1' ), admin_url('admin.php' ) ), 'update', 'pmpro_subscriptions_nonce'  ) ) ); ?>"
 			title="<?php esc_attr_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>" 

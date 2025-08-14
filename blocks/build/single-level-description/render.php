@@ -5,8 +5,8 @@
 
 // Get the level description.
 $level = pmpro_getLevel( $attributes['selected_membership_level'] );
-$level_description = apply_filters( 'pmpro_level_description', $level->description, $level );
-$level_description = wp_kses_post( $level_description );
+$level_description = isset( $level->description ) ? $level->description : '';
+$level_description = wp_kses_post( apply_filters( 'pmpro_level_description', $level_description, $level ) );
 
 // Return if level description is empty.
 if ( empty( $level_description ) ) {
