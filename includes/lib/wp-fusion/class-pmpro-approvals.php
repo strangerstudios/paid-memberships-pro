@@ -3,13 +3,14 @@
 /**
  * WP Fusion - PMPro Approvals Class.
  *
- * @since TBD
+ * @since 3.45.5
  */
-class PMPro_WPF_PMPro_Approvals {
+class WPF_PMPro_Approvals {
 
 	/**
 	 * Constructor.
 	 *
+	 * @since 3.45.5
 	 */
 	public function __construct() {
 
@@ -27,6 +28,7 @@ class PMPro_WPF_PMPro_Approvals {
 	/**
 	 * Adds PMP Approvals meta fields to WPF contact fields list
 	 *
+	 * @since 3.45.5
 	 *
 	 * @param array $meta_fields The meta fields.
 	 * @return array The meta fields.
@@ -89,6 +91,7 @@ class PMPro_WPF_PMPro_Approvals {
 	/**
 	 * Filter user meta at registration
 	 *
+	 * @since 3.45.5
 	 *
 	 * @param array $user_meta The user meta.
 	 * @param int   $user_id   The user ID.

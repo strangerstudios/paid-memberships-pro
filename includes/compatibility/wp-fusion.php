@@ -20,13 +20,9 @@ if( class_exists( 'WP_Fusion' ) ) {
     return;
 }
 
-/**
- * ToDo
- * Rename these classes to prevent any potential conflicts with WP Fusion.
- */
-include_once( PMPRO_DIR . '/includes/compatibility/wp-fusion/class-base.php' );
-include_once( PMPRO_DIR . '/includes/compatibility/wp-fusion/class-pmpro.php' );
-include_once( PMPRO_DIR . '/includes/compatibility/wp-fusion/class-pmpro-hooks.php' );
-include_once( PMPRO_DIR . '/includes/compatibility/wp-fusion/class-pmpro-batch.php' );
-include_once( PMPRO_DIR . '/includes/compatibility/wp-fusion/class-pmpro-approvals.php' );
-include_once( PMPRO_DIR . '/includes/compatibility/wp-fusion/class-pmpro-admin.php' );
+include_once( PMPRO_DIR . '/includes/lib/wp-fusion/class-base.php' );
+include_once( PMPRO_DIR . '/includes/lib/wp-fusion/class-pmpro.php' );
+include_once( PMPRO_DIR . '/includes/lib/wp-fusion/class-pmpro-hooks.php' );
+include_once( PMPRO_DIR . '/includes/lib/wp-fusion/class-pmpro-batch.php' );
+include_once( PMPRO_DIR . '/includes/lib/wp-fusion/class-pmpro-approvals.php' );
+include_once( PMPRO_DIR . '/includes/lib/wp-fusion/class-pmpro-admin.php' );

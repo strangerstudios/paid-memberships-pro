@@ -3,13 +3,14 @@
 /**
  * WP Fusion - PMPro Hooks Class.
  *
- * @since TBD
+ * @since 3.41.44
  */
-class PMPro_WPF_PMPro_Hooks {
+class WPF_PMPro_Hooks {
 
 	/**
 	 * Constructor.
 	 *
+	 * @since 3.41.44
 	 */
 	public function __construct() {
 
@@ -34,6 +35,7 @@ class PMPro_WPF_PMPro_Hooks {
 	/**
 	 * Triggered when new order is placed.
 	 *
+	 * @since 3.41.44
 	 * @param int   $user_id The user ID.
 	 * @param mixed $order   The order object.
 	 */
@@ -59,6 +61,7 @@ class PMPro_WPF_PMPro_Hooks {
 	/**
 	 * Triggered before a membership level change.
 	 *
+	 * @since 3.41.44
 	 * @param int   $level_id     The level ID.
 	 * @param int   $user_id      The user ID.
 	 * @param array $old_levels   The old levels.
@@ -103,6 +106,7 @@ class PMPro_WPF_PMPro_Hooks {
 	/**
 	 * Triggered after a membership level change.
 	 *
+	 * @since 3.41.44
 	 * @param int $level_id The level ID.
 	 * @param int $user_id  The user ID.
 	 */
@@ -121,6 +125,7 @@ class PMPro_WPF_PMPro_Hooks {
 	/**
 	 * Triggered when a recurring subscription payment fails.
 	 *
+	 * @since 3.41.44
 	 * @param object $old_order The order object.
 	 */
 	public function subscription_payment_failed( $old_order ) {
@@ -139,6 +144,7 @@ class PMPro_WPF_PMPro_Hooks {
 	/**
 	 * Triggered when a recurring subscription payment succeeds.
 	 *
+	 * @since 3.41.44
 	 * @param object $order The order object.
 	 */
 	public function subscription_payment_completed( $order ) {
@@ -157,6 +163,7 @@ class PMPro_WPF_PMPro_Hooks {
 	/**
 	 * Triggered when a user's membership expires.
 	 *
+	 * @since 3.41.44
 	 * @param int $user_id  The user ID.
 	 * @param int $level_id The level ID.
 	 */
@@ -183,6 +190,7 @@ class PMPro_WPF_PMPro_Hooks {
 	/**
 	 * Triggered when profile fields are updated.
 	 *
+	 * @since 3.41.44
 	 * @param int $user_id The user ID.
 	 */
 	public function profile_fields_update( $user_id ) {
@@ -192,6 +200,7 @@ class PMPro_WPF_PMPro_Hooks {
 	/**
 	 * Triggered after redeeming a gift certificate.
 	 *
+	 * @since 3.41.44
 	 * @param object $order The order object.
 	 */
 	public function after_redeem( $order ) {

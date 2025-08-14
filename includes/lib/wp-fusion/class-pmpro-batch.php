@@ -3,13 +3,14 @@
 /**
  * WP Fusion - PMPro Batch Class.
  *
- * @since TBD
+ * @since 3.45.5
  */
-class PMPro_WPF_PMPro_Batch {
+class WPF_PMPro_Batch {
 
 	/**
 	 * Constructor.
 	 *
+	 * @since 3.45.5
 	 */
 	public function __construct() {
 

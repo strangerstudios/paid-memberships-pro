@@ -2,7 +2,10 @@
 /**
  * WP Fusion - Paid Memberships Pro Integration.
  *
- * @since TBD
+ * @package   WP Fusion
+ * @copyright Copyright (c) 2024, Very Good Plugins, https://verygoodplugins.com
+ * @license   GPL-3.0+
+ * @since     3.45.3
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,12 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Handles integration with Paid Memberships Pro.
  *
+ * @since 3.45.3
  */
-class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
+class WPF_PMPro extends WPF_Integrations_Base {
 
 	/**
 	 * The slug for WP Fusion's module tracking.
 	 *
+	 * @since 3.45.3
 	 * @var string $slug
 	 */
 	public $slug = 'pmpro';
@@ -25,6 +30,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * The plugin name for WP Fusion's module tracking.
 	 *
+	 * @since 3.45.3
 	 * @var string $name
 	 */
 	public $name = 'Paid Memberships Pro';
@@ -32,6 +38,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * The link to the documentation on the WP Fusion website.
 	 *
+	 * @since 3.45.3
 	 * @var string $docs_url
 	 */
 	public $docs_url = 'https://wpfusion.com/documentation/membership/paid-memberships-pro/';
@@ -39,6 +46,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * Admin class instance.
 	 *
+	 * @since 3.45.3
 	 * @var WPF_PMPro_Admin
 	 */
 	public $admin;
@@ -46,6 +54,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * Hooks class instance.
 	 *
+	 * @since 3.45.3
 	 * @var WPF_PMPro_Hooks
 	 */
 	public $hooks;
@@ -53,6 +62,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * Batch class instance.
 	 *
+	 * @since 3.45.3
 	 * @var WPF_PMPro_Batch
 	 */
 	public $batch;
@@ -60,6 +70,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * Approvals class instance.
 	 *
+	 * @since 3.45.3
 	 * @var WPF_PMPro_Approvals
 	 */
 	public $approvals;
@@ -67,6 +78,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * Gets things started.
 	 *
+	 * @since 3.45.3
 	 */
 	public function init() {
 
@@ -76,14 +88,14 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 		require_once __DIR__ . '/class-pmpro-batch.php';
 
 		// Initialize classes.
-		$this->admin = new PMPro_WPF_PMPro_Admin();
-		$this->hooks = new PMPro_WPF_PMPro_Hooks();
-		$this->batch = new PMPro_WPF_PMPro_Batch();
+		$this->admin = new WPF_PMPro_Admin();
+		$this->hooks = new WPF_PMPro_Hooks();
+		$this->batch = new WPF_PMPro_Batch();
 
 		// Approvals integration.
 		if ( class_exists( 'PMPro_Approvals' ) ) {
 			require_once __DIR__ . '/class-pmpro-approvals.php';
-			$this->approvals = new PMPro_WPF_PMPro_Approvals();
+			$this->approvals = new WPF_PMPro_Approvals();
 		}
 
 		// WPF Stuff.
@@ -150,6 +162,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * Applies tags based on a user's current status in a membership level, either from being added to a level or via a batch operation.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param int         $user_id The user ID.
 	 * @param int         $level_id The level ID.
@@ -318,6 +331,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * Updates user meta after checkout.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param array $post_data The post data.
 	 * @return array Post data.
@@ -353,6 +367,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * Updates user's memberships if a linked tag is added/removed.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param int   $user_id   The user ID.
 	 * @param array $user_tags The user tags.
@@ -428,6 +443,7 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	/**
 	 * Runs when meta data is loaded from the CRM. Updates the start date and expiry date if found.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param int   $user_id   The user ID.
 	 * @param array $user_meta The user meta.
@@ -479,4 +495,4 @@ class PMPro_WPF_PMPro extends PMPro_WPF_Integrations_Base {
 	}
 }
 
-new PMPro_WPF_PMPro();
+new WPF_PMPro();

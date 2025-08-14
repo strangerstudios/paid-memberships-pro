@@ -1,10 +1,11 @@
 <?php
 
-abstract class PMPro_WPF_Integrations_Base {
+abstract class WPF_Integrations_Base {
 
 	/**
 	 * The slug name for WP Fusion's module tracking.
 	 *
+	 * @since 1.0.0
 	 * @var string $slug
 	 */
 	public $slug;
@@ -12,6 +13,7 @@ abstract class PMPro_WPF_Integrations_Base {
 	/**
 	 * The plugin name for WP Fusion's module tracking.
 	 *
+	 * @since 1.0.0
 	 * @var string $name
 	 */
 	public $name;
@@ -19,6 +21,7 @@ abstract class PMPro_WPF_Integrations_Base {
 	/**
 	 * The link to the documentation on the WP Fusion website.
 	 *
+	 * @since 3.38.14
 	 * @var string|bool $docs_url The URL.
 	 */
 	public $docs_url = false;

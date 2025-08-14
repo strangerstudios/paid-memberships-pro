@@ -2,7 +2,10 @@
 /**
  * WP Fusion - Paid Memberships Pro Admin Integration.
  *
- * @since TBD
+ * @package   WP Fusion
+ * @copyright Copyright (c) 2024, Very Good Plugins, https://verygoodplugins.com
+ * @license   GPL-3.0+
+ * @since     3.45.3
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,11 +17,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 3.45.3
  */
-class PMPro_WPF_PMPro_Admin {
+class WPF_PMPro_Admin {
 
 	/**
 	 * Constructor.
 	 *
+	 * @since 3.45.3
 	 */
 	public function __construct() {
 
@@ -38,6 +42,7 @@ class PMPro_WPF_PMPro_Admin {
 	/**
 	 * Gets the membership level CRM fields.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @return array The membership level CRM fields.
 	 */
@@ -82,6 +87,7 @@ class PMPro_WPF_PMPro_Admin {
 	/**
 	 * Adds PMPro field group to meta fields list.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param array $field_groups The field groups.
 	 * @return array Field groups.
@@ -99,6 +105,7 @@ class PMPro_WPF_PMPro_Admin {
 	/**
 	 * Adds PMPro meta fields to WPF contact fields list.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param array $meta_fields The meta fields.
 	 * @return array Meta fields.
@@ -229,6 +236,7 @@ class PMPro_WPF_PMPro_Admin {
 	/**
 	 * Adds options to PMP membership level settings.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param object $level The level object.
 	 */
@@ -474,6 +482,7 @@ class PMPro_WPF_PMPro_Admin {
 	/**
 	 * Saves changes to membership level settings.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param int $saveid The level ID.
 	 */
@@ -532,6 +541,7 @@ class PMPro_WPF_PMPro_Admin {
 	/**
 	 * Adds options to PMP discount code settings.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param object $edit The discount code object.
 	 */
@@ -570,6 +580,7 @@ class PMPro_WPF_PMPro_Admin {
 	/**
 	 * Saves changes to discount code settings.
 	 *
+	 * @since 3.45.3
 	 *
 	 * @param int $saveid The discount code ID.
 	 */
