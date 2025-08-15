@@ -271,7 +271,7 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 	// Handle the cancellation.
 	ipnlog( pmpro_handle_subscription_cancellation_at_gateway( $recurring_payment_id, 'paypalexpress', $gateway_environment ) );
 
-	// If the subscription was suspended due to max failed payments, make sure that the subscripiton is set to cancelled.
+	// If the subscription was suspended due to max failed payments, make sure that the subscription is set to cancelled.
 	if ( $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
 		$pmpro_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $recurring_payment_id, 'paypalexpress', $gateway_environment );
 		if ( ! empty( $pmpro_subscription ) ) { 
