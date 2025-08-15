@@ -387,7 +387,7 @@ function pmpro_admin_init_redirect_single_item_edit() {
 	// Edit Order redirect.
 	if ( $pmpro_admin_page == 'pmpro-orders' ) {
 		// If the order they are trying to edit does not exist, redirect them to the orders list.
-		if ( ! empty( $_REQUEST['order'] ) && $_REQUEST['order'] > 0 && empty( MemberOrder::get_order( $_REQUEST['order'] ) ) ) {
+		if ( ! empty( $_REQUEST['id'] ) && $_REQUEST['id'] > 0 && empty( MemberOrder::get_order( $_REQUEST['id'] ) ) ) {
 			wp_redirect( add_query_arg( array( 'page' => 'pmpro-orders' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
