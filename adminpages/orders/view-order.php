@@ -474,7 +474,16 @@ $subscription = $order->get_subscription();
 						'label'   => esc_html__( 'Delete Order', 'paid-memberships-pro' ),
 					);
 
-					// Allow filtering of actions.
+					/**
+					 * Allow filtering of actions on the single order view admin screen.
+					 *
+					 * @since TBD
+					 *
+					 * @param array $order_actions The array of order actions.
+					 * @param object $order The order object.
+					 *
+					 * @return array The filtered array of order actions.
+					 */
 					$order_actions = apply_filters( 'pmpro_order_view_actions', $order_actions, $order );
 
 					// Output the actions.
