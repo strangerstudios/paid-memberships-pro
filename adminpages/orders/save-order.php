@@ -85,7 +85,7 @@ if ( isset( $_POST['subscription_transaction_id'] ) ) {
 }
 if ( isset( $_POST['notes'] ) ) {
 	global $allowedposttags;
-	$order->notes = wp_kses( wp_unslash( $_REQUEST['notes'] ), $allowedposttags );
+	$order->notes = wp_kses( wp_unslash( $_POST['notes'] ), $allowedposttags );
 }
 
 if ( isset( $_POST['date'] ) && $_POST['date'] !== '' ) {

@@ -262,9 +262,7 @@ $subscription = $order->get_subscription();
 					<ul class="pmpro_list pmpro_list-plain pmpro_list-with-labels pmpro_cols-2">
 						<li class="pmpro_list_item">
 							<span class="pmpro_list_item_label"><?php esc_html_e('Discount Code', 'paid-memberships-pro' ); ?></span>
-							<span class="pmpro_list_item_value">
-								<span class="pmpro_tag pmpro_tag-discount-code"><?php echo esc_html( $order->discount_code->code ); ?></span>
-							</span>
+							<span class="pmpro_tag pmpro_tag-discount-code"><?php echo esc_html( $order->discount_code->code ); ?></span>
 						</li>
 					</ul>
 				<?php } ?>
@@ -370,20 +368,20 @@ $subscription = $order->get_subscription();
 						'edit' => array(
 							'title'   => esc_attr( sprintf( __( 'Edit order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
 							'href'    => esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $order->id, 'edit' => 1 ), admin_url( 'admin.php' ) ) ),
-							'class'   => 'button button-secondary button-hero pmpro-has-icon pmpro-has-icon-edit',
+							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-edit',
 							'label'   => esc_html__( 'Edit Order', 'paid-memberships-pro' ),
 						),
 						'print' => array(
 							'title'   => esc_attr( sprintf( __( 'Print or save order # %s as PDF', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
 							'href'    => esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'id' => $order->id ), admin_url( 'admin-ajax.php' ) ) ),
 							'target'  => '_blank',
-							'class'   => 'button button-secondary button-hero pmpro-has-icon pmpro-has-icon-printer',
+							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-printer',
 							'label'   => esc_html__( 'Print or Save as PDF', 'paid-memberships-pro' ),
 						),
 						'email' => array(
 							'title'   => esc_attr( sprintf( __( 'Send order # %s via email', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
 							'href'    => '#TB_inline?width=600&height=200&inlineId=email_order',
-							'class'   => 'thickbox email_link button button-secondary button-hero pmpro-has-icon pmpro-has-icon-email',
+							'class'   => 'thickbox email_link button button-secondary pmpro-has-icon pmpro-has-icon-email',
 							'data-order' => esc_attr( $order->id ),
 							'label'   => esc_html__( 'Send Order Via Email', 'paid-memberships-pro' ),
 						),
@@ -391,7 +389,7 @@ $subscription = $order->get_subscription();
 							'title'   => esc_attr( sprintf( __( 'View order # %s as member', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
 							'href'    => esc_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 							'target'  => '_blank',
-							'class'   => 'button button-secondary button-hero pmpro-has-icon pmpro-has-icon-admin-users',
+							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-admin-users',
 							'label'   => esc_html__( 'View Order As Member', 'paid-memberships-pro' ),
 						),
 					);
@@ -414,7 +412,7 @@ $subscription = $order->get_subscription();
 						$order_actions['check_token_order'] = array(
 							'title'   => esc_attr( sprintf( __( 'Recheck payment for order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
 							'href'    => esc_url( $recheck_nonce_url ),
-							'class'   => 'button button-secondary button-hero pmpro-has-icon pmpro-has-icon-image-rotate',
+							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-image-rotate',
 							'label'   => esc_html__( 'Recheck Payment Status', 'paid-memberships-pro' )
 						);
 					}
@@ -444,10 +442,37 @@ $subscription = $order->get_subscription();
 						$order_actions['refund'] = array(
 							'title'   => esc_attr( sprintf( __( 'Refund order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
 							'href'    => esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $refund_text ) . ', ' . wp_json_encode( $refund_nonce_url ) . '); void(0);' ),
-							'class'   => 'button button-secondary button-hero pmpro-has-icon pmpro-has-icon-image-rotate',
+							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-image-rotate',
 							'label'   => esc_html__( 'Refund Order', 'paid-memberships-pro' ),
 						);
 					}
+
+					// Add the "Delete" button.
+					$delete_text = esc_html(
+						sprintf(
+							// translators: %s is the Order Code.
+							__( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ),
+							str_replace( "'", '', $order->code )
+						)
+					);
+					$delete_nonce_url = wp_nonce_url(
+						add_query_arg(
+							array(
+								'page'   => 'pmpro-orders',
+								'action' => 'delete_order',
+								'delete' => $order->id,
+							),
+							admin_url( 'admin.php' )
+						),
+						'delete_order',
+						'pmpro_orders_nonce'
+					);
+					$order_actions['delete'] = array(
+						'title'   => esc_attr( sprintf( __( 'Delete order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
+						'href'    => esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $delete_text ) . ', ' . wp_json_encode( $delete_nonce_url ) . '); void(0);' ),
+						'class'   => 'button button-secondary is-destructive pmpro-has-icon pmpro-has-icon-trash',
+						'label'   => esc_html__( 'Delete Order', 'paid-memberships-pro' ),
+					);
 
 					// Allow filtering of actions.
 					$order_actions = apply_filters( 'pmpro_order_view_actions', $order_actions, $order );
@@ -484,7 +509,7 @@ $subscription = $order->get_subscription();
 					echo '<p>' . esc_html__( 'No notes for this order.', 'paid-memberships-pro' ) . '</p>';
 				}
 				?>
-				<button id="pmpro_add_order_note" class="button button-secondary button-hero pmpro-has-icon pmpro-has-icon-plus" type="button">
+				<button id="pmpro_add_order_note" class="button button-secondary pmpro-has-icon pmpro-has-icon-plus" type="button">
 					<?php esc_html_e( 'Add Order Note', 'paid-memberships-pro' ); ?>
 				</button>
 				<form class="pmpro_add_order_note_form" method="post" action="" style="display:none;">

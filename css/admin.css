@@ -966,7 +966,8 @@ td > .pmpro_tag {
 }
 
 @media (max-width: 782px) {
-	.pmpro-two-col {
+	.pmpro_admin .pmpro_two_col-left,
+	.pmpro_admin .pmpro_two_col-right {
 		grid-template-columns: 1fr;
 		grid-template-areas:
 			"main"
@@ -996,7 +997,8 @@ td > .pmpro_tag {
 .pmpro_admin .pmpro_section .pmpro_section_toggle {
 	display: flex;
 }
-.pmpro_admin .pmpro_section .pmpro_section_toggle:hover {
+.pmpro_admin .pmpro_section .pmpro_section_toggle:hover,
+.pmpro_admin .pmpro_section .pmpro_section_toggle:focus-within {
 	background-color: var(--pmpro--color--blue-medium-transparent);
 }
 .pmpro_admin .pmpro_section .pmpro_section_toggle button.pmpro_section-toggle-button {
@@ -1020,6 +1022,10 @@ td > .pmpro_tag {
 	position: relative;
 	text-align: left;
 	text-decoration: none;
+}
+
+.pmpro_admin .pmpro_section .pmpro_section_toggle button.pmpro_section-toggle-button:focus {
+	box-shadow: inset 0 0 0 2px var(--pmpro--color--blue-darkest-transparent);
 }
 
 .pmpro_admin .pmpro_section .pmpro_section_toggle button.pmpro_section-toggle-button .dashicons {
@@ -1127,12 +1133,6 @@ td > .pmpro_tag {
 /**
  * Lists
  */
-.pmpro_list {
-	#pmpro_order_single-meta-bill_to {
-		word-break: break-all;
-	}
-}
-
 .pmpro_list.pmpro_list-plain,
 .pmpro_list.pmpro_list-plain .pmpro_list_item {
 	list-style: none;
@@ -1144,18 +1144,8 @@ td > .pmpro_tag {
 	font-weight: 700;
 }
 
-.pmpro_list-with-labels {
-
-	.pmpro_list_item_label {
-		display: block;
-		font-weight: 400;
-		opacity: 0.75;
-	}
-
-	.pmpro_list_item_value {
-		font-weight: 700;
-	}
-
+.pmpro_list-with-labels .pmpro_list_item_label {
+	display: block;
 }
 
 /**
@@ -1188,6 +1178,7 @@ td > .pmpro_tag {
 .pmpro_member-box .pmpro_member-box-info h2 {
 	font-weight: 500;
 	margin: 0;
+	word-break: break-all;
 }
 .pmpro_member-box .pmpro_member-box-info h2 strong {
 	font-weight: 700;
@@ -1626,13 +1617,16 @@ a.pmpro_order-renewal {
 
 .pmpro_admin-pmpro-orders .pmpro_list-with-labels .pmpro_list_item_label {
 	font-weight: 700;
-	opacity: 1;
 }
 
 .pmpro_admin-pmpro-orders #pmpro_order-view {
 	font-size: 14px;
 	line-height: 1.5;
 	margin-top: 0;
+}
+
+.pmpro_admin-pmpro-orders #pmpro_order_single-meta-bill_to {
+	word-break: break-all;
 }
 
 .pmpro_admin-pmpro-orders #pmpro_order-view .pmpro_table tfoot tr:last-of-type td {
@@ -1657,6 +1651,12 @@ a.pmpro_order-renewal {
 
 .pmpro_admin-pmpro-orders .pmpro_add_order_note_form textarea {
 	width: 100%;
+}
+
+@media only screen and (min-width: 1200px) {
+	.pmpro_admin-pmpro-orders .pmpro_sidebar .button {
+		padding: var(--pmpro--spacing--small) var(--pmpro--spacing--medium);
+	}
 }
 
 /**
