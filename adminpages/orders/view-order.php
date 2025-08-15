@@ -65,15 +65,15 @@ $subscription = $order->get_subscription();
 								'value' => ucwords( $order->cardtype ) . ' ' . __( 'ending in', 'paid-memberships-pro' ) . ' ' . last4( $order->accountnumber ),
 							);
 						} else if ( $order->payment_type === 'Check' && ! empty( get_option( 'pmpro_check_gateway_label' ) ) ) {
-							$order->payment_type = get_option( 'pmpro_check_gateway_label' );
+							$order->payment_type_nicename = get_option( 'pmpro_check_gateway_label' );
 							$pmpro_order_single_meta['payment_method'] = array(
 								'label' => __( 'Payment method', 'paid-memberships-pro' ),
-								'value' => $order->payment_type,
+								'value' => $order->payment_type_nicename,
 							);
 						} elseif ( ! empty( $order->payment_type ) ) {
 							$pmpro_order_single_meta['payment_method'] = array(
 								'label' => __( 'Payment method', 'paid-memberships-pro' ),
-								'value' => $order->payment_type,
+								'value' => $order->payment_type_nicename,
 							);
 						} else {
 							$pmpro_order_single_meta['payment_method'] = array(
@@ -289,14 +289,14 @@ $subscription = $order->get_subscription();
 					</li>
 					<li class="pmpro_list_item">
 						<span class="pmpro_list_item_label"><?php esc_html_e( 'Payment Transaction ID', 'paid-memberships-pro' ); ?></span>
-						<?php echo empty( $order->payment_transaction_id ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : esc_html( $order->payment_transaction_id ); ?>
+						<?php echo empty( $order->payment_transaction_id ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : '<code>' . esc_html( $order->payment_transaction_id ) . '</code>'; ?>
 					</li>
 					<li class="pmpro_list_item">
 						<span class="pmpro_list_item_label"><?php esc_html_e( 'Subscription ID', 'paid-memberships-pro' ); ?></span>
 						<?php if ( empty( $subscription ) ) {
 							echo esc_html__( 'N/A', 'paid-memberships-pro' );
 						} else {
-							echo esc_html( $order->subscription_transaction_id );
+							echo '<code>' . esc_html( $order->subscription_transaction_id ) . '</code>';
 							?>
 							<p><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => (int) $subscription->get_id() ), admin_url( 'admin.php' ) ) ); ?>">
 								<?php esc_html_e( 'View Subscription', 'paid-memberships-pro' ); ?>
@@ -417,8 +417,39 @@ $subscription = $order->get_subscription();
 						);
 					}
 
+					// Add a "Mark as Paid" button if allowed.
+					if ( $order->status === 'pending' && $order->payment_type === 'Check' ) {
+						$mark_paid_text = esc_html(
+							sprintf(
+								// translators: %s is the Order Code.
+								__( 'Mark the payment for order %s as received. The user and admin may receive an email confirmation after the order update is processed. Are you sure you want to mark this order as paid?', 'paid-memberships-pro' ),
+								str_replace( "'", '', $order->code )
+							)
+						);
+						$mark_paid_nonce_url = wp_nonce_url(
+							add_query_arg(
+								array(
+									'page'       => 'pmpro-orders',
+									'action'     => 'mark_payment_received',
+									'paid_order' => $order->id,
+									'order'      => $order->id,
+									'id'         => $order->id,
+								),
+								admin_url( 'admin.php' )
+							),
+							'mark_payment_received',
+							'pmpro_orders_nonce'
+						);
+						$order_actions['mark_order_paid'] = array(
+							'title'   => esc_attr( sprintf( __( 'Mark order # %s as paid', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
+							'href'    => esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $mark_paid_text ) . ', ' . wp_json_encode( $mark_paid_nonce_url ) . '); void(0);' ),
+							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-image-rotate',
+							'label'   => esc_html__( 'Mark Order as Paid', 'paid-memberships-pro' ),
+						);
+					}
+
 					// Add the "Refund" button if allowed.
-					if ( function_exists( 'pmpro_allowed_refunds' ) && pmpro_allowed_refunds( $order ) ) {
+					if ( pmpro_allowed_refunds( $order ) ) {
 						$refund_text = esc_html(
 							sprintf(
 								// translators: %s is the Order Code.

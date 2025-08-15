@@ -55,6 +55,24 @@ if ( $nonceokay ) {
 			}
 			break;
 
+		case 'mark_payment_received':
+			$paid_order_id = absint( wp_unslash( $_REQUEST['paid_order'] ?? 0 ) );
+			$paid_order    = new MemberOrder( $paid_order_id );
+			if ( ! empty( $paid_order->id ) && $paid_order->payment_type === 'Check' ) {
+				$paid_order->status = 'success';
+				if ( $paid_order->saveOrder() ) {
+					$pmpro_msg  = sprintf( __( 'Payment for order # %s has been successfully marked as paid.', 'paid-memberships-pro' ), esc_html( $paid_order->code ) );
+					$pmpro_msgt = 'pmpro_success';
+				} else {
+					$pmpro_msg  = sprintf( __( 'Error updating status for order # %s.', 'paid-memberships-pro' ), esc_html( $paid_order->code ) );
+					$pmpro_msgt = 'pmpro_error';
+				}
+			} else {
+				$pmpro_msg  = __( 'Cannot update order status: invalid order or payment type.', 'paid-memberships-pro' );
+				$pmpro_msgt = 'pmpro_error';
+			}
+			break;
+
 		case 'refund_order':
 			$rorder_id = absint( wp_unslash( $_REQUEST['refund'] ?? 0 ) );
 			$rorder    = new MemberOrder( $rorder_id );
