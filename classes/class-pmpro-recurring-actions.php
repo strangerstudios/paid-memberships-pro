@@ -444,6 +444,7 @@ class PMPro_Recurring_Actions {
 		ksort( $emails, SORT_NUMERIC );
 
 		$previous_days = 0;
+
 		foreach ( $emails as $days => $template ) {
 			$sqlQuery = $wpdb->prepare(
 				"SELECT subscription.*
@@ -510,7 +511,7 @@ class PMPro_Recurring_Actions {
 		$days = floor( ( $subscription_obj->get_next_payment_date() - current_time( 'timestamp' ) ) / DAY_IN_SECONDS );
 
 		if ( empty( $user ) ) {
-			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d' ) );
+			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d', false ) );
 			update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
 			return;
 		}
@@ -545,7 +546,7 @@ class PMPro_Recurring_Actions {
 			$pmproemail->sendEmail();
 		}
 
-		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d' ) );
+		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_next_payment_date', $subscription_obj->get_next_payment_date( 'Y-m-d', false ) );
 		update_pmpro_subscription_meta( $subscription_id, 'pmprorm_last_days', $days );
 	}
 
