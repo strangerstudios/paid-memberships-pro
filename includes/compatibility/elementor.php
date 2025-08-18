@@ -64,7 +64,7 @@ add_action( 'pmpro_save_membership_level', 'pmpro_elementor_clear_level_cache' )
 /**
  * Add compatibility for the Elementor Caching to avoid caching any dynamic content based on Paid Memberships Pro compatibility.
  *
- * @since TBD
+ * @since 2.6.0
  * 
  * @param bool $is_dynamic_content Whether the content is dynamic or not.
  * @param array $element_raw_data The element's raw data.
