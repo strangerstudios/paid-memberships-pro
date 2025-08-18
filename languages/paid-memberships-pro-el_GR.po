@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.5.3\n"
+"Project-Id-Version: Paid Memberships Pro 3.5.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-25T16:35:49+00:00\n"
+"POT-Creation-Date: 2025-08-18T14:36:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -21606,6 +21606,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3489
 #: classes/gateways/class.pmprogateway_stripe.php:3490
 #: classes/gateways/class.pmprogateway_stripe.php:4143
+#: classes/gateways/class.pmprogateway_stripe.php:4137
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -22076,6 +22077,7 @@ msgstr ""
 #: includes/compatibility/beaver-builder.php:29
 #: includes/compatibility/beaver-builder.php:126
 #: includes/compatibility/elementor.php:36
+#: includes/compatibility/elementor.php:37
 msgid "Non-members"
 msgstr ""
 
@@ -28940,6 +28942,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1276
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1396
 #: classes/gateways/class.pmprogateway_stripe.php:4519
+#: classes/gateways/class.pmprogateway_stripe.php:4513
 #, php-format
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr ""
@@ -29688,6 +29691,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3882
 #: classes/gateways/class.pmprogateway_stripe.php:4535
 #: classes/gateways/class.pmprogateway_stripe.php:4537
+#: classes/gateways/class.pmprogateway_stripe.php:4529
+#: classes/gateways/class.pmprogateway_stripe.php:4531
 msgid "Admin: There was a problem processing the refund"
 msgstr ""
 
@@ -37193,6 +37198,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3876
 #: classes/gateways/class.pmprogateway_stripe.php:3877
 #: classes/gateways/class.pmprogateway_stripe.php:4531
+#: classes/gateways/class.pmprogateway_stripe.php:4525
 msgid "Admin: An error occurred while attempting to process this refund."
 msgstr ""
 
@@ -39101,12 +39107,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3899
 #: classes/gateways/class.pmprogateway_stripe.php:3900
 #: classes/gateways/class.pmprogateway_stripe.php:4554
+#: classes/gateways/class.pmprogateway_stripe.php:4548
 msgid "This is not a token order."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3905
 #: classes/gateways/class.pmprogateway_stripe.php:3906
 #: classes/gateways/class.pmprogateway_stripe.php:4560
+#: classes/gateways/class.pmprogateway_stripe.php:4554
 msgid "No checkout session ID found."
 msgstr ""
 
@@ -39119,18 +39127,23 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4567
 #: classes/gateways/class.pmprogateway_stripe.php:4569
 #: classes/gateways/class.pmprogateway_stripe.php:4571
+#: classes/gateways/class.pmprogateway_stripe.php:4561
+#: classes/gateways/class.pmprogateway_stripe.php:4563
+#: classes/gateways/class.pmprogateway_stripe.php:4565
 msgid "Could not retrieve checkout session: "
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3921
 #: classes/gateways/class.pmprogateway_stripe.php:3922
 #: classes/gateways/class.pmprogateway_stripe.php:4576
+#: classes/gateways/class.pmprogateway_stripe.php:4570
 msgid "Payment is still pending."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3926
 #: classes/gateways/class.pmprogateway_stripe.php:3927
 #: classes/gateways/class.pmprogateway_stripe.php:4581
+#: classes/gateways/class.pmprogateway_stripe.php:4575
 msgid "Checkout session has not yet been completed."
 msgstr ""
 
