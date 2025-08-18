@@ -49,7 +49,7 @@ function pmpro_elementor_get_all_levels() {
 add_action( 'plugins_loaded', 'pmpro_elementor_compatibility', 15 );
 
 /**
- * Delete the levels arreay caching whenever a new membership level is created or updated.
+ * Delete the levels array caching whenever a new membership level is created or updated.
  *
  * @since 2.5.9.1
  * 
