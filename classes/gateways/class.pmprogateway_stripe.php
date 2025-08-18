@@ -713,7 +713,7 @@ class PMProGateway_stripe extends PMProGateway {
 						<table class="form-table">
 							<?php
 								// If we have a webhook, make sure it has all the necessary events.
-								$webhook = $stripe->does_webhook_exist( true ); // True to force a recheck.
+								$webhook = $stripe->does_webhook_exist();
 								if ( is_array( $webhook ) && isset( $webhook['enabled_events'] ) ) {
 									$events = $stripe->check_missing_webhook_events( $webhook['enabled_events'] );
 									if ( $events ) {
@@ -3777,12 +3777,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
 	 */
-	private function does_webhook_exist( $force = false ) {
-		static $cached_webhook = null;
-		if ( ! empty( $cached_webhook ) && ! $force ) {
-			return $cached_webhook;
-		}
-
+	private function does_webhook_exist() {
 		$webhooks = $this->get_webhooks();
 
 		$webhook_id = false;
@@ -3809,11 +3804,10 @@ class PMProGateway_stripe extends PMProGateway {
 			$webhook_data['enabled_events'] = $webhook_events;
 			$webhook_data['api_version'] = $webhook_api_version;
 			$webhook_data['status'] = $webhook_status;
-			$cached_webhook = $webhook_data;
+			return $webhook_data;
 		} else {
-			$cached_webhook = false;
+			return false;
 		}
-		return $cached_webhook;
 	}
 
 	/**
