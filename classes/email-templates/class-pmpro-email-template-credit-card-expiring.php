@@ -58,7 +58,7 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return esc_html__( 'This is the membership confirmation email sent to the site administrator for every paid membership checkout on the site.', 'paid-memberships-pro' );
+		return esc_html__( 'This email is sent when a member\'s payment method will be expiring soon. This allows the member to update their payment method before a payment failure, which may result in lost access to member features.', 'paid-memberships-pro' );
 	}
 
 	/**
