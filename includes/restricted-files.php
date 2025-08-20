@@ -56,7 +56,6 @@ function pmpro_restricted_files_check_request() {
 	 * @param bool   $can_access Whether the user can access the file.
 	 * @param string $file_dir   Directory of the restricted file.
 	 * @param string $file       Name of the restricted file.
-	 * @param string $disposition Content disposition (inline or attachment).
 	 */
 	if ( empty( apply_filters( 'pmpro_can_access_restricted_file', false, $file_dir, $file ) ) ) {
 		wp_die( __( 'You do not have permission to access this file.', 'paid-memberships-pro' ), 403 );
