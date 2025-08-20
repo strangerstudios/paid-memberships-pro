@@ -56,19 +56,38 @@ function pmpro_restricted_files_check_request() {
 	 * @param bool   $can_access Whether the user can access the file.
 	 * @param string $file_dir   Directory of the restricted file.
 	 * @param string $file       Name of the restricted file.
+	 * @param string $disposition Content disposition (inline or attachment).
 	 */
 	if ( empty( apply_filters( 'pmpro_can_access_restricted_file', false, $file_dir, $file ) ) ) {
 		wp_die( __( 'You do not have permission to access this file.', 'paid-memberships-pro' ), 403 );
 	}
 
-	// Serve the file.
 	$file_path = pmpro_get_restricted_file_path( $file_dir, $file );
 	if ( file_exists( $file_path ) ) {
 		$finfo = finfo_open( FILEINFO_MIME_TYPE );
 		$content_type = finfo_file( $finfo, $file_path );
+
+		/**
+		 * Filter the content disposition for the restricted file. 
+		 * This automatically defaults to inline for images and attachments for non-images. 
+		 * 
+		 * @since TBD
+		 * 
+		 * @param $is_valid_image boolean This is true for image/* and false for anything else.
+		 * @param string $file Name of the restricted file.
+		 * @param string $file_dir Directory of the restricted file.
+		 * @param string $file_path Path to the restricted file.
+		 * 
+		 * @return string $content_disposition "inline" for image/* types, "attachment" for other file types.
+		 */
+		$content_disposition = apply_filters( 'pmpro_restricted_file_content_disposition', file_is_valid_image( $file_path ) ? 'inline' : 'attachment', $file, $file_dir, $file_path );
+		if ( $content_disposition !== 'inline' && $content_disposition !== 'attachment' ) {
+			$content_disposition = 'attachment'; // Default to attachment if not inline and not attachment.
+		}
+
 		finfo_close( $finfo );
 		header( 'Content-Type: ' . $content_type );
-		header( 'Content-Disposition: attachment; filename="' . $file . '"' );
+		header( 'Content-Disposition: ' . $content_disposition . '; filename="' . $file . '"' );
 		readfile( $file_path );
 		exit;
 	} else {
