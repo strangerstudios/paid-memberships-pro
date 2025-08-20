@@ -60,6 +60,7 @@ function pmpro_restricted_files_check_request() {
 	if ( empty( apply_filters( 'pmpro_can_access_restricted_file', false, $file_dir, $file ) ) ) {
 		wp_die( __( 'You do not have permission to access this file.', 'paid-memberships-pro' ), 403 );
 	}
+
 	// Serve the file.
 	$file_path = pmpro_get_restricted_file_path( $file_dir, $file );
 	if ( file_exists( $file_path ) ) {
