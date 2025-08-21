@@ -87,6 +87,9 @@ class PMPro_Action_Scheduler {
 		// which is intentional since some of our tasks can be heavy and we want to ensure they run smoothly and don't slow down a site.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
+
+		// If PMPro is paused or the halt() method was called, don't allow async requests.
+		add_filter( 'action_scheduler_allow_async_request_runner', array( $this, 'action_scheduler_allow_async_request_runner' ), 999 );
 	}
 
 	/**
@@ -604,16 +607,6 @@ class PMPro_Action_Scheduler {
 			$batch_size = 20;
 		}
 
-		// If PMPro is paused, we set the batch size to 0.
-		if ( pmpro_is_paused() ) {
-			$batch_size = 0;
-		}
-
-		// If the action scheduler is halted, we set the batch size to 0.
-		if ( get_option( 'pmpro_as_halted', false ) ) {
-			$batch_size = 0;
-		}
-
 		/**
 		 * Public filter for adjusting the batch size in Action Scheduler.
 		 *
@@ -671,6 +664,29 @@ class PMPro_Action_Scheduler {
 		$time_limit = apply_filters( 'pmpro_action_scheduler_time_limit_seconds', $time_limit );
 
 		return $time_limit;
+	}
+
+	/**
+	 * Halt Action Scheduler if PMPro is paused or if our halt() method was called.
+	 *
+	 * @access public
+	 * @since TBD
+	 *
+	 * @param bool $allow Whether to allow Action Scheduler to run asynchronously.
+	 * @return bool
+	 */
+	public function action_scheduler_allow_async_request_runner( $allow ) {
+		// If PMPro is paused, don't allow async requests.
+		if ( pmpro_is_paused() ) {
+			return false;
+		}
+
+		// If the halt() method was called, don't allow async requests.
+		if ( get_option( 'pmpro_as_halted', false ) ) {
+			return false;
+		}
+
+		return $allow;
 	}
 
 	/**
