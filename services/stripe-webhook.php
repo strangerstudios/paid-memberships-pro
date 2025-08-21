@@ -522,7 +522,7 @@
 			}
 
 			// Was the checkout session successful?
-			if ( $checkout_session->payment_status == "paid" ) {
+			if ( $checkout_session->payment_status == "paid" || $checkout_session->payment_status == "no_payment_required" ) {
 				// Yes. But did we already process this order?
 				if ( ! in_array( $order->status , array( 'token', 'pending' ) ) ) {
 					$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " has already been processed. Ignoring.";

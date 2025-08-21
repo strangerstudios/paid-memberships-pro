@@ -221,8 +221,8 @@ if ($submit) {
 
         //other values
         $pmpro_billing_order->billing->name = $bfirstname . " " . $blastname;
-        $pmpro_billing_order->billing->street = trim( $baddress1 );
-        $pmpro_billing_order->billing->street2 = trim( $baddress2 );
+        $pmpro_billing_order->billing->street = empty( $baddress1 ) ? '' : trim( $baddress1 );
+        $pmpro_billing_order->billing->street2 = empty( $baddress2 ) ? '' : trim( $baddress2 );
         $pmpro_billing_order->billing->city = $bcity;
         $pmpro_billing_order->billing->state = $bstate;
         $pmpro_billing_order->billing->country = $bcountry;
