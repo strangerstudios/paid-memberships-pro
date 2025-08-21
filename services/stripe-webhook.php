@@ -293,6 +293,7 @@
 					)
 				) );
 				$invoice = empty($invoice_payment->data[0]->invoice) ? null : $invoice_payment->data[0]->invoice; // Using data[0] as only one invoice payment should match a search passing a specific payment intent ID.
+			}
 
 			// If we have an invoice, try to get the subscription ID from it.
 			if ( ! empty( $invoice ) && ! empty( $invoice->parent->subscription_details->subscription ) ) {
