@@ -71,6 +71,11 @@ function pmpro_compatibility_checker() {
 			'check_type'  => 'constant',
 			'check_value' => 'BLUEHOST_PLUGIN_VERSION',
 		],
+		[
+			'file'        => 'wp-fusion-lite.php',
+			'check_type'  => 'class',
+			'check_value' => 'WP_Fusion_Lite',
+		],
 	];
 
 	foreach ( $compat_checks as $value ) {
@@ -78,9 +83,6 @@ function pmpro_compatibility_checker() {
 			include_once( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
 		}
 	}
-
-    include_once( PMPRO_DIR . '/includes/compatibility/wp-fusion.php' );
-
 }
 add_action( 'plugins_loaded', 'pmpro_compatibility_checker' );
 
