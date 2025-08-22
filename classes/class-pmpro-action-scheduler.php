@@ -90,6 +90,7 @@ class PMPro_Action_Scheduler {
 
 		// If PMPro is paused or the halt() method was called, don't allow async requests.
 		add_filter( 'action_scheduler_allow_async_request_runner', array( $this, 'action_scheduler_allow_async_request_runner' ), 999 );
+		add_action( 'admin_notices', array( $this, 'show_async_requests_paused_notice' ) );
 	}
 
 	/**
@@ -687,6 +688,29 @@ class PMPro_Action_Scheduler {
 		}
 
 		return $allow;
+	}
+
+	/**
+	 * Show a notice on the Action Scheduler page if PMPro is preventing async requests.
+	 *
+	 * @access public
+	 * @since TBD
+	 */
+	public function show_async_requests_paused_notice() {
+		// If this is not the action-scheduler page in the admin area, bail.
+		if ( ! is_admin() || empty( $_REQUEST['page'] ) || 'action-scheduler' !== $_REQUEST['page'] ) {
+			return;
+		}
+
+		if ( pmpro_is_paused() ) {
+			$message = __( 'Paid Memberships Pro services are currently paused. Scheduled actions will not be run automatically until services are resumed.', 'paid-memberships-pro' );
+		} elseif ( get_option( 'pmpro_as_halted', false ) ) {
+			$message = __( 'Paid Memberships Pro has temporarily halted scheduled actions while additional tasks are added. Actions will resume automatically once this process is complete.', 'paid-memberships-pro' );
+		}
+
+		if ( ! empty( $message ) ) {
+			echo '<div class="notice notice-warning"><p>' . esc_html( $message ) . '</p></div>';
+		}
 	}
 
 	/**
