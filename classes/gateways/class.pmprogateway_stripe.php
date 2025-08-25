@@ -4472,10 +4472,15 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//if an invoice ID is passed, get the charge/payment id
 		if ( strpos( $transaction_id, "in_" ) !== false ) {
-			$invoice = Stripe_Invoice::retrieve( $transaction_id );
+			$invoice = Stripe_Invoice::retrieve(
+				array(
+					'id' => $transaction_id,
+					'expand' => array( 'payments', 'payments.data.payment.payment_intent' )
+				)
+			);
 
-			if ( ! empty( $invoice ) && ! empty( $invoice->charge ) ) {
-				$transaction_id = $invoice->charge;
+			if ( ! empty( $invoice ) && ! empty( $invoice->payments->data[0]->payment->payment_intent->latest_charge ) ) {
+				$transaction_id = $invoice->payments->data[0]->payment->payment_intent->latest_charge;
 			}
 		}
 
