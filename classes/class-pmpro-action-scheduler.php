@@ -590,8 +590,6 @@ class PMPro_Action_Scheduler {
 	 * overall queue processing time due to latency in requests and the minimum 1 minute between each
 	 * queue being processed.
 	 *
-	 * This method also sets the batch size to 0 if PMPro is paused or the Action Scheduler is halted.
-	 *
 	 * You can also set this to a different value using the pmpro_action_scheduler_batch_size filter.
 	 *
 	 * For more details on Action Scheduler batch sizes, see: https://actionscheduler.org/perf/#increasing-batch-size
@@ -617,9 +615,6 @@ class PMPro_Action_Scheduler {
 	 * Modify the default time limit for processing a batch of actions.
 	 *
 	 * Action Scheduler provides a default of 30 seconds in which to process actions.
-	 * We can increase this for hosts like Pantheon and WP Engine.
-	 *
-	 * This method also sets the time limit to 0 if PMPro is paused or the Action Scheduler is halted.
 	 *
 	 * You can also set this to a different value using the pmpro_action_scheduler_time_limit_seconds filter.
 	 *
