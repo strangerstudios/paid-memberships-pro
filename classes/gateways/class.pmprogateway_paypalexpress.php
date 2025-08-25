@@ -1412,7 +1412,7 @@
 			} else {
 				//The refund failed, so lets return the gateway message
 
-				// translators: %1$s is the Transaction ID. %2$s is the Gateway Error
+				// translators: %1$s is the Transaction ID. %2$s is the Gateway Error.
 				$morder->notes = trim( $morder->notes . sprintf( __( 'Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s.', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] ) );
 			}
 
