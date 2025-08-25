@@ -631,26 +631,6 @@ class PMPro_Action_Scheduler {
 	 * @return int Modified time limit in seconds.
 	 */
 	public function modify_batch_time_limit( $time_limit ) {
-
-		// Set sensible defaults based on known environment limits.
-		// If we are on Pantheon, we can set it to 120.
-		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
-			$time_limit = 120;
-			// If we are on WP Engine, we can set it to 60.
-		} elseif ( defined( 'WP_ENGINE' ) ) {
-			$time_limit = 60;
-		}
-
-		// If PMPro is paused, we set the time limit to 0.
-		if ( pmpro_is_paused() ) {
-			$time_limit = 0;
-		}
-
-		// If the action scheduler is halted, we set the time limit to 0.
-		if ( get_option( 'pmpro_as_halted', false ) ) {
-			$time_limit = 0;
-		}
-
 		/**
 		 * Public filter for adjusting the time limit for Action Scheduler batches.
 		 *
