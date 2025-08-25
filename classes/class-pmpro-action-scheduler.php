@@ -87,6 +87,10 @@ class PMPro_Action_Scheduler {
 		// which is intentional since some of our tasks can be heavy and we want to ensure they run smoothly and don't slow down a site.
 		add_filter( 'action_scheduler_queue_runner_batch_size', array( $this, 'modify_batch_size' ), 999 );
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'modify_batch_time_limit' ), 999 );
+
+		// If PMPro is paused or the halt() method was called, don't allow async requests.
+		add_filter( 'action_scheduler_allow_async_request_runner', array( $this, 'action_scheduler_allow_async_request_runner' ), 999 );
+		add_action( 'admin_notices', array( $this, 'show_async_requests_paused_notice' ) );
 	}
 
 	/**
@@ -586,8 +590,6 @@ class PMPro_Action_Scheduler {
 	 * overall queue processing time due to latency in requests and the minimum 1 minute between each
 	 * queue being processed.
 	 *
-	 * This method also sets the batch size to 0 if PMPro is paused or the Action Scheduler is halted.
-	 *
 	 * You can also set this to a different value using the pmpro_action_scheduler_batch_size filter.
 	 *
 	 * For more details on Action Scheduler batch sizes, see: https://actionscheduler.org/perf/#increasing-batch-size
@@ -598,17 +600,6 @@ class PMPro_Action_Scheduler {
 	 * @return int Modified batch size.
 	 */
 	public function modify_batch_size( $batch_size ) {
-
-		// If PMPro is paused, we set the batch size to 0.
-		if ( pmpro_is_paused() ) {
-			$batch_size = 0;
-		}
-
-		// If the action scheduler is halted, we set the batch size to 0.
-		if ( get_option( 'pmpro_as_halted', false ) ) {
-			$batch_size = 0;
-		}
-
 		/**
 		 * Public filter for adjusting the batch size in Action Scheduler.
 		 *
@@ -624,9 +615,6 @@ class PMPro_Action_Scheduler {
 	 * Modify the default time limit for processing a batch of actions.
 	 *
 	 * Action Scheduler provides a default of 30 seconds in which to process actions.
-	 * We can increase this for hosts like Pantheon and WP Engine.
-	 *
-	 * This method also sets the time limit to 0 if PMPro is paused or the Action Scheduler is halted.
 	 *
 	 * You can also set this to a different value using the pmpro_action_scheduler_time_limit_seconds filter.
 	 *
@@ -638,26 +626,6 @@ class PMPro_Action_Scheduler {
 	 * @return int Modified time limit in seconds.
 	 */
 	public function modify_batch_time_limit( $time_limit ) {
-
-		// Set sensible defaults based on known environment limits.
-		// If we are on Pantheon, we can set it to 120.
-		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
-			$time_limit = 120;
-			// If we are on WP Engine, we can set it to 60.
-		} elseif ( defined( 'WP_ENGINE' ) ) {
-			$time_limit = 60;
-		}
-
-		// If PMPro is paused, we set the time limit to 0.
-		if ( pmpro_is_paused() ) {
-			$time_limit = 0;
-		}
-
-		// If the action scheduler is halted, we set the time limit to 0.
-		if ( get_option( 'pmpro_as_halted', false ) ) {
-			$time_limit = 0;
-		}
-
 		/**
 		 * Public filter for adjusting the time limit for Action Scheduler batches.
 		 *
@@ -666,6 +634,52 @@ class PMPro_Action_Scheduler {
 		$time_limit = apply_filters( 'pmpro_action_scheduler_time_limit_seconds', $time_limit );
 
 		return $time_limit;
+	}
+
+	/**
+	 * Halt Action Scheduler if PMPro is paused or if our halt() method was called.
+	 *
+	 * @access public
+	 * @since TBD
+	 *
+	 * @param bool $allow Whether to allow Action Scheduler to run asynchronously.
+	 * @return bool
+	 */
+	public function action_scheduler_allow_async_request_runner( $allow ) {
+		// If PMPro is paused, don't allow async requests.
+		if ( pmpro_is_paused() ) {
+			return false;
+		}
+
+		// If the halt() method was called, don't allow async requests.
+		if ( get_option( 'pmpro_as_halted', false ) ) {
+			return false;
+		}
+
+		return $allow;
+	}
+
+	/**
+	 * Show a notice on the Action Scheduler page if PMPro is preventing async requests.
+	 *
+	 * @access public
+	 * @since TBD
+	 */
+	public function show_async_requests_paused_notice() {
+		// If this is not the action-scheduler page in the admin area, bail.
+		if ( ! is_admin() || empty( $_REQUEST['page'] ) || 'action-scheduler' !== $_REQUEST['page'] ) {
+			return;
+		}
+
+		if ( pmpro_is_paused() ) {
+			$message = __( 'Paid Memberships Pro services are currently paused. Scheduled actions will not be run automatically until services are resumed.', 'paid-memberships-pro' );
+		} elseif ( get_option( 'pmpro_as_halted', false ) ) {
+			$message = __( 'Paid Memberships Pro has temporarily halted scheduled actions while additional tasks are added. Actions will resume automatically once this process is complete.', 'paid-memberships-pro' );
+		}
+
+		if ( ! empty( $message ) ) {
+			echo '<div class="notice notice-warning"><p>' . esc_html( $message ) . '</p></div>';
+		}
 	}
 
 	/**
