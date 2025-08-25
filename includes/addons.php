@@ -224,7 +224,6 @@ function pmpro_get_addon_categories() {
 			'pmpro-approvals',
 			'pmpro-member-badges',
 			'pmpro-member-directory',
-			'pmpro-membership-maps',
 			'pmpro-shipping',
 			'pmpro-testimonials'
 		),
