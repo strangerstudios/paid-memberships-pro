@@ -506,7 +506,10 @@ class PMPro_Action_Scheduler {
 			),
 			ARRAY_A
 		);
-
+		// If no hooks are found, we can exit early.
+		if ( empty( $hooks ) ) {
+			return;
+		}
 		foreach ( $hooks as $hook ) {
 			as_unschedule_all_actions( $hook['hook'], array(), 'pmpro_recurring_tasks' );
 		}
@@ -550,7 +553,7 @@ class PMPro_Action_Scheduler {
 			}
 		}
 
-		// Ensure our custom monthly task also has a fallback callback.
+		// Ensure our custom monthly task also has a dummy callback.
 		add_action(
 			'pmpro_trigger_monthly',
 			function () {
@@ -570,7 +573,7 @@ class PMPro_Action_Scheduler {
 		// Run any logic needed for monthly jobs here.
 		do_action( 'pmpro_schedule_monthly' );
 
-		// Schedule the next run for exactly one calendar month from now.
+		// Schedule the next run for the first day of next month.
 		$next_month = self::as_strtotime( 'first day of next month 8:00am' );
 		as_schedule_single_action( $next_month, 'pmpro_trigger_monthly', array(), 'pmpro_recurring_tasks' );
 	}
@@ -595,14 +598,6 @@ class PMPro_Action_Scheduler {
 	 * @return int Modified batch size.
 	 */
 	public function modify_batch_size( $batch_size ) {
-
-		// If we are on Pantheon, we can set it to 50.
-		if ( defined( 'PANTHEON_ENVIRONMENT' ) ) {
-			$batch_size = 50;
-			// If we are on WP Engine, we should set it to 20.
-		} elseif ( defined( 'WP_ENGINE' ) ) {
-			$batch_size = 20;
-		}
 
 		// If PMPro is paused, we set the batch size to 0.
 		if ( pmpro_is_paused() ) {

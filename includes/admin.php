@@ -181,7 +181,7 @@ function pmpro_pause_mode_notice() {
 	if ( pmpro_is_paused() && ! empty( $show_notice ) ) {
 		// Site is paused. Show the notice. ?>
 		<div id="hide_pause_notification" class="notice notice-error pmpro_notification pmpro_notification-error">
-			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_pause_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<button type="button" data-nonce="<?php echo esc_attr( wp_create_nonce( 'pmpro_notification_dismiss_hide_pause_notification' ) ); ?>" class="pmpro-notice-button notice-dismiss" value="hide_pause_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 			<div class="pmpro_notification-icon">
 				<span class="dashicons dashicons-warning"></span>
 			</div>
@@ -227,7 +227,7 @@ function pmpro_spamprotection_notice() {
 	if ( ! is_array( $archived_notifications ) || ! array_key_exists( 'hide_spamprotection_notification', $archived_notifications ) ) {
 		?>
 		<div id="hide_spamprotection_notification" class="notice notice-error pmpro_notification pmpro_notification-error">
-			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_spamprotection_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<button type="button" data-nonce="<?php echo esc_attr( wp_create_nonce( 'pmpro_notification_dismiss_hide_spamprotection_notification' ) ); ?>" class="pmpro-notice-button notice-dismiss" value="hide_spamprotection_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 			<div class="pmpro_notification-icon">
 				<span class="dashicons dashicons-warning"></span>
 			</div>

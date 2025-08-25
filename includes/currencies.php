@@ -76,7 +76,14 @@
 		'NZD' => __('New Zealand Dollar (&#36;)', 'paid-memberships-pro' ),
 		'NOK' => __('Norwegian Krone', 'paid-memberships-pro' ),
 		'PHP' => __('Philippine Pesos', 'paid-memberships-pro' ),
-		'PLN' => __('Polish Zloty', 'paid-memberships-pro' ),
+		'PLN' => array(
+			'name'                => __('Polish Zloty', 'paid-memberships-pro' ),
+			'decimals'            => '2',
+			'thousands_separator' => '&nbsp;',
+			'decimal_separator'   => ',',
+			'symbol'              => '&nbsp;zł',
+			'position'            => 'right',
+		),
 		'RON' => array(	
 				'name' => __( 'Romanian Leu', 'paid-memberships-pro' ),
 				'decimals' => '2',
