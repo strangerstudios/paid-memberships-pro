@@ -1,4 +1,14 @@
 == Changelog ==
+= 3.5.5 - 2025-08-26 =
+* ENHANCEMENT: Improved readability of order notes by adding line breaks before appending data via automated processes. #3480 (@kimcoleman)
+* ENHANCEMENT: Added formatting for the Polish zloty currency. #3478 (@warnaa)
+* ENHANCEMENT: Updated the Gocodebox_Banner_Notifier library and prefixed the class with `PMPro_` to avoid plugin conflicts. #3474 (@dparker1005)
+* BUG FIX: Fixed performance issues that may occur when the plugin is in "pause mode". #3476 (@dparker1005)
+* BUG FIX: Fixed an issue where some admin banners could not be dismissed. #3472 (@dparker1005)
+* BUG FIX: Resolving a PHP warning that may show when deactivating the plugin. #3475 (@dalemugford)
+* BUG FIX: Corrected the description for the Credit Card Expiring email template. #3471 (@kimwhite)
+* REFACTOR: Moved some compatibility code from the PMPro_Action_Scheduler class to separate compatibility files. #3475 (@dalemugford)
+
 = 3.5.4 - 2025-08-18 =
 * BUG FIX/ENHANCEMENT: Now marking restricted Elementor content as "dynamic content" to prevent it from being cached by Elementor. #3469 (@andrewlimaza)
 * BUG FIX: Fixed an issue where "Payment Reminder" emails may go out daily depending on the site's set timezone. #3463 (@dalemugford)

@@ -65,7 +65,7 @@ class PMPro_Recurring_Actions {
 		$this->conditionally_hook_admin_activity_email();
 
 		// Register recurring payment reminders.
-		add_action( 'pmpro_schedule_daily', array( $this, 'recurring_payment_reminders' ), );
+		add_action( 'pmpro_schedule_daily', array( $this, 'recurring_payment_reminders' ) );
 		add_action( 'pmpro_recurring_payment_reminder_email', array( $this, 'send_recurring_payment_reminder_email' ), 10, 3 );
 
 		// Temporary file cleanup (Daily)
