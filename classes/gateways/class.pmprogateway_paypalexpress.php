@@ -1384,6 +1384,11 @@
 
 			$httpParsedResponseAr = $morder->Gateway->PPHttpPost( 'RefundTransaction', '&TRANSACTIONID='.$transaction_id );		
 
+			// Add new lines to order notes if not empty.
+			if ( ! empty( $morder->notes ) ) {
+				$morder->notes .= "\n\n";
+			}
+
 			if ( 'success' === strtolower( $httpParsedResponseAr['ACK'] ) ) {
 				
 				$success = true;
@@ -1392,8 +1397,8 @@
 
 				global $current_user;
 
-				// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
-				$morder->notes = trim( $morder->notes . ' ' . sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
+				// translators: %1$s is the date, %2$s is the Transaction ID. %3$s is the user display name that initiated the refund.
+				$morder->notes = trim( $morder->notes . sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
 
 				$user = get_user_by( 'id', $morder->user_id );
 				//send an email to the member
@@ -1406,9 +1411,9 @@
 
 			} else {
 				//The refund failed, so lets return the gateway message
-				
-				// translators: %1$s is the Transaction ID. %1$s is the Gateway Error
-				$morder->notes = trim( $morder->notes .' '. sprintf( __( 'Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s.', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] ) );
+
+				// translators: %1$s is the Transaction ID. %2$s is the Gateway Error.
+				$morder->notes = trim( $morder->notes . sprintf( __( 'Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s.', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] ) );
 			}
 
 			$morder->SaveOrder();
