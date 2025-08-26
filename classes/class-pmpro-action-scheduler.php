@@ -640,7 +640,7 @@ class PMPro_Action_Scheduler {
 	 * Halt Action Scheduler if PMPro is paused or if our halt() method was called.
 	 *
 	 * @access public
-	 * @since TBD
+	 * @since 3.5.5
 	 *
 	 * @param bool $allow Whether to allow Action Scheduler to run asynchronously.
 	 * @return bool
@@ -663,7 +663,7 @@ class PMPro_Action_Scheduler {
 	 * Show a notice on the Action Scheduler page if PMPro is preventing async requests.
 	 *
 	 * @access public
-	 * @since TBD
+	 * @since 3.5.5
 	 */
 	public function show_async_requests_paused_notice() {
 		// If this is not the action-scheduler page in the admin area, bail.
