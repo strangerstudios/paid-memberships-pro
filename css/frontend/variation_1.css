@@ -646,6 +646,23 @@
 		}
 	}
 
+	/* Data Filters */
+	.pmpro_data_filters {
+
+		.pmpro_form_input {
+			padding: calc( var(--pmpro--base--spacing--small) / 2 );
+		}
+
+		.pmpro_form_input-select {
+			padding-right: calc(var(--pmpro--base--spacing--small) + 20px);
+		}
+
+		.pmpro_btn {
+			min-height: auto;
+			padding: calc( var(--pmpro--base--spacing--small) / 2 ) var(--pmpro--base--spacing--medium);
+		}
+	}
+
 	/**
 	* List Styles
 	*/
