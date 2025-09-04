@@ -314,6 +314,16 @@ class PMPro_Addons {
 		return $addons;
 	}
 
+	public function install_addons(){}
+
+	public function update_addons(){}
+
+	public function delete_addons(){}
+
+	public function activate_addons(){}
+
+	public function deactivate_addons(){}
+
 	/**
 	 * Get the Add On icon from the plugin slug.
 	 *
