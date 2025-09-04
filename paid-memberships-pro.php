@@ -40,17 +40,19 @@ require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// depreca
 require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
-	require_once( PMPRO_DIR . '/includes/license.php' );            		// defines location of addons data and licenses
+	require_once( PMPRO_DIR . '/includes/license.php' );            			// defines location of addons data and licenses
 }
 
-require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       		// class to process and save orders
-require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        		// setup and filter emails sent by PMPro
+require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       			// class to process and save orders
+require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        			// setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
-require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
+require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );	// setup the admin activity email
 
+//  Add On Management
+require_once( PMPRO_DIR . '/classes/class-pmpro-addons.php' );        			// the PMPro Add On Management class
 
 // New in 3.5: We now use Action Scheduler instead of WP Cron.
 if ( ! class_exists( \ActionScheduler::class ) ) {
@@ -195,9 +197,6 @@ global $wpdb;
 if ( is_admin() || defined('WP_CLI') ) {
 	pmpro_checkForUpgrades();
 }
-
-// load plugin updater
-require_once( PMPRO_DIR . '/includes/addons.php' );
 
 /*
 	Definitions

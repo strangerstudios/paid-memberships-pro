@@ -1,11 +1,13 @@
 <?php
 	$site_type = get_option( 'pmpro_site_type' );
 
+	$addon_manager = new PMPro_AddOns();
+
 	if ( empty( $site_type ) ) {
 		$site_type = 'general';
 	}
 	// Get Add On recommendations based on site type.
-	$addon_cats = pmpro_get_addon_categories();
+	$addon_cats = $addon_manager->get_addon_categories();
 	if ( ! empty( $addon_cats[$site_type] ) && $addon_cats[$site_type] ) {
 		$addon_slug_list = $addon_cats[$site_type];
 		shuffle( $addon_slug_list );
@@ -18,7 +20,7 @@
 
 	$addon_list = array();
 	foreach ( $addon_slug_list as $addon_slug ) {
-		$addon = pmpro_getAddonBySlug( $addon_slug );
+		$addon = $addon_manager->get_addon_by_slug( $addon_slug );
 		if ( ! is_array( $addon ) ) {
 			continue;
 		}
@@ -88,7 +90,7 @@
 						$title = str_replace( 'Paid Memberships Pro - ', '', $addon['Title'] );
 					}
 					$link = $addon['PluginURI'];
-					$icon = pmpro_get_addon_icon( $addon['Slug'] );
+					$icon = $addon_manager->get_addon_icon( $addon['Slug'] );
 					if ( $addon['License'] == 'free' ) {
 						$license_label = __( 'Free Add On', 'paid-memberships-pro' );
 					} elseif( $addon['License'] == 'standard' ) {

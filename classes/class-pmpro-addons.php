@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 /**
  * Class for managing PMPro Addons.
  */
-class PMPro_Addons {
+class PMPro_AddOns {
 
 	private $addons           = array();
 	private $addons_timestamp = 0;

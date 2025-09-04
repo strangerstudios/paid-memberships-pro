@@ -19,7 +19,9 @@
 	}
 	
 	// Get all Add Ons.
-	$addons = pmpro_getAddons();
+	$addon_manager = new PMPro_AddOns();
+
+	$addons = $addon_manager->get_addons();
 
 	// Get some other variables.
 	$addons_timestamp = get_option("pmpro_addons_timestamp", false);
@@ -36,7 +38,7 @@
 	}
 
 	// Get all Add On Categories.
-	$addon_cats = pmpro_get_addon_categories();
+	$addon_cats = $addon_manager->get_addon_categories();
 
 	?>
 	<hr class="wp-header-end">
@@ -97,7 +99,7 @@
 					}
 
 					// Set the src of the icon for this Add On.
-					$addon['plugin_icon_src'] = esc_url( pmpro_get_addon_icon( $addon['Slug'] ) );
+					$addon['plugin_icon_src'] = esc_url( $addon_manager->get_addon_icon( $addon['Slug'] ) );
 
 					if ( empty( $addon['ShortName'] ) ) {
 						$addon['ShortName'] = $addon['Name'];
@@ -120,7 +122,7 @@
 					}
 
 					// Set plugin data for whether this user can access this Add On.
-					if ( pmpro_can_download_addon_with_license( $addon['License'] ) ) {
+					if ( $addon_manager->can_download_addon_with_license( $addon['License'] ) ) {
 						$addon['access'] = true;
 					} else {
 						$addon['access'] = false;
