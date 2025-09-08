@@ -15,18 +15,19 @@ class PMPro_AddOns {
 		$this->addons_timestamp = get_option( 'pmpro_addons_timestamp', false );
 
 		add_action( 'admin_init', array( $this, 'admin_hooks' ) );
-
 	}
 
 	/**
 	 * Admin hooks for managing Add Ons.
 	 */
-	public function admin_hooks(){
+	public function admin_hooks() {
 		$this->check_when_updating_plugins();
 		add_filter( 'plugins_api', array( $this, 'plugins_api' ), 10, 3 );
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'update_plugins_filter' ) );
 		add_filter( 'http_request_args', array( $this, 'http_request_args_for_addons' ), 10, 2 );
-		add_action( 'update_option_pmpro_license_key', array( $this, 'reset_update_plugins_cache' ), 10, 2 );	
+		add_action( 'update_option_pmpro_license_key', array( $this, 'reset_update_plugins_cache' ), 10, 2 );
+		// Register AJAX endpoints for add-on actions.
+		$this->register_ajax_endpoints();
 	}
 
 	/**
@@ -314,15 +315,463 @@ class PMPro_AddOns {
 		return $addons;
 	}
 
-	public function install(){}
+	/**
+	 * Install an Add On by slug using WordPress core upgraders.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $slug The add on slug (directory name in the repo).
+	 * @return array|WP_Error Result array on success or WP_Error on failure.
+	 */
+	public function install( $slug = '' ) {
+		$slug = sanitize_key( (string) $slug );
+		if ( empty( $slug ) ) {
+			return new WP_Error( 'pmpro_addon_install_invalid_slug', __( 'Invalid Add On slug.', 'paid-memberships-pro' ) );
+		}
 
-	public function activate(){}
+		if ( ! current_user_can( 'install_plugins' ) || ( is_multisite() && ! current_user_can( 'manage_network_plugins' ) && is_network_admin() ) ) {
+			return new WP_Error( 'pmpro_addon_install_cap', __( 'You do not have permission to install plugins.', 'paid-memberships-pro' ) );
+		}
 
-	public function deactivate(){}
-	
-	public function update(){}
+		$addon = $this->get_addon_by_slug( $slug );
+		if ( empty( $addon ) ) {
+			return new WP_Error( 'pmpro_addon_not_found', __( 'Add On not found.', 'paid-memberships-pro' ) );
+		}
 
-	public function delete(){}
+		// License/access check for premium add ons.
+		if ( isset( $addon['License'] ) && pmpro_license_type_is_premium( $addon['License'] ) && ! $this->can_download_addon_with_license( $addon['License'] ) ) {
+			return new WP_Error( 'pmpro_addon_license_required', sprintf( __( 'A valid PMPro %s license is required to install this Add On.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) ) );
+		}
+
+		$package = $this->get_download_package_url( $slug );
+		if ( is_wp_error( $package ) ) {
+			return $package;
+		}
+
+		// Prepare filesystem and upgrader.
+		$fs_ready = $this->ensure_filesystem();
+		if ( is_wp_error( $fs_ready ) ) {
+			return $fs_ready;
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		$skin     = $this->get_upgrader_skin();
+		$upgrader = new Plugin_Upgrader( $skin );
+
+		$result = $upgrader->install( $package );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+		if ( ! $result ) {
+			return new WP_Error( 'pmpro_addon_install_failed', __( 'Installation failed.', 'paid-memberships-pro' ) );
+		}
+
+		// Best-effort resolve installed plugin file.
+		$plugin_file = $this->resolve_plugin_file( $slug );
+		return array(
+			'success'     => true,
+			'action'      => 'install',
+			'plugin_file' => $plugin_file,
+			'message'     => __( 'Add On installed.', 'paid-memberships-pro' ),
+		);
+	}
+
+	/**
+	 * Activate an Add On.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
+	 * @param bool   $network_wide   Activate network wide when in multisite/network admin.
+	 * @return array|WP_Error Result array or WP_Error.
+	 */
+	public function activate( $slug_or_plugin = '', $network_wide = false ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		if ( empty( $slug_or_plugin ) ) {
+			return new WP_Error( 'pmpro_addon_activate_invalid', __( 'Invalid Add On.', 'paid-memberships-pro' ) );
+		}
+
+		if ( is_network_admin() ) {
+			if ( ! current_user_can( 'manage_network_plugins' ) ) {
+				return new WP_Error( 'pmpro_addon_activate_cap', __( 'You do not have permission to activate plugins network-wide.', 'paid-memberships-pro' ) );
+			}
+			$network_wide = true;
+		} elseif ( ! current_user_can( 'activate_plugins' ) ) {
+				return new WP_Error( 'pmpro_addon_activate_cap', __( 'You do not have permission to activate plugins.', 'paid-memberships-pro' ) );
+		}
+
+		$plugin_file = $this->resolve_plugin_file( $slug_or_plugin );
+		if ( is_wp_error( $plugin_file ) ) {
+			return $plugin_file;
+		}
+
+		if ( is_plugin_active( $plugin_file ) ) {
+			return array(
+				'success'     => true,
+				'action'      => 'activate',
+				'plugin_file' => $plugin_file,
+				'message'     => __( 'Add On already active.', 'paid-memberships-pro' ),
+			);
+		}
+
+		$activate = activate_plugin( $plugin_file, '', $network_wide );
+		if ( is_wp_error( $activate ) ) {
+			return $activate;
+		}
+
+		return array(
+			'success'     => true,
+			'action'      => 'activate',
+			'plugin_file' => $plugin_file,
+			'message'     => __( 'Add On activated.', 'paid-memberships-pro' ),
+		);
+	}
+
+	/**
+	 * Deactivate an Add On.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
+	 * @param bool   $network_wide   Deactivate network wide when in multisite/network admin.
+	 * @return array|WP_Error Result array or WP_Error.
+	 */
+	public function deactivate( $slug_or_plugin = '', $network_wide = false ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		if ( empty( $slug_or_plugin ) ) {
+			return new WP_Error( 'pmpro_addon_deactivate_invalid', __( 'Invalid Add On.', 'paid-memberships-pro' ) );
+		}
+
+		if ( is_network_admin() ) {
+			if ( ! current_user_can( 'manage_network_plugins' ) ) {
+				return new WP_Error( 'pmpro_addon_deactivate_cap', __( 'You do not have permission to deactivate plugins network-wide.', 'paid-memberships-pro' ) );
+			}
+			$network_wide = true;
+		} elseif ( ! current_user_can( 'activate_plugins' ) ) {
+				return new WP_Error( 'pmpro_addon_deactivate_cap', __( 'You do not have permission to deactivate plugins.', 'paid-memberships-pro' ) );
+		}
+
+		$plugin_file = $this->resolve_plugin_file( $slug_or_plugin );
+		if ( is_wp_error( $plugin_file ) ) {
+			return $plugin_file;
+		}
+
+		if ( ! is_plugin_active( $plugin_file ) ) {
+			return array(
+				'success'     => true,
+				'action'      => 'deactivate',
+				'plugin_file' => $plugin_file,
+				'message'     => __( 'Add On already inactive.', 'paid-memberships-pro' ),
+			);
+		}
+
+		deactivate_plugins( array( $plugin_file ), false, $network_wide );
+		if ( is_plugin_active( $plugin_file ) ) {
+			return new WP_Error( 'pmpro_addon_deactivate_failed', __( 'Deactivation failed.', 'paid-memberships-pro' ) );
+		}
+
+		return array(
+			'success'     => true,
+			'action'      => 'deactivate',
+			'plugin_file' => $plugin_file,
+			'message'     => __( 'Add On deactivated.', 'paid-memberships-pro' ),
+		);
+	}
+
+	/**
+	 * Update an Add On.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
+	 * @return array|WP_Error Result array or WP_Error.
+	 */
+	public function update( $slug_or_plugin = '' ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		if ( empty( $slug_or_plugin ) ) {
+			return new WP_Error( 'pmpro_addon_update_invalid', __( 'Invalid Add On.', 'paid-memberships-pro' ) );
+		}
+
+		if ( ! current_user_can( 'update_plugins' ) ) {
+			return new WP_Error( 'pmpro_addon_update_cap', __( 'You do not have permission to update plugins.', 'paid-memberships-pro' ) );
+		}
+
+		$plugin_file = $this->resolve_plugin_file( $slug_or_plugin );
+		if ( is_wp_error( $plugin_file ) ) {
+			return $plugin_file;
+		}
+
+		// License gating when applicable.
+		$slug  = $this->maybe_extract_slug( $slug_or_plugin );
+		$addon = $slug ? $this->get_addon_by_slug( $slug ) : false;
+		if ( ! empty( $addon ) && isset( $addon['License'] ) && pmpro_license_type_is_premium( $addon['License'] ) && ! $this->can_download_addon_with_license( $addon['License'] ) ) {
+			return new WP_Error( 'pmpro_addon_license_required', sprintf( __( 'A valid PMPro %s license is required to update this Add On.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) ) );
+		}
+
+		$fs_ready = $this->ensure_filesystem();
+		if ( is_wp_error( $fs_ready ) ) {
+			return $fs_ready;
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		$skin     = $this->get_upgrader_skin();
+		$upgrader = new Plugin_Upgrader( $skin );
+
+		$result = $upgrader->upgrade( $plugin_file );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+		if ( false === $result ) {
+			return new WP_Error( 'pmpro_addon_update_failed', __( 'Update failed.', 'paid-memberships-pro' ) );
+		}
+
+		return array(
+			'success'     => true,
+			'action'      => 'update',
+			'plugin_file' => $plugin_file,
+			'message'     => __( 'Add On updated.', 'paid-memberships-pro' ),
+		);
+	}
+
+	/**
+	 * Delete (uninstall) an Add On.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
+	 * @param bool   $network_wide   If true in multisite, will deactivate network-wide before deleting.
+	 * @return array|WP_Error Result array or WP_Error.
+	 */
+	public function delete( $slug_or_plugin = '', $network_wide = false ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		if ( empty( $slug_or_plugin ) ) {
+			return new WP_Error( 'pmpro_addon_delete_invalid', __( 'Invalid Add On.', 'paid-memberships-pro' ) );
+		}
+
+		if ( ! current_user_can( 'delete_plugins' ) ) {
+			return new WP_Error( 'pmpro_addon_delete_cap', __( 'You do not have permission to delete plugins.', 'paid-memberships-pro' ) );
+		}
+
+		$plugin_file = $this->resolve_plugin_file( $slug_or_plugin );
+		if ( is_wp_error( $plugin_file ) ) {
+			return $plugin_file;
+		}
+
+		// Deactivate before deleting.
+		if ( is_plugin_active( $plugin_file ) ) {
+			deactivate_plugins( array( $plugin_file ), false, $network_wide );
+		}
+
+		$fs_ready = $this->ensure_filesystem();
+		if ( is_wp_error( $fs_ready ) ) {
+			return $fs_ready;
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		$deleted = delete_plugins( array( $plugin_file ) );
+		if ( is_wp_error( $deleted ) ) {
+			return $deleted;
+		}
+		if ( ! $deleted ) {
+			return new WP_Error( 'pmpro_addon_delete_failed', __( 'Delete failed.', 'paid-memberships-pro' ) );
+		}
+
+		return array(
+			'success'     => true,
+			'action'      => 'delete',
+			'plugin_file' => $plugin_file,
+			'message'     => __( 'Add On deleted.', 'paid-memberships-pro' ),
+		);
+	}
+
+	/**
+	 * Attempt to initialize the WordPress filesystem API for upgrader operations.
+	 * Returns WP_Error when credentials are required and not provided.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return true|WP_Error
+	 */
+	private function ensure_filesystem() {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		// Attempt to initialize using any available method (Direct, etc.).
+		if ( WP_Filesystem() ) {
+			return true;
+		}
+		// If we cannot initialize, credentials are likely required.
+		return new WP_Error( 'pmpro_fs_credentials', __( 'Filesystem credentials are required to continue.', 'paid-memberships-pro' ) );
+	}
+
+	/**
+	 * Get a quiet upgrader skin to capture output nicely for programmatic use.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return Automatic_Upgrader_Skin
+	 */
+	private function get_upgrader_skin() {
+		// Use the core automatic skin to avoid direct output.
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader-skins.php';
+		$args = array(
+			'skip_header' => true,
+			'url'         => admin_url( 'plugins.php' ),
+			'nonce'       => wp_create_nonce( 'updates' ),
+			'title'       => __( 'PMPro Add On Update', 'paid-memberships-pro' ),
+		);
+		return new Automatic_Upgrader_Skin( $args );
+	}
+
+	/**
+	 * Resolve plugin file (folder/file.php) from a slug or plugin identifier.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $slug_or_plugin Slug or plugin file.
+	 * @return string|WP_Error Plugin file or WP_Error if not found.
+	 */
+	private function resolve_plugin_file( $slug_or_plugin ) {
+		$slug_or_plugin = (string) $slug_or_plugin;
+		if ( false !== strpos( $slug_or_plugin, '/' ) && false !== strpos( $slug_or_plugin, '.php' ) ) {
+			return $slug_or_plugin; // Already a plugin file.
+		}
+
+		$slug    = sanitize_key( $slug_or_plugin );
+		$default = $slug . '/' . $slug . '.php';
+		$abs     = WP_PLUGIN_DIR . '/' . $default;
+		if ( file_exists( $abs ) ) {
+			return $default;
+		}
+
+		// Search installed plugins for a folder matching the slug.
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		$installed = array_keys( get_plugins() );
+		foreach ( $installed as $plugin_file ) {
+			if ( 0 === strpos( $plugin_file, $slug . '/' ) ) {
+				return $plugin_file;
+			}
+		}
+
+		return new WP_Error( 'pmpro_plugin_file_not_found', __( 'Plugin file could not be resolved.', 'paid-memberships-pro' ) );
+	}
+
+	/**
+	 * Maybe extract a slug from a slug or plugin file string.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $slug_or_plugin Input string.
+	 * @return string Slug or empty string if not detected.
+	 */
+	private function maybe_extract_slug( $slug_or_plugin ) {
+		$slug_or_plugin = (string) $slug_or_plugin;
+		if ( false !== strpos( $slug_or_plugin, '/' ) ) {
+			list( $slug ) = explode( '/', $slug_or_plugin );
+			return sanitize_key( $slug );
+		}
+		return sanitize_key( $slug_or_plugin );
+	}
+
+	/**
+	 * Get the download/package URL for an Add On by slug.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $slug The Add On slug.
+	 * @return string|WP_Error Package URL or WP_Error.
+	 */
+	private function get_download_package_url( $slug ) {
+		$slug = sanitize_key( $slug );
+		$api  = plugins_api( 'plugin_information', array( 'slug' => $slug ) );
+		if ( is_wp_error( $api ) || empty( $api ) || empty( $api->download_link ) ) {
+			return new WP_Error( 'pmpro_addon_package_missing', __( 'Could not determine download URL for this Add On.', 'paid-memberships-pro' ) );
+		}
+		return esc_url_raw( $api->download_link );
+	}
+
+	/**
+	 * Register AJAX endpoints for add-on operations.
+	 *
+	 * @since 3.2.0
+	 */
+	public function register_ajax_endpoints() {
+		add_action( 'wp_ajax_pmpro_addon_install', array( $this, 'ajax_install_addon' ) );
+		add_action( 'wp_ajax_pmpro_addon_update', array( $this, 'ajax_update_addon' ) );
+		add_action( 'wp_ajax_pmpro_addon_activate', array( $this, 'ajax_activate_addon' ) );
+		add_action( 'wp_ajax_pmpro_addon_deactivate', array( $this, 'ajax_deactivate_addon' ) );
+		add_action( 'wp_ajax_pmpro_addon_delete', array( $this, 'ajax_delete_addon' ) );
+	}
+
+	/**
+	 * AJAX: Install.
+	 */
+	public function ajax_install_addon() {
+		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
+		$slug   = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+		$result = $this->install( $slug );
+		$this->send_ajax_result( $result );
+	}
+
+	/**
+	 * AJAX: Update.
+	 */
+	public function ajax_update_addon() {
+		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
+		$target = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
+		$result = $this->update( $target );
+		$this->send_ajax_result( $result );
+	}
+
+	/**
+	 * AJAX: Activate.
+	 */
+	public function ajax_activate_addon() {
+		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
+		$target       = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
+		$network_wide = ! empty( $_POST['network_wide'] );
+		$result       = $this->activate( $target, $network_wide );
+		$this->send_ajax_result( $result );
+	}
+
+	/**
+	 * AJAX: Deactivate.
+	 */
+	public function ajax_deactivate_addon() {
+		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
+		$target       = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
+		$network_wide = ! empty( $_POST['network_wide'] );
+		$result       = $this->deactivate( $target, $network_wide );
+		$this->send_ajax_result( $result );
+	}
+
+	/**
+	 * AJAX: Delete.
+	 */
+	public function ajax_delete_addon() {
+		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
+		$target       = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
+		$network_wide = ! empty( $_POST['network_wide'] );
+		$result       = $this->delete( $target, $network_wide );
+		$this->send_ajax_result( $result );
+	}
+
+	/**
+	 * Helper to send standardized AJAX responses.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array|WP_Error $result Operation result.
+	 */
+	private function send_ajax_result( $result ) {
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error(
+				array(
+					'code'    => $result->get_error_code(),
+					'message' => $result->get_error_message(),
+				)
+			);
+		}
+		wp_send_json_success( $result );
+	}
 
 
 	/**
@@ -565,7 +1014,7 @@ class PMPro_AddOns {
 		}
 
 		return $addons;
-	}	
+	}
 
 	/**
 	 * Convert the format from get_addons() to that needed for plugins_api
