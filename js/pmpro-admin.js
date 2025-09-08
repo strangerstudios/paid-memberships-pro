@@ -786,6 +786,7 @@ jQuery(document).ready(function () {
 		var button = jQuery(this);
 
 		// Make sure we only run once.
+		button.hasClass('disabled')
 		if (button.hasClass('disabled')) {
 			return;
 		}
@@ -866,6 +867,7 @@ jQuery(document).ready(function () {
 									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val( primaryButtons[i].getAttribute('href') );
 									button.html('Activate');
 									button.removeClass('disabled');
+									button.removeClass('checkmarked');
 								}, 1000);
 								break;
 							}

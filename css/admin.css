@@ -3181,13 +3181,9 @@ tr.pmpro_alert {
 	padding: 8px 5px;
 }
 
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button:hover,
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button:focus {}
-
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button:focus {}
-
 /* Updated icon (check mark). */
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button.checkmarked:before {
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button.checkmarked:before, 
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .add-on-active:not(.add-on-needs-update) .action-button .button:not(.action-link):before {
 	color: #68de7c;
 	content: "\f147";
 	display: inline-block;
@@ -3195,6 +3191,11 @@ tr.pmpro_alert {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	vertical-align: middle;
+}
+
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .add-on-inactive .action-button .button{
+	background-color: #2271B1;
+	color: #FFF;
 }
 
 /**

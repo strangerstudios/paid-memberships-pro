@@ -7,12 +7,12 @@ defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
  */
 class PMPro_AddOns {
 
-	private $addons           = array();
-	private $addons_timestamp = 0;
+	public $addons           = array();
+	public $addons_timestamp = 0;
 
 	public function __construct() {
 		$this->addons           = get_option( 'pmpro_addons', array() );
-		$this->addons_timestamp = get_option( 'pmpro_addons_timestamp', 0 );
+		$this->addons_timestamp = get_option( 'pmpro_addons_timestamp', false );
 
 		add_action( 'admin_init', array( $this, 'admin_hooks' ) );
 
@@ -314,15 +314,16 @@ class PMPro_AddOns {
 		return $addons;
 	}
 
-	public function install_addons(){}
+	public function install(){}
 
-	public function update_addons(){}
+	public function activate(){}
 
-	public function delete_addons(){}
+	public function deactivate(){}
+	
+	public function update(){}
 
-	public function activate_addons(){}
+	public function delete(){}
 
-	public function deactivate_addons(){}
 
 	/**
 	 * Get the Add On icon from the plugin slug.

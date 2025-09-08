@@ -17,14 +17,20 @@
 		$pmpro_license_key = get_option("pmpro_license_key", "");
 		pmpro_license_isValid($pmpro_license_key, NULL, true);
 	}
-	
-	// Get all Add Ons.
+
+	// Add On Manager
 	$addon_manager = new PMPro_AddOns();
 
+	// Get all Add Ons.
 	$addons = $addon_manager->get_addons();
 
+	// Get all Add On Categories.
+	$addon_cats = $addon_manager->get_addon_categories();
+	
+	// Last checked time.
+	$addons_timestamp = $addon_manager->addons_timestamp;
+
 	// Get some other variables.
-	$addons_timestamp = get_option("pmpro_addons_timestamp", false);
 	$plugin_info = get_site_transient( 'update_plugins' );
 	$pmpro_license_key = get_option( 'pmpro_license_key', '' );
 
@@ -36,11 +42,7 @@
 			$all_visible_addons[] = $addon;
 		}
 	}
-
-	// Get all Add On Categories.
-	$addon_cats = $addon_manager->get_addon_categories();
-
-	?>
+?>
 	<hr class="wp-header-end">
 	<div id="pmpro-admin-add-ons">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Add Ons', 'paid-memberships-pro' ); ?></h1>
@@ -58,6 +60,9 @@
 				<li><a data-toggle="view" data-search="view" data-view="popular" href="#popular"><?php esc_html_e( 'Popular', 'paid-memberships-pro' ); ?></a></li>
 				<li><a data-toggle="view" data-search="view" data-view="free" href="#free"><?php esc_html_e( 'Free', 'paid-memberships-pro' ); ?></a></li>
 				<li><a data-toggle="view" data-search="view" data-view="premium" href="#premium"><?php esc_html_e( 'Premium', 'paid-memberships-pro' ); ?></a></li>
+				<li>| <a data-toggle="view" data-search="view" data-view="active" href="#active"><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></a></li>
+				<li><a data-toggle="view" data-search="view" data-view="inactive" href="#inactive"><?php esc_html_e( 'Inactive', 'paid-memberships-pro' ); ?></a></li>
+				<li><a data-toggle="view" data-search="view" data-view="update" href="#update"><?php esc_html_e('Update Available', 'paid-memberships-pro' ); ?></a></li>
 			</ul>
 			<div class="search-form">
 				<label class="screen-reader-text" for="search-plugins"><?php esc_html_e( 'Search Add Ons', 'paid-memberships-pro' ); ?></label>
@@ -150,6 +155,16 @@
 					}
 					if ( pmpro_license_type_is_premium( $addon['License'] ) ) {
 						$views[] = 'premium';
+					}
+					// Mark add-ons that have an update available.
+					if ( ! empty( $addon['needs_update'] ) ) {
+						$views[] = 'update';
+					}
+					// Add status-based views for filtering.
+					if ( $addon['status'] === 'active' ) {
+						$views[] = 'active';
+					} elseif ( $addon['status'] === 'inactive' ) {
+						$views[] = 'inactive';
 					}
 					$view = implode( ' ', array_unique( $views ) );
 				?>
@@ -318,7 +333,7 @@
 									} elseif ( $addon['status'] === 'active' ) {
 										$actions = apply_filters( 'plugin_action_links_' . $plugin_file, array(), $plugin_file, $addon, $addon['status'] );
 										if ( ! empty( $actions ) ) {
-											$action_button = str_replace( '<a ', '<a class="button" ', reset( $actions ) );
+											$action_button = str_replace( '<a ', '<a class="button action-link" ', reset( $actions ) );
 										} else {
 											$action_button['label'] = __( 'Active', 'paid-memberships-pro' );
 											$action_button['style'] .= ' disabled';
@@ -434,7 +449,8 @@
 
 					if ( view_val != '' ) {
 						view_items.hide();
-						$(`[data-search-${view}*="${view_val.toLowerCase()}"]`).show();
+						// Use token match (~=) to avoid partial matches like 'active' matching 'inactive'.
+						$(`[data-search-${view}~="${view_val.toLowerCase()}"]`).show();
 					} else {
 						view_items.show();
 					}
@@ -449,6 +465,40 @@
 				if ($searchInput.val().length > 0) {
 					$searchInput.trigger('keyup');
 				}
+
+				// Update counts for filters and hide Update if none.
+				(function updateFilterCounts(){
+					function setCount($link, count, hideIfZero) {
+						if (!$link.length) { return; }
+						var baseLabel = $link.data('baseLabel');
+						if (!baseLabel) {
+							// Capture the original label (strip any existing count suffix like " (x)").
+							baseLabel = $.trim($link.text()).replace(/\s*\(\d+\)$/, '');
+							$link.data('baseLabel', baseLabel);
+						}
+						$link.text(count > 0 ? baseLabel + ' (' + count + ')' : baseLabel);
+						if (hideIfZero) {
+							$link.closest('li').toggle(count > 0);
+						}
+					}
+
+					var activeCount = $('.add-on-container.add-on-active').length;
+					var inactiveCount = $('.add-on-container.add-on-inactive').length;
+					var updateCount = $('.add-on-container.add-on-needs-update').length;
+
+					setCount($('.filter-links a[data-view="active"]'), activeCount, false);
+					setCount($('.filter-links a[data-view="inactive"]'), inactiveCount, false);
+					setCount($('.filter-links a[data-view="update"]'), updateCount, true);
+
+					// If the Update view is active (or in the URL) but no updates exist, switch to All.
+					if (updateCount === 0) {
+						var $updateLink = $('.filter-links a[data-view="update"]');
+						var updateIsActive = $updateLink.hasClass('current') || window.location.hash === '#update';
+						if (updateIsActive) {
+							$('.filter-links a[data-view="all"]').trigger('click');
+						}
+					}
+				})();
 
 			});
 		</script>
