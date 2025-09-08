@@ -681,6 +681,10 @@ class PMPro_AddOns {
 	 */
 	private function get_download_package_url( $slug ) {
 		$slug = sanitize_key( $slug );
+		// Ensure the plugins_api() function is available (not always loaded during admin-ajax requests).
+		if ( ! function_exists( 'plugins_api' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+		}
 		$api  = plugins_api( 'plugin_information', array( 'slug' => $slug ) );
 		if ( is_wp_error( $api ) || empty( $api ) || empty( $api->download_link ) ) {
 			return new WP_Error( 'pmpro_addon_package_missing', __( 'Could not determine download URL for this Add On.', 'paid-memberships-pro' ) );
@@ -712,7 +716,9 @@ class PMPro_AddOns {
 	}
 
 	/**
-	 * AJAX: Update.
+	 * AJAX: Update Add On
+	 *
+	 * @return void
 	 */
 	public function ajax_update_addon() {
 		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
@@ -722,7 +728,9 @@ class PMPro_AddOns {
 	}
 
 	/**
-	 * AJAX: Activate.
+	 * AJAX: Activate Add On
+	 *
+	 * @return void
 	 */
 	public function ajax_activate_addon() {
 		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
@@ -733,7 +741,9 @@ class PMPro_AddOns {
 	}
 
 	/**
-	 * AJAX: Deactivate.
+	 * AJAX: Deactivate Add On
+	 *
+	 * @return void
 	 */
 	public function ajax_deactivate_addon() {
 		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
@@ -744,7 +754,9 @@ class PMPro_AddOns {
 	}
 
 	/**
-	 * AJAX: Delete.
+	 * AJAX: Delete Add On
+	 *
+	 * @return void
 	 */
 	public function ajax_delete_addon() {
 		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );

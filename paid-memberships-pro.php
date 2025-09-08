@@ -188,6 +188,18 @@ add_action( 'plugins_loaded', function() {
 
 } );
 
+// Add On Management: Ensure AJAX endpoints are available during admin-ajax requests even if no instance has been created.
+add_action( 'init', function () {
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		// If any of our handlers are already present, skip.
+		if ( has_action( 'wp_ajax_pmpro_addon_install' ) ) {
+			return;
+		}
+		( new PMPro_AddOns() )->register_ajax_endpoints();
+	}
+} );
+
+
 /*
 	Setup the DB and check for upgrades
 */

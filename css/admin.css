@@ -3198,6 +3198,16 @@ tr.pmpro_alert {
 	color: #FFF;
 }
 
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .dashicons-admin-generic {
+	color: #888;
+	margin-top: 13px;
+	margin-right: 3px;
+	font-size: 1.2rem;
+	cursor: pointer;
+}
+
+
+
 /**
  * License Settings
  */

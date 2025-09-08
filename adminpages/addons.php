@@ -82,6 +82,7 @@
 		<div id="pmpro-admin-add-ons-list">
 			<div class="list">
 				<?php
+				$pmpro_addons_ajax_nonce = wp_create_nonce( 'pmpro_addons_actions' );
 				$installed_plugins = array_keys( get_plugins() );
 				foreach ( $all_visible_addons as $addon ) {
 					$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
@@ -278,58 +279,40 @@
 										$action_button['label'] = __( 'Update Now', 'paid-memberships-pro' );
 										if ( empty( $addon['access'] ) ) {
 											// Can't update it. Popup.
-											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'license';
-											$action_button['hidden_fields']['pmproAddOnAdminName'] = $addon['ShortName'];
+											$action_button['hidden_fields']['pmproAddOnAdminAction']  = 'license';
+											$action_button['hidden_fields']['pmproAddOnAdminName']    = $addon['ShortName'];
 											$action_button['hidden_fields']['pmproAddOnAdminLicense'] = ucwords( $addon['License' ] );
 										} else {
 											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'update';
-											$action_button['hidden_fields']['pmproAddOnAdminActionUrl'] = wp_nonce_url(
-													self_admin_url(
-														add_query_arg( array(
-															'action' => 'upgrade-plugin',
-															'plugin' => $plugin_file
-														),
-														'update.php'
-													)
-												),
-												'upgrade-plugin_' . $plugin_file
-											);
+											$action_button['hidden_fields']['pmproAddOnAdminTarget'] = $plugin_file;
+											$action_button['hidden_fields']['pmproAddOnAdminNonce']  = $pmpro_addons_ajax_nonce;
+											if ( is_network_admin() ) {
+												$action_button['hidden_fields']['pmproAddOnNetworkWide'] = '1';
+											}
 										}
 									} elseif ( $addon['status'] === 'uninstalled' ) {
 										$action_button['label'] = __( 'Install', 'paid-memberships-pro' );
 										if ( empty( $addon['access'] ) ) {
-											// Can't update it. Popup.
-											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'license';
-											$action_button['hidden_fields']['pmproAddOnAdminName'] = $addon['ShortName'];
+											// Can't install it. Popup.
+											$action_button['hidden_fields']['pmproAddOnAdminAction']  = 'license';
+											$action_button['hidden_fields']['pmproAddOnAdminName']    = $addon['ShortName'];
 											$action_button['hidden_fields']['pmproAddOnAdminLicense'] = ucwords( $addon['License' ] );
 										} else {
 											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'install';
-											$action_button['hidden_fields']['pmproAddOnAdminActionUrl'] = wp_nonce_url(
-												self_admin_url(
-													add_query_arg( array(
-														'action' => 'install-plugin',
-														'plugin' => $addon['Slug']
-													),
-													'update.php'
-													)
-												),
-												'install-plugin_' . $addon['Slug']
-											);
+											$action_button['hidden_fields']['pmproAddOnAdminTarget'] = $addon['Slug'];
+											$action_button['hidden_fields']['pmproAddOnAdminNonce']  = $pmpro_addons_ajax_nonce;
+											if ( is_network_admin() ) {
+												$action_button['hidden_fields']['pmproAddOnNetworkWide'] = '1';
+											}
 										}
 									} elseif ( $addon['status'] === 'inactive' ) {
 										$action_button['label'] = __( 'Activate', 'paid-memberships-pro' );
 										$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'activate';
-										$action_button['hidden_fields']['pmproAddOnAdminActionUrl'] = wp_nonce_url(
-											self_admin_url(
-												add_query_arg( array(
-													'action' => 'activate',
-													'plugin' => $plugin_file
-												),
-												'plugins.php'
-												)
-											),
-											'activate-plugin_' . $plugin_file
-										);
+										$action_button['hidden_fields']['pmproAddOnAdminTarget'] = $plugin_file;
+										$action_button['hidden_fields']['pmproAddOnAdminNonce']  = $pmpro_addons_ajax_nonce;
+										if ( is_network_admin() ) {
+											$action_button['hidden_fields']['pmproAddOnNetworkWide'] = '1';
+										}
 									} elseif ( $addon['status'] === 'active' ) {
 										$actions = apply_filters( 'plugin_action_links_' . $plugin_file, array(), $plugin_file, $addon, $addon['status'] );
 										if ( ! empty( $actions ) ) {

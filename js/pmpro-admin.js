@@ -793,7 +793,7 @@ jQuery(document).ready(function () {
 		button.addClass('disabled');
 
 		// Pull the action that we are performing on this button.
-		var action = button.siblings('input[name="pmproAddOnAdminAction"]').val();
+	var action = button.siblings('input[name="pmproAddOnAdminAction"]').val();
 
 		if ('license' === action) {
 			// Get the add on name and the user's current license type and show banner.
@@ -806,83 +806,92 @@ jQuery(document).ready(function () {
 			// Remove checkmark if there.
 			button.removeClass('checkmarked');
 
-			// Update the button text.            
+			// Update button text
 			if ('activate' === action) {
-				button.html('Activating...');
+				button.text('Activating...');
 			} else if ('install' === action) {
-				button.html('Installing...');
+				button.text('Installing...');
 			} else if ('update' === action) {
-				button.html('Updating...');
+				button.text('Updating...');
+			} else if ('deactivate' === action) {
+				button.text('Deactivating...');
+			} else if ('delete' === action) {
+				button.text('Deleting...');
 			} else {
-				// Invalid action.
 				return;
 			}
 
-			// Run the action.
-			var actionUrl = button.siblings('input[name="pmproAddOnAdminActionUrl"]').val();
-			jQuery.ajax({
-				url: actionUrl,
-				type: 'GET',
-				success: function (response) {
-					// Create an element that we can use jQuery to parse.
-					var responseElement = jQuery('<div></div>').html(response);
+			// Build AJAX payload for new class endpoints
+			var target = button.siblings('input[name="pmproAddOnAdminTarget"]').val();
+			var nonce = button.siblings('input[name="pmproAddOnAdminNonce"]').val();
+			var network_wide = button.siblings('input[name="pmproAddOnNetworkWide"]').val() === '1';
+			var ajaxAction = null;
+			if (action === 'install') ajaxAction = 'pmpro_addon_install';
+			if (action === 'update') ajaxAction = 'pmpro_addon_update';
+			if (action === 'activate') ajaxAction = 'pmpro_addon_activate';
+			if (action === 'deactivate') ajaxAction = 'pmpro_addon_deactivate';
+			if (action === 'delete') ajaxAction = 'pmpro_addon_delete';
 
-					// Check for errors.
-					if ('activate' === action && responseElement.find('#message').hasClass('error')) {
-						button.html('Could not activate.');
-						return;
-					} else if ('install' === action && 0 === responseElement.find('.button-primary').length) {
-						button.html('Could not install.');
-						return;
-					} else if ('update' === action && -1 === responseElement.html().indexOf('<p>' + pmpro.plugin_updated_successfully_text)) {
-						button.html('Could not update.');
-						return;
-					}
-
-					// Add check mark.
-					button.addClass('checkmarked');
-
-					// Show success message.
-					if ('activate' === action) {
-						button.html('Activated');
-					} else if ('install' === action) {
-						button.html('Installed');
-					} else if ('update' === action) {
-						button.html('Updated');
-					}
-
-					// If user just installed, give them the option to activate.
-					// TODO: Also give option to activate after update, but this is harder.
-					if ('install' === action) {
-						// Find the buttons that could be the activate button.
-						var primaryButtons = responseElement.find('.button-primary');
-
-						// Loop through the buttons to find the activate button.
-						for (var i = 0; i < primaryButtons.length; i++) {
-							// If there is a href element beginning with plugins.php?action=activate&plugin=[plugin_slug], then it is very likely the activate button.
-							if ( primaryButtons[i].getAttribute('href') && primaryButtons[i].getAttribute('href').indexOf('plugins.php?action=activate&plugin=') > -1 ) {
-								// Wait 1 second before showing the activate button.
-								setTimeout(function () {
-									button.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
-									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val( primaryButtons[i].getAttribute('href') );
-									button.html('Activate');
-									button.removeClass('disabled');
-									button.removeClass('checkmarked');
-								}, 1000);
-								break;
-							}
+			jQuery.post(ajaxurl, {
+				action: ajaxAction,
+				nonce: nonce,
+				target: target,
+				slug: (action === 'install' ? target : ''),
+				network_wide: network_wide ? 1 : 0
+			}).done(function(resp){
+				if (!resp || !resp.success) {
+					var msg = (resp && resp.data && resp.data.message) ? resp.data.message : 'Action failed.';
+					// Filesystem credentials needed
+					if (resp && resp.data && resp.data.code === 'pmpro_fs_credentials') {
+						button.text('Credentials required...');
+						if (window.wp && wp.updates && wp.updates.maybeRequestFilesystemCredentials) {
+							wp.updates.maybeRequestFilesystemCredentials({});
 						}
+					} else {
+						button.text(msg);
 					}
-				},
-				error: function (response) {
-					if ('activate' === action) {
-						button.html('Could Not Activate.');
-					} else if ('install' === action) {
-						button.html('Could Not Install.');
-					} else if ('update' === action) {
-						button.html('Could Not Update.');
-					}
+					button.removeClass('disabled');
+					return;
 				}
+
+				// Success UI
+				button.addClass('checkmarked');
+				if (action === 'activate') {
+					button.text('Activated');
+				} else if (action === 'install') {
+					button.text('Installed');
+					// Switch to Activate state
+					setTimeout(function(){
+						button.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
+						button.text('Activate');
+						button.removeClass('disabled checkmarked');
+					}, 800);
+					return;
+				} else if (action === 'update') {
+					button.text('Updated');
+				} else if (action === 'deactivate') {
+					button.text('Deactivated');
+				} else if (action === 'delete') {
+					button.text('Deleted');
+				}
+
+				// Re-enable after success for possible further actions
+				setTimeout(function(){
+					button.removeClass('disabled');
+				}, 400);
+			}).fail(function(){
+				if (action === 'activate') {
+					button.text('Could Not Activate.');
+				} else if (action === 'install') {
+					button.text('Could Not Install.');
+				} else if (action === 'update') {
+					button.text('Could Not Update.');
+				} else if (action === 'deactivate') {
+					button.text('Could Not Deactivate.');
+				} else if (action === 'delete') {
+					button.text('Could Not Delete.');
+				}
+				button.removeClass('disabled');
 			});
 
 		}
