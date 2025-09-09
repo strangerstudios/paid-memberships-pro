@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.5.5\n"
+"Project-Id-Version: Paid Memberships Pro 3.5.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-26T18:08:10+00:00\n"
+"POT-Creation-Date: 2025-09-09T17:53:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -16964,6 +16964,7 @@ msgstr "Betalning accepterades."
 #: preheaders/checkout.php:524
 #: preheaders/checkout.php:621
 #: preheaders/checkout.php:636
+#: preheaders/checkout.php:639
 msgid "Unknown error generating account. Please contact us to set up your membership."
 msgstr "Ett okänt fel inträffade när kontot skulle skapas. Kontakta oss för att sätta upp ditt medlemskap."
 
@@ -17087,6 +17088,7 @@ msgstr "VIKTIGT: Något gick fel när ditt medlemskap skulle skapas. Ditt kredit
 #: preheaders/checkout.php:612
 #: preheaders/checkout.php:674
 #: preheaders/checkout.php:689
+#: preheaders/checkout.php:692
 #, php-format
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr "Du måste <a href=\"%s\">installera en betalnings-gateway</a> innan eventuella betalningar kan behandlas."
@@ -17124,6 +17126,7 @@ msgstr "Du måste <a href=\"%s\">installera en betalnings-gateway</a> innan even
 #: preheaders/checkout.php:614
 #: preheaders/checkout.php:676
 #: preheaders/checkout.php:691
+#: preheaders/checkout.php:694
 msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr "En betalningsgateway måste installeras innan eventuella betalningar kan behandlas."
 
@@ -39583,6 +39586,7 @@ msgstr ""
 #: preheaders/checkout.php:598
 #: preheaders/checkout.php:663
 #: preheaders/checkout.php:678
+#: preheaders/checkout.php:681
 msgid "IMPORTANT: Something went wrong while processing your checkout. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
@@ -39590,6 +39594,7 @@ msgstr ""
 #: preheaders/checkout.php:601
 #: preheaders/checkout.php:666
 #: preheaders/checkout.php:681
+#: preheaders/checkout.php:684
 msgid "IMPORTANT: Something went wrong while processing your checkout. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
