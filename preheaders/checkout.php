@@ -631,9 +631,9 @@ if ( $submit && $pmpro_msgt != "pmpro_error" && ! empty( $pmpro_review ) ) {
 		do_action( 'pmpro_checkout_processing_failed', $pmpro_review );
 
 		// Make sure we have an error message.
-                if( ! empty( $pmpro_review->error ) ) {
-                    $pmpro_msg = $pmpro_review->error;
-                }
+		if( ! empty( $pmpro_review->error ) ) {
+			$pmpro_msg = $pmpro_review->error;
+		}
 		
 		if ( empty( $pmpro_msg ) ) {
 			$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
