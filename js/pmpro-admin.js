@@ -1018,56 +1018,60 @@ jQuery(document).ready(function () {
 
 // Add On Action Dropdown (toggle + accessibility)
 jQuery(document).ready(function(){
-	var $doc = jQuery(document);
+		// If we're on the add ons admin page
+	if (jQuery('#pmpro-admin-add-ons-list').length) {
+	
+		var $doc = jQuery(document);
 
-	function closeAllAddonMenus(except){
-		jQuery('#pmpro-admin-add-ons-list .add-on-item .dropdown-arrow').attr('aria-expanded','false');
-		jQuery('#pmpro-admin-add-ons-list .add-on-item .pmpro-add-on-actions-menu').attr('aria-hidden','true');
-		jQuery('#pmpro-admin-add-ons-list .add-on-item').removeClass('is-open');
-		if (except) {
-			except.attr('aria-expanded','true')
-				.closest('.add-on-item').addClass('is-open')
-				.find('.pmpro-add-on-actions-menu').attr('aria-hidden','false');
+		function closeAllAddonMenus(except){
+			jQuery('#pmpro-admin-add-ons-list .add-on-item .dropdown-arrow').attr('aria-expanded','false');
+			jQuery('#pmpro-admin-add-ons-list .add-on-item .pmpro-add-on-actions-menu').attr('aria-hidden','true');
+			jQuery('#pmpro-admin-add-ons-list .add-on-item').removeClass('is-open');
+			if (except) {
+				except.attr('aria-expanded','true')
+					.closest('.add-on-item').addClass('is-open')
+					.find('.pmpro-add-on-actions-menu').attr('aria-hidden','false');
+			}
 		}
+
+		$doc.on('click', '#pmpro-admin-add-ons-list .add-on-item .dropdown-arrow', function(e){
+			e.preventDefault();
+			var $btn = jQuery(this);
+			var isOpen = $btn.attr('aria-expanded') === 'true';
+			if (isOpen) {
+				closeAllAddonMenus();
+			} else {
+				closeAllAddonMenus($btn);
+				// Focus first actionable item for keyboard users
+				setTimeout(function(){
+					var $first = $btn.next('.pmpro-add-on-actions-menu').find('button:not([disabled])').first();
+					if ($first.length) { $first.trigger('focus'); }
+				}, 15);
+			}
+		});
+
+		// Keyboard navigation inside menu
+		$doc.on('keydown', '#pmpro-admin-add-ons-list .pmpro-add-on-actions-menu', function(e){
+			var $items = jQuery(this).find('button:not([disabled])');
+			if (!$items.length) { return; }
+			var idx = $items.index(document.activeElement);
+			if (e.key === 'ArrowDown') { e.preventDefault(); idx = (idx + 1) % $items.length; $items.eq(idx).focus(); }
+			else if (e.key === 'ArrowUp') { e.preventDefault(); idx = (idx - 1 + $items.length) % $items.length; $items.eq(idx).focus(); }
+			else if (e.key === 'Home') { e.preventDefault(); $items.eq(0).focus(); }
+			else if (e.key === 'End') { e.preventDefault(); $items.eq($items.length - 1).focus(); }
+			else if (e.key === 'Escape') { e.preventDefault(); closeAllAddonMenus(); }
+		});
+
+		// Close when clicking outside
+		$doc.on('click', function(e){
+			if (!jQuery(e.target).closest('#pmpro-admin-add-ons-list .add-on-item .pmpro-add-on-actions-menu, #pmpro-admin-add-ons-list .add-on-item .dropdown-arrow').length) {
+				closeAllAddonMenus();
+			}
+		});
+
+		// Close on Escape from anywhere
+		$doc.on('keyup', function(e){ if (e.key === 'Escape') { closeAllAddonMenus(); } });
 	}
-
-	$doc.on('click', '#pmpro-admin-add-ons-list .add-on-item .dropdown-arrow', function(e){
-		e.preventDefault();
-		var $btn = jQuery(this);
-		var isOpen = $btn.attr('aria-expanded') === 'true';
-		if (isOpen) {
-			closeAllAddonMenus();
-		} else {
-			closeAllAddonMenus($btn);
-			// Focus first actionable item for keyboard users
-			setTimeout(function(){
-				var $first = $btn.next('.pmpro-add-on-actions-menu').find('button:not([disabled])').first();
-				if ($first.length) { $first.trigger('focus'); }
-			}, 15);
-		}
-	});
-
-	// Keyboard navigation inside menu
-	$doc.on('keydown', '#pmpro-admin-add-ons-list .pmpro-add-on-actions-menu', function(e){
-		var $items = jQuery(this).find('button:not([disabled])');
-		if (!$items.length) { return; }
-		var idx = $items.index(document.activeElement);
-		if (e.key === 'ArrowDown') { e.preventDefault(); idx = (idx + 1) % $items.length; $items.eq(idx).focus(); }
-		else if (e.key === 'ArrowUp') { e.preventDefault(); idx = (idx - 1 + $items.length) % $items.length; $items.eq(idx).focus(); }
-		else if (e.key === 'Home') { e.preventDefault(); $items.eq(0).focus(); }
-		else if (e.key === 'End') { e.preventDefault(); $items.eq($items.length - 1).focus(); }
-		else if (e.key === 'Escape') { e.preventDefault(); closeAllAddonMenus(); }
-	});
-
-	// Close when clicking outside
-	$doc.on('click', function(e){
-		if (!jQuery(e.target).closest('#pmpro-admin-add-ons-list .add-on-item .pmpro-add-on-actions-menu, #pmpro-admin-add-ons-list .add-on-item .dropdown-arrow').length) {
-			closeAllAddonMenus();
-		}
-	});
-
-	// Close on Escape from anywhere
-	$doc.on('keyup', function(e){ if (e.key === 'Escape') { closeAllAddonMenus(); } });
 });
 
 /**
