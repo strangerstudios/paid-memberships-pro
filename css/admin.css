@@ -3217,30 +3217,7 @@ tr.pmpro_alert {
 	box-shadow: inset 0 0px 8px rgba( 0, 0, 0, 0.1 );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Add On Action Dropdown                                                     */
-/* -------------------------------------------------------------------------- */
-/*
-Expected markup structure (to be implemented in PHP/JS):
-
-<div class="add-on-item ...">
- 	<div class="details">
- 		<button type="button" class="dropdown-arrow" aria-haspopup="true" aria-expanded="false">
- 			<span class="dashicons dashicons-ellipsis"></span>
- 		</button>
- 		<div class="pmpro-add-on-actions-menu" role="menu">
- 			<ul>
- 				<li><button type="button" role="menuitem" class="action-activate">Activate</button></li>
- 				<li><button type="button" role="menuitem" class="action-deactivate">Deactivate</button></li>
- 				<li><button type="button" role="menuitem" class="action-uninstall is-destructive">Uninstall</button></li>
- 			</ul>
- 		</div>
- 	</div>
-</div>
-
-The container may receive a state class (e.g. .is-open) OR the button's aria-expanded
-attribute can be toggled to true. This CSS supports both patterns.
-*/
+/* Add On Action Dropdown */
 
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu {
 	--pmpro-actions-menu-min-width: 140px;
@@ -3389,9 +3366,6 @@ attribute can be toggled to true. This CSS supports both patterns.
 		outline: 1px solid Highlight;
 	}
 }
-
-
-
 
 /**
  * License Settings
