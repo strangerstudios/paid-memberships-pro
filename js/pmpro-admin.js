@@ -771,6 +771,52 @@ jQuery(document).ready(function () {
 	// If we're on the add ons admin page
 	if (jQuery('#pmpro-admin-add-ons-list').length) {
 
+		// Scoped helper object for Add Ons page (keeps readability while avoiding duplication).
+		var pmproAddOnsHelpers = {
+			progressText: {
+				'activate': 'Activating...',
+				'install': 'Installing...',
+				'update': 'Updating...',
+				'deactivate': 'Deactivating...',
+				'delete': 'Deleting...'
+			},
+			failText: {
+				'activate': 'Could Not Activate.',
+				'install': 'Could Not Install.',
+				'update': 'Could Not Update.',
+				'deactivate': 'Could Not Deactivate.',
+				'delete': 'Could Not Delete.'
+			},
+			recountFilters: function(){
+				var activeCount = jQuery('.add-on-container.add-on-active').length;
+				var inactiveCount = jQuery('.add-on-container.add-on-inactive').length;
+				var updateCount = jQuery('.add-on-container.add-on-needs-update').length;
+				function setCount($link, count, hide){
+					if(!$link.length){return;}
+					var baseLabel = $link.data('baseLabel');
+					if(!baseLabel){
+						baseLabel = jQuery.trim($link.text()).replace(/\s*\(\d+\)$/,'');
+						$link.data('baseLabel', baseLabel);
+					}
+					$link.text(count>0? baseLabel+' ('+count+')': baseLabel);
+					if(hide){ $link.closest('li').toggle(count>0); }
+				}
+				setCount(jQuery('.filter-links a[data-view="active"]'), activeCount, false);
+				setCount(jQuery('.filter-links a[data-view="inactive"]'), inactiveCount, false);
+				setCount(jQuery('.filter-links a[data-view="update"]'), updateCount, true);
+				if(updateCount===0){
+					var $updateLink = jQuery('.filter-links a[data-view="update"]');
+					if($updateLink.hasClass('current') || window.location.hash === '#update'){
+						jQuery('.filter-links a[data-view="all"]').trigger('click');
+					}
+				}
+			},
+			applyCurrentFilter: function(){
+				var $current = jQuery('.filter-links a.current');
+				if($current.length){ $current.trigger('click'); }
+			}
+		};
+
 		// Hide the license banner.
 		jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
 			e.preventDefault();
@@ -808,22 +854,15 @@ jQuery(document).ready(function () {
 				return false;
 			}
 
-			// Remove checkmark if there.
+			// Remove checkmark
 			button.removeClass('checkmarked');
 
-			// Update button text (progress states)
-			var progressMap = {
-				'activate': 'Activating...',
-				'install': 'Installing...',
-				'update': 'Updating...',
-				'deactivate': 'Deactivating...',
-				'delete': 'Deleting...'
-			};
-			if (!progressMap[action]) {
+			// Update button text (progress state)
+			if (!pmproAddOnsHelpers.progressText[action]) {
 				button.removeClass('disabled');
 				return;
 			}
-			button.text(progressMap[action]);
+			button.text(pmproAddOnsHelpers.progressText[action]);
 
 			// Build AJAX payload for new class endpoints
 			var target = button.siblings('input[name="pmproAddOnAdminTarget"]').val();
@@ -836,36 +875,7 @@ jQuery(document).ready(function () {
 			if (action === 'deactivate') ajaxAction = 'pmpro_addon_deactivate';
 			if (action === 'delete') ajaxAction = 'pmpro_addon_delete';
 
-			function recountFilters(){
-				var activeCount = jQuery('.add-on-container.add-on-active').length;
-				var inactiveCount = jQuery('.add-on-container.add-on-inactive').length;
-				var updateCount = jQuery('.add-on-container.add-on-needs-update').length;
-				function setCount($link, count, hide){
-					if(!$link.length){return;}
-					var baseLabel = $link.data('baseLabel');
-					if(!baseLabel){
-						baseLabel = jQuery.trim($link.text()).replace(/\s*\(\d+\)$/,'');
-						$link.data('baseLabel', baseLabel);
-					}
-					$link.text(count>0? baseLabel+' ('+count+')': baseLabel);
-					if(hide){ $link.closest('li').toggle(count>0); }
-				}
-				setCount(jQuery('.filter-links a[data-view="active"]'), activeCount, false);
-				setCount(jQuery('.filter-links a[data-view="inactive"]'), inactiveCount, false);
-				setCount(jQuery('.filter-links a[data-view="update"]'), updateCount, true);
-				if(updateCount===0){
-					var $updateLink = jQuery('.filter-links a[data-view="update"]');
-					if($updateLink.hasClass('current') || window.location.hash === '#update'){
-						jQuery('.filter-links a[data-view="all"]').trigger('click');
-					}
-				}
-			}
-
-			function applyCurrentFilter(){
-				var $current = jQuery('.filter-links a.current');
-				if($current.length){ $current.trigger('click'); }
-			}
-
+			// Send AJAX request
 			jQuery.post(ajaxurl, {
 				action: ajaxAction,
 				nonce: nonce,
@@ -994,22 +1004,15 @@ jQuery(document).ready(function () {
 					dropdownMenu.remove();
 				}
 
-				recountFilters();
-				applyCurrentFilter();
+				pmproAddOnsHelpers.recountFilters();
+				pmproAddOnsHelpers.applyCurrentFilter();
 
 				// Re-enable after success for possible further actions (except transient states already swapped)
 				setTimeout(function(){
 					button.removeClass('disabled');
 				}, 400);
 			}).fail(function(){
-				var failMap = {
-					'activate': 'Could Not Activate.',
-					'install': 'Could Not Install.',
-					'update': 'Could Not Update.',
-					'deactivate': 'Could Not Deactivate.',
-					'delete': 'Could Not Delete.'
-				};
-				button.text(failMap[action] || 'Action failed.');
+				button.text(pmproAddOnsHelpers.failText[action] || 'Action failed.');
 				button.removeClass('disabled');
 			});
 		});
