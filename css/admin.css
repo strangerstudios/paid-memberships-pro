@@ -3292,7 +3292,7 @@ tr.pmpro_alert {
 	background: white;
 	border: none;
 	box-shadow: none;
-	color: #1D2327;
+	color: #2271b1;
 	cursor: pointer;
 	display: block;
 	line-height: 1.4;
@@ -3301,11 +3301,8 @@ tr.pmpro_alert {
 }
 
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu button:hover,
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu a:hover,
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu button:focus,
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu a:focus {
 	background: var(--pmpro--color--blue-medium-transparent);
-	color: #2271b1;
 	outline: none;
 }
 

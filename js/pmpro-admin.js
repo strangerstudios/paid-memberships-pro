@@ -814,6 +814,63 @@ jQuery(document).ready(function () {
 			applyCurrentFilter: function(){
 				var $current = jQuery('.filter-links a.current');
 				if($current.length){ $current.trigger('click'); }
+			},
+			// Ensure the actions dropdown exists and reflects current status (installed states only).
+			buildOrUpdateMenu: function(container, status, plugin_file, nonce, network_wide){
+				var $details = container.find('> .add-on-item > .details');
+				if(!$details.length){ return; }
+				var $btn = $details.children('.dropdown-arrow');
+				var $menu = $details.children('.pmpro-add-on-actions-menu');
+				// Only show dropdown for installed plugins (active/inactive).
+				if(status !== 'active' && status !== 'inactive'){
+					$btn.remove();
+					$menu.remove();
+					return;
+				}
+				if(!$btn.length){
+					$btn = jQuery(
+						'<button type="button" class="dropdown-arrow" aria-haspopup="true" aria-expanded="false">\n'
+						+ '\t<span class="screen-reader-text">Toggle actions menu</span>\n'
+						+ '\t<span class="dashicons dashicons-ellipsis"></span>\n'
+						+ '</button>'
+					);
+					$details.prepend($btn);
+				}
+				if(!$menu.length){
+					$menu = jQuery(
+						'<div class="pmpro-add-on-actions-menu" role="menu" aria-hidden="true">\n'
+						+ '\t<ul></ul>\n'
+						+ '</div>'
+					);
+					$btn.after($menu);
+				}
+				// Build menu items
+				var $ul = $menu.children('ul');
+				$ul.empty();
+				// First item: Activate or Deactivate
+				var firstAction = (status === 'inactive') ? 'activate' : 'deactivate';
+				var firstLabel = (status === 'inactive') ? 'Activate' : 'Deactivate';
+				var nwInput = network_wide ? '<input type="hidden" name="pmproAddOnNetworkWide" value="1" />' : '';
+				$ul.append(
+					'<li>'
+					+ '\t<button type="button" role="menuitem" class="pmproAddOnActionButton action-' + firstAction + '">' + firstLabel + '</button>'
+					+ '\t<input type="hidden" name="pmproAddOnAdminAction" value="' + firstAction + '" />'
+					+ '\t<input type="hidden" name="pmproAddOnAdminTarget" value="' + plugin_file + '" />'
+					+ '\t<input type="hidden" name="pmproAddOnAdminNonce" value="' + nonce + '" />'
+					+ nwInput
+					+ '</li>'
+				);
+				// Divider + Uninstall
+				$ul.append('<li class="divider"></li>');
+				$ul.append(
+					'<li>'
+					+ '\t<button type="button" role="menuitem" class="pmproAddOnActionButton action-uninstall is-destructive">Uninstall</button>'
+					+ '\t<input type="hidden" name="pmproAddOnAdminAction" value="delete" />'
+					+ '\t<input type="hidden" name="pmproAddOnAdminTarget" value="' + plugin_file + '" />'
+					+ '\t<input type="hidden" name="pmproAddOnAdminNonce" value="' + nonce + '" />'
+					+ nwInput
+					+ '</li>'
+				);
 			}
 		};
 
@@ -967,6 +1024,8 @@ jQuery(document).ready(function () {
 							mainTargetInput.val(plugin_file);
 						}, 600);
 					}
+					// Ensure actions menu exists/updated now that it's installed.
+					pmproAddOnsHelpers.buildOrUpdateMenu(container, 'inactive', plugin_file, nonce, network_wide);
 					setStatus('inactive', 'Inactive');
 				} else if (action === 'update') {
 					button.text('Updated').addClass('checkmarked');
@@ -994,7 +1053,7 @@ jQuery(document).ready(function () {
 					setStatus('uninstalled', 'Not Installed');
 					if(mainButton.length){
 						setTimeout(function(){
-							mainButton.text('Install').removeClass('disabled checkmarked');
+							mainButton.text('Install').removeClass('disabled checkmarked').removeAttr('disabled').attr('aria-disabled','false');
 							mainActionInput.val('install');
 							mainTargetInput.val(slug); // target is slug for install
 						}, 600);

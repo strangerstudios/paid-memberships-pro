@@ -171,49 +171,48 @@
 				?>
 				<div id="<?php echo esc_attr( $addon['Slug'] ); ?>" class="<?php echo esc_attr( $class ); ?>" data-search-content="<?php echo esc_attr( $addon['Name'] ); ?> <?php echo esc_attr( $addon['Slug'] ); ?> <?php echo esc_attr( $addon['Description'] ); ?> <?php echo esc_attr( $addon['License'] ); ?> <?php echo esc_attr( $view ); ?>" data-search-license="<?php echo esc_attr( $addon['License'] ); ?>" data-search-view="<?php echo esc_attr( $view ); ?>">
 					<div class="add-on-item">
-
 						<div class="details">
-							<?php if ( $addon['status'] !== 'uninstalled' ) { ?>
-								<button type="button" class="dropdown-arrow" aria-haspopup="true" aria-expanded="false">
-									<span class="screen-reader-text"><?php esc_html_e( 'Toggle actions menu', 'paid-memberships-pro' ); ?></span>
-									<span class="dashicons dashicons-ellipsis"></span>
-								</button>
-								<div class="pmpro-add-on-actions-menu" role="menu" aria-hidden="true">
-									<ul>
-										<?php if ( $addon['status'] === 'inactive' ) { ?>
-										<li>
-											<button type="button" role="menuitem" class="pmproAddOnActionButton action-activate">
-												<?php esc_html_e( 'Activate', 'paid-memberships-pro' ); ?>
-											</button>
-											<input type="hidden" name="pmproAddOnAdminAction" value="activate" />
-											<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
-											<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
-											<?php if ( is_network_admin() ) { ?><input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
-										</li>
-										<?php } elseif ( $addon['status'] === 'active' ) { ?>
-										<li>
-											<button type="button" role="menuitem" class="pmproAddOnActionButton action-deactivate">
-												<?php esc_html_e( 'Deactivate', 'paid-memberships-pro' ); ?>
-											</button>
-											<input type="hidden" name="pmproAddOnAdminAction" value="deactivate" />
-											<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
-											<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
-											<?php if ( is_network_admin() ) { ?><input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
-										</li>
-										<?php } ?>
-										<li class="divider"></li>
-										<li>
-											<button type="button" role="menuitem" class="pmproAddOnActionButton action-uninstall is-destructive">
-												<?php esc_html_e( 'Uninstall', 'paid-memberships-pro' ); ?>
-											</button>
-											<input type="hidden" name="pmproAddOnAdminAction" value="delete" />
-											<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
-											<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
-											<?php if ( is_network_admin() ) { ?><input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
-										</li>
-									</ul>
-								</div>
-							<?php } ?>
+								<?php if ( 'uninstalled' !== $addon['status'] ) : ?>
+									<button type="button" class="dropdown-arrow" aria-haspopup="true" aria-expanded="false">
+										<span class="screen-reader-text"><?php esc_html_e( 'Toggle actions menu', 'paid-memberships-pro' ); ?></span>
+										<span class="dashicons dashicons-ellipsis"></span>
+									</button>
+									<div class="pmpro-add-on-actions-menu" role="menu" aria-hidden="true">
+										<ul>
+											<?php if ( $addon['status'] === 'inactive' ) { ?>
+											<li>
+												<button type="button" role="menuitem" class="pmproAddOnActionButton action-activate">
+													<?php esc_html_e( 'Activate', 'paid-memberships-pro' ); ?>
+												</button>
+												<input type="hidden" name="pmproAddOnAdminAction" value="activate" />
+												<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
+												<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
+												<?php if ( is_network_admin() ) { ?><input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
+											</li>
+											<?php } elseif ( $addon['status'] === 'active' ) { ?>
+											<li>
+												<button type="button" role="menuitem" class="pmproAddOnActionButton action-deactivate">
+													<?php esc_html_e( 'Deactivate', 'paid-memberships-pro' ); ?>
+												</button>
+												<input type="hidden" name="pmproAddOnAdminAction" value="deactivate" />
+												<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
+												<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
+												<?php if ( is_network_admin() ) { ?><input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
+											</li>
+											<?php } ?>
+											<li class="divider"></li>
+											<li>
+												<button type="button" role="menuitem" class="pmproAddOnActionButton action-uninstall is-destructive">
+													<?php esc_html_e( 'Uninstall', 'paid-memberships-pro' ); ?>
+												</button>
+												<input type="hidden" name="pmproAddOnAdminAction" value="delete" />
+												<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
+												<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
+												<?php if ( is_network_admin() ) { ?><input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
+											</li>
+										</ul>
+									</div>
+								<?php endif; ?>
 							<?php
 								if ( $addon['License'] === 'wordpress.org' && ! empty( $addon['Author'] && ! in_array( $addon['Author'], array( 'Paid Memberships Pro', 'Stranger Studios' ) ) ) ) {
 									$plugin_link = 'https://wordpress.org/plugins/' . $addon['Slug'];
