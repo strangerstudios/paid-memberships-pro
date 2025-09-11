@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.5.5
+Stable tag: 3.5.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,13 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.5.6 - 2025-09-10 =
+* ENHANCEMENT: Added styles for frontend tables with data filter options. #3482 (@kimcoleman)
+* BUG FIX: Fixed an issue where a generic error message may be shown at checkout instead of the intended error message. #3483 (@JarrydLong)
+* BUG FIX: Fixed an issue where recurring PayPal Express payments would not be recorded in PMPro if the associated subscription did not already have orders present on the site. #3484 (@dparker1005)
+* BUG FIX: Fixed an issue where PayPal subscriptions may remain in "paused" status after being marked as cancelled in PMPro. #3485 (@dparker1005)
+* BUG FIX: Fixed an issue where Stripe application fees could be updated for invoices that did not originate from PMPro subscriptions. #3487 (@dparker1005)
+
 = 3.5.5 - 2025-08-26 =
 * ENHANCEMENT: Improved readability of order notes by adding line breaks before appending data via automated processes. #3480 (@kimcoleman)
 * ENHANCEMENT: Added formatting for the Polish zloty currency. #3478 (@warnaa)
