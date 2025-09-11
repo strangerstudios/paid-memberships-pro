@@ -31,6 +31,12 @@
 	// Get Info.
 	$plugin_info = get_site_transient( 'update_plugins' );
 
+	// Create a nonce for AJAX actions.
+	$pmpro_addons_ajax_nonce = wp_create_nonce( 'pmpro_addons_actions' );
+
+	// Get a list of installed plugins.
+	$installed_plugins = array_keys( get_plugins() );
+
 	// Build array of Visible Add Ons.
 	$all_visible_addons = array();
 	foreach ( $addons as $addon ) {
@@ -79,90 +85,88 @@
 		<div id="pmpro-admin-add-ons-list">
 			<div class="list">
 				<?php
-				$pmpro_addons_ajax_nonce = wp_create_nonce( 'pmpro_addons_actions' );
-				$installed_plugins       = array_keys( get_plugins() );
-				foreach ( $all_visible_addons as $addon ) {
-					$plugin_file     = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
-					$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+					foreach ( $all_visible_addons as $addon ) {
+						$plugin_file     = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
+						$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
 
-					// Check in case the plugin is installed but has a different file name.
-					if ( ! file_exists( $plugin_file_abs ) ) {
-						foreach ( $installed_plugins as $installed_plugin ) {
-							if ( strpos( $installed_plugin, $addon['Slug'] . '/' ) !== false ) {
-								$plugin_file     = $installed_plugin;
-								$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
-								break;
+						// Check in case the plugin is installed but has a different file name.
+						if ( ! file_exists( $plugin_file_abs ) ) {
+							foreach ( $installed_plugins as $installed_plugin ) {
+								if ( strpos( $installed_plugin, $addon['Slug'] . '/' ) !== false ) {
+									$plugin_file     = $installed_plugin;
+									$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+									break;
+								}
 							}
 						}
-					}
 
-					// Make sure plugin value is set.
-					if ( empty( $addon['plugin'] ) ) {
-						$addon['plugin'] = $plugin_file;
-					}
-
-					// Set the src of the icon for this Add On.
-					$addon['plugin_icon_src'] = esc_url( $addon_manager->get_addon_icon( $addon['Slug'] ) );
-
-					if ( empty( $addon['ShortName'] ) ) {
-						$addon['ShortName'] = $addon['Name'];
-					}
-
-					// Set plugin data for whether the plugin needs to be updated.
-					if ( isset( $plugin_info->response[ $plugin_file ] ) ) {
-						$addon['needs_update'] = true;
-					} else {
-						$addon['needs_update'] = false;
-					}
-
-					// Set plugin data for 'status' from active, inactive, and uninstalled.
-					if ( is_plugin_active( $plugin_file ) ) {
-						$addon['status'] = 'active';
-					} elseif ( file_exists( $plugin_file_abs ) ) {
-						$addon['status'] = 'inactive';
-					} else {
-						$addon['status'] = 'uninstalled';
-					}
-
-					// Set plugin data for whether this user can access this Add On.
-					if ( $addon_manager->can_download_addon_with_license( $addon['License'] ) ) {
-						$addon['access'] = true;
-					} else {
-						$addon['access'] = false;
-					}
-
-					// Build the selectors for the Add On in the list.
-					$classes   = array('add-on-container');
-					$classes[] = 'add-on-' . $addon['status'];
-					if ( ! empty( $addon['needs_update'] ) ) {
-						$classes[] = 'add-on-needs-update';
-					}
-					$class = implode( ' ', array_unique( $classes ) );
-
-					// Build the data-view for the Add On in the list.
-					$views   = array('all');
-					foreach ( $addon_cats as $cat => $slugs ) {
-						if ( in_array( $addon['Slug'], $slugs ) ) {
-							$views[] = $cat;
+						// Make sure plugin value is set.
+						if ( empty( $addon['plugin'] ) ) {
+							$addon['plugin'] = $plugin_file;
 						}
-					}
-					if ( in_array( $addon['License'], array( 'free', 'wordpress.org' ) ) ) {
-						$views[] = 'free';
-					}
-					if ( pmpro_license_type_is_premium( $addon['License'] ) ) {
-						$views[] = 'premium';
-					}
-					// Mark add-ons that have an update available.
-					if ( ! empty( $addon['needs_update'] ) ) {
-						$views[] = 'update';
-					}
-					// Add status-based views for filtering.
-					if ( $addon['status'] === 'active' ) {
-						$views[] = 'active';
-					} elseif ( $addon['status'] === 'inactive' ) {
-						$views[] = 'inactive';
-					}
-					$view = implode( ' ', array_unique( $views ) );
+
+						// Set the src of the icon for this Add On.
+						$addon['plugin_icon_src'] = esc_url( $addon_manager->get_addon_icon( $addon['Slug'] ) );
+
+						if ( empty( $addon['ShortName'] ) ) {
+							$addon['ShortName'] = $addon['Name'];
+						}
+
+						// Set plugin data for whether the plugin needs to be updated.
+						if ( isset( $plugin_info->response[ $plugin_file ] ) ) {
+							$addon['needs_update'] = true;
+						} else {
+							$addon['needs_update'] = false;
+						}
+
+						// Set plugin data for 'status' from active, inactive, and uninstalled.
+						if ( is_plugin_active( $plugin_file ) ) {
+							$addon['status'] = 'active';
+						} elseif ( file_exists( $plugin_file_abs ) ) {
+							$addon['status'] = 'inactive';
+						} else {
+							$addon['status'] = 'uninstalled';
+						}
+
+						// Set plugin data for whether this user can access this Add On.
+						if ( $addon_manager->can_download_addon_with_license( $addon['License'] ) ) {
+							$addon['access'] = true;
+						} else {
+							$addon['access'] = false;
+						}
+
+						// Build the selectors for the Add On in the list.
+						$classes   = array('add-on-container');
+						$classes[] = 'add-on-' . $addon['status'];
+						if ( ! empty( $addon['needs_update'] ) ) {
+							$classes[] = 'add-on-needs-update';
+						}
+						$class = implode( ' ', array_unique( $classes ) );
+
+						// Build the data-view for the Add On in the list.
+						$views   = array('all');
+						foreach ( $addon_cats as $cat => $slugs ) {
+							if ( in_array( $addon['Slug'], $slugs ) ) {
+								$views[] = $cat;
+							}
+						}
+						if ( in_array( $addon['License'], array( 'free', 'wordpress.org' ) ) ) {
+							$views[] = 'free';
+						}
+						if ( pmpro_license_type_is_premium( $addon['License'] ) ) {
+							$views[] = 'premium';
+						}
+						// Mark add-ons that have an update available.
+						if ( ! empty( $addon['needs_update'] ) ) {
+							$views[] = 'update';
+						}
+						// Add status-based views for filtering.
+						if ( $addon['status'] === 'active' ) {
+							$views[] = 'active';
+						} elseif ( $addon['status'] === 'inactive' ) {
+							$views[] = 'inactive';
+						}
+						$view = implode( ' ', array_unique( $views ) );
 					?>
 				<div id="<?php echo esc_attr( $addon['Slug'] ); ?>" class="<?php echo esc_attr( $class ); ?>" data-search-content="<?php echo esc_attr( $addon['Name'] ); ?> <?php echo esc_attr( $addon['Slug'] ); ?> <?php echo esc_attr( $addon['Description'] ); ?> <?php echo esc_attr( $addon['License'] ); ?> <?php echo esc_attr( $view ); ?>" data-search-license="<?php echo esc_attr( $addon['License'] ); ?>" data-search-view="<?php echo esc_attr( $view ); ?>">
 					<div class="add-on-item">
@@ -254,7 +258,6 @@
 									}
 									$plugin_meta[] = sprintf( __( 'By %s' ), $author );
 								}
-									// $plugin_meta = apply_filters( 'plugin_row_meta', $plugin_meta, $plugin_file, $addon, $addon['status']);
 									echo implode( ' | ', $plugin_meta ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 								</p>
@@ -263,19 +266,15 @@
 						<div class="actions">
 							<div class="status">
 							<?php
-							if ( $addon['License'] == 'free' ) {
-								$license_label = __( 'Free', 'paid-memberships-pro' );
-							} elseif ( $addon['License'] == 'standard' ) {
-								$license_label = __( 'Standard', 'paid-memberships-pro' );
-							} elseif ( $addon['License'] == 'plus' ) {
-								$license_label = __( 'Plus', 'paid-memberships-pro' );
-							} elseif ( $addon['License'] == 'builder' ) {
-								$license_label = __( 'Builder', 'paid-memberships-pro' );
-							} elseif ( $addon['License'] == 'wordpress.org' ) {
-								$license_label = __( 'Free', 'paid-memberships-pro' );
-							} else {
-								$license_label = false;
-							}
+							$license_labels = array(
+								'free'         => __( 'Free', 'paid-memberships-pro' ),
+								'standard'     => __( 'Standard', 'paid-memberships-pro' ),
+								'plus'         => __( 'Plus', 'paid-memberships-pro' ),
+								'builder'      => __( 'Builder', 'paid-memberships-pro' ),
+								'wordpress.org'=> __( 'Free', 'paid-memberships-pro' ),
+							);
+
+							$license_label = isset( $license_labels[ $addon['License'] ] ) ? $license_labels[ $addon['License'] ] : false;
 							if ( ! empty( $license_label ) ) {
 								?>
 									<p class="add-on-license-type">
