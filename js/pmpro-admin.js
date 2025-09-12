@@ -1003,9 +1003,9 @@ jQuery(document).ready(function () {
 					}
 					setStatus('active', 'Active');
 				} else if (action === 'deactivate') {
-					button.text('Deactivated').addClass('checkmarked');
+					button.text('Deactivated')
 					if(mainButton.length){
-						mainButton.text('Activate').removeClass('disabled').removeAttr('disabled').attr('aria-disabled','false');
+						mainButton.text('Activate').removeClass('disabled').removeAttr('disabled').attr('aria-disabled','false').removeClass('checkmarked');
 						mainActionInput.val('activate');
 						mainTargetInput.val(plugin_file);
 					}
@@ -1015,7 +1015,7 @@ jQuery(document).ready(function () {
 					}
 					setStatus('inactive', 'Inactive');
 				} else if (action === 'install') {
-					button.text('Installed').addClass('checkmarked');
+					button.text('Installed');
 					// After install the plugin is inactive.
 					if(mainButton.length){
 						setTimeout(function(){
@@ -1048,7 +1048,7 @@ jQuery(document).ready(function () {
 						container.data('search-view', parts2.join(' '));
 					}
 				} else if (action === 'delete') {
-					button.text('Deleted').addClass('checkmarked');
+					button.text('Deleted').removeClass('checkmarked');
 					// Switch to uninstalled state
 					setStatus('uninstalled', 'Not Installed');
 					if(mainButton.length){
@@ -1072,7 +1072,7 @@ jQuery(document).ready(function () {
 				}, 400);
 			}).fail(function(){
 				button.text(pmproAddOnsHelpers.failText[action] || 'Action failed.');
-				button.removeClass('disabled');
+				button.removeClass('disabled').removeClass('checkmarked');
 			});
 		});
 	}
