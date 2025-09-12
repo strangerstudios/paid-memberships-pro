@@ -152,6 +152,7 @@ class PMPro_AddOns {
 	public function reset_update_plugins_cache( $old_value, $value ) {
 		delete_option( 'pmpro_addons_timestamp' );
 		delete_site_transient( 'update_themes' );
+		delete_site_transient( 'update_plugins' );
 	}
 
 	/**
@@ -481,7 +482,7 @@ class PMPro_AddOns {
 	/**
 	 * Update an Add On.
 	 *
-	 * @since 3.2.0
+	 * @since TBD
 	 *
 	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
 	 * @return array|WP_Error Result array or WP_Error.
@@ -536,7 +537,7 @@ class PMPro_AddOns {
 	/**
 	 * Delete (uninstall) an Add On.
 	 *
-	 * @since 3.2.0
+	 * @since TBD
 	 *
 	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
 	 * @param bool   $network_wide   If true in multisite, will deactivate network-wide before deleting.
@@ -588,7 +589,7 @@ class PMPro_AddOns {
 	 * Attempt to initialize the WordPress filesystem API for upgrader operations.
 	 * Returns WP_Error when credentials are required and not provided.
 	 *
-	 * @since 3.2.0
+	 * @since TBD
 	 *
 	 * @return true|WP_Error
 	 */
@@ -605,7 +606,7 @@ class PMPro_AddOns {
 	/**
 	 * Get a quiet upgrader skin to capture output nicely for programmatic use.
 	 *
-	 * @since 3.2.0
+	 * @since TBD
 	 *
 	 * @return Automatic_Upgrader_Skin
 	 */
@@ -624,7 +625,7 @@ class PMPro_AddOns {
 	/**
 	 * Resolve plugin file (folder/file.php) from a slug or plugin identifier.
 	 *
-	 * @since 3.2.0
+	 * @since TBD
 	 *
 	 * @param string $slug_or_plugin Slug or plugin file.
 	 * @return string|WP_Error Plugin file or WP_Error if not found.
@@ -657,7 +658,7 @@ class PMPro_AddOns {
 	/**
 	 * Maybe extract a slug from a slug or plugin file string.
 	 *
-	 * @since 3.2.0
+	 * @since TBD
 	 *
 	 * @param string $slug_or_plugin Input string.
 	 * @return string Slug or empty string if not detected.
@@ -674,7 +675,7 @@ class PMPro_AddOns {
 	/**
 	 * Get the download/package URL for an Add On by slug.
 	 *
-	 * @since 3.2.0
+	 * @since TBD
 	 *
 	 * @param string $slug The Add On slug.
 	 * @return string|WP_Error Package URL or WP_Error.
@@ -695,7 +696,7 @@ class PMPro_AddOns {
 	/**
 	 * Register AJAX endpoints for add-on operations.
 	 *
-	 * @since 3.2.0
+	 * @since TBD
 	 */
 	public function register_ajax_endpoints() {
 		add_action( 'wp_ajax_pmpro_addon_install', array( $this, 'ajax_install_addon' ) );
@@ -707,6 +708,9 @@ class PMPro_AddOns {
 
 	/**
 	 * AJAX: Install.
+	 *
+	 * @since TBD
+	 * @return void
 	 */
 	public function ajax_install_addon() {
 		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
@@ -717,6 +721,8 @@ class PMPro_AddOns {
 
 	/**
 	 * AJAX: Update Add On
+	 *
+	 * @since TBD
 	 *
 	 * @return void
 	 */
@@ -729,6 +735,8 @@ class PMPro_AddOns {
 
 	/**
 	 * AJAX: Activate Add On
+	 *
+	 * @since TBD
 	 *
 	 * @return void
 	 */
@@ -743,6 +751,8 @@ class PMPro_AddOns {
 	/**
 	 * AJAX: Deactivate Add On
 	 *
+	 * @since TBD
+	 *
 	 * @return void
 	 */
 	public function ajax_deactivate_addon() {
@@ -755,6 +765,8 @@ class PMPro_AddOns {
 
 	/**
 	 * AJAX: Delete Add On
+	 *
+	 * @since TBD
 	 *
 	 * @return void
 	 */
@@ -769,7 +781,7 @@ class PMPro_AddOns {
 	/**
 	 * Helper to send standardized AJAX responses.
 	 *
-	 * @since 3.2.0
+	 * @since TBD
 	 *
 	 * @param array|WP_Error $result Operation result.
 	 */
