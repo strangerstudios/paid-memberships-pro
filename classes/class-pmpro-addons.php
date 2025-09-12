@@ -141,17 +141,19 @@ class PMPro_AddOns {
 	}
 
 	/**
-	 * Force update of plugin update data when the PMPro License key is updated
+	 * When the PMPro License key changes, bust cached addon/plugin update data.
 	 *
 	 * @since 1.8
 	 *
-	 * @param array  $args  Array of request args.
-	 * @param string $url  The URL to be pinged.
-	 * @return array $args Amended array of request args.
+	 * @param string $old_value Previous license key.
+	 * @param string $value     New license key.
+	 * @return void
 	 */
-	public function reset_update_plugins_cache( $old_value, $value ) {
+	public function reset_update_plugins_cache( $old_value, $value ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		delete_option( 'pmpro_addons_timestamp' );
-		delete_site_transient( 'update_themes' );
+		$this->addons_timestamp = 0; // Keep the in-memory value consistent.
+		// Clear plugin update data so WordPress fetches fresh info next cycle.
+		delete_site_transient( 'update_plugins' );
 	}
 
 	/**
@@ -180,7 +182,7 @@ class PMPro_AddOns {
 	 * @return array $incorrect_folder_names An array of Add Ons with incorrect folder names. The key is the installed folder name, the value is the Add On data.
 	 */
 	public function get_add_ons_with_incorrect_folder_names() {
-		// Make an easily searchable array of installed plugins to reduce computational compexity.
+		// Make an easily searchable array of installed plugins to reduce computational complexity.
 		// The key of the array is the plugin filename, the value is the folder name.
 		$installed_plugins = array();
 		foreach ( get_plugins() as $plugin_name => $plugin_data ) {
@@ -203,7 +205,7 @@ class PMPro_AddOns {
 
 			// Check if the Add On is installed with an incorrect folder name.
 			if ( array_key_exists( $addon_filename, $installed_plugins ) && $addon_folder !== $installed_plugins[ $addon_filename ] ) {
-				// The Add On is installed with the wrong folder nane. Add it to the array.
+				// The Add On is installed with the wrong folder name. Add it to the array.
 				$installed_name                            = $installed_plugins[ $addon_filename ] . '/' . $addon_filename;
 				$incorrect_folder_names[ $installed_name ] = $addon;
 			}
@@ -710,6 +712,9 @@ class PMPro_AddOns {
 	 */
 	public function ajax_install_addon() {
 		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			$this->send_ajax_result( new WP_Error( 'pmpro_addon_install_cap', __( 'You do not have permission to install plugins.', 'paid-memberships-pro' ) ) );
+		}
 		$slug   = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
 		$result = $this->install( $slug );
 		$this->send_ajax_result( $result );
@@ -950,28 +955,22 @@ class PMPro_AddOns {
 	 *              False if the user's license key cannot download it.
 	 */
 	public function can_download_addon_with_license( $addon_license ) {
-		// The wordpress.org and free types can always be downloaded.
-		if ( $addon_license === 'wordpress.org' || $addon_license === 'free' ) {
+		// Always accessible types.
+		if ( in_array( $addon_license, array( 'wordpress.org', 'free' ), true ) ) {
 			return true;
 		}
 
-		// Check premium license types.
-		if ( $addon_license === 'standard' ) {
-			$types_to_check = array( 'standard', 'plus', 'builder' );
-		}
-		if ( $addon_license === 'plus' ) {
-			$types_to_check = array( 'plus', 'builder' );
-		}
-		if ( $addon_license === 'builder' ) {
-			$types_to_check = array( 'builder' );
+		$license_matrix = array(
+			'standard' => array( 'standard', 'plus', 'builder' ),
+			'plus'     => array( 'plus', 'builder' ),
+			'builder'  => array( 'builder' ),
+		);
+
+		if ( ! isset( $license_matrix[ $addon_license ] ) ) {
+			return false; // Unknown license type.
 		}
 
-		// Some unknown license?
-		if ( empty( $types_to_check ) ) {
-			return false;
-		}
-
-		return pmpro_license_isValid( null, $types_to_check );
+		return pmpro_license_isValid( null, $license_matrix[ $addon_license ] );
 	}
 
 	/**
@@ -1001,8 +1000,10 @@ class PMPro_AddOns {
 			pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
 		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
 
-			// Update the timestamp
-			update_option( 'pmpro_addons_timestamp', current_time( 'timestamp' ), 'no' );
+			// Update the timestamp (option + in-memory property for consistency)
+			$timestamp = current_time( 'timestamp' );
+			update_option( 'pmpro_addons_timestamp', $timestamp, 'no' );
+			$this->addons_timestamp = $timestamp;
 
 			$addons = json_decode( wp_remote_retrieve_body( $remote_addons ), true );
 
@@ -1020,8 +1021,9 @@ class PMPro_AddOns {
 			// Sort the addons by short name.
 			array_multisort( $short_names, SORT_ASC, SORT_STRING | SORT_FLAG_CASE, $addons );
 
-			// Update addons in cache.
+			// Update addons in cache and in-memory.
 			update_option( 'pmpro_addons', $addons, 'no' );
+			$this->addons = $addons;
 
 		}
 
