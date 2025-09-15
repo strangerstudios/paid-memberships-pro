@@ -692,7 +692,47 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 	$order_data['tax'] = (! empty($invoice->tax) ? $invoice->tax / $currency_unit_multiplier : 0);
 	$order_data['total'] = (! empty($invoice->total) ? $invoice->total / $currency_unit_multiplier : 0);
 
-	// TODO: Set payment information data.
+	// Set payment information data.
+	// Find the payment intent.
+	$payment_intent_args = array(
+		'id'     => $invoice->payment_intent,
+		'expand' => array(
+			'payment_method',
+			'latest_charge',
+		),
+	);
+	$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
+	// Find the payment method.
+	$payment_method = null;
+	if ( ! empty( $payment_intent->payment_method ) ) {
+		$payment_method = $payment_intent->payment_method;
+	} elseif( ! empty( $payment_intent->latest_charge ) ) {
+		// If we didn't get a payment method, check the charge.
+		$payment_method = $payment_intent->latest_charge->payment_method_details;
+	}
+	if ( ! empty( $payment_method ) ) {		       	
+		$order_data['payment_type'] = 'Stripe - ' . $payment_method->type;
+		if ( ! empty( $payment_method->card ) ) {
+			// Paid with a card, let's update order and user meta with the card info.
+			$order_data['cardtype'] = $payment_method->card->brand;
+			$order_data['accountnumber'] = hideCardNumber( $payment_method->card->last4 );
+			$order_data['expirationmonth'] = $payment_method->card->exp_month;
+			$order_data['expirationyear'] = $payment_method->card->exp_year;
+		}
+		if ( ! empty( $payment_method->billing_details ) && ! empty( $payment_method->billing_details->address ) && ! empty( $payment_method->billing_details->address->line1 ) ) {
+			$order_data['billing'] = new stdClass();
+			$order_data['billing']->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
+			$order_data['billing']->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
+			$order_data['billing']->street2 = empty( $payment_method->billing_details->address->line2 ) ? '' : $payment_method->billing_details->address->line2;
+			$order_data['billing']->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
+			$order_data['billing']->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
+			$order_data['billing']->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
+			$order_data['billing']->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
+			$order_data['billing']->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
+		}
+	} else {
+		$order_data['payment_type'] = 'Stripe';
+	}
 
 	return $order_data;
 }
