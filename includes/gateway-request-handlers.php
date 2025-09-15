@@ -150,7 +150,7 @@ function pmpro_handle_recurring_payment_succeeded_at_gateway( $order_data ) {
 	// Check if we have an existing order for this subscription and payment_transaction_id.
 	$existing_orders = $subscription->get_orders(
 		array(
-			'payment_transaction_id' => isset( $other_order_data['payment_transaction_id'] ) ? $other_order_data['payment_transaction_id'] : '',
+			'payment_transaction_id' => isset( $order_data['payment_transaction_id'] ) ? $order_data['payment_transaction_id'] : '',
 			'limit' => 1,
 		)
 	);
