@@ -17,13 +17,17 @@ function pmpro_report_members_per_level_register( $pmpro_reports ) {
 
 add_filter( 'pmpro_registered_reports', 'pmpro_report_members_per_level_register' );
 
-// Enqueue Google Visualization JS on report page
+// Enqueue Chart.js on report page
 function pmpro_report_members_per_level_init() {
-	if ( is_admin() && ( isset( $_REQUEST['report'] ) && $_REQUEST[ 'report' ] == 'members_per_level' ) || ( isset( $_REQUEST['page'] ) && $_REQUEST[ 'page' ] == 'pmpro-reports' ) ) {
-		wp_enqueue_script( 'corechart', plugins_url( 'js/corechart.js',  plugin_dir_path( __DIR__ ) ) );
+	if ( is_admin() && ( ( isset( $_REQUEST['report'] ) && $_REQUEST[ 'report' ] == 'members_per_level' ) || ( isset( $_REQUEST['page'] ) && $_REQUEST[ 'page' ] == 'pmpro-reports' ) ) ) {
+		// Register Chart.js (CDN) and helper.
+		wp_register_script( 'pmpro-chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js', array(), '4.4.3', true );
+	$pmpro_main = dirname( dirname( dirname( __FILE__ ) ) ) . '/paid-memberships-pro.php';
+		wp_register_script( 'pmpro-reports-charts', plugins_url( 'js/admin-reports-charts.js',  $pmpro_main ), array( 'pmpro-chartjs', 'jquery' ), PMPRO_VERSION, true );
+		wp_enqueue_script( 'pmpro-reports-charts' );
 	}
 }
-add_action("init", "pmpro_report_members_per_level_init");
+add_action( 'init', 'pmpro_report_members_per_level_init' );
 
 // Members Per Level Report Widget on Reports Dashboard
 function pmpro_report_members_per_level_widget() {
@@ -108,32 +112,46 @@ function pmpro_report_draw_active_members_per_level_chart() {
 			}
 		}
 	} ?>
-	<div id="chart_div"></div>
+	<div style="width:100%; min-height: 320px;">
+		<canvas id="pmpro-chart-members-per-level" style="height:320px;"></canvas>
+	</div>
 	<script>
-		// Draw the Members Per Level pie chart.
-		google.charts.load( 'current', {'packages':['corechart']} );
-		google.charts.setOnLoadCallback( drawVisualization );
-		function drawVisualization() {
-			var data_array = [
-				['<?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?>', '<?php esc_html_e( 'Active Members', 'paid-memberships-pro' ); ?>'],
-				<?php foreach ( $cols as $level_name => $active_members ) { ?>
-					[
-						<?php echo wp_json_encode( esc_html( $level_name ) ); ?>,
-						<?php echo intval( $active_members ); ?>,
-					],
+		(function(){
+			function render(){
+				if (!window.pmproCharts) { return; }
+			var labels = [
+				<?php foreach ( $cols as $level_name => $_count ) { ?>
+					<?php echo wp_json_encode( esc_html( $level_name ) ); ?>,
 				<?php } ?>
 			];
-			var data = google.visualization.arrayToDataTable( data_array );
-			var options = {
-				legend: {
-					alignment: 'center',
-					position: 'right',
-					textStyle: {color: '#2D2D2D', fontSize: '14'}
+			var data = [
+				<?php foreach ( $cols as $_name => $active_members ) { ?>
+					<?php echo intval( $active_members ); ?>,
+				<?php } ?>
+			];
+			var colors = (window.pmproCharts && pmproCharts.palette) ? pmproCharts.palette : undefined;
+			var cfg = {
+				type: 'pie',
+				data: {
+					labels: labels,
+					datasets: [{
+						data: data,
+						backgroundColor: colors && colors.length >= data.length ? colors.slice(0, data.length) : undefined
+					}]
 				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: { position: 'right', labels: { color: '#2D2D2D', font: { size: 14 } } }
+					}
+				}
 			};
-			var chart = new google.visualization.PieChart( document.getElementById( 'chart_div' ) );
-			chart.draw( data, options );
-		}
+				pmproCharts.ensure('pmpro-chart-members-per-level', cfg);
+			}
+			if (document.readyState === 'complete') { render(); }
+			else { window.addEventListener('load', render); }
+		})();
 	</script>
 	<?php
 }

@@ -17,10 +17,13 @@ function pmpro_report_memberships_register( $pmpro_reports ) {
 
 add_filter( 'pmpro_registered_reports', 'pmpro_report_memberships_register' );
 
-// queue Google Visualization JS on report page
+// Enqueue Chart.js on report page
 function pmpro_report_memberships_init() {
 	if ( is_admin() && isset( $_REQUEST['report'] ) && $_REQUEST['report'] == 'memberships' && isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-reports' ) {
-		wp_enqueue_script( 'corechart', plugins_url( 'js/corechart.js', plugin_dir_path( __DIR__ ) ) );
+		wp_register_script( 'pmpro-chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js', array(), '4.4.3', true );
+	$pmpro_main = dirname( dirname( dirname( __FILE__ ) ) ) . '/paid-memberships-pro.php';
+		wp_register_script( 'pmpro-reports-charts', plugins_url( 'js/admin-reports-charts.js', $pmpro_main ), array( 'pmpro-chartjs', 'jquery' ), PMPRO_VERSION, true );
+		wp_enqueue_script( 'pmpro-reports-charts' );
 	}
 }
 add_action( 'init', 'pmpro_report_memberships_init' );
@@ -428,8 +431,18 @@ function pmpro_report_memberships_page() {
 		<input type="hidden" name="report" value="memberships" />
 		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Generate Report', 'paid-memberships-pro' ); ?>" />
 	</div> <!-- end pmpro_report-filters -->
-	<div class="pmpro_chart_area">
-		<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
+	<?php
+		// Determine cancellations label based on report type for use below.
+		if ( $type === 'signup_v_cancel' ) {
+			$cancellations_label = __( 'Cancellations', 'paid-memberships-pro' );
+		} elseif ( $type === 'signup_v_expiration' ) {
+			$cancellations_label = __( 'Expirations', 'paid-memberships-pro' );
+		} else {
+			$cancellations_label = __( 'All Cancellations', 'paid-memberships-pro' );
+		}
+	?>
+	<div class="pmpro_chart_area" style="min-height:500px;">
+		<canvas id="pmpro-chart-memberships" style="width: 100%; height: 500px;"></canvas>
 	</div>
 	<script>
 		//update month/year when period dropdown is changed
@@ -464,63 +477,58 @@ function pmpro_report_memberships_page() {
 
 		pmpro_ShowMonthOrYear();
 
-		//draw the chart
-		google.charts.load('current', {'packages':['corechart']});
-		google.charts.setOnLoadCallback(drawVisualization);
-		function drawVisualization() {
-
-			var data = google.visualization.arrayToDataTable([
-				<?php
-				// Get the label for the "cancellations" index.
-				if ( $type === 'signup_v_cancel' ) {
-					$cancellations_label = __( 'Cancellations', 'paid-memberships-pro' );
-				} elseif ( $type === 'signup_v_expiration' ) {
-					$cancellations_label = __( 'Expirations', 'paid-memberships-pro' );
-				} else {
-					$cancellations_label = __( 'All Cancellations', 'paid-memberships-pro' );
-				}
-				?>
-				['<?php echo esc_html( $date_function ); ?>', '<?php echo esc_html( __( 'Signups', 'paid-memberships-pro' ) ) ?>', '<?php echo esc_html( $cancellations_label ); ?>'],
+		(function(){
+			function render(){
+				if (!window.pmproCharts) { return; }
+			// Build labels and series arrays from PHP $dates
+			var labels = [
 				<?php foreach ( $dates as $key => $value ) { ?>
-				['<?php
+					<?php
 					if ( $period == 'monthly' ) {
-						echo esc_html( date_i18n( 'M', mktime( 0, 0, 0, $value->date, 2 ) ) );
+						$label = date_i18n( 'M', mktime( 0, 0, 0, $value->date, 2 ) );
 					} elseif ( $period == 'daily' ) {
-						echo esc_html( $key );
+						$label = $key;
 					} else {
-						echo esc_html( $value->date );
+						$label = $value->date;
 					}
+					echo wp_json_encode( esc_html( $label ) ) . ",\n";
 					?>
-				', <?php echo esc_html( $value->signups ); ?>, <?php echo esc_html( $value->cancellations ); ?>],
 				<?php } ?>
-			]);
+			];
+			var signups = [
+				<?php foreach ( $dates as $key => $value ) { echo intval( $value->signups ) . ",\n"; } ?>
+			];
+			var cancels = [
+				<?php foreach ( $dates as $key => $value ) { echo intval( $value->cancellations ) . ",\n"; } ?>
+			];
 
-			var options = {
-				colors: ['#0099c6', '#dc3912'],
-				chartArea: {width: '90%'},
-				legend: {
-					alignment: 'center',
-					position: 'top',
-					textStyle: {color: '#555555', fontSize: '12', italic: false}
+			var colors = (window.pmproCharts && pmproCharts.palette) ? pmproCharts.palette : ['#0099c6', '#dc3912'];
+			var cfg = {
+				type: 'bar',
+				data: {
+					labels: labels,
+					datasets: [
+						{ label: <?php echo wp_json_encode( esc_html__( 'Signups', 'paid-memberships-pro' ) ); ?>, data: signups, backgroundColor: colors[0] },
+						{ label: <?php echo wp_json_encode( esc_html( $cancellations_label ) ); ?>, data: cancels, backgroundColor: colors[1] }
+					]
 				},
-				hAxis: {
-					title: '<?php echo esc_html( $date_function ); ?>',
-					textStyle: {color: '#555555', fontSize: '12', italic: false},
-					titleTextStyle: {color: '#555555', fontSize: '20', bold: true, italic: false},
-					maxAlternation: 1
-				},
-				vAxis: {
-					format: '0',
-					textStyle: {color: '#555555', fontSize: '12', italic: false},
-				},
-				seriesType: 'bars',
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: { position: 'top', labels: { color: '#555555', font: { size: 12 } } }
+					},
+					scales: {
+						x: { ticks: { color: '#555555' }, title: { display: true, text: <?php echo wp_json_encode( esc_html( $date_function ) ); ?>, color: '#555555', font: { size: 14, weight: 'bold' } } },
+						y: { ticks: { color: '#555555', precision: 0 }, beginAtZero: true }
+					}
+				}
 			};
-
-			<?php if ( $type === 'signup_v_cancel' || $type === 'signup_v_expiration' || $type === 'signup_v_all' ) : // Signups vs. cancellations ?>
-				var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-			<?php endif; ?>
-			chart.draw(data, options);
-		}
+				pmproCharts.ensure('pmpro-chart-memberships', cfg);
+			}
+			if (document.readyState === 'complete') { render(); }
+			else { window.addEventListener('load', render); }
+		})();
 	</script>
 
 	</form>

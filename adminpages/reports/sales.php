@@ -22,15 +22,16 @@ function pmpro_report_sales_register( $pmpro_reports ) {
 
 add_filter( 'pmpro_registered_reports', 'pmpro_report_sales_register' );
 
-//queue Google Visualization JS on report page
-function pmpro_report_sales_init()
-{
+// Enqueue Chart.js on report page
+function pmpro_report_sales_init() {
 	if ( is_admin() && isset( $_REQUEST['report'] ) && $_REQUEST[ 'report' ] == 'sales' && isset( $_REQUEST['page'] ) && $_REQUEST[ 'page' ] == 'pmpro-reports' ) {
-		wp_enqueue_script( 'corechart', plugins_url( 'js/corechart.js',  plugin_dir_path( __DIR__ ) ) );
+		wp_register_script( 'pmpro-chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js', array(), '4.4.3', true );
+	$pmpro_main = dirname( dirname( dirname( __FILE__ ) ) ) . '/paid-memberships-pro.php';
+		wp_register_script( 'pmpro-reports-charts', plugins_url( 'js/admin-reports-charts.js', $pmpro_main ), array( 'pmpro-chartjs', 'jquery' ), PMPRO_VERSION, true );
+		wp_enqueue_script( 'pmpro-reports-charts' );
 	}
-
 }
-add_action("init", "pmpro_report_sales_init");
+add_action( 'init', 'pmpro_report_sales_init' );
 
 //widget
 function pmpro_report_sales_widget() {
@@ -713,7 +714,9 @@ function pmpro_report_sales_page()
 		<input type="submit" class="button button-primary action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div> <!-- end pmpro_report-filters -->
 	<div class="pmpro_chart_area">
-		<div id="chart_div"></div>
+		<div style="width:100%; min-height: 500px;">
+			<canvas id="pmpro-chart-sales" style="height:500px;"></canvas>
+		</div>
 		<div class="pmpro_chart_description"><p><center><em><?php esc_html_e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></em></center></p></div>
 	</div>
 	<script>
@@ -758,81 +761,83 @@ function pmpro_report_sales_page()
 
 		pmpro_ShowMonthOrYear();
 
-		//draw the chart
-		google.charts.load('current', {'packages':['corechart']});
-		google.charts.setOnLoadCallback(drawVisualization);
-		function drawVisualization() {
-			var dataTable = new google.visualization.DataTable();
-			
-			// Date
-			dataTable.addColumn('string', <?php echo wp_json_encode( esc_html( $report_unit ) ); ?>);
+		(function(){
+			function render(){
+				if (!window.pmproCharts) { return; }
+			// Prepare labels and datasets for Chart.js from PHP arrays
+			var labels = [
+				<?php foreach( $google_chart_row_data as $row ){ echo wp_json_encode( esc_html( $row['date'] ) ) . ",\n"; } ?>
+			];
 
-			// Tooltip
-			dataTable.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
-
+			// Build datasets based on $google_chart_column_labels
+			var datasets = [];
 			<?php
-			foreach ( $google_chart_column_labels as $label ) {
-				echo "dataTable.addColumn('number', " . wp_json_encode( esc_html( $label ) ) . ");";
-			} 
+			// Build a JS array of arrays for series values.
+			$series_values = array_fill( 0, count( $google_chart_column_labels ), array() );
+			foreach ( $google_chart_row_data as $row ) {
+				foreach ( $row['data'] as $i => $val ) {
+					$series_values[$i][] = is_numeric( $val ) ? $val : 0;
+				}
+			}
+			// Emit JS for datasets
+			foreach ( $google_chart_column_labels as $i => $label ) {
+				$values_js = wp_json_encode( array_map( 'floatval', $series_values[$i] ) );
+				// Try to map styles; if stacked new/renewals we keep bars; last dataset may be average line.
+				$is_average = ( false !== stripos( $label, 'Average' ) );
+				echo "datasets.push({ label: " . wp_json_encode( esc_html( $label ) ) . ", data: $values_js, type: '" . ( $is_average ? 'line' : 'bar' ) . "' });\n";
+			}
 			?>
 
-			dataTable.addRows([
-				<?php foreach( $google_chart_row_data as $chart_row_data ) { ?>
-					[
-						<?php echo wp_json_encode( esc_html( $chart_row_data['date'] ) ); ?>,
-						<?php echo wp_json_encode( wp_kses( $chart_row_data['tooltip'], 'post' ) ); ?>,
-						<?php
-						echo esc_html( implode( ',', $chart_row_data['data'] ) . ',' );
-						?>
-					],
-				<?php } ?>
-			]);
+			// Colors and styling
+			var palette = (window.pmproCharts && pmproCharts.palette) ? pmproCharts.palette : undefined;
+			datasets = datasets.map(function(ds, idx){
+				if (ds.type === 'line') {
+					ds.borderColor = (palette && palette[idx]) || '#666';
+					ds.backgroundColor = ds.borderColor;
+					ds.fill = false; ds.tension = 0; ds.pointRadius = 0; ds.borderWidth = 2;
+				} else {
+					ds.backgroundColor = (palette && palette[idx]) || undefined;
+					ds.borderWidth = 0;
+				}
+				return ds;
+			});
 
-			<?php
-			// Set the series data.
-			?>
-			var options = {
-				title: pmpro_report_title_sales(),
-				titlePosition: 'top',
-				titleTextStyle: {
-					color: '#555555',
-				},
-				legend: {position: 'bottom'},
-				chartArea: {
-					width: '90%',
-				},
-				focusTarget: 'category',
-				tooltip: {
-					isHtml: true
-				},
-				hAxis: {
-					textStyle: {
-						color: '#555555',
-						fontSize: '12',
-						italic: false,
+			var stacked = <?php echo $new_renewals === 'new_renewals' ? 'true' : 'false'; ?>;
+			var isSalesCount = <?php echo $type === 'sales' ? 'true' : 'false'; ?>;
+			var currencySymbol = <?php echo wp_json_encode( $pmpro_currency_symbol ?? '' ); ?>;
+			var title = pmpro_report_title_sales();
+
+			var cfg = {
+				type: 'bar',
+				data: { labels: labels, datasets: datasets },
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: { position: 'bottom' },
+						title: { display: !!title, text: title, color: '#555555' },
+						tooltip: {
+							callbacks: {
+								label: function(ctx){
+									var v = ctx.parsed.y;
+									if (isNaN(v)) return '';
+									return ' ' + ctx.dataset.label + ': ' + (isSalesCount ? (window.pmproCharts ? pmproCharts.formatNumber(v) : v) : (window.pmproCharts ? pmproCharts.formatCurrency(v, currencySymbol) : (currencySymbol + v)));
+								}
+							}
+						}
 					},
-				},
-				vAxis: {
-					<?php if ( $type === 'sales') { ?>
-						format: '0',
-					<?php } ?>
-					textStyle: {
-						color: '#555555',
-						fontSize: '12',
-						italic: false,
-					},
-				},
-				seriesType: 'bars',
-				series: <?php echo wp_json_encode( $google_chart_series_styles ); ?>,
-				<?php if ( $new_renewals === 'new_renewals' ) { ?>
-					isStacked: true,
-				<?php } ?>
+					scales: {
+						x: { stacked: stacked, ticks: { color: '#555' } },
+						y: { stacked: stacked, beginAtZero: true, ticks: { color: '#555', callback: function(value){ return isSalesCount ? (window.pmproCharts ? pmproCharts.formatNumber(value) : value) : (window.pmproCharts ? pmproCharts.formatCurrency(value, currencySymbol) : (currencySymbol + value)); } } }
+					}
+				}
 			};
 
-			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-			view = new google.visualization.DataView(dataTable);
-			chart.draw(view, options);
-		}
+				pmproCharts.ensure('pmpro-chart-sales', cfg);
+			}
+			if (document.readyState === 'complete') { render(); }
+			else { window.addEventListener('load', render); }
+		})();
 
 		function createCustomHTMLContent(period, renewals = false, notRenewals = false, total = false, compare = false, compare_new = false, compare_renewal = false) {
 
