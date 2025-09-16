@@ -7,8 +7,29 @@ defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
  */
 class PMPro_AddOns {
 
+	/**
+	 * Array of Add Ons.
+	 *
+	 * @since 1.8
+	 * @var array
+	 */
 	public $addons           = array();
+
+	/**
+	 * Timestamp of last Add Ons check.
+	 *
+	 * @since TBD
+	 * @var int
+	 */
 	public $addons_timestamp = 0;
+	
+	/**
+	 * Cache of plugin information to reduce calls to get_plugins().
+	 *
+	 * @since TBD
+	 * @var array|null
+	 */
+	private $cached_plugins = null;
 
 	public function __construct() {
 		$this->addons           = get_option( 'pmpro_addons', array() );
@@ -184,7 +205,11 @@ class PMPro_AddOns {
 		// Make an easily searchable array of installed plugins to reduce computational compexity.
 		// The key of the array is the plugin filename, the value is the folder name.
 		$installed_plugins = array();
-		foreach ( get_plugins() as $plugin_name => $plugin_data ) {
+		
+		// Get the cached list of installed plugins.
+		$cached_plugins = $this->get_installed_plugins();
+
+		foreach ( $cached_plugins as $plugin_name => $plugin_data ) {
 			// Skip plugins that are not in a folder.
 			if ( false === strpos( $plugin_name, '/' ) ) {
 				continue;
@@ -645,7 +670,7 @@ class PMPro_AddOns {
 
 		// Search installed plugins for a folder matching the slug.
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		$installed = array_keys( get_plugins() );
+		$installed = array_keys( $this->get_installed_plugins() );
 		foreach ( $installed as $plugin_file ) {
 			if ( 0 === strpos( $plugin_file, $slug . '/' ) ) {
 				return $plugin_file;
@@ -1011,6 +1036,8 @@ class PMPro_AddOns {
 		// Check for errors and if we're okay, save the addons formatted
 		if ( is_wp_error( $remote_addons ) ) {
 			pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
+			// Return cached addons if available
+      		return $this->addons ?: array();
 		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
 
 			// Update the timestamp
@@ -1034,7 +1061,6 @@ class PMPro_AddOns {
 
 			// Update addons in cache.
 			update_option( 'pmpro_addons', $addons, 'no' );
-
 		}
 
 		return $addons;
@@ -1099,4 +1125,18 @@ class PMPro_AddOns {
 
 		return $api;
 	}
+
+	/**
+	 * Get installed plugins with caching.
+	 *
+	 * @since TBD
+	 *
+	 * @return array Installed plugins.
+	 */
+	private function get_installed_plugins() {
+    if ( null === $this->cached_plugins ) {
+        $this->cached_plugins = get_plugins();
+    }
+    return $this->cached_plugins;
+}
 }
