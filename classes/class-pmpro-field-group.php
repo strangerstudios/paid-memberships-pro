@@ -54,7 +54,7 @@ class PMPro_Field_Group {
 	/**
 	 * Add a field group.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param string $name        The name of the field group.
 	 * @param string|null $label  The label for the field group. If NULL, a cleaned version of the name will be used.
@@ -77,7 +77,7 @@ class PMPro_Field_Group {
 		// If no label is provided, use the name.
 		if ( empty( $label ) ) {
 			if ( $name === 'checkout_boxes' ) {
-				apply_filters( 'pmpro_default_field_group_label', __( 'More Information','paid-memberships-pro' ) );
+				apply_filters( 'pmpro_default_field_group_label', esc_html__( 'More Information','paid-memberships-pro' ) );
 			} else {
 				$label = ucwords( str_replace( '_', ' ', $name ) );
 			}
@@ -95,7 +95,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get all added field groups.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array An array of PMPro_Field_Group objects.
 	 */
@@ -112,7 +112,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get an added field group by name.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param string $name The name of the field group.
 	 * @return PMPro_Field_Group The field group object.
@@ -133,7 +133,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get the field group for a field.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param PMPro_Field $field The field object.
 	 * @return PMPro_Field_Group|null The field group object, or NULL if the field is not in a group.
@@ -160,7 +160,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get a field by name.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param string $name The name of the field.
 	 * @return PMPro_Field|null The field object, or NULL if the field is not in a group.
@@ -184,7 +184,7 @@ class PMPro_Field_Group {
 	/**
 	 * Add a field to this field group.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param PMPro_Field $field The field object to add.
 	 * @return bool True if the field was added, otherwise false.
@@ -224,7 +224,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get all fields in this field group.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @return array An array of PMPro_Field objects.
 	 */
@@ -244,7 +244,7 @@ class PMPro_Field_Group {
 	/**
 	 * Get all fields to display in a specific context.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param array $args The arguments for getting the fields.
 	 */
@@ -261,6 +261,15 @@ class PMPro_Field_Group {
 		// Get the user ID.
 		$user_id = empty( $args['user_id'] ) ? get_current_user_id() : $args['user_id'];
 
+		// Get the checkout level if this is the checkout scope.
+		if ( 'checkout' === $args['scope'] ) {
+			$checkout_level = pmpro_getLevelAtCheckout();
+			if ( empty( $checkout_level->id ) ) {
+				// If we don't have a checkout level, we can't show any fields.
+				return array();
+			}
+		}
+
 		// Get a list of the fields that should be displayed.
 		$fields_to_display = array();
 		foreach ( $fields as $field ) {
@@ -273,13 +282,7 @@ class PMPro_Field_Group {
 				}
 
 				// Check if this field is for the level being purchased.
-				// Get the checkout level.
-				$checkout_level = pmpro_getLevelAtCheckout();
-				$chekcout_level_id = ! empty( $checkout_level->id ) ? (int)$checkout_level->id : NULL;
-				if ( empty( $chekcout_level_id ) ) {
-					continue;
-				}
-				if ( ! empty( $field->levels ) && ! in_array( (int) $chekcout_level_id, $field->levels, true ) ) {
+				if ( ! empty( $field->levels ) && ! in_array( (int) $checkout_level->id, $field->levels, true ) ) {
 					continue;
 				}
 			} else {
@@ -310,7 +313,7 @@ class PMPro_Field_Group {
 	/**
 	 * Display the field group.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param array $args The arguments for displaying the fields.
 	 */
@@ -449,6 +452,10 @@ class PMPro_Field_Group {
 				$field->divclass .= "pmpro_form_field pmpro_form_field-" . $field->type;
 				$field->class .= " pmpro_form_input-" . $field->type;
 
+				// Add a class to the field based on the id.
+				$field->divclass .= " pmpro_form_field-" . $field->id;
+				$field->class .= " pmpro_form_input-" . $field->id;
+
 				// Add the required class to field.
 				if ( ! empty( $args['show_required'] ) && ! empty( $field->required ) ) {
 					$field->divclass .= " pmpro_form_field-required";
@@ -461,8 +468,8 @@ class PMPro_Field_Group {
 				}
 
 				// Run the class through the filter.
-				$field->divclass = pmpro_get_element_class( $field->divclass );
-				$field->class = pmpro_get_element_class( $field->class );
+				$field->divclass = pmpro_get_element_class( $field->divclass, $field->id );
+				$field->class = pmpro_get_element_class( $field->class, $field->id );
 
 				?>
 				<div id="<?php echo esc_attr( $field->id );?>_div" <?php if ( ! empty( $field->divclass ) ) { echo 'class="' . esc_attr( $field->divclass ) . '"'; } ?>>
@@ -516,7 +523,7 @@ class PMPro_Field_Group {
 	/**
 	 * Save fields in a specific context.
 	 *
-	 * @since TBD
+	 * @since 3.4
 	 *
 	 * @param array $args The arguments for saving the fields.
 	 * @return bool True if the fields were saved, otherwise false.

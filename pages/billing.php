@@ -1,19 +1,19 @@
 <?php
 /**
  * Template: Billing
- * Version: 3.1.2
+ * Version: 3.4
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.1.2
+ * @version 3.4
  *
  * @author Paid Memberships Pro
  */
 ?>
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 <?php
-	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link, $pmpro_billing_subscription, $pmpro_billing_level;
+	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $pmpro_billing_subscription, $pmpro_billing_level;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bemail, $bconfirmemail, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	/**
@@ -151,15 +151,6 @@
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ); ?>">
 						<?php echo wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ); ?>
 					</div>
-				</div> <!-- end pmpro_card_content -->
-			</div> <!-- end pmpro_card -->
-		<?php } elseif ( $show_paypal_link ) { ?>
-			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
-				<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>">
-					<?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?>
-				</h2>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-					<p><?php echo wp_kses( __('Your payment subscription is managed by PayPal. Please <a href="https://www.paypal.com">login to PayPal here</a> to update your billing information.', 'paid-memberships-pro' ), array( 'a' => array( 'href' => array() ) ) );?></p>
 				</div> <!-- end pmpro_card_content -->
 			</div> <!-- end pmpro_card -->
 		<?php } elseif ( $gateway != $default_gateway ) {

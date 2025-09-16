@@ -206,4 +206,141 @@
 			// Update the subscription.
 			$subscription->set( $update_array );
 		}
+
+		/**
+		 * Check whether the payment for a token order has been completed. If so, process the order.
+		 *
+		 * @param MemberOrder $order The order object to check.
+		 * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+		 */
+		function check_token_order( $order ) {
+			return __( 'Checking token orders is not supported for this gateway.', 'paid-memberships-pro' );
+		}
+
+		/**
+		 * Show the settings fields for this gateway.
+		 *
+		 * Each gateway class should override this method. For backwards compatibility, if this
+		 * method is not overriden, we will find the method hooked into pmpro_payment_option_fields
+		 * and use that instead.
+		 *
+		 * @since 3.5
+		 */
+		public static function show_settings_fields() {
+			global $wp_filter;
+
+			// Make sure the filter exists.
+			if ( empty( $wp_filter['pmpro_payment_option_fields']->callbacks ) ) {
+				return;
+			}
+
+			// Get the name of the gateway class.
+			$gateway_class = get_called_class();
+
+			// Try to get the gateway name. It should be everything after PMProGateway_.
+			$gateway_name = str_replace( 'PMProGateway_', '', $gateway_class );
+
+			// Try to get the legacy gateway options.
+			$gateway_option_keys = self::get_legacy_gateway_options();
+			$gateway_options = array();
+			foreach ( $gateway_option_keys as $key ) {
+				$gateway_options[ $key ] = get_option( 'pmpro_' . $key );
+			}
+
+
+			// Loop through all the filters for pmpro_payment_option_fields and see if any are for this gateway.
+			foreach( $wp_filter['pmpro_payment_option_fields']->callbacks as $priority => $filters ) {
+				foreach ( $filters as $filter ) {
+					if ( is_array( $filter['function'] ) && $gateway_class == $filter['function'][0] ) {
+						// This gateway has hooked into pmpro_payment_option_fields. Use that method instead.
+						?>
+						<table class="form-table">
+							<tbody>
+								<?php
+								call_user_func( $filter['function'], $gateway_options, $gateway_name );
+								?>
+							</tbody>
+						</table>
+						<script>
+							// Show the settings for this gateway.
+							jQuery(document).ready(function() {
+								jQuery('.gateway_<?php echo esc_js( $gateway_name ); ?>').show();
+								jQuery('.gateway_<?php echo esc_js( strtolower( $gateway_name ) ); ?>').show();
+							});
+						</script>
+						<?php
+						return;
+					}
+				}
+			}
+		}
+
+		/**
+		 * Save the settings for this gateway.
+		 *
+		 * Each gateway class should override this method. For backwards compatibility, if this
+		 * method is not overriden, we will get the list of options that need to be saved and
+		 * save them.
+		 *
+		 * @since 3.5
+		 */
+		public static function save_settings_fields() {
+			// Get the legacy gateway options to save.
+			$options_to_save = self::get_legacy_gateway_options();
+
+			// Loop through the options and save them.
+			foreach ( $options_to_save as $option ) {
+				pmpro_setOption( $option );
+			}
+		}
+
+		/**
+		 * Helper function to get the legacy gateway option values.
+		 *
+		 * @since 3.5
+		 *
+		 * @return array The legacy gateway options.
+		 */
+		private static function get_legacy_gateway_options() {
+			global $wp_filter;
+
+			// The options were defined using the pmpro_payment_options filter.
+			// Make sure the filter exists.
+			if ( empty( $wp_filter['pmpro_payment_options']->callbacks ) ) {
+				return array();
+			}
+
+			// Loop through all the filters for pmpro_payment_options and see if any are for this gateway.
+			$gateway_options = array();
+			foreach( $wp_filter['pmpro_payment_options']->callbacks as $priority => $filters ) {
+				foreach ( $filters as $filter ) {
+					if ( is_array( $filter['function'] ) && get_called_class() == $filter['function'][0] ) {
+						// This gateway has hooked into pmpro_payment_options. Use that method instead.
+						$gateway_options = call_user_func( $filter['function'], $gateway_options );
+					}
+				}
+			}
+
+			// Remove any options that are global for all gateways.
+			$options_to_remove = array(
+				'gateway_environment',
+				'currency',
+				'tax_state',
+				'tax_rate',
+				'instructions',
+			);
+			$gateway_options = array_diff( $gateway_options, $options_to_remove );
+			return $gateway_options;
+		}
+
+		/**
+		 * Get a description for this gateway.
+		 *
+		 * @since 3.5
+		 *
+		 * @return string The description for this gateway.
+		 */
+		public static function get_description_for_gateway_settings() {
+			return esc_html__( '&#8212;', 'paid-memberships-pro' );
+		}
 	}

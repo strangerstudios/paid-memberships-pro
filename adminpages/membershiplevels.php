@@ -176,18 +176,21 @@
 		}
 
 		// For each group, make sure that each level in the group still exists. If not, remove the link.
-		foreach ( $level_groups as $level_group ) {
-			$group_level_ids = pmpro_get_level_ids_for_group( $level_group->id );
-			foreach ( $group_level_ids as $group_level_id ) {
-				$level_exists = false;
-				foreach ( $reordered_levels as $reordered_level ) {
-					if ( $group_level_id === $reordered_level->id ) {
-						$level_exists = true;
-						break;
+		// We only want to do this if we are not searching for specific levels, otherwise $reordered_levels may not contain all levels.
+		if ( empty( $s) ) {
+			foreach ( $level_groups as $level_group ) {
+				$group_level_ids = pmpro_get_level_ids_for_group( $level_group->id );
+				foreach ( $group_level_ids as $group_level_id ) {
+					$level_exists = false;
+					foreach ( $reordered_levels as $reordered_level ) {
+						if ( $group_level_id === $reordered_level->id ) {
+							$level_exists = true;
+							break;
+						}
 					}
-				}
-				if ( ! $level_exists ) {
-					$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = %d AND `level` = %d", $level_group->id, $group_level_id ) );
+					if ( ! $level_exists ) {
+						$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = %d AND `level` = %d", $level_group->id, $group_level_id ) );
+					}
 				}
 			}
 		}
@@ -394,7 +397,7 @@
 												$delete_text = esc_html(
 													sprintf(
 														// translators: %s is the Level Name.
-														__( "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active.", 'paid-memberships-pro' ),
+														__( "Are you sure you want to delete membership level %s? All payment subscriptions for this level will be cancelled.", 'paid-memberships-pro' ),
 														$level->name
 													)
 												);

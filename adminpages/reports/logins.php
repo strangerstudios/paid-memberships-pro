@@ -169,7 +169,7 @@ function pmpro_report_login_page()
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
 		<div class="tablenav top">
-			<label for="l"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
+			<label for="l" class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
 			<select id="l" name="l" onchange="jQuery('#visits-views-logins-form').trigger('submit');" aria-label="<?php esc_attr_e( 'Select a membership level to customize this report', 'paid-memberships-pro' ); ?>">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
 				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
@@ -185,7 +185,6 @@ function pmpro_report_login_page()
 					}
 				?>
 			</select>
-			<br class="clear" />
 		</div> <!-- end tablenav -->
 	</div> <!-- end pmpro_report-filters -->
 	<?php if ( $theusers ) { ?>
@@ -298,7 +297,7 @@ function pmpro_report_login_page()
 	<div class="tablenav bottom">
 		<div class="tablenav-pages">
 			<?php
-				echo wp_kses_post( pmpro_getPaginationString($pn, $totalrows, $limit, 1, admin_url( "admin.php?page=pmpro-reports&report=login&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=") );
+				echo wp_kses_post( pmpro_getPaginationString($pn, $totalrows, $limit, 1, admin_url( "admin.php?page=pmpro-reports&report=login&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=", __( 'Logins Report Pagination', 'paid-memberships-pro' ) ) );
 			?>
 		</div>
 	</div>

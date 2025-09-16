@@ -99,10 +99,12 @@ jQuery(document).on('click', function (e) {
 jQuery(document).ready(function () {
 	jQuery(document).on('click', '.pmpro-notice-button.notice-dismiss', function () {
 		var notification_id = jQuery(this).val();
+		var nonce = jQuery(this).data('nonce');
 
 		var postData = {
 			action: 'pmpro_hide_notice',
-			notification_id: notification_id
+			notification_id: notification_id,
+			nonce: nonce
 		}
 
 		jQuery.ajax({
@@ -268,6 +270,20 @@ function pmpro_userfields_prep_click_events() {
 		jQuery('.field_type_' + field_type).show();
 	}
 	update_userfield_type_fields();
+
+	// Toggle required at checkout field settings based on group settings.
+	jQuery('select[name="pmpro_userfields_group_checkout"]').unbind('change').on('change', function () {
+		var groupContainer = jQuery(this).closest('.pmpro_userfield-inside');
+		var fieldSettings = groupContainer.find('.pmpro_userfield-group-fields');
+		var requiredFields = fieldSettings.find('#pmpro_userfield-field-setting_required');
+
+		// Toggle visibility based on group setting.
+		if (jQuery(this).val() === 'yes') {
+			requiredFields.show();
+		} else {
+			requiredFields.hide();
+		}
+	}).trigger('change');
 
 	// Toggle field settings based on type.
 	jQuery('.pmpro_admin-pmpro-userfields select[name=type]').on('change', function (event) {
@@ -561,18 +577,21 @@ jQuery(document).ready(function () {
 					// If user just installed, give them the option to activate.
 					// TODO: Also give option to activate after update, but this is harder.
 					if ('install' === action) {
+						// Find the buttons that could be the activate button.
 						var primaryButtons = responseElement.find('.button-primary');
-						if (primaryButtons.length > 0) {
-							var activateButton = primaryButtons[0];
-							var activateButtonHref = activateButton.getAttribute('href');
-							if (activateButtonHref) {
+
+						// Loop through the buttons to find the activate button.
+						for (var i = 0; i < primaryButtons.length; i++) {
+							// If there is a href element beginning with plugins.php?action=activate&plugin=[plugin_slug], then it is very likely the activate button.
+							if ( primaryButtons[i].getAttribute('href') && primaryButtons[i].getAttribute('href').indexOf('plugins.php?action=activate&plugin=') > -1 ) {
 								// Wait 1 second before showing the activate button.
 								setTimeout(function () {
 									button.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
-									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val(activateButtonHref);
+									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val( primaryButtons[i].getAttribute('href') );
 									button.html('Activate');
 									button.removeClass('disabled');
 								}, 1000);
+								break;
 							}
 						}
 					}

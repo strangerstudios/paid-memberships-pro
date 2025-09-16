@@ -56,13 +56,10 @@ $pmpro_billing_level            = pmpro_getSpecificMembershipLevelForUser( $curr
 $current_user->membership_level = $pmpro_billing_level;
 
 //need to be secure?
-global $besecure, $gateway, $show_paypal_link, $show_check_payment_instructions;
+global $besecure, $gateway, $show_check_payment_instructions;
 if (empty($pmpro_billing_order->gateway)) {
     //no order
     $besecure = false;
-} elseif ($pmpro_billing_order->gateway == "paypalexpress") {
-    $besecure = get_option("pmpro_use_ssl");
-    $show_paypal_link = true;
 } elseif( $pmpro_billing_order->gateway == 'check' ) {
     $show_check_payment_instructions = true;
 } else {
@@ -224,8 +221,8 @@ if ($submit) {
 
         //other values
         $pmpro_billing_order->billing->name = $bfirstname . " " . $blastname;
-        $pmpro_billing_order->billing->street = trim( $baddress1 );
-        $pmpro_billing_order->billing->street2 = trim( $baddress2 );
+        $pmpro_billing_order->billing->street = empty( $baddress1 ) ? '' : trim( $baddress1 );
+        $pmpro_billing_order->billing->street2 = empty( $baddress2 ) ? '' : trim( $baddress2 );
         $pmpro_billing_order->billing->city = $bcity;
         $pmpro_billing_order->billing->state = $bstate;
         $pmpro_billing_order->billing->country = $bcountry;

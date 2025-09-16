@@ -57,6 +57,7 @@ function pmpro_get_capability_defs($role)
 		'pmpro_edit_members',
 		'pmpro_pagesettings',
 		'pmpro_paymentsettings',
+		'pmpro_taxsettings',
 		'pmpro_securitysettings',
 		'pmpro_emailsettings',
 		'pmpro_emailtemplates',

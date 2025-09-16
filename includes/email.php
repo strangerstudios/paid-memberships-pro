@@ -200,7 +200,7 @@ function pmpro_email_templates_save_template_data() {
 	}
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
-	$subject = sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) );
+	$subject = isset( $_REQUEST['subject'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) ) : '';
 	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ), 'email' );	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 	//update this template's settings
@@ -280,112 +280,11 @@ function pmpro_email_templates_send_test() {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
-	global $current_user;
-
-	//setup test email
-	$test_email = new PMProEmail();
-	$test_email->email = sanitize_email( $_REQUEST['email'] );
-	$test_email->template = str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) );
-
-	//add filter to change recipient
-	add_filter('pmpro_email_recipient', 'pmpro_email_templates_test_recipient', 10, 2);
-
-	//load test order
-	$test_order = new MemberOrder();
-	$test_order->get_test_order();
-
-	$test_user = $current_user;
-
-	// Grab the first membership level defined as a "test level" to use
-	$all_levels = pmpro_getAllLevels( true);
-	$test_user->membership_level = array_pop( $all_levels );
-
-	//add notice to email body
-	add_filter('pmpro_email_body', 'pmpro_email_templates_test_body', 10, 2);
-
-	//force the template
-	add_filter('pmpro_email_filter', 'pmpro_email_templates_test_template', 5, 1);
-
-	//figure out how to send the email
-	switch($test_email->template) {
-		case 'cancel':
-			$send_email = 'sendCancelEmail';
-			$params = array($test_user);
-			break;
-		case 'cancel_admin':
-			$send_email = 'sendCancelAdminEmail';
-			$params = array($current_user, $current_user->membership_level->id);
-			break;
-		case 'cancel_on_next_payment_date':
-		case 'cancel_on_next_payment_date_admin':
-			$send_email = 'cancel_on_next_payment_date' == $test_email->template ? 'sendCancelOnNextPaymentDateEmail' :
-				'sendCancelOnNextPaymentDateAdminEmail';
-			$levels = pmpro_getAllLevels( true );
-			global $pmpro_conpd_email_test_level;
-			$pmpro_conpd_email_test_level = current( $levels );
-			//Ensure mock level has enddate set
-			add_filter( 'pmpro_get_membership_levels_for_user', function() {
-				global $pmpro_conpd_email_test_level;
-				$pmpro_conpd_email_test_level->enddate = date( 'Y-m-d', strtotime( '+1 month' ) );
-				return array( $pmpro_conpd_email_test_level->id => $pmpro_conpd_email_test_level );
-			} );
-			$params = array( $test_user, $pmpro_conpd_email_test_level->id );
-			break;
-		case 'checkout_check':
-		case 'checkout_free':
-		case 'checkout_paid':
-			$send_email = 'sendCheckoutEmail';
-			$params = array($test_user, $test_order);
-			break;
-		case 'checkout_check_admin':
-		case 'checkout_free_admin':
-		case 'checkout_paid_admin':
-			$send_email = 'sendCheckoutAdminEmail';
-			$params = array($test_user, $test_order);
-			break;
-		case 'billing':
-			$send_email = 'sendBillingEmail';
-			$params = array($test_user, $test_order);
-			break;
-		case 'billing_admin':
-			$send_email = 'sendBillingAdminEmail';
-			$params = array($test_user, $test_order);
-			break;
-		case 'billing_failure':
-			$send_email = 'sendBillingFailureEmail';
-			$params = array($test_user, $test_order);
-			break;
-		case 'billing_failure_admin':
-			$send_email = 'sendBillingFailureAdminEmail';
-			$params = array($test_user->user_email, $test_order);
-			break;
-		case 'invoice':
-			$send_email = 'sendInvoiceEmail';
-			$params = array($test_user, $test_order);
-			break;
-		case 'membership_expired';
-			$send_email = 'sendMembershipExpiredEmail';
-			$params = array($test_user);
-			break;
-		case 'membership_expiring';
-			$send_email = 'sendMembershipExpiringEmail';
-			$params = array($test_user);
-			break;
-		case 'payment_action':
-			$send_email = 'sendPaymentActionRequiredEmail';
-			$params = array($test_user, $test_order, "http://www.example-notification-url.com/not-a-real-site");
-			break;
-		case 'payment_action_admin':
-			$send_email = 'sendPaymentActionRequiredAdminEmail';
-			$params = array($test_user, $test_order, "http://www.example-notification-url.com/not-a-real-site");
-			break;
-		default:
-			$send_email = 'sendEmail';
-			$params = array();
-	}
-
-	//send the email
-	$response = call_user_func_array(array($test_email, $send_email), $params);
+	//figure out PMPro_Email_Template class from template slug
+	$pmpro_email_template = PMPro_Email_Template::get_email_template( str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) ) );
+  
+	//it's a class name, not an instance and method is static. Call it directly.
+	$response = $pmpro_email_template::send_test( sanitize_email( $_REQUEST['email'] ) );
 
 	//return the response
 	echo esc_html( $response );
@@ -401,7 +300,7 @@ function pmpro_email_templates_test_recipient($email) {
 
 //for test emails
 function pmpro_email_templates_test_body($body, $email = null) {
-	$body .= '<br /><br /><b>-- ' . __('THIS IS A TEST EMAIL', 'paid-memberships-pro') . ' --</b>';
+	$body .= '<br /><br /><b>-- ' . esc_html__('THIS IS A TEST EMAIL', 'paid-memberships-pro') . ' --</b>';
 	return $body;
 }
 
@@ -457,7 +356,7 @@ function pmpro_email_templates_email_data($data, $email) {
 
 		// Membership Information.
 		$new_data['membership_expiration'] = '';
-		$new_data["membership_change"] = __("Your membership has been cancelled.", "paid-memberships-pro");
+		$new_data["membership_change"] = esc_html__("Your membership has been cancelled.", "paid-memberships-pro");
 		if ( empty( $user->membership_level ) ) {
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 		}
@@ -470,10 +369,10 @@ function pmpro_email_templates_email_data($data, $email) {
 			}
 			if ( ! empty($user->membership_level->enddate) ) {
 				$new_data['enddate'] = date_i18n( get_option( 'date_format' ), $user->membership_level->enddate );
-				$new_data['membership_expiration'] = "<p>" . sprintf( __("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
+				$new_data['membership_expiration'] = "<p>" . sprintf( esc_html__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
 				$new_data["membership_change"] .= " " . sprintf(__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) );
 			} else if ( ! empty( $email->expiration_changed ) ) {
-				$new_data["membership_change"] .= " " . __("This membership does not expire.", "paid-memberships-pro");
+				$new_data["membership_change"] .= " " . esc_html__("This membership does not expire.", "paid-memberships-pro");
 			}
 		}
 	}

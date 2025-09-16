@@ -29,12 +29,12 @@ function pmpro_add_user_field( $where, $field ) {
      * Filter the group to add the field to.
      * 
      * @since 2.9.3
-	 * @deprecated TBD
+	 * @deprecated 3.4
      * 
      * @param string $where The name of the group to add the field to.
      * @param PMPro_Field $field The field being added.
      */
-    $where = apply_filters_deprecated( 'pmpro_add_user_field_where', array( $where, $field ), 'TBD', 'pmpro_add_user_field' );
+    $where = apply_filters_deprecated( 'pmpro_add_user_field_where', array( $where, $field ), '3.4', 'pmpro_add_user_field' );
 
 	// Get the field group.
 	$field_group = PMPro_Field_Group::get( $where );
@@ -86,16 +86,16 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 		'name'                       => ucwords( $name ),
 		'singular_name'              => ucwords( $name ),
 		'menu_name'                  => ucwords( $name_plural ),
-		'search_items'               => sprintf( __( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'popular_items'              => sprintf( __( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'all_items'                  => sprintf( __( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'edit_item'                  => sprintf( __( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'update_item'                => sprintf( __( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'add_new_item'               => sprintf( __( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'new_item_name'              => sprintf( __( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'paid-memberships-pro' ), $name_plural ),
-		'add_or_remove_items'        => sprintf( __( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
-		'choose_from_most_used'      => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
+		'search_items'               => sprintf( esc_html__( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'popular_items'              => sprintf( esc_html__( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'all_items'                  => sprintf( esc_html__( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'edit_item'                  => sprintf( esc_html__( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'update_item'                => sprintf( esc_html__( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'add_new_item'               => sprintf( esc_html__( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'new_item_name'              => sprintf( esc_html__( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'separate_items_with_commas' => sprintf( esc_html__( 'Separate %s with commas', 'paid-memberships-pro' ), $name_plural ),
+		'add_or_remove_items'        => sprintf( esc_html__( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
+		'choose_from_most_used'      => sprintf( esc_html__( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
 	);
 
 	$pmpro_user_taxonomy_args = array(
@@ -155,11 +155,8 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 
 /**
  * Get a field group by name.
- *
- * @deprecated TBD Use PMPro_Field_Group::get instead.
  */
 function pmpro_get_field_group_by_name( $name ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_Field_Group::get' );
 	return PMPro_Field_Group::get( $name );
 }
 
@@ -231,10 +228,10 @@ function pmpro_display_fields_in_group( $group, $scope = 'checkout' ) {
 		'after_tos_fields',
 	);
 	if ( ! in_array( $group, $valid_groups ) ) {
-		_doing_it_wrong( __FUNCTION__, sprintf( __( 'The group %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $group, __FUNCTION__ ), '2.9.3' );
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The group %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $group, __FUNCTION__ ), '2.9.3' );
 	}
 	if ( $scope !== 'checkout' ) {
-		_doing_it_wrong( __FUNCTION__, sprintf( __( 'The scope %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $scope, __FUNCTION__ ), '2.9.3' );
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The scope %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $scope, __FUNCTION__ ), '2.9.3' );
 	}
 
     // Get the field group.
@@ -334,7 +331,9 @@ add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_after_tos_fie
 /**
  * Update user creation fields at checkout after a user is created.
  *
- * @since TBD
+ * Only runs for the after_username, after_email, and after_password field groups.
+ *
+ * @since 3.4
  *
  * @param int $user_id The ID of the user that was created.
  */
@@ -360,6 +359,8 @@ add_action( 'pmpro_checkout_before_user_auth', 'pmpro_checkout_before_user_auth_
 
 /**
  * Require required fields before creating a user at checkout.
+ *
+ * Only runs for the after_username, after_email, and after_password field groups.
  */
 function pmpro_checkout_user_creation_checks_user_fields( $okay ) {
 	// Arrays to store fields that were required and missed.
@@ -410,10 +411,10 @@ function pmpro_checkout_user_creation_checks_user_fields( $okay ) {
 		$pmpro_error_fields = array_merge((array)$pmpro_error_fields, $required);
 
 		if( count( $required ) == 1 ) {
-			$pmpro_msg = sprintf( __( 'The %s field is required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( esc_html__( 'The %s field is required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		} else {
-			$pmpro_msg = sprintf( __( 'The %s fields are required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( esc_html__( 'The %s fields are required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		}
 
@@ -430,6 +431,8 @@ add_filter( 'pmpro_checkout_user_creation_checks', 'pmpro_checkout_user_creation
 
 /**
  * Update the fields after a checkout is completed.
+ * 
+ * Does not run for the after_username, after_email, and after_password field groups.
  *
  * @param int $user_id The ID of the user that was created.
  * @param object $order The order object.
@@ -460,6 +463,8 @@ add_action( 'pmpro_before_send_to_payfast', 'pmpro_after_checkout_save_fields', 
 
 /**
  * Require required fields before creating an order at checkout.
+ *
+ * Does not run for the after_username, after_email, and after_password field groups.
  */
 function pmpro_registration_checks_for_user_fields( $okay ) {
 	// Arrays to store fields that were required and missed.
@@ -510,10 +515,10 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 		$pmpro_error_fields = array_merge((array)$pmpro_error_fields, $required);
 
 		if( count( $required ) == 1 ) {
-			$pmpro_msg = sprintf( __( 'The %s field is required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( esc_html__( 'The %s field is required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		} else {
-			$pmpro_msg = sprintf( __( 'The %s fields are required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( esc_html__( 'The %s fields are required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		}
 
@@ -599,10 +604,10 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 /**
  * Show user fields in profile.
  *
- * @deprecated TBD
+ * @deprecated 3.4
  */
 function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_show_user_fields_in_profile_with_locations' );
+	_deprecated_function( __FUNCTION__, '3.4', 'pmpro_show_user_fields_in_profile_with_locations' );
 	if ( $withlocations ) {
 		return pmpro_show_user_fields_in_profile_with_locations( $user );
 	}
@@ -641,10 +646,10 @@ add_action( 'edit_user_profile', 'pmpro_show_user_fields_in_profile_with_locatio
  * Show Profile fields on the frontend "Member Profile Edit" page.
  *
  * @since 2.3
- * @deprecated TBD
+ * @deprecated 3.4
  */
 function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = false ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_show_user_fields_in_frontend_profile_with_locations' );
+	_deprecated_function( __FUNCTION__, '3.4', 'pmpro_show_user_fields_in_frontend_profile_with_locations' );
 	if ( $withlocations ) {
 		return pmpro_show_user_fields_in_frontend_profile_with_locations( $user );
 	}
@@ -770,7 +775,7 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 	// check whether the user login variable contains something useful
 	if (empty($user_id)) {		
 
-		pmpro_setMessage( __( 'Unable to add/update user fields for this member', 'paid-memberships-pro' ), 'pmpro_error' );
+		pmpro_setMessage( esc_html__( 'Unable to add/update user fields for this member', 'paid-memberships-pro' ), 'pmpro_error' );
 
 		return false;
 	}
@@ -828,10 +833,10 @@ function pmpro_get_user_fields_for_csv() {
  * Get user fields which are marked to show in the profile.
  * If a $user_id is passed in, get fields based on the user's level.
  *
- * @deprecated TBD Use PMPro_Field_Group::get_fields_to_display instead.
+ * @deprecated 3.4 Use PMPro_Field_Group::get_fields_to_display instead.
  */
 function pmpro_get_user_fields_for_profile( $user_id, $withlocations = false ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_Field_Group::get_fields_to_display' );
+	_deprecated_function( __FUNCTION__, '3.4', 'PMPro_Field_Group::get_fields_to_display' );
 	$profile_fields = array();
 	// Loop through all the field groups.
 	$field_groups = PMPro_Field_Group::get_all();
@@ -905,7 +910,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 			//add to bottom of email
 			$field_groups = PMPro_Field_Group::get_all();
 			if ( ! empty( $field_groups ) ) {
-				$fields_content = "<p>" . __( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
+				$fields_content = "<p>" . esc_html__( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
 				$added_field = false;
 				// Loop through all the field groups.
 				foreach( $field_groups as $group_name => $group ) {
@@ -972,10 +977,10 @@ function pmpro_csv_columns_for_user_fields( $user, $column ) {
 /**
  * Get user fields from global.
  * @since 2.9.3
- * @deprecated TBD
+ * @deprecated 3.4
  */
 function pmpro_get_user_fields() {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.4' );
 
     global $pmpro_user_fields;
         
@@ -1010,7 +1015,7 @@ function pmpro_get_user_fields_settings() {
     $default_user_fields_settings = array(
         (object) array(
 			'name' => 'more_information',
-            'label' => __( 'More Information', 'paid-memberships-pro' ),
+            'label' => esc_html__( 'More Information', 'paid-memberships-pro' ),
             'checkout' => 'yes',
             'profile' => 'yes',
             'description' => '',
@@ -1108,7 +1113,7 @@ function pmpro_load_user_fields_from_settings() {
                         $parts = explode( ':', $settings_option );
                         $options[trim( $parts[0] )] = trim( $parts[1] );
                     } else {
-                        $options[] = $settings_option;
+                        $options[] = trim( $settings_option );
                     }
                 }
             } else {
@@ -1147,12 +1152,12 @@ add_action( 'init', 'pmpro_load_user_fields_from_settings', 1 );
  * Check if user is adding custom user fields with code.
  *
  * @since 2.9
- * @deprecated TBD
+ * @deprecated 3.4
  *
  * @return bool True if user is adding custom user fields with code.
  */
 function pmpro_has_coded_user_fields() {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.4' );
 	global $pmprorh_registration_fields;
 
 	// Check if coded fields are being added using the PMPro Register Helper Add On active.
@@ -1170,7 +1175,7 @@ function pmpro_has_coded_user_fields() {
  * Gets the label(s) for a passed user field value.
  *
  * @since 2.11
- * @deprecated TBD Use PMProField::displayValue instead.
+ * @deprecated 3.4 Use PMProField::displayValue instead.
  *
  * @param string $field_name  The name of the field that the value belongs to.
  * @param string|array $field_value The value to get the label for.
@@ -1178,7 +1183,7 @@ function pmpro_has_coded_user_fields() {
  * @return string|array The label(s) for the passed value. Will be same type as $field_value.
  */
 function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'PMProField::displayValue' );
+	_deprecated_function( __FUNCTION__, '3.4', 'PMProField::displayValue' );
 
 	// Loop through all the field groups.
 	$field_groups = PMPro_Field_Group::get_all();
@@ -1216,12 +1221,12 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
 /**
  * Get a single user field.
  * @since 3.0
- * @deprecated TBD
+ * @deprecated 3.4
  * @param string $field_name The name of the field to get.
  * @return bool|object The field object if found, false otherwise.
  */
 function pmpro_get_user_field( $field_name ) {
-	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_Field_Group::get_field' );
+	_deprecated_function( __FUNCTION__, '3.4', 'PMPro_Field_Group::get_field' );
 	$field = PMPro_Field_Group::get_field( $field_name );
 	return empty( $field ) ? false : $field;
 }

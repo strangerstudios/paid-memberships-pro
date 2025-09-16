@@ -47,6 +47,11 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 		return $okay;
 	}
 
+	// Don't show it more than once on a screen. This is for "PayPal Express".
+	if ( pmpro_get_session_var( 'pmpro_cloudflare_turnstile_validated' ) ) {
+		return $okay;
+	}
+
 	// If the Turnstile is not passed, show an error.
 	if ( empty( $_POST['cf-turnstile-response'] ) ) {
 		pmpro_setMessage( __( 'Please complete the security check.', 'paid-memberships-pro' ), 'pmpro_error' );
@@ -74,6 +79,7 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 		$okay = false;
 	}
 
+	pmpro_set_session_var( 'pmpro_cloudflare_turnstile_validated', true );
 	return $okay;
 }
 add_action( 'pmpro_checkout_checks', 'pmpro_cloudflare_turnstile_validation' );
@@ -164,3 +170,13 @@ function pmpro_cloudflare_turnstile_get_error_message() {
 
 	return $error_messages;
 }
+
+/**
+ * Clear the CloudFlare Turnstile session variable after checkout.
+ * @since 3.3.3
+ */
+function pmpro_after_checkout_reset_cloudflare_turnstile() {
+    pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_validated' );
+}
+add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
+add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_cloudflare_turnstile' );

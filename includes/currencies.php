@@ -15,8 +15,21 @@
 			'symbol' => '&pound;',
 			'position' => 'left'
 			),
+		'ALL' => array(
+			'name' => __('Albanian Lek (Lekë)', 'paid-memberships-pro' ),
+			'symbol' => '&nbsp;Lek',
+			'decimals' => 0,
+			'thousands_separator' => ',',
+			'decimal_separator' => '.',
+			'position' => 'right',
+			),
 		'ARS' => __('Argentine Peso (&#36;)', 'paid-memberships-pro' ),
 		'AUD' => __('Australian Dollars (&#36;)', 'paid-memberships-pro' ),
+		'BDT' => array(
+			'name' => __('Bangladeshi taka (৳&nbsp;)', 'paid-memberships-pro' ),
+			'symbol' => '৳&nbsp;',
+			'position' => 'left'
+			),
 		'BRL' => array(
 			'name' => __('Brazilian Real (R&#36;)', 'paid-memberships-pro' ),
 			'symbol' => 'R&#36;',
@@ -63,7 +76,14 @@
 		'NZD' => __('New Zealand Dollar (&#36;)', 'paid-memberships-pro' ),
 		'NOK' => __('Norwegian Krone', 'paid-memberships-pro' ),
 		'PHP' => __('Philippine Pesos', 'paid-memberships-pro' ),
-		'PLN' => __('Polish Zloty', 'paid-memberships-pro' ),
+		'PLN' => array(
+			'name'                => __('Polish Zloty', 'paid-memberships-pro' ),
+			'decimals'            => '2',
+			'thousands_separator' => '&nbsp;',
+			'decimal_separator'   => ',',
+			'symbol'              => '&nbsp;zł',
+			'position'            => 'right',
+		),
 		'RON' => array(	
 				'name' => __( 'Romanian Leu', 'paid-memberships-pro' ),
 				'decimals' => '2',

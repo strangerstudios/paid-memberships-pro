@@ -88,6 +88,15 @@
 	color: var(--pmpro--color--alert-link);
 }
 
+.pmpro_message p {
+	margin: 0 0 var(--pmpro--base--spacing--small);
+	padding: 0;
+}
+
+.pmpro_message p:last-of-type {
+	margin-bottom: 0;
+}
+
 /**
  * Form Elements
  */
@@ -174,6 +183,11 @@
 /* File-specific field type */
 .pmpro_form_field-file button {
 	margin-right: var(--pmpro--base--spacing--small);
+}
+
+.pmpro_form_field-file-preview img {
+	height: auto;
+	width: 200px;
 }
 
 /* Checkout and Billing forms */
@@ -359,6 +373,31 @@ button[type="button"]#other_discount_code_toggle:focus {
 	min-height: 30px;
 }
 
+/* Special Fields */
+.pmpro_form_field-password-toggle button,
+.pmpro_form_field-password-toggle button:hover,
+.pmpro_form_field-password-toggle button:focus,
+.pmpro_form_field-password-toggle button:active {
+	align-items: center;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	box-sizing: border-box;
+	color: var(--pmpro--color--contrast);
+	display: flex;
+	flex-direction: row;
+	gap: calc( var(--pmpro--base--spacing--small) / 2 );
+	line-height: 1;
+	margin: 0;
+	min-height: 1px;
+	padding: 0;
+}
+
+.pmpro_form_field-password-toggle button:focus,
+.pmpro_form_field-password-toggle button:active {
+	color: var(--pmpro--color--contrast);
+}
+
 /* Hide the Edge "reveal password" native button */
 .wp-pwd input::-ms-reveal {
 	display: none;
@@ -384,6 +423,10 @@ button[type="button"]#other_discount_code_toggle:focus {
 	border-collapse: collapse;
 	margin: 0;
 	width: 100%;
+}
+
+.pmpro_table-fixed {
+	table-layout: fixed;
 }
 
 /**
@@ -509,6 +552,23 @@ button[type="button"]#other_discount_code_toggle:focus {
 }
 
 /**
+ * Frontend data filters
+ */
+.pmpro_data_filters {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: var(--pmpro--base--spacing--small);
+	margin-bottom: var(--pmpro--base--spacing--medium);
+}
+
+.pmpro_data_count {
+	margin-bottom: var(--pmpro--base--spacing--medium);
+	text-align: right;
+}
+
+/**
  * Misc
  */
 .pmpro_pad-s {
@@ -595,6 +655,12 @@ button[type="button"]#other_discount_code_toggle:focus {
 	.pmpro_table tfoot tr td {
 		display: grid;
 		grid-template-columns: 1fr 2fr;
+	}
+
+	.pmpro_table-fixed tbody tr th,
+	.pmpro_table-fixed tbody tr td,
+	.pmpro_table-fixed tfoot tr td {
+		grid-template-columns: 1fr 1fr;
 	}
 
 	.pmpro_table tbody tr th::before,

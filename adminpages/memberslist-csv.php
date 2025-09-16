@@ -30,8 +30,12 @@
 	 * @since 1.8.7
 	 */
 	//set the number of users we'll load to try and protect ourselves from OOM errors
-	$max_users_per_loop = apply_filters('pmpro_set_max_user_per_export_loop', 2000);
+	$max_users_per_loop = intval( apply_filters( 'pmpro_set_max_user_per_export_loop', 2000 ) );
 
+	//If the filter returns odd value, reset to default.
+	if ( $max_users_per_loop < 1 ) {
+		$max_users_per_loop = 2000;
+	}
 	global $wpdb;
 
 	//get users (search input field)
@@ -98,7 +102,7 @@
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
 
 	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined";
+	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined,startdate";
 
 	if($l == "oldmembers")
 		$csv_file_header .= ",ended";
@@ -246,7 +250,7 @@
 	$theusers = $wpdb->get_col($sqlQuery);
 
 	//if no records just transmit file with only CSV header as content
-	if (empty($theusers)) {
+	if (empty($theusers) && empty($_REQUEST['pmpro_no_download'])) {
 
 		// send the data to the remote browser
 		pmpro_transmit_content($csv_fh, $filename, $headers);
@@ -309,16 +313,11 @@
 
 		$start = current_time('timestamp');
 
-		// Get the last record to output, will depend on which iteration we're on.
-		if ( $ic != $iterations ) {
-			$i_end = ($i_start + ( $max_users_per_loop - 1));
-		} else {
-			// Final iteration, so last UID is the last record in the users array
-			$i_end = ($users_found - 1);
-		}
-		$spl = array_slice($theusers, $i_start, $i_end + 1);
+		$i_end = min( $i_start + $max_users_per_loop - 1, $users_found - 1 );
+
+		$spl = array_slice( $theusers, $i_start, $i_end - $i_start + 1 );
 		//increment starting position
-		$i_start += $max_users_per_loop;
+		$i_start = $i_end + 1;
 
 		//escape the % for LIKE comparison with $wpdb
 		if(!empty($search))
@@ -337,6 +336,7 @@
 				u.user_status,
 				u.display_name,
 				mu.membership_id,
+				UNIX_TIMESTAMP(CONVERT_TZ(min(mu.startdate), '+00:00', @@global.time_zone)) as startdate,
 				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate,
 				m.name as membership
 			FROM {$wpdb->users} u
@@ -424,20 +424,19 @@
 			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_cycle_period() ) ) );
 			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : date_i18n($dateformat, $subscriptions[0]->get_next_payment_date() ) ) ) );
 
-			//joindate and enddate
+			//joindate, startdate, and enddate
 			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
 
-			if ( $theuser->membership_id ) {
-				// We are no longer filtering the expiration date text for performance reasons.
-				if ( $theuser->enddate ) {
-					array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->enddate ) ) );
-				} else {
-					array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
-				}
-			} elseif($l == "oldmembers" && $theuser->enddate) {
-				array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->enddate)));
+			if ( $theuser->startdate ) {
+				array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->startdate ) ) );
 			} else {
-				array_push($csvoutput, __('N/A', 'paid-memberships-pro'));
+				array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
+			}
+			// We are no longer filtering the expiration date text for performance reasons.
+			if ( $theuser->enddate ) {
+				array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->enddate ) ) );
+			} else {
+				array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
 			}
 
 			//any extra columns
@@ -446,7 +445,7 @@
 				foreach($extra_columns as $heading => $callback)
 				{
 					$val = call_user_func($callback, $theuser, $heading);
-					$val = !empty($val) ? $val : null;
+					$val = ( is_string( $val ) || ! empty($val) ) ? $val : null;
 					array_push( $csvoutput, pmpro_enclose($val) );
 				}
 			}
@@ -519,13 +518,15 @@
 	// free memory
 	$usr_data = null;
 
-	// send the data to the remote browser
-	pmpro_transmit_content($csv_fh, $filename, $headers);
+	// send the data to the remote browser, if this was not run via the Toolkit API
+	if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
+		pmpro_transmit_content($csv_fh, $filename, $headers);
+		exit;
+	}
 
-	exit;
 
-	function pmpro_enclose($s)
-	{
+	function pmpro_enclose($s) {
+		$s = (string) $s;
 		return "\"" . str_replace("\"", "\\\"", $s) . "\"";
 	}
 

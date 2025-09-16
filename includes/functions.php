@@ -9,12 +9,12 @@ We regularly release updates to the plugin, including important security fixes a
 You want to be able to upgrade.
 
 If you were asked to insert code into "your functions.php file", it was meant that you edit the functions.php
-in the root folder of your active theme. e.g. /wp-content/themes/twentytwelve/functions.php
+in the root folder of your active theme. e.g. /wp-content/themes/memberlite-child/functions.php
 You can also create a custom plugin to place customization code into. Instructions are here:
-http://www.paidmembershipspro.com/2012/08/create-a-plugin-for-pmpro-customizations/
+https://www.paidmembershipspro.com/create-a-plugin-for-pmpro-customizations/
 
 Further documentation for customizing Paid Memberships Pro can be found here:
-http://www.paidmembershipspro.com/documentation/
+https://www.paidmembershipspro.com/documentation/
  ****************************************************************/
 if ( ! function_exists( 'sornot' ) ) {
 	function sornot( $t, $n ) {
@@ -336,6 +336,11 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 
 
 function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
+	//Bail if no level
+	if ( empty( $level ) ) {
+		return '';
+	}
+
 	// initial payment
 	if ( ! $short ) {
 		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
@@ -527,6 +532,10 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 }
 
 function pmpro_getLevelExpiration( &$level ) {
+	//Bail if no level
+	if ( empty( $level ) ) {
+		return '';
+	}
 
 	if ( $level->expiration_number ) {
 		$expiration_text = sprintf( __( 'Membership expires after %1$d %2$s.', 'paid-memberships-pro' ), $level->expiration_number, pmpro_translate_billing_period( $level->expiration_period, $level->expiration_number ) );
@@ -1532,24 +1541,41 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 /**
  * pmpro_getMembershipCategories() returns the categories for a given level
  *
- * @param int $level_id is a valid membership level ID
- *
- * @return int[]
+ * @param int $level_id The membership level ID.
+ * @return array List of category IDs.
  */
 function pmpro_getMembershipCategories( $level_id ) {
+	static $cache = array();
+
 	$level_id = intval( $level_id );
+	if ( isset( $cache[ $level_id ] ) ) {
+		return $cache[ $level_id ];
+	}
 
 	global $wpdb;
 	$categories = $wpdb->get_col(
-		"SELECT c.category_id
-										FROM {$wpdb->pmpro_memberships_categories} AS c
-										WHERE c.membership_id = '" . esc_sql( $level_id ) . "'"
+		$wpdb->prepare(
+			"SELECT c.category_id
+			 FROM {$wpdb->pmpro_memberships_categories} AS c
+			 WHERE c.membership_id = %d",
+			$level_id
+		)
 	);
+
+	$cache[ $level_id ] = $categories;
 
 	return $categories;
 }
 
-
+/**
+ * pmpro_isAdmin() checks if a user is an admin.
+ *
+ * @since 1.8.11
+ *
+ * @param int|null $user_id The user ID to check. If null, uses the current user.
+ *
+ * @return bool True if the user is an admin, false otherwise.
+ */
 function pmpro_isAdmin( $user_id = null ) {
 	global $current_user;
 	if ( ! $user_id ) {
@@ -1568,6 +1594,18 @@ function pmpro_isAdmin( $user_id = null ) {
 	}
 }
 
+/**
+ * pmpro_replaceUserMeta() updates user meta values, replacing existing values.
+ *
+ * @since 1.8.11
+ *
+ * @param int $user_id User ID to update.
+ * @param string|array $meta_keys Meta keys to update.
+ * @param string|array $meta_values Meta values to set.
+ * @param string|array|null $prev_values Previous values to check against.
+ *
+ * @return int Number of meta keys updated.
+ */
 function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values = null ) {
 	// expects all arrays for last 3 params or all strings
 	if ( ! is_array( $meta_keys ) ) {
@@ -1592,6 +1630,14 @@ function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values
 	return $i;
 }
 
+/**
+ * pmpro_getMetavalues() returns an object with the meta values from a query.
+ *
+ * @since 1.8.11
+ *
+ * @param string $query SQL query to get meta values.
+ * @return stdClass Object with meta keys and values.
+ */
 function pmpro_getMetavalues( $query ) {
 	global $wpdb;
 
@@ -1606,20 +1652,24 @@ function pmpro_getMetavalues( $query ) {
 	return $r;
 }
 
-// function to return the pagination string
-function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $adjacents = 1, $targetpage = '/', $pagestring = '&pn=' ) {
-	// defaults
-	if ( ! $adjacents ) {
-		$adjacents = 1;
-	}
-	if ( ! $limit ) {
-		$limit = 15;
-	}
-	if ( ! $page ) {
-		$page = 1;
-	}
-	if ( ! $targetpage ) {
-		$targetpage = '/';
+/**
+ * Function to return the pagination string
+ *
+ * @since 1.0.0
+ *
+ * @param int    $page       Current page number
+ * @param int    $totalitems Total number of items
+ * @param int    $limit      Items per page
+ * @param int    $adjacents  Number of adjacent pages to show
+ * @param string $targetpage Target page URL
+ * @param string $pagestring Query string parameter for page number
+ * @param string $aria_label  aria-label for the pagination
+ * @return string HTML for pagination
+ */
+function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $adjacents = 1, $targetpage = '/', $pagestring = '&pn=', $aria_label = '' ) {
+
+	if ( ! $aria_label ) {
+		$aria_label = __( 'Pagination', 'paid-memberships-pro' );
 	}
 
 	// other vars
@@ -1628,39 +1678,26 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 	$lastpage = ceil( $totalitems / $limit );             // lastpage is = total items / items per page, rounded up.
 	$lpm1 = $lastpage - 1;                              // last page minus 1
 
-	/*
-		Now we apply our rules and draw the pagination object.
-		We're actually saving the code to a variable in case we want to draw it more than once.
-	*/
 	$pagination = '';
 	if ( $lastpage > 1 ) {
-		$pagination .= '<span class="pmpro_pagination"';
-		if ( ! empty( $margin ) || ! empty( $padding ) ) {
-			$pagination .= ' style="';
-			if ( $margin ) {
-				$pagination .= "margin: $margin;";
-			}
-			if ( $padding ) {
-				$pagination .= "padding: $padding;";
-			}
-			$pagination .= '"';
-		}
-		$pagination .= '>';
+		$pagination .= '<nav class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination' ) ) . '" aria-label="' . esc_attr( $aria_label ) . '">';
 
 		// previous button
 		if ( $page > 1 ) {
-			$pagination .= "<a href=\"$targetpage$pagestring$prev\">&laquo; prev</a>";
+			$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-previous' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $prev ) . '" ';
+			$pagination .= 'aria-label="' . esc_attr__( 'Go to the previous page', 'paid-memberships-pro' ) . '">&laquo; ' . esc_html__( 'Previous', 'paid-memberships-pro' ) . '</a>';
 		} else {
-			$pagination .= '<span class="disabled">&laquo; prev</span>';
+			$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-previous pmpro_pagination-disabled' ) ) . '">&laquo; ' . esc_html__( 'Previous', 'paid-memberships-pro' ) . '</span>';
 		}
 
 		// pages
 		if ( $lastpage < 7 + ( $adjacents * 2 ) ) {
 			for ( $counter = 1; $counter <= $lastpage; $counter++ ) {
 				if ( $counter == $page ) {
-					$pagination .= "<span class=\"current\">$counter</span>";
+					$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 				} else {
-					$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>";
+					$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+					$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 				}
 			}
 		} elseif ( $lastpage >= 7 + ( $adjacents * 2 ) ) {
@@ -1668,39 +1705,50 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 			if ( $page < 1 + ( $adjacents * 3 ) ) {
 				for ( $counter = 1; $counter < 4 + ( $adjacents * 2 ); $counter++ ) {
 					if ( $counter == $page ) {
-						$pagination .= "<span class=\"current\">$counter</span>";
+						$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 					} else {
-						$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>";
+						$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+						$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 					}
 				}
-				$pagination .= '...';
-				$pagination .= '<a href="' . $targetpage . $pagestring . $lpm1 . "\">$lpm1</a>";
-				$pagination .= '<a href="' . $targetpage . $pagestring . $lastpage . "\">$lastpage</a>";
+				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lpm1 ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lpm1 ) ) . '">' . esc_html( $lpm1 ) . '</a>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lastpage ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lastpage ) ) . '">' . esc_html( $lastpage ) . '</a>';
 			} // in middle; hide some front and some back
 			elseif ( $lastpage - ( $adjacents * 2 ) > $page && $page > ( $adjacents * 2 ) ) {
-				$pagination .= '<a href="' . $targetpage . $pagestring . '1">1</a>';
-				$pagination .= '<a href="' . $targetpage . $pagestring . '2">2</a>';
-				$pagination .= '...';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . '1' ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr__( 'Page 1', 'paid-memberships-pro' ) . '">1</a>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . '2' ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr__( 'Page 2', 'paid-memberships-pro' ) . '">2</a>';
+				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
 				for ( $counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++ ) {
 					if ( $counter == $page ) {
-						$pagination .= "<span class=\"current\">$counter</span>";
+						$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 					} else {
-						$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>";
+						$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+						$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 					}
 				}
-				$pagination .= '...';
-				$pagination .= '<a href="' . $targetpage . $pagestring . $lpm1 . "\">$lpm1</a>";
-				$pagination .= '<a href="' . $targetpage . $pagestring . $lastpage . "\">$lastpage</a>";
+				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lpm1 ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lpm1 ) ) . '">' . esc_html( $lpm1 ) . '</a>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lastpage ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lastpage ) ) . '">' . esc_html( $lastpage ) . '</a>';
 			} // close to end; only hide early pages
 			else {
-				$pagination .= '<a href="' . $targetpage . $pagestring . '1">1</a>';
-				$pagination .= '<a href="' . $targetpage . $pagestring . '2">2</a>';
-				$pagination .= '...';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . '1' ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr__( 'Page 1', 'paid-memberships-pro' ) . '">1</a>';
+				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . '2' ) . '" ';
+				$pagination .= 'aria-label="' . esc_attr__( 'Page 2', 'paid-memberships-pro' ) . '">2</a>';
+				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
 				for ( $counter = $lastpage - ( 1 + ( $adjacents * 3 ) ); $counter <= $lastpage; $counter++ ) {
 					if ( $counter == $page ) {
-						$pagination .= "<span class=\"current\">$counter</span>";
+						$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 					} else {
-						$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>";
+						$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+						$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 					}
 				}
 			}
@@ -1708,15 +1756,29 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 
 		// next button
 		if ( $page < $counter - 1 ) {
-			$pagination .= '<a href="' . $targetpage . $pagestring . $next . '">next &raquo;</a>';
+			$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-next' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $next ) . '" ';
+			$pagination .= 'aria-label="' . esc_attr__( 'Go to the next page', 'paid-memberships-pro' ) . '">' . esc_html__( 'Next', 'paid-memberships-pro' ) . ' &raquo;</a>';
 		} else {
-			$pagination .= '<span class="disabled">next &raquo;</span>';
+			$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-next pmpro_pagination-disabled' ) ) . '">' . esc_html__( 'Next', 'paid-memberships-pro' ) . ' &raquo;</span>';
 		}
-		$pagination .= "</span>\n";
+		$pagination .= "</nav>\n";
 	}
 
-	return $pagination;
-
+	/**
+	 * Filters the pagination HTML
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $pagination The pagination HTML
+	 * @param int    $page       Current page number
+	 * @param int    $totalitems Total number of items
+	 * @param int    $limit      Items per page
+	 * @param int    $adjacents  Number of adjacent pages to show
+	 * @param string $targetpage Target page URL
+	 * @param string $pagestring Query string parameter for page number
+	 * @return string The filtered pagination HTML
+	 */
+	return apply_filters( 'pmpro_get_pagination_string', $pagination, $page, $totalitems, $limit, $adjacents, $targetpage, $pagestring, $aria_label );
 }
 
 function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
@@ -2595,7 +2657,11 @@ function pmpro_are_any_visible_levels() {
 }
 
 /**
- * Get level at checkout and place into $pmpro_level global.
+ * Get level at checkout.
+ * 
+ * This function is only meant to be called once during checkout. Afterwards, the
+ * checkout level object should be passed to relevent hooks/filters.
+ *
  * If no level is passed or found in the URL parameters, global vars,
  * or in the post options, then this will return the first level found.
  *
@@ -2606,16 +2672,6 @@ function pmpro_are_any_visible_levels() {
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
-
-	static $function_cache = array();
-
-	// Check if we have a cached value to use.
-	$cache_key = md5( serialize( array( $level_id, $discount_code ) ) );
-	if ( array_key_exists( $cache_key, $function_cache ) ) {
-		// Set the global and return the cached value.
-		$pmpro_level = $function_cache[ $cache_key ];
-		return $pmpro_level;
-	}
 
 	// Reset $pmpro_level global.
 	$pmpro_level = null;
@@ -2702,11 +2758,6 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
-
-	// Cache the result for future use if this is a "top level" call to this function.
-	if ( ! doing_filter( 'pmpro_checkout_level' ) ) {
-		$function_cache[ $cache_key ] = $pmpro_level;
-	}
 
 	return $pmpro_level;
 }
@@ -3063,6 +3114,12 @@ function pmpro_formatAddress( $name, $address1, $address2, $city, $state, $zip, 
 			$address .= ' ' . $zip;
 		}
 
+		$address .= "\n";
+	} elseif ( ! empty( $city ) ) {
+		$address .= $city;
+		if ( ! empty( $zip ) ) {
+			$address .= ' ' . $zip;
+		}
 		$address .= "\n";
 	}
 
@@ -3809,7 +3866,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
  * Sanitizes the passed value.
  * Default sanitizing for things like user fields.
  *
- * @since TBD Marking the $field argument as deprecated.
+ * @since 3.4 Marking the $field argument as deprecated.
  *
  * @param array|int|null|string|stdClass $value The value to sanitize
  *
@@ -3818,7 +3875,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 function pmpro_sanitize( $value, $field = null ) {
 	if ( null !== $field ) {
 		// This argument is deprecated. User fields now have sanitization logic in the field class.
-		_deprecated_argument( __FUNCTION__, 'TBD', __( 'The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class.', 'paid-memberships-pro' ) );
+		_deprecated_argument( __FUNCTION__, '3.4', __( 'The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class.', 'paid-memberships-pro' ) );
 	}
 
 	if ( is_array( $value ) ) {
@@ -4078,9 +4135,12 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
  * Compare two integers using parameters similar to the version_compare function.
  * This allows us to pass in a comparison character via the notification rules
  * and get a true/false result.
+ *
+ * @since 3.4.4 Added support for != and <>.
+ *
  * @param int $a First integer to compare.
  * @param int $b Second integer to compare.
- * @param string $operator Operator to use, e.g. >, <, >=, <=, =.
+ * @param string $operator Operator to use, e.g. >, <, >=, <=, =, !=.
  * @return bool true or false based on the operator passed in. Returns null for invalid operators.
  */
 function pmpro_int_compare( $a, $b, $operator ) {
@@ -4100,6 +4160,10 @@ function pmpro_int_compare( $a, $b, $operator ) {
 		case '=':
 		case '==':
 			$r = (int)$a == (int)$b;
+			break;
+		case '!=':
+		case '<>':
+			$r = (int)$a != (int)$b;
 			break;
 		default:
 			$r = null;
@@ -4676,6 +4740,49 @@ function pmpro_compare_siteurl() {
 }
 
 /**
+ * When the pmpro_last_known_url option is updated, base64 encode it to
+ * prevent string replacements from changing it when the site is migrated.
+ *
+ * @since 3.5
+ * @link https://developer.wordpress.org/reference/hooks/pre_update_option_option/
+ *
+ * @param string $new_value The new value for the option.
+ * @return string The encoded value for the option.
+ */
+function pmpro_encode_last_known_url( $new_value ) {
+	// Only encode non-empty values.
+	if ( ! empty( $new_value ) ) {
+		$new_value = 'b64:' . base64_encode( $new_value );
+	}
+	return $new_value;
+}
+add_filter( 'pre_update_option_pmpro_last_known_url', 'pmpro_encode_last_known_url' );
+
+/**
+ * When the pmpro_last_known_url option is retrieved, if it
+ * is base64 encoded, decode it.
+ *
+ * @since 3.5
+ * @link https://developer.wordpress.org/reference/hooks/option_option/
+ *
+ * @param string $value The value of the option.
+ * @return string The decoded value of the option.
+ */
+function pmpro_decode_last_known_url( $value ) {
+	// Check if the value is base64 encoded.
+	if ( strpos( $value, 'b64:' ) === 0 ) {
+		$value = base64_decode( substr( $value, 4 ) );
+	} else {
+		// If the value is not encoded, then it is an old value. Encode it now.
+		remove_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
+		update_option( 'pmpro_last_known_url', $value );
+		add_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
+	}
+	return $value;
+}
+add_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
+
+/**
  * Determine if the site is in pause mode or not
  *
  * @since 2.10
@@ -4957,3 +5064,80 @@ function pmpro_method_defined_in_class( $object, $method_name ) {
     // Check if the method's declaring class is the same as the object's class.
     return $method->getDeclaringClass()->getName() === $reflection_class->getName();
 }
+
+/**
+ * Check if we can check a token order for completion.
+ *
+ * @since 3.3.3
+ *
+ * @param int $order_id The ID of the order to check.
+ * @return bool True if we can check the order for completion, false otherwise.
+ */
+function pmpro_can_check_token_order_for_completion( $order_id ) {
+	// Get the order object.
+	$order = new MemberOrder( $order_id );
+
+	// If the order does not exist, we can't check it.
+	if ( empty( $order->id ) ) {
+		return false;
+	}
+
+	// If the order is not a token order, we can't check it.
+	if ( 'token' !== $order->status ) {
+		return false;
+	}
+
+	// If the order does not have a gateway set, we can't check it.
+	if ( empty( $order->Gateway ) ) {
+		return false;
+	}
+
+	// Check if the order supports checking for completion.
+	return $order->Gateway->supports( 'check_token_orders' );
+}
+
+/**
+ * Check a token order for completion.
+ *
+ * @since 3.3.3
+ *
+ * @param int $order_id The ID of the order to check.
+ * @return true|string True if the payment has been completed and the order processed. A string if an error occurred.
+ */
+function pmpro_check_token_order_for_completion( $order_id ) {
+	// Get the order object.
+	$order = new MemberOrder( $order_id );
+
+	// If the order does not exist, we can't check it.
+	if ( empty( $order->id ) ) {
+		return __( 'Order not found.', 'paid-memberships-pro' );
+	}
+
+	// If the order is not a token order, we can't check it.
+	if ( 'token' !== $order->status ) {
+		return __( 'Order is not a token order.', 'paid-memberships-pro' );
+	}
+
+	// If the order does not have a gateway set, we can't check it.
+	if ( empty( $order->Gateway ) ) {
+		return __( 'Order gateway not found.', 'paid-memberships-pro' );
+	}
+
+	// Check the order for completion.
+	return $order->Gateway->check_token_order( $order );
+}
+
+/**
+ * Show a message on the account page for a specific membership level.
+ */
+function pmpro_display_member_account_level_message( $level ) {
+	$membership_account_message = get_pmpro_membership_level_meta( $level->id, 'membership_account_message', true );
+	if ( $membership_account_message ) {
+		?>
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-message' ) ); ?>">
+			<?php echo wpautop( wp_kses_post( $membership_account_message ) ); ?>
+		</div>
+		<?php
+	}
+}
+add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );

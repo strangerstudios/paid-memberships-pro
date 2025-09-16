@@ -3,7 +3,7 @@
 class PMPro_Member_Edit_Panel_User_Fields extends PMPro_Member_Edit_Panel {
 	/**
 	 * @var PMPro_Field_Group The field group .
-	 * @since TBD
+	 * @since 3.4
 	 */
 	private $field_group;
 
