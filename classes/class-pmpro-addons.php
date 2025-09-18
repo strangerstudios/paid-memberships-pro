@@ -22,7 +22,7 @@ class PMPro_AddOns {
 	 * @since 1.8
 	 * @var array
 	 */
-	public $addons           = array();
+	public $addons = array();
 
 	/**
 	 * Timestamp of last Add Ons check.
@@ -31,7 +31,7 @@ class PMPro_AddOns {
 	 * @var int
 	 */
 	public $addons_timestamp = 0;
-	
+
 	/**
 	 * Cache of plugin information to reduce calls to get_plugins().
 	 *
@@ -252,7 +252,7 @@ class PMPro_AddOns {
 		// Make an easily searchable array of installed plugins to reduce computational compexity.
 		// The key of the array is the plugin filename, the value is the folder name.
 		$installed_plugins = array();
-		
+
 		// Get the cached list of installed plugins.
 		$cached_plugins = $this->get_installed_plugins();
 
@@ -805,7 +805,7 @@ class PMPro_AddOns {
 		if ( ! function_exists( 'plugins_api' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 		}
-		$api  = plugins_api( 'plugin_information', array( 'slug' => $slug ) );
+		$api = plugins_api( 'plugin_information', array( 'slug' => $slug ) );
 		if ( is_wp_error( $api ) || empty( $api ) || empty( $api->download_link ) ) {
 			return new WP_Error( 'pmpro_addon_package_missing', __( 'Could not determine download URL for this Add On.', 'paid-memberships-pro' ) );
 		}
@@ -1131,7 +1131,7 @@ class PMPro_AddOns {
 		if ( is_wp_error( $remote_addons ) ) {
 			pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
 			// Return cached addons if available
-      		return $this->addons ?: array();
+			return $this->addons ?: array();
 		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
 
 			// Update the timestamp
@@ -1228,9 +1228,9 @@ class PMPro_AddOns {
 	 * @return array Installed plugins.
 	 */
 	private function get_installed_plugins() {
-    if ( null === $this->cached_plugins ) {
-        $this->cached_plugins = get_plugins();
-    }
-    return $this->cached_plugins;
-}
+		if ( null === $this->cached_plugins ) {
+			$this->cached_plugins = get_plugins();
+		}
+		return $this->cached_plugins;
+	}
 }
