@@ -1,7 +1,7 @@
 <?php
 	$site_type = get_option( 'pmpro_site_type' );
 
-	$addon_manager = new PMPro_AddOns();
+	$addon_manager = PMPro_AddOns::instance();
 
 	if ( empty( $site_type ) ) {
 		$site_type = 'general';

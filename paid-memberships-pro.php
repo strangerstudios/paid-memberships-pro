@@ -198,7 +198,7 @@ add_action( 'init', function () {
 		if ( has_action( 'wp_ajax_pmpro_addon_install' ) ) {
 			return;
 		}
-		( new PMPro_AddOns() )->register_ajax_endpoints();
+		PMPro_AddOns::instance()->register_ajax_endpoints();
 	}
 } );
 

@@ -17,7 +17,7 @@
 	}
 
 	// Add On Manager
-	$addon_manager = new PMPro_AddOns();
+	$addon_manager = PMPro_AddOns::instance();
 
 	// Get all Add Ons.
 	$addons = $addon_manager->get_addons();
