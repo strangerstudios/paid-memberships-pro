@@ -188,6 +188,9 @@ add_action( 'plugins_loaded', function() {
 
 } );
 
+// Add On Management (Deprecated in 3.5.6, to be removed in 4.0.0)
+require_once( PMPRO_DIR . '/includes/addons.php' );
+
 // Add On Management: Ensure AJAX endpoints are available during admin-ajax requests even if no instance has been created.
 add_action( 'init', function () {
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
