@@ -1003,7 +1003,7 @@ jQuery(document).ready(function () {
 					}
 					setStatus('active', 'Active');
 				} else if (action === 'deactivate') {
-					button.text('Deactivated')
+					button.text('Deactivated');
 					if(mainButton.length){
 						mainButton.text('Activate').removeClass('disabled').removeAttr('disabled').attr('aria-disabled','false').removeClass('checkmarked');
 						mainActionInput.val('activate');
