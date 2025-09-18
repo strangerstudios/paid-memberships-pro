@@ -1131,7 +1131,7 @@ class PMPro_AddOns {
 		if ( is_wp_error( $remote_addons ) ) {
 			pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
 			// Return cached addons if available
-			return $this->addons ?: array();
+      		return $this->addons ? : array();
 		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
 
 			// Update the timestamp
