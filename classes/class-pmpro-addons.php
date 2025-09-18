@@ -574,6 +574,12 @@ class PMPro_AddOns {
 			return $plugin_file;
 		}
 
+		// Ensure WordPress has the latest update data before attempting an upgrade.
+		// When multiple updates are triggered sequentially over AJAX, the in-memory
+		// update transient can be stale after the first upgrade completes. Refreshing
+		// here prevents false negatives from Plugin_Upgrader::upgrade().
+		$this->refresh_update_data();
+
 		// License gating when applicable.
 		$slug  = $this->maybe_extract_slug( $slug_or_plugin );
 		$addon = $slug ? $this->get_addon_by_slug( $slug ) : false;
@@ -595,7 +601,32 @@ class PMPro_AddOns {
 			return $result;
 		}
 		if ( false === $result ) {
-			return new WP_Error( 'pmpro_addon_update_failed', __( 'Update failed.', 'paid-memberships-pro' ) );
+			// Try one more time after a hard refresh of update data.
+			$this->refresh_update_data();
+			$result = $upgrader->upgrade( $plugin_file );
+			if ( is_wp_error( $result ) ) {
+				return $result;
+			}
+			if ( false === $result ) {
+				// As a last resort for PMPro-hosted add ons, attempt a direct reinstall
+				// using the package URL. This can occur if the transient briefly lacks
+				// the response entry even though an update is available.
+				if ( ! empty( $addon ) && ! empty( $slug ) ) {
+					$package = $this->get_download_package_url( $slug );
+					if ( ! is_wp_error( $package ) && ! empty( $package ) ) {
+						$install_result = $upgrader->install( $package );
+						if ( $install_result ) {
+							return array(
+								'success'     => true,
+								'action'      => 'update',
+								'plugin_file' => $plugin_file,
+								'message'     => __( 'Add On updated.', 'paid-memberships-pro' ),
+							);
+						}
+					}
+				}
+				return new WP_Error( 'pmpro_addon_update_failed', __( 'Update failed.', 'paid-memberships-pro' ) );
+			}
 		}
 
 		return array(
@@ -604,6 +635,22 @@ class PMPro_AddOns {
 			'plugin_file' => $plugin_file,
 			'message'     => __( 'Add On updated.', 'paid-memberships-pro' ),
 		);
+	}
+
+	/**
+	 * Refresh the core plugin update data and PMPro add-on responses.
+	 *
+	 * @since TBD
+	 * @return void
+	 */
+	private function refresh_update_data() {
+		// Make sure helper functions are loaded in AJAX context.
+		if ( ! function_exists( 'wp_update_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/update.php';
+		}
+		// Force a fresh check from WordPress.org and our filters.
+		wp_version_check( array(), true );
+		wp_update_plugins();
 	}
 
 	/**
