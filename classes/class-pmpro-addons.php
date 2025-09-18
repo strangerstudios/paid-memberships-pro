@@ -8,6 +8,15 @@ defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 class PMPro_AddOns {
 
 	/**
+	 * The single instance of the class.
+	 *
+	 * @var PMPro_AddOns
+	 * @access protected
+	 * @since TBD
+	 */
+	protected static $instance = null;
+
+	/**
 	 * Array of Add Ons.
 	 *
 	 * @since 1.8
@@ -36,6 +45,44 @@ class PMPro_AddOns {
 		$this->addons_timestamp = get_option( 'pmpro_addons_timestamp', false );
 
 		add_action( 'admin_init', array( $this, 'admin_hooks' ) );
+	}
+
+	/**
+	 * Get the single instance of the class.
+	 *
+	 * @access public
+	 * @since TBD
+	 * @return PMPro_AddOns
+	 */
+	public static function instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Prevent the instance from being cloned.
+	 *
+	 * @access public
+	 * @since TBD
+	 * @return void
+	 * @throws Exception If the instance is cloned.
+	 */
+	public function __clone() {
+		throw new Exception( __( 'PMPro_AddOns instance cannot be cloned', 'paid-memberships-pro' ) );
+	}
+
+	/**
+	 * Prevent the instance from being unserialized.
+	 *
+	 * @access public
+	 * @since TBD
+	 * @return void
+	 * @throws Exception If the instance is unserialized.
+	 */
+	public function __wakeup() {
+		throw new Exception( __( 'PMPro_AddOns instance cannot be unserialized', 'paid-memberships-pro' ) );
 	}
 
 	/**
