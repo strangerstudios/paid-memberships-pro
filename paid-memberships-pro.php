@@ -195,7 +195,7 @@ require_once( PMPRO_DIR . '/includes/addons.php' );
 add_action( 'init', function () {
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 		// If any of our handlers are already present, skip.
-		if ( has_action( 'wp_ajax_pmpro_addon_install' ) ) {
+		if ( has_action( 'pmpro_addon_install' ) ) {
 			return;
 		}
 		PMPro_AddOns::instance()->register_ajax_endpoints();
