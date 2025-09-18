@@ -12,6 +12,20 @@
  */
 
 /**
+ * Helper function to get the PMPro_AddOns singleton instance.
+ * 
+ * @since TBD
+ * @return PMPro_AddOns The singleton instance.
+ */
+function _pmpro_get_addons_manager() {
+	static $addons_manager = null;
+	if ( null === $addons_manager ) {
+		$addons_manager = PMPro_AddOns::instance();
+	}
+	return $addons_manager;
+}
+
+/**
  * Setup plugins api filters
  *
  * @since 1.8.5
@@ -23,7 +37,7 @@ function pmpro_setupAddonUpdateInfo() {
 	// The new class handles this automatically, but for backward compatibility
 	// we'll trigger the admin hooks manually if they haven't been set up yet
 	if ( ! has_filter( 'plugins_api', array( 'PMPro_AddOns', 'plugins_api' ) ) ) {
-		$addons_manager = new PMPro_AddOns();
+		$addons_manager = _pmpro_get_addons_manager();
 	}
 }
 add_action( 'admin_init', 'pmpro_setupAddonUpdateInfo' );
@@ -38,12 +52,7 @@ if ( ! function_exists( 'pmpro_getAddons' ) ) {
 	function pmpro_getAddons() {
 		_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::get_addons()' );
 		
-		static $addons_manager = null;
-		if ( null === $addons_manager ) {
-			$addons_manager = new PMPro_AddOns();
-		}
-		
-		return $addons_manager->get_addons();
+		return _pmpro_get_addons_manager()->get_addons();
 	}
 }
 
@@ -58,12 +67,7 @@ if ( ! function_exists( 'pmpro_getAddons' ) ) {
 function pmpro_get_add_ons_with_incorrect_folder_names() {
 	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::get_add_ons_with_incorrect_folder_names()' );
 	
-	static $addons_manager = null;
-	if ( null === $addons_manager ) {
-		$addons_manager = new PMPro_AddOns();
-	}
-	
-	return $addons_manager->get_add_ons_with_incorrect_folder_names();
+	return _pmpro_get_addons_manager()->get_add_ons_with_incorrect_folder_names();
 }
 
 /**
@@ -79,12 +83,7 @@ if ( ! function_exists( 'pmpro_getAddonBySlug' ) ) {
 	function pmpro_getAddonBySlug( $slug ) {
 		_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::get_addon_by_slug()' );
 		
-		static $addons_manager = null;
-		if ( null === $addons_manager ) {
-			$addons_manager = new PMPro_AddOns();
-		}
-		
-		return $addons_manager->get_addon_by_slug( $slug );
+		return _pmpro_get_addons_manager()->get_addon_by_slug( $slug );
 	}
 }
 
@@ -99,12 +98,7 @@ if ( ! function_exists( 'pmpro_getAddonBySlug' ) ) {
 function pmpro_get_addon_categories() {
 	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::get_addon_categories()' );
 	
-	static $addons_manager = null;
-	if ( null === $addons_manager ) {
-		$addons_manager = new PMPro_AddOns();
-	}
-	
-	return $addons_manager->get_addon_categories();
+	return _pmpro_get_addons_manager()->get_addon_categories();
 }
 
 /**
@@ -119,12 +113,7 @@ function pmpro_get_addon_categories() {
 function pmpro_get_addon_icon( $slug ) {
 	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::get_addon_icon()' );
 	
-	static $addons_manager = null;
-	if ( null === $addons_manager ) {
-		$addons_manager = new PMPro_AddOns();
-	}
-	
-	return $addons_manager->get_addon_icon( $slug );
+	return _pmpro_get_addons_manager()->get_addon_icon( $slug );
 }
 
 /**
@@ -139,12 +128,7 @@ function pmpro_get_addon_icon( $slug ) {
 function pmpro_update_plugins_filter( $value ) {
 	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::update_plugins_filter()' );
 	
-	static $addons_manager = null;
-	if ( null === $addons_manager ) {
-		$addons_manager = new PMPro_AddOns();
-	}
-	
-	return $addons_manager->update_plugins_filter( $value );
+	return _pmpro_get_addons_manager()->update_plugins_filter( $value );
 }
 
 /**
@@ -160,12 +144,7 @@ function pmpro_update_plugins_filter( $value ) {
 function pmpro_http_request_args_for_addons( $args, $url ) {
 	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::http_request_args_for_addons()' );
 	
-	static $addons_manager = null;
-	if ( null === $addons_manager ) {
-		$addons_manager = new PMPro_AddOns();
-	}
-	
-	return $addons_manager->http_request_args_for_addons( $args, $url );
+	return _pmpro_get_addons_manager()->http_request_args_for_addons( $args, $url );
 }
 
 /**
@@ -177,12 +156,7 @@ function pmpro_http_request_args_for_addons( $args, $url ) {
 function pmpro_plugins_api( $api, $action = '', $args = null ) {
 	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::plugins_api()' );
 	
-	static $addons_manager = null;
-	if ( null === $addons_manager ) {
-		$addons_manager = new PMPro_AddOns();
-	}
-	
-	return $addons_manager->plugins_api( $api, $action, $args );
+	return _pmpro_get_addons_manager()->plugins_api( $api, $action, $args );
 }
 
 /**
@@ -261,12 +235,7 @@ if ( ! function_exists( 'pmpro_getPluginAPIObjectFromAddon' ) ) {
 function pmpro_reset_update_plugins_cache( $old_value, $value ) {
 	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::reset_update_plugins_cache()' );
 	
-	static $addons_manager = null;
-	if ( null === $addons_manager ) {
-		$addons_manager = new PMPro_AddOns();
-	}
-	
-	return $addons_manager->reset_update_plugins_cache( $old_value, $value );
+	return _pmpro_get_addons_manager()->reset_update_plugins_cache( $old_value, $value );
 }
 
 /**
@@ -294,10 +263,5 @@ add_action( 'admin_init', 'pmpro_admin_init_updating_plugins' );
 function pmpro_can_download_addon_with_license( $addon_license ) {
 	_deprecated_function( __FUNCTION__, 'TBD', 'PMPro_AddOns::can_download_addon_with_license()' );
 	
-	static $addons_manager = null;
-	if ( null === $addons_manager ) {
-		$addons_manager = new PMPro_AddOns();
-	}
-	
-	return $addons_manager->can_download_addon_with_license( $addon_license );
+	return _pmpro_get_addons_manager()->can_download_addon_with_license( $addon_license );
 }
