@@ -363,7 +363,13 @@
 									} elseif ( $addon['status'] === 'active' ) {
 										$actions = apply_filters( 'plugin_action_links_' . $plugin_file, array(), $plugin_file, $addon, $addon['status'] );
 										if ( ! empty( $actions ) ) {
-											$action_button = str_replace( '<a ', '<a class="button action-link" ', reset( $actions ) );
+											$first_action = reset( $actions );
+											if ( is_string( $first_action ) && $first_action !== '' ) {
+												$action_button = str_replace( '<a ', '<a class="button action-link" ', $first_action );
+											} else {
+												$action_button['label']  = __( 'Active', 'paid-memberships-pro' );
+												$action_button['style'] .= ' disabled';
+											}
 										} else {
 											$action_button['label']  = __( 'Active', 'paid-memberships-pro' );
 											$action_button['style'] .= ' disabled';
