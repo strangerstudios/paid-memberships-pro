@@ -441,7 +441,7 @@ function pmpro_report_memberships_page() {
 			$cancellations_label = __( 'All Cancellations', 'paid-memberships-pro' );
 		}
 	?>
-	<div class="pmpro_chart_area" style="min-height:500px;">
+	<div class="pmpro_chart_area">
 		<canvas id="pmpro-chart-memberships" style="width: 100%; height: 500px;"></canvas>
 	</div>
 	<script>

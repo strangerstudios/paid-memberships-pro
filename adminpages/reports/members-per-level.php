@@ -23,7 +23,9 @@ function pmpro_report_members_per_level_init() {
 		// Register Chart.js (CDN) and helper.
 		wp_register_script( 'pmpro-chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js', array(), '4.4.3', true );
 	$pmpro_main = dirname( dirname( dirname( __FILE__ ) ) ) . '/paid-memberships-pro.php';
-		wp_register_script( 'pmpro-reports-charts', plugins_url( 'js/admin-reports-charts.js',  $pmpro_main ), array( 'pmpro-chartjs', 'jquery' ), PMPRO_VERSION, true );
+		// Register Chart.js Data Labels plugin for percentage labels on the pie chart.
+		wp_register_script( 'pmpro-chartjs-datalabels', 'https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js', array( 'pmpro-chartjs' ), '2.2.0', true );
+		wp_register_script( 'pmpro-reports-charts', plugins_url( 'js/admin-reports-charts.js',  $pmpro_main ), array( 'pmpro-chartjs', 'pmpro-chartjs-datalabels', 'jquery' ), PMPRO_VERSION, true );
 		wp_enqueue_script( 'pmpro-reports-charts' );
 	}
 }
@@ -116,20 +118,18 @@ function pmpro_report_draw_active_members_per_level_chart() {
 		<canvas id="pmpro-chart-members-per-level" style="height:320px;"></canvas>
 	</div>
 	<script>
-		(function(){
-			function render(){
-				if (!window.pmproCharts) { return; }
+	(function(){
+		function render(){
+			if (!window.pmproCharts) { return; }
 			var labels = [
-				<?php foreach ( $cols as $level_name => $_count ) { ?>
-					<?php echo wp_json_encode( esc_html( $level_name ) ); ?>,
-				<?php } ?>
+				<?php foreach ( $cols as $level_name => $_count ) { echo wp_json_encode( esc_html( $level_name ) ) . ","; } ?>
 			];
 			var data = [
-				<?php foreach ( $cols as $_name => $active_members ) { ?>
-					<?php echo intval( $active_members ); ?>,
-				<?php } ?>
+				<?php foreach ( $cols as $_name => $active_members ) { echo intval( $active_members ) . ","; } ?>
 			];
-			var colors = (window.pmproCharts && pmproCharts.palette) ? pmproCharts.palette : undefined;
+			if (!data.length) { return; }
+			var total = data.reduce(function(sum, v){ return sum + v; }, 0);
+			var colors = (window.pmproCharts && window.pmproCharts.palette) ? window.pmproCharts.palette : undefined;
 			var cfg = {
 				type: 'pie',
 				data: {
@@ -143,15 +143,34 @@ function pmpro_report_draw_active_members_per_level_chart() {
 					responsive: true,
 					maintainAspectRatio: false,
 					plugins: {
-						legend: { position: 'right', labels: { color: '#2D2D2D', font: { size: 14 } } }
+						legend: { position: 'right', labels: { color: '#2D2D2D', font: { size: 14 } } },
+						tooltip: {
+							callbacks: {
+								label: function(ctx){
+									var value = ctx.parsed; var pct = total ? ((value/total)*100).toFixed(1) : 0;
+									return ctx.label + ': ' + value + ' (' + pct + '%)';
+								}
+							}
+						},
+						datalabels: {
+							color: '#ffffff',
+							font: { weight: '600' },
+							formatter: function(value){
+								var pct = total ? ((value/total)*100).toFixed(1) : 0;
+								return pct + '%';
+							}
+						}
 					}
 				}
 			};
-				pmproCharts.ensure('pmpro-chart-members-per-level', cfg);
+			if (window.Chart && window.ChartDataLabels && !window.pmproChartsDataLabelsRegistered) {
+				try { window.Chart.register(window.ChartDataLabels); window.pmproChartsDataLabelsRegistered = true; } catch(e) {}
 			}
-			if (document.readyState === 'complete') { render(); }
-			else { window.addEventListener('load', render); }
-		})();
+			pmproCharts.ensure('pmpro-chart-members-per-level', cfg);
+		}
+		if (document.readyState === 'complete') { render(); }
+		else { window.addEventListener('load', render); }
+	})();
 	</script>
 	<?php
 }

@@ -3345,7 +3345,7 @@ tr.pmpro_alert {
 	color: #2c3338;
 }
 
-@media only screen and (min-width: 1500px) and (max-width:1800px) {
+@media only screen and (min-width: 1500px) {
     #wpbody-content .pmpro_admin-pmpro-reports #dashboard-widgets .postbox-container {
         width: 50%
     }
@@ -3483,13 +3483,13 @@ button.pmpro_report_th_closed:before {
 	stroke-width: 0 !important;
 }
 
-.pmpro_chart_area #chart_div {
-	height: 500px;
-	width: 100%;
+.pmpro_chart_area canvas {
+	margin: var(--pmpro--spacing--small) auto;
+	max-width: 100%;
 }
 
 .pmpro_table_area table {
-	max-width: 900px;
+	/* max-width: 900px; */
 }
 
 .pmpro_table_area tfoot th {
