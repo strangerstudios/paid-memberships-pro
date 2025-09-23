@@ -552,6 +552,23 @@ button[type="button"]#other_discount_code_toggle:focus {
 }
 
 /**
+ * Frontend data filters
+ */
+.pmpro_data_filters {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: var(--pmpro--base--spacing--small);
+	margin-bottom: var(--pmpro--base--spacing--medium);
+}
+
+.pmpro_data_count {
+	margin-bottom: var(--pmpro--base--spacing--medium);
+	text-align: right;
+}
+
+/**
  * Misc
  */
 .pmpro_pad-s {

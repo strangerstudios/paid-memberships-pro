@@ -713,7 +713,7 @@ class PMProGateway_stripe extends PMProGateway {
 						<table class="form-table">
 							<?php
 								// If we have a webhook, make sure it has all the necessary events.
-								$webhook = $stripe->does_webhook_exist( true ); // True to force a recheck.
+								$webhook = $stripe->does_webhook_exist();
 								if ( is_array( $webhook ) && isset( $webhook['enabled_events'] ) ) {
 									$events = $stripe->check_missing_webhook_events( $webhook['enabled_events'] );
 									if ( $events ) {
@@ -3777,12 +3777,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
 	 */
-	private function does_webhook_exist( $force = false ) {
-		static $cached_webhook = null;
-		if ( ! empty( $cached_webhook ) && ! $force ) {
-			return $cached_webhook;
-		}
-
+	private function does_webhook_exist() {
 		$webhooks = $this->get_webhooks();
 
 		$webhook_id = false;
@@ -3809,11 +3804,10 @@ class PMProGateway_stripe extends PMProGateway {
 			$webhook_data['enabled_events'] = $webhook_events;
 			$webhook_data['api_version'] = $webhook_api_version;
 			$webhook_data['status'] = $webhook_status;
-			$cached_webhook = $webhook_data;
+			return $webhook_data;
 		} else {
-			$cached_webhook = false;
+			return false;
 		}
-		return $cached_webhook;
 	}
 
 	/**
@@ -4486,6 +4480,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$success = false;
 
+		// Add new lines to order notes if not empty.
+		if ( ! empty( $order->notes ) ) {
+			$order->notes .= "\n\n";
+		}
+
 		//attempt refund
 		try {
 			
@@ -4516,7 +4515,8 @@ class PMProGateway_stripe extends PMProGateway {
 			
 				global $current_user;
 
-				$order->notes = trim( $order->notes.' '.sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );	
+				// translators: %1$s is the date. %2$s is the Transaction ID. %3$s is the user display name that initiated the refund.
+				$order->notes = trim( $order->notes . sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
 
 				$user = get_user_by( 'id', $order->user_id );
 				//send an email to the member
@@ -4528,14 +4528,14 @@ class PMProGateway_stripe extends PMProGateway {
 				$myemail->sendRefundedAdminEmail( $user, $order );
 
 			} else {
-				$order->notes = trim( $order->notes . ' ' . __('Admin: An error occurred while attempting to process this refund.', 'paid-memberships-pro' ) );
+				$order->notes = trim( $order->notes . __('Admin: An error occurred while attempting to process this refund.', 'paid-memberships-pro' ) );
 			}
 
 		} catch ( \Throwable $e ) {			
-			$order->notes = trim( $order->notes . ' ' . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );	
+			$order->notes = trim( $order->notes . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
 		} catch ( \Exception $e ) {
-			$order->notes = trim( $order->notes . ' ' . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
-		}		
+			$order->notes = trim( $order->notes . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
+		}
 
 		$order->saveOrder();
 
