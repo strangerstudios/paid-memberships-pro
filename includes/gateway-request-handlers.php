@@ -239,7 +239,7 @@ function pmpro_handle_recurring_payment_failure_at_gateway( $order_data ) {
 	$existing_orders = $subscription->get_orders(
 		array(
 			'status' => 'pending',
-			'payment_transaction_id' => isset( $other_order_data['payment_transaction_id'] ) ? $other_order_data['payment_transaction_id'] : '',
+			'payment_transaction_id' => isset( $order_data['payment_transaction_id'] ) ? $order_data['payment_transaction_id'] : '',
 			'limit' => 1,
 		)
 	);
