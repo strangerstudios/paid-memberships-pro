@@ -2060,7 +2060,7 @@ class PMProGateway_stripe extends PMProGateway {
 			);
 
 			// If we're sending an initial payment and a recurring payment separately, we need to set a trial period.
-			if ( empty( $combine_initial_and_recurring) ) {
+			if ( empty( $combine_initial_and_recurring ) ) {
 				// We need to set the trial period days and send initial and recurring payments as separate line items.
 				$subscription_data['trial_period_days'] = $filtered_trial_period_days;
 			}
