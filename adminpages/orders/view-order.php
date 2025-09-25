@@ -364,58 +364,7 @@ $subscription = $order->get_subscription();
 			<div class="pmpro_section_inside">
 				<?php
 					// Define the default actions as a named array.
-					$order_actions = array(
-						'edit' => array(
-							'title'   => esc_attr( sprintf( __( 'Edit order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
-							'href'    => esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $order->id, 'edit' => 1 ), admin_url( 'admin.php' ) ) ),
-							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-edit',
-							'label'   => esc_html__( 'Edit Order', 'paid-memberships-pro' ),
-						),
-						'print' => array(
-							'title'   => esc_attr( sprintf( __( 'Print or save order # %s as PDF', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
-							'href'    => esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'id' => $order->id ), admin_url( 'admin-ajax.php' ) ) ),
-							'target'  => '_blank',
-							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-printer',
-							'label'   => esc_html__( 'Print or Save as PDF', 'paid-memberships-pro' ),
-						),
-						'email' => array(
-							'title'   => esc_attr( sprintf( __( 'Send order # %s via email', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
-							'href'    => '#TB_inline?width=600&height=200&inlineId=email_order',
-							'class'   => 'thickbox email_link button button-secondary pmpro-has-icon pmpro-has-icon-email',
-							'data-order' => esc_attr( $order->id ),
-							'label'   => esc_html__( 'Send Order Via Email', 'paid-memberships-pro' ),
-						),
-						'invoice' => array(
-							'title'   => esc_attr( sprintf( __( 'View order # %s as member', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
-							'href'    => esc_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-							'target'  => '_blank',
-							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-admin-users',
-							'label'   => esc_html__( 'View Order As Member', 'paid-memberships-pro' ),
-						),
-					);
-
-					// Add the "Recheck Payment" button if allowed.
-					if ( 'token' === $order->status && pmpro_can_check_token_order_for_completion( $order->id ) ) {
-						$recheck_nonce_url = wp_nonce_url(
-							add_query_arg(
-								array(
-									'page'   => 'pmpro-orders',
-									'action' => 'check_token_order',
-									'token_order' => $order->id,
-									'id'     => $order->id,
-								),
-								admin_url( 'admin.php' )
-							),
-							'check_token_order',
-							'pmpro_orders_nonce'
-						);
-						$order_actions['check_token_order'] = array(
-							'title'   => esc_attr( sprintf( __( 'Recheck payment for order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
-							'href'    => esc_url( $recheck_nonce_url ),
-							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-image-rotate',
-							'label'   => esc_html__( 'Recheck Payment Status', 'paid-memberships-pro' )
-						);
-					}
+					$order_actions = array();
 
 					// Add a "Mark as Paid" button if allowed.
 					if ( $order->status === 'pending' && $order->payment_type === 'Check' ) {
@@ -443,8 +392,62 @@ $subscription = $order->get_subscription();
 						$order_actions['mark_order_paid'] = array(
 							'title'   => esc_attr( sprintf( __( 'Mark order # %s as paid', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
 							'href'    => esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $mark_paid_text ) . ', ' . wp_json_encode( $mark_paid_nonce_url ) . '); void(0);' ),
-							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-image-rotate',
+							'class'   => 'button is-success pmpro-has-icon pmpro-has-icon-image-rotate',
 							'label'   => esc_html__( 'Mark Order as Paid', 'paid-memberships-pro' ),
+						);
+					}
+
+					$order_actions['edit'] = array(
+						'title'   => esc_attr( sprintf( __( 'Edit order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
+						'href'    => esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $order->id, 'edit' => 1 ), admin_url( 'admin.php' ) ) ),
+						'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-edit',
+						'label'   => esc_html__( 'Edit Order', 'paid-memberships-pro' ),
+					);
+
+					$order_actions['print'] = array(
+						'title'   => esc_attr( sprintf( __( 'Print or save order # %s as PDF', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
+						'href'    => esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'id' => $order->id ), admin_url( 'admin-ajax.php' ) ) ),
+						'target'  => '_blank',
+						'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-printer',
+						'label'   => esc_html__( 'Print or Save as PDF', 'paid-memberships-pro' ),
+					);
+
+					$order_actions['email'] = array(
+						'title'   => esc_attr( sprintf( __( 'Send order # %s via email', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
+						'href'    => '#TB_inline?width=600&height=200&inlineId=email_order',
+						'class'   => 'thickbox email_link button button-secondary pmpro-has-icon pmpro-has-icon-email',
+						'data-order' => esc_attr( $order->id ),
+						'label'   => esc_html__( 'Send Order Via Email', 'paid-memberships-pro' ),
+					);
+
+					$order_actions['invoice'] = array(
+						'title'   => esc_attr( sprintf( __( 'View order # %s as member', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
+						'href'    => esc_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
+						'target'  => '_blank',
+						'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-admin-users',
+						'label'   => esc_html__( 'View Order As Member', 'paid-memberships-pro' ),
+					);
+
+					// Add the "Recheck Payment" button if allowed.
+					if ( 'token' === $order->status && pmpro_can_check_token_order_for_completion( $order->id ) ) {
+						$recheck_nonce_url = wp_nonce_url(
+							add_query_arg(
+								array(
+									'page'   => 'pmpro-orders',
+									'action' => 'check_token_order',
+									'token_order' => $order->id,
+									'id'     => $order->id,
+								),
+								admin_url( 'admin.php' )
+							),
+							'check_token_order',
+							'pmpro_orders_nonce'
+						);
+						$order_actions['check_token_order'] = array(
+							'title'   => esc_attr( sprintf( __( 'Recheck payment for order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
+							'href'    => esc_url( $recheck_nonce_url ),
+							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-image-rotate',
+							'label'   => esc_html__( 'Recheck Payment Status', 'paid-memberships-pro' )
 						);
 					}
 
@@ -501,7 +504,7 @@ $subscription = $order->get_subscription();
 					$order_actions['delete'] = array(
 						'title'   => esc_attr( sprintf( __( 'Delete order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
 						'href'    => esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $delete_text ) . ', ' . wp_json_encode( $delete_nonce_url ) . '); void(0);' ),
-						'class'   => 'button button-secondary is-destructive pmpro-has-icon pmpro-has-icon-trash',
+						'class'   => 'button is-destructive pmpro-has-icon pmpro-has-icon-trash',
 						'label'   => esc_html__( 'Delete Order', 'paid-memberships-pro' ),
 					);
 

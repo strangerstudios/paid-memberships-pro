@@ -1514,6 +1514,12 @@ td > .pmpro_tag {
 	color: #AA0000;
 }
 
+.pmpro_admin .pmpro_section .button.is-success {
+	background-color: var(--pmpro--color--success-background);
+	border-color: var(--pmpro--color--success-text);
+	color: var(--pmpro--color--success-text);
+}
+
 /**
  * Members list
  */
