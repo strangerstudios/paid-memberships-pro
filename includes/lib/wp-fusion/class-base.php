@@ -1,6 +1,6 @@
 <?php
-
-abstract class WPF_Integrations_Base {
+// IMPORTANT: Prefixing this base class from WP Fusion with "PMPro_" to avoid fatal errors if WP Fusion is activated after PMPro or any similar situation.
+abstract class PMPro_WPF_Integrations_Base {
 
 	/**
 	 * The slug name for WP Fusion's module tracking.

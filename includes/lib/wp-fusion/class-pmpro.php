@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 3.45.3
  */
-class WPF_PMPro extends WPF_Integrations_Base {
+class WPF_PMPro extends PMPro_WPF_Integrations_Base {
 
 	/**
 	 * The slug for WP Fusion's module tracking.
