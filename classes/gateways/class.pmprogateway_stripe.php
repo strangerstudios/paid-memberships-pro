@@ -177,6 +177,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'pmpro_set_up_apple_pay' ), 10, 2 );
 		add_action( 'init', array( 'PMProGateway_stripe', 'clear_saved_subscriptions' ) );
 		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_customer_portal' ), 5 );
+		add_action( 'wp_update_user', array( 'PMProGateway_stripe', 'update_customer_for_user' ), 10, 1 );
 
 		// Stripe Connect functions.
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
@@ -2299,13 +2300,14 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7.0
 	 *
 	 * @param int $user_id to get Stripe_Customer for.
+	 * @param bool $find_existing If true, will try to find an existing customer for the user if one does not exist in user meta.
 	 * @return Stripe_Customer|null
 	 */
-	public function get_customer_for_user( $user_id ) {
+	public function get_customer_for_user( $user_id, $find_existing = true ) {
 		// Pull Stripe customer ID from user meta.
 		$customer_id = get_user_meta( $user_id, 'pmpro_stripe_customerid', true );
 
-		if ( empty( $customer_id ) ) {
+		if ( empty( $customer_id ) && $find_existing ) {
 			// Try to figure out the customer ID from their subscription.
 			$subscription_search_params = array(
 				'user_id' => $user_id,
@@ -2383,11 +2385,25 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Create/Update Stripe customer for a user.
 	 *
 	 * @since 2.7.0
+	 * @deprecated TBD
 	 *
 	 * @param int $user_id to create/update Stripe customer for.
 	 * @return Stripe_Customer|false
 	 */
 	public function update_customer_from_user( $user_id ) {
+		_deprecated_function( __METHOD__, 'TBD', 'PMProGateway_stripe::update_customer_for_user()' );
+		return self::update_customer_for_user( $user_id );
+	}
+
+	/**
+	 * Create/Update Stripe customer for a user.
+	 *
+	 * @since TBD
+	 *
+	 * @param int $user_id to create/update Stripe customer for.
+	 * @return Stripe_Customer|false
+	 */
+	public static function update_customer_for_user( $user_id ) {
 		$user = get_userdata( $user_id );
 
 		if ( empty( $user->ID ) ) {
@@ -2395,8 +2411,15 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
+		$stripe = new PMProGateway_stripe();
+
 		// Get the existing customer from Stripe.
-		$customer = $this->get_customer_for_user( $user_id );
+		$customer = $stripe->get_customer_for_user( $user_id, false ); // False to improve performance if customer ID does not exist in user meta.
+		if ( empty( $customer ) ) {
+			// If we don't have a customer, don't update.
+			// This is important in case Stripe isn't used on the site.
+			return false;
+		}
 
 		// Get the name for the customer.
 		$name = trim( $user->first_name . " " . $user->last_name );
@@ -2407,30 +2430,22 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Get data to update customer with.
 		$customer_args = array(
+			'name'        => $name,
 			'email'       => $user->user_email,
 			'description' => $name . ' (' . $user->user_email . ')',
 		);
 
-		// Maybe update billing address for customer.
-		if (
-			! $this->customer_has_billing_address( $customer ) &&
-			! empty( $user->pmpro_baddress1 ) &&
-			! empty( $user->pmpro_bcity ) &&
-			! empty( $user->pmpro_bstate ) &&
-			! empty( $user->pmpro_bzipcode ) &&
-			! empty( $user->pmpro_bcountry )
-		) {
-			// We have an address in user meta and there is
-			// no address in Stripe. May as well send it.
-			$customer_args['address'] = array(
-				'city'        => $user->pmpro_bcity,
-				'country'     => $user->pmpro_bcountry,
-				'line1'       => $user->pmpro_baddress1,
-				'line2'       => $user->pmpro_baddress2,
-				'postal_code' => $user->pmpro_bzipcode,
-				'state'       => $user->pmpro_bstate,
-			);
-		}
+		/**
+		 * Change the information that is sent when updating/creating
+		 * a Stripe_Customer from a user.
+		 *
+		 * @since 2.7.0
+		 * @deprecated TBD
+		 *
+		 * @param array       $customer_args to be sent.
+		 * @param WP_User     $user being used to create/update customer.
+		 */
+		$customer_args = apply_filters_deprecated( 'pmpro_stripe_update_customer_from_user', array( $customer_args, $user ), 'TBD', 'pmpro_stripe_update_customer_for_user' );
 
 		/**
 		 * Change the information that is sent when updating/creating
@@ -2441,16 +2456,10 @@ class PMProGateway_stripe extends PMProGateway {
 		 * @param array       $customer_args to be sent.
 		 * @param WP_User     $user being used to create/update customer.
 		 */
-		$customer_args = apply_filters( 'pmpro_stripe_update_customer_from_user', $customer_args, $user );
+		$customer_args = apply_filters( 'pmpro_stripe_update_customer_for_user', $customer_args, $user );
 
 		// Update the customer.
-		if ( empty( $customer ) ) {
-			// We need to build a new customer.
-			$customer = $this->create_customer( $customer_args );
-		} else {
-			// Update the existing customer.
-			$customer = $this->update_customer( $customer->ID, $customer_args );
-		}
+		$customer = $stripe->update_customer( $customer->id, $customer_args );
 		return is_string( $customer ) ? false : $customer;
 	}
 
