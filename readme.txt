@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.5.3
+Stable tag: 3.5.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,32 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.5.6 - 2025-09-10 =
+* ENHANCEMENT: Added styles for frontend tables with data filter options. #3482 (@kimcoleman)
+* BUG FIX: Fixed an issue where a generic error message may be shown at checkout instead of the intended error message. #3483 (@JarrydLong)
+* BUG FIX: Fixed an issue where recurring PayPal Express payments would not be recorded in PMPro if the associated subscription did not already have orders present on the site. #3484 (@dparker1005)
+* BUG FIX: Fixed an issue where PayPal subscriptions may remain in "paused" status after being marked as cancelled in PMPro. #3485 (@dparker1005)
+* BUG FIX: Fixed an issue where Stripe application fees could be updated for invoices that did not originate from PMPro subscriptions. #3487 (@dparker1005)
+
+= 3.5.5 - 2025-08-26 =
+* ENHANCEMENT: Improved readability of order notes by adding line breaks before appending data via automated processes. #3480 (@kimcoleman)
+* ENHANCEMENT: Added formatting for the Polish zloty currency. #3478 (@warnaa)
+* ENHANCEMENT: Updated the Gocodebox_Banner_Notifier library and prefixed the class with `PMPro_` to avoid plugin conflicts. #3474 (@dparker1005)
+* BUG FIX: Fixed performance issues that may occur when the plugin is in "pause mode". #3476 (@dparker1005)
+* BUG FIX: Fixed an issue where some admin banners could not be dismissed. #3472 (@dparker1005)
+* BUG FIX: Resolving a PHP warning that may show when deactivating the plugin. #3475 (@dalemugford)
+* BUG FIX: Corrected the description for the Credit Card Expiring email template. #3471 (@kimwhite)
+* REFACTOR: Moved some compatibility code from the PMPro_Action_Scheduler class to separate compatibility files. #3475 (@dalemugford)
+
+= 3.5.4 - 2025-08-18 =
+* BUG FIX/ENHANCEMENT: Now marking restricted Elementor content as "dynamic content" to prevent it from being cached by Elementor. #3469 (@andrewlimaza)
+* BUG FIX: Fixed an issue where "Payment Reminder" emails may go out daily depending on the site's set timezone. #3463 (@dalemugford)
+* BUG FIX: Fixed an issue where some restricted Elementor data may not have successfully migrated after the PMPro v3.5 update. #3466 (@dparker1005)
+* BUG FIX: Fixed an issue where the "Rebuild Webhook" button on the Stripe Payment Settings page would not create a new webhook. #3457 (@dparker1005)
+* BUG FIX: Fixed an issue where PMPro checkouts would not complete if the Stripe Checkout session was set to "no_payment_required" status. #3458 (@johnorourke)
+* BUG FIX: Fixed an issue where PayPal subscriptions may be set to "paused" status instead of "cancelled" after recurring payments are suspended due to failed payments. #3468 (@dparker1005)
+* BUG FIX: Fixed a PHP deprecation warning that may show when updating billing information. #3460 (@dparker1005)
+
 = 3.5.3 - 2025-07-25 =
 * ENHANCEMENT: Added a new `!!renew_url!!` email template variable to expiration and cancellation email templates. #3448 (@kimcoleman)
 * ENHANCEMENT: Extended the checkout spam protection setting to also protect the login form. #3450 (@ideadude)

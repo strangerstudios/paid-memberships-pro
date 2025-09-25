@@ -71,6 +71,11 @@ function pmpro_compatibility_checker() {
 			'check_type'  => 'constant',
 			'check_value' => 'BLUEHOST_PLUGIN_VERSION',
 		],
+		[
+			'file'			=> 'pantheon.php',
+			'check_type'	=> 'function',
+			'check_value'	=> 'pantheon_wp_env',
+		],
 	];
 
 	foreach ( $compat_checks as $value ) {

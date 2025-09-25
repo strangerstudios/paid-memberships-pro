@@ -1,15 +1,23 @@
 <?php
+// This is a copy of the Gocodebox_Banner_Notifier class with the prefix replaced with PMPro_ to avoid conflicts.
+// https://github.com/gocodebox/banner-notifications
+
 /**
  * Example usage inside your plugin bootstrap:
  *
- * $notifier = new Gocodebox_Banner_Notifier( array(
+ * $notifier = new PMPro_Banner_Notifier( array(
  *     'prefix'            => 'myplugin',               // will hook wp_ajax_myplugin_notifications, etc.
  *     'version'           => '1.0.0',                  // used for transient key separation
  *     'notifications_url' => 'https://example.com/notifications.json',
  * ) );
  */
+defined( 'ABSPATH' ) || exit;
 
-class Gocodebox_Banner_Notifier {
+if ( class_exists( 'PMPro_Banner_Notifier' ) ) {
+	return;
+}
+
+class PMPro_Banner_Notifier {
 
 	/** @var string slug used in hooks, filters, option / meta keys, etc. */
 	private $prefix;
@@ -68,6 +76,9 @@ class Gocodebox_Banner_Notifier {
 		add_filter( "{$this->prefix}_notification_test_pmpro_revenue", array( $this, 'notification_test_pmpro_revenue' ), 10, 2 );
 		add_filter( "{$this->prefix}_notification_test_pmpro_num_orders", array( $this, 'notification_test_pmpro_num_orders' ), 10, 2 );
 		add_filter( "{$this->prefix}_notification_test_pmpro_setting", array( $this, 'notification_test_pmpro_setting' ), 10, 2 );
+		add_filter( "{$this->prefix}_notification_test_llms_setting", array( $this, 'notification_test_llms_setting' ), 10, 2 );
+		add_filter( "{$this->prefix}_notification_test_llms_revenue", array( $this, 'notification_test_llms_revenue' ), 10, 2 );
+		add_filter( "{$this->prefix}_notification_test_llms_num_orders", array( $this, 'notification_test_llms_num_orders' ), 10, 2 );
 		add_filter( "{$this->prefix}_notification_test_site_url_match", array( $this, 'notification_test_site_url_match' ), 10, 2 );
 		add_filter( "{$this->prefix}_notification_test_check_option", array( $this, 'notification_test_check_option' ), 10, 2 );
 	}
@@ -524,6 +535,63 @@ class Gocodebox_Banner_Notifier {
 	}
 
 	/**
+	 * LifterLMS revenue test.
+	 *
+	 * @param bool  $value The current test value.
+	 * @param array $data Array from the notification with [0] comparison operator and [1] revenue.
+	 * Optionally $data can contain a third parameter to also check the currency code.
+	 * @returns bool true if there is as much revenue as specified.
+	 */
+	function notification_test_llms_revenue( $value, $data ) {
+		global $wpdb;
+		static $revenue;
+
+		if ( ! is_array( $data ) || ! isset( $data[0] ) || ! isset( $data[1] ) ) {
+			return false;
+		}
+
+		if ( ! isset( $revenue ) ) {
+			$sql_query = "SELECT SUM(sales.meta_value - COALESCE(refunds.meta_value, 0)) AS amount
+						FROM {$wpdb->posts} AS txns
+						JOIN {$wpdb->postmeta} AS sales ON sales.post_id = txns.ID AND sales.meta_key = '_llms_amount'
+						LEFT JOIN {$wpdb->postmeta} AS refunds ON refunds.post_id = txns.ID AND refunds.meta_key = '_llms_refund_amount'
+						WHERE
+						        ( txns.post_status = 'llms-txn-succeeded' OR txns.post_status = 'llms-txn-refunded' )
+						    AND txns.post_type = 'llms_transaction'
+						;";
+			$revenue   = $wpdb->get_var( $sql_query );
+		}
+
+		return $this->int_compare( $revenue, $data[1], $data[0] );
+	}
+
+	/**
+	 * LifterLMS number of orders test.
+	 *
+	 * @param bool  $value The current test value.
+	 * @param array $data Array from the notification with [0] comparison operator and [1] number of orders.
+	 * @returns bool true if there are as many orders as specified.
+	 */
+	function notification_test_llms_num_orders( $value, $data ) {
+		global $wpdb;
+		static $num_orders;
+
+		if ( ! is_array( $data ) || ! isset( $data[0] ) || ! isset( $data[1] ) ) {
+			return false;
+		}
+
+		if ( ! isset( $num_orders ) ) {
+			$sql_query  = "SELECT COUNT(*)
+							FROM {$wpdb->posts} AS orders
+							WHERE post_status IN ('llms-active', 'llms-completed', 'llms-on-hold', 'llms-pending=cancel', 'llms-cancelled', 'llms-expired')
+							  AND post_type = 'llms_order'";
+			$num_orders = $wpdb->get_var( $sql_query );
+		}
+
+		return $this->int_compare( $num_orders, $data[1], $data[0] );
+	}
+
+	/**
 	 * PMPro number of orders test.
 	 *
 	 * @param bool  $value The current test value.
@@ -548,6 +616,31 @@ class Gocodebox_Banner_Notifier {
 		}
 
 		return pmpro_int_compare( $num_orders, $data[1], $data[0] );
+	}
+
+	/**
+	 * LifterLMS setting test.
+	 *
+	 * @param bool  $value The current test value.
+	 * @param array $data Array from the notification with [0] setting name to check [1] value to check for.
+	 * @returns bool true if an option if found with the specified name and value.
+	 */
+	function notification_test_llms_setting( $value, $data ) {
+		if ( ! is_array( $data ) || ! isset( $data[0] ) || ! isset( $data[1] ) ) {
+			return false;
+		}
+
+		// remove the pmpro_ prefix if given
+		if ( strpos( $data[0], 'lifterlms_' ) === 0 ) {
+			$data[0] = substr( $data[0], 6, strlen( $data[0] ) - 6 );
+		}
+
+		$option_value = get_option( 'lifterlms_' . $data[0] );
+		if ( isset( $option_value ) && $option_value == $data[1] ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -807,5 +900,47 @@ class Gocodebox_Banner_Notifier {
 
 		update_user_meta( $current_user->ID, "{$this->prefix}_archived_notifications", $archived_notifications );
 		exit;
+	}
+
+
+	/**
+	 * Compare two integers using parameters similar to the version_compare function.
+	 * This allows us to pass in a comparison character via the notification rules
+	 * and get a true/false result.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param int    $a First integer to compare.
+	 * @param int    $b Second integer to compare.
+	 * @param string $operator Operator to use, e.g. >, <, >=, <=, =, !=.
+	 * @return bool true or false based on the operator passed in. Returns null for invalid operators.
+	 */
+	function int_compare( $a, $b, $operator ) {
+		switch ( $operator ) {
+			case '>':
+				$r = (int) $a > (int) $b;
+				break;
+			case '<':
+				$r = (int) $a < (int) $b;
+				break;
+			case '>=':
+				$r = (int) $a >= (int) $b;
+				break;
+			case '<=':
+				$r = (int) $a <= (int) $b;
+				break;
+			case '=':
+			case '==':
+				$r = (int) $a == (int) $b;
+				break;
+			case '!=':
+			case '<>':
+				$r = (int) $a != (int) $b;
+				break;
+			default:
+				$r = null;
+		}
+
+		return $r;
 	}
 }

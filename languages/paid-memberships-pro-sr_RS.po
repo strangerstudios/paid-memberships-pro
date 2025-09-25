@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.5.3\n"
+"Project-Id-Version: Paid Memberships Pro 3.5.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-25T16:36:42+00:00\n"
+"POT-Creation-Date: 2025-09-09T17:52:59+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -62,6 +62,8 @@ msgstr "Godina"
 #: includes/currencies.php:153
 #: includes/currencies.php:134
 #: includes/currencies.php:161
+#: includes/currencies.php:141
+#: includes/currencies.php:168
 msgid "US Dollars (&#36;)"
 msgstr "Američki dolar"
 
@@ -71,6 +73,7 @@ msgstr "Američki dolar"
 #: includes/currencies.php:124
 #: includes/currencies.php:129
 #: includes/currencies.php:137
+#: includes/currencies.php:144
 msgid "Euros (&euro;)"
 msgstr "Evro"
 
@@ -80,6 +83,7 @@ msgstr "Evro"
 #: includes/currencies.php:123
 #: includes/currencies.php:128
 #: includes/currencies.php:136
+#: includes/currencies.php:143
 msgid "Pounds Sterling (&pound;)"
 msgstr "Funta"
 
@@ -101,6 +105,7 @@ msgstr ""
 #: includes/currencies.php:127
 #: includes/currencies.php:38
 #: includes/currencies.php:135
+#: includes/currencies.php:142
 msgid "Canadian Dollars (&#36;)"
 msgstr "Kanadski dolar"
 
@@ -206,6 +211,7 @@ msgstr ""
 #: includes/currencies.php:66
 #: includes/currencies.php:71
 #: includes/currencies.php:79
+#: includes/currencies.php:80
 msgid "Polish Zloty"
 msgstr ""
 
@@ -213,6 +219,7 @@ msgstr ""
 #: includes/currencies.php:84
 #: includes/currencies.php:89
 #: includes/currencies.php:97
+#: includes/currencies.php:104
 msgid "Singapore Dollar (&#36;)"
 msgstr ""
 
@@ -224,6 +231,7 @@ msgstr ""
 #: includes/currencies.php:94
 #: includes/currencies.php:99
 #: includes/currencies.php:107
+#: includes/currencies.php:114
 msgid "South Korean Won"
 msgstr ""
 
@@ -231,6 +239,7 @@ msgstr ""
 #: includes/currencies.php:97
 #: includes/currencies.php:102
 #: includes/currencies.php:110
+#: includes/currencies.php:117
 msgid "Swedish Krona"
 msgstr ""
 
@@ -238,6 +247,7 @@ msgstr ""
 #: includes/currencies.php:98
 #: includes/currencies.php:103
 #: includes/currencies.php:111
+#: includes/currencies.php:118
 msgid "Swiss Franc"
 msgstr ""
 
@@ -245,6 +255,7 @@ msgstr ""
 #: includes/currencies.php:99
 #: includes/currencies.php:104
 #: includes/currencies.php:112
+#: includes/currencies.php:119
 msgid "Taiwan New Dollars"
 msgstr ""
 
@@ -252,6 +263,7 @@ msgstr ""
 #: includes/currencies.php:100
 #: includes/currencies.php:105
 #: includes/currencies.php:113
+#: includes/currencies.php:120
 msgid "Thai Baht"
 msgstr ""
 
@@ -259,6 +271,7 @@ msgstr ""
 #: includes/currencies.php:101
 #: includes/currencies.php:106
 #: includes/currencies.php:114
+#: includes/currencies.php:121
 msgid "Turkish Lira"
 msgstr ""
 
@@ -266,6 +279,7 @@ msgstr ""
 #: includes/currencies.php:111
 #: includes/currencies.php:116
 #: includes/currencies.php:124
+#: includes/currencies.php:131
 msgid "Vietnamese Dong"
 msgstr ""
 
@@ -544,6 +558,7 @@ msgstr "Izvještaji"
 #: classes/class-pmpro-admin-activity-email.php:222
 #: adminpages/admin_header.php:240
 #: classes/class-pmpro-site-health.php:81
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:107
 msgid "Orders"
 msgstr "Narudžbe"
 
@@ -2378,6 +2393,7 @@ msgstr "Vaše članstvo je <strong>aktivno</strong>."
 #: shortcodes/pmpro_account.php:380
 #: adminpages/metaboxes/recent-members.php:60
 #: adminpages/metaboxes/recent-orders.php:32
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:102
 msgid "Level"
 msgstr "Nivo"
 
@@ -6961,6 +6977,7 @@ msgstr "Status"
 #: adminpages/subscriptions.php:570
 #: adminpages/paymentsettings.php:182
 #: classes/class-pmpro-subscription.php:1224
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:105
 msgid "Gateway"
 msgstr "Prolaz za Plaćanje"
 
@@ -7763,6 +7780,7 @@ msgstr "Zadnje&nbsp;Ime"
 #: classes/class-pmpro-subscriptions-list-table.php:147
 #: adminpages/subscriptions.php:531
 #: adminpages/subscriptions.php:534
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:104
 msgid "Fee"
 msgstr "Provizija"
 
@@ -7810,6 +7828,7 @@ msgstr "Učlanjen"
 #: classes/class-pmpro-subscriptions-list-table.php:152
 #: adminpages/subscriptions.php:516
 #: adminpages/subscriptions.php:519
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:106
 msgid "Ended"
 msgstr "Završen"
 
@@ -10103,6 +10122,7 @@ msgstr "Uplata prihvaćena."
 #: preheaders/checkout.php:524
 #: preheaders/checkout.php:621
 #: preheaders/checkout.php:636
+#: preheaders/checkout.php:639
 msgid "Unknown error generating account. Please contact us to set up your membership."
 msgstr "Nepoznata greška. Molmo kontaktirajte nas da vam uspostavimo račun manuelno."
 
@@ -10195,6 +10215,7 @@ msgstr "BITNO: Nešto je krenulo naopako prilikom kreiranja pretplate. Vaša kre
 #: preheaders/checkout.php:612
 #: preheaders/checkout.php:674
 #: preheaders/checkout.php:689
+#: preheaders/checkout.php:692
 #, php-format
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr "Morate <a href=\"%s\">uspostaviti Prolaz za Plaćanje</a> prije nego ijedna naplata bude procesirana."
@@ -10217,6 +10238,7 @@ msgstr "Morate <a href=\"%s\">uspostaviti Prolaz za Plaćanje</a> prije nego ije
 #: preheaders/checkout.php:614
 #: preheaders/checkout.php:676
 #: preheaders/checkout.php:691
+#: preheaders/checkout.php:694
 msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr "Prolaz za Plaćanje mora biti uspostavljen prije nego što ijedna naplata bude procesirana."
 
@@ -14419,6 +14441,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway.php:337
 #: classes/gateways/class.pmprogateway.php:344
 #: classes/class-pmpro-subscriptions-list-table.php:514
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:130
 msgid "&#8212;"
 msgstr ""
 
@@ -17132,6 +17155,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3489
 #: classes/gateways/class.pmprogateway_stripe.php:3490
 #: classes/gateways/class.pmprogateway_stripe.php:4143
+#: classes/gateways/class.pmprogateway_stripe.php:4137
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -17482,6 +17506,7 @@ msgstr ""
 #: includes/addons.php:492
 #: includes/addons.php:500
 #: includes/addons.php:523
+#: includes/addons.php:522
 msgid "Return to the PMPro Add Ons page"
 msgstr ""
 
@@ -17725,6 +17750,7 @@ msgstr ""
 #: includes/compatibility/beaver-builder.php:29
 #: includes/compatibility/beaver-builder.php:126
 #: includes/compatibility/elementor.php:36
+#: includes/compatibility/elementor.php:37
 msgid "Non-members"
 msgstr ""
 
@@ -19043,24 +19069,28 @@ msgstr ""
 #: includes/currencies.php:68
 #: includes/currencies.php:73
 #: includes/currencies.php:81
+#: includes/currencies.php:88
 msgid "Romanian Leu"
 msgstr ""
 
 #: includes/currencies.php:76
 #: includes/currencies.php:81
 #: includes/currencies.php:89
+#: includes/currencies.php:96
 msgid "Russian Ruble (&#8381;)"
 msgstr ""
 
 #: includes/currencies.php:89
 #: includes/currencies.php:94
 #: includes/currencies.php:102
+#: includes/currencies.php:109
 msgid "South African Rand (R)"
 msgstr ""
 
 #: includes/currencies.php:103
 #: includes/currencies.php:108
 #: includes/currencies.php:116
+#: includes/currencies.php:123
 msgid "Ukrainian Hryvnia (&#8372;)"
 msgstr ""
 
@@ -23805,6 +23835,7 @@ msgstr ""
 #: includes/addons.php:402
 #: includes/addons.php:410
 #: includes/addons.php:432
+#: includes/addons.php:431
 #, php-format
 msgid "Important: This plugin requires a valid PMPro %s license key to update."
 msgstr ""
@@ -23822,6 +23853,7 @@ msgstr ""
 #: includes/addons.php:489
 #: includes/addons.php:497
 #: includes/addons.php:520
+#: includes/addons.php:519
 #, php-format
 msgid "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">valid PMPro %s License Key</a> to update PMPro %s add ons."
 msgstr ""
@@ -24520,6 +24552,7 @@ msgstr ""
 #: adminpages/subscriptions.php:546
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:250
 #: classes/class-pmpro-orders-list-table.php:1286
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:248
 msgid "View all orders for this subscription"
 msgstr ""
 
@@ -24624,6 +24657,8 @@ msgstr ""
 #: classes/class-pmpro-subscriptions-list-table.php:617
 #: classes/class-pmpro-subscriptions-list-table.php:637
 #: classes/class-pmpro-subscriptions-list-table.php:661
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:194
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:233
 #, php-format
 msgid "%1$s at %2$s"
 msgstr ""
@@ -24835,6 +24870,8 @@ msgid "Invoice for order #%s at %s has been REFUNDED"
 msgstr ""
 
 #. translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
+#. translators: %1$s is the date, %2$s is the Transaction ID. %3$s is the user display name that initiated the refund.
+#. translators: %1$s is the date. %2$s is the Transaction ID. %3$s is the user display name that initiated the refund.
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1128
 #: classes/gateways/class.pmprogateway_stripe.php:4791
 #: classes/gateways/class.pmprogateway_stripe.php:4798
@@ -24883,11 +24920,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1276
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1396
 #: classes/gateways/class.pmprogateway_stripe.php:4519
+#: classes/gateways/class.pmprogateway_stripe.php:4513
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1401
 #, php-format
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr ""
 
 #. translators: %1$s is the Transaction ID. %1$s is the Gateway Error
+#. translators: %1$s is the Transaction ID. %2$s is the Gateway Error.
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1143
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1137
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1139
@@ -24901,6 +24941,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1300
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1291
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1411
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1416
 #, php-format
 msgid "Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s."
 msgstr ""
@@ -25631,6 +25672,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3882
 #: classes/gateways/class.pmprogateway_stripe.php:4535
 #: classes/gateways/class.pmprogateway_stripe.php:4537
+#: classes/gateways/class.pmprogateway_stripe.php:4529
+#: classes/gateways/class.pmprogateway_stripe.php:4531
 msgid "Admin: There was a problem processing the refund"
 msgstr ""
 
@@ -30297,6 +30340,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:172
 #: classes/class-pmpro-members-list-table.php:707
 #: classes/class-pmpro-subscriptions-list-table.php:449
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:170
 msgid "View Details"
 msgstr ""
 
@@ -30629,6 +30673,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:37
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:26
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:30
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:28
 #, php-format
 msgid "Active Subscriptions (%d)"
 msgstr ""
@@ -30646,6 +30691,7 @@ msgstr ""
 #: classes/class-pmpro-subscriptions-list-table.php:150
 #: adminpages/subscriptions.php:490
 #: adminpages/subscriptions.php:493
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:103
 msgid "Created"
 msgstr ""
 
@@ -30655,6 +30701,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:104
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:108
 #: classes/class-pmpro-subscriptions-list-table.php:151
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:106
 msgid "Next Payment"
 msgstr ""
 
@@ -30675,6 +30722,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:56
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:45
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:49
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:47
 #, php-format
 msgid "Cancelled Subscriptions (%d)"
 msgstr ""
@@ -30683,6 +30731,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:81
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:70
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:74
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:72
 msgid "This user does not have any subscriptions."
 msgstr ""
 
@@ -32730,6 +32779,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:128
 #: adminpages/subscriptions.php:313
 #: adminpages/subscriptions.php:328
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:126
 #, php-format
 msgid "Level ID: %d [deleted]"
 msgstr ""
@@ -32791,6 +32841,7 @@ msgstr ""
 #: classes/class-pmpro-subscriptions-list-table.php:397
 #: adminpages/subscriptions.php:485
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:161
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:159
 msgid "Sync Error"
 msgstr ""
 
@@ -32947,6 +32998,7 @@ msgstr ""
 #: includes/addons.php:466
 #: includes/addons.php:474
 #: includes/addons.php:497
+#: includes/addons.php:496
 #, php-format
 msgid "You must have a <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:"
 msgstr ""
@@ -33147,6 +33199,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3876
 #: classes/gateways/class.pmprogateway_stripe.php:3877
 #: classes/gateways/class.pmprogateway_stripe.php:4531
+#: classes/gateways/class.pmprogateway_stripe.php:4525
 msgid "Admin: An error occurred while attempting to process this refund."
 msgstr ""
 
@@ -33199,6 +33252,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:123
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:207
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:217
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:215
 msgid "test"
 msgstr ""
 
@@ -34220,6 +34274,7 @@ msgstr ""
 #: preheaders/checkout.php:598
 #: preheaders/checkout.php:663
 #: preheaders/checkout.php:678
+#: preheaders/checkout.php:681
 msgid "IMPORTANT: Something went wrong while processing your checkout. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
@@ -34227,6 +34282,7 @@ msgstr ""
 #: preheaders/checkout.php:601
 #: preheaders/checkout.php:666
 #: preheaders/checkout.php:681
+#: preheaders/checkout.php:684
 msgid "IMPORTANT: Something went wrong while processing your checkout. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
@@ -34930,6 +34986,7 @@ msgstr ""
 #: adminpages/subscriptions.php:589
 #: adminpages/subscriptions.php:590
 #: adminpages/subscriptions.php:592
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:11
 msgid "Link Subscription"
 msgstr ""
 
@@ -35055,12 +35112,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3899
 #: classes/gateways/class.pmprogateway_stripe.php:3900
 #: classes/gateways/class.pmprogateway_stripe.php:4554
+#: classes/gateways/class.pmprogateway_stripe.php:4548
 msgid "This is not a token order."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3905
 #: classes/gateways/class.pmprogateway_stripe.php:3906
 #: classes/gateways/class.pmprogateway_stripe.php:4560
+#: classes/gateways/class.pmprogateway_stripe.php:4554
 msgid "No checkout session ID found."
 msgstr ""
 
@@ -35073,18 +35132,23 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4567
 #: classes/gateways/class.pmprogateway_stripe.php:4569
 #: classes/gateways/class.pmprogateway_stripe.php:4571
+#: classes/gateways/class.pmprogateway_stripe.php:4561
+#: classes/gateways/class.pmprogateway_stripe.php:4563
+#: classes/gateways/class.pmprogateway_stripe.php:4565
 msgid "Could not retrieve checkout session: "
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3921
 #: classes/gateways/class.pmprogateway_stripe.php:3922
 #: classes/gateways/class.pmprogateway_stripe.php:4576
+#: classes/gateways/class.pmprogateway_stripe.php:4570
 msgid "Payment is still pending."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3926
 #: classes/gateways/class.pmprogateway_stripe.php:3927
 #: classes/gateways/class.pmprogateway_stripe.php:4581
+#: classes/gateways/class.pmprogateway_stripe.php:4575
 msgid "Checkout session has not yet been completed."
 msgstr ""
 
@@ -37130,6 +37194,7 @@ msgid "Are you sure you want to delete membership level %s? All payment subscrip
 msgstr ""
 
 #: includes/addons.php:542
+#: includes/addons.php:541
 #, php-format
 msgid "You must enter a valid PMPro %s License Key in the PMPro Settings to update this Add On."
 msgstr ""
@@ -37280,6 +37345,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:150
 #: classes/class-pmpro-subscriptions-list-table.php:542
 #: classes/class-pmpro-subscriptions-list-table.php:532
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:148
 msgid "No Level"
 msgstr ""
 
@@ -37548,24 +37614,28 @@ msgstr ""
 #: classes/class-pmpro-action-scheduler.php:118
 #: classes/class-pmpro-action-scheduler.php:174
 #: classes/class-pmpro-action-scheduler.php:177
+#: classes/class-pmpro-action-scheduler.php:181
 msgid "Action Scheduler instance cannot be cloned"
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:130
 #: classes/class-pmpro-action-scheduler.php:186
 #: classes/class-pmpro-action-scheduler.php:189
+#: classes/class-pmpro-action-scheduler.php:193
 msgid "Action Scheduler instance cannot be unserialized"
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:254
 #: classes/class-pmpro-action-scheduler.php:310
 #: classes/class-pmpro-action-scheduler.php:313
+#: classes/class-pmpro-action-scheduler.php:317
 msgid "An interval is required to queue an Action Scheduler recurring task."
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:308
 #: classes/class-pmpro-action-scheduler.php:364
 #: classes/class-pmpro-action-scheduler.php:367
+#: classes/class-pmpro-action-scheduler.php:371
 msgid "You must provide either a group or a hook to list tasks."
 msgstr ""
 
@@ -37723,6 +37793,7 @@ msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:125
 #: classes/class-pmpro-action-scheduler.php:128
+#: classes/class-pmpro-action-scheduler.php:132
 msgid "Important Notice: An Outdated Version of Action Scheduler is Loaded"
 msgstr ""
 
@@ -37733,6 +37804,7 @@ msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:141
 #: classes/class-pmpro-action-scheduler.php:144
+#: classes/class-pmpro-action-scheduler.php:148
 #, php-format
 msgid "For more information, please <a href=\"%s\" target=\"_blank\">review our documentation</a> on how to resolve library conflicts."
 msgstr ""
@@ -37743,16 +37815,19 @@ msgid "Block IPs from checkout and login if there are more than %d failures with
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:133
+#: classes/class-pmpro-action-scheduler.php:137
 #, php-format
 msgid "An outdated version of Action Scheduler (version %1$s) is being loaded by %2$s which may affect Paid Memberships Pro functionalilty on this website."
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:810
+#: classes/class-pmpro-action-scheduler.php:819
 #, php-format
 msgid "Missing table: %s"
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:834
+#: classes/class-pmpro-action-scheduler.php:843
 msgid "Missing priority column in actionscheduler_actions table (required for Action Scheduler 3.6+)"
 msgstr ""
 
@@ -37778,4 +37853,16 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:130
 msgid "The URL of the Membership Checkout page for the expiring level."
+msgstr ""
+
+#: classes/class-pmpro-action-scheduler.php:675
+msgid "Paid Memberships Pro services are currently paused. Scheduled actions will not be run automatically until services are resumed."
+msgstr ""
+
+#: classes/class-pmpro-action-scheduler.php:677
+msgid "Paid Memberships Pro has temporarily halted scheduled actions while additional tasks are added. Actions will resume automatically once this process is complete."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:61
+msgid "Legacy email that was sent when a member's payment method was be expiring soon. This email is no longer sent by default and will be removed in a future version of PMPro."
 msgstr ""
