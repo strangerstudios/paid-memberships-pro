@@ -434,7 +434,7 @@ function pmpro_lifter_hide_access_plans() {
 	remove_meta_box( 'lifterlms-product', array( 'course', 'llms_membership' ), 'side' );
 	remove_meta_box( 'lifterlms-product', array( 'course', 'llms_membership' ),  'normal' );
 }
-add_filter( 'add_meta_boxes', 'pmpro_lifter_hide_access_plans' );
+add_action( 'add_meta_boxes', 'pmpro_lifter_hide_access_plans', 20 );
 
 /**
  * Override student dashboard links if streamline feature is enabled.
@@ -786,3 +786,32 @@ function pmpro_llms_show_membership_settings_for_access_plans() {
 	return ! get_option( 'pmpro_lifter_streamline' );
 }
 add_filter( 'llms_show_membership_settings_for_access_plans', 'pmpro_llms_show_membership_settings_for_access_plans' );
+
+/**
+ * Remove LifterLMS membership-related engagement triggers.
+ */
+function pmpro_lifterlms_engagement_triggers( $triggers ) {
+	// Bail if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $triggers;
+	}
+
+	$new_triggers = [];
+
+	$triggers_to_remove = array(
+		'access_plan_purchased',
+		'course_purchased',
+		'membership_enrollment',
+		'membership_purchased'
+	);
+
+    // Loop through the triggers and exclude membership-related ones.
+    foreach ( $triggers as $key => $trigger ) {
+        if ( ! in_array( $key, $triggers_to_remove ) ) {
+            $new_triggers[ $key ] = $trigger;
+        }
+    }
+
+    return $new_triggers;
+}
+add_filter( 'lifterlms_engagement_triggers', 'pmpro_lifterlms_engagement_triggers', 20 );
