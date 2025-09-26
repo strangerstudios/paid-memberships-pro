@@ -2000,9 +2000,24 @@ class PMProGateway_stripe extends PMProGateway {
 		// Used to calculate Stripe Connect fees.
 		$application_fee_percentage = $stripe->get_application_fee_percentage();
 
-		// First, let's handle the initial payment.
-		if ( ! empty( $morder->subtotal ) ) {
-			$initial_subtotal       = $morder->subtotal;
+		// If the level is recurring, check if we can combine the initial and recurring payments.
+		$level = $morder->getMembershipLevelAtCheckout();
+		if ( pmpro_isLevelRecurring( $level ) ) {
+			$filtered_trial_period_days = $stripe->calculate_trial_period_days( $morder );
+			$unfiltered_trial_period_days = $stripe->calculate_trial_period_days( $morder, false );
+
+			$combine_initial_and_recurring = (
+				empty( $level->trial_limit ) && // Check if there is a trial period.
+				$filtered_trial_period_days === $unfiltered_trial_period_days && // Check if the trial period is the same as the filtered trial period.
+				empty( $level->profile_start_date ) && // Check if the profile start date set directly on the level is empty.
+				! empty( $level->initial_payment ) && // Check if there is an initial payment.
+				$level->initial_payment === $level->billing_amount // Check if the initial payment and recurring payment prices are the same.
+			);
+		}
+
+		// If we have an initial payment that is not being combined into a recurring payment, we need to build the initial payment line item.
+		if ( ! empty( $level->initial_payment ) && empty( $combine_initial_and_recurring ) ) {
+			$initial_subtotal       = $level->initial_payment;
 			$initial_tax            = $morder->getTaxForPrice( $initial_subtotal );
 			$initial_payment_amount = pmpro_round_price( (float) $initial_subtotal + (float) $initial_tax );
 			$initial_payment_price  = $stripe->get_price_for_product( $product_id, $initial_payment_amount );
@@ -2027,7 +2042,6 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Now, let's handle the recurring payments.
-		$level = $morder->getMembershipLevelAtCheckout();
 		if ( pmpro_isLevelRecurring( $level ) ) {
 			$recurring_subtotal       = $level->billing_amount;
 			$recurring_tax            = $morder->getTaxForPrice( $recurring_subtotal );
@@ -2046,20 +2060,8 @@ class PMProGateway_stripe extends PMProGateway {
 				'description' => self::get_order_description( $morder ),
 			);
 
-			// Check if we can combine initial and recurring payments.
-			$filtered_trial_period_days = $stripe->calculate_trial_period_days( $morder );
-			$unfiltered_trial_period_days = $stripe->calculate_trial_period_days( $morder, false );
-
-			if (
-				empty( $level->trial_limit ) && // Check if there is a trial period.
-				$filtered_trial_period_days === $unfiltered_trial_period_days && // Check if the trial period is the same as the filtered trial period.
-				empty( $level->profile_start_date ) && // Check if the profile start date set directly on the level is empty.
-				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
-				) {
-				// We can combine the initial payment and the recurring payment.
-				array_shift( $line_items );
-				$payment_intent_data = null;
-			} else {
+			// If we're sending an initial payment and a recurring payment separately, we need to set a trial period.
+			if ( empty( $combine_initial_and_recurring ) ) {
 				// We need to set the trial period days and send initial and recurring payments as separate line items.
 				$subscription_data['trial_period_days'] = $filtered_trial_period_days;
 			}
