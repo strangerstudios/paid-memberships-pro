@@ -22,7 +22,7 @@ $pmpro_email_templates_defaults = array(
 	'header' => array(
 		'subject'     => '',
 		'description' => esc_html__( 'Email Header', 'paid-memberships-pro'),
-		'body' => wp_kses_post( __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ) ),
+		'body' => wp_kses_post( sprintf( '<p>%s</p>', esc_html__( 'Dear !!header_name!!,', 'paid-memberships-pro' ) ) ),
 		'help_text' => esc_html__( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
 );
