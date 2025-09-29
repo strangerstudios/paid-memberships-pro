@@ -717,18 +717,18 @@ function pmpro_lost_password_redirect() {
 		
 		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
 		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
-	if ( ! $validated ) {	
-			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
-	}
+		if ( ! $validated ) {	
+				$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
 	}
 
 	//Check if Turnstile has been filled in
 	if ( $captcha == 'turnstile' && ! empty( $password ) ) {
 	   // Validate the reCAPTCHA response here. If it's empty, assume it failed.
 		$validated = pmpro_cloudflare_turnstile_validation( $recaptcha_response ); 
-	if ( ! $validated ) {	
-			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
-	}
+		if ( ! $validated ) {	
+				$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
 	}
 
 	// Don't redirect if we're not on the PMPro form.
