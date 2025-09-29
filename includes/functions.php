@@ -9,12 +9,12 @@ We regularly release updates to the plugin, including important security fixes a
 You want to be able to upgrade.
 
 If you were asked to insert code into "your functions.php file", it was meant that you edit the functions.php
-in the root folder of your active theme. e.g. /wp-content/themes/twentytwelve/functions.php
+in the root folder of your active theme. e.g. /wp-content/themes/memberlite-child/functions.php
 You can also create a custom plugin to place customization code into. Instructions are here:
-http://www.paidmembershipspro.com/2012/08/create-a-plugin-for-pmpro-customizations/
+https://www.paidmembershipspro.com/create-a-plugin-for-pmpro-customizations/
 
 Further documentation for customizing Paid Memberships Pro can be found here:
-http://www.paidmembershipspro.com/documentation/
+https://www.paidmembershipspro.com/documentation/
  ****************************************************************/
 if ( ! function_exists( 'sornot' ) ) {
 	function sornot( $t, $n ) {
@@ -1541,24 +1541,41 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 /**
  * pmpro_getMembershipCategories() returns the categories for a given level
  *
- * @param int $level_id is a valid membership level ID
- *
- * @return int[]
+ * @param int $level_id The membership level ID.
+ * @return array List of category IDs.
  */
 function pmpro_getMembershipCategories( $level_id ) {
+	static $cache = array();
+
 	$level_id = intval( $level_id );
+	if ( isset( $cache[ $level_id ] ) ) {
+		return $cache[ $level_id ];
+	}
 
 	global $wpdb;
 	$categories = $wpdb->get_col(
-		"SELECT c.category_id
-										FROM {$wpdb->pmpro_memberships_categories} AS c
-										WHERE c.membership_id = '" . esc_sql( $level_id ) . "'"
+		$wpdb->prepare(
+			"SELECT c.category_id
+			 FROM {$wpdb->pmpro_memberships_categories} AS c
+			 WHERE c.membership_id = %d",
+			$level_id
+		)
 	);
+
+	$cache[ $level_id ] = $categories;
 
 	return $categories;
 }
 
-
+/**
+ * pmpro_isAdmin() checks if a user is an admin.
+ *
+ * @since 1.8.11
+ *
+ * @param int|null $user_id The user ID to check. If null, uses the current user.
+ *
+ * @return bool True if the user is an admin, false otherwise.
+ */
 function pmpro_isAdmin( $user_id = null ) {
 	global $current_user;
 	if ( ! $user_id ) {
@@ -1577,6 +1594,18 @@ function pmpro_isAdmin( $user_id = null ) {
 	}
 }
 
+/**
+ * pmpro_replaceUserMeta() updates user meta values, replacing existing values.
+ *
+ * @since 1.8.11
+ *
+ * @param int $user_id User ID to update.
+ * @param string|array $meta_keys Meta keys to update.
+ * @param string|array $meta_values Meta values to set.
+ * @param string|array|null $prev_values Previous values to check against.
+ *
+ * @return int Number of meta keys updated.
+ */
 function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values = null ) {
 	// expects all arrays for last 3 params or all strings
 	if ( ! is_array( $meta_keys ) ) {
@@ -1601,6 +1630,14 @@ function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values
 	return $i;
 }
 
+/**
+ * pmpro_getMetavalues() returns an object with the meta values from a query.
+ *
+ * @since 1.8.11
+ *
+ * @param string $query SQL query to get meta values.
+ * @return stdClass Object with meta keys and values.
+ */
 function pmpro_getMetavalues( $query ) {
 	global $wpdb;
 
@@ -4701,6 +4738,49 @@ function pmpro_compare_siteurl() {
 
 	return ( $site_url === $current_url );
 }
+
+/**
+ * When the pmpro_last_known_url option is updated, base64 encode it to
+ * prevent string replacements from changing it when the site is migrated.
+ *
+ * @since 3.5
+ * @link https://developer.wordpress.org/reference/hooks/pre_update_option_option/
+ *
+ * @param string $new_value The new value for the option.
+ * @return string The encoded value for the option.
+ */
+function pmpro_encode_last_known_url( $new_value ) {
+	// Only encode non-empty values.
+	if ( ! empty( $new_value ) ) {
+		$new_value = 'b64:' . base64_encode( $new_value );
+	}
+	return $new_value;
+}
+add_filter( 'pre_update_option_pmpro_last_known_url', 'pmpro_encode_last_known_url' );
+
+/**
+ * When the pmpro_last_known_url option is retrieved, if it
+ * is base64 encoded, decode it.
+ *
+ * @since 3.5
+ * @link https://developer.wordpress.org/reference/hooks/option_option/
+ *
+ * @param string $value The value of the option.
+ * @return string The decoded value of the option.
+ */
+function pmpro_decode_last_known_url( $value ) {
+	// Check if the value is base64 encoded.
+	if ( strpos( $value, 'b64:' ) === 0 ) {
+		$value = base64_decode( substr( $value, 4 ) );
+	} else {
+		// If the value is not encoded, then it is an old value. Encode it now.
+		remove_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
+		update_option( 'pmpro_last_known_url', $value );
+		add_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
+	}
+	return $value;
+}
+add_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
 
 /**
  * Determine if the site is in pause mode or not

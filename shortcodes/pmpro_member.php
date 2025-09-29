@@ -115,7 +115,7 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		'trial_amount',
 	);
 
-	if ( in_array( $field, $pmpro_level_fields ) || in_array( $field, $pmpro_subscription_fields ) ) {
+	if ( in_array( $field, $pmpro_level_fields ) || in_array( $field, $pmpro_subscription_fields ) || 'level_meta_' === substr( $field, 0, 11 ) ) {
 		// Fields about the user's membership or subscription.
 		// Get the membership level to show.
 		$membership_level = null;
@@ -154,6 +154,9 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 				$field = str_replace( 'membership_', '', $field );
 				$r     = $membership_level->{$field};
 			}
+		} elseif( 'level_meta_' === substr( $field, 0, 11 ) ) {
+			// Membership level meta fields.
+			$r = get_pmpro_membership_level_meta( $membership_level->id, substr( $field, 11 ), true );
 		} else {
 			// Subscription fields.
 			$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $membership_level->id );

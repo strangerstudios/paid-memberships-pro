@@ -209,26 +209,26 @@ function pmpro_init_save_wizard_data() {
 
 		if ( ! empty( $levels_array ) ) {
 			foreach ( $levels_array as $type => $level_data ) {
-                pmpro_insert_or_replace(
-                    $wpdb->pmpro_membership_levels,
-                    $level_data,
-                    array(
-                        '%d',       // id
-                        '%s',       // name
-                        '%s',       // description
-                        '%s',       // confirmation
-                        '%f',       // initial_payment
-                        '%f',       // billing_amount
-                        '%d',       // cycle_number
-                        '%s',       // cycle_period
-                        '%d',       // billing_limit
-                        '%f',       // trial_amount
-                        '%d',       // trial_limit
-                        '%d',       // expiration_number
-                        '%s',       // expiration_period
-                        '%d',       // allow_signups
-                    )
-                );
+				pmpro_insert_or_replace(
+					$wpdb->pmpro_membership_levels,
+					$level_data,
+					array(
+						'%d',       // id
+						'%s',       // name
+						'%s',       // description
+						'%s',       // confirmation
+						'%f',       // initial_payment
+						'%f',       // billing_amount
+						'%d',       // cycle_number
+						'%s',       // cycle_period
+						'%d',       // billing_limit
+						'%f',       // trial_amount
+						'%d',       // trial_limit
+						'%d',       // expiration_number
+						'%s',       // expiration_period
+						'%d',       // allow_signups
+					)
+				);
 			}
 		}
 
@@ -259,6 +259,7 @@ function pmpro_init_save_wizard_data() {
 		$filterqueries = ! empty( $_REQUEST['filterqueries'] ) ? intval( $_REQUEST['filterqueries'] ) : 0;
 		$showexcerpts = ! empty( $_REQUEST['showexcerpts'] ) ? intval( $_REQUEST['showexcerpts'] ) : 0;
 		$wisdom_opt_out = ! empty( $_REQUEST['wisdom_opt_out'] ) ? intval( $_REQUEST['wisdom_opt_out'] ) : 0;
+		$update_manager = ! empty( $_REQUEST['updatemanager'] ) ? intval( $_REQUEST['updatemanager'] ) : 0;
 
 		// Updated the options. Set the values as above to cater for cases where the REQUEST variables are empty for blank checkboxes.
 		pmpro_setOption( 'filterqueries', $filterqueries );
@@ -267,6 +268,18 @@ function pmpro_init_save_wizard_data() {
 		pmpro_setOption( 'hide_toolbar' );
 		pmpro_setOption( 'wisdom_opt_out', $wisdom_opt_out );
 
+		// If the Update Manager is not installed, then install it.
+		if ( $update_manager === 0 ) {
+			$um_installed = pmpro_wizard_handle_update_manager();
+
+			// If we had an error installing or activating the Update Manager, we'll log it quietly.
+			if ( is_wp_error( $um_installed ) ) {
+				// If there was an error, we can set a transient to show the error on the next
+				if ( WP_DEBUG ) {
+					error_log( 'PMPro Wizard Update Manager Error: ' . $um_installed->get_error_message() );
+				}
+			}
+		}
 		// Redirect to next step
 		$next_step = add_query_arg(
 			array(
@@ -285,3 +298,82 @@ function pmpro_init_save_wizard_data() {
 
 }
 add_action( 'admin_init', 'pmpro_init_save_wizard_data' );
+
+/**
+ * Install and activate the Update Manager plugin.
+ *
+ * @since 3.5
+ * @return true|WP_Error True on success, WP_Error on failure.
+ */
+function pmpro_wizard_handle_update_manager() {
+	// Check permissions.
+	if ( ! current_user_can( 'install_plugins' ) ) {
+		return new WP_Error( 'permission_denied', __( 'Permission denied.', 'paid-memberships-pro' ) );
+	}
+
+	$um_slug = 'pmpro-update-manager';
+	$um_plugin_file = $um_slug . '/' . $um_slug . '.php';
+	$um_zip_url = 'https://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-update-manager.zip';
+	$um_installed = file_exists( WP_PLUGIN_DIR . '/' . $um_plugin_file );
+	$um_active = is_plugin_active( $um_plugin_file );
+
+	// If already active, nothing to do.
+	if ( $um_active ) {
+		return true;
+	}
+
+	// If installed but not active, just activate.
+	if ( $um_installed ) {
+		$activate_result = activate_plugin( $um_plugin_file );
+		if ( is_wp_error( $activate_result ) ) {
+			return $activate_result;
+		}
+		return true;
+	}
+
+	// Need to install first, then activate.
+	require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+	/**
+	* A silent upgrader skin for the WordPress Upgrader.
+	* 
+	* The WP skin will always echo during the call, so unless we start buffering 
+	* before any output (including possibly in other hooks/callbacks/core), 
+	* HTML will slip through.
+	* 
+	* WordPress has no filter/action to disable that HTML. 
+	* We can’t control what’s echoed by the default skin.
+	* A silent skin is the only WordPress-native, robust way.
+	*/
+	if ( ! class_exists( 'PMPro_Silent_Upgrader_Skin' ) ) {
+		// Check if the WP_Upgrader_Skin class exists before defining our own skin.
+		if ( ! class_exists( 'WP_Upgrader_Skin' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		}
+		class PMPro_Silent_Upgrader_Skin extends WP_Upgrader_Skin {
+			public function header() {}
+			public function footer() {}
+			public function feedback( $string, ...$args ) {}
+			public function error( $errors ) {}
+			public function before() {}
+			public function after() {}
+		}
+	}
+
+	$upgrader = new Plugin_Upgrader( new PMPro_Silent_Upgrader_Skin() );
+	$install_result = $upgrader->install( $um_zip_url );
+
+	if ( is_wp_error( $install_result ) ) {
+		return $install_result;
+	}
+
+	// Activate the plugin after installation.
+	$activate_result = activate_plugin( $um_plugin_file );
+	
+	if ( is_wp_error( $activate_result ) ) {
+		return $activate_result;
+	}
+
+	return true;
+}

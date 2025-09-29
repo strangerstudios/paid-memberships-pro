@@ -58,7 +58,7 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return esc_html__( 'This is the membership confirmation email sent to the site administrator for every paid membership checkout on the site.', 'paid-memberships-pro' );
+		return esc_html__( "Legacy email that was sent when a member's payment method was be expiring soon. This email is no longer sent by default and will be removed in a future version of PMPro.", 'paid-memberships-pro' );
 	}
 
 	/**
@@ -197,6 +197,21 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 			'expirationmonth' => $order->expirationmonth,
 			'expirationyear' => $order->expirationyear,
 		);
+	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since 3.5
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+		//Create test order
+		$test_order = new MemberOrder();
+
+		return array( $current_user, $test_order->get_test_order() );
 	}
 }
 
