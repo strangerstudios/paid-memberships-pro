@@ -160,6 +160,82 @@ function pmpro_lifter_get_courses_for_levels( $level_ids ) {
 }
 
 /**
+ * Get all courses that are associated with any membership level.
+ *
+ * @since TBD
+ *
+ * @return array<int> An array of course IDs.
+ */
+function pmpro_lifter_get_courses_for_all_levels() {
+	static $course_ids = null;
+
+	// If we don't have a cached value, query the database.
+	if ( $course_ids == null ) {
+		global $wpdb;
+		$course_ids = $wpdb->get_col(
+			"
+				SELECT mp.page_id 
+				FROM $wpdb->pmpro_memberships_pages mp 
+				LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID 
+				WHERE p.post_type = 'course' 
+				AND p.post_status = 'publish' 
+				GROUP BY mp.page_id
+			"
+		);
+	}	
+
+	return $course_ids;
+}
+
+/**
+ * Repair course enrollments for a user.
+ *
+ * @since TBD
+ *
+ * @param int $user_id The user ID to repair enrollments for.
+ */
+function pmpro_lifter_repair_course_enrollments( $user_id ) {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return;
+	}
+
+	// Get all courses associated with any level.
+	$all_level_courses = pmpro_lifter_get_courses_for_all_levels();
+
+	// Get all courses for the user's current levels.
+	$user_levels           = pmpro_getMembershipLevelsForUser( $user_id );
+	$current_level_courses = pmpro_lifter_get_courses_for_levels( wp_list_pluck( $user_levels, 'ID' ) );
+
+	// Get all the courses that the user is currently enrolled in.
+	$student          = new LLMS_Student( $user_id );
+	$enrolled_courses = ( $student->get_courses( array( 'status' => 'enrolled' ) ) )['results'];
+
+	// Make sure all arrays are ints only to avoid type issues during comparisons.
+	$all_level_courses     = array_map( 'intval', $all_level_courses );
+	$current_level_courses = array_map( 'intval', $current_level_courses );
+	$enrolled_courses      = array_map( 'intval', $enrolled_courses );
+
+	// Unenroll from courses that are no longer associated with the user's levels.
+	$courses_for_other_levels = array_diff( $all_level_courses, $current_level_courses );
+	$courses_to_unenroll      = array_intersect( $enrolled_courses, $courses_for_other_levels );
+	foreach ( $courses_to_unenroll as $course_id ) {
+		// Not passing a $trigger here as this would only remove courses added by the 'pmpro' trigger.
+		// In previous versions of PMPro, courses were not added with a trigger but we still want them to be removed going forwards.
+		$student->unenroll( $course_id );
+	}
+
+	// Enroll in courses that are associated with the user's levels but not currently enrolled.
+	$courses_to_enroll = array_diff( $current_level_courses, $enrolled_courses );
+	foreach ( $courses_to_enroll as $course_id ) {
+		// Using the 'pmpro' trigger to track which courses were added by PMPro.
+		// In the future, this could be used so that we only unenroll from PMPro-added courses.
+		$student->enroll( $course_id, 'pmpro' );
+	}
+}
+add_action( 'pmpro_lifter_repair_course_enrollments', 'pmpro_lifter_repair_course_enrollments', 10, 1 );
+
+/**
  * When users change levels, enroll/unenroll them from
  * any associated private courses.
  */
@@ -170,40 +246,86 @@ function pmpro_lifter_after_all_membership_level_changes( $pmpro_old_user_levels
 	}
 	
 	foreach ( $pmpro_old_user_levels as $user_id => $old_levels ) {
-		// Get current courses.
-		$current_levels = pmpro_getMembershipLevelsForUser( $user_id );
-		if ( ! empty( $current_levels ) ) {
-			$current_levels = wp_list_pluck( $current_levels, 'ID' );
-		} else {
-			$current_levels = array();
-		}
-		$current_courses = pmpro_lifter_get_courses_for_levels( $current_levels );
-		
-		// Get old courses.
-		$old_levels = wp_list_pluck( $old_levels, 'ID' );
-		$old_courses = pmpro_lifter_get_courses_for_levels( $old_levels );
-		
-		// Unenroll the user in any courses they used to have, but lost.
-		$courses_to_unenroll = array_diff( $old_courses, $current_courses );
-		foreach( $courses_to_unenroll as $course_id ) {
-			if ( llms_is_user_enrolled( $user_id, $course_id ) ) {
-				// Unenroll student
-				llms_unenroll_student( $user_id, $course_id );					
-			}
-		}
-		
-		// Enroll the user in any courses for their current levels.
-		$courses_to_enroll = array_diff( $current_courses, $old_courses );
-		foreach( $courses_to_enroll as $course_id ) {
-			if ( ! llms_is_user_enrolled( $user_id, $course_id ) ) {
-				llms_enroll_student( $user_id, $course_id );
-			}
-		}
+		pmpro_lifter_repair_course_enrollments( $user_id );
 	}
 }
 add_action( 'pmpro_after_all_membership_level_changes', 'pmpro_lifter_after_all_membership_level_changes' );
 
 /**
+ * Callback to queue repair of each individual user's course enrollments.
+ */
+function pmpro_lifter_repair_all_course_enrollments_callback() {
+	// Halt Action Scheduler processing to wait until we finish adding tasks.
+	PMPro_Action_Scheduler::instance()->halt();
+
+	$batch_size = 250;
+	$offset = 0;
+	do {
+		$user_ids = get_users(
+			array(
+				'fields' => 'ID',
+				'number' => $batch_size,
+				'offset' => $offset,
+			)
+		);
+		foreach ( $user_ids as $user_id ) {
+			PMPro_Action_Scheduler::instance()->maybe_add_task(
+				'pmpro_lifter_repair_course_enrollments',
+				array( 'user_id' => $user_id ),
+				'pmpro_async_tasks'
+			);
+		}
+		$offset += $batch_size;
+	} while ( count( $user_ids ) === $batch_size );
+
+	// Resume Action Scheduler processing.
+	PMPro_Action_Scheduler::instance()->resume();
+}
+add_action( 'pmpro_lifter_repair_all_course_enrollments_callback', 'pmpro_lifter_repair_all_course_enrollments_callback' );
+
+/**
+ * Queue Action Scheduler to repair course enrollments for all users.
+ *
+ * @since TBD
+ */
+function pmpro_lifter_repair_all_course_enrollments() {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return;
+	}
+
+	// Halt Action Scheduler processing to wait until we finish adding tasks.
+	PMPro_Action_Scheduler::instance()->maybe_add_task(
+		'pmpro_lifter_repair_all_course_enrollments_callback',
+		array(),
+		'pmpro_async_tasks'
+	);
+}
+
+/**
+ * When the level restrictions for a post are updated, if the post was a course, repair the course enrollments for all users.
+ *
+ * @since TBD
+ *
+ * @param int $post_id The ID of the post whose level restrictions were updated.
+ */
+function pmpro_lifter_after_updating_post_level_restrictions( $post_id ) {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return;
+	}
+
+	// Check if the post is a course.
+	if ( get_post_type( $post_id ) !== 'course' ) {
+		return;
+	}
+
+	// Queue the repair of course enrollments for all users.
+	pmpro_lifter_repair_all_course_enrollments();
+}
+add_action( 'pmpro_after_updating_post_level_restrictions', 'pmpro_lifter_after_updating_post_level_restrictions' );
+
+ /**
  * Hide the LifterLMS Membership menu item from the admin dashboard if streamline is enabled.
  */
 function pmpro_lifter_hide_membership_menu() {
@@ -312,7 +434,7 @@ function pmpro_lifter_hide_access_plans() {
 	remove_meta_box( 'lifterlms-product', array( 'course', 'llms_membership' ), 'side' );
 	remove_meta_box( 'lifterlms-product', array( 'course', 'llms_membership' ),  'normal' );
 }
-add_filter( 'add_meta_boxes', 'pmpro_lifter_hide_access_plans' );
+add_action( 'add_meta_boxes', 'pmpro_lifter_hide_access_plans', 20 );
 
 /**
  * Override student dashboard links if streamline feature is enabled.
@@ -664,3 +786,32 @@ function pmpro_llms_show_membership_settings_for_access_plans() {
 	return ! get_option( 'pmpro_lifter_streamline' );
 }
 add_filter( 'llms_show_membership_settings_for_access_plans', 'pmpro_llms_show_membership_settings_for_access_plans' );
+
+/**
+ * Remove LifterLMS membership-related engagement triggers.
+ */
+function pmpro_lifterlms_engagement_triggers( $triggers ) {
+	// Bail if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $triggers;
+	}
+
+	$new_triggers = [];
+
+	$triggers_to_remove = array(
+		'access_plan_purchased',
+		'course_purchased',
+		'membership_enrollment',
+		'membership_purchased'
+	);
+
+    // Loop through the triggers and exclude membership-related ones.
+    foreach ( $triggers as $key => $trigger ) {
+        if ( ! in_array( $key, $triggers_to_remove ) ) {
+            $new_triggers[ $key ] = $trigger;
+        }
+    }
+
+    return $new_triggers;
+}
+add_filter( 'lifterlms_engagement_triggers', 'pmpro_lifterlms_engagement_triggers', 20 );

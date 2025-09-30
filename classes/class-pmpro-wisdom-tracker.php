@@ -70,10 +70,8 @@ class PMPro_Wisdom_Tracker {
 		// Schedule / deschedule tracking when activated / deactivated
 		if ( $this->what_am_i == 'theme' ) {
 			// Need to think about scheduling for sites that have already activated the theme
-			add_action( 'after_switch_theme', [ $this, 'schedule_tracking' ] );
 			add_action( 'switch_theme', [ $this, 'deactivate_this_plugin' ] );
 		} else {
-			register_activation_hook( $this->plugin_file, [ $this, 'schedule_tracking' ] );
 			register_deactivation_hook( $this->plugin_file, [ $this, 'deactivate_this_plugin' ] );
 		}
 
@@ -96,10 +94,8 @@ class PMPro_Wisdom_Tracker {
 			$this->do_tracking();
 		}
 
-		// Hook our do_tracking function to the weekly action
-		add_filter( 'cron_schedules', [ $this, 'schedule_weekly_event' ] );
-		// It's called weekly, but in fact it could be daily, weekly or monthly
-		add_action( 'put_do_weekly_action', [ $this, 'do_tracking' ] );
+		// Hook our do_tracking function to Action Scheduler
+		add_action( 'pmpro_schedule_daily', [ $this, 'do_tracking' ] );
 
 		// Use this action for local testing
 		// add_action( 'admin_init', array( $this, 'do_tracking' ) );
@@ -121,31 +117,12 @@ class PMPro_Wisdom_Tracker {
 	 * And check if tracking is enabled - perhaps the plugin has been reactivated
 	 *
 	 * @since 1.0.0
+	 * @deprecated 3.5.3 - This is now handled by Action Scheduler.
+	 *
+	 * @modified 3.5 Now with Action Scheduler support
 	 */
 	public function schedule_tracking() {
-		if ( ! wp_next_scheduled( 'put_do_weekly_action' ) ) {
-			$schedule = $this->get_schedule();
-			wp_schedule_event( time(), $schedule, 'put_do_weekly_action' );
-		}
-		$this->do_tracking( true );
-	}
-
-	/**
-	 * Create weekly schedule
-	 *
-	 * @since 1.2.3
-	 */
-	public function schedule_weekly_event( $schedules ) {
-		$schedules['weekly']  = [
-			'interval' => 604800,
-			'display'  => esc_html__( 'Once Weekly', 'paid-memberships-pro' ),
-		];
-		$schedules['monthly'] = [
-			'interval' => 2635200,
-			'display'  => esc_html__( 'Once Monthly', 'paid-memberships-pro' ),
-		];
-
-		return $schedules;
+		_deprecated_function( __METHOD__, '3.5.3' );
 	}
 
 	/**

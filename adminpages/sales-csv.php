@@ -172,7 +172,10 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 
 	wp_cache_flush();
 }
-pmpro_transmit_report_data( $csv_fh, $filename, $headers );
+// If this was run via Toolkit API, we don't have to output the CSV file.
+if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
+	pmpro_transmit_report_data( $csv_fh, $filename, $headers );
+}
 
 function pmpro_enclose( $s ) {
 	return "\"" . str_replace( "\"", "\\\"", $s ) . "\"";

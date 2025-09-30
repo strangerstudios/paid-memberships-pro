@@ -33,12 +33,6 @@
 			//make sure PayPal Express is a gateway option
 			add_filter('pmpro_gateways', array('PMProGateway_paypalexpress', 'pmpro_gateways'));
 
-			//add fields to payment settings
-			add_filter('pmpro_payment_options', array('PMProGateway_paypalexpress', 'pmpro_payment_options'));
-
-			// Add payment setting fields.
-			add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalexpress', 'pmpro_payment_option_fields'), 10, 2);
-
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalexpress")
@@ -77,6 +71,17 @@
 		}
 
 		/**
+		 * Get a description for this gateway.
+		 *
+		 * @since 3.5
+		 *
+		 * @return string
+		 */
+		public static function get_description_for_gateway_settings() {
+			return esc_html__( 'With PayPal, members can pay with their PayPal balance, credit/debit cards, linked bank accounts, or local payment methods. PayPal is accepted worldwide and offers multi-currency support for 200+ markets and 25+ currencies.', 'paid-memberships-pro' );
+		}
+
+		/**
 		 * Check whether or not a gateway supports a specific feature.
 		 * 
 		 * @since 3.0
@@ -100,9 +105,11 @@
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *
 		 * @since 1.8
+		 * @deprecated 3.5
 		 */
 		static function getGatewayOptions()
 		{
+			_deprecated_function( __METHOD__, '3.5' );
 			$options = array(
 				'gateway_environment',
 				'gateway_email',
@@ -122,9 +129,11 @@
 		 * Set payment options for payment settings page.
 		 *
 		 * @since 1.8
+		 * @deprecated 3.5
 		 */
 		static function pmpro_payment_options($options)
 		{
+			_deprecated_function( __METHOD__, '3.5' );
 			//get options
 			$paypal_options = PMProGateway_paypalexpress::getGatewayOptions();
 
@@ -138,9 +147,11 @@
 		 * Display fields for this gateway's options.
 		 *
 		 * @since 1.8
+		 * @deprecated 3.5
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
+			_deprecated_function( __METHOD__, '3.5' );
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
@@ -219,6 +230,115 @@
 			</td>
 		</tr>
 		<?php
+		}
+
+		/**
+		 * Display fields for PayPal options.
+		 *
+		 * @since 3.5
+		 */
+		public static function show_settings_fields() {
+			?>
+			<p>
+				<?php
+					printf(
+						/* translators: %s: URL to the PayPal Express gateway documentation. */
+						esc_html__( 'For detailed setup instructions, please visit our %s.', 'paid-memberships-pro' ),
+						'<a href="https://www.paidmembershipspro.com/gateway/paypal-express/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=paypal-express-documentation" target="_blank">' . esc_html__( 'PayPal Express documentation', 'paid-memberships-pro' ) . '</a>'
+					);
+				?>
+			</p>
+			<div id="pmpro_paypal" class="pmpro_section" data-visibility="shown" data-activated="true">
+				<div class="pmpro_section_toggle">
+					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+						<span class="dashicons dashicons-arrow-up-alt2"></span>
+						<?php esc_html_e( 'Settings', 'paid-memberships-pro' ); ?>
+					</button>
+				</div>
+				<div class="pmpro_section_inside">
+					<table class="form-table">
+						<tbody>
+							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+								<th scope="row" valign="top">
+									<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr( get_option( 'pmpro_gateway_email' ) ); ?>" class="regular-text code" />
+								</td>
+							</tr>
+							<tr class="gateway gateway_paypal gateway_paypalexpress">
+								<th scope="row" valign="top">
+									<label for="apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<input type="text" id="apiusername" name="apiusername" value="<?php echo esc_attr( get_option( 'pmpro_apiusername' ) ); ?>" class="regular-text code" />
+								</td>
+							</tr>
+							<tr class="gateway gateway_paypal gateway_paypalexpress">
+								<th scope="row" valign="top">
+									<label for="apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<input type="text" id="apipassword" name="apipassword" value="<?php echo esc_attr( get_option( 'pmpro_apipassword' ) ); ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
+								</td>
+							</tr>
+							<tr class="gateway gateway_paypal gateway_paypalexpress">
+								<th scope="row" valign="top">
+									<label for="apisignature"><?php esc_html_e('API Signature', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<input type="text" id="apisignature" name="apisignature" value="<?php echo esc_attr( get_option( 'pmpro_apisignature' ) ); ?>" class="regular-text code" />
+								</td>
+							</tr>
+							<tr class="gateway gateway_paypal gateway_paypalexpress">
+								<th scope="row" valign="top">
+									<label for="paypalexpress_skip_confirmation"><?php esc_html_e('Confirmation Step', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
+										<option value="0" <?php selected( get_option('pmpro_paypalexpress_skip_confirmation'), 0 );?>><?php esc_html_e( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
+										<option value="1" <?php selected( get_option('pmpro_paypalexpress_skip_confirmation'), 1 );?>><?php esc_html_e( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
+									</select>
+								</td>
+							</tr>
+							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+								<th scope="row" valign="top">
+									<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
+								</th>
+								<td>
+									<p><code><?php echo esc_html( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );?></code></p>
+									<p class="description">
+										<?php esc_html_e( 'You must set up this IPN (Instant Payment Notification) URL in your PayPal account to fully integrate with PayPal Express.', 'paid-memberships-pro' ); ?>
+										<a href="https://www.paidmembershipspro.com/setting-ipn-urls-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=set-up-paypal-ipn" target="_blank"><?php esc_html_e( 'Read the documentation on setting up your PayPal IPN', 'paid-memberships-pro' ); ?></a>
+									</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<?php
+		}
+
+		/**
+		 * Save settings for PayPal.
+		 *
+		 * @since 3.5
+		 */
+		public static function save_settings_fields() {
+			$settings_to_save = array(
+				'gateway_email',
+				'apiusername',
+				'apipassword',
+				'apisignature',
+				'paypalexpress_skip_confirmation'
+			);
+
+			foreach ( $settings_to_save as $setting ) {
+				if ( isset( $_REQUEST[ $setting ] ) ) {
+					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
+				}
+			}
 		}
 
 		/**
@@ -599,7 +719,7 @@
 				$nvpStr .= "&PROFILESTARTDATE=" . $profile_start_date;
 			if(!empty($level->cycle_number))
 				$nvpStr .= "&BILLINGPERIOD=" . $level->cycle_period . "&BILLINGFREQUENCY=" . $level->cycle_number . "&AUTOBILLOUTAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
-			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
+			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr( trim( $order->membership_level->name ) . " at " . trim( get_bloginfo( "name" ) ), 0, 127 ), trim( $order->membership_level->name ), $order, trim( get_bloginfo( "name" ) ) ) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ) ) . "&L_PAYMENTTYPE0=Any";
 
@@ -917,15 +1037,6 @@
 		function cancel(&$order) {
 			// Always cancel the order locally even if PayPal might fail
 			$order->updateStatus("cancelled");
-
-			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.
-			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) ||
-				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) {
-				// recurring_payment_failed transaction still need to be cancelled
-				if ( $_POST['txn_type'] !== 'recurring_payment_failed' ) {
-					return true;
-				}
-			}
 
 			// Cancel at gateway
 			return $this->cancelSubscriptionAtGateway($order);
@@ -1273,6 +1384,11 @@
 
 			$httpParsedResponseAr = $morder->Gateway->PPHttpPost( 'RefundTransaction', '&TRANSACTIONID='.$transaction_id );		
 
+			// Add new lines to order notes if not empty.
+			if ( ! empty( $morder->notes ) ) {
+				$morder->notes .= "\n\n";
+			}
+
 			if ( 'success' === strtolower( $httpParsedResponseAr['ACK'] ) ) {
 				
 				$success = true;
@@ -1281,8 +1397,8 @@
 
 				global $current_user;
 
-				// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
-				$morder->notes = trim( $morder->notes . ' ' . sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
+				// translators: %1$s is the date, %2$s is the Transaction ID. %3$s is the user display name that initiated the refund.
+				$morder->notes = trim( $morder->notes . sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
 
 				$user = get_user_by( 'id', $morder->user_id );
 				//send an email to the member
@@ -1295,9 +1411,9 @@
 
 			} else {
 				//The refund failed, so lets return the gateway message
-				
-				// translators: %1$s is the Transaction ID. %1$s is the Gateway Error
-				$morder->notes = trim( $morder->notes .' '. sprintf( __( 'Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s.', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] ) );
+
+				// translators: %1$s is the Transaction ID. %2$s is the Gateway Error.
+				$morder->notes = trim( $morder->notes . sprintf( __( 'Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s.', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] ) );
 			}
 
 			$morder->SaveOrder();

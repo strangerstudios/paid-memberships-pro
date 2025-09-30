@@ -1115,6 +1115,24 @@ class PMPro_Subscription {
 
 		if ( $wpdb->insert_id ) {
 			$this->id = $wpdb->insert_id;
+
+			/**
+			 * Runs when a subscription is added.
+			 *
+			 * @param $this PMPro_Subscription The current subscription object
+			 *
+			 * @since 3.5
+			 */
+			do_action('pmpro_added_subscription', $this);
+		} else {
+			/**
+			 * Runs when a subscription is updated.
+			 *
+			 * @param $this PMPro_Subscription The current subscription object
+			 *
+			 * @since 3.5
+			 */
+			do_action('pmpro_updated_subscription', $this);
 		}
 
 		// The subscription was not created properly.
@@ -1206,7 +1224,7 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<hr />' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit Member', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $this->user_id ), self_admin_url( 'admin.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 
 			pmpro_setMessage( __( 'There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active.', 'paid-memberships-pro' ), 'pmpro_error', true ); // Will overwrite previous messages.

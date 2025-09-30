@@ -169,7 +169,7 @@ function pmpro_search_filter_pmpro_pages( $query ) {
 
 	// We're good. Remove the PMPro pages from the results.
 	$pmpro_page_ids = empty( $pmpro_pages ) ? array() : array_filter( array_values( $pmpro_pages ) );
-	$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $pmpro_page_ids ) );
+	$query->set( 'post__not_in', array_merge( pmpro_get_post_not_in( $query ), $pmpro_page_ids ) );
 
 	return $query;
 }
@@ -237,7 +237,7 @@ function pmpro_search_filter( $query ) {
 	static $final_hidden_posts = null;	
 	if ( isset( $final_hidden_posts ) ) {		
 		if( ! empty( $final_hidden_posts ) ) {
-			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $final_hidden_posts ) );
+			$query->set( 'post__not_in', array_merge( pmpro_get_post_not_in( $query ), $final_hidden_posts ) );
 		}		
 		return $query;
 	}
@@ -315,7 +315,7 @@ function pmpro_search_filter( $query ) {
 
 	// If we have posts to hide, add them to the query.
 	if( ! empty( $final_hidden_posts ) ) {
-		$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $final_hidden_posts ) );
+		$query->set( 'post__not_in', array_merge( pmpro_get_post_not_in( $query ), $final_hidden_posts ) );
 	}
 
     return $query;
@@ -576,3 +576,24 @@ function pmpro_body_classes( $classes ) {
 	return $classes;
 }
 add_filter( 'body_class', 'pmpro_body_classes' );
+
+/**
+ * Helper function to get the post__not_in array from a WP_Query object ensuring it is an array.
+ *
+ * @since 3.5.2
+ *
+ * @param WP_Query $query The WP_Query object.
+ * @return array The post__not_in array.
+ */
+function pmpro_get_post_not_in( $query ) {
+	if ( ! is_a( $query, 'WP_Query' ) ) {
+		return array();
+	}
+
+	$post_not_in = $query->get( 'post__not_in' );
+	if ( empty( $post_not_in ) || ! is_array( $post_not_in ) ) {
+		$post_not_in = array();
+	}
+
+	return $post_not_in;
+}

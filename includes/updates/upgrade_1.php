@@ -42,8 +42,8 @@ function pmpro_upgrade_1()
 	$pmpro_nag_paused = current_time('timestamp')+(3600*24*7);
 	update_option('pmpro_nag_paused', $pmpro_nag_paused, 'no');
 	
-	//wisdom tracking turned off by default
-	update_option('pmpro_wisdom_opt_out', 1);
+	//wisdom tracking turned on by default
+	update_option('pmpro_wisdom_opt_out', 0);
 
 	//db update
 	pmpro_db_delta();

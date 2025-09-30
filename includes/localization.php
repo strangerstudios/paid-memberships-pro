@@ -5,7 +5,7 @@ function pmpro_load_textdomain() {
 
 	//paths to local (plugin) and global (WP) language files
 	$mofile_local  = dirname( __DIR__ ) . '/languages/' . $mofile;
-	$mofile_global = WP_LANG_DIR . '/plugins/paid-memberships-pro/' . $mofile;
+	$mofile_global = WP_LANG_DIR . '/plugins/' . $mofile;
 
 	unload_textdomain( 'paid-memberships-pro' );
 
@@ -72,7 +72,7 @@ function pmpro_check_for_translations() {
 		return;
 	}
 
-	$pmpro_add_ons = pmpro_getAddOns();
+	$pmpro_add_ons = ( new PMPro_AddOns() )->get_addons();
 	foreach( $pmpro_add_ons as $add_on ) {
 		// Skip if the plugin isn't active.
 		if ( ! pmpro_is_plugin_active( $add_on['plugin'] ) ) {
