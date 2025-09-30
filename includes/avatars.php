@@ -187,6 +187,7 @@ function pmpro_set_up_avatar_field() {
 				'max_file_size' => 1024 * 1024 * 2, // 2MB.
 				'preview' => true,
 				'profile' => false, // Whenever we use this field, we're going to weave it into the user info sections.
+				'levels' => -1, // Prevent the field from being shown at checkout. This is not a standard way to hide the field, but `false` for profile doesn't hide the field from checkout.
 			)
 		)
 	);
