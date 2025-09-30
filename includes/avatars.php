@@ -1,6 +1,77 @@
 <?php
 
 /**
+ * Display "enable local avatars" checkbox on membership level edit page.
+ *
+ * @since TBD
+ *
+ * @param object $level The membership level being edited.
+ */
+function pmpro_membership_level_after_other_settings_avatar( $level ) {
+	$enabled = ! empty( get_pmpro_membership_level_meta( $level->id, 'enable_avatars', true ) );
+	?>
+	<table class="form-table">
+		<tbody>
+			<tr>
+				<th scope="row" valign="top"><label><?php esc_html_e('Enable Local Avatars', 'paid-memberships-pro'); ?></label></th>
+				<td><input id="enable_avatars" name="enable_avatars" type="checkbox" value="1" <?php checked( $enabled ); ?> /> <label for="enable_avatars"><?php esc_html_e('Check to enable local avatars for this membership level.', 'paid-memberships-pro'); ?></label></td>
+			</tr>
+		</tbody>
+	</table>
+	<?php
+}
+add_action( 'pmpro_membership_level_after_other_settings', 'pmpro_membership_level_after_other_settings_avatar', 10, 1 );
+
+/**
+ * Save "enable local avatars" checkbox on membership level edit page.
+ *
+ * @since TBD
+ *
+ * @param int $level_id The ID of the membership level being saved.
+ */
+function pmpro_save_membership_level_avatar( $level_id ) {
+	if ( ! empty( $_REQUEST['enable_avatars'] ) ) {
+		update_pmpro_membership_level_meta( $level_id, 'enable_avatars', 1 );
+	} else {
+		delete_pmpro_membership_level_meta( $level_id, 'enable_avatars' );
+	}
+}
+add_action( 'pmpro_save_membership_level', 'pmpro_save_membership_level_avatar', 10, 1 );
+
+/**
+ * Check whether a user has a level with "user avatars" enabled.
+ *
+ * @since TBD
+ *
+ * @param int $user_id The ID of the user to check.
+ * @return bool        Whether the user has a level with "user avatars" enabled.
+ */
+function pmpro_user_has_avatar_level( $user_id ) {
+	global $wpdb;
+
+	// Get all user avatar levels.
+	$enabled_levels = $wpdb->get_col( "
+		SELECT DISTINCT membership_id
+		FROM {$wpdb->pmpro_membership_levelmeta}
+		WHERE meta_key = 'enable_avatars'
+		AND meta_value = 1
+	" );
+
+	// Check if the user has any of these levels.
+	$has_avatar_level = ( ! empty( $enabled_levels )  && pmpro_hasMembershipLevel( $enabled_levels, $user_id ) );
+
+	/**
+	 * Filter whether a user has a level with "user avatars" enabled.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $has_avatar_level Whether the user has a level with "user avatars" enabled.
+	 * @param int  $user_id          The ID of the user to check.
+	 */
+	return apply_filters( 'pmpro_user_has_avatar_level', $has_avatar_level, $user_id );
+}
+
+/**
  * Filter the normal avatar data and show our avatar if set.
  *
  * @since TBD
@@ -30,7 +101,7 @@ function pmpro_get_avatar_data( $args, $id_or_email ) {
 		}
 	}
 
-	if ( empty( $user_id ) ) {
+	if ( empty( $user_id ) || ! pmpro_user_has_avatar_level( $user_id ) ) {
 		return $args;
 	}
 
@@ -131,6 +202,10 @@ add_action( 'init', 'pmpro_set_up_avatar_field' );
  * @param string $markup Whether to show the field in "div" or "tr" format.
  */
 function pmpro_display_avatar_field( $user_id, $markup ) {
+	if ( empty( $user_id ) || ! pmpro_user_has_avatar_level( $user_id ) ) {
+		return;
+	}
+
 	// Get the current field value.
 	$avatar_value = get_user_meta( $user_id, 'pmpro_avatar', true );
 
@@ -166,9 +241,13 @@ function pmpro_display_avatar_field( $user_id, $markup ) {
  * @since TBD
  *
  * @param int $user_id The ID of the user to save the avatar for.
- * @return true|string True if the change was made, an error message if the new value is invalid.
+ * @return bool|string True if the change was made, false if avatars are disabled for this user, an error message if the new value is invalid.
  */
 function pmpro_save_avatar_field( $user_id ) {
+	if ( empty( $user_id ) || ! pmpro_user_has_avatar_level( $user_id ) ) {
+		return false;
+	}
+
 	// If a new avatar was submitted and the new file is not valid, return an error.
 	if ( ! empty( $_FILES['pmpro_avatar'] ) && ! empty( $_FILES['pmpro_avatar']['name'] ) ) {
 		// Check if the file is valid.
