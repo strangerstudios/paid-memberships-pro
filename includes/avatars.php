@@ -51,7 +51,7 @@ function pmpro_user_has_avatar_level( $user_id ) {
 
 	// Get all user avatar levels.
 	$enabled_levels = $wpdb->get_col( "
-		SELECT DISTINCT membership_id
+		SELECT DISTINCT pmpro_membership_level_id
 		FROM {$wpdb->pmpro_membership_levelmeta}
 		WHERE meta_key = 'enable_avatars'
 		AND meta_value = 1
