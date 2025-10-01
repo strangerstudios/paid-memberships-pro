@@ -120,6 +120,11 @@
 				pmpro_stripeWebhookExit();
 			}
 
+			if ( empty( $invoice->parent->subscription_details->subscription ) ) {
+				$logstr .= "No subscription associated with invoice " . $invoice->id . ".";
+				pmpro_stripeWebhookExit();
+			}
+
 			$logstr .= pmpro_handle_recurring_payment_succeeded_at_gateway( pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) );
 			pmpro_stripeWebhookExit();
 		}
@@ -196,7 +201,7 @@
 			}
 
 			// If we don't have a subscription on the invoice, bail.
-			if ( empty( $invoice->subscription ) ) {
+			if ( empty( $invoice->parent->subscription_details->subscription ) ) {
 				$logstr .= "No subscription associated with invoice " . $invoice->id . " with failed payment.";
 				pmpro_stripeWebhookExit();
 			}
@@ -683,7 +688,7 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 	$order_data['gateway'] = 'stripe';
 	$order_data['gateway_environment'] = ( ! empty( $invoice->livemode ) && $invoice->livemode ) ? 'live' : 'sandbox';
 	$order_data['timestamp'] = $invoice->created;
-	$order_data['subscription_transaction_id'] = $invoice->subscription;
+	$order_data['subscription_transaction_id'] = $invoice->parent->subscription_details->subscription;
 	$order_data['payment_transaction_id'] = $invoice->id;
 
 	// Set order pricing data.
