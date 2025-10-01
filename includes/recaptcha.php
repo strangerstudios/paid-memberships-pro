@@ -251,6 +251,10 @@ function pmpro_login_form_recaptcha( $login_form, $args ) {
 		return $login_form;
 	}
 
+	// Only show the reCAPTCHA if we have a tracked failed login attempt.
+	if ( ! pmpro_login_has_failed_attempt() ) {
+		return $login_form;
+	}
 
 	ob_start();
 	pmpro_recaptcha_get_html( 'wp-submit' );
