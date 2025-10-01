@@ -57,6 +57,10 @@ function pmpro_cloudflare_turnstile_login_form_middle( $login_form, $args ) {
 		return $login_form;
 	}
 
+	if ( ! pmpro_login_has_failed_attempt() ) {
+		return $login_form;
+	}
+
 	ob_start();
 	pmpro_cloudflare_turnstile_get_html();
 	$pmpro_turnstile = ob_get_contents();
@@ -77,6 +81,11 @@ function pmpro_cloudflare_turnstile_login_and_password_form( $login_form ) {
 	if ( pmpro_captcha() != 'turnstile' ) {
         return $login_form;
     }
+
+	// Enable Turnstile only after a failed login attempt has been tracked.
+	if ( ! pmpro_login_has_failed_attempt() ) {
+		return $login_form;
+	}
 
 	// Custom CSS for the PMPro reset password form, or default to CSS for the default login pages to style the challenge better.
 	?>
@@ -166,6 +175,77 @@ function pmpro_cloudflare_validate_turnstile_at_checkout( $okay ) {
 }
 add_action( 'pmpro_checkout_checks', 'pmpro_cloudflare_turnstile_validation' );
 add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validation' );
+
+/**
+ * Default login validation check for CloudFlare Turnstile. This runs after default login checks (username and password).
+ *
+ * @since TBD
+ * 
+ * @param WP_User|WP_Error $user
+ * @param string $captcha
+ * @return WP_User|WP_Error
+ */
+function pmpro_cloudflare_default_login_validation( $user, $captcha ) {
+	if ( $captcha == 'turnstile' ) {
+	   // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_cloudflare_turnstile_validation(); 
+		if ( ! $validated ) {	
+				$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
+	}
+
+	return $user;
+}
+add_filter( 'pmpro_authenticate_after_default_login_checks', 'pmpro_cloudflare_default_login_validation', 10, 2 );
+
+/**
+ * Reset password validation check for CloudFlare Turnstile.
+ *
+ * @since TBD
+ * 
+ * @param WP_User|WP_Error $user
+ * @param string $captcha
+ * @return void
+ */
+function pmpro_cloudflare_password( $user, $captcha ) {
+	//Check if Turnstile has been filled in
+	if ( $captcha == 'turnstile' ) {
+	   // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_cloudflare_turnstile_validation(); 
+		if ( ! $validated ) {	
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
+	}
+
+	return $user;
+}
+add_filter( 'pmpro_password_reset_captcha_check', 'pmpro_cloudflare_password', 10, 2 );
+
+/**
+ * Lost password validation check for CloudFlare Turnstile.
+ *
+ * @since TBD
+ * 
+ * @param WP_Error $errors
+ * @param string $captcha
+ * @return WP_Error|void
+ */
+function pmpro_cloudflare_lostpassword_validation( $errors, $captcha ) {
+	//Check if Turnstile has been filled in
+	if ( $captcha == 'turnstile' ) {
+		$validated = pmpro_cloudflare_turnstile_validation(); 
+		if ( ! $validated ) {	
+				$errors = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
+
+		// Remove session data to reset turnstile validation.
+		pmpro_unset_session_var( 'pmpro_turnstile_validated' );
+
+	}
+
+	return $errors;
+}
+add_filter( 'pmpro_lostpassword_submission_check', 'pmpro_cloudflare_lostpassword_validation', 10, 2 );
 
 /**
  * CloudFlare Turnstile Security Settings

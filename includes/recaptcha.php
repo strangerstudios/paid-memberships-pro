@@ -69,14 +69,6 @@ function pmpro_init_recaptcha( $submit_button_id ) {
 function pmpro_recaptcha_get_html( $submit_button_id = 'pmpro_btn-submit-checkout' ) {
 	static $already_shown = false;
 
-	// If it's not a string let's set it to a string.
-	if ( ! is_string( $submit_button_id ) ) {
-		$submit_button_id = 'pmpro_btn-submit-checkout';
-	}
-
-	// Initialize the reCAPTCHA.
-	pmpro_init_recaptcha( $submit_button_id );
-	
 	// Make sure that we only show the captcha once.
 	if ( $already_shown ) {
 		return;
@@ -91,6 +83,14 @@ function pmpro_recaptcha_get_html( $submit_button_id = 'pmpro_btn-submit-checkou
 	if ( true === pmpro_recaptcha_is_validated() ) {
 		return;
 	}
+
+	// If it's not a string let's set it to a string.
+	if ( ! is_string( $submit_button_id ) ) {
+		$submit_button_id = 'pmpro_btn-submit-checkout';
+	}
+
+	// Initialize the reCAPTCHA.
+	pmpro_init_recaptcha( $submit_button_id );
 
 	$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
 	// Make sure we have a public key.
@@ -160,6 +160,80 @@ function pmpro_checkout_form_recaptcha( $level ) {
 add_action( 'pmpro_checkout_before_submit_button', 'pmpro_recaptcha_get_html' );
 add_action( 'pmpro_billing_before_submit_button', 'pmpro_recaptcha_get_html' );
 
+
+/**
+ * Check default wp-login.php login for reCAPTCHA validation.
+ *
+ * @param [type] $user
+ * @param [type] $captcha
+ * @return void
+ */
+function pmpro_default_login_captcha_validation( $user, $captcha ) {
+	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
+	if ( $captcha == 'recaptcha' ) {
+		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
+		
+		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
+		if ( ! $validated ) {	
+				$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
+	}
+
+	return $user;
+}
+add_filter( 'pmpro_authenticate_after_default_login_checks', 'pmpro_default_login_captcha_validation', 10, 2 );
+
+/**
+ * Check that the reCAPTCHA was completed on the password reset form.
+ *
+ * @since TBD
+ */
+function pmpro_password_reset_form_recaptcha( $user, $captcha ) {
+
+	if ( $captcha == 'recaptcha' ) {
+		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
+		
+		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
+		if ( ! $validated ) {	
+				$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
+	}
+
+	return $user;
+}
+add_action( 'pmpro_password_reset_captcha_check', 'pmpro_password_reset_form_recaptcha', 10, 2 );
+
+/**
+ * Catpcha validation check for lost password form.
+ *
+ * @param [type] $error
+ * @param [type] $args
+ * @return void
+ */
+function pmpro_lostpassword_captcha_validation( $error, $captcha ) {
+	
+	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
+	if ( $captcha == 'recaptcha' ) {
+		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
+		
+		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
+		if ( ! $validated ) {	
+				$error = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
+
+		// Remove session data to reset because the page is going to redirect anyway.
+		pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
+
+	}
+
+	return $error;
+}
+add_filter( 'pmpro_lostpassword_submission_check', 'pmpro_lostpassword_captcha_validation', 10, 2 );
+
+
 /**
  * Adds reCAPTCHA to the PMPro login form
  *
@@ -194,15 +268,8 @@ add_filter( 'login_form_middle', 'pmpro_login_form_recaptcha', 10, 2 );
  */
 function pmpro_wp_login_form_recaptcha() {
 
-	// Enable reCAPTCHA and clear the validation.
-	if ( pmpro_captcha() === 'recaptcha' ) {
-		// Only load recaptcha on the default login form if we've detected a failed login attempt from here. Cache it for like 20 minutes.
-		$ip = str_replace( array( '.', ':' ), array( '_', '_'), pmpro_get_ip() );
-		$has_failed = get_transient( 'pmpro_failed_login_' . $ip );
-		if ( ! $has_failed ) {
-			return;
-		}
-
+	// Enable reCAPTCHA only after a failed login attempt has been tracked.
+	if ( pmpro_captcha() === 'recaptcha' && pmpro_login_has_failed_attempt() ) {
 		pmpro_recaptcha_get_html( 'wp-submit' );
 	}
 }
@@ -309,11 +376,11 @@ function pmpro_after_checkout_reset_recaptcha() {
 	pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
 
 	// This is to clear the transient that tracks failed login attemtpts.
-	delete_transient( 'pmpro_failed_login_' . str_replace( array( '.', ':' ), array( '_', '_' ), pmpro_get_ip() ) );
+	pmpro_login_clear_failed_attempt();
 }
-add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_recaptcha' );
-add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha' );
-add_action( 'wp_login', 'pmpro_after_checkout_reset_recaptcha' );
+add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_recaptcha' ); // Clear on checkout
+add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha' ); // Clear on update billing info
+add_action( 'wp_login', 'pmpro_after_checkout_reset_recaptcha' ); // Clear on successful login.
 
 /**
  * Check if ReCAPTCHA is validated.
@@ -399,49 +466,6 @@ function pmpro_recaptcha_validation_check( $continue = true ) {
 }
 add_filter( 'pmpro_checkout_checks', 'pmpro_recaptcha_validation_check', 10, 1 );
 add_filter( 'pmpro_billing_update_checks', 'pmpro_recaptcha_validation_check', 10, 1 );
-
-/**
- * Set a transient to track failed login attempts based on IP address.
- * This is used to determine if we should show the reCAPTCHA on the default WordPress login form.
- * NOTE: This reloads the page to ensure the reCAPTCHA is shown correctly.
- *
- * @since TBD
- * 
- * @param string $username The username that was attempted to be logged in.
- */
-function pmpro_recaptcha_trigger_failed_login_attempt( $username ) {
-	// Bail if we don't have a recaptcha option set.
-	if ( 'recaptcha' !== pmpro_captcha() ) {
-		return $message;
-	}
-
-	// Track a failed login attempty by IP address and store it in a transient for 20 minutes.
-	$ip = str_replace( array( '.', ':' ), array( '_', '_'), pmpro_get_ip() );
-	set_transient( 'pmpro_failed_login_' . $ip, true, 60 * 20 ); // Store for 20 minutes
-	wp_safe_redirect( add_query_arg( 'failed_login_attempt', '1', $_SERVER['REQUEST_URI'] ) );
-}
-add_action( 'wp_login_failed', 'pmpro_recaptcha_trigger_failed_login_attempt' );
-
-/**
- * Shows a custom error message on the default wp-login.php page when a login attempt fails.
- *
- * @param [type] $message
- * @return void
- */
-function pmpro_show_custom_error_message_when_failed_login( $message ) {
-	// Bail if we don't have a recaptcha option set.
-	if ( 'recaptcha' !== pmpro_captcha() ) {
-		return $message;
-	}
-
-	// Set the custom error message if the failed login attempt is detected.
-    if ( isset( $_REQUEST['failed_login_attempt'] ) && $_REQUEST['failed_login_attempt'] === '1' ) {
-        $message .= '<div id="login_error" class="notice notice-error"><strong>' . esc_html__( 'Custom Error:', 'paid-memberships-pro' ) . '</strong> ' . esc_html__( 'There was an error logging in. Please try again.', 'paid-memberships-pro' ) . '</div>';
-    }
-
-    return $message;
-}
-add_filter( 'login_message', 'pmpro_show_custom_error_message_when_failed_login' );
 
 /**
  * Show reCAPTCHA settings on the PMPro settings page.
