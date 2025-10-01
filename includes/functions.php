@@ -4577,6 +4577,7 @@ function pmpro_allowed_refunds( $order ) {
 	 * @param array $allowed_gateways A list of allowed gateways to work with refunds
 	 */
 	$allowed_gateways = apply_filters( 'pmpro_allowed_refunds_gateways', array( 'stripe', 'paypalexpress' ) );
+
 	//Only apply to these gateways
 	if( in_array( $order->gateway, $allowed_gateways, true ) ) {
 		$okay = true;
@@ -5141,3 +5142,71 @@ function pmpro_display_member_account_level_message( $level ) {
 	}
 }
 add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );
+
+/**
+ * Update the level restrictions for a post.
+ *
+ * @since TBD
+ *
+ * @param int $post_id The ID of the post to update.
+ * @param array $level_ids The IDs of the levels to restrict the post to.
+ */
+function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
+	global $wpdb;
+
+	// Get the current level IDs for the post.
+	$current_level_ids = $wpdb->get_col( $wpdb->prepare(
+		"SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d",
+		intval( $post_id )
+	) );
+
+	// Get the list of level IDs to remove.
+	$level_ids_to_remove = array_diff( $current_level_ids, $level_ids );
+	if ( ! empty( $level_ids_to_remove ) ) {
+		// Delete the restrictions for the levels that are being removed.
+		foreach( $level_ids_to_remove as $level_id ) {
+			$wpdb->delete(
+				$wpdb->pmpro_memberships_pages,
+				array(
+					'membership_id' => intval( $level_id ),
+					'page_id'       => intval( $post_id ),
+				),
+				array(
+					'%d',
+					'%d',
+				)
+			);
+		}
+	}
+
+	// Get the list of level IDs to insert.
+	$level_ids_to_insert = array_diff( $level_ids, $current_level_ids );
+	if ( ! empty( $level_ids_to_insert ) ) {
+		// Insert the restrictions for the new levels.
+		foreach ( $level_ids_to_insert as $level_id ) {
+			$wpdb->insert(
+				$wpdb->pmpro_memberships_pages,
+				array(
+					'membership_id' => intval( $level_id ),
+					'page_id'       => intval( $post_id ),
+				),
+				array(
+					'%d',
+					'%d',
+				)
+			);
+		}
+	}
+
+	// If we made changes, run an action.
+	if ( ! empty( $level_ids_to_remove ) || ! empty( $level_ids_to_insert ) ) {
+		/**
+		 * Action triggered after updating post level restrictions.
+		 *
+		 * @since TBD
+		 *
+		 * @param int $post_id The ID of the post that was updated.
+		 */
+		do_action( 'pmpro_after_updating_post_level_restrictions', $post_id );
+	}
+}

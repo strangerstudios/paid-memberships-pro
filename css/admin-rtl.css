@@ -20,6 +20,16 @@
 	border-right: none;
 }
 
+.pmpro_admin .pmpro-two-col--left  {
+	grid-template-areas:
+		"main sidebar";
+}
+
+.pmpro_admin .pmpro-two-col--right {
+	grid-template-areas:
+		"sidebar main";
+}
+
 /* highlighted trs */
 
 /* discount levels */

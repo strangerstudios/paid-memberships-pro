@@ -72,6 +72,11 @@ function pmpro_compatibility_checker() {
 			'check_value' => 'BLUEHOST_PLUGIN_VERSION',
 		],
 		[
+			'file'        => 'wp-fusion-lite.php',
+			'check_type'  => 'class',
+			'check_value' => 'WP_Fusion_Lite',
+		],
+		[
 			'file'			=> 'pantheon.php',
 			'check_type'	=> 'function',
 			'check_value'	=> 'pantheon_wp_env',

@@ -743,7 +743,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 							/* translators: %s is the order code. */
 							__( 'There was an error refunding order #%s. None of the submitted changes to this membership have been made. Please check the order notes for more information.', 'paid-memberships-pro' ),
 							$refund_order->code
-						) . ' <a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $refund_order->id ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a>', 'pmpro_error'
+						) . ' <a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $refund_order->id ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a>', 'pmpro_error'
 					);
 					return;
 				}
@@ -880,7 +880,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 							/* translators: %s is the order code. */
 							__( 'There was an error refunding order #%s. None of the submitted changes to this membership have been made. Please check the order notes for more information.', 'paid-memberships-pro' ),
 							$refund_order->code
-						) . ' <a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $refund_order->id ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a>', 'pmpro_error'
+						) . ' <a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $refund_order->id ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a>', 'pmpro_error'
 					);
 					return;
 				}

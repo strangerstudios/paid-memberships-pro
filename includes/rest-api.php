@@ -1161,13 +1161,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				return new WP_REST_Response( array( 'error' => 'No level IDs provided.' ), 400 );
 			}
 
-			// Delete existing restrictions.
-			$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post_id ) . "'" );
-
-			// Add new restrictions.
-			foreach ( $level_ids as $level_id ) {
-				$wpdb->query( "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval( $level_id ) . "', '" . intval( $post_id ) . "')" );
-			}
+			pmpro_update_post_level_restrictions( $post_id, $level_ids );
 
 			return new WP_REST_Response( array( 'success' => $level_ids ), 200 );
 		}

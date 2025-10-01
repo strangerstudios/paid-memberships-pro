@@ -8,7 +8,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 		$user = self::get_user();
 		$this->slug = 'orders';
 		$this->title = __( 'Orders', 'paid-memberships-pro' );
-		$this->title_link = empty( $user->ID ) ? '' : '<a href=' . admin_url( 'admin.php?page=pmpro-orders&order=-1&user=' . $user->ID ) . ' class="page-title-action pmpro-has-icon pmpro-has-icon-plus">' . esc_html__( 'Add New Order', 'paid-memberships-pro' ) . '</a>';
+		$this->title_link = empty( $user->ID ) ? '' : '<a href=' . add_query_arg( array( 'page' => 'pmpro-orders', 'id' => -1, 'edit' => 1, 'user' => $user->ID ), admin_url( 'admin.php' ) ) . ' class="page-title-action pmpro-has-icon pmpro-has-icon-plus">' . esc_html__( 'Add New Order', 'paid-memberships-pro' ) . '</a>';
 	}
 
 	/**
@@ -65,7 +65,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 								?>
 							</td>
 							<td class="order_code column-order_code has-row-actions">
-								<strong><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $order->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $order->code ); ?></a></strong>
+								<strong><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $order->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $order->code ); ?></a></strong>
 								<div class="row-actions">
 									<span class="id">
 										<?php echo sprintf(
@@ -74,11 +74,11 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 											esc_html( $order->id )
 										); ?>
 									</span> |
-									<span class="edit">
-										<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $order->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
+									<span class="view">
+										<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $order->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'View', 'paid-memberships-pro' ); ?></a>
 									</span> |
 									<span class="print">
-										<a target="_blank" title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
+										<a target="_blank" title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'id' => $order->id ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
 									</span>
 									<?php if ( function_exists( 'pmpro_add_email_order_modal' ) ) { ?>
 										|

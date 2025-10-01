@@ -129,6 +129,7 @@ function pmpro_admin_enqueue_scripts() {
                         plugins_url( 'js/pmpro-admin.js', dirname(__FILE__) ),
                         array( 'jquery', 'jquery-ui-sortable', 'select2' ),
                         PMPRO_VERSION );
+
     $all_levels = pmpro_getAllLevels( true, true );
     $all_level_values_and_labels = array();
     foreach( $all_levels as $level ) {
