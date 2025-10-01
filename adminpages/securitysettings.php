@@ -165,9 +165,9 @@
 							</th>
 							<td>
 								<select id="spamprotection" name="spamprotection">
-									<option value="0" <?php selected( $spamprotection, false ); ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
+									<option value="0" <?php selected( $spamprotection, false ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' );?></option>
 									<!-- For reference, removed the Yes - Free memberships only. option -->
-									<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
+									<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
 								</select>
 								<p class="description"><?php printf( esc_html__( 'Block IPs from checkout and login if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
 							</td>
@@ -182,7 +182,7 @@
 									<option value="recaptcha" <?php selected( $captcha, 'recaptcha', true ); ?>><?php esc_html_e( 'Use Google reCAPTCHA', 'paid-memberships-pro' );?></option>
 									<option value="turnstile" <?php selected( $captcha, 'turnstile', true ); ?>><?php esc_html_e( 'Use CloudFlare Turnstile', 'paid-memberships-pro' );?></option>
 								</select>
-								<p class="description"><?php printf( esc_html__( 'Protect your Checkout and Login forms with Google reCAPTCHA or CloudFlare Turnstile.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
+								<p class="description"><?php esc_html_e( 'Protect your Checkout and Login forms with CAPTCHA verification.', 'paid-memberships-pro' );?></p>
 							</td>
 						</tr>
 						<?php
