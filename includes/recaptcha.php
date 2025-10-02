@@ -170,7 +170,7 @@ add_action( 'pmpro_billing_before_submit_button', 'pmpro_recaptcha_get_html' );
  */
 function pmpro_default_login_captcha_validation( $user, $captcha ) {
 	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
-	if ( $captcha == 'recaptcha' ) {
+	if ( $captcha == 'recaptcha' && pmpro_login_has_failed_attempt() ) {
 		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
 		
 		// Validate the reCAPTCHA response here. If it's empty, assume it failed.

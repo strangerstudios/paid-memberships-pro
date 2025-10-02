@@ -186,7 +186,7 @@ add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validatio
  * @return WP_User|WP_Error
  */
 function pmpro_cloudflare_default_login_validation( $user, $captcha ) {
-	if ( $captcha == 'turnstile' ) {
+	if ( $captcha == 'turnstile' && pmpro_login_has_failed_attempt() ) {
 	   // Validate the reCAPTCHA response here. If it's empty, assume it failed.
 		$validated = pmpro_cloudflare_turnstile_validation(); 
 		if ( ! $validated ) {	
