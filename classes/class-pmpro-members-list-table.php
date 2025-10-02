@@ -431,22 +431,23 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			}
 		}
 
-		if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
-				$sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
-		}
-
 		$sqlQuery .= ' WHERE mu.membership_id > 0 ';
 
 		if ( ! empty( $s ) ) {
 			$sqlQuery .= $search_query;
 		}
 
+		// If looking for oldmembers, expired, or cancelled, make sure they don't have an active membership.
+		if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
+			$sqlQuery .= " AND NOT EXISTS (SELECT 1 FROM $wpdb->pmpro_memberships_users mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active') ";
+		}
+
 		if ( 'oldmembers' === $l ) {
-			$sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status <> 'active' ";
 		} elseif ( 'expired' === $l ) {
-			$sqlQuery .= " AND mu.status = 'expired' AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status = 'expired' ";
 		} elseif ( 'cancelled' === $l ) {
-			$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') ";
 		} elseif ( $l ) {
 			$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . (int) $l . "' ";
 		} else {
