@@ -40,7 +40,6 @@ function pmpro_setupAddonUpdateInfo() {
 		$addons_manager = _pmpro_get_addons_manager();
 	}
 }
-add_action( 'admin_init', 'pmpro_setupAddonUpdateInfo' );
 
 /**
  * Get addon information from PMPro server.
@@ -250,7 +249,6 @@ function pmpro_admin_init_updating_plugins() {
 	// The new class handles this automatically in the admin_hooks() method
 	// This function is kept for backward compatibility but does nothing
 }
-add_action( 'admin_init', 'pmpro_admin_init_updating_plugins' );
 
 /**
  * Check if an add on can be downloaded based on it's license.
