@@ -276,7 +276,7 @@ class PMPro_AddOns {
 
 			// Check if the Add On is installed with an incorrect folder name.
 			if ( array_key_exists( $addon_filename, $installed_plugins ) && $addon_folder !== $installed_plugins[ $addon_filename ] ) {
-				// The Add On is installed with the wrong folder nane. Add it to the array.
+				// The Add On is installed with the wrong folder name. Add it to the array.
 				$installed_name                            = $installed_plugins[ $addon_filename ] . '/' . $addon_filename;
 				$incorrect_folder_names[ $installed_name ] = $addon;
 			}
