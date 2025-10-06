@@ -16,7 +16,7 @@ use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 use Stripe\Account as Stripe_Account;
 use Stripe\Checkout\Session as Stripe_Checkout_Session;
 
-define( "PMPRO_STRIPE_API_VERSION", "2022-11-15" );
+define( "PMPRO_STRIPE_API_VERSION", "2025-09-30.clover" );
 
 //include pmprogateway
 require_once( dirname( __FILE__ ) . "/class.pmprogateway.php" );
@@ -131,16 +131,6 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_rebuild_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_rebuild_webhook' ) );
-
-		/*
-            Filter pmpro_next_payment to get actual value
-            via the Stripe API. This is disabled by default
-            for performance reasons, but you can enable it
-            by copying this line into a custom plugin or
-            your active theme's functions.php and uncommenting
-            it there.
-        */
-		//add_filter('pmpro_next_payment', array('PMProGateway_stripe', 'pmpro_next_payment'), 10, 3);
 
 		//code to add at checkout if Stripe is the current gateway
 		$default_gateway = get_option( 'pmpro_gateway' );
@@ -398,7 +388,7 @@ class PMProGateway_stripe extends PMProGateway {
 							<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e( 'A webhook is set up in Stripe, but it is disabled.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#"><?php esc_html_e( 'Rebuild Webhook', 'paid-memberships-pro' ); ?></a></p>
 						</div>
 						<?php
-					} elseif ( $webhook['api_version'] < PMPRO_STRIPE_API_VERSION ) {
+					} elseif ( $webhook['api_version'] !== PMPRO_STRIPE_API_VERSION ) {
 						// Check webhook API version.
 						?>
 						<div class="notice error inline">
@@ -747,7 +737,7 @@ class PMProGateway_stripe extends PMProGateway {
 												<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e( 'A webhook is set up in Stripe, but it is disabled.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#"><?php esc_html_e( 'Rebuild Webhook', 'paid-memberships-pro' ); ?></a></p>
 											</div>
 											<?php
-										} elseif ( $webhook['api_version'] < PMPRO_STRIPE_API_VERSION ) {
+										} elseif ( $webhook['api_version'] !== PMPRO_STRIPE_API_VERSION ) {
 											// Check webhook API version.
 											?>
 											<div class="notice error inline">
@@ -1460,8 +1450,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Filter pmpro_next_payment to get date via API if possible
 	 *
 	 * @since 1.8.6
+	 * @deprecated TBD In favor of using the PMPro_Subscriptions class.
 	 */
 	public static function pmpro_next_payment( $timestamp, $user_id, $order_status ) {
+		_deprecated_function( __METHOD__, 'TBD' );
+
 		//find the last order for this user
 		if ( ! empty( $user_id ) ) {
 			//get last order
@@ -2633,11 +2626,9 @@ class PMProGateway_stripe extends PMProGateway {
 				// Subscription is active.
 				$update_array['status'] = 'active';
 
-				// Get the next payment date. If the last invoice is not paid, that invoice date is the next payment date. Otherwise, the next payment date is the current_period_end.
-				if ( ! empty( $stripe_subscription->latest_invoice ) && empty( $stripe_subscription->latest_invoice->paid ) ) {
-					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->latest_invoice->period_end ) );
-				} else {
-					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
+				// Get the next payment date.
+				if ( ! empty( $stripe_subscription->items->data[0]->current_period_end ) ) {
+					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->items->data[0]->current_period_end ) );
 				}
 
 				// Get the billing amount and cycle.
@@ -4042,7 +4033,8 @@ class PMProGateway_stripe extends PMProGateway {
 			// Find any open invoices for this subscription and forgive them.
 			if ( ! empty( $invoices ) ) {
 				foreach ( $invoices->data as $invoice ) {
-					if ( 'open' == $invoice->status && $invoice->subscription == $subscription->id ) {
+					$invoice_subscription_id = ! empty( $invoice->parent->subscription_details->subscription ) ? $invoice->parent->subscription_details->subscription : null;
+					if ( 'open' == $invoice->status && $invoice_subscription_id == $subscription->id ) {
 						$invoice->voidInvoice();
 					}
 				}
@@ -4483,10 +4475,15 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//if an invoice ID is passed, get the charge/payment id
 		if ( strpos( $transaction_id, "in_" ) !== false ) {
-			$invoice = Stripe_Invoice::retrieve( $transaction_id );
+			$invoice = Stripe_Invoice::retrieve(
+				array(
+					'id' => $transaction_id,
+					'expand' => array( 'payments', 'payments.data.payment.payment_intent' )
+				)
+			);
 
-			if ( ! empty( $invoice ) && ! empty( $invoice->charge ) ) {
-				$transaction_id = $invoice->charge;
+			if ( ! empty( $invoice ) && ! empty( $invoice->payments->data[0]->payment->payment_intent->latest_charge ) ) {
+				$transaction_id = $invoice->payments->data[0]->payment->payment_intent->latest_charge;
 			}
 		}
 
