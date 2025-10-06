@@ -306,14 +306,12 @@ add_action( 'admin_init', 'pmpro_init_save_wizard_data' );
  * @return true|WP_Error True on success, WP_Error on failure.
  */
 function pmpro_wizard_handle_update_manager() {
-	// Check permissions.
-	if ( ! current_user_can( 'install_plugins' ) ) {
-		return new WP_Error( 'permission_denied', __( 'Permission denied.', 'paid-memberships-pro' ) );
-	}
+
+	// Load the addon manager class if it isn't already.
+	$addon_manager = PMPro_AddOns::instance();
 
 	$um_slug = 'pmpro-update-manager';
 	$um_plugin_file = $um_slug . '/' . $um_slug . '.php';
-	$um_zip_url = 'https://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-update-manager.zip';
 	$um_installed = file_exists( WP_PLUGIN_DIR . '/' . $um_plugin_file );
 	$um_active = is_plugin_active( $um_plugin_file );
 
@@ -324,7 +322,7 @@ function pmpro_wizard_handle_update_manager() {
 
 	// If installed but not active, just activate.
 	if ( $um_installed ) {
-		$activate_result = activate_plugin( $um_plugin_file );
+		$activate_result = $addon_manager->activate( $um_slug );
 		if ( is_wp_error( $activate_result ) ) {
 			return $activate_result;
 		}
@@ -332,45 +330,15 @@ function pmpro_wizard_handle_update_manager() {
 	}
 
 	// Need to install first, then activate.
-	require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-	require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
-	/**
-	* A silent upgrader skin for the WordPress Upgrader.
-	* 
-	* The WP skin will always echo during the call, so unless we start buffering 
-	* before any output (including possibly in other hooks/callbacks/core), 
-	* HTML will slip through.
-	* 
-	* WordPress has no filter/action to disable that HTML. 
-	* We can’t control what’s echoed by the default skin.
-	* A silent skin is the only WordPress-native, robust way.
-	*/
-	if ( ! class_exists( 'PMPro_Silent_Upgrader_Skin' ) ) {
-		// Check if the WP_Upgrader_Skin class exists before defining our own skin.
-		if ( ! class_exists( 'WP_Upgrader_Skin' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-		}
-		class PMPro_Silent_Upgrader_Skin extends WP_Upgrader_Skin {
-			public function header() {}
-			public function footer() {}
-			public function feedback( $string, ...$args ) {}
-			public function error( $errors ) {}
-			public function before() {}
-			public function after() {}
-		}
-	}
-
-	$upgrader = new Plugin_Upgrader( new PMPro_Silent_Upgrader_Skin() );
-	$install_result = $upgrader->install( $um_zip_url );
+	$install_result = $addon_manager->install( $um_slug );
 
 	if ( is_wp_error( $install_result ) ) {
 		return $install_result;
 	}
 
 	// Activate the plugin after installation.
-	$activate_result = activate_plugin( $um_plugin_file );
-	
+	$activate_result = $addon_manager->activate( $um_slug );
+
 	if ( is_wp_error( $activate_result ) ) {
 		return $activate_result;
 	}

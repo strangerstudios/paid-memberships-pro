@@ -249,7 +249,7 @@ class PMPro_AddOns {
 	 * @return array $incorrect_folder_names An array of Add Ons with incorrect folder names. The key is the installed folder name, the value is the Add On data.
 	 */
 	public function get_add_ons_with_incorrect_folder_names() {
-		// Make an easily searchable array of installed plugins to reduce computational compexity.
+		// Make an easily searchable array of installed plugins to reduce computational complexity.
 		// The key of the array is the plugin filename, the value is the folder name.
 		$installed_plugins = array();
 
@@ -276,7 +276,7 @@ class PMPro_AddOns {
 
 			// Check if the Add On is installed with an incorrect folder name.
 			if ( array_key_exists( $addon_filename, $installed_plugins ) && $addon_folder !== $installed_plugins[ $addon_filename ] ) {
-				// The Add On is installed with the wrong folder nane. Add it to the array.
+				// The Add On is installed with the wrong folder name. Add it to the array.
 				$installed_name                            = $installed_plugins[ $addon_filename ] . '/' . $addon_filename;
 				$incorrect_folder_names[ $installed_name ] = $addon;
 			}
