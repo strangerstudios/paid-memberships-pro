@@ -376,11 +376,18 @@
 		border-bottom-right-radius: 0;
 	}
 
-	.pmpro_form_input-file {
-		border: 3px dashed var(--pmpro--color--border--variation);
-		border-radius: var(--pmpro--base--border-radius);
-		padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
-		width: 100%;
+	.pmpro_form_field-file {
+
+		.pmpro_form_input-file {
+			border: 3px dashed var(--pmpro--color--border--variation);
+			border-radius: var(--pmpro--base--border-radius);
+			padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
+			width: 100%;
+		}
+
+		.pmpro_btn {
+			padding: 0 var(--pmpro--base--spacing--small);
+		}
 	}
 
 	/* Special Fields */

@@ -1412,8 +1412,8 @@ td > .pmpro_tag {
 	width: 100%;
 }
 
-.pmpro_admin-pmpro-member .pmpro_form_field-file .pmpro_form_field-file-upload {
-	margin-top: var(--pmpro--spacing--medium);
+.pmpro_admin-pmpro-member .pmpro_form_field-file .pmpro_form_field-file-actions {
+	margin-bottom: var(--pmpro--spacing--small);
 }
 
 .pmpro_admin-pmpro-member .wp-pwd {
@@ -2333,17 +2333,24 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 
 /* Display-style User Fields on Edit Member or Edit User screen */
 .pmpro_form_field-file .pmpro_form_field-file-preview {
+	align-items: center;
 	border: 1px solid var(--pmpro--border--color);
 	border-radius: var(--pmpro--border--radius);
 	box-shadow: var(--pmpro--box-shadow);
-	display: inline-block;
+	display: flex;
+	height: 100px;
+	justify-content: center;
 	margin-bottom: var(--pmpro--spacing--small);
 	overflow: hidden;
+	width: 100px;
 }
 
 .pmpro_form_field-file .pmpro_form_field-file-preview img {
-	display: block;
+	height: 100%;
+	object-fit: cover;
+	width: 100%;
 }
+
 
 .pmpro_form_field-file .pmpro_form_field-file-name {
 	margin-bottom: var(--pmpro--spacing--small);
