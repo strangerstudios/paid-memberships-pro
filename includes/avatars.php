@@ -13,8 +13,10 @@ function pmpro_membership_level_after_other_settings_avatar( $level ) {
 	<table class="form-table">
 		<tbody>
 			<tr>
-				<th scope="row" valign="top"><label><?php esc_html_e('Enable Local Avatars', 'paid-memberships-pro'); ?></label></th>
-				<td><input id="enable_avatars" name="enable_avatars" type="checkbox" value="1" <?php checked( $enabled ); ?> /> <label for="enable_avatars"><?php esc_html_e('Check to enable local avatars for this membership level.', 'paid-memberships-pro'); ?></label></td>
+				<th scope="row" valign="top"><label><?php esc_html_e( 'Enable Local Avatars', 'paid-memberships-pro' ); ?></label></th>
+				<td>
+					<input id="enable_avatars" name="enable_avatars" type="checkbox" value="1" <?php checked( $enabled ); ?> /> <label for="enable_avatars"><?php esc_html_e( 'Check to enable local avatar support for users with this membership level.', 'paid-memberships-pro' ); ?></label>
+				</td>
 			</tr>
 		</tbody>
 	</table>
