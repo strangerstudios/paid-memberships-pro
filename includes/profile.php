@@ -1153,11 +1153,11 @@ function pmpro_member_profile_edit_form() {
 											<?php } ?>
 										</div>	<!-- end pmpro_form_field -->
 									<?php } ?>
+									<?php
+										// Show avatar field.
+										pmpro_display_avatar_field( $current_user->ID, 'div' );
+									?>
 								</div> <!-- end pmpro_form_fields -->
-								<?php
-								// Show avatar field.
-								pmpro_display_avatar_field( $current_user->ID, 'div' );
-								?>
 							</fieldset> <!-- end pmpro_member_profile_edit-account-information -->
 
 							<?php
