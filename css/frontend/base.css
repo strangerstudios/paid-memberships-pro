@@ -185,9 +185,19 @@
 	margin-right: var(--pmpro--base--spacing--small);
 }
 
+.pmpro_form_field-file-preview {
+	align-items: center;
+	display: flex;
+	height: 100px;
+	justify-content: center;
+	overflow: hidden;
+	width: 100px;
+}
+
 .pmpro_form_field-file-preview img {
-	height: auto;
-	width: 200px;
+	height: 100%;
+	object-fit: cover;
+	width: 100%;
 }
 
 /* Checkout and Billing forms */
