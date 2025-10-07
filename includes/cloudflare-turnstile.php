@@ -141,7 +141,7 @@ function pmpro_cloudflare_turnstile_validation( ) {
 	$verify   = wp_remote_retrieve_body( $verify );
 	$response = json_decode( $verify );
 
-	// If the check failed, show an error. /// Fix this.
+	// If the check failed, show an error.
 	if ( empty( $response->success ) ) {
 		$error_messages    = pmpro_cloudflare_turnstile_get_error_message();
 		$error_code        = $response->{'error-codes'}[0];
@@ -162,7 +162,7 @@ function pmpro_cloudflare_validate_turnstile_at_checkout( $okay ) {
 		return $okay;
 	}
 
-	// Let's validate the Turnstile and return a message or not. /// Fix this.
+	// Let's validate the Turnstile and return a message or not.
 	$okay = pmpro_cloudflare_turnstile_validation();
 	if ( ! $okay ) {
 		// If the validation failed, set the error message.
