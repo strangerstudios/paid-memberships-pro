@@ -522,15 +522,19 @@
 					var inactiveCount = $('.add-on-container.add-on-inactive').length;
 					var updateCount = $('.add-on-container.add-on-needs-update').length;
 
-					setCount($('.filter-links a[data-view="active"]'), activeCount, false);
-					setCount($('.filter-links a[data-view="inactive"]'), inactiveCount, false);
+					// Hide tabs whose count is zero.
+					setCount($('.filter-links a[data-view="active"]'), activeCount, true);
+					setCount($('.filter-links a[data-view="inactive"]'), inactiveCount, true);
 					setCount($('.filter-links a[data-view="update"]'), updateCount, true);
 
-					// If the Update view is active (or in the URL) but no updates exist, switch to All.
-					if (updateCount === 0) {
-						var $updateLink = $('.filter-links a[data-view="update"]');
-						var updateIsActive = $updateLink.hasClass('current') || window.location.hash === '#update';
-						if (updateIsActive) {
+					// If the current view is now hidden (count = 0), switch to All.
+					var $currentLink = $('.filter-links a.current');
+					if ($currentLink.length && !$currentLink.closest('li').is(':visible')) {
+						$('.filter-links a[data-view="all"]').trigger('click');
+					} else if (window.location.hash) {
+						var hashView = window.location.hash.replace('#','');
+						var $hashLink = $('.filter-links a[data-view="' + hashView + '"]');
+						if ($hashLink.length && !$hashLink.closest('li').is(':visible')) {
 							$('.filter-links a[data-view="all"]').trigger('click');
 						}
 					}

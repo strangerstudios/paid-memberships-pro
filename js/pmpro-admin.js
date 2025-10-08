@@ -791,7 +791,7 @@ jQuery(document).ready(function () {
 				var activeCount = jQuery('.add-on-container.add-on-active').length;
 				var inactiveCount = jQuery('.add-on-container.add-on-inactive').length;
 				var updateCount = jQuery('.add-on-container.add-on-needs-update').length;
-				function setCount($link, count, hide){
+					function setCount($link, count, hide){
 					if(!$link.length){return;}
 					var baseLabel = $link.data('baseLabel');
 					if(!baseLabel){
@@ -799,17 +799,23 @@ jQuery(document).ready(function () {
 						$link.data('baseLabel', baseLabel);
 					}
 					$link.text(count>0? baseLabel+' ('+count+')': baseLabel);
-					if(hide){ $link.closest('li').toggle(count>0); }
+						if(hide){ $link.closest('li').toggle(count>0); }
 				}
-				setCount(jQuery('.filter-links a[data-view="active"]'), activeCount, false);
-				setCount(jQuery('.filter-links a[data-view="inactive"]'), inactiveCount, false);
-				setCount(jQuery('.filter-links a[data-view="update"]'), updateCount, true);
-				if(updateCount===0){
-					var $updateLink = jQuery('.filter-links a[data-view="update"]');
-					if($updateLink.hasClass('current') || window.location.hash === '#update'){
+					// Hide tabs whose count is zero for all three: active, inactive, update.
+					setCount(jQuery('.filter-links a[data-view="active"]'), activeCount, true);
+					setCount(jQuery('.filter-links a[data-view="inactive"]'), inactiveCount, true);
+					setCount(jQuery('.filter-links a[data-view="update"]'), updateCount, true);
+					// If current link becomes hidden, switch to All.
+					var $currentLink = jQuery('.filter-links a.current');
+					if ($currentLink.length && !$currentLink.closest('li').is(':visible')) {
 						jQuery('.filter-links a[data-view="all"]').trigger('click');
+					} else if (window.location.hash) {
+						var hashView = window.location.hash.replace('#','');
+						var $hashLink = jQuery('.filter-links a[data-view="' + hashView + '"]');
+						if ($hashLink.length && !$hashLink.closest('li').is(':visible')) {
+							jQuery('.filter-links a[data-view="all"]').trigger('click');
+						}
 					}
-				}
 			},
 			applyCurrentFilter: function(){
 				var $current = jQuery('.filter-links a.current');
