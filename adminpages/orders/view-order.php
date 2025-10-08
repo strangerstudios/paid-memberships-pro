@@ -73,7 +73,7 @@ $subscription = $order->get_subscription();
 						} elseif ( ! empty( $order->payment_type ) ) {
 							$pmpro_order_single_meta['payment_method'] = array(
 								'label' => __( 'Payment method', 'paid-memberships-pro' ),
-								'value' => $order->payment_type_nicename,
+								'value' => $order->payment_type,
 							);
 						} else {
 							$pmpro_order_single_meta['payment_method'] = array(
