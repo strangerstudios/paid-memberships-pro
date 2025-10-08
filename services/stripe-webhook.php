@@ -702,22 +702,26 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 
 	// Set payment information data.
 	// Find the payment intent.
-	$payment_intent_args = array(
-		'id'     => $invoice->payment_intent,
-		'expand' => array(
-			'payment_method',
-			'latest_charge',
-		),
-	);
-	$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
-	// Find the payment method.
-	$payment_method = null;
-	if ( ! empty( $payment_intent->payment_method ) ) {
-		$payment_method = $payment_intent->payment_method;
-	} elseif( ! empty( $payment_intent->latest_charge ) ) {
-		// If we didn't get a payment method, check the charge.
-		$payment_method = $payment_intent->latest_charge->payment_method_details;
+	if ( ! empty( $invoice->payments->data[0]->payment->payment_intent ) ) {
+		$payment_intent_args = array(
+			'id'     => $invoice->payments->data[0]->payment->payment_intent,
+			'expand' => array(
+				'payment_method',
+				'latest_charge',
+			),
+		);
+		$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+
+		// Find the payment method.
+		$payment_method = null;
+		if ( ! empty( $payment_intent->payment_method ) ) {
+			$payment_method = $payment_intent->payment_method;
+		} elseif( ! empty( $payment_intent->latest_charge ) ) {
+			// If we didn't get a payment method, check the charge.
+			$payment_method = $payment_intent->latest_charge->payment_method_details;
+		}
 	}
+
 	if ( ! empty( $payment_method ) ) {		       	
 		$order_data['payment_type'] = 'Stripe - ' . $payment_method->type;
 		if ( ! empty( $payment_method->card ) ) {
