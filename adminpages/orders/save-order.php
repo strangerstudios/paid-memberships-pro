@@ -118,6 +118,8 @@ if ( false !== $order->saveOrder() ) {
 	$pmpro_msg .= '</a>';
 	$pmpro_msgt = 'pmpro_success';
 
+	// Make sure that $_REQUEST['id'] is set for the order edit page to avoid infinitely creating new orders when copying.
+	$_REQUEST['id'] = $order->id;
 } else {
 	$pmpro_msg  = __( 'Error saving order.', 'paid-memberships-pro' );
 	$pmpro_msgt = 'pmpro_error';
