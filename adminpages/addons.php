@@ -205,7 +205,6 @@
 													<input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
 											</li>
 											<?php } ?>
-											<li class="divider"></li>
 											<li>
 												<button type="button" role="menuitem" class="pmproAddOnActionButton action-uninstall is-destructive">
 													<?php esc_html_e( 'Uninstall', 'paid-memberships-pro' ); ?>

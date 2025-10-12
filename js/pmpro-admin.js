@@ -861,7 +861,6 @@ jQuery(document).ready(function () {
 					+ '</li>'
 				);
 				// Divider + Uninstall
-				$ul.append('<li class="divider"></li>');
 				$ul.append(
 					'<li>'
 					+ '\t<button type="button" role="menuitem" class="pmproAddOnActionButton action-uninstall is-destructive">Uninstall</button>'
