@@ -463,7 +463,7 @@ function pmpro_edit_level_templates() {
 		),
 		'gift' => array(
 			'name' => __( 'Gift', 'paid-memberships-pro' ),
-			'description' => __( 'Allow anyone to purchase a gift of membership.' ),
+			'description' => __( 'Allow anyone to purchase a gift of membership.', 'paid-memberships-pro' ),
 			'external-link' => 'https://www.paidmembershipspro.com/add-ons/pmpro-gift-levels/',
 			'type' => 'add_on'
 		)
