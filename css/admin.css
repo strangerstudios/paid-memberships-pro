@@ -5,6 +5,7 @@
 	--pmpro--border--color: #E5E7EB;
 	--pmpro--border--radius: 6px;
 	--pmpro--box-shadow: 1px 2px 3px #12196110;
+	--pmpro--box-shadow-heavy: 4px 8px 16px #12196155;
 	--pmpro--color--blue-lightest: #F5F8FA;
 	--pmpro--color--blue-medium-transparent: #E2E8F099;
 	--pmpro--color--blue-medium: #E2E8F0;
@@ -19,6 +20,7 @@
 	--pmpro--color--success-border: #c3e6cb;
 	--pmpro--color--success-text: #0F441C;
 	--pmpro--color--success-link: #2b542c;
+	--pmpro--color--success-text-alt: #45b45c;
 	--pmpro--color--error-background: #f8d7da;
 	--pmpro--color--error-border: #f5c6cb;
 	--pmpro--color--error-text: #721c24;
@@ -710,19 +712,25 @@ td > .pmpro_tag {
 }
 
 .pmpro-popup-wrap {
-	background-color: #FFF;
+	background-color: #fff;
 	border-radius: 10px;
 	box-shadow: 10px 10px 30px #555;
 	display: inline-block;
 	height: auto;
 	max-height: 90%;
-	padding: 25px;
+	padding: var(--pmpro--spacing--medium);
 	position: relative;
+	scrollbar-width: none;
 	text-align: center;
-	overflow-y: scroll;
+	overflow-y: auto;
 	overflow-x: hidden;
 	vertical-align: middle;
 	width: 80%;
+	-ms-overflow-style: none;
+}
+
+.pmpro-popup-wrap::-webkit-scrollbar {
+	display: none;
 }
 
 @media only screen and (min-width: 1200px) {
@@ -733,14 +741,15 @@ td > .pmpro_tag {
 
 .pmpro-popup-wrap h1,
 .pmpro-popup-wrap p {
-	margin: 0 0 20px 0;
+	font-weight: normal;
+	margin: 0 0 var(--pmpro--spacing--medium) 0;
 }
 
 .pmpro-popup-wrap a.pmproPopupCloseButton, 
 .pmpro-popup-wrap button.pmproPopupCloseButton {
 	color: #666;
 	cursor: pointer;
-	padding:0;
+	padding: 0;
 	position: absolute;
 	right: 10px;
 	text-decoration: none;
@@ -3250,10 +3259,6 @@ tr.pmpro_alert {
 /**
  * Add Ons
  */
-#pmpro-admin-add-ons {
-	padding-right: 20px;
-}
-
 #pmpro-admin-add-ons .pmpro-admin-add-ons-refresh {
 	display: inline-block;
 	float: right;
@@ -3376,6 +3381,9 @@ tr.pmpro_alert {
 }
 
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button {
+	border-color: var(--pmpro--color--info-text);
+	border-radius: var(--pmpro--border--radius);
+	color: var(--pmpro--color--info-text);
 	cursor: pointer;
 	font-weight: 600;
 	min-width: 120px;
@@ -3383,10 +3391,15 @@ tr.pmpro_alert {
 	padding: 6px 2px;
 }
 
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button[disabled],
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button.disabled {
+	cursor: not-allowed;
+}
+
 /* Updated icon (check mark). */
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button.checkmarked:before, 
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .add-on-active:not(.add-on-needs-update) .action-button .button:not(.action-link):before {
-	color: #68de7c;
+	color: var(--pmpro--color--success-text-alt);
 	content: "\f147";
 	display: inline-block;
 	font: normal 20px/1 'dashicons';
@@ -3396,21 +3409,21 @@ tr.pmpro_alert {
 }
 
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .dropdown-arrow {
-	background-color: rgba( 0, 0, 0, 0.015 );
-	border: 1px solid #E5E7EB;
-	border-radius: 5px;
+	background-color: var(--pmpro--color--blue-lightest);
+	border: 1px solid var(--pmpro--border--color);
+	border-radius: var(--pmpro--border--radius);
 	cursor: pointer;
 	display: block;
 	padding: 0px 2px;
 	position: absolute;
-	right: 5px;
-	top:5px;
+	right: var(--pmpro--spacing--small);
+	top: var(--pmpro--spacing--small);
 	text-align: center;
 }
 
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .dropdown-arrow span.dashicons {
 	line-height: 1.3;
-	color: #888;
+	color: #666;
 	font-size: 16px;
 	vertical-align: middle;
 }
@@ -3420,70 +3433,41 @@ tr.pmpro_alert {
 }
 
 /* Add On Action Dropdown */
-
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu {
-	--pmpro-actions-menu-min-width: 140px;
-	background: #FFFFFF;
+	background: #FFF;
 	border: 1px solid var(--pmpro--border--color);
 	border-radius: var(--pmpro--border--radius);
-	box-shadow: 0 4px 18px -2px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06);
-	position: absolute;
-	top: 36px; /* sits just beneath the toggle button */
-	right: 5px;
-	z-index: 30;
-	padding: 2px 0 0 0;
-	width: var(--pmpro-actions-menu-min-width);
-	max-width: 220px;
+	box-shadow: var(--pmpro--box-shadow);
+	color: #1D2327;
 	font-size: 13px;
 	line-height: 1.4;
-	color: #1D2327;
+	max-width: 220px;
 	opacity: 0;
-	visibility: hidden;
+	overflow: hidden;
+	padding: 0;
+	pointer-events: none;
+	position: absolute;
+	right: 10px;
+	top: 36px;
+	transition: opacity .15s ease, transform .18s ease, visibility .18s linear;
 	transform: translateY(-4px) scale(.96);
 	transform-origin: top right;
-	transition: opacity .15s ease, transform .18s ease, visibility .18s linear;
-	pointer-events: none;
+	visibility: hidden;
+	width: 140px;
+	z-index: 30;
 }
 
-/* Triangle caret */
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu:before {
-	content: "";
-	position: absolute;
-	top: -6px;
-	right: 7px;
-	border-width: 0 6px 6px 6px;
-	border-style: solid;
-	border-color: transparent transparent var(--pmpro--border--color) transparent;
-}
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu:after {
-	content: "";
-	position: absolute;
-	top: -5px;
-	right: 8px;
-	border-width: 0 5px 5px 5px;
-	border-style: solid;
-	border-color: transparent transparent #FFFFFF transparent;
-}
-
-/* Open state via parent helper class */
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .add-on-item.is-open .pmpro-add-on-actions-menu,
-/* Open state via aria-expanded attribute on the button (adjacent sibling) */
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .dropdown-arrow[aria-expanded="true"] + .pmpro-add-on-actions-menu {
 	opacity: 1;
-	visibility: visible;
-	transform: translateY(0) scale(1);
 	pointer-events: auto;
+	transform: translateY(0) scale(1);
+	visibility: visible;
 }
 
-/* List reset */
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-
-/* Individual action items */
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu ul,
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu li {
+	list-style: none;
 	margin: 0;
 	padding: 0;
 }
@@ -3491,14 +3475,17 @@ tr.pmpro_alert {
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu button,
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu a {
 	appearance: none;
-	background: white;
-	border: none;
+	background: #FFF;
+	border-color: var(--pmpro--border--color);
+	border-radius: 0;
+	border-style: solid;
+	border-width: 0 0 1px 0;
 	box-shadow: none;
-	color: #2271b1;
+	color: var(--pmpro--color--info-text);
 	cursor: pointer;
 	display: block;
 	line-height: 1.4;
-	padding: 8px 14px;
+	padding: var(--pmpro--spacing--small) var(--pmpro--spacing--medium);
 	width: 100%;
 }
 
@@ -3508,28 +3495,23 @@ tr.pmpro_alert {
 	outline: none;
 }
 
-/* Divider (optional) */
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu li.divider {
-	border-top: 1px solid var(--pmpro--border--color);
-	margin: 0;
-	padding: 0;
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu li:last-child button {
+	border-bottom-width: 0;
 }
 
-/* Destructive / uninstall action */
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu .is-destructive,
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu .action-uninstall {
-	color: #b32d2e;
+	color: var(--pmpro--color--error-text);
 }
 
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu .is-destructive:hover,
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu .action-uninstall:hover,
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu .is-destructive:focus,
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu .action-uninstall:focus {
-	background: #fbeaea;
-	color: #861d1e;
+	background: var(--pmpro--color--error-background);
+	color: var(--pmpro--color--error-text);
 }
 
-/* Disabled state */
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu button[disabled],
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu a[aria-disabled="true"] {
 	color: #999;
@@ -3540,19 +3522,6 @@ tr.pmpro_alert {
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu button[disabled]:hover,
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu a[aria-disabled="true"]:hover {
 	background: transparent;
-}
-
-/* Compact adjustments for very narrow screens */
-@media (max-width: 480px) {
-	#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu {
-		right: 2px;
-		top: 34px;
-		width: 150px;
-	}
-	#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu button,
-	#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .pmpro-add-on-actions-menu a {
-		padding: 6px 10px;
-	}
 }
 
 /* High contrast mode (forced-colors) accessibility tweaks */
