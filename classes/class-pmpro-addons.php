@@ -1041,7 +1041,7 @@ class PMPro_AddOns {
 					ucwords( $addon['License'] )
 				);
 
-				$html  = '<div class="wrap"><h2>' . esc_html__( 'Update Plugin' ) . '</h2>';
+				$html  = '<div class="wrap"><h2>' . esc_html__( 'Update Plugin', 'paid-memberships-pro' ) . '</h2>';
 				$html .= '<div class="error"><p>' . wp_kses_post( $msg ) . '</p></div>';
 				$html .= '<p><a href="' . esc_url( admin_url( 'admin.php?page=pmpro-addons' ) ) . '" target="_parent">' . esc_html__( 'Return to the PMPro Add Ons page', 'paid-memberships-pro' ) . '</a></p>';
 				$html .= '</div>';
