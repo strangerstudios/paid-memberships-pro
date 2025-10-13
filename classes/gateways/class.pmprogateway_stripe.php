@@ -2687,7 +2687,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( empty( $portal_configuration_id ) ) {
 			$portal_configuration_params = array(
 				'business_profile' => array(
-					'headline' => esc_html__( 'Manage billing', 'woocommerce-gateway-stripe' ),
+					'headline' => esc_html__( 'Manage billing', 'paid-memberships-pro' ),
 				),
 				'features' => array(
 					'customer_update' => array( 'enabled' => true, 'allowed_updates' => array( 'address', 'phone', 'tax_id' ) ),

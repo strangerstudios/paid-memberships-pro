@@ -249,14 +249,23 @@
 								<p><?php echo esc_html( $addon['Description'] ); ?></p>
 								<p>
 								<?php
+									$plugin_meta_allowed_html = array(
+										'a' => array(
+											'target' => array(),
+											'href' => array(),
+										),
+									);
 									$plugin_meta = array();
-								if ( ! empty( $addon['Author'] && ! in_array( $addon['Author'], array( 'Paid Memberships Pro', 'Stranger Studios' ) ) ) ) {
-									$author = $addon['Author'];
-									if ( ! empty( $addon['AuthorURI'] ) ) {
-										$author = '<a href="' . esc_url( $addon['AuthorURI'] ) . '" target="_blank">' . esc_html( $addon['Author'] ) . '</a>';
+									if ( ! empty( $addon['Author'] && ! in_array( $addon['Author'], array( 'Paid Memberships Pro', 'Stranger Studios' ) ) ) ) {
+										$author = $addon['Author'];
+										if ( ! empty( $addon['AuthorURI'] ) ) {
+											$author = '<a href="' . esc_url( $addon['AuthorURI'] ) . '" target="_blank">' . esc_html( $addon['Author'] ) . '</a>';
+										}
+										$plugin_meta[] = sprintf(
+											esc_html__( 'By %s', 'paid-memberships-pro' ),
+											wp_kses( $author, $plugin_meta_allowed_html )
+										);
 									}
-									$plugin_meta[] = sprintf( __( 'By %s' ), $author );
-								}
 									echo implode( ' | ', $plugin_meta ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 								</p>

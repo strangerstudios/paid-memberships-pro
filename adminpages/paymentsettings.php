@@ -188,7 +188,7 @@
 									<?php esc_html_e( 'Description', 'paid-memberships-pro' ); ?>
 								</th>
 								<th class="manage-column column-edit" scope="col">
-									<span class="screen-reader-text"><?php esc_html_e( '', 'paid-memberships-pro' );?>
+									<span class="screen-reader-text"><?php esc_html_e( 'Actions', 'paid-memberships-pro' );?></span>
 								</th>
 							</tr>
 						</thead>
@@ -206,7 +206,7 @@
 								?>
 								<tr class="gateway gateway_<?php echo esc_attr( $gateway_slug );?>">
 									<td class="column-gateway">
-										<?php echo ! empty( $gateway_instance ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( $gateway_name ) . '</a>' : esc_html__( $gateway_name ); ?>
+										<?php echo ! empty( $gateway_instance ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $gateway_name ) . '</a>' : esc_html( $gateway_name ); ?>
 									</td>
 									<td class="column-status">
 										<?php
@@ -329,7 +329,7 @@
 					echo sprintf(
 						// translators: %s is the Level ID.
 						esc_html__('Edit Payment Gateway: %s', 'paid-memberships-pro'),
-						esc_html__( $pmpro_gateways[ $edit_gateway ] )
+						esc_html( $pmpro_gateways[ $edit_gateway ] )
 					);
 				?>
 			</h1>

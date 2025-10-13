@@ -261,7 +261,7 @@ class PMPro_Site_Health {
 			}
 
 			if ( $api ) {
-				$gateway_text .= ' (' . __( 'API Keys', ' paid-memberships-pro' ) . ')';
+				$gateway_text .= ' (' . __( 'API Keys', 'paid-memberships-pro' ) . ')';
 				return $gateway_text . ' [' . $gateway . ':api-keys ]';
 			}
 
