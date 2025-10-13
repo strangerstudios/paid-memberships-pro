@@ -299,11 +299,11 @@ class PMPro_Field {
 	function __get( $name ) {
 		if ( isset( $this->$name ) ) {
 			if ( ! $this->is_valid_property( $name ) ) {
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s is not valid for the field type %s.', 'paid-memberships-pro' ), $name, $this->type ), '3.4' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s is not valid for the field type %s.', 'paid-memberships-pro' ), esc_html( $name ), esc_html( $this->type ) ), '3.4' );
 			}
 			return $this->$name;
 		} else {
-			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s does not exist.', 'paid-memberships-pro' ), $name ), '3.4' );
+			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The property %s does not exist.', 'paid-memberships-pro' ), esc_html( $name ) ), '3.4' );
 		}
 
 		return null;
@@ -341,19 +341,19 @@ class PMPro_Field {
 	function __call( $name, $arguments ) {
 		switch( $name ) {
 			case 'set':
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the $args property of the constructor when creating a new PMPro_Field object.', 'paid-memberships-pro' ), $name ), '3.4' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the $args property of the constructor when creating a new PMPro_Field object.', 'paid-memberships-pro' ), esc_html( $name ) ), '3.4' );
 				break;
 			case 'saveUsersTable':
 			case 'saveTermRelationshipsTable':
 			case 'saveFile':
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the save_field_for_user method of the PMPro_Field object.', 'paid-memberships-pro' ), $name ), '3.4' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the save_field_for_user method of the PMPro_Field object.', 'paid-memberships-pro' ), esc_html( $name ) ), '3.4' );
 				break;
 			case 'getHTML':
 			case 'getDependenciesJS':
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the display() method of the PMPro_Field object.', 'paid-memberships-pro' ), $name ), '3.4' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the display() method of the PMPro_Field object.', 'paid-memberships-pro' ), esc_html( $name ) ), '3.4' );
 				break;
 			default:
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version.', 'paid-memberships-pro' ), $name ), '3.4' );
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version.', 'paid-memberships-pro' ), esc_html( $name ) ), '3.4' );
 				break;
 		}
 		return call_user_func( array( $this, $name ), $arguments );

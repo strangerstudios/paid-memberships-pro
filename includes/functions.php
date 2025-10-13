@@ -3875,7 +3875,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 function pmpro_sanitize( $value, $field = null ) {
 	if ( null !== $field ) {
 		// This argument is deprecated. User fields now have sanitization logic in the field class.
-		_deprecated_argument( __FUNCTION__, '3.4', __( 'The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class.', 'paid-memberships-pro' ) );
+		_deprecated_argument( __FUNCTION__, '3.4', esc_html__( 'The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class.', 'paid-memberships-pro' ) );
 	}
 
 	if ( is_array( $value ) ) {
@@ -5136,7 +5136,7 @@ function pmpro_display_member_account_level_message( $level ) {
 	if ( $membership_account_message ) {
 		?>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-message' ) ); ?>">
-			<?php echo wpautop( wp_kses_post( $membership_account_message ) ); ?>
+			<?php echo wp_kses_post( wpautop( $membership_account_message ) ); ?>
 		</div>
 		<?php
 	}

@@ -216,7 +216,7 @@ function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 				$output
 			);
 
-			echo $output;
+			echo wp_kses_post( $output );
 		}
 		echo '</div>';
 		echo '</div>'; // Close the postbox div

@@ -123,7 +123,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 											$gateway .= ' (' . esc_html__( 'test', 'paid-memberships-pro' ) . ')';
 										}
 
-										echo $gateway;
+										echo esc_html( $gateway );
 									} else {
 										echo  '&#8212;';
 									}

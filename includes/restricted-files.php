@@ -58,7 +58,7 @@ function pmpro_restricted_files_check_request() {
 	 * @param string $file       Name of the restricted file.
 	 */
 	if ( empty( apply_filters( 'pmpro_can_access_restricted_file', false, $file_dir, $file ) ) ) {
-		wp_die( __( 'You do not have permission to access this file.', 'paid-memberships-pro' ), 403 );
+		wp_die( esc_html__( 'You do not have permission to access this file.', 'paid-memberships-pro' ), 403 );
 	}
 
 	// Serve the file.
@@ -91,7 +91,7 @@ function pmpro_restricted_files_check_request() {
 		readfile( $file_path );
 		exit;
 	} else {
-		wp_die( __( 'File not found.', 'paid-memberships-pro' ), 404 );
+		wp_die(	esc_html__( 'File not found.', 'paid-memberships-pro' ), 404 );
 	}
 }
 add_action( 'init', 'pmpro_restricted_files_check_request' );
