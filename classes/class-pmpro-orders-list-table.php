@@ -1049,7 +1049,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				);
 				$actions['mark_order_paid'] = sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( sprintf( __( 'Mark order # %s as paid', 'paid-memberships-pro' ), esc_html( $item->code ) ) ),
+					sprintf(
+						esc_attr__( 'Mark order # %s as paid', 'paid-memberships-pro' ),
+						esc_html( $item->code )
+					),
 					esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $mark_paid_text ) . ', ' . wp_json_encode( $mark_paid_nonce_url ) . '); void(0);' ),
 					esc_html__( 'Mark Paid', 'paid-memberships-pro' )
 				);
