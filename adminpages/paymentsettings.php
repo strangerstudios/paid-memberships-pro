@@ -329,7 +329,7 @@
 					echo sprintf(
 						// translators: %s is the Level ID.
 						esc_html__('Edit Payment Gateway: %s', 'paid-memberships-pro'),
-						esc_html__( $pmpro_gateways[ $edit_gateway ] )
+						esc_html( $pmpro_gateways[ $edit_gateway ] )
 					);
 				?>
 			</h1>
