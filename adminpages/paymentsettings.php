@@ -188,7 +188,7 @@
 									<?php esc_html_e( 'Description', 'paid-memberships-pro' ); ?>
 								</th>
 								<th class="manage-column column-edit" scope="col">
-									<span class="screen-reader-text"><?php esc_html_e( '', 'paid-memberships-pro' );?>
+									<span class="screen-reader-text"><?php esc_html_e( 'Actions', 'paid-memberships-pro' );?></span>
 								</th>
 							</tr>
 						</thead>
