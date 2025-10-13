@@ -265,8 +265,8 @@ function pmpro_recaptcha_settings() {
 			<p class="description"><?php esc_html_e( 'A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
 		</td>
 	</tr>
-	<tr class='pmpro_recaptcha_settings' style='<?php esc_attr_e( $tr_style); ?>'>
-		<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label></th>
+	<tr class="pmpro_recaptcha_settings" style="<?php echo esc_attr( $tr_style ); ?>">
+		<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?></label></th>
 		<td>					
 			<select id="recaptcha_version" name="recaptcha_version">
 				<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php esc_html_e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
@@ -275,14 +275,14 @@ function pmpro_recaptcha_settings() {
 			<p class="description"><?php esc_html_e( 'Changing your version will require new API keys.', 'paid-memberships-pro' ); ?></p>
 		</td>
 	</tr>
-	<tr class='pmpro_recaptcha_settings' style='<?php esc_attr_e( $tr_style); ?>'>
-		<th scope="row"><label for="recaptcha_publickey"><?php esc_html_e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label></th>
+	<tr class="pmpro_recaptcha_settings" style="<?php echo esc_attr( $tr_style ); ?>">
+		<th scope="row"><label for="recaptcha_publickey"><?php esc_html_e('reCAPTCHA Site Key', 'paid-memberships-pro' );?></label></th>
 		<td>
 			<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" value="<?php echo esc_attr($recaptcha_publickey);?>" class="regular-text code" />
 		</td>
 	</tr>
-	<tr class='pmpro_recaptcha_settings' style='<?php esc_attr_e( $tr_style); ?>'>
-		<th scope="row"><label for="recaptcha_privatekey"><?php esc_html_e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?>:</label></th>
+	<tr class="pmpro_recaptcha_settings" style="<?php echo esc_attr( $tr_style ); ?>">
+		<th scope="row"><label for="recaptcha_privatekey"><?php esc_html_e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?></label></th>
 		<td>
 			<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" value="<?php echo esc_attr($recaptcha_privatekey);?>" class="regular-text code" />
 		</td>
