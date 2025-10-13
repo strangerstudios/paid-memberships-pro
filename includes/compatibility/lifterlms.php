@@ -41,7 +41,7 @@ function pmpro_lifter_meta_boxes() {
 		return;
 	}
 	
-	add_meta_box( 'pmpro_page_meta', esc_html__( 'Require Membership', 'pmpro-courses' ), 'pmpro_page_meta', 'course', 'side' );
+	add_meta_box( 'pmpro_page_meta', esc_html__( 'Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'course', 'side' );
 	remove_meta_box( 'lifterlms-membership-access', array(), 'side' );
 }
 add_action( 'add_meta_boxes', 'pmpro_lifter_meta_boxes', 20 );
