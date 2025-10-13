@@ -233,7 +233,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	} elseif ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
 		// Throw a doing it wrong warning. If a discount code is being used, it should be set on the level.
 		// @TODO: Remove this in v4.0 along with references to the discount code globals. Discount codes should be set on the level object.
-		_doing_it_wrong( __FUNCTION__, __( 'Discount codes should be set on the $pmpro_level object.', 'paid-memberships-pro' ), '3.4' );
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'Discount codes should be set on the $pmpro_level object.', 'paid-memberships-pro' ), '3.4' );
 		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 	}
 

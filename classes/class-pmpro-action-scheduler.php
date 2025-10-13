@@ -178,7 +178,7 @@ class PMPro_Action_Scheduler {
 	 * @throws Exception If the instance is cloned.
 	 */
 	public function __clone() {
-		throw new Exception( __( 'Action Scheduler instance cannot be cloned', 'paid-memberships-pro' ) );
+		throw new Exception( esc_html__( 'Action Scheduler instance cannot be cloned', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -190,7 +190,7 @@ class PMPro_Action_Scheduler {
 	 * @throws Exception If the instance is unserialized.
 	 */
 	public function __wakeup() {
-		throw new Exception( __( 'Action Scheduler instance cannot be unserialized', 'paid-memberships-pro' ) );
+		throw new Exception( esc_html__( 'Action Scheduler instance cannot be unserialized', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -314,7 +314,7 @@ class PMPro_Action_Scheduler {
 			if ( ! empty( $interval_in_seconds ) ) {
 				return as_schedule_recurring_action( $first_run_datetime, $interval_in_seconds, $hook, array(), $group, true );
 			} else {
-				throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'An interval is required to queue an Action Scheduler recurring task.', 'paid-memberships-pro' ) );
+				throw new WP_Error( 'pmpro_action_scheduler_warning', esc_html__( 'An interval is required to queue an Action Scheduler recurring task.', 'paid-memberships-pro' ) );
 			}
 		}
 	}
@@ -368,7 +368,7 @@ class PMPro_Action_Scheduler {
 		}
 		if ( empty( $args ) ) {
 			// If neither group nor hook is provided, we cannot list tasks.
-			throw new WP_Error( 'pmpro_action_scheduler_warning', __( 'You must provide either a group or a hook to list tasks.', 'paid-memberships-pro' ) );
+			throw new WP_Error( 'pmpro_action_scheduler_warning', esc_html__( 'You must provide either a group or a hook to list tasks.', 'paid-memberships-pro' ) );
 		}
 		return as_get_scheduled_actions( $args );
 	}

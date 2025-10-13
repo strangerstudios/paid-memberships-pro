@@ -70,7 +70,7 @@ class PMPro_AddOns {
 	 * @throws Exception If the instance is cloned.
 	 */
 	public function __clone() {
-		throw new Exception( __( 'PMPro_AddOns instance cannot be cloned', 'paid-memberships-pro' ) );
+		throw new Exception( esc_html__( 'PMPro_AddOns instance cannot be cloned', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -82,7 +82,7 @@ class PMPro_AddOns {
 	 * @throws Exception If the instance is unserialized.
 	 */
 	public function __wakeup() {
-		throw new Exception( __( 'PMPro_AddOns instance cannot be unserialized', 'paid-memberships-pro' ) );
+		throw new Exception( esc_html__( 'PMPro_AddOns instance cannot be unserialized', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -1046,7 +1046,7 @@ class PMPro_AddOns {
 				$html .= '<p><a href="' . esc_url( admin_url( 'admin.php?page=pmpro-addons' ) ) . '" target="_parent">' . esc_html__( 'Return to the PMPro Add Ons page', 'paid-memberships-pro' ) . '</a></p>';
 				$html .= '</div>';
 
-				echo $html;
+				echo wp_kses_post( $html );
 
 				include ABSPATH . 'wp-admin/admin-footer.php';
 

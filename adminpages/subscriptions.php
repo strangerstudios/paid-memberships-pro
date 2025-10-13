@@ -601,7 +601,7 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 				echo 'error';
 			}
 			?>
-			"><p><?php echo $pmpro_msg; ?></p></div>
+			"><p><?php echo wp_kses_post( $pmpro_msg ); ?></p></div>
 		<?php }
 		$subscriptions_list_table = new PMPro_Subscriptions_List_Table();
 		$subscriptions_list_table->prepare_items();

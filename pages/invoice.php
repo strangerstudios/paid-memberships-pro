@@ -347,9 +347,8 @@
 										?>
 									</th>
 									<td data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>">
-										<?php echo pmpro_escape_price(
-											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-											$pmpro_invoice->get_formatted_subtotal() );
+										<?php
+										echo pmpro_escape_price( $pmpro_invoice->get_formatted_subtotal() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 										?>
 									</td>
 								</tr>

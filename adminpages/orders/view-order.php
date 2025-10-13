@@ -236,9 +236,7 @@ $subscription = $order->get_subscription();
 								?>
 							</th>
 							<td data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>">
-								<?php echo pmpro_escape_price(
-									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-									$order->get_formatted_subtotal() );
+								<?php echo pmpro_escape_price( $order->get_formatted_subtotal() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 							</td>
 						</tr>
@@ -534,13 +532,13 @@ $subscription = $order->get_subscription();
 					foreach ( $order_actions as $key => $action ) {
 						?>
 						<a
-							<?php if ( ! empty( $action['title'] ) ) : ?>title="<?php echo $action['title']; ?>"<?php endif; ?>
-							<?php if ( ! empty( $action['href'] ) ) : ?>href="<?php echo $action['href']; ?>"<?php endif; ?>
-							<?php if ( ! empty( $action['target'] ) ) : ?>target="<?php echo $action['target']; ?>"<?php endif; ?>
-							<?php if ( ! empty( $action['class'] ) ) : ?>class="<?php echo $action['class']; ?>"<?php endif; ?>
-							<?php if ( ! empty( $action['data-order'] ) ) : ?>data-order="<?php echo $action['data-order']; ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['title'] ) ) : ?>title="<?php echo esc_attr( $action['title'] ); ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['href'] ) ) : ?>href="<?php echo esc_url( $action['href'] ); ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['target'] ) ) : ?>target="<?php echo esc_attr( $action['target'] ); ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['class'] ) ) : ?>class="<?php echo esc_attr( $action['class'] ); ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['data-order'] ) ) : ?>data-order="<?php echo esc_attr( $action['data-order'] ); ?>"<?php endif; ?>
 						>
-							<?php echo $action['label']; ?>
+							<?php echo esc_html( $action['label'] ); ?>
 						</a>
 						<?php
 					}

@@ -373,7 +373,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 					echo 'error';
 				}
 				?>
-				"><p><?php echo $pmpro_msg; ?></p></div>
+				"><p><?php echo wp_kses_post( $pmpro_msg ); ?></p></div>
 			<?php } ?>
 				<?php
 				// Note: Only subscriptions belonging to current levels can be filtered. There is no option for subscriptions belonging to deleted levels.
@@ -470,7 +470,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			}
 
 			if ( ! empty( $actions_html ) ) {
-				echo implode( ' | ', $actions_html );
+				echo wp_kses_post( implode( ' | ', $actions_html ) );
 			}
 			?>
 		</div>
@@ -556,9 +556,10 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_gateway( $item ) {
+		global $pmpro_gateways;
 		if ( ! empty( $item->get_gateway() ) ) {
 			if ( ! empty( $pmpro_gateways[ $item->get_gateway() ] ) ) {
-				echo $pmpro_gateways[ $item->get_gateway() ];
+				echo esc_html( $pmpro_gateways[ $item->get_gateway() ] );
 			} else {
 				echo esc_html( ucwords( $item->get_gateway() ) );
 			}
