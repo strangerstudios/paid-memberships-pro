@@ -151,7 +151,7 @@ function pmpro_admin_title( $admin_title, $title ) {
 			$title = sprintf( __( 'Edit Member: %s', 'paid-memberships-pro' ), $user->display_name );
 		}
 		/* translators: Edit/Add Member Admin screen title. 1: Screen name, 2: Site name. */
-		$admin_title = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress' ), $title, get_bloginfo( 'name' ) );
+		$admin_title = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress', 'paid-memberships-pro' ), $title, get_bloginfo( 'name' ) );
 	}
 	return $admin_title;
 }
