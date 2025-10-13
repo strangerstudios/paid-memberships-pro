@@ -533,7 +533,7 @@ class PMPro_Recurring_Actions {
 				'user_login'            => $user->user_login,
 				'sitename'              => get_option( 'blogname' ),
 				'membership_id'         => $subscription_obj->get_membership_level_id(),
-				'membership_level_name' => empty( $membership_level ) ? sprintf( esc_html__( '[Deleted level #%d]', 'pmpro-recurring-emails' ), $subscription_obj->get_membership_level_id() ) : $membership_level->name,
+				'membership_level_name' => empty( $membership_level ) ? sprintf( esc_html__( '[Deleted level #%d]', 'paid-memberships-pro' ), $subscription_obj->get_membership_level_id() ) : $membership_level->name,
 				'membership_cost'       => $subscription_obj->get_cost_text(),
 				'billing_amount'        => pmpro_formatPrice( $subscription_obj->get_billing_amount() ),
 				'renewaldate'           => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
