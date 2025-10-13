@@ -206,7 +206,7 @@
 								?>
 								<tr class="gateway gateway_<?php echo esc_attr( $gateway_slug );?>">
 									<td class="column-gateway">
-										<?php echo ! empty( $gateway_instance ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( $gateway_name ) . '</a>' : esc_html__( $gateway_name ); ?>
+										<?php echo ! empty( $gateway_instance ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $gateway_name ) . '</a>' : esc_html( $gateway_name ); ?>
 									</td>
 									<td class="column-status">
 										<?php
