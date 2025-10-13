@@ -308,17 +308,17 @@ $subscription = $order->get_subscription();
 				</ul>
 			</div><!-- .pmpro_section_inside -->
 		</div><!-- .pmpro_section -->
+		<?php
+		/**
+		 * Allow adding additional content to the order view page.
+		 *
+		 * @since TBD
+		 *
+		 * @param MemberOrder $order The order object.
+		 */
+		do_action( 'pmpro_after_order_view_main', $order );
+		?>
 	</div> <!-- .pmpro_main -->
-	<?php
-	/**
-	 * Allow adding additional content to the order view page.
-	 *
-	 * @since TBD
-	 *
-	 * @param MemberOrder $order The order object.
-	 */
-	do_action( 'pmpro_after_order_view_main', $order );
-	?>
 	<div class="pmpro_sidebar">
 		<div class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
