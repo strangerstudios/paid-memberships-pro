@@ -90,16 +90,19 @@
 	$headers[] = "Pragma: no-cache";
 	$headers[] = "Connection: close";
 
-	if($s && $l == "oldmembers")
-		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired_' . sanitize_file_name($s) . '.csv"';
-	elseif($s && $l)
+	if ( $s && $l == "oldmembers" ) {
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_oldmembers_' . sanitize_file_name($s) . '.csv"';
+	} elseif($s && $l) {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . intval($l) . '_level_' . sanitize_file_name($s) . '.csv"';
-	elseif($s)
+	} elseif($s) {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . sanitize_file_name($s) . '.csv"';
-	elseif($l == "oldmembers")
+	} elseif($l == "oldmembers") {
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_oldmembers.csv"';
+	} elseif($l == 'expired' ) {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired.csv"';
-	else
+	} else {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
+	}
 
 	//set default CSV file headers, using comma as delimiter
 	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined,startdate";
