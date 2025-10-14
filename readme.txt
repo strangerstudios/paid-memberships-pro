@@ -210,7 +210,7 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
-= 3.6 - TBD =
+= 3.6 RC1 - 2025-10-14 =
 * FEATURE: Added compatibility with WP Fusion Lite. #3461 (@jarrydlong)
 * ENHANCEMENT: Added a new admin “view order” page before the “edit” step. #3467 (@kimcoleman)
 * ENHANCEMENT: Now saving orders in `pending` status when a Stripe or PayPal recurring payment fails. #3491 (@dparker1005)
