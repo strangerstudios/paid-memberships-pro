@@ -186,10 +186,6 @@
 												<input type="hidden" name="pmproAddOnAdminAction" value="activate" />
 												<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
 												<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
-												<?php
-												if ( is_network_admin() ) {
-													?>
-													<input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
 											</li>
 											<?php } elseif ( $addon['status'] === 'active' ) { ?>
 											<li>
@@ -199,10 +195,6 @@
 												<input type="hidden" name="pmproAddOnAdminAction" value="deactivate" />
 												<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
 												<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
-												<?php
-												if ( is_network_admin() ) {
-													?>
-													<input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
 											</li>
 											<?php } ?>
 											<li>
@@ -212,10 +204,6 @@
 												<input type="hidden" name="pmproAddOnAdminAction" value="delete" />
 												<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
 												<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
-												<?php
-												if ( is_network_admin() ) {
-													?>
-													<input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
 											</li>
 										</ul>
 									</div>
@@ -341,9 +329,6 @@
 											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'update';
 											$action_button['hidden_fields']['pmproAddOnAdminTarget'] = $plugin_file;
 											$action_button['hidden_fields']['pmproAddOnAdminNonce']  = $pmpro_addons_ajax_nonce;
-											if ( is_network_admin() ) {
-												$action_button['hidden_fields']['pmproAddOnNetworkWide'] = '1';
-											}
 										}
 									} elseif ( $addon['status'] === 'uninstalled' ) {
 										$action_button['label'] = __( 'Install', 'paid-memberships-pro' );
@@ -356,18 +341,12 @@
 											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'install';
 											$action_button['hidden_fields']['pmproAddOnAdminTarget'] = $addon['Slug'];
 											$action_button['hidden_fields']['pmproAddOnAdminNonce']  = $pmpro_addons_ajax_nonce;
-											if ( is_network_admin() ) {
-												$action_button['hidden_fields']['pmproAddOnNetworkWide'] = '1';
-											}
 										}
 									} elseif ( $addon['status'] === 'inactive' ) {
 										$action_button['label']                                  = __( 'Activate', 'paid-memberships-pro' );
 										$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'activate';
 										$action_button['hidden_fields']['pmproAddOnAdminTarget'] = $plugin_file;
 										$action_button['hidden_fields']['pmproAddOnAdminNonce']  = $pmpro_addons_ajax_nonce;
-										if ( is_network_admin() ) {
-											$action_button['hidden_fields']['pmproAddOnNetworkWide'] = '1';
-										}
 									} elseif ( $addon['status'] === 'active' ) {
 										$actions = apply_filters( 'plugin_action_links_' . $plugin_file, array(), $plugin_file, $addon, $addon['status'] );
 										if ( ! empty( $actions ) ) {

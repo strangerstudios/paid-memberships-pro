@@ -822,7 +822,7 @@ jQuery(document).ready(function () {
 				if($current.length){ $current.trigger('click'); }
 			},
 			// Ensure the actions dropdown exists and reflects current status (installed states only).
-			buildOrUpdateMenu: function(container, status, plugin_file, nonce, network_wide){
+			buildOrUpdateMenu: function(container, status, plugin_file, nonce){
 				var $details = container.find('> .add-on-item > .details');
 				if(!$details.length){ return; }
 				var $btn = $details.children('.dropdown-arrow');
@@ -856,14 +856,12 @@ jQuery(document).ready(function () {
 				// First item: Activate or Deactivate
 				var firstAction = (status === 'inactive') ? 'activate' : 'deactivate';
 				var firstLabel = (status === 'inactive') ? 'Activate' : 'Deactivate';
-				var nwInput = network_wide ? '<input type="hidden" name="pmproAddOnNetworkWide" value="1" />' : '';
 				$ul.append(
 					'<li>'
 					+ '\t<button type="button" role="menuitem" class="pmproAddOnActionButton action-' + firstAction + '">' + firstLabel + '</button>'
 					+ '\t<input type="hidden" name="pmproAddOnAdminAction" value="' + firstAction + '" />'
 					+ '\t<input type="hidden" name="pmproAddOnAdminTarget" value="' + plugin_file + '" />'
 					+ '\t<input type="hidden" name="pmproAddOnAdminNonce" value="' + nonce + '" />'
-					+ nwInput
 					+ '</li>'
 				);
 				// Divider + Uninstall
@@ -873,7 +871,6 @@ jQuery(document).ready(function () {
 					+ '\t<input type="hidden" name="pmproAddOnAdminAction" value="delete" />'
 					+ '\t<input type="hidden" name="pmproAddOnAdminTarget" value="' + plugin_file + '" />'
 					+ '\t<input type="hidden" name="pmproAddOnAdminNonce" value="' + nonce + '" />'
-					+ nwInput
 					+ '</li>'
 				);
 			}
@@ -929,7 +926,6 @@ jQuery(document).ready(function () {
 			// Build AJAX payload for new class endpoints
 			var target = button.siblings('input[name="pmproAddOnAdminTarget"]').val();
 			var nonce = button.siblings('input[name="pmproAddOnAdminNonce"]').val();
-			var network_wide = button.siblings('input[name="pmproAddOnNetworkWide"]').val() === '1';
 			var ajaxAction = null;
 			if (action === 'install') ajaxAction = 'pmpro_addon_install';
 			if (action === 'update') ajaxAction = 'pmpro_addon_update';
@@ -943,7 +939,6 @@ jQuery(document).ready(function () {
 				nonce: nonce,
 				target: target,
 				slug: (action === 'install' ? target : ''),
-				network_wide: network_wide ? 1 : 0
 			}).done(function(resp){
 				if (!resp || !resp.success) {
 					var msg = (resp && resp.data && resp.data.message) ? resp.data.message : 'Action failed.';
@@ -1030,7 +1025,7 @@ jQuery(document).ready(function () {
 						}, 600);
 					}
 					// Ensure actions menu exists/updated now that it's installed.
-					pmproAddOnsHelpers.buildOrUpdateMenu(container, 'inactive', plugin_file, nonce, network_wide);
+					pmproAddOnsHelpers.buildOrUpdateMenu(container, 'inactive', plugin_file, nonce);
 					setStatus('inactive', 'Inactive');
 				} else if (action === 'update') {
 					button.text('Updated').addClass('checkmarked');

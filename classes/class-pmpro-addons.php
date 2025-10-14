@@ -402,7 +402,7 @@ class PMPro_AddOns {
 			return new WP_Error( 'pmpro_addon_install_invalid_slug', __( 'Invalid Add On slug.', 'paid-memberships-pro' ) );
 		}
 
-		if ( ! current_user_can( 'install_plugins' ) || ( is_multisite() && ! current_user_can( 'manage_network_plugins' ) && is_network_admin() ) ) {
+		if ( ! current_user_can( 'install_plugins' ) ) {
 			return new WP_Error( 'pmpro_addon_install_cap', __( 'You do not have permission to install plugins.', 'paid-memberships-pro' ) );
 		}
 
@@ -455,21 +455,15 @@ class PMPro_AddOns {
 	 * @since 3.2.0
 	 *
 	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
-	 * @param bool   $network_wide   Activate network wide when in multisite/network admin.
 	 * @return array|WP_Error Result array or WP_Error.
 	 */
-	public function activate( $slug_or_plugin = '', $network_wide = false ) {
+	public function activate( $slug_or_plugin = '' ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		if ( empty( $slug_or_plugin ) ) {
 			return new WP_Error( 'pmpro_addon_activate_invalid', __( 'Invalid Add On.', 'paid-memberships-pro' ) );
 		}
 
-		if ( is_network_admin() ) {
-			if ( ! current_user_can( 'manage_network_plugins' ) ) {
-				return new WP_Error( 'pmpro_addon_activate_cap', __( 'You do not have permission to activate plugins network-wide.', 'paid-memberships-pro' ) );
-			}
-			$network_wide = true;
-		} elseif ( ! current_user_can( 'activate_plugins' ) ) {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
 				return new WP_Error( 'pmpro_addon_activate_cap', __( 'You do not have permission to activate plugins.', 'paid-memberships-pro' ) );
 		}
 
@@ -487,7 +481,7 @@ class PMPro_AddOns {
 			);
 		}
 
-		$activate = activate_plugin( $plugin_file, '', $network_wide );
+		$activate = activate_plugin( $plugin_file, '', false );
 		if ( is_wp_error( $activate ) ) {
 			return $activate;
 		}
@@ -506,21 +500,15 @@ class PMPro_AddOns {
 	 * @since 3.2.0
 	 *
 	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
-	 * @param bool   $network_wide   Deactivate network wide when in multisite/network admin.
 	 * @return array|WP_Error Result array or WP_Error.
 	 */
-	public function deactivate( $slug_or_plugin = '', $network_wide = false ) {
+	public function deactivate( $slug_or_plugin = '' ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		if ( empty( $slug_or_plugin ) ) {
 			return new WP_Error( 'pmpro_addon_deactivate_invalid', __( 'Invalid Add On.', 'paid-memberships-pro' ) );
 		}
 
-		if ( is_network_admin() ) {
-			if ( ! current_user_can( 'manage_network_plugins' ) ) {
-				return new WP_Error( 'pmpro_addon_deactivate_cap', __( 'You do not have permission to deactivate plugins network-wide.', 'paid-memberships-pro' ) );
-			}
-			$network_wide = true;
-		} elseif ( ! current_user_can( 'activate_plugins' ) ) {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
 				return new WP_Error( 'pmpro_addon_deactivate_cap', __( 'You do not have permission to deactivate plugins.', 'paid-memberships-pro' ) );
 		}
 
@@ -538,7 +526,7 @@ class PMPro_AddOns {
 			);
 		}
 
-		deactivate_plugins( array( $plugin_file ), false, $network_wide );
+		deactivate_plugins( array( $plugin_file ), false, false );
 		if ( is_plugin_active( $plugin_file ) ) {
 			return new WP_Error( 'pmpro_addon_deactivate_failed', __( 'Deactivation failed.', 'paid-memberships-pro' ) );
 		}
@@ -659,10 +647,9 @@ class PMPro_AddOns {
 	 * @since TBD
 	 *
 	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
-	 * @param bool   $network_wide   If true in multisite, will deactivate network-wide before deleting.
 	 * @return array|WP_Error Result array or WP_Error.
 	 */
-	public function delete( $slug_or_plugin = '', $network_wide = false ) {
+	public function delete( $slug_or_plugin = '' ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		if ( empty( $slug_or_plugin ) ) {
 			return new WP_Error( 'pmpro_addon_delete_invalid', __( 'Invalid Add On.', 'paid-memberships-pro' ) );
@@ -679,7 +666,7 @@ class PMPro_AddOns {
 
 		// Deactivate before deleting.
 		if ( is_plugin_active( $plugin_file ) ) {
-			deactivate_plugins( array( $plugin_file ), false, $network_wide );
+			deactivate_plugins( array( $plugin_file ), false, false );
 		}
 
 		$fs_ready = $this->ensure_filesystem();
@@ -861,9 +848,8 @@ class PMPro_AddOns {
 	 */
 	public function ajax_activate_addon() {
 		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
-		$target       = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
-		$network_wide = ! empty( $_POST['network_wide'] );
-		$result       = $this->activate( $target, $network_wide );
+		$target = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
+		$result = $this->activate( $target );
 		$this->send_ajax_result( $result );
 	}
 
@@ -876,9 +862,8 @@ class PMPro_AddOns {
 	 */
 	public function ajax_deactivate_addon() {
 		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
-		$target       = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
-		$network_wide = ! empty( $_POST['network_wide'] );
-		$result       = $this->deactivate( $target, $network_wide );
+		$target = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
+		$result = $this->deactivate( $target );
 		$this->send_ajax_result( $result );
 	}
 
@@ -891,9 +876,8 @@ class PMPro_AddOns {
 	 */
 	public function ajax_delete_addon() {
 		check_ajax_referer( 'pmpro_addons_actions', 'nonce' );
-		$target       = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
-		$network_wide = ! empty( $_POST['network_wide'] );
-		$result       = $this->delete( $target, $network_wide );
+		$target = isset( $_POST['target'] ) ? sanitize_text_field( wp_unslash( $_POST['target'] ) ) : '';
+		$result = $this->delete( $target );
 		$this->send_ajax_result( $result );
 	}
 
@@ -1131,7 +1115,7 @@ class PMPro_AddOns {
 		if ( is_wp_error( $remote_addons ) ) {
 			pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
 			// Return cached addons if available
-      		return $this->addons ? : array();
+			return $this->addons ? : array();
 		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
 
 			// Update the timestamp
