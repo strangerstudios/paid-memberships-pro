@@ -310,7 +310,7 @@ $subscription = $order->get_subscription();
 		/**
 		 * Allow adding additional content to the order view page.
 		 *
-		 * @since TBD
+		 * @since 3.6
 		 *
 		 * @param MemberOrder $order The order object.
 		 */
@@ -519,7 +519,7 @@ $subscription = $order->get_subscription();
 					/**
 					 * Allow filtering of actions on the single order view admin screen.
 					 *
-					 * @since TBD
+					 * @since 3.6
 					 *
 					 * @param array $order_actions The array of order actions.
 					 * @param object $order The order object.

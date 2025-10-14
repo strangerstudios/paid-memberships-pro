@@ -38,7 +38,7 @@
 					/**
 					 * Filter the order action links.
 					 *
-					 * @since TBD
+					 * @since 3.6
 					 *
 					 * @param array $pmpro_order_action_links Array of actions to display.
 					 * @param MemberOrder $pmpro_invoice The PMPro Invoice/Order object.

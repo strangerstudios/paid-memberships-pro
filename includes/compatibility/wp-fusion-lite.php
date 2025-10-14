@@ -5,7 +5,7 @@
  * Integrates WP Fusion logic for Paid Memberships Pro, see: https://wpfusion.com/documentation/membership/paid-memberships-pro/
  * For integrations into other CRMs the Pro version of WP Fusion is needed. 
  * 
- * @since TBD
+ * @since 3.6
  */
 
 // WP Fusion Pro is active, then let's give WP Fusion Pro priority to include their own PMPro integration code.

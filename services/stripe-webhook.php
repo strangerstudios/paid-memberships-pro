@@ -671,7 +671,7 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 /**
  * Build "extra order data" array from invoice to be passed to gateway request handler functions.
  *
- * @since TBD
+ * @since 3.6
  *
  * @param Stripe_Invoice $invoice The invoice object from Stripe.
  * @return array The order data array.

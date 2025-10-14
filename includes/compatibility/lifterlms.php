@@ -162,7 +162,7 @@ function pmpro_lifter_get_courses_for_levels( $level_ids ) {
 /**
  * Get all courses that are associated with any membership level.
  *
- * @since TBD
+ * @since 3.6
  *
  * @return array<int> An array of course IDs.
  */
@@ -190,7 +190,7 @@ function pmpro_lifter_get_courses_for_all_levels() {
 /**
  * Repair course enrollments for a user.
  *
- * @since TBD
+ * @since 3.6
  *
  * @param int $user_id The user ID to repair enrollments for.
  */
@@ -286,7 +286,7 @@ add_action( 'pmpro_lifter_repair_all_course_enrollments_callback', 'pmpro_lifter
 /**
  * Queue Action Scheduler to repair course enrollments for all users.
  *
- * @since TBD
+ * @since 3.6
  */
 function pmpro_lifter_repair_all_course_enrollments() {
 	// Bail if the streamline option is not enabled.
@@ -305,7 +305,7 @@ function pmpro_lifter_repair_all_course_enrollments() {
 /**
  * When the level restrictions for a post are updated, if the post was a course, repair the course enrollments for all users.
  *
- * @since TBD
+ * @since 3.6
  *
  * @param int $post_id The ID of the post whose level restrictions were updated.
  */

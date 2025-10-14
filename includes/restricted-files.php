@@ -71,7 +71,7 @@ function pmpro_restricted_files_check_request() {
 		 * Filter the content disposition for the restricted file. 
 		 * This automatically defaults to inline for images and attachments for non-images. 
 		 * 
-		 * @since TBD
+		 * @since 3.6
 		 * 
 		 * @param $is_valid_image boolean This is true for image/* and false for anything else.
 		 * @param string $file Name of the restricted file.

@@ -1450,10 +1450,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Filter pmpro_next_payment to get date via API if possible
 	 *
 	 * @since 1.8.6
-	 * @deprecated TBD In favor of using the PMPro_Subscriptions class.
+	 * @deprecated 3.6 In favor of using the PMPro_Subscriptions class.
 	 */
 	public static function pmpro_next_payment( $timestamp, $user_id, $order_status ) {
-		_deprecated_function( __METHOD__, 'TBD' );
+		_deprecated_function( __METHOD__, '3.6' );
 
 		//find the last order for this user
 		if ( ! empty( $user_id ) ) {
@@ -2380,20 +2380,20 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Create/Update Stripe customer for a user.
 	 *
 	 * @since 2.7.0
-	 * @deprecated TBD
+	 * @deprecated 3.6
 	 *
 	 * @param int $user_id to create/update Stripe customer for.
 	 * @return Stripe_Customer|false
 	 */
 	public function update_customer_from_user( $user_id ) {
-		_deprecated_function( __METHOD__, 'TBD', 'PMProGateway_stripe::update_customer_for_user()' );
+		_deprecated_function( __METHOD__, '3.6', 'PMProGateway_stripe::update_customer_for_user()' );
 		return self::update_customer_for_user( $user_id );
 	}
 
 	/**
 	 * Create/Update Stripe customer for a user.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @param int $user_id to create/update Stripe customer for.
 	 * @return Stripe_Customer|false
@@ -2435,12 +2435,12 @@ class PMProGateway_stripe extends PMProGateway {
 		 * a Stripe_Customer from a user.
 		 *
 		 * @since 2.7.0
-		 * @deprecated TBD
+		 * @deprecated 3.6
 		 *
 		 * @param array       $customer_args to be sent.
 		 * @param WP_User     $user being used to create/update customer.
 		 */
-		$customer_args = apply_filters_deprecated( 'pmpro_stripe_update_customer_from_user', array( $customer_args, $user ), 'TBD', 'pmpro_stripe_update_customer_for_user' );
+		$customer_args = apply_filters_deprecated( 'pmpro_stripe_update_customer_from_user', array( $customer_args, $user ), '3.6', 'pmpro_stripe_update_customer_for_user' );
 
 		/**
 		 * Change the information that is sent when updating/creating

@@ -752,7 +752,7 @@ function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
 /**
  * Helper function to build order data array from subscription and $_POST data.
  *
- * @since TBD
+ * @since 3.6
  *
  * @param PMPro_Subscription $subscription The subscription to get recurring order data for.
  */

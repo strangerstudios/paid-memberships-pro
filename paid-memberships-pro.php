@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.5.6
+ * Version: 3.5.991
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.5.6' );
+define( 'PMPRO_VERSION', '3.5.991' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -188,7 +188,7 @@ add_action( 'plugins_loaded', function() {
 
 } );
 
-// Add On Management (Deprecated in 3.5.6, to be removed in 4.0.0)
+// Add On Management (Deprecated in 3.6, to be removed in 4.0.0)
 require_once( PMPRO_DIR . '/includes/addons.php' );
 
 // Add On Management: Ensure AJAX endpoints are available during admin-ajax requests even if no instance has been created.

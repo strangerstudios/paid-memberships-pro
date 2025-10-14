@@ -5146,7 +5146,7 @@ add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_
 /**
  * Update the level restrictions for a post.
  *
- * @since TBD
+ * @since 3.6
  *
  * @param int $post_id The ID of the post to update.
  * @param array $level_ids The IDs of the levels to restrict the post to.
@@ -5203,7 +5203,7 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
 		/**
 		 * Action triggered after updating post level restrictions.
 		 *
-		 * @since TBD
+		 * @since 3.6
 		 *
 		 * @param int $post_id The ID of the post that was updated.
 		 */

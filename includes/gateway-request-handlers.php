@@ -121,7 +121,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 /**
  * Handle successful recurring payment IPN/webhook requests from gateways.
  *
- * @since TBD
+ * @since 3.6
  *
  * @param array  $order_data An array of order data.
  *
@@ -209,7 +209,7 @@ function pmpro_handle_recurring_payment_succeeded_at_gateway( $order_data ) {
 /**
  * Handle payment failure IPN/webhook requests from gateways.
  *
- * @since TBD
+ * @since 3.6
  *
  * @param array  $order_data An array of order data.
  *
@@ -272,7 +272,7 @@ function pmpro_handle_recurring_payment_failure_at_gateway( $order_data ) {
 	/**
 	 * Run additional code when a subscription payment fails.
 	 *
-	 * @since TBD $order has been updated from passing an old successful order to the current pending order.
+	 * @since 3.6 $order has been updated from passing an old successful order to the current pending order.
 	 *
 	 * @param MemberOrder $order The Member Order that has failed.
 	 */

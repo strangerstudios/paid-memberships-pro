@@ -12,7 +12,7 @@ class PMPro_AddOns {
 	 *
 	 * @var PMPro_AddOns
 	 * @access protected
-	 * @since TBD
+	 * @since 3.6
 	 */
 	protected static $instance = null;
 
@@ -27,7 +27,7 @@ class PMPro_AddOns {
 	/**
 	 * Timestamp of last Add Ons check.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 * @var int
 	 */
 	public $addons_timestamp = 0;
@@ -35,7 +35,7 @@ class PMPro_AddOns {
 	/**
 	 * Cache of plugin information to reduce calls to get_plugins().
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 * @var array|null
 	 */
 	private $cached_plugins = null;
@@ -51,7 +51,7 @@ class PMPro_AddOns {
 	 * Get the single instance of the class.
 	 *
 	 * @access public
-	 * @since TBD
+	 * @since 3.6
 	 * @return PMPro_AddOns
 	 */
 	public static function instance() {
@@ -65,7 +65,7 @@ class PMPro_AddOns {
 	 * Prevent the instance from being cloned.
 	 *
 	 * @access public
-	 * @since TBD
+	 * @since 3.6
 	 * @return void
 	 * @throws Exception If the instance is cloned.
 	 */
@@ -77,7 +77,7 @@ class PMPro_AddOns {
 	 * Prevent the instance from being unserialized.
 	 *
 	 * @access public
-	 * @since TBD
+	 * @since 3.6
 	 * @return void
 	 * @throws Exception If the instance is unserialized.
 	 */
@@ -370,7 +370,7 @@ class PMPro_AddOns {
 	 * @param bool $force_check Whether to force a check for new addons.
 	 *
 	 * @return array
-	 * @since TBD
+	 * @since 3.6
 	 */
 	public function get_addons( $force_check = false ) {
 		$addons           = $this->addons;
@@ -542,7 +542,7 @@ class PMPro_AddOns {
 	/**
 	 * Update an Add On.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
 	 * @return array|WP_Error Result array or WP_Error.
@@ -628,7 +628,7 @@ class PMPro_AddOns {
 	/**
 	 * Refresh the core plugin update data and PMPro add-on responses.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 * @return void
 	 */
 	private function refresh_update_data() {
@@ -644,7 +644,7 @@ class PMPro_AddOns {
 	/**
 	 * Delete (uninstall) an Add On.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @param string $slug_or_plugin Slug (folder) or plugin file (folder/file.php).
 	 * @return array|WP_Error Result array or WP_Error.
@@ -695,7 +695,7 @@ class PMPro_AddOns {
 	 * Attempt to initialize the WordPress filesystem API for upgrader operations.
 	 * Returns WP_Error when credentials are required and not provided.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @return true|WP_Error
 	 */
@@ -712,7 +712,7 @@ class PMPro_AddOns {
 	/**
 	 * Get a quiet upgrader skin to capture output nicely for programmatic use.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @return Automatic_Upgrader_Skin
 	 */
@@ -731,7 +731,7 @@ class PMPro_AddOns {
 	/**
 	 * Resolve plugin file (folder/file.php) from a slug or plugin identifier.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @param string $slug_or_plugin Slug or plugin file.
 	 * @return string|WP_Error Plugin file or WP_Error if not found.
@@ -764,7 +764,7 @@ class PMPro_AddOns {
 	/**
 	 * Maybe extract a slug from a slug or plugin file string.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @param string $slug_or_plugin Input string.
 	 * @return string Slug or empty string if not detected.
@@ -781,7 +781,7 @@ class PMPro_AddOns {
 	/**
 	 * Get the download/package URL for an Add On by slug.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @param string $slug The Add On slug.
 	 * @return string|WP_Error Package URL or WP_Error.
@@ -802,7 +802,7 @@ class PMPro_AddOns {
 	/**
 	 * Register AJAX endpoints for add-on operations.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 */
 	public function register_ajax_endpoints() {
 		add_action( 'wp_ajax_pmpro_addon_install', array( $this, 'ajax_install_addon' ) );
@@ -815,7 +815,7 @@ class PMPro_AddOns {
 	/**
 	 * AJAX: Install.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 * @return void
 	 */
 	public function ajax_install_addon() {
@@ -828,7 +828,7 @@ class PMPro_AddOns {
 	/**
 	 * AJAX: Update Add On
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @return void
 	 */
@@ -842,7 +842,7 @@ class PMPro_AddOns {
 	/**
 	 * AJAX: Activate Add On
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @return void
 	 */
@@ -856,7 +856,7 @@ class PMPro_AddOns {
 	/**
 	 * AJAX: Deactivate Add On
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @return void
 	 */
@@ -870,7 +870,7 @@ class PMPro_AddOns {
 	/**
 	 * AJAX: Delete Add On
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @return void
 	 */
@@ -884,7 +884,7 @@ class PMPro_AddOns {
 	/**
 	 * Helper to send standardized AJAX responses.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @param array|WP_Error $result Operation result.
 	 */
@@ -1093,7 +1093,7 @@ class PMPro_AddOns {
 	 * Get remote addons from the License Server.
 	 *
 	 * @return array
-	 * @since TBD
+	 * @since 3.6
 	 */
 	private function get_remote_addons() {
 
@@ -1207,7 +1207,7 @@ class PMPro_AddOns {
 	/**
 	 * Get installed plugins with caching.
 	 *
-	 * @since TBD
+	 * @since 3.6
 	 *
 	 * @return array Installed plugins.
 	 */
