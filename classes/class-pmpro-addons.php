@@ -402,7 +402,7 @@ class PMPro_AddOns {
 			return new WP_Error( 'pmpro_addon_install_invalid_slug', __( 'Invalid Add On slug.', 'paid-memberships-pro' ) );
 		}
 
-		if ( ! current_user_can( 'install_plugins' ) || ( is_multisite() && ! current_user_can( 'manage_network_plugins' ) && is_network_admin() ) ) {
+		if ( ! current_user_can( 'install_plugins' ) ) {
 			return new WP_Error( 'pmpro_addon_install_cap', __( 'You do not have permission to install plugins.', 'paid-memberships-pro' ) );
 		}
 
@@ -464,12 +464,7 @@ class PMPro_AddOns {
 			return new WP_Error( 'pmpro_addon_activate_invalid', __( 'Invalid Add On.', 'paid-memberships-pro' ) );
 		}
 
-		if ( is_network_admin() ) {
-			if ( ! current_user_can( 'manage_network_plugins' ) ) {
-				return new WP_Error( 'pmpro_addon_activate_cap', __( 'You do not have permission to activate plugins network-wide.', 'paid-memberships-pro' ) );
-			}
-			$network_wide = true;
-		} elseif ( ! current_user_can( 'activate_plugins' ) ) {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
 				return new WP_Error( 'pmpro_addon_activate_cap', __( 'You do not have permission to activate plugins.', 'paid-memberships-pro' ) );
 		}
 
@@ -515,12 +510,7 @@ class PMPro_AddOns {
 			return new WP_Error( 'pmpro_addon_deactivate_invalid', __( 'Invalid Add On.', 'paid-memberships-pro' ) );
 		}
 
-		if ( is_network_admin() ) {
-			if ( ! current_user_can( 'manage_network_plugins' ) ) {
-				return new WP_Error( 'pmpro_addon_deactivate_cap', __( 'You do not have permission to deactivate plugins network-wide.', 'paid-memberships-pro' ) );
-			}
-			$network_wide = true;
-		} elseif ( ! current_user_can( 'activate_plugins' ) ) {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
 				return new WP_Error( 'pmpro_addon_deactivate_cap', __( 'You do not have permission to deactivate plugins.', 'paid-memberships-pro' ) );
 		}
 
