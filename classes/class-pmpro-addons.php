@@ -44,7 +44,7 @@ class PMPro_AddOns {
 		$this->addons           = get_option( 'pmpro_addons', array() );
 		$this->addons_timestamp = get_option( 'pmpro_addons_timestamp', false );
 
-		add_action( 'admin_init', array( $this, 'admin_hooks' ) );
+		add_action( 'admin_init', array( $this, 'admin_hooks' ), 0 ); // Priority 0 to run before other admin_init hooks.
 	}
 
 	/**
