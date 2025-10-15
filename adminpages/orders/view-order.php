@@ -533,7 +533,7 @@ $subscription = $order->get_subscription();
 						?>
 						<a
 							<?php if ( ! empty( $action['title'] ) ) : ?>title="<?php echo esc_attr( $action['title'] ); ?>"<?php endif; ?>
-							<?php if ( ! empty( $action['href'] ) ) : ?>href="<?php echo esc_url( $action['href'] ); ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['href'] ) ) : ?>href="<?php echo esc_attr( $action['href'] ); ?>"<?php endif; ?>
 							<?php if ( ! empty( $action['target'] ) ) : ?>target="<?php echo esc_attr( $action['target'] ); ?>"<?php endif; ?>
 							<?php if ( ! empty( $action['class'] ) ) : ?>class="<?php echo esc_attr( $action['class'] ); ?>"<?php endif; ?>
 							<?php if ( ! empty( $action['data-order'] ) ) : ?>data-order="<?php echo esc_attr( $action['data-order'] ); ?>"<?php endif; ?>
