@@ -354,7 +354,10 @@ class PMPro_AddOns {
 			if ( version_compare( $plugin_data['Version'], $addon['Version'], '<' ) ) {
 				$value->response[ $plugin_file ]              = $this->get_plugin_API_object_from_addon( $addon );
 				$value->response[ $plugin_file ]->new_version = $addon['Version'];
-				$value->response[ $plugin_file ]->icons       = array( 'default' => esc_url( $this->get_addon_icon( $addon['Slug'] ) ) );
+				$icon = $this->get_addon_icon( $addon['Slug'] );
+				if ( ! empty( $icon ) ) {
+					$value->response[ $plugin_file ]->icons = array( 'default' => esc_url( $icon ) );
+				}
 			} else {
 				$value->no_update[ $plugin_file ] = $this->get_plugin_API_object_from_addon( $addon );
 			}
@@ -907,9 +910,14 @@ class PMPro_AddOns {
 	 * @since 2.8.x
 	 *
 	 * @param string $slug The identifying slug for the addon (typically the directory name).
-	 * @return string $plugin_icon_src The src URL for the plugin icon.
+	 * @return string|false $plugin_icon_src The src URL for the plugin icon or false if PMPRO_DIR is not defined.
 	 */
 	public function get_addon_icon( $slug ) {
+		// If PMPRO_DIR is not defined, bail. This may happen in the Update Manager Add On.
+		if ( ! defined( 'PMPRO_DIR' ) ) {
+			return false;
+		}
+
 		if ( file_exists( PMPRO_DIR . '/images/add-ons/' . $slug . '.png' ) ) {
 			$plugin_icon_src = PMPRO_URL . '/images/add-ons/' . $slug . '.png';
 		} else {
