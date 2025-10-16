@@ -1270,3 +1270,25 @@ function pmpro_changeTabs( e, inputChanged ) {
 jQuery(document).ready(function () {
 	jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
 });
+
+/**
+ * Report Widgets - Collapsed Row Toggles
+ */
+jQuery(document).ready(function () {
+	jQuery('.pmpro_report_th').on('click',function(event) {
+		//prevent form submit onclick
+		event.preventDefault();
+
+		//toggle sub rows
+		jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
+
+		//change arrow
+		if(jQuery(this).hasClass('pmpro_report_th_closed')) {
+			jQuery(this).removeClass('pmpro_report_th_closed');
+			jQuery(this).addClass('pmpro_report_th_opened');
+		} else {
+			jQuery(this).removeClass('pmpro_report_th_opened');
+			jQuery(this).addClass('pmpro_report_th_closed');
+		}
+	});
+});
