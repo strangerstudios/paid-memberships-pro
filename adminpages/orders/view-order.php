@@ -279,7 +279,7 @@ $subscription = $order->get_subscription();
 				<ul class="pmpro_list pmpro_list-plain pmpro_list-with-labels pmpro_cols-2">
 					<li class="pmpro_list_item">
 						<span class="pmpro_list_item_label"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></span>
-						<?php echo esc_html( $order->gateway ); ?>
+						<?php echo esc_html( pmpro_get_gateway_nicename( $order->gateway ) ); ?>
 					</li>
 					<li class="pmpro_list_item">
 						<span class="pmpro_list_item_label"><?php esc_html_e( 'Environment', 'paid-memberships-pro' ); ?></span>

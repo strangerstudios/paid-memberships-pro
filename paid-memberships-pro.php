@@ -260,6 +260,26 @@ function pmpro_gateways() {
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );
 }
 
+/**
+ * Returns the gateway nicename.
+ * Used for outputting the gateway's label value for customers.
+ * 
+ * @since TBD
+ * 
+ * @param string $gateway The gateway's internal slug (i.e. paypalexpress).
+ * @return string The gateway's nicename (i.e. PayPal Express).
+ */
+function pmpro_get_gateway_nicename( $gateway ) {
+	$gateways = pmpro_gateways();
+	if ( array_key_exists( $gateway, $gateways ) ) {
+		$gateway_nicename =  $gateways[ $gateway ];
+	} else {
+		$gateway_nicename = ucwords( $gateway );
+	}
+
+	return $gateway_nicename;
+}
+
 
 // when checking levels for users, we save the info here for caching. each key is a user id for level object for that user.
 global $all_membership_levels;
