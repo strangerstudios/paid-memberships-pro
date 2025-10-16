@@ -268,7 +268,7 @@ $subscription = $order->get_subscription();
 			</div><!-- .pmpro_section_inside -->
 		</div><!-- .pmpro_section -->
 
-		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div id="pmpro_order-view-gateway" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 					<span class="dashicons dashicons-arrow-up-alt2"></span>
@@ -318,7 +318,7 @@ $subscription = $order->get_subscription();
 		?>
 	</div> <!-- .pmpro_main -->
 	<div class="pmpro_sidebar">
-		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div id="pmpro_order-view-member" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 					<span class="dashicons dashicons-arrow-up-alt2"></span>
@@ -362,7 +362,7 @@ $subscription = $order->get_subscription();
 			</div><!-- .pmpro_section_inside -->
 		</div><!-- .pmpro_section -->
 
-		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div id="pmpro_order-view-actions" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 					<span class="dashicons dashicons-arrow-up-alt2"></span>
@@ -545,7 +545,7 @@ $subscription = $order->get_subscription();
 				?>
 			</div><!-- .pmpro_section_inside -->
 		</div><!-- .pmpro_section -->
-		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div id="pmpro_order-view-notes" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 					<span class="dashicons dashicons-arrow-up-alt2"></span>
