@@ -967,7 +967,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				),
 				'view'   => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'View', 'paid-memberships-pro' ),
+					esc_attr( sprintf( __( 'View order # %s', 'paid-memberships-pro' ), $item->code ) ),
 					esc_url(
 						add_query_arg(
 							[
@@ -981,7 +981,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				),
 				'copy'   => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Copy', 'paid-memberships-pro' ),
+					esc_attr( sprintf( __( 'Copy order # %s', 'paid-memberships-pro' ), $item->code ) ),
 					esc_url(
 						add_query_arg(
 							[
@@ -998,13 +998,13 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				),
 				'delete'  => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Delete', 'paid-memberships-pro' ),
+					esc_attr( sprintf( __( 'Delete order # %s', 'paid-memberships-pro' ), $item->code ) ),
 					'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
 					esc_html__( 'Delete', 'paid-memberships-pro' )
 				),
 				'print'   => sprintf(
 					'<a title="%1$s" href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a>',
-					esc_attr__( 'Print', 'paid-memberships-pro' ),
+					esc_attr( sprintf( __( 'Print order # %s', 'paid-memberships-pro' ), $item->code ) ),
 					esc_url(
 						add_query_arg(
 							[
@@ -1018,7 +1018,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				),
 				'email'   => sprintf(
 					'<a title="%1$s" href="%2$s" data-order="%3$s" class="thickbox email_link">%4$s</a>',
-					esc_attr__( 'Email', 'paid-memberships-pro' ),
+					esc_attr( sprintf( __( 'Email order # %s to the user', 'paid-memberships-pro' ), $item->code ) ),
 					'#TB_inline?width=600&height=200&inlineId=email_order',
 					esc_attr( $item->id ),
 					esc_html__( 'Email', 'paid-memberships-pro' )
@@ -1061,7 +1061,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			if ( pmpro_allowed_refunds( $item ) ) {
 				$actions['refund'] = sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Refund', 'paid-memberships-pro' ),
+					esc_attr( sprintf( __( 'Refund order # %s', 'paid-memberships-pro' ), $item->code ) ),
 					esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $refund_text ) . ', ' . wp_json_encode( $refund_nonce_url ) . '); void(0);' ),
 					esc_html__( 'Refund', 'paid-memberships-pro' )
 				);
@@ -1072,7 +1072,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			if ( 'token' === $item->status && pmpro_can_check_token_order_for_completion( $item->id ) ) {
 				$actions['check_token_order'] = sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Recheck Payment', 'paid-memberships-pro' ),
+					esc_attr( sprintf( __( 'Recheck payment status for order # %s', 'paid-memberships-pro' ), $item->code ) ),
 					esc_url(
 						wp_nonce_url(
 							add_query_arg(
