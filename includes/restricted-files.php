@@ -80,7 +80,7 @@ function pmpro_restricted_files_check_request() {
 		 * 
 		 * @return string $content_disposition "inline" for image/* types, "attachment" for other file types.
 		 */
-		$content_disposition = apply_filters( 'pmpro_restricted_file_content_disposition', file_is_valid_image( $file_path ) ? 'inline' : 'attachment', $file, $file_dir, $file_path );
+		$content_disposition = apply_filters( 'pmpro_restricted_file_content_disposition', wp_getimagesize( $file_path ) ? 'inline' : 'attachment', $file, $file_dir, $file_path );
 		if ( $content_disposition !== 'inline' && $content_disposition !== 'attachment' ) {
 			$content_disposition = 'attachment'; // Default to attachment if not inline and not attachment.
 		}
