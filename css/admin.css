@@ -1669,7 +1669,8 @@ a.pmpro_order-renewal {
 }
 
 @media only screen and (min-width: 1200px) {
-	.pmpro_admin-pmpro-orders .pmpro_sidebar .button {
+	.pmpro_admin-pmpro-orders .pmpro_sidebar #pmpro_order-view-actions .button,
+	.pmpro_admin-pmpro-orders .pmpro_sidebar #pmpro_add_order_note {
 		padding: var(--pmpro--spacing--small) var(--pmpro--spacing--medium);
 	}
 }
