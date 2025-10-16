@@ -354,6 +354,8 @@ class PMPro_AddOns {
 			if ( version_compare( $plugin_data['Version'], $addon['Version'], '<' ) ) {
 				$value->response[ $plugin_file ]              = $this->get_plugin_API_object_from_addon( $addon );
 				$value->response[ $plugin_file ]->new_version = $addon['Version'];
+
+				// If we have an icon to show, add it to the response. Otherwise let it show the default icon.
 				$icon = $this->get_addon_icon( $addon['Slug'] );
 				if ( ! empty( $icon ) ) {
 					$value->response[ $plugin_file ]->icons = array( 'default' => esc_url( $icon ) );
