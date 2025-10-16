@@ -217,7 +217,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Now updating the email address for customers in Stripe when the corresponding user is updated in WordPress. #3454 (@dparker1005)
 * ENHANCEMENT: General improvements to the Add Ons page including filters for active and inactive Add Ons. #3488 (@dalemugford)
 * ENHANCEMENT: Now automatically adjusting the content-disposition header for restricted files based on the file type. #3473 (@andrewlimaza)
-* ENHANCEMENT: Added a new filter `pmpro_restricted_field_disposition` to dynamically adjust the content-disposition header for restricted files. #3473 (@andrewlimaza)
+* ENHANCEMENT: Added a new filter `pmpro_restricted_file_content_disposition` to dynamically adjust the content-disposition header for restricted files. #3473 (@andrewlimaza)
 * ENHANCEMENT: Added a new filter `pmpro_order_action_links` to allow modifying the action links when viewing an order on the frontend. #3465 (@dparker1005)
 * ENHANCEMENT: Added a new action `pmpro_after_updating_post_level_restrictions` to run code after the level restrictions for a post is updated. #3462 (@dparker1005)
 * ENHANCEMENT: Now repairing membership-based course enrollments when LifterLMS courses are saved while streamline is enabled. #3462 (@dparker1005)
