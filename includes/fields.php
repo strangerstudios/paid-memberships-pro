@@ -990,16 +990,20 @@ function pmpro_get_user_fields() {
 // Code for the user fields settings page.
 /**
  * Get field group HTML for settings.
+ *
+ * @deprecated TBD
  */
 function pmpro_get_field_group_html( $group = null ) {
-    include( PMPRO_DIR . '/adminpages/user-fields/group-settings.php' );
+	_deprecated_function( __FUNCTION__, 'TBD' );
 }
  
 /**
  * Get field HTML for settings.
+ *
+ * @deprecated TBD
  */
 function pmpro_get_field_html( $field = null ) {
-	include( PMPRO_DIR . '/adminpages/user-fields/field-settings.php' );
+	_deprecated_function( __FUNCTION__, 'TBD' );
 }
 
 /**
@@ -1010,7 +1014,8 @@ function pmpro_get_field_html( $field = null ) {
 function pmpro_get_user_fields_settings() {
     $default_user_fields_settings = array(
         (object) array(
-            'name' => esc_html__( 'More Information', 'paid-memberships-pro' ),
+			'name' => 'more_information',
+            'label' => esc_html__( 'More Information', 'paid-memberships-pro' ),
             'checkout' => 'yes',
             'profile' => 'yes',
             'description' => '',
@@ -1024,6 +1029,7 @@ function pmpro_get_user_fields_settings() {
     // Make sure all expected properties are set for each group.
 	foreach ( $settings as $group ) {
 		$group->name = ! empty( $group->name ) ? $group->name : '';
+		$group->label = ! empty( $group->label ) ? $group->label : '';
 		$group->checkout = ! empty( $group->checkout ) ? $group->checkout : 'yes';
 		$group->profile = ! empty( $group->profile ) ? $group->profile : 'yes';
 		$group->description = ! empty( $group->description ) ? $group->description : '';
@@ -1058,7 +1064,7 @@ function pmpro_load_user_fields_from_settings() {
     $settings_groups = pmpro_get_user_fields_settings();
 
     foreach ( $settings_groups as $group ) {
-        $group_obj = PMPro_Field_Group::add( $group->name, $group->name, $group->description );
+        $group_obj = PMPro_field_Group::add( $group->name, $group->label, $group->description );
         
         // Figure out profile value. Change 2 settings values into 1 field value.
         if ( $group->checkout === 'yes' ) {

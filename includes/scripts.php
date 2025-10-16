@@ -138,14 +138,6 @@ function pmpro_admin_enqueue_scripts() {
 		$level->formatted_description = apply_filters( 'pmpro_level_description', $level->description, $level );
         $all_levels_formatted_text[$level->id] = $level;
     }
-    // Get HTML for empty field group.
-    ob_start();
-    pmpro_get_field_group_html();
-    $empty_field_group_html = ob_get_clean();
-    // Get HTML for empty field.
-    ob_start();
-    pmpro_get_field_html();
-    $empty_field_html = ob_get_clean();
 
 	wp_localize_script(
 		'pmpro_admin',
@@ -155,8 +147,6 @@ function pmpro_admin_enqueue_scripts() {
 			'all_levels_formatted_text' => $all_levels_formatted_text,
 			'all_level_values_and_labels' => $all_level_values_and_labels,
 			'checkout_url' => pmpro_url( 'checkout' ),
-			'user_fields_blank_group' => $empty_field_group_html,
-			'user_fields_blank_field' => $empty_field_html,
 			// We want the core WP translation so we can check for it in JS.
 			'plugin_updated_successfully_text' => __( 'Plugin updated successfully.' ),
 		)
