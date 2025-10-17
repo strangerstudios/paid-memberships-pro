@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.5.991\n"
+"Project-Id-Version: Paid Memberships Pro 3.5.992\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-14T19:11:35+00:00\n"
+"POT-Creation-Date: 2025-10-17T14:19:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -549,6 +549,7 @@ msgstr ""
 
 #: shortcodes/pmpro_account.php:390
 #: shortcodes/pmpro_account.php:399
+#: shortcodes/pmpro_account.php:419
 msgid "View All Orders &rarr;"
 msgstr ""
 
@@ -633,6 +634,7 @@ msgstr ""
 
 #: pages/billing.php:86
 #: shortcodes/pmpro_account.php:186
+#: shortcodes/pmpro_account.php:197
 msgid "Next payment on"
 msgstr ""
 
@@ -1308,6 +1310,7 @@ msgstr "Identificador: %d"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:207
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:217
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:215
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:119
 msgid "test"
 msgstr "prova"
 
@@ -2643,6 +2646,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:1230
 #: classes/class-pmpro-orders-list-table.php:1252
 #: classes/class-pmpro-orders-list-table.php:1275
+#: classes/class-pmpro-orders-list-table.php:1313
 #, php-format
 msgid "Subscription: %s"
 msgstr "Subscripció: %s"
@@ -2652,11 +2656,13 @@ msgstr "Subscripció: %s"
 #: classes/class-pmpro-orders-list-table.php:1220
 #: classes/class-pmpro-orders-list-table.php:1242
 #: classes/class-pmpro-orders-list-table.php:1265
+#: classes/class-pmpro-orders-list-table.php:1303
 #, php-format
 msgid "Payment: %s"
 msgstr "Pagament: %s"
 
 #: classes/class-pmpro-orders-list-table.php:52
+#: classes/class-pmpro-orders-list-table.php:57
 msgid "Orders per page"
 msgstr ""
 
@@ -3685,18 +3691,21 @@ msgstr "No es mostrarà cap títol."
 
 #: shortcodes/pmpro_account.php:261
 #: shortcodes/pmpro_account.php:270
+#: shortcodes/pmpro_account.php:285
 #, php-format
 msgid "Cancel %1$s Membership"
 msgstr "Cancel·la l'afiliació %1$s"
 
 #: shortcodes/pmpro_account.php:257
 #: shortcodes/pmpro_account.php:266
+#: shortcodes/pmpro_account.php:280
 #, php-format
 msgid "Change %1$s Membership"
 msgstr "Canvia l'afiliació %1$s"
 
 #: shortcodes/pmpro_account.php:219
 #: shortcodes/pmpro_account.php:228
+#: shortcodes/pmpro_account.php:240
 #, php-format
 msgid "Renew %1$s Membership"
 msgstr "Renova l'afiliació %1$s"
@@ -3773,11 +3782,13 @@ msgstr "Plantilla obsoleta"
 
 #: classes/class-pmpro-orders-list-table.php:363
 #: classes/class-pmpro-orders-list-table.php:364
+#: classes/class-pmpro-orders-list-table.php:369
 msgid "Review"
 msgstr "Revisa"
 
 #: classes/class-pmpro-orders-list-table.php:362
 #: classes/class-pmpro-orders-list-table.php:363
+#: classes/class-pmpro-orders-list-table.php:368
 msgid "Token"
 msgstr "Testimoni"
 
@@ -3936,6 +3947,7 @@ msgstr "Al pas 1, heu escollit el tipus de lloc web %s."
 #: adminpages/reports/sales.php:859
 #: adminpages/reports/sales.php:862
 #: adminpages/reports/sales.php:917
+#: adminpages/reports/sales.php:914
 #, php-format
 msgid "%1$s %2$s"
 msgstr "%1$s %2$s"
@@ -3946,6 +3958,7 @@ msgstr "%1$s %2$s"
 #: adminpages/reports/sales.php:856
 #: adminpages/reports/sales.php:859
 #: adminpages/reports/sales.php:914
+#: adminpages/reports/sales.php:911
 #, php-format
 msgid "%1$s %2$s for %3$s"
 msgstr "%1$s %2$s per a %3$s"
@@ -3953,6 +3966,7 @@ msgstr "%1$s %2$s per a %3$s"
 #: adminpages/reports/sales.php:654
 #: adminpages/reports/sales.php:657
 #: adminpages/reports/sales.php:704
+#: adminpages/reports/sales.php:701
 msgid "Select report data to include"
 msgstr "Seleccioneu les dades de l'informe que voleu incloure"
 
@@ -3980,6 +3994,8 @@ msgstr "Període"
 #: adminpages/reports/memberships.php:413
 #: adminpages/reports/sales.php:682
 #: adminpages/reports/memberships.php:414
+#: adminpages/reports/memberships.php:394
+#: adminpages/reports/sales.php:679
 msgid "Filter report by discount code"
 msgstr "Filtra l'informe per codi de descompte"
 
@@ -3990,6 +4006,8 @@ msgstr "Filtra l'informe per codi de descompte"
 #: adminpages/reports/memberships.php:374
 #: adminpages/reports/sales.php:664
 #: adminpages/reports/memberships.php:375
+#: adminpages/reports/memberships.php:355
+#: adminpages/reports/sales.php:661
 msgid "Filter report by membership level"
 msgstr "Filtra l'informe per nivell d'afiliació"
 
@@ -4000,6 +4018,8 @@ msgstr "Filtra l'informe per nivell d'afiliació"
 #: adminpages/reports/memberships.php:367
 #: adminpages/reports/sales.php:651
 #: adminpages/reports/memberships.php:368
+#: adminpages/reports/memberships.php:348
+#: adminpages/reports/sales.php:648
 msgid "Select report year"
 msgstr "Seleccioneu l'any de l'informe"
 
@@ -4010,6 +4030,8 @@ msgstr "Seleccioneu l'any de l'informe"
 #: adminpages/reports/memberships.php:361
 #: adminpages/reports/sales.php:645
 #: adminpages/reports/memberships.php:362
+#: adminpages/reports/memberships.php:342
+#: adminpages/reports/sales.php:642
 msgid "Select report month"
 msgstr "Seleccioneu el mes de l'informe"
 
@@ -4020,6 +4042,8 @@ msgstr "Seleccioneu el mes de l'informe"
 #: adminpages/reports/memberships.php:354
 #: adminpages/reports/sales.php:639
 #: adminpages/reports/memberships.php:355
+#: adminpages/reports/memberships.php:335
+#: adminpages/reports/sales.php:636
 msgid "Select report type"
 msgstr "Seleccioneu el tipus d'informe"
 
@@ -4030,6 +4054,8 @@ msgstr "Seleccioneu el tipus d'informe"
 #: adminpages/reports/memberships.php:348
 #: adminpages/reports/sales.php:629
 #: adminpages/reports/memberships.php:349
+#: adminpages/reports/memberships.php:329
+#: adminpages/reports/sales.php:626
 msgid "Select report time period"
 msgstr "Seleccioneu el període de temps de l'informe"
 
@@ -4063,30 +4089,35 @@ msgstr "<a href=\"%s\">Introduïu la vostra clau aquí</a>"
 #: adminpages/reports/sales.php:813
 #: adminpages/reports/sales.php:816
 #: adminpages/reports/sales.php:871
+#: adminpages/reports/sales.php:868
 msgid "Previous Period Renewals:"
 msgstr "Renovacions del període anterior:"
 
 #: adminpages/reports/sales.php:808
 #: adminpages/reports/sales.php:811
 #: adminpages/reports/sales.php:866
+#: adminpages/reports/sales.php:863
 msgid "Previous Period New:"
 msgstr "Nous del període anterior:"
 
 #: adminpages/reports/sales.php:658
 #: adminpages/reports/sales.php:661
 #: adminpages/reports/sales.php:708
+#: adminpages/reports/sales.php:705
 msgid "Show Only Renewals"
 msgstr "Mostra només renovacions"
 
 #: adminpages/reports/sales.php:657
 #: adminpages/reports/sales.php:660
 #: adminpages/reports/sales.php:707
+#: adminpages/reports/sales.php:704
 msgid "Show Only New"
 msgstr "Mostra només nous"
 
 #: adminpages/reports/sales.php:656
 #: adminpages/reports/sales.php:659
 #: adminpages/reports/sales.php:706
+#: adminpages/reports/sales.php:703
 msgid "Show New and Renewals"
 msgstr "Mostra nous i renovacions"
 
@@ -4096,6 +4127,8 @@ msgstr "Mostra nous i renovacions"
 #: adminpages/reports/sales.php:848
 #: adminpages/reports/sales.php:636
 #: adminpages/reports/sales.php:903
+#: adminpages/reports/sales.php:633
+#: adminpages/reports/sales.php:900
 msgid "Last 12 Months"
 msgstr "Últims 12 mesos"
 
@@ -4105,6 +4138,8 @@ msgstr "Últims 12 mesos"
 #: adminpages/reports/sales.php:842
 #: adminpages/reports/sales.php:635
 #: adminpages/reports/sales.php:897
+#: adminpages/reports/sales.php:632
+#: adminpages/reports/sales.php:894
 msgid "Last 30 Days"
 msgstr "Últims 30 dies"
 
@@ -4114,18 +4149,22 @@ msgstr "Últims 30 dies"
 #: adminpages/reports/sales.php:845
 #: adminpages/reports/sales.php:634
 #: adminpages/reports/sales.php:900
+#: adminpages/reports/sales.php:631
+#: adminpages/reports/sales.php:897
 msgid "Last 7 Days"
 msgstr "Últims 7 dies"
 
 #: adminpages/reports/sales.php:541
 #: adminpages/reports/sales.php:544
 #: adminpages/reports/sales.php:571
+#: adminpages/reports/sales.php:568
 msgid "Previous Period"
 msgstr "Període anterior"
 
 #: adminpages/reports/sales.php:519
 #: adminpages/reports/sales.php:522
 #: adminpages/reports/sales.php:549
+#: adminpages/reports/sales.php:546
 #, php-format
 msgid "Renewal %s"
 msgstr ""
@@ -4139,6 +4178,9 @@ msgstr ""
 #: adminpages/reports/sales.php:527
 #: adminpages/reports/sales.php:529
 #: adminpages/reports/sales.php:531
+#: adminpages/reports/sales.php:524
+#: adminpages/reports/sales.php:526
+#: adminpages/reports/sales.php:528
 #, php-format
 msgid "Previous Year: %s"
 msgstr "Any anterior: %s"
@@ -4146,6 +4188,7 @@ msgstr "Any anterior: %s"
 #: adminpages/reports/sales.php:492
 #: adminpages/reports/sales.php:495
 #: adminpages/reports/sales.php:522
+#: adminpages/reports/sales.php:519
 #, php-format
 msgid "Total: %s"
 msgstr "Total: %s"
@@ -4153,6 +4196,7 @@ msgstr "Total: %s"
 #: adminpages/reports/sales.php:488
 #: adminpages/reports/sales.php:491
 #: adminpages/reports/sales.php:518
+#: adminpages/reports/sales.php:515
 #, php-format
 msgid "New: %s"
 msgstr "Nova: %s"
@@ -4160,6 +4204,7 @@ msgstr "Nova: %s"
 #: adminpages/reports/sales.php:484
 #: adminpages/reports/sales.php:487
 #: adminpages/reports/sales.php:514
+#: adminpages/reports/sales.php:511
 #, php-format
 msgid "Renewals: %s"
 msgstr "Renovacions: %s"
@@ -4171,6 +4216,8 @@ msgstr "Renovacions: %s"
 #: adminpages/reports/memberships.php:347
 #: adminpages/reports/sales.php:628
 #: adminpages/reports/memberships.php:348
+#: adminpages/reports/memberships.php:328
+#: adminpages/reports/sales.php:625
 msgctxt "Dropdown label, e.g. Show Period"
 msgid "Show"
 msgstr "Mostra"
@@ -4220,6 +4267,8 @@ msgstr "Últims"
 #: adminpages/reports/memberships.php:345
 #: adminpages/reports/sales.php:626
 #: adminpages/reports/memberships.php:346
+#: adminpages/reports/memberships.php:326
+#: adminpages/reports/sales.php:623
 msgid "Customize Report"
 msgstr "Personalitza l'informe"
 
@@ -4939,6 +4988,7 @@ msgstr "Client de Stripe"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:677
 #: classes/gateways/class.pmprogateway_paypalstandard.php:247
 #: classes/class-pmpro-orders-list-table.php:1192
+#: classes/class-pmpro-orders-list-table.php:1230
 msgid "PayPal"
 msgstr "PayPal"
 
@@ -6321,6 +6371,7 @@ msgstr "Paid Memberships Pro - Opcions de la passarel·la de pagament"
 #: classes/class-pmpro-subscriptions-list-table.php:608
 #: classes/class-pmpro-subscriptions-list-table.php:628
 #: classes/class-pmpro-subscriptions-list-table.php:652
+#: classes/class-pmpro-orders-list-table.php:1361
 #, php-format
 msgid "%1$s at %2$s"
 msgstr "%1$s a les %2$s"
@@ -6345,6 +6396,7 @@ msgstr "Informació addicional de la comanda"
 #: classes/class-pmpro-orders-list-table.php:1286
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:248
 #: classes/class-pmpro-orders-list-table.php:1309
+#: classes/class-pmpro-orders-list-table.php:1347
 msgid "View all orders for this subscription"
 msgstr "Visualitza totes les comandes d'aquesta subscripció"
 
@@ -6390,6 +6442,7 @@ msgstr "Un codi generat aleatòriament que serveix com a número de comanda úni
 #: classes/class-pmpro-orders-list-table.php:1043
 #: classes/class-pmpro-orders-list-table.php:1064
 #: classes/class-pmpro-orders-list-table.php:1066
+#: classes/class-pmpro-orders-list-table.php:1104
 msgid "Refund"
 msgstr "Reemborsament"
 
@@ -6398,6 +6451,7 @@ msgstr "Reemborsament"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:78
 #: classes/class-pmpro-orders-list-table.php:970
 #: classes/class-pmpro-orders-list-table.php:980
+#: classes/class-pmpro-orders-list-table.php:991
 msgid "View"
 msgstr "Visualitza"
 
@@ -6408,6 +6462,8 @@ msgstr "Visualitza"
 #: classes/class-pmpro-orders-list-table.php:956
 #: adminpages/orders/view-order.php:467
 #: classes/class-pmpro-orders-list-table.php:943
+#: adminpages/orders/view-order.php:473
+#: classes/class-pmpro-orders-list-table.php:948
 #, php-format
 msgid "Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?"
 msgstr "Reemborseu la comanda %s a la passarel·la de pagament. Aquesta acció és permanent. L'usuari i l'administrador rebran una confirmació per correu electrònic després de processar el reemborsament. Segur que voleu reemborsar aquesta comanda?"
@@ -6456,6 +6512,7 @@ msgstr "Visiteu la pàgina del <a href=\"%s\" target=\"_blank\">compte d'afiliac
 #: adminpages/reports/logins.php:251
 #: classes/class-pmpro-orders-list-table.php:977
 #: classes/class-pmpro-orders-list-table.php:965
+#: classes/class-pmpro-orders-list-table.php:970
 #, php-format
 msgid "ID: %s"
 msgstr "Identificador: %s"
@@ -6521,24 +6578,28 @@ msgstr "S'està carregant..."
 #: adminpages/reports/sales.php:801
 #: adminpages/reports/sales.php:804
 #: adminpages/reports/sales.php:859
+#: adminpages/reports/sales.php:856
 msgid "Total:"
 msgstr "Total:"
 
 #: adminpages/reports/sales.php:796
 #: adminpages/reports/sales.php:799
 #: adminpages/reports/sales.php:854
+#: adminpages/reports/sales.php:851
 msgid "Renewals:"
 msgstr "Renovacions:"
 
 #: adminpages/reports/sales.php:791
 #: adminpages/reports/sales.php:794
 #: adminpages/reports/sales.php:849
+#: adminpages/reports/sales.php:846
 msgid "New:"
 msgstr "Nou:"
 
 #: adminpages/reports/sales.php:559
 #: adminpages/reports/sales.php:562
 #: adminpages/reports/sales.php:589
+#: adminpages/reports/sales.php:586
 #, php-format
 msgid "Average %s"
 msgstr "Mitjana de %s"
@@ -6546,6 +6607,7 @@ msgstr "Mitjana de %s"
 #: adminpages/reports/sales.php:530
 #: adminpages/reports/sales.php:533
 #: adminpages/reports/sales.php:560
+#: adminpages/reports/sales.php:557
 #, php-format
 msgid "New %s"
 msgstr "Nou %s"
@@ -6556,6 +6618,7 @@ msgstr "Nou %s"
 #: classes/class-pmpro-orders-list-table.php:1264
 #: classes/class-pmpro-orders-list-table.php:1286
 #: classes/class-pmpro-orders-list-table.php:1309
+#: classes/class-pmpro-orders-list-table.php:1347
 msgid "Renewal"
 msgstr "Renovació"
 
@@ -6946,6 +7009,7 @@ msgstr "No s'ha trobat cap historial d'afiliacions."
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:179
 #: includes/profile.php:813
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:175
 msgid "No membership orders found."
 msgstr "No s'ha trobat cap comanda d'afiliació."
 
@@ -6958,6 +7022,7 @@ msgstr "Historial de nivells d'afiliació"
 #: shortcodes/pmpro_account.php:326
 #: shortcodes/pmpro_account.php:335
 #: pages/invoice.php:396
+#: shortcodes/pmpro_account.php:351
 msgid "Order History"
 msgstr "Historial de comandes"
 
@@ -8481,12 +8546,14 @@ msgstr "[%1$s] Activitat de PMPro per a %2$s: %3$s"
 #: classes/class-pmpro-orders-list-table.php:619
 #: classes/class-pmpro-orders-list-table.php:641
 #: classes/class-pmpro-orders-list-table.php:629
+#: classes/class-pmpro-orders-list-table.php:634
 msgid "Last Year"
 msgstr "L'any passat"
 
 #: classes/class-pmpro-orders-list-table.php:615
 #: classes/class-pmpro-orders-list-table.php:637
 #: classes/class-pmpro-orders-list-table.php:625
+#: classes/class-pmpro-orders-list-table.php:630
 msgid "Last Month"
 msgstr "El mes passat"
 
@@ -9141,6 +9208,7 @@ msgstr "Edita l'usuari"
 
 #: classes/class-pmpro-orders-list-table.php:365
 #: classes/class-pmpro-orders-list-table.php:366
+#: classes/class-pmpro-orders-list-table.php:371
 msgid "Error"
 msgstr "Error"
 
@@ -9197,6 +9265,10 @@ msgstr "Error"
 #: classes/class-pmpro-subscriptions-list-table.php:658
 #: classes/class-pmpro-subscriptions-list-table.php:675
 #: pages/invoice.php:155
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:144
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:151
+#: classes/class-pmpro-orders-list-table.php:1253
+#: classes/class-pmpro-orders-list-table.php:1320
 msgid "&#8212;"
 msgstr "&#8212;"
 
@@ -9698,6 +9770,7 @@ msgstr "Visualitza les comandes"
 #: classes/class-pmpro-orders-list-table.php:1007
 #: classes/class-pmpro-orders-list-table.php:984
 #: classes/class-pmpro-orders-list-table.php:997
+#: classes/class-pmpro-orders-list-table.php:1014
 msgid "Copy"
 msgstr "Copia"
 
@@ -9989,18 +10062,21 @@ msgstr "També podeu provar de cercar:"
 #: classes/class-pmpro-orders-list-table.php:572
 #: classes/class-pmpro-orders-list-table.php:594
 #: classes/class-pmpro-orders-list-table.php:582
+#: classes/class-pmpro-orders-list-table.php:587
 msgid "Only Free Orders"
 msgstr "Només comandes gratuïtes"
 
 #: classes/class-pmpro-orders-list-table.php:570
 #: classes/class-pmpro-orders-list-table.php:592
 #: classes/class-pmpro-orders-list-table.php:580
+#: classes/class-pmpro-orders-list-table.php:585
 msgid "Only Paid Orders"
 msgstr "Només comandes pagades"
 
 #: classes/class-pmpro-orders-list-table.php:566
 #: classes/class-pmpro-orders-list-table.php:588
 #: classes/class-pmpro-orders-list-table.php:576
+#: classes/class-pmpro-orders-list-table.php:581
 msgid "With a Discount Code"
 msgstr "Amb un codi de descompte"
 
@@ -10028,6 +10104,7 @@ msgstr "No s'han trobat codis de descompte"
 #: adminpages/reports/sales.php:668
 #: adminpages/reports/sales.php:671
 #: adminpages/reports/sales.php:717
+#: adminpages/reports/sales.php:714
 msgid "Average line calculated using data prior to current day, month, or year."
 msgstr "Línia mitjana calculada amb dades anteriors al dia, mes o any actual."
 
@@ -10054,6 +10131,8 @@ msgstr "Aquesta setmana"
 #: adminpages/reports/memberships.php:419
 #: adminpages/reports/sales.php:698
 #: adminpages/reports/memberships.php:420
+#: adminpages/reports/memberships.php:400
+#: adminpages/reports/sales.php:695
 msgid "All Codes"
 msgstr "Tots els codis"
 
@@ -10061,6 +10140,7 @@ msgstr "Tots els codis"
 #: adminpages/reports/memberships.php:409
 #: adminpages/reports/memberships.php:390
 #: adminpages/reports/memberships.php:391
+#: adminpages/reports/memberships.php:371
 msgid "All Free Levels"
 msgstr "Tots els nivells gratuïts"
 
@@ -10068,6 +10148,7 @@ msgstr "Tots els nivells gratuïts"
 #: adminpages/reports/memberships.php:404
 #: adminpages/reports/memberships.php:385
 #: adminpages/reports/memberships.php:386
+#: adminpages/reports/memberships.php:366
 msgid "All Paid Levels"
 msgstr "Tots els nivells de pagament"
 
@@ -10170,6 +10251,8 @@ msgstr "Gestiona les pàgines"
 #: pages/invoice.php:107
 #: pages/invoice.php:274
 #: pages/invoice.php:430
+#: classes/class-pmpro-orders-list-table.php:367
+#: shortcodes/pmpro_account.php:390
 msgid "Refunded"
 msgstr "Reemborsat"
 
@@ -10188,6 +10271,10 @@ msgstr "Reemborsat"
 #: classes/class-pmpro-orders-list-table.php:1303
 #: pages/invoice.php:104
 #: pages/invoice.php:423
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:155
+#: classes/class-pmpro-orders-list-table.php:365
+#: classes/class-pmpro-orders-list-table.php:1341
+#: shortcodes/pmpro_account.php:383
 msgid "Paid"
 msgstr "Pagat"
 
@@ -10443,6 +10530,7 @@ msgstr "Consentiment de les condicions del servei"
 #: classes/class-pmpro-orders-list-table.php:1112
 #: classes/class-pmpro-subscriptions-list-table.php:495
 #: classes/class-pmpro-orders-list-table.php:1135
+#: classes/class-pmpro-orders-list-table.php:1173
 msgid "none"
 msgstr "cap"
 
@@ -10485,6 +10573,7 @@ msgstr "Caducat"
 #: classes/class-pmpro-subscriptions-list-table.php:589
 #: classes/class-pmpro-orders-list-table.php:361
 #: classes/class-pmpro-subscriptions-list-table.php:580
+#: classes/class-pmpro-orders-list-table.php:366
 msgid "Cancelled"
 msgstr "Cancel·lat"
 
@@ -11898,6 +11987,7 @@ msgstr "Paid Memberships Pro"
 
 #: shortcodes/pmpro_account.php:406
 #: shortcodes/pmpro_account.php:415
+#: shortcodes/pmpro_account.php:443
 msgid "Member Links"
 msgstr "Enllaços del membre"
 
@@ -11912,6 +12002,7 @@ msgstr "Enllaços del membre"
 #: pages/invoice.php:309
 #: pages/invoice.php:349
 #: pages/invoice.php:437
+#: shortcodes/pmpro_account.php:399
 msgid "Amount"
 msgstr "Import"
 
@@ -11931,15 +12022,18 @@ msgstr "El meu compte"
 
 #: shortcodes/pmpro_account.php:257
 #: shortcodes/pmpro_account.php:266
+#: shortcodes/pmpro_account.php:280
 msgid "Change"
 msgstr "Canvia"
 
 #: shortcodes/pmpro_account.php:233
 #: shortcodes/pmpro_account.php:242
+#: shortcodes/pmpro_account.php:255
 msgid "Update Billing Info"
 msgstr "Actualitza la informació de facturació"
 
 #: classes/class-pmpro-orders-list-table.php:150
+#: classes/class-pmpro-orders-list-table.php:155
 msgid "Billing"
 msgstr "Facturació"
 
@@ -12128,6 +12222,7 @@ msgstr "El teu&nbsp;nivell"
 #: pages/levels.php:124
 #: shortcodes/pmpro_account.php:219
 #: shortcodes/pmpro_account.php:228
+#: shortcodes/pmpro_account.php:240
 msgid "Renew"
 msgstr "Renova"
 
@@ -12177,6 +12272,8 @@ msgstr "Visualitza el teu compte de membre &rarr;"
 #: shortcodes/pmpro_account.php:371
 #: classes/class-pmpro-orders-list-table.php:365
 #: pages/invoice.php:427
+#: classes/class-pmpro-orders-list-table.php:370
+#: shortcodes/pmpro_account.php:387
 msgid "Pending"
 msgstr "Pendent"
 
@@ -12219,6 +12316,7 @@ msgstr "Mètode de pagament"
 #: classes/class-pmpro-orders-list-table.php:1017
 #: classes/class-pmpro-orders-list-table.php:1027
 #: classes/class-pmpro-orders-list-table.php:1007
+#: classes/class-pmpro-orders-list-table.php:1046
 msgid "Print"
 msgstr "Imprimeix"
 
@@ -12507,6 +12605,9 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:102
 #: pages/invoice.php:407
 #: pages/invoice.php:436
+#: classes/class-pmpro-orders-list-table.php:153
+#: shortcodes/pmpro_account.php:361
+#: shortcodes/pmpro_account.php:398
 msgid "Level"
 msgstr "Nivell"
 
@@ -13184,6 +13285,7 @@ msgstr "Heu d'introduir una clau de llicència PMPro %s vàlida a Opcions > Llic
 #: includes/addons.php:523
 #: includes/addons.php:522
 #: classes/class-pmpro-addons.php:1030
+#: classes/class-pmpro-addons.php:1040
 msgid "Return to the PMPro Add Ons page"
 msgstr "Torna a la pàgina de complements de PMPro"
 
@@ -13197,6 +13299,7 @@ msgstr "Heu de tenir una <a href=\"https://www.paidmembershipspro.com/pricing/?u
 
 #: includes/addons.php:487
 #: classes/class-pmpro-addons.php:1028
+#: classes/class-pmpro-addons.php:1038
 msgid "Update Plugin"
 msgstr "Actualitza l'extensió"
 
@@ -13214,6 +13317,7 @@ msgstr "Heu de tenir una <a target=\"_blank\" href=\"https://www.paidmemberships
 #: includes/addons.php:431
 #: classes/class-pmpro-addons.php:1200
 #: includes/addons.php:216
+#: classes/class-pmpro-addons.php:1210
 #, php-format
 msgid "Important: This plugin requires a valid PMPro %s license key to update."
 msgstr "Important: Aquesta extensió requereix una clau de llicència PMPro %s vàlida per actualitzar-se."
@@ -14030,6 +14134,10 @@ msgstr "Detalls"
 #: adminpages/reports/sales.php:560
 #: adminpages/reports/sales.php:589
 #: adminpages/reports/sales.php:641
+#: adminpages/reports/sales.php:546
+#: adminpages/reports/sales.php:557
+#: adminpages/reports/sales.php:586
+#: adminpages/reports/sales.php:638
 msgid "Revenue"
 msgstr "Ingressos"
 
@@ -14038,6 +14146,7 @@ msgstr "Ingressos"
 #: adminpages/reports/sales.php:47
 #: adminpages/reports/sales.php:614
 #: adminpages/reports/sales.php:642
+#: adminpages/reports/sales.php:639
 msgid "Sales"
 msgstr "Vendes"
 
@@ -14050,6 +14159,7 @@ msgstr "Vendes"
 #: adminpages/reports/sales.php:620
 #: classes/class-pmpro-admin-activity-email.php:104
 #: adminpages/dashboard.php:64
+#: adminpages/reports/sales.php:617
 msgid "Sales and Revenue"
 msgstr "Vendes i ingressos"
 
@@ -14065,6 +14175,8 @@ msgstr "Vendes i ingressos (Prova/Sandbox)"
 #: adminpages/reports/memberships.php:428
 #: adminpages/reports/sales.php:713
 #: adminpages/reports/memberships.php:429
+#: adminpages/reports/memberships.php:409
+#: adminpages/reports/sales.php:710
 msgid "Generate Report"
 msgstr "Genera l'informe"
 
@@ -14082,6 +14194,10 @@ msgstr "Genera l'informe"
 #: adminpages/reports/sales.php:663
 #: adminpages/reports/memberships.php:361
 #: adminpages/reports/memberships.php:374
+#: adminpages/reports/memberships.php:341
+#: adminpages/reports/memberships.php:354
+#: adminpages/reports/sales.php:641
+#: adminpages/reports/sales.php:660
 msgid "for"
 msgstr "per a"
 
@@ -14089,6 +14205,7 @@ msgstr "per a"
 #: adminpages/reports/memberships.php:377
 #: adminpages/reports/memberships.php:358
 #: adminpages/reports/memberships.php:359
+#: adminpages/reports/memberships.php:339
 msgid "Signups vs. Expirations"
 msgstr "Registres vs. venciments"
 
@@ -14096,6 +14213,7 @@ msgstr "Registres vs. venciments"
 #: adminpages/reports/memberships.php:376
 #: adminpages/reports/memberships.php:357
 #: adminpages/reports/memberships.php:358
+#: adminpages/reports/memberships.php:338
 msgid "Signups vs. Cancellations"
 msgstr "Registres vs. cancel·lacions"
 
@@ -14103,6 +14221,7 @@ msgstr "Registres vs. cancel·lacions"
 #: adminpages/reports/memberships.php:375
 #: adminpages/reports/memberships.php:356
 #: adminpages/reports/memberships.php:357
+#: adminpages/reports/memberships.php:337
 msgid "Signups vs. All Cancellations"
 msgstr "Registres vs. totes les cancel·lacions"
 
@@ -14114,6 +14233,8 @@ msgstr "Registres vs. totes les cancel·lacions"
 #: adminpages/reports/memberships.php:352
 #: adminpages/reports/sales.php:633
 #: adminpages/reports/memberships.php:353
+#: adminpages/reports/memberships.php:333
+#: adminpages/reports/sales.php:630
 msgid "Annual"
 msgstr "Anual"
 
@@ -14128,6 +14249,8 @@ msgstr "Anual"
 #: adminpages/reports/memberships.php:352
 #: adminpages/advancedsettings.php:285
 #: adminpages/advancedsettings.php:279
+#: adminpages/reports/memberships.php:332
+#: adminpages/reports/sales.php:629
 msgid "Monthly"
 msgstr "Mensual"
 
@@ -14141,6 +14264,8 @@ msgstr "Mensual"
 #: adminpages/reports/memberships.php:351
 #: adminpages/advancedsettings.php:279
 #: adminpages/advancedsettings.php:273
+#: adminpages/reports/memberships.php:331
+#: adminpages/reports/sales.php:628
 msgid "Daily"
 msgstr "Diari"
 
@@ -14160,6 +14285,7 @@ msgstr "Diari"
 #: adminpages/reports/logins.php:223
 #: classes/class-pmpro-orders-list-table.php:639
 #: classes/class-pmpro-orders-list-table.php:627
+#: classes/class-pmpro-orders-list-table.php:632
 msgid "This Year"
 msgstr "Aquest any"
 
@@ -14167,6 +14293,7 @@ msgstr "Aquest any"
 #: adminpages/reports/memberships.php:44
 #: adminpages/reports/memberships.php:479
 #: adminpages/reports/memberships.php:480
+#: adminpages/reports/memberships.php:460
 msgid "All Cancellations"
 msgstr "Totes les cancel·lacions"
 
@@ -14185,6 +14312,11 @@ msgstr "Totes les cancel·lacions"
 #: adminpages/reports/sales.php:589
 #: adminpages/reports/memberships.php:483
 #: adminpages/reports/memberships.php:535
+#: adminpages/reports/memberships.php:463
+#: adminpages/reports/memberships.php:515
+#: adminpages/reports/sales.php:546
+#: adminpages/reports/sales.php:557
+#: adminpages/reports/sales.php:586
 msgid "Signups"
 msgstr "Registres"
 
@@ -14196,6 +14328,7 @@ msgstr "Registres"
 #: adminpages/reports/memberships.php:339
 #: adminpages/reports/memberships.php:340
 #: adminpages/dashboard.php:73
+#: adminpages/reports/memberships.php:320
 msgid "Membership Stats"
 msgstr "Estadístiques d'afiliacions"
 
@@ -14223,6 +14356,7 @@ msgstr "Tots els usuaris"
 #: adminpages/reports/logins.php:219
 #: adminpages/reports/logins.php:224
 #: adminpages/reports/sales.php:888
+#: adminpages/reports/sales.php:885
 msgid "All Time"
 msgstr "Sempre"
 
@@ -14244,6 +14378,7 @@ msgstr "Sempre"
 #: adminpages/reports/logins.php:222
 #: classes/class-pmpro-orders-list-table.php:635
 #: classes/class-pmpro-orders-list-table.php:623
+#: classes/class-pmpro-orders-list-table.php:628
 msgid "This Month"
 msgstr "Aquest mes"
 
@@ -14511,6 +14646,7 @@ msgstr "Les teves opcions de pàgina s'han actualitzat."
 #: adminpages/metaboxes/recent-orders.php:42
 #: classes/class-pmpro-orders-list-table.php:242
 #: pages/invoice.php:451
+#: classes/class-pmpro-orders-list-table.php:247
 msgid "No orders found."
 msgstr "No s'han trobat comandes."
 
@@ -14519,6 +14655,8 @@ msgstr "No s'han trobat comandes."
 #: classes/class-pmpro-orders-list-table.php:921
 #: adminpages/orders/view-order.php:496
 #: classes/class-pmpro-orders-list-table.php:908
+#: adminpages/orders/view-order.php:502
+#: classes/class-pmpro-orders-list-table.php:913
 #, php-format
 msgid "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?"
 msgstr "La supressió de comandes és permanent i pot afectar els usuaris actius. Esteu segur que voleu suprimir la comanda %s?"
@@ -14534,6 +14672,7 @@ msgstr "La supressió de comandes és permanent i pot afectar els usuaris actius
 #: shortcodes/pmpro_account.php:182
 #: classes/class-pmpro-subscription.php:1205
 #: classes/class-pmpro-subscription.php:1223
+#: shortcodes/pmpro_account.php:193
 msgid "Subscription"
 msgstr "Subscripció"
 
@@ -14559,10 +14698,13 @@ msgstr "Subscripció"
 #: adminpages/orders/view-order.php:122
 #: classes/class-pmpro-orders-list-table.php:1133
 #: classes/class-pmpro-orders-list-table.php:1152
+#: classes/class-pmpro-orders-list-table.php:1171
+#: classes/class-pmpro-orders-list-table.php:1190
 msgid "deleted"
 msgstr "suprimit"
 
 #: classes/class-pmpro-orders-list-table.php:152
+#: classes/class-pmpro-orders-list-table.php:157
 msgid "Transaction IDs"
 msgstr "Identificadors de transacció"
 
@@ -14592,6 +14734,7 @@ msgstr "Nivell d'afiliació"
 #: adminpages/reports/logins.php:207
 #: adminpages/metaboxes/recent-orders.php:31
 #: classes/gateways/class.pmprogateway_payflowpro.php:132
+#: classes/class-pmpro-orders-list-table.php:152
 msgid "User"
 msgstr "Usuari"
 
@@ -14606,6 +14749,7 @@ msgstr "Cerca comandes"
 #: classes/class-pmpro-subscriptions-list-table.php:400
 #: classes/class-pmpro-orders-list-table.php:680
 #: classes/class-pmpro-orders-list-table.php:668
+#: classes/class-pmpro-orders-list-table.php:673
 msgid "Filter"
 msgstr "Filtra"
 
@@ -14614,42 +14758,49 @@ msgstr "Filtra"
 #: classes/class-pmpro-subscriptions-list-table.php:392
 #: classes/class-pmpro-orders-list-table.php:630
 #: classes/class-pmpro-orders-list-table.php:618
+#: classes/class-pmpro-orders-list-table.php:623
 msgid "filter by "
 msgstr "filtra per "
 
 #: classes/class-pmpro-orders-list-table.php:595
 #: classes/class-pmpro-orders-list-table.php:617
 #: classes/class-pmpro-orders-list-table.php:605
+#: classes/class-pmpro-orders-list-table.php:610
 msgid "To"
 msgstr "a"
 
 #: classes/class-pmpro-orders-list-table.php:580
 #: classes/class-pmpro-orders-list-table.php:602
 #: classes/class-pmpro-orders-list-table.php:590
+#: classes/class-pmpro-orders-list-table.php:595
 msgid "From"
 msgstr "De"
 
 #: classes/class-pmpro-orders-list-table.php:568
 #: classes/class-pmpro-orders-list-table.php:590
 #: classes/class-pmpro-orders-list-table.php:578
+#: classes/class-pmpro-orders-list-table.php:583
 msgid "Within a Status"
 msgstr "Dins d'un estat"
 
 #: classes/class-pmpro-orders-list-table.php:564
 #: classes/class-pmpro-orders-list-table.php:586
 #: classes/class-pmpro-orders-list-table.php:574
+#: classes/class-pmpro-orders-list-table.php:579
 msgid "Within a Level"
 msgstr "Dins d'un nivell"
 
 #: classes/class-pmpro-orders-list-table.php:562
 #: classes/class-pmpro-orders-list-table.php:584
 #: classes/class-pmpro-orders-list-table.php:572
+#: classes/class-pmpro-orders-list-table.php:577
 msgid "Predefined Date Range"
 msgstr "Període predefinit"
 
 #: classes/class-pmpro-orders-list-table.php:560
 #: classes/class-pmpro-orders-list-table.php:582
 #: classes/class-pmpro-orders-list-table.php:570
+#: classes/class-pmpro-orders-list-table.php:575
 msgid "Within a Date Range"
 msgstr "Dins d'un període"
 
@@ -14741,6 +14892,11 @@ msgstr "Identificador d'afiliat"
 #: adminpages/orders/edit-order.php:29
 #: pages/invoice.php:406
 #: pages/invoice.php:435
+#: adminpages/reports/memberships.php:514
+#: adminpages/reports/sales.php:930
+#: classes/class-pmpro-orders-list-table.php:159
+#: shortcodes/pmpro_account.php:360
+#: shortcodes/pmpro_account.php:397
 msgid "Date"
 msgstr "Data"
 
@@ -14841,6 +14997,7 @@ msgstr "Entorn de la passarel·la"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:105
 #: adminpages/orders/edit-order.php:285
 #: adminpages/orders/view-order.php:281
+#: classes/class-pmpro-orders-list-table.php:156
 msgid "Gateway"
 msgstr "Passarel·la"
 
@@ -14886,6 +15043,9 @@ msgstr "Passarel·la"
 #: classes/gateways/class.pmprogateway_stripe.php:2892
 #: pages/invoice.php:409
 #: pages/invoice.php:440
+#: classes/class-pmpro-orders-list-table.php:158
+#: shortcodes/pmpro_account.php:363
+#: shortcodes/pmpro_account.php:402
 msgid "Status"
 msgstr "Estat"
 
@@ -14961,6 +15121,11 @@ msgstr "Tipus de pagament"
 #: adminpages/orders/view-order.php:152
 #: pages/invoice.php:269
 #: pages/invoice.php:408
+#: adminpages/reports/memberships.php:542
+#: adminpages/reports/sales.php:931
+#: adminpages/reports/sales.php:953
+#: classes/class-pmpro-orders-list-table.php:154
+#: shortcodes/pmpro_account.php:362
 msgid "Total"
 msgstr "Total"
 
@@ -15221,6 +15386,8 @@ msgstr "Membres cancel·lats"
 #: classes/email-templates/class-pmpro-email-template-cancel.php:154
 #: classes/class-pmpro-members-list-table.php:792
 #: classes/email-templates/class-pmpro-email-template-cancel-admin.php:162
+#: adminpages/reports/memberships.php:361
+#: adminpages/reports/sales.php:690
 msgid "All Levels"
 msgstr "Tots els nivells"
 
@@ -15235,6 +15402,7 @@ msgstr "Tots els nivells"
 #: classes/class-pmpro-members-list-table.php:789
 #: classes/class-pmpro-members-list-table.php:790
 #: classes/class-pmpro-orders-list-table.php:566
+#: classes/class-pmpro-orders-list-table.php:571
 msgid "Show"
 msgstr "Mostra"
 
@@ -15251,6 +15419,8 @@ msgstr "Mostra"
 #: adminpages/reports/sales.php:623
 #: adminpages/reports/memberships.php:343
 #: adminpages/orders.php:316
+#: adminpages/reports/memberships.php:323
+#: adminpages/reports/sales.php:620
 msgid "Export to CSV"
 msgstr "Exporta a CSV"
 
@@ -15314,6 +15484,8 @@ msgstr "Afegeix un nou nivell"
 #: adminpages/paymentsettings.php:364
 #: adminpages/orders/edit-order.php:391
 #: adminpages/orders/view-order.php:575
+#: adminpages/orders/view-order.php:581
+#: shortcodes/pmpro_account.php:285
 msgid "Cancel"
 msgstr "Cancel·la"
 
@@ -15538,6 +15710,7 @@ msgstr "Esteu segur que vols suprimir el codi de descompte %s ? Les subscripcion
 #: classes/class-pmpro-orders-list-table.php:1128
 #: classes/class-pmpro-orders-list-table.php:1150
 #: classes/class-pmpro-orders-list-table.php:1173
+#: classes/class-pmpro-orders-list-table.php:1211
 msgid "edit"
 msgstr "edita"
 
@@ -15556,6 +15729,7 @@ msgstr "Nivells"
 #: adminpages/dashboard.php:256
 #: adminpages/reports/logins.php:211
 #: adminpages/reports/logins.php:210
+#: shortcodes/pmpro_account.php:207
 msgid "Expires"
 msgstr "Caduca"
 
@@ -15787,6 +15961,7 @@ msgstr "Data d'inici"
 #: adminpages/orders.php:356
 #: adminpages/metaboxes/recent-orders.php:30
 #: adminpages/orders/edit-order.php:22
+#: classes/class-pmpro-orders-list-table.php:151
 msgid "Code"
 msgstr "Codi"
 
@@ -15806,6 +15981,7 @@ msgstr "Això es generarà quan deseu."
 #: adminpages/subscriptions.php:249
 #: adminpages/subscriptions.php:257
 #: adminpages/membershiplevels.php:364
+#: classes/class-pmpro-orders-list-table.php:149
 msgid "ID"
 msgstr "ID"
 
@@ -16144,6 +16320,7 @@ msgstr "Avançat"
 #: classes/class-pmpro-orders-list-table.php:1034
 #: classes/class-pmpro-orders-list-table.php:1021
 #: classes/class-pmpro-orders-list-table.php:1024
+#: classes/class-pmpro-orders-list-table.php:1059
 msgid "Email"
 msgstr "Correu electrònic"
 
@@ -16308,6 +16485,7 @@ msgstr "Per %s"
 #: classes/gateways/class.pmprogateway_stripe.php:486
 #: classes/gateways/class.pmprogateway_stripe.php:835
 #: pages/invoice.php:436
+#: shortcodes/pmpro_account.php:398
 msgid "N/A"
 msgstr "N/A"
 
@@ -16327,6 +16505,7 @@ msgstr "N/A"
 #: classes/class-pmpro-orders-list-table.php:1013
 #: classes/class-pmpro-orders-list-table.php:1001
 #: classes/class-pmpro-orders-list-table.php:1003
+#: classes/class-pmpro-orders-list-table.php:1026
 msgid "Delete"
 msgstr "Suprimeix"
 
@@ -16433,6 +16612,7 @@ msgstr "Actiu"
 #: classes/class-pmpro-orders-list-table.php:580
 #: adminpages/addons.php:62
 #: classes/class-pmpro-orders-list-table.php:568
+#: classes/class-pmpro-orders-list-table.php:573
 msgid "All"
 msgstr "Tots"
 
@@ -16656,6 +16836,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:1045
 #: classes/class-pmpro-orders-list-table.php:1067
 #: classes/class-pmpro-orders-list-table.php:1090
+#: classes/class-pmpro-orders-list-table.php:1128
 msgid "Recheck"
 msgstr ""
 
@@ -16781,39 +16962,48 @@ msgstr ""
 
 #: adminpages/reports/memberships.php:475
 #: adminpages/reports/memberships.php:476
+#: adminpages/reports/memberships.php:456
 msgid "Cancellations"
 msgstr ""
 
 #: adminpages/reports/memberships.php:477
 #: adminpages/reports/memberships.php:478
+#: adminpages/reports/memberships.php:458
 msgid "Expirations"
 msgstr ""
 
 #: adminpages/reports/sales.php:637
+#: adminpages/reports/sales.php:634
 msgid "Custom Range"
 msgstr ""
 
 #: adminpages/reports/sales.php:657
+#: adminpages/reports/sales.php:654
 msgid "from"
 msgstr ""
 
 #: adminpages/reports/sales.php:658
+#: adminpages/reports/sales.php:655
 msgid "Select report start date"
 msgstr ""
 
 #: adminpages/reports/sales.php:660
+#: adminpages/reports/sales.php:657
 msgid "to"
 msgstr ""
 
 #: adminpages/reports/sales.php:661
+#: adminpages/reports/sales.php:658
 msgid "Select report end date"
 msgstr ""
 
 #: adminpages/reports/sales.php:935
+#: adminpages/reports/sales.php:932
 msgid "New"
 msgstr ""
 
 #: adminpages/reports/sales.php:936
+#: adminpages/reports/sales.php:933
 msgid "Renewals"
 msgstr ""
 
@@ -18772,6 +18962,7 @@ msgstr ""
 #: includes/addons.php:542
 #: includes/addons.php:541
 #: classes/class-pmpro-addons.php:1050
+#: classes/class-pmpro-addons.php:1060
 #, php-format
 msgid "You must enter a valid PMPro %s License Key in the PMPro Settings to update this Add On."
 msgstr ""
@@ -19558,12 +19749,15 @@ msgstr ""
 #. translators: %s is the Order Code.
 #: adminpages/orders/view-order.php:382
 #: classes/class-pmpro-orders-list-table.php:1032
+#: classes/class-pmpro-orders-list-table.php:1067
 #, php-format
 msgid "Mark the payment for order %s as received. The user and admin may receive an email confirmation after the order update is processed. Are you sure you want to mark this order as paid?"
 msgstr ""
 
+#. translators: %s is the Order Code.
 #: adminpages/orders/view-order.php:401
 #: classes/class-pmpro-orders-list-table.php:1053
+#: classes/class-pmpro-orders-list-table.php:1090
 #, php-format
 msgid "Mark order # %s as paid"
 msgstr ""
@@ -19577,12 +19771,16 @@ msgstr ""
 msgid "Edit order # %s"
 msgstr ""
 
+#. translators: %s is the Order Code.
 #: adminpages/orders/view-order.php:416
+#: classes/class-pmpro-orders-list-table.php:1033
 #, php-format
 msgid "Print or save order # %s as PDF"
 msgstr ""
 
+#. translators: %s is the Order Code.
 #: adminpages/orders/view-order.php:424
+#: classes/class-pmpro-orders-list-table.php:1053
 #, php-format
 msgid "Send order # %s via email"
 msgstr ""
@@ -19606,44 +19804,57 @@ msgid "Recheck payment for order # %s"
 msgstr ""
 
 #: adminpages/orders/view-order.php:458
+#: adminpages/orders/view-order.php:464
 msgid "Recheck Payment Status"
 msgstr ""
 
 #: adminpages/orders/view-order.php:485
+#: adminpages/orders/view-order.php:491
+#: classes/class-pmpro-orders-list-table.php:1102
 #, php-format
 msgid "Refund order # %s"
 msgstr ""
 
 #: adminpages/orders/view-order.php:488
+#: adminpages/orders/view-order.php:494
 msgid "Refund Order"
 msgstr ""
 
+#. translators: %s is the Order Code.
 #: adminpages/orders/view-order.php:513
+#: adminpages/orders/view-order.php:519
+#: classes/class-pmpro-orders-list-table.php:1021
 #, php-format
 msgid "Delete order # %s"
 msgstr ""
 
 #: adminpages/orders/view-order.php:516
+#: adminpages/orders/view-order.php:522
 msgid "Delete Order"
 msgstr ""
 
 #: adminpages/orders/view-order.php:552
+#: adminpages/orders/view-order.php:558
 msgid "Order Notes"
 msgstr ""
 
 #: adminpages/orders/view-order.php:560
+#: adminpages/orders/view-order.php:566
 msgid "No notes for this order."
 msgstr ""
 
 #: adminpages/orders/view-order.php:564
+#: adminpages/orders/view-order.php:570
 msgid "Add Order Note"
 msgstr ""
 
 #: adminpages/orders/view-order.php:568
+#: adminpages/orders/view-order.php:574
 msgid "Order Note"
 msgstr ""
 
 #: adminpages/orders/view-order.php:573
+#: adminpages/orders/view-order.php:579
 msgid "Save Note"
 msgstr ""
 
@@ -19660,27 +19871,33 @@ msgid "PMPro_AddOns instance cannot be unserialized"
 msgstr ""
 
 #: classes/class-pmpro-addons.php:402
+#: classes/class-pmpro-addons.php:407
 msgid "Invalid Add On slug."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:406
+#: classes/class-pmpro-addons.php:411
 msgid "You do not have permission to install plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:411
+#: classes/class-pmpro-addons.php:416
 msgid "Add On not found."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:416
+#: classes/class-pmpro-addons.php:421
 #, php-format
 msgid "A valid PMPro %s license is required to install this Add On."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:439
+#: classes/class-pmpro-addons.php:444
 msgid "Installation failed."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:448
+#: classes/class-pmpro-addons.php:453
 msgid "Add On installed."
 msgstr ""
 
@@ -19688,94 +19905,120 @@ msgstr ""
 #: classes/class-pmpro-addons.php:508
 #: classes/class-pmpro-addons.php:553
 #: classes/class-pmpro-addons.php:655
+#: classes/class-pmpro-addons.php:468
+#: classes/class-pmpro-addons.php:513
+#: classes/class-pmpro-addons.php:558
+#: classes/class-pmpro-addons.php:660
 msgid "Invalid Add On."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:467
+#: classes/class-pmpro-addons.php:472
 msgid "You do not have permission to activate plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:480
+#: classes/class-pmpro-addons.php:485
 msgid "Add On already active."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:493
+#: classes/class-pmpro-addons.php:498
 msgid "Add On activated."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:512
+#: classes/class-pmpro-addons.php:517
 msgid "You do not have permission to deactivate plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:525
+#: classes/class-pmpro-addons.php:530
 msgid "Add On already inactive."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:531
+#: classes/class-pmpro-addons.php:536
 msgid "Deactivation failed."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:538
+#: classes/class-pmpro-addons.php:543
 msgid "Add On deactivated."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:557
+#: classes/class-pmpro-addons.php:562
 msgid "You do not have permission to update plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:575
+#: classes/class-pmpro-addons.php:580
 #, php-format
 msgid "A valid PMPro %s license is required to update this Add On."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:611
 #: classes/class-pmpro-addons.php:624
+#: classes/class-pmpro-addons.php:616
+#: classes/class-pmpro-addons.php:629
 msgid "Add On updated."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:616
+#: classes/class-pmpro-addons.php:621
 msgid "Update failed."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:659
+#: classes/class-pmpro-addons.php:664
 msgid "You do not have permission to delete plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:683
+#: classes/class-pmpro-addons.php:688
 msgid "Delete failed."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:690
+#: classes/class-pmpro-addons.php:695
 msgid "Add On deleted."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:709
+#: classes/class-pmpro-addons.php:714
 msgid "Filesystem credentials are required to continue."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:726
+#: classes/class-pmpro-addons.php:731
 msgid "PMPro Add On Update"
 msgstr ""
 
 #: classes/class-pmpro-addons.php:761
+#: classes/class-pmpro-addons.php:766
 msgid "Plugin file could not be resolved."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:797
+#: classes/class-pmpro-addons.php:802
 msgid "Could not determine download URL for this Add On."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:994
+#: classes/class-pmpro-addons.php:1004
 #, php-format
 msgid "You must have a <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">valid PMPro %1$s License Key</a> to update PMPro %2$s add ons. The following plugins will not be updated:"
 msgstr ""
 
 #: classes/class-pmpro-addons.php:1023
+#: classes/class-pmpro-addons.php:1033
 #, php-format
 msgid "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">valid PMPro %1$s License Key</a> to update PMPro %2$s add ons."
 msgstr ""
 
 #: classes/class-pmpro-orders-list-table.php:1057
+#: classes/class-pmpro-orders-list-table.php:1095
 msgid "Mark Paid"
 msgstr ""
 
@@ -19785,4 +20028,46 @@ msgstr ""
 
 #: includes/email-templates.php:25
 msgid "Dear !!header_name!!,"
+msgstr ""
+
+#. translators: %s is the Order Code.
+#: adminpages/orders/view-order.php:458
+#: classes/class-pmpro-orders-list-table.php:1113
+#, php-format
+msgid "Recheck payment status for order # %s"
+msgstr ""
+
+#. translators: %s is the Order Code.
+#: classes/class-pmpro-orders-list-table.php:907
+#: classes/class-pmpro-orders-list-table.php:978
+#, php-format
+msgid "View order # %s"
+msgstr ""
+
+#. translators: %s is the Order Code.
+#: classes/class-pmpro-orders-list-table.php:998
+#, php-format
+msgid "Copy order # %s"
+msgstr ""
+
+#: classes/class-pmpro-orders-list-table.php:1168
+#, php-format
+msgid "Edit member %s"
+msgstr ""
+
+#: classes/class-pmpro-orders-list-table.php:1314
+#, php-format
+msgid "View subscription: %s"
+msgstr ""
+
+#: shortcodes/pmpro_account.php:161
+msgid "You do not have an active membership."
+msgstr ""
+
+#: shortcodes/pmpro_account.php:166
+msgid "Choose a membership level."
+msgstr ""
+
+#: shortcodes/pmpro_account.php:426
+msgid "Please contact the site administrator for full order history."
 msgstr ""
