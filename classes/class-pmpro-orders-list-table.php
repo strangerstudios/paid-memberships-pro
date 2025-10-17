@@ -44,6 +44,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @since 3.0
 	 */
 	public static function hook_screen_options() {
+		// If we're viewing a single order, bail.
+		if ( ! empty( $_REQUEST['id'] ) ) {
+			return;
+		}
+
 		$list_table = new PMPro_Orders_List_Table();
 		add_screen_option(
 			'per_page',
