@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.5.991
+Stable tag: 3.5.992
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,7 +210,7 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
-= 3.6 RC1 - 2025-10-14 =
+= 3.6 RC2 - 2025-10-17 =
 * FEATURE: Added compatibility with WP Fusion Lite. #3461 (@jarrydlong)
 * ENHANCEMENT: Added a new admin “view order” page before the “edit” step. #3467 (@kimcoleman)
 * ENHANCEMENT: Now saving orders in `pending` status when a Stripe or PayPal recurring payment fails. #3491 (@dparker1005)
@@ -224,6 +224,8 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Now removing membership-related LifterLMS engagement triggers when streamline is enabled. #3439 (@kimcoleman)
 * ENHANCEMENT: Updated Stripe API version to 2025-09-30.clover. #3459 (@dparker1005)
 * ENHANCEMENT: Improved styling of “file” type user fields. #3498 (@kimcoleman)
+* ENHANCEMENT: Added a new function `pmpro_get_gateway_nicename()` to retrieve a gateway's nicename by its slug. #3508 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Now hiding links from the Account page if the linked page is not set. #3516 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Now saving the Stripe invoice ID as the PMPro order’s payment transaction ID whenever an invoice is generated in Stripe. #3464 (@dparker1005)
 * BUG FIX: Fixed an issue where LifterLMS access plans meta boxes may still show when streamline is enabled. #3439 (@kimcoleman)
 * REFACTOR: Added abstracted functions for processing recurring successful and failed payments during webhook/IPN handlers. #3491 (@dparker1005)
