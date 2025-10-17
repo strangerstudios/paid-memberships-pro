@@ -452,7 +452,13 @@ $subscription = $order->get_subscription();
 							'pmpro_orders_nonce'
 						);
 						$order_actions['check_token_order'] = array(
-							'title'   => esc_attr( sprintf( __( 'Recheck payment for order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
+							'title'   => esc_attr(
+								sprintf(
+									/* translators: %s is the Order Code. */
+									__( 'Recheck payment status for order # %s', 'paid-memberships-pro' ),
+									$order->code
+								)
+							),
 							'href'    => esc_url( $recheck_nonce_url ),
 							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-image-rotate',
 							'label'   => esc_html__( 'Recheck Payment Status', 'paid-memberships-pro' )

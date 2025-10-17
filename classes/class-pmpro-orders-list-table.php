@@ -904,7 +904,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_order_code( $item ) {
 		?>
-		<strong><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $item->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
+		<strong><a title="<?php echo esc_attr( sprintf( __( 'View order # %s', 'paid-memberships-pro' ), $item->code ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $item->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
 		<div class="row-actions">
 			<?php
 			$delete_text = esc_html(
@@ -972,7 +972,13 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				),
 				'view'   => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'View', 'paid-memberships-pro' ),
+					esc_attr(
+						sprintf(
+							/* translators: %s is the Order Code. */
+							__( 'View order # %s', 'paid-memberships-pro' ),
+							$item->code
+						)
+					),
 					esc_url(
 						add_query_arg(
 							[
@@ -986,7 +992,13 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				),
 				'copy'   => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Copy', 'paid-memberships-pro' ),
+					esc_attr(
+						sprintf(
+							/* translators: %s is the Order Code. */
+							__( 'Copy order # %s', 'paid-memberships-pro' ),
+							$item->code
+						)
+					),
 					esc_url(
 						add_query_arg(
 							[
@@ -1003,13 +1015,25 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				),
 				'delete'  => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Delete', 'paid-memberships-pro' ),
+					esc_attr(
+						sprintf(
+							/* translators: %s is the Order Code. */
+							__( 'Delete order # %s', 'paid-memberships-pro' ),
+							$item->code
+						)
+					),
 					'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
 					esc_html__( 'Delete', 'paid-memberships-pro' )
 				),
 				'print'   => sprintf(
 					'<a title="%1$s" href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a>',
-					esc_attr__( 'Print', 'paid-memberships-pro' ),
+					esc_attr(
+						sprintf(
+							/* translators: %s is the Order Code. */
+							__( 'Print or save order # %s as PDF', 'paid-memberships-pro' ),
+							$item->code
+						)
+					),
 					esc_url(
 						add_query_arg(
 							[
@@ -1023,7 +1047,13 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				),
 				'email'   => sprintf(
 					'<a title="%1$s" href="%2$s" data-order="%3$s" class="thickbox email_link">%4$s</a>',
-					esc_attr__( 'Email', 'paid-memberships-pro' ),
+					esc_attr(
+						sprintf(
+							/* translators: %s is the Order Code. */
+							__( 'Send order # %s via email', 'paid-memberships-pro' ),
+							$item->code
+						)
+					),
 					'#TB_inline?width=600&height=200&inlineId=email_order',
 					esc_attr( $item->id ),
 					esc_html__( 'Email', 'paid-memberships-pro' )
@@ -1054,9 +1084,12 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				);
 				$actions['mark_order_paid'] = sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					sprintf(
-						esc_attr__( 'Mark order # %s as paid', 'paid-memberships-pro' ),
-						esc_html( $item->code )
+					esc_attr(
+						sprintf(
+							/* translators: %s is the Order Code. */
+							__( 'Mark order # %s as paid', 'paid-memberships-pro' ),
+							$item->code
+						)
 					),
 					esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $mark_paid_text ) . ', ' . wp_json_encode( $mark_paid_nonce_url ) . '); void(0);' ),
 					esc_html__( 'Mark Paid', 'paid-memberships-pro' )
@@ -1066,7 +1099,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			if ( pmpro_allowed_refunds( $item ) ) {
 				$actions['refund'] = sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Refund', 'paid-memberships-pro' ),
+					esc_attr( sprintf( __( 'Refund order # %s', 'paid-memberships-pro' ), $item->code ) ),
 					esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $refund_text ) . ', ' . wp_json_encode( $refund_nonce_url ) . '); void(0);' ),
 					esc_html__( 'Refund', 'paid-memberships-pro' )
 				);
@@ -1077,7 +1110,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			if ( 'token' === $item->status && pmpro_can_check_token_order_for_completion( $item->id ) ) {
 				$actions['check_token_order'] = sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Recheck Payment', 'paid-memberships-pro' ),
+					esc_attr( sprintf( __( 'Recheck payment status for order # %s', 'paid-memberships-pro' ), $item->code ) ),
 					esc_url(
 						wp_nonce_url(
 							add_query_arg(
@@ -1131,8 +1164,8 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_user( $item ) {
-		if ( ! empty( $item->user ) ) { 
-			echo '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item->user->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $item->user->user_login ) . '</a><br />';
+		if ( ! empty( $item->user ) ) {
+			echo '<a title="' . esc_attr( sprintf( __( 'Edit member %s', 'paid-memberships-pro' ), $item->user->user_login ) ) . '" href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item->user->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $item->user->user_login ) . '</a><br />';
 			echo esc_html( $item->user->user_email );
 		 } elseif ( $item->user_id > 0 ) {
 			echo '['. esc_html__( 'deleted', 'paid-memberships-pro' ) . ']';
@@ -1278,7 +1311,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$column_value['subscription_transaction_id'] = sprintf(
 				// translators: %s is the subscription transaction ID.
 				__( 'Subscription: %s', 'paid-memberships-pro' ),
-				! empty( $subscription ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ) . '">' . esc_html( $item->subscription_transaction_id ) . '</a>' : esc_html( $item->subscription_transaction_id )
+				! empty( $subscription ) ? '<a title="' . esc_attr( sprintf( __( 'View subscription: %s', 'paid-memberships-pro' ), $item->subscription_transaction_id ) ) . '" href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ) . '">' . esc_html( $item->subscription_transaction_id ) . '</a>' : esc_html( $item->subscription_transaction_id )
 			);
 		}
 
