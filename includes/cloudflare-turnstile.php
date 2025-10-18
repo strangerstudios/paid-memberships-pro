@@ -4,15 +4,9 @@
  */
 
 /**
- * Show CloudFlare Turnstile on the checkout page.
+ * Generate the CloudFlare Turnstile HTML/Challenge for displaying in various places.
  */
 function pmpro_cloudflare_turnstile_get_html() {
-
-	// If CloudFlare Turnstile is not enabled, bail.
-	if ( empty( get_option( 'pmpro_cloudflare_turnstile' ) ) ) {
-		return;
-	}
-
 	/**
 	 * Filter the CloudFlare Turnstile theme.
 	 *
@@ -22,39 +16,117 @@ function pmpro_cloudflare_turnstile_get_html() {
 	if ( $cf_theme !== 'light' ) {
 		$cf_theme = 'dark';
 	}
+
 	?>
 	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-	<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( get_option( 'pmpro_cloudflare_turnstile_site_key' ) ); ?>" data-theme="<?php echo esc_attr( $cf_theme ); ?>"></div>
+	<div class="pmpro-cloudflare-turnstile-wrapper">
+		<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( get_option( 'pmpro_cloudflare_turnstile_site_key' ) ); ?>" data-theme="<?php echo esc_attr( $cf_theme ); ?>" data-language="auto" data-size="normal"></div>
+	</div>
 	<?php
 
 }
-add_action( 'pmpro_checkout_before_submit_button', 'pmpro_cloudflare_turnstile_get_html' );
-add_action( 'pmpro_billing_before_submit_button', 'pmpro_cloudflare_turnstile_get_html' );
+
+/**
+ * Display the CloudFlare Turnstile HTML at checkout and billing pages.
+ */
+function pmpro_cloudflare_turnstile_display_at_checkout_and_billing() {
+	// If CloudFlare Turnstile is not enabled, bail.
+	if ( pmpro_captcha() != 'turnstile' ) {
+		return;
+	}
+
+	// Display the Turnstile HTML.
+	pmpro_cloudflare_turnstile_get_html();
+}
+add_action( 'pmpro_checkout_before_submit_button', 'pmpro_cloudflare_turnstile_display_at_checkout_and_billing' );
+add_action( 'pmpro_billing_before_submit_button', 'pmpro_cloudflare_turnstile_display_at_checkout_and_billing' );
+
+/**
+ * Adds Turnstile to the PMPro login form
+ *
+ * @since TBD
+ */
+function pmpro_cloudflare_turnstile_login_form_middle( $login_form, $args ) {
+
+	// Let's bail if we're not loading our version of the login form.
+	if ( ! isset( $args['pmpro_login_form_used'] ) ) {
+		return $login_form;
+	}
+	// Turnstile is not enabled, bail.
+	if ( pmpro_captcha() != 'turnstile' ) {
+		return $login_form;
+	}
+
+	if ( ! pmpro_login_has_failed_attempt() ) {
+		return $login_form;
+	}
+
+	ob_start();
+	pmpro_cloudflare_turnstile_get_html();
+	$pmpro_turnstile = ob_get_contents();
+	ob_end_clean();
+
+	return $login_form . $pmpro_turnstile; 
+}
+add_filter( 'login_form_middle', 'pmpro_cloudflare_turnstile_login_form_middle', 10, 2 );
+
+/**
+ * Adds Turnstile to the WordPress login (wp-login.php) and the password reset forms.
+ *
+ * @since TBD
+ */
+function pmpro_cloudflare_turnstile_login_and_password_form( $login_form ) {
+	
+	// If not using turnstile, let's bail.
+	if ( pmpro_captcha() != 'turnstile' ) {
+        return $login_form;
+    }
+
+	// Enable Turnstile only after a failed login attempt has been tracked.
+	if ( ! pmpro_login_has_failed_attempt() ) {
+		return $login_form;
+	}
+
+	// Custom CSS for the PMPro reset password form, or default to CSS for the default login pages to style the challenge better.
+	?>
+	<style>
+		.pmpro-cloudflare-turnstile-wrapper {
+	<?php if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] === 'reset_pass' ) { ?> 
+			margin-top: 25px; 
+			<?php } else { ?> 
+			margin-bottom: 10px;
+			margin-left: -15px;
+			<?php } ?>
+		}
+	</style>
+	<?php
+    
+    pmpro_cloudflare_turnstile_get_html();
+    
+}
+add_action( 'login_form', 'pmpro_cloudflare_turnstile_login_and_password_form', 10 );
+add_action( 'lostpassword_form', 'pmpro_cloudflare_turnstile_login_and_password_form', 10 );
+add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_cloudflare_turnstile_login_and_password_form', 10 );
 
 /**
  * Registration check to make sure the Turnstile passes.
  *
  * @return void
  */
-function pmpro_cloudflare_turnstile_validation( $okay ) {
-	// If checkout is already halted, bail.
-	if ( ! $okay ) {
-		return $okay;
-	}
-
+function pmpro_cloudflare_turnstile_validation( ) {
+	
 	// If CloudFlare Turnstile is not enabled, bail.
 	if ( empty( get_option( 'pmpro_cloudflare_turnstile' ) ) ) {
-		return $okay;
+		return true;
 	}
 
 	// Don't show it more than once on a screen. This is for "PayPal Express".
 	if ( pmpro_get_session_var( 'pmpro_cloudflare_turnstile_validated' ) ) {
-		return $okay;
+		return true;
 	}
 
 	// If the Turnstile is not passed, show an error.
 	if ( empty( $_POST['cf-turnstile-response'] ) ) {
-		pmpro_setMessage( __( 'Please complete the security check.', 'paid-memberships-pro' ), 'pmpro_error' );
 		return false;
 	}
 
@@ -82,8 +154,98 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 	pmpro_set_session_var( 'pmpro_cloudflare_turnstile_validated', true );
 	return $okay;
 }
+
+// Validate checkout and billing yo!
+function pmpro_cloudflare_validate_turnstile_at_checkout( $okay ) {
+	// If checkout is already halted, bail.
+	if ( ! $okay ) {
+		return $okay;
+	}
+
+	// Let's validate the Turnstile and return a message or not.
+	$okay = pmpro_cloudflare_turnstile_validation();
+	if ( ! $okay ) {
+		// If the validation failed, set the error message.
+		pmpro_setMessage( __( 'Please complete the security check.', 'paid-memberships-pro' ), 'pmpro_error' );
+		return $okay;
+	}
+
+	return $okay;
+
+}
 add_action( 'pmpro_checkout_checks', 'pmpro_cloudflare_turnstile_validation' );
 add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validation' );
+
+/**
+ * Default login validation check for CloudFlare Turnstile. This runs after default login checks (username and password).
+ *
+ * @since TBD
+ * 
+ * @param WP_User|WP_Error $user
+ * @param string $captcha
+ * @return WP_User|WP_Error
+ */
+function pmpro_cloudflare_default_login_validation( $user, $captcha ) {
+	if ( $captcha == 'turnstile' && pmpro_login_has_failed_attempt() ) {
+	   // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_cloudflare_turnstile_validation(); 
+		if ( ! $validated ) {	
+				$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
+	}
+
+	return $user;
+}
+add_filter( 'pmpro_authenticate_after_default_login_checks', 'pmpro_cloudflare_default_login_validation', 10, 2 );
+
+/**
+ * Reset password validation check for CloudFlare Turnstile.
+ *
+ * @since TBD
+ * 
+ * @param WP_User|WP_Error $user
+ * @param string $captcha
+ * @return void
+ */
+function pmpro_cloudflare_password( $user, $captcha ) {
+	//Check if Turnstile has been filled in
+	if ( $captcha == 'turnstile' ) {
+	   // Validate the reCAPTCHA response here. If it's empty, assume it failed.
+		$validated = pmpro_cloudflare_turnstile_validation(); 
+		if ( ! $validated ) {	
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
+	}
+
+	return $user;
+}
+add_filter( 'pmpro_password_reset_captcha_check', 'pmpro_cloudflare_password', 10, 2 );
+
+/**
+ * Lost password validation check for CloudFlare Turnstile.
+ *
+ * @since TBD
+ * 
+ * @param WP_Error $errors
+ * @param string $captcha
+ * @return WP_Error|void
+ */
+function pmpro_cloudflare_lostpassword_validation( $errors, $captcha ) {
+	//Check if Turnstile has been filled in
+	if ( $captcha == 'turnstile' ) {
+		$validated = pmpro_cloudflare_turnstile_validation(); 
+		if ( ! $validated ) {	
+				$errors = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+		}
+
+		// Remove session data to reset turnstile validation.
+		pmpro_unset_session_var( 'pmpro_turnstile_validated' );
+
+	}
+
+	return $errors;
+}
+add_filter( 'pmpro_lostpassword_submission_check', 'pmpro_cloudflare_lostpassword_validation', 10, 2 );
 
 /**
  * CloudFlare Turnstile Security Settings
@@ -92,31 +254,20 @@ add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validatio
  */
 function pmpro_cloudflare_turnstile_settings() {
 	// Get the options
-	$cloudflare_turnstile  = get_option( 'pmpro_cloudflare_turnstile', '0' );
+	$cloudflare_turnstile  = pmpro_captcha();
 	$cloudflare_site_key = get_option( 'pmpro_cloudflare_turnstile_site_key', '' );
 	$cloudflare_secret_key = get_option( 'pmpro_cloudflare_turnstile_secret_key', '' );
 
 	// If CloudFlare Turnstile is not enabled, hide some settings by default.
-	$tr_style = empty( $cloudflare_turnstile ) ? 'display: none;' : '';
+	$tr_style = ( $cloudflare_turnstile !== 'turnstile' ) ? 'display: none;' : '';
 
 	// Output settings
-	?>
-	<tr>
-		<th scope="row" valign="top">
-			<label for="cloudflare_turnstile"><?php esc_html_e( 'Use CloudFlare Turnstile?', 'paid-memberships-pro' ); ?></label>
-		</th>
-		<td>
-			<select id="cloudflare_turnstile" name="cloudflare_turnstile">
-				<option value="0" <?php selected( $cloudflare_turnstile, 0 ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-				<option value="1" <?php selected( $cloudflare_turnstile, 1 ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
-			</select>
-			<p class="description"><?php esc_html_e( 'A free CloudFlare Turnstile key is required.', 'paid-memberships-pro' ); ?> <a href="https://www.cloudflare.com/products/turnstile/" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Click here to signup for CloudFlare Turnstile', 'paid-memberships-pro' ); ?></a>.</p>
-		</td>
-	</tr>
-   <tr class='pmpro_cloudflare_turnstile_settings' style='<?php esc_attr_e( $tr_style ); ?>'>
+	?>	
+    <tr class='pmpro_cloudflare_turnstile_settings' style='<?php esc_attr_e( $tr_style ); ?>'>
 		<th scope="row"><label for="cloudflare_turnstile_site_key"><?php esc_html_e( 'Turnstile Site Key', 'paid-memberships-pro' ); ?>:</label></th>
 		<td>
 			<input type="text" id="cloudflare_turnstile_site_key" name="cloudflare_turnstile_site_key" value="<?php echo esc_attr( $cloudflare_site_key ); ?>" class="regular-text code" />
+            <p class="description"><?php esc_html_e( 'A free CloudFlare Turnstile key is required.', 'paid-memberships-pro' ); ?> <a href="https://www.cloudflare.com/products/turnstile/" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Click here to signup for CloudFlare Turnstile', 'paid-memberships-pro' ); ?></a>.</p>
 		</td>
 	</tr>
 	<tr class='pmpro_cloudflare_turnstile_settings' style='<?php esc_attr_e( $tr_style ); ?>'>
@@ -127,8 +278,8 @@ function pmpro_cloudflare_turnstile_settings() {
 	</tr>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery('#cloudflare_turnstile').change(function() {
-				if(jQuery(this).val() == '1') {
+			jQuery('#captcha').change(function() {
+				if(jQuery(this).val() == 'turnstile') {
 					jQuery('.pmpro_cloudflare_turnstile_settings').show();
 				} else {
 					jQuery('.pmpro_cloudflare_turnstile_settings').hide();
@@ -172,7 +323,7 @@ function pmpro_cloudflare_turnstile_get_error_message() {
 }
 
 /**
- * Clear the CloudFlare Turnstile session variable after checkout.
+ * Clear the CloudFlare Turnstile session variable after checkout or billing update.
  * @since 3.3.3
  */
 function pmpro_after_checkout_reset_cloudflare_turnstile() {
@@ -180,3 +331,4 @@ function pmpro_after_checkout_reset_cloudflare_turnstile() {
 }
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
 add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
+add_action( 'wp_login', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
