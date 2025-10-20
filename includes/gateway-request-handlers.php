@@ -52,6 +52,9 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	// Store the old next payment date for the subscription for later.
 	$old_next_payment_date = $subscription->get_next_payment_date();
 
+	// Check if this subscription has pending payments.
+	$has_pending_payments = ! empty( $subscription->get_orders( array( 'status' => 'pending', 'limit' => 1 ) ) );
+
 	// Mark the PMPro_Subscription as cancelled (also clears the next payment date).
 	$subscription->set( 'status', 'cancelled' );
 	$subscription->save();
@@ -84,8 +87,8 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 
 	// Check if we want to try to extend the user's membership to the next payment date.
 	if ( apply_filters( 'pmpro_cancel_on_next_payment_date', true, $subscription->get_membership_level_id(), $user->ID ) ) {
-		// Check if $old_next_payment_date is in the future.
-		if ( ! empty( $old_next_payment_date ) && $old_next_payment_date > current_time( 'timestamp' ) ) {
+		// Check if $old_next_payment_date is in the future or if we have pending payments.
+		if ( ( ! empty( $old_next_payment_date ) && $old_next_payment_date > current_time( 'timestamp' ) ) || $has_pending_payments ) {
 			// Set the enddate to the next payment date.
 			pmpro_set_expiration_date( $user->ID, $subscription->get_membership_level_id(), $old_next_payment_date );
 
