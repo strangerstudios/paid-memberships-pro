@@ -973,7 +973,7 @@ function pmpro_password_reset_captcha( $errors, $user ) {
 	 * 
 	 * @since TBD
 	 *
-	 * @param WP_User|WP_Error $user The WP_User object if validation passed, otherwise a WP_Error object with the error.
+	 * @param WP_User|false $user The WP_User object if validation passed, otherwise false if user doesn't exist.
 	 * @param string $captcha The type of captcha being used. Either 'recaptcha', 'turnstile', or empty string if no captcha.
 	 */
 	$user = apply_filters( 'pmpro_password_reset_captcha_check', $user, pmpro_captcha() );
@@ -982,9 +982,11 @@ function pmpro_password_reset_captcha( $errors, $user ) {
 	if ( ! empty( $user ) && is_wp_error( $user ) ) {
 		$error = $user->get_error_code();
 
+		pmpro_login_track_failed_attempt(); // Sets a temporary transient to track failed login attempts by IP address, used by captchas.
+
 		if ( $error ) {
 			$error_args = array(
-						'action' => 'reset_pass',
+						'action' => urlencode( $_REQUEST['action'] ),
 						'errors' => urlencode( $error ),
 			);	
 			wp_redirect( add_query_arg( $error_args, $redirect_url ) );

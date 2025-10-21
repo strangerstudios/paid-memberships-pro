@@ -325,6 +325,7 @@ function pmpro_validate_recaptcha( $response ) {
 
 	// An empty response means the user did not complete the reCAPTCHA challenge.
 	if ( empty( $response ) ) {
+		pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
 		return false;
 	}
 
@@ -339,6 +340,7 @@ function pmpro_validate_recaptcha( $response ) {
 		pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
 		return true;
 	} else {
+		pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
 		return false;
 	}
 
