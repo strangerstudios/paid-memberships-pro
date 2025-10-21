@@ -197,42 +197,13 @@ function pmpro_password_reset_form_recaptcha( $user, $captcha ) {
 		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
 		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
 		if ( ! $validated ) {	
-				$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
+			$user = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
 		}
 	}
 
 	return $user;
 }
 add_action( 'pmpro_password_reset_captcha_check', 'pmpro_password_reset_form_recaptcha', 10, 2 );
-
-/**
- * Catpcha validation check for lost password form.
- *
- * @param [type] $error
- * @param [type] $args
- * @return void
- */
-function pmpro_lostpassword_captcha_validation( $error, $captcha ) {
-	
-	//Check if reCAPTCHA has been filled in, assume they hit submit if we have a $password value.
-	if ( $captcha == 'recaptcha' ) {
-		$recaptcha_response = pmpro_getParam( 'g-recaptcha-response' );
-		
-		// Validate the reCAPTCHA response here. If it's empty, assume it failed.
-		$validated = pmpro_validate_recaptcha( $recaptcha_response ); 
-		if ( ! $validated ) {	
-				$error = new WP_Error( 'captcha-failed', wp_kses( __( '<strong>Error:</strong> Captcha verification failed. Please try again.', 'paid-memberships-pro' ), array( 'strong' => array() ) ) );		
-		}
-
-		// Remove session data to reset because the page is going to redirect anyway.
-		pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
-
-	}
-
-	return $error;
-}
-add_filter( 'pmpro_lostpassword_submission_check', 'pmpro_lostpassword_captcha_validation', 10, 2 );
-
 
 /**
  * Adds reCAPTCHA to the PMPro login form

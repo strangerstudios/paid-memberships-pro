@@ -943,7 +943,7 @@ add_filter( 'login_message', 'pmpro_captcha_failed_wp_login_error_message' );
  * 
  * @since TBD
  */
-function pmpro_password_reset_captcha() {
+function pmpro_password_reset_captcha( $errors, $user ) {
 
 	// No action parameter found, let's bail.
 	if ( empty( $_REQUEST['action'] ) ) {
@@ -951,7 +951,7 @@ function pmpro_password_reset_captcha() {
 	}
 
 	// lostpassword is used for the WP password reset page. Otherwise we're using PMPro's password reset
-	if ( $_REQUEST['action'] == 'lostpassword' ) {
+	if ( (int) $_REQUEST['pmpro_login_form_used'] !== 1 ) {
 		$redirect_to = isset( $_REQUEST['redirect_to'] ) ? $_REQUEST['redirect_to'] : '';
 		$redirect_url = wp_lostpassword_url( $redirect_to );
 	} else {
@@ -995,7 +995,7 @@ function pmpro_password_reset_captcha() {
 		}
 	}
 }
-add_action( 'lostpassword_post', 'pmpro_password_reset_captcha', 20 );
+add_action( 'lostpassword_post', 'pmpro_password_reset_captcha', 20, 2 );
 
 /**
  * Function to handle the actually password reset and update password.
