@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 3.5.992
+Stable tag: 3.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,7 +210,7 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
-= 3.6 RC2 - 2025-10-17 =
+= 3.6 - 2025-10-21 =
 * FEATURE: Added compatibility with WP Fusion Lite. #3461 (@jarrydlong)
 * ENHANCEMENT: Added a new admin “view order” page before the “edit” step. #3467 (@kimcoleman)
 * ENHANCEMENT: Now saving orders in `pending` status when a Stripe or PayPal recurring payment fails. #3491 (@dparker1005)
@@ -225,20 +225,18 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Updated Stripe API version to 2025-09-30.clover. #3459 (@dparker1005)
 * ENHANCEMENT: Improved styling of “file” type user fields. #3498 (@kimcoleman)
 * ENHANCEMENT: Added a new function `pmpro_get_gateway_nicename()` to retrieve a gateway's nicename by its slug. #3508 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Fixes member list exports including “expired” in the file name when exporting “old members”. #3500 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Added Brazil to the list of countries that do not allow Stripe Connect application fees. #3490 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Optimized queries when showing “old members” on the Members List. #3494 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Now hiding links from the Account page if the linked page is not set. #3516 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Now saving the Stripe invoice ID as the PMPro order’s payment transaction ID whenever an invoice is generated in Stripe. #3464 (@dparker1005)
+* BUG FIX: Fixed an issue where incorrect tax values may be set on orders when using Stripe Checkout. #3489 (@dparker1005)
+* BUG FIX: Adding back the !!membership_id!! email template variable to the “admin_cancel” email template. #3503 (@kimcoleman)
+* BUG FIX: Fixed localization in the email header and footer templates. #3492 (@dwanjuki)
 * BUG FIX: Fixed an issue where LifterLMS access plans meta boxes may still show when streamline is enabled. #3439 (@kimcoleman)
 * REFACTOR: Added abstracted functions for processing recurring successful and failed payments during webhook/IPN handlers. #3491 (@dparker1005)
 * REFACTOR: Created a new class `PMPro_AddOns` for managing Add Ons. #3488, #3497 (@dalemugford)
 * REFACTOR: Added an abstracted function `pmpro_update_post_level_restrictions()` for setting the level restrictions for a post. #3462 (@dparker1005)
-
-= Next Release - TBD =
-* BUG FIX/ENHANCEMENT: Fixes member list exports including “expired” in the file name when exporting “old members”. #3500 (@andrewlimaza)
-* BUG FIX/ENHANCEMENT: Added Brazil to the list of countries that do not allow Stripe Connect application fees. #3490 (@dparker1005)
-* BUG FIX/ENHANCEMENT: Optimized queries when showing “old members” on the Members List. #3494 (@dparker1005)
-* BUG FIX: Fixed an issue where incorrect tax values may be set on orders when using Stripe Checkout. #3489 (@dparker1005)
-* BUG FIX: Adding back the !!membership_id!! email template variable to the “admin_cancel” email template. #3503 (@kimcoleman)
-* BUG FIX: Fixed localization in the email header and footer templates. #3492 (@dwanjuki)
 
 = 3.5.6 - 2025-09-10 =
 * ENHANCEMENT: Added styles for frontend tables with data filter options. #3482 (@kimcoleman)
