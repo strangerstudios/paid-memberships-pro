@@ -321,10 +321,13 @@ function pmpro_is_consent_current( $entry ) {
  * @param MemberOrder $order The order object being edited.
  */
 function pmpro_show_tos_log_on_view_order_page( $order ) {
-	$tospage_id = get_option( 'pmpro_tospage' );
-	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
+	// Return early if no TOS page is set.
+	if ( empty( get_option( 'pmpro_tospage' ) ) ) {
+		return;
+	}
 
-	if ( ! empty( $tospage_id ) || ! empty( $consent_entry ) ) {
+	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
+	if ( ! empty( $consent_entry ) ) {
 		?>
 		<div id="pmpro_order-tos-consent"  class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
@@ -335,11 +338,7 @@ function pmpro_show_tos_log_on_view_order_page( $order ) {
 			</div>
 			<div class="pmpro_section_inside">
 				<?php
-					if( ! empty( $consent_entry ) ) {
-						echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-					} else {
-						esc_html_e( 'N/A', 'paid-memberships-pro' );
-					}
+					echo esc_html( pmpro_consent_to_text( $consent_entry ) );
 				?>
 			</div>
 		</div>
@@ -356,20 +355,19 @@ add_action( 'pmpro_after_order_view_main', 'pmpro_show_tos_log_on_view_order_pag
  * @param MemberOrder $order The order object being edited.
  */
 function pmpro_show_tos_log_on_edit_order_page( $order ) {
-	$tospage_id = get_option( 'pmpro_tospage' );
-	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
+	// Return early if no TOS page is set.
+	if ( empty( get_option( 'pmpro_tospage' ) ) ) {
+		return;
+	}
 
-	if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
+	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
+	if ( ! empty( $consent_entry ) ) {
 		?>
 		<tr>
 			<th scope="row" valign="top"><label for="tos_consent"><?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?></label></th>
 			<td id="tos_consent">
 				<?php
-					if( !empty( $consent_entry ) ) {
-						echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-					} else {
-						esc_html_e( 'N/A', 'paid-memberships-pro' );
-					}
+					echo esc_html( pmpro_consent_to_text( $consent_entry ) );
 				?>
 			</td>
 		</tr>
