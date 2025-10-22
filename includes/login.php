@@ -736,7 +736,7 @@ function pmpro_lost_password_redirect() {
 
 	$errors = retrieve_password();
 	if ( is_wp_error( $errors ) ) {
-		$redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( 'reset_pass' ) ), $redirect_url );
+		$redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( $_REQUEST['action'] ) ), $redirect_url );
 	} else {
 		$redirect_url = add_query_arg( array( 'checkemail' => urlencode( 'confirm' ) ), $redirect_url );
 	}
@@ -955,16 +955,11 @@ function pmpro_password_reset_captcha( $errors, $user ) {
 		$redirect_to = isset( $_REQUEST['redirect_to'] ) ? $_REQUEST['redirect_to'] : '';
 		$redirect_url = wp_lostpassword_url( $redirect_to );
 	} else {
-		$redirect_url = pmpro_lostpassword_url(); 
+		$redirect_url = add_query_arg( array( 'action' => 'reset_pass' ), pmpro_login_url() );
 	}
 
 	// Don't run on WooCommerce pages.
 	if ( ! empty( $_POST['woocommerce-lost-password-nonce'] ) ) {
-		return;
-	}
-
-	// Do not process this unless we know it's been submitted.
-	if ( empty( $_POST['user_login'] ) ) {
 		return;
 	}
 
