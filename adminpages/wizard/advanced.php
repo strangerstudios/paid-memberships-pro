@@ -14,7 +14,7 @@ $wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
 			<p><?php esc_html_e( 'Configure advanced settings relating to your membership site. You can configure additional settings later.', 'paid-memberships-pro' ); ?></p>
 		</div>		
 		<div class="pmpro-wizard__field">
-			<label for ="updatemanager" class="pmpro-wizard__label-block">
+			<label for="updatemanager" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Install Update Manager', 'paid-memberships-pro' ); ?>
 			</label>
 			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'The Update Manager is a required plugin that enables automatic updates for Paid Memberships Pro and its Add Ons, delivered securely from our official license server.', 'paid-memberships-pro' ); ?></p>
