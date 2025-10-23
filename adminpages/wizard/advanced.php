@@ -13,6 +13,7 @@ $wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
 			<h2><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h2>
 			<p><?php esc_html_e( 'Configure advanced settings relating to your membership site. You can configure additional settings later.', 'paid-memberships-pro' ); ?></p>
 		</div>		
+		<?php if ( ! defined( 'PMPROUM_VERSION' ) ) : ?>
 		<div class="pmpro-wizard__field">
 			<label for="updatemanager" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Install Update Manager', 'paid-memberships-pro' ); ?>
@@ -23,6 +24,7 @@ $wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
 				<option value="1"><?php esc_html_e( 'No - I\'ll install and activate it manually later.', 'paid-memberships-pro' ); ?></option>
 			</select><br><br>
 		</div>
+		<?php endif; ?>
 		<div class="pmpro-wizard__field">
 			<label for="filterqueries" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Filter searches and archives?', 'paid-memberships-pro' ); ?>
