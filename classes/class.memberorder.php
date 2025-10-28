@@ -1962,4 +1962,25 @@
 			 */
 			return apply_filters( 'pmpro_order_formatted_tax', $formatted_tax, $this );
 		}
+
+		/**
+		 * Add a new entry to the order notes.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $note The note to add.
+		 */
+		public function add_order_note( $note ) {
+			// Sanitize the note.
+			// Use wp_kses_post() if you want default post tags; otherwise keep $allowedposttags.
+			global $allowedposttags;
+			$note = wp_kses( $note, $allowedposttags );
+
+			// Append the note with site-local timestamp.
+			$now_local = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
+			$this->notes .= ( empty( $this->notes ) ? '' : "\n\n" ) . $now_local . ': ' . $note;
+
+			// Trim whitespace.
+			$this->notes = trim( $this->notes );
+		}
 	} // End of Class
