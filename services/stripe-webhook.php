@@ -248,7 +248,7 @@
 				if ( $pmpro_stripe_event->data->object->amount_refunded < $pmpro_stripe_event->data->object->amount ) {
 					$logstr .= sprintf( 'Webhook: Order ID %1$s with transaction ID %2$s was partially refunded. The order will need to be updated in the WP dashboard.', $morder->id, $payment_transaction_id );
 
-					$morder->add_order_note( sprintf( 'Webhook: Order ID %1$s was partially refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+					$morder->add_order_note( sprintf( 'Webhook: Order ID %1$s was partially refunded for transaction ID %2$s at the gateway.', $morder->id, $payment_transaction_id ) );
 					$morder->SaveOrder();
 					pmpro_stripeWebhookExit();
 				}
@@ -259,7 +259,7 @@
 				$logstr .= sprintf( 'Webhook: Order ID %1$s successfully refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id );
 
 				// Add to order notes.
-				$morder->add_order_note( sprintf( 'Webhook: Order ID %1$s successfully refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+				$morder->add_order_note( sprintf( 'Webhook: Order ID %1$s successfully refunded for transaction ID %2$s at the gateway.', $morder->id, $payment_transaction_id ) );
 
 				$morder->SaveOrder();
 

@@ -334,7 +334,7 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 		if ( abs( (float)$_POST['mc_gross'] ) < (float)$morder->total ) {				
 			ipnlog( sprintf( 'IPN: Order was partially refunded on %1$s for transaction ID %2$s at the gateway. The order will need to be updated in the WP dashboard.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
-			$morder->add_order_note( sprintf( 'IPN: Order was partially refunded on %1$s for transaction ID %2$s at the gateway. The order will need to be updated in the WP dashboard.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+			$morder->add_order_note( sprintf( 'IPN: Order was partially refunded for transaction ID %1$s at the gateway. The order will need to be updated in the WP dashboard.', $payment_transaction_id ) );
 			$morder->SaveOrder();
 			pmpro_ipnExit();
 		}
@@ -342,7 +342,7 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 		// Full refund.
 		$morder->status = 'refunded';
 
-		$morder->add_order_note( sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+		$morder->add_order_note( sprintf( 'IPN: Order successfully refunded for transaction ID %1$s at the gateway.', $payment_transaction_id ) );
 
 		ipnlog( sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
