@@ -95,7 +95,7 @@ if ( $nonceokay ) {
 			$order_id = absint( wp_unslash( $_REQUEST['id'] ?? 0 ) );
 			$note = isset( $_POST['notes'] ) ? wp_unslash( $_POST['notes'] ) : '';
 
-			if ( $order_id && $raw_note !== '' ) {
+			if ( $order_id && $note !== '' ) {
 				$order = new MemberOrder( $order_id );
 				if ( ! empty( $order->id ) ) {
 					// Add the note.
