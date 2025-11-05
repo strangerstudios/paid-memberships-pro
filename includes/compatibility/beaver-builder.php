@@ -10,6 +10,15 @@ function pmpro_beaver_builder_compatibility() {
 add_action( 'init', 'pmpro_beaver_builder_compatibility' );
 
 /**
+ * When in Beaver Builder editing mode, remove the PMPro content filter
+ * to avoid conflicts while editing.
+ */
+function pmpro_beaver_builder_fl_builder_editing_enabled() {
+	remove_filter('the_content', 'pmpro_membership_content_filter', 15);
+}
+add_action( 'fl_builder_editing_enabled', 'pmpro_beaver_builder_fl_builder_editing_enabled' );
+
+/**
  * Add PMPro to row settings.
  *
  * @param array  $form Row form settings.
