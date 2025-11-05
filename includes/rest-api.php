@@ -1272,7 +1272,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 
 			// Set the cache before returning.
-			set_transient( 'pmpro_rest_api_customer_info_' . md5( $user_email ), $data, 10 * MINUTE_IN_SECONDS );
+			set_transient( 'pmpro_rest_api_customer_info_' . md5( $user_email ), $data, HOUR_IN_SECONDS );
 
 			return new WP_REST_Response( $data, 200 );
 
