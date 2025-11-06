@@ -657,7 +657,7 @@ function pmpro_report_sales_page()
 			<input type="date" id="custom_start_date" name="custom_start_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( $startdate ); ?>" />
 			<span class="pmpro_report-filter-text pmpro-sales-report-custom"><?php esc_html_e('to', 'paid-memberships-pro' )?></span>
 			<label for="custom_end_date" class="screen-reader-text pmpro-sales-report-custo"><?php esc_html_e( 'Select report end date', 'paid-memberships-pro' ); ?></label>
-			<input type="date" id="custom_end_date" name="custom_end_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( $enddate ); ?>" />
+			<input type="date" id="custom_end_date" name="custom_end_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( ! empty( $enddate ) ? date_i18n( 'Y-m-d', strtotime( $enddate ) ) : '' ); ?>" />
 			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 			<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
 			<select id="level" name="level[]" multiple>
@@ -801,7 +801,11 @@ function pmpro_report_sales_page()
 
 			var stacked = <?php echo $new_renewals === 'new_renewals' ? 'true' : 'false'; ?>;
 			var isSalesCount = <?php echo $type === 'sales' ? 'true' : 'false'; ?>;
-			var currencySymbol = <?php echo wp_json_encode( $pmpro_currency_symbol ?? '' ); ?>;
+			// Decode any HTML entities in the currency symbol (e.g. '&#36;' -> '$')
+			<?php
+				$pmpro_currency_symbol_decoded = html_entity_decode( $pmpro_currency_symbol ?? '', ENT_QUOTES, 'UTF-8' );
+			?>
+			var currencySymbol = <?php echo wp_json_encode( $pmpro_currency_symbol_decoded ); ?>;
 			var title = pmpro_report_title_sales();
 
 			var cfg = {
