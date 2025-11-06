@@ -14,7 +14,7 @@ add_action( 'init', 'pmpro_beaver_builder_compatibility' );
  * to avoid conflicts while editing.
  */
 function pmpro_beaver_builder_fl_builder_editing_enabled() {
-	remove_filter('the_content', 'pmpro_membership_content_filter', 15);
+	remove_filter( 'the_content', 'pmpro_membership_content_filter', 15 );
 }
 add_action( 'fl_builder_editing_enabled', 'pmpro_beaver_builder_fl_builder_editing_enabled' );
 
