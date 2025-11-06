@@ -82,9 +82,6 @@ if ( $report_exists ) { ?>
 	<form id="pmpro-reports-form" method="post" action="admin-post.php">
 
 		<div class="dashboard-widgets-wrap">
-			<div class="reports-widget-left">
-				testing
-			</div>
 			<div id="dashboard-widgets" class="metabox-holder">
 
 				<div id="postbox-container-1" class="postbox-container">

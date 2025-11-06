@@ -1,1 +1,33 @@
 /* Temporary home for new reports CSS */
+
+.pmpro_chart_area {
+	background-color: #FFF;
+	border: 1px solid var(--pmpro--border--color);
+	border-radius: var(--pmpro--border--radius);
+	box-shadow: var(--pmpro--box-shadow);
+	clear: both;
+	margin: var(--pmpro--spacing--medium) 0;
+	padding: 0 var(--pmpro--spacing--medium);
+}
+
+.pmpro_chart_area rect[stroke-opacity] {
+	stroke-width: 0 !important;
+}
+
+.pmpro_chart_area canvas {
+	margin: var(--pmpro--spacing--small) auto;
+	max-width: 100%;
+}
+
+/* Stabilize Chart.js canvas sizing to avoid resize loops */
+.pmpro_chart_area .pmpro-chart-container {
+	contain: layout paint size;
+	height: 500px; /* keep chart height stable */
+	position: relative;
+	width: 100%;
+}
+.pmpro_chart_area .pmpro-chart-container > canvas {
+	display: block;
+	height: 100% !important;
+	width: 100% !important;
+}

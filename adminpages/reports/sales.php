@@ -711,8 +711,8 @@ function pmpro_report_sales_page()
 		<input type="submit" class="button button-primary action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div> <!-- end pmpro_report-filters -->
 	<div class="pmpro_chart_area">
-		<div>
-			<canvas id="pmpro-chart-sales" style="height:500px;"></canvas>
+		<div class="pmpro-chart-container">
+			<canvas id="pmpro-chart-sales"></canvas>
 		</div>
 		<div class="pmpro_chart_description"><p><center><em><?php esc_html_e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></em></center></p></div>
 	</div>
@@ -810,6 +810,7 @@ function pmpro_report_sales_page()
 				options: {
 					responsive: true,
 					maintainAspectRatio: false,
+					resizeDelay: 200,
 					plugins: {
 						legend: { position: 'bottom' },
 						title: { display: !!title, text: title, color: '#555555' },
