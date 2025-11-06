@@ -96,6 +96,7 @@ function pmpro_enqueue_scripts() {
 		wp_enqueue_style( 'select2', plugins_url('css/select2.min.css', dirname(__FILE__)), '', '4.1.0-beta.0', 'screen' );
 		wp_enqueue_script( 'select2', plugins_url('js/select2.min.js', dirname(__FILE__)), array( 'jquery' ), '4.1.0-beta.0' );
 	}
+	
 }
 add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );
 
@@ -191,5 +192,10 @@ function pmpro_admin_enqueue_scripts() {
 	if ( is_rtl() ) {
 		wp_enqueue_style( 'pmpro_admin_rtl' );
 	}
+
+	// Temporarily, let's enqueue the new reports.css file here from plugin root /css folder
+    wp_register_style( 'pmpro-reports', plugins_url( 'css/reports.css', __DIR__ ), array('pmpro_admin'), time(), 'screen' );
+	wp_enqueue_style( 'pmpro-reports' );
+
 }
 add_action( 'admin_enqueue_scripts', 'pmpro_admin_enqueue_scripts' );
