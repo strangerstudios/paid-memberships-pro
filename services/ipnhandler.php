@@ -225,7 +225,7 @@ if ( $txn_type == "recurring_payment" ) {
 				ipnlog( 'Subscription is suspended. Waiting for another IPN message to handle this.' );
 			} else {
 				// Subscription is not suspended. Send failed payment email.
-				pmpro_ipnFailedPayment( $last_subscription_order );
+				pmpro_ipnFailedPayment( $subscription );
 			}
 		} else {
 			ipnlog( 'Payment status is ' . $payment_status . '.' );
@@ -672,62 +672,22 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
 /*
 	Send an email RE a failed payment.
-	$last_order passed in is the previous order for this subscription.
+	$subscription The subscription that had the failed payment or the last order for the subscription (legacy).
 */
-function pmpro_ipnFailedPayment( $last_order ) {
-	//hook to do other stuff when payments fail
-	do_action( "pmpro_subscription_payment_failed", $last_order );
-
-	// Get the subscription object.
-	$subscription = $last_order->get_subscription();
-
-	//create a blank order for the email
-	$morder          = new MemberOrder();
-	$morder->user_id = empty( $subscription ) ? $last_order->user_id : $subscription->get_user_id();
-	$morder->membership_id = empty( $subscription ) ? $last_order->membership_id : $subscription->get_membership_level_id();
-
-	$user                   = new WP_User( $morder->user_id );
-
-	//add billing information if appropriate
-	if ( $last_order->gateway == "paypal" )        //website payments pro
-	{
-		$morder->billing = new stdClass();
-		$morder->billing->name    = sanitize_text_field( $_POST['address_name'] );
-		$morder->billing->street  = sanitize_text_field( $_POST['address_street'] );
-		$morder->billing->city    = sanitize_text_field( $_POST['address_city '] );
-		$morder->billing->state   = sanitize_text_field( $_POST['address_state'] );
-		$morder->billing->zip     = sanitize_text_field( $_POST['address_zip'] );
-		$morder->billing->country = sanitize_text_field( $_POST['address_country_code'] );
-		$morder->billing->phone   = get_user_meta( $morder->user_id, "pmpro_bphone", true );
-
-		//Updates this order with the most recent orders payment method information and saves it. 
-		pmpro_update_order_with_recent_payment_method( $morder );
-	} elseif ( $last_order->gateway == "paypalexpress" ) {
-		$morder->billing = new stdClass();
-
-		$morder->billing->name    = $last_order->billing->name;
-		$morder->billing->street  = $last_order->billing->street;
-		$morder->billing->street2 = $last_order->billing->street2;
-		$morder->billing->city    = $last_order->billing->city;
-		$morder->billing->state   = $last_order->billing->state;
-		$morder->billing->zip     = $last_order->billing->zip;
-		$morder->billing->country = $last_order->billing->country;
-		$morder->billing->phone   = $last_order->billing->phone;
-		
-		//Updates this order with the most recent orders payment method information and saves it. 
-		pmpro_update_order_with_recent_payment_method( $morder );
+function pmpro_ipnFailedPayment( $subscription ) {
+	// If a "last order" was passed, get the subscription object.
+	if ( is_a( $subscription, 'MemberOrder' ) ) {
+		$subscription = $subscription->get_subscription();
 	}
 
-	// Email the user and ask them to update their credit card information
-	$pmproemail = new PMProEmail();
-	$pmproemail->sendBillingFailureEmail( $user, $morder );
+	// Make sure we have a subscription.
+	if ( empty( $subscription ) ) {
+		ipnlog( "ERROR: Couldn't find subscription for failed payment." );
+		return false;
+	}
 
-	// Email admin so they are aware of the failure
-	$pmproemail = new PMProEmail();
-	$pmproemail->sendBillingFailureAdminEmail( get_bloginfo( "admin_email" ), $morder );
-
-	ipnlog( "Payment failed. Emails sent to " . $user->user_email . " and " . get_bloginfo( "admin_email" ) . "." );
-
+	// Process the failed payment.
+	ipnlog( pmpro_handle_recurring_payment_failure_at_gateway( pmpro_ipn_get_order_data( $subscription ) ) );
 	return true;
 }
 
@@ -736,108 +696,130 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	$subscription The subscription to save an order for or the last order for the subscription (legacy).
 */
 function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
-	global $wpdb;
+	// If a "last order" was passed, get the subscription object.
+	if ( is_a( $subscription, 'MemberOrder' ) ) {
+		$subscription = $subscription->get_subscription();
+	}
 
-	//check that txn_id has not been previously processed
-	$old_txn = $wpdb->get_var( $wpdb->prepare( "SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = %s LIMIT 1", $txn_id ) );
-
-	if ( empty( $old_txn ) ) {
-		// If a "last order" was passed, get the subscription object.
-		if ( is_a( $subscription, 'MemberOrder' ) ) {
-			$subscription = $subscription->get_subscription();
-		}
-
-		//save order
-		$morder                              = new MemberOrder();
-		$morder->user_id                     = $subscription->get_user_id();
-		$morder->membership_id               = $subscription->get_membership_level_id();
-		$morder->payment_transaction_id      = $txn_id;
-		$morder->subscription_transaction_id = $subscription->get_subscription_transaction_id();
-		$morder->gateway                     = $subscription->get_gateway();
-		$morder->gateway_environment         = $subscription->get_gateway_environment();
-
-		// Payment Status
-		$morder->status = 'success'; // We have confirmed that and thats the reason we are here.
-
-		if ( 'paypalexpress' === $morder->gateway ) {
-			$morder->payment_type = "PayPal Express";
-			$morder->cardtype = "";
-		}
-
-		//set amount based on which PayPal type
-		if ( false !== stripos( $morder->gateway, "paypal" ) ) {
-
-			if ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
-				$morder->total  = sanitize_text_field( $_POST['mc_gross'] );
-			} elseif ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
-				$morder->total  = sanitize_text_field( $_POST['amount'] );
-			} elseif ( isset( $_POST['payment_gross'] )  && ! empty( $_POST['payment_gross' ] ) ) {
-				$morder->total  = sanitize_text_field( $_POST['payment_gross'] );
-			}
-			
-			//check for tax
-			if ( isset( $_POST['tax'] ) && ! empty( $_POST['tax'] ) ) {
-				$morder->tax = (float) $_POST['tax'];
-				if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) && $morder->total > (float) $_POST['amount'] ) {
-					$morder->tax *= (float) $morder->total / (float) $_POST['amount'];
-				}
-				$morder->subtotal = $morder->total - $morder->tax;
-			} else {
-				$morder->tax = 0;
-				$morder->subtotal = $morder->total;
-			}
-		}
-
-		$morder->find_billing_address();
-
-		//get card info if appropriate
-		if ( $morder->gateway == "paypal" ) {   //website payments pro
-			//Updates this order with the most recent orders payment method information and saves it. 
-			pmpro_update_order_with_recent_payment_method( $morder );
-		}
-
-		//figure out timestamp or default to none (today)
-		if ( ! empty( $_POST['payment_date'] ) ) {
-			$morder->timestamp = strtotime( sanitize_text_field( $_POST['payment_date'] ) );
-		}
-
-		// Save the event ID for the last processed user/IPN (in case we want to be able to replay IPN requests)
-		$ipn_id = isset($_POST['ipn_track_id']) ? sanitize_text_field( $_POST['ipn_track_id'] ) : null;
-
-		// Allow extraction of the IPN Track ID from the order notes (if needed)
-		$morder->notes = "[IPN_ID]{$ipn_id}[/IPN_ID]";
-
-		/**
-		 * Post processing for a specific subscription related IPN event ID
-		 *
-		 * @param       string      $ipn_id     - The ipn_track_id from the PayPal IPN request
-		 * @param       MemberOrder $morder     - The completed Member Order object for the IPN request
-		 */
-		do_action('pmpro_subscription_ipn_event_processed', $ipn_id, $morder );
-
-		if ( ! is_null( $ipn_id ) ) {
-			if ( false === update_user_meta( $morder->user_id, "pmpro_last_{$morder->gateway}_ipn_id", $ipn_id )) {
-				ipnlog( "Unable to save the IPN event ID ({$ipn_id}) to usermeta for {$morder->user_id} " );
-			}
-		}
-
-		//save
-		$morder->saveOrder();
-		$morder->getMemberOrderByID( $morder->id );
-
-		//email the user their order
-		$pmproemail = new PMProEmail();
-		$pmproemail->sendInvoiceEmail( get_userdata( $morder->user_id ), $morder );
-
-		//hook for successful subscription payments
-		do_action( "pmpro_subscription_payment_completed", $morder );
-
-		ipnlog( "New order (" . $morder->code . ") created." );
-
-		return true;
-	} else {
-		ipnlog( "Duplicate Transaction ID: " . $txn_id );
-
+	// Make sure we have a subscription.
+	if ( empty( $subscription ) ) {
+		ipnlog( "ERROR: Couldn't find subscription for failed payment." );
 		return false;
 	}
+
+	// Save the event ID for the last processed user/IPN (in case we want to be able to replay IPN requests)
+	$ipn_id = isset($_POST['ipn_track_id']) ? sanitize_text_field( $_POST['ipn_track_id'] ) : null;
+
+	// Get the data that should be used to create the order.
+	$order_data = pmpro_ipn_get_order_data( $subscription );
+	$order_data['payment_transaction_id'] = $txn_id;
+	$order_data['notes'] = isset( $ipn_id ) ? "[IPN_ID]{$ipn_id}[/IPN_ID]" : '';
+
+	// Process the recurring payment.
+	ipnlog( pmpro_handle_recurring_payment_succeeded_at_gateway( $order_data ) );
+
+	// Get the MemberOrder object for the order we just created.
+	$morder = new MemberOrder();
+	$morder->getMemberOrderByPaymentTransactionID( $txn_id );
+	if ( empty( $morder ) || empty( $morder->id ) ) {
+		ipnlog( "ERROR: Could not find order just created for this recurring payment (" . $subscription->get_subscription_transaction_id() . ")." );
+		return false;
+	}
+
+	// Get card info if appropriate.
+	if ( $morder->gateway == "paypal" ) {   //website payments pro
+		//Updates this order with the most recent orders payment method information and saves it. 
+		pmpro_update_order_with_recent_payment_method( $morder );
+	}
+
+	/**
+	 * Post processing for a specific subscription related IPN event ID
+	 *
+	 * @param       string      $ipn_id     - The ipn_track_id from the PayPal IPN request
+	 * @param       MemberOrder $morder     - The completed Member Order object for the IPN request
+	 */
+	do_action('pmpro_subscription_ipn_event_processed', $ipn_id, $morder );
+
+	if ( ! is_null( $ipn_id ) ) {
+		if ( false === update_user_meta( $morder->user_id, "pmpro_last_{$morder->gateway}_ipn_id", $ipn_id )) {
+			ipnlog( "Unable to save the IPN event ID ({$ipn_id}) to usermeta for {$morder->user_id} " );
+		}
+	}
+
+	return true;
+}
+
+/**
+ * Helper function to build order data array from subscription and $_POST data.
+ *
+ * @since 3.6
+ *
+ * @param PMPro_Subscription $subscription The subscription to get recurring order data for.
+ */
+function pmpro_ipn_get_order_data( $subscription ) {
+	$order_data = array(
+		'gateway'        => $subscription->get_gateway(),
+		'gateway_environment' => $subscription->get_gateway_environment(),
+		'subscription_transaction_id' => $subscription->get_subscription_transaction_id(),
+		'timestamp' => ! empty( $_POST['payment_date'] ) ? strtotime( sanitize_text_field( $_POST['payment_date'] ) ) : current_time( 'timestamp' ),
+	);
+
+	//set amount based on which PayPal type
+	if ( false !== stripos( $order_data['gateway'], "paypal" ) ) {
+
+		if ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
+			$order_data['total']  = sanitize_text_field( $_POST['mc_gross'] );
+		} elseif ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
+			$order_data['total']  = sanitize_text_field( $_POST['amount'] );
+		} elseif ( isset( $_POST['payment_gross'] )  && ! empty( $_POST['payment_gross' ] ) ) {
+			$order_data['total']  = sanitize_text_field( $_POST['payment_gross'] );
+		}
+		
+		//check for tax
+		if ( isset( $_POST['tax'] ) && ! empty( $_POST['tax'] ) ) {
+			$order_data['tax'] = (float) $_POST['tax'];
+			if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) && $order_data['total'] > (float) $_POST['amount'] ) {
+				$order_data['tax'] *= (float) $order_data['total'] / (float) $_POST['amount'];
+			}
+			$order_data['subtotal'] = $order_data['total'] - $order_data['tax'];
+		} else {
+			$order_data['tax'] = 0;
+			$order_data['subtotal'] = $order_data['total'];
+		}
+	}
+
+	// Get the most recent order so that we can copy the billing info.
+	$sub_orders = $subscription->get_orders(
+		array(
+			'limit' => 1,
+			'status' => 'success',
+		)
+	);
+	if ( ! empty( $sub_orders ) ) {
+		$last_order = $sub_orders[0];
+
+		// Copy billing address info.
+		if ( ! empty( $last_order->billing ) ) {
+			$order_data['billing'] = new stdClass();
+			$order_data['billing']->name    = $last_order->billing->name;
+			$order_data['billing']->street  = $last_order->billing->street;
+			$order_data['billing']->street2 = $last_order->billing->street2;
+			$order_data['billing']->city    = $last_order->billing->city;
+			$order_data['billing']->state   = $last_order->billing->state;
+			$order_data['billing']->zip     = $last_order->billing->zip;
+			$order_data['billing']->country = $last_order->billing->country;
+			$order_data['billing']->phone   = $last_order->billing->phone;
+		}
+
+		// Copy payment method info.
+		$order_data['payment_type'] = empty( $last_order->payment_type ) ? '' : $last_order->payment_type;
+		$order_data['cardtype'] = empty( $last_order->cardtype ) ? '' : $last_order->cardtype;
+		$order_data['accountnumber'] = empty( $last_order->accountnumber ) ? '' : $last_order->accountnumber;
+		$order_data['expirationmonth'] = empty( $last_order->expirationmonth ) ? '' : $last_order->expirationmonth;
+		$order_data['expirationyear' ] = empty( $last_order->expirationyear ) ? '' : $last_order->expirationyear;
+	} elseif ( 'paypalexpress' === $order_data['gateway'] ) {
+		$order_data['payment_type'] = 'PayPal Express';
+	}
+
+	return $order_data;
 }

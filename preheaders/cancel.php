@@ -75,13 +75,14 @@
 
 			$worked = true;
 			foreach($old_level_ids as $old_level_id) {
-				// If the user does have a subscription for this level (possibly multiple), get the furthest next payment date that is after today.
+				// If the user does have a subscription for this level (possibly multiple), get the furthest next payment date that is after today
+				// making sure that there are no "pending" orders representing missed payments.
 				$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID, (int)$old_level_id );
 				$next_payment_date = false;
 				if ( ! empty( $subscriptions ) ) {
 					foreach ( $subscriptions as $sub ) {
 						$sub_next_payment_date = $sub->get_next_payment_date();
-						if ( ! empty( $sub_next_payment_date ) && $sub_next_payment_date > current_time( 'timestamp' ) && ( empty( $next_payment_date ) || $sub_next_payment_date > $next_payment_date ) ) {
+						if ( ! empty( $sub_next_payment_date ) && $sub_next_payment_date > current_time( 'timestamp' ) && ( empty( $next_payment_date ) || $sub_next_payment_date > $next_payment_date ) && empty( $sub->get_orders( array( 'status' => 'pending', 'limit' => 1 ) ) ) ) {
 							$next_payment_date = $sub_next_payment_date;
 						}
 					}

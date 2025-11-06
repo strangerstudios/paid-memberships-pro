@@ -142,7 +142,7 @@ function pmpro_print_root_color_values() {
 	--pmpro--color--border--variation: hsl( $base_hsl_parts );
 }";
 
-	echo '<style id="pmpro_colors">' . $css . '</style>';
+	echo '<style id="pmpro_colors">' . esc_html( $css ) . '</style>';
 }
 add_action( 'wp_head', 'pmpro_print_root_color_values' );
 

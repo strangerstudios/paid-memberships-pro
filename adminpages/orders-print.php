@@ -13,13 +13,13 @@ if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_op
 }
 
 // Do we have an order ID?
-if ( empty( $_REQUEST['order'] ) ) {
+if ( empty( $_REQUEST['id'] ) ) {
 	wp_redirect( admin_url( 'admin.php?page=pmpro-orders' ) );
 	exit;
 }
 
 // Get order, user, and membership level.
-$order = new MemberOrder( intval( $_REQUEST['order'] ) );
+$order = new MemberOrder( intval( $_REQUEST['id'] ) );
 $order->getUser();
 $level = $order->getMembershipLevel();
 

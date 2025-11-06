@@ -165,7 +165,7 @@ function pmpro_style_variation_item_preview_html() { ?>
 		</div>
 		<div class="pmpro_style_variation_item-preview-actions">
 			<span class="pmpro_card_action"><?php esc_html_e( 'Action Link', 'paid-memberships-pro' ); ?></span>
-			<span class="pmpro_card_action_separator"><?php echo pmpro_actions_nav_separator(); ?></span>
+			<span class="pmpro_card_action_separator"><?php echo esc_html( pmpro_actions_nav_separator() ); ?></span>
 			<span class="pmpro_card_action"><?php esc_html_e( 'Action Link', 'paid-memberships-pro' ); ?></span>
 		</div>
 	</div>

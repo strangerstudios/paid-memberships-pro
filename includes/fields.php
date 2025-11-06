@@ -228,10 +228,10 @@ function pmpro_display_fields_in_group( $group, $scope = 'checkout' ) {
 		'after_tos_fields',
 	);
 	if ( ! in_array( $group, $valid_groups ) ) {
-		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The group %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $group, __FUNCTION__ ), '2.9.3' );
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The group %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), esc_html( $group ), __FUNCTION__ ), '2.9.3' );
 	}
 	if ( $scope !== 'checkout' ) {
-		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The scope %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), $scope, __FUNCTION__ ), '2.9.3' );
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The scope %s should not be passed into %s. Use PMPro_Field_Group::display() instead.', 'paid-memberships-pro' ), esc_html( $scope ), __FUNCTION__ ), '2.9.3' );
 	}
 
     // Get the field group.

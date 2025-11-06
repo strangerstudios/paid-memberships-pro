@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.5.6
+ * Version: 3.6
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.5.6' );
+define( 'PMPRO_VERSION', '3.6' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -40,17 +40,19 @@ require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// depreca
 require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
-	require_once( PMPRO_DIR . '/includes/license.php' );            		// defines location of addons data and licenses
+	require_once( PMPRO_DIR . '/includes/license.php' );            			// defines location of addons data and licenses
 }
 
-require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       		// class to process and save orders
-require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        		// setup and filter emails sent by PMPro
+require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       			// class to process and save orders
+require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        			// setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
-require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
+require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );	// setup the admin activity email
 
+//  Add On Management
+require_once( PMPRO_DIR . '/classes/class-pmpro-addons.php' );        			// the PMPro Add On Management class
 
 // New in 3.5: We now use Action Scheduler instead of WP Cron.
 if ( ! class_exists( \ActionScheduler::class ) ) {
@@ -186,6 +188,22 @@ add_action( 'plugins_loaded', function() {
 
 } );
 
+// Add On Management (Deprecated in 3.6, to be removed in 4.0.0)
+require_once( PMPRO_DIR . '/includes/addons.php' );
+
+// Add On Management: Ensure AJAX endpoints are available during admin-ajax requests even if no instance has been created.
+add_action( 'init', function () {
+	$addons_instance = PMPro_AddOns::instance(); // Set up filters.
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		// If any of our handlers are already present, skip.
+		if ( has_action( 'pmpro_addon_install' ) ) {
+			return;
+		}
+		$addons_instance->register_ajax_endpoints();
+	}
+} );
+
+
 /*
 	Setup the DB and check for upgrades
 */
@@ -195,9 +213,6 @@ global $wpdb;
 if ( is_admin() || defined('WP_CLI') ) {
 	pmpro_checkForUpgrades();
 }
-
-// load plugin updater
-require_once( PMPRO_DIR . '/includes/addons.php' );
 
 /*
 	Definitions
@@ -243,6 +258,26 @@ function pmpro_gateways() {
 	}
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );
+}
+
+/**
+ * Returns the gateway nicename.
+ * Used for outputting the gateway's label value for customers.
+ * 
+ * @since TBD
+ * 
+ * @param string $gateway The gateway's internal slug (i.e. paypalexpress).
+ * @return string The gateway's nicename (i.e. PayPal Express).
+ */
+function pmpro_get_gateway_nicename( $gateway ) {
+	$gateways = pmpro_gateways();
+	if ( array_key_exists( $gateway, $gateways ) ) {
+		$gateway_nicename =  $gateways[ $gateway ];
+	} else {
+		$gateway_nicename = ucwords( $gateway );
+	}
+
+	return $gateway_nicename;
 }
 
 

@@ -129,6 +129,7 @@ function pmpro_admin_enqueue_scripts() {
                         plugins_url( 'js/pmpro-admin.js', dirname(__FILE__) ),
                         array( 'jquery', 'jquery-ui-sortable', 'select2' ),
                         PMPRO_VERSION );
+
     $all_levels = pmpro_getAllLevels( true, true );
     $all_level_values_and_labels = array();
     foreach( $all_levels as $level ) {
@@ -158,7 +159,7 @@ function pmpro_admin_enqueue_scripts() {
 			'user_fields_blank_group' => $empty_field_group_html,
 			'user_fields_blank_field' => $empty_field_html,
 			// We want the core WP translation so we can check for it in JS.
-			'plugin_updated_successfully_text' => __( 'Plugin updated successfully.' ),
+			'plugin_updated_successfully_text' => __( 'Plugin updated successfully.', 'paid-memberships-pro' ),
 		)
 	);
 	wp_enqueue_script( 'pmpro_admin' );

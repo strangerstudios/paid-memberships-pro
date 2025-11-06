@@ -261,7 +261,7 @@ class PMPro_Site_Health {
 			}
 
 			if ( $api ) {
-				$gateway_text .= ' (' . __( 'API Keys', ' paid-memberships-pro' ) . ')';
+				$gateway_text .= ' (' . __( 'API Keys', 'paid-memberships-pro' ) . ')';
 				return $gateway_text . ' [' . $gateway . ':api-keys ]';
 			}
 
@@ -577,7 +577,7 @@ class PMPro_Site_Health {
 
 	function get_add_ons_with_incorrect_folder_name() {
 		// Get the current list of Add Ons with the wrong name.
-		$incorrect_folder_names = pmpro_get_add_ons_with_incorrect_folder_names();
+		$incorrect_folder_names = PMPro_AddOns::instance()->get_add_ons_with_incorrect_folder_names();
 
 		// Build error messages for each Add On with the wrong name.
 		$errors = array();

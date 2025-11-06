@@ -52,6 +52,9 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	// Store the old next payment date for the subscription for later.
 	$old_next_payment_date = $subscription->get_next_payment_date();
 
+	// Check if this subscription has pending payments.
+	$has_pending_payments = ! empty( $subscription->get_orders( array( 'status' => 'pending', 'limit' => 1 ) ) );
+
 	// Mark the PMPro_Subscription as cancelled (also clears the next payment date).
 	$subscription->set( 'status', 'cancelled' );
 	$subscription->save();
@@ -84,8 +87,8 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 
 	// Check if we want to try to extend the user's membership to the next payment date.
 	if ( apply_filters( 'pmpro_cancel_on_next_payment_date', true, $subscription->get_membership_level_id(), $user->ID ) ) {
-		// Check if $old_next_payment_date is in the future.
-		if ( ! empty( $old_next_payment_date ) && $old_next_payment_date > current_time( 'timestamp' ) ) {
+		// Check if $old_next_payment_date is in the future and that we don't have pending payments.
+		if ( ! empty( $old_next_payment_date ) && $old_next_payment_date > current_time( 'timestamp' ) && ! $has_pending_payments ) {
 			// Set the enddate to the next payment date.
 			pmpro_set_expiration_date( $user->ID, $subscription->get_membership_level_id(), $old_next_payment_date );
 
@@ -118,6 +121,177 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	return 'Cancelled membership for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '.';
 }
 
+/**
+ * Handle successful recurring payment IPN/webhook requests from gateways.
+ *
+ * @since 3.6
+ *
+ * @param array  $order_data An array of order data.
+ *
+ * @return string Entry to add to IPN/webhook log.
+ */
+function pmpro_handle_recurring_payment_succeeded_at_gateway( $order_data ) {
+	// Get subscription info from order data.
+	$subscription_transaction_id = isset( $order_data['subscription_transaction_id'] ) ? $order_data['subscription_transaction_id'] : '';
+	$gateway = isset( $order_data['gateway'] ) ? $order_data['gateway'] : '';
+	$gateway_environment = isset( $order_data['gateway_environment'] ) ? $order_data['gateway_environment'] : '';
+
+	// Find subscription.
+	$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_transaction_id, $gateway, $gateway_environment );
+	if ( empty( $subscription ) ) {
+		// The subscription does not exist on this site. Bail.
+		return 'ERROR: Could not find this subscription associated with a successful payment (subscription_transaction_id=' . $subscription_transaction_id . ').';
+	}
+
+	// Get the user associated with the subscription.
+	$user = get_userdata( $subscription->get_user_id() );
+	if ( empty( $user ) ) {
+		// The user for this subscription does not exist
+		return 'ERROR: Could not process successful payment. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscription_transaction_id . '.';
+	}
+
+	// Check if we have an existing order for this subscription and payment_transaction_id.
+	$existing_orders = $subscription->get_orders(
+		array(
+			'payment_transaction_id' => isset( $order_data['payment_transaction_id'] ) ? $order_data['payment_transaction_id'] : '',
+			'limit' => 1,
+		)
+	);
+
+	// Get the existing order or build a new one.
+	if ( ! empty( $existing_orders ) ) {
+		$order = current( $existing_orders );
+
+		// If this order is already succcessful, we have already processed this payment.
+		if ( 'success' === $order->status ) {
+			return 'We have already processed this payment. ( Order ID #' . $order->id . ')';
+		}
+	} else {
+		// Also check for any pending orders that don't have a payment_transaction_id.
+		// This could happen for PayPal Express payment failures, for example.
+		$existing_orders = $subscription->get_orders(
+			array(
+				'status' => 'pending',
+				'payment_transaction_id' => '',
+				'limit' => 1,
+			)
+		);
+		if ( ! empty( $existing_orders ) ) {
+			$order = current( $existing_orders );
+		} else {
+			$order = new MemberOrder();
+		}
+	}
+
+	// Make sure that we have the correct information for this subscription on the order.
+	$order_data['user_id'] = $user->ID;
+	$order_data['membership_id'] = $subscription->get_membership_level_id();
+	$order_data['gateway'] = $gateway;
+	$order_data['gateway_environment'] = $gateway_environment;
+	$order_data['subscription_transaction_id'] = $subscription_transaction_id;
+	$order_data['status'] = 'success';
+
+	// Update the order data.
+	foreach ( $order_data as $k => $v ) {
+		// Check if the property exists on the order object.
+		if ( property_exists( $order, $k ) ) {
+			$order->$k = $v;
+		}
+	}
+	$order->saveOrder();
+
+	do_action('pmpro_subscription_payment_completed', $order);
+
+	// Email the user their order.
+	$pmproemail = new PMProEmail();
+	$pmproemail->sendInvoiceEmail($user, $order);
+
+	return 'Created new order with ID #' . $order->id . '.';
+}
+
+/**
+ * Handle payment failure IPN/webhook requests from gateways.
+ *
+ * @since 3.6
+ *
+ * @param array  $order_data An array of order data.
+ *
+ * @return string Entry to add to IPN/webhook log.
+ */
+function pmpro_handle_recurring_payment_failure_at_gateway( $order_data ) {
+	// Get subscription info from order data.
+	$subscription_transaction_id = isset( $order_data['subscription_transaction_id'] ) ? $order_data['subscription_transaction_id'] : '';
+	$gateway = isset( $order_data['gateway'] ) ? $order_data['gateway'] : '';
+	$gateway_environment = isset( $order_data['gateway_environment'] ) ? $order_data['gateway_environment'] : '';
+
+	// Find subscription.
+	$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_transaction_id, $gateway, $gateway_environment );
+	if ( empty( $subscription ) ) {
+		// The subscription does not exist on this site. Bail.
+		return 'ERROR: Could not find this subscription associated with a failed payment (subscription_transaction_id=' . $subscription_transaction_id . ').';
+	}
+
+	// Get the user associated with the subscription.
+	$user = get_userdata( $subscription->get_user_id() );
+	if ( empty( $user ) ) {
+		// The user for this subscription does not exist
+		return 'ERROR: Could not process failed payment. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscription_transaction_id . '.';
+	}
+
+	// Check if we have an existing pending order for this subscription and payment_transaction_id.
+	$existing_orders = $subscription->get_orders(
+		array(
+			'status' => 'pending',
+			'payment_transaction_id' => isset( $order_data['payment_transaction_id'] ) ? $order_data['payment_transaction_id'] : '',
+			'limit' => 1,
+		)
+	);
+
+	// Get the existing order or build a new one.
+	if ( ! empty( $existing_orders ) ) {
+		$order = current( $existing_orders );
+	} else {
+		$order = new MemberOrder();
+	}
+
+	// Make sure that we have the correct information for this subscription on the order.
+	$order_data['user_id'] = $user->ID;
+	$order_data['membership_id'] = $subscription->get_membership_level_id();
+	$order_data['gateway'] = $gateway;
+	$order_data['gateway_environment'] = $gateway_environment;
+	$order_data['subscription_transaction_id'] = $subscription_transaction_id;
+	$order_data['status'] = 'pending';
+
+
+	// Update the order data.
+	foreach ( $order_data as $k => $v ) {
+		// Check if the property exists on the order object.
+		if ( property_exists( $order, $k ) ) {
+			$order->$k = $v;
+		}
+	}
+	$order->saveOrder();
+
+	/**
+	 * Run additional code when a subscription payment fails.
+	 *
+	 * @since 3.6 $order has been updated from passing an old successful order to the current pending order.
+	 *
+	 * @param MemberOrder $order The Member Order that has failed.
+	 */
+	do_action( 'pmpro_subscription_payment_failed', $order );
+
+	// Email the user and ask them to update their credit card information
+	$pmproemail = new PMProEmail();
+	$pmproemail->sendBillingFailureEmail($user, $order);
+
+	// Email admin so they are aware of the failure
+	$pmproemail = new PMProEmail();
+	$pmproemail->sendBillingFailureAdminEmail(get_bloginfo("admin_email"), $order);
+
+	return 'Processed failed payment for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '. Order id = ' . $order->id . '.';
+}
+		
 /**
  * Get the most recent order's payment method information and assign
  * it to the order provided where possible

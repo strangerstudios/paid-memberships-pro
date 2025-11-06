@@ -151,7 +151,7 @@ function pmpro_admin_title( $admin_title, $title ) {
 			$title = sprintf( __( 'Edit Member: %s', 'paid-memberships-pro' ), $user->display_name );
 		}
 		/* translators: Edit/Add Member Admin screen title. 1: Screen name, 2: Site name. */
-		$admin_title = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress' ), $title, get_bloginfo( 'name' ) );
+		$admin_title = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress', 'paid-memberships-pro' ), $title, get_bloginfo( 'name' ) );
 	}
 	return $admin_title;
 }
@@ -387,7 +387,7 @@ function pmpro_admin_init_redirect_single_item_edit() {
 	// Edit Order redirect.
 	if ( $pmpro_admin_page == 'pmpro-orders' ) {
 		// If the order they are trying to edit does not exist, redirect them to the orders list.
-		if ( ! empty( $_REQUEST['order'] ) && $_REQUEST['order'] > 0 && empty( MemberOrder::get_order( $_REQUEST['order'] ) ) ) {
+		if ( ! empty( $_REQUEST['id'] ) && $_REQUEST['id'] > 0 && empty( MemberOrder::get_order( $_REQUEST['id'] ) ) ) {
 			wp_redirect( add_query_arg( array( 'page' => 'pmpro-orders' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
