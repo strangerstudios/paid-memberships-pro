@@ -1,5 +1,9 @@
 /* Temporary home for new reports CSS */
 
+.pmpro_admin-pmpro-reports #posts-filter {
+	margin-top: var(--pmpro--spacing--small);
+}
+
 /* New Chart.js Area Styles */
 .pmpro_chart_area {
 	background-color: #FFF;
@@ -47,7 +51,6 @@
 	flex-wrap: nowrap;
 	gap: var(--pmpro--spacing--small);
 	margin: 0;
-	padding: calc( var(--pmpro--spacing--medium) / 2 );
 }
 
 .pmpro_report-filters h3 {
