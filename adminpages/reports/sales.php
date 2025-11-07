@@ -716,6 +716,59 @@ function pmpro_report_sales_page() {
 			<input type="submit" class="button button-primary action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
 		</div> <!-- end pmpro_report-filters -->
 		<div class="pmpro_chart_area">
+			<?php
+				// Build dynamic chart features based on current dataset and filters.
+				$sum_total = 0.0;
+				$sum_renewals = 0.0;
+				if ( ! empty( $dates ) ) {
+					foreach ( $dates as $date_key => $row ) {
+						$val = isset( $row->value ) ? (float) $row->value : 0;
+						$ren = isset( $row->renewals ) ? (float) $row->renewals : 0;
+						$sum_total += $val;
+						$sum_renewals += $ren;
+					}
+				}
+				$sum_new = max( 0, $sum_total - $sum_renewals );
+				$show_money = ( 'sales' !== $type ); // revenue shows currency, sales shows counts.
+				$format_value = function( $v ) use ( $show_money ) {
+					return $show_money ? pmpro_formatPrice( $v ) : number_format_i18n( (float) $v );
+				};
+
+				$cards = array();
+				$cards[] = array(
+					'key'   => 'total',
+					'label' => $show_money ? __( 'Total Revenue', 'paid-memberships-pro' ) : __( 'Total Signups', 'paid-memberships-pro' ),
+					'value' => $sum_total,
+				);
+				if ( 'only_renewals' !== $new_renewals ) {
+					$cards[] = array(
+						'key'   => 'total-new',
+						'label' => $show_money ? __( 'Total New', 'paid-memberships-pro' ) : __( 'New Signups', 'paid-memberships-pro' ),
+						'value' => $sum_new,
+					);
+				}
+				if ( 'only_new' !== $new_renewals ) {
+					$cards[] = array(
+						'key'   => 'total-renewals',
+						'label' => $show_money ? __( 'Total Renewals', 'paid-memberships-pro' ) : __( 'Renewals', 'paid-memberships-pro' ),
+						'value' => $sum_renewals,
+					);
+				}
+				$cards[] = array(
+					'key'   => 'average',
+					'label' => $show_money ? __( 'Average', 'paid-memberships-pro' ) : __( 'Average Signups', 'paid-memberships-pro' ),
+					'value' => isset( $average ) ? (float) $average : 0,
+				);
+			?>
+			<div class="chart-features">
+				<?php foreach ( $cards as $card ) : ?>
+					<div class="chart-feature feature-<?php echo esc_attr( $card['key'] ); ?>">
+						<span class="chart-feature-label"><?php echo esc_html( $card['label'] ); ?></span>
+						<span class="chart-feature-value"><?php echo esc_html( $format_value( $card['value'] ) ); ?></span>
+					</div>
+				<?php endforeach; ?>
+			</div>
+
 			<div class="pmpro-chart-container">
 				<canvas id="pmpro-chart-sales"></canvas>
 			</div>
@@ -826,15 +879,44 @@ function pmpro_report_sales_page() {
 						responsive: true,
 						maintainAspectRatio: false,
 						resizeDelay: 200,
+						// Show combined tooltip lines for all datasets at an index (not just hovered segment).
+						interaction: { mode: 'index', intersect: false },
 						plugins: {
 							legend: { position: 'bottom' },
 							title: { display: !!title, text: title, color: '#555555' },
 							tooltip: {
+								// Ensure stacked bars list each dataset value and then append a Total line.
 								callbacks: {
 									label: function(ctx){
 										var v = ctx.parsed.y;
 										if (isNaN(v)) return '';
-										return ' ' + ctx.dataset.label + ': ' + (isSalesCount ? (window.pmproCharts ? pmproCharts.formatNumber(v) : v) : (window.pmproCharts ? pmproCharts.formatCurrency(v, currencySymbol) : (currencySymbol + v)));
+										var formatted = isSalesCount ? (window.pmproCharts ? pmproCharts.formatNumber(v) : v) : (window.pmproCharts ? pmproCharts.formatCurrency(v, currencySymbol) : (currencySymbol + v));
+										return ' ' + ctx.dataset.label + ': ' + formatted;
+									},
+									afterBody: function(items){
+										// Aggregate totals similar to previous Google Charts tooltip.
+										var renewalVal = 0, newVal = 0, previousVal = 0, averageVal = 0;
+										items.forEach(function(it){
+											var label = it.dataset.label.toLowerCase();
+											var val = it.parsed.y || 0;
+											if (label.indexOf('renewal') !== -1) renewalVal += val;
+											else if (label.indexOf('new') !== -1) newVal += val;
+											else if (label.indexOf('previous') !== -1) previousVal += val;
+											else if (label.indexOf('average') !== -1) averageVal += val;
+										});
+										var lines = [];
+										var format = function(v){ return isSalesCount ? (window.pmproCharts ? pmproCharts.formatNumber(v) : v) : (window.pmproCharts ? pmproCharts.formatCurrency(v, currencySymbol) : (currencySymbol + v)); };
+										// Add total (new + renewals) if we have at least one of them and user wants both or only one.
+										if ((renewalVal + newVal) > 0) {
+											lines.push('Total: ' + format(renewalVal + newVal));
+										}
+										if (previousVal > 0) {
+											lines.push('Previous Period Total: ' + format(previousVal));
+										}
+										if (averageVal > 0) {
+											lines.push('Average: ' + format(averageVal));
+										}
+										return lines;
 									}
 								}
 							}

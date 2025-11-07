@@ -5,6 +5,31 @@
 }
 
 /* New Chart.js Area Styles */
+.chart-features {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1%;
+	justify-items: center;
+	margin: var(--pmpro--spacing--small) 0;
+}
+
+.chart-feature {
+	border-radius: 4px;
+	background-color: var(--pmpro--color--blue-lightest);
+	border: 1px solid var(--pmpro--border--color);
+	text-align: center;
+	justify-content: center;
+	/* align content in the vertical center */
+	display: flex;
+	flex-direction: column;
+	justify-items: center;
+	align-items: center;
+	flex: 1 0 20%;
+	min-width: 120px;
+	min-height: 120px;
+}
+
 .pmpro_chart_area {
 	background-color: #FFF;
 	border: 1px solid var(--pmpro--border--color);
@@ -27,7 +52,7 @@
 /* Stabilize Chart.js canvas sizing to avoid resize loops */
 .pmpro_chart_area .pmpro-chart-container {
 	contain: layout paint size;
-	height: 500px; /* keep chart height stable */
+	height: 450px; /* keep chart height stable */
 	position: relative;
 	width: 100%;
 }
