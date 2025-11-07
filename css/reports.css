@@ -1,6 +1,6 @@
 /* Temporary home for new reports CSS */
 
-/* Chart.js Area Styles */
+/* New Chart.js Area Styles */
 .pmpro_chart_area {
 	background-color: #FFF;
 	border: 1px solid var(--pmpro--border--color);
@@ -33,8 +33,6 @@
 	width: 100% !important;
 }
 
-/**************/
-
 /**
  * Reports admin area
  */
@@ -44,15 +42,11 @@
 
 .pmpro_report-filters {
 	align-items: start;
-	background-color: #FFF;
-	border: 1px solid var(--pmpro--border--color);
-	border-radius: var(--pmpro--border--radius);
-	box-shadow: var(--pmpro--box-shadow);
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
 	gap: var(--pmpro--spacing--small);
-	margin: 1em 0;
+	margin: 0;
 	padding: calc( var(--pmpro--spacing--medium) / 2 );
 }
 
@@ -62,44 +56,107 @@
 }
 
 .pmpro_report-filters .tablenav.top  {
-	align-items: start;
 	display: flex;
-	flex-wrap: wrap;
-	gap: .5em;
+	align-items: flex-start;
+	flex-direction: column;
+	gap: 3px;
 	height: auto;
 	margin: 0;
 	padding: 0;
 }
 
-.pmpro_report-filters .tablenav.top .pmpro_report-filter-text {
-	line-height: 30px;
+/* Make all controls full-width and stacked nicely */
+.pmpro_report-filters .tablenav.top select,
+.pmpro_report-filters .tablenav.top input[type="date"],
+.pmpro_report-filters .tablenav.top .select2-container {
+	width: 100% !important;
 }
 
-.pmpro_report-filters .select2-container .select2-selection--multiple {
-	min-height: auto;
-}
-
+/* Select2 appearance: match native selects and handle multiple selections */
+.pmpro_report-filters .select2-container--default .select2-selection--single,
 .pmpro_report-filters .select2-container--default .select2-selection--multiple {
-	border-color: #8c8f94;
+	border: 1px solid #8c8f94;
+	border-radius: var(--pmpro--border--radius, 4px);
+	color: #2c3338;
+	background-color: #fff;
 }
-
-.pmpro_report-filters .select2-container--default .select2-selection--multiple .select2-selection__rendered li {
-	margin: 0;
+.pmpro_report-filters .select2-container--default .select2-selection--single {
+	height: 30px;
+	display: flex;
+	align-items: center;
+	/* padding: 0 10px; */
 }
-
-.pmpro_report-filters .select2-container--default .select2-selection--multiple li.select2-selection__choice {
-	margin: 3px 3px 0 0;
-}
-
-.pmpro_report-filters .select2-container--default .select2-search--inline .select2-search__field {
+.pmpro_report-filters .select2-container--default .select2-selection--single .select2-selection__rendered {
 	line-height: 1.4;
-	min-height: auto;
+	color: #2c3338;
+	padding-left: 0;
 }
-
-.pmpro_report-filters .select2-container--default .select2-search--inline .select2-search__field::placeholder {
+.pmpro_report-filters .select2-container--default .select2-selection--single .select2-selection__placeholder {
+	color: #2c3338;
+	opacity: .85;
+}
+.pmpro_report-filters .select2-container--default .select2-selection--single .select2-selection__arrow {
+	height: 100%;
+	right: 8px;
+}
+.pmpro_report-filters .select2-container--default .select2-selection--multiple {
+	min-height: 40px;
+	/* padding: 4px 8px; */
+}
+.pmpro_report-filters .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+.pmpro_report-filters .select2-container--default .select2-selection--multiple .select2-selection__choice {
+	display: block;
+	/* width: 100%; */
+	/* margin: 4px 0 0 0; */
+	/* padding: 6px 8px; */
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
 	color: #2c3338;
 }
+.pmpro_report-filters .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+	float: right;
+	margin-left: 8px;
+	color: #50575e;
+}
+.pmpro_report-filters .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+	/* width: 100% !important; */
+	min-height: 28px;
+	/* margin-top: 6px; */
+}
+.pmpro_report-filters .select2-container--default.select2-container--focus .select2-selection--multiple,
+.pmpro_report-filters .select2-container--default.select2-container--open .select2-selection--single,
+.pmpro_report-filters .select2-container--default .select2-selection--single:focus {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+	outline: 2px solid transparent;
+}
 
+.pmpro_report-filters .select2-selection__rendered li {
+	display: inline-block !important;
+	width: calc(100% - 15px);
+	margin: 0 2px;
+}
+
+/* Ensure label text spans occupy their own line, and have breathing room */
+.pmpro_report-filters .tablenav.top .pmpro_report-filter-text {
+	display: block;
+	line-height: 1.4;
+	margin-top: var(--pmpro--spacing--small);
+	margin-bottom: var(--pmpro--spacing--small);
+}
+
+/* Generate Report button: make full-width and anchor toward bottom */
+.pmpro_report-filters input[type="submit"].button {
+	justify-self: start;
+    margin-top: var(--pmpro--spacing--medium);
+}
+
+/* Big screens */
 @media only screen and (min-width: 1500px) {
     #wpbody-content .pmpro_admin-pmpro-reports #dashboard-widgets .postbox-container {
         width: 50%
@@ -109,6 +166,29 @@
         width: 50%;
     }
 }
+
+/* Small screens */
+@media screen and (max-width: 767px) {
+	/* Add the box, border and white background on mobile */
+	.pmpro_report-filters {
+		background-color: #FFF;
+		border: 1px solid var(--pmpro--border--color);
+		border-radius: var(--pmpro--border--radius);
+		box-shadow: var(--pmpro--box-shadow);
+	}
+
+	/* Change the flow to  */
+	.pmpro_report-filters .tablenav.top  {
+		align-items: stretch;
+		display: flex;
+		flex-direction: row;
+		gap: var(--pmpro--spacing--small);
+		height: auto;
+		margin: 0;
+		padding: 0;
+	}
+}
+
 
 /* Reports individual page view styles */
 #visits-views-logins-form {
@@ -226,4 +306,25 @@ button.pmpro_report_th_closed:before {
 
 .pmpro_table_area tfoot th {
 	font-weight: 700;
+}
+
+/* --- Sales report: two-column layout (filters left, chart right) --- */
+/* Scope to PMPro reports page only to avoid affecting other admin forms */
+@media screen and (min-width: 768px) {
+	.pmpro_admin-pmpro-reports #posts-filter {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--pmpro--spacing--medium);
+	}
+
+	.pmpro_admin-pmpro-reports #posts-filter .pmpro_report-filters {
+		/* Left panel: fixed-ish width, does not grow */
+		flex: 0 0 220px;
+	}
+
+	.pmpro_admin-pmpro-reports #posts-filter .pmpro_chart_area {
+		/* Right panel: takes remaining space */
+		flex: 1 1 auto;
+		margin-top: 0; /* align tops when in row layout */
+	}
 }

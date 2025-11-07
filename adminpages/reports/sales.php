@@ -615,321 +615,330 @@ function pmpro_report_sales_page() {
 	);
 	$csv_export_link = add_query_arg( $args, admin_url( 'admin-ajax.php' ) );
 	?>
-	<form id="posts-filter" method="get" action="">
+
 	<h1 class="wp-heading-inline">
 		<?php esc_html_e('Sales and Revenue', 'paid-memberships-pro' );?>
 	</h1>
 	<?php if ( current_user_can( 'pmpro_sales_report_csv' ) ) { ?>
 		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<?php } ?>
-	<div class="pmpro_report-filters">
-		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
-		<div class="tablenav top">
-			<span class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></span>
-			<label for="period" class="screen-reader-text"><?php esc_html_e( 'Select report time period', 'paid-memberships-pro' ); ?></label>
-			<select id="period" name="period">
-				<option value="daily" <?php selected($period, "daily");?>><?php esc_html_e('Daily', 'paid-memberships-pro' );?></option>
-				<option value="monthly" <?php selected($period, "monthly");?>><?php esc_html_e('Monthly', 'paid-memberships-pro' );?></option>
-				<option value="annual" <?php selected($period, "annual");?>><?php esc_html_e('Annual', 'paid-memberships-pro' );?></option>
-				<option value='7days' <?php selected( $period, '7days' ); ?>><?php esc_html_e( 'Last 7 Days', 'paid-memberships-pro' ); ?></option>
-				<option value='30days' <?php selected( $period, '30days' ); ?>><?php esc_html_e( 'Last 30 Days', 'paid-memberships-pro' ); ?></option>
-				<option value='12months' <?php selected( $period, '12months' ); ?>><?php esc_html_e( 'Last 12 Months', 'paid-memberships-pro' ); ?></option>
-				<option value='custom' <?php selected( $period, 'custom' ); ?>><?php esc_html_e( 'Custom Range', 'paid-memberships-pro' ); ?></option>
-			</select>
-			<label for="type" class="screen-reader-text"><?php esc_html_e( 'Select report type', 'paid-memberships-pro' ); ?></label>
-			<select id="type" name="type">
-				<option value="revenue" <?php selected($type, "revenue");?>><?php esc_html_e('Revenue', 'paid-memberships-pro' );?></option>
-				<option value="sales" <?php selected($type, "sales");?>><?php esc_html_e('Sales', 'paid-memberships-pro' );?></option>
-			</select>
-			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
-			<label for="month" class="screen-reader-text"><?php esc_html_e( 'Select report month', 'paid-memberships-pro' ); ?></label>
-			<select id="month" name="month">
-				<?php for($i = 1; $i < 13; $i++) { ?>
-					<option value="<?php echo esc_attr( $i );?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
-				<?php } ?>
-			</select>
-			<label for="year" class="screen-reader-text"><?php esc_html_e( 'Select report year', 'paid-memberships-pro' ); ?></label>
-			<select id="year" name="year">
-				<?php for($i = $thisyear; $i > 2007; $i--) { ?>
-					<option value="<?php echo esc_attr( $i );?>" <?php selected($year, $i);?>><?php echo esc_html( $i );?></option>
-				<?php } ?>
-			</select>
-			<span class="pmpro_report-filter-text pmpro-sales-report-custom"><?php esc_html_e('from', 'paid-memberships-pro' )?></span>
-			<label for="custom_start_date" class="screen-reader-text pmpro-sales-report-custo"><?php esc_html_e( 'Select report start date', 'paid-memberships-pro' ); ?></label>
-			<input type="date" id="custom_start_date" name="custom_start_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( $startdate ); ?>" />
-			<span class="pmpro_report-filter-text pmpro-sales-report-custom"><?php esc_html_e('to', 'paid-memberships-pro' )?></span>
-			<label for="custom_end_date" class="screen-reader-text pmpro-sales-report-custo"><?php esc_html_e( 'Select report end date', 'paid-memberships-pro' ); ?></label>
-			<input type="date" id="custom_end_date" name="custom_end_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( ! empty( $enddate ) ? date_i18n( 'Y-m-d', strtotime( $enddate ) ) : '' ); ?>" />
-			<span id="for" class="pmpro_report-filter-text"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
-			<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
-			<select id="level" name="level[]" multiple>
+
+	<form id="posts-filter" method="get" action="">
+
+		<div class="pmpro_report-filters">
+			<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
+			<div class="tablenav top">
+				<span class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></span>
+				<label for="period" class="screen-reader-text"><?php esc_html_e( 'Select report time period', 'paid-memberships-pro' ); ?></label>
+				<select id="period" name="period">
+					<option value="daily" <?php selected($period, "daily");?>><?php esc_html_e('Daily', 'paid-memberships-pro' );?></option>
+					<option value="monthly" <?php selected($period, "monthly");?>><?php esc_html_e('Monthly', 'paid-memberships-pro' );?></option>
+					<option value="annual" <?php selected($period, "annual");?>><?php esc_html_e('Annual', 'paid-memberships-pro' );?></option>
+					<option value='7days' <?php selected( $period, '7days' ); ?>><?php esc_html_e( 'Last 7 Days', 'paid-memberships-pro' ); ?></option>
+					<option value='30days' <?php selected( $period, '30days' ); ?>><?php esc_html_e( 'Last 30 Days', 'paid-memberships-pro' ); ?></option>
+					<option value='12months' <?php selected( $period, '12months' ); ?>><?php esc_html_e( 'Last 12 Months', 'paid-memberships-pro' ); ?></option>
+					<option value='custom' <?php selected( $period, 'custom' ); ?>><?php esc_html_e( 'Custom Range', 'paid-memberships-pro' ); ?></option>
+				</select>
+				<label for="type" class="screen-reader-text"><?php esc_html_e( 'Select report type', 'paid-memberships-pro' ); ?></label>
+				<select id="type" name="type">
+					<option value="revenue" <?php selected($type, "revenue");?>><?php esc_html_e('Revenue', 'paid-memberships-pro' );?></option>
+					<option value="sales" <?php selected($type, "sales");?>><?php esc_html_e('Sales', 'paid-memberships-pro' );?></option>
+				</select>
+				<span id="for" class="pmpro_report-filter-text"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
+				<label for="month" class="screen-reader-text"><?php esc_html_e( 'Select report month', 'paid-memberships-pro' ); ?></label>
+				<select id="month" name="month">
+					<?php for($i = 1; $i < 13; $i++) { ?>
+						<option value="<?php echo esc_attr( $i );?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
+					<?php } ?>
+				</select>
+				<label for="year" class="screen-reader-text"><?php esc_html_e( 'Select report year', 'paid-memberships-pro' ); ?></label>
+				<select id="year" name="year">
+					<?php for($i = $thisyear; $i > 2007; $i--) { ?>
+						<option value="<?php echo esc_attr( $i );?>" <?php selected($year, $i);?>><?php echo esc_html( $i );?></option>
+					<?php } ?>
+				</select>
+				<span class="pmpro_report-filter-text pmpro-sales-report-custom"><?php esc_html_e('from', 'paid-memberships-pro' )?></span>
+				<label for="custom_start_date" class="screen-reader-text pmpro-sales-report-custo"><?php esc_html_e( 'Select report start date', 'paid-memberships-pro' ); ?></label>
+				<input type="date" id="custom_start_date" name="custom_start_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( $startdate ); ?>" />
+				<span class="pmpro_report-filter-text pmpro-sales-report-custom"><?php esc_html_e('to', 'paid-memberships-pro' )?></span>
+				<label for="custom_end_date" class="screen-reader-text pmpro-sales-report-custo"><?php esc_html_e( 'Select report end date', 'paid-memberships-pro' ); ?></label>
+				<input type="date" id="custom_end_date" name="custom_end_date" class="pmpro-sales-report-custom" value="<?php echo esc_attr( ! empty( $enddate ) ? date_i18n( 'Y-m-d', strtotime( $enddate ) ) : '' ); ?>" />
+				<span id="for" class="pmpro_report-filter-text"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
+				<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
+				<select id="level" name="level[]" multiple>
+					<?php
+						$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
+						$levels = pmpro_sort_levels_by_order( $levels );
+						foreach($levels as $level)
+						{
+					?>
+						<option value="<?php echo esc_attr( $level->id ); ?>" <?php if ( in_array( $level->id, $l ) ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name); ?></option>
+					<?php
+						}
+					?>
+				</select>
 				<?php
-					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
-					$levels = pmpro_sort_levels_by_order( $levels );
-					foreach($levels as $level)
-					{
-				?>
-					<option value="<?php echo esc_attr( $level->id ); ?>" <?php if ( in_array( $level->id, $l ) ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name); ?></option>
-				<?php
-					}
-				?>
-			</select>
-			<?php
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
-			$sqlQuery .= "ORDER BY id DESC ";
-			$codes = $wpdb->get_results($sqlQuery, OBJECT);
-			if ( ! empty( $codes ) ) { ?>
-			<label for="discount_code" class="screen-reader-text"><?php esc_html_e( 'Filter report by discount code', 'paid-memberships-pro' ); ?></label>
-			<select id="discount_code" name="discount_code[]" multiple>
-				<?php foreach ( $codes as $code ) { ?>
-					<option value="<?php echo esc_attr( $code->id ); ?>" <?php if ( in_array( $code->id, $discount_code ) ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $code->code ); ?></option>
+				$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+				$sqlQuery .= "ORDER BY id DESC ";
+				$codes = $wpdb->get_results($sqlQuery, OBJECT);
+				if ( ! empty( $codes ) ) { ?>
+				<label for="discount_code" class="screen-reader-text"><?php esc_html_e( 'Filter report by discount code', 'paid-memberships-pro' ); ?></label>
+				<select id="discount_code" name="discount_code[]" multiple>
+					<?php foreach ( $codes as $code ) { ?>
+						<option value="<?php echo esc_attr( $code->id ); ?>" <?php if ( in_array( $code->id, $discount_code ) ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $code->code ); ?></option>
+					<?php } ?>
+				</select>
 				<?php } ?>
-			</select>
-			<?php } ?>
-			<script>
-				// Make the level and discount code fields select2.
-				jQuery(document).ready(function() {
-					jQuery('#level').select2({
-						placeholder: '<?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?>',
-						allowClear: true,
-						width: '200px'
+				<script>
+					// Make the level and discount code fields select2.
+					jQuery(document).ready(function() {
+						jQuery('#level').select2({
+							placeholder: '<?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?>',
+							allowClear: true,
+							width: '200px'
+						});
+						jQuery('#discount_code').select2({
+							placeholder: '<?php esc_html_e( 'All Codes', 'paid-memberships-pro' ); ?>',
+							allowClear: true,
+							width: '200px'
+						});
 					});
-					jQuery('#discount_code').select2({
-						placeholder: '<?php esc_html_e( 'All Codes', 'paid-memberships-pro' ); ?>',
-						allowClear: true,
-						width: '200px'
-					});
-				});
-			</script>
-			<label for="show_parts" class="screen-reader-text"><?php esc_html_e( 'Select report data to include', 'paid-memberships-pro' ); ?></label>
-			<select id="show_parts" name="show_parts">
-				<option value='new_renewals' <?php selected( $new_renewals, 'new_renewals' ); ?> ><?php esc_html_e( 'Show New and Renewals', 'paid-memberships-pro' ); ?></option>
-				<option value='only_new' <?php selected( $new_renewals, 'only_new' ); ?> ><?php esc_html_e( 'Show Only New', 'paid-memberships-pro' ); ?></option>
-				<option value='only_renewals' <?php selected( $new_renewals, 'only_renewals' ); ?> ><?php esc_html_e( 'Show Only Renewals', 'paid-memberships-pro' ); ?></option>
-			</select>
-		</div> <!-- end tablenav -->
-		<input type="hidden" name="page" value="pmpro-reports" />
-		<input type="hidden" name="report" value="sales" />
-		<input type="submit" class="button button-primary action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
-	</div> <!-- end pmpro_report-filters -->
-	<div class="pmpro_chart_area">
-		<div class="pmpro-chart-container">
-			<canvas id="pmpro-chart-sales"></canvas>
+				</script>
+				<label for="show_parts" class="screen-reader-text"><?php esc_html_e( 'Select report data to include', 'paid-memberships-pro' ); ?></label>
+				<select id="show_parts" name="show_parts">
+					<option value='new_renewals' <?php selected( $new_renewals, 'new_renewals' ); ?> ><?php esc_html_e( 'Show New and Renewals', 'paid-memberships-pro' ); ?></option>
+					<option value='only_new' <?php selected( $new_renewals, 'only_new' ); ?> ><?php esc_html_e( 'Show Only New', 'paid-memberships-pro' ); ?></option>
+					<option value='only_renewals' <?php selected( $new_renewals, 'only_renewals' ); ?> ><?php esc_html_e( 'Show Only Renewals', 'paid-memberships-pro' ); ?></option>
+				</select>
+			</div> <!-- end tablenav -->
+			<input type="hidden" name="page" value="pmpro-reports" />
+			<input type="hidden" name="report" value="sales" />
+			<input type="submit" class="button button-primary action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
+		</div> <!-- end pmpro_report-filters -->
+		<div class="pmpro_chart_area">
+			<div class="pmpro-chart-container">
+				<canvas id="pmpro-chart-sales"></canvas>
+			</div>
+			<div class="pmpro_chart_description">
+				<p>
+					<center>
+						<em><?php esc_html_e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></em>
+					</center>
+				</p>
+			</div>
 		</div>
-		<div class="pmpro_chart_description"><p><center><em><?php esc_html_e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></em></center></p></div>
-	</div>
-	<script>
-		//update month/year when period dropdown is changed
-		jQuery(document).ready(function() {
-			jQuery('#period').on('change',function() {
-				pmpro_ShowMonthOrYear();
-			});
-		});
-
-		function pmpro_ShowMonthOrYear()
-		{
-			var period = jQuery('#period').val();
-			if(period == 'daily')
-			{
-				jQuery('#for').show();
-				jQuery('#month').show();
-				jQuery('#year').show();
-				jQuery('.pmpro-sales-report-custom').hide();
-			}
-			else if(period == 'monthly')
-			{
-				jQuery('#for').show();
-				jQuery('#month').hide();
-				jQuery('#year').show();
-				jQuery('.pmpro-sales-report-custom').hide();
-			}
-			else if ( period == 'custom' ) {
-				jQuery('.pmpro-sales-report-custom').show();
-				jQuery('#for').hide();
-				jQuery('#month').hide();
-				jQuery('#year').hide();
-			}
-			else
-			{
-				jQuery('#for').hide();
-				jQuery('#month').hide();
-				jQuery('#year').hide();
-				jQuery('.pmpro-sales-report-custom').hide();
-			}
-		}
-
-		pmpro_ShowMonthOrYear();
-
-		(function(){
-			function render(){
-				if (!window.pmproCharts) { return; }
-			// Prepare labels and datasets for Chart.js from PHP arrays
-			var labels = [
-				<?php foreach( $google_chart_row_data as $row ){ echo wp_json_encode( esc_html( $row['date'] ) ) . ",\n"; } ?>
-			];
-
-			// Build datasets based on $google_chart_column_labels
-			var datasets = [];
-			<?php
-			// Build a JS array of arrays for series values.
-			$series_values = array_fill( 0, count( $google_chart_column_labels ), array() );
-			foreach ( $google_chart_row_data as $row ) {
-				foreach ( $row['data'] as $i => $val ) {
-					$series_values[$i][] = is_numeric( $val ) ? $val : 0;
-				}
-			}
-			// Emit JS for datasets
-			foreach ( $google_chart_column_labels as $i => $label ) {
-				$values_js = wp_json_encode( array_map( 'floatval', $series_values[$i] ) );
-				// Try to map styles; if stacked new/renewals we keep bars; last dataset may be average line.
-				$is_average = ( false !== stripos( $label, 'Average' ) );
-				echo "datasets.push({ label: " . wp_json_encode( esc_html( $label ) ) . ", data: $values_js, type: '" . ( $is_average ? 'line' : 'bar' ) . "' });\n";
-			}
-			?>
-
-			// Colors and styling
-			var palette = (window.pmproCharts && pmproCharts.palette) ? pmproCharts.palette : undefined;
-			datasets = datasets.map(function(ds, idx){
-				if (ds.type === 'line') {
-					ds.borderColor = (palette && palette[idx]) || '#666';
-					ds.backgroundColor = ds.borderColor;
-					ds.fill = false; ds.tension = 0; ds.pointRadius = 0; ds.borderWidth = 2;
-				} else {
-					ds.backgroundColor = (palette && palette[idx]) || undefined;
-					ds.borderWidth = 0;
-				}
-				return ds;
+		<script>
+			//update month/year when period dropdown is changed
+			jQuery(document).ready(function() {
+				jQuery('#period').on('change',function() {
+					pmpro_ShowMonthOrYear();
+				});
 			});
 
-			var stacked = <?php echo $new_renewals === 'new_renewals' ? 'true' : 'false'; ?>;
-			var isSalesCount = <?php echo $type === 'sales' ? 'true' : 'false'; ?>;
-			// Decode any HTML entities (e.g. '&#36;' -> '$')
-			<?php
-				$pmpro_currency_symbol_decoded = html_entity_decode( $pmpro_currency_symbol ?? '', ENT_QUOTES, 'UTF-8' );
-			?>
-			var currencySymbol = <?php echo wp_json_encode( $pmpro_currency_symbol_decoded ); ?>;
-			var title = pmpro_report_title_sales();
+			function pmpro_ShowMonthOrYear()
+			{
+				var period = jQuery('#period').val();
+				if(period == 'daily')
+				{
+					jQuery('#for').show();
+					jQuery('#month').show();
+					jQuery('#year').show();
+					jQuery('.pmpro-sales-report-custom').hide();
+				}
+				else if(period == 'monthly')
+				{
+					jQuery('#for').show();
+					jQuery('#month').hide();
+					jQuery('#year').show();
+					jQuery('.pmpro-sales-report-custom').hide();
+				}
+				else if ( period == 'custom' ) {
+					jQuery('.pmpro-sales-report-custom').show();
+					jQuery('#for').hide();
+					jQuery('#month').hide();
+					jQuery('#year').hide();
+				}
+				else
+				{
+					jQuery('#for').hide();
+					jQuery('#month').hide();
+					jQuery('#year').hide();
+					jQuery('.pmpro-sales-report-custom').hide();
+				}
+			}
 
-			var cfg = {
-				type: 'bar',
-				data: { labels: labels, datasets: datasets },
-				options: {
-					responsive: true,
-					maintainAspectRatio: false,
-					resizeDelay: 200,
-					plugins: {
-						legend: { position: 'bottom' },
-						title: { display: !!title, text: title, color: '#555555' },
-						tooltip: {
-							callbacks: {
-								label: function(ctx){
-									var v = ctx.parsed.y;
-									if (isNaN(v)) return '';
-									return ' ' + ctx.dataset.label + ': ' + (isSalesCount ? (window.pmproCharts ? pmproCharts.formatNumber(v) : v) : (window.pmproCharts ? pmproCharts.formatCurrency(v, currencySymbol) : (currencySymbol + v)));
+			pmpro_ShowMonthOrYear();
+
+			(function(){
+				function render(){
+					if (!window.pmproCharts) { return; }
+				// Prepare labels and datasets for Chart.js from PHP arrays
+				var labels = [
+					<?php foreach( $google_chart_row_data as $row ){ echo wp_json_encode( esc_html( $row['date'] ) ) . ",\n"; } ?>
+				];
+
+				// Build datasets based on $google_chart_column_labels
+				var datasets = [];
+				<?php
+				// Build a JS array of arrays for series values.
+				$series_values = array_fill( 0, count( $google_chart_column_labels ), array() );
+				foreach ( $google_chart_row_data as $row ) {
+					foreach ( $row['data'] as $i => $val ) {
+						$series_values[$i][] = is_numeric( $val ) ? $val : 0;
+					}
+				}
+				// Emit JS for datasets
+				foreach ( $google_chart_column_labels as $i => $label ) {
+					$values_js = wp_json_encode( array_map( 'floatval', $series_values[$i] ) );
+					// Try to map styles; if stacked new/renewals we keep bars; last dataset may be average line.
+					$is_average = ( false !== stripos( $label, 'Average' ) );
+					echo "datasets.push({ label: " . wp_json_encode( esc_html( $label ) ) . ", data: $values_js, type: '" . ( $is_average ? 'line' : 'bar' ) . "' });\n";
+				}
+				?>
+
+				// Colors and styling
+				var palette = (window.pmproCharts && pmproCharts.palette) ? pmproCharts.palette : undefined;
+				datasets = datasets.map(function(ds, idx){
+					if (ds.type === 'line') {
+						ds.borderColor = (palette && palette[idx]) || '#666';
+						ds.backgroundColor = ds.borderColor;
+						ds.fill = false; ds.tension = 0; ds.pointRadius = 0; ds.borderWidth = 2;
+					} else {
+						ds.backgroundColor = (palette && palette[idx]) || undefined;
+						ds.borderWidth = 0;
+					}
+					return ds;
+				});
+
+				var stacked = <?php echo $new_renewals === 'new_renewals' ? 'true' : 'false'; ?>;
+				var isSalesCount = <?php echo $type === 'sales' ? 'true' : 'false'; ?>;
+				// Decode any HTML entities (e.g. '&#36;' -> '$')
+				<?php
+					$pmpro_currency_symbol_decoded = html_entity_decode( $pmpro_currency_symbol ?? '', ENT_QUOTES, 'UTF-8' );
+				?>
+				var currencySymbol = <?php echo wp_json_encode( $pmpro_currency_symbol_decoded ); ?>;
+				var title = pmpro_report_title_sales();
+
+				var cfg = {
+					type: 'bar',
+					data: { labels: labels, datasets: datasets },
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						resizeDelay: 200,
+						plugins: {
+							legend: { position: 'bottom' },
+							title: { display: !!title, text: title, color: '#555555' },
+							tooltip: {
+								callbacks: {
+									label: function(ctx){
+										var v = ctx.parsed.y;
+										if (isNaN(v)) return '';
+										return ' ' + ctx.dataset.label + ': ' + (isSalesCount ? (window.pmproCharts ? pmproCharts.formatNumber(v) : v) : (window.pmproCharts ? pmproCharts.formatCurrency(v, currencySymbol) : (currencySymbol + v)));
+									}
 								}
 							}
+						},
+						scales: {
+							x: { stacked: stacked, ticks: { color: '#555' } },
+							y: { stacked: stacked, beginAtZero: true, ticks: { color: '#555', callback: function(value){ return isSalesCount ? (window.pmproCharts ? pmproCharts.formatNumber(value) : value) : (window.pmproCharts ? pmproCharts.formatCurrency(value, currencySymbol) : (currencySymbol + value)); } } }
 						}
-					},
-					scales: {
-						x: { stacked: stacked, ticks: { color: '#555' } },
-						y: { stacked: stacked, beginAtZero: true, ticks: { color: '#555', callback: function(value){ return isSalesCount ? (window.pmproCharts ? pmproCharts.formatNumber(value) : value) : (window.pmproCharts ? pmproCharts.formatCurrency(value, currencySymbol) : (currencySymbol + value)); } } }
+					}
+				};
+
+					pmproCharts.ensure('pmpro-chart-sales', cfg);
+				}
+				if (document.readyState === 'complete') { render(); }
+				else { window.addEventListener('load', render); }
+			})();
+
+			function createCustomHTMLContent(period, renewals = false, notRenewals = false, total = false, compare = false, compare_new = false, compare_renewal = false) {
+
+				// Our return var for the Tooltip HTML.
+				var content_string;
+
+				// Start building the Tooltip HTML.
+				content_string = '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
+					'<strong>' + period + '</strong><br/>';
+				content_string += '<ul style="margin-bottom: 0px;">';
+
+				// New Sales/Revenue.
+				if ( notRenewals ) {
+					content_string += '<li><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'New:', 'paid-memberships-pro' ) ); ?> + '</span>' + notRenewals + '</li>';
+				}
+
+				// Renewal Sales/Revenue.
+				if ( renewals ) {
+					content_string += '<li><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'Renewals:', 'paid-memberships-pro' ) ); ?> + '</span>' + renewals + '</li>';
+				}
+
+				// Total Sales/Revenue.
+				if ( total ) {
+					content_string += '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'Total:', 'paid-memberships-pro' ) ); ?> + '</span>' + total + '</li>';
+				}
+
+				// Comparison Sales/Revenue.
+				if ( compare ) {
+					// Comparison Period New Sales/Revenue
+					if ( compare_new ) {
+						content_string += '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'Previous Period New:', 'paid-memberships-pro' ) ); ?> + '</span>' + compare_new + '</li>';
+					}
+
+					// Comparison Period Renewal Sales/Revenue
+					if ( compare_renewal ) {
+						content_string += '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'Previous Period Renewals:', 'paid-memberships-pro' ) ); ?> + '</span>' + compare_renewal + '</li>';
 					}
 				}
-			};
 
-				pmproCharts.ensure('pmpro-chart-sales', cfg);
+				// Finish the Tooltip HTML.
+				content_string += '</ul>' + '</div>';
+
+				// Return Tooltip HTML.
+				return content_string;
 			}
-			if (document.readyState === 'complete') { render(); }
-			else { window.addEventListener('load', render); }
-		})();
-
-		function createCustomHTMLContent(period, renewals = false, notRenewals = false, total = false, compare = false, compare_new = false, compare_renewal = false) {
-
-			// Our return var for the Tooltip HTML.
-			var content_string;
-
-			// Start building the Tooltip HTML.
-			content_string = '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
-				'<strong>' + period + '</strong><br/>';
-			content_string += '<ul style="margin-bottom: 0px;">';
-
-			// New Sales/Revenue.
-			if ( notRenewals ) {
-				content_string += '<li><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'New:', 'paid-memberships-pro' ) ); ?> + '</span>' + notRenewals + '</li>';
-			}
-
-			// Renewal Sales/Revenue.
-			if ( renewals ) {
-				content_string += '<li><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'Renewals:', 'paid-memberships-pro' ) ); ?> + '</span>' + renewals + '</li>';
-			}
-
-			// Total Sales/Revenue.
-			if ( total ) {
-				content_string += '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'Total:', 'paid-memberships-pro' ) ); ?> + '</span>' + total + '</li>';
-			}
-
-			// Comparison Sales/Revenue.
-			if ( compare ) {
-				// Comparison Period New Sales/Revenue
-				if ( compare_new ) {
-					content_string += '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'Previous Period New:', 'paid-memberships-pro' ) ); ?> + '</span>' + compare_new + '</li>';
-				}
-
-				// Comparison Period Renewal Sales/Revenue
-				if ( compare_renewal ) {
-					content_string += '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' + <?php echo wp_json_encode( esc_html__( 'Previous Period Renewals:', 'paid-memberships-pro' ) ); ?> + '</span>' + compare_renewal + '</li>';
-				}
-			}
-
-			// Finish the Tooltip HTML.
-			content_string += '</ul>' + '</div>';
-
-			// Return Tooltip HTML.
-			return content_string;
-		}
-		function pmpro_report_title_sales() {
-			<?php
-				if ( ! empty( $month ) && $period === 'daily' ) {
-					$date = date_i18n( 'F', mktime(0, 0, 0, $month, 2) ) . ' ' . $year;
-				} elseif( ! empty( $year ) && $period === 'monthly'  ) {
-					$date = $year;
-				} elseif ( $period === 'annual') {
-					$date = __( 'All Time', 'paid-memberships-pro' );
-				} else {
-					$date = '';
-				}
-
-				// Let's make the period read better.
-				if ( $period ) {
-					switch ( $period ) {
-						case '30days':
-							$period_title = __( 'Last 30 Days', 'paid-memberships-pro' );
-							break;
-						case '7days':
-							$period_title = __( 'Last 7 Days', 'paid-memberships-pro' );
-							break;
-						case '12months':
-							$period_title = __( 'Last 12 Months', 'paid-memberships-pro' );
-							break;
-						default:
-							$period_title = $period;
-							break;
+			function pmpro_report_title_sales() {
+				<?php
+					if ( ! empty( $month ) && $period === 'daily' ) {
+						$date = date_i18n( 'F', mktime(0, 0, 0, $month, 2) ) . ' ' . $year;
+					} elseif( ! empty( $year ) && $period === 'monthly'  ) {
+						$date = $year;
+					} elseif ( $period === 'annual') {
+						$date = __( 'All Time', 'paid-memberships-pro' );
+					} else {
+						$date = '';
 					}
-				}
-				
-				// Adjust the title if we have a date or not so it reads better.
-				if ( $date ) {
-					// translators: %1$s is the report period, %2$s is the report type, %3$s is the date.
-					$title = sprintf( esc_html__( '%1$s %2$s for %3$s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) );
-				} else {
-					// translators: %1$s is the report period, %2$s is the report type.
-					$title = sprintf( esc_html__( '%1$s %2$s', 'paid-memberships-pro' ) , ucwords( $period_title ), ucwords( $type ) );
 
-				}
-			?>
-			return <?php echo wp_json_encode( esc_html(  $title )  ); ?>;
-		}
-	</script>
+					// Let's make the period read better.
+					if ( $period ) {
+						switch ( $period ) {
+							case '30days':
+								$period_title = __( 'Last 30 Days', 'paid-memberships-pro' );
+								break;
+							case '7days':
+								$period_title = __( 'Last 7 Days', 'paid-memberships-pro' );
+								break;
+							case '12months':
+								$period_title = __( 'Last 12 Months', 'paid-memberships-pro' );
+								break;
+							default:
+								$period_title = $period;
+								break;
+						}
+					}
+					
+					// Adjust the title if we have a date or not so it reads better.
+					if ( $date ) {
+						// translators: %1$s is the report period, %2$s is the report type, %3$s is the date.
+						$title = sprintf( esc_html__( '%1$s %2$s for %3$s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) );
+					} else {
+						// translators: %1$s is the report period, %2$s is the report type.
+						$title = sprintf( esc_html__( '%1$s %2$s', 'paid-memberships-pro' ) , ucwords( $period_title ), ucwords( $type ) );
+
+					}
+				?>
+				return <?php echo wp_json_encode( esc_html(  $title )  ); ?>;
+			}
+		</script>
 
 	</form>
 	<?php
