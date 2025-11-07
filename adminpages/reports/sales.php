@@ -192,8 +192,10 @@ function pmpro_report_sales_data( $args ){
 
 }
 
-function pmpro_report_sales_page()
-{
+/**
+ * Sales Report Page
+ */
+function pmpro_report_sales_page() {
 	global $wpdb, $pmpro_currency_symbol, $pmpro_currency, $pmpro_currencies;
 
 	//get values from form
@@ -801,7 +803,7 @@ function pmpro_report_sales_page()
 
 			var stacked = <?php echo $new_renewals === 'new_renewals' ? 'true' : 'false'; ?>;
 			var isSalesCount = <?php echo $type === 'sales' ? 'true' : 'false'; ?>;
-			// Decode any HTML entities in the currency symbol (e.g. '&#36;' -> '$')
+			// Decode any HTML entities (e.g. '&#36;' -> '$')
 			<?php
 				$pmpro_currency_symbol_decoded = html_entity_decode( $pmpro_currency_symbol ?? '', ENT_QUOTES, 'UTF-8' );
 			?>
@@ -971,11 +973,15 @@ function pmpro_report_sales_page()
 	<?php
 }
 
-/*
-	Other code required for your reports. This file is loaded every time WP loads with PMPro enabled.
-*/
-
-//get sales
+/**
+ * Get the number of sales in a given time period
+ *
+ * @param string       $period Time period to query (today, this month, this year, all time)
+ * @param int|array    $levels Membership level ID or array of IDs to filter by. Default is 'all'.
+ * @param string       $type   Type of sales to count: 'all', 'new', 'renewals'. Default is 'all'.
+ *
+ * @return int Number of sales in the given time period
+ */
 function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) {	
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_sales' );

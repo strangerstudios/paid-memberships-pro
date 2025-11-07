@@ -6,7 +6,8 @@
 
 	// Keep track of instantiated charts so we can clean up/resizing.
 	ns._instances = ns._instances || {};
-
+	
+	 // Default palette of colors for charts.
 	ns.palette = [
 		'#3366cc',
 		'#dc3912',
