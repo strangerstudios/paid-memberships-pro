@@ -1,5 +1,6 @@
 /* Temporary home for new reports CSS */
 
+/* Chart.js Area Styles */
 .pmpro_chart_area {
 	background-color: #FFF;
 	border: 1px solid var(--pmpro--border--color);
@@ -30,4 +31,199 @@
 	display: block;
 	height: 100% !important;
 	width: 100% !important;
+}
+
+/**************/
+
+/**
+ * Reports admin area
+ */
+.pmpro_admin-pmpro-reports #dashboard-widgets .meta-box-sortables {
+	margin: 20px 8px 20px;
+}
+
+.pmpro_report-filters {
+	align-items: start;
+	background-color: #FFF;
+	border: 1px solid var(--pmpro--border--color);
+	border-radius: var(--pmpro--border--radius);
+	box-shadow: var(--pmpro--box-shadow);
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	gap: var(--pmpro--spacing--small);
+	margin: 1em 0;
+	padding: calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+.pmpro_report-filters h3 {
+	margin: 0;
+	padding: 0;
+}
+
+.pmpro_report-filters .tablenav.top  {
+	align-items: start;
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	height: auto;
+	margin: 0;
+	padding: 0;
+}
+
+.pmpro_report-filters .tablenav.top .pmpro_report-filter-text {
+	line-height: 30px;
+}
+
+.pmpro_report-filters .select2-container .select2-selection--multiple {
+	min-height: auto;
+}
+
+.pmpro_report-filters .select2-container--default .select2-selection--multiple {
+	border-color: #8c8f94;
+}
+
+.pmpro_report-filters .select2-container--default .select2-selection--multiple .select2-selection__rendered li {
+	margin: 0;
+}
+
+.pmpro_report-filters .select2-container--default .select2-selection--multiple li.select2-selection__choice {
+	margin: 3px 3px 0 0;
+}
+
+.pmpro_report-filters .select2-container--default .select2-search--inline .select2-search__field {
+	line-height: 1.4;
+	min-height: auto;
+}
+
+.pmpro_report-filters .select2-container--default .select2-search--inline .select2-search__field::placeholder {
+	color: #2c3338;
+}
+
+@media only screen and (min-width: 1500px) {
+    #wpbody-content .pmpro_admin-pmpro-reports #dashboard-widgets .postbox-container {
+        width: 50%
+    }
+
+    #wpbody-content .pmpro_admin-pmpro-reports #dashboard-widgets #postbox-container-1 {
+        width: 50%;
+    }
+}
+
+/* Reports individual page view styles */
+#visits-views-logins-form {
+	margin-top: var(--pmpro--spacing--medium);
+}
+
+#visits-views-logins-form h1.wp-heading-inline {
+	margin-top: 0;
+}
+
+#pmpro_report_login_data thead tr th {
+	background-color: #1A688B;
+	color: #FFF;
+	font-weight: bold;
+}
+#pmpro_report_login_data thead tr.thead-sub th {
+	background-color: initial;
+	color: initial;
+	font-size: 12px;
+	font-weight: normal;
+	word-spacing: 100vw;
+}
+#pmpro_report_login_data thead th,
+#pmpro_report_login_data tbody td {
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+/* Reports widgets view styles */
+.pmpro_report-holder table.wp-list-table thead th,
+.pmpro_report-holder table.wp-list-table tbody td {
+	padding: 8px 10px;
+}
+
+.pmpro_clickable {
+	cursor: pointer;
+}
+
+.js .postbox.pmpro_clickable h3 {
+	cursor: pointer;
+}
+
+#pmpro_report_login .wp-list-table tbody td,
+#pmpro_report_memberships .wp-list-table tbody tr.pmpro_report_tr td,
+#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td:not(#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td:first-child),
+#pmpro_report_sales .wp-list-table tfoot td {
+	vertical-align: top;
+}
+
+#pmpro_report_sales .wp-list-table thead th:last-child,
+#pmpro_report_sales .wp-list-table tbody td:last-child,
+#pmpro_report_sales .wp-list-table tfoot td:last-child {
+	text-align: right;
+}
+
+.pmpro_report-holder .wp-list-table tbody th {
+	vertical-align: top;
+}
+
+.pmpro_report-holder .wp-list-table tbody button {
+	border: none;
+	background: 0 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	color: #555;
+	cursor: pointer;
+	line-height: 1.7;
+	margin: 0;
+	padding: 0;
+	text-align: left;
+}
+
+button.pmpro_report_th:before {
+	bottom: 2px;
+	display: inline-block;
+	font: 400 20px/1 dashicons;
+	left: 0;
+	padding: 0;
+	position: relative;
+	text-decoration: none;
+	vertical-align: bottom;
+}
+
+button.pmpro_report_th_opened:before {
+	content: "\f140";
+}
+
+button.pmpro_report_th_closed:before {
+	content: "\f139";
+}
+
+.pmpro_report-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child th,
+.pmpro_report-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child td {
+	border-bottom: 1px solid var(--pmpro--border--color);
+}
+
+#pmpro_report_memberships .wp-list-table tbody:nth-child(odd) th,
+#pmpro_report_memberships .wp-list-table tbody:nth-child(odd) td,
+#pmpro_report_sales .wp-list-table tbody:nth-child(odd) th,
+#pmpro_report_sales .wp-list-table tbody:nth-child(odd) td {
+	background-color: #fff;
+}
+
+#pmpro_report_memberships .wp-list-table tbody:nth-child(even) th,
+#pmpro_report_memberships .wp-list-table tbody:nth-child(even) td,
+#pmpro_report_sales .wp-list-table tbody:nth-child(even) th,
+#pmpro_report_sales .wp-list-table tbody:nth-child(even) td {
+	background-color: var(--pmpro--color--blue-lightest);
+}
+
+.pmpro_admin .pmpro_report-button {
+	margin: 0;
+	text-align: center;
+}
+
+.pmpro_table_area tfoot th {
+	font-weight: 700;
 }
