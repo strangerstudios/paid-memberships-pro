@@ -2,6 +2,12 @@
  * PMPro Reports Charts Helper (Chart.js)
  */
 (function (window, $) {
+
+	// Only run on the reports pages. ('memberships_page_pmpro-reports' body class added)
+	if (!$('body').hasClass('memberships_page_pmpro-reports')) {
+		return;
+	}
+
 	const ns = (window.pmproCharts = window.pmproCharts || {});
 
 	// Keep track of instantiated charts so we can clean up/resizing.
