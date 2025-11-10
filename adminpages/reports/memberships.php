@@ -318,13 +318,13 @@ function pmpro_report_memberships_page() {
 	);
 
 	?>
-	<form id="posts-filter" method="get" action="">
 	<h1 class="wp-heading-inline">
 		<?php esc_html_e( 'Membership Stats', 'paid-memberships-pro' ); ?>
 	</h1>
 	<?php if ( current_user_can( 'pmpro_reportscsv' ) ) { ?>
 		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<?php } ?>
+	<form id="posts-filter" method="get" action="">
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro' ); ?></h3>
 		<div class="tablenav top">
@@ -420,9 +420,50 @@ function pmpro_report_memberships_page() {
 		} else {
 			$cancellations_label = __( 'All Cancellations', 'paid-memberships-pro' );
 		}
+
+		// Build data summaries for feature cards similar to sales report.
+		$total_signups = 0;
+		$total_cancels = 0;
+		foreach ( $dates as $d ) {
+			$total_signups += isset( $d->signups ) ? (int) $d->signups : 0;
+			$total_cancels += isset( $d->cancellations ) ? (int) $d->cancellations : 0;
+		}
+		// Average signups over number of periods represented (exclude empty periods from average for a fairer number)
+		$period_count = 0;
+		foreach ( $dates as $d ) {
+			if ( isset( $d->signups ) || isset( $d->cancellations ) ) {
+				$period_count++;
+			}
+		}
+		$average_signups = $period_count > 0 ? ( $total_signups / $period_count ) : 0;
+		// Cancellation rate based purely on current window (avoid external period mapping).
+		$cancellation_rate = ( $total_signups > 0 ) ? number_format_i18n( ( $total_cancels / $total_signups ) * 100, 2 ) : number_format_i18n( 0, 2 );
 	?>
 	<div class="pmpro_chart_area">
-		<canvas id="pmpro-chart-memberships" style="width: 100%; height: 500px;"></canvas>
+		<div class="chart-features">
+			<div class="chart-feature feature-total-signups">
+				<span class="chart-feature-label"><?php esc_html_e( 'Total Signups', 'paid-memberships-pro' ); ?></span>
+				<span class="chart-feature-value"><?php echo esc_html( number_format_i18n( $total_signups ) ); ?></span>
+			</div>
+			<div class="chart-feature feature-total-cancellations">
+				<span class="chart-feature-label"><?php echo esc_html( $cancellations_label ); ?></span>
+				<span class="chart-feature-value"><?php echo esc_html( number_format_i18n( $total_cancels ) ); ?></span>
+			</div>
+			<div class="chart-feature feature-average-signups">
+				<span class="chart-feature-label"><?php esc_html_e( 'Average Signups', 'paid-memberships-pro' ); ?></span>
+				<span class="chart-feature-value"><?php echo esc_html( number_format_i18n( $average_signups, 2 ) ); ?></span>
+			</div>
+			<div class="chart-feature feature-cancellation-rate">
+				<span class="chart-feature-label"><?php esc_html_e( 'Cancellation Rate', 'paid-memberships-pro' ); ?></span>
+				<span class="chart-feature-value"><?php echo esc_html( $cancellation_rate ); ?>%</span>
+			</div>
+		</div>
+		<div class="pmpro-chart-container">
+			<canvas id="pmpro-chart-memberships"></canvas>
+		</div>
+		<div class="pmpro_chart_description">
+			<p><center><em><?php esc_html_e( 'Net equals Signups minus Cancellations. Average calculated over non-empty periods.', 'paid-memberships-pro' ); ?></em></center></p>
+		</div>
 	</div>
 	<script>
 		//update month/year when period dropdown is changed
