@@ -318,7 +318,7 @@ function pmpro_is_consent_current( $entry ) {
  *
  * @since TBD
  *
- * @param MemberOrder $order The order object being edited.
+ * @param MemberOrder $order The order object being viewed.
  */
 function pmpro_show_tos_log_on_view_order_page( $order ) {
 	// Return early if no TOS page is set.
