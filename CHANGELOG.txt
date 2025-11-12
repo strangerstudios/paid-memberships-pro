@@ -1,4 +1,14 @@
 == Changelog ==
+= 3.6.1 - 2025-11-12 =
+* ENHANCEMENT: Now showing TOS Consent information on the admin "View Order" page. #3520 (@kimcoleman)
+* ENHANCEMENT: Added a new helper method `add_order_note()` to the MemberOrder class. #3524 (@dparker1005)
+* ENHANCEMENT: Added icons for WP Activity Log and WP Fusion Lite. #3521 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Now updating the next payment date for subscriptions when there is a failed payment. #3526 (@dparker1005)
+* BUG FIX: Fixed an issue where post restrictions could not be removed when using the classic editor. #3530 (@dparker1005)
+* BUG FIX: Fixed an issue where page contents would not load in the Beaver Builder editor if the post is restricted. #3529 (@dparker1005)
+* BUG FIX: Fixed an issue where plus characters in usernames may be converted into spaces when shown in login page error messages. #3519 (@andrewlimaza)
+* BUG FIX: Fixed a deprecation warning when installing Add Ons from the Membership > Add Ons screen. #3525 (@andrewlimaza)
+
 = 3.6 - 2025-10-21 =
 * FEATURE: Added compatibility with WP Fusion Lite. #3461 (@jarrydlong)
 * ENHANCEMENT: Added a new admin “view order” page before the “edit” step. #3467 (@kimcoleman)
