@@ -282,6 +282,65 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				)
 			)
 		);
+
+		/**
+		 * Generic Exports: start an export and get status.
+		 * Routes:
+		 * - POST /pmpro/v1/exports/start
+		 * - GET  /pmpro/v1/exports/status
+		 *
+		 * Params:
+		 * - type: string (e.g., 'members')
+		 * - l: level filter (optional)
+		 * - s: search (optional)
+		 * - export_id: for status (optional)
+		 */
+		register_rest_route( $pmpro_namespace, '/exports/start',
+			array(
+				array(
+					'methods'  => WP_REST_Server::EDITABLE,
+					'callback' => function( $request ) {
+						$params = $request->get_params();
+						$type   = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : '';
+						if ( empty( $type ) ) {
+							return new WP_REST_Response( array( 'error' => 'Missing export type.' ), 400 );
+						}
+						$force_async = ! empty( $params['force_async'] ) ? (bool) $params['force_async'] : false;
+						$exports = PMPro_Exports::instance();
+						$result  = $exports->start_export( $type, $params, $force_async );
+						$status_code = isset( $result['error'] ) ? 400 : 200;
+						return new WP_REST_Response( $result, $status_code );
+					},
+					'permission_callback' => function( $request ) {
+						// For now, require members export capability; extendable per type later.
+						return current_user_can( 'pmpro_memberslistcsv' ) || current_user_can( 'manage_options' );
+					},
+				)
+			)
+		);
+
+		register_rest_route( $pmpro_namespace, '/exports/status',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => function( $request ) {
+						$params    = $request->get_params();
+						$type      = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : '';
+						$export_id = isset( $params['export_id'] ) ? sanitize_text_field( $params['export_id'] ) : '';
+						if ( empty( $type ) ) {
+							return new WP_REST_Response( array( 'error' => 'Missing export type.' ), 400 );
+						}
+						$exports = PMPro_Exports::instance();
+						$result  = $exports->get_status( $type, $export_id );
+						$status_code = isset( $result['error'] ) ? 404 : 200;
+						return new WP_REST_Response( $result, $status_code );
+					},
+					'permission_callback' => function( $request ) {
+						return current_user_can( 'pmpro_memberslistcsv' ) || current_user_can( 'manage_options' );
+					},
+				)
+			)
+		);
 		}
 		
 		/**
