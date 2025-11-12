@@ -4489,11 +4489,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$success = false;
 
-		// Add new lines to order notes if not empty.
-		if ( ! empty( $order->notes ) ) {
-			$order->notes .= "\n\n";
-		}
-
 		//attempt refund
 		try {
 			
@@ -4524,8 +4519,8 @@ class PMProGateway_stripe extends PMProGateway {
 			
 				global $current_user;
 
-				// translators: %1$s is the date. %2$s is the Transaction ID. %3$s is the user display name that initiated the refund.
-				$order->notes = trim( $order->notes . sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
+				// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
+				$order->add_order_note( sprintf( __('Admin: Order successfully refunded for transaction ID %1$s by %2$s.', 'paid-memberships-pro' ), $transaction_id, $current_user->display_name ) );
 
 				$user = get_user_by( 'id', $order->user_id );
 				//send an email to the member
@@ -4537,13 +4532,13 @@ class PMProGateway_stripe extends PMProGateway {
 				$myemail->sendRefundedAdminEmail( $user, $order );
 
 			} else {
-				$order->notes = trim( $order->notes . __('Admin: An error occurred while attempting to process this refund.', 'paid-memberships-pro' ) );
+				$order->add_order_note( __('Admin: An error occurred while attempting to process this refund.', 'paid-memberships-pro' ) );
 			}
 
-		} catch ( \Throwable $e ) {			
-			$order->notes = trim( $order->notes . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
+		} catch ( \Throwable $e ) {
+			$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
 		} catch ( \Exception $e ) {
-			$order->notes = trim( $order->notes . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
+			$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
 		}
 
 		$order->saveOrder();
