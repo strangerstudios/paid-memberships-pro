@@ -1029,7 +1029,7 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 		if ( $error ) {
 				$error_args = array(
 					'action' => urlencode( $error ),
-					'username' => sanitize_text_field( $username )
+					'username' => urlencode( sanitize_text_field( $username ) )
 				);
 				wp_redirect( add_query_arg( $error_args, pmpro_login_url() ) );
 			} else {
@@ -1065,7 +1065,7 @@ function pmpro_login_failed( $username, $error = null ) {
 			// If an error was passed, get the code from there.
 			$error_code = is_wp_error( $error ) ? $error->get_error_code() : 'failed';
 
-			$redirect_url = add_query_arg( array( 'action'=> $error_code, 'username' => sanitize_text_field( $username ), 'redirect_to' => urlencode( $redirect_to ) ), pmpro_login_url() );
+			$redirect_url = add_query_arg( array( 'action'=> $error_code, 'username' => urlencode( sanitize_text_field( $username ) ), 'redirect_to' => urlencode( $redirect_to ) ), pmpro_login_url() );
 		} else {
 			$redirect_url = add_query_arg( 'action', 'loggedout', pmpro_login_url() );			
 		}

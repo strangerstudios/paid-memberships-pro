@@ -77,6 +77,7 @@ function pmpro_show_tos_at_checkout() {
 				<label class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_clickable', 'tos' ) ); ?>" for="tos">
 					<input type="checkbox" name="tos" value="1" id="tos" <?php checked( 1, $tos ); ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-checkbox pmpro_form_input-required', 'tos' ) ); ?>" />
 					<?php
+						/* translators: 1: TOS page URL, 2: TOS page title. */
 						$tos_label = sprintf( __( 'I agree to the <a href="%1$s" target="_blank">%2$s</a>', 'paid-memberships-pro' ), esc_url( get_permalink( $tospage->ID ) ), esc_html( $tospage->post_title ) );
 						/**
 						 * Filter the Terms of Service field label.
@@ -169,6 +170,7 @@ function pmpro_validate_tos_at_checkout( $pmpro_continue_registration ) {
 	if ( ! isset( $_REQUEST['tos'] ) || empty( $_REQUEST['tos'] ) ) {
 		$pmpro_continue_registration = false;
 		$pmpro_error_fields[] = 'tospage';
+		/* translators: 1: TOS page title. */
 		pmpro_setMessage( sprintf( __( "Please check the box to agree to the %s.", 'paid-memberships-pro' ), $tospage->post_title ), "pmpro_error" );
 	}
 
@@ -284,7 +286,8 @@ function pmpro_consent_to_text( $entry ) {
 	$user = get_userdata( $entry['user_id'] );
 	$post = get_post( $entry['post_id'] );
 
-	$s = sprintf( __( '%s agreed to %s (ID #%d, last modified %s) on %s.', 'paid-memberships-pro' ),
+	/* translators: 1: User display name, 2: TOS post title, 3: TOS post ID, 4: TOS post modified date, 5: Consent timestamp date. */
+	$s = sprintf( __( '%1$s agreed to %2$s (ID #%3$d, last modified %4$s) on %5$s.', 'paid-memberships-pro' ),
 				  $user->display_name,
 				  $post->post_title,
 				  $post->ID,
@@ -311,6 +314,40 @@ function pmpro_is_consent_current( $entry ) {
 }
 
 /**
+ * Show TOS log on the View Order page.
+ *
+ * @since TBD
+ *
+ * @param MemberOrder $order The order object being viewed.
+ */
+function pmpro_show_tos_log_on_view_order_page( $order ) {
+	// Return early if no TOS page is set.
+	if ( empty( get_option( 'pmpro_tospage' ) ) ) {
+		return;
+	}
+
+	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
+	if ( ! empty( $consent_entry ) ) {
+		?>
+		<div id="pmpro_order-tos-consent" class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+					<span class="dashicons dashicons-arrow-up-alt2"></span>
+					<?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside">
+				<?php
+					echo esc_html( pmpro_consent_to_text( $consent_entry ) );
+				?>
+			</div>
+		</div>
+		<?php
+	}
+}
+add_action( 'pmpro_after_order_view_main', 'pmpro_show_tos_log_on_view_order_page' );
+
+/**
  * Show TOS log on the Edit Order page.
  *
  * @since 3.2
@@ -318,20 +355,19 @@ function pmpro_is_consent_current( $entry ) {
  * @param MemberOrder $order The order object being edited.
  */
 function pmpro_show_tos_log_on_edit_order_page( $order ) {
-	$tospage_id = get_option( 'pmpro_tospage' );
-	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
+	// Return early if no TOS page is set.
+	if ( empty( get_option( 'pmpro_tospage' ) ) ) {
+		return;
+	}
 
-	if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
+	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
+	if ( ! empty( $consent_entry ) ) {
 		?>
 		<tr>
 			<th scope="row" valign="top"><label for="tos_consent"><?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?></label></th>
 			<td id="tos_consent">
 				<?php
-					if( !empty( $consent_entry ) ) {
-						echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-					} else {
-						esc_html_e( 'N/A', 'paid-memberships-pro' );
-					}
+					echo esc_html( pmpro_consent_to_text( $consent_entry ) );
 				?>
 			</td>
 		</tr>
