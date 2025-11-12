@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.6\n"
+"Project-Id-Version: Paid Memberships Pro 3.6.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-21T13:51:04+00:00\n"
+"POT-Creation-Date: 2025-11-12T16:14:58+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -564,6 +564,8 @@ msgstr "Izvještaji"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:107
 #: adminpages/orders.php:191
 #: adminpages/orders.php:292
+#: adminpages/orders.php:186
+#: adminpages/orders.php:287
 msgid "Orders"
 msgstr "Narudžbe"
 
@@ -641,6 +643,7 @@ msgstr "Kodovi za Popuste"
 #: adminpages/membershiplevels.php:224
 #: includes/compatibility/elementor/class-pmpro-elementor-content-restriction.php:76
 #: classes/class-pmpro-site-health.php:93
+#: includes/compatibility/beaver-builder.php:143
 msgid "Membership Levels"
 msgstr "Nivoi Članstva"
 
@@ -997,6 +1000,8 @@ msgstr "Ističe"
 #: classes/gateways/class.pmprogateway_stripe.php:566
 #: classes/gateways/class.pmprogateway_stripe.php:921
 #: classes/gateways/class.pmprogateway_stripe.php:969
+#: includes/compatibility/beaver-builder.php:54
+#: includes/compatibility/beaver-builder.php:150
 msgid "No"
 msgstr "Ne"
 
@@ -1157,6 +1162,8 @@ msgstr "Ne"
 #: classes/gateways/class.pmprogateway_stripe.php:568
 #: classes/gateways/class.pmprogateway_stripe.php:923
 #: classes/gateways/class.pmprogateway_stripe.php:971
+#: includes/compatibility/beaver-builder.php:53
+#: includes/compatibility/beaver-builder.php:149
 msgid "Yes"
 msgstr "Da"
 
@@ -7447,6 +7454,8 @@ msgstr "Sačuvaj Narudžbu"
 #: adminpages/orders.php:961
 #: adminpages/orders.php:200
 #: adminpages/orders.php:293
+#: adminpages/orders.php:195
+#: adminpages/orders.php:288
 msgid "Add New Order"
 msgstr "Dodaj Novu Narudžbu"
 
@@ -7490,6 +7499,7 @@ msgstr "Dodaj Novu Narudžbu"
 #: adminpages/orders.php:316
 #: adminpages/reports/memberships.php:323
 #: adminpages/reports/sales.php:620
+#: adminpages/orders.php:311
 msgid "Export to CSV"
 msgstr "Izvedi do CSV"
 
@@ -7514,6 +7524,7 @@ msgstr "Izvedi do CSV"
 #: adminpages/orders.php:979
 #: adminpages/orders.php:1000
 #: adminpages/orders.php:322
+#: adminpages/orders.php:317
 msgid "Search Orders"
 msgstr "Pretraži Narudžbe"
 
@@ -10220,12 +10231,14 @@ msgstr "Vaše email adrese se ne poklapaju. Pokušajte ponovo."
 msgid "The email address entered is in an invalid format. Please try again."
 msgstr "Unesena email adresa je nevažećg formata. Pokušajte ponovo."
 
+#. translators: 1: TOS page title.
 #: preheaders/checkout.php:504
 #: preheaders/checkout.php:354
 #: preheaders/checkout.php:359
 #: preheaders/checkout.php:352
 #: preheaders/checkout.php:362
 #: includes/terms-of-service.php:172
+#: includes/terms-of-service.php:174
 #, php-format
 msgid "Please check the box to agree to the %s."
 msgstr "Molmo potvrdite kvadratić da ste saglasni sa %s."
@@ -13173,6 +13186,8 @@ msgstr ""
 #: adminpages/orders.php:909
 #: adminpages/orders.php:887
 #: includes/terms-of-service.php:327
+#: includes/terms-of-service.php:336
+#: includes/terms-of-service.php:367
 msgid "TOS Consent"
 msgstr ""
 
@@ -14751,6 +14766,7 @@ msgstr ""
 #: adminpages/orders.php:312
 #: adminpages/orders.php:214
 #: adminpages/orders/view-order.php:412
+#: adminpages/orders.php:209
 msgid "Edit Order"
 msgstr ""
 
@@ -18088,26 +18104,35 @@ msgstr ""
 #: includes/compatibility/beaver-builder.php:126
 #: includes/compatibility/elementor.php:36
 #: includes/compatibility/elementor.php:37
+#: includes/compatibility/beaver-builder.php:38
+#: includes/compatibility/beaver-builder.php:135
 msgid "Non-members"
 msgstr ""
 
 #: includes/compatibility/beaver-builder.php:35
 #: includes/compatibility/beaver-builder.php:131
+#: includes/compatibility/beaver-builder.php:44
+#: includes/compatibility/beaver-builder.php:140
 msgid "PMPro"
 msgstr ""
 
 #: includes/compatibility/beaver-builder.php:38
+#: includes/compatibility/beaver-builder.php:47
 msgid "General"
 msgstr ""
 
 #: includes/compatibility/beaver-builder.php:42
 #: includes/compatibility/beaver-builder.php:138
 #: includes/compatibility/elementor/class-pmpro-elementor-content-restriction.php:35
+#: includes/compatibility/beaver-builder.php:51
+#: includes/compatibility/beaver-builder.php:147
 msgid "Enable Paid Memberships Pro module visibility?"
 msgstr ""
 
 #: includes/compatibility/beaver-builder.php:57
 #: includes/compatibility/beaver-builder.php:153
+#: includes/compatibility/beaver-builder.php:66
+#: includes/compatibility/beaver-builder.php:162
 msgid "Select a level for module access"
 msgstr ""
 
@@ -21457,6 +21482,7 @@ msgstr ""
 #: includes/privacy.php:519
 #: includes/privacy.php:518
 #: includes/terms-of-service.php:295
+#: includes/terms-of-service.php:298
 msgid "That post has since been updated."
 msgstr ""
 
@@ -26134,6 +26160,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4531
 #: classes/gateways/class.pmprogateway_stripe.php:4544
 #: classes/gateways/class.pmprogateway_stripe.php:4546
+#: classes/gateways/class.pmprogateway_stripe.php:4539
+#: classes/gateways/class.pmprogateway_stripe.php:4541
 msgid "Admin: There was a problem processing the refund"
 msgstr ""
 
@@ -33845,6 +33873,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4531
 #: classes/gateways/class.pmprogateway_stripe.php:4525
 #: classes/gateways/class.pmprogateway_stripe.php:4540
+#: classes/gateways/class.pmprogateway_stripe.php:4535
 msgid "Admin: An error occurred while attempting to process this refund."
 msgstr ""
 
@@ -34889,10 +34918,12 @@ msgstr ""
 msgid "Membership Information"
 msgstr ""
 
+#. translators: 1: TOS page URL, 2: TOS page title.
 #: pages/checkout.php:506
 #: pages/checkout.php:534
 #: pages/checkout.php:549
 #: includes/terms-of-service.php:80
+#: includes/terms-of-service.php:81
 #, php-format
 msgid "I agree to the <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
 msgstr ""
@@ -35831,6 +35862,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4554
 #: classes/gateways/class.pmprogateway_stripe.php:4548
 #: classes/gateways/class.pmprogateway_stripe.php:4563
+#: classes/gateways/class.pmprogateway_stripe.php:4558
 msgid "This is not a token order."
 msgstr ""
 
@@ -35839,6 +35871,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4560
 #: classes/gateways/class.pmprogateway_stripe.php:4554
 #: classes/gateways/class.pmprogateway_stripe.php:4569
+#: classes/gateways/class.pmprogateway_stripe.php:4564
 msgid "No checkout session ID found."
 msgstr ""
 
@@ -35857,6 +35890,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4576
 #: classes/gateways/class.pmprogateway_stripe.php:4578
 #: classes/gateways/class.pmprogateway_stripe.php:4580
+#: classes/gateways/class.pmprogateway_stripe.php:4573
+#: classes/gateways/class.pmprogateway_stripe.php:4575
 msgid "Could not retrieve checkout session: "
 msgstr ""
 
@@ -35865,6 +35900,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4576
 #: classes/gateways/class.pmprogateway_stripe.php:4570
 #: classes/gateways/class.pmprogateway_stripe.php:4585
+#: classes/gateways/class.pmprogateway_stripe.php:4580
 msgid "Payment is still pending."
 msgstr ""
 
@@ -35873,6 +35909,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4581
 #: classes/gateways/class.pmprogateway_stripe.php:4575
 #: classes/gateways/class.pmprogateway_stripe.php:4590
+#: classes/gateways/class.pmprogateway_stripe.php:4585
 msgid "Checkout session has not yet been completed."
 msgstr ""
 
@@ -38045,6 +38082,7 @@ msgstr ""
 
 #: adminpages/dashboard.php:86
 #: adminpages/orders.php:194
+#: adminpages/orders.php:189
 msgid "View All Orders"
 msgstr ""
 
@@ -38675,35 +38713,42 @@ msgid "Cannot update order status: invalid order or payment type."
 msgstr ""
 
 #: adminpages/orders.php:111
+#: adminpages/orders.php:106
 msgid "Order note added successfully."
 msgstr ""
 
 #: adminpages/orders.php:114
+#: adminpages/orders.php:109
 msgid "Error adding order note."
 msgstr ""
 
 #: adminpages/orders.php:118
+#: adminpages/orders.php:113
 msgid "Invalid order."
 msgstr ""
 
 #: adminpages/orders.php:184
 #: adminpages/orders/view-order.php:23
+#: adminpages/orders.php:179
 #, php-format
 msgid "Order # %s"
 msgstr ""
 
 #: adminpages/orders.php:184
+#: adminpages/orders.php:179
 #, php-format
 msgid "Order ID: %s"
 msgstr ""
 
 #: adminpages/orders.php:211
 #: adminpages/orders/save-order.php:117
+#: adminpages/orders.php:206
 #, php-format
 msgid "View Order # %s"
 msgstr ""
 
 #: adminpages/orders.php:230
+#: adminpages/orders.php:225
 msgid "Orders navigation"
 msgstr ""
 
@@ -39083,4 +39128,17 @@ msgstr ""
 
 #: shortcodes/pmpro_account.php:426
 msgid "Please contact the site administrator for full order history."
+msgstr ""
+
+#. translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1396
+#: classes/gateways/class.pmprogateway_stripe.php:4523
+#, php-format
+msgid "Admin: Order successfully refunded for transaction ID %1$s by %2$s."
+msgstr ""
+
+#. translators: 1: User display name, 2: TOS post title, 3: TOS post ID, 4: TOS post modified date, 5: Consent timestamp date.
+#: includes/terms-of-service.php:290
+#, php-format
+msgid "%1$s agreed to %2$s (ID #%3$d, last modified %4$s) on %5$s."
 msgstr ""
