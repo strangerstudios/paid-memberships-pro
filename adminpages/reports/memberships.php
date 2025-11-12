@@ -462,7 +462,7 @@ function pmpro_report_memberships_page() {
 			<canvas id="pmpro-chart-memberships"></canvas>
 		</div>
 		<div class="pmpro_chart_description">
-			<p><center><em><?php esc_html_e( 'Net equals Signups minus Cancellations. Average calculated over non-empty periods.', 'paid-memberships-pro' ); ?></em></center></p>
+			<p><center><em><?php esc_html_e( 'Average calculated over non-empty periods.', 'paid-memberships-pro' ); ?></em></center></p>
 		</div>
 	</div>
 	<script>

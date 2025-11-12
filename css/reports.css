@@ -35,13 +35,8 @@
 	border: 1px solid var(--pmpro--border--color);
 	border-radius: var(--pmpro--border--radius);
 	box-shadow: var(--pmpro--box-shadow);
-	clear: both;
 	margin: var(--pmpro--spacing--medium) 0;
 	padding: 0 var(--pmpro--spacing--medium);
-}
-
-.pmpro_chart_area rect[stroke-opacity] {
-	stroke-width: 0 !important;
 }
 
 .pmpro_chart_area canvas {
@@ -58,8 +53,9 @@
 }
 .pmpro_chart_area .pmpro-chart-container > canvas {
 	display: block;
-	height: 100% !important;
-	width: 100% !important;
+	height: 100%;
+	width: 100%;
+	overflow: visible;
 }
 
 /**
