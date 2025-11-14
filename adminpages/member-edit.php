@@ -45,6 +45,7 @@ function pmpro_member_edit_get_panels() {
 	$panels = apply_filters( 'pmpro_member_edit_panels', $panels );
 
 	// Build array to return with slug as key.
+	$panels_return = array();
 	foreach ( $panels as $panel ) {
 		$panels_return[ $panel->get_slug() ] = $panel;
 	}
