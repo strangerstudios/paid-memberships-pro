@@ -760,6 +760,7 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 					'gateway'                        => $order_data['gateway'],
 					'gateway_environment'            => $order_data['gateway_environment'],
 					'subscription_transaction_id'    => $order_data['subscription_transaction_id'],
+					'status'                         => 'success',
 				)
 			);
 			if ( ! empty( $last_order ) && ! empty( $last_order->billing ) ) {
