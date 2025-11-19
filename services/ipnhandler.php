@@ -704,7 +704,6 @@ function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
 	// Get the data that should be used to create the order.
 	$order_data = pmpro_ipn_get_order_data( $subscription );
 	$order_data['payment_transaction_id'] = $txn_id;
-	$order_data['notes'] = isset( $ipn_id ) ? "[IPN_ID]{$ipn_id}[/IPN_ID]" : '';
 
 	// Process the recurring payment.
 	ipnlog( pmpro_handle_recurring_payment_succeeded_at_gateway( $order_data ) );
@@ -715,6 +714,12 @@ function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
 	if ( empty( $morder ) || empty( $morder->id ) ) {
 		ipnlog( "ERROR: Could not find order just created for this recurring payment (" . $subscription->get_subscription_transaction_id() . ")." );
 		return false;
+	}
+
+	// Add an order note with the IPN ID.
+	if ( ! empty( $ipn_id ) ) {
+		$morder->add_order_note( "[IPN_ID]{$ipn_id}[/IPN_ID]" );
+		$morder->SaveOrder();
 	}
 
 	// Get card info if appropriate.
