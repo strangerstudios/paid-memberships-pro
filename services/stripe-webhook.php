@@ -465,7 +465,14 @@
 			pmpro_stripeWebhookExit();
 		} elseif ( $pmpro_stripe_event->type == 'invoice.created' || $pmpro_stripe_event->type == 'invoice.upcoming' ) {
 			// Make sure we have the invoice in the desired API version.
-			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			if ( ! empty( $pmpro_stripe_event->data->object->id ) ) {
+				$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			} else {
+				// We don't have an invoice ID, so we're likely processing the 'invoice.upcoming' event.
+				// In this case, we're just trying to remove any application fee from the subscription.
+				// Use the data object as-is and let's hope it's in the correct API version. If not, this code will just bail during the following check which is ok too.
+				$invoice = $pmpro_stripe_event->data->object;
+			}
 
 			// Check if a subscription ID exists on the invoice. If not, this is not a PMPro recurring payment.
 			$subscription_id = empty( $invoice->parent->subscription_details->subscription ) ? null : $invoice->parent->subscription_details->subscription;
