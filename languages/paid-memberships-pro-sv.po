@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.6.1\n"
+"Project-Id-Version: Paid Memberships Pro 3.6.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-11-12T16:15:00+00:00\n"
+"POT-Creation-Date: 2025-11-20T15:46:46+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -3346,16 +3346,19 @@ msgstr ""
 
 #: adminpages/member-edit.php:186
 #: adminpages/member-edit.php:194
+#: adminpages/member-edit.php:189
 msgid "Sorry, you are not allowed to edit this user."
 msgstr ""
 
 #: adminpages/member-edit.php:126
 #: adminpages/member-edit.php:134
+#: adminpages/member-edit.php:129
 msgid "Show More"
 msgstr "Visa mer"
 
 #: adminpages/member-edit.php:99
 #: adminpages/member-edit.php:107
+#: adminpages/member-edit.php:102
 msgid "Edit Member Area Menu"
 msgstr ""
 
@@ -3364,6 +3367,7 @@ msgstr ""
 #: includes/adminpages.php:148
 #: includes/adminpages.php:106
 #: adminpages/member-edit.php:98
+#: adminpages/member-edit.php:93
 msgid "Add Member"
 msgstr "Lägg till medlem"
 
@@ -3371,6 +3375,7 @@ msgstr "Lägg till medlem"
 #: adminpages/member-edit.php:88
 #: includes/adminpages.php:151
 #: adminpages/member-edit.php:96
+#: adminpages/member-edit.php:91
 #, php-format
 msgid "Edit Member: %s"
 msgstr "Redigera medlem: %s"
@@ -5871,6 +5876,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4525
 #: classes/gateways/class.pmprogateway_stripe.php:4540
 #: classes/gateways/class.pmprogateway_stripe.php:4535
+#: classes/gateways/class.pmprogateway_stripe.php:4533
 msgid "Admin: An error occurred while attempting to process this refund."
 msgstr ""
 
@@ -9358,6 +9364,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3029
 #: classes/gateways/class.pmprogateway_stripe.php:3681
 #: classes/gateways/class.pmprogateway_stripe.php:3683
+#: classes/gateways/class.pmprogateway_stripe.php:3680
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -9369,6 +9376,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4143
 #: classes/gateways/class.pmprogateway_stripe.php:4137
 #: classes/gateways/class.pmprogateway_stripe.php:4140
+#: classes/gateways/class.pmprogateway_stripe.php:4138
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -16787,6 +16795,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4548
 #: classes/gateways/class.pmprogateway_stripe.php:4563
 #: classes/gateways/class.pmprogateway_stripe.php:4558
+#: classes/gateways/class.pmprogateway_stripe.php:4556
 msgid "This is not a token order."
 msgstr ""
 
@@ -16796,6 +16805,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4554
 #: classes/gateways/class.pmprogateway_stripe.php:4569
 #: classes/gateways/class.pmprogateway_stripe.php:4564
+#: classes/gateways/class.pmprogateway_stripe.php:4562
 msgid "No checkout session ID found."
 msgstr ""
 
@@ -16825,6 +16835,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4570
 #: classes/gateways/class.pmprogateway_stripe.php:4585
 #: classes/gateways/class.pmprogateway_stripe.php:4580
+#: classes/gateways/class.pmprogateway_stripe.php:4578
 msgid "Payment is still pending."
 msgstr ""
 
@@ -16834,6 +16845,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4575
 #: classes/gateways/class.pmprogateway_stripe.php:4590
 #: classes/gateways/class.pmprogateway_stripe.php:4585
+#: classes/gateways/class.pmprogateway_stripe.php:4583
 msgid "Checkout session has not yet been completed."
 msgstr ""
 
@@ -20026,6 +20038,7 @@ msgstr ""
 #. translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1396
 #: classes/gateways/class.pmprogateway_stripe.php:4523
+#: classes/gateways/class.pmprogateway_stripe.php:4521
 #, php-format
 msgid "Admin: Order successfully refunded for transaction ID %1$s by %2$s."
 msgstr ""
