@@ -3606,9 +3606,6 @@ class PMProGateway_stripe extends PMProGateway {
 					'pending_setup_intent.payment_method',
 				),
 			);
-			if ( ! self::using_api_keys() ) {
-		    $subscription_params['application_fee_percent'] = $this->get_application_fee_percentage();
-			}
 			$subscription_params = apply_filters( 'pmpro_stripe_create_subscription_array', $subscription_params );
 			$subscription = Stripe_Subscription::create( $subscription_params );
 		} catch ( Stripe\Error\Base $e ) {
@@ -3731,6 +3728,7 @@ class PMProGateway_stripe extends PMProGateway {
 	private static function webhook_events() {
 		$events = array(
 			'invoice.created',
+			'invoice.upcoming',
 			'invoice.payment_succeeded',
 			'invoice.payment_action_required',
 			'customer.subscription.deleted',

@@ -343,6 +343,19 @@
 				} catch ( \Stripe\Error\Base $e ) {
 					// Could not get invoices. We just won't set a payment transaction ID.
 				}
+
+				// Also remove any application fee on the subscription. We will add it to individual invoices when they're created.
+				try {
+					Stripe_Subscription::update(
+						$checkout_session->subscription,
+						array(
+							'application_fee_percent' => 0,
+						)
+					);
+					$logstr .= "Updated application fee for subscription " . $checkout_session->subscription . " to 0%.";
+				} catch ( Exception $e ) {
+					$logstr .= "Could not update application fee for subscription " . $checkout_session->subscription . ". " . $e->getMessage();
+				}
 			}
 			// Update payment method and billing address on order.
 			if ( empty( $payment_method ) ) {
@@ -450,14 +463,23 @@
 
 			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
 			pmpro_stripeWebhookExit();
-		} elseif ( $pmpro_stripe_event->type == 'invoice.created' ) {
+		} elseif ( $pmpro_stripe_event->type == 'invoice.created' || $pmpro_stripe_event->type == 'invoice.upcoming' ) {
 			// Make sure we have the invoice in the desired API version.
-			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			if ( ! empty( $pmpro_stripe_event->data->object->id ) ) {
+				$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			} else {
+				// We don't have an invoice ID, so we're likely processing the 'invoice.upcoming' event.
+				// In this case, we're just trying to remove any application fee from the subscription.
+				// Use the data object as-is and let's hope it's in the correct API version. If not, this code will just bail during the following check which is ok too.
+				$invoice = $pmpro_stripe_event->data->object;
+			}
 
 			// Check if a subscription ID exists on the invoice. If not, this is not a PMPro recurring payment.
 			$subscription_id = empty( $invoice->parent->subscription_details->subscription ) ? null : $invoice->parent->subscription_details->subscription;
 			if ( empty( $subscription_id ) ) {
-				$logstr .= "Invoice " . $invoice->id . " is not for a subscription and is therefore not a PMPro recurring payment. No action taken.";
+				// Upcoming invoices will not have an ID set.
+				$invoice_id = empty( $invoice->id ) ? '[upcoming]' : $invoice->id;
+				$logstr .= "Invoice " . $invoice_id . " is not for a subscription and is therefore not a PMPro recurring payment. No action taken.";
 				pmpro_stripeWebhookExit();
 			}
 
@@ -465,6 +487,25 @@
 			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_id, 'stripe', $livemode ? 'live' : 'sandbox' );
 			if ( empty( $subscription ) ) {
 				$logstr .= "Could not find a PMPro subscription with transaction ID " . $subscription_id . ". No action taken.";
+				pmpro_stripeWebhookExit();
+			}
+
+			// Remove the application fee on the subscription. We will add it to individual invoices when they're created.
+			try {
+				Stripe_Subscription::update(
+					$subscription_id,
+					array(
+						'application_fee_percent' => 0,
+					)
+				);
+				$logstr .= "Updated application fee for subscription " . $subscription_id . " to 0%.";
+			} catch ( Exception $e ) {
+				$logstr .= "Could not update application fee for subscription " . $subscription_id . ". " . $e->getMessage();
+			}
+
+			// If we're processing 'invoice.upcoming', we don't need to do anything else.
+			// We will update the invoice application fee when it is actually created.
+			if ( $pmpro_stripe_event->type == 'invoice.upcoming' ) {
 				pmpro_stripeWebhookExit();
 			}
 
@@ -492,19 +533,6 @@
 				$logstr .= "Updated application fee for invoice " . $invoice->id . " to " . $application_fee . "%.";
 			} catch ( Exception $e ) {
 				$logstr .= "Could not update application fee for invoice " . $invoice->id . ". " . $e->getMessage();
-			}
-
-			// Update the application fee on the subscription.
-			try {
-				Stripe_Subscription::update(
-					$subscription_id,
-					array(
-						'application_fee_percent' => $application_fee,
-					)
-				);
-				$logstr .= "Updated application fee for subscription " . $subscription_id . " to " . $application_fee . "%.";
-			} catch ( Exception $e ) {
-				$logstr .= "Could not update application fee for subscription " . $subscription_id . ". " . $e->getMessage();
 			}
 			pmpro_stripeWebhookExit();
 		}
