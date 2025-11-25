@@ -44,6 +44,7 @@ export default function ContentVisibilityControls (props) {
 		}
 		return [
 			<CheckboxControl
+				__nextHasNoMarginBottom
 				label={level.label}
 				checked={levels.some((levelID) => levelID == level.value)}
 				onChange={setLevelsAttribute}
@@ -60,6 +61,7 @@ export default function ContentVisibilityControls (props) {
 				{
 					props.name !== 'pmpro/membership' &&
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ visibilityBlockEnabled 	? __('Disable content visibility for this block', 'paid-memberships-pro') : __('Enable content visibility for this block', 'paid-memberships-pro') }
 						onChange={ (newValue) => {
 							setAttributes({ visibilityBlockEnabled: newValue ? true : false });
@@ -72,6 +74,7 @@ export default function ContentVisibilityControls (props) {
 					<HStack>
 						{/* Button to toggle visibility to "show" mode */}
 							<Button
+								__next40pxDefaultSize
 								className="pmpro-block-require-membership-element__set-show-button"
 								icon="visibility"
 								variant={invert_restrictions === '0' ? 'primary' : 'secondary'}
@@ -82,6 +85,7 @@ export default function ContentVisibilityControls (props) {
 							</Button>
 							{/* Button to toggle visibility to "hide" mode */}
 							<Button
+								__next40pxDefaultSize
 								className="pmpro-block-require-membership-element__set-hide-button"
 								icon="hidden"
 								variant={invert_restrictions === '1' ? 'primary' : 'secondary'}
@@ -93,6 +97,8 @@ export default function ContentVisibilityControls (props) {
 						</HStack>
 						<br />
 						<SelectControl
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
 							value={segment}
 							label={ invert_restrictions === '1' ? __('Hide content from:', 'paid-memberships-pro') : __('Show content to:', 'paid-memberships-pro') }
 							options={[
@@ -113,6 +119,8 @@ export default function ContentVisibilityControls (props) {
 						</> }
 						{ invert_restrictions=='0' && <>
 							<SelectControl
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom							
 								value={show_noaccess}
 								label={ __( 'Show No Access Message?', 'paid-memberships-pro' ) }
 								help={ __ ( "Modify the 'no access' message on the Memberships > Advanced Settings page.", "paid-memberships-pro" ) }
