@@ -69,7 +69,7 @@ register( pmproCustomStore() );
 ( function ( wp ) {
 	const { __ } = wp.i18n;
 	const { registerPlugin } = wp.plugins;
-	const { PluginDocumentSettingPanel } = wp.editPost;
+	const { PluginDocumentSettingPanel } = wp.editor;
 	const { Component } = wp.element;
 	const { Spinner, CheckboxControl } = wp.components;
 
@@ -96,6 +96,7 @@ register( pmproCustomStore() );
 			( level ) => {
 				return (
 					<CheckboxControl
+						__nextHasNoMarginBottom
 						key={ level.id }
 						label={ level.name }
 						checked={ props.restrictedLevels.includes( level.id ) }
@@ -115,7 +116,7 @@ register( pmproCustomStore() );
 			}
 		);
 		return (
-			<fragment>
+			<>
 				{
 					// Add buttons to select all or none.
 					level_checkboxes.length > 1 &&
@@ -137,7 +138,7 @@ register( pmproCustomStore() );
 						level_checkboxes
 					)
 				}
-			</fragment>
+			</>
 		);
 	} );
 
