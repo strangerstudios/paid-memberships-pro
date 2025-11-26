@@ -45,6 +45,7 @@ export default function ContentVisibilityControls (props) {
 		return [
 			<CheckboxControl
 				__nextHasNoMarginBottom
+				key={level.value} 
 				label={level.label}
 				checked={levels.some((levelID) => levelID == level.value)}
 				onChange={setLevelsAttribute}
@@ -113,7 +114,7 @@ export default function ContentVisibilityControls (props) {
 							<p>
 								{ __( 'Select', 'paid-memberships-pro' ) } <a href="#" onClick={(event) => { event.preventDefault(); selectAllLevels(true); }}>{ __('All', 'paid-memberships-pro') }</a> | <a href="#" onClick={(event) => { event.preventDefault(); selectAllLevels(false); }}>{ __( 'None', 'paid-memberships-pro' ) }</a>
 							</p>
-							<div class="pmpro-block-inspector-scrollable">
+							<div className="pmpro-block-inspector-scrollable">
 								{checkboxes}
 							</div>
 						</> }
