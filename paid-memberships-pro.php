@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.6
+ * Version: 3.6.1
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.6' );
+define( 'PMPRO_VERSION', '3.6.1' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -265,7 +265,7 @@ function pmpro_gateways() {
  * Returns the gateway nicename.
  * Used for outputting the gateway's label value for customers.
  * 
- * @since TBD
+ * @since 3.6.1
  * 
  * @param string $gateway The gateway's internal slug (i.e. paypalexpress).
  * @return string The gateway's nicename (i.e. PayPal Express).

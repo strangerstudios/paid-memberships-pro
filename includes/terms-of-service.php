@@ -316,7 +316,7 @@ function pmpro_is_consent_current( $entry ) {
 /**
  * Show TOS log on the View Order page.
  *
- * @since TBD
+ * @since 3.6.1
  *
  * @param MemberOrder $order The order object being viewed.
  */

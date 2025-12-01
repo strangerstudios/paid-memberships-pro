@@ -1966,7 +1966,7 @@
 		/**
 		 * Add a new entry to the order notes.
 		 *
-		 * @since TBD
+		 * @since 3.6.1
 		 *
 		 * @param string $note The note to add.
 		 */
