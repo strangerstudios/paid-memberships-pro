@@ -58,7 +58,8 @@ class PMPro_Exports {
 		// Allow access to export files for the requesting user if token/export_id validate.
 		if ( 'exports' === $file_dir ) {
 			$export_id = isset( $_REQUEST['export_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['export_id'] ) ) : '';
-			$token     = isset( $_REQUEST['token'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['token'] ) ) : '';
+			// Do not sanitize token; use raw-unslashed for HMAC compare.
+			$token     = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : '';
 			$file      = isset( $_REQUEST['pmpro_restricted_file'] ) ? basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file'] ) ) ) : '';
 			if ( ! empty( $export_id ) && ! empty( $token ) && ! empty( $file ) ) {
 				if ( class_exists( 'PMPro_Exports' ) ) {
@@ -317,7 +318,8 @@ class PMPro_Exports {
 
 	protected function create_export_record( $user_id, $type, $filters, $total, $chunk_size ) {
 		$export_id = wp_generate_uuid4();
-		$token     = wp_generate_password( 32, true, true );
+		// Generate a URL-safe token (alphanumeric only) to avoid reserved characters breaking query strings.
+		$token     = wp_generate_password( 40, false, false );
 		$token_hash = hash_hmac( 'sha256', $token, wp_salt( 'auth' ) );
 		$file_name = $this->build_file_name( $type, $export_id );
 

@@ -178,7 +178,7 @@ require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-integration.php';
 $wisdom_integration = PMPro_Wisdom_Integration::instance();
 $wisdom_integration->setup_wisdom();
 
-// Setup our PMPro Action Scheduler.
+// Setup PMPro Action Scheduler & Exports.
 add_action( 'plugins_loaded', function() {
 
 	// Load our Action Scheduler class.
@@ -186,6 +186,10 @@ add_action( 'plugins_loaded', function() {
 
 	// Add our recurring actions.
 	PMPro_Recurring_Actions::instance();
+
+	// Ensure Exports system is initialized so its filters are registered on all requests
+	// (needed for restricted files to validate access).
+	PMPro_Exports::instance();
 
 } );
 
