@@ -43,6 +43,8 @@ class PMPro_Exports {
 	public function __construct() {
 		// Background chunk processor.
 		add_action( 'pmpro_export_process_chunk', array( $this, 'process_chunk' ), 10, 1 );
+		// Scheduled file deletion handler.
+		add_action( 'pmpro_export_delete_file', array( $this, 'delete_file_task' ), 10, 1 );
 		// File access filter.
 		add_filter( 'pmpro_can_access_restricted_file', array( $this, 'export_can_access_restricted_files' ), 10, 2 );
 	}
@@ -65,10 +67,63 @@ class PMPro_Exports {
 				if ( class_exists( 'PMPro_Exports' ) ) {
 					$exports = PMPro_Exports::instance();
 					$can_access = $exports->validate_file_access( get_current_user_id(), $export_id, $token, $file );
+					// If access is granted, perform cleanup and schedule file deletion.
+					if ( $can_access ) {
+						$exports->cleanup_after_download( $export_id );
+						$exports->schedule_file_deletion( $file, 6 * HOUR_IN_SECONDS );
+					}
 				}
 			}
 		}
 		return $can_access;
+	}
+
+	/**
+	 * Cleanup export state after a successful download.
+	 * Clears the active pointer and ephemeral transients and removes the stored export record.
+	 * Leaves the file on disk.
+	 *
+	 * @param string $export_id
+	 */
+	protected function cleanup_after_download( $export_id ) {
+		$user_id = get_current_user_id();
+		if ( empty( $user_id ) ) {
+			return;
+		}
+		// Delete the active export pointer for members.
+		delete_user_meta( $user_id, $this->get_active_meta_key( 'members' ) );
+		// Delete the export record stored under the owner.
+		$key = $this->get_export_meta_key( $export_id );
+		delete_user_meta( $user_id, $key );
+		// Clear transients.
+		delete_transient( 'pmpro_export_owner_' . $export_id );
+		delete_transient( 'pmpro_export_token_' . $export_id );
+	}
+
+	/**
+	 * Schedule deletion of the exported file via Action Scheduler.
+	 *
+	 * @param string $file_name The file name within the exports restricted dir.
+	 * @param int    $delay     Seconds from now to delete the file.
+	 */
+	protected function schedule_file_deletion( $file_name, $delay ) {
+		$timestamp = time() + max( 0, (int) $delay );
+		PMPro_Action_Scheduler::instance()->maybe_add_task( 'pmpro_export_delete_file', array( 'file' => $file_name ), 'pmpro_async_tasks', $timestamp );
+	}
+
+	/**
+	 * Action Scheduler task: delete an export file from disk.
+	 *
+	 * @param array $args Should contain 'file'.
+	 */
+	public function delete_file_task( $args ) {
+		if ( empty( $args['file'] ) ) {
+			return;
+		}
+		$file_path = $this->get_file_path( basename( $args['file'] ) );
+		if ( $file_path && file_exists( $file_path ) ) {
+			@unlink( $file_path );
+		}
 	}
 
 	/**
