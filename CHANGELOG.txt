@@ -1,4 +1,12 @@
 == Changelog ==
+= 3.6.2 - 2025-11-20 =
+* ENHANCEMENT: Stripe subscriptions will no longer be created with an application fee or will have the fee immediately removed when the initial payment is complete. Application fees will then be added per-invoice during the `invoice.created` webhook to ensure that fees are only charged when PMPro is actively managing the subscription. #3535 (@dparker1005)
+* ENHANCEMENT: Updated the Stripe webhook handler to remove application fees from existing subscriptions over time during the `invoice.upcoming` webhook event. This helps to ensure that websites that have stopped using Stripe Connect will not be charged the 2% application fee. #3535 (@dparker1005)
+* ENHANCEMENT: Updated the PayPal IPN handler to use the `add_order_note()` method when adding the IPN ID to an order. #3534 (@dparker1005)
+* BUG FIX: Restored fallback logic for pulling billing addresses from Stripe customer objects and previous PMPro orders when a Stripe recurring payment is received without a billing address set on the payment method. #3533 (@dparker1005)
+* BUG FIX: Fixed an issue where correcting data in fields with validation errors did not clear the error border from the input. #3531 (@andrewlimaza)
+* BUG FIX: Fixed an issue where the Edit Member sidebar may not show the correct user field panels after changing a user's membership level. #3532 (@dparker1005)
+
 = 3.6.1 - 2025-11-12 =
 * ENHANCEMENT: Now showing TOS Consent information on the admin "View Order" page. #3520 (@kimcoleman)
 * ENHANCEMENT: Added a new helper method `add_order_note()` to the MemberOrder class. #3524 (@dparker1005)

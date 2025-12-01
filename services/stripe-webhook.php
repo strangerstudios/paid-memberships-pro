@@ -343,6 +343,19 @@
 				} catch ( \Stripe\Error\Base $e ) {
 					// Could not get invoices. We just won't set a payment transaction ID.
 				}
+
+				// Also remove any application fee on the subscription. We will add it to individual invoices when they're created.
+				try {
+					Stripe_Subscription::update(
+						$checkout_session->subscription,
+						array(
+							'application_fee_percent' => 0,
+						)
+					);
+					$logstr .= "Updated application fee for subscription " . $checkout_session->subscription . " to 0%.";
+				} catch ( Exception $e ) {
+					$logstr .= "Could not update application fee for subscription " . $checkout_session->subscription . ". " . $e->getMessage();
+				}
 			}
 			// Update payment method and billing address on order.
 			if ( empty( $payment_method ) ) {
@@ -450,14 +463,23 @@
 
 			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
 			pmpro_stripeWebhookExit();
-		} elseif ( $pmpro_stripe_event->type == 'invoice.created' ) {
+		} elseif ( $pmpro_stripe_event->type == 'invoice.created' || $pmpro_stripe_event->type == 'invoice.upcoming' ) {
 			// Make sure we have the invoice in the desired API version.
-			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			if ( ! empty( $pmpro_stripe_event->data->object->id ) ) {
+				$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			} else {
+				// We don't have an invoice ID, so we're likely processing the 'invoice.upcoming' event.
+				// In this case, we're just trying to remove any application fee from the subscription.
+				// Use the data object as-is and let's hope it's in the correct API version. If not, this code will just bail during the following check which is ok too.
+				$invoice = $pmpro_stripe_event->data->object;
+			}
 
 			// Check if a subscription ID exists on the invoice. If not, this is not a PMPro recurring payment.
 			$subscription_id = empty( $invoice->parent->subscription_details->subscription ) ? null : $invoice->parent->subscription_details->subscription;
 			if ( empty( $subscription_id ) ) {
-				$logstr .= "Invoice " . $invoice->id . " is not for a subscription and is therefore not a PMPro recurring payment. No action taken.";
+				// Upcoming invoices will not have an ID set.
+				$invoice_id = empty( $invoice->id ) ? '[upcoming]' : $invoice->id;
+				$logstr .= "Invoice " . $invoice_id . " is not for a subscription and is therefore not a PMPro recurring payment. No action taken.";
 				pmpro_stripeWebhookExit();
 			}
 
@@ -465,6 +487,25 @@
 			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_id, 'stripe', $livemode ? 'live' : 'sandbox' );
 			if ( empty( $subscription ) ) {
 				$logstr .= "Could not find a PMPro subscription with transaction ID " . $subscription_id . ". No action taken.";
+				pmpro_stripeWebhookExit();
+			}
+
+			// Remove the application fee on the subscription. We will add it to individual invoices when they're created.
+			try {
+				Stripe_Subscription::update(
+					$subscription_id,
+					array(
+						'application_fee_percent' => 0,
+					)
+				);
+				$logstr .= "Updated application fee for subscription " . $subscription_id . " to 0%.";
+			} catch ( Exception $e ) {
+				$logstr .= "Could not update application fee for subscription " . $subscription_id . ". " . $e->getMessage();
+			}
+
+			// If we're processing 'invoice.upcoming', we don't need to do anything else.
+			// We will update the invoice application fee when it is actually created.
+			if ( $pmpro_stripe_event->type == 'invoice.upcoming' ) {
 				pmpro_stripeWebhookExit();
 			}
 
@@ -492,19 +533,6 @@
 				$logstr .= "Updated application fee for invoice " . $invoice->id . " to " . $application_fee . "%.";
 			} catch ( Exception $e ) {
 				$logstr .= "Could not update application fee for invoice " . $invoice->id . ". " . $e->getMessage();
-			}
-
-			// Update the application fee on the subscription.
-			try {
-				Stripe_Subscription::update(
-					$subscription_id,
-					array(
-						'application_fee_percent' => $application_fee,
-					)
-				);
-				$logstr .= "Updated application fee for subscription " . $subscription_id . " to " . $application_fee . "%.";
-			} catch ( Exception $e ) {
-				$logstr .= "Could not update application fee for subscription " . $subscription_id . ". " . $e->getMessage();
 			}
 			pmpro_stripeWebhookExit();
 		}
@@ -713,6 +741,7 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 		}
 	}
 
+	// Set the payment type and card info if we have a payment method.
 	if ( ! empty( $payment_method ) ) {		       	
 		$order_data['payment_type'] = 'Stripe - ' . $payment_method->type;
 		if ( ! empty( $payment_method->card ) ) {
@@ -722,19 +751,58 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 			$order_data['expirationmonth'] = $payment_method->card->exp_month;
 			$order_data['expirationyear'] = $payment_method->card->exp_year;
 		}
-		if ( ! empty( $payment_method->billing_details ) && ! empty( $payment_method->billing_details->address ) && ! empty( $payment_method->billing_details->address->line1 ) ) {
-			$order_data['billing'] = new stdClass();
-			$order_data['billing']->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
-			$order_data['billing']->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
-			$order_data['billing']->street2 = empty( $payment_method->billing_details->address->line2 ) ? '' : $payment_method->billing_details->address->line2;
-			$order_data['billing']->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
-			$order_data['billing']->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
-			$order_data['billing']->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
-			$order_data['billing']->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
-			$order_data['billing']->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
-		}
 	} else {
 		$order_data['payment_type'] = 'Stripe';
+	}
+
+	// Set the billing address.
+	if ( ! empty( $payment_method ) && ! empty( $payment_method->billing_details ) && ! empty( $payment_method->billing_details->address ) && ! empty( $payment_method->billing_details->address->line1 ) ) {
+		$order_data['billing'] = new stdClass();
+		$order_data['billing']->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
+		$order_data['billing']->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
+		$order_data['billing']->street2 = empty( $payment_method->billing_details->address->line2 ) ? '' : $payment_method->billing_details->address->line2;
+		$order_data['billing']->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
+		$order_data['billing']->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
+		$order_data['billing']->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
+		$order_data['billing']->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
+		$order_data['billing']->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
+	} else {
+		// No billing address in the payment method, let's try to get it from the customer.
+		if ( ! empty( $invoice->customer ) ) {
+			$customer = Stripe_Customer::retrieve( $invoice->customer );
+		}
+		if ( ! empty( $customer ) && ! empty( $customer->address ) && ! empty( $customer->address->line1 ) ) {
+			$order_data['billing'] = new stdClass();
+			$order_data['billing']->name = empty( $customer->name ) ? '' : $customer->name;
+			$order_data['billing']->street = empty( $customer->address->line1 ) ? '' : $customer->address->line1;
+			$order_data['billing']->street2 = empty( $customer->address->line2 ) ? '' : $customer->address->line2;
+			$order_data['billing']->city = empty( $customer->address->city ) ? '' : $customer->address->city;
+			$order_data['billing']->state = empty( $customer->address->state ) ? '' : $customer->address->state;
+			$order_data['billing']->zip = empty( $customer->address->postal_code ) ? '' : $customer->address->postal_code;
+			$order_data['billing']->country = empty( $customer->address->country ) ? '' : $customer->address->country;
+			$order_data['billing']->phone = empty( $customer->phone ) ? '' : $customer->phone;
+		} else {
+			// No billing address in the customer, so try to pull it from the most recent subscription order.
+			$last_order = MemberOrder::get_order(
+				array(
+					'gateway'                        => $order_data['gateway'],
+					'gateway_environment'            => $order_data['gateway_environment'],
+					'subscription_transaction_id'    => $order_data['subscription_transaction_id'],
+					'status'                         => 'success',
+				)
+			);
+			if ( ! empty( $last_order ) && ! empty( $last_order->billing ) ) {
+				$order_data['billing'] = new stdClass();
+				$order_data['billing']->name = empty( $last_order->billing->name ) ? '' : $last_order->billing->name;
+				$order_data['billing']->street = empty( $last_order->billing->street ) ? '' : $last_order->billing->street;
+				$order_data['billing']->street2 = empty( $last_order->billing->street2 ) ? '' : $last_order->billing->street2;
+				$order_data['billing']->city = empty( $last_order->billing->city ) ? '' : $last_order->billing->city;
+				$order_data['billing']->state = empty( $last_order->billing->state ) ? '' : $last_order->billing->state;
+				$order_data['billing']->zip = empty( $last_order->billing->zip ) ? '' : $last_order->billing->zip;
+				$order_data['billing']->country = empty( $last_order->billing->country ) ? '' : $last_order->billing->country;
+				$order_data['billing']->phone = empty( $last_order->billing->phone ) ? '' : $last_order->billing->phone;
+			}
+		}
 	}
 
 	return $order_data;

@@ -172,8 +172,8 @@ jQuery(document).ready(function(){
 	});
 
 	//unhighlight error fields when the user edits them
-	jQuery('.pmpro_error').bind("change keyup input", function() {
-		jQuery(this).removeClass('pmpro_error');
+	jQuery('.pmpro_form_input-error').bind("change keyup input", function() {
+		jQuery(this).removeClass('pmpro_form_input-error');
 	});
 
 	//click apply button on enter in discount code box
