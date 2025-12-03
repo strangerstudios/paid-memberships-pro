@@ -135,7 +135,9 @@ register( pmproCustomStore() );
 							{ level_checkboxes }
 						</div>
 					) : (
-						level_checkboxes
+						<div className="pmpro-block-inspector-membershiplevels">
+							{ level_checkboxes }
+						</div>
 					)
 				}
 			</>
