@@ -546,64 +546,17 @@ class PMPro_Exports {
 	protected function members_count_total( $filters ) {
 		global $wpdb;
 
-		$search_key = false;
-		$s = isset( $filters['s'] ) ? $filters['s'] : '';
-		if ( ! empty( $s ) && strpos( $s, ':' ) !== false ) {
-			$parts = explode( ':', $s );
-			$search_key = array_shift( $parts );
-			$s = implode( ':', $parts );
-		}
-		$s = str_replace( '*', '%', $s );
-
-		$l = isset( $filters['l'] ) ? $filters['l'] : '';
-
 		$sql = "SELECT COUNT(DISTINCT u.ID) FROM {$wpdb->users} u ";
-		$search = '';
-
-		if ( $s ) {
-			if ( ! empty( $search_key ) ) {
-				if ( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
-					$key_column = 'u.user_' . $search_key;
-					$search = " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
-				} elseif ( in_array( $search_key, array( 'discount', 'discount_code', 'dc' ), true ) ) {
-					$user_ids = $wpdb->get_col( "SELECT dcu.user_id FROM {$wpdb->pmpro_discount_codes_uses} dcu LEFT JOIN {$wpdb->pmpro_discount_codes} dc ON dcu.code_id = dc.id WHERE dc.code = '" . esc_sql( $s ) . "'" );
-					if ( empty( $user_ids ) ) { $user_ids = array(0); }
-					$search = ' AND u.ID IN(' . implode( ',', array_map( 'intval', $user_ids ) ) . ') ';
-				} else {
-					$user_ids = $wpdb->get_col( "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value LIKE '%" . esc_sql( $s ) . "%'" );
-					if ( empty( $user_ids ) ) { $user_ids = array(0); }
-					$search = ' AND u.ID IN(' . implode( ',', array_map( 'intval', $user_ids ) ) . ') ';
-				}
-			} elseif ( function_exists( 'wp_is_large_user_count' ) && wp_is_large_user_count() ) {
-				$search = " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
-			} else {
-				$sql .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
-				$search = " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
-			}
+		$needs_usermeta_join = false;
+		$search = $this->build_members_search_sql_fragment( $filters, $needs_usermeta_join );
+		if ( $needs_usermeta_join ) {
+			$sql .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
 		}
-
 		$sql .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		$sql .= " WHERE mu.membership_id > 0 ";
 
-		$filter = null;
-		if ( 'oldmembers' === $l ) {
-			$filter = " AND mu.status <> 'active' ";
-		}
-		if ( 'expired' === $l || 'cancelled' === $l ) {
-			$statuses = ( 'expired' === $l ) ? array( 'expired' ) : array( 'cancelled', 'admin_cancelled' );
-			$filter = " AND mu.status IN ('" . implode( "','", array_map( 'esc_sql', $statuses ) ) . "') ";
-			$filter .= " AND NOT EXISTS ( SELECT 1 FROM {$wpdb->pmpro_memberships_users} mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active' ) ";
-		}
-		if ( is_null( $filter ) && is_numeric( $l ) ) {
-			$filter = " AND mu.status = 'active' AND mu.membership_id = " . (int) $l . " ";
-		}
-		if ( is_null( $filter ) ) {
-			$filter = " AND mu.status = 'active' ";
-		}
-		if ( $s ) {
-			$sql .= $search;
-		}
-		$sql .= $filter;
+		$filter = $this->build_members_filter_sql_fragment( $filters );
+		$sql    .= $search . $filter;
 
 		// Allow manipulation of SQL if needed.
 		$sql = apply_filters( 'pmpro_members_list_sql', $sql );
@@ -614,64 +567,17 @@ class PMPro_Exports {
 	protected function members_fetch_ids_chunk( $filters, $offset, $limit ) {
 		global $wpdb;
 
-		$search_key = false;
-		$s = isset( $filters['s'] ) ? $filters['s'] : '';
-		if ( ! empty( $s ) && strpos( $s, ':' ) !== false ) {
-			$parts = explode( ':', $s );
-			$search_key = array_shift( $parts );
-			$s = implode( ':', $parts );
-		}
-		$s = str_replace( '*', '%', $s );
-
-		$l = isset( $filters['l'] ) ? $filters['l'] : '';
-
 		$sql = "SELECT DISTINCT u.ID FROM {$wpdb->users} u ";
-		$search = '';
-
-		if ( $s ) {
-			if ( ! empty( $search_key ) ) {
-				if ( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
-					$key_column = 'u.user_' . $search_key;
-					$search = " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
-				} elseif ( in_array( $search_key, array( 'discount', 'discount_code', 'dc' ), true ) ) {
-					$user_ids = $wpdb->get_col( "SELECT dcu.user_id FROM {$wpdb->pmpro_discount_codes_uses} dcu LEFT JOIN {$wpdb->pmpro_discount_codes} dc ON dcu.code_id = dc.id WHERE dc.code = '" . esc_sql( $s ) . "'" );
-					if ( empty( $user_ids ) ) { $user_ids = array(0); }
-					$search = ' AND u.ID IN(' . implode( ',', array_map( 'intval', $user_ids ) ) . ') ';
-				} else {
-					$user_ids = $wpdb->get_col( "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value LIKE '%" . esc_sql( $s ) . "%'" );
-					if ( empty( $user_ids ) ) { $user_ids = array(0); }
-					$search = ' AND u.ID IN(' . implode( ',', array_map( 'intval', $user_ids ) ) . ') ';
-				}
-			} elseif ( function_exists( 'wp_is_large_user_count' ) && wp_is_large_user_count() ) {
-				$search = " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
-			} else {
-				$sql .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
-				$search = " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
-			}
+		$needs_usermeta_join = false;
+		$search = $this->build_members_search_sql_fragment( $filters, $needs_usermeta_join );
+		if ( $needs_usermeta_join ) {
+			$sql .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
 		}
-
 		$sql .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		$sql .= " WHERE mu.membership_id > 0 ";
 
-		$filter = null;
-		if ( 'oldmembers' === $l ) {
-			$filter = " AND mu.status <> 'active' ";
-		}
-		if ( 'expired' === $l || 'cancelled' === $l ) {
-			$statuses = ( 'expired' === $l ) ? array( 'expired' ) : array( 'cancelled', 'admin_cancelled' );
-			$filter = " AND mu.status IN ('" . implode( "','", array_map( 'esc_sql', $statuses ) ) . "') ";
-			$filter .= " AND NOT EXISTS ( SELECT 1 FROM {$wpdb->pmpro_memberships_users} mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active' ) ";
-		}
-		if ( is_null( $filter ) && is_numeric( $l ) ) {
-			$filter = " AND mu.status = 'active' AND mu.membership_id = " . (int) $l . " ";
-		}
-		if ( is_null( $filter ) ) {
-			$filter = " AND mu.status = 'active' ";
-		}
-		if ( $s ) {
-			$sql .= $search;
-		}
-		$sql .= $filter;
+		$filter = $this->build_members_filter_sql_fragment( $filters );
+		$sql    .= $search . $filter;
 		$sql .= ' ORDER BY u.ID ';
 		$sql .= $wpdb->prepare( ' LIMIT %d, %d', (int) $offset, (int) $limit );
 
@@ -714,22 +620,49 @@ class PMPro_Exports {
 
 		// Build and write header if needed.
 		if ( $write_header ) {
-			$csv_header = 'id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined,startdate';
-			$csv_header .= ( isset( $export['filters']['l'] ) && 'oldmembers' === $export['filters']['l'] ) ? ',ended' : ',expires';
+			$heading_map = array(
+				'theuser|ID'            => 'id',
+				'theuser|user_login'    => 'username',
+				'metavalues|first_name' => 'firstname',
+				'metavalues|last_name'  => 'lastname',
+				'theuser|user_email'    => 'email',
+				'theuser|membership'    => 'membership',
+				'discount_code|id'      => 'discount_code_id',
+				'discount_code|code'    => 'discount_code',
+			);
+			$headers = array();
+			foreach ( $default_columns as $col ) {
+				$key = $col[0] . '|' . $col[1];
+				$headers[] = isset( $heading_map[ $key ] ) ? $heading_map[ $key ] : $col[1];
+			}
+			$headers = array_merge(
+				$headers,
+				array(
+					'subscription_transaction_id',
+					'billing_amount',
+					'cycle_number',
+					'cycle_period',
+					'next_payment_date',
+					'joined',
+					'startdate',
+					( isset( $export['filters']['l'] ) && 'oldmembers' === $export['filters']['l'] ) ? 'ended' : 'expires',
+				)
+			);
 			if ( ! empty( $extra_columns ) ) {
 				foreach ( $extra_columns as $heading => $callback ) {
-					$csv_header .= ',' . $heading;
+					$headers[] = $heading;
 				}
 			}
+			$csv_header = implode( ',', $headers );
 			$csv_header = apply_filters( 'pmpro_members_list_csv_heading', $csv_header );
-			$csv_header .= "\n";
-			fprintf( $fh, '%s', $csv_header );
+			fprintf( $fh, "%s\n", $csv_header );
 		}
 
 		// Build user rows with a single query similar to the original export for performance.
 		$placeholders = implode( ', ', array_fill( 0, count( $user_ids ), '%d' ) );
 		$filter = $this->build_members_filter_sql_fragment( $export['filters'] );
-		$search = $this->build_members_search_sql_fragment( $export['filters'] );
+		$needs_usermeta_join = false;
+		$search = $this->build_members_search_sql_fragment( $export['filters'], $needs_usermeta_join );
 		if ( ! empty( $search ) ) {
 			$search = str_replace( '%', '%%', $search ); // escape for prepare
 		}
@@ -750,7 +683,7 @@ class PMPro_Exports {
 				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate,
 				m.name as membership
 			FROM {$wpdb->users} u
-			LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id
+			" . ( $needs_usermeta_join ? "LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id" : '' ) . "
 			LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id
 			LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
 			WHERE u.ID in ( {$placeholders} ) AND mu.membership_id > 0 {$filter} {$search}
@@ -843,7 +776,14 @@ class PMPro_Exports {
 		return $filter;
 	}
 
-	protected function build_members_search_sql_fragment( $filters ) {
+	/**
+	 * Build the search SQL fragment for member queries.
+	 *
+	 * @param array $filters               Filters from the request.
+	 * @param bool  $needs_usermeta_join   Set to true if a LEFT JOIN on usermeta is required for this search.
+	 * @return string                      SQL fragment beginning with " AND ..."
+	 */
+	protected function build_members_search_sql_fragment( $filters, &$needs_usermeta_join = false ) {
 		global $wpdb;
 		$s = isset( $filters['s'] ) ? $filters['s'] : '';
 		if ( empty( $s ) ) {
@@ -872,7 +812,7 @@ class PMPro_Exports {
 		} elseif ( function_exists( 'wp_is_large_user_count' ) && wp_is_large_user_count() ) {
 			return " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
 		} else {
-			// Note: when used, caller must have joined usermeta.
+			$needs_usermeta_join = true;
 			return " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
 		}
 	}
