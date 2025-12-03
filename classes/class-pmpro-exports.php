@@ -20,10 +20,18 @@ class PMPro_Exports {
 	protected static $instance = null;
 
 	/**
-	 * Default chunk size and async threshold. Filterable.
+	 * Default chunk size.
+	 *
+	 * How many items (members, orders, etc.) are fetched/written per async batch when processing an export.
 	 */
-	protected $default_chunk_size = 5000;
-	protected $default_async_threshold = 5000;
+	protected $default_chunk_size = 1000;
+
+	/**
+	 * Default async threshold. Filterable.
+	 *
+	 * The total count above which the export switches from synchronous (in the request) to asynchronous (Action Scheduler chunks).
+	 */
+	protected $default_async_threshold = 2500;
 
 	/**
 	 * Get singleton instance.
@@ -42,7 +50,7 @@ class PMPro_Exports {
 	 */
 	public function __construct() {
 		// Background chunk processor.
-		add_action( 'pmpro_export_process_chunk', array( $this, 'process_chunk' ), 10, 1 );
+		add_action( 'pmpro_export_process_chunk', array( $this, 'process_chunk' ), 10, 2 );
 		// Scheduled file deletion handler.
 		add_action( 'pmpro_export_delete_file', array( $this, 'delete_file_task' ), 10, 1 );
 		// File access filter.
@@ -195,8 +203,8 @@ class PMPro_Exports {
 			return $this->format_public_export_response( $export );
 		}
 
-		// Background: queue first chunk.
-		$this->enqueue_next_chunk( $export['id'] );
+		// Background: queue first chunk, include owner to avoid lookup issues in async context.
+		$this->enqueue_next_chunk( $export['id'], $user_id );
 		return $this->format_public_export_response( $export );
 	}
 
@@ -206,10 +214,17 @@ class PMPro_Exports {
 	 * @param string $export_id
 	 * @return void
 	 */
-	protected function enqueue_next_chunk( $export_id ) {
+	protected function enqueue_next_chunk( $export_id, $user_id = 0 ) {
 		// If PMPro is paused, still queue (AS will not run async until resumed).
 		// PMPro's Action Scheduler helper respects queue throttling/deduplication.
-		PMPro_Action_Scheduler::instance()->maybe_add_task( 'pmpro_export_process_chunk', array( 'export_id' => $export_id ), 'pmpro_async_tasks' );
+		$payload = array(
+			'export_id' => $export_id,
+		);
+		if ( ! empty( $user_id ) ) {
+			$payload['user_id'] = (int) $user_id;
+		}
+		// Wrap payload so Action Scheduler passes it as a single argument to the hook.
+		PMPro_Action_Scheduler::instance()->maybe_add_task( 'pmpro_export_process_chunk', array( $payload ), 'pmpro_async_tasks' );
 	}
 
 	/**
@@ -218,12 +233,30 @@ class PMPro_Exports {
 	 * @param array $args Must contain 'export_id'.
 	 * @return void
 	 */
-	public function process_chunk( $args ) {
+	public function process_chunk( $args, $user_id = 0 ) {
+		// Normalize Action Scheduler args: previously we passed an associative array directly,
+		// which AS delivers as individual params. Accept both shapes.
+		if ( is_string( $args ) ) {
+			$args = array(
+				'export_id' => $args,
+			);
+		} elseif ( is_array( $args ) && isset( $args[0] ) && is_array( $args[0] ) && isset( $args[0]['export_id'] ) ) {
+			$args = $args[0];
+		}
+		if ( ! isset( $args['user_id'] ) && ! empty( $user_id ) ) {
+			$args['user_id'] = (int) $user_id;
+		}
+
 		if ( empty( $args['export_id'] ) ) {
 			return;
 		}
 
-		$export = $this->get_export_record( $args['export_id'] );
+		// Prefer explicit owner passed via args to avoid transient lookup issues in async context.
+		if ( ! empty( $args['user_id'] ) ) {
+			$export = $this->get_export_record_for_user( $args['export_id'], (int) $args['user_id'] );
+		} else {
+			$export = $this->get_export_record( $args['export_id'] );
+		}
 		if ( ! $export ) {
 			return; // Nothing to do.
 		}
@@ -231,7 +264,14 @@ class PMPro_Exports {
 			return;
 		}
 
-		$user_id = get_current_user_id(); // context user may be 0 during AS; rely on stored user.
+		// Ensure restricted directory exists before writing.
+		pmpro_set_up_restricted_files_directory();
+
+		// Mark as running to reflect progress in status polling.
+		if ( 'queued' === $export['status'] ) {
+			$export['status'] = 'running';
+			$this->save_export_record( $export );
+		}
 
 		// Process chunk by type.
 		if ( 'members' === $export['type'] ) {
@@ -255,7 +295,7 @@ class PMPro_Exports {
 
 				// Queue next chunk if not complete.
 				if ( 'complete' !== $export['status'] ) {
-					$this->enqueue_next_chunk( $export['id'] );
+					$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
 				}
 			} catch ( \Throwable $e ) {
 				$export['status'] = 'error';
@@ -310,6 +350,20 @@ class PMPro_Exports {
 		if ( empty( $export ) || (int) $export['user_id'] !== (int) $user_id || $export['type'] !== $type ) {
 			return array( 'error' => __( 'No export found.', 'paid-memberships-pro' ) );
 		}
+
+		// Self-heal: if export is queued/running but no chunk task is pending, re-enqueue it.
+		if ( in_array( $export['status'], array( 'queued', 'running' ), true ) && class_exists( '\ActionScheduler' ) ) {
+			$args = array(
+				array(
+					'export_id' => $export['id'],
+					'user_id'   => (int) $export['user_id'],
+				),
+			);
+			$exists = PMPro_Action_Scheduler::instance()->has_existing_task( 'pmpro_export_process_chunk', $args, 'pmpro_async_tasks' );
+			if ( ! $exists ) {
+				$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
+			}
+		}
 		return $this->format_public_export_response( $export );
 	}
 
@@ -321,7 +375,8 @@ class PMPro_Exports {
 			'pmpro_restricted_file_dir' => 'exports',
 			'pmpro_restricted_file'     => $export['file_name'],
 			'export_id'                 => $export['id'],
-			'token'                     => $export['token'], // We pass the token; validated via filter.
+			// Token is stored transiently; fallback to record if present.
+			'token'                     => isset( $export['token'] ) ? $export['token'] : get_transient( 'pmpro_export_token_' . $export['id'] ),
 		);
 		return add_query_arg( $query, home_url( '/' ) );
 	}
@@ -407,6 +462,10 @@ class PMPro_Exports {
 		$key = $this->get_export_meta_key( $record['id'] );
 		// Do not store plaintext token in meta.
 		$to_store = $record;
+		if ( isset( $record['token'] ) ) {
+			// Persist token ephemerally so download_url can be built after async completion.
+			set_transient( 'pmpro_export_token_' . $record['id'], $record['token'], DAY_IN_SECONDS );
+		}
 		unset( $to_store['token'] );
 		update_user_meta( (int) $record['user_id'], $key, wp_json_encode( $to_store ) );
 	}
@@ -822,4 +881,24 @@ class PMPro_Exports {
 		$s = (string) $s;
 		return '"' . str_replace( '"', '\\"', $s ) . '"';
 	}
-}
+
+		/**
+		 * Load an export record for a known owner id.
+		 *
+		 * @param string $export_id
+		 * @param int    $user_id
+		 * @return array|null
+		 */
+		protected function get_export_record_for_user( $export_id, $user_id ) {
+			if ( empty( $export_id ) || empty( $user_id ) ) {
+				return null;
+			}
+			$key = $this->get_export_meta_key( $export_id );
+			$raw = get_user_meta( (int) $user_id, $key, true );
+			if ( empty( $raw ) ) {
+				return null;
+			}
+			$data = json_decode( (string) $raw, true );
+			return is_array( $data ) ? $data : null;
+		}
+	}

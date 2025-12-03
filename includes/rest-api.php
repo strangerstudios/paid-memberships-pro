@@ -332,8 +332,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						}
 						$exports = PMPro_Exports::instance();
 						$result  = $exports->get_status( $type, $export_id );
-						$status_code = isset( $result['error'] ) ? 404 : 200;
-						return new WP_REST_Response( $result, $status_code );
+						// Never respond with 404 for logical export errors; keep 200 and surface error message.
+						if ( isset( $result['error'] ) ) {
+							$result['http_status'] = 200;
+						}
+						return new WP_REST_Response( $result, 200 );
 					},
 					'permission_callback' => function( $request ) {
 						return current_user_can( 'pmpro_memberslistcsv' ) || current_user_can( 'manage_options' );
