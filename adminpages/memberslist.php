@@ -46,7 +46,5 @@ if ( isset( $_REQUEST['l'] ) ) {
 			$user_list_table->display();
 		?>
 	</form>
-<?php endif; ?>
 <?php
 	require_once dirname( __DIR__ ) . '/adminpages/admin_footer.php';
-?>
