@@ -104,6 +104,27 @@ p.pmpro_meta_notice {
 	top: 0;
 }
 
+/* Show spinning loader icon when export is in progress */
+.pmpro_admin .pmpro-has-icon-download[data-status="running"]:before,
+.pmpro_admin .pmpro-has-icon-download[data-status="queued"]:before,
+.pmpro_admin .pmpro-has-icon-download[data-status="preparing"]:before {
+	content: '';
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	top: -1px;
+	line-height: 0;
+	background-image: url('../images/loader.svg');
+	background-repeat: no-repeat;
+	background-size: 14px 14px;
+	animation: pmpro-spin 2s linear infinite;
+}
+
+@keyframes pmpro-spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
 .pmpro_admin .pmpro-has-icon-plus:before {
 	content: "\f132";
 	top: 0;
@@ -1538,6 +1559,10 @@ td > .pmpro_tag {
 
 #member-list-form h1.wp-heading-inline {
 	margin-top: 0;
+}
+
+#pmpro-members-export-button {
+	
 }
 
 .wp-list-table.members .column-ID {

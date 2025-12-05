@@ -1292,3 +1292,136 @@ jQuery(document).ready(function () {
 		}
 	});
 });
+
+// Dynamic Exports Button (Members, Orders, etc.)
+// Handles csv exports via Action Scheduler with large datasets.
+jQuery(document).ready(function () {
+	// Reusable export handler. Looks for buttons with class .pmpro-export-button
+	// and manages lifecycle: start, poll, download. Uses REST endpoints.
+	(function(){
+		var $ = jQuery;
+		var EXPORT_SELECTOR = '.pmpro-export-button';
+
+		function setButtonState($btn, text, status){
+			if(!$btn || !$btn.length){ return; }
+			$btn.text(text);
+			$btn.attr('data-status', status);
+		}
+
+		function beginPolling($btn){
+			if($btn.data('polling')){ return; }
+			$btn.data('polling', true);
+			var interval = setInterval(function(){ pollStatus($btn); }, 3000);
+			$btn.data('pollInterval', interval);
+		}
+
+		function stopPolling($btn){
+			$btn.data('polling', false);
+			var interval = $btn.data('pollInterval');
+			if(interval){ clearInterval(interval); $btn.data('pollInterval', null); }
+		}
+
+		function startExport($btn){
+			if(($btn.attr('data-status')||'idle') !== 'idle'){ return; }
+			var type = $btn.data('type') || 'members';
+			var filters = $btn.data('filters') || {};
+			if (typeof filters === 'string') { try { filters = JSON.parse(filters); } catch(e){ filters = {}; } }
+			setButtonState($btn, 'Preparing…', 'preparing');
+			var payload = Object.assign({ type: type }, filters);
+			var startUrl = $btn.data('startUrl') || ($btn.data('start-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/exports/start') : null);
+			var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
+			if(!startUrl || !nonce){ setButtonState($btn, 'Error', 'error'); return; }
+			fetch(startUrl, {
+				method: 'POST',
+				headers: { 'Content-Type':'application/json', 'X-WP-Nonce': nonce },
+				body: JSON.stringify(payload)
+			}).then(function(r){ return r.json(); }).then(function(data){
+				if(data && data.error){
+					setButtonState($btn, 'Error Starting Export', 'error');
+					return;
+				}
+				$btn.attr('data-export-id', data.export_id || '');
+				if(data.status === 'complete' && data.download_url){
+					setButtonState($btn, 'Download', 'complete');
+					$btn.off('click.pmproExport').on('click.pmproExport', function(){ window.location = data.download_url; });
+				} else {
+					setButtonState($btn, 'Building CSV…', 'running');
+					beginPolling($btn);
+				}
+			}).catch(function(){ setButtonState($btn, 'Error', 'error'); });
+		}
+
+		function pollStatus($btn){
+			var exportId = $btn.attr('data-export-id');
+			if(!exportId){ stopPolling($btn); return; }
+			var type = $btn.data('type') || 'members';
+			var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/exports/status') : null);
+			var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
+			if(!statusUrlBase || !nonce){ stopPolling($btn); return; }
+			var url = new URL(statusUrlBase);
+			url.searchParams.set('type', type);
+			url.searchParams.set('export_id', exportId);
+			fetch(url.toString(), { headers: { 'X-WP-Nonce': nonce } })
+				.then(function(r){ return r.json(); })
+				.then(function(data){
+					if(data && data.error){ setButtonState($btn, 'Export Error', 'error'); stopPolling($btn); return; }
+					if(data.status === 'complete' && data.download_url){
+						setButtonState($btn, 'Download', 'complete');
+						$btn.off('click.pmproExport').on('click.pmproExport', function(){ window.location = data.download_url; });
+						stopPolling($btn);
+						return;
+					}
+					if(data.status === 'error'){ setButtonState($btn, 'Export Error', 'error'); stopPolling($btn); return; }
+					var pct = data.percent || 0;
+					setButtonState($btn, 'Building CSV ' + pct + '%…', 'running');
+				})
+				.catch(function(){ /* swallow transient errors */ });
+		}
+
+		function resumeIfActive($btn){
+			var type = $btn.data('type') || 'members';
+			var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/exports/status') : null);
+			var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
+			if(!statusUrlBase || !nonce){ return; }
+			var url = new URL(statusUrlBase);
+			url.searchParams.set('type', type);
+			fetch(url.toString(), { headers: { 'X-WP-Nonce': nonce } })
+				.then(function(r){ return r.json(); })
+				.then(function(data){
+					if(data && !data.error && data.export_id){
+						$btn.attr('data-export-id', data.export_id);
+						if(data.status === 'complete' && data.download_url){
+							setButtonState($btn, 'Download', 'complete');
+							$btn.off('click.pmproExport').on('click.pmproExport', function(){ window.location = data.download_url; });
+						} else if(data.status === 'running' || data.status === 'queued'){
+							setButtonState($btn, 'Building CSV ' + (data.percent||0) + '%…', 'running');
+							beginPolling($btn);
+						}
+					}
+				})
+				.catch(function(){ /* ignore */ });
+		}
+
+		// Initialize: wire up all export buttons.
+		var $buttons = $(EXPORT_SELECTOR);
+		if($buttons.length){
+			$buttons.each(function(){
+				var $btn = $(this);
+				// Default idle state
+				if(!$btn.attr('data-status')){ $btn.attr('data-status','idle'); }
+				// Resume if there is an active export
+				resumeIfActive($btn);
+				// Click: start or noop if running; if complete, reset to idle after click
+				$btn.off('click.pmproExport').on('click.pmproExport', function(e){
+					e.preventDefault();
+					if($btn.attr('data-status') === 'complete'){
+						setTimeout(function(){ setButtonState($btn, 'Export to CSV', 'idle'); $btn.attr('data-export-id',''); $btn.off('click.pmproExport'); }, 500);
+						return;
+					}
+					if($btn.attr('data-status') === 'running'){ return; }
+					startExport($btn);
+				});
+			});
+		}
+	})();
+});
