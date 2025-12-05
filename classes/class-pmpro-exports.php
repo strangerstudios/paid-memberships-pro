@@ -205,6 +205,7 @@ class PMPro_Exports {
 
 		// Background: queue first chunk, include owner to avoid lookup issues in async context.
 		$this->enqueue_next_chunk( $export['id'], $user_id );
+		
 		return $this->format_public_export_response( $export );
 	}
 
