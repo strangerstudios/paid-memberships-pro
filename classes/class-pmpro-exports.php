@@ -24,14 +24,14 @@ class PMPro_Exports {
 	 *
 	 * How many items (members, orders, etc.) are fetched/written per async batch when processing an export.
 	 */
-	protected $default_chunk_size = 1000;
+	protected $default_chunk_size = 500;
 
 	/**
 	 * Default async threshold. Filterable.
 	 *
 	 * The total count above which the export switches from synchronous (in the request) to asynchronous (Action Scheduler chunks).
 	 */
-	protected $default_async_threshold = 2500;
+	protected $default_async_threshold = 2000;
 
 	/**
 	 * Get singleton instance.
@@ -464,7 +464,7 @@ class PMPro_Exports {
 		// Do not store plaintext token in meta.
 		$to_store = $record;
 		if ( isset( $record['token'] ) ) {
-			// Persist token ephemerally so download_url can be built after async completion.
+			// Persist token so download_url can be built after async completion.
 			set_transient( 'pmpro_export_token_' . $record['id'], $record['token'], DAY_IN_SECONDS );
 		}
 		unset( $to_store['token'] );
@@ -473,36 +473,12 @@ class PMPro_Exports {
 
 	protected function get_export_record( $export_id ) {
 		$user_id = get_current_user_id();
-		// We need to search all users? No, export is tied to the creator; try current user first.
-		// If running in Action Scheduler (no user), we need to locate the owner. We'll attempt to scan authorship from known pattern: user meta stored under creator.
-		// We cannot cheaply scan all users; store owner id in an option? Keeping minimal: also try fetching from all roles is expensive.
-		// Instead, we store a backref under a site option mapping export_id=>user_id to allow AS lookup. Keep minimal and avoid site-wide data per user request, so we encode owner within export_id key on all users is not feasible.
-		// Practical approach: during AS context, set current user to export['user_id'] before use. So here, we try both current user and the stored owner if present.
-
-		// Try reading under current user first.
 		$key = $this->get_export_meta_key( $export_id );
 		$raw = get_user_meta( $user_id, $key, true );
 		if ( ! empty( $raw ) ) {
 			$data = json_decode( (string) $raw, true );
 			if ( is_array( $data ) ) {
 				return $data;
-			}
-		}
-
-		// If not found for current user, try to infer owner by scanning the active keys for this type for current user (won't help) —
-		// Instead accept a fallback: look up owner id based on export id stored temporarily in an option map. To keep minimal footprint per requirements, skip broad searches.
-		// If the AS context passes export_id only, we rely on the next_offset and file path that don't require user context for writing. We still need owner for meta I/O.
-
-		// Attempt: find owner id in a transitory site cache specific to this export (set when creating record). If missing, we cannot load record here.
-		$owner_map_key = 'pmpro_export_owner_' . $export_id;
-		$owner_id = (int) get_transient( $owner_map_key );
-		if ( $owner_id > 0 ) {
-			$raw = get_user_meta( $owner_id, $key, true );
-			if ( ! empty( $raw ) ) {
-				$data = json_decode( (string) $raw, true );
-				if ( is_array( $data ) ) {
-					return $data;
-				}
 			}
 		}
 
@@ -535,7 +511,7 @@ class PMPro_Exports {
 		return pmpro_get_restricted_file_path( 'exports', $file_name );
 	}
 
-	// ===== Members export implementation ===== //
+	// ===== Members Exports ===== //
 
 	protected function sanitize_members_filters( $args ) {
 		$filters = array();
