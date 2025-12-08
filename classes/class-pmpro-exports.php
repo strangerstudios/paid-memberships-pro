@@ -199,6 +199,12 @@ class PMPro_Exports {
 				$limit     = min( $chunk_size, $remaining );
 				$ids       = $this->members_fetch_ids_chunk( $filters, $offset, $limit );
 				$written   = $this->members_write_rows( $export, $ids, $write_header );
+				if ( is_wp_error( $written ) ) {
+					$export['status'] = 'error';
+					$export['error']  = $written->get_error_message();
+					$this->save_export_record( $export );
+					return $this->format_public_export_response( $export );
+				}
 				$write_header = false; // Only on first chunk
 				$offset   += $limit;
 				$export['processed_count'] += $written;
@@ -293,6 +299,12 @@ class PMPro_Exports {
 					$ids = $this->members_fetch_ids_chunk( $export['filters'], $offset, $limit );
 					$write_header = ( $offset === 0 );
 					$written = $this->members_write_rows( $export, $ids, $write_header );
+					if ( is_wp_error( $written ) ) {
+						$export['status'] = 'error';
+						$export['error']  = $written->get_error_message();
+						$this->save_export_record( $export );
+						return; // Stop processing further chunks.
+					}
 
 					$export['processed_count'] += $written;
 					$export['next_offset']      = $offset + $limit;
@@ -577,6 +589,12 @@ class PMPro_Exports {
 
 	// ===== Members Exports ===== //
 
+	/**
+	 * Sanitize members export filters.
+	 *
+	 * @param array $args
+	 * @return array Sanitized filters.
+	 */
 	protected function sanitize_members_filters( $args ) {
 		$filters = array();
 		$filters['l'] = isset( $args['l'] ) ? sanitize_text_field( $args['l'] ) : '';
@@ -584,6 +602,12 @@ class PMPro_Exports {
 		return $filters;
 	}
 
+	/**
+	 * Count total members based on filters.
+	 *
+	 * @param array $filters
+	 * @return int Total member count.
+	 */
 	protected function members_count_total( $filters ) {
 		global $wpdb;
 
@@ -605,6 +629,14 @@ class PMPro_Exports {
 		return max( 0, $count );
 	}
 
+	/**
+	 * Fetch a chunk of member IDs based on filters.
+	 *
+	 * @param array $filters
+	 * @param int   $offset
+	 * @param int   $limit
+	 * @return array Array of user IDs.
+	 */
 	protected function members_fetch_ids_chunk( $filters, $offset, $limit ) {
 		global $wpdb;
 
@@ -630,6 +662,14 @@ class PMPro_Exports {
 		return array_map( 'intval', $ids );
 	}
 
+	/**
+	 * Write member rows to export file.
+	 *
+	 * @param array $export Export record.
+	 * @param array $user_ids User IDs to export.
+	 * @param bool  $write_header Whether to write the CSV header row.
+	 * @return int|WP_Error Number of rows written, or WP_Error on failure.
+	 */
 	protected function members_write_rows( &$export, $user_ids, $write_header ) {
 		global $wpdb;
 		if ( empty( $user_ids ) ) {
@@ -640,7 +680,7 @@ class PMPro_Exports {
 		$file_path = $this->get_file_path( $export['file_name'] );
 		$fh = fopen( $file_path, 'a' );
 		if ( false === $fh ) {
-			throw new \RuntimeException( __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
+			return new \WP_Error( 'pmpro_export_file_write_error', __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
 		}
 
 		// Columns and header (reuse existing filters to stay compatible).
@@ -797,6 +837,12 @@ class PMPro_Exports {
 		return $rows_written;
 	}
 
+	/**
+	 * Build the membership filter SQL fragment for member queries.
+	 *
+	 * @param array $filters               Filters from the request.
+	 * @return string                      SQL fragment beginning with " AND ..."
+	 */
 	protected function build_members_filter_sql_fragment( $filters ) {
 		global $wpdb;
 		$l = isset( $filters['l'] ) ? $filters['l'] : '';
