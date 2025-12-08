@@ -129,7 +129,7 @@ class PMPro_Exports {
 	 */
 	protected function schedule_file_deletion( $file_name, $delay ) {
 		$timestamp = time() + max( 0, (int) $delay );
-		PMPro_Action_Scheduler::instance()->maybe_add_task( 'pmpro_export_delete_file', array( 'file' => $file_name ), 'pmpro_async_tasks', $timestamp );
+		PMPro_Action_Scheduler::instance()->maybe_add_task( 'pmpro_export_delete_file', array( $file_name ), 'pmpro_async_tasks', $timestamp );
 	}
 
 	/**
@@ -138,13 +138,13 @@ class PMPro_Exports {
 	 * @param array $args Should contain 'file'.
 	 * @return void
 	 */
-	public function delete_file_task( $args ) {
-		if ( empty( $args['file'] ) ) {
+	public function delete_file_task( $filename ) {
+		if ( empty( $filename ) || ! is_string( $filename ) ) {
 			return;
 		}
-		$file_path = $this->get_file_path( basename( $args['file'] ) );
+		$file_path = $this->get_file_path( basename( $filename ) );
+		error_log( 'Deleting export file: ' . $file_path );
 		if ( $file_path && file_exists( $file_path ) ) {
-			// Use wp_delete_file() per WordPress standards.
 			wp_delete_file( $file_path );
 		}
 	}
@@ -481,8 +481,7 @@ class PMPro_Exports {
 		// Generate a URL-safe token (alphanumeric only) to avoid reserved characters breaking query strings.
 		$token      = wp_generate_password( 40, false, false );
 		$token_hash = hash_hmac( 'sha256', $token, wp_salt( 'auth' ) );
-		$file_name  = $type . '-' . $export_id;
-		'.csv';
+		$file_name  = $type . '-' . $export_id . '.csv';
 
 		$record = array(
 			'id'              => $export_id,
