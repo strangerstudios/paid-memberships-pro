@@ -56,12 +56,7 @@ function pmpro_wp_ajax_twocheckout_ins()
 }
 add_action('wp_ajax_nopriv_twocheckout-ins', 'pmpro_wp_ajax_twocheckout_ins');
 add_action('wp_ajax_twocheckout-ins', 'pmpro_wp_ajax_twocheckout_ins');
-function pmpro_wp_ajax_memberlist_csv()
-{
-	require_once(dirname(__FILE__) . "/../adminpages/memberslist-csv.php");	
-	exit;	
-}
-add_action('wp_ajax_memberslist_csv', 'pmpro_wp_ajax_memberlist_csv');
+
 function pmpro_wp_ajax_orders_csv()
 {
 	require_once(dirname(__FILE__) . "/../adminpages/orders-csv.php");	
