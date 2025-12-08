@@ -75,6 +75,13 @@ class PMPro_Exports {
 			// Do not sanitize token; use raw-unslashed for HMAC compare.
 			$token = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : '';
 			$file  = isset( $_REQUEST['pmpro_restricted_file'] ) ? basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file'] ) ) ) : '';
+			// Optional nonce verification to satisfy standards.
+			if ( isset( $_REQUEST['_wpnonce'] ) ) {
+				$nonce = sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) );
+				if ( ! wp_verify_nonce( $nonce, 'pmpro_export_download_' . $export_id ) ) {
+					return $can_access;
+				}
+			}
 			if ( ! empty( $export_id ) && ! empty( $token ) && ! empty( $file ) ) {
 				if ( class_exists( 'PMPro_Exports' ) ) {
 					$exports    = self::instance();
@@ -137,7 +144,8 @@ class PMPro_Exports {
 		}
 		$file_path = $this->get_file_path( basename( $args['file'] ) );
 		if ( $file_path && file_exists( $file_path ) ) {
-			@unlink( $file_path );
+			// Use wp_delete_file() per WordPress standards.
+			wp_delete_file( $file_path );
 		}
 	}
 
@@ -396,6 +404,7 @@ class PMPro_Exports {
 			'export_id'                 => $export['id'],
 			// Token is stored transiently; fallback to record if present.
 			'token'                     => isset( $export['token'] ) ? $export['token'] : get_transient( 'pmpro_export_token_' . $export['id'] ),
+			'_wpnonce'                  => wp_create_nonce( 'pmpro_export_download_' . $export['id'] ),
 		);
 		return add_query_arg( $query, home_url( '/' ) );
 	}
@@ -437,10 +446,22 @@ class PMPro_Exports {
 
 	// ===== Storage helpers (User Meta) ===== //
 
+	/**
+	 * Get the export meta key for a given export id.
+	 *
+	 * @param string $export_id Export ID.
+	 * @return string User meta key storing the export record.
+	 */
 	protected function get_export_meta_key( $export_id ) {
 		return 'pmpro_export_' . $export_id;
 	}
 
+	/**
+	 * Get the active export meta key for a given type.
+	 *
+	 * @param string $type Export type key.
+	 * @return string User meta key storing active export id.
+	 */
 	protected function get_active_meta_key( $type ) {
 		return 'pmpro_export_active_' . $type;
 	}
@@ -593,8 +614,8 @@ class PMPro_Exports {
 	/**
 	 * Sanitize members export filters.
 	 *
-	 * @param array $args
-	 * @return array Sanitized filters.
+	 * @param array $args Raw filter args from request.
+	 * @return array Sanitized filters array with keys 'l' and 's'.
 	 */
 	protected function sanitize_members_filters( $args ) {
 		$filters      = array();
@@ -604,59 +625,59 @@ class PMPro_Exports {
 	}
 
 	/**
-	 * Count total members based on filters.
+	 * Count total members matching filters.
 	 *
-	 * @param array $filters
-	 * @return int Total member count.
+	 * @param array $filters Sanitized filters.
+	 * @return int Total matching member count.
 	 */
 	protected function members_count_total( $filters ) {
 		global $wpdb;
 
-		$sql                 = "SELECT COUNT(DISTINCT u.ID) FROM {$wpdb->users} u ";
+		$query               = "SELECT COUNT(DISTINCT u.ID) FROM {$wpdb->users} u ";
 		$needs_usermeta_join = false;
 		$search              = $this->build_members_search_sql_fragment( $filters, $needs_usermeta_join );
 		if ( $needs_usermeta_join ) {
-			$sql .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
+			$query .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
 		}
-		$sql .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
-		$sql .= ' WHERE mu.membership_id > 0 ';
+		$query .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
+		$query .= ' WHERE mu.membership_id > 0 ';
 
 		$filter = $this->build_members_filter_sql_fragment( $filters );
-		$sql   .= $search . $filter;
+		$query .= $search . $filter;
 
 		// Allow manipulation of SQL if needed.
-		$sql   = apply_filters( 'pmpro_members_list_sql', $sql );
-		$count = (int) $wpdb->get_var( $wpdb->prepare( $sql ) );
+		$query = apply_filters( 'pmpro_members_list_sql', $query );
+		$count = (int) $wpdb->get_var( $query );
 		return max( 0, $count );
 	}
 
 	/**
-	 * Fetch a chunk of member IDs based on filters.
+	 * Fetch a chunk of member IDs matching filters.
 	 *
-	 * @param array $filters
-	 * @param int   $offset
-	 * @param int   $limit
-	 * @return array Array of user IDs.
+	 * @param array $filters Sanitized filters.
+	 * @param int   $offset  Row offset.
+	 * @param int   $limit   Max rows.
+	 * @return array<int> List of user IDs.
 	 */
 	protected function members_fetch_ids_chunk( $filters, $offset, $limit ) {
 		global $wpdb;
 
-		$sql                 = "SELECT DISTINCT u.ID FROM {$wpdb->users} u ";
+		$query               = "SELECT DISTINCT u.ID FROM {$wpdb->users} u ";
 		$needs_usermeta_join = false;
 		$search              = $this->build_members_search_sql_fragment( $filters, $needs_usermeta_join );
 		if ( $needs_usermeta_join ) {
-			$sql .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
+			$query .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
 		}
-		$sql .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
-		$sql .= ' WHERE mu.membership_id > 0 ';
+		$query .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
+		$query .= ' WHERE mu.membership_id > 0 ';
 
 		$filter = $this->build_members_filter_sql_fragment( $filters );
-		$sql   .= $search . $filter;
-		$sql   .= ' ORDER BY u.ID ';
-		$sql   .= $wpdb->prepare( ' LIMIT %d, %d', (int) $offset, (int) $limit );
+		$query .= $search . $filter;
+		$query .= ' ORDER BY u.ID ';
+		$query .= $wpdb->prepare( ' LIMIT %d, %d', (int) $offset, (int) $limit );
 
-		$sql = apply_filters( 'pmpro_members_list_sql', $sql );
-		$ids = $wpdb->get_col( $wpdb->prepare( $sql ) );
+		$query = apply_filters( 'pmpro_members_list_sql', $query );
+		$ids = $wpdb->get_col( $query );
 		if ( empty( $ids ) ) {
 			return array();
 		}
@@ -664,12 +685,12 @@ class PMPro_Exports {
 	}
 
 	/**
-	 * Write member rows to export file.
+	 * Write member rows to the export file.
 	 *
-	 * @param array $export Export record.
-	 * @param array $user_ids User IDs to export.
-	 * @param bool  $write_header Whether to write the CSV header row.
-	 * @return int|WP_Error Number of rows written, or WP_Error on failure.
+	 * @param array $export       Export record.
+	 * @param array $user_ids     User IDs to write.
+	 * @param bool  $write_header Whether to write header.
+	 * @return int|\WP_Error Rows written or WP_Error on failure.
 	 */
 	protected function members_write_rows( &$export, $user_ids, $write_header ) {
 		global $wpdb;
@@ -746,10 +767,10 @@ class PMPro_Exports {
 		$needs_usermeta_join = false;
 		$search              = $this->build_members_search_sql_fragment( $export['filters'], $needs_usermeta_join );
 		if ( ! empty( $search ) ) {
-			$search = str_replace( '%', '%%', $search ); // escape for prepare
+			$search = str_replace( '%', '%%', $search ); // Escape for prepare.
 		}
 
-		$userSql = "
+		$user_sql = "
 			SELECT DISTINCT
 				u.ID,
 				u.user_login,
@@ -772,9 +793,9 @@ class PMPro_Exports {
 			GROUP BY u.ID, mu.membership_id
 			ORDER BY u.ID
 		";
-		$userSql = call_user_func( array( $wpdb, 'prepare' ), $userSql, $user_ids );
+		$user_sql = call_user_func( array( $wpdb, 'prepare' ), $user_sql, $user_ids );
 		// Query is already prepared above; safe to execute.
-		$usr_data = $wpdb->get_results( $userSql );
+		$usr_data = $wpdb->get_results( $user_sql );
 
 		$rows_written = 0;
 
@@ -788,7 +809,7 @@ class PMPro_Exports {
 			$theuser->metavalues = $metavalues;
 
 			// Discount code used (latest).
-			$disSql        = $wpdb->prepare(
+			$dis_sql        = $wpdb->prepare(
 				"
 				SELECT c.id, c.code
 				FROM {$wpdb->pmpro_discount_codes_uses} cu
@@ -798,7 +819,7 @@ class PMPro_Exports {
 				LIMIT 1",
 				$theuser->ID
 			);
-			$discount_code = $wpdb->get_row( $disSql );
+			$discount_code = $wpdb->get_row( $dis_sql );
 			if ( empty( $discount_code ) ) {
 				$discount_code = (object) array(
 					'id'   => '',
@@ -850,6 +871,12 @@ class PMPro_Exports {
 	 * @param array $filters               Filters from the request.
 	 * @return string                      SQL fragment beginning with " AND ..."
 	 */
+	/**
+	 * Build the membership filter SQL fragment for member queries.
+	 *
+	 * @param array $filters Sanitized filters.
+	 * @return string SQL fragment beginning with " AND ".
+	 */
 	protected function build_members_filter_sql_fragment( $filters ) {
 		global $wpdb;
 		$l      = isset( $filters['l'] ) ? $filters['l'] : '';
@@ -877,6 +904,13 @@ class PMPro_Exports {
 	 * @param array $filters               Filters from the request.
 	 * @param bool  $needs_usermeta_join   Set to true if a LEFT JOIN on usermeta is required for this search.
 	 * @return string                      SQL fragment beginning with " AND ..."
+	 */
+	/**
+	 * Build the search SQL fragment for member queries.
+	 *
+	 * @param array $filters             Sanitized filters.
+	 * @param bool  $needs_usermeta_join Set true if usermeta JOIN needed.
+	 * @return string SQL fragment beginning with " AND ".
 	 */
 	protected function build_members_search_sql_fragment( $filters, &$needs_usermeta_join = false ) {
 		global $wpdb;
