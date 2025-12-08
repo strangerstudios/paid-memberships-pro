@@ -33,6 +33,9 @@ class PMPro_Exports {
 	 */
 	protected $default_async_threshold = 2000;
 
+	/** Default export file expiration time (in seconds). */
+	protected $default_export_exp = 6 * HOUR_IN_SECONDS;
+
 	/**
 	 * Get singleton instance.
 	 *
@@ -67,6 +70,7 @@ class PMPro_Exports {
 	public function export_can_access_restricted_files( $can_access, $file_dir ) {
 		// Allow access to export files for the requesting user if token/export_id validate.
 		if ( 'exports' === $file_dir ) {
+			$current_user_id = get_current_user_id();
 			$export_id = isset( $_REQUEST['export_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['export_id'] ) ) : '';
 			// Do not sanitize token; use raw-unslashed for HMAC compare.
 			$token     = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : '';
@@ -74,11 +78,11 @@ class PMPro_Exports {
 			if ( ! empty( $export_id ) && ! empty( $token ) && ! empty( $file ) ) {
 				if ( class_exists( 'PMPro_Exports' ) ) {
 					$exports = PMPro_Exports::instance();
-					$can_access = $exports->validate_file_access( get_current_user_id(), $export_id, $token, $file );
+					$can_access = $exports->validate_file_access( $current_user_id, $export_id, $token, $file );
 					// If access is granted, perform cleanup and schedule file deletion.
 					if ( $can_access ) {
-						$exports->cleanup_after_download( $export_id );
-						$exports->schedule_file_deletion( $file, 6 * HOUR_IN_SECONDS );
+						$exports->cleanup_after_download( $current_user_id, $export_id );
+						$exports->schedule_file_deletion( $file, $this->default_export_exp );
 					}
 				}
 			}
@@ -91,18 +95,19 @@ class PMPro_Exports {
 	 * Clears the active pointer and ephemeral transients and removes the stored export record.
 	 * Leaves the file on disk.
 	 *
+	 * @param int    $current_user_id
 	 * @param string $export_id
+	 * @return void
 	 */
-	protected function cleanup_after_download( $export_id ) {
-		$user_id = get_current_user_id();
-		if ( empty( $user_id ) ) {
+	protected function cleanup_after_download( $current_user_id, $export_id ) {
+		if ( empty( $current_user_id ) ) {
 			return;
 		}
 		// Delete the active export pointer for members.
-		delete_user_meta( $user_id, $this->get_active_meta_key( 'members' ) );
+		delete_user_meta( $current_user_id, $this->get_active_meta_key( 'members' ) );
 		// Delete the export record stored under the owner.
 		$key = $this->get_export_meta_key( $export_id );
-		delete_user_meta( $user_id, $key );
+		delete_user_meta( $current_user_id, $key );
 		// Clear transients.
 		delete_transient( 'pmpro_export_owner_' . $export_id );
 		delete_transient( 'pmpro_export_token_' . $export_id );
@@ -113,6 +118,7 @@ class PMPro_Exports {
 	 *
 	 * @param string $file_name The file name within the exports restricted dir.
 	 * @param int    $delay     Seconds from now to delete the file.
+	 * @return void
 	 */
 	protected function schedule_file_deletion( $file_name, $delay ) {
 		$timestamp = time() + max( 0, (int) $delay );
@@ -123,6 +129,7 @@ class PMPro_Exports {
 	 * Action Scheduler task: delete an export file from disk.
 	 *
 	 * @param array $args Should contain 'file'.
+	 * @return void
 	 */
 	public function delete_file_task( $args ) {
 		if ( empty( $args['file'] ) ) {
@@ -136,7 +143,7 @@ class PMPro_Exports {
 
 	/**
 	 * Start an export. Routes to type-specific create routine.
-	 * Decides sync vs async based on threshold.
+	 * Decides sync (original) vs async (new) method based on threshold.
 	 *
 	 * @param string $type Export type (currently supports 'members').
 	 * @param array  $args Filters, e.g., ['l' => ..., 's' => ...].
@@ -184,6 +191,7 @@ class PMPro_Exports {
 
 		if ( ! $should_async ) {
 			// Synchronous: process all chunks quickly in this request.
+			// Chunked helps with memory usage.
 			$offset = 0;
 			$write_header = true;
 			while ( $offset < $total ) {
@@ -203,9 +211,10 @@ class PMPro_Exports {
 			return $this->format_public_export_response( $export );
 		}
 
-		// Background: queue first chunk, include owner to avoid lookup issues in async context.
+		// Async: queue first chunk, include owner to avoid lookup issues in async context.
 		$this->enqueue_next_chunk( $export['id'], $user_id );
 		
+		// Return initial response.
 		return $this->format_public_export_response( $export );
 	}
 
@@ -264,9 +273,6 @@ class PMPro_Exports {
 		if ( in_array( $export['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
 			return;
 		}
-
-		// Ensure restricted directory exists before writing.
-		pmpro_set_up_restricted_files_directory();
 
 		// Mark as running to reflect progress in status polling.
 		if ( 'queued' === $export['status'] ) {
@@ -352,7 +358,7 @@ class PMPro_Exports {
 			return array( 'error' => __( 'No export found.', 'paid-memberships-pro' ) );
 		}
 
-		// Self-heal: if export is queued/running but no chunk task is pending, re-enqueue it.
+		// Self-heal: if export is queued/running but no chunk task is pending, enqueue it.
 		if ( in_array( $export['status'], array( 'queued', 'running' ), true ) && class_exists( '\ActionScheduler' ) ) {
 			$args = array(
 				array(
@@ -427,12 +433,22 @@ class PMPro_Exports {
 		return 'pmpro_export_active_' . $type;
 	}
 
+	/**
+	 * Create and persist a new export record.
+	 *
+	 * @param int    $user_id
+	 * @param string $type
+	 * @param array  $filters
+	 * @param int    $total
+	 * @param int    $chunk_size
+	 * @return array The created export record.
+	 */
 	protected function create_export_record( $user_id, $type, $filters, $total, $chunk_size ) {
 		$export_id = wp_generate_uuid4();
 		// Generate a URL-safe token (alphanumeric only) to avoid reserved characters breaking query strings.
 		$token     = wp_generate_password( 40, false, false );
 		$token_hash = hash_hmac( 'sha256', $token, wp_salt( 'auth' ) );
-		$file_name = $this->build_file_name( $type, $export_id );
+		$file_name = $type . '-' . $export_id; '.csv';
 
 		$record = array(
 			'id'              => $export_id,
@@ -459,6 +475,12 @@ class PMPro_Exports {
 		return $record;
 	}
 
+	/**
+	 * Save an export record to user meta.
+	 *
+	 * @param array $record
+	 * @return void
+	 */
 	protected function save_export_record( $record ) {
 		$key = $this->get_export_meta_key( $record['id'] );
 		// Do not store plaintext token in meta.
@@ -471,6 +493,12 @@ class PMPro_Exports {
 		update_user_meta( (int) $record['user_id'], $key, wp_json_encode( $to_store ) );
 	}
 
+	/**
+	 * Get export record (in user context).
+	 *
+	 * @param string $export_id
+	 * @return array|null
+	 */
 	protected function get_export_record( $export_id ) {
 		$user_id = get_current_user_id();
 		$key = $this->get_export_meta_key( $export_id );
@@ -485,6 +513,13 @@ class PMPro_Exports {
 		return null;
 	}
 
+	/**
+	 * Get export record for a specific user.
+	 *
+	 * @param string $export_id
+	 * @param int    $user_id
+	 * @return array|null
+	 */
 	protected function get_active_export_for_user( $user_id, $type ) {
 		$active_id = get_user_meta( $user_id, $this->get_active_meta_key( $type ), true );
 		if ( empty( $active_id ) ) {
@@ -499,16 +534,45 @@ class PMPro_Exports {
 		return is_array( $data ) ? $data : null;
 	}
 
-	protected function build_file_name( $type, $export_id ) {
-		switch ( $type ) {
-			case 'members':
-			default:
-				return 'members-' . $export_id . '.csv';
-		}
-	}
-
+	/**
+	 * Get full file path for an export file.
+	 *
+	 * @param string $file_name
+	 * @return string Full file path.
+	 */
 	protected function get_file_path( $file_name ) {
 		return pmpro_get_restricted_file_path( 'exports', $file_name );
+	}
+
+	/**
+	 * Load an export record for a known owner id.
+	 *
+	 * @param string $export_id
+	 * @param int    $user_id
+	 * @return array|null
+	 */
+	protected function get_export_record_for_user( $export_id, $user_id ) {
+		if ( empty( $export_id ) || empty( $user_id ) ) {
+			return null;
+		}
+		$key = $this->get_export_meta_key( $export_id );
+		$raw = get_user_meta( (int) $user_id, $key, true );
+		if ( empty( $raw ) ) {
+			return null;
+		}
+		$data = json_decode( (string) $raw, true );
+		return is_array( $data ) ? $data : null;
+	}
+
+	/**
+	 * Enclose a value for CSV output.
+	 *
+	 * @param mixed $s
+	 * @return string
+	 */
+	protected function csv_enclose( $s ) {
+		$s = (string) $s;
+		return '"' . str_replace( '"', '\\"', $s ) . '"';
 	}
 
 	// ===== Members Exports ===== //
@@ -537,7 +601,7 @@ class PMPro_Exports {
 
 		// Allow manipulation of SQL if needed.
 		$sql = apply_filters( 'pmpro_members_list_sql', $sql );
-		$count = (int) $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		$count = (int) $wpdb->get_var( $wpdb->prepare( $sql ) );
 		return max( 0, $count );
 	}
 
@@ -559,7 +623,7 @@ class PMPro_Exports {
 		$sql .= $wpdb->prepare( ' LIMIT %d, %d', (int) $offset, (int) $limit );
 
 		$sql = apply_filters( 'pmpro_members_list_sql', $sql );
-		$ids = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		$ids = $wpdb->get_col( $wpdb->prepare( $sql ) );
 		if ( empty( $ids ) ) {
 			return array();
 		}
@@ -668,7 +732,8 @@ class PMPro_Exports {
 			ORDER BY u.ID
 		";
 		$userSql = call_user_func( array( $wpdb, 'prepare' ), $userSql, $user_ids );
-		$usr_data = $wpdb->get_results( $userSql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// Query is already prepared above; safe to execute.
+		$usr_data = $wpdb->get_results( $userSql );
 
 		$rows_written = 0;
 
@@ -794,28 +859,4 @@ class PMPro_Exports {
 		}
 	}
 
-	protected function csv_enclose( $s ) {
-		$s = (string) $s;
-		return '"' . str_replace( '"', '\\"', $s ) . '"';
-	}
-
-		/**
-		 * Load an export record for a known owner id.
-		 *
-		 * @param string $export_id
-		 * @param int    $user_id
-		 * @return array|null
-		 */
-		protected function get_export_record_for_user( $export_id, $user_id ) {
-			if ( empty( $export_id ) || empty( $user_id ) ) {
-				return null;
-			}
-			$key = $this->get_export_meta_key( $export_id );
-			$raw = get_user_meta( (int) $user_id, $key, true );
-			if ( empty( $raw ) ) {
-				return null;
-			}
-			$data = json_decode( (string) $raw, true );
-			return is_array( $data ) ? $data : null;
-		}
 	}
