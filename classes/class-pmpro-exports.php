@@ -151,24 +151,24 @@ class PMPro_Exports {
 	protected function get_export_type_configs() {
 		$configs = array(
 			'members' => array(
-				'capabilities'            => array( 'pmpro_memberslistcsv', 'manage_options' ),
-				'sanitize_filters'        => 'sanitize_members_filters',
-				'count_total'             => 'members_count_total',
-				'fetch_ids'               => 'members_fetch_ids_chunk',
-				'write_rows'              => 'members_write_rows',
-				'chunk_size_filter'       => 'pmpro_members_export_chunk_size',
-				'async_threshold_filter'  => 'pmpro_members_export_async_threshold',
-				'file_prefix'             => 'members',
+				'capabilities'           => array( 'pmpro_memberslistcsv', 'manage_options' ),
+				'sanitize_filters'       => 'sanitize_members_filters',
+				'count_total'            => 'members_count_total',
+				'fetch_ids'              => 'members_fetch_ids_chunk',
+				'write_rows'             => 'members_write_rows',
+				'chunk_size_filter'      => 'pmpro_members_export_chunk_size',
+				'async_threshold_filter' => 'pmpro_members_export_async_threshold',
+				'file_prefix'            => 'members',
 			),
 			'orders'  => array(
-				'capabilities'            => array( 'pmpro_orderscsv', 'manage_options' ),
-				'sanitize_filters'        => 'sanitize_orders_filters',
-				'count_total'             => 'orders_count_total',
-				'fetch_ids'               => 'orders_fetch_ids_chunk',
-				'write_rows'              => 'orders_write_rows',
-				'chunk_size_filter'       => 'pmpro_orders_export_chunk_size',
-				'async_threshold_filter'  => 'pmpro_orders_export_async_threshold',
-				'file_prefix'             => 'orders',
+				'capabilities'           => array( 'pmpro_orderscsv', 'manage_options' ),
+				'sanitize_filters'       => 'sanitize_orders_filters',
+				'count_total'            => 'orders_count_total',
+				'fetch_ids'              => 'orders_fetch_ids_chunk',
+				'write_rows'             => 'orders_write_rows',
+				'chunk_size_filter'      => 'pmpro_orders_export_chunk_size',
+				'async_threshold_filter' => 'pmpro_orders_export_async_threshold',
+				'file_prefix'            => 'orders',
 			),
 		);
 
@@ -589,10 +589,10 @@ class PMPro_Exports {
 			return $written;
 		}
 
-		$processed                       = (int) $written;
-		$export['processed_count']      += $processed;
-		$export['next_offset']           = $offset + count( $ids );
-		$export['status']                = ( $export['processed_count'] >= $export['total_count'] ) ? 'complete' : 'running';
+		$processed                  = (int) $written;
+		$export['processed_count'] += $processed;
+		$export['next_offset']      = $offset + count( $ids );
+		$export['status']           = ( $export['processed_count'] >= $export['total_count'] ) ? 'complete' : 'running';
 		$this->save_export_record( $export );
 
 		if ( 'complete' === $export['status'] && 'orders' === $export['type'] ) {
@@ -899,7 +899,7 @@ class PMPro_Exports {
 	/**
 	 * Write a header row to the CSV if needed.
 	 *
-	 * @param resource    $fh          File handle.
+	 * @param resource     $fh          File handle.
 	 * @param string|array $header_row Header row as array or pre-built string.
 	 * @return void
 	 */
@@ -979,7 +979,7 @@ class PMPro_Exports {
 		$query .= $wpdb->prepare( ' LIMIT %d, %d', (int) $offset, (int) $limit );
 
 		$query = apply_filters( 'pmpro_members_list_sql', $query );
-		$ids = $wpdb->get_col( $query );
+		$ids   = $wpdb->get_col( $query );
 		if ( empty( $ids ) ) {
 			return array();
 		}
@@ -1110,7 +1110,7 @@ class PMPro_Exports {
 			$theuser->metavalues = $metavalues;
 
 			// Discount code used (latest).
-			$dis_sql        = $wpdb->prepare(
+			$dis_sql       = $wpdb->prepare(
 				"
 				SELECT c.id, c.code
 				FROM {$wpdb->pmpro_discount_codes_uses} cu
@@ -1319,12 +1319,12 @@ class PMPro_Exports {
 					$enddate   = date_i18n( 'Y-m-d', strtotime( 'last day of last month', $now ) );
 				} elseif ( 'This Year' === $predefined ) {
 					$year      = date_i18n( 'Y', $now );
-					$startdate = date_i18n( "Y-m-d", strtotime( "first day of January $year", $now ) );
-					$enddate   = date_i18n( "Y-m-d", strtotime( "last day of December $year", $now ) );
+					$startdate = date_i18n( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+					$enddate   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", $now ) );
 				} elseif ( 'Last Year' === $predefined ) {
 					$year      = (int) date_i18n( 'Y', $now ) - 1;
-					$startdate = date_i18n( "Y-m-d", strtotime( "first day of January $year", $now ) );
-					$enddate   = date_i18n( "Y-m-d", strtotime( "last day of December $year", $now ) );
+					$startdate = date_i18n( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+					$enddate   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", $now ) );
 				} else {
 					$startdate = date_i18n( 'Y-m-d', strtotime( 'first day of this month', $now ) );
 					$enddate   = date_i18n( 'Y-m-d', strtotime( 'last day of this month', $now ) );
@@ -1525,7 +1525,7 @@ class PMPro_Exports {
 
 		$sql_base = "FROM {$wpdb->pmpro_membership_orders} AS o {$joins} WHERE {$where}";
 		if ( ! empty( $filters['limit'] ) ) {
-			$sql = "SELECT COUNT(*) FROM ( SELECT DISTINCT o.id {$sql_base} ORDER BY o.id DESC, o.timestamp DESC LIMIT %d, %d ) AS counts";
+			$sql      = "SELECT COUNT(*) FROM ( SELECT DISTINCT o.id {$sql_base} ORDER BY o.id DESC, o.timestamp DESC LIMIT %d, %d ) AS counts";
 			$params[] = isset( $filters['offset'] ) ? (int) $filters['offset'] : 0;
 			$params[] = (int) $filters['limit'];
 		} else {
@@ -1571,13 +1571,13 @@ class PMPro_Exports {
 			$limit = min( $limit, $remaining );
 		}
 
-		$sql     = "SELECT DISTINCT o.id FROM {$wpdb->pmpro_membership_orders} AS o {$joins} WHERE {$where} ORDER BY o.id DESC, o.timestamp DESC LIMIT %d, %d";
+		$sql      = "SELECT DISTINCT o.id FROM {$wpdb->pmpro_membership_orders} AS o {$joins} WHERE {$where} ORDER BY o.id DESC, o.timestamp DESC LIMIT %d, %d";
 		$params[] = $query_offset;
 		$params[] = (int) $limit;
 
-		$sql  = call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $sql ), $params ) );
-		$ids  = $wpdb->get_col( $sql );
-		$ids  = is_array( $ids ) ? array_map( 'intval', $ids ) : array();
+		$sql = call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $sql ), $params ) );
+		$ids = $wpdb->get_col( $sql );
+		$ids = is_array( $ids ) ? array_map( 'intval', $ids ) : array();
 		return $ids;
 	}
 
@@ -1752,8 +1752,8 @@ class PMPro_Exports {
 				}
 			}
 
-			$ts           = date_i18n( $dateformat, $order->getTimestamp() );
-			$csvoutput[]  = $this->csv_enclose( $ts );
+			$ts          = date_i18n( $dateformat, $order->getTimestamp() );
+			$csvoutput[] = $this->csv_enclose( $ts );
 
 			if ( ! empty( $extra_columns ) ) {
 				foreach ( $extra_columns as $heading => $callback ) {
