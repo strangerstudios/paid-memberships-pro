@@ -85,10 +85,11 @@ class PMPro_Exports {
 			if ( ! empty( $export_id ) && ! empty( $token ) && ! empty( $file ) ) {
 				if ( class_exists( 'PMPro_Exports' ) ) {
 					$exports    = self::instance();
+					$export_rec = $exports->get_export_record_for_user( $export_id, $current_user_id );
 					$can_access = $exports->validate_file_access( $current_user_id, $export_id, $token, $file );
 					// If access is granted, perform cleanup and schedule file deletion.
 					if ( $can_access ) {
-						$exports->cleanup_after_download( $current_user_id, $export_id );
+						$exports->cleanup_after_download( $current_user_id, $export_id, isset( $export_rec['type'] ) ? $export_rec['type'] : '' );
 						$exports->schedule_file_deletion( $file, $this->default_export_exp );
 					}
 				}
@@ -106,12 +107,20 @@ class PMPro_Exports {
 	 * @param string $export_id
 	 * @return void
 	 */
-	protected function cleanup_after_download( $current_user_id, $export_id ) {
+	protected function cleanup_after_download( $current_user_id, $export_id, $type = '' ) {
 		if ( empty( $current_user_id ) ) {
 			return;
 		}
-		// Delete the active export pointer for members.
-		delete_user_meta( $current_user_id, $this->get_active_meta_key( 'members' ) );
+		if ( empty( $type ) ) {
+			$record = $this->get_export_record_for_user( $export_id, $current_user_id );
+			if ( ! empty( $record['type'] ) ) {
+				$type = $record['type'];
+			}
+		}
+		// Delete the active export pointer for this type.
+		if ( ! empty( $type ) ) {
+			delete_user_meta( $current_user_id, $this->get_active_meta_key( $type ) );
+		}
 		// Delete the export record stored under the owner.
 		$key = $this->get_export_meta_key( $export_id );
 		delete_user_meta( $current_user_id, $key );
@@ -130,6 +139,241 @@ class PMPro_Exports {
 	protected function schedule_file_deletion( $file_name, $delay ) {
 		$timestamp = time() + max( 0, (int) $delay );
 		PMPro_Action_Scheduler::instance()->maybe_add_task( 'pmpro_export_delete_file', array( $file_name ), 'pmpro_async_tasks', $timestamp );
+	}
+
+	// ===== Type Helpers ===== //
+
+	/**
+	 * Export type configurations.
+	 *
+	 * @return array
+	 */
+	protected function get_export_type_configs() {
+		$configs = array(
+			'members' => array(
+				'capabilities'            => array( 'pmpro_memberslistcsv', 'manage_options' ),
+				'sanitize_filters'        => 'sanitize_members_filters',
+				'count_total'             => 'members_count_total',
+				'fetch_ids'               => 'members_fetch_ids_chunk',
+				'write_rows'              => 'members_write_rows',
+				'chunk_size_filter'       => 'pmpro_members_export_chunk_size',
+				'async_threshold_filter'  => 'pmpro_members_export_async_threshold',
+				'file_prefix'             => 'members',
+			),
+			'orders'  => array(
+				'capabilities'            => array( 'pmpro_orderscsv', 'manage_options' ),
+				'sanitize_filters'        => 'sanitize_orders_filters',
+				'count_total'             => 'orders_count_total',
+				'fetch_ids'               => 'orders_fetch_ids_chunk',
+				'write_rows'              => 'orders_write_rows',
+				'chunk_size_filter'       => 'pmpro_orders_export_chunk_size',
+				'async_threshold_filter'  => 'pmpro_orders_export_async_threshold',
+				'file_prefix'             => 'orders',
+			),
+		);
+
+		return apply_filters( 'pmpro_export_type_configs', $configs );
+	}
+
+	/**
+	 * Return config for a type if available.
+	 *
+	 * @param string $type
+	 * @return array|null
+	 */
+	protected function get_type_config( $type ) {
+		$configs = $this->get_export_type_configs();
+		return isset( $configs[ $type ] ) ? $configs[ $type ] : null;
+	}
+
+	/**
+	 * Check if a user can export the given type.
+	 *
+	 * @param string $type
+	 * @param int    $user_id
+	 * @return bool
+	 */
+	public function user_can_export( $type, $user_id = 0 ) {
+		$config = $this->get_type_config( $type );
+		if ( empty( $config ) ) {
+			return false;
+		}
+		$user_id = $user_id ? (int) $user_id : get_current_user_id();
+		if ( empty( $user_id ) ) {
+			return false;
+		}
+		if ( empty( $config['capabilities'] ) || ! is_array( $config['capabilities'] ) ) {
+			return user_can( $user_id, 'manage_options' );
+		}
+
+		foreach ( $config['capabilities'] as $capability ) {
+			if ( user_can( $user_id, $capability ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Get chunk size for a type.
+	 *
+	 * @param string $type
+	 * @return int
+	 */
+	protected function get_chunk_size_for_type( $type ) {
+		$config     = $this->get_type_config( $type );
+		$chunk_size = $this->default_chunk_size;
+
+		if ( $config && ! empty( $config['chunk_size_filter'] ) ) {
+			$chunk_size = (int) apply_filters( $config['chunk_size_filter'], $chunk_size );
+		}
+
+		// Legacy filter for orders export loop size.
+		if ( 'orders' === $type ) {
+			$chunk_size = (int) apply_filters( 'pmpro_set_max_orders_per_export_loop', $chunk_size );
+		}
+
+		if ( $chunk_size < 1 ) {
+			$chunk_size = $this->default_chunk_size;
+		}
+		return $chunk_size;
+	}
+
+	/**
+	 * Get async threshold for a type.
+	 *
+	 * @param string $type
+	 * @return int
+	 */
+	protected function get_async_threshold_for_type( $type ) {
+		$config    = $this->get_type_config( $type );
+		$threshold = $this->default_async_threshold;
+
+		if ( $config && ! empty( $config['async_threshold_filter'] ) ) {
+			$threshold = (int) apply_filters( $config['async_threshold_filter'], $threshold );
+		}
+
+		if ( $threshold < 1 ) {
+			$threshold = $this->default_async_threshold;
+		}
+		return $threshold;
+	}
+
+	/**
+	 * Sanitize filters for a given type.
+	 *
+	 * @param string $type
+	 * @param array  $args
+	 * @return array
+	 */
+	protected function sanitize_filters_for_type( $type, $args ) {
+		$config = $this->get_type_config( $type );
+		if ( empty( $config ) || empty( $config['sanitize_filters'] ) ) {
+			return array();
+		}
+
+		$callback = $config['sanitize_filters'];
+		if ( is_string( $callback ) && method_exists( $this, $callback ) ) {
+			return $this->{$callback}( $args );
+		}
+
+		if ( is_callable( $callback ) ) {
+			return call_user_func( $callback, $args );
+		}
+
+		return array();
+	}
+
+	/**
+	 * Count total rows for a type.
+	 *
+	 * @param string $type
+	 * @param array  $filters
+	 * @return int
+	 */
+	protected function count_total_for_type( $type, $filters ) {
+		$config = $this->get_type_config( $type );
+		if ( empty( $config ) || empty( $config['count_total'] ) ) {
+			return 0;
+		}
+		$callback = $config['count_total'];
+
+		if ( is_string( $callback ) && method_exists( $this, $callback ) ) {
+			return (int) $this->{$callback}( $filters );
+		}
+		if ( is_callable( $callback ) ) {
+			return (int) call_user_func( $callback, $filters );
+		}
+		return 0;
+	}
+
+	/**
+	 * Fetch IDs for a type chunk.
+	 *
+	 * @param string $type
+	 * @param array  $filters
+	 * @param int    $offset
+	 * @param int    $limit
+	 * @return array|\WP_Error
+	 */
+	protected function fetch_ids_for_type( $type, $filters, $offset, $limit ) {
+		$config = $this->get_type_config( $type );
+		if ( empty( $config ) || empty( $config['fetch_ids'] ) ) {
+			return array();
+		}
+		$callback = $config['fetch_ids'];
+
+		if ( is_string( $callback ) && method_exists( $this, $callback ) ) {
+			return $this->{$callback}( $filters, $offset, $limit );
+		}
+		if ( is_callable( $callback ) ) {
+			return call_user_func( $callback, $filters, $offset, $limit );
+		}
+		return array();
+	}
+
+	/**
+	 * Write rows for a type chunk.
+	 *
+	 * @param string $type
+	 * @param array  $export
+	 * @param array  $ids
+	 * @param bool   $write_header
+	 * @return int|\WP_Error
+	 */
+	protected function write_rows_for_type( $type, $export, $ids, $write_header ) {
+		$config = $this->get_type_config( $type );
+		if ( empty( $config ) || empty( $config['write_rows'] ) ) {
+			return 0;
+		}
+		$callback = $config['write_rows'];
+
+		if ( is_string( $callback ) && method_exists( $this, $callback ) ) {
+			return $this->{$callback}( $export, $ids, $write_header );
+		}
+		if ( is_callable( $callback ) ) {
+			return call_user_func( $callback, $export, $ids, $write_header );
+		}
+		return 0;
+	}
+
+	/**
+	 * Build a file name for a type/export id.
+	 *
+	 * @param string $type
+	 * @param string $export_id
+	 * @param array  $filters
+	 * @return string
+	 */
+	protected function get_file_name_for_type( $type, $export_id, $filters = array() ) {
+		$config      = $this->get_type_config( $type );
+		$file_prefix = $type;
+		if ( $config && ! empty( $config['file_prefix'] ) ) {
+			$file_prefix = $config['file_prefix'];
+		}
+		$file_name = $file_prefix . '-' . $export_id . '.csv';
+		$file_name = apply_filters( 'pmpro_export_file_name', $file_name, $type, $export_id, $filters );
+		return sanitize_file_name( $file_name );
 	}
 
 	/**
@@ -159,13 +403,18 @@ class PMPro_Exports {
 	 * @return array Result including export_id, status, counts, and optional download_url or error.
 	 */
 	public function start_export( $type, $args = array(), $force_async = false ) {
-		if ( 'members' !== $type ) {
+		$config = $this->get_type_config( $type );
+		if ( empty( $config ) ) {
 			return array( 'error' => __( 'Unsupported export type.', 'paid-memberships-pro' ) );
 		}
 
 		$user_id = get_current_user_id();
 		if ( empty( $user_id ) ) {
 			return array( 'error' => __( 'Not logged in.', 'paid-memberships-pro' ) );
+		}
+
+		if ( ! $this->user_can_export( $type, $user_id ) ) {
+			return array( 'error' => __( 'You do not have permission to export this data.', 'paid-memberships-pro' ) );
 		}
 
 		// If an active export for this type exists for the user, return it instead of creating a new one.
@@ -178,18 +427,12 @@ class PMPro_Exports {
 		pmpro_set_up_restricted_files_directory();
 
 		// Normalize and sanitize args.
-		$filters = $this->sanitize_members_filters( $args );
+		$filters = $this->sanitize_filters_for_type( $type, $args );
 
-		// Determine counts.
-		$total      = $this->members_count_total( $filters );
-		$chunk_size = (int) apply_filters( 'pmpro_members_export_chunk_size', $this->default_chunk_size );
-		if ( $chunk_size < 1 ) {
-			$chunk_size = $this->default_chunk_size;
-		}
-		$threshold = (int) apply_filters( 'pmpro_members_export_async_threshold', $this->default_async_threshold );
-		if ( $threshold < 1 ) {
-			$threshold = $this->default_async_threshold;
-		}
+		// Determine counts and chunk sizes.
+		$total      = $this->count_total_for_type( $type, $filters );
+		$chunk_size = $this->get_chunk_size_for_type( $type );
+		$threshold  = $this->get_async_threshold_for_type( $type );
 
 		// Create export record in user meta.
 		$export = $this->create_export_record( $user_id, $type, $filters, $total, $chunk_size );
@@ -198,30 +441,26 @@ class PMPro_Exports {
 		$should_async = $force_async || ( $total > $threshold );
 
 		if ( ! $should_async ) {
-			// Synchronous: process all chunks quickly in this request.
-			// Chunked helps with memory usage.
-			$offset       = 0;
-			$write_header = true;
-			while ( $offset < $total ) {
-				$remaining = $total - $offset;
-				$limit     = min( $chunk_size, $remaining );
-				$ids       = $this->members_fetch_ids_chunk( $filters, $offset, $limit );
-				$written   = $this->members_write_rows( $export, $ids, $write_header );
-				if ( is_wp_error( $written ) ) {
-					$export['status'] = 'error';
-					$export['error']  = $written->get_error_message();
-					$this->save_export_record( $export );
-					return $this->format_public_export_response( $export );
-				}
-				$write_header               = false; // Only on first chunk
-				$offset                    += $limit;
-				$export['processed_count'] += $written;
-				$export['next_offset']      = $offset;
-				$this->save_export_record( $export );
-			}
-			// Finalize.
-			$export['status'] = 'complete';
+			// Synchronous: process all chunks in this request for smaller datasets.
+			$export['status'] = 'running';
 			$this->save_export_record( $export );
+
+			while ( 'complete' !== $export['status'] && 'error' !== $export['status'] ) {
+				$result = $this->process_export_chunk_record( $export );
+				if ( is_wp_error( $result ) ) {
+					$export['status'] = 'error';
+					$export['error']  = $result->get_error_message();
+					$this->save_export_record( $export );
+					break;
+				}
+				// Safety: avoid tight loop if no rows were written.
+				if ( 0 === $result && $export['processed_count'] >= $export['total_count'] ) {
+					$export['status'] = 'complete';
+					$this->save_export_record( $export );
+					break;
+				}
+			}
+
 			return $this->format_public_export_response( $export );
 		}
 
@@ -294,42 +533,73 @@ class PMPro_Exports {
 			$this->save_export_record( $export );
 		}
 
-		// Process chunk by type.
-		if ( 'members' === $export['type'] ) {
-			$total      = (int) $export['total_count'];
-			$offset     = (int) $export['next_offset'];
-			$chunk_size = (int) $export['chunk_size'];
-			$remaining  = max( 0, $total - $offset );
-			$limit      = min( $chunk_size, $remaining );
-
-			try {
-				if ( $remaining > 0 ) {
-					$ids          = $this->members_fetch_ids_chunk( $export['filters'], $offset, $limit );
-					$write_header = ( $offset === 0 );
-					$written      = $this->members_write_rows( $export, $ids, $write_header );
-					if ( is_wp_error( $written ) ) {
-						$export['status'] = 'error';
-						$export['error']  = $written->get_error_message();
-						$this->save_export_record( $export );
-						return; // Stop processing further chunks.
-					}
-
-					$export['processed_count'] += $written;
-					$export['next_offset']      = $offset + $limit;
-					$export['status']           = ( $export['processed_count'] >= $total ) ? 'complete' : 'running';
-					$this->save_export_record( $export );
-				}
-
-				// Queue next chunk if not complete.
-				if ( 'complete' !== $export['status'] ) {
-					$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
-				}
-			} catch ( \Throwable $e ) {
+		try {
+			$result = $this->process_export_chunk_record( $export );
+			if ( is_wp_error( $result ) ) {
 				$export['status'] = 'error';
-				$export['error']  = $e->getMessage();
+				$export['error']  = $result->get_error_message();
 				$this->save_export_record( $export );
+				return;
 			}
+
+			// Queue next chunk if not complete.
+			if ( 'complete' !== $export['status'] ) {
+				$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
+			}
+		} catch ( \Throwable $e ) {
+			$export['status'] = 'error';
+			$export['error']  = $e->getMessage();
+			$this->save_export_record( $export );
 		}
+	}
+
+	/**
+	 * Process a single chunk for an export record.
+	 *
+	 * @param array $export Export record (will be mutated/saved).
+	 * @return int|\WP_Error Rows written or WP_Error.
+	 */
+	protected function process_export_chunk_record( &$export ) {
+		$total      = (int) $export['total_count'];
+		$offset     = (int) $export['next_offset'];
+		$chunk_size = (int) $export['chunk_size'];
+		$remaining  = max( 0, $total - $offset );
+
+		if ( $remaining <= 0 ) {
+			$export['status'] = 'complete';
+			$this->save_export_record( $export );
+			return 0;
+		}
+
+		$limit = min( $chunk_size, $remaining );
+
+		$ids = $this->fetch_ids_for_type( $export['type'], $export['filters'], $offset, $limit );
+		if ( is_wp_error( $ids ) ) {
+			return $ids;
+		}
+		if ( empty( $ids ) ) {
+			$export['status'] = 'complete';
+			$this->save_export_record( $export );
+			return 0;
+		}
+
+		$write_header = ( 0 === $offset );
+		$written      = $this->write_rows_for_type( $export['type'], $export, $ids, $write_header );
+		if ( is_wp_error( $written ) ) {
+			return $written;
+		}
+
+		$processed                       = (int) $written;
+		$export['processed_count']      += $processed;
+		$export['next_offset']           = $offset + count( $ids );
+		$export['status']                = ( $export['processed_count'] >= $export['total_count'] ) ? 'complete' : 'running';
+		$this->save_export_record( $export );
+
+		if ( 'complete' === $export['status'] && 'orders' === $export['type'] ) {
+			do_action( 'pmpro_after_order_csv_export', $export );
+		}
+
+		return $processed;
 	}
 
 	/**
@@ -377,6 +647,9 @@ class PMPro_Exports {
 		if ( empty( $export ) || (int) $export['user_id'] !== (int) $user_id || $export['type'] !== $type ) {
 			return array( 'error' => __( 'No export found.', 'paid-memberships-pro' ) );
 		}
+		if ( ! $this->user_can_export( $type, $user_id ) ) {
+			return array( 'error' => __( 'You do not have permission to export this data.', 'paid-memberships-pro' ) );
+		}
 
 		// Self-heal: if export is queued/running but no chunk task is pending, enqueue it.
 		if ( in_array( $export['status'], array( 'queued', 'running' ), true ) && class_exists( '\ActionScheduler' ) ) {
@@ -419,7 +692,7 @@ class PMPro_Exports {
 	 * @return bool
 	 */
 	public function validate_file_access( $user_id, $export_id, $token, $file ) {
-		$export = $this->get_export_record( $export_id );
+		$export = $this->get_export_record_for_user( $export_id, $user_id );
 		if ( empty( $export ) ) {
 			return false;
 		}
@@ -437,8 +710,8 @@ class PMPro_Exports {
 		if ( empty( $token ) || ! hash_equals( $export['token_hash'], $calc ) ) {
 			return false;
 		}
-		// Capability check: must have permission to export members.
-		if ( ! current_user_can( 'pmpro_memberslistcsv' ) && ! current_user_can( 'manage_options' ) ) {
+		// Capability check: must have permission to export this type.
+		if ( ! $this->user_can_export( $export['type'], $user_id ) ) {
 			return false;
 		}
 		return true;
@@ -476,12 +749,12 @@ class PMPro_Exports {
 	 * @param int    $chunk_size
 	 * @return array The created export record.
 	 */
-	protected function create_export_record( $user_id, $type, $filters, $total, $chunk_size ) {
+	protected function create_export_record( $user_id, $type, $filters, $total, $chunk_size, $file_name = '' ) {
 		$export_id = wp_generate_uuid4();
 		// Generate a URL-safe token (alphanumeric only) to avoid reserved characters breaking query strings.
 		$token      = wp_generate_password( 40, false, false );
 		$token_hash = hash_hmac( 'sha256', $token, wp_salt( 'auth' ) );
-		$file_name  = $type . '-' . $export_id . '.csv';
+		$file_name  = empty( $file_name ) ? $this->get_file_name_for_type( $type, $export_id, $filters ) : $file_name;
 
 		$record = array(
 			'id'              => $export_id,
@@ -608,6 +881,36 @@ class PMPro_Exports {
 		return '"' . str_replace( '"', '\\"', $s ) . '"';
 	}
 
+	/**
+	 * Open file handle for an export file.
+	 *
+	 * @param array $export
+	 * @return resource|\WP_Error
+	 */
+	protected function open_export_file_handle( $export ) {
+		$file_path = $this->get_file_path( $export['file_name'] );
+		$fh        = fopen( $file_path, 'a' );
+		if ( false === $fh ) {
+			return new \WP_Error( 'pmpro_export_file_write_error', __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
+		}
+		return $fh;
+	}
+
+	/**
+	 * Write a header row to the CSV if needed.
+	 *
+	 * @param resource    $fh          File handle.
+	 * @param string|array $header_row Header row as array or pre-built string.
+	 * @return void
+	 */
+	protected function write_csv_header_row( $fh, $header_row ) {
+		if ( empty( $fh ) || empty( $header_row ) ) {
+			return;
+		}
+		$line = is_array( $header_row ) ? implode( ',', $header_row ) : (string) $header_row;
+		fprintf( $fh, "%s\n", $line );
+	}
+
 	// ===== Members Exports ===== //
 
 	/**
@@ -691,17 +994,16 @@ class PMPro_Exports {
 	 * @param bool  $write_header Whether to write header.
 	 * @return int|\WP_Error Rows written or WP_Error on failure.
 	 */
-	protected function members_write_rows( &$export, $user_ids, $write_header ) {
+	protected function members_write_rows( $export, $user_ids, $write_header ) {
 		global $wpdb;
 		if ( empty( $user_ids ) ) {
 			return 0;
 		}
 
 		// File path and handle.
-		$file_path = $this->get_file_path( $export['file_name'] );
-		$fh        = fopen( $file_path, 'a' );
-		if ( false === $fh ) {
-			return new \WP_Error( 'pmpro_export_file_write_error', __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
+		$fh = $this->open_export_file_handle( $export );
+		if ( is_wp_error( $fh ) ) {
+			return $fh;
 		}
 
 		// Columns and header (reuse existing filters to stay compatible).
@@ -757,7 +1059,7 @@ class PMPro_Exports {
 			}
 			$csv_header = implode( ',', $headers );
 			$csv_header = apply_filters( 'pmpro_members_list_csv_heading', $csv_header );
-			fprintf( $fh, "%s\n", $csv_header );
+			$this->write_csv_header_row( $fh, $csv_header );
 		}
 
 		// Build user rows with a single query similar to the original export for performance.
@@ -945,5 +1247,529 @@ class PMPro_Exports {
 			$needs_usermeta_join = true;
 			return " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
 		}
+	}
+
+	// ===== Orders Exports ===== //
+
+	/**
+	 * Sanitize orders export filters.
+	 *
+	 * @param array $args
+	 * @return array
+	 */
+	protected function sanitize_orders_filters( $args ) {
+		$filters                    = array();
+		$filters['s']               = isset( $args['s'] ) ? trim( sanitize_text_field( $args['s'] ) ) : '';
+		$filters['filter']          = isset( $args['filter'] ) ? sanitize_text_field( $args['filter'] ) : 'all';
+		$filters['l']               = isset( $args['l'] ) ? intval( $args['l'] ) : 0;
+		$filters['discount_code']   = isset( $args['discount-code'] ) ? intval( $args['discount-code'] ) : 0;
+		$filters['status']          = isset( $args['status'] ) ? sanitize_text_field( $args['status'] ) : '';
+		$filters['predefined_date'] = isset( $args['predefined-date'] ) ? sanitize_text_field( $args['predefined-date'] ) : 'This Month';
+		$filters['start_month']     = isset( $args['start-month'] ) ? intval( $args['start-month'] ) : 1;
+		$filters['start_day']       = isset( $args['start-day'] ) ? intval( $args['start-day'] ) : 1;
+		$filters['start_year']      = isset( $args['start-year'] ) ? intval( $args['start-year'] ) : (int) date_i18n( 'Y' );
+		$filters['end_month']       = isset( $args['end-month'] ) ? intval( $args['end-month'] ) : (int) date_i18n( 'n' );
+		$filters['end_day']         = isset( $args['end-day'] ) ? intval( $args['end-day'] ) : (int) date_i18n( 'j' );
+		$filters['end_year']        = isset( $args['end-year'] ) ? intval( $args['end-year'] ) : (int) date_i18n( 'Y' );
+		$filters['limit']           = isset( $args['limit'] ) ? intval( $args['limit'] ) : 0;
+		$filters['pn']              = isset( $args['pn'] ) ? intval( $args['pn'] ) : 1;
+
+		if ( $filters['limit'] < 0 ) {
+			$filters['limit'] = 0;
+		}
+		if ( $filters['pn'] < 1 ) {
+			$filters['pn'] = 1;
+		}
+
+		$filters['offset'] = ! empty( $filters['limit'] ) ? max( 0, ( $filters['pn'] * $filters['limit'] ) - $filters['limit'] ) : 0;
+
+		return $filters;
+	}
+
+	/**
+	 * Build the base filter condition for orders queries.
+	 *
+	 * @param array $filters
+	 * @return array{sql:string,params:array,joins:array}
+	 */
+	protected function build_orders_filter_condition( $filters ) {
+		global $wpdb;
+
+		$filter    = isset( $filters['filter'] ) ? $filters['filter'] : 'all';
+		$sql       = '1=1';
+		$params    = array();
+		$join      = array();
+		$now       = current_time( 'timestamp' );
+		$startdate = '';
+		$enddate   = '';
+
+		switch ( $filter ) {
+			case 'within-a-date-range':
+				$startdate = sprintf( '%04d-%02d-%02d', max( 1, (int) $filters['start_year'] ), max( 1, (int) $filters['start_month'] ), max( 1, (int) $filters['start_day'] ) );
+				$enddate   = sprintf( '%04d-%02d-%02d', max( 1, (int) $filters['end_year'] ), max( 1, (int) $filters['end_month'] ), max( 1, (int) $filters['end_day'] ) );
+				$startdate = get_gmt_from_date( $startdate . ' 00:00:00' );
+				$enddate   = get_gmt_from_date( $enddate . ' 23:59:59' );
+				$sql       = 'o.timestamp BETWEEN %s AND %s';
+				$params    = array( $startdate, $enddate );
+				break;
+			case 'predefined-date-range':
+				$predefined = isset( $filters['predefined_date'] ) ? $filters['predefined_date'] : 'This Month';
+				if ( 'Last Month' === $predefined ) {
+					$startdate = date_i18n( 'Y-m-d', strtotime( 'first day of last month', $now ) );
+					$enddate   = date_i18n( 'Y-m-d', strtotime( 'last day of last month', $now ) );
+				} elseif ( 'This Year' === $predefined ) {
+					$year      = date_i18n( 'Y', $now );
+					$startdate = date_i18n( "Y-m-d", strtotime( "first day of January $year", $now ) );
+					$enddate   = date_i18n( "Y-m-d", strtotime( "last day of December $year", $now ) );
+				} elseif ( 'Last Year' === $predefined ) {
+					$year      = (int) date_i18n( 'Y', $now ) - 1;
+					$startdate = date_i18n( "Y-m-d", strtotime( "first day of January $year", $now ) );
+					$enddate   = date_i18n( "Y-m-d", strtotime( "last day of December $year", $now ) );
+				} else {
+					$startdate = date_i18n( 'Y-m-d', strtotime( 'first day of this month', $now ) );
+					$enddate   = date_i18n( 'Y-m-d', strtotime( 'last day of this month', $now ) );
+				}
+				$startdate = get_gmt_from_date( $startdate . ' 00:00:00' );
+				$enddate   = get_gmt_from_date( $enddate . ' 23:59:59' );
+				$sql       = 'o.timestamp BETWEEN %s AND %s';
+				$params    = array( $startdate, $enddate );
+				break;
+			case 'within-a-level':
+				$sql    = 'o.membership_id = %d';
+				$params = array( (int) $filters['l'] );
+				break;
+			case 'with-discount-code':
+				$sql    = 'dc.code_id = %d';
+				$params = array( (int) $filters['discount_code'] );
+				$join[] = "LEFT JOIN {$wpdb->pmpro_discount_codes_uses} dc ON o.id = dc.order_id";
+				break;
+			case 'within-a-status':
+				$sql    = 'o.status = %s';
+				$params = array( sanitize_text_field( $filters['status'] ) );
+				break;
+			case 'only-paid':
+				$sql = 'o.total > 0';
+				break;
+			case 'only-free':
+				$sql = 'o.total = 0';
+				break;
+		}
+
+		return array(
+			'sql'    => $sql,
+			'params' => $params,
+			'joins'  => $join,
+		);
+	}
+
+	/**
+	 * Build the search fragment for orders queries.
+	 *
+	 * @param array $filters
+	 * @return array{sql:string,params:array,joins:array}
+	 */
+	protected function build_orders_search_fragment( $filters ) {
+		global $wpdb;
+
+		$search = isset( $filters['s'] ) ? trim( $filters['s'] ) : '';
+		if ( '' === $search ) {
+			return array(
+				'sql'    => '',
+				'params' => array(),
+				'joins'  => array(),
+			);
+		}
+
+		$joins      = array();
+		$params     = array();
+		$search_sql = '';
+
+		if ( strpos( $search, ':' ) !== false ) {
+			$parts      = explode( ':', $search );
+			$search_key = array_shift( $parts );
+			$search_val = implode( ':', $parts );
+			$like       = '%' . $wpdb->esc_like( $search_val ) . '%';
+
+			if ( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
+				$column = 'u.user_' . $search_key;
+			} else {
+				$column = 'o.' . preg_replace( '/[^a-zA-Z0-9_]/', '', $search_key );
+			}
+			if ( 'o.' === $column || empty( $column ) ) {
+				$column = 'o.id';
+			}
+			$search_sql = "{$column} LIKE %s";
+			$params[]   = $like;
+		} else {
+			$join_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
+
+			if ( ! empty( $join_usermeta ) ) {
+				$joins[] = "LEFT JOIN {$wpdb->usermeta} um ON o.user_id = um.user_id";
+			}
+
+			$fields = array(
+				'o.id',
+				'o.code',
+				'o.billing_name',
+				'o.billing_street',
+				'o.billing_street2',
+				'o.billing_city',
+				'o.billing_state',
+				'o.billing_zip',
+				'o.billing_country',
+				'o.billing_phone',
+				'o.payment_type',
+				'o.cardtype',
+				'o.accountnumber',
+				'o.status',
+				'o.gateway',
+				'o.gateway_environment',
+				'o.payment_transaction_id',
+				'o.subscription_transaction_id',
+				'o.notes',
+				'u.user_login',
+				'u.user_email',
+				'u.display_name',
+				'ml.name',
+			);
+
+			if ( ! empty( $join_usermeta ) ) {
+				$fields[] = 'um.meta_value';
+			}
+
+			$fields  = apply_filters( 'pmpro_orders_search_fields', $fields );
+			$like    = '%' . $wpdb->esc_like( $search ) . '%';
+			$clauses = array();
+
+			foreach ( $fields as $field ) {
+				$field = preg_replace( '/[^a-zA-Z0-9\._]/', '', $field );
+				if ( empty( $field ) ) {
+					continue;
+				}
+				$clauses[] = "{$field} LIKE %s";
+				$params[]  = $like;
+			}
+
+			if ( ! empty( $clauses ) ) {
+				$search_sql = '( ' . implode( ' OR ', $clauses ) . ' )';
+			}
+		}
+
+		return array(
+			'sql'    => $search_sql,
+			'params' => $params,
+			'joins'  => $joins,
+		);
+	}
+
+	/**
+	 * Combine filter/search parts into a query definition.
+	 *
+	 * @param array $filters
+	 * @return array{joins:array,where:string,params:array}
+	 */
+	protected function build_orders_query_components( $filters ) {
+		global $wpdb;
+
+		$condition = $this->build_orders_filter_condition( $filters );
+		$search    = $this->build_orders_search_fragment( $filters );
+
+		$joins = array(
+			"LEFT JOIN {$wpdb->users} u ON o.user_id = u.ID",
+			"LEFT JOIN {$wpdb->pmpro_membership_levels} ml ON o.membership_id = ml.id",
+		);
+
+		if ( ! empty( $condition['joins'] ) ) {
+			$joins = array_merge( $joins, (array) $condition['joins'] );
+		}
+		if ( ! empty( $search['joins'] ) ) {
+			$joins = array_merge( $joins, (array) $search['joins'] );
+		}
+
+		$joins       = array_values( array_unique( $joins ) );
+		$where_parts = array();
+		if ( ! empty( $condition['sql'] ) ) {
+			$where_parts[] = $condition['sql'];
+		}
+		if ( ! empty( $search['sql'] ) ) {
+			$where_parts[] = $search['sql'];
+		}
+
+		$where = ! empty( $where_parts ) ? implode( ' AND ', $where_parts ) : '1=1';
+
+		$params = array_merge(
+			isset( $condition['params'] ) ? $condition['params'] : array(),
+			isset( $search['params'] ) ? $search['params'] : array()
+		);
+
+		return array(
+			'joins'  => $joins,
+			'where'  => $where,
+			'params' => $params,
+		);
+	}
+
+	/**
+	 * Count total orders for filters.
+	 *
+	 * @param array $filters
+	 * @return int
+	 */
+	protected function orders_count_total( $filters ) {
+		global $wpdb;
+
+		$parts  = $this->build_orders_query_components( $filters );
+		$joins  = implode( ' ', $parts['joins'] );
+		$where  = $parts['where'];
+		$params = $parts['params'];
+
+		$sql_base = "FROM {$wpdb->pmpro_membership_orders} AS o {$joins} WHERE {$where}";
+		if ( ! empty( $filters['limit'] ) ) {
+			$sql = "SELECT COUNT(*) FROM ( SELECT DISTINCT o.id {$sql_base} ORDER BY o.id DESC, o.timestamp DESC LIMIT %d, %d ) AS counts";
+			$params[] = isset( $filters['offset'] ) ? (int) $filters['offset'] : 0;
+			$params[] = (int) $filters['limit'];
+		} else {
+			$sql = "SELECT COUNT(DISTINCT o.id) {$sql_base}";
+		}
+
+		if ( ! empty( $params ) ) {
+			$sql = call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $sql ), $params ) );
+		}
+
+		$count = (int) $wpdb->get_var( $sql );
+		return max( 0, $count );
+	}
+
+	/**
+	 * Fetch a chunk of order IDs matching filters.
+	 *
+	 * @param array $filters
+	 * @param int   $offset
+	 * @param int   $limit
+	 * @return array<int>
+	 */
+	protected function orders_fetch_ids_chunk( $filters, $offset, $limit ) {
+		global $wpdb;
+
+		if ( $limit < 1 ) {
+			return array();
+		}
+
+		$parts  = $this->build_orders_query_components( $filters );
+		$joins  = implode( ' ', $parts['joins'] );
+		$where  = $parts['where'];
+		$params = $parts['params'];
+
+		$base_offset  = isset( $filters['offset'] ) ? (int) $filters['offset'] : 0;
+		$query_offset = $base_offset + (int) $offset;
+
+		if ( ! empty( $filters['limit'] ) ) {
+			$remaining = (int) $filters['limit'] - (int) $offset;
+			if ( $remaining <= 0 ) {
+				return array();
+			}
+			$limit = min( $limit, $remaining );
+		}
+
+		$sql     = "SELECT DISTINCT o.id FROM {$wpdb->pmpro_membership_orders} AS o {$joins} WHERE {$where} ORDER BY o.id DESC, o.timestamp DESC LIMIT %d, %d";
+		$params[] = $query_offset;
+		$params[] = (int) $limit;
+
+		$sql  = call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $sql ), $params ) );
+		$ids  = $wpdb->get_col( $sql );
+		$ids  = is_array( $ids ) ? array_map( 'intval', $ids ) : array();
+		return $ids;
+	}
+
+	/**
+	 * Write order rows to CSV.
+	 *
+	 * @param array $export
+	 * @param array $order_ids
+	 * @param bool  $write_header
+	 * @return int|\WP_Error
+	 */
+	protected function orders_write_rows( $export, $order_ids, $write_header ) {
+		global $wpdb;
+
+		if ( empty( $order_ids ) ) {
+			return 0;
+		}
+
+		$fh = $this->open_export_file_handle( $export );
+		if ( is_wp_error( $fh ) ) {
+			return $fh;
+		}
+
+		$csv_file_header_array = array(
+			'id',
+			'code',
+			'user_id',
+			'user_login',
+			'first_name',
+			'last_name',
+			'user_email',
+			'billing_name',
+			'billing_street',
+			'billing_city',
+			'billing_state',
+			'billing_zip',
+			'billing_country',
+			'billing_phone',
+			'membership_id',
+			'level_name',
+			'subtotal',
+			'tax',
+			'total',
+			'payment_type',
+			'cardtype',
+			'accountnumber',
+			'expirationmonth',
+			'expirationyear',
+			'status',
+			'gateway',
+			'gateway_environment',
+			'payment_transaction_id',
+			'subscription_transaction_id',
+			'discount_code_id',
+			'discount_code',
+			'timestamp',
+		);
+
+		$default_columns = array(
+			array( 'order', 'id' ),
+			array( 'order', 'code' ),
+			array( 'user', 'ID' ),
+			array( 'user', 'user_login' ),
+			array( 'user', 'first_name' ),
+			array( 'user', 'last_name' ),
+			array( 'user', 'user_email' ),
+			array( 'order', 'billing', 'name' ),
+			array( 'order', 'billing', 'street' ),
+			array( 'order', 'billing', 'city' ),
+			array( 'order', 'billing', 'state' ),
+			array( 'order', 'billing', 'zip' ),
+			array( 'order', 'billing', 'country' ),
+			array( 'order', 'billing', 'phone' ),
+			array( 'order', 'membership_id' ),
+			array( 'level', 'name' ),
+			array( 'order', 'subtotal' ),
+			array( 'order', 'tax' ),
+			array( 'order', 'total' ),
+			array( 'order', 'payment_type' ),
+			array( 'order', 'cardtype' ),
+			array( 'order', 'accountnumber' ),
+			array( 'order', 'expirationmonth' ),
+			array( 'order', 'expirationyear' ),
+			array( 'order', 'status' ),
+			array( 'order', 'gateway' ),
+			array( 'order', 'gateway_environment' ),
+			array( 'order', 'payment_transaction_id' ),
+			array( 'order', 'subscription_transaction_id' ),
+			array( 'discount_code', 'id' ),
+			array( 'discount_code', 'code' ),
+		);
+
+		$default_columns       = apply_filters( 'pmpro_order_list_csv_default_columns', $default_columns );
+		$csv_file_header_array = apply_filters( 'pmpro_order_list_csv_export_header_array', $csv_file_header_array );
+		$dateformat            = apply_filters( 'pmpro_order_list_csv_dateformat', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
+
+		$extra_columns = apply_filters( 'pmpro_orders_csv_extra_columns', array() );
+		$extra_columns = apply_filters( 'pmpro_order_list_csv_extra_columns', $extra_columns );
+
+		if ( $write_header ) {
+			if ( ! empty( $extra_columns ) ) {
+				foreach ( $extra_columns as $heading => $callback ) {
+					$csv_file_header_array[] = $heading;
+				}
+			}
+			$csv_header = implode( ',', $csv_file_header_array );
+			$this->write_csv_header_row( $fh, $csv_header );
+			do_action( 'pmpro_before_order_list_csv_export', $order_ids );
+		}
+
+		$rows_written = 0;
+
+		foreach ( $order_ids as $order_id ) {
+			$csvoutput = array();
+
+			$order            = new MemberOrder();
+			$order->nogateway = true;
+			$order->getMemberOrderByID( $order_id );
+
+			if ( empty( $order->id ) ) {
+				continue;
+			}
+
+			if ( empty( $order->billing ) || ! is_object( $order->billing ) ) {
+				$order->billing = new \stdClass();
+			}
+
+			$user  = get_userdata( $order->user_id );
+			$level = $order->getMembershipLevel();
+			if ( ! $user ) {
+				$user = new \stdClass();
+			}
+			if ( empty( $level ) ) {
+				$level = new \stdClass();
+			}
+
+			$sqlQuery = $wpdb->prepare(
+				"
+				SELECT c.id, c.code
+				FROM {$wpdb->pmpro_discount_codes_uses} AS cu
+					LEFT JOIN {$wpdb->pmpro_discount_codes} AS c
+					ON cu.code_id = c.id
+				WHERE cu.order_id = %s
+				LIMIT 1",
+				$order_id
+			);
+
+			$discount_code = $wpdb->get_row( $sqlQuery );
+			if ( empty( $discount_code ) ) {
+				$discount_code = (object) array(
+					'id'   => '',
+					'code' => '',
+				);
+			}
+
+			if ( ! empty( $default_columns ) ) {
+				foreach ( $default_columns as $col ) {
+					switch ( count( $col ) ) {
+						case 3:
+							$val = isset( ${$col[0]}->{$col[1]}->{$col[2]} ) ? ${$col[0]}->{$col[1]}->{$col[2]} : null;
+							break;
+
+						case 2:
+							$val = isset( ${$col[0]}->{$col[1]} ) ? ${$col[0]}->{$col[1]} : null;
+							break;
+
+						default:
+							$val = null;
+					}
+
+					$csvoutput[] = $this->csv_enclose( $val );
+				}
+			}
+
+			$ts           = date_i18n( $dateformat, $order->getTimestamp() );
+			$csvoutput[]  = $this->csv_enclose( $ts );
+
+			if ( ! empty( $extra_columns ) ) {
+				foreach ( $extra_columns as $heading => $callback ) {
+					$val         = call_user_func( $callback, $order );
+					$val         = ! empty( $val ) ? $val : null;
+					$csvoutput[] = $this->csv_enclose( $val );
+				}
+			}
+
+			$line = implode( ',', $csvoutput ) . "\n";
+			fprintf( $fh, '%s', $line );
+
+			++$rows_written;
+		}
+
+		fclose( $fh );
+		return $rows_written;
 	}
 }

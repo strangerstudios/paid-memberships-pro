@@ -316,7 +316,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						return new WP_REST_Response( $result, $status_code );
 					},
 					'permission_callback' => function( $request ) {
-						return current_user_can( 'pmpro_memberslistcsv' ) || current_user_can( 'manage_options' );
+						$params  = $request->get_params();
+						$type    = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : '';
+						$exports = PMPro_Exports::instance();
+						if ( empty( $type ) ) {
+							return current_user_can( 'manage_options' ) || current_user_can( 'pmpro_memberslistcsv' ) || current_user_can( 'pmpro_orderscsv' );
+						}
+						return $exports->user_can_export( $type );
 					},
 				)
 			)
@@ -351,7 +357,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						return new WP_REST_Response( $result, 200 );
 					},
 					'permission_callback' => function( $request ) {
-						return current_user_can( 'pmpro_memberslistcsv' ) || current_user_can( 'manage_options' );
+						$params  = $request->get_params();
+						$type    = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : '';
+						$exports = PMPro_Exports::instance();
+						if ( empty( $type ) ) {
+							return current_user_can( 'manage_options' ) || current_user_can( 'pmpro_memberslistcsv' ) || current_user_can( 'pmpro_orderscsv' );
+						}
+						return $exports->user_can_export( $type );
 					},
 				)
 			)
