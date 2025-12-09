@@ -1317,10 +1317,32 @@ jQuery(document).ready(function ($) {
 	}
 
 	function setButtonStateKey($btn, status, percent){
+		// Compute label
 		var label = EXPORT_STATES[status];
 		if(typeof label === 'function'){
 			label = label(percent);
 		}
+
+		// Base visual state: secondary
+		$btn.removeClass('button-primary');
+		$btn.prop('disabled', false);
+
+		// Preparing/running: disabled secondary
+		if(status === 'preparing' || status === 'running'){
+			$btn.prop('disabled', true);
+		}
+
+		// Complete: switch to primary (blue) and enable
+		if(status === 'complete'){
+			$btn.addClass('button-primary');
+			$btn.prop('disabled', false);
+		}
+
+		// Errors: keep secondary and enable so user can retry
+		if(status && (status === 'error' || status === 'error_start')){
+			$btn.prop('disabled', false);
+		}
+
 		setButtonState($btn, label, status);
 	}
 

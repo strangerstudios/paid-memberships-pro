@@ -24,14 +24,14 @@ class PMPro_Exports {
 	 *
 	 * How many items (members, orders, etc.) are fetched/written per async batch when processing an export.
 	 */
-	protected $default_chunk_size = 500;
+	protected $default_chunk_size = 250;
 
 	/**
 	 * Default async threshold. Filterable.
 	 *
 	 * The total count above which the export switches from synchronous (in the request) to asynchronous (Action Scheduler chunks).
 	 */
-	protected $default_async_threshold = 2000;
+	protected $default_async_threshold = 499;
 
 	/** Default export file expiration time (in seconds). */
 	protected $default_export_exp = 6 * HOUR_IN_SECONDS;
