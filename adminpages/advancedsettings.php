@@ -54,6 +54,7 @@
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("uninstall");
+		pmpro_setOption("email_login");
 		pmpro_setOption("site_type");
 
         /**
@@ -108,6 +109,8 @@
 	}
 	$uninstall = get_option( 'pmpro_uninstall');
 	$site_type = get_option( 'pmpro_site_type' );
+
+	$pmpro_email_login = get_option( 'pmpro_email_login' );
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
@@ -582,6 +585,18 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 								<?php esc_html_e( 'Sharing non-sensitive membership site data helps us analyze how our plugin is meeting your needs and identify opportunities to improve. Read about what usage data is tracked:', 'paid-memberships-pro' ); ?>
 								<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="<?php esc_attr_e( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ); ?></a>.
 							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="pmpro-email-login"><?php esc_html_e('Passwordless Login?', 'paid-memberships-pro' );?></label>
+						</th>
+						<td>
+							<select id="pmpro-email-login" name="email_login">
+								<option value="0" <?php selected( 0, $pmpro_email_login ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' );?></option>
+								<option value="1" <?php selected( 1, $pmpro_email_login ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' );?></option>
+							</select>
+							<p class="description"><?php esc_html_e( 'Add an option at login to allow registered accounts to login via email links without requiring a password.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 					<tr>

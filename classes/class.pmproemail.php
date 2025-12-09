@@ -888,6 +888,36 @@
 		}
 
 		/**
+		 * Send login link email to the member.
+		 * 
+		 * @since TBD
+		 * 
+		 * @param WP_User $user The user object of the member to send the login link to.
+		 * @param string $login_token The login token to be sent to the member.
+		 */
+		function send_email_login_link( $user = NULL, $login_token = NULL ) {
+			global $current_user;
+			if ( ! $user ) {
+				$user = $current_user;
+			}
+
+			if ( ! $user || ! $login_token ) {
+				return false;
+			}
+
+			// Make the login link here whenever sending the email.
+			$login_link = add_query_arg( 'pmpro_email_login_token', $login_token, home_url() );
+
+			// Check if there is a $_REQUEST['redirect_to'] value and add it to the login link if so.
+			if ( ! empty( $_REQUEST['redirect_to'] ) ) {
+				$login_link = add_query_arg( 'redirect_to', urlencode( $_REQUEST['redirect_to'] ), $login_link );
+			}
+
+			$email = new PMPro_Email_Template_Login_Link( $user, $login_link );
+			return $email->send();
+		}
+
+		/**
 		 * Gets the admin user name.
 		 *
 		 * @since 2.10.6
