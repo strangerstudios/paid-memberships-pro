@@ -1,5 +1,4 @@
 <?php
-// Allowdynamic variables
 class PMPro_Email_Template_Login_Link extends PMPro_Email_Template {
 
 	/**
