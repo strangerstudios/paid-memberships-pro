@@ -184,7 +184,7 @@ jQuery( document ).ready( function( $ ) {
 			}
 		});
 		// Hide payment request button on form submit to prevent double charges.
-		jQuery('form').submit(function(){
+		jQuery('#pmpro_form').submit(function(){
 			jQuery('#payment-request-button').hide();
 		});	
 		// Update price shown in payment request button if price changes.
