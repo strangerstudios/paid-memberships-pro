@@ -83,15 +83,11 @@ class PMPro_Exports {
 				}
 			}
 			if ( ! empty( $export_id ) && ! empty( $token ) && ! empty( $file ) ) {
-				if ( class_exists( 'PMPro_Exports' ) ) {
-					$exports    = self::instance();
-					$export_rec = $exports->get_export_record_for_user( $export_id, $current_user_id );
-					$can_access = $exports->validate_file_access( $current_user_id, $export_id, $token, $file );
-					// If access is granted, perform cleanup and schedule file deletion.
-					if ( $can_access ) {
-						$exports->cleanup_after_download( $current_user_id, $export_id, isset( $export_rec['type'] ) ? $export_rec['type'] : '' );
-						$exports->schedule_file_deletion( $file, $this->default_export_exp );
-					}
+				$can_access = $this->validate_file_access( $current_user_id, $export_id, $token, $file );
+				// If access is granted, perform cleanup and schedule file deletion.
+				if ( $can_access ) {
+					$this->cleanup_after_download( $current_user_id, $export_id );
+					$this->schedule_file_deletion( $file, $this->default_export_exp );
 				}
 			}
 		}
@@ -387,7 +383,6 @@ class PMPro_Exports {
 			return;
 		}
 		$file_path = $this->get_file_path( basename( $filename ) );
-		error_log( 'Deleting export file: ' . $file_path );
 		if ( $file_path && file_exists( $file_path ) ) {
 			wp_delete_file( $file_path );
 		}
@@ -1169,12 +1164,6 @@ class PMPro_Exports {
 	/**
 	 * Build the membership filter SQL fragment for member queries.
 	 *
-	 * @param array $filters               Filters from the request.
-	 * @return string                      SQL fragment beginning with " AND ..."
-	 */
-	/**
-	 * Build the membership filter SQL fragment for member queries.
-	 *
 	 * @param array $filters Sanitized filters.
 	 * @return string SQL fragment beginning with " AND ".
 	 */
@@ -1199,13 +1188,6 @@ class PMPro_Exports {
 		return $filter;
 	}
 
-	/**
-	 * Build the search SQL fragment for member queries.
-	 *
-	 * @param array $filters               Filters from the request.
-	 * @param bool  $needs_usermeta_join   Set to true if a LEFT JOIN on usermeta is required for this search.
-	 * @return string                      SQL fragment beginning with " AND ..."
-	 */
 	/**
 	 * Build the search SQL fragment for member queries.
 	 *
