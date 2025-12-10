@@ -57,7 +57,7 @@ class PMPro_Email_Template_Login_Link extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return esc_html__( "Sends a one-time login code for quick and secure sign-in.", 'paid-memberships-pro' );
+		return esc_html__( 'Sends a one-time login token for quick and secure sign-in. Please note the !!login_link!! variable is required in order for this email to work properly.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -148,7 +148,7 @@ class PMPro_Email_Template_Login_Link extends PMPro_Email_Template {
 	 */
 	public static function get_test_email_constructor_args() {
 		global $current_user;
-		return array( $current_user, home_url() );
+		return array( $current_user, add_query_arg( 'pmpro_email_login_token', pmpro_login_generate_login_token( $current_user->ID ), home_url() ) );
 	}
 }
 
