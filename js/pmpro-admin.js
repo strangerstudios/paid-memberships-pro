@@ -1304,8 +1304,8 @@ jQuery(document).ready(function ($) {
 	var EXPORT_STATES = {
 		idle: 'Export to CSV',
 		preparing: 'Preparing…',
-		running: function(percent){ return 'Building CSV' + (typeof percent === 'number' ? ' ' + percent + '%…' : '…'); },
-		complete: 'Download',
+		running: 'Building CSV…',
+		complete: 'Download CSV',
 		error: 'Export Error',
 		error_start: 'Error Starting Export'
 	};
@@ -1316,11 +1316,11 @@ jQuery(document).ready(function ($) {
 		$btn.attr('data-status', status);
 	}
 
-	function setButtonStateKey($btn, status, percent){
+	function setButtonStateKey($btn, status){
 		// Compute label
 		var label = EXPORT_STATES[status];
 		if(typeof label === 'function'){
-			label = label(percent);
+			label = label();
 		}
 
 		// Base visual state: secondary
@@ -1349,7 +1349,7 @@ jQuery(document).ready(function ($) {
 	function beginPolling($btn){
 		if($btn.data('polling')){ return; }
 		$btn.data('polling', true);
-		var interval = setInterval(function(){ pollStatus($btn); }, 3000);
+		var interval = setInterval(function(){ pollStatus($btn); }, 5000);
 		$btn.data('pollInterval', interval);
 	}
 
@@ -1434,16 +1434,15 @@ jQuery(document).ready(function ($) {
 						}, 500);
 					});
 					stopPolling($btn);
-					return;
-				}
-				if(data.status === 'error'){ setButtonStateKey($btn, 'error'); stopPolling($btn); return; }
-				var pct = data.percent || 0;
-				setButtonStateKey($btn, 'running', pct);
-			})
-			.catch(function(){
-				setButtonStateKey($btn, 'error');
-				stopPolling($btn);
-			 });
+			return;
+		}
+		if(data.status === 'error'){ setButtonStateKey($btn, 'error'); stopPolling($btn); return; }
+		setButtonStateKey($btn, 'running');
+	})
+	.catch(function(){
+		setButtonStateKey($btn, 'error');
+		stopPolling($btn);
+	 });
 	}
 
 	function resumeIfActive($btn){
@@ -1475,7 +1474,7 @@ jQuery(document).ready(function ($) {
 							}, 500);
 						});
 					} else if(data.status === 'running' || data.status === 'queued'){
-						setButtonStateKey($btn, 'running', (data.percent||0));
+						setButtonStateKey($btn, 'running');
 						beginPolling($btn);
 					}
 				}

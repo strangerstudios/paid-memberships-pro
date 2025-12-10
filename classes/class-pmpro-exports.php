@@ -33,10 +33,10 @@ class PMPro_Exports {
 	 */
 	protected $default_async_threshold = 499;
 
-	/** Default export file expiration time (in seconds). 
-	 * 
+	/** Default export file expiration time (in seconds).
+	 *
 	 * How long to keep export files available for download after generation.
-	*/
+	 */
 	protected $default_export_exp = 6 * HOUR_IN_SECONDS;
 
 	/**
@@ -75,10 +75,12 @@ class PMPro_Exports {
 		if ( 'exports' === $file_dir ) {
 			$current_user_id = get_current_user_id();
 			$export_id       = isset( $_REQUEST['export_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['export_id'] ) ) : '';
-			// Do not sanitize token; use raw-unslashed for HMAC compare.
+
+			// Do not sanitize token; use raw-unslashed for proper HMAC compare.
 			$token = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : '';
 			$file  = isset( $_REQUEST['pmpro_restricted_file'] ) ? basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file'] ) ) ) : '';
-			// Optional nonce verification to satisfy standards.
+
+			// Nonce verification.
 			if ( isset( $_REQUEST['_wpnonce'] ) ) {
 				$nonce = sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) );
 				if ( ! wp_verify_nonce( $nonce, 'pmpro_export_download_' . $export_id ) ) {
@@ -462,6 +464,24 @@ class PMPro_Exports {
 			return $this->format_public_export_response( $export );
 		}
 
+		// Async: mark as running right away so status polling doesn't get stuck on "queued".
+		$export['status'] = 'running';
+		$this->save_export_record( $export );
+
+		// Optionally process the first chunk immediately to provide progress on first poll.
+		$first_result = $this->process_export_chunk_record( $export );
+		if ( is_wp_error( $first_result ) ) {
+			$export['status'] = 'error';
+			$export['error']  = $first_result->get_error_message();
+			$this->save_export_record( $export );
+			return $this->format_public_export_response( $export );
+		}
+
+		// If the first chunk finished the export, return early.
+		if ( 'complete' === $export['status'] ) {
+			return $this->format_public_export_response( $export );
+		}
+
 		// Async: queue first chunk, include owner to avoid lookup issues in async context.
 		$this->enqueue_next_chunk( $export['id'], $user_id );
 
@@ -604,19 +624,12 @@ class PMPro_Exports {
 	 * Build a public response structure for REST/UI.
 	 */
 	protected function format_public_export_response( $export ) {
-		$percent = 0;
-		if ( (int) $export['total_count'] > 0 ) {
-			$percent = (int) round( ( (int) $export['processed_count'] / (int) $export['total_count'] ) * 100 );
-		} elseif ( 'complete' === $export['status'] ) {
-			$percent = 100;
-		}
 		$resp = array(
 			'export_id'       => $export['id'],
 			'type'            => $export['type'],
 			'status'          => $export['status'],
 			'total_count'     => (int) $export['total_count'],
 			'processed_count' => (int) $export['processed_count'],
-			'percent'         => $percent,
 		);
 		if ( 'complete' === $export['status'] ) {
 			$resp['download_url'] = $this->get_download_url( $export );
@@ -658,8 +671,22 @@ class PMPro_Exports {
 				),
 			);
 			$exists = PMPro_Action_Scheduler::instance()->has_existing_task( 'pmpro_export_process_chunk', $args, 'pmpro_async_tasks' );
+			if ( $exists && 'queued' === $export['status'] ) {
+				$export['status'] = 'running';
+				$this->save_export_record( $export );
+			}
+			// If no task exists, process a chunk inline (to surface progress) and enqueue the next chunk.
 			if ( ! $exists ) {
-				$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
+				$result = $this->process_export_chunk_record( $export );
+				if ( is_wp_error( $result ) ) {
+					$export['status'] = 'error';
+					$export['error']  = $result->get_error_message();
+					$this->save_export_record( $export );
+					return $this->format_public_export_response( $export );
+				}
+				if ( 'complete' !== $export['status'] ) {
+					$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
+				}
 			}
 		}
 		return $this->format_public_export_response( $export );
