@@ -92,7 +92,7 @@ class PMPro_Exports {
 				// If access is granted, perform cleanup and schedule file deletion.
 				if ( $can_access ) {
 					$this->cleanup_after_download( $current_user_id, $export_id );
-					$this->schedule_file_deletion( $file, $this->default_export_exp );
+					$this->schedule_file_deletion( $file, $this->default_export_exp, $current_user_id, $export_id );
 				}
 			}
 		}
@@ -132,17 +132,47 @@ class PMPro_Exports {
 
 	/**
 	 * Schedule deletion of the exported file via Action Scheduler.
+	 * Also passes user ID and export ID for post-deletion export record cleanup.
 	 *
 	 * @param string $file_name The file name within the exports restricted dir.
-	 * @param int    $delay     Seconds from now to delete the file.
+	 * @param int    $delay     Time from now (in seconds) to delete the file.
+	 * @param int    $current_user_id The user ID of the export owner.
+	 * @param string $export_id The export ID.
+	 *
 	 * @return void
 	 */
-	protected function schedule_file_deletion( $file_name, $delay ) {
+	protected function schedule_file_deletion( $file_name, $delay, $current_user_id, $export_id ) {
+		if ( empty( $file_name ) || ! is_string( $file_name ) || empty( $current_user_id ) || empty( $export_id ) ) {
+			return;
+		}
 		$timestamp = time() + max( 0, (int) $delay );
-		PMPro_Action_Scheduler::instance()->maybe_add_task( 'pmpro_export_delete_file', array( $file_name ), 'pmpro_async_tasks', $timestamp );
+		$data      = array(
+			'filename'  => $file_name,
+			'user_id'   => $current_user_id,
+			'export_id' => $export_id,
+		);
+		PMPro_Action_Scheduler::instance()->maybe_add_task( 'pmpro_export_delete_file', $data, 'pmpro_async_tasks', $timestamp );
 	}
 
-	// ===== Type Helpers ===== //
+	/**
+	 * Action Scheduler task: delete a previously exported file.
+	 *
+	 * @param array $args Should contain 'file'.
+	 * @return void
+	 */
+	public function delete_file_task( $data ) {
+		if ( empty( $data['filename'] ) || ! is_string( $data['filename'] ) ) {
+			return;
+		}
+		$file_path = $this->get_file_path( basename( $data['filename'] ) );
+		if ( $file_path && file_exists( $file_path ) ) {
+			wp_delete_file( $file_path );
+			if ( ! empty( $data['user_id'] ) && ! empty( $data['export_id'] ) ) {
+				$this->cleanup_after_download( $data['user_id'], $data['export_id'] );
+			}
+		}
+	}
+
 
 	/**
 	 * Export type configurations.
@@ -150,6 +180,7 @@ class PMPro_Exports {
 	 * @return array
 	 */
 	protected function get_export_type_configs() {
+
 		$configs = array(
 			'members' => array(
 				'capabilities'           => array( 'pmpro_memberslistcsv', 'manage_options' ),
@@ -375,22 +406,6 @@ class PMPro_Exports {
 		$file_name = $file_prefix . '-' . $export_id . '.csv';
 		$file_name = apply_filters( 'pmpro_export_file_name', $file_name, $type, $export_id, $filters );
 		return sanitize_file_name( $file_name );
-	}
-
-	/**
-	 * Action Scheduler task: delete an export file from disk.
-	 *
-	 * @param array $args Should contain 'file'.
-	 * @return void
-	 */
-	public function delete_file_task( $filename ) {
-		if ( empty( $filename ) || ! is_string( $filename ) ) {
-			return;
-		}
-		$file_path = $this->get_file_path( basename( $filename ) );
-		if ( $file_path && file_exists( $file_path ) ) {
-			wp_delete_file( $file_path );
-		}
 	}
 
 	/**
