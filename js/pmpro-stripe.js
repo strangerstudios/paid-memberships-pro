@@ -66,7 +66,7 @@ jQuery( document ).ready( function( $ ) {
 	}
 	$( '.pmpro_form' ).submit( function( event ) {
 		// If the gateway field is present and not set to stripe, return.
-		if ( $( 'input[name="gateway"]' ).length > 0 && $( 'input[name="gateway"]:checked' ).val() !== 'stripe' ) {
+		if ( $(this).find('input[name="gateway"]').length > 0 && $(this).find('input[name="gateway"]:checked').val() !== 'stripe' ) {
 			return;
 		}
 
@@ -77,13 +77,13 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 		// If there is no "pmpro_level" input (or "level" input for legacy page templates), then this is not a checkout form. Return.
-		if ( $( 'input[name="pmpro_level"]' ).length === 0 && $( 'input[name="level"]' ).length === 0 ) {
+		if ( $(this).find('input[name="pmpro_level"]').length === 0 && $(this).find('input[name="level"]').length === 0 ) {
 			return;
 		}
 
 		// If there is a payment method ID already, then this is a form submission after card authentication.
 		// This may be the case when the payment request button is used, for example.
-		if ( $( 'input[name="payment_method_id"]' ).length > 0 ) {
+		if ( $(this).find('input[name="payment_method_id"]').length > 0 ) {
 			return;
 		}
 
