@@ -287,7 +287,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * Start an export.
 		 * 
 		 * Route:
-		 * - POST /pmpro/v1/exports/start
+		 * - POST /pmpro/v1/export/start
 		 *
 		 * Params:
 		 * - type: string (e.g., 'members', 'orders') (required)
@@ -295,10 +295,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * - s: search (optional)
 		 * - export_id: for status (optional)
 		 * 
+		 * Example:.../wp-json/pmpro/v1/export/start
+		 * 
 		 * @since TBD
-		 * Example start: https://example.com/wp-json/pmpro/v1/exports/start
 		 */
-		register_rest_route( $pmpro_namespace, '/exports/start',
+		register_rest_route( $pmpro_namespace, '/export/start',
 			array(
 				array(
 					'methods'  => WP_REST_Server::EDITABLE,
@@ -337,10 +338,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * Route:
 		 * - GET  /pmpro/v1/exports/status
 		 *
+		 * Example: .../wp-json/pmpro/v1/export/status?type=members&export_id=12345
+		 *
 		 * @since TBD
-		 * Example: https://example.com/wp-json/pmpro/v1/exports/status?type=members&export_id=12345
 		 */
-		register_rest_route( $pmpro_namespace, '/exports/status',
+		register_rest_route( $pmpro_namespace, '/export/status',
 			array(
 				array(
 					'methods'  => WP_REST_Server::READABLE,

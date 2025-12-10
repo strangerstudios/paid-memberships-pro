@@ -1366,7 +1366,7 @@ jQuery(document).ready(function ($) {
 		if (typeof filters === 'string') { try { filters = JSON.parse(filters); } catch(e){ filters = {}; } }
 		setButtonStateKey($btn, 'preparing');
 		var payload = Object.assign({ type: type }, filters);
-		var startUrl = $btn.data('startUrl') || ($btn.data('start-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/exports/start') : null);
+		var startUrl = $btn.data('startUrl') || ($btn.data('start-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/export/start') : null);
 		var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
 		if(!startUrl || !nonce){ setButtonState($btn, 'Error', 'error'); return; }
 		fetch(startUrl, {
@@ -1407,7 +1407,7 @@ jQuery(document).ready(function ($) {
 		var exportId = $btn.attr('data-export-id');
 		if(!exportId){ stopPolling($btn); return; }
 		var type = $btn.data('type') || 'members';
-		var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/exports/status') : null);
+		var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/export/status') : null);
 		var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
 		if(!statusUrlBase || !nonce){ stopPolling($btn); return; }
 		var url = new URL(statusUrlBase);

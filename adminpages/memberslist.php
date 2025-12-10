@@ -32,8 +32,8 @@ if ( isset( $_REQUEST['l'] ) ) {
 				data-status="idle"
 				data-export-id=""
 				data-type="members"
-				data-start-url="<?php echo esc_url( rest_url( 'pmpro/v1/exports/start' ) ); ?>"
-				data-status-url="<?php echo esc_url( rest_url( 'pmpro/v1/exports/status' ) ); ?>"
+				data-start-url="<?php echo esc_url( rest_url( 'pmpro/v1/export/start' ) ); ?>"
+				data-status-url="<?php echo esc_url( rest_url( 'pmpro/v1/export/status' ) ); ?>"
 				data-nonce="<?php echo esc_attr( wp_create_nonce( 'wp_rest' ) ); ?>"
 				data-filters='<?php echo esc_attr( wp_json_encode( $members_export_filters ) ); ?>'>
 				<?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?>
