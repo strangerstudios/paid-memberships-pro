@@ -99,23 +99,10 @@ class PMPro_Email_Template_Login_Link extends PMPro_Email_Template {
 
 		$email_template_variables = array(
 			'subject' => $this->get_default_subject(),
-			// 'login_link' => self::generate_login_link_variable( $user->ID ),
 			'login_link' => $this->login_link,
 			'sitename' => get_bloginfo( 'name' )
 		);
 		return $email_template_variables;
-	}
-
-	/**
-	 * Generate the login link for !!login_link!!
-	 *
-	 * @param int $user_id The WordPress user ID.
-	 * @return string The generated login link.
-	 */
-	private static function generate_login_link_variable( $user_id ) {
-		$login_token = pmpro_login_generate_login_token( $user_id );
-		$login_link = wp_login_url() . '?email_login_token=' . $login_token;
-		return $login_link;
 	}
 
 	/**
@@ -162,7 +149,7 @@ class PMPro_Email_Template_Login_Link extends PMPro_Email_Template {
 	 */
 	public static function get_test_email_constructor_args() {
 		global $current_user;
-		return array( $current_user, 'somefakeurl.com/?abc=123123123' ); /// Change this test.
+		return array( $current_user, home_url() );
 	}
 }
 

@@ -15,18 +15,11 @@ function pmpro_login_email_login_scripts() {
 	wp_enqueue_style( 'pmpro-email-login', PMPRO_URL . '/css/frontend/pmpro-email-login.css', array(), PMPRO_VERSION );
 	wp_enqueue_script( 'pmpro-email-login', PMPRO_URL . '/js/pmpro-email-login.js', array( 'jquery' ), PMPRO_VERSION, true );
 
-	$login_url = wp_login_url();
-
-	// Add the redirect_to parameter if it exists.
-	if ( isset( $_REQUEST['redirect_to' ] ) && ! empty( $_REQUEST['redirect_to'] ) ) {
-		$login_url = add_query_arg( 'redirect_to', urlencode( $_REQUEST['redirect_to'] ), $login_url );
-	}
-
-	$login_url = add_query_arg( array( 'action' => 'pmpro_magic_login', 'pmpro_email_login' => wp_create_nonce( 'pmpro_email_login' ) ), $login_url );
+	// Create the login URL with the magic login action and nonce to generate the token.
+	$login_url = add_query_arg( array( 'action' => 'pmpro_magic_login', 'pmpro_email_login' => wp_create_nonce( 'pmpro_email_login' ) ), wp_login_url() );
 
 	// Localize some variables for this JS File.
 	$login_js_args = array(
-		'login_text' 	  => __( 'Get Login Link via email', 'paid-memberships-pro' ),
 		'login_url'      => $login_url
 	);
 
@@ -36,7 +29,7 @@ add_action( 'login_enqueue_scripts', 'pmpro_login_email_login_scripts' );
 add_action( 'wp_enqueue_scripts', 'pmpro_login_email_login_scripts' );
 
 /**
- * Adds the "Send me the login link" button to the login form (wp-login.php)
+ * Adds the "Send me the login link" button to the login form (wp-login.php) and frontend PMPro login form (login_form_middle)
  * 
  * @since TBD
  *
@@ -155,12 +148,19 @@ function pmpro_login_process_form_submission() {
 			return true;
 		}
 
-		// Generate the login token for the user to email it to them later.
+		// Generate the login token for the user to email it to them.
 		$login_token = pmpro_login_generate_login_token( $user_id );
+		$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect_to'] ) ) : '';
+
+		// Create the login link from token + redirect_to to let them verify and redirect later.
+		$login_link = add_query_arg( 'pmpro_email_login_token', $login_token, home_url() );
+		if ( ! empty( $redirect_to ) ) {
+			$login_link = add_query_arg( 'redirect_to', urlencode( $redirect_to ), $login_link );
+		}
 
 		// Send email with login link.
 		$pmpro_email = new PMProEmail();
-		$pmpro_email->send_email_login_link( $user, $login_token );
+		$pmpro_email->send_email_login_link( $user, $login_link );
 
 		set_transient( 'pmpro_email_login_sent_' . $user_id, sanitize_text_field( wp_unslash( $_GET['pmpro_email_login'] ) ), 5 * MINUTE_IN_SECONDS );
 		return true;
@@ -241,8 +241,8 @@ function pmpro_login_authenticate_via_email_login(){
 		// Add the default wp_login hook for 2FA, reCAPTCHA or anything else that may want to intercept logins before redirecting.
 		do_action( 'wp_login', $user->user_login, $user );
 
-		// Figure out the redirect URL the user should be redirected to.
-		$redirect_to = ! empty( $_REQUEST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect_to'] ) ) : '';
+		// Figure out the redirect URL the user should be redirected to. Use the default login behavior of PMPro.
+		$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect_to'] ) ) : '';
 		$login_redirect = pmpro_login_redirect( $redirect_to, '', $user );
 
 		// Redirect the user to the appropriate page.
