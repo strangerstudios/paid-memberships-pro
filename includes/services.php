@@ -57,14 +57,6 @@ function pmpro_wp_ajax_twocheckout_ins()
 add_action('wp_ajax_nopriv_twocheckout-ins', 'pmpro_wp_ajax_twocheckout_ins');
 add_action('wp_ajax_twocheckout-ins', 'pmpro_wp_ajax_twocheckout_ins');
 
-function pmpro_wp_ajax_orders_csv()
-{
-	require_once(dirname(__FILE__) . "/../adminpages/orders-csv.php");	
-	exit;	
-}
-add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
-
-
 /**
  * Handles the Visits, Views and Logins Export
  */

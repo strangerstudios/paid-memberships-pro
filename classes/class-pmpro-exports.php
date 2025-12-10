@@ -33,7 +33,10 @@ class PMPro_Exports {
 	 */
 	protected $default_async_threshold = 499;
 
-	/** Default export file expiration time (in seconds). */
+	/** Default export file expiration time (in seconds). 
+	 * 
+	 * How long to keep export files available for download after generation.
+	*/
 	protected $default_export_exp = 6 * HOUR_IN_SECONDS;
 
 	/**
