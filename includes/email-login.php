@@ -15,12 +15,13 @@ function pmpro_login_email_login_scripts() {
 	wp_enqueue_style( 'pmpro-email-login', PMPRO_URL . '/css/frontend/pmpro-email-login.css', array(), PMPRO_VERSION );
 	wp_enqueue_script( 'pmpro-email-login', PMPRO_URL . '/js/pmpro-email-login.js', array( 'jquery' ), PMPRO_VERSION, true );
 
-	// Create the login URL with the magic login action and nonce to generate the token.
-	$login_url = add_query_arg( array( 'action' => 'pmpro_magic_login', 'pmpro_email_login' => wp_create_nonce( 'pmpro_email_login' ) ), wp_login_url() );
+	// Create the login URL with the magic login action. The nonce will be sent via POST, not in the URL.
+	$login_url = add_query_arg( array( 'action' => 'pmpro_magic_login' ), wp_login_url() );
 
 	// Localize some variables for this JS File.
 	$login_js_args = array(
-		'login_url'      => $login_url
+		'login_url'      => $login_url,
+		'nonce'          => wp_create_nonce( 'pmpro_email_login' )
 	);
 
 	wp_localize_script( 'pmpro-email-login', 'pmpro_email_login_js', $login_js_args );
@@ -62,7 +63,7 @@ function pmpro_login_email_show_form_submitted() {
 		return;
 	}
 
-    // Show a message to the user.
+	// Show a message to the user.
 	add_action(
 		'login_message',
 		function() {
@@ -128,7 +129,7 @@ function pmpro_login_process_form_submission() {
 	if ( isset( $_GET['pmpro_email_login'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['pmpro_email_login'] ) ), 'pmpro_email_login' ) ) {
 
 		// Get the user from either the email or username field.
-		$login_input = $_REQUEST['log'];
+		$login_input = isset($_REQUEST['log']) ? sanitize_text_field(wp_unslash($_REQUEST['log'])) : '';
 
 		// Figure out if it's an email or username.
 		if ( is_email( $login_input ) ) {
@@ -148,6 +149,14 @@ function pmpro_login_process_form_submission() {
 			return true;
 		}
 
+		// Rate limiting: Only allow one email per user per 5 minutes.
+		$last_sent = get_transient( 'pmpro_email_login_last_sent_' . $user_id );
+		if ( $last_sent && ( time() - $last_sent < 5 * MINUTE_IN_SECONDS ) ) {
+			// Optionally, you could log or show a message here.
+			return false;
+		}
+		// Update the last sent time.
+		set_transient( 'pmpro_email_login_last_sent_' . $user_id, time(), 5 * MINUTE_IN_SECONDS );
 		// Generate the login token for the user to email it to them.
 		$login_token = pmpro_login_generate_login_token( $user_id );
 		$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect_to'] ) ) : '';
@@ -187,7 +196,7 @@ function pmpro_login_generate_login_token( $user_id ) {
 	$login_token = substr( hash_hmac( 'sha256', $code, $user_id ), 0, 30 ); // Generate a shorter code (30 chars).
 	$login_expires = time() + ( 15 * MINUTE_IN_SECONDS ); // Token valid for 15 minutes.
 
-	// Store the login token and expiration in user meta, separated this out so it's easier to work with and query. 
+	// Store the login token and expiration in user meta. Separated this out so it's easier to work with and query. 
 	update_user_meta( $user_id, 'pmpro_email_login_token', $login_token );
 	update_user_meta( $user_id, 'pmpro_email_login_expires', $login_expires );
 
