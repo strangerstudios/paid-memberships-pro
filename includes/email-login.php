@@ -145,7 +145,7 @@ function pmpro_login_process_form_submission() {
 		}
 		
 		// If there is a cached login token, don't send another email. Bail and return true.
-		if ( get_transient( 'pmpro_email_login_sent_' . $user_id ) === sanitize_text_field( wp_unslash( $_GET['pmpro_email_login'] ) ) ) {
+		if ( get_transient( 'pmpro_email_login_sent_' . $user_id ) === sanitize_text_field( wp_unslash( $_REQUEST['pmpro_email_login'] ) ) ) {
 			return true;
 		}
 
