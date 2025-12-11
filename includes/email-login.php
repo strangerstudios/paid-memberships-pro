@@ -129,7 +129,7 @@ function pmpro_login_process_form_submission() {
 	if ( isset( $_GET['pmpro_email_login'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['pmpro_email_login'] ) ), 'pmpro_email_login' ) ) {
 
 		// Get the user from either the email or username field.
-		$login_input = $_REQUEST['log'];
+		$login_input = isset($_REQUEST['log']) ? sanitize_text_field(wp_unslash($_REQUEST['log'])) : '';
 
 		// Figure out if it's an email or username.
 		if ( is_email( $login_input ) ) {
