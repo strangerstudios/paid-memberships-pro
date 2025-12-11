@@ -148,7 +148,14 @@ class PMPro_Email_Template_Login_Link extends PMPro_Email_Template {
 	 */
 	public static function get_test_email_constructor_args() {
 		global $current_user;
-		return array( $current_user, add_query_arg( 'pmpro_email_login_token', pmpro_login_generate_login_token( $current_user->ID ), home_url() ) );
+		if ( function_exists( 'pmpro_login_generate_login_token' ) ) {
+			$login_token = pmpro_login_generate_login_token( $current_user->ID );
+			$login_link = add_query_arg( 'pmpro_email_login_token', $login_token, home_url() );
+		} else {
+			// Fallback: return home_url() without token if function does not exist.
+			$login_link = home_url();
+		}
+		return array( $current_user, $login_link );
 	}
 }
 
