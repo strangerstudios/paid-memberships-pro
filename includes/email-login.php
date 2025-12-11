@@ -15,12 +15,13 @@ function pmpro_login_email_login_scripts() {
 	wp_enqueue_style( 'pmpro-email-login', PMPRO_URL . '/css/frontend/pmpro-email-login.css', array(), PMPRO_VERSION );
 	wp_enqueue_script( 'pmpro-email-login', PMPRO_URL . '/js/pmpro-email-login.js', array( 'jquery' ), PMPRO_VERSION, true );
 
-	// Create the login URL with the magic login action and nonce to generate the token.
-	$login_url = add_query_arg( array( 'action' => 'pmpro_magic_login', 'pmpro_email_login' => wp_create_nonce( 'pmpro_email_login' ) ), wp_login_url() );
+	// Create the login URL with the magic login action. The nonce will be sent via POST, not in the URL.
+	$login_url = add_query_arg( array( 'action' => 'pmpro_magic_login' ), wp_login_url() );
 
 	// Localize some variables for this JS File.
 	$login_js_args = array(
-		'login_url'      => $login_url
+		'login_url'      => $login_url,
+		'nonce'          => wp_create_nonce( 'pmpro_email_login' )
 	);
 
 	wp_localize_script( 'pmpro-email-login', 'pmpro_email_login_js', $login_js_args );
