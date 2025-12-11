@@ -21,6 +21,7 @@ class PMPro_Email_Template_Login_Link extends PMPro_Email_Template {
 	 * @since TBD
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
+	 * @param string $login_link The login link for the user to click to authenticate. (The full login link).
 	 */
 	public function __construct( WP_User $user, string $login_link  ) {
 		$this->user = $user;
