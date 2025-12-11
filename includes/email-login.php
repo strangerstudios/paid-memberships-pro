@@ -62,7 +62,7 @@ function pmpro_login_email_show_form_submitted() {
 		return;
 	}
 
-    // Show a message to the user.
+	// Show a message to the user.
 	add_action(
 		'login_message',
 		function() {
