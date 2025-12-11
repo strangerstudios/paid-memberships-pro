@@ -132,7 +132,7 @@ class PMPro_Recurring_Actions {
 
 		global $wpdb;
 
-		$today = date( 'Y-m-d 00:00:00', current_time( 'timestamp' ) );
+		$today = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
 
 		// Get the number of days before expiration to send the email. Filterable.
 		// Default is 7 days.
@@ -140,7 +140,7 @@ class PMPro_Recurring_Actions {
 
 		// Configure the interval to select records from
 		$interval_start = $today;
-		$interval_end   = date( 'Y-m-d 00:00:00', strtotime( "+{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
+		$interval_end   = date( 'Y-m-d H:i:s', strtotime( "+{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
 
 		// look for memberships that are going to expire within one week (but we haven't emailed them within a week)
 		$sqlQuery = $wpdb->prepare(
