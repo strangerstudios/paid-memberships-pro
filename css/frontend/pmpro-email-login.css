@@ -38,16 +38,16 @@ float: none !important;
 }
 
 #loginform p.submit{
-  top:5px;
-  position:relative;
+top:5px;
+position:relative;
 }
 
 #pmpro-email-login-button{
-  width:100%;
-  max-height:40px;
-  padding:0px;
+width:100%;
+max-height:40px;
+padding:0px;
 }
 
 #pmpro_email_login_confirmation{
-  margin-bottom:0px;
+margin-bottom:0px;
 }
