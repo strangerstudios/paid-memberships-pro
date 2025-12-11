@@ -149,6 +149,14 @@ function pmpro_login_process_form_submission() {
 			return true;
 		}
 
+		// Rate limiting: Only allow one email per user per 5 minutes.
+		$last_sent = get_transient( 'pmpro_email_login_last_sent_' . $user_id );
+		if ( $last_sent && ( time() - $last_sent < 5 * MINUTE_IN_SECONDS ) ) {
+			// Optionally, you could log or show a message here.
+			return false;
+		}
+		// Update the last sent time.
+		set_transient( 'pmpro_email_login_last_sent_' . $user_id, time(), 5 * MINUTE_IN_SECONDS );
 		// Generate the login token for the user to email it to them.
 		$login_token = pmpro_login_generate_login_token( $user_id );
 		$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect_to'] ) ) : '';
