@@ -196,7 +196,7 @@ function pmpro_login_generate_login_token( $user_id ) {
 	$login_token = substr( hash_hmac( 'sha256', $code, $user_id ), 0, 30 ); // Generate a shorter code (30 chars).
 	$login_expires = time() + ( 15 * MINUTE_IN_SECONDS ); // Token valid for 15 minutes.
 
-	// Store the login token and expiration in user meta, separated this out so it's easier to work with and query. 
+	// Store the login token and expiration in user meta. Separated this out so it's easier to work with and query. 
 	update_user_meta( $user_id, 'pmpro_email_login_token', $login_token );
 	update_user_meta( $user_id, 'pmpro_email_login_expires', $login_expires );
 
