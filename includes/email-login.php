@@ -16,7 +16,7 @@ function pmpro_login_email_login_scripts() {
 	wp_enqueue_script( 'pmpro-email-login', PMPRO_URL . '/js/pmpro-email-login.js', array( 'jquery' ), PMPRO_VERSION, true );
 
 	// Create the login URL with the magic login action and nonce to generate the token.
-	$login_url = add_query_arg( array( 'action' => 'pmpro_magic_login', 'pmpro_email_login' => wp_create_nonce( 'pmpro_email_login' ) ), wp_login_url() );
+	$login_url = add_query_arg( array( 'action' => 'pmpro_magic_login' ), wp_login_url() );
 
 	// Localize some variables for this JS File.
 	$login_js_args = array(
@@ -44,6 +44,7 @@ function pmpro_login_add_login_email_button() {
 	<div id="pmpro-email-login">
 		<span class="pmpro-login-or-separator"></span>
 		<button type="button" value="#" class="<?php echo esc_attr( pmpro_get_element_class( $button_class ) ); ?>" id="pmpro-email-login-button"><?php esc_html_e( 'Email Me a Login Link', 'paid-memberships-pro' ); ?></button>
+		<input type="hidden" name="pmpro_email_login" id="pmpro_email_login" value="<?php echo esc_attr( wp_create_nonce( 'pmpro_email_login' ) ); ?>" />
 	</div>
 	<?php
 }
@@ -125,7 +126,7 @@ add_action( 'wp_footer', 'pmpro_login_process_form_submission_pmpro_login' );
  */
 function pmpro_login_process_form_submission() {
 
-	if ( isset( $_GET['pmpro_email_login'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['pmpro_email_login'] ) ), 'pmpro_email_login' ) ) {
+	if ( isset( $_REQUEST['pmpro_email_login'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_email_login'] ) ), 'pmpro_email_login' ) ) {
 
 		// Get the user from either the email or username field.
 		$login_input = isset($_REQUEST['log']) ? sanitize_text_field(wp_unslash($_REQUEST['log'])) : '';
