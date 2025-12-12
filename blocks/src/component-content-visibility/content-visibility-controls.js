@@ -45,7 +45,7 @@ export default function ContentVisibilityControls (props) {
 		return [
 			<CheckboxControl
 				__nextHasNoMarginBottom
-				key={level.value} 
+				key={level.value}
 				label={level.label}
 				checked={levels.some((levelID) => levelID == level.value)}
 				onChange={setLevelsAttribute}
@@ -121,7 +121,7 @@ export default function ContentVisibilityControls (props) {
 						{ invert_restrictions=='0' && <>
 							<SelectControl
 								__next40pxDefaultSize
-								__nextHasNoMarginBottom							
+								__nextHasNoMarginBottom
 								value={show_noaccess}
 								label={ __( 'Show No Access Message?', 'paid-memberships-pro' ) }
 								help={ __ ( "Modify the 'no access' message on the Memberships > Advanced Settings page.", "paid-memberships-pro" ) }

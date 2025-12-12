@@ -42,7 +42,7 @@ export default function Edit({ attributes, setAttributes }) {
 					}}
 				/>
 				<ToggleControl
-					__nextHasNoMarginBottom	
+					__nextHasNoMarginBottom
 					label={ __( "Display the 'Log In Widget' menu in the 'Welcome' content.", "paid-memberships-pro" ) }
 					help={ __( "Assign the menu under Appearance > Menus.", "paid-memberships-pro" ) }
 					checked={show_menu}
