@@ -56,6 +56,12 @@ add_action( 'init', 'pmpro_register_block_types' );
  * Enqueue block editor only CSS.
  */
 function pmpro_block_editor_assets() {
+
+	// Only load this in the editor view and not the frontend.
+	if ( ! is_admin() ) {
+		return;
+	}
+
 	// Enqueue the CSS file css/blocks.editor.css.
 	wp_enqueue_style(
 		'pmpro-block-editor-css',
@@ -96,7 +102,7 @@ function pmpro_block_editor_assets() {
 	wp_enqueue_script( 'pmpro-component-content-visibility-script' );
 
 }
-add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_assets' );
+add_action( 'enqueue_block_assets', 'pmpro_block_editor_assets' );
 
 /**
  * Register post meta needed for our blocks.
