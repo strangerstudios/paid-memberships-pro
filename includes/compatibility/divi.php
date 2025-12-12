@@ -52,6 +52,18 @@ class PMProDivi{
 			'toggle_slug' => 'paid-memberships-pro',
 		);
 
+		 $settings['pmpro_hide_content'] = array(
+			'tab_slug' => 'custom_css',
+			'label' => __('Restrict instead of allow contend for entered levels AND allow for all others', 'paid-memberships-pro'),
+			'type' => 'yes_no_button',
+			'options' => array(
+				'off' => __('No', 'paid-memberships-pro'),
+				'on' => __('Yes', 'paid-memberships-pro'),
+			),
+			'toggle_slug' => 'paid-memberships-pro',
+		);
+	
+
 		return $settings;
 
 	}
@@ -68,7 +80,7 @@ class PMProDivi{
 		
 		$level = $props['paid-memberships-pro'];
 		
-		if ( empty( trim( $level ) ) || trim( $level ) === '0' ) {
+		if (( empty( trim( $level ) ) || trim( $level ) === '0' ) && ! ( ! empty( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] )) {
 			return $output;
 		}
 		
@@ -79,16 +91,25 @@ class PMProDivi{
 		   //they specified just one level
 		   $levels = array( $level );
 		}
-
+		do_action('qm/debug', '$levels: ' . print_r($levels, true));
 	    if( pmpro_hasMembershipLevel( $levels ) ){
-	    	return $output;
+			if (! empty( $props['pmpro_hide_content'] ) && 'on' === $props['pmpro_hide_content']) {
+				return ''; // Don't show for members
+			} else {
+				return $output; // Show for Members
+			}
+
 	    } else {
 			if ( ! empty( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] ) {
 				return pmpro_get_no_access_message( NULL, $levels );
 			} else {
-				return '';
+				if (! empty( $props['pmpro_hide_content'] ) && 'on' === $props['pmpro_hide_content']) {
+					return $output; // Show for all Users without membership
+				} else {
+					return '';
+				}
 			}
-	    	
+	
 	    }
 	}
 	
