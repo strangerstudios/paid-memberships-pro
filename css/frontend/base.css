@@ -181,11 +181,12 @@
 }
 
 /* File-specific field type */
-.pmpro_form_field-file button {
+
+.pmpro_form .pmpro_form_field-file button {
 	margin-right: var(--pmpro--base--spacing--small);
 }
 
-.pmpro_form_field-file-preview {
+.pmpro_form .pmpro_form_field-file-preview {
 	align-items: center;
 	display: flex;
 	height: 100px;
@@ -194,7 +195,7 @@
 	width: 100px;
 }
 
-.pmpro_form_field-file-preview img {
+.pmpro_form .pmpro_form_field-file-preview img {
 	height: 100%;
 	object-fit: cover;
 	width: 100%;
