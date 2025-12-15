@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 5.6
-Stable tag: 3.6.2
+Stable tag: 3.6.3
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,13 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.6.3 - 2025-12-15 =
+* SECURITY: No longer prepopulating the password field on the checkout page after a failed checkout attempt. #3551 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Updated membership actions to run more frequently to improve support for hourly memberships. #3547 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Improved the styling for nested `.pmpro_card` elements. #3539 (@kimcoleman)
+* BUG FIX: Fixed the HTML structure when displaying image-type file fields to improve appearance. #3537 (@kimcoleman)
+* BUG FIX: Corrected the links shown for the Stripe Tax setting. #3546 (@dwanjuki)
+
 = 3.6.2 - 2025-11-20 =
 * ENHANCEMENT: Stripe subscriptions will no longer be created with an application fee or will have the fee immediately removed when the initial payment is complete. Application fees will then be added per-invoice during the `invoice.created` webhook to ensure that fees are only charged when PMPro is actively managing the subscription. #3535 (@dparker1005)
 * ENHANCEMENT: Updated the Stripe webhook handler to remove application fees from existing subscriptions over time during the `invoice.upcoming` webhook event. This helps to ensure that websites that have stopped using Stripe Connect will not be charged the 2% application fee. #3535 (@dparker1005)
