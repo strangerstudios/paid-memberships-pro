@@ -284,7 +284,7 @@ function pmpro_handle_recurring_payment_failure_at_gateway( $order_data ) {
 	// Some gateways can perform many retries in a short period of time. To avoid spamming the user/admin, we will only send one email per day.
 	// Check order meta for the last time we sent a failure email for this order.
 	$last_failure_email_sent = get_pmpro_membership_order_meta( $order->id, 'last_failure_email_sent', true );
-	if ( ! empty( $last_failure_email_sent ) && ( time() - intval( $last_failure_email_sent ) ) < DAY_IN_SECONDS - HOUR_IN_SECONDS ) { // Give an hour of wiggle room for payments that are retried at the same time each day.
+	if ( ! empty( $last_failure_email_sent ) && ( time() - intval( $last_failure_email_sent ) ) < 23 * HOUR_IN_SECONDS ) { // 23 hours to give some wiggle room for payments that are retried at the same time each day.
 		return 'Processed failed payment for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '. Order id = ' . $order->id . '. Already sent failure email within the last 24 hours.';
 	}
 
