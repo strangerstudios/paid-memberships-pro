@@ -207,5 +207,11 @@ function pmpro_track_library_conflict( $name, $path, $version ) {
 		}
 	}
 
+	// Clean up any libraries that no longer have paths.
+	foreach ( $library_conflicts as $lib_name => $paths ) {
+		if ( empty( $paths ) ) {
+			unset( $library_conflicts[ $lib_name ] );
+		}
+	}
 	update_option( 'pmpro_library_conflicts', $library_conflicts, false );
 }
