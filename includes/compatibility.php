@@ -201,7 +201,7 @@ function pmpro_track_library_conflict( $name, $path, $version ) {
 	// Remove conflicts if older than 7 days.
 	foreach ( $library_conflicts as $lib_name => $paths ) {
 		foreach ( $paths as $lib_path => $info ) {
-			if ( ! empty( $info['timestamp'] ) && ( strtotime( $info['timestamp'] ) < strtotime( '-7 days', strtotime( $now ) ) ) ) {
+			if ( ! empty( $info['timestamp'] ) && ( strtotime( $info['timestamp'] ) < strtotime( '-7 days' ) ) ) {
 				unset( $library_conflicts[ $lib_name ][ $lib_path ] );
 			}
 		}
