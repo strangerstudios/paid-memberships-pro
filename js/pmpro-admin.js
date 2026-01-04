@@ -791,7 +791,7 @@ jQuery(document).ready(function () {
 				var activeCount = jQuery('.add-on-container.add-on-active').length;
 				var inactiveCount = jQuery('.add-on-container.add-on-inactive').length;
 				var updateCount = jQuery('.add-on-container.add-on-needs-update').length;
-				function setCount($link, count, hide){
+					function setCount($link, count, hide){
 					if(!$link.length){return;}
 					var baseLabel = $link.data('baseLabel');
 					if(!baseLabel){
@@ -799,24 +799,30 @@ jQuery(document).ready(function () {
 						$link.data('baseLabel', baseLabel);
 					}
 					$link.text(count>0? baseLabel+' ('+count+')': baseLabel);
-					if(hide){ $link.closest('li').toggle(count>0); }
+						if(hide){ $link.closest('li').toggle(count>0); }
 				}
-				setCount(jQuery('.filter-links a[data-view="active"]'), activeCount, false);
-				setCount(jQuery('.filter-links a[data-view="inactive"]'), inactiveCount, false);
-				setCount(jQuery('.filter-links a[data-view="update"]'), updateCount, true);
-				if(updateCount===0){
-					var $updateLink = jQuery('.filter-links a[data-view="update"]');
-					if($updateLink.hasClass('current') || window.location.hash === '#update'){
+					// Hide tabs whose count is zero for all three: active, inactive, update.
+					setCount(jQuery('.filter-links a[data-view="active"]'), activeCount, true);
+					setCount(jQuery('.filter-links a[data-view="inactive"]'), inactiveCount, true);
+					setCount(jQuery('.filter-links a[data-view="update"]'), updateCount, true);
+					// If current link becomes hidden, switch to All.
+					var $currentLink = jQuery('.filter-links a.current');
+					if ($currentLink.length && !$currentLink.closest('li').is(':visible')) {
 						jQuery('.filter-links a[data-view="all"]').trigger('click');
+					} else if (window.location.hash) {
+						var hashView = window.location.hash.replace('#','');
+						var $hashLink = jQuery('.filter-links a[data-view="' + hashView + '"]');
+						if ($hashLink.length && !$hashLink.closest('li').is(':visible')) {
+							jQuery('.filter-links a[data-view="all"]').trigger('click');
+						}
 					}
-				}
 			},
 			applyCurrentFilter: function(){
 				var $current = jQuery('.filter-links a.current');
 				if($current.length){ $current.trigger('click'); }
 			},
 			// Ensure the actions dropdown exists and reflects current status (installed states only).
-			buildOrUpdateMenu: function(container, status, plugin_file, nonce, network_wide){
+			buildOrUpdateMenu: function(container, status, plugin_file, nonce){
 				var $details = container.find('> .add-on-item > .details');
 				if(!$details.length){ return; }
 				var $btn = $details.children('.dropdown-arrow');
@@ -850,25 +856,21 @@ jQuery(document).ready(function () {
 				// First item: Activate or Deactivate
 				var firstAction = (status === 'inactive') ? 'activate' : 'deactivate';
 				var firstLabel = (status === 'inactive') ? 'Activate' : 'Deactivate';
-				var nwInput = network_wide ? '<input type="hidden" name="pmproAddOnNetworkWide" value="1" />' : '';
 				$ul.append(
 					'<li>'
 					+ '\t<button type="button" role="menuitem" class="pmproAddOnActionButton action-' + firstAction + '">' + firstLabel + '</button>'
 					+ '\t<input type="hidden" name="pmproAddOnAdminAction" value="' + firstAction + '" />'
 					+ '\t<input type="hidden" name="pmproAddOnAdminTarget" value="' + plugin_file + '" />'
 					+ '\t<input type="hidden" name="pmproAddOnAdminNonce" value="' + nonce + '" />'
-					+ nwInput
 					+ '</li>'
 				);
 				// Divider + Uninstall
-				$ul.append('<li class="divider"></li>');
 				$ul.append(
 					'<li>'
 					+ '\t<button type="button" role="menuitem" class="pmproAddOnActionButton action-uninstall is-destructive">Uninstall</button>'
 					+ '\t<input type="hidden" name="pmproAddOnAdminAction" value="delete" />'
 					+ '\t<input type="hidden" name="pmproAddOnAdminTarget" value="' + plugin_file + '" />'
 					+ '\t<input type="hidden" name="pmproAddOnAdminNonce" value="' + nonce + '" />'
-					+ nwInput
 					+ '</li>'
 				);
 			}
@@ -924,7 +926,6 @@ jQuery(document).ready(function () {
 			// Build AJAX payload for new class endpoints
 			var target = button.siblings('input[name="pmproAddOnAdminTarget"]').val();
 			var nonce = button.siblings('input[name="pmproAddOnAdminNonce"]').val();
-			var network_wide = button.siblings('input[name="pmproAddOnNetworkWide"]').val() === '1';
 			var ajaxAction = null;
 			if (action === 'install') ajaxAction = 'pmpro_addon_install';
 			if (action === 'update') ajaxAction = 'pmpro_addon_update';
@@ -938,7 +939,6 @@ jQuery(document).ready(function () {
 				nonce: nonce,
 				target: target,
 				slug: (action === 'install' ? target : ''),
-				network_wide: network_wide ? 1 : 0
 			}).done(function(resp){
 				if (!resp || !resp.success) {
 					var msg = (resp && resp.data && resp.data.message) ? resp.data.message : 'Action failed.';
@@ -1025,7 +1025,7 @@ jQuery(document).ready(function () {
 						}, 600);
 					}
 					// Ensure actions menu exists/updated now that it's installed.
-					pmproAddOnsHelpers.buildOrUpdateMenu(container, 'inactive', plugin_file, nonce, network_wide);
+					pmproAddOnsHelpers.buildOrUpdateMenu(container, 'inactive', plugin_file, nonce);
 					setStatus('inactive', 'Inactive');
 				} else if (action === 'update') {
 					button.text('Updated').addClass('checkmarked');
@@ -1269,4 +1269,26 @@ function pmpro_changeTabs( e, inputChanged ) {
  */
 jQuery(document).ready(function () {
 	jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
+});
+
+/**
+ * Report Widgets - Collapsed Row Toggles
+ */
+jQuery(document).ready(function () {
+	jQuery('.pmpro_report_th').on('click',function(event) {
+		//prevent form submit onclick
+		event.preventDefault();
+
+		//toggle sub rows
+		jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
+
+		//change arrow
+		if(jQuery(this).hasClass('pmpro_report_th_closed')) {
+			jQuery(this).removeClass('pmpro_report_th_closed');
+			jQuery(this).addClass('pmpro_report_th_opened');
+		} else {
+			jQuery(this).removeClass('pmpro_report_th_opened');
+			jQuery(this).addClass('pmpro_report_th_closed');
+		}
+	});
 });

@@ -106,10 +106,22 @@
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{
 			// Make sure we have the invoice in the desired API version.
-			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			$invoice = Stripe_Invoice::retrieve(
+				array(
+					'id' => $pmpro_stripe_event->data->object->id,
+					'expand' => array(
+						'payments',
+					)
+				)
+			);
 
 			if ( $invoice->amount_due <= 0 ) {
 				$logstr .= "Ignoring an invoice for $0. Probably for a new subscription just created. Invoice ID #" . $invoice->id . ".";
+				pmpro_stripeWebhookExit();
+			}
+
+			if ( empty( $invoice->parent->subscription_details->subscription ) ) {
+				$logstr .= "No subscription associated with invoice " . $invoice->id . ".";
 				pmpro_stripeWebhookExit();
 			}
 
@@ -120,8 +132,16 @@
 			// Make sure we have the invoice in the desired API version.
 			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
 
+			// Get the subscription ID for this invoice.
+			if ( ! empty( $invoice->parent->subscription_details->subscription ) ) {
+				$subscription_id = $invoice->parent->subscription_details->subscription;
+			} else {
+				$logstr .= "Could not find subscription ID for invoice " . $invoice->id . ".";
+				pmpro_stripeWebhookExit();
+			}
+
 			// Get the subscription from the invoice.
-			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $invoice->subscription, 'stripe', $livemode ? 'live' : 'sandbox' );
+			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_id, 'stripe', $livemode ? 'live' : 'sandbox' );
 			if( ! empty( $subscription ) ) {
 				$user_id = $subscription->get_user_id();
 				$user = get_userdata($user_id);
@@ -133,29 +153,6 @@
 				// Prep order for emails.
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
-
-				// Find the payment intent.
-		        $payment_intent_args = array(
-		          'id'     => $invoice->payment_intent,
-		          'expand' => array(
-		            'payment_method',
-					'latest_charge',
-		          ),
-		        );
-		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
-				// Find the payment method.
-				$payment_method = null;
-				if ( ! empty( $payment_intent->payment_method ) ) {
-					$payment_method = $payment_intent->payment_method;
-				} elseif( ! empty( $payment_intent->latest_charge ) ) {
-					// If we didn't get a payment method, check the charge.
-					$payment_method = $payment_intent->latest_charge->payment_method_details;
-				}
-				if ( empty( $payment_method ) ) {		       	
-					$logstr .= "Could not find payment method for invoice " . $invoice->id;					
-				}
-				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );
 
 				// Add invoice link to the order.
 				$morder->invoice_url = $invoice->hosted_invoice_url;
@@ -184,13 +181,17 @@
 			$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->id );
 
 			// Get the invoice for this charge if it exists.
-			if ( ! empty( $charge->invoice ) ) {
-				try {
-					$invoice = Stripe_Invoice::retrieve( $charge->invoice );
-				} catch ( Exception $e ) {
-					error_log( 'Unable to fetch Stripe Invoice object: ' . $e->getMessage() );
-					$invoice = null;
-				}
+			if ( ! empty( $charge->payment_intent ) ) {
+				$invoice_payment = \Stripe\InvoicePayment::all( array(
+					'payment' => array(
+						'type' => 'payment_intent',
+						'payment_intent' => $charge->payment_intent,
+					),
+					'expand' => array(
+						'data.invoice'
+					)
+				) );
+				$invoice = empty($invoice_payment->data[0]->invoice) ? null : $invoice_payment->data[0]->invoice; // Using data[0] as only one invoice payment should match a search passing a specific payment intent ID.
 			}
 
 			// If we don't have an invoice, bail.
@@ -200,7 +201,7 @@
 			}
 
 			// If we don't have a subscription on the invoice, bail.
-			if ( empty( $invoice->subscription ) ) {
+			if ( empty( $invoice->parent->subscription_details->subscription ) ) {
 				$logstr .= "No subscription associated with invoice " . $invoice->id . " with failed payment.";
 				pmpro_stripeWebhookExit();
 			}
@@ -223,8 +224,15 @@
       		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
 		
 			// Initial payment orders are stored using the invoice ID, so check that value too.
-			if ( empty( $morder->id ) && ! empty( $charge->invoice ) ) {
-				$payment_transaction_id = $charge->invoice;
+			if ( empty( $morder->id ) && ! empty( $charge->payment_intent ) ) {
+				// Get the invoice for this charge if it exists.
+				$invoice_payment = \Stripe\InvoicePayment::all( array(
+					'payment' => array(
+						'type' => 'payment_intent',
+						'payment_intent' => $charge->payment_intent,
+					),
+				) );
+				$payment_transaction_id = empty($invoice_payment->data[0]->invoice) ? null : $invoice_payment->data[0]->invoice; // Using data[0] as only one invoice payment should match a search passing a specific payment intent ID.
 				$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
 			}
 
@@ -240,11 +248,7 @@
 				if ( $pmpro_stripe_event->data->object->amount_refunded < $pmpro_stripe_event->data->object->amount ) {
 					$logstr .= sprintf( 'Webhook: Order ID %1$s with transaction ID %2$s was partially refunded. The order will need to be updated in the WP dashboard.', $morder->id, $payment_transaction_id );
 
-					// Add new lines to order notes if not empty.
-					if ( ! empty( $morder->notes ) ) {
-						$morder->notes .= "\n\n";
-					}
-					$morder->notes = trim( $morder->notes . sprintf( 'Webhook: Order ID %1$s was partially refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+					$morder->add_order_note( sprintf( 'Webhook: Order ID %1$s was partially refunded for transaction ID %2$s at the gateway.', $morder->id, $payment_transaction_id ) );
 					$morder->SaveOrder();
 					pmpro_stripeWebhookExit();
 				}
@@ -254,13 +258,8 @@
 				
 				$logstr .= sprintf( 'Webhook: Order ID %1$s successfully refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id );
 
-				// Add new lines to order notes if not empty.
-				if ( ! empty( $morder->notes ) ) {
-					$morder->notes .= "\n\n";
-				}
-
 				// Add to order notes.
-				$morder->notes = trim( $morder->notes . sprintf( 'Webhook: Order ID %1$s successfully refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+				$morder->add_order_note( sprintf( 'Webhook: Order ID %1$s successfully refunded for transaction ID %2$s at the gateway.', $morder->id, $payment_transaction_id ) );
 
 				$morder->SaveOrder();
 
@@ -343,6 +342,19 @@
 					}
 				} catch ( \Stripe\Error\Base $e ) {
 					// Could not get invoices. We just won't set a payment transaction ID.
+				}
+
+				// Also remove any application fee on the subscription. We will add it to individual invoices when they're created.
+				try {
+					Stripe_Subscription::update(
+						$checkout_session->subscription,
+						array(
+							'application_fee_percent' => 0,
+						)
+					);
+					$logstr .= "Updated application fee for subscription " . $checkout_session->subscription . " to 0%.";
+				} catch ( Exception $e ) {
+					$logstr .= "Could not update application fee for subscription " . $checkout_session->subscription . ". " . $e->getMessage();
 				}
 			}
 			// Update payment method and billing address on order.
@@ -451,14 +463,23 @@
 
 			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
 			pmpro_stripeWebhookExit();
-		} elseif ( $pmpro_stripe_event->type == 'invoice.created' ) {
+		} elseif ( $pmpro_stripe_event->type == 'invoice.created' || $pmpro_stripe_event->type == 'invoice.upcoming' ) {
 			// Make sure we have the invoice in the desired API version.
-			$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			if ( ! empty( $pmpro_stripe_event->data->object->id ) ) {
+				$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
+			} else {
+				// We don't have an invoice ID, so we're likely processing the 'invoice.upcoming' event.
+				// In this case, we're just trying to remove any application fee from the subscription.
+				// Use the data object as-is and let's hope it's in the correct API version. If not, this code will just bail during the following check which is ok too.
+				$invoice = $pmpro_stripe_event->data->object;
+			}
 
 			// Check if a subscription ID exists on the invoice. If not, this is not a PMPro recurring payment.
-			$subscription_id = empty( $invoice->subscription ) ? null : $invoice->subscription;
+			$subscription_id = empty( $invoice->parent->subscription_details->subscription ) ? null : $invoice->parent->subscription_details->subscription;
 			if ( empty( $subscription_id ) ) {
-				$logstr .= "Invoice " . $invoice->id . " is not for a subscription and is therefore not a PMPro recurring payment. No action taken.";
+				// Upcoming invoices will not have an ID set.
+				$invoice_id = empty( $invoice->id ) ? '[upcoming]' : $invoice->id;
+				$logstr .= "Invoice " . $invoice_id . " is not for a subscription and is therefore not a PMPro recurring payment. No action taken.";
 				pmpro_stripeWebhookExit();
 			}
 
@@ -466,6 +487,25 @@
 			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_id, 'stripe', $livemode ? 'live' : 'sandbox' );
 			if ( empty( $subscription ) ) {
 				$logstr .= "Could not find a PMPro subscription with transaction ID " . $subscription_id . ". No action taken.";
+				pmpro_stripeWebhookExit();
+			}
+
+			// Remove the application fee on the subscription. We will add it to individual invoices when they're created.
+			try {
+				Stripe_Subscription::update(
+					$subscription_id,
+					array(
+						'application_fee_percent' => 0,
+					)
+				);
+				$logstr .= "Updated application fee for subscription " . $subscription_id . " to 0%.";
+			} catch ( Exception $e ) {
+				$logstr .= "Could not update application fee for subscription " . $subscription_id . ". " . $e->getMessage();
+			}
+
+			// If we're processing 'invoice.upcoming', we don't need to do anything else.
+			// We will update the invoice application fee when it is actually created.
+			if ( $pmpro_stripe_event->type == 'invoice.upcoming' ) {
 				pmpro_stripeWebhookExit();
 			}
 
@@ -493,19 +533,6 @@
 				$logstr .= "Updated application fee for invoice " . $invoice->id . " to " . $application_fee . "%.";
 			} catch ( Exception $e ) {
 				$logstr .= "Could not update application fee for invoice " . $invoice->id . ". " . $e->getMessage();
-			}
-
-			// Update the application fee on the subscription.
-			try {
-				Stripe_Subscription::update(
-					$subscription_id,
-					array(
-						'application_fee_percent' => $application_fee,
-					)
-				);
-				$logstr .= "Updated application fee for subscription " . $subscription_id . " to " . $application_fee . "%.";
-			} catch ( Exception $e ) {
-				$logstr .= "Could not update application fee for subscription " . $subscription_id . ". " . $e->getMessage();
 			}
 			pmpro_stripeWebhookExit();
 		}
@@ -663,7 +690,7 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 /**
  * Build "extra order data" array from invoice to be passed to gateway request handler functions.
  *
- * @since TBD
+ * @since 3.6
  *
  * @param Stripe_Invoice $invoice The invoice object from Stripe.
  * @return array The order data array.
@@ -680,7 +707,7 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 	$order_data['gateway'] = 'stripe';
 	$order_data['gateway_environment'] = ( ! empty( $invoice->livemode ) && $invoice->livemode ) ? 'live' : 'sandbox';
 	$order_data['timestamp'] = $invoice->created;
-	$order_data['subscription_transaction_id'] = $invoice->subscription;
+	$order_data['subscription_transaction_id'] = $invoice->parent->subscription_details->subscription;
 	$order_data['payment_transaction_id'] = $invoice->id;
 
 	// Set order pricing data.
@@ -694,22 +721,27 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 
 	// Set payment information data.
 	// Find the payment intent.
-	$payment_intent_args = array(
-		'id'     => $invoice->payment_intent,
-		'expand' => array(
-			'payment_method',
-			'latest_charge',
-		),
-	);
-	$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
-	// Find the payment method.
-	$payment_method = null;
-	if ( ! empty( $payment_intent->payment_method ) ) {
-		$payment_method = $payment_intent->payment_method;
-	} elseif( ! empty( $payment_intent->latest_charge ) ) {
-		// If we didn't get a payment method, check the charge.
-		$payment_method = $payment_intent->latest_charge->payment_method_details;
+	if ( ! empty( $invoice->payments->data[0]->payment->payment_intent ) ) {
+		$payment_intent_args = array(
+			'id'     => $invoice->payments->data[0]->payment->payment_intent,
+			'expand' => array(
+				'payment_method',
+				'latest_charge',
+			),
+		);
+		$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+
+		// Find the payment method.
+		$payment_method = null;
+		if ( ! empty( $payment_intent->payment_method ) ) {
+			$payment_method = $payment_intent->payment_method;
+		} elseif( ! empty( $payment_intent->latest_charge ) ) {
+			// If we didn't get a payment method, check the charge.
+			$payment_method = $payment_intent->latest_charge->payment_method_details;
+		}
 	}
+
+	// Set the payment type and card info if we have a payment method.
 	if ( ! empty( $payment_method ) ) {		       	
 		$order_data['payment_type'] = 'Stripe - ' . $payment_method->type;
 		if ( ! empty( $payment_method->card ) ) {
@@ -719,19 +751,58 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 			$order_data['expirationmonth'] = $payment_method->card->exp_month;
 			$order_data['expirationyear'] = $payment_method->card->exp_year;
 		}
-		if ( ! empty( $payment_method->billing_details ) && ! empty( $payment_method->billing_details->address ) && ! empty( $payment_method->billing_details->address->line1 ) ) {
-			$order_data['billing'] = new stdClass();
-			$order_data['billing']->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
-			$order_data['billing']->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
-			$order_data['billing']->street2 = empty( $payment_method->billing_details->address->line2 ) ? '' : $payment_method->billing_details->address->line2;
-			$order_data['billing']->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
-			$order_data['billing']->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
-			$order_data['billing']->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
-			$order_data['billing']->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
-			$order_data['billing']->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
-		}
 	} else {
 		$order_data['payment_type'] = 'Stripe';
+	}
+
+	// Set the billing address.
+	if ( ! empty( $payment_method ) && ! empty( $payment_method->billing_details ) && ! empty( $payment_method->billing_details->address ) && ! empty( $payment_method->billing_details->address->line1 ) ) {
+		$order_data['billing'] = new stdClass();
+		$order_data['billing']->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
+		$order_data['billing']->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
+		$order_data['billing']->street2 = empty( $payment_method->billing_details->address->line2 ) ? '' : $payment_method->billing_details->address->line2;
+		$order_data['billing']->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
+		$order_data['billing']->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
+		$order_data['billing']->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
+		$order_data['billing']->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
+		$order_data['billing']->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
+	} else {
+		// No billing address in the payment method, let's try to get it from the customer.
+		if ( ! empty( $invoice->customer ) ) {
+			$customer = Stripe_Customer::retrieve( $invoice->customer );
+		}
+		if ( ! empty( $customer ) && ! empty( $customer->address ) && ! empty( $customer->address->line1 ) ) {
+			$order_data['billing'] = new stdClass();
+			$order_data['billing']->name = empty( $customer->name ) ? '' : $customer->name;
+			$order_data['billing']->street = empty( $customer->address->line1 ) ? '' : $customer->address->line1;
+			$order_data['billing']->street2 = empty( $customer->address->line2 ) ? '' : $customer->address->line2;
+			$order_data['billing']->city = empty( $customer->address->city ) ? '' : $customer->address->city;
+			$order_data['billing']->state = empty( $customer->address->state ) ? '' : $customer->address->state;
+			$order_data['billing']->zip = empty( $customer->address->postal_code ) ? '' : $customer->address->postal_code;
+			$order_data['billing']->country = empty( $customer->address->country ) ? '' : $customer->address->country;
+			$order_data['billing']->phone = empty( $customer->phone ) ? '' : $customer->phone;
+		} else {
+			// No billing address in the customer, so try to pull it from the most recent subscription order.
+			$last_order = MemberOrder::get_order(
+				array(
+					'gateway'                        => $order_data['gateway'],
+					'gateway_environment'            => $order_data['gateway_environment'],
+					'subscription_transaction_id'    => $order_data['subscription_transaction_id'],
+					'status'                         => 'success',
+				)
+			);
+			if ( ! empty( $last_order ) && ! empty( $last_order->billing ) ) {
+				$order_data['billing'] = new stdClass();
+				$order_data['billing']->name = empty( $last_order->billing->name ) ? '' : $last_order->billing->name;
+				$order_data['billing']->street = empty( $last_order->billing->street ) ? '' : $last_order->billing->street;
+				$order_data['billing']->street2 = empty( $last_order->billing->street2 ) ? '' : $last_order->billing->street2;
+				$order_data['billing']->city = empty( $last_order->billing->city ) ? '' : $last_order->billing->city;
+				$order_data['billing']->state = empty( $last_order->billing->state ) ? '' : $last_order->billing->state;
+				$order_data['billing']->zip = empty( $last_order->billing->zip ) ? '' : $last_order->billing->zip;
+				$order_data['billing']->country = empty( $last_order->billing->country ) ? '' : $last_order->billing->country;
+				$order_data['billing']->phone = empty( $last_order->billing->phone ) ? '' : $last_order->billing->phone;
+			}
+		}
 	}
 
 	return $order_data;

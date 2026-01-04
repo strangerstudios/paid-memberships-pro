@@ -152,11 +152,22 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
 					<?php if ( empty( $mylevels ) ) {
-						$url = pmpro_url( 'levels' );
+						
 						?>
 						<div id="pmpro_account-membership-none" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-								<p><?php echo wp_kses( sprintf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url ), array( 'a' => array( 'href' => array() ) ) ); ?></p>
+								<p>
+									<?php
+									esc_html_e( 'You do not have an active membership.', 'paid-memberships-pro' );
+									$levels_url = pmpro_url( 'levels' );
+									if ( ! empty( $levels_url ) ) {
+										echo ' ';
+										?>
+										<a href="<?php echo esc_url( $levels_url ); ?>"><?php esc_html_e( 'Choose a membership level.', 'paid-memberships-pro' ); ?></a>
+										<?php
+									}
+									?>
+								</p>
 							</div> <!-- end pmpro_card_content -->
 						</div> <!-- end pmpro_card -->
 						<?php
@@ -224,8 +235,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										// Build the links to return.
 										$pmpro_member_action_links = array();
 
-										if ( array_key_exists($level->id, $pmpro_levels) && pmpro_isLevelExpiringSoon( $level ) ) {
-											$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew" href="' . esc_url( add_query_arg( 'pmpro_level', $level->id, pmpro_url( 'checkout', '', 'https' ) ) ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
+										$renew_url = pmpro_url( 'checkout', 'level=' . $level->id, 'https' );
+										if ( array_key_exists($level->id, $pmpro_levels) && pmpro_isLevelExpiringSoon( $level ) && ! empty( $renew_url ) ) {
+											$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
 
 										}
 
@@ -238,8 +250,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 												if ( ! empty( $gateway_obj ) && method_exists( $gateway_obj, 'supports' ) && $gateway_obj->supports( 'payment_method_updates' ) ) {
 													// Make sure that the subscription has an order, which is necessary to update.
 													$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
-													if ( ! empty( $newest_orders ) ) {
-														$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', 'pmpro_subscription_id=' . $subscription->get_id(), 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
+													$update_billing_url = pmpro_url( 'billing', 'pmpro_subscription_id=' . $subscription->get_id(), 'https' );
+													if ( ! empty( $newest_orders ) && ! empty( $update_billing_url ) ) {
+														$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', $update_billing_url, esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
 													}
 												}
 											}
@@ -262,12 +275,15 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											$show_change_link = false;
 										}
 
-										if ( ! empty( $show_change_link ) ) {
-											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change" href="' . esc_url( pmpro_url( 'levels' ) ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
-
+										$levels_url = pmpro_url( 'levels' );
+										if ( ! empty( $show_change_link ) && ! empty( $levels_url ) ) {
+											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change" href="' . esc_url( $levels_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
 										}
 
-										$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( add_query_arg( 'levelstocancel', $level->id, pmpro_url( 'cancel' ) ) ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
+										$cancel_url = pmpro_url( 'cancel', 'levelstocancel=' . $level->id );
+										if ( ! empty( $cancel_url ) ) {
+											$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
+										}
 
 										// Wrap each action link item in a <span>
 										$pmpro_member_action_links = array_map( function( $link ) {
@@ -374,9 +390,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											$display_status = esc_html__( 'Refunded', 'paid-memberships-pro' );
 											$tag_style = 'error';
 										}
+										$invoice_url = pmpro_url( "invoice", "?invoice=" . $order->code );
+										$date_content = empty( $invoice_url ) ? date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) : '<a href="' . esc_url( $invoice_url ) . '">' . esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ) . '</a>';
 										?>
 										<tr id="pmpro_table_order-<?php echo esc_attr( $order->code ); ?>">
-											<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_order-date' ) ); ?>" data-title="<?php esc_attr_e( 'Date', 'paid-memberships-pro' ); ?>"><a href="<?php echo esc_url( pmpro_url( "invoice", "?invoice=" . $order->code ) ) ?>"><?php echo esc_html( date_i18n(get_option("date_format"), $order->getTimestamp()) )?></a></th>
+											<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_order-date' ) ); ?>" data-title="<?php esc_attr_e( 'Date', 'paid-memberships-pro' ); ?>"><?php echo wp_kses_post( $date_content ); ?></th>
 											<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_order-level' ) ); ?>" data-title="<?php esc_attr_e( 'Level', 'paid-memberships-pro' ); ?>"><?php if(!empty($order->membership_level)) echo esc_html( $order->membership_level->name ); else echo esc_html__("N/A", 'paid-memberships-pro' );?></td>
 											<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_order-amount' ) ); ?>" data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>"><?php
 												//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -394,11 +412,21 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						<?php
 							// Show the "View All Orders" link if there are more than 5 orders.
 							if ( $count == 6 ) {
-								?>
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-									<a href="<?php echo esc_url( pmpro_url( 'invoice' ) ); ?>"><?php esc_html_e( 'View All Orders &rarr;', 'paid-memberships-pro' );?></a>
-								</div>
-								<?php
+								$invoice_url = pmpro_url( 'invoice' );
+								if ( ! empty( $invoice_url ) ) {
+									?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
+										<a href="<?php echo esc_url( $invoice_url ); ?>"><?php esc_html_e( 'View All Orders &rarr;', 'paid-memberships-pro' );?></a>
+									</div>
+									<?php
+								} else {
+									// Invoice page is not set, but we should still let the user know that there are more orders.
+									?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
+										<p><?php esc_html_e( 'Please contact the site administrator for full order history.', 'paid-memberships-pro' ); ?></p>
+									</div>
+									<?php
+								}
 							}
 						?>
 					</div> <!-- end pmpro_card -->

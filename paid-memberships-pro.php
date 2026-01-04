@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.5.6
+ * Version: 3.6.3
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.5.6' );
+define( 'PMPRO_VERSION', '3.6.3' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -189,17 +189,18 @@ add_action( 'plugins_loaded', function() {
 
 } );
 
-// Add On Management (Deprecated in 3.5.6, to be removed in 4.0.0)
+// Add On Management (Deprecated in 3.6, to be removed in 4.0.0)
 require_once( PMPRO_DIR . '/includes/addons.php' );
 
 // Add On Management: Ensure AJAX endpoints are available during admin-ajax requests even if no instance has been created.
 add_action( 'init', function () {
+	$addons_instance = PMPro_AddOns::instance(); // Set up filters.
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 		// If any of our handlers are already present, skip.
 		if ( has_action( 'pmpro_addon_install' ) ) {
 			return;
 		}
-		PMPro_AddOns::instance()->register_ajax_endpoints();
+		$addons_instance->register_ajax_endpoints();
 	}
 } );
 
@@ -258,6 +259,26 @@ function pmpro_gateways() {
 	}
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );
+}
+
+/**
+ * Returns the gateway nicename.
+ * Used for outputting the gateway's label value for customers.
+ * 
+ * @since 3.6.1
+ * 
+ * @param string $gateway The gateway's internal slug (i.e. paypalexpress).
+ * @return string The gateway's nicename (i.e. PayPal Express).
+ */
+function pmpro_get_gateway_nicename( $gateway ) {
+	$gateways = pmpro_gateways();
+	if ( array_key_exists( $gateway, $gateways ) ) {
+		$gateway_nicename =  $gateways[ $gateway ];
+	} else {
+		$gateway_nicename = ucwords( $gateway );
+	}
+
+	return $gateway_nicename;
 }
 
 

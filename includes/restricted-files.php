@@ -58,7 +58,7 @@ function pmpro_restricted_files_check_request() {
 	 * @param string $file       Name of the restricted file.
 	 */
 	if ( empty( apply_filters( 'pmpro_can_access_restricted_file', false, $file_dir, $file ) ) ) {
-		wp_die( __( 'You do not have permission to access this file.', 'paid-memberships-pro' ), 403 );
+		wp_die( esc_html__( 'You do not have permission to access this file.', 'paid-memberships-pro' ), 403 );
 	}
 
 	// Serve the file.
@@ -71,7 +71,7 @@ function pmpro_restricted_files_check_request() {
 		 * Filter the content disposition for the restricted file. 
 		 * This automatically defaults to inline for images and attachments for non-images. 
 		 * 
-		 * @since TBD
+		 * @since 3.6
 		 * 
 		 * @param $is_valid_image boolean This is true for image/* and false for anything else.
 		 * @param string $file Name of the restricted file.
@@ -80,7 +80,7 @@ function pmpro_restricted_files_check_request() {
 		 * 
 		 * @return string $content_disposition "inline" for image/* types, "attachment" for other file types.
 		 */
-		$content_disposition = apply_filters( 'pmpro_restricted_file_content_disposition', file_is_valid_image( $file_path ) ? 'inline' : 'attachment', $file, $file_dir, $file_path );
+		$content_disposition = apply_filters( 'pmpro_restricted_file_content_disposition', wp_getimagesize( $file_path ) ? 'inline' : 'attachment', $file, $file_dir, $file_path );
 		if ( $content_disposition !== 'inline' && $content_disposition !== 'attachment' ) {
 			$content_disposition = 'attachment'; // Default to attachment if not inline and not attachment.
 		}
@@ -91,7 +91,7 @@ function pmpro_restricted_files_check_request() {
 		readfile( $file_path );
 		exit;
 	} else {
-		wp_die( __( 'File not found.', 'paid-memberships-pro' ), 404 );
+		wp_die(	esc_html__( 'File not found.', 'paid-memberships-pro' ), 404 );
 	}
 }
 add_action( 'init', 'pmpro_restricted_files_check_request' );

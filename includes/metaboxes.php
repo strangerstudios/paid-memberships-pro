@@ -103,7 +103,7 @@ function pmpro_page_save( $post_id ) {
 	if( ! empty( $_POST['page_levels'] ) ) {
 		$mydata = array_map( 'intval', $_POST['page_levels'] );
 	} else {
-		$mydata = NULL;
+		$mydata = array();
 	}
 
 	// Add new memberships for this page.

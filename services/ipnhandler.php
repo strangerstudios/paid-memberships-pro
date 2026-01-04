@@ -334,11 +334,7 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 		if ( abs( (float)$_POST['mc_gross'] ) < (float)$morder->total ) {				
 			ipnlog( sprintf( 'IPN: Order was partially refunded on %1$s for transaction ID %2$s at the gateway. The order will need to be updated in the WP dashboard.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
-			// Add new lines to order notes if not empty.
-			if ( ! empty( $morder->notes ) ) {
-				$morder->notes .= "\n\n";
-			}
-			$morder->notes = trim( $morder->notes . sprintf( 'IPN: Order was partially refunded on %1$s for transaction ID %2$s at the gateway. The order will need to be updated in the WP dashboard.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+			$morder->add_order_note( sprintf( 'IPN: Order was partially refunded for transaction ID %1$s at the gateway. The order will need to be updated in the WP dashboard.', $payment_transaction_id ) );
 			$morder->SaveOrder();
 			pmpro_ipnExit();
 		}
@@ -346,12 +342,7 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 		// Full refund.
 		$morder->status = 'refunded';
 
-		// Add new lines to order notes if not empty.
-		if ( ! empty( $morder->notes ) ) {
-			$morder->notes .= "\n\n";
-		}
-
-		$morder->notes = trim( $morder->notes . sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+		$morder->add_order_note( sprintf( 'IPN: Order successfully refunded for transaction ID %1$s at the gateway.', $payment_transaction_id ) );
 
 		ipnlog( sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
@@ -713,7 +704,6 @@ function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
 	// Get the data that should be used to create the order.
 	$order_data = pmpro_ipn_get_order_data( $subscription );
 	$order_data['payment_transaction_id'] = $txn_id;
-	$order_data['notes'] = isset( $ipn_id ) ? "[IPN_ID]{$ipn_id}[/IPN_ID]" : '';
 
 	// Process the recurring payment.
 	ipnlog( pmpro_handle_recurring_payment_succeeded_at_gateway( $order_data ) );
@@ -724,6 +714,12 @@ function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
 	if ( empty( $morder ) || empty( $morder->id ) ) {
 		ipnlog( "ERROR: Could not find order just created for this recurring payment (" . $subscription->get_subscription_transaction_id() . ")." );
 		return false;
+	}
+
+	// Add an order note with the IPN ID.
+	if ( ! empty( $ipn_id ) ) {
+		$morder->add_order_note( "[IPN_ID]{$ipn_id}[/IPN_ID]" );
+		$morder->SaveOrder();
 	}
 
 	// Get card info if appropriate.
@@ -752,7 +748,7 @@ function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
 /**
  * Helper function to build order data array from subscription and $_POST data.
  *
- * @since TBD
+ * @since 3.6
  *
  * @param PMPro_Subscription $subscription The subscription to get recurring order data for.
  */

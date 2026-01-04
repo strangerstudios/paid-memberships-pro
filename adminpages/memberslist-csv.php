@@ -90,16 +90,19 @@
 	$headers[] = "Pragma: no-cache";
 	$headers[] = "Connection: close";
 
-	if($s && $l == "oldmembers")
-		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired_' . sanitize_file_name($s) . '.csv"';
-	elseif($s && $l)
+	if ( $s && $l == "oldmembers" ) {
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_oldmembers_' . sanitize_file_name($s) . '.csv"';
+	} elseif($s && $l) {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . intval($l) . '_level_' . sanitize_file_name($s) . '.csv"';
-	elseif($s)
+	} elseif($s) {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . sanitize_file_name($s) . '.csv"';
-	elseif($l == "oldmembers")
+	} elseif($l == "oldmembers") {
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_oldmembers.csv"';
+	} elseif($l == 'expired' ) {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired.csv"';
-	else
+	} else {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
+	}
 
 	//set default CSV file headers, using comma as delimiter
 	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined,startdate";
@@ -181,15 +184,6 @@
 	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id ";
 
-	$former_members = in_array($l, array( "oldmembers", "expired", "cancelled"));
-	$former_member_join = null;
-
-	if($former_members)
-	{
-		$former_member_join = "LEFT JOIN {$wpdb->pmpro_memberships_users} mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
-		$sqlQuery .= $former_member_join;
-	}
-
 	$sqlQuery .= "WHERE mu.membership_id > 0 ";
 
 	// looking for a specific user
@@ -197,21 +191,27 @@
 		$sqlQuery .= $search;
 	}
 
-	// if ($former_members)
-		// $sqlQuery .= "AND mu2.status = 'active' ";
-
 	$filter = null;
 
 	//records where the user is NOT an active member
 	//if $l == "oldmembers"
-	$filter = ($l == "oldmembers" ? " AND mu.status <> 'active' AND mu2.status IS NULL " : $filter);
+	$filter = ($l == "oldmembers" ? " AND mu.status <> 'active' " : $filter);
 
 	// prepare the status to use in the filter
 	//           elseif ($l == "expired")                elseif ($l == "cancelled")
 	$f_status = ($l == "expired" ? array( 'expired' ) : ( $l == "cancelled" ? array('cancelled', 'admin_cancelled') : null));
 
 	//records where the user is expired or cancelled
-	$filter = ( ($l == "expired" || $l == "cancelled") && is_null($filter)) ? "AND mu.status IN ('" . implode("','", $f_status) . "') AND mu2.status IS NULL " : $filter;
+	$filter = ( ($l == "expired" || $l == "cancelled") && is_null($filter)) ? "AND mu.status IN ('" . implode("','", $f_status) . "') " : $filter;
+
+	if ( in_array($l, array( "oldmembers", "expired", "cancelled") ) ) {
+		$filter .= " AND NOT EXISTS (
+			SELECT 1
+			FROM {$wpdb->pmpro_memberships_users} mu2
+			WHERE mu2.user_id = u.ID
+			AND mu2.status = 'active'
+		) ";
+	}
 
 	//records for active users with the requested membership level
 	// elseif($l)
@@ -343,7 +343,6 @@
 			LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id
 			LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id
 			LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
-			{$former_member_join}
 			WHERE u.ID in ( " . implode(', ', array_fill(0, count( $spl ), '%d' ) ) . " ) AND mu.membership_id > 0 {$filter} {$search}
 			GROUP BY u.ID, mu.membership_id
 			ORDER BY u.ID

@@ -186,10 +186,6 @@
 												<input type="hidden" name="pmproAddOnAdminAction" value="activate" />
 												<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
 												<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
-												<?php
-												if ( is_network_admin() ) {
-													?>
-													<input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
 											</li>
 											<?php } elseif ( $addon['status'] === 'active' ) { ?>
 											<li>
@@ -199,13 +195,8 @@
 												<input type="hidden" name="pmproAddOnAdminAction" value="deactivate" />
 												<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
 												<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
-												<?php
-												if ( is_network_admin() ) {
-													?>
-													<input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
 											</li>
 											<?php } ?>
-											<li class="divider"></li>
 											<li>
 												<button type="button" role="menuitem" class="pmproAddOnActionButton action-uninstall is-destructive">
 													<?php esc_html_e( 'Uninstall', 'paid-memberships-pro' ); ?>
@@ -213,10 +204,6 @@
 												<input type="hidden" name="pmproAddOnAdminAction" value="delete" />
 												<input type="hidden" name="pmproAddOnAdminTarget" value="<?php echo esc_attr( $plugin_file ); ?>" />
 												<input type="hidden" name="pmproAddOnAdminNonce" value="<?php echo esc_attr( $pmpro_addons_ajax_nonce ); ?>" />
-												<?php
-												if ( is_network_admin() ) {
-													?>
-													<input type="hidden" name="pmproAddOnNetworkWide" value="1" /><?php } ?>
 											</li>
 										</ul>
 									</div>
@@ -250,14 +237,23 @@
 								<p><?php echo esc_html( $addon['Description'] ); ?></p>
 								<p>
 								<?php
+									$plugin_meta_allowed_html = array(
+										'a' => array(
+											'target' => array(),
+											'href' => array(),
+										),
+									);
 									$plugin_meta = array();
-								if ( ! empty( $addon['Author'] && ! in_array( $addon['Author'], array( 'Paid Memberships Pro', 'Stranger Studios' ) ) ) ) {
-									$author = $addon['Author'];
-									if ( ! empty( $addon['AuthorURI'] ) ) {
-										$author = '<a href="' . esc_url( $addon['AuthorURI'] ) . '" target="_blank">' . esc_html( $addon['Author'] ) . '</a>';
+									if ( ! empty( $addon['Author'] && ! in_array( $addon['Author'], array( 'Paid Memberships Pro', 'Stranger Studios' ) ) ) ) {
+										$author = $addon['Author'];
+										if ( ! empty( $addon['AuthorURI'] ) ) {
+											$author = '<a href="' . esc_url( $addon['AuthorURI'] ) . '" target="_blank">' . esc_html( $addon['Author'] ) . '</a>';
+										}
+										$plugin_meta[] = sprintf(
+											esc_html__( 'By %s', 'paid-memberships-pro' ),
+											wp_kses( $author, $plugin_meta_allowed_html )
+										);
 									}
-									$plugin_meta[] = sprintf( __( 'By %s' ), $author );
-								}
 									echo implode( ' | ', $plugin_meta ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 								</p>
@@ -333,9 +329,6 @@
 											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'update';
 											$action_button['hidden_fields']['pmproAddOnAdminTarget'] = $plugin_file;
 											$action_button['hidden_fields']['pmproAddOnAdminNonce']  = $pmpro_addons_ajax_nonce;
-											if ( is_network_admin() ) {
-												$action_button['hidden_fields']['pmproAddOnNetworkWide'] = '1';
-											}
 										}
 									} elseif ( $addon['status'] === 'uninstalled' ) {
 										$action_button['label'] = __( 'Install', 'paid-memberships-pro' );
@@ -348,18 +341,12 @@
 											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'install';
 											$action_button['hidden_fields']['pmproAddOnAdminTarget'] = $addon['Slug'];
 											$action_button['hidden_fields']['pmproAddOnAdminNonce']  = $pmpro_addons_ajax_nonce;
-											if ( is_network_admin() ) {
-												$action_button['hidden_fields']['pmproAddOnNetworkWide'] = '1';
-											}
 										}
 									} elseif ( $addon['status'] === 'inactive' ) {
 										$action_button['label']                                  = __( 'Activate', 'paid-memberships-pro' );
 										$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'activate';
 										$action_button['hidden_fields']['pmproAddOnAdminTarget'] = $plugin_file;
 										$action_button['hidden_fields']['pmproAddOnAdminNonce']  = $pmpro_addons_ajax_nonce;
-										if ( is_network_admin() ) {
-											$action_button['hidden_fields']['pmproAddOnNetworkWide'] = '1';
-										}
 									} elseif ( $addon['status'] === 'active' ) {
 										$actions = apply_filters( 'plugin_action_links_' . $plugin_file, array(), $plugin_file, $addon, $addon['status'] );
 										if ( ! empty( $actions ) ) {
@@ -522,15 +509,19 @@
 					var inactiveCount = $('.add-on-container.add-on-inactive').length;
 					var updateCount = $('.add-on-container.add-on-needs-update').length;
 
-					setCount($('.filter-links a[data-view="active"]'), activeCount, false);
-					setCount($('.filter-links a[data-view="inactive"]'), inactiveCount, false);
+					// Hide tabs whose count is zero.
+					setCount($('.filter-links a[data-view="active"]'), activeCount, true);
+					setCount($('.filter-links a[data-view="inactive"]'), inactiveCount, true);
 					setCount($('.filter-links a[data-view="update"]'), updateCount, true);
 
-					// If the Update view is active (or in the URL) but no updates exist, switch to All.
-					if (updateCount === 0) {
-						var $updateLink = $('.filter-links a[data-view="update"]');
-						var updateIsActive = $updateLink.hasClass('current') || window.location.hash === '#update';
-						if (updateIsActive) {
+					// If the current view is now hidden (count = 0), switch to All.
+					var $currentLink = $('.filter-links a.current');
+					if ($currentLink.length && !$currentLink.closest('li').is(':visible')) {
+						$('.filter-links a[data-view="all"]').trigger('click');
+					} else if (window.location.hash) {
+						var hashView = window.location.hash.replace('#','');
+						var $hashLink = $('.filter-links a[data-view="' + hashView + '"]');
+						if ($hashLink.length && !$hashLink.closest('li').is(':visible')) {
 							$('.filter-links a[data-view="all"]').trigger('click');
 						}
 					}

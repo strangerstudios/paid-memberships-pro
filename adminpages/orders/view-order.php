@@ -73,7 +73,7 @@ $subscription = $order->get_subscription();
 						} elseif ( ! empty( $order->payment_type ) ) {
 							$pmpro_order_single_meta['payment_method'] = array(
 								'label' => __( 'Payment method', 'paid-memberships-pro' ),
-								'value' => $order->payment_type_nicename,
+								'value' => $order->payment_type,
 							);
 						} else {
 							$pmpro_order_single_meta['payment_method'] = array(
@@ -236,9 +236,7 @@ $subscription = $order->get_subscription();
 								?>
 							</th>
 							<td data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>">
-								<?php echo pmpro_escape_price(
-									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-									$order->get_formatted_subtotal() );
+								<?php echo pmpro_escape_price( $order->get_formatted_subtotal() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 							</td>
 						</tr>
@@ -270,7 +268,7 @@ $subscription = $order->get_subscription();
 			</div><!-- .pmpro_section_inside -->
 		</div><!-- .pmpro_section -->
 
-		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div id="pmpro_order-view-gateway" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 					<span class="dashicons dashicons-arrow-up-alt2"></span>
@@ -281,7 +279,7 @@ $subscription = $order->get_subscription();
 				<ul class="pmpro_list pmpro_list-plain pmpro_list-with-labels pmpro_cols-2">
 					<li class="pmpro_list_item">
 						<span class="pmpro_list_item_label"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></span>
-						<?php echo esc_html( $order->gateway ); ?>
+						<?php echo esc_html( pmpro_get_gateway_nicename( $order->gateway ) ); ?>
 					</li>
 					<li class="pmpro_list_item">
 						<span class="pmpro_list_item_label"><?php esc_html_e( 'Environment', 'paid-memberships-pro' ); ?></span>
@@ -308,9 +306,19 @@ $subscription = $order->get_subscription();
 				</ul>
 			</div><!-- .pmpro_section_inside -->
 		</div><!-- .pmpro_section -->
+		<?php
+		/**
+		 * Allow adding additional content to the order view page.
+		 *
+		 * @since 3.6
+		 *
+		 * @param MemberOrder $order The order object.
+		 */
+		do_action( 'pmpro_after_order_view_main', $order );
+		?>
 	</div> <!-- .pmpro_main -->
 	<div class="pmpro_sidebar">
-		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div id="pmpro_order-view-member" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 					<span class="dashicons dashicons-arrow-up-alt2"></span>
@@ -354,7 +362,7 @@ $subscription = $order->get_subscription();
 			</div><!-- .pmpro_section_inside -->
 		</div><!-- .pmpro_section -->
 
-		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div id="pmpro_order-view-actions" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 					<span class="dashicons dashicons-arrow-up-alt2"></span>
@@ -444,7 +452,13 @@ $subscription = $order->get_subscription();
 							'pmpro_orders_nonce'
 						);
 						$order_actions['check_token_order'] = array(
-							'title'   => esc_attr( sprintf( __( 'Recheck payment for order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
+							'title'   => esc_attr(
+								sprintf(
+									/* translators: %s is the Order Code. */
+									__( 'Recheck payment status for order # %s', 'paid-memberships-pro' ),
+									$order->code
+								)
+							),
 							'href'    => esc_url( $recheck_nonce_url ),
 							'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-image-rotate',
 							'label'   => esc_html__( 'Recheck Payment Status', 'paid-memberships-pro' )
@@ -511,7 +525,7 @@ $subscription = $order->get_subscription();
 					/**
 					 * Allow filtering of actions on the single order view admin screen.
 					 *
-					 * @since TBD
+					 * @since 3.6
 					 *
 					 * @param array $order_actions The array of order actions.
 					 * @param object $order The order object.
@@ -524,20 +538,20 @@ $subscription = $order->get_subscription();
 					foreach ( $order_actions as $key => $action ) {
 						?>
 						<a
-							<?php if ( ! empty( $action['title'] ) ) : ?>title="<?php echo $action['title']; ?>"<?php endif; ?>
-							<?php if ( ! empty( $action['href'] ) ) : ?>href="<?php echo $action['href']; ?>"<?php endif; ?>
-							<?php if ( ! empty( $action['target'] ) ) : ?>target="<?php echo $action['target']; ?>"<?php endif; ?>
-							<?php if ( ! empty( $action['class'] ) ) : ?>class="<?php echo $action['class']; ?>"<?php endif; ?>
-							<?php if ( ! empty( $action['data-order'] ) ) : ?>data-order="<?php echo $action['data-order']; ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['title'] ) ) : ?>title="<?php echo esc_attr( $action['title'] ); ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['href'] ) ) : ?>href="<?php echo esc_attr( $action['href'] ); ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['target'] ) ) : ?>target="<?php echo esc_attr( $action['target'] ); ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['class'] ) ) : ?>class="<?php echo esc_attr( $action['class'] ); ?>"<?php endif; ?>
+							<?php if ( ! empty( $action['data-order'] ) ) : ?>data-order="<?php echo esc_attr( $action['data-order'] ); ?>"<?php endif; ?>
 						>
-							<?php echo $action['label']; ?>
+							<?php echo esc_html( $action['label'] ); ?>
 						</a>
 						<?php
 					}
 				?>
 			</div><!-- .pmpro_section_inside -->
 		</div><!-- .pmpro_section -->
-		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div id="pmpro_order-view-notes" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 					<span class="dashicons dashicons-arrow-up-alt2"></span>

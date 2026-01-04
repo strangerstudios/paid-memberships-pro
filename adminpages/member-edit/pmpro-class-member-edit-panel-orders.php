@@ -114,16 +114,12 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 								<?php
 								// Logic to get the gateway name and output it neatly.
 									if ( ! empty( $order->gateway ) ) {
-										if ( ! empty( $pmpro_gateways[$order->gateway] ) ) {
-											$gateway = esc_html( $pmpro_gateways[$order->gateway] );
-										} else {
-											$gateway = esc_html( ucwords( $order->gateway ) );
-										}
+										$gateway = pmpro_get_gateway_nicename( $order->gateway );
 										if ( $order->gateway_environment == 'sandbox' ) {
 											$gateway .= ' (' . esc_html__( 'test', 'paid-memberships-pro' ) . ')';
 										}
 
-										echo $gateway;
+										echo esc_html( $gateway );
 									} else {
 										echo  '&#8212;';
 									}

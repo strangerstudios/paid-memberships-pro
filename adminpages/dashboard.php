@@ -216,7 +216,7 @@ function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 				$output
 			);
 
-			echo $output;
+			echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 		echo '</div>';
 		echo '</div>'; // Close the postbox div

@@ -93,20 +93,15 @@ if ( $nonceokay ) {
 
 		case 'add_order_note':
 			$order_id = absint( wp_unslash( $_REQUEST['id'] ?? 0 ) );
-			$raw_note = isset( $_POST['notes'] ) ? wp_unslash( $_POST['notes'] ) : '';
+			$note = isset( $_POST['notes'] ) ? wp_unslash( $_POST['notes'] ) : '';
 
-			if ( $order_id && $raw_note !== '' ) {
-				// Sanitize the note.
-				// Use wp_kses_post() if you want default post tags; otherwise keep $allowedposttags.
-				global $allowedposttags;
-				$new_note = wp_kses( $raw_note, $allowedposttags );
-
+			if ( $order_id && $note !== '' ) {
 				$order = new MemberOrder( $order_id );
 				if ( ! empty( $order->id ) ) {
-					// Append the note with site-local timestamp.
-					$now_local = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
-					$order->notes .= ( empty( $order->notes ) ? '' : "\n\n" ) . $now_local . ': ' . $new_note;
+					// Add the note.
+					$order->add_order_note( $note );
 
+					// Save the order.
 					if ( $order->saveOrder() ) {
 						$pmpro_msg  = __( 'Order note added successfully.', 'paid-memberships-pro' );
 						$pmpro_msgt = 'pmpro_success';

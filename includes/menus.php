@@ -84,7 +84,7 @@ function pmpro_pages_metabox_nav_links() {
 		</div>
 		<p class="button-controls wp-clearfix">
 			<span class="add-to-menu">
-				<input type="submit"<?php wp_nav_menu_disabled_check( $nav_menu_selected_id ); ?> class="button submit-add-to-menu right" value="<?php esc_attr_e( 'Add to Menu' ); ?>" name="add-pmpro-page-items" id="submit-pmpro-page-items" />
+				<input type="submit"<?php wp_nav_menu_disabled_check( $nav_menu_selected_id ); ?> class="button submit-add-to-menu right" value="<?php esc_attr_e( 'Add to Menu', 'paid-memberships-pro' ); ?>" name="add-pmpro-page-items" id="submit-pmpro-page-items" />
 				<span class="spinner"></span>
 			</span>
 		</p>
