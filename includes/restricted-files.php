@@ -214,7 +214,6 @@ function pmpro_is_directory_protected( $dir = '' ) {
 		$test_url,
 		array(
 			'timeout'     => 5,
-			'sslverify'   => apply_filters( 'https_local_ssl_verify', false ),
 			'redirection' => 0,
 		)
 	);
