@@ -156,16 +156,10 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
  *
  * @since TBD
  *
- * @param string $dir Optional subdirectory within the restricted files directory.
  * @return bool|null True if protected, false if accessible, null if unable to determine.
  */
-function pmpro_is_restricted_directory_protected( $dir = '' ) {
-	// If there's a custom directory being tested, use it.
-	if ( ! empty( $dir ) ) {
-		$restricted_dir = pmpro_get_restricted_file_path( $dir );
-	} else {
-		$restricted_dir = pmpro_get_restricted_file_path();
-	}
+function pmpro_is_restricted_directory_protected() {
+	$restricted_dir = pmpro_get_restricted_file_path();
 
 	// Can't test if directory doesn't exist.
 	if ( ! is_dir( $restricted_dir ) ) {
@@ -194,16 +188,19 @@ function pmpro_is_restricted_directory_protected( $dir = '' ) {
 	// Build a URL by appending the relative path to the base URL.
 	$relative_path = substr( $normalized_test_file, strlen( $basedir_with_slash ) );
 	$test_url      = trailingslashit( $wp_upload_dir['baseurl'] ) . ltrim( $relative_path, '/' );
+	error_log( 'PMPro Restricted Files Test URL: ' . $test_url );
+	
 	// Attempt direct access.
 	$response = wp_remote_get(
 		$test_url,
 		array(
-			'timeout'     => 5,
+			'timeout'     => 3,
 			'redirection' => 0,
 		)
 	);
 
 	if ( is_wp_error( $response ) ) {
+		error_log( 'PMPro Restricted Files Check Error: ' . $response->get_error_message() );
 		return null;
 	}
 
@@ -222,15 +219,18 @@ function pmpro_is_restricted_directory_protected( $dir = '' ) {
  * @return string|null File path if found, null otherwise.
  */
 function pmpro_find_testable_file( $directory ) {
-	$iterator = new RecursiveIteratorIterator(
-		new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ),
-		RecursiveIteratorIterator::SELF_FIRST
-	);
 	try {
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ),
-			RecursiveIteratorIterator::SELF_FIRST
+		$directory_iterator = new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS );
+		$filtered_iterator  = new RecursiveCallbackFilterIterator(
+			$directory_iterator,
+			static function( $current ) {
+				$filename = $current->getFilename();
+
+				// Skip dotfiles and dot directories (e.g. .DS_Store, .htaccess).
+				return '' === $filename || '.' !== $filename[0];
+			}
 		);
+		$iterator = new RecursiveIteratorIterator( $filtered_iterator, RecursiveIteratorIterator::SELF_FIRST );
 
 		foreach ( $iterator as $file ) {
 			if ( $file->isFile() ) {
