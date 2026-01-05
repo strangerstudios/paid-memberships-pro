@@ -234,13 +234,20 @@ function pmpro_is_directory_protected( $dir = '' ) {
  * @since TBD
  *
  * @param string $directory The directory path to search.
+ * @param int    $max_depth Maximum recursion depth to search. Default 3.
+ * @param int    $max_files Maximum number of files to check before giving up. Default 100.
  * @return string|null File path if found, null otherwise.
  */
-function pmpro_find_testable_file( $directory ) {
+function pmpro_find_testable_file( $directory, $max_depth = 3, $max_files = 100 ) {
 	$iterator = new RecursiveIteratorIterator(
 		new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ),
 		RecursiveIteratorIterator::SELF_FIRST
 	);
+	
+	// Limit recursion depth to prevent performance issues with deeply nested directories.
+	$iterator->setMaxDepth( $max_depth );
+
+	$files_checked = 0;
 
 	foreach ( $iterator as $file ) {
 		if ( $file->isFile() ) {
@@ -249,6 +256,12 @@ function pmpro_find_testable_file( $directory ) {
 				continue;
 			}
 			return $file->getPathname();
+		}
+		
+		// Prevent excessive iteration by limiting the number of files checked.
+		$files_checked++;
+		if ( $files_checked >= $max_files ) {
+			break;
 		}
 	}
 
