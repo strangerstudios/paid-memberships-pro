@@ -188,26 +188,33 @@ function pmpro_is_restricted_directory_protected() {
 	// Build a URL by appending the relative path to the base URL.
 	$relative_path = substr( $normalized_test_file, strlen( $basedir_with_slash ) );
 	$test_url      = trailingslashit( $wp_upload_dir['baseurl'] ) . ltrim( $relative_path, '/' );
-	error_log( 'PMPro Restricted Files Test URL: ' . $test_url );
 	
 	// Attempt direct access.
-	$response = wp_remote_get(
+	$response = wp_remote_head(
 		$test_url,
 		array(
-			'timeout'     => 3,
-			'redirection' => 0,
+			'timeout'             => 3, // Short timeout for responsiveness.
+			'redirection'         => 1,	// allow one for a HTTP → HTTPS hop
+			'reject_unsafe_urls'  => true, // Security measure.
 		)
 	);
 
 	if ( is_wp_error( $response ) ) {
-		error_log( 'PMPro Restricted Files Check Error: ' . $response->get_error_message() );
 		return null;
 	}
 
 	$status_code = wp_remote_retrieve_response_code( $response );
 
-	// 401/403/404 = protected, 200 = exposed.
-	return in_array( $status_code, array( 401, 403, 404 ), true );
+	// 401/403/404 = protected, 200 = exposed, everything else = unable to determine.
+	if ( in_array( $status_code, array( 401, 403, 404 ), true ) ) {
+		return true;
+	}
+
+	if ( 200 === $status_code ) {
+		return false;
+	}
+
+	return null;
 }
 
 /**
