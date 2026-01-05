@@ -244,6 +244,10 @@ function pmpro_find_testable_file( $directory ) {
 
 	foreach ( $iterator as $file ) {
 		if ( $file->isFile() ) {
+			// Avoid using .htaccess itself as the test file, since it may be protected by default.
+			if ( '.htaccess' === $file->getBasename() ) {
+				continue;
+			}
 			return $file->getPathname();
 		}
 	}
