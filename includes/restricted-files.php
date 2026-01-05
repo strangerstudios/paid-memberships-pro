@@ -151,21 +151,6 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
 }
 
 /**
- * Check if the PMPro restricted files directory is protected from direct access.
- *
- * Attempts to access a file in the restricted directory via HTTP to verify
- * that server-level protection (e.g., NGINX rules or .htaccess) is in place.
- *
- * @since TBD
- *
- * @param string $dir Optional subdirectory within the restricted files directory to test. Defaults to the base restricted directory when empty.
- * @return bool|null True if protected, false if accessible, null if unable to determine.
- */
-function pmpro_is_restricted_directory_protected( $dir = '' ) {
-	return pmpro_is_directory_protected( $dir );
-}
-
-/**
  * Core implementation for checking if the PMPro restricted files directory
  * is protected from direct access.
  *
@@ -174,7 +159,7 @@ function pmpro_is_restricted_directory_protected( $dir = '' ) {
  * @param string $dir Optional subdirectory within the restricted files directory.
  * @return bool|null True if protected, false if accessible, null if unable to determine.
  */
-function pmpro_is_directory_protected( $dir = '' ) {
+function pmpro_is_restricted_directory_protected( $dir = '' ) {
 	// If there's a custom directory being tested, use it.
 	if ( ! empty( $dir ) ) {
 		$restricted_dir = pmpro_get_restricted_file_path( $dir );
