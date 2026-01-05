@@ -195,12 +195,20 @@ function pmpro_is_directory_protected( $dir = '' ) {
 
 	// Convert file path to URL.
 	$wp_upload_dir = wp_upload_dir();
-	$test_url      = str_replace(
-		$wp_upload_dir['basedir'],
-		$wp_upload_dir['baseurl'],
-		$test_file
-	);
 
+	// Normalize paths to ensure consistent separators.
+	$normalized_test_file = wp_normalize_path( $test_file );
+	$normalized_basedir   = wp_normalize_path( $wp_upload_dir['basedir'] );
+	$basedir_with_slash   = trailingslashit( $normalized_basedir );
+
+	// Ensure the test file is within the uploads base directory.
+	if ( 0 !== strpos( $normalized_test_file, $basedir_with_slash ) ) {
+		return null;
+	}
+
+	// Build a URL by appending the relative path to the base URL.
+	$relative_path = substr( $normalized_test_file, strlen( $basedir_with_slash ) );
+	$test_url      = trailingslashit( $wp_upload_dir['baseurl'] ) . ltrim( $relative_path, '/' );
 	// Attempt direct access.
 	$response = wp_remote_get(
 		$test_url,
