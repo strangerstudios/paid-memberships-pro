@@ -251,17 +251,19 @@ function pmpro_find_testable_file( $directory, $max_depth = 3, $max_files = 100 
 
 	foreach ( $iterator as $file ) {
 		if ( $file->isFile() ) {
+			// Prevent excessive iteration by limiting the number of files checked.
+			$files_checked++;
+			
 			// Avoid using .htaccess itself as the test file, since it may be protected by default.
 			if ( '.htaccess' === $file->getBasename() ) {
+				// Still continue searching if under the limit.
+				if ( $files_checked >= $max_files ) {
+					break;
+				}
 				continue;
 			}
+			
 			return $file->getPathname();
-		}
-		
-		// Prevent excessive iteration by limiting the number of files checked.
-		$files_checked++;
-		if ( $files_checked >= $max_files ) {
-			break;
 		}
 	}
 
