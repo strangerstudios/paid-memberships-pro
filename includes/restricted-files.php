@@ -241,15 +241,23 @@ function pmpro_find_testable_file( $directory ) {
 		new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ),
 		RecursiveIteratorIterator::SELF_FIRST
 	);
+	try {
+		$iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ),
+			RecursiveIteratorIterator::SELF_FIRST
+		);
 
-	foreach ( $iterator as $file ) {
-		if ( $file->isFile() ) {
-			// Avoid using .htaccess itself as the test file, since it may be protected by default.
-			if ( '.htaccess' === $file->getBasename() ) {
-				continue;
+		foreach ( $iterator as $file ) {
+			if ( $file->isFile() ) {
+				return $file->getPathname();
 			}
-			return $file->getPathname();
 		}
+	} catch ( UnexpectedValueException $e ) {
+		// Directory exists but is not readable or has other access issues.
+		return null;
+	} catch ( Exception $e ) {
+		// Any other unexpected issue while iterating; fail gracefully.
+		return null;
 	}
 
 	return null;
