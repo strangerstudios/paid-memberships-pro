@@ -149,3 +149,83 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
 	}
 	return $restricted_file_path;
 }
+
+/**
+ * Check if the PMPro restricted files directory is protected from direct access.
+ *
+ * Attempts to access a file in the restricted directory via HTTP to verify
+ * that server-level protection (e.g., NGINX rules or .htaccess) is in place.
+ *
+ * @since TBD
+ *
+ * @return bool|null True if protected, false if accessible, null if unable to determine.
+ */
+function pmpro_is_directory_protected( $dir = '' ) {
+	// If there's a custom directory being tested, use it.
+	if ( ! empty( $dir ) ) {
+		$restricted_dir = pmpro_get_restricted_file_path( $dir );
+	} else {
+		$restricted_dir = pmpro_get_restricted_file_path();
+	}
+
+	// Can't test if directory doesn't exist.
+	if ( ! is_dir( $restricted_dir ) ) {
+		return null;
+	}
+
+	// Find a file to test with.
+	$test_file = pmpro_find_testable_file( $restricted_dir );
+	if ( ! $test_file ) {
+		return null;
+	}
+
+	// Convert file path to URL.
+	$wp_upload_dir = wp_upload_dir();
+	$test_url      = str_replace(
+		$wp_upload_dir['basedir'],
+		$wp_upload_dir['baseurl'],
+		$test_file
+	);
+
+	// Attempt direct access.
+	$response = wp_remote_get(
+		$test_url,
+		array(
+			'timeout'     => 5,
+			'sslverify'   => apply_filters( 'https_local_ssl_verify', false ),
+			'redirection' => 0,
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		return null;
+	}
+
+	$status_code = wp_remote_retrieve_response_code( $response );
+
+	// 403 = protected, 200 = exposed.
+	return 403 === $status_code;
+}
+
+/**
+ * Grab a file in the restricted directory that can be used for access testing.
+ *
+ * @since TBD
+ *
+ * @param string $directory The directory path to search.
+ * @return string|null File path if found, null otherwise.
+ */
+function pmpro_find_testable_file( $directory ) {
+	$iterator = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ),
+		RecursiveIteratorIterator::SELF_FIRST
+	);
+
+	foreach ( $iterator as $file ) {
+		if ( $file->isFile() ) {
+			return $file->getPathname();
+		}
+	}
+
+	return null;
+}
