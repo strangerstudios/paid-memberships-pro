@@ -212,6 +212,9 @@ function pmpro_handle_recurring_payment_succeeded_at_gateway( $order_data ) {
 /**
  * Handle payment failure IPN/webhook requests from gateways.
  *
+ * Note: This should not be run for subscriptions that are already cancelled at the gateway. These cases
+ *       should be handled by pmpro_handle_subscription_cancellation_at_gateway().
+ *
  * @since 3.6
  *
  * @param array  $order_data An array of order data.
