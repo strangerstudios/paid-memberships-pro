@@ -1711,7 +1711,7 @@ class PMPro_Field {
 						case 'image/jpeg':
 						case 'image/png':
 						case 'image/gif':
-							$output = '<div class="' . pmpro_get_element_class( 'pmpro_form_field-file-preview' ) . '"><img class="' . pmpro_get_element_class( 'pmpro_form_field-file-subtype_' . $file_type['ext'] ) . '" alt="" src="' . $value['previewurl'] . '"><div class="' . pmpro_get_element_class( 'pmpro_form_field-file-name' ) . '"><a href="' . $value['fullurl'] . '" target="_blank">' . $value['filename'] . '</a></div></div>';
+							$output = '<div class="' . pmpro_get_element_class( 'pmpro_form_field-file-preview' ) . '"><img class="' . pmpro_get_element_class( 'pmpro_form_field-file-subtype_' . $file_type['ext'] ) . '" alt="" src="' . $value['previewurl'] . '"></div><div class="' . pmpro_get_element_class( 'pmpro_form_field-file-name' ) . '"><a href="' . $value['fullurl'] . '" target="_blank">' . $value['filename'] . '</a></div>';
 							$allowed_html = array(
 								'a' => array(
 									'href' => array(),
