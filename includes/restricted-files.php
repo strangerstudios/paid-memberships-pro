@@ -224,8 +224,8 @@ function pmpro_is_directory_protected( $dir = '' ) {
 
 	$status_code = wp_remote_retrieve_response_code( $response );
 
-	// 403 = protected, 200 = exposed.
-	return 403 === $status_code;
+	// 401/403/404 = protected, 200 = exposed.
+	return in_array( $status_code, array( 401, 403, 404 ), true );
 }
 
 /**
