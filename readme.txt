@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.9
 Requires PHP: 5.6
-Stable tag: 3.6.3
+Stable tag: 3.6.4
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,13 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.6.4 - 2026-01-08 =
+* ENHANCEMENT: Adding a new `!!order_url!!` email template variable to checkout email templates. #3555 (@kimcoleman)
+* ENHANCEMENT: Now limiting failed payment emails to be sent a maximum of once daily per subscription. #3552 (@dparker1005)
+* ENHANCEMENT: Now cleaning up library conflict records that are older than 7 days. #3554 (@dalemugford)
+* BUG FIX/ENHANCEMENT: Discount codes now expire at the end of the date set as the "Expiration Date" instead of at the start of that date. #3559 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Now ignoring Stripe `charge.failed` webhook events for subscriptions that have already been cancelled in Stripe which could interfere with processing the subsequent `customer.subscription.deleted` webhook event. #3556 (@dparker1005)
+
 = 3.6.3 - 2025-12-15 =
 * SECURITY: No longer prepopulating the password field on the checkout page after a failed checkout attempt. #3551 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Updated membership actions to run more frequently to improve support for hourly memberships. #3547 (@andrewlimaza)
