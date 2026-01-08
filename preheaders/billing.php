@@ -16,7 +16,7 @@ if ( ! empty( $_REQUEST['pmpro_subscription_id'] ) ) {
 } else {
 	// No subscription or order was passed. Check if the user has exactly one active subscription. If so, use it.
 	$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID );
-	if ( count( $subscriptions ) === 1 ) {
+	if ( count( $subscriptions ) > 0 ) {
 		$pmpro_billing_subscription = $subscriptions[0];
 	}
 }
