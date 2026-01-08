@@ -1,15 +1,15 @@
-# Copyright (C) 2025 Paid Memberships Pro
+# Copyright (C) 2026 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.6.3\n"
+"Project-Id-Version: Paid Memberships Pro 3.6.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-12-15T19:05:08+00:00\n"
+"POT-Creation-Date: 2026-01-08T17:25:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -35074,6 +35074,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:194
 #: classes/gateways/class.pmprogateway_check.php:113
 #: classes/gateways/class.pmprogateway_check.php:149
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:195
 msgid "Check"
 msgstr ""
 
@@ -39422,6 +39423,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:243
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:150
 #: classes/email-templates/class-pmpro-email-template-invoice.php:157
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:241
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:245
 msgid "The type of credit card used."
 msgstr ""
 
@@ -39444,6 +39447,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:244
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:151
 #: classes/email-templates/class-pmpro-email-template-invoice.php:158
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:242
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:246
 msgid "The last four digits of the credit card number."
 msgstr ""
 
@@ -39466,6 +39471,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:245
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:152
 #: classes/email-templates/class-pmpro-email-template-invoice.php:159
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:243
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:247
 msgid "The expiration month of the credit card."
 msgstr ""
 
@@ -39488,6 +39495,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:246
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:153
 #: classes/email-templates/class-pmpro-email-template-invoice.php:160
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:244
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:248
 msgid "The expiration year of the credit card."
 msgstr ""
 
@@ -39799,6 +39808,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:139
 #: classes/email-templates/class-pmpro-email-template-invoice.php:146
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:141
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:221
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
 msgid "The date of the order."
 msgstr ""
 
@@ -39811,6 +39823,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:220
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:149
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:148
 msgid "The total cost of the order."
 msgstr ""
 
@@ -39825,6 +39838,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:132
 #: classes/email-templates/class-pmpro-email-template-refund.php:130
 #: classes/email-templates/class-pmpro-email-template-invoice.php:147
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:222
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:150
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:142
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:140
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:234
 msgid "The URL of the order."
 msgstr ""
 
@@ -39939,6 +39958,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
 #: classes/email-templates/class-pmpro-email-template-invoice.php:161
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:142
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:223
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:235
 msgid "The discount code used for the order."
 msgstr ""
 
@@ -40233,6 +40255,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:234
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:141
 #: classes/email-templates/class-pmpro-email-template-invoice.php:148
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:224
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:232
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:236
 msgid "The complete billing address of the order."
 msgstr ""
 
@@ -40258,6 +40283,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:235
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:142
 #: classes/email-templates/class-pmpro-email-template-invoice.php:149
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:233
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:237
 msgid "The billing name of the order."
 msgstr ""
 
@@ -40283,6 +40311,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:236
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:143
 #: classes/email-templates/class-pmpro-email-template-invoice.php:150
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:226
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:234
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:238
 msgid "The billing street of the order."
 msgstr ""
 
@@ -40308,6 +40339,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:237
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:144
 #: classes/email-templates/class-pmpro-email-template-invoice.php:151
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:227
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:235
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:239
 msgid "The billing street line 2 of the order."
 msgstr ""
 
@@ -40333,6 +40367,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:238
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:145
 #: classes/email-templates/class-pmpro-email-template-invoice.php:152
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:228
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:236
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:240
 msgid "The billing city of the order."
 msgstr ""
 
@@ -40358,6 +40395,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:239
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:146
 #: classes/email-templates/class-pmpro-email-template-invoice.php:153
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:237
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:241
 msgid "The billing state of the order."
 msgstr ""
 
@@ -40383,6 +40423,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:240
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:147
 #: classes/email-templates/class-pmpro-email-template-invoice.php:154
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:238
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:242
 msgid "The billing ZIP code of the order."
 msgstr ""
 
@@ -40408,6 +40451,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:241
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:148
 #: classes/email-templates/class-pmpro-email-template-invoice.php:155
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:239
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:243
 msgid "The billing country of the order."
 msgstr ""
 
@@ -40433,6 +40479,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:242
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:149
 #: classes/email-templates/class-pmpro-email-template-invoice.php:156
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:232
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:240
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:244
 msgid "The billing phone number of the order."
 msgstr ""
 
@@ -40558,6 +40607,7 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:232
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:233
 msgid "The default or custom label for the check gateway."
 msgstr ""
 
