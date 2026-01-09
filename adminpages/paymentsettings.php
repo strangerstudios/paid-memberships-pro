@@ -76,7 +76,7 @@
 	//make sure the tax rate is not > 1
 	$tax_state = get_option( "pmpro_tax_state");
 	$tax_rate = get_option( "pmpro_tax_rate");
-	if((double)$tax_rate > 1)
+	if((float)$tax_rate > 1)
 	{
 		//assume the entered X%
 		$tax_rate = $tax_rate / 100;
