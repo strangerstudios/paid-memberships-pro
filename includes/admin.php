@@ -286,6 +286,25 @@ function pmpro_admin_header() {
 				</h1>
 				<span class="pmpro_version">v<?php echo esc_html( PMPRO_VERSION ); ?></span>
 			</div>
+			<div class="pmpro_admin pmpro_quick_search">
+				<input type="text" placeholder="<?php esc_attr_e( 'Quick search...', 'paid-memberships-pro' ); ?>" autocomplete="off" />
+				<div class="pmpro_quick_search_select">
+					<label class="screen-reader-text" for="pmpro_quick_search_type"><?php esc_html_e( 'Search type', 'paid-memberships-pro' ); ?></label>
+					<select id="pmpro_quick_search_type">
+						<option value="all"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></option>
+						<option value="users"><?php esc_html_e( 'Users', 'paid-memberships-pro' ); ?></option>
+						<option value="subscriptions"><?php esc_html_e( 'Subscriptions', 'paid-memberships-pro' ); ?></option>
+						<option value="orders"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></option>
+						<option value="reports"><?php esc_html_e( 'Reports', 'paid-memberships-pro' ); ?></option>
+						<option value="levels"><?php esc_html_e( 'Levels', 'paid-memberships-pro' ); ?></option>
+						<option value="discounts"><?php esc_html_e( 'Discount Codes', 'paid-memberships-pro' ); ?></option>
+						<option value="settings"><?php esc_html_e( 'Settings', 'paid-memberships-pro' ); ?></option>
+						<option value="addons"><?php esc_html_e( 'Add Ons', 'paid-memberships-pro' ); ?></option>
+						<option value="documentation"><?php esc_html_e( 'Documentation', 'paid-memberships-pro' ); ?></option>
+					</select>
+				</div>
+				<div class="pmpro_quick_search_results"></div>
+			</div>
 			<div class="pmpro_meta">
 				<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=documentation"><?php esc_html_e('Documentation', 'paid-memberships-pro' ); ?></a>
 				<a target="_blank" href="https://www.paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=pricing&utm_content=get-support"><?php esc_html_e('Get Support', 'paid-memberships-pro' );?></a>

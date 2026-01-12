@@ -1292,3 +1292,180 @@ jQuery(document).ready(function () {
 		}
 	});
 });
+
+/**
+ * Quick Search
+ */
+jQuery(document).ready(function($) {
+	// Dynamically update the select width to fit selected option
+	pmproqsUpdateSelectWidth();
+
+	var searchTimeout = null;
+
+	var activeIndex = -1;
+
+	// Helper: Measure select option text width and update CSS variable
+	function pmproqsMeasureTextWidth(text, refEl) {
+		// Create a hidden span to measure text width using the select's font styles
+		var span = document.createElement('span');
+		span.style.position = 'absolute';
+		span.style.visibility = 'hidden';
+		span.style.whiteSpace = 'pre';
+		// Copy relevant font styles from the reference element (the <select>)
+		var cs = window.getComputedStyle(refEl);
+		span.style.fontFamily = cs.fontFamily;
+		span.style.fontSize = cs.fontSize;
+		span.style.fontWeight = cs.fontWeight;
+		span.style.fontStyle = cs.fontStyle;
+		span.style.letterSpacing = cs.letterSpacing;
+		span.textContent = text;
+		document.body.appendChild(span);
+		var width = span.getBoundingClientRect().width;
+		document.body.removeChild(span);
+		return width;
+	}
+
+	function pmproqsUpdateSelectWidth() {
+		var selectEl = document.getElementById('pmpro_quick_search_type');
+		if (!selectEl) return;
+		var text = selectEl.options[selectEl.selectedIndex].text;
+		// Measure the text and add space for the native arrow + padding + borders.
+		var textW = pmproqsMeasureTextWidth(text, selectEl);
+		var extra = 28; // approx. arrow + borders
+		var padding = 12; // matches padding in CSS (2px 4px) plus a little buffer
+		var computedWidth = Math.ceil(textW + extra + padding);
+		// Apply via CSS variable so input padding-left stays in sync
+		var container = document.querySelector('.pmpro_quick_search');
+		if (container) {
+			container.style.setProperty('--pmproqs-select-w', computedWidth + 'px');
+		}
+	}
+
+	function getResultRows() {
+		return $('.pmpro_quick_search_results tbody tr');
+	}
+
+	function setActive(index) {
+		var rows = getResultRows();
+		rows.removeClass('is-active');
+		if (!rows.length) {
+			activeIndex = -1;
+			return;
+		}
+		// wrap the index
+		var len = rows.length;
+		activeIndex = ((index % len) + len) % len;
+		$(rows[activeIndex]).addClass('is-active');
+	}
+
+	function moveActive(delta) {
+		if (getResultRows().length === 0) return;
+		if (activeIndex === -1) {
+			setActive(0);
+		} else {
+			setActive(activeIndex + delta);
+		}
+	}
+
+	function activateSelection() {
+		var rows = getResultRows();
+		if (!rows.length || activeIndex === -1) return;
+		var link = $(rows[activeIndex]).find('a').get(0);
+		if (link) {
+			if (link.target === '_blank') {
+				window.open(link.href, '_blank');
+			} else {
+				window.location = link.href;
+			}
+		}
+	}
+
+	function performSearch() {
+		var query = $('.pmpro_quick_search input').val();
+		var searchType = $('#pmpro_quick_search_type').val() || 'all';
+
+		// If the query is empty, clear results and return.
+		var resultsDiv = $('.pmpro_quick_search_results');
+		if (query.trim() === '') {
+			resultsDiv.hide().empty();
+			return;
+		}
+
+		// Perform AJAX request to get search results
+		$.ajax({
+			url: pmpro.rest_url + 'pmpro/v1/quick_search',
+			method: 'GET',
+			data: {
+				search: query,
+				type: searchType,
+			},
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader('X-WP-Nonce', pmpro.nonce);
+			},
+			success: function(response) {
+				// Display results in a dropdown below the input
+				resultsDiv.empty();
+				if (response.success) {
+					resultsDiv.html(response.data);
+				} else {
+					resultsDiv.html('An error occurred while searching. Please try again.');
+				}
+				resultsDiv.show();
+				// highlight first available result
+				activeIndex = -1;
+				setActive(0);
+				// allow mouse hover to change the active row without stealing focus
+				getResultRows().off('mouseenter.pmproqs').on('mouseenter.pmproqs', function(){
+					var idx = getResultRows().index(this);
+					setActive(idx);
+				});
+			},
+			error: function() {
+				alert('An error occurred while searching. Please try again.');
+			}
+		});
+	}
+
+	$('.pmpro_quick_search input').on('input', function() {
+		$('.pmpro_quick_search_results').hide();
+		clearTimeout(searchTimeout);
+		// TODO: Adjust delay as needed. Maybe add a filter.
+		searchTimeout = setTimeout(performSearch, 250);
+	});
+
+	$('#pmpro_quick_search_type').on('change', function(){
+		pmproqsUpdateSelectWidth();
+		$('.pmpro_quick_search_results').hide();
+		clearTimeout(searchTimeout);
+		activeIndex = -1;
+		searchTimeout = setTimeout(performSearch, 0);
+	});
+
+	$('.pmpro_quick_search input').on('keydown', function(e) {
+		// Only intercept navigation keys; let everything else (e.g. Cmd/Ctrl+A) pass through
+		if (e.key === 'ArrowDown') {
+			e.preventDefault();
+			moveActive(1);
+			return;
+		}
+		if (e.key === 'ArrowUp') {
+			e.preventDefault();
+			moveActive(-1);
+			return;
+		}
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			activateSelection();
+			return;
+		}
+	});
+
+	// Hide results when clicking outside
+	$(document).on('click', function(e) {
+		if (!$(e.target).closest('.pmpro_quick_search').length) {
+			$('.pmpro_quick_search_results').hide();
+		}
+	});
+	// Optionally improve first render robustness: recalc after layout is stable
+	setTimeout(pmproqsUpdateSelectWidth, 0);
+});
