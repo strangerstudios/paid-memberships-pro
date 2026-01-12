@@ -1490,7 +1490,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				foreach( $email_templates as $template_slug => $template_class ) {
 					$template_name = $template_class::get_template_name();
 					$settings_pages[ $template_name ] = array(
-						'slug' => 'pmpro-emailtemplates&edit=' . $template_slug,
+						'slug' => 'pmpro-emailtemplates&edit=' . urlencode( $template_slug ),
 						'permission' => 'pmpro_emailsettings',
 						'label' => esc_html__( 'Email Templates', 'paid-memberships-pro' ) . ' > ' . esc_html( $template_name ),
 					);
