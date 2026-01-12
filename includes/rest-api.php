@@ -1480,7 +1480,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$gateways = pmpro_gateways();
 				foreach( $gateways as $gateway => $nice_name ) {
 					$settings_pages[ $nice_name ] = array(
-						'slug' => 'pmpro-paymentsettings&edit_gateway=' . $gateway,
+						'slug' => 'pmpro-paymentsettings&edit_gateway=' . urlencode( $gateway ),
 						'permission' => 'pmpro_paymentsettings',
 						'label' => esc_html__( 'Payments', 'paid-memberships-pro' ) . ' > ' . esc_html( $nice_name ),
 					);
