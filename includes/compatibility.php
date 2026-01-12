@@ -196,6 +196,28 @@ function pmpro_track_library_conflict( $name, $path, $version ) {
 
 	// Update the library conflict information.
 	$library_conflicts[ $name ][ $path ]['version']   = $version;
-	$library_conflicts[ $name ][ $path ]['timestamp'] = $now;	
+	$library_conflicts[ $name ][ $path ]['timestamp'] = $now;
+
+	// Cleanup.
+	$seven_days_ago = strtotime( '-7 days' );
+	foreach ( $library_conflicts as $lib_name => $paths ) {
+		// If no paths, remove the library entry.
+		if ( empty( $paths ) ) {
+			unset( $library_conflicts[ $lib_name ] );
+			continue;
+		}
+		// Check each path's timestamp. If older than 7 days, remove it.
+		foreach ( $paths as $lib_path => $info ) {
+			if ( ! empty( $info['timestamp'] ) && ( strtotime( $info['timestamp'] ) < $seven_days_ago ) ) {
+				unset( $library_conflicts[ $lib_name ][ $lib_path ] );
+			}
+		}
+
+		// If all paths were removed, clean up the library entry.
+		if ( empty( $library_conflicts[ $lib_name ] ) ) {
+			unset( $library_conflicts[ $lib_name ] );
+		}
+	}
+	
 	update_option( 'pmpro_library_conflicts', $library_conflicts, false );
 }
