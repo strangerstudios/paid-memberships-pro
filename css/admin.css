@@ -104,6 +104,33 @@ p.pmpro_meta_notice {
 	top: 0;
 }
 
+/* Show spinning loader icon when export is in progress */
+.pmpro_admin .pmpro-has-icon-download[data-status="running"]:before,
+.pmpro_admin .pmpro-has-icon-download[data-status="queued"]:before,
+.pmpro_admin .pmpro-has-icon-download[data-status="preparing"]:before {
+	content: '';
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	top: -1px;
+	line-height: 0;
+	/* Use mask + currentColor so spinner inherits button/text color */
+	background-color: currentColor;
+	-webkit-mask-image: url('../images/loader.svg');
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-size: 14px 14px;
+	mask-image: url('../images/loader.svg');
+	mask-repeat: no-repeat;
+	mask-size: 14px 14px;
+	animation: pmpro-spin 2s linear infinite;
+}
+
+
+@keyframes pmpro-spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
 .pmpro_admin .pmpro-has-icon-plus:before {
 	content: "\f132";
 	top: 0;

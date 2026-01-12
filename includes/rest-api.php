@@ -282,6 +282,97 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				)
 			)
 		);
+
+		/**
+		 * Start an export.
+		 * 
+		 * Route:
+		 * - POST /pmpro/v1/export/start
+		 *
+		 * Params:
+		 * - type: string (e.g., 'members', 'orders') (required)
+		 * - l: level filter (optional)
+		 * - s: search (optional)
+		 * - export_id: for status (optional)
+		 * 
+		 * Example:.../wp-json/pmpro/v1/export/start
+		 * 
+		 * @since TBD
+		 */
+		register_rest_route( $pmpro_namespace, '/export/start',
+			array(
+				array(
+					'methods'  => WP_REST_Server::EDITABLE,
+					'callback' => function( $request ) {
+						$params = $request->get_params();
+						$type   = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : '';
+						if ( empty( $type ) ) {
+							return new WP_REST_Response( array( 'error' => 'Missing export type.' ), 400 );
+						}
+						$force_async = ! empty( $params['force_async'] ) ? (bool) $params['force_async'] : false;
+						$exports = PMPro_Exports::instance();
+						$result  = $exports->start_export( $type, $params, $force_async );
+						
+						// Trigger Action Scheduler to run queued tasks right away.
+						do_action('action_scheduler_run_queue');
+						
+						$status_code = isset( $result['error'] ) ? 400 : 200;
+						return new WP_REST_Response( $result, $status_code );
+					},
+					'permission_callback' => function( $request ) {
+						$params  = $request->get_params();
+						$type    = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : '';
+						$exports = PMPro_Exports::instance();
+						if ( empty( $type ) ) {
+							return current_user_can( 'manage_options' ) || current_user_can( 'pmpro_memberslistcsv' ) || current_user_can( 'pmpro_orderscsv' );
+						}
+						return $exports->user_can_export( $type );
+					},
+				)
+			)
+		);
+
+		/**
+		 * Get the progress status of an export.
+		 *
+		 * Route:
+		 * - GET  /pmpro/v1/exports/status
+		 *
+		 * Example: .../wp-json/pmpro/v1/export/status?type=members&export_id=12345
+		 *
+		 * @since TBD
+		 */
+		register_rest_route( $pmpro_namespace, '/export/status',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => function( $request ) {
+						$params    = $request->get_params();
+						$type      = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : '';
+						$export_id = isset( $params['export_id'] ) ? sanitize_text_field( $params['export_id'] ) : '';
+						if ( empty( $type ) ) {
+							return new WP_REST_Response( array( 'error' => 'Missing export type.' ), 400 );
+						}
+						$exports = PMPro_Exports::instance();
+						$result  = $exports->get_status( $type, $export_id );
+						// Never respond with 404 for logical export errors; keep 200 and surface error message.
+						if ( isset( $result['error'] ) ) {
+							$result['http_status'] = 200;
+						}
+						return new WP_REST_Response( $result, 200 );
+					},
+					'permission_callback' => function( $request ) {
+						$params  = $request->get_params();
+						$type    = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : '';
+						$exports = PMPro_Exports::instance();
+						if ( empty( $type ) ) {
+							return current_user_can( 'manage_options' ) || current_user_can( 'pmpro_memberslistcsv' ) || current_user_can( 'pmpro_orderscsv' );
+						}
+						return $exports->user_can_export( $type );
+					},
+				)
+			)
+		);
 		}
 		
 		/**
