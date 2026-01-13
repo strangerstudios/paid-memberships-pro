@@ -116,7 +116,7 @@ class pmpro_ReCaptcha
         );
         $answers = json_decode($getResponse, true);
 
-        // We received a successful response, now check it for V2 or V3.
+        // Check if reCAPTCHA validation was successful, then handle V2 or V3.
         if ( ! empty( $answers['success'] ) ) {
 			
 			// Check for V3 score if present.
