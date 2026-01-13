@@ -136,6 +136,9 @@ class pmpro_ReCaptcha
 
 				if ( (float) $answers['score'] >= $min_score ) {
 					$recaptchaResponse->success = true;
+				} else {
+					$recaptchaResponse->success = false;
+					$recaptchaResponse->errorCodes = 'Low reCAPTCHA score';
 				}
 
 			} else {
