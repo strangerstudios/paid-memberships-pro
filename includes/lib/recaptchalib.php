@@ -117,12 +117,30 @@ class pmpro_ReCaptcha
         $answers = json_decode($getResponse, true);
 
         // We received a successful response, now check it for V2 or V3.
-        if ( $answers['success'] == true ) {
-            if ( ! empty( $answers['score'] ) && $answers['score'] >= (float) apply_filters( 'pmpro_recaptcha_v3_min_score', 0.5 ) ) { // V3 recaptcha
-                $recaptchaResponse->success = true;
-            } elseif ( ! isset( $answers['score'] ) ) { // V2 recaptcha
-                $recaptchaResponse->success = true; 
-            }
+        if ( ! empty( $answers['success'] ) ) {
+			
+			// Check for V3 score if present.
+			if ( isset( $answers['score'] ) ) {
+
+				/**
+				 * Set the mimnimum score to mark the submission as successful.
+				 * 
+				 * @since TBD
+				 * 
+				 * @param float $min_score. Defaults to 0.5 and supports 0.0 - 1.0 values. Any values outside this will default to 0.5.
+				 */
+				$min_score = (float) apply_filters( 'pmpro_recaptcha_v3_min_score', 0.5 );
+				if ( $min_score < 0.0 || $min_score > 1.0 ) {
+					$min_score = 0.5;
+				}
+
+				if ( (float) $answers['score'] >= $min_score ) {
+					$recaptchaResponse->success = true;
+				}
+
+			} else {
+				$recaptchaResponse->success = true; // V2 has no score.
+			}
         } else {
             $recaptchaResponse->success = false;
             if (!empty($answers['error-codes'])) {
