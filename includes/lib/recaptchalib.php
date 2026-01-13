@@ -123,7 +123,7 @@ class pmpro_ReCaptcha
 			if ( isset( $answers['score'] ) ) {
 
 				/**
-				 * Set the mimnimum score to mark the submission as successful.
+				 * Set the minimum score to mark the submission as successful.
 				 * 
 				 * @since TBD
 				 * 
