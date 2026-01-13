@@ -127,7 +127,7 @@ class pmpro_ReCaptcha
 				 * 
 				 * @since TBD
 				 * 
-				 * @param float $min_score. Defaults to 0.5 and supports 0.0 - 1.0 values. Any values outside this will default to 0.5.
+				 * @param float $min_score Defaults to 0.5 and supports 0.0 - 1.0 values. Any values outside this will default to 0.5.
 				 */
 				$min_score = (float) apply_filters( 'pmpro_recaptcha_v3_min_score', 0.5 );
 				if ( $min_score < 0.0 || $min_score > 1.0 ) {
