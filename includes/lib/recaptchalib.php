@@ -93,10 +93,14 @@ class pmpro_ReCaptcha
      */
     public function verifyResponse($remoteIp, $response)
     {
+
+		// Default to it not being okay.
+		$recaptchaResponse = new pmpro_ReCaptchaResponse();
+		$recaptchaResponse->success = false;
+
         // Discard empty solution submissions
         if ($response == null || strlen($response) == 0) {
-            $recaptchaResponse = new pmpro_ReCaptchaResponse();
-            $recaptchaResponse->success = false;
+            $recaptchaResponse->success = false; // Redundant but okay.
             $recaptchaResponse->errorCodes = 'missing-input';
             return $recaptchaResponse;
         }
@@ -111,10 +115,14 @@ class pmpro_ReCaptcha
             )
         );
         $answers = json_decode($getResponse, true);
-        $recaptchaResponse = new pmpro_ReCaptchaResponse();
 
-        if ((bool)$answers['success'] == true) {
-            $recaptchaResponse->success = true;
+        // We received a successful response, now check it for V2 or V3.
+        if ( $answers['success'] == true ) {
+            if ( ! empty( $answers['score'] ) && $answers['score'] >= (float) apply_filters( 'pmpro_recaptcha_v3_min_score', 0.5 ) ) { // V3 recaptcha
+                $recaptchaResponse->success = true;
+            } elseif ( ! isset( $answers['score'] ) ) { // V2 recaptcha
+                $recaptchaResponse->success = true; 
+            }
         } else {
             $recaptchaResponse->success = false;
             if (!empty($answers['error-codes'])) {
@@ -141,4 +149,3 @@ class pmpro_ReCaptcha
         return $recaptchaResponse;
     }
 }
-?>
