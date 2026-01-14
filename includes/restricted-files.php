@@ -149,3 +149,108 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
 	}
 	return $restricted_file_path;
 }
+
+/**
+ * Core implementation for checking if the PMPro restricted files directory
+ * is protected from direct access.
+ *
+ * @since TBD
+ *
+ * @return bool|null True if protected, false if accessible, null if unable to determine.
+ */
+function pmpro_is_restricted_directory_protected() {
+	$restricted_dir = pmpro_get_restricted_file_path();
+
+	// Can't test if directory doesn't exist.
+	if ( ! is_dir( $restricted_dir ) ) {
+		return null;
+	}
+
+	// Find a file to test with.
+	$test_file = pmpro_find_testable_file( $restricted_dir );
+	if ( ! $test_file ) {
+		return null;
+	}
+
+	// Convert file path to URL.
+	$wp_upload_dir = wp_upload_dir();
+
+	// Normalize paths to ensure consistent separators.
+	$normalized_test_file = wp_normalize_path( $test_file );
+	$normalized_basedir   = wp_normalize_path( $wp_upload_dir['basedir'] );
+	$basedir_with_slash   = trailingslashit( $normalized_basedir );
+
+	// Ensure the test file is within the uploads base directory.
+	if ( 0 !== strpos( $normalized_test_file, $basedir_with_slash ) ) {
+		return null;
+	}
+
+	// Build a URL by appending the relative path to the base URL.
+	$relative_path = substr( $normalized_test_file, strlen( $basedir_with_slash ) );
+	$test_url      = trailingslashit( $wp_upload_dir['baseurl'] ) . ltrim( $relative_path, '/' );
+	
+	// Attempt direct access.
+	$response = wp_remote_head(
+		$test_url,
+		array(
+			'timeout'             => 3, // Short timeout for responsiveness.
+			'redirection'         => 1,	// allow one for a HTTP → HTTPS hop
+			'reject_unsafe_urls'  => true, // Security measure.
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		return null;
+	}
+
+	$status_code = wp_remote_retrieve_response_code( $response );
+
+	// 401/403/404 = protected, 200 = exposed, everything else = unable to determine.
+	if ( in_array( $status_code, array( 401, 403, 404 ), true ) ) {
+		return true;
+	}
+
+	if ( 200 === $status_code ) {
+		return false;
+	}
+
+	return null;
+}
+
+/**
+ * Grab a file in the restricted directory that can be used for access testing.
+ *
+ * @since TBD
+ *
+ * @param string $directory The directory path to search.
+ * @return string|null File path if found, null otherwise.
+ */
+function pmpro_find_testable_file( $directory ) {
+	try {
+		$directory_iterator = new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS );
+		$filtered_iterator  = new RecursiveCallbackFilterIterator(
+			$directory_iterator,
+			static function( $current ) {
+				$filename = $current->getFilename();
+
+				// Skip dotfiles and dot directories (e.g. .DS_Store, .htaccess).
+				return '' === $filename || '.' !== $filename[0];
+			}
+		);
+		$iterator = new RecursiveIteratorIterator( $filtered_iterator, RecursiveIteratorIterator::SELF_FIRST );
+
+		foreach ( $iterator as $file ) {
+			if ( $file->isFile() ) {
+				return $file->getPathname();
+			}
+		}
+	} catch ( UnexpectedValueException $e ) {
+		// Directory exists but is not readable or has other access issues.
+		return null;
+	} catch ( Exception $e ) {
+		// Any other unexpected issue while iterating; fail gracefully.
+		return null;
+	}
+
+	return null;
+}
