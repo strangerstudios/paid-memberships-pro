@@ -139,6 +139,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
 			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
 			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
+			'!!order_url!!' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
 			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
 		);
 	}
@@ -188,6 +189,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 			'membership_expiration' => $membership_expiration,
 			'order_id' => $order->code,
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
+			'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 			'discount_code' => $discount_code,
 		);
 
