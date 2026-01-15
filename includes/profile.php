@@ -1060,6 +1060,12 @@ function pmpro_member_profile_edit_form() {
 			}
 		}
 
+		// Save the new avatar, which may return an error string.
+		$avatar_saved = pmpro_save_avatar_field( $user->ID );
+		if ( is_string( $avatar_saved ) ) {
+			$errors[] = $avatar_saved;
+		}
+
 		/**
 		 * Fires before member profile update errors are returned.
 		 *
@@ -1081,6 +1087,8 @@ function pmpro_member_profile_edit_form() {
 		<?php } else {
 			// Save updated profile fields.
 			wp_update_user( $user );
+
+			// Profile updated message.
 			?>
 			<div role="alert" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_success', 'pmpro_success' ) ); ?>">
 				<?php esc_html_e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
@@ -1145,6 +1153,10 @@ function pmpro_member_profile_edit_form() {
 											<?php } ?>
 										</div>	<!-- end pmpro_form_field -->
 									<?php } ?>
+									<?php
+										// Show avatar field.
+										pmpro_display_avatar_field( $current_user->ID, 'div' );
+									?>
 								</div> <!-- end pmpro_form_fields -->
 							</fieldset> <!-- end pmpro_member_profile_edit-account-information -->
 

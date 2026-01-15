@@ -396,7 +396,11 @@
 
 	.pmpro_form_field-file {
 
-		.pmpro_form_input-file {
+		.pmpro_form_field-file-preview img {
+			border: 1px solid var(--pmpro--color--border--variation);
+		}
+
+		.pmpro_form_input {
 			border: 3px dashed var(--pmpro--color--border--variation);
 			border-radius: 0;
 			padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
