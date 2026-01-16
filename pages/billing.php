@@ -389,7 +389,7 @@
 
 		$memberships_for_user = pmpro_getMembershipLevelsForUser( $current_user->ID );
 
-		// Show active "paid levels" only.
+		// Show active levels only.
 		?>
 		<section id="pmpro_billing-memberships" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section' ) ); ?>">
 			<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_title pmpro_font-x-large' ) ); ?>"><?php esc_html_e( 'My Memberships', 'paid-memberships-pro' ); ?></h2>
@@ -450,11 +450,6 @@
 
 						}
 
-						$cancel_url = pmpro_url( 'cancel', 'levelstocancel=' . $membership->id );
-						if ( ! empty( $cancel_url ) ) {
-							$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
-						}
-
 						// Get the Update billing information link if we have a subscription.
 						if ( $subscription ) {
 							$subscription_id = $subscription->get_id() ?? '';
@@ -475,6 +470,11 @@
 								$billing_url = add_query_arg( 'pmpro_subscription_id', $subscription_id, pmpro_url( 'billing' ) );
 								$pmpro_member_action_links['update-billing'] = '<a href="' . esc_url( $billing_url ) . '">' . esc_html__( 'Update Billing Information', 'paid-memberships-pro' ) . '</a>';
 							}
+						}
+
+						$cancel_url = pmpro_url( 'cancel', 'levelstocancel=' . $membership->id );
+						if ( ! empty( $cancel_url ) ) {
+							$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
 						}
 
 						?><div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>"><?php 
