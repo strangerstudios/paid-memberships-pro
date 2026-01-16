@@ -88,11 +88,6 @@
 									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Next payment on', 'paid-memberships-pro' ); ?></span>
 									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo esc_html( $pmpro_billing_subscription->get_next_payment_date( get_option( 'date_format' ) ) ); ?></span>
 								</li>
-								<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
-									<?php $pmpro_gateways = pmpro_gateways(); ?>
-									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></span>
-									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo esc_html( $pmpro_gateways[$subscription_gateway_obj->gateway] ); ?></span>
-								</li>
 							</ul> <!-- end pmpro_list -->
 							<?php
 						} elseif ( 'all' === $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
