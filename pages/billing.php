@@ -458,7 +458,20 @@
 						// Get the Update billing information link if we have a subscription.
 						if ( $subscription ) {
 							$subscription_id = $subscription->get_id() ?? '';
-							if ( ! empty( $subscription_id ) ) {
+							
+							// Get the order for this subscription.
+							$newest_orders = $subscription->get_orders(
+								array(
+									'status'  => 'success',
+									'limit'   => 1,
+									'orderby' => '`timestamp` DESC, `id` DESC',
+								)
+							);
+
+							// We need this for the billing page link.
+							$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
+
+							if (  $pmpro_billing_order && ! empty( $subscription_id ) ) {
 								$billing_url = add_query_arg( 'pmpro_subscription_id', $subscription_id, pmpro_url( 'billing' ) );
 								$pmpro_member_action_links['update-billing'] = '<a href="' . esc_url( $billing_url ) . '">' . esc_html__( 'Update Billing Information', 'paid-memberships-pro' ) . '</a>';
 							}
