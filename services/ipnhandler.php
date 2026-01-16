@@ -270,8 +270,12 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 	// Handle the cancellation.
 	ipnlog( pmpro_handle_subscription_cancellation_at_gateway( $recurring_payment_id, 'paypalexpress', $gateway_environment ) );
 
-	// If the subscription was suspended due to max failed payments or paused due to failed payments, make sure that the subscription is definitely set to cancelled.
-	if ( $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
+	// Double-check the subscription status to ensure that it is cancelled.
+	$gateway_obj = new PMProGateway_paypalexpress();
+	$subscription_status_array = $gateway_obj->getSubscriptionStatus( $recurring_payment_id, $gateway_environment );
+	if ( ! empty( $subscription_status_array ) && isset( $subscription_status_array['status'] ) && $subscription_status_array['status'] != 'Cancelled' ) {
+		// If the subscription is not cancelled, cancel it at the gateway.
+		ipnlog( 'Subscription status is ' . $subscription_status_array['status'] . '. Cancelling subscription at gateway.' );
 		$pmpro_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $recurring_payment_id, 'paypalexpress', $gateway_environment );
 		if ( ! empty( $pmpro_subscription ) ) { 
 			$pmpro_subscription->cancel_at_gateway();
