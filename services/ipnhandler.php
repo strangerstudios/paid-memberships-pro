@@ -272,10 +272,12 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 
 	// Double-check the subscription status to ensure that it is cancelled.
 	$gateway_obj = new PMProGateway_paypalexpress();
-	$subscription_status_array = $gateway_obj->getSubscriptionStatus( $recurring_payment_id, $gateway_environment );
-	if ( ! empty( $subscription_status_array ) && isset( $subscription_status_array['status'] ) && $subscription_status_array['status'] != 'Cancelled' ) {
+	$temp_order  = new MemberOrder(); // Fake an order to pass to getSubscriptionStatus.
+	$temp_order->subscription_transaction_id = $recurring_payment_id;
+	$subscription_status_array = $gateway_obj->getSubscriptionStatus( $temp_order );
+	if ( ! empty( $subscription_status_array ) && isset( $subscription_status_array['STATUS'] ) && $subscription_status_array['STATUS'] != 'Cancelled' ) {
 		// If the subscription is not cancelled, cancel it at the gateway.
-		ipnlog( 'Subscription status is ' . $subscription_status_array['status'] . '. Cancelling subscription at gateway.' );
+		ipnlog( 'Subscription status is ' . $subscription_status_array['STATUS'] . '. Cancelling subscription at gateway.' );
 		$pmpro_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $recurring_payment_id, 'paypalexpress', $gateway_environment );
 		if ( ! empty( $pmpro_subscription ) ) { 
 			$pmpro_subscription->cancel_at_gateway();
