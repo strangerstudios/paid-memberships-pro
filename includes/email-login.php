@@ -129,7 +129,7 @@ function pmpro_login_process_form_submission() {
 	if ( isset( $_REQUEST['pmpro_email_login'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_email_login'] ) ), 'pmpro_email_login' ) ) {
 
 		// Get the user from either the email or username field.
-		$login_input = isset($_REQUEST['log']) ? sanitize_text_field(wp_unslash($_REQUEST['log'])) : '';
+		$login_input = isset( $_REQUEST['log'] ) ? sanitize_text_field( wp_unslash($_REQUEST['log'] ) ) : '';
 
 		// Figure out if it's an email or username.
 		if ( is_email( $login_input ) ) {
@@ -143,9 +143,12 @@ function pmpro_login_process_form_submission() {
 		if ( $user_id <= 0 ) {
 			return false;
 		}
-		
+
+		// Get the magic login identifier from the request.
+		$is_magic_login = isset( $_REQUEST['pmpro_email_login'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['pmpro_email_login'] ) ) : '';
+
 		// If there is a cached login token, don't send another email. Bail and return true.
-		if ( get_transient( 'pmpro_email_login_sent_' . $user_id ) === sanitize_text_field( wp_unslash( $_REQUEST['pmpro_email_login'] ) ) ) {
+		if ( get_transient( 'pmpro_email_login_sent_' . $user_id ) === $is_magic_login ) {
 			return true;
 		}
 
@@ -157,6 +160,7 @@ function pmpro_login_process_form_submission() {
 		}
 		// Update the last sent time.
 		set_transient( 'pmpro_email_login_last_sent_' . $user_id, time(), 5 * MINUTE_IN_SECONDS );
+
 		// Generate the login token for the user to email it to them.
 		$login_token = pmpro_login_generate_login_token( $user_id );
 		$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect_to'] ) ) : '';
@@ -171,7 +175,7 @@ function pmpro_login_process_form_submission() {
 		$pmpro_email = new PMProEmail();
 		$pmpro_email->send_email_login_link( $user, $login_link );
 
-		set_transient( 'pmpro_email_login_sent_' . $user_id, sanitize_text_field( wp_unslash( $_GET['pmpro_email_login'] ) ), 5 * MINUTE_IN_SECONDS );
+		set_transient( 'pmpro_email_login_sent_' . $user_id, $is_magic_login, 5 * MINUTE_IN_SECONDS );
 		return true;
 	}
 
@@ -236,6 +240,7 @@ function pmpro_login_authenticate_via_email_login(){
 		if ( time() > (int) $expires ) {
 			delete_user_meta( $user_id, 'pmpro_email_login_token' );
 			delete_user_meta( $user_id, 'pmpro_email_login_expires' );
+			delete_transient( 'pmpro_email_login_last_sent_' . $user_id );
 			wp_die( esc_html__( 'Login link has expired. Please generate a new token.', 'paid-memberships-pro' ) );
 		}
 
@@ -246,6 +251,7 @@ function pmpro_login_authenticate_via_email_login(){
 		delete_user_meta( $user_id, 'pmpro_email_login_token' );
 		delete_user_meta( $user_id, 'pmpro_email_login_expires' );
 		delete_transient( 'pmpro_email_login_sent_' . $user_id );
+		delete_transient( 'pmpro_email_login_last_sent_' . $user_id );
 
 		// Add the default wp_login hook for 2FA, reCAPTCHA or anything else that may want to intercept logins before redirecting.
 		do_action( 'wp_login', $user->user_login, $user );
@@ -286,6 +292,7 @@ function pmpro_login_cleanup_expired_login_tokens() {
 		delete_user_meta( $user_id, 'pmpro_email_login_token' );
 		delete_user_meta( $user_id, 'pmpro_email_login_expires' );
 		delete_transient( 'pmpro_email_login_sent_' . $user_id );
+		delete_transient( 'pmpro_email_login_last_sent_' . $user_id );
 	}
 }
 add_action( 'pmpro_schedule_quarter_hourly', 'pmpro_login_cleanup_expired_login_tokens' );
