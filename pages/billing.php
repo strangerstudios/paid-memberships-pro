@@ -445,27 +445,57 @@
 						</ul>		
 					</div> <!-- end pmpro_card_content -->
 						<?php
+
+						// Build the links to return.
+						$pmpro_member_action_links = array();
+
+						$renew_url = pmpro_url( 'checkout', 'level=' . $membership->id, 'https' );
+						if ( pmpro_isLevelExpiringSoon( $membership ) && ! empty( $renew_url ) ) {
+							$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
+
+						}
+
+						$cancel_url = pmpro_url( 'cancel', 'levelstocancel=' . $membership->id );
+						if ( ! empty( $cancel_url ) ) {
+							$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
+						}
+
+						// Get the Update billing information link if we have a subscription.
 						if ( $subscription ) {
-						?>
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-						<?php 
 							$subscription_id = $subscription->get_id() ?? '';
 							if ( ! empty( $subscription_id ) ) {
 								$billing_url = add_query_arg( 'pmpro_subscription_id', $subscription_id, pmpro_url( 'billing' ) );
-								?><a href="<?php echo esc_url( $billing_url ); ?>"><?php esc_html_e( 'View Billing Information', 'paid-memberships-pro' ); ?></a><?php
+								$pmpro_member_action_links['update-billing'] = '<a href="' . esc_url( $billing_url ) . '">' . esc_html__( 'Update Billing Information', 'paid-memberships-pro' ) . '</a>';
 							}
+						}
+
+						?><div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>"><?php 
+
+						/**
+						 * Filter the member action links.
+						 *
+						 * @param array $pmpro_member_action_links Member action links.
+						 * @param int   $level->id The ID of the membership level.
+						 * @return array $pmpro_member_action_links Member action links.
+						 */
+						$pmpro_member_action_links = apply_filters( 'pmpro_member_action_links', $pmpro_member_action_links, $membership->id );
+
+						$allowed_html = array(
+							'a' => array (
+								'class' => array(),
+								'href' => array(),
+								'id' => array(),
+								'target' => array(),
+								'title' => array(),
+								'aria-label' => array(),
+							),
+							'span' => array(
+								'class' => array(),
+							),
+						);
+						echo wp_kses( implode( '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_action_separator' ) ) . '">' . pmpro_actions_nav_separator() . '</span>', $pmpro_member_action_links ), $allowed_html );
 						?>					
 						</div> <!-- end pmpro_card_actions -->
- 						<?php
-						} elseif ( ! empty( $membership->enddate ) && pmpro_isLevelExpiringSoon( $membership ) ) { ?>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-							<a id="pmpro_actionlink-renew"
-							   href="<?php echo esc_url( add_query_arg( 'pmpro_level', $membership->id, pmpro_url( 'checkout', '', 'https' ) ) ); ?>"
-							   aria-label="<?php echo esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ); ?>">
-								<?php esc_html_e( 'Renew', 'paid-memberships-pro' ); ?>
-							</a>
-						</div>
-						<?php } ?>
 				</div> <!-- end pmpro_card -->
 				<?php
 			}
@@ -494,7 +524,6 @@
 						<thead>
 							<tr>
 								<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-level' ) ); ?>"><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
-								<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-status' ) ); ?>"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
 								<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-date' ) ); ?>"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
 								<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-renew' ) ); ?>"><?php echo ''; ?></th>
 							</tr>
@@ -513,9 +542,6 @@
 									<tr>
 										<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-level' ) ); ?>">
 											<?php echo esc_html( $previous_membership->name ); ?>
-										</td>
-										<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-status' ) ); ?>">
-											<?php echo esc_html( $previous_membership->status ); ?>
 										</td>
 										<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-date' ) ); ?>">
 											<?php
