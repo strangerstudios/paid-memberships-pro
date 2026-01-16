@@ -9,12 +9,12 @@ We regularly release updates to the plugin, including important security fixes a
 You want to be able to upgrade.
 
 If you were asked to insert code into "your functions.php file", it was meant that you edit the functions.php
-in the root folder of your active theme. e.g. /wp-content/themes/twentytwelve/functions.php
+in the root folder of your active theme. e.g. /wp-content/themes/memberlite-child/functions.php
 You can also create a custom plugin to place customization code into. Instructions are here:
-http://www.paidmembershipspro.com/2012/08/create-a-plugin-for-pmpro-customizations/
+https://www.paidmembershipspro.com/create-a-plugin-for-pmpro-customizations/
 
 Further documentation for customizing Paid Memberships Pro can be found here:
-http://www.paidmembershipspro.com/documentation/
+https://www.paidmembershipspro.com/documentation/
  ****************************************************************/
 if ( ! function_exists( 'sornot' ) ) {
 	function sornot( $t, $n ) {
@@ -1541,24 +1541,41 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 /**
  * pmpro_getMembershipCategories() returns the categories for a given level
  *
- * @param int $level_id is a valid membership level ID
- *
- * @return int[]
+ * @param int $level_id The membership level ID.
+ * @return array List of category IDs.
  */
 function pmpro_getMembershipCategories( $level_id ) {
+	static $cache = array();
+
 	$level_id = intval( $level_id );
+	if ( isset( $cache[ $level_id ] ) ) {
+		return $cache[ $level_id ];
+	}
 
 	global $wpdb;
 	$categories = $wpdb->get_col(
-		"SELECT c.category_id
-										FROM {$wpdb->pmpro_memberships_categories} AS c
-										WHERE c.membership_id = '" . esc_sql( $level_id ) . "'"
+		$wpdb->prepare(
+			"SELECT c.category_id
+			 FROM {$wpdb->pmpro_memberships_categories} AS c
+			 WHERE c.membership_id = %d",
+			$level_id
+		)
 	);
+
+	$cache[ $level_id ] = $categories;
 
 	return $categories;
 }
 
-
+/**
+ * pmpro_isAdmin() checks if a user is an admin.
+ *
+ * @since 1.8.11
+ *
+ * @param int|null $user_id The user ID to check. If null, uses the current user.
+ *
+ * @return bool True if the user is an admin, false otherwise.
+ */
 function pmpro_isAdmin( $user_id = null ) {
 	global $current_user;
 	if ( ! $user_id ) {
@@ -1577,6 +1594,18 @@ function pmpro_isAdmin( $user_id = null ) {
 	}
 }
 
+/**
+ * pmpro_replaceUserMeta() updates user meta values, replacing existing values.
+ *
+ * @since 1.8.11
+ *
+ * @param int $user_id User ID to update.
+ * @param string|array $meta_keys Meta keys to update.
+ * @param string|array $meta_values Meta values to set.
+ * @param string|array|null $prev_values Previous values to check against.
+ *
+ * @return int Number of meta keys updated.
+ */
 function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values = null ) {
 	// expects all arrays for last 3 params or all strings
 	if ( ! is_array( $meta_keys ) ) {
@@ -1601,6 +1630,14 @@ function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values
 	return $i;
 }
 
+/**
+ * pmpro_getMetavalues() returns an object with the meta values from a query.
+ *
+ * @since 1.8.11
+ *
+ * @param string $query SQL query to get meta values.
+ * @return stdClass Object with meta keys and values.
+ */
 function pmpro_getMetavalues( $query ) {
 	global $wpdb;
 
@@ -1938,8 +1975,8 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 	// check if the code has started
 	if ( ! $error ) {
 		// fix the date timestamps
-		$dbcode->starts = strtotime( date_i18n( 'm/d/Y', $dbcode->starts ) );
-		$dbcode->expires = strtotime( date_i18n( 'm/d/Y', $dbcode->expires ) );
+		$dbcode->starts = strtotime( date_i18n( 'm/d/Y 00:00:00', $dbcode->starts ) );
+		$dbcode->expires = strtotime( date_i18n( 'm/d/Y 23:59:59', $dbcode->expires ) );
 
 		// today
 		$today = strtotime( date_i18n( 'm/d/Y H:i:00', current_time( 'timestamp' ) ) );
@@ -3840,7 +3877,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 function pmpro_sanitize( $value, $field = null ) {
 	if ( null !== $field ) {
 		// This argument is deprecated. User fields now have sanitization logic in the field class.
-		_deprecated_argument( __FUNCTION__, '3.4', __( 'The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class.', 'paid-memberships-pro' ) );
+		_deprecated_argument( __FUNCTION__, '3.4', esc_html__( 'The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class.', 'paid-memberships-pro' ) );
 	}
 
 	if ( is_array( $value ) ) {
@@ -4542,6 +4579,7 @@ function pmpro_allowed_refunds( $order ) {
 	 * @param array $allowed_gateways A list of allowed gateways to work with refunds
 	 */
 	$allowed_gateways = apply_filters( 'pmpro_allowed_refunds_gateways', array( 'stripe', 'paypalexpress' ) );
+
 	//Only apply to these gateways
 	if( in_array( $order->gateway, $allowed_gateways, true ) ) {
 		$okay = true;
@@ -4703,6 +4741,49 @@ function pmpro_compare_siteurl() {
 
 	return ( $site_url === $current_url );
 }
+
+/**
+ * When the pmpro_last_known_url option is updated, base64 encode it to
+ * prevent string replacements from changing it when the site is migrated.
+ *
+ * @since 3.5
+ * @link https://developer.wordpress.org/reference/hooks/pre_update_option_option/
+ *
+ * @param string $new_value The new value for the option.
+ * @return string The encoded value for the option.
+ */
+function pmpro_encode_last_known_url( $new_value ) {
+	// Only encode non-empty values.
+	if ( ! empty( $new_value ) ) {
+		$new_value = 'b64:' . base64_encode( $new_value );
+	}
+	return $new_value;
+}
+add_filter( 'pre_update_option_pmpro_last_known_url', 'pmpro_encode_last_known_url' );
+
+/**
+ * When the pmpro_last_known_url option is retrieved, if it
+ * is base64 encoded, decode it.
+ *
+ * @since 3.5
+ * @link https://developer.wordpress.org/reference/hooks/option_option/
+ *
+ * @param string $value The value of the option.
+ * @return string The decoded value of the option.
+ */
+function pmpro_decode_last_known_url( $value ) {
+	// Check if the value is base64 encoded.
+	if ( strpos( $value, 'b64:' ) === 0 ) {
+		$value = base64_decode( substr( $value, 4 ) );
+	} else {
+		// If the value is not encoded, then it is an old value. Encode it now.
+		remove_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
+		update_option( 'pmpro_last_known_url', $value );
+		add_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
+	}
+	return $value;
+}
+add_filter( 'option_pmpro_last_known_url', 'pmpro_decode_last_known_url' );
 
 /**
  * Determine if the site is in pause mode or not
@@ -5057,9 +5138,77 @@ function pmpro_display_member_account_level_message( $level ) {
 	if ( $membership_account_message ) {
 		?>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-message' ) ); ?>">
-			<?php echo wpautop( wp_kses_post( $membership_account_message ) ); ?>
+			<?php echo wp_kses_post( wpautop( $membership_account_message ) ); ?>
 		</div>
 		<?php
 	}
 }
 add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );
+
+/**
+ * Update the level restrictions for a post.
+ *
+ * @since 3.6
+ *
+ * @param int $post_id The ID of the post to update.
+ * @param array $level_ids The IDs of the levels to restrict the post to.
+ */
+function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
+	global $wpdb;
+
+	// Get the current level IDs for the post.
+	$current_level_ids = $wpdb->get_col( $wpdb->prepare(
+		"SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d",
+		intval( $post_id )
+	) );
+
+	// Get the list of level IDs to remove.
+	$level_ids_to_remove = array_diff( $current_level_ids, $level_ids );
+	if ( ! empty( $level_ids_to_remove ) ) {
+		// Delete the restrictions for the levels that are being removed.
+		foreach( $level_ids_to_remove as $level_id ) {
+			$wpdb->delete(
+				$wpdb->pmpro_memberships_pages,
+				array(
+					'membership_id' => intval( $level_id ),
+					'page_id'       => intval( $post_id ),
+				),
+				array(
+					'%d',
+					'%d',
+				)
+			);
+		}
+	}
+
+	// Get the list of level IDs to insert.
+	$level_ids_to_insert = array_diff( $level_ids, $current_level_ids );
+	if ( ! empty( $level_ids_to_insert ) ) {
+		// Insert the restrictions for the new levels.
+		foreach ( $level_ids_to_insert as $level_id ) {
+			$wpdb->insert(
+				$wpdb->pmpro_memberships_pages,
+				array(
+					'membership_id' => intval( $level_id ),
+					'page_id'       => intval( $post_id ),
+				),
+				array(
+					'%d',
+					'%d',
+				)
+			);
+		}
+	}
+
+	// If we made changes, run an action.
+	if ( ! empty( $level_ids_to_remove ) || ! empty( $level_ids_to_insert ) ) {
+		/**
+		 * Action triggered after updating post level restrictions.
+		 *
+		 * @since 3.6
+		 *
+		 * @param int $post_id The ID of the post that was updated.
+		 */
+		do_action( 'pmpro_after_updating_post_level_restrictions', $post_id );
+	}
+}

@@ -1,11 +1,13 @@
 <?php
 	$site_type = get_option( 'pmpro_site_type' );
 
+	$addon_manager = PMPro_AddOns::instance();
+
 	if ( empty( $site_type ) ) {
 		$site_type = 'general';
 	}
 	// Get Add On recommendations based on site type.
-	$addon_cats = pmpro_get_addon_categories();
+	$addon_cats = $addon_manager->get_addon_categories();
 	if ( ! empty( $addon_cats[$site_type] ) && $addon_cats[$site_type] ) {
 		$addon_slug_list = $addon_cats[$site_type];
 		shuffle( $addon_slug_list );
@@ -18,7 +20,7 @@
 
 	$addon_list = array();
 	foreach ( $addon_slug_list as $addon_slug ) {
-		$addon = pmpro_getAddonBySlug( $addon_slug );
+		$addon = $addon_manager->get_addon_by_slug( $addon_slug );
 		if ( ! is_array( $addon ) ) {
 			continue;
 		}
@@ -28,8 +30,8 @@
 	// Did they choose collect payments? If so, show a nudge to complete the gateway setup.
 	$configure_payment = get_option( 'pmpro_wizard_collect_payment' );
 
-	$site_types = pmpro_wizard_get_site_types();
-	$site_type_hubs = pmpro_wizard_get_site_type_hubs();
+	$site_types = pmpro_get_site_types();
+	$site_type_hubs = pmpro_get_site_type_hubs();
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 	<div class="pmpro-wizard__step-header">
@@ -41,11 +43,30 @@
 		<p>
 			<?php
 			if ( isset( $site_types[ $site_type ] ) && isset( $site_type_hubs[ $site_type ] ) ) {
+				// Add UTM parameters to the site type hub link.
+				$site_type_hubs[ $site_type ] = add_query_arg(
+					array(
+						'utm_source'   => 'plugin',
+						'utm_medium'   => 'setup-wizard',
+						'utm_campaign' => 'wizard-done',
+						'utm_content'  => 'use-case-hub',
+					),
+					$site_type_hubs[ $site_type ]
+				);
+
+				// Add a redirect to the login page with the hub link.
+				$site_type_hub_link = add_query_arg(
+					array(
+						'redirect_to'  => urlencode( $site_type_hubs[ $site_type ] )
+					),
+					'https://www.paidmembershipspro.com/login/'
+				);
+
 				echo sprintf( esc_html__( "In step 1, you chose the %s site type.", 'paid-memberships-pro' ), '<strong>' . esc_html( $site_types[ $site_type ] ) . '</strong>' ) . ' ';
 				echo sprintf(
 					/* translators: %s: URL to the PMPro use case hub for the chosen site type */
 					esc_html__( 'Check out the %s, which guides you through next steps for your unique project.', 'paid-memberships-pro' ),
-					'<a href="' . esc_url( $site_type_hubs[ $site_type ] ) . '" target="_blank"><strong>' . esc_html( $site_types[ $site_type ] ) . ' ' . esc_html__( 'hub', 'paid-memberships-pro' ) . '</strong></a>'
+					'<a href="' . esc_url( $site_type_hub_link ) . '" target="_blank"><strong>' . esc_html( $site_types[ $site_type ] ) . ' ' . esc_html__( 'hub', 'paid-memberships-pro' ) . '</strong></a>'
 				);
 			}
 			?>
@@ -69,7 +90,7 @@
 						$title = str_replace( 'Paid Memberships Pro - ', '', $addon['Title'] );
 					}
 					$link = $addon['PluginURI'];
-					$icon = pmpro_get_addon_icon( $addon['Slug'] );
+					$icon = $addon_manager->get_addon_icon( $addon['Slug'] );
 					if ( $addon['License'] == 'free' ) {
 						$license_label = __( 'Free Add On', 'paid-memberships-pro' );
 					} elseif( $addon['License'] == 'standard' ) {

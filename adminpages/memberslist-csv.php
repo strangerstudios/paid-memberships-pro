@@ -90,19 +90,22 @@
 	$headers[] = "Pragma: no-cache";
 	$headers[] = "Connection: close";
 
-	if($s && $l == "oldmembers")
-		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired_' . sanitize_file_name($s) . '.csv"';
-	elseif($s && $l)
+	if ( $s && $l == "oldmembers" ) {
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_oldmembers_' . sanitize_file_name($s) . '.csv"';
+	} elseif($s && $l) {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . intval($l) . '_level_' . sanitize_file_name($s) . '.csv"';
-	elseif($s)
+	} elseif($s) {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . sanitize_file_name($s) . '.csv"';
-	elseif($l == "oldmembers")
+	} elseif($l == "oldmembers") {
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_oldmembers.csv"';
+	} elseif($l == 'expired' ) {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired.csv"';
-	else
+	} else {
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
+	}
 
 	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined";
+	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined,startdate";
 
 	if($l == "oldmembers")
 		$csv_file_header .= ",ended";
@@ -181,15 +184,6 @@
 	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id ";
 
-	$former_members = in_array($l, array( "oldmembers", "expired", "cancelled"));
-	$former_member_join = null;
-
-	if($former_members)
-	{
-		$former_member_join = "LEFT JOIN {$wpdb->pmpro_memberships_users} mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
-		$sqlQuery .= $former_member_join;
-	}
-
 	$sqlQuery .= "WHERE mu.membership_id > 0 ";
 
 	// looking for a specific user
@@ -197,21 +191,27 @@
 		$sqlQuery .= $search;
 	}
 
-	// if ($former_members)
-		// $sqlQuery .= "AND mu2.status = 'active' ";
-
 	$filter = null;
 
 	//records where the user is NOT an active member
 	//if $l == "oldmembers"
-	$filter = ($l == "oldmembers" ? " AND mu.status <> 'active' AND mu2.status IS NULL " : $filter);
+	$filter = ($l == "oldmembers" ? " AND mu.status <> 'active' " : $filter);
 
 	// prepare the status to use in the filter
 	//           elseif ($l == "expired")                elseif ($l == "cancelled")
 	$f_status = ($l == "expired" ? array( 'expired' ) : ( $l == "cancelled" ? array('cancelled', 'admin_cancelled') : null));
 
 	//records where the user is expired or cancelled
-	$filter = ( ($l == "expired" || $l == "cancelled") && is_null($filter)) ? "AND mu.status IN ('" . implode("','", $f_status) . "') AND mu2.status IS NULL " : $filter;
+	$filter = ( ($l == "expired" || $l == "cancelled") && is_null($filter)) ? "AND mu.status IN ('" . implode("','", $f_status) . "') " : $filter;
+
+	if ( in_array($l, array( "oldmembers", "expired", "cancelled") ) ) {
+		$filter .= " AND NOT EXISTS (
+			SELECT 1
+			FROM {$wpdb->pmpro_memberships_users} mu2
+			WHERE mu2.user_id = u.ID
+			AND mu2.status = 'active'
+		) ";
+	}
 
 	//records for active users with the requested membership level
 	// elseif($l)
@@ -250,7 +250,7 @@
 	$theusers = $wpdb->get_col($sqlQuery);
 
 	//if no records just transmit file with only CSV header as content
-	if (empty($theusers)) {
+	if (empty($theusers) && empty($_REQUEST['pmpro_no_download'])) {
 
 		// send the data to the remote browser
 		pmpro_transmit_content($csv_fh, $filename, $headers);
@@ -336,13 +336,13 @@
 				u.user_status,
 				u.display_name,
 				mu.membership_id,
+				UNIX_TIMESTAMP(CONVERT_TZ(min(mu.startdate), '+00:00', @@global.time_zone)) as startdate,
 				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate,
 				m.name as membership
 			FROM {$wpdb->users} u
 			LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id
 			LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id
 			LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
-			{$former_member_join}
 			WHERE u.ID in ( " . implode(', ', array_fill(0, count( $spl ), '%d' ) ) . " ) AND mu.membership_id > 0 {$filter} {$search}
 			GROUP BY u.ID, mu.membership_id
 			ORDER BY u.ID
@@ -423,20 +423,19 @@
 			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_cycle_period() ) ) );
 			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : date_i18n($dateformat, $subscriptions[0]->get_next_payment_date() ) ) ) );
 
-			//joindate and enddate
+			//joindate, startdate, and enddate
 			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
 
-			if ( $theuser->membership_id ) {
-				// We are no longer filtering the expiration date text for performance reasons.
-				if ( $theuser->enddate ) {
-					array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->enddate ) ) );
-				} else {
-					array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
-				}
-			} elseif($l == "oldmembers" && $theuser->enddate) {
-				array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->enddate)));
+			if ( $theuser->startdate ) {
+				array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->startdate ) ) );
 			} else {
-				array_push($csvoutput, __('N/A', 'paid-memberships-pro'));
+				array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
+			}
+			// We are no longer filtering the expiration date text for performance reasons.
+			if ( $theuser->enddate ) {
+				array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->enddate ) ) );
+			} else {
+				array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
 			}
 
 			//any extra columns
@@ -518,13 +517,15 @@
 	// free memory
 	$usr_data = null;
 
-	// send the data to the remote browser
-	pmpro_transmit_content($csv_fh, $filename, $headers);
+	// send the data to the remote browser, if this was not run via the Toolkit API
+	if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
+		pmpro_transmit_content($csv_fh, $filename, $headers);
+		exit;
+	}
 
-	exit;
 
-	function pmpro_enclose($s)
-	{
+	function pmpro_enclose($s) {
+		$s = (string) $s;
 		return "\"" . str_replace("\"", "\\\"", $s) . "\"";
 	}
 

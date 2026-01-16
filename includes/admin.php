@@ -75,6 +75,36 @@ function pmpro_block_dashboard() {
 }
 
 /**
+ * Handle saving custom metabox order via AJAX.
+ *
+ * Saves the order of dashboard metaboxes for the current user.
+ *
+ * @since 3.5
+ * @return void
+ */
+function pmpro_save_metabox_order() {
+
+	// Nonce check.
+	if ( ! wp_verify_nonce( $_POST['pmpro_metabox_nonce'], 'pmpro_metabox_order' ) ) {
+		wp_send_json_error( __( 'Security check failed.', 'paid-memberships-pro' ) );
+	}
+
+	// Sanitize and validate order.
+	$order = sanitize_text_field( wp_unslash( $_POST['order'] ) );
+
+	// Save to user meta.
+	$user_id = get_current_user_id();
+	$updated = update_user_meta( $user_id, 'pmpro_dashboard_metabox_order', $order );
+
+	if ( false === $updated ) {
+		wp_send_json_error( __( 'Could not save order.', 'paid-memberships-pro' ) );
+	}
+
+	wp_send_json_success( __( 'Order saved successfully.', 'paid-memberships-pro' ) );
+}
+add_action( 'wp_ajax_pmpro_save_metabox_order', 'pmpro_save_metabox_order' );
+
+/**
  * Initialize our Site Health integration and add hooks.
  *
  * @since 2.6.2
@@ -151,7 +181,7 @@ function pmpro_pause_mode_notice() {
 	if ( pmpro_is_paused() && ! empty( $show_notice ) ) {
 		// Site is paused. Show the notice. ?>
 		<div id="hide_pause_notification" class="notice notice-error pmpro_notification pmpro_notification-error">
-			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_pause_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<button type="button" data-nonce="<?php echo esc_attr( wp_create_nonce( 'pmpro_notification_dismiss_hide_pause_notification' ) ); ?>" class="pmpro-notice-button notice-dismiss" value="hide_pause_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 			<div class="pmpro_notification-icon">
 				<span class="dashicons dashicons-warning"></span>
 			</div>
@@ -197,7 +227,7 @@ function pmpro_spamprotection_notice() {
 	if ( ! is_array( $archived_notifications ) || ! array_key_exists( 'hide_spamprotection_notification', $archived_notifications ) ) {
 		?>
 		<div id="hide_spamprotection_notification" class="notice notice-error pmpro_notification pmpro_notification-error">
-			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_spamprotection_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<button type="button" data-nonce="<?php echo esc_attr( wp_create_nonce( 'pmpro_notification_dismiss_hide_spamprotection_notification' ) ); ?>" class="pmpro-notice-button notice-dismiss" value="hide_spamprotection_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 			<div class="pmpro_notification-icon">
 				<span class="dashicons dashicons-warning"></span>
 			</div>
@@ -322,7 +352,7 @@ add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
  * @since 3.0
  */
 function pmpro_hide_non_pmpro_notices() {
-    global $wp_filter;
+	global $wp_filter;
 
 	// Make sure we're on a PMPro page.
 	if ( ! isset( $_REQUEST['page'] )
@@ -331,10 +361,10 @@ function pmpro_hide_non_pmpro_notices() {
 	}
 
 	// Handle notices added through these hooks.
-    $hooks = ['admin_notices', 'all_admin_notices'];
+	$hooks = ['admin_notices', 'all_admin_notices'];
 
-    foreach ($hooks as $hook) {
-        // If no callbacks are registered, skip.
+	foreach ($hooks as $hook) {
+		// If no callbacks are registered, skip.
 		if ( ! isset( $wp_filter[$hook] ) ) {
 			continue;
 		}
@@ -370,6 +400,6 @@ function pmpro_hide_non_pmpro_notices() {
 				}
 			}
 		}
-    }
+	}
 }
 add_action( 'in_admin_header', 'pmpro_hide_non_pmpro_notices' );

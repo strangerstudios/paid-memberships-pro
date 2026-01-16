@@ -71,6 +71,16 @@ function pmpro_compatibility_checker() {
 			'check_type'  => 'constant',
 			'check_value' => 'BLUEHOST_PLUGIN_VERSION',
 		],
+		[
+			'file'        => 'wp-fusion-lite.php',
+			'check_type'  => 'class',
+			'check_value' => 'WP_Fusion_Lite',
+		],
+		[
+			'file'			=> 'pantheon.php',
+			'check_type'	=> 'function',
+			'check_value'	=> 'pantheon_wp_env',
+		],
 	];
 
 	foreach ( $compat_checks as $value ) {
@@ -127,6 +137,11 @@ function pmpro_compatibility_checker_themes(){
 			'file' => 'divi.php',
 			'check_type' => 'constant',
 			'check_value' => 'ET_BUILDER_THEME' //Adds support for the Divi theme.
+		),
+		array(
+			'file' => 'bricks.php',
+			'check_type' => 'class',
+			'check_value' => 'Bricks\Conditions'
 		)
 	);
 
@@ -181,6 +196,28 @@ function pmpro_track_library_conflict( $name, $path, $version ) {
 
 	// Update the library conflict information.
 	$library_conflicts[ $name ][ $path ]['version']   = $version;
-	$library_conflicts[ $name ][ $path ]['timestamp'] = $now;	
+	$library_conflicts[ $name ][ $path ]['timestamp'] = $now;
+
+	// Cleanup.
+	$seven_days_ago = strtotime( '-7 days' );
+	foreach ( $library_conflicts as $lib_name => $paths ) {
+		// If no paths, remove the library entry.
+		if ( empty( $paths ) ) {
+			unset( $library_conflicts[ $lib_name ] );
+			continue;
+		}
+		// Check each path's timestamp. If older than 7 days, remove it.
+		foreach ( $paths as $lib_path => $info ) {
+			if ( ! empty( $info['timestamp'] ) && ( strtotime( $info['timestamp'] ) < $seven_days_ago ) ) {
+				unset( $library_conflicts[ $lib_name ][ $lib_path ] );
+			}
+		}
+
+		// If all paths were removed, clean up the library entry.
+		if ( empty( $library_conflicts[ $lib_name ] ) ) {
+			unset( $library_conflicts[ $lib_name ] );
+		}
+	}
+	
 	update_option( 'pmpro_library_conflicts', $library_conflicts, false );
 }

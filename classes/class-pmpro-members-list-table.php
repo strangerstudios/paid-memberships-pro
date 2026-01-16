@@ -382,12 +382,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$sqlQuery .=
 			"	
 			FROM $wpdb->users u 
-			LEFT JOIN $wpdb->pmpro_memberships_users mu
+			INNER JOIN $wpdb->pmpro_memberships_users mu
 			ON u.ID = mu.user_id
 			LEFT JOIN $wpdb->pmpro_membership_levels m
 			ON mu.membership_id = m.id
-			LEFT JOIN $wpdb->pmpro_subscriptions s
-			ON mu.user_id = s.user_id
 			";
 
 		if ( !empty( $s ) ) {
@@ -403,6 +401,11 @@ class PMPro_Members_List_Table extends WP_List_Table {
 					}
 					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";					
 				} elseif ( $search_key === 'subscription_transaction_id' ) {
+					$sqlQuery .=
+						"	
+						LEFT JOIN $wpdb->pmpro_subscriptions s
+						ON mu.user_id = s.user_id
+						";
 					$search_query = " AND s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND mu.status = 'active' ";
 				} else {
 					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value LIKE '%" . esc_sql( $s ) . "%'" );
@@ -415,14 +418,17 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				// Don't check user meta at all on big sites.
 				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";
 			} else {
+				// Join the subscription table.
+				$sqlQuery .=
+					"	
+					LEFT JOIN $wpdb->pmpro_subscriptions s
+					ON mu.user_id = s.user_id
+					";
+
 				// Default search checks a few fields.
 				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
 				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' OR ( s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND s.status = 'active' ) ) ";
 			}
-		}
-
-		if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
-				$sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
 		}
 
 		$sqlQuery .= ' WHERE mu.membership_id > 0 ';
@@ -431,12 +437,17 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sqlQuery .= $search_query;
 		}
 
+		// If looking for oldmembers, expired, or cancelled, make sure they don't have an active membership.
+		if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
+			$sqlQuery .= " AND NOT EXISTS (SELECT 1 FROM $wpdb->pmpro_memberships_users mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active') ";
+		}
+
 		if ( 'oldmembers' === $l ) {
-			$sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status <> 'active' ";
 		} elseif ( 'expired' === $l ) {
-			$sqlQuery .= " AND mu.status = 'expired' AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status = 'expired' ";
 		} elseif ( 'cancelled' === $l ) {
-			$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') ";
 		} elseif ( $l ) {
 			$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . (int) $l . "' ";
 		} else {

@@ -544,7 +544,7 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 							$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $subscription->get_subscription_transaction_id() ) );
 							?>
 							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>">
-								<?php echo esc_html( sprintf( _n( 'View %s order', 'View %s orders', $orders_count, 'text-domain' ), number_format_i18n( $orders_count ) ) ); ?>
+								<?php echo esc_html( sprintf( _n( 'View %s order', 'View %s orders', $orders_count, 'paid-memberships-pro' ), number_format_i18n( $orders_count ) ) ); ?>
 							</a>
 						</td>
 					</tr>
@@ -601,7 +601,7 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 				echo 'error';
 			}
 			?>
-			"><p><?php echo $pmpro_msg; ?></p></div>
+			"><p><?php echo wp_kses_post( $pmpro_msg ); ?></p></div>
 		<?php }
 		$subscriptions_list_table = new PMPro_Subscriptions_List_Table();
 		$subscriptions_list_table->prepare_items();

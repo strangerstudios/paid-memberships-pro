@@ -109,6 +109,7 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
 			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
 			'!!startdate!!' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
 			'!!enddate!!' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' )
@@ -157,10 +158,13 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 		);
 
 		if ( empty( $this->cancelled_level_ids ) ) {
+			$email_template_variables['membership_id'] = '';
 			$email_template_variables['membership_level_name'] = esc_html__( 'All Levels', 'paid-memberships-pro' );
 		} elseif ( is_array( $this->cancelled_level_ids ) ) {
+			$email_template_variables['membership_id'] = $this->cancelled_level_ids[0]; // Pass just the first as the level id.
 			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode( "','", $this->cancelled_level_ids ) . "')" ) );
 		} else {
+			$email_template_variables['membership_id'] = $this->cancelled_level_ids;
 			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $this->cancelled_level_ids . "'" ) );
 		}
 
@@ -207,6 +211,22 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 			 	AND membership_id = '" . $old_level_id . "' 
 				AND status IN('inactive', 'cancelled', 'admin_cancelled') 
 			ORDER BY id DESC" );
+	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since 3.5
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+
+		$all_levels = pmpro_getAllLevels( true );
+		$test_level = current( $all_levels );
+
+		return array( $current_user, $test_level->id );
 	}
 }
 

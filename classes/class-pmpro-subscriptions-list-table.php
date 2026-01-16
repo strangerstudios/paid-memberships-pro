@@ -267,7 +267,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		// Filters.
 		$condition = '1=1';
 		if ( ! empty( $level ) ) {
-			$condition .= ' AND s.membership_level_id = ' . esc_sql( $level );
+			$condition .= ' AND s.membership_level_id = ' . intval( $level );
 		}
 		if ( ! empty( $status ) ) {
 			if ( $status === 'sync_error' ) {
@@ -280,13 +280,11 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$orderby = '';
 
 		if ( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) && ! $count ) {
-
-			$order = strtoupper( esc_sql( $_REQUEST['order'] ) );
-			$orderby = ( $_REQUEST['orderby'] );
-
-			$subscription_query = "ORDER BY $orderby $order";
+			$order         = $_REQUEST['order'] == 'asc' ? 'ASC' : 'DESC';
+			$orderby       = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+			$orderby_query = "ORDER BY $orderby $order";
 		} else {
-			$subscription_query = 'ORDER BY id DESC';
+			$orderby_query = 'ORDER BY id DESC';
 		}
 
 		if( $count ) {
@@ -320,12 +318,12 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			//Not escaping here because we escape the values in the condition statement
 			$sqlQuery .= 'AND ' . $condition . ' ';
 
-			if( ! $count ) {
-				$sqlQuery .= 'GROUP BY s.id ORDER BY s.id DESC, s.startdate DESC ';
+			if ( ! $count ) {
+				$sqlQuery .= 'GROUP BY s.id ' . $orderby_query . ' ';
 			}
 		} else {
 			//Not escaping here because we escape the values in the condition statement
-			$sqlQuery .= "WHERE " . $condition . ' ' . $subscription_query . ' ';
+			$sqlQuery .= "WHERE " . $condition . ' ' .  $orderby_query . ' ';
 
 		}
 
@@ -375,7 +373,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 					echo 'error';
 				}
 				?>
-				"><p><?php echo $pmpro_msg; ?></p></div>
+				"><p><?php echo wp_kses_post( $pmpro_msg ); ?></p></div>
 			<?php } ?>
 				<?php
 				// Note: Only subscriptions belonging to current levels can be filtered. There is no option for subscriptions belonging to deleted levels.
@@ -411,22 +409,14 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return string The sanitized value.
 	 */
 	function sanitize_orderby( $orderby ) {
+		$allowed_orderbys = array( 's.id','s.user_id','s.startdate','s.enddate','s.next_payment_date' );
 
-		$allowed_orderbys = array(
-			'id' => 's.id',
-			'user' => 's.user_id',
-			'startdate' => 's.startdate',
-			'enddate' => 's.enddate',
-			'next_payment_date' => 's.next_payment_date',
-		);
-
-	 	if ( ! empty( $allowed_orderbys[$orderby] ) ) {
-			$orderby = $allowed_orderbys[$orderby];
-		} else {
-			$orderby = false;
+		// Sanitize the orderby value to support one of our predefined orderby values OR default to next_payment_date.
+		if ( ! in_array( $orderby, $allowed_orderbys, true ) ) {
+			$orderby = 's.next_payment_date';
 		}
 
-		return $allowed_orderbys;
+		return $orderby;
 	}
 
 	/**
@@ -480,7 +470,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			}
 
 			if ( ! empty( $actions_html ) ) {
-				echo implode( ' | ', $actions_html );
+				echo wp_kses_post( implode( ' | ', $actions_html ) );
 			}
 			?>
 		</div>
@@ -519,19 +509,27 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		if ( ! empty( $level ) ) {
 			echo esc_html( $level->name );
 		} elseif ( $item->get_membership_level_id() > 0 ) {
-			echo '['. esc_html( 'deleted', 'paid-memberships-pro' ).']';
+			echo '['. esc_html__( 'deleted', 'paid-memberships-pro' ).']';
 		} else {
 			esc_html_e( '&#8212;', 'paid-memberships-pro' );
 		}
 
 		// If the subscription is active and the user does not have the level that the subscription is for, show a message.
 		if ( 'active' === $item->get_status() ) {
-			$user_levels    = pmpro_getMembershipLevelsForUser( $item->get_user_id() );
-			$user_level_ids = wp_list_pluck( $user_levels, 'id' );
-			if ( ! in_array( $item->get_membership_level_id(), $user_level_ids ) ) {
+			if( $item->get_membership_level_id() > 0 ) {
+				$user_levels    = pmpro_getMembershipLevelsForUser( $item->get_user_id() );
+				$user_level_ids = wp_list_pluck( $user_levels, 'id' );
+				if ( ! in_array( $item->get_membership_level_id(), $user_level_ids ) ) {
+					?>
+					<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+						<?php esc_html_e( 'Membership Ended', 'paid-memberships-pro' ); ?>
+					</span>
+					<?php
+				}
+			} else {
 				?>
 				<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
-					<?php esc_html_e( 'Membership Ended', 'paid-memberships-pro' ); ?>
+					<?php esc_html_e( 'No Level', 'paid-memberships-pro' ); ?>
 				</span>
 				<?php
 			}
@@ -558,9 +556,10 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_gateway( $item ) {
+		global $pmpro_gateways;
 		if ( ! empty( $item->get_gateway() ) ) {
 			if ( ! empty( $pmpro_gateways[ $item->get_gateway() ] ) ) {
-				echo $pmpro_gateways[ $item->get_gateway() ];
+				echo esc_html( $pmpro_gateways[ $item->get_gateway() ] );
 			} else {
 				echo esc_html( ucwords( $item->get_gateway() ) );
 			}

@@ -142,7 +142,7 @@ if ( ! empty( $template ) ) {
 					<td data-colname="<?php esc_attr_e( 'Subject', 'paid-memberships-pro' ); ?>">
 						<?php
 							$subject = get_option( 'pmpro_email_' . $key . '_subject', $template['subject'] );
-							echo ! empty( $subject ) ? esc_html( $subject ) : __( '&#8212;', 'paid-memberships-pro' );
+							echo ! empty( $subject ) ? esc_html( $subject ) : esc_html__( '&#8212;', 'paid-memberships-pro' );
 						?>
 					</td>
 					<td data-colname="<?php esc_attr_e( 'Status', 'paid-memberships-pro' ); ?>">

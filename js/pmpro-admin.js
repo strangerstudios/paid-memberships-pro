@@ -99,10 +99,12 @@ jQuery(document).on('click', function (e) {
 jQuery(document).ready(function () {
 	jQuery(document).on('click', '.pmpro-notice-button.notice-dismiss', function () {
 		var notification_id = jQuery(this).val();
+		var nonce = jQuery(this).data('nonce');
 
 		var postData = {
 			action: 'pmpro_hide_notice',
-			notification_id: notification_id
+			notification_id: notification_id,
+			nonce: nonce
 		}
 
 		jQuery.ajax({
@@ -765,124 +767,373 @@ jQuery(document).ready(function () {
 
 // Add Ons Page Code.
 jQuery(document).ready(function () {
-	// Hide the license banner.
-	jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
-		e.preventDefault();
-		jQuery('.pmpro-popup-overlay').hide();
-	});
 
-	// Hide the popup banner if "ESC" is pressed.
-	jQuery(document).keyup(function (e) {
-		if (e.key === 'Escape') {
-			jQuery('.pmpro-popup-overlay').hide();
-		}
-	});
+	// If we're on the add ons admin page
+	if (jQuery('#pmpro-admin-add-ons-list').length) {
 
-	jQuery('#pmpro-admin-add-ons-list .action-button .pmproAddOnActionButton').click(function (e) {
-		e.preventDefault();
-
-		var button = jQuery(this);
-
-		// Make sure we only run once.
-		if (button.hasClass('disabled')) {
-			return;
-		}
-		button.addClass('disabled');
-
-		// Pull the action that we are performing on this button.
-		var action = button.siblings('input[name="pmproAddOnAdminAction"]').val();
-
-		if ('license' === action) {
-			// Get the add on name and the user's current license type and show banner.
-			document.getElementById('addon-name').innerHTML = button.siblings('input[name="pmproAddOnAdminName"]').val();
-			document.getElementById('addon-license').innerHTML = button.siblings('input[name="pmproAddOnAdminLicense"]').val();
-			jQuery('.pmpro-popup-overlay').show();
-			button.removeClass('disabled');
-			return false;
-		} else {
-			// Remove checkmark if there.
-			button.removeClass('checkmarked');
-
-			// Update the button text.            
-			if ('activate' === action) {
-				button.html('Activating...');
-			} else if ('install' === action) {
-				button.html('Installing...');
-			} else if ('update' === action) {
-				button.html('Updating...');
-			} else {
-				// Invalid action.
-				return;
-			}
-
-			// Run the action.
-			var actionUrl = button.siblings('input[name="pmproAddOnAdminActionUrl"]').val();
-			jQuery.ajax({
-				url: actionUrl,
-				type: 'GET',
-				success: function (response) {
-					// Create an element that we can use jQuery to parse.
-					var responseElement = jQuery('<div></div>').html(response);
-
-					// Check for errors.
-					if ('activate' === action && responseElement.find('#message').hasClass('error')) {
-						button.html('Could not activate.');
-						return;
-					} else if ('install' === action && 0 === responseElement.find('.button-primary').length) {
-						button.html('Could not install.');
-						return;
-					} else if ('update' === action && -1 === responseElement.html().indexOf('<p>' + pmpro.plugin_updated_successfully_text)) {
-						button.html('Could not update.');
-						return;
+		// Scoped helper object for Add Ons page (keeps readability while avoiding duplication).
+		var pmproAddOnsHelpers = {
+			progressText: {
+				'activate': 'Activating...',
+				'install': 'Installing...',
+				'update': 'Updating...',
+				'deactivate': 'Deactivating...',
+				'delete': 'Deleting...'
+			},
+			failText: {
+				'activate': 'Could Not Activate.',
+				'install': 'Could Not Install.',
+				'update': 'Could Not Update.',
+				'deactivate': 'Could Not Deactivate.',
+				'delete': 'Could Not Delete.'
+			},
+			recountFilters: function(){
+				var activeCount = jQuery('.add-on-container.add-on-active').length;
+				var inactiveCount = jQuery('.add-on-container.add-on-inactive').length;
+				var updateCount = jQuery('.add-on-container.add-on-needs-update').length;
+					function setCount($link, count, hide){
+					if(!$link.length){return;}
+					var baseLabel = $link.data('baseLabel');
+					if(!baseLabel){
+						baseLabel = jQuery.trim($link.text()).replace(/\s*\(\d+\)$/,'');
+						$link.data('baseLabel', baseLabel);
 					}
-
-					// Add check mark.
-					button.addClass('checkmarked');
-
-					// Show success message.
-					if ('activate' === action) {
-						button.html('Activated');
-					} else if ('install' === action) {
-						button.html('Installed');
-					} else if ('update' === action) {
-						button.html('Updated');
-					}
-
-					// If user just installed, give them the option to activate.
-					// TODO: Also give option to activate after update, but this is harder.
-					if ('install' === action) {
-						// Find the buttons that could be the activate button.
-						var primaryButtons = responseElement.find('.button-primary');
-
-						// Loop through the buttons to find the activate button.
-						for (var i = 0; i < primaryButtons.length; i++) {
-							// If there is a href element beginning with plugins.php?action=activate&plugin=[plugin_slug], then it is very likely the activate button.
-							if ( primaryButtons[i].getAttribute('href') && primaryButtons[i].getAttribute('href').indexOf('plugins.php?action=activate&plugin=') > -1 ) {
-								// Wait 1 second before showing the activate button.
-								setTimeout(function () {
-									button.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
-									button.siblings('input[name="pmproAddOnAdminActionUrl"]').val( primaryButtons[i].getAttribute('href') );
-									button.html('Activate');
-									button.removeClass('disabled');
-								}, 1000);
-								break;
-							}
+					$link.text(count>0? baseLabel+' ('+count+')': baseLabel);
+						if(hide){ $link.closest('li').toggle(count>0); }
+				}
+					// Hide tabs whose count is zero for all three: active, inactive, update.
+					setCount(jQuery('.filter-links a[data-view="active"]'), activeCount, true);
+					setCount(jQuery('.filter-links a[data-view="inactive"]'), inactiveCount, true);
+					setCount(jQuery('.filter-links a[data-view="update"]'), updateCount, true);
+					// If current link becomes hidden, switch to All.
+					var $currentLink = jQuery('.filter-links a.current');
+					if ($currentLink.length && !$currentLink.closest('li').is(':visible')) {
+						jQuery('.filter-links a[data-view="all"]').trigger('click');
+					} else if (window.location.hash) {
+						var hashView = window.location.hash.replace('#','');
+						var $hashLink = jQuery('.filter-links a[data-view="' + hashView + '"]');
+						if ($hashLink.length && !$hashLink.closest('li').is(':visible')) {
+							jQuery('.filter-links a[data-view="all"]').trigger('click');
 						}
 					}
-				},
-				error: function (response) {
-					if ('activate' === action) {
-						button.html('Could Not Activate.');
-					} else if ('install' === action) {
-						button.html('Could Not Install.');
-					} else if ('update' === action) {
-						button.html('Could Not Update.');
+			},
+			applyCurrentFilter: function(){
+				var $current = jQuery('.filter-links a.current');
+				if($current.length){ $current.trigger('click'); }
+			},
+			// Ensure the actions dropdown exists and reflects current status (installed states only).
+			buildOrUpdateMenu: function(container, status, plugin_file, nonce){
+				var $details = container.find('> .add-on-item > .details');
+				if(!$details.length){ return; }
+				var $btn = $details.children('.dropdown-arrow');
+				var $menu = $details.children('.pmpro-add-on-actions-menu');
+				// Only show dropdown for installed plugins (active/inactive).
+				if(status !== 'active' && status !== 'inactive'){
+					$btn.remove();
+					$menu.remove();
+					return;
+				}
+				if(!$btn.length){
+					$btn = jQuery(
+						'<button type="button" class="dropdown-arrow" aria-haspopup="true" aria-expanded="false">\n'
+						+ '\t<span class="screen-reader-text">Toggle actions menu</span>\n'
+						+ '\t<span class="dashicons dashicons-ellipsis"></span>\n'
+						+ '</button>'
+					);
+					$details.prepend($btn);
+				}
+				if(!$menu.length){
+					$menu = jQuery(
+						'<div class="pmpro-add-on-actions-menu" role="menu" aria-hidden="true">\n'
+						+ '\t<ul></ul>\n'
+						+ '</div>'
+					);
+					$btn.after($menu);
+				}
+				// Build menu items
+				var $ul = $menu.children('ul');
+				$ul.empty();
+				// First item: Activate or Deactivate
+				var firstAction = (status === 'inactive') ? 'activate' : 'deactivate';
+				var firstLabel = (status === 'inactive') ? 'Activate' : 'Deactivate';
+				$ul.append(
+					'<li>'
+					+ '\t<button type="button" role="menuitem" class="pmproAddOnActionButton action-' + firstAction + '">' + firstLabel + '</button>'
+					+ '\t<input type="hidden" name="pmproAddOnAdminAction" value="' + firstAction + '" />'
+					+ '\t<input type="hidden" name="pmproAddOnAdminTarget" value="' + plugin_file + '" />'
+					+ '\t<input type="hidden" name="pmproAddOnAdminNonce" value="' + nonce + '" />'
+					+ '</li>'
+				);
+				// Divider + Uninstall
+				$ul.append(
+					'<li>'
+					+ '\t<button type="button" role="menuitem" class="pmproAddOnActionButton action-uninstall is-destructive">Uninstall</button>'
+					+ '\t<input type="hidden" name="pmproAddOnAdminAction" value="delete" />'
+					+ '\t<input type="hidden" name="pmproAddOnAdminTarget" value="' + plugin_file + '" />'
+					+ '\t<input type="hidden" name="pmproAddOnAdminNonce" value="' + nonce + '" />'
+					+ '</li>'
+				);
+			}
+		};
+
+		// Hide the license banner.
+		jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
+			e.preventDefault();
+			jQuery('.pmpro-popup-overlay').hide();
+		});
+
+		// Hide the popup banner if "ESC" is pressed.
+		jQuery(document).keyup(function (e) {
+			if (e.key === 'Escape') {
+				jQuery('.pmpro-popup-overlay').hide();
+			}
+		});
+
+		jQuery('#pmpro-admin-add-ons-list').on('click', '.pmproAddOnActionButton', function (e) {
+			e.preventDefault();
+
+			var button = jQuery(this);
+			var container = button.closest('.add-on-container');
+
+			// Make sure we only run once.
+			if (button.hasClass('disabled')) {
+				return;
+			}
+			button.addClass('disabled');
+
+			// Pull the action that we are performing on this button.
+			var action = button.siblings('input[name="pmproAddOnAdminAction"]').val();
+
+			if ('license' === action) {
+				// Get the add on name and the user's current license type and show banner.
+				document.getElementById('addon-name').innerHTML = button.siblings('input[name="pmproAddOnAdminName"]').val();
+				document.getElementById('addon-license').innerHTML = button.siblings('input[name="pmproAddOnAdminLicense"]').val();
+				jQuery('.pmpro-popup-overlay').show();
+				button.removeClass('disabled');
+				return false;
+			}
+
+			// Remove checkmark
+			button.removeClass('checkmarked');
+
+			// Update button text (progress state)
+			if (!pmproAddOnsHelpers.progressText[action]) {
+				button.removeClass('disabled');
+				return;
+			}
+			button.text(pmproAddOnsHelpers.progressText[action]);
+
+			// Build AJAX payload for new class endpoints
+			var target = button.siblings('input[name="pmproAddOnAdminTarget"]').val();
+			var nonce = button.siblings('input[name="pmproAddOnAdminNonce"]').val();
+			var ajaxAction = null;
+			if (action === 'install') ajaxAction = 'pmpro_addon_install';
+			if (action === 'update') ajaxAction = 'pmpro_addon_update';
+			if (action === 'activate') ajaxAction = 'pmpro_addon_activate';
+			if (action === 'deactivate') ajaxAction = 'pmpro_addon_deactivate';
+			if (action === 'delete') ajaxAction = 'pmpro_addon_delete';
+
+			// Send AJAX request
+			jQuery.post(ajaxurl, {
+				action: ajaxAction,
+				nonce: nonce,
+				target: target,
+				slug: (action === 'install' ? target : ''),
+			}).done(function(resp){
+				if (!resp || !resp.success) {
+					var msg = (resp && resp.data && resp.data.message) ? resp.data.message : 'Action failed.';
+					// Filesystem credentials needed
+					if (resp && resp.data && resp.data.code === 'pmpro_fs_credentials') {
+						button.text('Credentials required...');
+						if (window.wp && wp.updates && wp.updates.maybeRequestFilesystemCredentials) {
+							wp.updates.maybeRequestFilesystemCredentials({});
+						}
+					} else {
+						button.text(msg);
+					}
+					button.removeClass('disabled');
+					return;
+				}
+
+				var plugin_file = (resp && resp.data && resp.data.plugin_file) ? resp.data.plugin_file : null;
+				var slug = container.attr('id');
+				if(!plugin_file && slug){ plugin_file = slug + '/' + slug + '.php'; }
+				var mainButton = container.find('.action-button > .pmproAddOnActionButton');
+				var mainActionInput = mainButton.siblings('input[name="pmproAddOnAdminAction"]');
+				var mainTargetInput = mainButton.siblings('input[name="pmproAddOnAdminTarget"]');
+				var statusLabel = container.find('.add-on-status strong');
+				var dropdownBtn = container.find('.details > .dropdown-arrow');
+				var dropdownMenu = container.find('.pmpro-add-on-actions-menu');
+				var firstMenuBtn = dropdownMenu.find('button.pmproAddOnActionButton').first();
+				var firstMenuActionInput = firstMenuBtn.siblings('input[name="pmproAddOnAdminAction"]');
+
+				function setStatus(newStatus, statusText){
+					container.removeClass('add-on-active add-on-inactive add-on-uninstalled');
+					if(newStatus){ container.addClass('add-on-' + newStatus); }
+					if(statusLabel.length){
+						statusLabel.removeClass(function(i,c){ return (c.match(/status-\S+/g)||[]).join(' '); });
+						statusLabel.attr('class','status-' + newStatus).text(statusText);
+					}
+					// Update data-search-view tokens
+					var viewAttr = container.data('search-view');
+					if(viewAttr){
+						var parts = viewAttr.split(' ').filter(function(p){ return ['active','inactive','update'].indexOf(p) === -1; });
+						if(newStatus === 'active') parts.push('active');
+						if(newStatus === 'inactive') parts.push('inactive');
+						if(container.hasClass('add-on-needs-update')) parts.push('update');
+						var newView = parts.filter(function(v,i,a){ return a.indexOf(v)===i; }).join(' ');
+						container.attr('data-search-view', newView);
+						container.data('search-view', newView);
 					}
 				}
-			});
 
+				// Handle each action result
+				if (action === 'activate') {
+					button.text('Activated').addClass('checkmarked');
+					// Main button shows Active (disabled)
+					if(mainButton.length){
+						mainButton.text('Active').addClass('disabled').attr('disabled','disabled').attr('aria-disabled','true');
+						mainActionInput.val('');
+						mainTargetInput.val(plugin_file);
+					}
+					// Update dropdown first item to Deactivate
+					if(firstMenuBtn.length){
+						firstMenuBtn.text('Deactivate').removeClass('action-activate').addClass('action-deactivate');
+						firstMenuActionInput.val('deactivate');
+					}
+					setStatus('active', 'Active');
+				} else if (action === 'deactivate') {
+					button.text('Deactivated');
+					if(mainButton.length){
+						mainButton.text('Activate').removeClass('disabled').removeAttr('disabled').attr('aria-disabled','false').removeClass('checkmarked');
+						mainActionInput.val('activate');
+						mainTargetInput.val(plugin_file);
+					}
+					if(firstMenuBtn.length){
+						firstMenuBtn.text('Activate').removeClass('action-deactivate').addClass('action-activate');
+						firstMenuActionInput.val('activate');
+					}
+					setStatus('inactive', 'Inactive');
+				} else if (action === 'install') {
+					button.text('Installed');
+					// After install the plugin is inactive.
+					if(mainButton.length){
+						setTimeout(function(){
+							mainButton.text('Activate').removeClass('disabled checkmarked');
+							mainActionInput.val('activate');
+							mainTargetInput.val(plugin_file);
+						}, 600);
+					}
+					// Ensure actions menu exists/updated now that it's installed.
+					pmproAddOnsHelpers.buildOrUpdateMenu(container, 'inactive', plugin_file, nonce);
+					setStatus('inactive', 'Inactive');
+				} else if (action === 'update') {
+					button.text('Updated').addClass('checkmarked');
+					container.removeClass('add-on-needs-update');
+					// If active keep Active label, else ensure main button is Activate
+					if(mainButton.length){
+						if(container.hasClass('add-on-active')){
+							mainButton.text('Active').addClass('disabled').attr('disabled','disabled').attr('aria-disabled','true');
+						}else{
+							mainButton.text('Activate').removeClass('disabled');
+							mainActionInput.val('activate');
+							mainTargetInput.val(plugin_file);
+						}
+					}
+					// Update search view attribute removing update token
+					var viewAttr2 = container.data('search-view');
+					if(viewAttr2){
+						var parts2 = viewAttr2.split(' ').filter(function(p){ return p !== 'update'; });
+						container.attr('data-search-view', parts2.join(' '));
+						container.data('search-view', parts2.join(' '));
+					}
+				} else if (action === 'delete') {
+					button.text('Deleted').removeClass('checkmarked');
+					// Switch to uninstalled state
+					setStatus('uninstalled', 'Not Installed');
+					if(mainButton.length){
+						setTimeout(function(){
+							mainButton.text('Install').removeClass('disabled checkmarked').removeAttr('disabled').attr('aria-disabled','false');
+							mainActionInput.val('install');
+							mainTargetInput.val(slug); // target is slug for install
+						}, 600);
+					}
+					// Remove dropdown
+					dropdownBtn.remove();
+					dropdownMenu.remove();
+				}
+
+				pmproAddOnsHelpers.recountFilters();
+				pmproAddOnsHelpers.applyCurrentFilter();
+
+				// Re-enable after success for possible further actions (except transient states already swapped)
+				setTimeout(function(){
+					button.removeClass('disabled');
+				}, 400);
+			}).fail(function(){
+				button.text(pmproAddOnsHelpers.failText[action] || 'Action failed.');
+				button.removeClass('disabled').removeClass('checkmarked');
+			});
+		});
+	}
+});
+
+// Add On Action Dropdown (toggle + accessibility)
+jQuery(document).ready(function(){
+		// If we're on the add ons admin page
+	if (jQuery('#pmpro-admin-add-ons-list').length) {
+	
+		var $doc = jQuery(document);
+
+		function closeAllAddonMenus(except){
+			jQuery('#pmpro-admin-add-ons-list .add-on-item .dropdown-arrow').attr('aria-expanded','false');
+			jQuery('#pmpro-admin-add-ons-list .add-on-item .pmpro-add-on-actions-menu').attr('aria-hidden','true');
+			jQuery('#pmpro-admin-add-ons-list .add-on-item').removeClass('is-open');
+			if (except) {
+				except.attr('aria-expanded','true')
+					.closest('.add-on-item').addClass('is-open')
+					.find('.pmpro-add-on-actions-menu').attr('aria-hidden','false');
+			}
 		}
-	});
+
+		$doc.on('click', '#pmpro-admin-add-ons-list .add-on-item .dropdown-arrow', function(e){
+			e.preventDefault();
+			var $btn = jQuery(this);
+			var isOpen = $btn.attr('aria-expanded') === 'true';
+			if (isOpen) {
+				closeAllAddonMenus();
+			} else {
+				closeAllAddonMenus($btn);
+				// Focus first actionable item for keyboard users
+				setTimeout(function(){
+					var $first = $btn.next('.pmpro-add-on-actions-menu').find('button:not([disabled])').first();
+					if ($first.length) { $first.trigger('focus'); }
+				}, 15);
+			}
+		});
+
+		// Keyboard navigation inside menu
+		$doc.on('keydown', '#pmpro-admin-add-ons-list .pmpro-add-on-actions-menu', function(e){
+			var $items = jQuery(this).find('button:not([disabled])');
+			if (!$items.length) { return; }
+			var idx = $items.index(document.activeElement);
+			if (e.key === 'ArrowDown') { e.preventDefault(); idx = (idx + 1) % $items.length; $items.eq(idx).focus(); }
+			else if (e.key === 'ArrowUp') { e.preventDefault(); idx = (idx - 1 + $items.length) % $items.length; $items.eq(idx).focus(); }
+			else if (e.key === 'Home') { e.preventDefault(); $items.eq(0).focus(); }
+			else if (e.key === 'End') { e.preventDefault(); $items.eq($items.length - 1).focus(); }
+			else if (e.key === 'Escape') { e.preventDefault(); closeAllAddonMenus(); }
+		});
+
+		// Close when clicking outside
+		$doc.on('click', function(e){
+			if (!jQuery(e.target).closest('#pmpro-admin-add-ons-list .add-on-item .pmpro-add-on-actions-menu, #pmpro-admin-add-ons-list .add-on-item .dropdown-arrow').length) {
+				closeAllAddonMenus();
+			}
+		});
+
+		// Close on Escape from anywhere
+		$doc.on('keyup', function(e){ if (e.key === 'Escape') { closeAllAddonMenus(); } });
+	}
 });
 
 /**
@@ -1018,4 +1269,26 @@ function pmpro_changeTabs( e, inputChanged ) {
  */
 jQuery(document).ready(function () {
 	jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
+});
+
+/**
+ * Report Widgets - Collapsed Row Toggles
+ */
+jQuery(document).ready(function () {
+	jQuery('.pmpro_report_th').on('click',function(event) {
+		//prevent form submit onclick
+		event.preventDefault();
+
+		//toggle sub rows
+		jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
+
+		//change arrow
+		if(jQuery(this).hasClass('pmpro_report_th_closed')) {
+			jQuery(this).removeClass('pmpro_report_th_closed');
+			jQuery(this).addClass('pmpro_report_th_opened');
+		} else {
+			jQuery(this).removeClass('pmpro_report_th_opened');
+			jQuery(this).addClass('pmpro_report_th_closed');
+		}
+	});
 });

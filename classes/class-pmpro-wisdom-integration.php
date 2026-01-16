@@ -508,7 +508,7 @@ class PMPro_Wisdom_Integration {
 	 */
 	public function get_addons_info() {
 		// Build the list of Add Ons data to track.
-		$addons      = pmpro_getAddons();
+		$addons      = PMPro_AddOns::instance()->get_addons();
 		$plugin_info = get_site_transient( 'update_plugins' );
 
 		// Split Add Ons into groups for filtering

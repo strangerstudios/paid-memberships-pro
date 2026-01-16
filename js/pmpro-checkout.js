@@ -172,8 +172,8 @@ jQuery(document).ready(function(){
 	});
 
 	//unhighlight error fields when the user edits them
-	jQuery('.pmpro_error').bind("change keyup input", function() {
-		jQuery(this).removeClass('pmpro_error');
+	jQuery('.pmpro_form_input-error').bind("change keyup input", function() {
+		jQuery(this).removeClass('pmpro_form_input-error');
 	});
 
 	//click apply button on enter in discount code box
@@ -204,8 +204,12 @@ jQuery(document).ready(function(){
 	jQuery("input[name=submit-checkout]").after('<input type="hidden" name="javascriptok" value="1" />');
 	
 	// Keep bottom message box in sync with the top one.
-	jQuery('#pmpro_message').bind("DOMSubtreeModified",function(){
+	let pmpro_msgObserver = new MutationObserver(() => {
 		setTimeout( function(){ pmpro_copyMessageToBottom() }, 200);
+	});
+	pmpro_msgObserver.observe( jQuery('#pmpro_message').get(0), {
+		childList: true,
+		subtree: true
 	});
 	
 	function pmpro_copyMessageToBottom() {

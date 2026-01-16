@@ -72,7 +72,7 @@ function pmpro_check_for_translations() {
 		return;
 	}
 
-	$pmpro_add_ons = pmpro_getAddOns();
+	$pmpro_add_ons = ( new PMPro_AddOns() )->get_addons();
 	foreach( $pmpro_add_ons as $add_on ) {
 		// Skip if the plugin isn't active.
 		if ( ! pmpro_is_plugin_active( $add_on['plugin'] ) ) {

@@ -145,6 +145,19 @@ class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 	public function get_recipient_name() {
 		return $this->user->display_name;
 	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 *
+	 * @since 3.5
+	 *
+	 * @return array The arguments to send the test email from the abstract class.
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user;
+
+		return array( $current_user );
+	}
 }
 
 /**

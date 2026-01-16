@@ -16,13 +16,13 @@ $pmpro_email_templates_defaults = array(
 	'footer' => array(
 		'subject' => '',
 		'description' => esc_html__( 'Email Footer', 'paid-memberships-pro'),
-		'body' => wp_kses_post( '<p>Respectfully,<br />!!sitename!! </p>', 'paid-memberships-pro' ),
+		'body' => wp_kses_post( '<p>' . esc_html__( 'Respectfully,', 'paid-memberships-pro' ) . '<br />!!sitename!! </p>' ),
 		'help_text' => esc_html__( 'This is the closing message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
 	'header' => array(
 		'subject'     => '',
 		'description' => esc_html__( 'Email Header', 'paid-memberships-pro'),
-		'body' => wp_kses_post( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
+		'body' => wp_kses_post( sprintf( '<p>%s</p>', esc_html__( 'Dear !!header_name!!,', 'paid-memberships-pro' ) ) ),
 		'help_text' => esc_html__( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
 );

@@ -65,6 +65,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Cron Job Status', 'paid-memberships-pro' ),
 					'value' => self::get_cron_jobs(),
 				],
+				'pmpro-action-scheduler-health' => [
+					'label' => __( 'Action Scheduler Health', 'paid-memberships-pro' ),
+					'value' => self::action_scheduler_issues(),
+				],
 				'pmpro-gateway'              => [
 					'label' => __( 'Payment Gateway', 'paid-memberships-pro' ),
 					'value' => self::get_gateway(),
@@ -257,7 +261,7 @@ class PMPro_Site_Health {
 			}
 
 			if ( $api ) {
-				$gateway_text .= ' (' . __( 'API Keys', ' paid-memberships-pro' ) . ')';
+				$gateway_text .= ' (' . __( 'API Keys', 'paid-memberships-pro' ) . ')';
 				return $gateway_text . ' [' . $gateway . ':api-keys ]';
 			}
 
@@ -418,6 +422,10 @@ class PMPro_Site_Health {
 			$cron_information[] = $cron_hook . ' (' . $next_run . ')';
 		}
 
+		if ( empty( $cron_information ) ) {
+			return __( 'No cron jobs scheduled', 'paid-memberships-pro' );
+		}
+
 		return implode( " | \n", $cron_information );
 	}
 
@@ -569,7 +577,7 @@ class PMPro_Site_Health {
 
 	function get_add_ons_with_incorrect_folder_name() {
 		// Get the current list of Add Ons with the wrong name.
-		$incorrect_folder_names = pmpro_get_add_ons_with_incorrect_folder_names();
+		$incorrect_folder_names = PMPro_AddOns::instance()->get_add_ons_with_incorrect_folder_names();
 
 		// Build error messages for each Add On with the wrong name.
 		$errors = array();
@@ -669,5 +677,24 @@ class PMPro_Site_Health {
 
 		return __( 'Disabled', 'paid-memberships-pro' );
 
+	}
+
+	/**
+	 * Check for Action Scheduler issues.
+	 *
+	 * @since 3.5.3
+	 *
+	 * @return string Count any issues found with Action Scheduler or its tables.
+	 */
+	public function action_scheduler_issues() {
+		// This is a wrapper for the Action Scheduler method.
+		$issues = PMPro_Action_Scheduler::check_action_scheduler_table_health();
+
+		if ( empty( $issues ) ) {
+			return __( 'No issues found with the Action Scheduler tables.', 'paid-memberships-pro' );
+		} else {
+			// Let's format the issues into a semicolon-separated string.
+			return implode( '; ', array_map( 'esc_html', $issues ) ) . '.';
+		}
 	}
 }

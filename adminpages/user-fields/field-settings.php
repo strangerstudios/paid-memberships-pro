@@ -162,7 +162,7 @@ $levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 				<?php $server_max_upload = wp_max_upload_size() / 1024 / 1024; ?>
 				<label for="pmpro_userfields_field_max_file_size"><?php esc_html_e( 'Max File Size Upload', 'paid-memberships-pro' ); ?></label>
 				<input type="number" name="pmpro_userfields_field_max_file_size" id="pmpro_userfields_field_max_file_size" value="<?php echo intval( $field_max_file_size ); ?>" max="<?php echo esc_attr( $server_max_upload ); ?>"/>
-				<span class="description"><?php printf( esc_html__( 'Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s.', 'paid-memberships-pro' ), $server_max_upload . 'MB' ); ?></span>
+				<span class="description"><?php printf( esc_html__( 'Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s.', 'paid-memberships-pro' ), esc_html( $server_max_upload . 'MB' ) ); ?></span>
 			</div> <!-- end pmpro_userfield-field-setting -->
 
 		</div> <!-- end #pmpro_userfield-row-settings_files -->

@@ -181,13 +181,24 @@
 }
 
 /* File-specific field type */
-.pmpro_form_field-file button {
+
+.pmpro_form .pmpro_form_field-file button {
 	margin-right: var(--pmpro--base--spacing--small);
 }
 
-.pmpro_form_field-file-preview img {
-	height: auto;
-	width: 200px;
+.pmpro_form .pmpro_form_field-file-preview {
+	align-items: center;
+	display: flex;
+	height: 100px;
+	justify-content: center;
+	overflow: hidden;
+	width: 100px;
+}
+
+.pmpro_form .pmpro_form_field-file-preview img {
+	height: 100%;
+	object-fit: cover;
+	width: 100%;
 }
 
 /* Checkout and Billing forms */
@@ -548,6 +559,23 @@ button[type="button"]#other_discount_code_toggle:focus {
 .pmpro_actions_nav-right {
 	flex: 1;
 	order: 2;
+	text-align: right;
+}
+
+/**
+ * Frontend data filters
+ */
+.pmpro_data_filters {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: var(--pmpro--base--spacing--small);
+	margin-bottom: var(--pmpro--base--spacing--medium);
+}
+
+.pmpro_data_count {
+	margin-bottom: var(--pmpro--base--spacing--medium);
 	text-align: right;
 }
 
