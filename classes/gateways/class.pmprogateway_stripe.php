@@ -2142,6 +2142,7 @@ class PMProGateway_stripe extends PMProGateway {
 		
 		// Member doesn't have any subscription. Don't try to redirect, as we will show the default billing info form.
 		if ( empty( $pmpro_billing_subscription ) ) {
+			return;
 		}
 		
 		//Bail if the order's gateway isn't Stripe
