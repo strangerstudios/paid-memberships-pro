@@ -282,6 +282,27 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				)
 			)
 		);
+
+		/**
+		 * Get search results for the quick search bar.
+		 *
+		 * @since TBD
+		 *
+		 * Example: https://example.com/wp-json/pmpro/v1/quick_search
+		 */
+		register_rest_route( $pmpro_namespace, '/quick_search',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_quick_search' ),
+					'args'     => array(
+						'search' => array(),
+						'type'   => array(),
+					),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)
+			)
+		);
 		}
 		
 		/**
@@ -1167,6 +1188,439 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
+		 * Get the quick search results for a search string.
+		 *
+		 * @since TBD
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_quick_search( $request ) {
+			global $wpdb;
+
+			$params = $request->get_params();
+
+			$search_string = isset( $params['search'] ) ? sanitize_text_field( $params['search'] ) : null;
+
+			if ( empty( $search_string ) ) {
+				return new WP_REST_Response( array( 'error' => 'No search string provided.' ), 400 );
+			}
+
+			// Centralized limits.
+			$limit_default  = 5;  // used when searching across "all"
+			$limit_specific = 10; // used when a specific type is selected
+
+			// Determine search type.
+			$type = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : 'all';
+			$allowed_types = array( 'all', 'users', 'subscriptions', 'orders', 'reports', 'levels', 'discounts', 'settings', 'addons', 'documentation' );
+			if ( ! in_array( $type, $allowed_types, true ) ) {
+				$type = 'all';
+			}
+			$limit = ( 'all' === $type ) ? $limit_default : $limit_specific;
+
+			// Build an array of results to return. Each result will be a link.
+			$results = array();
+
+			// Search Users.
+			if ( ( 'all' === $type || 'users' === $type ) && ( current_user_can( pmpro_get_edit_member_capability() ) || current_user_can( 'manage_options' ) ) ) {
+				// If we're specifically searching for users and there is a colon in the query, we are going to search by meta fields.
+				if ( strpos( $search_string, ':' ) !== false && 'users' === $type ) {
+					list( $meta_key, $meta_value ) = explode( ':', $search_string, 2 );
+					$meta_key = sanitize_text_field( trim( $meta_key ) );
+					$meta_value = sanitize_text_field( trim( $meta_value ) );
+
+					$user_ids = $wpdb->get_col( $wpdb->prepare(
+						"SELECT user_id FROM {$wpdb->usermeta}
+						WHERE meta_key = %s
+						AND meta_value LIKE %s
+						LIMIT %d",
+						$meta_key,
+						$meta_value . '%',
+						$limit
+					) );
+					$users = array();
+					foreach( $user_ids as $user_id ) {
+						$user = get_userdata( $user_id );
+						if ( $user ) {
+							$users[] = $user;
+						}
+					}	
+				} else {
+					// Normal user search by ID, login, or email.
+					$users = $wpdb->get_results( $wpdb->prepare(
+						"SELECT * FROM {$wpdb->users}
+						WHERE ID = %d
+						OR user_login LIKE %s
+						OR user_email LIKE %s
+						ORDER BY display_name ASC
+						LIMIT %d",
+						is_numeric( $search_string ) ? $search_string : -1,
+						$search_string . '%',
+						$search_string . '%',
+						$limit
+					) );
+				}
+				$results['users'] = array(
+					'label' => esc_html__( 'Users', 'paid-memberships-pro' ),
+					'items' => array_map(
+						function($user) {
+							return array(
+								'url'   => esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $user->ID ), admin_url( 'admin.php' ) ) ),
+								'label' => sprintf( '<strong>%s</strong> (%s)', esc_html( $user->display_name ), esc_html( $user->user_email ) ),
+								'icon'  => 'dashicons-admin-users'
+							);
+						}, $users
+					)
+				);
+			}
+
+			// Search Subscriptions.
+			if ( ( 'all' === $type || 'subscriptions' === $type ) && ( current_user_can( pmpro_get_edit_member_capability() ) || current_user_can( 'manage_options' ) ) ) {
+				// If we're only searching subscriptions, allow loose matches.
+				if ( 'subscriptions' === $type ) {
+					$subscriptions = $wpdb->get_results( $wpdb->prepare(
+						"SELECT id, subscription_transaction_id, user_id FROM {$wpdb->pmpro_subscriptions}
+						WHERE id = %d
+						OR subscription_transaction_id LIKE %s
+						LIMIT %d",
+						is_numeric( $search_string ) ? $search_string : -1,
+						$search_string . '%',
+						$limit
+					) );
+				} else {
+					// When searching all, only allow exact matches.
+					$subscriptions = $wpdb->get_results( $wpdb->prepare(
+						"SELECT id, subscription_transaction_id, user_id FROM {$wpdb->pmpro_subscriptions}
+						WHERE id = %d
+						OR subscription_transaction_id = %s
+						LIMIT %d",
+						is_numeric( $search_string ) ? $search_string : -1,
+						$search_string,
+						$limit
+					) );
+				}
+				$results['subscriptions'] = array(
+					'label' => esc_html__( 'Subscriptions', 'paid-memberships-pro' ),
+					'items' => array_map(
+						function($subscription) {
+							$user = get_userdata( $subscription->user_id );
+							$label = $user ? sprintf( '<strong>%s</strong> (%s)', esc_html( $subscription->subscription_transaction_id ), esc_html( $user->display_name ) ) : sprintf( '<strong>%s</strong>', esc_html( $subscription->subscription_transaction_id ) );
+							return array(
+								'url'   => esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->id ), admin_url( 'admin.php' ) ) ),
+								'label' => $label,
+								'icon'  => 'dashicons-update'
+							);
+						}, $subscriptions
+					)
+				);
+			}
+
+			// Search Orders.
+			if ( ( 'all' === $type || 'orders' === $type ) && ( current_user_can( 'pmpro_orders') || current_user_can( 'manage_options' ) ) ) {
+				// If we're only searching orders, allow loose matches.
+				if ( 'orders' === $type ) {
+					$orders = $wpdb->get_results( $wpdb->prepare(
+						"SELECT id, code, user_id FROM {$wpdb->pmpro_membership_orders}
+						WHERE id = %d
+						OR code LIKE %s
+						OR payment_transaction_id LIKE %s
+						LIMIT %d",
+						is_numeric( $search_string ) ? $search_string : -1,
+						$search_string . '%',
+						$search_string . '%',
+						$limit
+					) );
+				} else {
+					// When searching all, only allow exact matches.
+					$orders = $wpdb->get_results( $wpdb->prepare(
+						"SELECT id, code, user_id FROM {$wpdb->pmpro_membership_orders}
+						WHERE id = %d
+						OR code = %s
+						OR payment_transaction_id = %s
+						LIMIT %d",
+						is_numeric( $search_string ) ? $search_string : -1,
+						$search_string,
+						$search_string,
+						$limit
+					) );
+				}
+				$results['orders'] = array(
+					'label' => esc_html__( 'Orders', 'paid-memberships-pro' ),
+					'items' => array_map(
+						function($order) {
+							$user = get_userdata( $order->user_id );
+							$label = $user ? sprintf( '<strong>%s</strong> (%s)', esc_html( $order->code ), esc_html( $user->display_name ) ) : sprintf( '<strong>%s</strong>', esc_html( $order->code ) );
+							return array(
+								'url'   => esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $order->id ), admin_url( 'admin.php' ) ) ),
+								'label' => $label,
+								'icon'  => 'dashicons-money-alt'
+							);
+						}, $orders
+					)
+				);
+			}
+
+			// Search reports pages.
+			if ( ( 'all' === $type || 'reports' === $type ) && ( current_user_can( 'pmpro_reports' ) || current_user_can( 'manage_options' ) ) ) {
+				global $pmpro_reports;
+				$results['reports'] = array(
+					'label' => esc_html__( 'Reports', 'paid-memberships-pro' ),
+					'items' => array_filter(
+						array_map(
+							function($report_slug, $report_name) use ($search_string) {
+								if ( stripos( $report_name, $search_string ) === 0 ) {
+									return array(
+										'url'   => esc_url( admin_url( 'admin.php?page=pmpro-reports&report=' . $report_slug ) ),
+										'label' => sprintf( '<strong>%s</strong>', esc_html( $report_name ) ),
+										'icon'  => 'dashicons-chart-line'
+									);
+								}
+							}, array_keys($pmpro_reports), $pmpro_reports
+						)
+					)
+				);
+			}
+
+			// Search Levels.
+			if ( ( 'all' === $type || 'levels' === $type ) && ( current_user_can( 'pmpro_membershiplevels' ) || current_user_can( 'manage_options' ) ) ) {
+				$levels = $wpdb->get_results( $wpdb->prepare(
+					"SELECT id, name FROM {$wpdb->pmpro_membership_levels}
+					WHERE id = %d
+					OR name LIKE %s
+					LIMIT %d",
+					is_numeric( $search_string ) ? $search_string : -1,
+					$search_string . '%',
+					$limit
+				) );
+				$results['levels'] = array(
+					'label' => esc_html__( 'Membership Levels', 'paid-memberships-pro' ),
+					'items' => array_map(
+						function($level) {
+							return array(
+								'url'   => esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ),
+								'label' => sprintf( '<strong>%s</strong>', esc_html( $level->name ) ),
+								'icon'  => 'dashicons-groups'
+							);
+						}, $levels
+					)
+				);
+			}
+
+			// Search Discount Codes.
+			if ( ( 'all' === $type || 'discounts' === $type ) && ( current_user_can( 'pmpro_discountcodes' ) || current_user_can( 'manage_options' ) ) ) {
+				$discounts = $wpdb->get_results( $wpdb->prepare(
+					"SELECT id, code FROM {$wpdb->pmpro_discount_codes}
+					WHERE id = %d
+					OR code LIKE %s
+					LIMIT %d",
+					is_numeric( $search_string ) ? $search_string : -1,
+					$search_string . '%',
+					$limit
+				) );
+				$results['discounts'] = array(
+					'label' => esc_html__( 'Discount Codes', 'paid-memberships-pro' ),
+					'items' => array_map(
+						function($discount) {
+							return array(
+								'url'   => esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $discount->id ), admin_url( 'admin.php' ) ) ),
+								'label' => sprintf( '<strong>%s</strong>', esc_html( $discount->code ) ),
+								'icon'  => 'dashicons-tag'
+							);
+						}, $discounts
+					)
+				);
+			}
+
+			// Search Settings Pages.
+			// Note: We are using the paid-memberships-pro text domain here to match the settings page names that are actually being used.
+			if ( 'all' === $type || 'settings' === $type ) {
+				$settings_pages = array(
+					__( 'Levels', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-membershiplevels',
+						'permission' => 'pmpro_membershiplevels',
+					),
+					__( 'Discount Codes', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-discountcodes',
+						'permission' => 'pmpro_discountcodes',
+					),
+					__( 'Pages', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-pagesettings',
+						'permission' => 'pmpro_pagesettings',
+					),
+					__( 'Payments', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-paymentsettings',
+						'permission' => 'pmpro_paymentsettings',
+					),
+					__( 'Security', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-securitysettings',
+						'permission' => 'pmpro_securitysettings',
+					),
+					__( 'Email', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-emailsettings',
+						'permission' => 'pmpro_emailsettings',
+					),
+					__( 'Email Templates', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-emailtemplates',
+						'permission' => 'pmpro_emailsettings',
+					),
+					__( 'User Fields', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-userfields',
+						'permission' => 'pmpro_userfields',
+					),
+					__( 'Design', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-designsettings',
+						'permission' => 'pmpro_designsettings',
+					),
+					__( 'Advanced', 'paid-memberships-pro' ) => array(
+						'slug' => 'pmpro-advancedsettings',
+						'permission' => 'pmpro_advancedsettings',
+					),
+				);
+				// Add payment gateways to settings pages.
+				$gateways = pmpro_gateways();
+				foreach( $gateways as $gateway => $nice_name ) {
+					$settings_pages[ $nice_name ] = array(
+						'slug' => 'pmpro-paymentsettings&edit_gateway=' . urlencode( $gateway ),
+						'permission' => 'pmpro_paymentsettings',
+						'label' => esc_html__( 'Payments', 'paid-memberships-pro' ) . ' > ' . esc_html( $nice_name ),
+					);
+				}
+				// Add email templates to settings pages.
+				$email_templates = PMPro_Email_Template::get_all_email_templates();
+				foreach( $email_templates as $template_slug => $template_class ) {
+					$template_name = $template_class::get_template_name();
+					$settings_pages[ $template_name ] = array(
+						'slug' => 'pmpro-emailtemplates&edit=' . urlencode( $template_slug ),
+						'permission' => 'pmpro_emailsettings',
+						'label' => esc_html__( 'Email Templates', 'paid-memberships-pro' ) . ' > ' . esc_html( $template_name ),
+					);
+				}
+				$results['settings'] = array(
+					'label' => esc_html__( 'Settings', 'paid-memberships-pro' ),
+					'items' => array_filter(
+						array_map(
+							function($name, $info) use ($search_string) {
+								// Check if $name starts with the query and user has permission.
+								if ( stripos( $name, $search_string ) === 0 && ( current_user_can( $info['permission'] ) || current_user_can( 'manage_options' ) ) ) {
+									return array(
+										'url'   => esc_url( admin_url( 'admin.php?page=' . $info['slug'] ) ),
+										'label' => sprintf( '<strong>%s</strong>', esc_html( isset( $info['label'] ) ? $info['label'] : $name ) ),
+										'icon'  => 'dashicons-admin-generic'
+									);
+								}
+							}, array_keys($settings_pages), $settings_pages
+						)
+					)
+				);
+			}
+
+			// Search Add Ons.
+			if ( ( 'all' === $type || 'addons' === $type ) && ( current_user_can( 'pmpro_addons' ) || current_user_can( 'manage_options' ) ) ) {
+				$addon_class = new PMPro_AddOns();
+				$addons = $addon_class->get_addons();
+				$results['addons'] = array(
+					'label' => esc_html__( 'Add Ons', 'paid-memberships-pro' ),
+					'items' => array_filter(
+						array_map(
+							function($addon) use ($search_string) {
+								// Strip 'Paid Memberships Pro - ' from the Add On name if present.
+								$addon_name_cleaned = str_replace( 'Paid Memberships Pro - ', '', $addon['Name'] );
+								if ( stripos( $addon_name_cleaned, $search_string ) === 0 ) {
+									return array(
+										'url'   => esc_url( admin_url( 'admin.php?page=pmpro-addons&s=' . urlencode( $addon['Slug'] ) ) ),
+										'label' => sprintf( '<strong>%s</strong>', esc_html( $addon['Name'] ) ),
+										'icon'  => 'dashicons-admin-plugins'
+									);
+								}
+							}, $addons
+						)
+					)
+				);
+			}
+
+			// Search paidmembershipspro.com.
+			if ( 'all' === $type || 'documentation' === $type ) {
+				$docs = array(
+					array(
+						'label' => 'Caching',
+						'url'   => 'https://www.paidmembershipspro.com/documentation/advanced/caching/',
+						'tags'  => array( 'cache', 'caching', 'performance' ),
+					),
+					array(
+						'label' => 'Hosting Recommendations',
+						'url'   => 'https://www.paidmembershipspro.com/recommendations-web-hosting-support-pmpro/',
+						'tags'  => array( 'host', 'hosting', 'performance' ),
+					),
+				);
+				$results['documentation'] = array(
+					'label' => esc_html__( 'Documentation', 'paid-memberships-pro' ),
+					'items' => array_merge(
+						array_filter(
+							array_map(
+								function($doc) use ($search_string) {
+									foreach ( $doc['tags'] as $tag ) {
+										if ( stripos( $tag, $search_string ) === 0 ) {
+											return array(
+												'url'   => esc_url( $doc['url'] ),
+												'label' => sprintf( '<strong>%s</strong>', esc_html( $doc['label'] ) ),
+												'icon'  => 'dashicons-book',
+												'new_tab' => true,
+											);
+										}
+									}
+								}, $docs
+							)
+						),
+					)
+				);
+
+				// For documentation, show one fewer results plus the "search website" link.
+				$results['documentation']['items'] = array_slice( $results['documentation']['items'], 0, $limit - 1 );
+				$results['documentation']['items'][] = array(
+					'url'   => esc_url( 'https://www.paidmembershipspro.com/?s=' . urlencode( $search_string ) ),
+					'label' => sprintf( '<strong>%s</strong>', esc_html__( 'Search Paid Memberships Pro Website', 'paid-memberships-pro' ) ),
+					'icon'  => 'dashicons-search',
+					'new_tab' => true,
+				);
+			}
+
+			// Build HTML results.
+			$html_results = '<table class="widefat striped">';
+			foreach ( $results as $section_slug => $section ) {
+				if ( empty( $section['items'] ) ) {
+					continue;
+				}
+
+				if ( 'all' === $type ) {
+					$html_results .= '<tbody><tr><th scope="rowgroup" colspan="2">' . esc_html( $section['label'] ) . '</th></tr>';
+				}
+
+				// Limit to the max number of items.
+				$items_to_show = array_slice( $section['items'], 0, $limit );
+
+				foreach ( $items_to_show as $item ) {
+					$icon_html = '';
+					if ( ! empty( $item['icon'] ) ) {
+						$icon_html = '<span class="dashicons ' . esc_attr( $item['icon'] ) . '" aria-hidden="true"></span>';
+					}
+					$html_results .= '<tr><td>' . $icon_html . '</td><td><a href="' . esc_url( $item['url'] ) . '" ' . ( ! empty( $item['new_tab'] ) ? 'target="_blank"' : '' ) . '>' . wp_kses_post( $item['label'] ) . '</a></td></tr>';
+				}
+
+				$html_results .= '</tbody>';
+			}
+
+			// If we don't have any results.
+			if ( $html_results === '<table class="widefat striped">' ) {
+				$html_results .= '<tbody><tr><td colspan="2">' . esc_html__( 'No results found.', 'paid-memberships-pro' ) . '</td></tr></tbody>';
+			}
+
+			$html_results .= '</table>';
+
+			// Return results.
+			wp_send_json_success( $html_results );
+		}
+
+		/**
 		 * Default permissions check for endpoints/routes.
 		 * Defaults to 'subscriber' for all GET requests and 
 		 * 'administrator' for any other type of request.
@@ -1209,6 +1663,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'capability' => 'edit_post',
 					'request_param' => 'post_id',
 				),
+				'/pmpro/v1/quick_search' => true, // Permissions will be checked per result type.
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );
 			
