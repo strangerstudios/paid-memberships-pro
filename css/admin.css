@@ -1676,6 +1676,61 @@ a.pmpro_order-renewal {
 }
 
 /**
+ * Subscriptions list
+ */
+#subscriptions-list-form {
+	margin-top: var(--pmpro--spacing--medium);
+}
+
+.pmpro_admin-pmpro-subscriptions h1.wp-heading-inline {
+	margin-top: 0;
+}
+
+.pmpro_admin-pmpro-subscriptions #pmpro_message {
+	margin-bottom: var(--pmpro--spacing--small);
+}
+
+.pmpro_admin-pmpro-subscriptions #pmpro_message + .wp-heading-inline {
+	margin-top: var(--pmpro--spacing--small);
+}
+
+.pmpro_admin-pmpro-subscriptions .column-status .pmpro_tag {
+	word-break: break-word;
+}
+
+.pmpro_admin-pmpro-subscriptions .pmpro_message + .pmpro_message,
+.pmpro_admin-pmpro-subscriptions .pmpro_message + .pmpro_list-with-labels {
+	margin-top: var(--pmpro--spacing--medium);
+}
+
+.pmpro_admin-pmpro-subscriptions .pmpro_list-with-labels .pmpro_list_item_label {
+	font-weight: 700;
+}
+
+.pmpro_admin-pmpro-subscriptions #pmpro_subscription-view {
+	font-size: 14px;
+	line-height: 1.5;
+	margin-top: 0;
+}
+
+.pmpro_admin-pmpro-subscriptions .pmpro_sidebar .pmpro_section:first-of-type {
+	margin-top: 0;
+}
+
+.pmpro_admin-pmpro-subscriptions .pmpro_sidebar .pmpro_section_inside {
+	display: flex;
+	flex-direction: column;
+	gap: var(--pmpro--spacing--small);
+}
+
+@media only screen and (min-width: 1200px) {
+	.pmpro_admin-pmpro-subscriptions .pmpro_sidebar #pmpro_subscription-view-actions .button {
+		padding: var(--pmpro--spacing--small) var(--pmpro--spacing--medium);
+	}
+}
+
+
+/**
  * Membership levels list and single edit
  */
 #membership-level-list-form {
