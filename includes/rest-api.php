@@ -1592,7 +1592,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				}
 
 				if ( 'all' === $type ) {
-					$html_results .= '<thead><tr><th colspan="2">' . esc_html( $section['label'] ) . '</th></tr></thead><tbody>';
+					$html_results .= '<tbody><tr><th scope="rowgroup" colspan="2">' . esc_html( $section['label'] ) . '</th></tr>';
 				}
 
 				// Limit to the max number of items.
@@ -1601,9 +1601,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				foreach ( $items_to_show as $item ) {
 					$icon_html = '';
 					if ( ! empty( $item['icon'] ) ) {
-						$icon_html = '<span class="dashicons ' . esc_attr( $item['icon'] ) . '"></span>';
+						$icon_html = '<span class="dashicons ' . esc_attr( $item['icon'] ) . '" aria-hidden="true"></span>';
 					}
-					$html_results .= '<tr><th>' . $icon_html . '</th><td><a href="' . esc_url( $item['url'] ) . '" ' . ( ! empty( $item['new_tab'] ) ? 'target="_blank"' : '' ) . '>' . wp_kses_post( $item['label'] ) . '</a></td></tr>';
+					$html_results .= '<tr><td>' . $icon_html . '</td><td><a href="' . esc_url( $item['url'] ) . '" ' . ( ! empty( $item['new_tab'] ) ? 'target="_blank"' : '' ) . '>' . wp_kses_post( $item['label'] ) . '</a></td></tr>';
 				}
 
 				$html_results .= '</tbody>';
@@ -1611,7 +1611,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			// If we don't have any results.
 			if ( $html_results === '<table class="widefat striped">' ) {
-				$html_results .= '<thead><tr><th>' . esc_html__( 'No results found.', 'paid-memberships-pro' ) . '</th></tr></thead>';
+				$html_results .= '<tbody><tr><td colspan="2">' . esc_html__( 'No results found.', 'paid-memberships-pro' ) . '</td></tr></tbody>';
 			}
 
 			$html_results .= '</table>';

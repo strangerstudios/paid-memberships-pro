@@ -287,9 +287,10 @@ function pmpro_admin_header() {
 				<span class="pmpro_version">v<?php echo esc_html( PMPRO_VERSION ); ?></span>
 			</div>
 			<div class="pmpro_admin pmpro_quick_search">
-				<input type="text" placeholder="<?php esc_attr_e( 'Quick search...', 'paid-memberships-pro' ); ?>" autocomplete="off" />
+				<label class="screen-reader-text" for="pmpro_quick_search_input"><?php esc_html_e( 'Search PMPro data', 'paid-memberships-pro' ); ?></label>
+				<input id="pmpro_quick_search_input" type="text" placeholder="<?php esc_attr_e( 'Quick search...', 'paid-memberships-pro' ); ?>" autocomplete="off" />
 				<div class="pmpro_quick_search_select">
-					<label class="screen-reader-text" for="pmpro_quick_search_type"><?php esc_html_e( 'Search type', 'paid-memberships-pro' ); ?></label>
+					<label class="screen-reader-text" for="pmpro_quick_search_type"><?php esc_html_e( 'PMPro data to search', 'paid-memberships-pro' ); ?></label>
 					<select id="pmpro_quick_search_type">
 						<option value="all"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></option>
 						<option value="users"><?php esc_html_e( 'Users', 'paid-memberships-pro' ); ?></option>
