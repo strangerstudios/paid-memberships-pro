@@ -182,7 +182,7 @@ if ( ! empty( $subscription ) || 'link' === $action ) {
 			<?php foreach ( $items as $item ) : ?>
 				<li>
 					<?php if ( ! empty( $item['url'] ) ) : ?>
-						<a href="<?php echo esc_url( $item['url'] ); ?>"<?php echo ! empty( $item['current'] ) ? ' class="current"' : ''; ?><?php echo ! empty( $item['current'] ) ? ' aria-current="page"' : ''; ?> title="<?php echo esc_attr( $item['title'] ?? '' ); ?>">
+						<a href="<?php echo esc_url( $item['url'] ); ?>"<?php echo ! empty( $item['current'] ) ? ' class="current"' : ''; ?><?php echo ! empty( $item['current'] ) ? ' aria-current="page"' : ''; ?> title="<?php echo esc_attr( isset( $item['title'] ) ? $item['title'] : '' ); ?>">
 							<?php echo esc_html( $item['label'] ); ?>
 						</a>
 					<?php else : ?>
