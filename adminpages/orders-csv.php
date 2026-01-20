@@ -172,7 +172,7 @@ if ( $filter == "all" || ! $filter ) {
 //string search
 if ( ! empty( $s ) ) {
 	$sqlQuery = "
-		SELECT SQL_CALC_FOUND_ROWS o.id
+		SELECT o.id
 		FROM {$wpdb->pmpro_membership_orders} AS o
 			LEFT JOIN $wpdb->users u ON o.user_id = u.ID
 			LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id
@@ -252,7 +252,7 @@ if ( ! empty( $s ) ) {
 	$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
 
 } else {
-	$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o ";
+	$sqlQuery = "SELECT o.id FROM $wpdb->pmpro_membership_orders o ";
 
 	if ( $filter === 'with-discount-code' ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
