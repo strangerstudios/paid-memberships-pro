@@ -288,7 +288,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			$sqlQuery = "SELECT COUNT(*) ";
+			$sqlQuery = "SELECT COUNT(DISTINCT s.id) ";
 		} else {
 			$sqlQuery = 'SELECT s.id ';
 		}
