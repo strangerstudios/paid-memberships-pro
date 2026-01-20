@@ -1210,6 +1210,7 @@ function pmpro_change_avatar_form() {
 									</div> <!-- end pmpro_form_field-pmpro_avatar -->
 								</div> <!-- end pmpro_form_fields -->
 							</fieldset> <!-- end pmpro_form_fieldset -->
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">
 								<input type="hidden" name="action" value="change-avatar" />
 								<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ); ?>" />
