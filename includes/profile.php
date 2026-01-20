@@ -1149,6 +1149,23 @@ function pmpro_member_profile_edit_form() {
 							</fieldset> <!-- end pmpro_member_profile_edit-account-information -->
 
 							<?php
+								// Display the avatar field if the user has an avatar level.
+								if ( pmpro_user_has_avatar_level( $user->ID ) ) {
+									?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div>
+									<fieldset id="pmpro_member_profile_edit-avatar" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_member_profile_edit-avatar' ) ); ?>">
+										<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+											<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Profile Picture', 'paid-memberships-pro' ); ?></h2>
+										</legend>
+										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+											<?php pmpro_display_avatar_field( $user->ID, true ); ?>
+										</div>
+									</fieldset> <!-- end pmpro_member_profile_edit-avatar -->
+									<?php
+								}
+							?>
+
+							<?php
 								/**
 								 * Fires after the default Your Member Profile fields.
 								 *
