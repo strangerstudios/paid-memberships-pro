@@ -1051,7 +1051,7 @@
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
 
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"] || ( ! empty( $this->httpParsedResponseAr['L_ERRORCODE0'] ) && $this->httpParsedResponseAr['L_ERRORCODE0'] == 11556 ) ) ) {
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]) || ( ! empty( $this->httpParsedResponseAr['L_ERRORCODE0'] ) && $this->httpParsedResponseAr['L_ERRORCODE0'] == '11556' ) ) {
 				// Note: Error code 11556 means "Invalid profile status for cancel action; profile should be active or suspended". In other words, the profile is already cancelled.
 				return true;
 			} else {
@@ -1074,7 +1074,7 @@
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
 
 			// Note: Error code 11556 means "Invalid profile status for cancel action; profile should be active or suspended". In other words, the profile is already cancelled.
-			return ( 'SUCCESS' == strtoupper( $this->httpParsedResponseAr['ACK'] ) || 'SUCCESSWITHWARNING' == strtoupper( $this->httpParsedResponseAr['ACK'] ) || ( ! empty( $this->httpParsedResponseAr['L_ERRORCODE0'] ) && $this->httpParsedResponseAr['L_ERRORCODE0'] == 11556 ) );
+			return ( 'SUCCESS' == strtoupper( $this->httpParsedResponseAr['ACK'] ) || 'SUCCESSWITHWARNING' == strtoupper( $this->httpParsedResponseAr['ACK'] ) || ( ! empty( $this->httpParsedResponseAr['L_ERRORCODE0'] ) && $this->httpParsedResponseAr['L_ERRORCODE0'] == '11556' ) );
 		}
 
 		function getSubscriptionStatus(&$order)
