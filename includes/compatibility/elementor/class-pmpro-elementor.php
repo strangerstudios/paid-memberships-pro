@@ -30,13 +30,20 @@ class PMPro_Elementor {
 	 * Register new section for PMPro Required Membership Levels.
 	 */
 	public function __construct() {
-        
-        require_once( __DIR__ . '/class-pmpro-elementor-content-restriction.php' );
-        // Register new section to display restriction controls
-        $this->register_sections();
 
-        $this->content_restriction();
-	}
+		require_once( __DIR__ . '/class-pmpro-elementor-content-restriction.php' );
+
+		// Register our custom widgets.
+		add_action( 'elementor/widgets/widgets_registered', array( $this, 'init' ) );
+
+		// Create a new category for our widgets.
+		add_action( 'elementor/elements/categories_registered', array( $this, 'add_widget_categories' ) );
+
+		// Register new section to display restriction controls
+		$this->register_sections();
+		$this->content_restriction();
+
+    }
 
     /**
      *
@@ -49,6 +56,45 @@ class PMPro_Elementor {
             self::$_instance = new self();
 
         return self::$_instance;
+    }
+
+	/**
+	 * Initialize the widgets.
+	 */
+	public function init() {
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-base.php';
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-account.php';
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-billing.php';
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-cancel.php';
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-checkout.php';
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-confirmation.php';
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-order.php';
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-levels.php';
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-login.php';
+		require_once __DIR__ . '/widgets/class-pmpro-elementor-widget-member-profile-edit.php';
+
+		\Elementor\Plugin::instance()->widgets_manager->register( new PMPro_Elementor_Widget_Account() );
+		\Elementor\Plugin::instance()->widgets_manager->register( new PMPro_Elementor_Widget_Billing() );
+		\Elementor\Plugin::instance()->widgets_manager->register( new PMPro_Elementor_Widget_Cancel() );
+		\Elementor\Plugin::instance()->widgets_manager->register( new PMPro_Elementor_Widget_Checkout() );
+		\Elementor\Plugin::instance()->widgets_manager->register( new PMPro_Elementor_Widget_Confirmation() );
+		\Elementor\Plugin::instance()->widgets_manager->register( new PMPro_Elementor_Widget_Order() );
+		\Elementor\Plugin::instance()->widgets_manager->register( new PMPro_Elementor_Widget_Levels() );
+		\Elementor\Plugin::instance()->widgets_manager->register( new PMPro_Elementor_Widget_Login() );
+		\Elementor\Plugin::instance()->widgets_manager->register( new PMPro_Elementor_Widget_Member_Profile_Edit() );
+	}
+
+    /**
+     * Add a new category for our widgets.
+     */
+    public function add_widget_categories( $elements_manager ) {
+        $elements_manager->add_category(
+            'paid-memberships-pro',
+            [
+                'title' => __( 'Paid Memberships Pro', 'paid-memberships-pro' ),
+                'icon'  => 'dashicons-before admin-users',
+            ]
+        );
     }
 
     private function register_sections() {
