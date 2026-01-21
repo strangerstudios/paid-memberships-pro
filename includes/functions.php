@@ -3966,6 +3966,19 @@ function pmpro_cleanup_memberships_users_table() {
 }
 
 /**
+ * Whether the current page is a PMPRO page or not.
+ *
+ * @since TBD
+ *
+ * @return bool
+ */
+function pmpro_is_page() {
+	global $pmpro_pages;
+
+	return is_page( $pmpro_pages );
+}
+
+/**
  * Are we on the PMPro checkout page?
  * @since 2.1
  * @return bool True if we are on the checkout page, false otherwise
