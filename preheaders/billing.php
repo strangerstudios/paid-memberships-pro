@@ -24,6 +24,12 @@ if ( ! empty( $_REQUEST['pmpro_subscription_id'] ) ) {
 // Allow updating billing information if we have a single subscription.
 if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 
+	// Make sure the person trying to view the subscription owns it.
+	if ( $current_user->ID !== $pmpro_billing_subscription->get_user_id()) {
+		wp_redirect( pmpro_url( 'account' ) );
+		exit;
+	}
+
 	// Get the order for this subscription.
 	$newest_orders = $pmpro_billing_subscription->get_orders(
 		array(
@@ -35,6 +41,10 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 
 	// We need an order for this user to update. Redirect to the account page because things will not work without it.
 	$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
+	if ( ! is_a( $pmpro_billing_order, 'MemberOrder' ) ) {
+		wp_redirect( pmpro_url( 'account' ) );
+		exit;
+	}
 
 	// Get the user's current membership level.
 	$pmpro_billing_level            = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $pmpro_billing_subscription->get_membership_level_id() );
