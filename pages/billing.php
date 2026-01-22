@@ -541,7 +541,7 @@
 					<thead>
 						<tr>
 							<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-level' ) ); ?>"><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
-							<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-date' ) ); ?>"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+							<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-date' ) ); ?>"><?php esc_html_e( 'Ended', 'paid-memberships-pro' ); ?></th>
 							<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-renew' ) ); ?>"><?php echo ''; ?></th>
 						</tr>
 					</thead>
@@ -566,10 +566,7 @@
 										<?php
 											$enddate_display = __( 'N/A', 'paid-memberships-pro' );
 											if ( ! empty( $previous_membership->enddate ) ) {
-												$enddate_timestamp = strtotime( $previous_membership->enddate );
-												if ( false !== $enddate_timestamp ) {
-													$enddate_display = date_i18n( get_option( 'date_format' ), $enddate_timestamp );
-												}
+												$enddate_display = date_i18n( get_option( 'date_format' ), $enddate_timestamp );
 											}
 											echo esc_html( $enddate_display );
 										?>
