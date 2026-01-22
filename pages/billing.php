@@ -71,7 +71,7 @@
 						// Check if the gateway for this subscription updates a single subscription at once or all subscriptions at once.
 						$subscription_gateway_obj = $pmpro_billing_subscription->get_gateway_object();
 
-						// If it's an individual subscription, or the gateway doesn't support payment method updates, show the level name and cost text for this subscription. We will show text on how to update in the future.
+						// If it's not an 'all' update method, we can show specific level information.
 						if ( 'all' !== $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
 							// Show the cost text for the subscription.
 							?>
@@ -163,7 +163,7 @@
 					<?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?>
 				</h2>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-					<p><?php echo sprintf( esc_html__( 'To change your billing information, log in to your payment gateway dashboard or complete checkout again for your current membership level: %s.', 'paid-memberships-pro' ), "<a href='$checkout_url'>$checkout_url</a>" ); ?></p>
+					<p><?php echo wp_kses_post( sprintf( __( 'To change your billing information, log in to your payment gateway dashboard or complete checkout again for your current membership level: %s.', 'paid-memberships-pro' ), "<a href='" . esc_url( $checkout_url ) . "'>$checkout_url</a>" ) ); ?></p>
 				</div> <!-- end pmpro_card_content -->
 			</div> <!-- end pmpro_card -->
 		<?php } else {
