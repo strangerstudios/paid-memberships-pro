@@ -569,7 +569,14 @@
 									</td>
 									<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-date' ) ); ?>">
 										<?php
-											echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $previous_membership->enddate ) ) );
+											$enddate_display = __( 'N/A', 'paid-memberships-pro' );
+											if ( ! empty( $previous_membership->enddate ) ) {
+												$enddate_timestamp = strtotime( $previous_membership->enddate );
+												if ( false !== $enddate_timestamp ) {
+													$enddate_display = date_i18n( get_option( 'date_format' ), $enddate_timestamp );
+												}
+											}
+											echo esc_html( $enddate_display );
 										?>
 									</td>
 									<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-renew' ) ); ?>">
