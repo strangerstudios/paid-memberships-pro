@@ -430,11 +430,6 @@
 								<?php 
 										} // End for expiration text.
 									}
-								
-								// If there's nothing attached to the level, then we can just ignore it.
-								if ( ! $subscription && empty( $membership->enddate ) ) {
-									esc_html_e( "This membership is not recurring. You don't need to update your billing information.", 'paid-memberships-pro' );
-								}
 								?>
 								
 						</ul>		
