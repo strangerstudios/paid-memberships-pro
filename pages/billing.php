@@ -566,7 +566,7 @@
 										<?php
 											$enddate_display = __( 'N/A', 'paid-memberships-pro' );
 											if ( ! empty( $previous_membership->enddate ) ) {
-												$enddate_display = date_i18n( get_option( 'date_format' ), $enddate_timestamp );
+												$enddate_display = date_i18n( get_option( 'date_format' ), $previous_membership->enddate );
 											}
 											echo esc_html( $enddate_display );
 										?>
