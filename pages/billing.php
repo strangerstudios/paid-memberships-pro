@@ -483,7 +483,7 @@
 						 * Filter the member action links.
 						 *
 						 * @param array $pmpro_member_action_links Member action links.
-						 * @param int   $level->id The ID of the membership level.
+						 * @param int   $membership_id The ID of the membership level.
 						 * @return array $pmpro_member_action_links Member action links.
 						 */
 						$pmpro_member_action_links = apply_filters( 'pmpro_member_action_links', $pmpro_member_action_links, $membership->id );
