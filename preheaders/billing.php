@@ -39,7 +39,7 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 		)
 	);
 
-	// We need an order for this user to update. Redirect to the account page because things will not work without it.
+	// Get the newest successful order for this subscription, if any. The order may be null and the billing page will handle that scenario gracefully.
 	$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
 	if ( ! is_a( $pmpro_billing_order, 'MemberOrder' ) ) {
 		wp_redirect( pmpro_url( 'account' ) );
