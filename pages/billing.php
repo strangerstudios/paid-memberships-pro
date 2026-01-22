@@ -72,7 +72,7 @@
 						$subscription_gateway_obj = $pmpro_billing_subscription->get_gateway_object();
 
 						// If it's an individual subscription, or the gateway doesn't support payment method updates, show the level name and cost text for this subscription. We will show text on how to update in the future.
-						if ( 'individual' === $subscription_gateway_obj->supports( 'payment_method_updates' ) || ! $subscription_gateway_obj->supports( 'payment_method_updates' )  ) {
+						if ( 'all' !== $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
 							// Show the cost text for the subscription.
 							?>
 							<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain pmpro_list-with-labels pmpro_cols-2' ) ); ?>">
