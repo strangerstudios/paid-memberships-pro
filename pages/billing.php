@@ -535,8 +535,6 @@
 	} );
 	
 	if ( ! empty( $previous_memberships ) && empty( $pmpro_billing_subscription ) ) {
-		// Array to keep track of shown ID's
-		$shown_levels = array();
 	?>
 
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div>
@@ -554,14 +552,16 @@
 					</thead>
 					<tbody>
 						<?php
-						// Get "OLD or Cancelled" memberships.
+							// Array to keep track of shown IDs
+							$shown_levels = array();
+
+							// Get previous memberships - show each level only once.
 							foreach ( $previous_memberships as $key => $previous_membership ) {
-								if ( in_array( $previous_membership->id, $shown_levels ) ) {
+								if ( isset( $shown_levels[$previous_membership->id] ) ) {
 									continue;
 								}
 								// Add it to "shown levels" array to not show it again.
-								$shown_levels[] = $previous_membership->id;
-								
+								$shown_levels[$previous_membership->id] = true;
 								?>
 								<tr>
 									<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-level' ) ); ?>">
