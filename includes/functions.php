@@ -2455,6 +2455,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				l.confirmation,
 				l.expiration_number,
 				l.expiration_period,
+				l.allow_signups,
 				mu.initial_payment,
 				mu.billing_amount,
 				mu.cycle_number,
@@ -2462,6 +2463,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.billing_limit,
 				mu.trial_amount,
 				mu.trial_limit,
+				mu.status,
 				mu.code_id as code_id,
 				UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate,
 				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
