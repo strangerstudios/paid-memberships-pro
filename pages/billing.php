@@ -452,7 +452,7 @@
 
 						// Get the Update billing information link if we have a subscription.
 						if ( $subscription ) {
-							$subscription_id = $subscription->get_id() ?? '';
+							$subscription_id = $subscription->get_id();
 							
 							// Get the order for this subscription.
 							$newest_orders = $subscription->get_orders(
