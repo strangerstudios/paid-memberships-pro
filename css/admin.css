@@ -810,6 +810,59 @@ td > .pmpro_tag {
 	text-align: left;
 }
 
+/* Email Log Popup */
+.pmpro-email-log-details .pmpro-email-log-error {
+	color: var(--pmpro--color--error-text);
+}
+
+.pmpro-email-log-details h3 {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.pmpro-email-log-details .pmpro-email-log-toggle-label {
+	display: flex;
+	align-items: center;
+	font-size: 13px;
+	font-weight: normal;
+	cursor: pointer;
+}
+
+.pmpro-email-log-details .pmpro-email-log-toggle-label input[type="checkbox"] {
+	margin: 0 6px 0 0;
+}
+
+.pmpro-email-log-details .pmpro-email-body-container {
+	border: 1px solid var(--pmpro--border--color);
+	height: 400px;
+	overflow-y: auto;
+	position: relative;
+}
+
+.pmpro-email-log-details .pmpro-email-body-formatted {
+	padding: 15px;
+	background: #fff;
+	min-height: 100%;
+	box-sizing: border-box;
+}
+
+.pmpro-email-log-details .pmpro-email-body-raw {
+	padding: 15px;
+	background: #f5f5f5;
+	min-height: 100%;
+	box-sizing: border-box;
+	display: none;
+}
+
+.pmpro-email-log-details .pmpro-email-body-raw pre {
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	margin: 0;
+	font-family: monospace;
+	font-size: 12px;
+}
+
 /* Consent Log */
 .pmpro_consent_log.pmpro_scrollable {
 	max-width: 800px;

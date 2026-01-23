@@ -420,6 +420,12 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.53' );
 	}
 
+	// Upgrade to 3.7 - Email logging
+	if ( $pmpro_db_version < 3.7 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.7' );
+	}
+
 }
 
 function pmpro_db_delta() {
@@ -441,6 +447,7 @@ function pmpro_db_delta() {
 	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
+	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
 
 	$collate = '';
 	if ( $wpdb->has_cap( 'collation' ) ) {
@@ -731,6 +738,34 @@ function pmpro_db_delta() {
 		 PRIMARY KEY (`id`),
 		 KEY `level` (`level`),
 		 KEY `group` (`group`)
+		) $collate;
+	";
+	dbDelta($sqlQuery);
+
+	//pmpro_email_log
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_email_log . "` (
+		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `user_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+		  `email_to` varchar(255) NOT NULL,
+		  `email_from` varchar(255) NOT NULL,
+		  `from_name` varchar(255) NOT NULL DEFAULT '',
+		  `subject` text NOT NULL,
+		  `body` longtext NOT NULL,
+		  `template` varchar(100) NOT NULL DEFAULT '',
+		  `headers` text NOT NULL,
+		  `reply_to` varchar(255) NOT NULL DEFAULT '',
+		  `cc` text NOT NULL DEFAULT '',
+		  `bcc` text NOT NULL DEFAULT '',
+		  `status` varchar(20) NOT NULL DEFAULT 'sent',
+		  `error_message` text NOT NULL DEFAULT '',
+		  `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+		  PRIMARY KEY (`id`),
+		  KEY `user_id` (`user_id`),
+		  KEY `email_to` (`email_to`(" . $max_index_length . ")),
+		  KEY `template` (`template`),
+		  KEY `status` (`status`),
+		  KEY `timestamp` (`timestamp`)
 		) $collate;
 	";
 	dbDelta($sqlQuery);

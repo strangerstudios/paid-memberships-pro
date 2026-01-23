@@ -270,7 +270,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'post_id' => array(),
 					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
-				), 
+				),
 				array(
 					'methods'  => WP_REST_Server::EDITABLE,
 					'args'     => array(
@@ -280,6 +280,28 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'callback' => array( $this, 'pmpro_rest_api_set_post_restrictions' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)
+			)
+		);
+
+		/**
+		 * Get email log details.
+		 * @since TBD
+		 * Example: https://example.com/wp-json/pmpro/v1/email_log_popup
+		 */
+		register_rest_route( $pmpro_namespace, '/email_log_popup',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_get_email_log_popup_contents' ),
+					'args'     => array(
+						'log_id' => array(
+							'required' => true,
+							'type' => 'integer',
+							'sanitize_callback' => 'absint',
+						),
+					),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				),
 			)
 		);
 		}
@@ -1167,6 +1189,40 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
+		 * Get email log details.
+		 *
+		 * @since TBD
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_get_email_log_popup_contents( $request ) {
+			global $wpdb;
+
+			$params = $request->get_params();
+			$log_id = isset( $params['log_id'] ) ? intval( $params['log_id'] ) : null;
+
+			if ( empty( $log_id ) ) {
+				return new WP_REST_Response( array( 'error' => 'No log ID provided.' ), 400 );
+			}
+
+			// Get the email log from the database
+			$log = $wpdb->get_row( $wpdb->prepare(
+				"SELECT * FROM {$wpdb->pmpro_email_log} WHERE id = %d",
+				$log_id
+			) );
+
+			if ( ! $log ) {
+				return new WP_REST_Response( array( 'error' => 'Email log not found.' ), 404 );
+			}
+
+			// Use helper function to render the email log details
+			$html = pmpro_render_email_log_details( $log );
+
+			return new WP_REST_Response( array( 'html' => $html ), 200 );
+		}
+
+		/**
 		 * Default permissions check for endpoints/routes.
 		 * Defaults to 'subscriber' for all GET requests and 
 		 * 'administrator' for any other type of request.
@@ -1209,6 +1265,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'capability' => 'edit_post',
 					'request_param' => 'post_id',
 				),
+				'/pmpro/v1/email_log_popup' => 'manage_options',
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );
 			
