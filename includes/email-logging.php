@@ -8,7 +8,7 @@
  * @param PMProEmail $email The email object
  * @param bool $result Result of wp_mail()
  */
-function pmpro_update_email_log_status( $email, $result ) {
+function pmpro_log_email( $email, $result ) {
 	global $wpdb;
 
 	// Make sure we have an email object.
@@ -64,7 +64,7 @@ function pmpro_update_email_log_status( $email, $result ) {
 		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 	);
 }
-add_action( 'pmpro_after_email_sent', 'pmpro_update_email_log_status', 10, 2 );
+add_action( 'pmpro_after_email_sent', 'pmpro_log_email', 10, 2 );
 
 /**
  * Parse email headers to extract reply-to, CC, BCC
