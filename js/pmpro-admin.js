@@ -87,12 +87,25 @@ function pmpro_admin_prep_click_events() {
 	});
 }
 
-// Hide the popup if clicked outside the popup.
+// Popups.
 jQuery(document).on('click', function (e) {
 	// Check if the clicked element is the close button or outside the pmpro-popup-wrap
 	if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
 		jQuery('.pmpro-popup-overlay').hide();
 	}
+
+	// Hide the license banner.
+	jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
+		e.preventDefault();
+		jQuery('.pmpro-popup-overlay').hide();
+	});
+
+	// Hide the popup banner if "ESC" is pressed.
+	jQuery(document).keyup(function (e) {
+		if (e.key === 'Escape') {
+			jQuery('.pmpro-popup-overlay').hide();
+		}
+	});
 });
 
 /** JQuery to hide the notifications. */
@@ -876,19 +889,6 @@ jQuery(document).ready(function () {
 			}
 		};
 
-		// Hide the license banner.
-		jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
-			e.preventDefault();
-			jQuery('.pmpro-popup-overlay').hide();
-		});
-
-		// Hide the popup banner if "ESC" is pressed.
-		jQuery(document).keyup(function (e) {
-			if (e.key === 'Escape') {
-				jQuery('.pmpro-popup-overlay').hide();
-			}
-		});
-
 		jQuery('#pmpro-admin-add-ons-list').on('click', '.pmproAddOnActionButton', function (e) {
 			e.preventDefault();
 
@@ -1289,6 +1289,55 @@ jQuery(document).ready(function () {
 		} else {
 			jQuery(this).removeClass('pmpro_report_th_opened');
 			jQuery(this).addClass('pmpro_report_th_closed');
+		}
+	});
+});
+
+/**
+ * Email Logs - View Email Details Modal
+ */
+jQuery(document).ready(function($) {
+	// View email log details via REST API
+	$(document).on('click', '.pmpro-view-email-log', function(e) {
+		e.preventDefault();
+		var logId = $(this).data('log-id');
+
+		// Use WordPress REST API
+		$.ajax({
+			url: pmpro.rest_url + 'pmpro/v1/email_log_popup?log_id=' + logId,
+			type: 'GET',
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader('X-WP-Nonce', pmpro.nonce);
+			},
+			success: function(response) {
+				if (response && response.html) {
+					$('#pmpro-email-log-content').html(response.html);
+					// Show as popup overlay
+					$('#pmpro-popup').show();
+				}
+			},
+			error: function() {
+				$('#pmpro-email-log-content').html('<p style="color: red;">' + 'Error loading email log details.' + '</p>');
+				$('#pmpro-popup').show();
+			}
+		});
+	});
+
+	// Toggle between formatted and raw HTML view for email body
+	$(document).on('change', '.pmpro-email-body-view-toggle', function() {
+		var $toggle = $(this);
+		var $container = $toggle.closest('.pmpro-email-log-details');
+		var $formatted = $container.find('.pmpro-email-body-formatted');
+		var $raw = $container.find('.pmpro-email-body-raw');
+
+		if ($toggle.is(':checked')) {
+			// Show raw HTML view
+			$formatted.hide();
+			$raw.show();
+		} else {
+			// Show formatted view
+			$raw.hide();
+			$formatted.show();
 		}
 	});
 });
