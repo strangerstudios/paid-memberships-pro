@@ -827,6 +827,7 @@ function pmpro_report_memberships_delete_transients() {
 	delete_transient( 'pmpro_report_cancellation_rate' );
 	delete_transient( 'pmpro_report_memberships_cancellations' );
 	delete_transient( 'pmpro_report_memberships_signups' );
+	delete_transient( 'pmpro_report_memberships_signups_v2' );
 }
 add_action( 'pmpro_updated_order', 'pmpro_report_memberships_delete_transients' );
 add_action( 'pmpro_after_checkout', 'pmpro_report_memberships_delete_transients' );
