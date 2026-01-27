@@ -549,60 +549,139 @@ function pmpro_report_memberships_page() {
 	<?php
 }
 
-
-
-/*
-	Other code required for your reports. This file is loaded every time WP loads with PMPro enabled.
-*/
-
-// get signups
 function pmpro_getSignups( $period = false, $levels = 'all' ) {
-	// check for a transient
-	$cache = get_transient( 'pmpro_report_memberships_signups' );
-	if ( ! empty( $cache ) && isset( $cache[ $period ] ) && isset( $cache[ $period ][ $levels ] ) ) {
-		return $cache[ $period ][ $levels ];
-	}
-
-	// a sale is an order with status = success
-	if ( $period == 'today' ) {
-		$startdate = date_i18n( ' Y-m-d' );
-	} elseif ( $period == 'this month' ) {
-		$startdate = date_i18n( 'Y-m' ) . '-01';
-	} elseif ( $period == 'this year' ) {
-		$startdate = date_i18n( 'Y' ) . '-01-01';
-	} else {
-		$startdate = '1970-01-01';
-	}
-
-	// build query
 	global $wpdb;
 
-	$sqlQuery = "SELECT COUNT(DISTINCT mu.user_id) FROM $wpdb->pmpro_memberships_users mu WHERE mu.startdate >= '" . esc_sql( $startdate ) . "' ";
+	// Normalize period.
+	if ( empty( $period ) ) {
+		$period = 'all time';
+	}
 
-	// restrict by level
-	if ( ! empty( $levels ) && $levels != 'all' ) {
-		// Let's make sure that each ID inside of $levels is an integer.
-		if ( ! is_array( $levels ) ) {
-			$levels = explode( ',', $levels );
+	$valid_periods = array( 'today', 'this month', 'this year', 'all time' );
+	if ( ! in_array( $period, $valid_periods, true ) ) {
+		$period = 'all time';
+	}
+
+	// Disallow multiple levels. Allow: 'all' or a single level ID.
+	if ( is_array( $levels ) ) {
+		$clean = array_values( array_filter( array_map( 'intval', $levels ) ) );
+		if ( count( $clean ) > 1 ) {
+			_doing_it_wrong(
+				__FUNCTION__,
+				__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
+				'3.0'
+			);
+			return 0;
 		}
-		$levels    = implode( ',', array_map( 'intval', $levels ) );
-		$sqlQuery .= 'AND mu.membership_id IN(' . $levels . ') ';
+		$levels = ! empty( $clean ) ? $clean[0] : 'all';
+	} elseif ( is_string( $levels ) && strpos( $levels, ',' ) !== false ) {
+		$clean = array_values( array_filter( array_map( 'intval', explode( ',', $levels ) ) ) );
+		if ( count( $clean ) > 1 ) {
+			_doing_it_wrong(
+				__FUNCTION__,
+				__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
+				'3.0'
+			);
+			return 0;
+		}
+		$levels = ! empty( $clean ) ? $clean[0] : 'all';
 	}
 
-	$signups = $wpdb->get_var( $sqlQuery );
+	// Request-level cache to avoid repeated get_transient calls.
+	static $cache = null;
+	static $cache_loaded = false;
 
-	// save in cache
-	if ( ! empty( $cache ) && ! empty( $cache[ $period ] ) ) {
-		$cache[ $period ][ $levels ] = $signups;
-	} elseif ( ! empty( $cache ) ) {
-		$cache[ $period ] = array( $levels => $signups );
-	} else {
-		$cache = array( $period => array( $levels => $signups ) );
+	$transient_key = 'pmpro_report_memberships_signups_v2';
+
+	if ( ! $cache_loaded ) {
+		$cache = get_transient( $transient_key );
+		if ( ! is_array( $cache ) ) {
+			$cache = array();
+		}
+		$cache_loaded = true;
 	}
 
-	set_transient( 'pmpro_report_memberships_signups', $cache, 3600 * 24 );
+	// Compute boundary timestamps for each period (WP timezone).
+	$now = current_time( 'timestamp' );
 
-	return $signups;
+	$bounds = array(
+		'today'      => date( 'Y-m-d 00:00:00', $now ),
+		'this month' => date( 'Y-m-01 00:00:00', $now ),
+		'this year'  => date( 'Y-01-01 00:00:00', $now ),
+		'all time'   => '1970-01-01 00:00:00',
+	);
+
+	// Rebuild cache if missing OR if boundaries changed since it was built.
+	$needs_rebuild = empty( $cache['_primed'] )
+		|| empty( $cache['_bounds'] )
+		|| $cache['_bounds']['today'] !== $bounds['today']
+		|| $cache['_bounds']['this month'] !== $bounds['this month']
+		|| $cache['_bounds']['this year'] !== $bounds['this year'];
+
+	if ( $needs_rebuild ) {
+		$sql = $wpdb->prepare(
+			"
+			SELECT mu.membership_id,
+				COUNT(DISTINCT CASE WHEN mu.startdate >= %s THEN mu.user_id END) AS today,
+				COUNT(DISTINCT CASE WHEN mu.startdate >= %s THEN mu.user_id END) AS this_month,
+				COUNT(DISTINCT CASE WHEN mu.startdate >= %s THEN mu.user_id END) AS this_year,
+				COUNT(DISTINCT mu.user_id) AS all_time
+			FROM {$wpdb->pmpro_memberships_users} mu
+			WHERE mu.startdate >= %s
+			GROUP BY mu.membership_id WITH ROLLUP
+			",
+			$bounds['today'],
+			$bounds['this month'],
+			$bounds['this year'],
+			$bounds['all time']
+		);
+
+		$rows = $wpdb->get_results( $sql );
+
+		$cache = array(
+			'_primed' => true,
+			'_bounds' => $bounds,
+			'today'      => array( 'all' => 0, 'levels' => array() ),
+			'this month' => array( 'all' => 0, 'levels' => array() ),
+			'this year'  => array( 'all' => 0, 'levels' => array() ),
+			'all time'   => array( 'all' => 0, 'levels' => array() ),
+		);
+
+		foreach ( (array) $rows as $row ) {
+			$counts = array(
+				'today'      => (int) $row->today,
+				'this month' => (int) $row->this_month,
+				'this year'  => (int) $row->this_year,
+				'all time'   => (int) $row->all_time,
+			);
+
+			if ( is_null( $row->membership_id ) ) {
+				// ROLLUP total row = all levels.
+				foreach ( $counts as $p => $count ) {
+					$cache[ $p ]['all'] = $count;
+				}
+			} else {
+				$level_id = (int) $row->membership_id;
+				foreach ( $counts as $p => $count ) {
+					$cache[ $p ]['levels'][ $level_id ] = $count;
+				}
+			}
+		}
+
+		set_transient( $transient_key, $cache, DAY_IN_SECONDS );
+	}
+
+	// Serve "all" quickly.
+	if ( empty( $levels ) || $levels === 'all' ) {
+		return (int) $cache[ $period ]['all'];
+	}
+
+	$level_id = (int) $levels;
+	if ( $level_id <= 0 ) {
+		return 0;
+	}
+
+	return isset( $cache[ $period ]['levels'][ $level_id ] ) ? (int) $cache[ $period ]['levels'][ $level_id ] : 0;
 }
 
 /**
