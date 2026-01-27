@@ -569,7 +569,7 @@ function pmpro_getSignups( $period = false, $levels = 'all' ) {
 			_doing_it_wrong(
 				__FUNCTION__,
 				__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
-				'3.0'
+				'TBD'
 			);
 			return 0;
 		}
@@ -580,7 +580,7 @@ function pmpro_getSignups( $period = false, $levels = 'all' ) {
 			_doing_it_wrong(
 				__FUNCTION__,
 				__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
-				'3.0'
+				'TBD'
 			);
 			return 0;
 		}
