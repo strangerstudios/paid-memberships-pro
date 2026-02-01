@@ -54,6 +54,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 
 	// Check if this subscription has pending payments.
 	$has_pending_payments = ! empty( $subscription->get_orders( array( 'status' => 'pending', 'limit' => 1 ) ) );
+	$all_orders = $subscription->get_orders();
 
 	// Mark the PMPro_Subscription as cancelled (also clears the next payment date).
 	$subscription->set( 'status', 'cancelled' );
@@ -103,7 +104,14 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 			$myemail = new PMProEmail();
 			$myemail->sendCancelOnNextPaymentDateAdminEmail( $user, $subscription->get_membership_level_id() );
 
-			return 'Cancelled membership for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '. Membership extended to next payment date.';
+			$return_msg  = 'Cancelled membership for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '. Membership extended to next payment date. ';
+			$return_msg .= '(' . '$has_pending_payments' . '=>' . ( $has_pending_payments ? 'true' : 'false' ) . ') ';
+
+			foreach ( $all_orders as $order ) {
+				$return_msg .= '(Order Debug ' . $order->id . '=>' . $order->status . ') ';
+			}
+
+			return $return_msg;
 		}
 	}
 

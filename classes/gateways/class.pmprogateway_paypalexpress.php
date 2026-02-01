@@ -1051,7 +1051,8 @@
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
 
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]) || ( ! empty( $this->httpParsedResponseAr['L_ERRORCODE0'] ) && $this->httpParsedResponseAr['L_ERRORCODE0'] == '11556' ) ) {
+				// Note: Error code 11556 means "Invalid profile status for cancel action; profile should be active or suspended". In other words, the profile is already cancelled.
 				return true;
 			} else {
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
@@ -1066,13 +1067,109 @@
 		 * Cancels a subscription in PayPal.
 		 *
 		 * @param PMPro_Subscription $subscription to cancel.
-	 	 */
+		 */
 		function cancel_subscription( $subscription ) {
-			// Build the nvp string for PayPal API
-			$nvpStr = '&PROFILEID=' . urlencode( $subscription->get_subscription_transaction_id() ) . '&ACTION=Cancel&NOTE=' . urlencode('User requested cancel.');
-			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
+			// Build the nvp string for PayPal API.
+			$nvpStr = '&PROFILEID=' . urlencode( $subscription->get_subscription_transaction_id() ) . '&ACTION=Cancel&NOTE=' . urlencode( 'User requested cancel.' );
 
-			return ( 'SUCCESS' == strtoupper( $this->httpParsedResponseAr['ACK'] ) || 'SUCCESSWITHWARNING' == strtoupper( $this->httpParsedResponseAr['ACK'] ) );
+			// --- Logging setup ---
+			$logfile   = apply_filters( 'pmpro_paypal_cancellation_logfile', pmpro_get_restricted_file_path( 'logs', 'paypal-cancellations.txt' ) );
+			$timestamp = function_exists( 'current_time' )
+				? current_time( 'mysql' ) . ' (site tz)'
+				: gmdate( 'Y-m-d H:i:s' ) . ' (UTC)';
+
+			// Current URL (best effort).
+			$current_url = '';
+			if ( ! empty( $_SERVER['HTTP_HOST'] ) ) {
+				$scheme      = ( ! empty( $_SERVER['HTTPS'] ) && 'off' !== $_SERVER['HTTPS'] ) ? 'https' : 'http';
+				$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
+				$current_url = $scheme . '://' . $_SERVER['HTTP_HOST'] . $request_uri;
+			}
+
+			// Stack trace (clean + readable).
+			$trace_lines = array();
+			if ( function_exists( 'wp_debug_backtrace_summary' ) ) {
+				$trace = wp_debug_backtrace_summary( null, 0, false );
+
+				if ( is_string( $trace ) ) {
+					// Older behavior: comma-separated string.
+					$parts = array_map( 'trim', explode( ',', $trace ) );
+				} elseif ( is_array( $trace ) ) {
+					// Newer behavior: already an array.
+					$parts = array_map( 'trim', $trace );
+				} else {
+					$parts = array();
+				}
+
+				foreach ( $parts as $i => $part ) {
+					$trace_lines[] = sprintf( '%02d. %s', $i + 1, $part );
+				}
+			} else {
+				// Fallback for very old WP / non-WP contexts.
+				$bt = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+				foreach ( $bt as $i => $frame ) {
+					$class = isset( $frame['class'] ) ? $frame['class'] : '';
+					$type  = isset( $frame['type'] ) ? $frame['type'] : '';
+					$fn    = isset( $frame['function'] ) ? $frame['function'] : '';
+					$file  = isset( $frame['file'] ) ? $frame['file'] : '';
+					$line  = isset( $frame['line'] ) ? $frame['line'] : '';
+
+					$func = trim( $class . $type . $fn, ':' ) . '()';
+					$loc  = $file ? ' — ' . $file . ( $line ? ':' . $line : '' ) : '';
+
+					$trace_lines[] = sprintf(
+						'%02d. %s%s',
+						$i + 1,
+						$func ? $func : '[unknown]',
+						$loc
+					);
+				}
+			}
+
+			// Redact sensitive fields from NVP string for logging (best effort).
+			$redacted_nvpStr = preg_replace(
+				'/(?:PWD|PASSWORD|SIGNATURE|USER|ACCT|CREDITCARDTYPE|CVV2|EXPDATE|TOKEN)=([^&]*)/i',
+				'$0[REDACTED]',
+				$nvpStr
+			);
+
+			// --- Call PayPal API ---
+			$this->httpParsedResponseAr = $this->PPHttpPost( 'ManageRecurringPaymentsProfileStatus', $nvpStr );
+
+			// Prepare response for logging.
+			$response_for_log = $this->httpParsedResponseAr;
+
+			// --- Write log entry ---
+			$log_entry  = "\n";
+			$log_entry .= "============================================================\n";
+			$log_entry .= "PMPro PayPal Cancellation Log\n";
+			$log_entry .= "Timestamp: " . $timestamp . "\n";
+			$log_entry .= "URL: " . ( $current_url ? $current_url : '[unknown]' ) . "\n";
+
+			// Helpful identifiers (if available).
+			$profile_id = $subscription->get_subscription_transaction_id();
+			$log_entry .= "PayPal Profile ID: " . ( $profile_id ? $profile_id : '[unknown]' ) . "\n";
+
+			$log_entry .= "\nNVP String:\n";
+			$log_entry .= $redacted_nvpStr . "\n";
+
+			$log_entry .= "\nStack Trace:\n";
+			$log_entry .= ( ! empty( $trace_lines ) ? implode( "\n", $trace_lines ) : '[no trace available]' ) . "\n";
+
+			$log_entry .= "\nAPI Response:\n";
+			$log_entry .= print_r( $response_for_log, true ) . "\n";
+			$log_entry .= "============================================================\n";
+
+			// Write to file (best effort; don't fatally error if filesystem is unhappy).
+			if ( ! empty( $logfile ) ) {
+				$loghandle = @fopen( $logfile, 'a+' );
+				if ( $loghandle ) {
+					@fwrite( $loghandle, $log_entry );
+					@fclose( $loghandle );
+				}
+			}
+
+			return ( isset( $this->httpParsedResponseAr['ACK'] ) && ( 'SUCCESS' === strtoupper( $this->httpParsedResponseAr['ACK'] ) || 'SUCCESSWITHWARNING' === strtoupper( $this->httpParsedResponseAr['ACK'] ) ) );
 		}
 
 		function getSubscriptionStatus(&$order)
