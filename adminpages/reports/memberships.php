@@ -613,9 +613,9 @@ function pmpro_getSignups( $period = false, $levels = 'all' ) {
 	$now = current_time( 'timestamp' );
 
 	$bounds = array(
-		'today'      => date( 'Y-m-d 00:00:00', $now ),
-		'this month' => date( 'Y-m-01 00:00:00', $now ),
-		'this year'  => date( 'Y-01-01 00:00:00', $now ),
+		'today'      => date_i18n( 'Y-m-d 00:00:00', $now ),
+		'this month' => date_i18n( 'Y-m-01 00:00:00', $now ),
+		'this year'  => date_i18n( 'Y-01-01 00:00:00', $now ),
 		'all time'   => '1970-01-01 00:00:00',
 	);
 
@@ -720,17 +720,17 @@ function pmpro_getCancellations( $period = null, $levels = 'all', $status = arra
 
 	// figure out start date
 	$now  = current_time( 'timestamp' );
-	$year = date( 'Y', $now );
+	$year = date_i18n( 'Y', $now );
 
 	if ( $period == 'today' ) {
-		$startdate = date( 'Y-m-d', $now ) . ' 00:00:00';
-		$enddate   = "'" . date( 'Y-m-d', $now ) . " 23:59:59'";
+		$startdate = date_i18n( 'Y-m-d', $now ) . ' 00:00:00';
+		$enddate   = "'" . date_i18n( 'Y-m-d', $now ) . " 23:59:59'";
 	} elseif ( $period == 'this month' ) {
-		$startdate = date( 'Y-m', $now ) . '-01 00:00:00';
-		$enddate   = "CONCAT(LAST_DAY('" . date_i18n( 'Y-m', $now ) . '-01' . "'), ' 23:59:59')";
+		$startdate = date_i18n( 'Y-m', $now ) . '-01 00:00:00';
+		$enddate   = "CONCAT(LAST_DAY('" . date_i18n( 'Y-m', $now ) . "-01'), ' 23:59:59')";
 	} elseif ( $period == 'this year' ) {
-		$startdate = date( 'Y', $now ) . '-01-01 00:00:00';
-		$enddate   = "'" . date( 'Y', $now ) . "-12-" . date_i18n( 't', strtotime( $startdate ) ) . " 23:59:59'";
+		$startdate = date_i18n( 'Y', $now ) . '-01-01 00:00:00';
+		$enddate   = "'" . date_i18n( 'Y', $now ) . "-12-" . date_i18n( 't', strtotime( $startdate ) ) . " 23:59:59'";
 	} else {
 		// all time
 		$startdate = '1970-01-01';  // all time (no point in using a value prior to the start of the UNIX epoch)
