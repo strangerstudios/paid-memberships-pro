@@ -87,21 +87,23 @@ function pmpro_admin_prep_click_events() {
 	});
 }
 
-// Popups.
-jQuery(document).on('click', function (e) {
-	// Check if the clicked element is the close button or outside the pmpro-popup-wrap
-	if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
-		jQuery('.pmpro-popup-overlay').hide();
-	}
+// Popups: All handlers registered once on document ready.
+jQuery(document).ready(function () {
+	// Hide the popup when clicking outside the popup.
+	jQuery(document).on('click', function (e) {
+		if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
+			jQuery('.pmpro-popup-overlay').hide();
+		}
+	});
 
-	// Hide the license banner.
-	jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
+	// Hide the popup when close/complete button is clicked.
+	jQuery(document).on('click', '.pmproPopupCloseButton, .pmproPopupCompleteButton', function (e) {
 		e.preventDefault();
 		jQuery('.pmpro-popup-overlay').hide();
 	});
 
-	// Hide the popup banner if "ESC" is pressed.
-	jQuery(document).keyup(function (e) {
+	// Hide the popup if "ESC" is pressed.
+	jQuery(document).on('keyup', function (e) {
 		if (e.key === 'Escape') {
 			jQuery('.pmpro-popup-overlay').hide();
 		}

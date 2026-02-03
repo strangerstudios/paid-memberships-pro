@@ -109,10 +109,10 @@ class PMPro_Member_Edit_Panel_Email_Logs extends PMPro_Member_Edit_Panel {
 					</tbody>
 				</table>
 				<p>
-				<?php 
-				printf( 
+				<?php
+				printf(
 					esc_html__( 'Showing the %d most recent emails.', 'paid-memberships-pro' ),
-					count( $logs ),
+					count( $logs )
 				);
 				echo ' ';
 				printf( 
