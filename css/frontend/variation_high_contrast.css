@@ -81,6 +81,33 @@
 		opacity: 0.25;
 	}
 
+	/* Fix for nested cards */
+	.pmpro_card .pmpro_card {
+		background-color: transparent;
+		border: 0;
+		box-shadow: none;
+		overflow: visible;
+	}
+
+	.pmpro_card .pmpro_card .pmpro_card_title {
+		padding: 0;
+	}
+
+	.pmpro_card .pmpro_card .pmpro_card_content {
+		padding: 0;
+	}
+
+	.pmpro_card .pmpro_card .pmpro_card_actions {
+		background: none;
+		border: 0;
+		margin: 0;
+		padding: 0;
+	}
+
+	.pmpro_card .pmpro_card .pmpro_card_content + .pmpro_card_actions {
+		border: 0;
+	}
+
 	/**
 	 * Heading Styles
 	 */

@@ -52,20 +52,20 @@ class PMPro_Recurring_Actions {
 		// Make sure that the restricted files directory is set up.
 		add_action( 'pmpro_schedule_daily', 'pmpro_set_up_restricted_files_directory' );
 
-		// Expired Membership Routines (Daily)
-		add_action( 'pmpro_schedule_daily', array( $this, 'check_for_expired_memberships' ) );
+		// Expired Membership Routines (Every 15 minutes)
+		add_action( 'pmpro_schedule_quarter_hourly', array( $this, 'check_for_expired_memberships' ) );
 		add_action( 'pmpro_expire_memberships', array( $this, 'expire_memberships' ), 10, 2 );
 		add_action( 'pmpro_membership_expired_email', array( $this, 'send_membership_expired_email' ), 10, 2 );
 
-		// Membership expiration reminders (Daily)
-		add_action( 'pmpro_schedule_daily', array( $this, 'membership_expiration_reminders' ), 99 );
+		// Membership expiration reminders (Every 15 minutes)
+		add_action( 'pmpro_schedule_quarter_hourly', array( $this, 'membership_expiration_reminders' ), 99 );
 		add_action( 'pmpro_expiration_reminder_email', array( $this, 'send_expiration_reminder_email' ), 99, 2 );
 
 		// Admin activity emails (Conditionally Hooked based on frequency)
 		$this->conditionally_hook_admin_activity_email();
 
 		// Register recurring payment reminders.
-		add_action( 'pmpro_schedule_daily', array( $this, 'recurring_payment_reminders' ) );
+		add_action( 'pmpro_schedule_quarter_hourly', array( $this, 'recurring_payment_reminders' ) );
 		add_action( 'pmpro_recurring_payment_reminder_email', array( $this, 'send_recurring_payment_reminder_email' ), 10, 3 );
 
 		// Temporary file cleanup (Daily)
@@ -132,7 +132,7 @@ class PMPro_Recurring_Actions {
 
 		global $wpdb;
 
-		$today = date( 'Y-m-d 00:00:00', current_time( 'timestamp' ) );
+		$today = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
 
 		// Get the number of days before expiration to send the email. Filterable.
 		// Default is 7 days.
@@ -140,7 +140,7 @@ class PMPro_Recurring_Actions {
 
 		// Configure the interval to select records from
 		$interval_start = $today;
-		$interval_end   = date( 'Y-m-d 00:00:00', strtotime( "+{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
+		$interval_end   = date( 'Y-m-d H:i:s', strtotime( "+{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
 
 		// look for memberships that are going to expire within one week (but we haven't emailed them within a week)
 		$sqlQuery = $wpdb->prepare(

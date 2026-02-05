@@ -206,6 +206,19 @@
 				pmpro_stripeWebhookExit();
 			}
 
+			// If the subscription is no longer active in Stripe, bail.
+			// We will handle this case with the customer.subscription.deleted event.
+			try {
+				$subscription = Stripe_Subscription::retrieve( $invoice->parent->subscription_details->subscription );
+			} catch ( \Exception $e ) {
+				$logstr .= "Error retrieving subscription " . $invoice->parent->subscription_details->subscription . " from Stripe: " . $e->getMessage() . ". No action taken for failed payment.";
+				pmpro_stripeWebhookExit();
+			}
+			if ( empty( $subscription ) || ! in_array( $subscription->status, array( 'trialing', 'active', 'past_due' ) ) ) {
+				$logstr .= "Subscription " . ( ! empty( $subscription->id ) ? $subscription->id : $invoice->parent->subscription_details->subscription ) . " is no longer active in Stripe. Status = " . ( ! empty( $subscription->status ) ? $subscription->status : 'unknown' ) . ". No action taken for failed payment.";
+				pmpro_stripeWebhookExit();
+			}
+
 			$logstr .= pmpro_handle_recurring_payment_failure_at_gateway( pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) );
 			pmpro_stripeWebhookExit();
 		}

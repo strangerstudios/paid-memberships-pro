@@ -1975,8 +1975,8 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 	// check if the code has started
 	if ( ! $error ) {
 		// fix the date timestamps
-		$dbcode->starts = strtotime( date_i18n( 'm/d/Y', $dbcode->starts ) );
-		$dbcode->expires = strtotime( date_i18n( 'm/d/Y', $dbcode->expires ) );
+		$dbcode->starts = strtotime( date_i18n( 'm/d/Y 00:00:00', $dbcode->starts ) );
+		$dbcode->expires = strtotime( date_i18n( 'm/d/Y 23:59:59', $dbcode->expires ) );
 
 		// today
 		$today = strtotime( date_i18n( 'm/d/Y H:i:00', current_time( 'timestamp' ) ) );
