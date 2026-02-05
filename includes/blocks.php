@@ -74,7 +74,7 @@ function pmpro_block_editor_assets() {
 		wp_register_script(
 			'pmpro-sidebar-editor-script',
 			PMPRO_URL . '/blocks/build/sidebar/index.js',
-			array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-i18n', 'wp-editor', 'wp-api-request', 'wp-plugins', 'wp-edit-post' )
+			array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-i18n', 'wp-block-editor', 'wp-api-request', 'wp-plugins', 'wp-edit-post' )
 		);
 		wp_localize_script(
 			'pmpro-sidebar-editor-script',
@@ -89,7 +89,7 @@ function pmpro_block_editor_assets() {
 	wp_register_script(
 		'pmpro-component-content-visibility-script',
 		PMPRO_URL . '/blocks/build/component-content-visibility/index.js',
-		array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-i18n', 'wp-editor', 'wp-api-request', 'wp-plugins', 'wp-edit-post' )
+		array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-i18n', 'wp-block-editor', 'wp-api-request', 'wp-plugins' )
 	);
 
 	wp_localize_script(
