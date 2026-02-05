@@ -69,7 +69,9 @@ register( pmproCustomStore() );
 ( function ( wp ) {
 	const { __ } = wp.i18n;
 	const { registerPlugin } = wp.plugins;
-	const { PluginDocumentSettingPanel } = wp.editor;
+	// Below is copied from WP 6.6 release notes for compatibility with pre-6.6 versions. This should be simplified when minimum WP version is 6.6.
+	// https://make.wordpress.org/core/2024/06/18/editor-unified-extensibility-apis-in-6-6/
+	const PluginDocumentSettingPanel = wp.editor?.PluginDocumentSettingPanel ?? ( wp.editPost?.PluginDocumentSettingPanel ?? wp.editSite?.PluginDocumentSettingPanel );
 	const { Component } = wp.element;
 	const { Spinner, CheckboxControl } = wp.components;
 
