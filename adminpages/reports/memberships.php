@@ -52,6 +52,14 @@ function pmpro_report_memberships_widget() {
 			'all time'   => __( 'All Time', 'paid-memberships-pro' ),
 		);
 
+		/**
+		 * Filter the periods for the memberships widget.
+		 * @since TBD
+		 * @param array $reports The array of periods.
+		 * @return array $reports The array of periods.
+		 */
+		$reports = apply_filters( 'pmpro_memberships_widget_periods', $reports );
+
 		foreach ( $reports as $report_type => $report_name ) {
 			$signups       = number_format_i18n( pmpro_getSignups( $report_type ) );
 			$cancellations = number_format_i18n( pmpro_getCancellations( $report_type ) );
