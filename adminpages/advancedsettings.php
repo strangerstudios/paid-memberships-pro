@@ -54,6 +54,7 @@
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("uninstall");
+		pmpro_setOption( 'avatar_enabled_sitewide' );
 		pmpro_setOption("site_type");
 
         /**
@@ -107,6 +108,7 @@
 		$redirecttosubscription = get_option( "pmpro_redirecttosubscription");
 	}
 	$uninstall = get_option( 'pmpro_uninstall');
+	$avatar_enabled_sitewide = get_option( 'pmpro_avatar_enabled_sitewide' );
 	$site_type = get_option( 'pmpro_site_type' );
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
@@ -582,6 +584,15 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 								<?php esc_html_e( 'Sharing non-sensitive membership site data helps us analyze how our plugin is meeting your needs and identify opportunities to improve. Read about what usage data is tracked:', 'paid-memberships-pro' ); ?>
 								<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="<?php esc_attr_e( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ); ?></a>.
 							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="avatar_enabled_sitewide"><?php esc_html_e( 'Profile Pictures', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<input id="avatar_enabled_sitewide" name="avatar_enabled_sitewide" type="checkbox" value="1" <?php checked( $avatar_enabled_sitewide, 1 ); ?> /> <label for="avatar_enabled_sitewide"><?php esc_html_e( 'Enable profile pictures for all users, regardless of membership level.', 'paid-memberships-pro' ); ?></label>
+							<p class="description"><?php esc_html_e( 'When enabled, all logged-in users can upload a custom profile picture. When disabled, profile pictures are only available for membership levels with the "Enable Profile Pictures" setting checked.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 					<tr>
