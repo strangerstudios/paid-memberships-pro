@@ -1342,7 +1342,7 @@ jQuery(document).ready(function($) {
 	}
 
 	function getResultRows() {
-		return $('.pmpro_quick_search_results tbody tr');
+		return $('.pmpro_quick_search_results tbody tr:has(a)');
 	}
 
 	function setActive(index) {
