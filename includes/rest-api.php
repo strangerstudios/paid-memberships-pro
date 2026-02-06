@@ -1212,7 +1212,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			// Determine search type.
 			$type = isset( $params['type'] ) ? sanitize_text_field( $params['type'] ) : 'all';
-			$allowed_types = array( 'all', 'users', 'subscriptions', 'orders', 'reports', 'levels', 'discounts', 'settings', 'addons', 'documentation' );
+			$allowed_types = array( 'all', 'users', 'subscriptions', 'orders', 'reports', 'levels', 'discounts', 'settings', 'documentation' );
 			if ( ! in_array( $type, $allowed_types, true ) ) {
 				$type = 'all';
 			}
@@ -1509,30 +1509,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 									);
 								}
 							}, array_keys($settings_pages), $settings_pages
-						)
-					)
-				);
-			}
-
-			// Search Add Ons.
-			if ( ( 'all' === $type || 'addons' === $type ) && ( current_user_can( 'pmpro_addons' ) || current_user_can( 'manage_options' ) ) ) {
-				$addon_class = new PMPro_AddOns();
-				$addons = $addon_class->get_addons();
-				$results['addons'] = array(
-					'label' => esc_html__( 'Add Ons', 'paid-memberships-pro' ),
-					'items' => array_filter(
-						array_map(
-							function($addon) use ($search_string) {
-								// Strip 'Paid Memberships Pro - ' from the Add On name if present.
-								$addon_name_cleaned = str_replace( 'Paid Memberships Pro - ', '', $addon['Name'] );
-								if ( stripos( $addon_name_cleaned, $search_string ) === 0 ) {
-									return array(
-										'url'   => esc_url( admin_url( 'admin.php?page=pmpro-addons&s=' . urlencode( $addon['Slug'] ) ) ),
-										'label' => sprintf( '<strong>%s</strong>', esc_html( $addon['Name'] ) ),
-										'icon'  => 'dashicons-admin-plugins'
-									);
-								}
-							}, $addons
 						)
 					)
 				);

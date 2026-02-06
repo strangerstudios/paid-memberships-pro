@@ -300,7 +300,6 @@ function pmpro_admin_header() {
 						<option value="levels"><?php esc_html_e( 'Levels', 'paid-memberships-pro' ); ?></option>
 						<option value="discounts"><?php esc_html_e( 'Discount Codes', 'paid-memberships-pro' ); ?></option>
 						<option value="settings"><?php esc_html_e( 'Settings', 'paid-memberships-pro' ); ?></option>
-						<option value="addons"><?php esc_html_e( 'Add Ons', 'paid-memberships-pro' ); ?></option>
 						<option value="documentation"><?php esc_html_e( 'Documentation', 'paid-memberships-pro' ); ?></option>
 					</select>
 				</div>
