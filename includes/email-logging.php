@@ -148,76 +148,114 @@ function pmpro_render_email_log_details( $log ) {
 		return '';
 	}
 
+	global $pmpro_email_templates_defaults;
+
 	ob_start();
 	?>
-	<div class="pmpro-email-log-details">
-		<h3 class="pmpro-email-log-info-header">
-			<?php esc_html_e( 'Email Information', 'paid-memberships-pro' ); ?>
-		</h3>
-		<table class="widefat">
-			<tr>
-				<th><?php esc_html_e( 'To', 'paid-memberships-pro' ); ?>:</th>
-				<td><?php echo esc_html( $log->email_to ); ?></td>
-			</tr>
-			<tr>
-				<th><?php esc_html_e( 'From', 'paid-memberships-pro' ); ?>:</th>
-				<td><?php echo esc_html( $log->from_name . ' <' . $log->email_from . '>' ); ?></td>
-			</tr>
-			<?php if ( ! empty( $log->reply_to ) ) { ?>
-			<tr>
-				<th><?php esc_html_e( 'Reply-To', 'paid-memberships-pro' ); ?>:</th>
-				<td><?php echo esc_html( $log->reply_to ); ?></td>
-			</tr>
-			<?php } ?>
-			<?php if ( ! empty( $log->cc ) ) { ?>
-			<tr>
-				<th><?php esc_html_e( 'CC', 'paid-memberships-pro' ); ?>:</th>
-				<td><?php echo esc_html( $log->cc ); ?></td>
-			</tr>
-			<?php } ?>
-			<?php if ( ! empty( $log->bcc ) ) { ?>
-			<tr>
-				<th><?php esc_html_e( 'BCC', 'paid-memberships-pro' ); ?>:</th>
-				<td><?php echo esc_html( $log->bcc ); ?></td>
-			</tr>
-			<?php } ?>
-			<tr>
-				<th><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?>:</th>
-				<td><?php echo esc_html( $log->subject ); ?></td>
-			</tr>
-			<tr>
-				<th><?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?>:</th>
-				<td><?php echo esc_html( $log->template ); ?></td>
-			</tr>
-			<tr>
-				<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?>:</th>
-				<td><?php echo esc_html( ucfirst( $log->status ) ); ?></td>
-			</tr>
-			<tr>
-				<th><?php esc_html_e( 'Timestamp', 'paid-memberships-pro' ); ?>:</th>
-				<td><?php echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $log->timestamp ) ) ); ?></td>
-			</tr>
-			<?php if ( ! empty( $log->error_message ) ) { ?>
-			<tr>
-				<th><?php esc_html_e( 'Error', 'paid-memberships-pro' ); ?>:</th>
-				<td class="pmpro-email-log-error"><?php echo esc_html( $log->error_message ); ?></td>
-			</tr>
-			<?php } ?>
-		</table>
-
-		<h3>
-			<?php esc_html_e( 'Email Body', 'paid-memberships-pro' ); ?>
-			<label class="pmpro-email-log-toggle-label">
-				<input type="checkbox" class="pmpro-email-body-view-toggle">
-				<?php esc_html_e( 'View Raw HTML', 'paid-memberships-pro' ); ?>
-			</label>
-		</h3>
-		<div class="pmpro-email-body-container">
-			<div class="pmpro-email-body-formatted">
-				<?php echo wp_kses_post( $log->body ); ?>
+	<div class="pmpro_scrollable">
+		<div class="pmpro-email-log-details">
+			<div class="pmpro-email-log-header">
+				<?php esc_html_e( 'Email Information', 'paid-memberships-pro' ); ?>
 			</div>
-			<div class="pmpro-email-body-raw">
-				<pre><?php echo esc_html( $log->body ); ?></pre>
+			<table class="wp-list-table widefat striped">
+				<tr>
+					<th><?php esc_html_e( 'To', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $log->email_to ); ?></td>
+				</tr>
+				<tr>
+					<th><?php esc_html_e( 'From', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $log->from_name . ' <' . $log->email_from . '>' ); ?></td>
+				</tr>
+				<?php if ( ! empty( $log->reply_to ) ) { ?>
+				<tr>
+					<th><?php esc_html_e( 'Reply-To', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $log->reply_to ); ?></td>
+				</tr>
+				<?php } ?>
+				<?php if ( ! empty( $log->cc ) ) { ?>
+				<tr>
+					<th><?php esc_html_e( 'CC', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $log->cc ); ?></td>
+				</tr>
+				<?php } ?>
+				<?php if ( ! empty( $log->bcc ) ) { ?>
+				<tr>
+					<th><?php esc_html_e( 'BCC', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $log->bcc ); ?></td>
+				</tr>
+				<?php } ?>
+				<tr>
+					<th><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></th>
+					<td><?php echo esc_html( $log->subject ); ?></td>
+				</tr>
+				<tr>
+					<th><?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<?php
+							if ( ! empty( $log->template ) && ! empty( $pmpro_email_templates_defaults[$log->template ]['description'] ) ) {
+								echo esc_html( $pmpro_email_templates_defaults[$log->template ]['description'] );
+								echo ' <code>' . esc_html( $log->template ) . '</code>';
+							} else {
+								echo '—';
+							}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<?php
+							// Build the selectors for the status tag.
+							$status_classes = array();
+							$status_classes[] = 'pmpro_tag';
+							$status_classes[] = 'pmpro_tag-has_icon';
+							if ( $log->status === 'sent' ) {
+								$status_classes[] = 'pmpro_tag-success';
+							} else {
+								$status_classes[] = 'pmpro_tag-error';
+							}
+							$status_class = implode( ' ', $status_classes );
+						?>
+						<span class="<?php echo esc_attr( $status_class ); ?>"><?php esc_html_e( ucfirst( $log->status ), 'paid-memberships-pro' ); ?></span>
+					</td>
+				</tr>
+				<tr>
+					<th><?php esc_html_e( 'Timestamp', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<?php
+						echo esc_html( sprintf(
+							// translators: %1$s is the date and %2$s is the time.
+							__( '%1$s at %2$s', 'paid-memberships-pro' ),
+							esc_html( date_i18n( get_option( 'date_format' ), strtotime( $log->timestamp ) ) ),
+							esc_html( date_i18n( get_option( 'time_format' ), strtotime( $log->timestamp ) ) )
+						) );
+						?>
+					</td>
+				</tr>
+				<?php if ( ! empty( $log->error_message ) ) { ?>
+				<tr>
+					<th><?php esc_html_e( 'Error', 'paid-memberships-pro' ); ?></th>
+					<td class="pmpro-email-log-error"><?php echo esc_html( $log->error_message ); ?></td>
+				</tr>
+				<?php } ?>
+			</table>
+
+			<div class="pmpro_spacer"></div>
+
+			<div class="pmpro-email-log-header">
+				<?php esc_html_e( 'Email Body', 'paid-memberships-pro' ); ?>
+				<label for="pmpro-email-body-view-toggle" class="pmpro-email-log-toggle-label">
+					<input type="checkbox" id="pmpro-email-body-view-toggle" class="pmpro-email-body-view-toggle">
+					<?php esc_html_e( 'View Raw HTML', 'paid-memberships-pro' ); ?>
+				</label>
+			</div>
+			<div class="pmpro-email-body-container">
+				<div class="pmpro-email-body-formatted">
+					<?php echo wp_kses_post( $log->body ); ?>
+				</div>
+				<div class="pmpro-email-body-raw">
+					<pre><?php echo esc_html( $log->body ); ?></pre>
+				</div>
 			</div>
 		</div>
 	</div>

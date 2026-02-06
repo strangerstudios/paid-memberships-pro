@@ -717,7 +717,7 @@ td > .pmpro_tag {
 	box-shadow: 10px 10px 30px #555;
 	display: inline-block;
 	height: auto;
-	max-height: 90%;
+	max-height: 80vh;
 	padding: var(--pmpro--spacing--medium);
 	position: relative;
 	scrollbar-width: none;
@@ -811,14 +811,30 @@ td > .pmpro_tag {
 }
 
 /* Email Log Popup */
+#pmpro-email-log-content .pmpro_scrollable {
+	height: 100%;
+	max-height: 80vh;
+	overflow-x: hidden;
+	text-align: left;
+	width: 100%;
+}
+
+.pmpro-email-log-details {
+	padding-right: var(--pmpro--spacing--small);
+}
+
 .pmpro-email-log-details .pmpro-email-log-error {
 	color: var(--pmpro--color--error-text);
 }
 
-.pmpro-email-log-details h3 {
-	display: flex;
-	justify-content: space-between;
+.pmpro-email-log-details .pmpro-email-log-header {
 	align-items: center;
+	display: flex;
+	font-size: 18px;
+	font-weight: 700;
+	justify-content: space-between;
+	line-height: 1.5;
+	margin: var(--pmpro--spacing--small) 0;
 }
 
 .pmpro-email-log-details .pmpro-email-log-toggle-label {
@@ -835,8 +851,6 @@ td > .pmpro_tag {
 
 .pmpro-email-log-details .pmpro-email-body-container {
 	border: 1px solid var(--pmpro--border--color);
-	height: 400px;
-	overflow-y: auto;
 	position: relative;
 }
 
@@ -2611,6 +2625,13 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	list-style: disc;
 	margin-left: 20px;
 }
+
+.pmpro_info {
+	background-color: var(--pmpro--color--info-background);
+	border-color: var(--pmpro--color--info-border);
+	color: var(--pmpro--color--info-text);
+}
+
 .pmpro_success {
 	background-color: var(--pmpro--color--success-background);
 	border-color: var(--pmpro--color--success-border);
@@ -3672,6 +3693,10 @@ tr.pmpro_alert {
 	margin-top: 0;
 }
 
+.pmpro_spacer {
+	margin: var(--pmpro--spacing--medium) 0;
+}
+
 /**
  * Reports admin area
  */
@@ -3746,6 +3771,15 @@ tr.pmpro_alert {
         width: 50%;
     }
 }
+
+#email-logs-form {
+	margin-top: var(--pmpro--spacing--medium);
+}
+
+#email-logs-form h1.wp-heading-inline {
+	margin-top: 0;
+}
+
 
 /* Reports individual page view styles */
 #visits-views-logins-form {
@@ -4387,6 +4421,23 @@ button.pmpro_report_th_closed:before {
 	.pmpro_admin-pmpro-emailtemplates .wp-list-table tbody tr td {
 		display: block;
 		padding-left: 35%;
+	}
+
+	.pmpro_responsive_table thead {
+		display: none;
+	}
+
+	.pmpro_responsive_table tbody tr th,
+	.pmpro_responsive_table tbody tr td,
+	.pmpro_responsive_table tfoot tr td {
+		display: grid;
+		grid-template-columns: 1fr 2fr;
+	}
+
+	.pmpro_responsive_table tbody tr th::before,
+	.pmpro_responsive_table tbody tr td::before,
+	.pmpro_responsive_table tfoot tr td::before {
+		content: attr(data-colname) ": ";
 	}
 
 }
