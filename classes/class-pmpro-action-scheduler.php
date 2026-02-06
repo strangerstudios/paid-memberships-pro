@@ -775,9 +775,9 @@ class PMPro_Action_Scheduler {
 
 		$runner = ActionScheduler_QueueRunner::instance();
 
-		// Release the lock so we can dispatch immediately
-		// (AS has a 60-second cooldown between dispatches).
-		ActionScheduler::lock()->release( 'async-request-runner' );
+		// Clear the lock so we can dispatch immediately
+		// (A.S. has a 60-second heartbeat between dispatches).
+		delete_option( 'action_scheduler_lock_async-request-runner' );
 
 		// Fire a non-blocking wp_remote_post() to process the queue
 		// in a separate PHP process.
