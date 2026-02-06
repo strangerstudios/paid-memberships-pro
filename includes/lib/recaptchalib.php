@@ -93,10 +93,14 @@ class pmpro_ReCaptcha
      */
     public function verifyResponse($remoteIp, $response)
     {
+
+		// Default to it not being okay.
+		$recaptchaResponse = new pmpro_ReCaptchaResponse();
+		$recaptchaResponse->success = false;
+
         // Discard empty solution submissions
         if ($response == null || strlen($response) == 0) {
-            $recaptchaResponse = new pmpro_ReCaptchaResponse();
-            $recaptchaResponse->success = false;
+            $recaptchaResponse->success = false; // Redundant but okay.
             $recaptchaResponse->errorCodes = 'missing-input';
             return $recaptchaResponse;
         }
@@ -111,10 +115,35 @@ class pmpro_ReCaptcha
             )
         );
         $answers = json_decode($getResponse, true);
-        $recaptchaResponse = new pmpro_ReCaptchaResponse();
 
-        if ((bool)$answers['success'] == true) {
-            $recaptchaResponse->success = true;
+        // Check if reCAPTCHA validation was successful, then handle V2 or V3.
+        if ( ! empty( $answers['success'] ) ) {
+			
+			// Check for V3 score if present.
+			if ( isset( $answers['score'] ) ) {
+
+				/**
+				 * Set the minimum score to mark the submission as successful.
+				 * 
+				 * @since TBD
+				 * 
+				 * @param float $min_score Defaults to 0.5 and supports 0.0 - 1.0 values. Any values outside this will default to 0.5.
+				 */
+				$min_score = (float) apply_filters( 'pmpro_recaptcha_v3_min_score', 0.5 );
+				if ( $min_score < 0.0 || $min_score > 1.0 ) {
+					$min_score = 0.5;
+				}
+
+				if ( (float) $answers['score'] >= $min_score ) {
+					$recaptchaResponse->success = true;
+				} else {
+					$recaptchaResponse->success = false;
+					$recaptchaResponse->errorCodes = 'Low reCAPTCHA score';
+				}
+
+			} else {
+				$recaptchaResponse->success = true; // V2 has no score.
+			}
         } else {
             $recaptchaResponse->success = false;
             if (!empty($answers['error-codes'])) {
@@ -141,4 +170,3 @@ class pmpro_ReCaptcha
         return $recaptchaResponse;
     }
 }
-?>
