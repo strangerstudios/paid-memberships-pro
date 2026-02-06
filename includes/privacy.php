@@ -84,6 +84,17 @@ function pmpro_personal_data_eraser( $email_address, $page = 1 ) {
 			}
 		}
 
+		// Delete email log entries for this user.
+		$num_email_logs = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM {$wpdb->pmpro_email_log} WHERE user_id = %d", intval( $user->ID ) ) );
+		if ( $num_email_logs > 0 ) {
+			$wpdb->delete(
+				$wpdb->pmpro_email_log,
+				array( 'user_id' => $user->ID ),
+				array( '%d' )
+			);
+			$num_items_removed += intval( $num_email_logs );
+		}
+
 		// Warn the admin if this user has an active subscription
 		$messages[] = __( "Please note that data erasure will not cancel a user's membership level or any active subscriptions. Please edit or delete the user through the WordPress dashboard.", 'paid-memberships-pro' );
 	}
@@ -334,7 +345,8 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 				'item_id'     => "membership_order-{$order->id}",
 				'data'        => $order_data_to_export,
 			);
-		}		
+		}
+
 	}
 
 	$done = true;
