@@ -1804,7 +1804,7 @@ function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
 
 	$total = $wpdb->get_var( $sqlQuery );
 
-	return (double) $total;
+	return (float) $total;
 }
 
 function pmpro_calculateRecurringRevenue( $s, $l ) {
@@ -3521,7 +3521,7 @@ function pmpro_round_price( $price, $currency = '' ) {
 		$decimals = intval( $pmpro_currencies[ $currency ]['decimals'] );
 	}
 
-	$rounded = round( (double) $price, $decimals );
+	$rounded = round( (float) $price, $decimals );
 
 	/**
 	 * Filter for result of pmpro_round_price.
