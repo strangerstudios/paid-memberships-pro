@@ -93,11 +93,14 @@ function pmpro_avatar_get_enabled_levels() {
  * @return bool        Whether the user has a level with "user avatars" enabled.
  */
 function pmpro_user_has_avatar_level( $user_id ) {
-	// Get cached enabled levels.
-	$enabled_levels = pmpro_avatar_get_enabled_levels();
-
-	// Check if the user has any of these levels.
-	$has_avatar_level = ( ! empty( $enabled_levels ) && pmpro_hasMembershipLevel( $enabled_levels, $user_id ) );
+	// If sitewide avatars enabled, any user qualifies.
+	if ( pmpro_getOption( 'avatar_enabled_sitewide' ) ) {
+		$has_avatar_level = ! empty( $user_id );
+	} else {
+		// Per-level check.
+		$enabled_levels = pmpro_avatar_get_enabled_levels();
+		$has_avatar_level = ( ! empty( $enabled_levels ) && pmpro_hasMembershipLevel( $enabled_levels, $user_id ) );
+	}
 
 	/**
 	 * Filter whether a user has a level with "user avatars" enabled.
@@ -682,11 +685,13 @@ function pmpro_get_avatar_data( $args, $id_or_email ) {
 	// Determine the user ID.
 	$user_id = pmpro_avatar_get_user_id_from_identifier( $id_or_email );
 
-	if ( empty( $user_id ) || ! pmpro_user_has_avatar_level( $user_id ) ) {
+	if ( empty( $user_id ) ) {
 		return $args;
 	}
 
 	// Get the avatar URL for the requested size.
+	// We check for a stored avatar file rather than level eligibility,
+	// so that avatars persist even if a user loses their avatar-enabled level.
 	$size = ! empty( $args['size'] ) ? (int) $args['size'] : 96;
 	$avatar_url = pmpro_avatar_get_url( $user_id, $size );
 
