@@ -313,9 +313,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						$exports = PMPro_Exports::instance();
 						$result  = $exports->start_export( $type, $params, $force_async );
 						
-						// Trigger Action Scheduler to run queued tasks right away.
-						do_action('action_scheduler_run_queue');
-						
+						// Trigger async queue processing if this was an async export.
+						if ( ! empty( $result['export_id'] ) ) {
+							PMPro_Action_Scheduler::dispatch_queue();
+						}
+
 						$status_code = isset( $result['error'] ) ? 400 : 200;
 						return new WP_REST_Response( $result, $status_code );
 					},
