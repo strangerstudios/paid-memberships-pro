@@ -46,15 +46,138 @@ function pmpro_report_email_logs_widget() {
 		)
 	);
 
+	// Get the last successful email log entry.
+	$last_sent_log = $wpdb->get_row(
+		"SELECT * FROM {$wpdb->pmpro_email_log} 
+		 WHERE status = 'sent' 
+		 ORDER BY timestamp DESC 
+		 LIMIT 1"
+	);
+
+	// If there is a failed email log entry, get the last one.
+	$last_failed_log = $wpdb->get_row(
+		"SELECT * FROM {$wpdb->pmpro_email_log} 
+		 WHERE status = 'failed' 
+		 ORDER BY timestamp DESC 
+		 LIMIT 1"
+	);
+
+	$email_log_purge_days = get_option( 'pmpro_email_log_purge_days', 90 );	
 	?>
 	<div class="pmpro_report-holder">
-		<p><?php printf( __( '%s emails logged in the last 30 days', 'paid-memberships-pro' ), number_format_i18n( $total_sent ) ); ?></p>
-		<?php if ( $total_failed > 0 ) { ?>
-			<p class="pmpro_error"><?php printf( __( '%s emails failed in the last 30 days', 'paid-memberships-pro' ), number_format_i18n( $total_failed ) ); ?></p>
+		<p>
+			<?php
+				// translators: %s is the total number of emails logged in the last 30 days.
+				printf(
+					__( 'Email activity: %s emails logged in the last 30 days.', 'paid-memberships-pro' ),
+					'<strong>' . number_format_i18n( $total_sent + $total_failed ) . '</strong>'
+				);
+
+				if ( ! empty( $email_log_purge_days ) ) {
+					echo ' ';
+					// translators: %s is the number of days after which email logs are automatically purged.
+					printf(
+						_n(
+							'Logs are automatically purged after %s day.',
+							'Logs are automatically purged after %s days.',
+							$email_log_purge_days,
+							'paid-memberships-pro'
+						),
+						'<strong>' . number_format_i18n( $email_log_purge_days ) . '</strong>'
+					);
+				}
+
+				if ( current_user_can( 'manage_options' ) ) {
+					echo ' <a href="' . esc_url( add_query_arg( 'page', 'pmpro-emailsettings#email-logging-settings', admin_url( 'admin.php' ) ) ) . '">';
+					esc_html_e( 'Email Log Settings', 'paid-memberships-pro' );
+					echo '</a>';
+				}
+			?>
+		</p>
+		<table class="wp-list-table widefat fixed striped">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Last Activity', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Actions', 'paid-memberships-pro' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><?php esc_html_e( 'Emails Sent Successfully', 'paid-memberships-pro' ); ?></td>
+					<td>
+						<?php if ( $total_sent > 0 ) { ?>
+							<?php
+							// Build the selectors for the status tag.
+							$status_classes = array();
+							$status_classes[] = 'pmpro_tag';
+							$status_classes[] = 'pmpro_tag-has_icon';
+							$status_classes[] = 'pmpro_tag-success';
+							$status_class = implode( ' ', $status_classes );
+							?>
+							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( __( '%s Sent', 'paid-memberships-pro' ), number_format_i18n( $total_sent ) ); ?></span>
+						<?php } else { ?>
+							<?php echo esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
+						<?php } ?>
+					</td>
+					<td>
+					<?php if ( $last_sent_log ) { ?>
+						<?php echo esc_html( sprintf(
+							// translators: %1$s is the date and %2$s is the time.
+							__( '%1$s at %2$s', 'paid-memberships-pro' ),
+							esc_html( date_i18n( get_option( 'date_format' ), strtotime( $last_sent_log->timestamp ) ) ),
+							esc_html( date_i18n( get_option( 'time_format' ), strtotime( $last_sent_log->timestamp ) ) )
+						) );
+						?>
+					<?php } else { ?>
+						<?php esc_html_e( 'No successful emails sent in the last 30 days', 'paid-memberships-pro' ); ?>
+					<?php } ?>
+					</td>
+					<td><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_logs', 'status' => 'sent' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_html_e( 'View Sent Email Log', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'View Log', 'paid-memberships-pro' ); ?></a></td>
+				</tr>
+				<tr>
+					<td><?php esc_html_e( 'Emails Failed to Send', 'paid-memberships-pro' ); ?></td>
+					<td>
+						<?php if ( $total_failed > 0 ) { ?>
+							<?php
+							// Build the selectors for the status tag.
+							$status_classes = array();
+							$status_classes[] = 'pmpro_tag';
+							$status_classes[] = 'pmpro_tag-has_icon';
+							$status_classes[] = 'pmpro_tag-error';
+							$status_class = implode( ' ', $status_classes );
+							?>
+							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( __( '%s Failed', 'paid-memberships-pro' ), number_format_i18n( $total_failed ) ); ?></span>
+						<?php } else { ?>
+							<?php echo esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
+						<?php } ?>
+					</td>
+					<td>
+					<?php if ( $last_failed_log ) { ?>
+						<?php
+						echo esc_html( sprintf(
+							// translators: %1$s is the date and %2$s is the time.
+							__( '%1$s at %2$s', 'paid-memberships-pro' ),
+							esc_html( date_i18n( get_option( 'date_format' ), strtotime( $last_failed_log->timestamp ) ) ),
+							esc_html( date_i18n( get_option( 'time_format' ), strtotime( $last_failed_log->timestamp ) ) )
+						) );
+						?>
+					<?php } else { ?>
+						<?php esc_html_e( 'No failed emails in the last 30 days', 'paid-memberships-pro' ); ?>
+					<?php } ?>
+					</td>
+					<td><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_logs', 'status' => 'failed' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_html_e( 'View Failed Email Log', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'View Log', 'paid-memberships-pro' ); ?></a></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<?php if ( function_exists( 'pmpro_report_email_logs_page' ) ) { ?>
+			<p class="pmpro_report-button">
+				<a class="button button-primary" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_logs' ), admin_url( 'admin.php' ) ) ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'View the full %s report', 'paid-memberships-pro' ), $pmpro_reports['email_logs'] ) ); ?>"><?php esc_html_e( 'Details', 'paid-memberships-pro' );?></a>
+			</p>
 		<?php } ?>
-		<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=email_logs' ) ); ?>">
-			<?php esc_html_e( 'View Full Report', 'paid-memberships-pro' ); ?>
-		</a>
+
 	</div>
 	<?php
 }

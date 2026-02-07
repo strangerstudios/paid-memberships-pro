@@ -63,10 +63,11 @@
 
 	$email_logging_disabled = get_option( 'pmpro_email_logging_disabled' );
 	$email_log_purge_days = get_option( 'pmpro_email_log_purge_days', 90 );
-	// Default to 90 if empty
-	if ( empty( $email_log_purge_days ) ) {
-		$email_log_purge_days = 90;
-	}
+
+	// Default to 90 only if the value is null or an empty string, but allow 0 as a valid value.
+		if ( $email_log_purge_days === null || $email_log_purge_days === '' ) {
+			$email_log_purge_days = 90;
+		}
 
 	if(empty($from_email))
 	{
