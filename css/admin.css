@@ -3916,11 +3916,11 @@ tr.pmpro_alert {
     }
 }
 
-#email-logs-form {
+#email-log-form {
 	margin-top: var(--pmpro--spacing--medium);
 }
 
-#email-logs-form h1.wp-heading-inline {
+#email-log-form h1.wp-heading-inline {
 	margin-top: 0;
 }
 

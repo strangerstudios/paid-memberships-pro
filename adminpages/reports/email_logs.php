@@ -1,30 +1,30 @@
 <?php
 /*
 	PMPro Report
-	Title: Email Logs
-	Slug: email_logs
+	Title: Email Log
+	Slug: email_log
 
 	For each report, write three functions:
 	* pmpro_report_{slug}_register() to register the widget (slug and title).
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
-function pmpro_report_email_logs_register( $pmpro_reports ) {
+function pmpro_report_email_log_register( $pmpro_reports ) {
 	// If email logging is disabled, do not register the report.
 	$email_logging_disabled = get_option( 'pmpro_email_logging_disabled' );
 	if ( ! empty( $email_logging_disabled ) ) {
 		return $pmpro_reports;
 	}
 
-	$pmpro_reports['email_logs'] = __( 'Email Logs', 'paid-memberships-pro' );
+	$pmpro_reports['email_log'] = __( 'Email Log', 'paid-memberships-pro' );
 	return $pmpro_reports;
 }
-add_filter( 'pmpro_registered_reports', 'pmpro_report_email_logs_register' );
+add_filter( 'pmpro_registered_reports', 'pmpro_report_email_log_register' );
 
 /**
- * Widget display for email logs report
+ * Widget display for email log report
  */
-function pmpro_report_email_logs_widget() {
+function pmpro_report_email_log_widget() {
 	global $wpdb;
 
 	// Get total emails sent in last 30 days
@@ -75,11 +75,11 @@ function pmpro_report_email_logs_widget() {
 
 				if ( ! empty( $email_log_purge_days ) ) {
 					echo ' ';
-					// translators: %s is the number of days after which email logs are automatically purged.
+					// translators: %s is the number of days after which email log entries are automatically purged.
 					printf(
 						_n(
-							'Logs are automatically purged after %s day.',
-							'Logs are automatically purged after %s days.',
+							'Entries are automatically purged after %s day.',
+							'Entries are automatically purged after %s days.',
 							$email_log_purge_days,
 							'paid-memberships-pro'
 						),
@@ -134,7 +134,7 @@ function pmpro_report_email_logs_widget() {
 						<?php esc_html_e( 'No successful emails sent in the last 30 days', 'paid-memberships-pro' ); ?>
 					<?php } ?>
 					</td>
-					<td><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_logs', 'status' => 'sent' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_html_e( 'View Sent Email Log', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'View Log', 'paid-memberships-pro' ); ?></a></td>
+					<td><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_log', 'status' => 'sent' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_html_e( 'View Sent Email Log', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'View Log', 'paid-memberships-pro' ); ?></a></td>
 				</tr>
 				<tr>
 					<td><?php esc_html_e( 'Emails Failed to Send', 'paid-memberships-pro' ); ?></td>
@@ -167,14 +167,14 @@ function pmpro_report_email_logs_widget() {
 						<?php esc_html_e( 'No failed emails in the last 30 days', 'paid-memberships-pro' ); ?>
 					<?php } ?>
 					</td>
-					<td><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_logs', 'status' => 'failed' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_html_e( 'View Failed Email Log', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'View Log', 'paid-memberships-pro' ); ?></a></td>
+					<td><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_log', 'status' => 'failed' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_html_e( 'View Failed Email Log', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'View Log', 'paid-memberships-pro' ); ?></a></td>
 				</tr>
 			</tbody>
 		</table>
 
-		<?php if ( function_exists( 'pmpro_report_email_logs_page' ) ) { ?>
+		<?php if ( function_exists( 'pmpro_report_email_log_page' ) ) { ?>
 			<p class="pmpro_report-button">
-				<a class="button button-primary" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_logs' ), admin_url( 'admin.php' ) ) ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'View the full %s report', 'paid-memberships-pro' ), $pmpro_reports['email_logs'] ) ); ?>"><?php esc_html_e( 'Details', 'paid-memberships-pro' );?></a>
+				<a class="button button-primary" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_log' ), admin_url( 'admin.php' ) ) ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'View the full %s report', 'paid-memberships-pro' ), $pmpro_reports['email_log'] ) ); ?>"><?php esc_html_e( 'Details', 'paid-memberships-pro' );?></a>
 			</p>
 		<?php } ?>
 
@@ -183,10 +183,28 @@ function pmpro_report_email_logs_widget() {
 }
 
 /**
- * Main page display for email logs report
+ * Main page display for email log report
  */
-function pmpro_report_email_logs_page() {
+function pmpro_report_email_log_page() {
 	global $wpdb, $pmpro_email_templates_defaults;
+
+	// Handle deleting an email log.
+	if ( isset( $_REQUEST['pmpro_delete_email_log'] ) ) {
+		$log_id = intval( $_REQUEST['pmpro_delete_email_log'] );
+		check_admin_referer( 'pmpro_delete_email_log_' . $log_id, 'pmpro_delete_email_log_nonce' );
+		
+		$wpdb->delete(
+			$wpdb->pmpro_email_log,
+			array( 'id' => $log_id ),
+			array( '%d' )
+		);
+		
+		?>
+		<div class="notice notice-success is-dismissible">
+			<p><?php esc_html_e( 'Email log deleted successfully.', 'paid-memberships-pro' ); ?></p>
+		</div>
+		<?php
+	}
 
 	// Get search parameter
 	$s = isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '';
@@ -209,18 +227,47 @@ function pmpro_report_email_logs_page() {
 
 	// Search filter
 	if ( ! empty( $s ) ) {
-		// Check if a full email address or login name was provided.
-		$user = get_user_by( 'login', $s );
-		if ( ! $user ) {
-			$user = get_user_by( 'email', $s );
-		}
+		// Check if we are searching for a specific field.
+		if ( strpos( $s, ':' ) !== false ) {
+			$search_parts = explode( ':', $s );
+			$search_key = trim( $search_parts[0] );
+			$search_value = trim( $search_parts[1] );
+			
+			if ( $search_key == 'login' || $search_key == 'user_login' || $search_key == 'username' ) {
+				$user = get_user_by( 'login', $search_value );
+				if ( $user ) {
+					$where_clauses[] = "user_id = %d";
+					$where_values[] = $user->ID;
+				} else {
+					$where_clauses[] = "0=1";
+				}
+			} elseif ( $search_key == 'email' || $search_key == 'user_email' ) {
+				$where_clauses[] = "email_to = %s";
+				$where_values[] = $search_value;
+			} elseif ( $search_key == 'id' || $search_key == 'user_id' ) {
+				$where_clauses[] = "user_id = %d";
+				$where_values[] = intval( $search_value );
+			} else {
+				// Default to general search if the key is not recognized.
+				$where_clauses[] = "(email_to LIKE %s OR subject LIKE %s)";
+				$search_term = '%' . $wpdb->esc_like( $s ) . '%';
+				$where_values[] = $search_term;
+				$where_values[] = $search_term;
+			}
+		} else {
+			// Check if a full email address or login name was provided.
+			$user = get_user_by( 'login', $s );
+			if ( ! $user ) {
+				$user = get_user_by( 'email', $s );
+			}
 
-		$where_clauses[] = "(email_to LIKE %s OR subject LIKE %s " . ( $user ? "OR user_id = %d" : "" ) . ")";
-		$search_term = '%' . $wpdb->esc_like( $s ) . '%';
-		$where_values[] = $search_term;
-		$where_values[] = $search_term;
-		if ( $user ) {
-			$where_values[] = $user->ID;
+			$where_clauses[] = "(email_to LIKE %s OR subject LIKE %s " . ( $user ? "OR user_id = %d" : "" ) . ")";
+			$search_term = '%' . $wpdb->esc_like( $s ) . '%';
+			$where_values[] = $search_term;
+			$where_values[] = $search_term;
+			if ( $user ) {
+				$where_values[] = $user->ID;
+			}
 		}
 	}
 
@@ -245,14 +292,14 @@ function pmpro_report_email_logs_page() {
 	}
 	$totalrows = $wpdb->get_var( $count_query );
 
-	// Get logs with pagination
-	$logs_query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$wpdb->pmpro_email_log} 
+	// Get log entries with pagination
+	$log_query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$wpdb->pmpro_email_log} 
 				   WHERE {$where_sql} 
 				   ORDER BY timestamp DESC 
 				   LIMIT %d, %d";
 
 	$query_values = array_merge( $where_values, array( $start, $limit ) );
-	$logs = $wpdb->get_results( $wpdb->prepare( $logs_query, $query_values ) );
+	$entries = $wpdb->get_results( $wpdb->prepare( $log_query, $query_values ) );
 
 	// Get available templates for filter dropdown
 	$templates = $wpdb->get_col( 
@@ -262,23 +309,23 @@ function pmpro_report_email_logs_page() {
 	);
 
 	?>
-	<form id="email-logs-form" method="get" action="">
+	<form id="email-log-form" method="get" action="">
 		<h1 class="wp-heading-inline">
-			<?php esc_html_e( 'Email Logs', 'paid-memberships-pro' ); ?>
+			<?php esc_html_e( 'Email Log', 'paid-memberships-pro' ); ?>
 		</h1>
 
 		<p class="search-box">
 			<label class="screen-reader-text" for="post-search-input">
-				<?php esc_html_e( 'Search Email Logs', 'paid-memberships-pro' ); ?>
+				<?php esc_html_e( 'Search Email Log', 'paid-memberships-pro' ); ?>
 			</label>
 			<input type="hidden" name="page" value="pmpro-reports" />
-			<input type="hidden" name="report" value="email_logs" />
+			<input type="hidden" name="report" value="email_log" />
 			<input id="post-search-input" type="search" value="<?php echo esc_attr( $s ); ?>" name="s" />
-			<input type="submit" id="search-submit" class="button" value="<?php esc_attr_e( 'Search Logs', 'paid-memberships-pro' ); ?>" />
+			<input type="submit" id="search-submit" class="button" value="<?php esc_attr_e( 'Search Log', 'paid-memberships-pro' ); ?>" />
 		</p>
 
 		<p>
-			<?php esc_html_e( 'This report shows a record of membership-related emails sent to members and site admins. You can search the logs by email template, subject line, or recipient. Click "View Content" to see the full message for any entry.', 'paid-memberships-pro' ); ?>
+			<?php esc_html_e( 'This report shows a record of membership-related emails sent to members and site admins. You can search by email template, subject line, or recipient. Click "View Content" to see the full message for any entry.', 'paid-memberships-pro' ); ?>
 			<?php if ( current_user_can( 'manage_options' ) ) { ?>
 				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-emailsettings#email-logging-settings' ), admin_url( 'admin.php' ) ) ); ?>">
 					<?php esc_html_e( 'Use the Email Settings page to manage how email logging works', 'paid-memberships-pro' ); ?>
@@ -292,7 +339,7 @@ function pmpro_report_email_logs_page() {
 				<label for="template" class="pmpro_report-filter-text">
 					<?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?>
 				</label>
-				<select id="template" name="template" onchange="jQuery('#email-logs-form').trigger('submit');">
+				<select id="template" name="template" onchange="jQuery('#email-log-form').trigger('submit');">
 					<option value="all" <?php selected( $template_filter, 'all' ); ?>>
 						<?php esc_html_e( 'All Templates', 'paid-memberships-pro' ); ?>
 					</option>
@@ -305,7 +352,7 @@ function pmpro_report_email_logs_page() {
 				<label for="status" class="pmpro_report-filter-text">
 					<?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?>
 				</label>
-				<select id="status" name="status" onchange="jQuery('#email-logs-form').trigger('submit');">
+				<select id="status" name="status" onchange="jQuery('#email-log-form').trigger('submit');">
 					<option value="all" <?php selected( $status_filter, 'all' ); ?>>
 						<?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?>
 					</option>
@@ -319,7 +366,7 @@ function pmpro_report_email_logs_page() {
 			</div>
 		</div>
 
-		<?php if ( $logs ) { ?>
+		<?php if ( $entries ) { ?>
 			<div class="tablenav top">
 				<div class="tablenav-pages">
 					<span class="displaying-num">
@@ -329,7 +376,7 @@ function pmpro_report_email_logs_page() {
 				<br class="clear" />
 			</div>
 
-			<table id="pmpro_report_email_logs" class="widefat striped pmpro_responsive_table">
+			<table id="pmpro_report_email_log" class="widefat striped pmpro_responsive_table">
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
@@ -341,8 +388,8 @@ function pmpro_report_email_logs_page() {
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ( $logs as $log ) { 
-						$user = ! empty( $log->user_id ) ? get_userdata( $log->user_id ) : null;
+					<?php foreach ( $entries as $entry ) { 
+						$user = ! empty( $entry->user_id ) ? get_userdata( $entry->user_id ) : null;
 						?>
 						<tr>
 							<td data-colname="<?php esc_attr_e( 'Date', 'paid-memberships-pro' ); ?>">
@@ -350,26 +397,30 @@ function pmpro_report_email_logs_page() {
 								echo esc_html( sprintf(
 									// translators: %1$s is the date and %2$s is the time.
 									__( '%1$s at %2$s', 'paid-memberships-pro' ),
-									esc_html( date_i18n( get_option( 'date_format' ), strtotime( $log->timestamp ) ) ),
-									esc_html( date_i18n( get_option( 'time_format' ), strtotime( $log->timestamp ) ) )
+									esc_html( date_i18n( get_option( 'date_format' ), strtotime( $entry->timestamp ) ) ),
+									esc_html( date_i18n( get_option( 'time_format' ), strtotime( $entry->timestamp ) ) )
 								) );
 								?>
 								<div class="row-actions">
-									<a href="#" class="pmpro-view-email-log" data-log-id="<?php echo esc_attr( $log->id ); ?>">
+									<a href="#" class="pmpro-view-email-log" data-log-id="<?php echo esc_attr( $entry->id ); ?>">
 										<?php esc_html_e( 'View Content', 'paid-memberships-pro' ); ?>
+									</a>
+									| 
+									<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_log', 'pmpro_delete_email_log' => $entry->id ) ), 'pmpro_delete_email_log_' . strval( intval( $entry->id ) ), 'pmpro_delete_email_log_nonce' ) ); ?>" class="pmpro-delete-email-log" style="color: #a00;" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this email log?', 'paid-memberships-pro' ); ?>');">
+										<?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?>
 									</a>
 								</div>
 							</td>
-							<td data-colname="<?php esc_attr_e( 'To', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $log->email_to ); ?></td>
-							<td data-colname="<?php esc_attr_e( 'Subject', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $log->subject ); ?></td>
+							<td data-colname="<?php esc_attr_e( 'To', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $entry->email_to ); ?></td>
+							<td data-colname="<?php esc_attr_e( 'Subject', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $entry->subject ); ?></td>
 							<td data-colname="<?php esc_attr_e( 'Template', 'paid-memberships-pro' ); ?>">
 								<?php
 									$description = '';
-									if ( ! empty( $log->template ) ) {
-										if ( ! empty( $pmpro_email_templates_defaults[ $log->template ]['description'] ) ) {
-											$description = $pmpro_email_templates_defaults[ $log->template ]['description'];
+									if ( ! empty( $entry->template ) ) {
+										if ( ! empty( $pmpro_email_templates_defaults[ $entry->template ]['description'] ) ) {
+											$description = $pmpro_email_templates_defaults[ $entry->template ]['description'];
 										} else {
-											$description = ucwords( str_replace( array( '_', '-' ), ' ', $log->template ) );
+											$description = ucwords( str_replace( array( '_', '-' ), ' ', $entry->template ) );
 										}
 									}
 
@@ -394,17 +445,17 @@ function pmpro_report_email_logs_page() {
 									$status_classes = array();
 									$status_classes[] = 'pmpro_tag';
 									$status_classes[] = 'pmpro_tag-has_icon';
-									if ( $log->status === 'sent' ) {
+									if ( $entry->status === 'sent' ) {
 										$status_classes[] = 'pmpro_tag-success';
 									} else {
 										$status_classes[] = 'pmpro_tag-error';
 									}
 									$status_class = implode( ' ', $status_classes );
 								?>
-								<span class="<?php echo esc_attr( $status_class ); ?>"><?php esc_html_e( ucfirst( $log->status ), 'paid-memberships-pro' ); ?></span>
+								<span class="<?php echo esc_attr( $status_class ); ?>"><?php esc_html_e( ucfirst( $entry->status ), 'paid-memberships-pro' ); ?></span>
 
-								<?php if ( ! empty( $log->error_message ) ) { ?>
-									<br /><small><?php echo esc_html( $log->error_message ); ?></small>
+								<?php if ( ! empty( $entry->error_message ) ) { ?>
+									<br /><small><?php echo esc_html( $entry->error_message ); ?></small>
 								<?php } ?>
 							</td>
 						</tr>
@@ -421,9 +472,9 @@ function pmpro_report_email_logs_page() {
 							$totalrows, 
 							$limit, 
 							1, 
-							admin_url( "admin.php?page=pmpro-reports&report=email_logs&s=" . urlencode( $s ) ), 
+							admin_url( "admin.php?page=pmpro-reports&report=email_log&s=" . urlencode( $s ) ), 
 							"&template=" . urlencode( $template_filter ) . "&status=" . urlencode( $status_filter ) . "&limit=" . $limit . "&pn=", 
-							__( 'Email Logs Pagination', 'paid-memberships-pro' ) 
+							__( 'Email Log Pagination', 'paid-memberships-pro' ) 
 						) 
 					);
 					?>
@@ -432,7 +483,7 @@ function pmpro_report_email_logs_page() {
 		<?php } else { ?>
 			<div class="pmpro_spacer"></div>
 			<div class="pmpro_message pmpro_info">
-				<p><?php esc_html_e( 'No email logs found.', 'paid-memberships-pro' ); ?></p>
+				<p><?php esc_html_e( 'No email log entries found.', 'paid-memberships-pro' ); ?></p>
 			</div>
 			<div class="pmpro_spacer"></div>
 		<?php } ?>

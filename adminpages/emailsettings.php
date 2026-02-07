@@ -42,7 +42,7 @@
 			global $wpdb;
 			$wpdb->query( "TRUNCATE TABLE {$wpdb->pmpro_email_log}" );
 			$msg = true;
-			$msgt = esc_html__( 'All email logs have been purged.', 'paid-memberships-pro' );
+			$msgt = esc_html__( 'All email log entries have been purged.', 'paid-memberships-pro' );
 		} else {
 			//assume success
 			$msg = true;
@@ -227,8 +227,8 @@
 				<p>
 					<?php
 					printf(
-						esc_html__( 'Email logs help you troubleshoot email delivery issues and track what emails have been sent. View email logs in the %s.', 'paid-memberships-pro' ),
-						'<a href="' . admin_url( 'admin.php?page=pmpro-reports&report=email_logs' ) . '">' . esc_html__( 'Email Logs Report', 'paid-memberships-pro' ) . '</a>'
+						esc_html__( 'Troubleshoot email delivery issues and track what emails have been sent. View entries in the %s.', 'paid-memberships-pro' ),
+						'<a href="' . admin_url( 'admin.php?page=pmpro-reports&report=email_log' ) . '">' . esc_html__( 'Email Log Report', 'paid-memberships-pro' ) . '</a>'
 					);
 					?>
 				</p>
@@ -242,31 +242,31 @@
 								<input type="checkbox" id="email_logging_disabled" name="email_logging_disabled" value="1" <?php checked( $email_logging_disabled, '1' ); ?> />
 								<label for="email_logging_disabled"><?php esc_html_e( 'Disable email logging', 'paid-memberships-pro' ); ?></label>
 								<p class="description">
-									<?php esc_html_e( 'Check this to stop logging emails to the database. Existing logs will not be deleted.', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Check this to stop logging emails to the database. Existing entries will not be deleted.', 'paid-memberships-pro' ); ?>
 								</p>
 							</td>
 						</tr>
 						<tr>
 							<th scope="row" valign="top">
-								<label for="email_log_purge_days"><?php esc_html_e( 'Auto-Purge Logs', 'paid-memberships-pro' ); ?>:</label>
+								<label for="email_log_purge_days"><?php esc_html_e( 'Auto-Purge', 'paid-memberships-pro' ); ?>:</label>
 							</th>
 							<td>
 								<input type="number" id="email_log_purge_days" name="email_log_purge_days" value="<?php echo esc_attr( $email_log_purge_days ); ?>" min="0" step="1" style="width: 100px;" />
 								<label for="email_log_purge_days"><?php esc_html_e( 'days', 'paid-memberships-pro' ); ?></label>
 								<p class="description">
-									<?php esc_html_e( 'Automatically delete email logs older than this many days. Set to 0 to disable auto-purge.', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Automatically delete email log entries older than this many days. Set to 0 to disable auto-purge.', 'paid-memberships-pro' ); ?>
 								</p>
 							</td>
 						</tr>
 						<tr>
 							<th scope="row" valign="top">
-								<label><?php esc_html_e( 'Purge All Logs', 'paid-memberships-pro' ); ?>:</label>
+								<label><?php esc_html_e( 'Purge All Entries', 'paid-memberships-pro' ); ?>:</label>
 							</th>
 							<td>
 								<input type="checkbox" id="email_log_purge_all" name="email_log_purge_all" value="1" />
-						<label for="email_log_purge_all"><?php esc_html_e( 'Purge all email logs', 'paid-memberships-pro' ); ?></label>
+						<label for="email_log_purge_all"><?php esc_html_e( 'Purge all email log entries', 'paid-memberships-pro' ); ?></label>
 								<p class="description">
-									<?php esc_html_e( 'Check this and save to permanently delete all email logs from the database. This action cannot be undone.', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Check this and save to permanently delete all email log entries from the database. This action cannot be undone.', 'paid-memberships-pro' ); ?>
 								</p>
 							</td>
 						</tr>

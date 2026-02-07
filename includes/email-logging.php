@@ -1,70 +1,138 @@
 <?php
 
 /**
- * Log an email.
+ * Log an email via wp_mail_succeeded.
  *
  * @since TBD
  * 
- * @param PMProEmail $email The email object
- * @param bool $result Result of wp_mail()
+ * @param array $mail_data The email data.
  */
-function pmpro_log_email( $email, $result ) {
-	global $wpdb;
+function pmpro_log_email_succeeded( $mail_data ) {
+	pmpro_log_email_from_mail_data( $mail_data, true );
+}
+add_action( 'wp_mail_succeeded', 'pmpro_log_email_succeeded' );
 
-	// Make sure we have an email object.
-	if ( empty( $email ) ) {
-		return $email;
-	}
+/**
+ * Log an email via wp_mail_failed.
+ *
+ * @since TBD
+ * 
+ * @param WP_Error $error The error object.
+ */
+function pmpro_log_email_failed( $error ) {
+	$mail_data = $error->get_error_data( 'wp_mail_failed' );
+	pmpro_log_email_from_mail_data( $mail_data, false, $error->get_error_message() );
+}
+add_action( 'wp_mail_failed', 'pmpro_log_email_failed' );
+
+/**
+ * Log an email from the mail data.
+ *
+ * @since TBD
+ * 
+ * @param array $mail_data The email data.
+ * @param bool $success Whether the email was sent successfully.
+ * @param string $error_message The error message if the email failed.
+ */
+function pmpro_log_email_from_mail_data( $mail_data, $success, $error_message = '' ) {
+	global $wpdb;
 
 	// Check if logging is disabled
 	if ( pmpro_getOption( 'email_logging_disabled' ) == '1' ) {
 		return;
 	}
-	
-	// Extract user_id from email data or lookup by email address
+
+	// Normalize headers to array
+	$headers = isset( $mail_data['headers'] ) ? $mail_data['headers'] : array();
+	if ( ! is_array( $headers ) ) {
+		$headers = explode( "\n", $headers );
+	}
+
+	// Extract data from headers
+	$template = '';
 	$user_id = 0;
-	if ( ! empty( $email->data['user_id'] ) ) {
-		$user_id = intval( $email->data['user_id'] );
-	} elseif( ! empty( $email->data['user_login'] ) ) {
-		$user = get_user_by( 'login', $email->data['user_login'] );
-		if ( $user ) {
-			$user_id = $user->ID;
+	$clean_headers = array(); // Headers without our internal tracking headers
+
+	foreach ( $headers as $header ) {
+		if ( empty( trim( $header ) ) ) {
+			continue;
 		}
-	} elseif ( ! empty( $email->email ) ) {
-		$user = get_user_by( 'email', $email->email );
+
+		if ( stripos( $header, 'X-PMPro-Template:' ) === 0 ) {
+			$template = trim( substr( $header, 17 ) );
+		} elseif ( stripos( $header, 'X-PMPro-User-ID:' ) === 0 ) {
+			$user_id = intval( substr( $header, 16 ) );
+		} else {
+			$clean_headers[] = $header;
+		}
+	}
+
+	// If user_id not in headers, try to find by email
+	// Use normalized email_to for lookup
+	$email_to = isset( $mail_data['to'] ) ? $mail_data['to'] : '';
+	if ( is_array( $email_to ) ) {
+		$email_to = implode( ',', $email_to );
+	}
+
+	if ( empty( $user_id ) && ! empty( $email_to ) ) {
+		// Handle comma-separated emails? Just take the first one for lookup
+		$emails = explode( ',', $email_to );
+		$email_address = trim( $emails[0] );
+		
+		// Strip name if present "Name <email>"
+		if ( preg_match( '/<([^>]+)>/', $email_address, $matches ) ) {
+			$email_address = $matches[1];
+		}
+
+		$user = get_user_by( 'email', $email_address );
 		if ( $user ) {
 			$user_id = $user->ID;
 		}
 	}
-	
-	// Parse headers to extract reply-to, CC, BCC
-	$parsed_headers = pmpro_parse_email_headers( $email->headers );
+
+	// Parse other headers (Reply-To, CC, BCC)
+	$parsed_headers = pmpro_parse_email_headers( $clean_headers );
 	
 	// Prepare data for insertion
 	$log_data = array(
 		'user_id'       => $user_id,
-		'email_to'      => ! empty( $email->email ) ? $email->email : '',
-		'email_from'    => ! empty( $email->from ) ? $email->from : '',
-		'from_name'     => ! empty( $email->fromname ) ? $email->fromname : '',
-		'subject'       => ! empty( $email->subject ) ? $email->subject : '',
-		'body'          => ! empty( $email->body ) ? $email->body : '',
-		'template'      => ! empty( $email->template ) ? $email->template : '',
-		'headers'       => maybe_serialize( $email->headers ),
+		'email_to'      => $email_to,
+		'email_from'    => '', // Will be extracted from headers or default
+		'from_name'     => '', // Will be extracted from headers or default
+		'subject'       => isset( $mail_data['subject'] ) ? $mail_data['subject'] : '',
+		'body'          => isset( $mail_data['message'] ) ? $mail_data['message'] : '',
+		'template'      => $template,
+		'headers'       => maybe_serialize( $clean_headers ),
 		'reply_to'      => $parsed_headers['reply_to'],
 		'cc'            => $parsed_headers['cc'],
 		'bcc'           => $parsed_headers['bcc'],
-		'status'        => $result ? 'sent' : 'failed',
+		'status'        => $success ? 'sent' : 'failed',
+		'error_message' => $error_message,
 		'timestamp'     => current_time( 'mysql' )
 	);
+
+	// Extract From and From Name from headers
+	foreach ( $clean_headers as $header ) {
+		if ( stripos( $header, 'From:' ) === 0 ) {
+			$from_header = trim( substr( $header, 5 ) );
+			// Check for "Name <email>" format
+			if ( preg_match( '/(.*)<([^>]+)>/', $from_header, $matches ) ) {
+				$log_data['from_name'] = trim( $matches[1] );
+				$log_data['email_from'] = trim( $matches[2] );
+			} else {
+				$log_data['email_from'] = $from_header;
+			}
+			break;
+		}
+	}
 	
 	// Insert log entry
 	$wpdb->insert(
 		$wpdb->pmpro_email_log,
 		$log_data,
-		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 	);
 }
-add_action( 'pmpro_after_email_sent', 'pmpro_log_email', 10, 2 );
 
 /**
  * Parse email headers to extract reply-to, CC, BCC
@@ -113,9 +181,9 @@ function pmpro_parse_email_headers( $headers ) {
 }
 
 /**
- * Auto-purge old email logs based on settings
+ * Auto-purge old email log entries based on settings
  */
-function pmpro_auto_purge_email_logs() {
+function pmpro_auto_purge_email_log_entries() {
 	$purge_days = intval( get_option( 'pmpro_email_log_purge_days', 90 ) );
 
 	// If set to 0, purge is disabled
@@ -134,7 +202,7 @@ function pmpro_auto_purge_email_logs() {
 		)
 	);
 }
-add_action( 'pmpro_schedule_daily', 'pmpro_auto_purge_email_logs' );
+add_action( 'pmpro_schedule_daily', 'pmpro_auto_purge_email_log_entries' );
 
 /**
  * Render email log details HTML for modal display

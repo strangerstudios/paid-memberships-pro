@@ -1,19 +1,19 @@
 <?php
 /**
- * Email Logs panel for Member Edit page
+ * Email Log panel for Member Edit page
  *
  * @package Paid Memberships Pro
  * @subpackage Admin
  * @since TBD
  */
 
-class PMPro_Member_Edit_Panel_Email_Logs extends PMPro_Member_Edit_Panel {
+class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 	/**
 	 * Set up the panel
 	 */
 	public function __construct() {
-		$this->slug = 'email-logs';
-		$this->title = __( 'Email Logs', 'paid-memberships-pro' );
+		$this->slug = 'email-log';
+		$this->title = __( 'Email Log', 'paid-memberships-pro' );
 		// No submit button needed - this is read-only
 		$this->submit_text = '';
 	}
@@ -35,12 +35,12 @@ class PMPro_Member_Edit_Panel_Email_Logs extends PMPro_Member_Edit_Panel {
 		$user = self::get_user();
 		
 		if ( empty( $user->ID ) ) {
-			echo '<p>' . esc_html__( 'Save the user first to view email logs.', 'paid-memberships-pro' ) . '</p>';
+			echo '<p>' . esc_html__( 'Save the user first to view email log entries.', 'paid-memberships-pro' ) . '</p>';
 			return;
 		}
 		
-		// Get all email logs for this user (limited to 10 most recent)
-		$logs = $wpdb->get_results( $wpdb->prepare(
+		// Get all email log entries for this user (limited to 10 most recent)
+		$entries = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * FROM {$wpdb->pmpro_email_log} 
 			 WHERE user_id = %d OR email_to = %s 
 			 ORDER BY timestamp DESC 
@@ -50,8 +50,8 @@ class PMPro_Member_Edit_Panel_Email_Logs extends PMPro_Member_Edit_Panel {
 		) );
 		
 		?>
-		<?php if ( empty( $logs ) ) { ?>
-			<p><?php esc_html_e( 'No email logs found for this user.', 'paid-memberships-pro' ); ?></p>
+		<?php if ( empty( $entries ) ) { ?>
+			<p><?php esc_html_e( 'No email log entries found for this user.', 'paid-memberships-pro' ); ?></p>
 		<?php } else { ?>
 			<table class="widefat striped pmpro_responsive_table">
 				<thead>
@@ -64,33 +64,33 @@ class PMPro_Member_Edit_Panel_Email_Logs extends PMPro_Member_Edit_Panel {
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ( $logs as $log ) { ?>
+					<?php foreach ( $entries as $entry ) { ?>
 						<tr>
 							<td data-colname="<?php esc_attr_e( 'Date', 'paid-memberships-pro' ); ?>">
 								<?php
 								echo esc_html( sprintf(
 									// translators: %1$s is the date and %2$s is the time.
 									__( '%1$s at %2$s', 'paid-memberships-pro' ),
-									esc_html( date_i18n( get_option( 'date_format' ), strtotime( $log->timestamp ) ) ),
-									esc_html( date_i18n( get_option( 'time_format' ), strtotime( $log->timestamp ) ) )
+									esc_html( date_i18n( get_option( 'date_format' ), strtotime( $entry->timestamp ) ) ),
+									esc_html( date_i18n( get_option( 'time_format' ), strtotime( $entry->timestamp ) ) )
 								) );
 								?>
 								<div class="row-actions">
-									<a href="#" class="pmpro-view-email-log" data-log-id="<?php echo esc_attr( $log->id ); ?>">
+									<a href="#" class="pmpro-view-email-log" data-log-id="<?php echo esc_attr( $entry->id ); ?>">
 										<?php esc_html_e( 'View Content', 'paid-memberships-pro' ); ?>
 									</a>
 								</div>
 							</td>
-							<td data-colname="<?php esc_attr_e( 'To', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $log->email_to ); ?></td>
-							<td data-colname="<?php esc_attr_e( 'Subject', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $log->subject ); ?></td>
+							<td data-colname="<?php esc_attr_e( 'To', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $entry->email_to ); ?></td>
+							<td data-colname="<?php esc_attr_e( 'Subject', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $entry->subject ); ?></td>
 							<td data-colname="<?php esc_attr_e( 'Template', 'paid-memberships-pro' ); ?>">
 								<?php
 									$description = '';
-									if ( ! empty( $log->template ) ) {
-										if ( ! empty( $pmpro_email_templates_defaults[ $log->template ]['description'] ) ) {
-											$description = $pmpro_email_templates_defaults[ $log->template ]['description'];
+									if ( ! empty( $entry->template ) ) {
+										if ( ! empty( $pmpro_email_templates_defaults[ $entry->template ]['description'] ) ) {
+											$description = $pmpro_email_templates_defaults[ $entry->template ]['description'];
 										} else {
-											$description = ucwords( str_replace( array( '_', '-' ), ' ', $log->template ) );
+											$description = ucwords( str_replace( array( '_', '-' ), ' ', $entry->template ) );
 										}
 									}
 
@@ -103,17 +103,17 @@ class PMPro_Member_Edit_Panel_Email_Logs extends PMPro_Member_Edit_Panel {
 									$status_classes = array();
 									$status_classes[] = 'pmpro_tag';
 									$status_classes[] = 'pmpro_tag-has_icon';
-									if ( $log->status === 'sent' ) {
+									if ( $entry->status === 'sent' ) {
 										$status_classes[] = 'pmpro_tag-success';
 									} else {
 										$status_classes[] = 'pmpro_tag-error';
 									}
 									$status_class = implode( ' ', $status_classes );
 								?>
-								<span class="<?php echo esc_attr( $status_class ); ?>"><?php esc_html_e( ucfirst( $log->status ), 'paid-memberships-pro' ); ?></span>
+								<span class="<?php echo esc_attr( $status_class ); ?>"><?php esc_html_e( ucfirst( $entry->status ), 'paid-memberships-pro' ); ?></span>
 
-								<?php if ( ! empty( $log->error_message ) ) { ?>
-									<br /><small><?php echo esc_html( $log->error_message ); ?></small>
+								<?php if ( ! empty( $entry->error_message ) ) { ?>
+									<br /><small><?php echo esc_html( $entry->error_message ); ?></small>
 								<?php } ?>
 							</td>
 						</tr>
@@ -122,16 +122,16 @@ class PMPro_Member_Edit_Panel_Email_Logs extends PMPro_Member_Edit_Panel {
 			</table>
 			<p>
 			<?php
-			/* translators: %d is the number of email logs being shown. */
+			/* translators: %d is the number of email log entries being shown. */
 			printf(
 				esc_html__( 'Showing the %d most recent emails.', 'paid-memberships-pro' ),
-				count( $logs )
+				count( $entries )
 			);
 			echo ' ';
 			printf(
 				'<a href="%s">%s</a>',
-				esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_logs', 's' => urlencode( $user->user_login ) ), admin_url( 'admin.php' ) ) ),
-				esc_html__( 'View all email logs for this user.', 'paid-memberships-pro' )
+				esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_log', 's' => 'login:' . urlencode( $user->user_login ) ), admin_url( 'admin.php' ) ) ),
+				esc_html__( 'View all email log entries for this user.', 'paid-memberships-pro' )
 			);
 			?>
 		</p>
@@ -154,6 +154,6 @@ add_filter( 'pmpro_member_edit_panels', function( $panels ) {
 		return $panels;
 	}
 
-	$panels[] = new PMPro_Member_Edit_Panel_Email_Logs();
+	$panels[] = new PMPro_Member_Edit_Panel_Email_Log();
 	return $panels;
 } );
