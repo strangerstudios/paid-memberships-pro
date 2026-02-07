@@ -30,7 +30,7 @@ class PMPro_Member_Edit_Panel_Email_Logs extends PMPro_Member_Edit_Panel {
 	 * Display the panel contents
 	 */
 	protected function display_panel_contents() {
-		global $wpdb;
+		global $wpdb, $pmpro_email_templates_defaults;
 		
 		$user = self::get_user();
 		
@@ -50,80 +50,92 @@ class PMPro_Member_Edit_Panel_Email_Logs extends PMPro_Member_Edit_Panel {
 		) );
 		
 		?>
-		<div id="member-email-logs">
-			<?php if ( empty( $logs ) ) { ?>
-				<p><?php esc_html_e( 'No email logs found for this user.', 'paid-memberships-pro' ); ?></p>
-			<?php } else { ?>
-				<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
-					<thead>
+		<?php if ( empty( $logs ) ) { ?>
+			<p><?php esc_html_e( 'No email logs found for this user.', 'paid-memberships-pro' ); ?></p>
+		<?php } else { ?>
+			<table class="widefat striped pmpro_responsive_table">
+				<thead>
+					<tr>
+						<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'To', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ( $logs as $log ) { ?>
 						<tr>
-							<th><?php esc_html_e( 'Date/Time', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'To', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'Actions', 'paid-memberships-pro' ); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ( $logs as $log ) { ?>
-							<tr>
-								<td>
-									<?php 
-									echo esc_html( 
-										date_i18n( 
-											get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), 
-											strtotime( $log->timestamp ) 
-										) 
-									);
-									?>
-								</td>
-								<td><?php echo esc_html( $log->email_to ); ?></td>
-								<td><?php echo esc_html( $log->subject ); ?></td>
-								<td>
-									<?php 
-									if ( ! empty( $log->template ) ) {
-										echo esc_html( ucwords( str_replace( array( '_', '-' ), ' ', $log->template ) ) );
-									} else {
-										echo '—';
-									}
-									?>
-								</td>
-								<td>
-									<?php if ( $log->status === 'sent' ) { ?>
-										<span style="color: green;">✓ <?php esc_html_e( 'Sent', 'paid-memberships-pro' ); ?></span>
-									<?php } else { ?>
-										<span style="color: red;">✗ <?php esc_html_e( 'Failed', 'paid-memberships-pro' ); ?></span>
-										<?php if ( ! empty( $log->error_message ) ) { ?>
-											<br><small><?php echo esc_html( $log->error_message ); ?></small>
-										<?php } ?>
-									<?php } ?>
-								</td>
-								<td>
+							<td data-colname="<?php esc_attr_e( 'Date', 'paid-memberships-pro' ); ?>">
+								<?php
+								echo esc_html( sprintf(
+									// translators: %1$s is the date and %2$s is the time.
+									__( '%1$s at %2$s', 'paid-memberships-pro' ),
+									esc_html( date_i18n( get_option( 'date_format' ), strtotime( $log->timestamp ) ) ),
+									esc_html( date_i18n( get_option( 'time_format' ), strtotime( $log->timestamp ) ) )
+								) );
+								?>
+								<div class="row-actions">
 									<a href="#" class="pmpro-view-email-log" data-log-id="<?php echo esc_attr( $log->id ); ?>">
-										<?php esc_html_e( 'View', 'paid-memberships-pro' ); ?>
+										<?php esc_html_e( 'View Content', 'paid-memberships-pro' ); ?>
 									</a>
-								</td>
-							</tr>
-						<?php } ?>
-					</tbody>
-				</table>
-				<p>
-				<?php
-				printf(
-					esc_html__( 'Showing the %d most recent emails.', 'paid-memberships-pro' ),
-					count( $logs )
-				);
-				echo ' ';
-				printf( 
-					'<a href="%s">%s</a>',
-					esc_url( admin_url( 'admin.php?page=pmpro-reports&report=email_logs&s=' . urlencode( $user->user_login ) ) ),
-					esc_html__( 'View all email logs for this user.', 'paid-memberships-pro' )
-				);
-				?>
-			</p>
-			<?php } ?>
-		</div>
+								</div>
+							</td>
+							<td data-colname="<?php esc_attr_e( 'To', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $log->email_to ); ?></td>
+							<td data-colname="<?php esc_attr_e( 'Subject', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $log->subject ); ?></td>
+							<td data-colname="<?php esc_attr_e( 'Template', 'paid-memberships-pro' ); ?>">
+								<?php
+									$description = '';
+									if ( ! empty( $log->template ) ) {
+										if ( ! empty( $pmpro_email_templates_defaults[ $log->template ]['description'] ) ) {
+											$description = $pmpro_email_templates_defaults[ $log->template ]['description'];
+										} else {
+											$description = ucwords( str_replace( array( '_', '-' ), ' ', $log->template ) );
+										}
+									}
+
+									echo $description ? esc_html( $description ) : esc_html__( '&#8212;', 'paid-memberships-pro' );
+								?>
+							</td>
+							<td data-colname="<?php esc_attr_e( 'Status', 'paid-memberships-pro' ); ?>">
+								<?php
+									// Build the selectors for the status tag.
+									$status_classes = array();
+									$status_classes[] = 'pmpro_tag';
+									$status_classes[] = 'pmpro_tag-has_icon';
+									if ( $log->status === 'sent' ) {
+										$status_classes[] = 'pmpro_tag-success';
+									} else {
+										$status_classes[] = 'pmpro_tag-error';
+									}
+									$status_class = implode( ' ', $status_classes );
+								?>
+								<span class="<?php echo esc_attr( $status_class ); ?>"><?php esc_html_e( ucfirst( $log->status ), 'paid-memberships-pro' ); ?></span>
+
+								<?php if ( ! empty( $log->error_message ) ) { ?>
+									<br /><small><?php echo esc_html( $log->error_message ); ?></small>
+								<?php } ?>
+							</td>
+						</tr>
+					<?php } ?>
+				</tbody>
+			</table>
+			<p>
+			<?php
+			/* translators: %d is the number of email logs being shown. */
+			printf(
+				esc_html__( 'Showing the %d most recent emails.', 'paid-memberships-pro' ),
+				count( $logs )
+			);
+			echo ' ';
+			printf(
+				'<a href="%s">%s</a>',
+				esc_url( add_query_arg( array( 'page' => 'pmpro-reports', 'report' => 'email_logs', 's' => urlencode( $user->user_login ) ), admin_url( 'admin.php' ) ) ),
+				esc_html__( 'View all email logs for this user.', 'paid-memberships-pro' )
+			);
+			?>
+		</p>
+		<?php } ?>
 
 		<?php
 		// Render the email log modal

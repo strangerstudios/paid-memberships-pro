@@ -241,11 +241,16 @@ function pmpro_report_email_logs_page() {
 							<td data-colname="<?php esc_attr_e( 'Subject', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $log->subject ); ?></td>
 							<td data-colname="<?php esc_attr_e( 'Template', 'paid-memberships-pro' ); ?>">
 								<?php
-								if ( ! empty( $log->template ) && ! empty( $pmpro_email_templates_defaults[$log->template ]['description'] ) ) {
-									echo esc_html( $pmpro_email_templates_defaults[$log->template ]['description'] );
-								} else {
-									echo '—';
-								}
+									$description = '';
+									if ( ! empty( $log->template ) ) {
+										if ( ! empty( $pmpro_email_templates_defaults[ $log->template ]['description'] ) ) {
+											$description = $pmpro_email_templates_defaults[ $log->template ]['description'];
+										} else {
+											$description = ucwords( str_replace( array( '_', '-' ), ' ', $log->template ) );
+										}
+									}
+
+									echo $description ? esc_html( $description ) : esc_html__( '&#8212;', 'paid-memberships-pro' );
 								?>
 							</td>
 							<td data-colname="<?php esc_attr_e( 'User', 'paid-memberships-pro' ); ?>">
@@ -274,6 +279,10 @@ function pmpro_report_email_logs_page() {
 									$status_class = implode( ' ', $status_classes );
 								?>
 								<span class="<?php echo esc_attr( $status_class ); ?>"><?php esc_html_e( ucfirst( $log->status ), 'paid-memberships-pro' ); ?></span>
+
+								<?php if ( ! empty( $log->error_message ) ) { ?>
+									<br /><small><?php echo esc_html( $log->error_message ); ?></small>
+								<?php } ?>
 							</td>
 						</tr>
 					<?php } ?>
