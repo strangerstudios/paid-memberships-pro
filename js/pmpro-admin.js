@@ -1296,7 +1296,7 @@ jQuery(document).ready(function () {
 });
 
 /**
- * Email Logs - View Email Details Modal
+ * Email Log - View Email Details Modal
  */
 jQuery(document).ready(function($) {
 	// View email log details via REST API
