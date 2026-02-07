@@ -95,7 +95,7 @@ require_once( PMPRO_DIR . '/adminpages/reports/logins.php' );            // load
 require_once( PMPRO_DIR . '/adminpages/reports/memberships.php' );       // load the Memberships report
 require_once( PMPRO_DIR . '/adminpages/reports/members-per-level.php' ); // load the Members Per Level report
 require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );             // load the Sales report
-require_once( PMPRO_DIR . '/adminpages/reports/email_logs.php' );        // load the Email Logs report
+require_once( PMPRO_DIR . '/adminpages/reports/email_log.php' );        // load the Email Log report
 
 require_once( PMPRO_DIR . '/adminpages/member-edit.php' ); // load the Member Edit admin page.
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-abstract-class-member-edit-panel.php' );
@@ -105,7 +105,7 @@ require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-orders.php' );
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-tos.php' );
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-user-fields.php' );
-require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-email-logs.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-email-log.php' );
 
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
