@@ -53,18 +53,39 @@ function pmpro_log_email_from_mail_data( $mail_data, $success, $error_message = 
 	$user_id = 0;
 	$clean_headers = array(); // Headers without our internal tracking headers
 
-	foreach ( $headers as $header ) {
-		if ( empty( trim( $header ) ) ) {
+	foreach ( $headers as $key => $value ) {
+		// Handle associative array (Key => Value)
+		if ( is_string( $key ) ) {
+			if ( strcasecmp( $key, 'X-PMPro-Template' ) === 0 ) {
+				$template = trim( $value );
+				continue;
+			} elseif ( strcasecmp( $key, 'X-PMPro-User-ID' ) === 0 ) {
+				$user_id = intval( $value );
+				continue;
+			}
+			
+			// Keep other headers
+			$clean_headers[ $key ] = $value;
 			continue;
 		}
 
-		if ( stripos( $header, 'X-PMPro-Template:' ) === 0 ) {
-			$template = trim( substr( $header, 17 ) );
-		} elseif ( stripos( $header, 'X-PMPro-User-ID:' ) === 0 ) {
-			$user_id = intval( substr( $header, 16 ) );
-		} else {
-			$clean_headers[] = $header;
+		// Handle numeric array (String "Header: Value")
+		if ( empty( trim( $value ) ) ) {
+			continue;
 		}
+
+		if ( stripos( $value, 'X-PMPro-Template:' ) === 0 ) {
+			$template = trim( substr( $value, 17 ) );
+		} elseif ( stripos( $value, 'X-PMPro-User-ID:' ) === 0 ) {
+			$user_id = intval( substr( $value, 16 ) );
+		} else {
+			$clean_headers[] = $value;
+		}
+	}
+
+	// If there is no template, don't log as it's likely not from PMPro. Remove this if we want to log all emails regardless of source, but for now we want to limit to PMPro-generated emails.
+	if ( empty( $template ) ) {
+		return;
 	}
 
 	// If user_id not in headers, try to find by email
