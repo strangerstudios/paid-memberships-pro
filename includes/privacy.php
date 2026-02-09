@@ -22,6 +22,31 @@ function pmpro_add_privacy_policy_content() {
 	$content .= '<p>' . __( "At checkout, we may also collect your credit card number, expiration date, and security code. This information is passed to our payment gateway to process your purchase. The last 4 digits of your credit card number and the expiration date are saved by our site to use for reference and to send you an email if your credit card will expire before the next recurring payment.", 'paid-memberships-pro' ) . '</p>';
 	$content .= '<p>' . __( "When logged in, we use cookies to track some of your activity on our site including logins, visits, and page views.", 'paid-memberships-pro' ) . '</p>';
 
+	// Check if email logging is enabled
+	$email_logging_disabled = get_option( 'pmpro_email_logging_disabled' );
+	$email_log_purge_days = get_option( 'pmpro_email_log_purge_days', 90 );
+
+	if ( empty( $email_logging_disabled ) ) {
+		$content .= '<p>' . __( "We maintain logs of transactional emails sent to you for operational and support purposes. These logs include the email content, recipient address, subject line, and delivery status.", 'paid-memberships-pro' ) . '</p>';
+
+		   if ( ! empty( $email_log_purge_days ) ) {
+			   // translators: %s is the number of days after which email log entries are automatically purged.
+			   $content .= '<p>';
+			   $content .= sprintf(
+				   _n(
+					   'Entries are automatically purged after %s day.',
+					   'Entries are automatically purged after %s days.',
+					   $email_log_purge_days,
+					   'paid-memberships-pro'
+				   ),
+				   number_format_i18n( $email_log_purge_days )
+			   );
+			   $content .= '</p>';
+		   }
+
+		$content .= '<p>' . __( 'If you request deletion of your personal data, all email log entries associated with your account will be permanently removed.', 'paid-memberships-pro' ) . '</p>';
+	}
+
 	wp_add_privacy_policy_content( 'Paid Memberships Pro', $content );
 }
 add_action( 'admin_init', 'pmpro_add_privacy_policy_content' );
