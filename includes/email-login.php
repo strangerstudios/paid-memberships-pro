@@ -109,7 +109,7 @@ function pmpro_login_process_form_submission_pmpro_login() {
 				$('.pmpro_card_actions').remove();
 
 				// Now add the success message inside the .pmpro_card_content div.
-				$('.pmpro_card_content').prepend('<div class="pmpro_message" id="pmpro_email_login_confirmation"><?php echo esc_js( "If an account exists for this email address, you\'ll receive a login link shortly. This link will expire in 15 minutes.", "paid-memberships-pro" ); ?> <a href="<?php echo esc_url( pmpro_login_url() ); ?>"><?php echo esc_js( "Click here to go back to login.", "paid-memberships-pro" ); ?></a></div>');
+				$('.pmpro_card_content').prepend('<div class="pmpro_message" id="pmpro_email_login_confirmation"><?php echo esc_js( "If an account exists for this email address, you'll receive a login link shortly. This link will expire in 15 minutes.", "paid-memberships-pro" ); ?> <a href="<?php echo esc_url( pmpro_login_url() ); ?>"><?php echo esc_js( "Click here to go back to login.", "paid-memberships-pro" ); ?></a></div>');
 			});
 		</script>
 	<?php
