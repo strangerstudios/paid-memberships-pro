@@ -253,6 +253,9 @@
 			}
 			
 			// Add tracking headers for the email log.
+			// Note: WordPress's wp_mail() strips From, Reply-To, CC, BCC, and Content-Type
+			// headers before firing wp_mail_succeeded, so we duplicate them as X-PMPro-*
+			// headers which WordPress preserves as unrecognized headers.
 			if ( ! empty( $this->template ) ) {
 				$this->headers[] = 'X-PMPro-Template: ' . $this->template;
 			}
@@ -262,6 +265,23 @@
 				$user = get_user_by( 'login', $this->data['user_login'] );
 				if ( $user ) {
 					$this->headers[] = 'X-PMPro-User-ID: ' . $user->ID;
+				}
+			}
+			if ( ! empty( $this->from ) ) {
+				$this->headers[] = 'X-PMPro-From: ' . $this->from;
+			}
+			if ( ! empty( $this->fromname ) ) {
+				$this->headers[] = 'X-PMPro-From-Name: ' . $this->fromname;
+			}
+
+			// Reply-To, CC, BCC may have been added via the pmpro_email_headers filter.
+			foreach ( $this->headers as $header ) {
+				if ( stripos( $header, 'Reply-To:' ) === 0 ) {
+					$this->headers[] = 'X-PMPro-Reply-To: ' . trim( substr( $header, 9 ) );
+				} elseif ( stripos( $header, 'Cc:' ) === 0 ) {
+					$this->headers[] = 'X-PMPro-CC: ' . trim( substr( $header, 3 ) );
+				} elseif ( stripos( $header, 'Bcc:' ) === 0 ) {
+					$this->headers[] = 'X-PMPro-BCC: ' . trim( substr( $header, 4 ) );
 				}
 			}
 

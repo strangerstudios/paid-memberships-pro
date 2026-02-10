@@ -48,24 +48,43 @@ function pmpro_log_email_from_mail_data( $mail_data, $success, $error_message = 
 		$headers = explode( "\n", $headers );
 	}
 
-	// Extract data from headers
+	// Extract data from X-PMPro tracking headers.
+	// Note: WordPress's wp_mail() strips standard headers (From, Reply-To, CC, BCC)
+	// before firing wp_mail_succeeded, so we use custom X-PMPro-* headers instead.
 	$template = '';
 	$user_id = 0;
+	$email_from = '';
+	$from_name = '';
+	$reply_to = '';
+	$cc = '';
+	$bcc = '';
 	$clean_headers = array(); // Headers without our internal tracking headers
+
+	// Map of X-PMPro header names to their extraction callbacks.
+	$pmpro_headers = array(
+		'X-PMPro-Template'   => 'template',
+		'X-PMPro-User-ID'    => 'user_id',
+		'X-PMPro-From'       => 'email_from',
+		'X-PMPro-From-Name'  => 'from_name',
+		'X-PMPro-Reply-To'   => 'reply_to',
+		'X-PMPro-CC'         => 'cc',
+		'X-PMPro-BCC'        => 'bcc',
+	);
 
 	foreach ( $headers as $key => $value ) {
 		// Handle associative array (Key => Value)
 		if ( is_string( $key ) ) {
-			if ( strcasecmp( $key, 'X-PMPro-Template' ) === 0 ) {
-				$template = trim( $value );
-				continue;
-			} elseif ( strcasecmp( $key, 'X-PMPro-User-ID' ) === 0 ) {
-				$user_id = intval( $value );
-				continue;
+			$matched = false;
+			foreach ( $pmpro_headers as $header_name => $var_name ) {
+				if ( strcasecmp( $key, $header_name ) === 0 ) {
+					$$var_name = trim( $value );
+					$matched = true;
+					break;
+				}
 			}
-			
-			// Keep other headers
-			$clean_headers[ $key ] = $value;
+			if ( ! $matched ) {
+				$clean_headers[ $key ] = $value;
+			}
 			continue;
 		}
 
@@ -74,14 +93,22 @@ function pmpro_log_email_from_mail_data( $mail_data, $success, $error_message = 
 			continue;
 		}
 
-		if ( stripos( $value, 'X-PMPro-Template:' ) === 0 ) {
-			$template = trim( substr( $value, 17 ) );
-		} elseif ( stripos( $value, 'X-PMPro-User-ID:' ) === 0 ) {
-			$user_id = intval( substr( $value, 16 ) );
-		} else {
+		$matched = false;
+		foreach ( $pmpro_headers as $header_name => $var_name ) {
+			$prefix = $header_name . ':';
+			if ( stripos( $value, $prefix ) === 0 ) {
+				$$var_name = trim( substr( $value, strlen( $prefix ) ) );
+				$matched = true;
+				break;
+			}
+		}
+		if ( ! $matched ) {
 			$clean_headers[] = $value;
 		}
 	}
+
+	// Ensure user_id is an integer.
+	$user_id = intval( $user_id );
 
 	// If there is no template, don't log as it's likely not from PMPro. Remove this if we want to log all emails regardless of source, but for now we want to limit to PMPro-generated emails.
 	if ( empty( $template ) ) {
@@ -111,42 +138,24 @@ function pmpro_log_email_from_mail_data( $mail_data, $success, $error_message = 
 		}
 	}
 
-	// Parse other headers (Reply-To, CC, BCC)
-	$parsed_headers = pmpro_parse_email_headers( $clean_headers );
-	
 	// Prepare data for insertion
 	$log_data = array(
 		'user_id'       => $user_id,
 		'email_to'      => $email_to,
-		'email_from'    => '', // Will be extracted from headers or default
-		'from_name'     => '', // Will be extracted from headers or default
+		'email_from'    => $email_from,
+		'from_name'     => $from_name,
 		'subject'       => isset( $mail_data['subject'] ) ? $mail_data['subject'] : '',
 		'body'          => isset( $mail_data['message'] ) ? $mail_data['message'] : '',
 		'template'      => $template,
 		'headers'       => maybe_serialize( $clean_headers ),
-		'reply_to'      => $parsed_headers['reply_to'],
-		'cc'            => $parsed_headers['cc'],
-		'bcc'           => $parsed_headers['bcc'],
+		'reply_to'      => $reply_to,
+		'cc'            => $cc,
+		'bcc'           => $bcc,
 		'status'        => $success ? 'sent' : 'failed',
 		'error_message' => $error_message,
 		'timestamp'     => current_time( 'mysql' )
 	);
 
-	// Extract From and From Name from headers
-	foreach ( $clean_headers as $header ) {
-		if ( stripos( $header, 'From:' ) === 0 ) {
-			$from_header = trim( substr( $header, 5 ) );
-			// Check for "Name <email>" format
-			if ( preg_match( '/(.*)<([^>]+)>/', $from_header, $matches ) ) {
-				$log_data['from_name'] = trim( $matches[1] );
-				$log_data['email_from'] = trim( $matches[2] );
-			} else {
-				$log_data['email_from'] = $from_header;
-			}
-			break;
-		}
-	}
-	
 	// Insert log entry
 	$wpdb->insert(
 		$wpdb->pmpro_email_log,
@@ -155,51 +164,6 @@ function pmpro_log_email_from_mail_data( $mail_data, $success, $error_message = 
 	);
 }
 
-/**
- * Parse email headers to extract reply-to, CC, BCC
- * 
- * @param array|string $headers Email headers
- * @return array Associative array with reply_to, cc, bcc
- */
-function pmpro_parse_email_headers( $headers ) {
-	$parsed = array(
-		'reply_to' => '',
-		'cc'       => '',
-		'bcc'      => ''
-	);
-	
-	if ( empty( $headers ) ) {
-		return $parsed;
-	}
-	
-	// Convert to array if string
-	if ( ! is_array( $headers ) ) {
-		$headers = explode( "\n", $headers );
-	}
-	
-	foreach ( $headers as $header ) {
-		if ( is_string( $header ) ) {
-			$header = trim( $header );
-			
-			// Parse Reply-To
-			if ( stripos( $header, 'Reply-To:' ) === 0 ) {
-				$parsed['reply_to'] = trim( str_ireplace( 'Reply-To:', '', $header ) );
-			}
-			
-			// Parse CC
-			if ( stripos( $header, 'Cc:' ) === 0 ) {
-				$parsed['cc'] = trim( str_ireplace( 'Cc:', '', $header ) );
-			}
-			
-			// Parse BCC
-			if ( stripos( $header, 'Bcc:' ) === 0 ) {
-				$parsed['bcc'] = trim( str_ireplace( 'Bcc:', '', $header ) );
-			}
-		}
-	}
-	
-	return $parsed;
-}
 
 /**
  * Auto-purge old email log entries based on settings
