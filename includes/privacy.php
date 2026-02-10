@@ -7,7 +7,9 @@
 
 /** 
  * Add suggested Privacy Policy language for PMPro
+ *
  * @since 1.9.5
+ * @since TBD Add information about email logging to the suggested language.
  */
 function pmpro_add_privacy_policy_content() {	
 	// Check for support.
@@ -152,7 +154,10 @@ add_filter( 'wp_privacy_personal_data_exporters', 'pmpro_register_personal_data_
 
 /**
  * Personal data exporter for PMPro data.
+ *
  * @since 1.9.5
+ * @since TBD Add support for exporting email log entries.
+ *
  */
 function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 	global $wpdb;
@@ -372,6 +377,38 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 			);
 		}
 
+		// Add email log entries for any email where this user is the recipient.
+		$email_logs = $wpdb->get_results( $wpdb->prepare(
+			"SELECT * FROM {$wpdb->pmpro_email_log}
+			WHERE user_id = %d AND email_to = %s
+			ORDER BY timestamp DESC",
+			intval( $user->ID ),
+			$email_address
+		) );
+
+		foreach ( $email_logs as $log ) {
+			$email_data_to_export = array(
+				array(
+					'name'  => __( 'Date', 'paid-memberships-pro' ),
+					'value' => date( get_option( 'date_format' ), strtotime( $log->timestamp ) ),
+				),
+				array(
+					'name'  => __( 'Subject', 'paid-memberships-pro' ),
+					'value' => $log->subject,
+				),
+				array(
+					'name'  => __( 'Email Content', 'paid-memberships-pro' ),
+					'value' => $log->body,
+				),
+			);
+
+			$data_to_export[] = array(
+				'group_id'    => 'pmpro_email_log',
+				'group_label' => __( 'Paid Memberships Pro Email Log', 'paid-memberships-pro' ),
+				'item_id'     => "email_log-{$log->id}",
+				'data'        => $email_data_to_export,
+			);
+		}
 	}
 
 	$done = true;
