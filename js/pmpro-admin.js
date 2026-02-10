@@ -1449,7 +1449,7 @@ jQuery(document).ready(function ($) {
 
 	function resumeIfActive($btn){
 		var type = $btn.data('type') || 'members';
-		var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/exports/status') : null);
+		var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/export/status') : null);
 		var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
 		if(!statusUrlBase || !nonce){ return; }
 		var url = new URL(statusUrlBase);
