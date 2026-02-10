@@ -25,7 +25,7 @@ add_filter( 'pmpro_registered_reports', 'pmpro_report_email_log_register' );
  * Widget display for email log report
  */
 function pmpro_report_email_log_widget() {
-	global $wpdb;
+	global $wpdb, $pmpro_reports;
 
 	// Get total emails sent in last 30 days
 	$thirty_days_ago = date( 'Y-m-d H:i:s', strtotime( '-30 days' ) );
