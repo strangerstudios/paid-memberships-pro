@@ -17,6 +17,13 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 
 	$is_logged_in = ! empty( $user ) && ! empty( $user->ID );
 
+	// Check for PMPro's separate redirect field, which is used to prevent
+	// login error messages from being lost on failed login attempts.
+	// See pmpro_login_form() for where this field is added.
+	if ( $is_logged_in && ! empty( $_REQUEST['pmpro_redirect_to'] ) ) {
+		$redirect_to = esc_url_raw( wp_unslash( $_REQUEST['pmpro_redirect_to'] ) );
+	}
+
 	if ( $is_logged_in && empty( $redirect_to ) ) {
 		// Can't use the pmpro_hasMembershipLevel function because it won't be defined yet.
 		$is_member = $wpdb->get_var( "SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user->ID ) . "' LIMIT 1" );
@@ -597,6 +604,28 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
  */
 function pmpro_login_form( $args = array() ) {
 	static $pmpro_login_form_counter = 1;
+
+	// Separate the redirect URL from wp_login_form's redirect_to hidden field.
+	// When redirect_to is passed directly to wp_login_form(), it gets embedded
+	// as a hidden field that wp-login.php uses during the authentication flow.
+	// This can cause login error messages to not display on the PMPro login page
+	// after a failed login attempt. Instead, we use a separate pmpro_redirect_to
+	// hidden field that PMPro controls independently.
+	$pmpro_redirect_to = '';
+	if ( ! empty( $args['redirect'] ) ) {
+		$pmpro_redirect_to = $args['redirect'];
+		unset( $args['redirect'] );
+	}
+
+	// Add pmpro_redirect_to as a separate hidden field inside the form.
+	$pmpro_redirect_closure = null;
+	if ( ! empty( $pmpro_redirect_to ) ) {
+		$pmpro_redirect_closure = function( $html ) use ( $pmpro_redirect_to ) {
+			return $html . '<input type="hidden" name="pmpro_redirect_to" value="' . esc_attr( $pmpro_redirect_to ) . '" />';
+		};
+		add_filter( 'login_form_bottom', $pmpro_redirect_closure );
+	}
+
 	add_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
 	wp_login_form( $args );
 	?>
@@ -649,6 +678,9 @@ function pmpro_login_form( $args = array() ) {
 	</script>
 	<?php
 	remove_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
+	if ( $pmpro_redirect_closure ) {
+		remove_filter( 'login_form_bottom', $pmpro_redirect_closure );
+	}
 	$pmpro_login_form_counter++;
 }
 
@@ -1058,7 +1090,11 @@ function pmpro_login_failed( $username, $error = null ) {
 
 	$referrer = wp_get_referer();
 
-	$redirect_to = ( ! empty( $_REQUEST['redirect_to'] ) ) ? esc_url_raw( $_REQUEST['redirect_to'] ) : '';
+	// Check for PMPro's separate redirect field first, then fall back to redirect_to.
+	$redirect_to = ( ! empty( $_REQUEST['pmpro_redirect_to'] ) ) ? esc_url_raw( wp_unslash( $_REQUEST['pmpro_redirect_to'] ) ) : '';
+	if ( empty( $redirect_to ) ) {
+		$redirect_to = ( ! empty( $_REQUEST['redirect_to'] ) ) ? esc_url_raw( $_REQUEST['redirect_to'] ) : '';
+	}
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
