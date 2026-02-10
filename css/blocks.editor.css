@@ -53,7 +53,8 @@
 	background: #2c3338;
 	border-radius: 5px;
 }
-.pmpro-block-inspector-scrollable .components-base-control.components-checkbox-control {
+.pmpro-block-inspector-scrollable .components-base-control.components-checkbox-control,
+.pmpro-block-inspector-membershiplevels .components-base-control.components-checkbox-control {
 	margin-bottom: 5px;
 }
 

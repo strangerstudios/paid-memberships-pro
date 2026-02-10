@@ -87,12 +87,27 @@ function pmpro_admin_prep_click_events() {
 	});
 }
 
-// Hide the popup if clicked outside the popup.
-jQuery(document).on('click', function (e) {
-	// Check if the clicked element is the close button or outside the pmpro-popup-wrap
-	if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
+// Popups: All handlers registered once on document ready.
+jQuery(document).ready(function () {
+	// Hide the popup when clicking outside the popup.
+	jQuery(document).on('click', function (e) {
+		if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
+			jQuery('.pmpro-popup-overlay').hide();
+		}
+	});
+
+	// Hide the popup when close/complete button is clicked.
+	jQuery(document).on('click', '.pmproPopupCloseButton, .pmproPopupCompleteButton', function (e) {
+		e.preventDefault();
 		jQuery('.pmpro-popup-overlay').hide();
-	}
+	});
+
+	// Hide the popup if "ESC" is pressed.
+	jQuery(document).on('keyup', function (e) {
+		if (e.key === 'Escape') {
+			jQuery('.pmpro-popup-overlay').hide();
+		}
+	});
 });
 
 /** JQuery to hide the notifications. */
@@ -876,19 +891,6 @@ jQuery(document).ready(function () {
 			}
 		};
 
-		// Hide the license banner.
-		jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
-			e.preventDefault();
-			jQuery('.pmpro-popup-overlay').hide();
-		});
-
-		// Hide the popup banner if "ESC" is pressed.
-		jQuery(document).keyup(function (e) {
-			if (e.key === 'Escape') {
-				jQuery('.pmpro-popup-overlay').hide();
-			}
-		});
-
 		jQuery('#pmpro-admin-add-ons-list').on('click', '.pmproAddOnActionButton', function (e) {
 			e.preventDefault();
 
@@ -1459,11 +1461,11 @@ jQuery(document).ready(function ($) {
 					$btn.attr('data-export-id', data.export_id);
 					if(data.status === 'complete' && data.download_url){
 						setButtonStateKey($btn, 'complete');
-						$btn.off('click.pmproExport').on('click.pmproExport', function(e){ 
+						$btn.off('click.pmproExport').on('click.pmproExport', function(e){
 							e.preventDefault();
 							window.location = data.download_url;
 							// Reset after download and rebind default start handler
-							setTimeout(function(){ 
+							setTimeout(function(){
 								setButtonStateKey($btn, 'idle');
 								$btn.attr('data-export-id','');
 								$btn.off('click.pmproExport').on('click.pmproExport', function(ev){
@@ -1505,4 +1507,230 @@ jQuery(document).ready(function ($) {
 			});
 		});
 	}
+});
+
+/**
+ * Email Log - View Email Details Modal
+ */
+jQuery(document).ready(function($) {
+	// View email log details via REST API
+	$(document).on('click', '.pmpro-view-email-log', function(e) {
+		e.preventDefault();
+		var logId = $(this).data('log-id');
+
+		// Use WordPress REST API
+		$.ajax({
+			url: pmpro.rest_url + 'pmpro/v1/email_log_popup?log_id=' + logId,
+			type: 'GET',
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader('X-WP-Nonce', pmpro.nonce);
+			},
+			success: function(response) {
+				if (response && response.html) {
+					$('#pmpro-email-log-content').html(response.html);
+					// Show as popup overlay
+					$('#pmpro-popup').show();
+				}
+			},
+			error: function() {
+				$('#pmpro-email-log-content').html('<p style="color: red;">' + 'Error loading email log details.' + '</p>');
+				$('#pmpro-popup').show();
+			}
+		});
+	});
+
+	// Toggle between formatted and raw HTML view for email body
+	$(document).on('change', '.pmpro-email-body-view-toggle', function() {
+		var $toggle = $(this);
+		var $container = $toggle.closest('.pmpro-email-log-details');
+		var $formatted = $container.find('.pmpro-email-body-formatted');
+		var $raw = $container.find('.pmpro-email-body-raw');
+
+		if ($toggle.is(':checked')) {
+			// Show raw HTML view
+			$formatted.hide();
+			$raw.show();
+		} else {
+			// Show formatted view
+			$raw.hide();
+			$formatted.show();
+		}
+	});
+});
+
+/**
+ * Quick Search
+ */
+jQuery(document).ready(function($) {
+	// Dynamically update the select width to fit selected option
+	pmproqsUpdateSelectWidth();
+
+	var searchTimeout = null;
+
+	var activeIndex = -1;
+
+	// Helper: Measure select option text width and update CSS variable
+	function pmproqsMeasureTextWidth(text, refEl) {
+		// Create a hidden span to measure text width using the select's font styles
+		var span = document.createElement('span');
+		span.style.position = 'absolute';
+		span.style.visibility = 'hidden';
+		span.style.whiteSpace = 'pre';
+		// Copy relevant font styles from the reference element (the <select>)
+		var cs = window.getComputedStyle(refEl);
+		span.style.fontFamily = cs.fontFamily;
+		span.style.fontSize = cs.fontSize;
+		span.style.fontWeight = cs.fontWeight;
+		span.style.fontStyle = cs.fontStyle;
+		span.style.letterSpacing = cs.letterSpacing;
+		span.textContent = text;
+		document.body.appendChild(span);
+		var width = span.getBoundingClientRect().width;
+		document.body.removeChild(span);
+		return width;
+	}
+
+	function pmproqsUpdateSelectWidth() {
+		var selectEl = document.getElementById('pmpro_quick_search_type');
+		if (!selectEl) return;
+		var text = selectEl.options[selectEl.selectedIndex].text;
+		// Measure the text and add space for the native arrow + padding + borders.
+		var textW = pmproqsMeasureTextWidth(text, selectEl);
+		var extra = 28; // approx. arrow + borders
+		var padding = 12; // matches padding in CSS (2px 4px) plus a little buffer
+		var computedWidth = Math.ceil(textW + extra + padding);
+		// Apply via CSS variable so input padding-left stays in sync
+		var container = document.querySelector('.pmpro_quick_search');
+		if (container) {
+			container.style.setProperty('--pmproqs-select-w', computedWidth + 'px');
+		}
+	}
+
+	function getResultRows() {
+		return $('.pmpro_quick_search_results tbody tr:has(a)');
+	}
+
+	function setActive(index) {
+		var rows = getResultRows();
+		rows.removeClass('is-active');
+		if (!rows.length) {
+			activeIndex = -1;
+			return;
+		}
+		// wrap the index
+		var len = rows.length;
+		activeIndex = ((index % len) + len) % len;
+		$(rows[activeIndex]).addClass('is-active');
+	}
+
+	function moveActive(delta) {
+		if (getResultRows().length === 0) return;
+		if (activeIndex === -1) {
+			setActive(0);
+		} else {
+			setActive(activeIndex + delta);
+		}
+	}
+
+	function activateSelection() {
+		var rows = getResultRows();
+		if (!rows.length || activeIndex === -1) return;
+		var link = $(rows[activeIndex]).find('a').get(0);
+		if (link) {
+			if (link.target === '_blank') {
+				window.open(link.href, '_blank');
+			} else {
+				window.location = link.href;
+			}
+		}
+	}
+
+	function performSearch() {
+		var query = $('.pmpro_quick_search input').val();
+		var searchType = $('#pmpro_quick_search_type').val() || 'all';
+
+		// If the query is empty, clear results and return.
+		var resultsDiv = $('.pmpro_quick_search_results');
+		if (query.trim() === '') {
+			resultsDiv.hide().empty();
+			return;
+		}
+
+		// Perform AJAX request to get search results
+		$.ajax({
+			url: pmpro.rest_url + 'pmpro/v1/quick_search',
+			method: 'GET',
+			data: {
+				search: query,
+				type: searchType,
+			},
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader('X-WP-Nonce', pmpro.nonce);
+			},
+			success: function(response) {
+				// Display results in a dropdown below the input
+				resultsDiv.empty();
+				if (response.success) {
+					resultsDiv.html(response.data);
+				} else {
+					resultsDiv.html('An error occurred while searching. Please try again.');
+				}
+				resultsDiv.show();
+				// highlight first available result
+				activeIndex = -1;
+				setActive(0);
+				// allow mouse hover to change the active row without stealing focus
+				getResultRows().off('mouseenter.pmproqs').on('mouseenter.pmproqs', function(){
+					var idx = getResultRows().index(this);
+					setActive(idx);
+				});
+			},
+			error: function() {
+				alert('An error occurred while searching. Please try again.');
+			}
+		});
+	}
+
+	$('.pmpro_quick_search input').on('input', function() {
+		$('.pmpro_quick_search_results').hide();
+		clearTimeout(searchTimeout);
+		// TODO: Adjust delay as needed. Maybe add a filter.
+		searchTimeout = setTimeout(performSearch, 250);
+	});
+
+	$('#pmpro_quick_search_type').on('change', function(){
+		pmproqsUpdateSelectWidth();
+		$('.pmpro_quick_search_results').hide();
+		clearTimeout(searchTimeout);
+		activeIndex = -1;
+		searchTimeout = setTimeout(performSearch, 0);
+	});
+
+	$('.pmpro_quick_search input').on('keydown', function(e) {
+		// Only intercept navigation keys; let everything else (e.g. Cmd/Ctrl+A) pass through
+		if (e.key === 'ArrowDown') {
+			e.preventDefault();
+			moveActive(1);
+			return;
+		}
+		if (e.key === 'ArrowUp') {
+			e.preventDefault();
+			moveActive(-1);
+			return;
+		}
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			activateSelection();
+			return;
+		}
+	});
+
+	// Hide results when clicking outside
+	$(document).on('click', function(e) {
+		if (!$(e.target).closest('.pmpro_quick_search').length) {
+			$('.pmpro_quick_search_results').hide();
+		}
+	});
+	// Optionally improve first render robustness: recalc after layout is stable
+	setTimeout(pmproqsUpdateSelectWidth, 0);
 });
