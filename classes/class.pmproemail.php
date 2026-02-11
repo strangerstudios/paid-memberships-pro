@@ -251,21 +251,20 @@
 					}
 				}
 			}
-			
-			// Add tracking headers for the email log.
-			if ( ! empty( $this->template ) ) {
-				$this->headers[] = 'X-PMPro-Template: ' . $this->template;
-			}
-			if ( ! empty( $this->data ) && ! empty( $this->data['user_id'] ) ) {
-				$this->headers[] = 'X-PMPro-User-ID: ' . $this->data['user_id'];
-			} elseif ( ! empty( $this->data ) && ! empty( $this->data['user_login'] ) ) {
-				$user = get_user_by( 'login', $this->data['user_login'] );
-				if ( $user ) {
-					$this->headers[] = 'X-PMPro-User-ID: ' . $user->ID;
-				}
-			}
 
-			return wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
+			$result = wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
+
+			/**
+			 * Fires after an email is sent via wp_mail.
+			 *
+			 * @since TBD
+			 *
+			 * @param PMProEmail $this The email object.
+			 * @param bool $result Whether the email was sent successfully.
+			 */
+			do_action( 'pmpro_after_email_sent', $this, $result );
+
+			return $result;
 		}
 		
 		/**

@@ -1,158 +1,108 @@
 <?php
 
 /**
- * Log an email via wp_mail_succeeded.
+ * Log an email.
  *
  * @since TBD
  * 
- * @param array $mail_data The email data.
+ * @param PMProEmail $email The email object
+ * @param bool $result Result of wp_mail()
  */
-function pmpro_log_email_succeeded( $mail_data ) {
-	pmpro_log_email_from_mail_data( $mail_data, true );
-}
-add_action( 'wp_mail_succeeded', 'pmpro_log_email_succeeded' );
-
-/**
- * Log an email via wp_mail_failed.
- *
- * @since TBD
- * 
- * @param WP_Error $error The error object.
- */
-function pmpro_log_email_failed( $error ) {
-	$mail_data = $error->get_error_data( 'wp_mail_failed' );
-	pmpro_log_email_from_mail_data( $mail_data, false, $error->get_error_message() );
-}
-add_action( 'wp_mail_failed', 'pmpro_log_email_failed' );
-
-/**
- * Log an email from the mail data.
- *
- * @since TBD
- * 
- * @param array $mail_data The email data.
- * @param bool $success Whether the email was sent successfully.
- * @param string $error_message The error message if the email failed.
- */
-function pmpro_log_email_from_mail_data( $mail_data, $success, $error_message = '' ) {
+function pmpro_log_email( $email, $result ) {
 	global $wpdb;
+
+	// Make sure we have an email object.
+	if ( empty( $email ) ) {
+		return $email;
+	}
 
 	// Check if logging is disabled
 	if ( pmpro_getOption( 'email_logging_disabled' ) == '1' ) {
 		return;
 	}
-
-	// Normalize headers to array
-	$headers = isset( $mail_data['headers'] ) ? $mail_data['headers'] : array();
-	if ( ! is_array( $headers ) ) {
-		$headers = explode( "\n", $headers );
-	}
-
-	// Extract data from headers
-	$template = '';
+	
+	// Extract user_id from email data or lookup by email address
 	$user_id = 0;
-	$clean_headers = array(); // Headers without our internal tracking headers
-
-	foreach ( $headers as $key => $value ) {
-		// Handle associative array (Key => Value)
-		if ( is_string( $key ) ) {
-			if ( strcasecmp( $key, 'X-PMPro-Template' ) === 0 ) {
-				$template = trim( $value );
-				continue;
-			} elseif ( strcasecmp( $key, 'X-PMPro-User-ID' ) === 0 ) {
-				$user_id = intval( $value );
-				continue;
-			}
-			
-			// Keep other headers
-			$clean_headers[ $key ] = $value;
-			continue;
+	if ( ! empty( $email->data['user_id'] ) ) {
+		$user_id = intval( $email->data['user_id'] );
+	} elseif( ! empty( $email->data['user_login'] ) ) {
+		$user = get_user_by( 'login', $email->data['user_login'] );
+		if ( $user ) {
+			$user_id = $user->ID;
 		}
-
-		// Handle numeric array (String "Header: Value")
-		if ( empty( trim( $value ) ) ) {
-			continue;
-		}
-
-		if ( stripos( $value, 'X-PMPro-Template:' ) === 0 ) {
-			$template = trim( substr( $value, 17 ) );
-		} elseif ( stripos( $value, 'X-PMPro-User-ID:' ) === 0 ) {
-			$user_id = intval( substr( $value, 16 ) );
-		} else {
-			$clean_headers[] = $value;
-		}
-	}
-
-	// If there is no template, don't log as it's likely not from PMPro. Remove this if we want to log all emails regardless of source, but for now we want to limit to PMPro-generated emails.
-	if ( empty( $template ) ) {
-		return;
-	}
-
-	// If user_id not in headers, try to find by email
-	// Use normalized email_to for lookup
-	$email_to = isset( $mail_data['to'] ) ? $mail_data['to'] : '';
-	if ( is_array( $email_to ) ) {
-		$email_to = implode( ',', $email_to );
-	}
-
-	if ( empty( $user_id ) && ! empty( $email_to ) ) {
-		// Handle comma-separated emails? Just take the first one for lookup
-		$emails = explode( ',', $email_to );
-		$email_address = trim( $emails[0] );
-		
-		// Strip name if present "Name <email>"
-		if ( preg_match( '/<([^>]+)>/', $email_address, $matches ) ) {
-			$email_address = $matches[1];
-		}
-
-		$user = get_user_by( 'email', $email_address );
+	} elseif ( ! empty( $email->email ) ) {
+		$user = get_user_by( 'email', $email->email );
 		if ( $user ) {
 			$user_id = $user->ID;
 		}
 	}
-
-	// Parse other headers (Reply-To, CC, BCC)
-	$parsed_headers = pmpro_parse_email_headers( $clean_headers );
 	
+	// Parse headers to extract reply-to, CC, BCC
+	$parsed_headers = pmpro_parse_email_headers( $email->headers );
+
 	// Prepare data for insertion
 	$log_data = array(
 		'user_id'       => $user_id,
-		'email_to'      => $email_to,
-		'email_from'    => '', // Will be extracted from headers or default
-		'from_name'     => '', // Will be extracted from headers or default
-		'subject'       => isset( $mail_data['subject'] ) ? $mail_data['subject'] : '',
-		'body'          => isset( $mail_data['message'] ) ? $mail_data['message'] : '',
-		'template'      => $template,
-		'headers'       => maybe_serialize( $clean_headers ),
+		'email_to'      => ! empty( $email->email ) ? $email->email : '',
+		'email_from'    => ! empty( $email->from ) ? $email->from : '',
+		'from_name'     => ! empty( $email->fromname ) ? $email->fromname : '',
+		'subject'       => ! empty( $email->subject ) ? $email->subject : '',
+		'body'          => ! empty( $email->body ) ? $email->body : '',
+		'template'      => ! empty( $email->template ) ? $email->template : '',
+		'headers'       => maybe_serialize( $email->headers ),
 		'reply_to'      => $parsed_headers['reply_to'],
 		'cc'            => $parsed_headers['cc'],
 		'bcc'           => $parsed_headers['bcc'],
-		'status'        => $success ? 'sent' : 'failed',
-		'error_message' => $error_message,
-		'timestamp'     => current_time( 'mysql' )
+		'status'        => $result ? 'sent' : 'failed',
+		'timestamp'     => current_time( 'mysql', true ),
+		'error_message' => ! $result ? pmpro_last_wp_mail_error() : ''
 	);
 
-	// Extract From and From Name from headers
-	foreach ( $clean_headers as $header ) {
-		if ( stripos( $header, 'From:' ) === 0 ) {
-			$from_header = trim( substr( $header, 5 ) );
-			// Check for "Name <email>" format
-			if ( preg_match( '/(.*)<([^>]+)>/', $from_header, $matches ) ) {
-				$log_data['from_name'] = trim( $matches[1] );
-				$log_data['email_from'] = trim( $matches[2] );
-			} else {
-				$log_data['email_from'] = $from_header;
-			}
-			break;
-		}
-	}
-	
 	// Insert log entry
 	$wpdb->insert(
 		$wpdb->pmpro_email_log,
 		$log_data,
 		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 	);
+}
+add_action( 'pmpro_after_email_sent', 'pmpro_log_email', 10, 2 );
+
+/**
+ * Capture the error message from a failed wp_mail() call.
+ *
+ * @since TBD
+ *
+ * @param WP_Error $error The error object.
+ */
+function pmpro_capture_wp_mail_error( $error ) {
+	pmpro_last_wp_mail_error( $error->get_error_message() );
+}
+add_action( 'wp_mail_failed', 'pmpro_capture_wp_mail_error' );
+
+/**
+ * Clear any stale wp_mail error after a successful send.
+ *
+ * @since TBD
+ */
+function pmpro_clear_wp_mail_error() {
+	pmpro_last_wp_mail_error( '' );
+}
+add_action( 'wp_mail_succeeded', 'pmpro_clear_wp_mail_error' );
+
+/**
+ * Get or set the last wp_mail error message.
+ *
+ * @since TBD
+ *
+ * @param string|null $set Pass a string to set the error, or null to just retrieve it.
+ * @return string The last error message, or empty string if none.
+ */
+function pmpro_last_wp_mail_error( $set = null ) {
+	static $last_error = '';
+	if ( $set !== null ) {
+		$last_error = $set;
+	}
+	return $last_error;
 }
 
 /**
