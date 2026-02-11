@@ -82,19 +82,34 @@ function pmpro_report_members_per_level_page() {
 function pmpro_report_get_active_members_per_level() {
 	global $wpdb;
 
+	// Check for cached data.
+	$cache = get_transient( 'pmpro_report_members_per_level' );
+	if ( ! empty( $cache ) ) {
+		return $cache;
+	}
+
 	// Query to get active members per level.
-	$sqlQuery = "SELECT membership_id, count(*) as total_active_members 
-	FROM $wpdb->pmpro_memberships_users as mu 
-	LEFT JOIN $wpdb->users as u on u.ID = mu.user_id 
-	WHERE mu.status = 'active' 
+	$sqlQuery = "SELECT membership_id, count(*) as total_active_members
+	FROM $wpdb->pmpro_memberships_users as mu
+	LEFT JOIN $wpdb->users as u on u.ID = mu.user_id
+	WHERE mu.status = 'active'
 	AND u.ID IS NOT NULL
-	GROUP BY membership_id 
+	GROUP BY membership_id
 	ORDER BY total_active_members DESC";
-	
+
 	$results = $wpdb->get_results( $sqlQuery );
+
+	// Cache the results for 24 hours.
+	set_transient( 'pmpro_report_members_per_level', $results, 3600 * 24 );
 
 	return $results;
 }
+
+// Clear the members per level transient when membership data changes.
+function pmpro_report_members_per_level_delete_transients() {
+	delete_transient( 'pmpro_report_members_per_level' );
+}
+add_action( 'pmpro_after_change_membership_level', 'pmpro_report_members_per_level_delete_transients' );
 
 // Draw a pie chart of active members per level.
 function pmpro_report_draw_active_members_per_level_chart() {
