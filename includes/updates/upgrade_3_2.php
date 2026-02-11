@@ -7,7 +7,7 @@
  * @since 3.1
  */
 function pmpro_upgrade_3_2() {
-	if ( 'paypal' === pmpro_getGateway() ) {
+	if ( 'paypalwpp' === pmpro_getGateway() ) {
 		// Set an option to show the notice about the PPE option being removed.
 		update_option( 'pmpro_upgrade_3_2_notice_wpp', true );
 	}

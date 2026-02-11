@@ -1022,7 +1022,7 @@ function pmpro_get_deprecated_gateways() {
 	return apply_filters( 'pmpro_deprecated_gateways', array(
 		'twocheckout',
 		'cybersource',
-		'paypal',
+		'paypalwpp',
 		'authorizenet',
 		'payflowpro',
 		'paypalstandard',
