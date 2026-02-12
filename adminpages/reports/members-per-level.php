@@ -100,7 +100,7 @@ function pmpro_report_get_active_members_per_level() {
 	$results = $wpdb->get_results( $sqlQuery );
 
 	// Cache the results for 24 hours.
-	set_transient( 'pmpro_report_members_per_level', $results, 3600 * 24 );
+	set_transient( 'pmpro_report_members_per_level', $results, DAY_IN_SECONDS );
 
 	return $results;
 }
