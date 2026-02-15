@@ -71,8 +71,8 @@ class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 								echo esc_html( sprintf(
 									// translators: %1$s is the date and %2$s is the time.
 									__( '%1$s at %2$s', 'paid-memberships-pro' ),
-									esc_html( date_i18n( get_option( 'date_format' ), strtotime( $entry->timestamp ) ) ),
-									esc_html( date_i18n( get_option( 'time_format' ), strtotime( $entry->timestamp ) ) )
+									esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $entry->timestamp ) ) ) ),
+									esc_html( date_i18n( get_option( 'time_format' ), strtotime( get_date_from_gmt( $entry->timestamp ) ) ) )
 								) );
 								?>
 								<div class="row-actions">
