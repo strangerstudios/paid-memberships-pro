@@ -126,8 +126,8 @@ function pmpro_report_email_log_widget() {
 						<?php echo esc_html( sprintf(
 							// translators: %1$s is the date and %2$s is the time.
 							__( '%1$s at %2$s', 'paid-memberships-pro' ),
-							esc_html( date_i18n( get_option( 'date_format' ), strtotime( $last_sent_log->timestamp ) ) ),
-							esc_html( date_i18n( get_option( 'time_format' ), strtotime( $last_sent_log->timestamp ) ) )
+							esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $last_sent_log->timestamp ) ) ) ),
+							esc_html( date_i18n( get_option( 'time_format' ), strtotime( get_date_from_gmt( $last_sent_log->timestamp ) ) ) )
 						) );
 						?>
 					<?php } else { ?>
@@ -159,8 +159,8 @@ function pmpro_report_email_log_widget() {
 						echo esc_html( sprintf(
 							// translators: %1$s is the date and %2$s is the time.
 							__( '%1$s at %2$s', 'paid-memberships-pro' ),
-							esc_html( date_i18n( get_option( 'date_format' ), strtotime( $last_failed_log->timestamp ) ) ),
-							esc_html( date_i18n( get_option( 'time_format' ), strtotime( $last_failed_log->timestamp ) ) )
+							esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $last_failed_log->timestamp ) ) ) ),
+							esc_html( date_i18n( get_option( 'time_format' ), strtotime( get_date_from_gmt( $last_failed_log->timestamp ) ) ) )
 						) );
 						?>
 					<?php } else { ?>
@@ -397,8 +397,8 @@ function pmpro_report_email_log_page() {
 								echo esc_html( sprintf(
 									// translators: %1$s is the date and %2$s is the time.
 									__( '%1$s at %2$s', 'paid-memberships-pro' ),
-									esc_html( date_i18n( get_option( 'date_format' ), strtotime( $entry->timestamp ) ) ),
-									esc_html( date_i18n( get_option( 'time_format' ), strtotime( $entry->timestamp ) ) )
+									esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $entry->timestamp ) ) ) ),
+									esc_html( date_i18n( get_option( 'time_format' ), strtotime( get_date_from_gmt( $entry->timestamp ) ) ) )
 								) );
 								?>
 								<div class="row-actions">
