@@ -293,7 +293,7 @@ function pmpro_report_email_log_page() {
 	$totalrows = $wpdb->get_var( $count_query );
 
 	// Get log entries with pagination
-	$log_query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$wpdb->pmpro_email_log} 
+	$log_query = "SELECT * FROM {$wpdb->pmpro_email_log}
 				   WHERE {$where_sql} 
 				   ORDER BY timestamp DESC 
 				   LIMIT %d, %d";
