@@ -18,7 +18,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
 	$order_ids = get_transient( 'pmpro_dashboard_report_recent_orders' );
 	if ( false === $order_ids) {
 		// No cached value. Get the orders.
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders ORDER BY id DESC, timestamp DESC LIMIT 5";
+		$sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders ORDER BY id DESC, timestamp DESC LIMIT 5";
 		$order_ids = $wpdb->get_col( $sqlQuery );
 		set_transient( 'pmpro_dashboard_report_recent_orders', $order_ids, 3600 * 24 );
 	}
