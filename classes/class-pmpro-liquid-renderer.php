@@ -36,7 +36,6 @@ class PMPro_Liquid_Renderer {
 	 * Get the registry of available Liquid filters.
 	 *
 	 * Returns a map of filter name => array( 'callback' => callable, 'description' => string ).
-	 * The registry is extensible via the 'pmpro_liquid_filters' WordPress filter hook.
 	 *
 	 * @since TBD
 	 *
@@ -56,57 +55,17 @@ class PMPro_Liquid_Renderer {
 				},
 				'description' => __( 'Convert to lowercase. Example: {{ name | downcase }}', 'paid-memberships-pro' ),
 			),
-			'capitalize' => array(
-				'callback'    => function ( $value ) {
-					return ucwords( strtolower( (string) $value ) );
-				},
-				'description' => __( 'Capitalize each word. Example: {{ name | capitalize }}', 'paid-memberships-pro' ),
-			),
 			'strip'      => array(
 				'callback'    => function ( $value ) {
 					return trim( (string) $value );
 				},
 				'description' => __( 'Remove leading and trailing whitespace. Example: {{ name | strip }}', 'paid-memberships-pro' ),
 			),
-			'strip_html' => array(
-				'callback'    => function ( $value ) {
-					return wp_strip_all_tags( (string) $value );
-				},
-				'description' => __( 'Remove all HTML tags. Example: {{ billing_address | strip_html }}', 'paid-memberships-pro' ),
-			),
-			'escape'     => array(
-				'callback'    => function ( $value ) {
-					return esc_html( (string) $value );
-				},
-				'description' => __( 'Escape HTML entities. Example: {{ name | escape }}', 'paid-memberships-pro' ),
-			),
 			'default'    => array(
 				'callback'    => function ( $value, $default_value = '' ) {
 					return ( $value === null || $value === '' || $value === false ) ? $default_value : $value;
 				},
 				'description' => __( 'Use a default value if empty. Example: {{ discount_code | default: "None" }}', 'paid-memberships-pro' ),
-			),
-			'date'       => array(
-				'callback'    => function ( $value, $format = '' ) {
-					if ( empty( $format ) || empty( $value ) ) {
-						return (string) $value;
-					}
-					$timestamp = is_numeric( $value ) ? (int) $value : strtotime( (string) $value );
-					if ( $timestamp === false ) {
-						return (string) $value;
-					}
-					return date_i18n( $format, $timestamp );
-				},
-				'description' => __( 'Format a date value using PHP date format. Example: {{ order_date | date: "F j, Y" }}', 'paid-memberships-pro' ),
-			),
-			'size'       => array(
-				'callback'    => function ( $value ) {
-					if ( is_array( $value ) ) {
-						return count( $value );
-					}
-					return strlen( (string) $value );
-				},
-				'description' => __( 'Return the length of a string. Example: {{ name | size }}', 'paid-memberships-pro' ),
 			),
 		);
 
