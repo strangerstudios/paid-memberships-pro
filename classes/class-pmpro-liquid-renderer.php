@@ -110,57 +110,7 @@ class PMPro_Liquid_Renderer {
 			),
 		);
 
-		/**
-		 * Filter the available Liquid template filters.
-		 *
-		 * Allows developers to add custom Liquid filters for email templates.
-		 * Filter entries may be either callable values or arrays containing
-		 * 'callback' (callable) and optional 'description' (string) keys.
-		 *
-		 * @since TBD
-		 *
-		 * @param array $filters The filter registry.
-		 */
-		$filters = apply_filters( 'pmpro_liquid_filters', $filters );
-
-		return self::normalize_filter_registry( $filters );
-	}
-
-	/**
-	 * Normalize the filter registry to a consistent array structure.
-	 *
-	 * @since TBD
-	 *
-	 * @param mixed $filters The potentially customized filter registry.
-	 * @return array Normalized registry keyed by filter name.
-	 */
-	private static function normalize_filter_registry( $filters ) {
-		if ( ! is_array( $filters ) ) {
-			return array();
-		}
-
-		$normalized_filters = array();
-
-		foreach ( $filters as $filter_name => $filter_definition ) {
-			if ( is_callable( $filter_definition ) ) {
-				$normalized_filters[ $filter_name ] = array(
-					'callback'    => $filter_definition,
-					'description' => '',
-				);
-				continue;
-			}
-
-			if ( ! is_array( $filter_definition ) || empty( $filter_definition['callback'] ) || ! is_callable( $filter_definition['callback'] ) ) {
-				continue;
-			}
-
-			$normalized_filters[ $filter_name ] = array(
-				'callback'    => $filter_definition['callback'],
-				'description' => isset( $filter_definition['description'] ) ? (string) $filter_definition['description'] : '',
-			);
-		}
-
-		return $normalized_filters;
+		return $filters;
 	}
 
 	/**
