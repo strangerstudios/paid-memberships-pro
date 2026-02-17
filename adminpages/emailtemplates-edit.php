@@ -202,6 +202,100 @@
 						?>
 					</div> <!-- end pmpro_section_inside -->
 				</div> <!-- end pmpro_section -->
+				<div id="liquid-reference" class="pmpro_section" data-visibility="hidden" data-activated="true">
+					<div class="pmpro_section_toggle">
+						<button class="pmpro_section-toggle-button" type="button" aria-expanded="false">
+							<span class="dashicons dashicons-arrow-down-alt2"></span>
+							<?php esc_html_e( 'Liquid Syntax Reference', 'paid-memberships-pro' ); ?>
+						</button>
+					</div>
+					<div class="pmpro_section_inside" style="display: none;">
+						<p><?php esc_html_e( 'Use Liquid-style syntax to add dynamic logic to your email templates. This works alongside the existing variable placeholders.', 'paid-memberships-pro' ); ?></p>
+						<h3><?php esc_html_e( 'Variables', 'paid-memberships-pro' ); ?></h3>
+						<table class="widefat fixed striped">
+							<tbody>
+								<tr>
+									<th><code>{{ display_name }}</code></th>
+									<td><?php esc_html_e( 'Output the value of a variable.', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>{{ name | upcase }}</code></th>
+									<td><?php esc_html_e( 'Apply a filter to transform the output.', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>{{ name | downcase | escape }}</code></th>
+									<td><?php esc_html_e( 'Chain multiple filters using the pipe (|) character.', 'paid-memberships-pro' ); ?></td>
+								</tr>
+							</tbody>
+						</table>
+						<h3><?php esc_html_e( 'Filters', 'paid-memberships-pro' ); ?></h3>
+						<table class="widefat fixed striped">
+							<tbody>
+								<?php
+								$liquid_filters = PMPro_Liquid_Renderer::get_filters();
+								foreach ( $liquid_filters as $filter_name => $filter_def ) {
+									?>
+									<tr>
+										<th><code><?php echo esc_html( $filter_name ); ?></code></th>
+										<td><?php echo esc_html( $filter_def['description'] ); ?></td>
+									</tr>
+									<?php
+								}
+								?>
+							</tbody>
+						</table>
+						<h3><?php esc_html_e( 'Conditionals', 'paid-memberships-pro' ); ?></h3>
+						<p><?php esc_html_e( 'Use conditional tags to show or hide content based on variable values.', 'paid-memberships-pro' ); ?></p>
+						<pre><code>{&#37; if membership_level_name &#37;}
+  &lt;p&gt;Your level: {{ membership_level_name }}&lt;/p&gt;
+{&#37; endif &#37;}</code></pre>
+						<pre><code>{&#37; if membership_cost == "$0.00" &#37;}
+  &lt;p&gt;You have a free membership.&lt;/p&gt;
+{&#37; else &#37;}
+  &lt;p&gt;Your membership costs {{ membership_cost }}.&lt;/p&gt;
+{&#37; endif &#37;}</code></pre>
+						<table class="widefat fixed striped">
+							<tbody>
+								<tr>
+									<th><code>==</code></th>
+									<td><?php esc_html_e( 'Equal to. Example: {% if variable == "value" %}', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>!=</code></th>
+									<td><?php esc_html_e( 'Not equal to. Example: {% if variable != "value" %}', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>&gt;</code></th>
+									<td><?php esc_html_e( 'Greater than. Example: {% if variable > 0 %}', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>&lt;</code></th>
+									<td><?php esc_html_e( 'Less than. Example: {% if variable < 100 %}', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>&gt;=</code></th>
+									<td><?php esc_html_e( 'Greater than or equal to. Example: {% if variable >= 1 %}', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>&lt;=</code></th>
+									<td><?php esc_html_e( 'Less than or equal to. Example: {% if variable <= 99 %}', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>and</code></th>
+									<td><?php esc_html_e( 'Both conditions must be true. Example: {% if variable1 and variable2 %}', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>or</code></th>
+									<td><?php esc_html_e( 'Either condition can be true. Example: {% if variable1 or variable2 %}', 'paid-memberships-pro' ); ?></td>
+								</tr>
+								<tr>
+									<th><code>empty</code></th>
+									<td><?php esc_html_e( 'Check if a variable is empty. Example: {% if variable == empty %}', 'paid-memberships-pro' ); ?></td>
+								</tr>
+							</tbody>
+						</table>
+					</div> <!-- end pmpro_section_inside -->
+				</div> <!-- end pmpro_section -->
 			</div>
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="pmpro_section">

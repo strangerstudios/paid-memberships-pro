@@ -242,6 +242,13 @@
 			// Add header and footer to email body.
 			$this->body = $email_header . $this->body . $email_footer;
 
+			// Process Liquid-style template syntax in the email body.
+			if ( is_array( $this->data ) ) {
+				$render_data = $this->data;
+				unset( $render_data['body'] );
+				$this->body = PMPro_Liquid_Renderer::render( $this->body, $render_data );
+			}
+
 			// Swap data into body and subject line again in case filters changed them or in case we added header/footer.
 			if ( is_array( $this->data ) ) {
 				foreach ( $this->data as $key => $value ) {
