@@ -161,8 +161,12 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 		}
 
 		$discount_code = '';
+		$discount_code_name = '';
+		$discount_code_id = '';
 		if( $order->getDiscountCode() ) {
 			$discount_code = "<p>" . esc_html__("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
+			$discount_code_name = $order->discount_code->code;
+			$discount_code_id = $order->discount_code->id;
 		}
 
 		$email_template_variables = array(
@@ -181,6 +185,8 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 			'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 			'discount_code' => $discount_code,
+			'discount_code_name' => $discount_code_name,
+			'discount_code_id' => $discount_code_id,
 			'billing_address' => pmpro_formatAddress( $order->billing->name,
 														 $order->billing->street,
 														 $order->billing->street2,
@@ -228,7 +234,9 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 			'!!order_total!!' => esc_html__( 'The total cost of the order.', 'paid-memberships-pro' ),
 			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
 			'!!order_url!!' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
-			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
+			'!!discount_code!!' => esc_html__( 'The discount code for the order displayed as a formatted paragraph with label.', 'paid-memberships-pro' ),
+			'!!discount_code_name!!' => esc_html__( 'The name of the discount code used for the order.', 'paid-memberships-pro' ),
+			'!!discount_code_id!!' => esc_html__( 'The ID of the discount code used for the order.', 'paid-memberships-pro' ),
 			'!!billing_address!!' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
 			'!!billing_name!!' => esc_html__( 'The billing name of the order.', 'paid-memberships-pro' ),
 			'!!billing_street!!' => esc_html__( 'The billing street of the order.', 'paid-memberships-pro' ),
