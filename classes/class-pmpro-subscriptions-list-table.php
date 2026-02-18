@@ -249,6 +249,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
 		$level = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : false;
 		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+		$gateway = ( isset( $_REQUEST['gateway'] ) && $_REQUEST['gateway'] !== 'all' ) ? sanitize_text_field( $_REQUEST['gateway'] ) : 'all';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
 		$items_per_page = $this->get_items_per_page( 'pmpro_subscriptions_per_page' );
 		/**
@@ -274,6 +275,14 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 				$condition .= ' AND sm.meta_value IS NOT NULL';
 			} else {
 				$condition .= ' AND s.status = "' . esc_sql( $status ) . '"';
+			}
+		}
+
+		if ( $gateway !== 'all' ) {
+			if ( $gateway === 'testing_only' ) {
+				$condition .= ' AND s.gateway = "" ';
+			} else {
+				$condition .= $wpdb->prepare( ' AND s.gateway = %s ', $gateway );
 			}
 		}
 
@@ -363,6 +372,12 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 				$status = '';
 			}
 
+			if ( isset( $_REQUEST['gateway'] ) && $_REQUEST['gateway'] !== 'all' ) {
+				$gateway = sanitize_text_field( $_REQUEST['gateway'] );
+			} else {
+				$gateway = 'all';
+			}
+
 			// The code that goes before the table is here
 			if ( ! empty( $pmpro_msg ) ) { ?>
 				<div id="message" class="
@@ -393,6 +408,20 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 					<option value="active" <?php selected( $status, 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
 					<option value="cancelled" <?php selected( $status, 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
 					<option value="sync_error" <?php selected( $status, 'sync_error' ); ?>><?php esc_html_e( 'Sync Error', 'paid-memberships-pro' ); ?></option>
+				</select>
+				<select id="gateway" name="gateway">
+					<option value="all" <?php selected( $gateway, 'all' ); ?>><?php esc_html_e( 'All Gateways', 'paid-memberships-pro' ); ?></option>
+					<?php
+						$gateways = pmpro_gateways();
+						foreach ( $gateways as $gateway_slug => $gateway_name ) {
+							if ( empty( $gateway_slug ) ) {
+								$gateway_slug = 'testing_only';
+							}
+							?>
+							<option value="<?php echo esc_attr( $gateway_slug ); ?>" <?php selected( $gateway, (string) $gateway_slug ); ?>><?php echo esc_html( $gateway_name ); ?></option>
+							<?php
+						}
+					?>
 				</select>
 				<input type="hidden" name="page" value="pmpro-subscriptions"/>
 				<input id="submit" class="button" type="submit" value="<?php esc_attr_e( 'Filter', 'paid-memberships-pro' ); ?>"/>
