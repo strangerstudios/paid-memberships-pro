@@ -218,28 +218,10 @@ class PMPro_Liquid_Renderer {
 	private static function evaluate_condition( $condition_string, $data ) {
 		$condition_string = trim( $condition_string );
 
-		// Evaluate top-level boolean operators left-to-right, ignoring quoted strings.
+		// Evaluate top-level boolean operators from right-to-left to match Liquid semantics.
 		$boolean_chain = self::parse_boolean_condition_chain( $condition_string );
 		if ( ! empty( $boolean_chain ) ) {
-			$result = self::evaluate_condition( $boolean_chain['operands'][0], $data );
-
-			foreach ( $boolean_chain['operators'] as $index => $operator ) {
-				if ( $operator === 'and' ) {
-					if ( ! $result ) {
-						continue;
-					}
-					$next_result = self::evaluate_condition( $boolean_chain['operands'][ $index + 1 ], $data );
-					$result = $result && $next_result;
-				} else {
-					if ( $result ) {
-						continue;
-					}
-					$next_result = self::evaluate_condition( $boolean_chain['operands'][ $index + 1 ], $data );
-					$result = $result || $next_result;
-				}
-			}
-
-			return $result;
+			return self::evaluate_boolean_chain( $boolean_chain, $data );
 		}
 
 		return self::evaluate_single_condition( $condition_string, $data );
@@ -291,6 +273,51 @@ class PMPro_Liquid_Renderer {
 		// Simple truthy check.
 		$value = self::resolve_value( $condition_string, $data );
 		return ! empty( $value );
+	}
+
+	/**
+	 * Evaluate a parsed boolean chain from right-to-left.
+	 *
+	 * Liquid evaluates mixed boolean operators from right-to-left and does not support
+	 * parenthesized grouping in conditional tags.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $boolean_chain The parsed boolean chain.
+	 * @param array $data          Key-value pairs for variable resolution.
+	 * @return bool The result of the boolean evaluation.
+	 */
+	private static function evaluate_boolean_chain( $boolean_chain, $data ) {
+		$operators = $boolean_chain['operators'];
+		$operands  = $boolean_chain['operands'];
+
+		if ( empty( $operands ) ) {
+			return false;
+		}
+
+		$result = self::evaluate_condition( $operands[ count( $operands ) - 1 ], $data );
+
+		for ( $index = count( $operators ) - 1; $index >= 0; $index-- ) {
+			$operator = $operators[ $index ];
+
+			if ( $operator === 'and' ) {
+				if ( ! $result ) {
+					continue;
+				}
+
+				$left_result = self::evaluate_condition( $operands[ $index ], $data );
+				$result      = $left_result && $result;
+			} else {
+				if ( $result ) {
+					continue;
+				}
+
+				$left_result = self::evaluate_condition( $operands[ $index ], $data );
+				$result      = $left_result || $result;
+			}
+		}
+
+		return $result;
 	}
 
 	/**
