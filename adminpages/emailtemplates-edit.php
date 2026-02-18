@@ -219,11 +219,11 @@
 									<td><?php esc_html_e( 'Output the value of a variable.', 'paid-memberships-pro' ); ?></td>
 								</tr>
 								<tr>
-									<th><code>{{ name | upcase }}</code></th>
+									<th><code>{{ display_name | upcase }}</code></th>
 									<td><?php esc_html_e( 'Apply a filter to transform the output.', 'paid-memberships-pro' ); ?></td>
 								</tr>
 								<tr>
-									<th><code>{{ name | downcase | escape }}</code></th>
+									<th><code>{{ display_name | downcase | strip }}</code></th>
 									<td><?php esc_html_e( 'Chain multiple filters using the pipe (|) character.', 'paid-memberships-pro' ); ?></td>
 								</tr>
 							</tbody>
@@ -246,14 +246,18 @@
 						</table>
 						<h3><?php esc_html_e( 'Conditionals', 'paid-memberships-pro' ); ?></h3>
 						<p><?php esc_html_e( 'Use conditional tags to show or hide content based on variable values.', 'paid-memberships-pro' ); ?></p>
-						<pre><code>{&#37; if membership_level_name &#37;}
-  &lt;p&gt;Your level: {{ membership_level_name }}&lt;/p&gt;
-{&#37; endif &#37;}</code></pre>
-						<pre><code>{&#37; if membership_cost == "$0.00" &#37;}
-  &lt;p&gt;You have a free membership.&lt;/p&gt;
+						<pre>{&#37; if discount_code_name &#37;}
+  &lt;p&gt;<?php echo esc_html__( 'Discount Code:', 'paid-memberships-pro' ); ?> {{ discount_code_name }}&lt;/p&gt;
+{&#37; endif &#37;}</pre>
+						<hr />
+						<pre>{&#37; if order_total_raw &gt;= 250 &#37;}
+  &lt;p&gt;<?php echo esc_html__( 'Thank you for being a Gold Sponsor!', 'paid-memberships-pro' ); ?>&lt;/p&gt;
+{&#37; elsif order_total_raw &gt;= 100 &#37;}
+  &lt;p&gt;<?php echo esc_html__( 'Thank you for being a Silver Sponsor!', 'paid-memberships-pro' ); ?>&lt;/p&gt;
 {&#37; else &#37;}
-  &lt;p&gt;Your membership costs {{ membership_cost }}.&lt;/p&gt;
-{&#37; endif &#37;}</code></pre>
+  &lt;p&gt;<?php echo esc_html__( 'Thank you for being a Bronze Sponsor!', 'paid-memberships-pro' ); ?>&lt;/p&gt;
+{&#37; endif &#37;}</pre>
+						<hr />
 						<table class="widefat fixed striped">
 							<tbody>
 								<tr>
