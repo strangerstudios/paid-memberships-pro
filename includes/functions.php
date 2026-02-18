@@ -4267,7 +4267,33 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 		$sanitized_string = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $sanitized_string );
 	}
 
+	// Preserve Liquid-style control tags through wp_kses() sanitization.
+	// Only {% %} tags are preserved (conditions use < > operators that wp_kses encodes).
+	// Output tags {{ }} are NOT preserved so wp_kses can still sanitize their contents.
+	$liquid_placeholders = array();
+	if ( 'pmpro_email' === $context ) {
+		$placeholder_id = wp_rand();
+		$sanitized_string = preg_replace_callback(
+			'/(\{%.*?%\})/s',
+			function ( $matches ) use ( &$liquid_placeholders, $placeholder_id ) {
+				$placeholder = '%%PMPRO_LIQUID_' . $placeholder_id . '_' . count( $liquid_placeholders ) . '%%';
+				$liquid_placeholders[ $placeholder ] = $matches[0];
+				return $placeholder;
+			},
+			$sanitized_string
+		);
+	}
+
 	$sanitized_string = wp_kses( $sanitized_string, $context );
+
+	// Restore Liquid template tags.
+	if ( ! empty( $liquid_placeholders ) ) {
+		$sanitized_string = str_replace(
+			array_keys( $liquid_placeholders ),
+			array_values( $liquid_placeholders ),
+			$sanitized_string
+		);
+	}
 
 	/**
 	 * Allow overriding the normal pmpro_kses functionality for a context.
