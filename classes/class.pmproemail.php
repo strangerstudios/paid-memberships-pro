@@ -196,8 +196,11 @@
 			if ( ! empty( $this->template ) ) {
 				$custom_to = get_option( 'pmpro_email_' . $this->template . '_to' );
 				if ( ! empty( $custom_to ) ) {
-					$custom_to = $this->substitute_variables( $custom_to );
-					$this->email = sanitize_email( $custom_to );
+					$custom_to = sanitize_email( $this->substitute_variables( $custom_to ) );
+					if ( ! is_email( $custom_to ) ) {
+						return false;
+					}
+					$this->email = $custom_to;
 				}
 			}
 
