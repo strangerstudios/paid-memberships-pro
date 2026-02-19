@@ -34,6 +34,12 @@ if ( ! empty( $template ) ) {
 					<?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?>
 				</th>
 				<th>
+					<?php esc_html_e( 'CC', 'paid-memberships-pro' ); ?>
+				</th>
+				<th>
+					<?php esc_html_e( 'BCC', 'paid-memberships-pro' ); ?>
+				</th>
+				<th>
 					<?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?>
 				</th>
 			</tr>
@@ -143,6 +149,18 @@ if ( ! empty( $template ) ) {
 						<?php
 							$subject = get_option( 'pmpro_email_' . $key . '_subject', $template['subject'] );
 							echo ! empty( $subject ) ? esc_html( $subject ) : esc_html__( '&#8212;', 'paid-memberships-pro' );
+						?>
+					</td>
+					<td data-colname="<?php esc_attr_e( 'CC', 'paid-memberships-pro' ); ?>">
+						<?php
+							$cc = get_option( 'pmpro_email_' . $key . '_cc' );
+							echo ! empty( $cc ) ? esc_html( $cc ) : esc_html__( '&#8212;', 'paid-memberships-pro' );
+						?>
+					</td>
+					<td data-colname="<?php esc_attr_e( 'BCC', 'paid-memberships-pro' ); ?>">
+						<?php
+							$bcc = get_option( 'pmpro_email_' . $key . '_bcc' );
+							echo ! empty( $bcc ) ? esc_html( $bcc ) : esc_html__( '&#8212;', 'paid-memberships-pro' );
 						?>
 					</td>
 					<td data-colname="<?php esc_attr_e( 'Status', 'paid-memberships-pro' ); ?>">
