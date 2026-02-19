@@ -622,6 +622,11 @@ jQuery(document).ready(function ($) {
 	 * Strips leading/trailing commas, collapses extra whitespace around commas.
 	 */
 	function pmpro_clean_email_list( value ) {
+		// Return an empty string if the value is empty or undefined/null.
+		if ( ! value ) {
+			return '';
+		}
+
 		// Split by comma, trim each part, remove empties, rejoin.
 		return value.split( ',' ).map( function( s ) { return s.trim(); } ).filter( Boolean ).join( ', ' );
 	}
