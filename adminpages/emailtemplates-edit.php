@@ -3,6 +3,9 @@
 	$template_data['body'] = get_option( 'pmpro_email_' . $edit . '_body' );
 	$template_data['subject'] = get_option( 'pmpro_email_' . $edit . '_subject' );
 	$template_data['disabled'] = get_option( 'pmpro_email_' . $edit . '_disabled' );
+	$template_data['to'] = get_option( 'pmpro_email_' . $edit . '_to' );
+	$template_data['cc'] = get_option( 'pmpro_email_' . $edit . '_cc' );
+	$template_data['bcc'] = get_option( 'pmpro_email_' . $edit . '_bcc' );
 
 	// If not found, load template from defaults.
 	if ( empty( $template_data['body'] ) ) {
@@ -142,11 +145,42 @@
 							</tr>
 							<?php
 								if ( ! in_array( $edit, array( 'header', 'footer' ) ) ) {
+									// Determine if this is a member email or admin email.
+									$is_admin_email = ( strpos( $edit, '_admin' ) !== false );
 									?>
+									<tr>
+										<th scope="row" valign="top"><label for="pmpro_email_template_to"><?php esc_html_e( 'To', 'paid-memberships-pro' ); ?></label></th>
+										<td>
+											<input id="pmpro_email_template_to" name="pmpro_email_template_to" type="text" value="<?php echo esc_attr( $template_data['to'] ); ?>" placeholder="<?php echo esc_attr( $is_admin_email ? '!!wordpress_admin_email!!' : '!!user_email!!' ); ?>" <?php echo filter_var( $template_data['disabled'], FILTER_VALIDATE_BOOLEAN ) ? 'disabled' : ''; ?> />
+											<?php if ( $is_admin_email ) { ?>
+												<p class="description"><?php printf(
+													/* translators: %s: link to General Settings */
+													esc_html__( 'The default recipient for this email is the administration email address set in %s.', 'paid-memberships-pro' ),
+													'<a href="' . esc_url( admin_url( 'options-general.php' ) ) . '" target="_blank">' . esc_html__( 'Settings > General', 'paid-memberships-pro' ) . '</a>'
+												); ?></p>
+											<?php } else { ?>
+												<p class="description"><?php esc_html_e( 'The default recipient for this email is the member. It is not recommended to change this.', 'paid-memberships-pro' ); ?></p>
+											<?php } ?>
+										</td>
+									</tr>
 									<tr>
 										<th scope="row" valign="top"><label for="pmpro_email_template_subject"><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></label></th>
 										<td>
 											<input id="pmpro_email_template_subject" name="pmpro_email_template_subject" type="text" value="<?php echo esc_attr( $template_data['subject'] ); ?>" <?php echo filter_var( $template_data['disabled'], FILTER_VALIDATE_BOOLEAN ) ? 'disabled' : ''; ?> />
+										</td>
+									</tr>
+									<tr>
+										<th scope="row" valign="top"><label for="pmpro_email_template_cc"><?php esc_html_e( 'CC', 'paid-memberships-pro' ); ?></label></th>
+										<td>
+											<input id="pmpro_email_template_cc" name="pmpro_email_template_cc" type="text" value="<?php echo esc_attr( $template_data['cc'] ); ?>" <?php echo filter_var( $template_data['disabled'], FILTER_VALIDATE_BOOLEAN ) ? 'disabled' : ''; ?> />
+											<p class="description"><?php esc_html_e( 'Add one or more email addresses separated by commas.', 'paid-memberships-pro' ); ?></p>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row" valign="top"><label for="pmpro_email_template_bcc"><?php esc_html_e( 'BCC', 'paid-memberships-pro' ); ?></label></th>
+										<td>
+											<input id="pmpro_email_template_bcc" name="pmpro_email_template_bcc" type="text" value="<?php echo esc_attr( $template_data['bcc'] ); ?>" <?php echo filter_var( $template_data['disabled'], FILTER_VALIDATE_BOOLEAN ) ? 'disabled' : ''; ?> />
+											<p class="description"><?php esc_html_e( 'Add one or more email addresses separated by commas.', 'paid-memberships-pro' ); ?></p>
 										</td>
 									</tr>
 									<?php
