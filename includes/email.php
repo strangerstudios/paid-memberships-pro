@@ -202,9 +202,9 @@ function pmpro_email_templates_save_template_data() {
 	$template = sanitize_text_field( $_REQUEST['template'] );
 	$subject = isset( $_REQUEST['subject'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) ) : '';
 	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ), 'email' );	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	$to = isset( $_REQUEST['to'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['to'] ) ) : '';
-	$cc = isset( $_REQUEST['cc'] ) ? trim( wp_unslash( $_REQUEST['cc'] ), ", \t\n\r\0\x0B" ) : '';
-	$bcc = isset( $_REQUEST['bcc'] ) ? trim( wp_unslash( $_REQUEST['bcc'] ), ", \t\n\r\0\x0B" ) : '';
+	$to = isset( $_REQUEST['to'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['to'] ), ", \t\n\r\0\x0B" ) ) : '';
+	$cc = isset( $_REQUEST['cc'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['cc'] ), ", \t\n\r\0\x0B" ) ) : '';
+	$bcc = isset( $_REQUEST['bcc'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['bcc'] ), ", \t\n\r\0\x0B" ) ) : '';
 
 	//update this template's settings
 	update_option( 'pmpro_email_' . $template . '_subject', $subject );
