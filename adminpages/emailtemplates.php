@@ -25,10 +25,10 @@ if ( ! empty( $template ) ) {
 		<thead>
 			<tr>
 				<th scope="row">
-					<?php esc_html_e( 'Email Template Name', 'paid-memberships-pro' ); ?>
+					<?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?>
 				</th>
 				<th>
-					<?php esc_html_e( 'Default Recipient', 'paid-memberships-pro' ); ?>
+					<?php esc_html_e( 'To', 'paid-memberships-pro' ); ?>
 				</th>
 				<th>
 					<?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?>
@@ -132,16 +132,17 @@ if ( ! empty( $template ) ) {
 							?>
 						</div>
 					</td>
-					<td data-colname="<?php esc_attr_e( 'Default Recipient', 'paid-memberships-pro' ); ?>">
+					<td data-colname="<?php esc_attr_e( 'To', 'paid-memberships-pro' ); ?>">
 						<?php
-							// If the email has _admin in $key, it's an admin email.
-							// If the email is default, header, or footer, show a dash.
-							if ( strpos( $key, '_admin' ) !== false ) {
-								echo esc_html__( 'Admin', 'paid-memberships-pro' );
+							$to = get_option( 'pmpro_email_' . $key . '_to' );
+							if ( ! empty( $to ) ) {
+								echo esc_html( $to );
 							} elseif ( in_array( $key, [ 'default', 'header', 'footer' ], true ) ) {
 								echo esc_html__( '&#8212;', 'paid-memberships-pro' );
+							} elseif ( strpos( $key, '_admin' ) !== false ) {
+								echo esc_html__( 'Admin (default recipient)', 'paid-memberships-pro' );
 							} else {
-								echo esc_html__( 'Member', 'paid-memberships-pro' );
+								echo esc_html__( 'Member (default recipient)', 'paid-memberships-pro' );
 							}
 						?>
 					</td>
