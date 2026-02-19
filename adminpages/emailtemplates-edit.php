@@ -151,7 +151,7 @@
 									<tr>
 										<th scope="row" valign="top"><label for="pmpro_email_template_to"><?php esc_html_e( 'To', 'paid-memberships-pro' ); ?></label></th>
 										<td>
-											<input id="pmpro_email_template_to" name="pmpro_email_template_to" type="text" value="<?php echo esc_attr( $template_data['to'] ); ?>" placeholder="<?php echo $is_admin_email ? '!!wordpress_admin_email!!' : '!!user_email!!'; ?>" <?php echo filter_var( $template_data['disabled'], FILTER_VALIDATE_BOOLEAN ) ? 'disabled' : ''; ?> />
+											<input id="pmpro_email_template_to" name="pmpro_email_template_to" type="text" value="<?php echo esc_attr( $template_data['to'] ); ?>" placeholder="<?php echo esc_attr( $is_admin_email ? '!!wordpress_admin_email!!' : '!!user_email!!' ); ?>" <?php echo filter_var( $template_data['disabled'], FILTER_VALIDATE_BOOLEAN ) ? 'disabled' : ''; ?> />
 											<?php if ( $is_admin_email ) { ?>
 												<p class="description"><?php printf(
 													/* translators: %s: link to General Settings */
