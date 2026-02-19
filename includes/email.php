@@ -352,7 +352,7 @@ function pmpro_email_templates_email_data($data, $email) {
 
 	//general data
 	$new_data['sitename'] = get_option( 'blogname' );
-	$new_data['siteemail'] = get_option( 'pmpro_from_email');
+	$new_data['siteemail'] = get_option( 'pmpro_from_email' );
 	$new_data['pmpro_from_email'] = get_option( 'pmpro_from_email' );
 	$new_data['wordpress_admin_email'] = get_bloginfo( 'admin_email' );
 	if(empty($new_data['login_link'])) {
