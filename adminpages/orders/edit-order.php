@@ -29,10 +29,7 @@ if ( ! empty( $order->id ) ) { ?>
 					<th scope="row" valign="top"><label for="date"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></label></th>
 					<td>
 						<?php
-							$timestamp = $order->getTimestamp();
-							if ( empty( $timestamp ) ) {
-								$timestamp = time();
-							}
+							$timestamp = empty( $order->timestamp ) ? current_time( 'timestamp' ) : $order->getTimestamp();
 							$date_input_value = date_i18n( 'Y-m-d\TH:i', $timestamp );
 						?>
 						<input type="datetime-local" name="date" value="<?php echo esc_attr( $date_input_value ); ?>">
