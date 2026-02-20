@@ -10,7 +10,7 @@ if ( version_compare( PHP_VERSION, '5.3.29', '<' ) ) {
 }
 
 if ( ! class_exists( 'PMPro_Stripe_Webhook_Handler' ) ) {
-	require_once PMPRO_DIR . '/classes/class-pmpro-stripe-webhook-handler.php';
+	require_once PMPRO_DIR . '/services/class-pmpro-stripe-webhook-handler.php';
 }
 
 $event_id = null;

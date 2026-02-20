@@ -51,7 +51,7 @@ add_action('wp_ajax_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
  */
 function pmpro_stripe_webhook_process_scheduled_event( $event_id, $livemode = false ) {
 	if ( ! class_exists( 'PMPro_Stripe_Webhook_Handler' ) ) {
-		require_once dirname(__FILE__) . '/../classes/class-pmpro-stripe-webhook-handler.php';
+		require_once dirname(__FILE__) . '/../services/class-pmpro-stripe-webhook-handler.php';
 	}
 	PMPro_Stripe_Webhook_Handler::run(
 		array(
