@@ -74,6 +74,31 @@ class WPF_PMPro_Admin {
 				'type'  => 'text',
 				'group' => 'pmpro',
 			),
+			'pmpro_initial_payment'    => array(
+				'label' => 'Initial Payment',
+				'type'  => 'text',
+				'group' => 'pmpro',
+			),
+			'pmpro_order_status'       => array(
+				'label' => 'Order Status',
+				'type'  => 'text',
+				'group' => 'pmpro',
+			),
+			'pmpro_order_code'         => array(
+				'label' => 'Order Code',
+				'type'  => 'text',
+				'group' => 'pmpro',
+			),
+			'pmpro_membership_id'      => array(
+				'label' => 'Membership ID',
+				'type'  => 'text',
+				'group' => 'pmpro',
+			),
+			'pmpro_order_date'         => array(
+				'label' => 'Order Date',
+				'type'  => 'date',
+				'group' => 'pmpro',
+			),
 			'pmpro_next_payment_date'  => array(
 				'label' => 'Next Payment Date',
 				'type'  => 'date',
@@ -191,20 +216,29 @@ class WPF_PMPro_Admin {
 		);
 
 		// Add level-specific field mappings for each membership level.
-		$contact_fields = wpf_get_option( 'contact_fields', array() );
+		$contact_fields    = wpf_get_option( 'contact_fields', array() );
+		$membership_fields = $this->get_membership_level_crm_fields();
 
 		foreach ( $contact_fields as $key => $value ) {
 			if ( ! empty( $value['crm_field'] ) ) {
-				$crm_key = substr( $key, 0, strrpos( $key, '_' ) );
 
-				if ( isset( $membership_fields[ $crm_key ] ) ) {
-					$post_id             = (int) str_replace( $crm_key . '_', '', $key );
-					$meta_fields[ $key ] = array(
-						'label'  => pmpro_getLevel( $post_id )->name . ' - ' . $membership_fields[ $crm_key ]['label'],
-						'type'   => $membership_fields[ $crm_key ]['type'],
-						'pseudo' => true,
-						'group'  => 'pmpro',
-					);
+				foreach ( $membership_fields as $crm_key => $crm_value ) {
+
+					if ( 0 === strpos( $key, $crm_key . '_' ) ) {
+
+						$level_id = str_replace( $crm_key . '_', '', $key );
+
+						// Get the level name.
+						$level      = pmpro_getLevel( $level_id );
+						$level_name = $level ? $level->name : 'Level ' . $level_id;
+
+						$meta_fields[ $key ] = array(
+							'label'  => $level_name . ' - ' . $crm_value['label'],
+							'type'   => $crm_value['type'],
+							'pseudo' => true,
+							'group'  => 'pmpro',
+						);
+					}
 				}
 			}
 		}
@@ -242,19 +276,17 @@ class WPF_PMPro_Admin {
 	 */
 	public function membership_level_settings( $level ) {
 
-		$settings = get_option( 'wpf_pmp_' . $level->id );
+		$defaults = array(
+			'apply_tags'                      => array(),
+			'remove_tags'                     => false,
+			'tag_link'                        => array(),
+			'apply_tags_cancelled'            => array(),
+			'apply_tags_expired'              => array(),
+			'apply_tags_payment_failed'       => array(),
+			'apply_tags_pending_cancellation' => array(),
+		);
 
-		if ( empty( $settings ) ) {
-			$settings = array(
-				'apply_tags'                      => array(),
-				'remove_tags'                     => false,
-				'tag_link'                        => array(),
-				'apply_tags_cancelled'            => array(),
-				'apply_tags_expired'              => array(),
-				'apply_tags_payment_failed'       => array(),
-				'apply_tags_pending_cancellation' => array(),
-			);
-		}
+		$settings = wp_parse_args( get_option( 'wpf_pmp_' . $level->id, array() ), $defaults );
 
 		?>
 
@@ -433,6 +465,9 @@ class WPF_PMPro_Admin {
 					$crm_fields = wp_fusion()->settings->get_crm_fields_flat();
 					$crm_fields = array( '' => '- None -' ) + $crm_fields;
 
+					// Get saved contact field mappings.
+					$contact_fields = wpf_get_option( 'contact_fields', array() );
+
 					$level_fields = $this->get_membership_level_crm_fields();
 
 					echo '<tr class="header"><td colspan="2"><h3>' . esc_html__( 'Level-Specific Field Mapping', 'wp-fusion' ) . '</h3></td></tr>';
@@ -442,9 +477,9 @@ class WPF_PMPro_Admin {
 						$field_label = $field_data['label'];
 						$field_type  = $field_data['type'];
 
-						// Get the saved value.
+						// Get the saved value from contact fields.
 						$meta_key = $field_id . '_' . $level->id;
-						$value    = isset( $crm_fields[ $meta_key ] ) ? $crm_fields[ $meta_key ] : '';
+						$value    = isset( $contact_fields[ $meta_key ]['crm_field'] ) ? $contact_fields[ $meta_key ]['crm_field'] : '';
 
 						echo '<tr>';
 						echo '<th scope="row"><label for="' . esc_attr( $meta_key ) . '">' . esc_html( $field_label ) . ':</label></th>';
@@ -489,13 +524,14 @@ class WPF_PMPro_Admin {
 	public function save_level_settings( $saveid ) {
 
 		// Verify nonce for the main settings.
-		if ( ! isset( $_POST['pmpro_membershiplevels_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['pmpro_membershiplevels_nonce'] ), 'save_membershiplevel' ) ) {
+		if ( ! isset( $_POST['pmpro_membershiplevels_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pmpro_membershiplevels_nonce'] ) ), 'save_membershiplevel' ) ) {
 			return;
 		}
 
 		// Save main settings.
 		if ( isset( $_POST['wpf-settings'] ) ) {
-			update_option( 'wpf_pmp_' . $saveid, wpf_clean( wp_unslash( $_POST['wpf-settings'] ) ), false );
+			$settings = wpf_clean( wp_unslash( $_POST['wpf-settings'] ) );
+			update_option( 'wpf_pmp_' . $saveid, $settings, false );
 		} else {
 			delete_option( 'wpf_pmp_' . $saveid );
 		}
@@ -543,11 +579,11 @@ class WPF_PMPro_Admin {
 	 *
 	 * @since 3.45.3
 	 *
-	 * @param object $edit The discount code object.
+	 * @param int $edit The discount code ID.
 	 */
 	public function discount_code_settings( $edit ) {
 
-		$settings = get_option( 'wpf_pmp_discount_' . $edit->id );
+		$settings = get_option( 'wpf_pmp_discount_' . $edit );
 
 		if ( empty( $settings ) ) {
 			$settings = array( 'apply_tags' => array() );
@@ -586,8 +622,14 @@ class WPF_PMPro_Admin {
 	 */
 	public function save_discount_code_settings( $saveid ) {
 
+		// Verify nonce for discount code settings.
+		if ( ! isset( $_POST['pmpro_discountcodes_nonce'] ) || ! check_admin_referer( 'save', 'pmpro_discountcodes_nonce' ) ) {
+			return;
+		}
+
 		if ( isset( $_POST['wpf-settings'] ) ) {
-			update_option( 'wpf_pmp_discount_' . $saveid, wpf_clean( wp_unslash( $_POST['wpf-settings'] ) ) );
+			$settings = wpf_clean( wp_unslash( $_POST['wpf-settings'] ) );
+			update_option( 'wpf_pmp_discount_' . $saveid, $settings );
 		}
 	}
 }

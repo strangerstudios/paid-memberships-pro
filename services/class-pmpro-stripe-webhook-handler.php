@@ -381,7 +381,7 @@ class PMPro_Stripe_Webhook_Handler {
 			return;
 		}
 
-		$logstr .= pmpro_handle_recurring_payment_failure_at_gateway( self::get_order_data_from_invoice( $invoice ) );
+		$logstr .= pmpro_handle_recurring_payment_failure_at_gateway( self::get_order_data_from_invoice( $invoice, $charge->payment_method ) );
 	}
 
 	/**
@@ -901,10 +901,12 @@ class PMPro_Stripe_Webhook_Handler {
 	 *
 	 * @since 3.6
 	 *
-	 * @param Stripe_Invoice $invoice The invoice object from Stripe.
+	 * @param Stripe_Invoice $invoice           The invoice object from Stripe.
+	 * @param string         $payment_method_id Optional payment method ID to retrieve from Stripe.
+	 *                                          Useful for failed payments where the invoice has no payment data.
 	 * @return array The order data array.
 	 */
-	private static function get_order_data_from_invoice( $invoice ) {
+	private static function get_order_data_from_invoice( $invoice, $payment_method_id = '' ) {
 		global $pmpro_currency, $pmpro_currencies;
 
 		$payment_method = null;
@@ -932,8 +934,15 @@ class PMPro_Stripe_Webhook_Handler {
 		$order_data['total'] = ( ! empty( $invoice->total ) ? $invoice->total / $currency_unit_multiplier : 0 );
 
 		// Set payment information data.
-		// Find the payment intent.
-		if ( ! empty( $invoice->payments->data[0]->payment->payment_intent ) ) {
+		// Find the payment method.
+		// If we have a payment method ID, retrieve it directly from Stripe.
+		// This is needed for failed payments where the invoice has no payment data.
+		if ( ! empty( $payment_method_id ) ) {
+			$payment_method = Stripe_PaymentMethod::retrieve( $payment_method_id );
+		}
+
+		// If we don't have a payment method yet, try to get it from the invoice's payment intent.
+		if ( empty( $payment_method ) && ! empty( $invoice->payments->data[0]->payment->payment_intent ) ) {
 			$payment_intent_args = array(
 				'id'     => $invoice->payments->data[0]->payment->payment_intent,
 				'expand' => array(

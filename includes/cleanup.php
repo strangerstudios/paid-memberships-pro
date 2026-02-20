@@ -137,5 +137,13 @@ function pmpro_delete_membership_history( $user_id ) {
 		array( 'user_id' => $user_id ), 
 		array( '%d' )
 	);
+
+	// Delete email log entries for this user.
+	$wpdb->delete(
+		$wpdb->pmpro_email_log,
+		array( 'user_id' => $user_id ),
+		array( '%d' )
+	);
+
 	// we don't remove the orders because it would affect reporting
 }

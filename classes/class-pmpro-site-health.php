@@ -105,6 +105,10 @@ class PMPro_Site_Health {
 					'label' => __( 'getfile.php Usage', 'paid-memberships-pro' ),
 					'value' => self::get_getfile_usage(),
 				],
+				'pmpro-restricted-files-protection' => [
+					'label' => __( 'Restricted Files Protection', 'paid-memberships-pro' ),
+					'value' => self::get_restricted_files_protection(),
+				],
 				'pmpro-htaccess-cache-usage' => [
 					'label' => __( '.htaccess Cache Usage', 'paid-memberships-pro' ),
 					'value' => self::get_htaccess_cache_usage(),
@@ -506,6 +510,31 @@ class PMPro_Site_Health {
 		}
 
 		return __( 'On - .htaccess contains services/getfile.php usage', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Get the restricted files protection information.
+	 *
+	 * @since TBD
+	 *
+	 * @return string The restricted files protection information.
+	 */
+	public function get_restricted_files_protection() {
+		if ( ! function_exists( 'pmpro_is_restricted_directory_protected' ) ) {
+			return __( 'Unable to determine', 'paid-memberships-pro' );
+		}
+
+		$is_protected = pmpro_is_restricted_directory_protected();
+
+		if ( true === $is_protected ) {
+			return __( 'Protected', 'paid-memberships-pro' );
+		}
+
+		if ( false === $is_protected ) {
+			return __( 'Accessible', 'paid-memberships-pro' );
+		}
+
+		return __( 'Unable to determine', 'paid-memberships-pro' );
 	}
 
 	/**

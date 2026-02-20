@@ -189,17 +189,21 @@
 			}
 			
 			//swap data into body and subject line
-			if(is_array($this->data))
-			{
-				foreach($this->data as $key => $value)
-				{
-					if ( 'body' != $key ) {
-						$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
-						$this->subject = str_replace("!!" . $key . "!!", $value, $this->subject);
+			$this->body = $this->substitute_variables( $this->body );
+			$this->subject = $this->substitute_variables( $this->subject );
+
+			// Apply per-template To override before the recipient filter.
+			if ( ! empty( $this->template ) ) {
+				$custom_to = get_option( 'pmpro_email_' . $this->template . '_to' );
+				if ( ! empty( $custom_to ) ) {
+					$custom_to = sanitize_email( $this->substitute_variables( $custom_to ) );
+					if ( ! is_email( $custom_to ) ) {
+						return false;
 					}
+					$this->email = $custom_to;
 				}
 			}
-			
+
 			//filters
 			$temail = apply_filters("pmpro_email_filter", $this);		//allows filtering entire email at once
 
@@ -216,6 +220,61 @@
 			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
 			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
+
+			// Apply per-template CC/BCC settings after filters so we merge with any headers added by custom code.
+			if ( ! empty( $this->template ) ) {
+				// Get CC addresses and append to any existing CC header.
+				$custom_cc = get_option( 'pmpro_email_' . $this->template . '_cc' );
+				if ( ! empty( $custom_cc ) ) {
+					$custom_cc = $this->substitute_variables( $custom_cc );
+					$custom_cc = self::sanitize_email_addresses( $custom_cc );
+					if ( ! empty( $custom_cc ) ) {
+						$existing_cc_key = null;
+						foreach ( $this->headers as $header_key => $header ) {
+							if ( stripos( $header, 'Cc:' ) === 0 ) {
+								$existing_cc_key = $header_key;
+								break;
+							}
+						}
+						if ( null !== $existing_cc_key ) {
+							$existing_addresses = self::sanitize_email_addresses( substr( $this->headers[ $existing_cc_key ], 3 ) );
+							if ( ! empty( $existing_addresses ) ) {
+								$this->headers[ $existing_cc_key ] = 'Cc: ' . $existing_addresses . ', ' . $custom_cc;
+							} else {
+								$this->headers[ $existing_cc_key ] = 'Cc: ' . $custom_cc;
+							}
+						} else {
+							$this->headers[] = 'Cc: ' . $custom_cc;
+						}
+					}
+				}
+
+				// Get BCC addresses and append to any existing BCC header.
+				$custom_bcc = get_option( 'pmpro_email_' . $this->template . '_bcc' );
+				if ( ! empty( $custom_bcc ) ) {
+					$custom_bcc = $this->substitute_variables( $custom_bcc );
+					$custom_bcc = self::sanitize_email_addresses( $custom_bcc );
+					if ( ! empty( $custom_bcc ) ) {
+						$existing_bcc_key = null;
+						foreach ( $this->headers as $header_key => $header ) {
+							if ( stripos( $header, 'Bcc:' ) === 0 ) {
+								$existing_bcc_key = $header_key;
+								break;
+							}
+						}
+						if ( null !== $existing_bcc_key ) {
+							$existing_addresses = self::sanitize_email_addresses( substr( $this->headers[ $existing_bcc_key ], 4 ) );
+							if ( ! empty( $existing_addresses ) ) {
+								$this->headers[ $existing_bcc_key ] = 'Bcc: ' . $existing_addresses . ', ' . $custom_bcc;
+							} else {
+								$this->headers[ $existing_bcc_key ] = 'Bcc: ' . $custom_bcc;
+							}
+						} else {
+							$this->headers[] = 'Bcc: ' . $custom_bcc;
+						}
+					}
+				}
+			}
 
 			// Get template header.
 			$email_header = '';
@@ -243,18 +302,41 @@
 			$this->body = $email_header . $this->body . $email_footer;
 
 			// Swap data into body and subject line again in case filters changed them or in case we added header/footer.
+			$this->body = $this->substitute_variables( $this->body );
+			$this->subject = $this->substitute_variables( $this->subject );
+			
+			$result = wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
+
+			/**
+			 * Fires after an email is sent via wp_mail.
+			 *
+			 * @since TBD
+			 *
+			 * @param PMProEmail $this The email object.
+			 * @param bool $result Whether the email was sent successfully.
+			 */
+			do_action( 'pmpro_after_email_sent', $this, $result );
+
+			return $result;
+		}
+		
+		/**
+		 * Replace !!variable!! placeholders in a string with values from $this->data.
+		 *
+		 * @param string $string The string to perform replacements on.
+		 * @return string The string with placeholders replaced.
+		 */
+		private function substitute_variables( $string ) {
 			if ( is_array( $this->data ) ) {
 				foreach ( $this->data as $key => $value ) {
-					if ( 'body' != $key ) {
-						$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
-						$this->subject = str_replace("!!" . $key . "!!", $value, $this->subject);
+					if ( 'body' !== $key ) {
+						$string = str_replace( '!!' . $key . '!!', $value, $string );
 					}
 				}
 			}
-			
-			return wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
+			return $string;
 		}
-		
+
 		/**
 		 * Add the From Name and Email to the headers.
 		 * @since 2.1
@@ -281,7 +363,31 @@
 				$this->headers[] = 'From:' . $this->from;
 			}
 		}
-		
+
+		/**
+		 * Sanitize a comma-separated list of email addresses.
+		 *
+		 * Invalid addresses are silently removed.
+		 *
+		 * @since 3.5
+		 *
+		 * @param string $addresses Comma-separated email addresses.
+		 * @return string Sanitized comma-separated email addresses.
+		 */
+		private static function sanitize_email_addresses( $addresses ) {
+			$parts     = array_map( 'trim', explode( ',', $addresses ) );
+			$validated = array();
+
+			foreach ( $parts as $part ) {
+				$email = sanitize_email( $part );
+				if ( ! empty( $email ) ) {
+					$validated[] = $email;
+				}
+			}
+
+			return implode( ', ', $validated );
+		}
+
 		/**
 		 * Send the level cancelled email to the member.
 		 *

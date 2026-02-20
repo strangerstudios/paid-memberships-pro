@@ -44,6 +44,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
+	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
 }
 pmpro_setDBTables();
 

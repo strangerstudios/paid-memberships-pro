@@ -162,6 +162,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	// We need to pull the checkout level and fields data from the order.
 	$checkout_level_arr = get_pmpro_membership_order_meta( $order->id, 'checkout_level', true );
 	$pmpro_level = (object) $checkout_level_arr;
+	$order->membership_level = $pmpro_level;
 
 	// Set $discount_code_id.
 	// @TODO: Remove this in v4.0. Discount codes should be set on the level object.
