@@ -4207,7 +4207,9 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 function pmpro_doing_webhook( $gateway = null, $set = false ){
 	// If second param is set, set things up.
 	if ( ! empty( $set ) ) {
-		define( 'PMPRO_DOING_WEBHOOK', $gateway );
+		if ( ! defined( 'PMPRO_DOING_WEBHOOK' ) ) {
+			define( 'PMPRO_DOING_WEBHOOK', $gateway );
+		}
 		do_action( 'pmpro_doing_webhook', $gateway );
 		return true;
 	}
@@ -4232,11 +4234,17 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 /**
  * Called once a webhook has been run but was not handled.
  *
+ * @param string|null $gateway Optional. The gateway the webhook was not handled for.
+ *
  * @return void
  *
  * @since 2.8
  */
-function pmpro_unhandled_webhook(){
+function pmpro_unhandled_webhook( $gateway = null ) {
+	if ( null === $gateway ) {
+		$gateway = defined( 'PMPRO_DOING_WEBHOOK' ) ? PMPRO_DOING_WEBHOOK : '';
+	}
+
 	/**
 	 * Allow hooking into after a webhook has been run but was not handled.
 	 *
@@ -4244,7 +4252,7 @@ function pmpro_unhandled_webhook(){
 	 *
 	 * @param string $gateway The gateway the webhook was not handled for.
 	 */
-	do_action( 'pmpro_unhandled_webhook', PMPRO_DOING_WEBHOOK );
+	do_action( 'pmpro_unhandled_webhook', $gateway );
 }
 
 /**
