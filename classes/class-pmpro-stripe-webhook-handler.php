@@ -91,7 +91,24 @@ class PMPro_Stripe_Webhook_Handler {
 				$pmpro_stripe_event = Stripe_Event::retrieve( $event_id );
 			} catch ( Exception $e ) {
 				$logstr .= 'Could not find an event with ID #' . $event_id . '. ' . $e->getMessage();
-				$pmpro_stripe_event = $post_event; // For testing, the passed event can be treated as trusted fallback data.
+
+				/**
+				 * Filter whether the Stripe webhook handler can trust a posted event payload
+				 * when retrieving the event from Stripe fails.
+				 *
+				 * @since TBD
+				 *
+				 * @param bool        $allow_unverified_post_event Whether to trust the posted event payload fallback.
+				 * @param object|null $post_event                  Parsed event payload from the request body.
+				 * @param string      $event_id                    Stripe event ID being retrieved.
+				 */
+				$allow_unverified_post_event = (bool) apply_filters( 'pmpro_stripe_webhook_allow_unverified_post_event', false, $post_event, $event_id );
+
+				// This fallback is intended for controlled testing/debug scenarios only.
+				if ( $allow_unverified_post_event && ! empty( $post_event ) && ! empty( $post_event->id ) && sanitize_text_field( $post_event->id ) === $event_id ) {
+					$pmpro_stripe_event = $post_event;
+					$logstr .= ' Falling back to the unverified posted event payload.';
+				}
 			}
 		}
 
