@@ -632,16 +632,39 @@ jQuery(document).ready(function ($) {
 		pmpro_save_template().done(setTimeout(function () { pmpro_send_test_email(); }, '1000'));
 	});
 
+	/**
+	 * Clean up a comma-separated email list.
+	 * Strips leading/trailing commas, collapses extra whitespace around commas.
+	 */
+	function pmpro_clean_email_list( value ) {
+		// Return an empty string if the value is empty or undefined/null.
+		if ( ! value ) {
+			return '';
+		}
+
+		// Split by comma, trim each part, remove empties, rejoin.
+		return value.split( ',' ).map( function( s ) { return s.trim(); } ).filter( Boolean ).join( ', ' );
+	}
+
 	function pmpro_save_template() {
 
 		$("#pmpro_submit_template_data").attr("disabled", true);
 		$(".status").hide();
 		// console.log(template);
 
+		// Clean CC and BCC values before saving and update the fields.
+		var cc_val = pmpro_clean_email_list( $("#pmpro_email_template_cc").val() );
+		var bcc_val = pmpro_clean_email_list( $("#pmpro_email_template_bcc").val() );
+		$("#pmpro_email_template_cc").val( cc_val );
+		$("#pmpro_email_template_bcc").val( bcc_val );
+
 		$data = {
 			template: $template,
 			subject: $("#pmpro_email_template_subject").val(),
 			body: $("#pmpro_email_template_body").val(),
+			to: $("#pmpro_email_template_to").val(),
+			cc: cc_val,
+			bcc: bcc_val,
 			action: 'pmpro_email_templates_save_template_data',
 			security: $('input[name=security]').val()
 		};
@@ -676,6 +699,9 @@ jQuery(document).ready(function ($) {
 			var template_data = $.parseJSON(response);
 			$('#pmpro_email_template_subject').val(template_data['subject']);
 			$('#pmpro_email_template_body').val(template_data['body']);
+			$('#pmpro_email_template_to').val(template_data['to']);
+			$('#pmpro_email_template_cc').val(template_data['cc']);
+			$('#pmpro_email_template_bcc').val(template_data['bcc']);
 			$(".status_message_wrapper").addClass('updated');
 			$(".status_message").html('Template Reset');
 			$(".status_message").show();
@@ -757,11 +783,17 @@ jQuery(document).ready(function ($) {
 			$("#pmpro_email_template_disable").prop('checked', true);
 			$("#pmpro_email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
 			$("#pmpro_email_template_subject").attr('readonly', 'readonly').attr('disabled', 'disabled');
+			$("#pmpro_email_template_to").attr('readonly', 'readonly').attr('disabled', 'disabled');
+			$("#pmpro_email_template_cc").attr('readonly', 'readonly').attr('disabled', 'disabled');
+			$("#pmpro_email_template_bcc").attr('readonly', 'readonly').attr('disabled', 'disabled');
 		}
 		else {
 			$("#pmpro_email_template_disable").prop('checked', false);
 			$("#pmpro_email_template_body").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
 			$("#pmpro_email_template_subject").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
+			$("#pmpro_email_template_to").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
+			$("#pmpro_email_template_cc").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
+			$("#pmpro_email_template_bcc").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
 		}
 
 	}
