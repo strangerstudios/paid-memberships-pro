@@ -87,12 +87,27 @@ function pmpro_admin_prep_click_events() {
 	});
 }
 
-// Hide the popup if clicked outside the popup.
-jQuery(document).on('click', function (e) {
-	// Check if the clicked element is the close button or outside the pmpro-popup-wrap
-	if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
+// Popups: All handlers registered once on document ready.
+jQuery(document).ready(function () {
+	// Hide the popup when clicking outside the popup.
+	jQuery(document).on('click', function (e) {
+		if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
+			jQuery('.pmpro-popup-overlay').hide();
+		}
+	});
+
+	// Hide the popup when close/complete button is clicked.
+	jQuery(document).on('click', '.pmproPopupCloseButton, .pmproPopupCompleteButton', function (e) {
+		e.preventDefault();
 		jQuery('.pmpro-popup-overlay').hide();
-	}
+	});
+
+	// Hide the popup if "ESC" is pressed.
+	jQuery(document).on('keyup', function (e) {
+		if (e.key === 'Escape') {
+			jQuery('.pmpro-popup-overlay').hide();
+		}
+	});
 });
 
 /** JQuery to hide the notifications. */
@@ -908,19 +923,6 @@ jQuery(document).ready(function () {
 			}
 		};
 
-		// Hide the license banner.
-		jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
-			e.preventDefault();
-			jQuery('.pmpro-popup-overlay').hide();
-		});
-
-		// Hide the popup banner if "ESC" is pressed.
-		jQuery(document).keyup(function (e) {
-			if (e.key === 'Escape') {
-				jQuery('.pmpro-popup-overlay').hide();
-			}
-		});
-
 		jQuery('#pmpro-admin-add-ons-list').on('click', '.pmproAddOnActionButton', function (e) {
 			e.preventDefault();
 
@@ -1323,4 +1325,444 @@ jQuery(document).ready(function () {
 			jQuery(this).addClass('pmpro_report_th_closed');
 		}
 	});
+});
+
+// Dynamic Exports Button (Members, Orders, etc.)
+// Handles csv exports via Action Scheduler with large datasets.
+jQuery(document).ready(function ($) {
+	// Reusable export handler. Looks for buttons with class .pmpro-export-button
+	// and manages lifecycle: start, poll, download. Uses REST endpoints.
+	var exportButton = '.pmpro-export-button';
+
+	// Centralized labels for button states
+	var EXPORT_STATES = {
+		idle: 'Export to CSV',
+		preparing: 'Preparing…',
+		running: 'Building CSV…',
+		complete: 'Download CSV',
+		error: 'Export Error',
+		error_start: 'Error Starting Export'
+	};
+
+	function setButtonState($btn, text, status){
+		if(!$btn || !$btn.length){ return; }
+		$btn.text(text);
+		$btn.attr('data-status', status);
+	}
+
+	function setButtonStateKey($btn, status){
+		// Compute label
+		var label = EXPORT_STATES[status];
+		if(typeof label === 'function'){
+			label = label();
+		}
+
+		// Base visual state: secondary
+		$btn.removeClass('button-primary');
+		$btn.prop('disabled', false);
+
+		// Preparing/running: disabled secondary
+		if(status === 'preparing' || status === 'running'){
+			$btn.prop('disabled', true);
+		}
+
+		// Complete: switch to primary (blue) and enable
+		if(status === 'complete'){
+			$btn.addClass('button-primary');
+			$btn.prop('disabled', false);
+		}
+
+		// Errors: keep secondary and enable so user can retry
+		if(status && (status === 'error' || status === 'error_start')){
+			$btn.prop('disabled', false);
+		}
+
+		setButtonState($btn, label, status);
+	}
+
+	function beginPolling($btn){
+		if($btn.data('polling')){ return; }
+		$btn.data('polling', true);
+		var interval = setInterval(function(){ pollStatus($btn); }, 5000);
+		$btn.data('pollInterval', interval);
+	}
+
+	function stopPolling($btn){
+		$btn.data('polling', false);
+		var interval = $btn.data('pollInterval');
+		if(interval){ clearInterval(interval); $btn.data('pollInterval', null); }
+	}
+
+	function startExport($btn){
+		if(($btn.attr('data-status')||'idle') !== 'idle'){ return; }
+		var type = $btn.data('type') || 'members';
+		var filters = $btn.data('filters') || {};
+		if (typeof filters === 'string') { try { filters = JSON.parse(filters); } catch(e){ filters = {}; } }
+		setButtonStateKey($btn, 'preparing');
+		var payload = Object.assign({ type: type }, filters);
+		var startUrl = $btn.data('startUrl') || ($btn.data('start-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/export/start') : null);
+		var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
+		if(!startUrl || !nonce){ setButtonState($btn, 'Error', 'error'); return; }
+		fetch(startUrl, {
+			method: 'POST',
+			headers: { 'Content-Type':'application/json', 'X-WP-Nonce': nonce },
+			body: JSON.stringify(payload)
+		}).then(function(r){ return r.json(); }).then(function(data){
+			if(data && data.error){
+				setButtonStateKey($btn, 'error_start');
+				return;
+			}
+			$btn.attr('data-export-id', data.export_id || '');
+			if(data.status === 'complete' && data.download_url){
+				setButtonStateKey($btn, 'complete');
+				$btn.off('click.pmproExport').on('click.pmproExport', function(e){
+					e.preventDefault();
+					window.location = data.download_url;
+					// Reset state shortly after triggering download
+					setTimeout(function(){
+						setButtonStateKey($btn, 'idle');
+						$btn.attr('data-export-id','');
+						// Rebind default click handler to start exports again
+						$btn.off('click.pmproExport').on('click.pmproExport', function(ev){
+							ev.preventDefault();
+							if($btn.attr('data-status') === 'running'){ return; }
+							startExport($btn);
+						});
+					}, 500);
+				});
+			} else {
+				setButtonStateKey($btn, 'running');
+				beginPolling($btn);
+			}
+		}).catch(function(){ setButtonStateKey($btn, 'error'); });
+	}
+
+	function pollStatus($btn){
+		var exportId = $btn.attr('data-export-id');
+		if(!exportId){ stopPolling($btn); return; }
+		var type = $btn.data('type') || 'members';
+		var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/export/status') : null);
+		var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
+		if(!statusUrlBase || !nonce){ stopPolling($btn); return; }
+		var url = new URL(statusUrlBase);
+		url.searchParams.set('type', type);
+		url.searchParams.set('export_id', exportId);
+		fetch(url.toString(), { headers: { 'X-WP-Nonce': nonce } })
+			.then(function(r){ return r.json(); })
+			.then(function(data){
+				if(data && data.error){ setButtonStateKey($btn, 'error'); stopPolling($btn); return; }
+				if(data.status === 'complete' && data.download_url){
+					setButtonStateKey($btn, 'complete');
+					$btn.off('click.pmproExport').on('click.pmproExport', function(e){
+						e.preventDefault();
+						window.location = data.download_url;
+						// Reset state to idle for next export
+						setTimeout(function(){
+							setButtonStateKey($btn, 'idle');
+							$btn.attr('data-export-id','');
+							$btn.off('click.pmproExport').on('click.pmproExport', function(ev){
+								ev.preventDefault();
+								if($btn.attr('data-status') === 'running'){ return; }
+								startExport($btn);
+							});
+						}, 500);
+					});
+					stopPolling($btn);
+			return;
+		}
+		if(data.status === 'error'){ setButtonStateKey($btn, 'error'); stopPolling($btn); return; }
+		setButtonStateKey($btn, 'running');
+	})
+	.catch(function(){
+		setButtonStateKey($btn, 'error');
+		stopPolling($btn);
+	 });
+	}
+
+	function resumeIfActive($btn){
+		var type = $btn.data('type') || 'members';
+		var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/export/status') : null);
+		var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
+		if(!statusUrlBase || !nonce){ return; }
+		var url = new URL(statusUrlBase);
+		url.searchParams.set('type', type);
+		fetch(url.toString(), { headers: { 'X-WP-Nonce': nonce } })
+			.then(function(r){ return r.json(); })
+			.then(function(data){
+				if(data && !data.error && data.export_id){
+					$btn.attr('data-export-id', data.export_id);
+					if(data.status === 'complete' && data.download_url){
+						setButtonStateKey($btn, 'complete');
+						$btn.off('click.pmproExport').on('click.pmproExport', function(e){
+							e.preventDefault();
+							window.location = data.download_url;
+							// Reset after download and rebind default start handler
+							setTimeout(function(){
+								setButtonStateKey($btn, 'idle');
+								$btn.attr('data-export-id','');
+								$btn.off('click.pmproExport').on('click.pmproExport', function(ev){
+									ev.preventDefault();
+									if($btn.attr('data-status') === 'running'){ return; }
+									startExport($btn);
+								});
+							}, 500);
+						});
+					} else if(data.status === 'running' || data.status === 'queued'){
+						setButtonStateKey($btn, 'running');
+						beginPolling($btn);
+					}
+				}
+			})
+			.catch(function(){ /* ignore */ });
+	}
+
+	// Initialize: wire up all export buttons.
+	var $buttons = $(exportButton);
+	if($buttons.length){
+		$buttons.each(function(){
+			var $btn = $(this);
+			// Default idle state
+			if(!$btn.attr('data-status')){ setButtonStateKey($btn, 'idle'); }
+
+
+			// Resume if there is an active export
+			resumeIfActive($btn);
+			// Click: start or noop if running; if complete, reset to idle after click
+			$btn.off('click.pmproExport').on('click.pmproExport', function(e){
+				e.preventDefault();
+				if($btn.attr('data-status') === 'complete'){
+					setTimeout(function(){ setButtonStateKey($btn, 'idle'); $btn.attr('data-export-id',''); $btn.off('click.pmproExport'); }, 500);
+					return;
+				}
+				if($btn.attr('data-status') === 'running'){ return; }
+				startExport($btn);
+			});
+		});
+	}
+});
+
+/**
+ * Email Log - View Email Details Modal
+ */
+jQuery(document).ready(function($) {
+	// View email log details via REST API
+	$(document).on('click', '.pmpro-view-email-log', function(e) {
+		e.preventDefault();
+		var logId = $(this).data('log-id');
+
+		// Use WordPress REST API
+		$.ajax({
+			url: pmpro.rest_url + 'pmpro/v1/email_log_popup?log_id=' + logId,
+			type: 'GET',
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader('X-WP-Nonce', pmpro.nonce);
+			},
+			success: function(response) {
+				if (response && response.html) {
+					$('#pmpro-email-log-content').html(response.html);
+					// Show as popup overlay
+					$('#pmpro-popup').show();
+				}
+			},
+			error: function() {
+				$('#pmpro-email-log-content').html('<p style="color: red;">' + 'Error loading email log details.' + '</p>');
+				$('#pmpro-popup').show();
+			}
+		});
+	});
+
+	// Toggle between formatted and raw HTML view for email body
+	$(document).on('change', '.pmpro-email-body-view-toggle', function() {
+		var $toggle = $(this);
+		var $container = $toggle.closest('.pmpro-email-log-details');
+		var $formatted = $container.find('.pmpro-email-body-formatted');
+		var $raw = $container.find('.pmpro-email-body-raw');
+
+		if ($toggle.is(':checked')) {
+			// Show raw HTML view
+			$formatted.hide();
+			$raw.show();
+		} else {
+			// Show formatted view
+			$raw.hide();
+			$formatted.show();
+		}
+	});
+});
+
+/**
+ * Quick Search
+ */
+jQuery(document).ready(function($) {
+	// Dynamically update the select width to fit selected option
+	pmproqsUpdateSelectWidth();
+
+	var searchTimeout = null;
+
+	var activeIndex = -1;
+
+	// Helper: Measure select option text width and update CSS variable
+	function pmproqsMeasureTextWidth(text, refEl) {
+		// Create a hidden span to measure text width using the select's font styles
+		var span = document.createElement('span');
+		span.style.position = 'absolute';
+		span.style.visibility = 'hidden';
+		span.style.whiteSpace = 'pre';
+		// Copy relevant font styles from the reference element (the <select>)
+		var cs = window.getComputedStyle(refEl);
+		span.style.fontFamily = cs.fontFamily;
+		span.style.fontSize = cs.fontSize;
+		span.style.fontWeight = cs.fontWeight;
+		span.style.fontStyle = cs.fontStyle;
+		span.style.letterSpacing = cs.letterSpacing;
+		span.textContent = text;
+		document.body.appendChild(span);
+		var width = span.getBoundingClientRect().width;
+		document.body.removeChild(span);
+		return width;
+	}
+
+	function pmproqsUpdateSelectWidth() {
+		var selectEl = document.getElementById('pmpro_quick_search_type');
+		if (!selectEl) return;
+		var text = selectEl.options[selectEl.selectedIndex].text;
+		// Measure the text and add space for the native arrow + padding + borders.
+		var textW = pmproqsMeasureTextWidth(text, selectEl);
+		var extra = 28; // approx. arrow + borders
+		var padding = 12; // matches padding in CSS (2px 4px) plus a little buffer
+		var computedWidth = Math.ceil(textW + extra + padding);
+		// Apply via CSS variable so input padding-left stays in sync
+		var container = document.querySelector('.pmpro_quick_search');
+		if (container) {
+			container.style.setProperty('--pmproqs-select-w', computedWidth + 'px');
+		}
+	}
+
+	function getResultRows() {
+		return $('.pmpro_quick_search_results tbody tr:has(a)');
+	}
+
+	function setActive(index) {
+		var rows = getResultRows();
+		rows.removeClass('is-active');
+		if (!rows.length) {
+			activeIndex = -1;
+			return;
+		}
+		// wrap the index
+		var len = rows.length;
+		activeIndex = ((index % len) + len) % len;
+		$(rows[activeIndex]).addClass('is-active');
+	}
+
+	function moveActive(delta) {
+		if (getResultRows().length === 0) return;
+		if (activeIndex === -1) {
+			setActive(0);
+		} else {
+			setActive(activeIndex + delta);
+		}
+	}
+
+	function activateSelection() {
+		var rows = getResultRows();
+		if (!rows.length || activeIndex === -1) return;
+		var link = $(rows[activeIndex]).find('a').get(0);
+		if (link) {
+			if (link.target === '_blank') {
+				window.open(link.href, '_blank');
+			} else {
+				window.location = link.href;
+			}
+		}
+	}
+
+	function performSearch() {
+		var query = $('.pmpro_quick_search input').val();
+		var searchType = $('#pmpro_quick_search_type').val() || 'all';
+
+		// If the query is empty, clear results and return.
+		var resultsDiv = $('.pmpro_quick_search_results');
+		if (query.trim() === '') {
+			resultsDiv.hide().empty();
+			return;
+		}
+
+		// Perform AJAX request to get search results
+		$.ajax({
+			url: pmpro.rest_url + 'pmpro/v1/quick_search',
+			method: 'GET',
+			data: {
+				search: query,
+				type: searchType,
+			},
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader('X-WP-Nonce', pmpro.nonce);
+			},
+			success: function(response) {
+				// Display results in a dropdown below the input
+				resultsDiv.empty();
+				if (response.success) {
+					resultsDiv.html(response.data);
+				} else {
+					resultsDiv.html('An error occurred while searching. Please try again.');
+				}
+				resultsDiv.show();
+				// highlight first available result
+				activeIndex = -1;
+				setActive(0);
+				// allow mouse hover to change the active row without stealing focus
+				getResultRows().off('mouseenter.pmproqs').on('mouseenter.pmproqs', function(){
+					var idx = getResultRows().index(this);
+					setActive(idx);
+				});
+			},
+			error: function() {
+				alert('An error occurred while searching. Please try again.');
+			}
+		});
+	}
+
+	$('.pmpro_quick_search input').on('input', function() {
+		$('.pmpro_quick_search_results').hide();
+		clearTimeout(searchTimeout);
+		// TODO: Adjust delay as needed. Maybe add a filter.
+		searchTimeout = setTimeout(performSearch, 250);
+	});
+
+	$('#pmpro_quick_search_type').on('change', function(){
+		pmproqsUpdateSelectWidth();
+		$('.pmpro_quick_search_results').hide();
+		clearTimeout(searchTimeout);
+		activeIndex = -1;
+		searchTimeout = setTimeout(performSearch, 0);
+	});
+
+	$('.pmpro_quick_search input').on('keydown', function(e) {
+		// Only intercept navigation keys; let everything else (e.g. Cmd/Ctrl+A) pass through
+		if (e.key === 'ArrowDown') {
+			e.preventDefault();
+			moveActive(1);
+			return;
+		}
+		if (e.key === 'ArrowUp') {
+			e.preventDefault();
+			moveActive(-1);
+			return;
+		}
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			activateSelection();
+			return;
+		}
+	});
+
+	// Hide results when clicking outside
+	$(document).on('click', function(e) {
+		if (!$(e.target).closest('.pmpro_quick_search').length) {
+			$('.pmpro_quick_search_results').hide();
+		}
+	});
+	// Optionally improve first render robustness: recalc after layout is stable
+	setTimeout(pmproqsUpdateSelectWidth, 0);
 });

@@ -186,7 +186,7 @@ if ( ! empty( $order->id ) ) { ?>
 					$discount_code_id = 0;
 				}
 
-				$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+				$sqlQuery = "SELECT * FROM $wpdb->pmpro_discount_codes ";
 				$sqlQuery .= "ORDER BY id DESC ";
 				$codes = $wpdb->get_results($sqlQuery, OBJECT);
 				if ( ! empty( $codes ) ) { ?>

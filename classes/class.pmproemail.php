@@ -305,7 +305,19 @@
 			$this->body = $this->substitute_variables( $this->body );
 			$this->subject = $this->substitute_variables( $this->subject );
 			
-			return wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
+			$result = wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
+
+			/**
+			 * Fires after an email is sent via wp_mail.
+			 *
+			 * @since TBD
+			 *
+			 * @param PMProEmail $this The email object.
+			 * @param bool $result Whether the email was sent successfully.
+			 */
+			do_action( 'pmpro_after_email_sent', $this, $result );
+
+			return $result;
 		}
 		
 		/**
