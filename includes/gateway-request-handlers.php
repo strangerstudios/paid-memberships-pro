@@ -212,6 +212,9 @@ function pmpro_handle_recurring_payment_succeeded_at_gateway( $order_data ) {
 /**
  * Handle payment failure IPN/webhook requests from gateways.
  *
+ * Note: This should not be run for subscriptions that are already cancelled at the gateway. These cases
+ *       should be handled by pmpro_handle_subscription_cancellation_at_gateway().
+ *
  * @since 3.6
  *
  * @param array  $order_data An array of order data.
@@ -281,6 +284,13 @@ function pmpro_handle_recurring_payment_failure_at_gateway( $order_data ) {
 	 */
 	do_action( 'pmpro_subscription_payment_failed', $order );
 
+	// Some gateways can perform many retries in a short period of time. To avoid spamming the user/admin, we will only send one email per day.
+	// Check order meta for the last time we sent a failure email for this order.
+	$last_failure_email_sent = get_pmpro_membership_order_meta( $order->id, 'last_failure_email_sent', true );
+	if ( ! empty( $last_failure_email_sent ) && ( time() - intval( $last_failure_email_sent ) ) < 23 * HOUR_IN_SECONDS ) { // 23 hours to give some wiggle room for payments that are retried at the same time each day.
+		return 'Processed failed payment for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '. Order id = ' . $order->id . '. Already sent failure email within the last 24 hours.';
+	}
+
 	// Email the user and ask them to update their credit card information
 	$pmproemail = new PMProEmail();
 	$pmproemail->sendBillingFailureEmail($user, $order);
@@ -288,6 +298,9 @@ function pmpro_handle_recurring_payment_failure_at_gateway( $order_data ) {
 	// Email admin so they are aware of the failure
 	$pmproemail = new PMProEmail();
 	$pmproemail->sendBillingFailureAdminEmail(get_bloginfo("admin_email"), $order);
+
+	// Update order meta with the time we sent the failure email.
+	update_pmpro_membership_order_meta( $order->id, 'last_failure_email_sent', time() );
 
 	return 'Processed failed payment for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '. Order id = ' . $order->id . '.';
 }

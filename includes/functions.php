@@ -44,6 +44,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
+	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
 }
 pmpro_setDBTables();
 
@@ -1803,7 +1804,7 @@ function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
 
 	$total = $wpdb->get_var( $sqlQuery );
 
-	return (double) $total;
+	return (float) $total;
 }
 
 function pmpro_calculateRecurringRevenue( $s, $l ) {
@@ -1975,8 +1976,8 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 	// check if the code has started
 	if ( ! $error ) {
 		// fix the date timestamps
-		$dbcode->starts = strtotime( date_i18n( 'm/d/Y', $dbcode->starts ) );
-		$dbcode->expires = strtotime( date_i18n( 'm/d/Y', $dbcode->expires ) );
+		$dbcode->starts = strtotime( date_i18n( 'm/d/Y 00:00:00', $dbcode->starts ) );
+		$dbcode->expires = strtotime( date_i18n( 'm/d/Y 23:59:59', $dbcode->expires ) );
 
 		// today
 		$today = strtotime( date_i18n( 'm/d/Y H:i:00', current_time( 'timestamp' ) ) );
@@ -3520,7 +3521,7 @@ function pmpro_round_price( $price, $currency = '' ) {
 		$decimals = intval( $pmpro_currencies[ $currency ]['decimals'] );
 	}
 
-	$rounded = round( (double) $price, $decimals );
+	$rounded = round( (float) $price, $decimals );
 
 	/**
 	 * Filter for result of pmpro_round_price.

@@ -1,15 +1,15 @@
-# Copyright (C) 2025 Paid Memberships Pro
+# Copyright (C) 2026 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.6.3\n"
+"Project-Id-Version: Paid Memberships Pro 3.6.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-12-15T19:03:41+00:00\n"
+"POT-Creation-Date: 2026-01-08T17:24:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -3693,9 +3693,9 @@ msgstr ""
 #: adminpages/orders/edit-order.php:194
 #: adminpages/orders/view-order.php:262
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:158
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:181
-#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:174
-#: classes/email-templates/class-pmpro-email-template-checkout-free.php:172
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:182
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:175
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:173
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:165
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:169
 #: classes/email-templates/class-pmpro-email-template-invoice.php:190
@@ -7076,12 +7076,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:129
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:102
 #: classes/email-templates/class-pmpro-email-template-cancel.php:104
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:210
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:211
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:139
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:132
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:130
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:218
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:222
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:219
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:223
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:136
 #: classes/email-templates/class-pmpro-email-template-invoice.php:139
 #: classes/email-templates/class-pmpro-email-template-membership-expired.php:124
@@ -7104,12 +7104,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:130
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:103
 #: classes/email-templates/class-pmpro-email-template-cancel.php:105
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:211
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:212
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:140
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:133
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:131
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:219
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:223
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:220
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:224
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:137
 #: classes/email-templates/class-pmpro-email-template-invoice.php:140
 #: classes/email-templates/class-pmpro-email-template-membership-expired.php:125
@@ -7132,12 +7132,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:131
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:104
 #: classes/email-templates/class-pmpro-email-template-cancel.php:106
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:212
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:213
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:141
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:134
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:132
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:220
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:224
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:221
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:225
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:138
 #: classes/email-templates/class-pmpro-email-template-invoice.php:141
 #: classes/email-templates/class-pmpro-email-template-membership-expired.php:126
@@ -7227,12 +7227,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:132
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:105
 #: classes/email-templates/class-pmpro-email-template-cancel.php:107
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:213
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:214
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:142
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:135
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:133
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:221
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:222
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:226
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:139
 #: classes/email-templates/class-pmpro-email-template-invoice.php:142
 #: classes/email-templates/class-pmpro-email-template-membership-expired.php:127
@@ -7251,12 +7251,12 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php:133
 #: classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php:106
 #: classes/email-templates/class-pmpro-email-template-cancel.php:108
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:214
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:215
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:143
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:136
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:134
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:222
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:226
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:223
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:227
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:140
 #: classes/email-templates/class-pmpro-email-template-invoice.php:143
 #: classes/email-templates/class-pmpro-email-template-membership-expired.php:128
@@ -7271,10 +7271,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:131
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:130
 #: classes/email-templates/class-pmpro-email-template-billing.php:117
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:222
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:151
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:230
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:234
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:224
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:152
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:232
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:236
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:141
 #: classes/email-templates/class-pmpro-email-template-invoice.php:148
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:114
@@ -7286,10 +7286,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:132
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:131
 #: classes/email-templates/class-pmpro-email-template-billing.php:118
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:223
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:152
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:231
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:235
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:153
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:233
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:237
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:142
 #: classes/email-templates/class-pmpro-email-template-invoice.php:149
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:115
@@ -7301,10 +7301,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:133
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:132
 #: classes/email-templates/class-pmpro-email-template-billing.php:119
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:224
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:153
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:232
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:236
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:226
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:154
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:234
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:238
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:143
 #: classes/email-templates/class-pmpro-email-template-invoice.php:150
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:116
@@ -7316,10 +7316,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:134
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:133
 #: classes/email-templates/class-pmpro-email-template-billing.php:120
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:225
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:154
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:233
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:237
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:227
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:155
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:235
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:239
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:144
 #: classes/email-templates/class-pmpro-email-template-invoice.php:151
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:117
@@ -7331,10 +7331,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:135
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:134
 #: classes/email-templates/class-pmpro-email-template-billing.php:121
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:226
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:155
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:234
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:238
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:228
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:156
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:236
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:240
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:145
 #: classes/email-templates/class-pmpro-email-template-invoice.php:152
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:118
@@ -7346,10 +7346,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:136
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:135
 #: classes/email-templates/class-pmpro-email-template-billing.php:122
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:227
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:156
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:235
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:239
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:157
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:237
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:241
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:146
 #: classes/email-templates/class-pmpro-email-template-invoice.php:153
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:119
@@ -7361,10 +7361,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:137
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:136
 #: classes/email-templates/class-pmpro-email-template-billing.php:123
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:228
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:157
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:236
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:240
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:158
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:238
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:242
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:147
 #: classes/email-templates/class-pmpro-email-template-invoice.php:154
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:120
@@ -7376,10 +7376,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:138
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:137
 #: classes/email-templates/class-pmpro-email-template-billing.php:124
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:229
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:158
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:237
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:241
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:159
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:239
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:243
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:148
 #: classes/email-templates/class-pmpro-email-template-invoice.php:155
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:121
@@ -7391,10 +7391,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:139
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:138
 #: classes/email-templates/class-pmpro-email-template-billing.php:125
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:230
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:159
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:238
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:242
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:232
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:160
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:240
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:244
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:149
 #: classes/email-templates/class-pmpro-email-template-invoice.php:156
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:122
@@ -7406,8 +7406,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:140
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:139
 #: classes/email-templates/class-pmpro-email-template-billing.php:126
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:239
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:243
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:241
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:245
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:150
 #: classes/email-templates/class-pmpro-email-template-invoice.php:157
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:123
@@ -7419,8 +7419,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:141
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:140
 #: classes/email-templates/class-pmpro-email-template-billing.php:127
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:240
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:244
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:242
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:246
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:151
 #: classes/email-templates/class-pmpro-email-template-invoice.php:158
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:124
@@ -7432,8 +7432,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:142
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:141
 #: classes/email-templates/class-pmpro-email-template-billing.php:128
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:241
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:245
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:243
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:247
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:152
 #: classes/email-templates/class-pmpro-email-template-invoice.php:159
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:125
@@ -7445,8 +7445,8 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-billing-failure-admin.php:143
 #: classes/email-templates/class-pmpro-email-template-billing-failure.php:142
 #: classes/email-templates/class-pmpro-email-template-billing.php:129
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:242
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:246
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:244
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:248
 #: classes/email-templates/class-pmpro-email-template-credit-card-expiring.php:153
 #: classes/email-templates/class-pmpro-email-template-invoice.php:160
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:126
@@ -7656,7 +7656,7 @@ msgid "Checkout - Pay by Check (admin)"
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:61
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:194
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:195
 #: classes/gateways/class.pmprogateway_check.php:113
 #: classes/gateways/class.pmprogateway_check.php:149
 #: includes/email-templates.php:6
@@ -7698,9 +7698,9 @@ msgid ""
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:154
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:186
-#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:169
-#: classes/email-templates/class-pmpro-email-template-checkout-free.php:167
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:187
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:170
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:168
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:160
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:164
 #: classes/email-templates/class-pmpro-email-template-invoice.php:198
@@ -7710,75 +7710,88 @@ msgstr ""
 msgid "This membership will expire on %s."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:215
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:216
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:144
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:137
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:135
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:223
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:227
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:224
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:228
 msgid "The confirmation message for the membership level."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:216
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:217
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:145
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:138
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:136
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:224
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:228
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:225
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:229
 #: classes/email-templates/class-pmpro-email-template-membership-recurring.php:122
 msgid "The cost of the membership level."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:217
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:218
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:146
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:139
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:137
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:225
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:226
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:230
 #: classes/email-templates/class-pmpro-email-template-invoice.php:162
 #: classes/email-templates/class-pmpro-email-template-membership-expiring.php:129
 msgid "The expiration date of the membership level."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:218
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:219
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:147
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:140
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:138
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:226
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:227
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:231
 msgid "The ID of the order."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:219
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:148
-#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:141
-#: classes/email-templates/class-pmpro-email-template-checkout-free.php:139
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:227
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:231
-#: classes/email-templates/class-pmpro-email-template-invoice.php:146
-#: classes/email-templates/class-pmpro-email-template-refund-admin.php:112
-#: classes/email-templates/class-pmpro-email-template-refund.php:115
-msgid "The date of the order."
-msgstr ""
-
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:220
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:149
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:148
 #: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:228
 #: classes/email-templates/class-pmpro-email-template-checkout-paid.php:232
 msgid "The total cost of the order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:221
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:149
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:141
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:139
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:229
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
+#: classes/email-templates/class-pmpro-email-template-invoice.php:146
+#: classes/email-templates/class-pmpro-email-template-refund-admin.php:112
+#: classes/email-templates/class-pmpro-email-template-refund.php:115
+msgid "The date of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:222
 #: classes/email-templates/class-pmpro-email-template-checkout-check.php:150
 #: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:142
 #: classes/email-templates/class-pmpro-email-template-checkout-free.php:140
-#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:229
-#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:233
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:230
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:234
+#: classes/email-templates/class-pmpro-email-template-invoice.php:147
+#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:131
+#: classes/email-templates/class-pmpro-email-template-payment-action.php:125
+#: classes/email-templates/class-pmpro-email-template-refund.php:130
+msgid "The URL of the order."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:223
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:151
+#: classes/email-templates/class-pmpro-email-template-checkout-free-admin.php:143
+#: classes/email-templates/class-pmpro-email-template-checkout-free.php:141
+#: classes/email-templates/class-pmpro-email-template-checkout-paid-admin.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-paid.php:235
 #: classes/email-templates/class-pmpro-email-template-invoice.php:161
 msgid "The discount code used for the order."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:231
+#: classes/email-templates/class-pmpro-email-template-checkout-check-admin.php:233
 msgid "The default or custom label for the check gateway."
 msgstr ""
 
@@ -7820,7 +7833,7 @@ msgid ""
 "<p>Log in to your membership account here: !!login_url!!</p>"
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-checkout-check.php:160
+#: classes/email-templates/class-pmpro-email-template-checkout-check.php:161
 msgid "Payment instructions for the user to complete their purchase (defined in Payment Gateway settings)."
 msgstr ""
 
@@ -8039,13 +8052,6 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-refund-admin.php:111
 #: classes/email-templates/class-pmpro-email-template-refund.php:114
 msgid "The total amount of the order."
-msgstr ""
-
-#: classes/email-templates/class-pmpro-email-template-invoice.php:147
-#: classes/email-templates/class-pmpro-email-template-payment-action-admin.php:131
-#: classes/email-templates/class-pmpro-email-template-payment-action.php:125
-#: classes/email-templates/class-pmpro-email-template-refund.php:130
-msgid "The URL of the order."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-membership-expired.php:50
