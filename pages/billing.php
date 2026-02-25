@@ -155,8 +155,8 @@
 					</div>
 				</div> <!-- end pmpro_card_content -->
 			</div> <!-- end pmpro_card -->
-		<?php } elseif ( $gateway != $default_gateway ) {
-			// This membership's gateway is not the default site gateway, Pay by Check, or PayPal Express.
+		<?php } elseif ( ! $subscription_gateway_obj->supports( 'payment_method_updates' ) || $gateway != $default_gateway ) {
+			// The gateway doesn't support on-site billing updates or is not the default site gateway.
 			?>
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 				<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>">
