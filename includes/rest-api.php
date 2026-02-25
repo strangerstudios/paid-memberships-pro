@@ -282,6 +282,24 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				)
 			)
 		);
+
+			/**
+			 * Returns member information for a given email address.
+			 * @since TBD
+			 * Example: https://example.com/wp-json/pmpro/v1/get_member_info
+			 */
+			register_rest_route( $pmpro_namespace, '/get_member_info',
+				array(
+					array(
+						'methods'  => WP_REST_Server::READABLE,
+						'args' => array(
+							'user_email' => array()
+						),
+						'callback' => array( $this, 'pmpro_rest_api_get_member_info' ),
+						'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+					)
+				)
+			);
 		}
 		
 		/**
@@ -1167,6 +1185,100 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
+		 * Returns customer info for REST API responses.
+		 * @since TBD
+		 * 
+		 * @param WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response The REST response.
+		 */
+		function pmpro_rest_api_get_member_info( $request ) {
+			global $wpdb;
+
+			$user_email = sanitize_email( $request->get_param( 'user_email' ) );
+
+			// Check if we got cache for this email address.
+			$cached_results = get_transient( 'pmpro_rest_api_customer_info_' . md5( $user_email ) );
+			if ( $cached_results !== false ) {
+				return new WP_REST_Response( $cached_results, 200 );
+			}
+
+			// Try to get the user object.
+			$user = get_user_by( 'email', $user_email );
+
+			// If user doesn't exist. Return false.
+			if ( ! $user ) {
+				return new WP_Error( 'user_not_found', __( 'No account found.', 'paid-memberships-pro' ), array( 'status' => 404 ) );
+			}
+
+			// Get user information now.
+			$data = array();
+
+			// Get Last Order
+			$order = new MemberOrder();
+			$order->getLastMemberOrder( $user->ID );
+
+			if ( empty( $order->id ) ) {
+				return new WP_Error( 'order_not_found', __( 'No order found for this user.', 'paid-memberships-pro' ), array( 'status' => 404 ) );
+			}
+
+			// Get Membership Info
+			$levels = pmpro_getMembershipLevelsForUser( $user->ID );
+
+			if ( ! empty( $levels ) ) {
+				$data['level'] = implode( ', ', wp_list_pluck( $levels, 'name' ) );
+			} else {
+				// Get the old level and display this past information.
+				$previous_level_id = $order->membership_id;
+
+				if ( ! empty( $previous_level_id ) ) {
+					$previous_level = pmpro_getLevel( $previous_level_id );
+					$previous_level->name = isset( $previous_level->name ) ? $previous_level->name : __( '[deleted]', 'paid-memberships-pro' );
+					$data['level'] = esc_html( $previous_level->name . ' - ' . __( 'inactive', 'paid-memberships-pro' ) );
+				} else {
+					$data['level'] = __( 'No level found', 'paid-memberships-pro' );
+				}
+				
+			}
+
+			// The user information.
+			$data['user_id'] = $user->ID;
+			$data['user_login'] = $user->user_nicename;
+			$data['order_id'] = (int) $order->id;
+			$data['payment_gateway'] = ucfirst( $order->gateway );
+			$data['order_total'] = pmpro_formatPrice( $order->total );
+			
+			/**
+			 * Filter to add meta information to the customer info returned by the PMPro REST API.
+			 * @since TBD
+			 */
+			$data['meta'] = apply_filters( 'pmpro_rest_api_get_customer_info_meta', array(), $user, $order );
+
+			// Fetch the latest refund order and find out how many refunded orders there have been.
+			$sql = "
+				SELECT SQL_CALC_FOUND_ROWS
+				`o`.`id`
+				FROM `$wpdb->pmpro_membership_orders` AS `o`
+				WHERE
+					`o`.`status` = 'refunded'
+					AND `o`.`user_id` = %d
+				ORDER BY
+					`o`.`id` DESC,
+					`o`.`timestamp` DESC
+				LIMIT 1
+			";
+
+			$data['refunds_last_order_id'] = (int) $wpdb->get_var( $wpdb->prepare( $sql, $user->ID ) );
+			$data['refunds_total_found']   = (int) $wpdb->get_var( 'SELECT FOUND_ROWS() AS `found_rows`' );
+
+
+			// Set the cache before returning.
+			set_transient( 'pmpro_rest_api_customer_info_' . md5( $user_email ), $data, HOUR_IN_SECONDS );
+
+			return new WP_REST_Response( $data, 200 );
+
+		}
+
+		/**
 		 * Default permissions check for endpoints/routes.
 		 * Defaults to 'subscriber' for all GET requests and 
 		 * 'administrator' for any other type of request.
@@ -1209,6 +1321,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'capability' => 'edit_post',
 					'request_param' => 'post_id',
 				),
+				'/pmpro/v1/get_member_info' => 'pmpro_edit_members'
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );
 			
