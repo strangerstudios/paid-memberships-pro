@@ -53,6 +53,7 @@ class PMPro_Site_Health {
 	 */
 	public function unhook() {
 		remove_filter( 'debug_information', [ $this, 'debug_information' ] );
+		remove_filter( 'site_status_tests', [ $this, 'register_site_health_tests' ] );
 	}
 
 	/**
@@ -128,7 +129,7 @@ class PMPro_Site_Health {
 				'pmpro-add-ons-incorrect-folder-names' => [
 					'label' => __( 'Incorrect Add On Folder Names', 'paid-memberships-pro' ),
 					'value' => self::get_add_ons_with_incorrect_folder_name(),
-        		],
+				],
 				'pmpro-current-site-url' => [
 					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
 					'value' => get_site_url(),
@@ -583,8 +584,14 @@ class PMPro_Site_Health {
 		return $return_arr;
 	}
 
+	/**
+	 * Get Add Ons with incorrect folder names.
+	 *
+	 * @since TBD
+	 *
+	 * @return string Formatted string of Add Ons with incorrect folder names or a message indicating none were found.
+	 */
 	public static function get_add_ons_with_incorrect_folder_name() {
-
 		// Get the current list of Add Ons with the wrong name.
 		$incorrect_folder_names = PMPro_AddOns::instance()->get_add_ons_with_incorrect_folder_names();
 
@@ -598,6 +605,7 @@ class PMPro_Site_Health {
 			self::$file_errors = true;
 			$formatted_response = implode( " | \n", $errors );
 		} else {
+			self::$file_errors = false;
 			$formatted_response = __( 'No Add Ons with incorrect folder names detected.', 'paid-memberships-pro' );
 		}
 
@@ -715,9 +723,12 @@ class PMPro_Site_Health {
 	}
 
 	/**
-	 * Show warning in Site Health Status for incorrect Add On folder names.
+	 * Register Site Health tests for incorrect Add On folder names.
 	 *
 	 * @since TBD
+	 *
+	 * @param array $tests The Site Health tests.
+	 * @return array The updated Site Health tests.
 	 */
 	public static function register_site_health_tests( $tests ) {
 		$tests['direct']['pmpro-incorrect-addon-folder-names'] = array(
@@ -728,9 +739,11 @@ class PMPro_Site_Health {
 	}
 
 	/**
-	 * Helper function to check for any incorrect Add On folder names and return a warning if found.
-	 * 
+	 * Check for any incorrect Add On folder names and return a Site Health result.
+	 *
 	 * @since TBD
+	 *
+	 * @return array The Site Health test result.
 	 */
 	public static function site_health_incorrect_addon_folder_names() {
 		$incorrect_folder_names = self::get_add_ons_with_incorrect_folder_name();
@@ -746,5 +759,16 @@ class PMPro_Site_Health {
 				'test'        => 'pmpro-incorrect-addon-folder-names',
 			);
 		}
+
+		return array(
+			'label'       => __( 'Paid Memberships Pro Add On Folder Names', 'paid-memberships-pro' ),
+			'status'      => 'good',
+			'badge'       => array(
+				'label' => __( 'PMPro', 'paid-memberships-pro' ),
+				'color' => 'blue',
+			),
+			'description' => __( 'All Paid Memberships Pro Add On folder names are correct.', 'paid-memberships-pro' ),
+			'test'        => 'pmpro-incorrect-addon-folder-names',
+		);
 	}
 }
