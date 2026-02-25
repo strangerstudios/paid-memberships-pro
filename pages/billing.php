@@ -393,7 +393,7 @@
 		?>
 		<section id="pmpro_billing-memberships" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section' ) ); ?>">
 			<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_title pmpro_font-x-large' ) ); ?>"><?php esc_html_e( 'My Memberships', 'paid-memberships-pro' ); ?></h2>
-			<div class="pmpro_section_content">
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
 		<?php
 		foreach( $memberships_for_user as $membership ) {
 
@@ -526,7 +526,7 @@
 
 	// Let's remove active ones from the list before looping through.
 	$previous_memberships = array_filter( $previous_memberships, function( $membership ) {
-		return ! ( $membership->status == 'active' || pmpro_hasMembershipLevel( $membership->id ) );
+		return ! ( $membership->status === 'active' || pmpro_hasMembershipLevel( $membership->id ) );
 	} );
 	
 	if ( ! empty( $previous_memberships ) && empty( $pmpro_billing_subscription ) ) {
@@ -542,7 +542,7 @@
 						<tr>
 							<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-level' ) ); ?>"><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
 							<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-date' ) ); ?>"><?php esc_html_e( 'Ended', 'paid-memberships-pro' ); ?></th>
-							<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-renew' ) ); ?>"><?php echo ''; ?></th>
+							<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_memberships-history-renew' ) ); ?>"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -585,12 +585,15 @@
 								</tr>
 								<?php
 							}
-						}
 						?>
-					</tbody>							
+					</tbody>
 				</table>
 			</div> <!-- end pmpro_card_content -->
+		</div> <!-- end pmpro_card -->
 	</section>
+	<?php
+	}
+	?>
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
 		<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
 	</div>
