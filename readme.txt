@@ -27,9 +27,9 @@ PMPro supports any kind of member-focused business or organization. With over 12
 * [Blog & News](https://www.paidmembershipspro.com/blog-news/)
 * [Communities](https://www.paidmembershipspro.com/communities/)
 * [Courses & Coaching](https://www.paidmembershipspro.com/courses/)
-* [Directory & Listings](https://www.paidmembershipspro.com/add-ons/member-directory/)
+* [Directory & Listings](https://www.paidmembershipspro.com/member-directories/)
 * [Paid Newsletters](https://www.paidmembershipspro.com/paid-newsletters/)
-* [Podcasting](https://www.paidmembershipspro.com/membership-site-podcasting-benefits/)
+* [Podcasting](https://www.paidmembershipspro.com/podcasting/)
 * [Private Video](https://www.paidmembershipspro.com/private-videos/)
 
 You can also browse [Case Studies for successful membership sites that are using PMPro](https://www.paidmembershipspro.com/category/case-study/) to get paid for their content and reach their personal or business goals with 100% open source software.
