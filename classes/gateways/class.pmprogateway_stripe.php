@@ -2139,7 +2139,12 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! self::using_stripe_checkout() ) {
 			return;
 		}
-
+		
+		// Member doesn't have any subscription. Don't try to redirect, as we will show the default billing info form.
+		if ( empty( $pmpro_billing_subscription ) ) {
+			return;
+		}
+		
 		//Bail if the order's gateway isn't Stripe
 		if ( empty( $pmpro_billing_subscription->get_gateway() ) || 'stripe' !== $pmpro_billing_subscription->get_gateway()  ) {
 			return;
