@@ -404,7 +404,7 @@ class PMPro_Field_Group {
 			?>
 			<h2><?php echo wp_kses_post( $this->label ); ?></h2>
 			<?php
-			if ( ! empty( $box->description ) ) {
+			if ( ! empty( $this->description ) ) {
 				?>
 				<p><?php echo wp_kses_post( $this->description ); ?></p>
 				<?php
