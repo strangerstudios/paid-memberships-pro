@@ -84,7 +84,7 @@
 			 * Filter whether the Stripe webhook handler can trust a posted event payload
 			 * when retrieving the event from Stripe fails.
 			 *
-			 * @since TBD
+			 * @since 3.6.5
 			 *
 			 * @param bool        $allow_unverified_post_event Whether to trust the posted event payload fallback.
 			 * @param object|null $post_event                  Parsed event payload from the request body.
