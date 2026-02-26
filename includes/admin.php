@@ -203,6 +203,92 @@ function pmpro_pause_mode_notice() {
 }
 
 /**
+ * Display a notice when the pause engine is active.
+ *
+ * @since TBD
+ */
+function pmpro_pause_engine_notice() {
+	if ( ! pmpro_pause_engine_is_active() ) {
+		return;
+	}
+
+	$state = PMPro_Pause_Mode::instance()->get_state();
+	$modules = PMPro_Pause_Mode::instance()->get_active_modules();
+
+	// Build module label list.
+	$module_labels = array();
+	foreach ( $modules as $slug ) {
+		if ( PMPro_Pause_Mode::instance()->is_module_active( $slug ) ) {
+			// Get the module label from the registered modules.
+			$all_presets = PMPro_Pause_Mode::get_presets();
+			$module_labels[] = esc_html( $slug );
+		}
+	}
+
+	$activated_by = ! empty( $state['activated_by'] ) ? $state['activated_by'] : __( 'unknown', 'paid-memberships-pro' );
+	$activated_at = ! empty( $state['activated_at'] ) ? human_time_diff( $state['activated_at'] ) . ' ' . __( 'ago', 'paid-memberships-pro' ) : __( 'unknown', 'paid-memberships-pro' );
+
+	?>
+	<div class="notice notice-error pmpro_notification pmpro_notification-error">
+		<div class="pmpro_notification-icon">
+			<span class="dashicons dashicons-warning"></span>
+		</div>
+		<div class="pmpro_notification-content">
+			<h3><?php esc_html_e( 'PMPro Pause Engine Active', 'paid-memberships-pro' ); ?></h3>
+			<p>
+				<?php
+				printf(
+					/* translators: 1: who activated, 2: how long ago */
+					esc_html__( 'Activated by %1$s, %2$s.', 'paid-memberships-pro' ),
+					'<strong>' . esc_html( $activated_by ) . '</strong>',
+					esc_html( $activated_at )
+				);
+				?>
+			</p>
+			<p>
+				<?php
+				printf(
+					/* translators: %s: comma-separated list of active modules */
+					esc_html__( 'Active modules: %s', 'paid-memberships-pro' ),
+					'<code>' . implode( '</code>, <code>', $module_labels ) . '</code>'
+				);
+				?>
+			</p>
+			<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
+			<p>
+				<a href="<?php echo esc_url( wp_nonce_url( admin_url( '?pmpro-resume-pause-engine=1' ), 'pmpro_resume_pause_engine' ) ); ?>" class="button button-primary"><?php esc_html_e( 'Resume All Services', 'paid-memberships-pro' ); ?></a>
+			</p>
+			<?php } ?>
+		</div>
+	</div>
+	<?php
+}
+add_action( 'admin_notices', 'pmpro_pause_engine_notice' );
+
+/**
+ * Handle the pause engine resume action.
+ *
+ * @since 3.6
+ */
+function pmpro_handle_pause_engine_actions() {
+	if ( empty( $_REQUEST['pmpro-resume-pause-engine'] ) ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'pmpro_manage_pause_mode' ) ) {
+		return;
+	}
+
+	check_admin_referer( 'pmpro_resume_pause_engine' );
+
+	PMPro_Pause_Mode::instance()->resume();
+
+	wp_safe_redirect( admin_url( 'admin.php?page=pmpro-dashboard' ) );
+	exit;
+}
+add_action( 'admin_init', 'pmpro_handle_pause_engine_actions' );
+
+/**
  * Maybe display a notice about spam protection being disabled.
  *
  * @since 2.11
