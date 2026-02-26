@@ -212,15 +212,15 @@ function pmpro_pause_engine_notice() {
 		return;
 	}
 
-	$state = PMPro_Pause_Mode::instance()->get_state();
-	$modules = PMPro_Pause_Mode::instance()->get_active_modules();
+	$state = PMPro_Pause_Engine::instance()->get_state();
+	$modules = PMPro_Pause_Engine::instance()->get_active_modules();
 
 	// Build module label list.
 	$module_labels = array();
 	foreach ( $modules as $slug ) {
-		if ( PMPro_Pause_Mode::instance()->is_module_active( $slug ) ) {
+		if ( PMPro_Pause_Engine::instance()->is_module_active( $slug ) ) {
 			// Get the module label from the registered modules.
-			$all_presets = PMPro_Pause_Mode::get_presets();
+			$all_presets = PMPro_Pause_Engine::get_presets();
 			$module_labels[] = esc_html( $slug );
 		}
 	}
@@ -281,7 +281,7 @@ function pmpro_handle_pause_engine_actions() {
 
 	check_admin_referer( 'pmpro_resume_pause_engine' );
 
-	PMPro_Pause_Mode::instance()->resume();
+	PMPro_Pause_Engine::instance()->resume();
 
 	wp_safe_redirect( admin_url( 'admin.php?page=pmpro-dashboard' ) );
 	exit;

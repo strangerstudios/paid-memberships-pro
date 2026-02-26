@@ -1,6 +1,6 @@
 <?php
 /**
- * PMPro Pause Mode Engine.
+ * PMPro Pause Engine Engine.
  *
  * A modular pause system for PMPro that allows progressive
  * lockdown of site functionality during migrations and maintenance.
@@ -11,7 +11,7 @@
  */
 
 /**
- * Interface for pause mode modules.
+ * Interface for pause engine modules.
  *
  * @since TBD
  */
@@ -25,16 +25,16 @@ interface PMPro_Pause_Module_Interface {
 }
 
 /**
- * PMPro Pause Mode orchestrator.
+ * PMPro Pause Engine orchestrator.
  *
  * @since TBD
  */
-class PMPro_Pause_Mode {
+class PMPro_Pause_Engine {
 
-	const OPTION_KEY = 'pmpro_pause_mode';
+	const OPTION_KEY = 'pmpro_pause_engine';
 
 	/**
-	 * @var PMPro_Pause_Mode
+	 * @var PMPro_Pause_Engine
 	 */
 	protected static $instance = null;
 
@@ -69,7 +69,7 @@ class PMPro_Pause_Mode {
 	/**
 	 * Get the singleton instance.
 	 *
-	 * @return PMPro_Pause_Mode
+	 * @return PMPro_Pause_Engine
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
@@ -91,9 +91,9 @@ class PMPro_Pause_Mode {
 		$this->register_module( new PMPro_Pause_Module_Sessions() );
 
 		// Always register the email replay callback so AS can process queued emails after resume.
-		add_action( 'pmpro_pause_mode_send_queued_email', array( $this, 'send_queued_email' ) );
+		add_action( 'pmpro_pause_engine_send_queued_email', array( $this, 'send_queued_email' ) );
 
-		// Re-activate modules if pause mode is active.
+		// Re-activate modules if pause engine is active.
 		$state = $this->get_state();
 		if ( ! empty( $state['enabled'] ) && ! empty( $state['modules'] ) ) {
 			foreach ( $this->get_ordered_modules( $state['modules'] ) as $slug ) {
@@ -114,10 +114,10 @@ class PMPro_Pause_Mode {
 	}
 
 	/**
-	 * Activate pause mode with the given modules.
+	 * Activate pause engine with the given modules.
 	 *
 	 * @param string[] $modules      Array of module slugs to enable.
-	 * @param string   $activated_by Who/what activated pause mode.
+	 * @param string   $activated_by Who/what activated pause engine.
 	 * @return bool
 	 */
 	public function pause( $modules = array(), $activated_by = 'manual' ) {
@@ -170,8 +170,8 @@ class PMPro_Pause_Mode {
 
 		$this->log( sprintf( 'Pause mode activated by %s with modules: %s', $activated_by, implode( ', ', $modules ) ) );
 
-		/** Fires after pause mode is fully activated. */
-		do_action( 'pmpro_pause_mode_activated', $state );
+		/** Fires after pause engine is fully activated. */
+		do_action( 'pmpro_pause_engine_activated', $state );
 
 		return true;
 	}
@@ -207,7 +207,7 @@ class PMPro_Pause_Mode {
 		$this->state = null;
 
 		$this->log( 'Pause mode deactivated.' );
-		do_action( 'pmpro_pause_mode_deactivated', $state );
+		do_action( 'pmpro_pause_engine_deactivated', $state );
 
 		return true;
 	}
@@ -281,7 +281,7 @@ class PMPro_Pause_Mode {
 	}
 
 	/**
-	 * Check if pause mode is active.
+	 * Check if pause engine is active.
 	 *
 	 * @return bool
 	 */
@@ -351,11 +351,11 @@ class PMPro_Pause_Mode {
 		);
 
 		/**
-		 * Filter available pause mode presets.
+		 * Filter available pause engine presets.
 		 *
 		 * @param array $presets Preset definitions.
 		 */
-		return apply_filters( 'pmpro_pause_mode_presets', $presets );
+		return apply_filters( 'pmpro_pause_engine_presets', $presets );
 	}
 
 	/**
@@ -381,17 +381,17 @@ class PMPro_Pause_Mode {
 	}
 
 	/**
-	 * Check if the current user can bypass pause mode.
+	 * Check if the current user can bypass pause engine.
 	 *
 	 * @return bool
 	 */
 	public static function current_user_can_bypass() {
 		/**
-		 * Filter whether the current user can bypass pause mode.
+		 * Filter whether the current user can bypass pause engine.
 		 *
 		 * @param bool $can_bypass Whether the user can bypass.
 		 */
-		return apply_filters( 'pmpro_pause_mode_admin_bypass', current_user_can( 'pmpro_manage_pause_mode' ) );
+		return apply_filters( 'pmpro_pause_engine_admin_bypass', current_user_can( 'pmpro_manage_pause_mode' ) );
 	}
 
 	/**
@@ -411,15 +411,15 @@ class PMPro_Pause_Mode {
 	}
 
 	/**
-	 * Log a pause mode event.
+	 * Log a pause engine event.
 	 *
 	 * @param string $message The message to log.
 	 */
 	private function log( $message ) {
-		error_log( '[PMPro Pause Mode] ' . $message );
+		error_log( '[PMPro Pause Engine] ' . $message );
 
-		/** Fires when a pause mode event is logged. */
-		do_action( 'pmpro_pause_mode_log', $message );
+		/** Fires when a pause engine event is logged. */
+		do_action( 'pmpro_pause_engine_log', $message );
 	}
 }
 
@@ -474,7 +474,7 @@ class PMPro_Pause_Module_Mutations implements PMPro_Pause_Module_Interface {
 	 * Block checkout for non-admins.
 	 */
 	public function block_checkout( $value ) {
-		if ( PMPro_Pause_Mode::current_user_can_bypass() ) {
+		if ( PMPro_Pause_Engine::current_user_can_bypass() ) {
 			return $value;
 		}
 
@@ -488,7 +488,7 @@ class PMPro_Pause_Module_Mutations implements PMPro_Pause_Module_Interface {
 	 * Block level changes for non-admins.
 	 */
 	public function block_level_change( $level, $user_id, $old_level_status, $cancel_level ) {
-		if ( PMPro_Pause_Mode::current_user_can_bypass() ) {
+		if ( PMPro_Pause_Engine::current_user_can_bypass() ) {
 			return $level;
 		}
 		return false;
@@ -498,7 +498,7 @@ class PMPro_Pause_Module_Mutations implements PMPro_Pause_Module_Interface {
 	 * Block order creation for non-admins.
 	 */
 	public function block_order_creation( $value ) {
-		if ( PMPro_Pause_Mode::current_user_can_bypass() ) {
+		if ( PMPro_Pause_Engine::current_user_can_bypass() ) {
 			return $value;
 		}
 		return false;
@@ -565,7 +565,7 @@ class PMPro_Pause_Module_Gateways implements PMPro_Pause_Module_Interface {
 		add_filter( 'pre_http_request', array( $this, 'block_outbound_http' ), 1, 3 );
 
 		/** Filter whether to block inbound webhooks with 503. */
-		if ( apply_filters( 'pmpro_pause_mode_block_inbound_webhooks', true ) ) {
+		if ( apply_filters( 'pmpro_pause_engine_block_inbound_webhooks', true ) ) {
 			foreach ( self::$webhook_actions as $action ) {
 				add_action( $action, array( $this, 'block_inbound_webhook' ), 0 );
 			}
@@ -613,7 +613,7 @@ class PMPro_Pause_Module_Gateways implements PMPro_Pause_Module_Interface {
 	 * Block inbound webhooks with 503.
 	 */
 	public function block_inbound_webhook() {
-		$retry_after = apply_filters( 'pmpro_pause_mode_retry_after', 3600 );
+		$retry_after = apply_filters( 'pmpro_pause_engine_retry_after', 3600 );
 
 		status_header( 503 );
 		header( 'Retry-After: ' . intval( $retry_after ) );
@@ -641,12 +641,12 @@ class PMPro_Pause_Module_Gateways implements PMPro_Pause_Module_Interface {
 		 *
 		 * @param string[] $domains Gateway API domains.
 		 */
-		$blocked_domains = apply_filters( 'pmpro_pause_mode_blocked_gateway_domains', self::$gateway_domains );
+		$blocked_domains = apply_filters( 'pmpro_pause_engine_blocked_gateway_domains', self::$gateway_domains );
 
 		if ( in_array( $host, $blocked_domains, true ) ) {
 			return new WP_Error(
-				'pmpro_pause_mode_blocked',
-				__( 'Outbound gateway request blocked during pause mode.', 'paid-memberships-pro' )
+				'pmpro_pause_engine_blocked',
+				__( 'Outbound gateway request blocked during pause engine.', 'paid-memberships-pro' )
 			);
 		}
 
@@ -715,9 +715,9 @@ class PMPro_Pause_Module_Mail implements PMPro_Pause_Module_Interface {
 		);
 
 		PMPro_Action_Scheduler::instance()->maybe_add_task(
-			'pmpro_pause_mode_send_queued_email',
+			'pmpro_pause_engine_send_queued_email',
 			array( $email_data ),
-			'pmpro_pause_mode_email_queue'
+			'pmpro_pause_engine_email_queue'
 		);
 
 		// Return false to prevent sending.
@@ -828,7 +828,7 @@ class PMPro_Pause_Module_Frontend implements PMPro_Pause_Module_Interface {
 	 * Block frontend for non-admins.
 	 */
 	public function block_frontend() {
-		if ( PMPro_Pause_Mode::current_user_can_bypass() ) {
+		if ( PMPro_Pause_Engine::current_user_can_bypass() ) {
 			return;
 		}
 
@@ -846,12 +846,12 @@ class PMPro_Pause_Module_Frontend implements PMPro_Pause_Module_Interface {
 	 * @return WP_Error|null|true
 	 */
 	public function block_rest_api( $errors ) {
-		if ( PMPro_Pause_Mode::current_user_can_bypass() ) {
+		if ( PMPro_Pause_Engine::current_user_can_bypass() ) {
 			return $errors;
 		}
 
 		return new WP_Error(
-			'pmpro_pause_mode_rest_blocked',
+			'pmpro_pause_engine_rest_blocked',
 			__( 'Site is temporarily unavailable for maintenance.', 'paid-memberships-pro' ),
 			array( 'status' => 503 )
 		);
@@ -861,7 +861,7 @@ class PMPro_Pause_Module_Frontend implements PMPro_Pause_Module_Interface {
 	 * Block POST requests from non-admins.
 	 */
 	public function block_post_requests() {
-		if ( PMPro_Pause_Mode::current_user_can_bypass() ) {
+		if ( PMPro_Pause_Engine::current_user_can_bypass() ) {
 			return;
 		}
 
@@ -903,7 +903,7 @@ class PMPro_Pause_Module_Frontend implements PMPro_Pause_Module_Interface {
 
 		if ( $user && ! user_can( $user, 'pmpro_manage_pause_mode' ) ) {
 			return new WP_Error(
-				'pmpro_pause_mode_login_blocked',
+				'pmpro_pause_engine_login_blocked',
 				__( 'This site is temporarily unavailable for maintenance. Only administrators can log in.', 'paid-memberships-pro' )
 			);
 		}
@@ -915,7 +915,7 @@ class PMPro_Pause_Module_Frontend implements PMPro_Pause_Module_Interface {
 	 * Display the maintenance page.
 	 */
 	private function show_maintenance_page() {
-		$retry_after = apply_filters( 'pmpro_pause_mode_retry_after', 3600 );
+		$retry_after = apply_filters( 'pmpro_pause_engine_retry_after', 3600 );
 
 		$html = '<!DOCTYPE html>
 <html>
@@ -943,7 +943,7 @@ class PMPro_Pause_Module_Frontend implements PMPro_Pause_Module_Interface {
 		 *
 		 * @param string $html The maintenance page HTML.
 		 */
-		$html = apply_filters( 'pmpro_pause_mode_maintenance_template', $html );
+		$html = apply_filters( 'pmpro_pause_engine_maintenance_template', $html );
 
 		status_header( 503 );
 		header( 'Content-Type: text/html; charset=utf-8' );
@@ -1014,7 +1014,7 @@ class PMPro_Pause_Module_Sessions implements PMPro_Pause_Module_Interface {
 
 		if ( $user && ! user_can( $user, 'pmpro_manage_pause_mode' ) ) {
 			return new WP_Error(
-				'pmpro_pause_mode_login_blocked',
+				'pmpro_pause_engine_login_blocked',
 				__( 'This site is temporarily unavailable for maintenance. Only administrators can log in.', 'paid-memberships-pro' )
 			);
 		}
@@ -1046,9 +1046,9 @@ class PMPro_Pause_Module_Sessions implements PMPro_Pause_Module_Interface {
 		$total = count_users();
 		if ( ( $total['total_users'] - count( $admins ) ) > 500 ) {
 			PMPro_Action_Scheduler::instance()->maybe_add_task(
-				'pmpro_pause_mode_clear_sessions_batch',
+				'pmpro_pause_engine_clear_sessions_batch',
 				array( $admins, 500 ),
-				'pmpro_pause_mode_sessions'
+				'pmpro_pause_engine_sessions'
 			);
 		}
 	}
@@ -1061,7 +1061,7 @@ class PMPro_Pause_Module_Sessions implements PMPro_Pause_Module_Interface {
  * @return bool
  */
 function pmpro_pause_engine_is_active() {
-	return PMPro_Pause_Mode::instance()->is_paused();
+	return PMPro_Pause_Engine::instance()->is_paused();
 }
 
 /**
@@ -1072,5 +1072,5 @@ function pmpro_pause_engine_is_active() {
  * @return bool
  */
 function pmpro_pause_module_is_active( $slug ) {
-	return PMPro_Pause_Mode::instance()->is_module_active( $slug );
+	return PMPro_Pause_Engine::instance()->is_module_active( $slug );
 }
