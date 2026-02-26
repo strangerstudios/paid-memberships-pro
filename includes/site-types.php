@@ -41,9 +41,9 @@ function pmpro_get_site_type_hubs() {
 		'premium_content'	=> 'https://www.paidmembershipspro.com/blog-news/hub/',
 		'community'			=> 'https://www.paidmembershipspro.com/communities/hub/',
 		'courses'			=> 'https://www.paidmembershipspro.com/courses/hub/',
-		'directory'			=> 'https://www.paidmembershipspro.com/add-ons/member-directory/',
+		'directory'			=> 'https://www.paidmembershipspro.com/member-directories/hub/',
 		'newsletter'		=> 'https://www.paidmembershipspro.com/paid-newsletters/hub/',
-		'podcast'			=> 'https://www.paidmembershipspro.com/membership-site-podcasting-benefits/',
+		'podcast'			=> 'https://www.paidmembershipspro.com/podcasting/hub/',
 		'video'				=> 'https://www.paidmembershipspro.com/private-videos/hub/',
 	);
 }
