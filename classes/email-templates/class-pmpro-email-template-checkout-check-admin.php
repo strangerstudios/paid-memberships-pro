@@ -199,7 +199,8 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 			'billing_zip' => $order->billing->zip,
 			'billing_country' => $order->billing->country,
 			'billing_phone' => $order->billing->phone,
-			'check_gateway_label' => get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' )
+			'check_gateway_label' => get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' ),
+			'order_gateway' => $order->gateway,
 		);
 
 		return $email_template_variables;
@@ -241,6 +242,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 			'!!billing_country!!' => esc_html__( 'The billing country of the order.', 'paid-memberships-pro' ),
 			'!!billing_phone!!' => esc_html__( 'The billing phone number of the order.', 'paid-memberships-pro' ),
 			'!!check_gateway_label!!' => esc_html__( 'The default or custom label for the check gateway.', 'paid-memberships-pro' ),
+			'!!order_gateway!!' => esc_html__( 'The gateway used for the order.', 'paid-memberships-pro' ),
 		);
 	}
 

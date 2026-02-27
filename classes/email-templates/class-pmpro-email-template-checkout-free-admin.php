@@ -143,6 +143,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 			'!!discount_code!!' => esc_html__( 'The discount code for the order displayed as a formatted paragraph with label.', 'paid-memberships-pro' ),
 			'!!discount_code_name!!' => esc_html__( 'The name of the discount code used for the order.', 'paid-memberships-pro' ),
 			'!!discount_code_id!!' => esc_html__( 'The ID of the discount code used for the order.', 'paid-memberships-pro' ),
+			'!!order_gateway!!' => esc_html__( 'The gateway used for the order.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -199,6 +200,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 			'discount_code' => $discount_code,
 			'discount_code_name' => $discount_code_name,
 			'discount_code_id' => $discount_code_id,
+			'order_gateway' => $order->gateway,
 		);
 
 		return $email_template_variables;

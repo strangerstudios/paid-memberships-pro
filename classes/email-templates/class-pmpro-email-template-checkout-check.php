@@ -162,6 +162,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'!!billing_country!!' => esc_html__( 'The billing country of the order.', 'paid-memberships-pro' ),
 			'!!billing_phone!!' => esc_html__( 'The billing phone number of the order.', 'paid-memberships-pro' ),
 			'!!instructions!!' => esc_html__( 'Payment instructions for the user to complete their purchase (defined in Payment Gateway settings).', 'paid-memberships-pro' ),
+			'!!order_gateway!!' => esc_html__( 'The gateway used for the order.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -236,6 +237,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 			'billing_country' => $order->billing->country,
 			'billing_phone' => $order->billing->phone,
 			'instructions' => wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ),
+			'order_gateway' => $order->gateway,
 		);
 		return $email_template_variables;
 	}

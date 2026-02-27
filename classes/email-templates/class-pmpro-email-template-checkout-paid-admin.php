@@ -208,6 +208,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 			'accountnumber' => hideCardNumber( $order->accountnumber ),
 			'expirationmonth' => $order->expirationmonth,
 			'expirationyear' => $order->expirationyear,
+			'order_gateway' => $order->gateway,
 		);
 
 		return $email_template_variables;
@@ -252,6 +253,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 			'!!accountnumber!!' => esc_html__( 'The last four digits of the credit card number.', 'paid-memberships-pro' ),
 			'!!expirationmonth!!' => esc_html__( 'The expiration month of the credit card.', 'paid-memberships-pro' ),
 			'!!expirationyear!!' => esc_html__( 'The expiration year of the credit card.', 'paid-memberships-pro' ),
+			'!!order_gateway!!' => esc_html__( 'The gateway used for the order.', 'paid-memberships-pro' ),
 		);
 	}
 
