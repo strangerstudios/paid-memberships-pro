@@ -865,6 +865,12 @@ class PMPro_Pause_Module_Frontend implements PMPro_Pause_Module_Interface {
 			return;
 		}
 
+		// Allow login page POST so admins can authenticate.
+		global $pagenow;
+		if ( 'wp-login.php' === $pagenow ) {
+			return;
+		}
+
 		if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && ! is_admin() ) {
 			wp_die(
 				esc_html__( 'This site is currently in maintenance mode. Please try again later.', 'paid-memberships-pro' ),
@@ -976,8 +982,12 @@ class PMPro_Pause_Module_Sessions implements PMPro_Pause_Module_Interface {
 		}
 		$this->active = true;
 
-		// Clear non-admin sessions immediately.
-		$this->clear_non_admin_sessions();
+		// Clear non-admin sessions once WP is fully loaded (get_users needs $wpdb roles ready).
+		if ( did_action( 'init' ) ) {
+			$this->clear_non_admin_sessions();
+		} else {
+			add_action( 'init', array( $this, 'clear_non_admin_sessions' ), 0 );
+		}
 
 		// Block non-admin logins going forward.
 		add_filter( 'authenticate', array( $this, 'block_non_admin_login' ), 999, 2 );
@@ -1025,32 +1035,30 @@ class PMPro_Pause_Module_Sessions implements PMPro_Pause_Module_Interface {
 	/**
 	 * Clear sessions for all non-admin users.
 	 */
-	private function clear_non_admin_sessions() {
+	public function clear_non_admin_sessions() {
 		$admins = get_users( array(
 			'capability' => 'pmpro_manage_pause_mode',
 			'fields'     => 'ID',
 		) );
 
-		$users = get_users( array(
-			'exclude' => $admins,
-			'fields'  => 'ID',
-			'number'  => 500,
-		) );
+		$offset = 0;
+		$batch  = 500;
 
-		foreach ( $users as $user_id ) {
-			$sessions = WP_Session_Tokens::get_instance( $user_id );
-			$sessions->destroy_all();
-		}
+		do {
+			$users = get_users( array(
+				'exclude' => $admins,
+				'fields'  => 'ID',
+				'number'  => $batch,
+				'offset'  => $offset,
+			) );
 
-		// If there are more users, schedule a follow-up batch.
-		$total = count_users();
-		if ( ( $total['total_users'] - count( $admins ) ) > 500 ) {
-			PMPro_Action_Scheduler::instance()->maybe_add_task(
-				'pmpro_pause_engine_clear_sessions_batch',
-				array( $admins, 500 ),
-				'pmpro_pause_engine_sessions'
-			);
-		}
+			foreach ( $users as $user_id ) {
+				$sessions = WP_Session_Tokens::get_instance( $user_id );
+				$sessions->destroy_all();
+			}
+
+			$offset += $batch;
+		} while ( count( $users ) === $batch );
 	}
 }
 
