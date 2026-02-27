@@ -1,6 +1,6 @@
 <?php
 /**
- * PMPro Pause Engine Engine.
+ * PMPro Pause Engine.
  *
  * A modular pause system for PMPro that allows progressive
  * lockdown of site functionality during migrations and maintenance.
@@ -89,6 +89,15 @@ class PMPro_Pause_Engine {
 		$this->register_module( new PMPro_Pause_Module_Schedules() );
 		$this->register_module( new PMPro_Pause_Module_Frontend() );
 		$this->register_module( new PMPro_Pause_Module_Sessions() );
+
+		/**
+		 * Fires after built-in pause modules are registered.
+		 *
+		 * Use this to register custom modules via $engine->register_module().
+		 *
+		 * @param PMPro_Pause_Engine $engine The pause engine instance.
+		 */
+		do_action( 'pmpro_pause_engine_register_modules', $this );
 
 		// Always register the email replay callback so AS can process queued emails after resume.
 		add_action( 'pmpro_pause_engine_send_queued_email', array( $this, 'send_queued_email' ) );
@@ -598,6 +607,10 @@ class PMPro_Pause_Module_Gateways implements PMPro_Pause_Module_Interface {
 	 * Block checkout from reaching the gateway.
 	 */
 	public function block_gateway_outbound() {
+		if ( PMPro_Pause_Engine::current_user_can_bypass() ) {
+			return;
+		}
+
 		global $pmpro_msg, $pmpro_msgt;
 		$pmpro_msg  = __( 'Payment processing is temporarily suspended. Please try again later.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'pmpro_error';
@@ -631,6 +644,10 @@ class PMPro_Pause_Module_Gateways implements PMPro_Pause_Module_Interface {
 	 * @return false|array|WP_Error
 	 */
 	public function block_outbound_http( $response, $parsed_args, $url ) {
+		if ( PMPro_Pause_Engine::current_user_can_bypass() ) {
+			return $response;
+		}
+
 		$host = wp_parse_url( $url, PHP_URL_HOST );
 		if ( empty( $host ) ) {
 			return $response;
@@ -705,6 +722,11 @@ class PMPro_Pause_Module_Mail implements PMPro_Pause_Module_Interface {
 	 * @return false
 	 */
 	public function intercept_email( $return, $atts ) {
+		// Don't re-intercept emails being replayed by the queue.
+		if ( doing_action( 'pmpro_pause_engine_send_queued_email' ) ) {
+			return $return;
+		}
+
 		$email_data = array(
 			'to'          => $atts['to'],
 			'subject'     => $atts['subject'],
