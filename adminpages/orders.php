@@ -288,22 +288,21 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => -1, 'edit' => 1 ), admin_url('admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
 		<?php
-		// build the export URL
+		// Build the export URL with current filter params.
 		$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
 		$url_params = array(
-			'filter'          => isset( $_REQUEST['filter'] ) ? trim( sanitize_text_field( $_REQUEST['filter'] ) ) : 'all',
 			's'               => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '',
-			'l'               => isset( $_REQUEST['l'] ) ? sanitize_text_field( $_REQUEST['l'] ) : false,
-			'start-month'     => isset( $_REQUEST['start-month'] ) ? intval( $_REQUEST['start-month'] ) : '1',
-			'start-day'       => isset( $_REQUEST['start-day'] ) ? intval( $_REQUEST['start-day'] ) : '1',
-			'start-year'      => isset( $_REQUEST['start-year'] ) ? intval( $_REQUEST['start-year'] ) : date( 'Y', $now ),
-			'end-month'       => isset( $_REQUEST['end-month'] ) ? intval( $_REQUEST['end-month'] ) : date( 'n', $now ),
-			'end-day'         => isset( $_REQUEST['end-day'] ) ? intval( $_REQUEST['end-day'] ) : date( 'j', $now ),
-			'end-year'        => isset( $_REQUEST['end-year'] ) ? intval( $_REQUEST['end-year'] ) : date( 'Y', $now ),
-			'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : 'This Month',
-			'discount-code'	  => isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : false,
+			'l'               => isset( $_REQUEST['l'] ) ? intval( $_REQUEST['l'] ) : '',
 			'status'          => isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '',
+			'discount-code'   => isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : '',
+			'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : '',
+			'start-date'      => isset( $_REQUEST['start-date'] ) ? sanitize_text_field( $_REQUEST['start-date'] ) : '',
+			'end-date'        => isset( $_REQUEST['end-date'] ) ? sanitize_text_field( $_REQUEST['end-date'] ) : '',
+			'gateway'         => isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '',
+			'total'           => isset( $_REQUEST['total'] ) ? sanitize_text_field( $_REQUEST['total'] ) : '',
 		);
+		// Remove empty params to keep URL clean.
+		$url_params = array_filter( $url_params );
 		$export_url = add_query_arg( $url_params, $export_url );
 		?>
 
@@ -312,11 +311,45 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		<?php } ?>
 
 		<?php
+		// Count active filters for the toggle button badge.
+		$active_filter_count = 0;
+		if ( ! empty( $_REQUEST['l'] ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $_REQUEST['status'] ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $_REQUEST['discount-code'] ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $_REQUEST['predefined-date'] ) || ( ! empty( $_REQUEST['start-date'] ) && ! empty( $_REQUEST['end-date'] ) ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $_REQUEST['gateway'] ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $_REQUEST['total'] ) ) {
+			$active_filter_count++;
+		}
+		?>
+		<button type="button" id="pmpro-orders-toggle-filters" class="page-title-action pmpro-has-icon pmpro-has-icon-filter">
+			<?php esc_html_e( 'Filters', 'paid-memberships-pro' ); ?>
+			<?php if ( $active_filter_count > 0 ) { ?>
+				<span class="pmpro-orders-filter-badge"><?php echo esc_html( $active_filter_count ); ?></span>
+			<?php } ?>
+		</button>
+
+		<?php
 			$orders_list_table = new PMPro_Orders_List_Table();
 			$orders_list_table->prepare_items();
 			$orders_list_table->search_box( __( 'Search Orders', 'paid-memberships-pro' ), 'paid-memberships-pro' );
-			$orders_list_table->display();
 		?>
+
+		<div id="pmpro-orders-layout">
+			<div class="pmpro_main">
+				<?php $orders_list_table->display(); ?>
+			</div>
+		</div>
 	</form>
 <?php }
 

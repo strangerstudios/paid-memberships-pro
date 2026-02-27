@@ -1618,6 +1618,179 @@ a.pmpro_order-renewal {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+/* Orders sidebar filters */
+.pmpro_admin .pmpro-has-icon-filter:before {
+	content: "\f536";
+}
+
+#pmpro-orders-toggle-filters {
+	position: relative;
+}
+
+#pmpro-orders-toggle-filters.active {
+	background: #f0f0f1;
+	border-color: #0071a1;
+	color: #0071a1;
+}
+
+.pmpro-orders-filter-badge {
+	align-items: center;
+	background: #2271b1;
+	border-radius: 50%;
+	color: #fff;
+	display: inline-flex;
+	font-size: 11px;
+	font-weight: 600;
+	height: 18px;
+	justify-content: center;
+	line-height: 1;
+	min-width: 18px;
+	vertical-align: middle;
+}
+
+#pmpro-orders-layout {
+	position: relative;
+}
+
+#pmpro-orders-layout > .pmpro_main {
+	transition: margin-left 0.25s ease;
+}
+
+#pmpro-orders-layout.pmpro-sidebar-open > .pmpro_main {
+	margin-left: 290px;
+}
+
+#pmpro-orders-filter-panel {
+	left: 0;
+	margin: 0;
+	max-height: calc(100vh - 64px);
+	opacity: 0;
+	overflow: hidden;
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	transition: opacity 0.25s ease, transform 0.25s ease;
+	transform: translateX(-20px);
+	width: 260px;
+}
+
+#pmpro-orders-layout.pmpro-sidebar-open > #pmpro-orders-filter-panel {
+	opacity: 1;
+	overflow-y: auto;
+	pointer-events: auto;
+	transform: translateX(0);
+}
+
+.pmpro-orders-sidebar-header {
+	align-items: center;
+	border-bottom: 1px solid var(--pmpro--border--color);
+	display: flex;
+	justify-content: space-between;
+	padding: var(--pmpro--spacing--small) 16px;
+}
+
+.pmpro-orders-sidebar-header h3 {
+	font-size: 14px;
+	margin: 0;
+}
+
+.pmpro-orders-sidebar-close {
+	background: none;
+	border: none;
+	color: #787c82;
+	cursor: pointer;
+	padding: 0;
+}
+
+.pmpro-orders-sidebar-close:hover {
+	color: #d63638;
+}
+
+.pmpro-orders-sidebar-body {
+	padding: 16px;
+}
+
+.pmpro-orders-filter-section {
+	border-bottom: 1px solid var(--pmpro--border--color);
+	margin-bottom: 16px;
+	padding-bottom: 16px;
+}
+
+.pmpro-orders-filter-section:last-child {
+	border-bottom: none;
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+.pmpro-orders-filter-section > label {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	margin-bottom: 6px;
+	text-transform: uppercase;
+}
+
+.pmpro-orders-filter-section select,
+.pmpro-orders-filter-section input[type="date"] {
+	width: 100%;
+}
+
+.pmpro-orders-date-predefined,
+.pmpro-orders-date-custom {
+	margin-top: 8px;
+}
+
+.pmpro-orders-date-custom {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.pmpro-orders-date-custom span {
+	font-size: 12px;
+	text-align: center;
+}
+
+.pmpro-orders-sidebar-actions {
+	align-items: center;
+	border-top: 1px solid var(--pmpro--border--color);
+	display: flex;
+	gap: 12px;
+	padding: 16px;
+}
+
+.pmpro-orders-sidebar-actions .button-primary {
+	flex: 1;
+}
+
+.pmpro-orders-clear-filters {
+	color: #b32d2e;
+	font-size: 13px;
+	text-decoration: none;
+}
+
+.pmpro-orders-clear-filters:hover {
+	color: #a02022;
+}
+
+@media (max-width: 782px) {
+	#pmpro-orders-layout.pmpro-sidebar-open > .pmpro_main {
+		margin-left: 0;
+	}
+
+	#pmpro-orders-filter-panel {
+		max-height: none;
+		position: static;
+		transform: none;
+		width: 100%;
+	}
+
+	#pmpro-orders-layout.pmpro-sidebar-open > #pmpro-orders-filter-panel {
+		transform: none;
+		width: 100%;
+	}
+}
+
 .pmpro_admin-pmpro-orders h1.wp-heading-inline {
 	margin-top: 0;
 }

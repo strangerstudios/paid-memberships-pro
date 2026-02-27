@@ -29,80 +29,9 @@ $max_orders_per_loop = apply_filters( 'pmpro_set_max_orders_per_export_loop', 20
 
 global $wpdb;
 
-//get users
-if ( isset( $_REQUEST['s'] ) ) {
-	$s = sanitize_text_field( $_REQUEST['s'] );
-} else {
-	$s = "";
-}
+// Get search and pagination params.
+$s = isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '';
 
-if ( isset( $_REQUEST['l'] ) ) {
-	$l = intval( $_REQUEST['l'] );
-} else {
-	$l = false;
-}
-
-if ( isset( $_REQUEST['discount-code'] ) ) {
-	$discount_code = intval( $_REQUEST['discount-code'] );
-} else {
-	$discount_code = false;
-}
-
-if ( isset( $_REQUEST['start-month'] ) ) {
-	$start_month = intval( $_REQUEST['start-month'] );
-} else {
-	$start_month = "1";
-}
-
-if ( isset( $_REQUEST['start-day'] ) ) {
-	$start_day = intval( $_REQUEST['start-day'] );
-} else {
-	$start_day = "1";
-}
-
-if ( isset( $_REQUEST['start-year'] ) ) {
-	$start_year = intval( $_REQUEST['start-year'] );
-} else {
-	$start_year = date_i18n( "Y" );
-}
-
-if ( isset( $_REQUEST['end-month'] ) ) {
-	$end_month = intval( $_REQUEST['end-month'] );
-} else {
-	$end_month = date_i18n( "n" );
-}
-
-if ( isset( $_REQUEST['end-day'] ) ) {
-	$end_day = intval( $_REQUEST['end-day'] );
-} else {
-	$end_day = date_i18n( "j" );
-}
-
-if ( isset( $_REQUEST['end-year'] ) ) {
-	$end_year = intval( $_REQUEST['end-year'] );
-} else {
-	$end_year = date_i18n( "Y" );
-}
-
-if ( isset( $_REQUEST['predefined-date'] ) ) {
-	$predefined_date = sanitize_text_field( $_REQUEST['predefined-date'] );
-} else {
-	$predefined_date = "This Month";
-}
-
-if ( isset( $_REQUEST['status'] ) ) {
-	$status = sanitize_text_field( $_REQUEST['status'] );
-} else {
-	$status = "";
-}
-
-if ( isset( $_REQUEST['filter'] ) ) {
-	$filter = sanitize_text_field( $_REQUEST['filter'] );
-} else {
-	$filter = "all";
-}
-
-//some vars for the search
 if ( ! empty( $_REQUEST['pn'] ) ) {
 	$pn = intval( $_REQUEST['pn'] );
 } else {
@@ -123,51 +52,118 @@ if ( $limit ) {
 	$start = null;
 }
 
-//filters
-if ( $filter == "all" || ! $filter ) {
-	$condition = "1=1";
-} elseif ( $filter == "within-a-date-range" ) {
-	$start_date = $start_year . "-" . $start_month . "-" . $start_day;
-	$end_date   = $end_year . "-" . $end_month . "-" . $end_day;
+$now = current_time( 'timestamp' );
 
-	//add times to dates and localize
-	$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
-	$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
+// Build filter conditions. Supports multiple simultaneous filters combined with AND.
+$conditions = array();
+$needs_discount_code_join = false;
 
-	$condition = "o.timestamp BETWEEN '" . $start_date . "' AND '" . $end_date . "'";
-} elseif ( $filter == "predefined-date-range" ) {
-	if ( $predefined_date == "Last Month" ) {
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of last month", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of last month", current_time( "timestamp" ) ) );
-	} elseif ( $predefined_date == "This Month" ) {
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of this month", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of this month", current_time( "timestamp" ) ) );
-	} elseif ( $predefined_date == "This Year" ) {
-		$year       = date_i18n( 'Y' );
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
-	} elseif ( $predefined_date == "Last Year" ) {
-		$year       = date_i18n( 'Y' ) - 1;
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
+// Legacy support: translate old single filter= param to new-style individual params.
+if ( ! empty( $_REQUEST['filter'] ) && $_REQUEST['filter'] !== 'all' ) {
+	$legacy_filter = sanitize_text_field( $_REQUEST['filter'] );
+	switch ( $legacy_filter ) {
+		case 'within-a-date-range':
+			if ( empty( $_REQUEST['start-date'] ) ) {
+				$start_month = isset( $_REQUEST['start-month'] ) ? intval( $_REQUEST['start-month'] ) : 1;
+				$start_day   = isset( $_REQUEST['start-day'] ) ? intval( $_REQUEST['start-day'] ) : 1;
+				$start_year  = isset( $_REQUEST['start-year'] ) ? intval( $_REQUEST['start-year'] ) : date( 'Y', $now );
+				$end_month   = isset( $_REQUEST['end-month'] ) ? intval( $_REQUEST['end-month'] ) : date( 'n', $now );
+				$end_day     = isset( $_REQUEST['end-day'] ) ? intval( $_REQUEST['end-day'] ) : date( 'j', $now );
+				$end_year    = isset( $_REQUEST['end-year'] ) ? intval( $_REQUEST['end-year'] ) : date( 'Y', $now );
+				$_REQUEST['start-date'] = sprintf( '%04d-%02d-%02d', $start_year, $start_month, $start_day );
+				$_REQUEST['end-date']   = sprintf( '%04d-%02d-%02d', $end_year, $end_month, $end_day );
+			}
+			break;
+		case 'predefined-date-range':
+			if ( empty( $_REQUEST['predefined-date'] ) ) {
+				$_REQUEST['predefined-date'] = 'This Month';
+			}
+			break;
+		case 'only-paid':
+			$_REQUEST['total'] = 'paid';
+			break;
+		case 'only-free':
+			$_REQUEST['total'] = 'free';
+			break;
+	}
+}
+
+// Level filter.
+$l = isset( $_REQUEST['l'] ) ? intval( $_REQUEST['l'] ) : 0;
+if ( ! empty( $l ) ) {
+	$conditions[] = $wpdb->prepare( 'o.membership_id = %d', $l );
+}
+
+// Status filter.
+$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+if ( ! empty( $status ) ) {
+	$conditions[] = $wpdb->prepare( "o.status = %s", $status );
+}
+
+// Discount code filter.
+$discount_code = isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : 0;
+if ( ! empty( $discount_code ) ) {
+	$conditions[] = $wpdb->prepare( 'dc.code_id = %d', $discount_code );
+	$needs_discount_code_join = true;
+}
+
+// Date filter (predefined or custom range).
+$predefined_date = isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : '';
+$start_date_input = isset( $_REQUEST['start-date'] ) ? sanitize_text_field( $_REQUEST['start-date'] ) : '';
+$end_date_input = isset( $_REQUEST['end-date'] ) ? sanitize_text_field( $_REQUEST['end-date'] ) : '';
+
+if ( ! empty( $predefined_date ) ) {
+	if ( $predefined_date == 'Last Month' ) {
+		$start_date = date( 'Y-m-d', strtotime( 'first day of last month', $now ) );
+		$end_date   = date( 'Y-m-d', strtotime( 'last day of last month', $now ) );
+	} elseif ( $predefined_date == 'This Month' ) {
+		$start_date = date( 'Y-m-d', strtotime( 'first day of this month', $now ) );
+		$end_date   = date( 'Y-m-d', strtotime( 'last day of this month', $now ) );
+	} elseif ( $predefined_date == 'This Year' ) {
+		$year       = date( 'Y', $now );
+		$start_date = date( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+		$end_date   = date( 'Y-m-d', strtotime( "last day of December $year", $now ) );
+	} elseif ( $predefined_date == 'Last Year' ) {
+		$year       = date( 'Y', $now ) - 1;
+		$start_date = date( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+		$end_date   = date( 'Y-m-d', strtotime( "last day of December $year", $now ) );
 	}
 
-	//add times to dates and localize
-	$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
-	$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
-
-	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
-} elseif ( $filter == "within-a-level" ) {
-	$condition = "o.membership_id = " . (int) $l;
-} elseif ( $filter == 'with-discount-code' ) {
-	$condition = 'dc.code_id = ' . (int) $discount_code;
-} elseif ( $filter == "within-a-status" ) {
-	$condition = "o.status = '" . esc_sql( $status ) . "' ";
-} elseif ( $filter == 'only-paid' ) {
-	$condition = "o.total > 0";
-} elseif( $filter == 'only-free' ) {
-	$condition = "o.total = 0";
+	if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
+		$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
+		$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
+		$conditions[] = $wpdb->prepare( "o.timestamp BETWEEN %s AND %s", $start_date, $end_date );
+	}
+} elseif ( ! empty( $start_date_input ) && ! empty( $end_date_input ) ) {
+	$start_date = get_gmt_from_date( $start_date_input . ' 00:00:00' );
+	$end_date   = get_gmt_from_date( $end_date_input . ' 23:59:59' );
+	$conditions[] = $wpdb->prepare( "o.timestamp BETWEEN %s AND %s", $start_date, $end_date );
 }
+
+// Gateway filter.
+$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
+if ( ! empty( $gateway ) ) {
+	$conditions[] = $wpdb->prepare( "o.gateway = %s", $gateway );
+}
+
+// Total filter.
+$total_filter = isset( $_REQUEST['total'] ) ? sanitize_text_field( $_REQUEST['total'] ) : '';
+if ( $total_filter === 'paid' ) {
+	$conditions[] = "o.total > 0";
+} elseif ( $total_filter === 'free' ) {
+	$conditions[] = "o.total = 0";
+}
+
+// Combine conditions with AND.
+if ( empty( $conditions ) ) {
+	$condition = '1=1';
+} else {
+	$condition = implode( ' AND ', $conditions );
+}
+
+// Backward-compatible hook.
+$filter = ! empty( $_REQUEST['filter'] ) ? sanitize_text_field( $_REQUEST['filter'] ) : 'all';
+$condition = apply_filters( 'pmpro_admin_orders_query_condition', $condition, $filter );
 
 //string search
 if ( ! empty( $s ) ) {
@@ -178,8 +174,8 @@ if ( ! empty( $s ) ) {
 			LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id
 		";
 
-	// Join with discount codes if the filter is set to 'with-discount-code'
-	if ( $filter === 'with-discount-code' ) {
+	// Join with discount codes if filtering by discount code.
+	if ( $needs_discount_code_join ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 	}
 
@@ -254,7 +250,7 @@ if ( ! empty( $s ) ) {
 } else {
 	$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o ";
 
-	if ( $filter === 'with-discount-code' ) {
+	if ( $needs_discount_code_join ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 	}
 	//Not escaping here because we escape the values in the condition statement
