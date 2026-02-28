@@ -562,6 +562,26 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Add the "Learn more" link to the top tablenav area.
+	 *
+	 * @param string $which The location of the extra table nav markup: 'top' or 'bottom'.
+	 * @since 3.x
+	 */
+	protected function extra_tablenav( $which ) {
+		if ( 'top' === $which ) {
+			?>
+			<div class="alignleft actions">
+				<?php
+					$discount_codes_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Discount Codes Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/discount-codes/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=documentation&utm_content=&utm_term=">' . esc_html__( 'Discount Codes', 'paid-memberships-pro' ) . '</a>';
+					// translators: %s: Link to Discount Codes doc.
+					printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $discount_codes_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
+			</div>
+			<?php
+		}
+	}
+
+	/**
 	 * Override single_row function to add error class if the discount code row need to be highlighted due miscounfiguration
 	 *
 	 * @param StdClass $item The current row item.

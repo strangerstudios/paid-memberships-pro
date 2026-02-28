@@ -371,6 +371,12 @@
 			?>
 		</h1>
 
+		<p><?php
+			$edit_discount_code_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Discount Codes Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/discount-codes/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=documentation&utm_content=&utm_term=">' . esc_html__( 'Discount Codes', 'paid-memberships-pro' ) . '</a>';
+			// translators: %s: Link to Discount Codes doc.
+			printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $edit_discount_code_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?></p>
+
 		<?php if(!empty($pmpro_msg)) { ?>
 			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo wp_kses_post( $pmpro_msg );?></p></div>
 		<?php } ?>
