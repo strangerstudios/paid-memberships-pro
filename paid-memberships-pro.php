@@ -87,6 +87,7 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-b
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure-admin.php' ); // billing failure email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php' ); //cancel auto renewals email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php' ); //cancel auto renewals admin email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-login-link.php' ); // login link email template for one-time login.
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
@@ -132,6 +133,10 @@ require_once( PMPRO_DIR . '/includes/cloudflare-turnstile.php' );   // load Clou
 require_once( PMPRO_DIR . '/includes/terms-of-service.php' );       // code to add a terms of service checkbox to checkout
 require_once( PMPRO_DIR . '/includes/cleanup.php' );                // clean things up when deletes happen, etc.
 require_once( PMPRO_DIR . '/includes/login.php' );                  // code to redirect away from login/register page
+if ( get_option( 'pmpro_email_login' ) ) {
+require_once( PMPRO_DIR . '/includes/email-login.php' );            // passwordless email login functionality. Enabled only if the option is set to true.
+}
+
 require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PMPro capabilities for roles
 require_once( PMPRO_DIR . '/includes/privacy.php' );                // code to aid with user data privacy, e.g. GDPR compliance
 require_once( PMPRO_DIR . '/includes/pointers.php' );				// popover help pointers

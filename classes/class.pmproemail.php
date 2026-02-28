@@ -888,6 +888,29 @@
 		}
 
 		/**
+		 * Send login link email to the member.
+		 * 
+		 * @since TBD
+		 * 
+		 * @param WP_User $user The user object of the member to send the login link to.
+		 * @param string $login_link The login link to be sent to the member.
+		 */
+		function send_email_login_link( $user = NULL, $login_link = NULL ) {
+			global $current_user;
+			if ( ! $user ) {
+				$user = $current_user;
+			}
+
+			// No user or no login link, bail.
+			if ( ! $user || ! $login_link ) {
+				return false;
+			}
+
+			$email = new PMPro_Email_Template_Login_Link( $user, $login_link );
+			return $email->send();
+		}
+
+		/**
 		 * Gets the admin user name.
 		 *
 		 * @since 2.10.6

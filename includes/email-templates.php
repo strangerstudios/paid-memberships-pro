@@ -35,6 +35,12 @@ if( 'stripe' !== $default_gateway ) {
 	unset( $registered_templates['payment_action'] );
 	unset( $registered_templates['payment_action_admin'] );
 }
+
+// Unset if login link feature is set to false. The function 'pmpro_login_generate_login_token' is only available if you enable the login link feature in PMPro settings.
+if ( ! function_exists( 'pmpro_login_generate_login_token') ) {
+	unset( $registered_templates['login_link'] );
+}
+
 foreach ( $registered_templates as $registered_template_slug => $registered_template_class ) {
 	$pmpro_email_templates_defaults[ $registered_template_slug ] = array(
 		'subject'     => $registered_template_class::get_default_subject(),
