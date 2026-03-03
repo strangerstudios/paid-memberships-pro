@@ -70,7 +70,7 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 	 * @return string The email subject.
 	 */
 	public static function get_default_subject() {
-		return sprintf( esc_html__( 'Your membership confirmation for %s', 'paid-memberships-pro' ), get_option( 'blogname' ) );
+		return esc_html__( 'Your membership confirmation for {{ sitename }}', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -81,18 +81,21 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
+		return wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}. Your membership account is now active.</p>
 
-!!membership_level_confirmation_message!!
+{% if membership_level_confirmation_message %}{{ membership_level_confirmation_message }}{% endif %}
 
 <p>Below are details about your membership account.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: !!membership_level_name!!</p>
-!!membership_expiration!! !!discount_code!!
+<p>Membership Level: {{ membership_level_name }}</p>
 
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+{% if membership_expiration %}{{ membership_expiration }}{% endif %}
+
+{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}
+
+<p>Log in to your membership account here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

@@ -69,7 +69,7 @@ class PMPro_Email_Template_Invoice extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( "Recurring payment receipt for !!sitename!! membership", 'paid-memberships-pro' );
+		return esc_html__( 'Recurring payment receipt for {{ sitename }} membership', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,28 +80,28 @@ class PMPro_Email_Template_Invoice extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Thank you for your membership to !!sitename!!. Below is a receipt for your most recent membership order.</p>
+		return wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}. Below is a receipt for your most recent membership order.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
 <p>
-	Order #!!order_id!! on !!order_date!!<br />
-	Total Billed: !!order_total!!
+	Order #{{ order_id }} on {{ order_date }}<br />
+	Total Billed: {{ order_total }}
 </p>
 
 <p>
 	Billing Information:<br />
-	!!billing_address!!
+	{{ billing_address }}
 </p>
 
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
+{% if cardtype %}<p>
+	{{ cardtype }}: {{ accountnumber }}<br />
+	Expires: {{ expirationmonth }}/{{ expirationyear }}
+</p>{% endif %}
 
-<p>Log in to your membership account here: !!login_url!!</p>
+<p>Log in to your membership account here: {{ login_url }}</p>
 
-<p>View an online version of this order here: !!order_url!!</p>', 'paid-memberships-pro' ) );
+<p>View an online version of this order here: {{ order_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

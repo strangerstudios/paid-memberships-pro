@@ -74,7 +74,7 @@ class PMPro_Email_Template_Checkout_Paid extends PMPro_Email_Template {
 	 * @return string The email subject.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' );
+		return esc_html__( 'Your membership confirmation for {{ sitename }}', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -85,35 +85,38 @@ class PMPro_Email_Template_Checkout_Paid extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return  wp_kses_post( __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
+		return  wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}. Your membership account is now active.</p>
 
-!!membership_level_confirmation_message!!
+{% if membership_level_confirmation_message %}{{ membership_level_confirmation_message }}{% endif %}
 
 <p>Below are details about your membership account and a receipt for your initial membership order.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: !!membership_level_name!!</p>
+<p>Membership Level: {{ membership_level_name }}</p>
 
-<p>Membership Fee: !!membership_cost!!</p>
-!!membership_expiration!! !!discount_code!!
+<p>Membership Fee: {{ membership_cost }}</p>
+
+{% if membership_expiration %}{{ membership_expiration }}{% endif %}
+
+{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}
 
 <p>
-	Order #!!order_id!! on !!order_date!!<br />
-	Total Billed: !!order_total!!
+	Order #{{ order_id }} on {{ order_date }}<br />
+	Total Billed: {{ order_total }}
 </p>
 
 <p>
 	Billing Information:<br />
-	!!billing_address!!
+	{{ billing_address }}
 </p>
 
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
+{% if accountnumber %}<p>
+	{{ cardtype }}: {{ accountnumber }}<br />
+	Expires: {{ expirationmonth }}/{{ expirationyear }}
+</p>{% endif %}
 
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to your membership account here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

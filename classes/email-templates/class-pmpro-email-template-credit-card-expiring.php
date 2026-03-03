@@ -69,7 +69,7 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( 'Credit card on file expiring soon at !!sitename!!', 'paid-memberships-pro' );
+		return esc_html__( 'Credit card on file expiring soon at {{ sitename }}', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,26 +80,26 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>The payment method used for your membership at !!sitename!! will expire soon.</p>
+		return wp_kses_post( __( '<p>The payment method used for your membership at {{ sitename }} will expire soon.</p>
 
 <p>
 	<strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br />
-	!!login_url!!
+	{{ login_url }}
 </p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
 <p>The most recent account information we have on file is:</p>
 
 <p>
-	!!billing_name!!<br />
-	!!billing_address!!
+	{{ billing_name }}<br />
+	{{ billing_address }}
 </p>
 
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>', 'paid-memberships-pro' ) );
+{% if accountnumber %}<p>
+	{{ cardtype }}: {{ accountnumber }}<br />
+	Expires: {{ expirationmonth }}/{{ expirationyear }}
+</p>{% endif %}', 'paid-memberships-pro' ) );
 	}
 
 	/**

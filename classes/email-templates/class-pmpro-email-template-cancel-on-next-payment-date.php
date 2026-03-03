@@ -70,7 +70,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( 'Your payment subscription at !!sitename!! has been CANCELLED', 'paid-memberships-pro' );
+		return esc_html__( 'Your payment subscription at {{ sitename }} has been CANCELLED', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -81,13 +81,13 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
+		return wp_kses_post( __( '<p>Your payment subscription at {{ sitename }} has been cancelled.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: !!membership_level_name!!</p>
+<p>Membership Level: {{ membership_level_name }}</p>
 
-<p>Your access will expire on !!enddate!!.</p>', 'paid-memberships-pro' ) );
+<p>Your access will expire on {{ enddate }}.</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

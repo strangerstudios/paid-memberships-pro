@@ -69,7 +69,7 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( "Payment action required: membership for !!user_login!! at !!sitename!!", 'paid-memberships-pro' );
+		return esc_html__( 'Payment action required: membership for {{ user_login }} at {{ sitename }}', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,15 +80,15 @@ class PMPro_Email_Template_Payment_Action_Admin extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>A payment at !!sitename!! for !!user_login!! requires additional customer authentication to complete.</p>
+		return wp_kses_post( __( '<p>A payment at {{ sitename }} for {{ user_login }} requires additional customer authentication to complete.</p>
 
-<p>Below is a copy of the email we sent to !!user_email!! to notify them that they need to complete their payment:</p>
+<p>Below is a copy of the email we sent to {{ user_email }} to notify them that they need to complete their payment:</p>
 
-<p>Customer authentication is required to finish setting up your subscription at !!sitename!!.</p>
+<p>Customer authentication is required to finish setting up your subscription at {{ sitename }}.</p>
 
 <p>Please complete the verification steps issued by your payment provider at the following link:</p>
 
-<p>!!order_url!!</p>', 'paid-memberships-pro' ) );
+<p>{{ order_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

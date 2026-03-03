@@ -72,7 +72,7 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( 'Your membership at !!sitename!! has been CANCELLED', 'paid-memberships-pro' );
+		return esc_html__( 'Your membership at {{ sitename }} has been CANCELLED', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -83,13 +83,13 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Your membership at !!sitename!! has been cancelled.</p>
+		return wp_kses_post( __( '<p>Your membership at {{ sitename }} has been cancelled.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: !!membership_level_name!!</p>
+<p>Membership Level: {{ membership_level_name }}</p>
 
-<p>If you did not request this cancellation and would like more information please contact us at !!siteemail!!</p>', 'paid-memberships-pro' ) );
+<p>If you did not request this cancellation and would like more information please contact us at {{ siteemail }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

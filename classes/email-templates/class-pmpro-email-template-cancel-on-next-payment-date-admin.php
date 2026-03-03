@@ -69,7 +69,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( "Payment subscription for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' );
+		return esc_html__( 'Payment subscription for {{ user_login }} at {{ sitename }} has been CANCELLED', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,17 +80,17 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>The payment subscription for !!user_login!! at !!sitename!! has been cancelled.</p>
+		return wp_kses_post( __( '<p>The payment subscription for {{ user_login }} at {{ sitename }} has been cancelled.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: !!membership_level_name!!</p>
+<p>Membership Level: {{ membership_level_name }}</p>
 
-<p>Start Date: !!startdate!!</p>
+<p>Start Date: {{ startdate }}</p>
 
-<p>Expiration Date: !!enddate!!</p>
+<p>Expiration Date: {{ enddate }}</p>
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to your WordPress admin here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

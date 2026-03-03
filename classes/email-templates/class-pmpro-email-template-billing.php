@@ -70,7 +70,7 @@ class PMPro_Email_Template_Billing extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( 'Your billing information has been updated at !!sitename!!', 'paid-memberships-pro' );
+		return esc_html__( 'Your billing information has been updated at {{ sitename }}', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -81,23 +81,23 @@ class PMPro_Email_Template_Billing extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Your billing information at !!sitename!! has been changed.</p>
+		return wp_kses_post( __( '<p>Your billing information at {{ sitename }} has been changed.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
 <p>
 	Billing Information:<br />
-	!!billing_address!!
+	{{ billing_address }}
 </p>
 
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
+{% if accountnumber %}<p>
+	{{ cardtype }}: {{ accountnumber }}<br />
+	Expires: {{ expirationmonth }}/{{ expirationyear }}
+</p>{% endif %}
 
-<p>If you did not request a billing information change please contact us at !!siteemail!!</p>
+<p>If you did not request a billing information change please contact us at {{ siteemail }}</p>
 
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to your membership account here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

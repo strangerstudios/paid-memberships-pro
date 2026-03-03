@@ -69,7 +69,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 	 * @return string The email subject.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( 'Member checkout for !!membership_level_name!! at !!sitename!!', 'paid-memberships-pro' );
+		return esc_html__( 'Member checkout for {{ membership_level_name }} at {{ sitename }}', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,33 +80,36 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>There was a new member checkout at !!sitename!!.</p>
+		return wp_kses_post( __( '<p>There was a new member checkout at {{ sitename }}.</p>
 
 <p>Below are details about the new membership account and a receipt for the initial membership order.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: !!membership_level_name!!</p>
+<p>Membership Level: {{ membership_level_name }}</p>
 
-<p>Membership Fee: !!membership_cost!!</p>
-!!membership_expiration!! !!discount_code!!
+<p>Membership Fee: {{ membership_cost }}</p>
+
+{% if membership_expiration %}{{ membership_expiration }}{% endif %}
+
+{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}
 
 <p>
-	Order #!!order_id!! on !!order_date!!<br />
-	Total Billed: !!order_total!!
+	Order #{{ order_id }} on {{ order_date }}<br />
+	Total Billed: {{ order_total }}
 </p>
 
 <p>
 	Billing Information:<br />
-	!!billing_address!!
+	{{ billing_address }}
 </p>
 
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
+{% if accountnumber %}<p>
+	{{ cardtype }}: {{ accountnumber }}<br />
+	Expires: {{ expirationmonth }}/{{ expirationyear }}
+</p>{% endif %}
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to your WordPress admin here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

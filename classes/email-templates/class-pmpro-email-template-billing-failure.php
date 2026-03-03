@@ -70,7 +70,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 	 * @return string The email subject.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( "Membership payment failed at !!sitename!!", 'paid-memberships-pro' );
+		return esc_html__( 'Membership payment failed at {{ sitename }}', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -81,14 +81,14 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed.</p> 
+		return wp_kses_post( __( '<p>The current subscription payment for level {{ membership_level_name }} at {{ sitename }} has failed.</p>
 
 <p>
 	<strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br />
-	!!login_url!!
+	{{ login_url }}
 </p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>', 'paid-memberships-pro' ) );
+<p>Account: {{ display_name }} ({{ user_email }})</p>', 'paid-memberships-pro' ) );
 	}
 
 		/**

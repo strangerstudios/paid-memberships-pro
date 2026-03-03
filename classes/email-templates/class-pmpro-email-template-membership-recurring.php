@@ -60,7 +60,7 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( "Your membership at !!sitename!! will renew soon", 'paid-memberships-pro' );
+		return esc_html__( 'Your membership at {{ sitename }} will renew soon', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -71,13 +71,13 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Thank you for your membership to !!sitename!!.</p>
+		return wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}.</p>
 
-<p>This is just a reminder that your !!membership_level_name!! membership will automatically renew on !!renewaldate!!.</p>
+<p>This is just a reminder that your {{ membership_level_name }} membership will automatically renew on {{ renewaldate }}.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>If for some reason you do not want to renew your membership you can cancel here: !!cancel_url!!</p>', 'paid-memberships-pro' ) );
+<p>If for some reason you do not want to renew your membership you can cancel here: {{ cancel_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

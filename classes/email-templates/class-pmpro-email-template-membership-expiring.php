@@ -69,7 +69,7 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( "Your membership at !!sitename!! will end soon", 'paid-memberships-pro' );
+		return esc_html__( 'Your membership at {{ sitename }} will end soon', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,13 +80,13 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Thank you for your membership to !!sitename!!. This is just a reminder that your membership will end on !!enddate!!.</p>
+		return wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}. This is just a reminder that your membership will end on {{ enddate }}.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: !!membership_level_name!!</p>
+<p>Membership Level: {{ membership_level_name }}</p>
 
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to your membership account here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

@@ -70,25 +70,25 @@ class PMPro_Email_Template_Billing_Admin extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( 'Billing information has been updated for !!user_login!! at !!sitename!!', 'paid-memberships-pro' );
+		return esc_html__( 'Billing information has been updated for {{ user_login }} at {{ sitename }}', 'paid-memberships-pro' );
 	}
 
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>The billing information for !!display_name!! at !!sitename!! has been changed.</p>
+		return wp_kses_post( __( '<p>The billing information for {{ display_name }} at {{ sitename }} has been changed.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
 <p>
 	Billing Information:<br />
-	!!billing_address!!
+	{{ billing_address }}
 </p>
 
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
+{% if accountnumber %}<p>
+	{{ cardtype }}: {{ accountnumber }}<br />
+	Expires: {{ expirationmonth }}/{{ expirationyear }}
+</p>{% endif %}
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to your WordPress admin here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 
 	}
 
