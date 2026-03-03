@@ -2063,22 +2063,23 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 /**
  * Email Template Settings
  */
-.admin_page_pmpro-emailtemplates #poststuff {
-	padding-top: 0;
-}
-
-.admin_page_pmpro-emailtemplates #poststuff .pmpro_tag {
+.admin_page_pmpro-emailtemplates .pmpro_tag {
 	display: inline-block;
 	margin-bottom: var(--pmpro--spacing--small);
 }
 
-.admin_page_pmpro-emailtemplates .edit-form-section .form-table tr:first-child th {
+.admin_page_pmpro-emailtemplates .form-table tr:first-child th {
 	padding-top: 15px;
 }
 
-.admin_page_pmpro-emailtemplates .edit-form-section .form-table input[type=text],
-.admin_page_pmpro-emailtemplates .edit-form-section .form-table textarea {
+.admin_page_pmpro-emailtemplates .form-table input[type=text],
+.admin_page_pmpro-emailtemplates .form-table textarea {
 	width: 100%;
+}
+
+.admin_page_pmpro-emailtemplates pre {
+	margin: 0 1px;
+	white-space: pre-wrap;
 }
 
 .admin_page_pmpro-emailtemplates .pmpro_send_test_email {

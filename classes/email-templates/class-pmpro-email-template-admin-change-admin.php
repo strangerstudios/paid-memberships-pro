@@ -115,10 +115,10 @@ class PMPro_Email_Template_Admin_Change_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'!!membership_change!!' => esc_html__( 'A message indicating the change in membership.', 'paid-memberships-pro' ),
+			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_change }}' => esc_html__( 'A message indicating the change in membership.', 'paid-memberships-pro' ),
 		);
 	}
 

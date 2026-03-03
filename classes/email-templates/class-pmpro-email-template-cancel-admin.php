@@ -106,13 +106,13 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		 return array(
-			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!startdate!!' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
-			'!!enddate!!' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' )
+			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ startdate }}' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
+			'{{ enddate }}' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' )
 		 );
 	}
 
