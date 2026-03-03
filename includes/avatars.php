@@ -1246,3 +1246,31 @@ function pmpro_avatar_add_account_action_link( $links ) {
 	return $new_links;
 }
 add_filter( 'pmpro_account_profile_action_links', 'pmpro_avatar_add_account_action_link' );
+
+/**
+ * Show a note on the WordPress user edit page when the user's avatar is managed by PMPro.
+ *
+ * Replaces the default Gravatar description with a link to the PMPro member edit page.
+ *
+ * @since TBD
+ *
+ * @param string  $description  The description displayed under the profile picture.
+ * @param WP_User $profile_user The user being edited.
+ * @return string Modified description.
+ */
+function pmpro_avatar_user_profile_picture_description( $description, $profile_user ) {
+	// Only show when PMPro is managing this user's avatar.
+	if ( ! pmpro_user_has_avatar_level( $profile_user->ID ) ) {
+		return $description;
+	}
+
+	$edit_url = admin_url( 'admin.php?page=pmpro-member&user_id=' . intval( $profile_user->ID ) );
+
+	return sprintf(
+		/* translators: %1$s: opening link tag, %2$s: closing link tag. */
+		esc_html__( 'This user\'s profile picture is managed by Paid Memberships Pro. %1$sEdit their profile picture%2$s.', 'paid-memberships-pro' ),
+		'<a href="' . esc_url( $edit_url ) . '">',
+		'</a>'
+	);
+}
+add_filter( 'user_profile_picture_description', 'pmpro_avatar_user_profile_picture_description', 10, 2 );
