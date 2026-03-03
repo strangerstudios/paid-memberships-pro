@@ -44,6 +44,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
+	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
 }
 pmpro_setDBTables();
 
@@ -1803,7 +1804,7 @@ function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
 
 	$total = $wpdb->get_var( $sqlQuery );
 
-	return (double) $total;
+	return (float) $total;
 }
 
 function pmpro_calculateRecurringRevenue( $s, $l ) {
@@ -2455,6 +2456,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				l.confirmation,
 				l.expiration_number,
 				l.expiration_period,
+				l.allow_signups,
 				mu.initial_payment,
 				mu.billing_amount,
 				mu.cycle_number,
@@ -2462,6 +2464,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.billing_limit,
 				mu.trial_amount,
 				mu.trial_limit,
+				mu.status,
 				mu.code_id as code_id,
 				UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate,
 				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
@@ -3520,7 +3523,7 @@ function pmpro_round_price( $price, $currency = '' ) {
 		$decimals = intval( $pmpro_currencies[ $currency ]['decimals'] );
 	}
 
-	$rounded = round( (double) $price, $decimals );
+	$rounded = round( (float) $price, $decimals );
 
 	/**
 	 * Filter for result of pmpro_round_price.

@@ -190,13 +190,38 @@
 				<p><?php esc_html_e( 'To keep your membership data safe, we store certain sensitive files in the following protected directory:', 'paid-memberships-pro' ); ?></p>
 				<?php
 					$restricted_file_path = pmpro_get_restricted_file_path();
+					$restricted_dir_tag_class = 'alert';
+					$restricted_dir_tag_label = __( 'Unable to determine', 'paid-memberships-pro' );
+
+					if ( function_exists( 'pmpro_is_restricted_directory_protected' ) ) {
+						$restricted_dir_protected = pmpro_is_restricted_directory_protected();
+						if ( true === $restricted_dir_protected ) {
+							$restricted_dir_tag_class = 'success';
+							$restricted_dir_tag_label = __( 'Protected', 'paid-memberships-pro' );
+						} elseif ( false === $restricted_dir_protected ) {
+							$restricted_dir_tag_class = 'error';
+							$restricted_dir_tag_label = __( 'Accessible', 'paid-memberships-pro' );
+						}
+					}
 				?>
 				<p><code><?php echo esc_html( $restricted_file_path ); ?></code></p>
-				<p><?php
-					$restricted_file_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Restricted File Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/security-settings/?utm_source=plugin&utm_medium=pmpro-securitysettings&utm_campaign=documentation&utm_content=restricted-file-settings#restricted-files">' . esc_html__( 'Restricted File Settings', 'paid-memberships-pro' ) . '</a>';
-					// translators: %s: Link to Security Settings doc.
-					printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $restricted_file_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				?></p>
+				<table class="form-table">
+					<tbody>
+						<tr>
+							<th scope="row" valign="top">
+								<?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?>
+							</th>
+							<td>
+								<div class="pmpro_tag pmpro_tag-has_icon pmpro_tag-<?php echo esc_attr( $restricted_dir_tag_class ); ?>"><?php echo esc_html( $restricted_dir_tag_label ); ?></div>
+								<p><?php
+									$restricted_file_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Restricted File Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/security-settings/?utm_source=plugin&utm_medium=pmpro-securitysettings&utm_campaign=documentation&utm_content=restricted-file-settings#restricted-files">' . esc_html__( 'Restricted File Settings', 'paid-memberships-pro' ) . '</a>';
+									// translators: %s: Link to Security Settings doc.
+									printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $restricted_file_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								?></p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 
 				<?php
 					/**

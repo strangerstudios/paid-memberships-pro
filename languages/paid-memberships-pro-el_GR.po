@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.6.4\n"
+"Project-Id-Version: Paid Memberships Pro 3.6.5\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-08T17:24:44+00:00\n"
+"POT-Creation-Date: 2026-02-26T14:48:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -4249,6 +4249,7 @@ msgstr "Αποθηκεύστε το Επίπεδο"
 #: adminpages/orders/view-order.php:575
 #: adminpages/orders/view-order.php:581
 #: shortcodes/pmpro_account.php:285
+#: adminpages/orders/edit-order.php:388
 msgid "Cancel"
 msgstr "Ακύρωση"
 
@@ -4386,6 +4387,7 @@ msgstr "Σύρετε τα επίπεδα συνδρομών για να τα α�
 #: adminpages/orders.php:747
 #: adminpages/membershiplevels.php:367
 #: adminpages/orders/edit-order.php:247
+#: adminpages/orders/edit-order.php:244
 msgid "Expiration"
 msgstr "Λήξη"
 
@@ -4552,6 +4554,7 @@ msgstr "Λίστα συνδρομητών"
 #: adminpages/reports/memberships.php:323
 #: adminpages/reports/sales.php:620
 #: adminpages/orders.php:311
+#: adminpages/reports/memberships.php:331
 msgid "Export to CSV"
 msgstr "Εξαγωγή σε CSV "
 
@@ -4694,6 +4697,7 @@ msgstr "Προβολή"
 #: classes/email-templates/class-pmpro-email-template-cancel-admin.php:162
 #: adminpages/reports/memberships.php:361
 #: adminpages/reports/sales.php:690
+#: adminpages/reports/memberships.php:369
 msgid "All Levels"
 msgstr "Όλα τα επίπεδα"
 
@@ -4932,6 +4936,7 @@ msgstr "Last&nbsp;Name"
 #: pages/checkout.php:371
 #: pages/checkout.php:389
 #: adminpages/orders/edit-order.php:111
+#: adminpages/orders/edit-order.php:108
 msgid "Billing Address"
 msgstr "Διεύθυνση Πληρωμής"
 
@@ -5232,6 +5237,7 @@ msgstr "Θα παραχθεί τυχαία για εσάς."
 #: adminpages/subscriptions.php:276
 #: adminpages/orders.php:423
 #: adminpages/orders/edit-order.php:56
+#: adminpages/orders/edit-order.php:53
 msgid "User ID"
 msgstr "ID Χρήστη"
 
@@ -5259,6 +5265,7 @@ msgstr "ID Χρήστη"
 #: adminpages/orders.php:417
 #: adminpages/orders.php:438
 #: adminpages/orders/edit-order.php:65
+#: adminpages/orders/edit-order.php:62
 msgid "Membership Level ID"
 msgstr "ID Επιπέδου Συνδρομής"
 
@@ -5279,6 +5286,7 @@ msgstr "ID Επιπέδου Συνδρομής"
 #: adminpages/orders.php:477
 #: adminpages/orders.php:498
 #: adminpages/orders/edit-order.php:118
+#: adminpages/orders/edit-order.php:115
 msgid "Billing Name"
 msgstr "Όνομα Λογαριασμού"
 
@@ -5299,6 +5307,7 @@ msgstr "Όνομα Λογαριασμού"
 #: adminpages/orders.php:491
 #: adminpages/orders.php:512
 #: adminpages/orders/edit-order.php:125
+#: adminpages/orders/edit-order.php:122
 msgid "Billing Street"
 msgstr "Οδός Λογαριασμού"
 
@@ -5322,6 +5331,7 @@ msgstr "Οδός Λογαριασμού"
 #: includes/privacy.php:257
 #: adminpages/orders.php:536
 #: adminpages/orders/edit-order.php:135
+#: adminpages/orders/edit-order.php:132
 msgid "Billing City"
 msgstr "Πόλη Λογαριασμού"
 
@@ -5343,6 +5353,7 @@ msgstr "Πόλη Λογαριασμού"
 #: includes/privacy.php:261
 #: adminpages/orders.php:549
 #: adminpages/orders/edit-order.php:141
+#: adminpages/orders/edit-order.php:138
 msgid "Billing State"
 msgstr "Γεωγραφικό Διαμέρισμα Λογαριασμού"
 
@@ -5367,6 +5378,7 @@ msgstr "Γεωγραφικό Διαμέρισμα Λογαριασμού"
 #: includes/privacy.php:265
 #: adminpages/orders.php:561
 #: adminpages/orders/edit-order.php:147
+#: adminpages/orders/edit-order.php:144
 msgid "Billing Postal Code"
 msgstr "Τ.Κ Λογαριασμού"
 
@@ -5392,6 +5404,7 @@ msgstr "Τ.Κ Λογαριασμού"
 #: includes/privacy.php:269
 #: adminpages/orders.php:573
 #: adminpages/orders/edit-order.php:152
+#: adminpages/orders/edit-order.php:149
 msgid "Billing Country"
 msgstr "Χώρα Λογαριασμού"
 
@@ -5414,6 +5427,7 @@ msgstr "Χώρα Λογαριασμού"
 #: includes/privacy.php:273
 #: adminpages/orders.php:586
 #: adminpages/orders/edit-order.php:158
+#: adminpages/orders/edit-order.php:155
 msgid "Billing Phone"
 msgstr "Αριθμός Τηλεφώνου Λογαριασμού"
 
@@ -5436,6 +5450,7 @@ msgstr "Αριθμός Τηλεφώνου Λογαριασμού"
 #: includes/privacy.php:277
 #: adminpages/orders.php:651
 #: adminpages/orders/edit-order.php:206
+#: adminpages/orders/edit-order.php:203
 msgid "Sub Total"
 msgstr "Υπό Σύνολο"
 
@@ -5488,6 +5503,7 @@ msgstr "Υπό Σύνολο"
 #: includes/functions.php:3262
 #: includes/functions.php:3299
 #: adminpages/orders/edit-order.php:212
+#: adminpages/orders/edit-order.php:209
 msgid "Tax"
 msgstr "Φόρος"
 
@@ -5607,6 +5623,8 @@ msgstr "Ποσό Κουπονιού"
 #: adminpages/reports/sales.php:953
 #: classes/class-pmpro-orders-list-table.php:154
 #: shortcodes/pmpro_account.php:362
+#: adminpages/orders/edit-order.php:215
+#: adminpages/reports/memberships.php:550
 msgid "Total"
 msgstr "Σύνολο"
 
@@ -5636,6 +5654,7 @@ msgstr "Οφειλή υποσύνολο + φόρος - ποσό κουπονιο
 #: adminpages/orders.php:670
 #: adminpages/orders.php:691
 #: adminpages/orders/edit-order.php:225
+#: adminpages/orders/edit-order.php:222
 msgid "Payment Type"
 msgstr "Τύπος Πληρωμής"
 
@@ -5656,6 +5675,7 @@ msgstr "Τύπος Πληρωμής"
 #: adminpages/orders.php:681
 #: adminpages/orders.php:702
 #: adminpages/orders/edit-order.php:229
+#: adminpages/orders/edit-order.php:226
 msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
 msgstr "π.χ. PayPal Express, PayPal Standard, Credit Card."
 
@@ -5718,6 +5738,7 @@ msgstr "π.χ. PayPal Express, PayPal Standard, Credit Card."
 #: adminpages/orders.php:685
 #: adminpages/orders.php:706
 #: adminpages/orders/edit-order.php:233
+#: adminpages/orders/edit-order.php:230
 msgid "Card Type"
 msgstr "Τύπος Κάρτας"
 
@@ -5738,6 +5759,7 @@ msgstr "Τύπος Κάρτας"
 #: adminpages/orders.php:695
 #: adminpages/orders.php:716
 #: adminpages/orders/edit-order.php:236
+#: adminpages/orders/edit-order.php:233
 msgid "e.g. Visa, MasterCard, AMEX, etc"
 msgstr "π.χ. Visa, MasterCard, AMEX, etc"
 
@@ -5768,6 +5790,7 @@ msgstr "π.χ. Visa, MasterCard, AMEX, etc"
 #: adminpages/orders.php:699
 #: adminpages/orders.php:720
 #: adminpages/orders/edit-order.php:240
+#: adminpages/orders/edit-order.php:237
 msgid "Account Number"
 msgstr "Αριθμός Λογαριασμού"
 
@@ -5947,6 +5970,7 @@ msgstr "Έτος λήξης"
 #: classes/class-pmpro-orders-list-table.php:158
 #: shortcodes/pmpro_account.php:363
 #: shortcodes/pmpro_account.php:402
+#: adminpages/orders/edit-order.php:254
 msgid "Status"
 msgstr "Κατάσταση"
 
@@ -6026,6 +6050,7 @@ msgstr "Κατάσταση"
 #: adminpages/orders/edit-order.php:285
 #: adminpages/orders/view-order.php:281
 #: classes/class-pmpro-orders-list-table.php:156
+#: adminpages/orders/edit-order.php:282
 msgid "Gateway"
 msgstr "Τρόπος πληρωμής"
 
@@ -6071,6 +6096,7 @@ msgstr "Τρόπος πληρωμής"
 #: adminpages/subscriptions.php:574
 #: adminpages/paymentsettings.php:138
 #: adminpages/orders/edit-order.php:302
+#: adminpages/orders/edit-order.php:299
 msgid "Gateway Environment"
 msgstr "Περιβάλλον Τρόπου Πληρωμής"
 
@@ -6116,6 +6142,7 @@ msgstr "Περιβάλλον Τρόπου Πληρωμής"
 #: adminpages/paymentsettings.php:142
 #: classes/class-pmpro-site-health.php:288
 #: adminpages/orders/edit-order.php:305
+#: adminpages/orders/edit-order.php:302
 msgid "Sandbox/Testing"
 msgstr "Sandbox/Testing"
 
@@ -6161,6 +6188,7 @@ msgstr "Sandbox/Testing"
 #: adminpages/paymentsettings.php:143
 #: classes/class-pmpro-site-health.php:289
 #: adminpages/orders/edit-order.php:306
+#: adminpages/orders/edit-order.php:303
 msgid "Live/Production"
 msgstr "Live/Production"
 
@@ -6184,6 +6212,7 @@ msgstr "Live/Production"
 #: adminpages/orders.php:833
 #: adminpages/orders/edit-order.php:313
 #: adminpages/orders/view-order.php:289
+#: adminpages/orders/edit-order.php:310
 msgid "Payment Transaction ID"
 msgstr "ID Πληρωμής"
 
@@ -6204,6 +6233,7 @@ msgstr "ID Πληρωμής"
 #: adminpages/orders.php:822
 #: adminpages/orders.php:843
 #: adminpages/orders/edit-order.php:316
+#: adminpages/orders/edit-order.php:313
 msgid "Generated by the gateway. Useful to cross reference orders."
 msgstr "Δημιουργήθηκε από τον τρόπο πληρωμής. Χρήσιμο για να διασταυρώσετε παραγγελίες αναφοράς."
 
@@ -6252,6 +6282,7 @@ msgstr "Δημιουργήθηκε από τον τρόπο πληρωμής. Χ
 #: classes/class-pmpro-subscription.php:1207
 #: classes/class-pmpro-subscription.php:1225
 #: adminpages/orders/edit-order.php:321
+#: adminpages/orders/edit-order.php:318
 msgid "Subscription Transaction ID"
 msgstr "ID Συνδρομής"
 
@@ -6274,6 +6305,7 @@ msgstr "ID Συνδρομής"
 #: adminpages/subscriptions.php:264
 #: adminpages/orders.php:862
 #: adminpages/orders/edit-order.php:324
+#: adminpages/orders/edit-order.php:321
 msgid "Generated by the gateway. Useful to cross reference subscriptions."
 msgstr "Δημιουργήθηκε από τον τρόπο πληρωμής. Χρήσιμο για να διασταυρώσετε συνδρομές αναφοράς."
 
@@ -6377,6 +6409,7 @@ msgstr "Δημιουργήθηκε από τον τρόπο πληρωμής. Χ
 #: classes/class-pmpro-orders-list-table.php:159
 #: shortcodes/pmpro_account.php:360
 #: shortcodes/pmpro_account.php:397
+#: adminpages/reports/memberships.php:522
 msgid "Date"
 msgstr "Ημερομηνία"
 
@@ -6397,6 +6430,7 @@ msgstr "Ημερομηνία"
 #: adminpages/orders.php:869
 #: adminpages/orders.php:890
 #: adminpages/orders/edit-order.php:346
+#: adminpages/orders/edit-order.php:343
 msgid "Affiliate ID"
 msgstr "Affiliate ID"
 
@@ -6417,6 +6451,7 @@ msgstr "Affiliate ID"
 #: adminpages/orders.php:882
 #: adminpages/orders.php:903
 #: adminpages/orders/edit-order.php:353
+#: adminpages/orders/edit-order.php:350
 msgid "Affiliate SubID"
 msgstr "Affiliate SubID"
 
@@ -6437,6 +6472,7 @@ msgstr "Affiliate SubID"
 #: adminpages/orders.php:896
 #: adminpages/orders.php:917
 #: adminpages/orders/edit-order.php:361
+#: adminpages/orders/edit-order.php:358
 msgid "Notes"
 msgstr "Σημειώσεις"
 
@@ -6458,6 +6494,7 @@ msgstr "Σημειώσεις"
 #: adminpages/orders.php:928
 #: adminpages/orders.php:949
 #: adminpages/orders/edit-order.php:390
+#: adminpages/orders/edit-order.php:387
 msgid "Save Order"
 msgstr "Αποθήκευση Παραγγελίας"
 
@@ -8033,6 +8070,7 @@ msgstr "Pass all generated HTML through a URL filter to add HTTPS to URLs used o
 #: adminpages/reports/members-per-level.php:35
 #: adminpages/reports/memberships.php:98
 #: adminpages/reports/sales.php:109
+#: adminpages/reports/memberships.php:106
 msgid "Details"
 msgstr "Λεπτομέριες"
 
@@ -8297,6 +8335,7 @@ msgstr "Συνολικά Logins"
 #: adminpages/reports/memberships.php:340
 #: adminpages/dashboard.php:73
 #: adminpages/reports/memberships.php:320
+#: adminpages/reports/memberships.php:328
 msgid "Membership Stats"
 msgstr "Στατιστικά Συνδρομών"
 
@@ -8324,6 +8363,8 @@ msgstr "Στατιστικά Συνδρομών"
 #: adminpages/reports/sales.php:546
 #: adminpages/reports/sales.php:557
 #: adminpages/reports/sales.php:586
+#: adminpages/reports/memberships.php:471
+#: adminpages/reports/memberships.php:523
 msgid "Signups"
 msgstr "Εγγραφές"
 
@@ -8333,6 +8374,7 @@ msgstr "Εγγραφές"
 #: adminpages/reports/memberships.php:479
 #: adminpages/reports/memberships.php:480
 #: adminpages/reports/memberships.php:460
+#: adminpages/reports/memberships.php:468
 msgid "All Cancellations"
 msgstr "Όλες οι Ακυρώσεις"
 
@@ -8408,6 +8450,7 @@ msgstr "Αυτό τον Χρόνο"
 #: adminpages/advancedsettings.php:273
 #: adminpages/reports/memberships.php:331
 #: adminpages/reports/sales.php:628
+#: adminpages/reports/memberships.php:339
 msgid "Daily"
 msgstr "Ημερησίως"
 
@@ -8452,6 +8495,7 @@ msgstr "Ημερησίως"
 #: adminpages/advancedsettings.php:279
 #: adminpages/reports/memberships.php:332
 #: adminpages/reports/sales.php:629
+#: adminpages/reports/memberships.php:340
 msgid "Monthly"
 msgstr "Μηνιαίως"
 
@@ -8488,6 +8532,7 @@ msgstr "Μηνιαίως"
 #: adminpages/reports/sales.php:633
 #: adminpages/reports/memberships.php:333
 #: adminpages/reports/sales.php:630
+#: adminpages/reports/memberships.php:341
 msgid "Annual"
 msgstr "Ετησίως"
 
@@ -8502,6 +8547,7 @@ msgstr "Ετησίως"
 #: adminpages/reports/memberships.php:373
 #: adminpages/reports/memberships.php:375
 #: adminpages/reports/memberships.php:356
+#: adminpages/reports/memberships.php:345
 msgid "Signups vs. All Cancellations"
 msgstr "Εγγραφές vs. Όλες τις Ακυρώσεις"
 
@@ -8518,6 +8564,7 @@ msgstr "Εγγραφές vs. Όλες τις Ακυρώσεις"
 #: adminpages/reports/memberships.php:374
 #: adminpages/reports/memberships.php:376
 #: adminpages/reports/memberships.php:357
+#: adminpages/reports/memberships.php:346
 msgid "Signups vs. Cancellations"
 msgstr "Εγγραφές vs. Ακυρώσεις"
 
@@ -8532,6 +8579,7 @@ msgstr "Εγγραφές vs. Ακυρώσεις"
 #: adminpages/reports/memberships.php:375
 #: adminpages/reports/memberships.php:377
 #: adminpages/reports/memberships.php:358
+#: adminpages/reports/memberships.php:347
 msgid "Signups vs. Expirations"
 msgstr "Εγγραφές vs. Λήξεις"
 
@@ -8598,6 +8646,8 @@ msgstr "Εγγραφές vs. Λήξεις"
 #: adminpages/reports/memberships.php:354
 #: adminpages/reports/sales.php:641
 #: adminpages/reports/sales.php:660
+#: adminpages/reports/memberships.php:349
+#: adminpages/reports/memberships.php:362
 msgid "for"
 msgstr "για"
 
@@ -8631,6 +8681,7 @@ msgstr "για"
 #: adminpages/reports/memberships.php:429
 #: adminpages/reports/memberships.php:409
 #: adminpages/reports/sales.php:710
+#: adminpages/reports/memberships.php:417
 msgid "Generate Report"
 msgstr "Παραγωγή Αναφοράς"
 
@@ -9170,6 +9221,7 @@ msgstr "Η επιβεβαίωση της συνδρομή σας για %s"
 #: adminpages/orders/view-order.php:262
 #: classes/gateways/class.pmprogateway_stripe.php:1375
 #: pages/invoice.php:373
+#: adminpages/orders/edit-order.php:191
 msgid "Discount Code"
 msgstr "Εκπτωτικός Κωδικός"
 
@@ -10038,6 +10090,7 @@ msgstr "To fully integrate with Braintree, be sure to set your Web Hook URL to"
 #: classes/gateways/class.pmprogateway_stripe.php:1345
 #: adminpages/orders/edit-order.php:171
 #: classes/gateways/class.pmprogateway_stripe.php:1336
+#: adminpages/orders/edit-order.php:168
 msgid "Payment Information"
 msgstr "Πληροφορίες Πληρωμής"
 
@@ -11034,6 +11087,7 @@ msgstr "Υποβολή και Επιβεβαίωση"
 #: classes/gateways/class.pmprogateway_paypal.php:725
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1058
 #: classes/gateways/class.pmprogateway_paypalstandard.php:602
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1059
 msgid "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 msgstr "Παρακαλούμε επικοινωνήστε με τον ιδιοκτήτη της σελίδας ή ακυρώστε την συνδρομή σας εντός του PayPal ώστε να σιγουρευτείτε πως δεν θα έχετε μελλοντικές χρεώσεις."
 
@@ -13476,6 +13530,8 @@ msgstr "Παρακαλούμε διευκρινήστε ένα id επιπέδο
 #: adminpages/levels/edit-level.php:638
 #: adminpages/orders/edit-order.php:75
 #: adminpages/orders/edit-order.php:197
+#: adminpages/orders/edit-order.php:72
+#: adminpages/orders/edit-order.php:194
 msgid "None"
 msgstr "Κανένα"
 
@@ -16512,6 +16568,7 @@ msgstr "Όλες οι Συνδέσεις"
 #: adminpages/reports/memberships.php:475
 #: adminpages/reports/memberships.php:476
 #: adminpages/reports/memberships.php:456
+#: adminpages/reports/memberships.php:464
 msgid "Cancellations"
 msgstr "Ακυρώσεις"
 
@@ -19267,6 +19324,7 @@ msgstr ""
 #: adminpages/reports/memberships.php:385
 #: adminpages/reports/memberships.php:386
 #: adminpages/reports/memberships.php:366
+#: adminpages/reports/memberships.php:374
 msgid "All Paid Levels"
 msgstr ""
 
@@ -19305,6 +19363,7 @@ msgstr ""
 #: adminpages/reports/sales.php:698
 #: adminpages/reports/memberships.php:420
 #: adminpages/reports/sales.php:695
+#: adminpages/reports/memberships.php:408
 msgid "All Codes"
 msgstr ""
 
@@ -22310,6 +22369,7 @@ msgstr ""
 #: includes/addons.php:522
 #: classes/class-pmpro-addons.php:1030
 #: classes/class-pmpro-addons.php:1040
+#: classes/class-pmpro-addons.php:1041
 msgid "Return to the PMPro Add Ons page"
 msgstr ""
 
@@ -28315,6 +28375,7 @@ msgstr ""
 #: classes/class-pmpro-addons.php:1200
 #: includes/addons.php:216
 #: classes/class-pmpro-addons.php:1210
+#: classes/class-pmpro-addons.php:1211
 #, php-format
 msgid "Important: This plugin requires a valid PMPro %s license key to update."
 msgstr ""
@@ -28992,6 +29053,7 @@ msgstr ""
 #: adminpages/orders.php:416
 #: adminpages/orders/edit-order.php:49
 #: adminpages/orders/view-order.php:325
+#: adminpages/orders/edit-order.php:46
 msgid "Member Information"
 msgstr ""
 
@@ -29004,6 +29066,7 @@ msgstr ""
 #: adminpages/orders.php:732
 #: adminpages/orders.php:753
 #: adminpages/orders/edit-order.php:253
+#: adminpages/orders/edit-order.php:250
 msgid "MM/YYYY"
 msgstr ""
 
@@ -29024,6 +29087,7 @@ msgstr ""
 #: adminpages/subscriptions.php:559
 #: adminpages/orders/edit-order.php:278
 #: adminpages/orders/view-order.php:275
+#: adminpages/orders/edit-order.php:275
 msgid "Payment Gateway Information"
 msgstr ""
 
@@ -29091,6 +29155,7 @@ msgstr ""
 #: adminpages/orders.php:858
 #: adminpages/orders.php:879
 #: adminpages/orders/edit-order.php:335
+#: adminpages/orders/edit-order.php:332
 msgid "Additional Order Information"
 msgstr ""
 
@@ -29456,6 +29521,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1291
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1411
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1416
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1413
 #, php-format
 msgid "Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s."
 msgstr ""
@@ -33479,6 +33545,7 @@ msgstr ""
 #: adminpages/reports/sales.php:626
 #: adminpages/reports/memberships.php:326
 #: adminpages/reports/sales.php:623
+#: adminpages/reports/memberships.php:334
 msgid "Customize Report"
 msgstr ""
 
@@ -33542,6 +33609,7 @@ msgstr ""
 #: adminpages/reports/sales.php:628
 #: adminpages/reports/memberships.php:328
 #: adminpages/reports/sales.php:625
+#: adminpages/reports/memberships.php:336
 msgctxt "Dropdown label, e.g. Show Period"
 msgid "Show"
 msgstr ""
@@ -33738,6 +33806,7 @@ msgstr ""
 #: adminpages/reports/members-per-level.php:35
 #: adminpages/reports/memberships.php:98
 #: adminpages/reports/sales.php:109
+#: adminpages/reports/memberships.php:106
 #, php-format
 msgid "View the full %s report"
 msgstr ""
@@ -33759,6 +33828,7 @@ msgstr ""
 #: adminpages/reports/sales.php:629
 #: adminpages/reports/memberships.php:329
 #: adminpages/reports/sales.php:626
+#: adminpages/reports/memberships.php:337
 msgid "Select report time period"
 msgstr ""
 
@@ -33773,6 +33843,7 @@ msgstr ""
 #: adminpages/reports/sales.php:639
 #: adminpages/reports/memberships.php:335
 #: adminpages/reports/sales.php:636
+#: adminpages/reports/memberships.php:343
 msgid "Select report type"
 msgstr ""
 
@@ -33787,6 +33858,7 @@ msgstr ""
 #: adminpages/reports/sales.php:645
 #: adminpages/reports/memberships.php:342
 #: adminpages/reports/sales.php:642
+#: adminpages/reports/memberships.php:350
 msgid "Select report month"
 msgstr ""
 
@@ -33801,6 +33873,7 @@ msgstr ""
 #: adminpages/reports/sales.php:651
 #: adminpages/reports/memberships.php:348
 #: adminpages/reports/sales.php:648
+#: adminpages/reports/memberships.php:356
 msgid "Select report year"
 msgstr ""
 
@@ -33815,6 +33888,7 @@ msgstr ""
 #: adminpages/reports/sales.php:664
 #: adminpages/reports/memberships.php:355
 #: adminpages/reports/sales.php:661
+#: adminpages/reports/memberships.php:363
 msgid "Filter report by membership level"
 msgstr ""
 
@@ -33830,6 +33904,7 @@ msgstr ""
 #: adminpages/reports/memberships.php:414
 #: adminpages/reports/memberships.php:394
 #: adminpages/reports/sales.php:679
+#: adminpages/reports/memberships.php:402
 msgid "Filter report by discount code"
 msgstr ""
 
@@ -35777,6 +35852,7 @@ msgstr ""
 #: adminpages/orders.php:436
 #: adminpages/orders.php:457
 #: adminpages/orders/edit-order.php:80
+#: adminpages/orders/edit-order.php:77
 #, php-format
 msgid "ID %d [deleted]"
 msgstr ""
@@ -35786,6 +35862,7 @@ msgstr ""
 #: adminpages/orders.php:708
 #: adminpages/orders.php:729
 #: adminpages/orders/edit-order.php:243
+#: adminpages/orders/edit-order.php:240
 msgid "Only the last 4 digits are stored in this site to use as a reference with the gateway."
 msgstr ""
 
@@ -36226,6 +36303,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1052
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1043
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1163
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1165
 msgid "Subscription could not be found."
 msgstr ""
 
@@ -37948,6 +38026,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1006
 #: classes/gateways/class.pmprogateway_paypalexpress.php:997
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1117
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1119
 msgid "PayPal login credentials are not set."
 msgstr ""
 
@@ -37958,6 +38037,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1011
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1002
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1122
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1124
 msgid "Subscription transaction ID is empty."
 msgstr ""
 
@@ -39395,6 +39475,7 @@ msgstr ""
 #: includes/privacy.php:253
 #: adminpages/orders.php:524
 #: adminpages/orders/edit-order.php:130
+#: adminpages/orders/edit-order.php:127
 msgid "Billing Street 2"
 msgstr ""
 
@@ -40044,6 +40125,7 @@ msgstr ""
 #: adminpages/reports/memberships.php:477
 #: adminpages/reports/memberships.php:478
 #: adminpages/reports/memberships.php:458
+#: adminpages/reports/memberships.php:466
 msgid "Expirations"
 msgstr ""
 
@@ -41271,6 +41353,7 @@ msgid "The URL of the login page."
 msgstr ""
 
 #: includes/checkout.php:236
+#: includes/checkout.php:237
 msgid "Discount codes should be set on the $pmpro_level object."
 msgstr ""
 
@@ -42078,6 +42161,7 @@ msgstr ""
 #: includes/addons.php:541
 #: classes/class-pmpro-addons.php:1050
 #: classes/class-pmpro-addons.php:1060
+#: classes/class-pmpro-addons.php:1061
 #, php-format
 msgid "You must enter a valid PMPro %s License Key in the PMPro Settings to update this Add On."
 msgstr ""
@@ -42998,32 +43082,38 @@ msgstr ""
 
 #: classes/class-pmpro-addons.php:402
 #: classes/class-pmpro-addons.php:407
+#: classes/class-pmpro-addons.php:408
 msgid "Invalid Add On slug."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:406
 #: classes/class-pmpro-addons.php:411
+#: classes/class-pmpro-addons.php:412
 msgid "You do not have permission to install plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:411
 #: classes/class-pmpro-addons.php:416
+#: classes/class-pmpro-addons.php:417
 msgid "Add On not found."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:416
 #: classes/class-pmpro-addons.php:421
+#: classes/class-pmpro-addons.php:422
 #, php-format
 msgid "A valid PMPro %s license is required to install this Add On."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:439
 #: classes/class-pmpro-addons.php:444
+#: classes/class-pmpro-addons.php:445
 msgid "Installation failed."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:448
 #: classes/class-pmpro-addons.php:453
+#: classes/class-pmpro-addons.php:454
 msgid "Add On installed."
 msgstr ""
 
@@ -43035,51 +43125,64 @@ msgstr ""
 #: classes/class-pmpro-addons.php:513
 #: classes/class-pmpro-addons.php:558
 #: classes/class-pmpro-addons.php:660
+#: classes/class-pmpro-addons.php:469
+#: classes/class-pmpro-addons.php:514
+#: classes/class-pmpro-addons.php:559
+#: classes/class-pmpro-addons.php:661
 msgid "Invalid Add On."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:467
 #: classes/class-pmpro-addons.php:472
+#: classes/class-pmpro-addons.php:473
 msgid "You do not have permission to activate plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:480
 #: classes/class-pmpro-addons.php:485
+#: classes/class-pmpro-addons.php:486
 msgid "Add On already active."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:493
 #: classes/class-pmpro-addons.php:498
+#: classes/class-pmpro-addons.php:499
 msgid "Add On activated."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:512
 #: classes/class-pmpro-addons.php:517
+#: classes/class-pmpro-addons.php:518
 msgid "You do not have permission to deactivate plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:525
 #: classes/class-pmpro-addons.php:530
+#: classes/class-pmpro-addons.php:531
 msgid "Add On already inactive."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:531
 #: classes/class-pmpro-addons.php:536
+#: classes/class-pmpro-addons.php:537
 msgid "Deactivation failed."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:538
 #: classes/class-pmpro-addons.php:543
+#: classes/class-pmpro-addons.php:544
 msgid "Add On deactivated."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:557
 #: classes/class-pmpro-addons.php:562
+#: classes/class-pmpro-addons.php:563
 msgid "You do not have permission to update plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:575
 #: classes/class-pmpro-addons.php:580
+#: classes/class-pmpro-addons.php:581
 #, php-format
 msgid "A valid PMPro %s license is required to update this Add On."
 msgstr ""
@@ -43088,63 +43191,76 @@ msgstr ""
 #: classes/class-pmpro-addons.php:624
 #: classes/class-pmpro-addons.php:616
 #: classes/class-pmpro-addons.php:629
+#: classes/class-pmpro-addons.php:617
+#: classes/class-pmpro-addons.php:630
 msgid "Add On updated."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:616
 #: classes/class-pmpro-addons.php:621
+#: classes/class-pmpro-addons.php:622
 msgid "Update failed."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:659
 #: classes/class-pmpro-addons.php:664
+#: classes/class-pmpro-addons.php:665
 msgid "You do not have permission to delete plugins."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:683
 #: classes/class-pmpro-addons.php:688
+#: classes/class-pmpro-addons.php:689
 msgid "Delete failed."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:690
 #: classes/class-pmpro-addons.php:695
+#: classes/class-pmpro-addons.php:696
 msgid "Add On deleted."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:709
 #: classes/class-pmpro-addons.php:714
+#: classes/class-pmpro-addons.php:715
 msgid "Filesystem credentials are required to continue."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:726
 #: classes/class-pmpro-addons.php:731
+#: classes/class-pmpro-addons.php:732
 msgid "PMPro Add On Update"
 msgstr ""
 
 #: classes/class-pmpro-addons.php:761
 #: classes/class-pmpro-addons.php:766
+#: classes/class-pmpro-addons.php:767
 msgid "Plugin file could not be resolved."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:797
 #: classes/class-pmpro-addons.php:802
+#: classes/class-pmpro-addons.php:803
 msgid "Could not determine download URL for this Add On."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:994
 #: classes/class-pmpro-addons.php:1004
+#: classes/class-pmpro-addons.php:1005
 #, php-format
 msgid "You must have a <a target=\"_blank\" href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">valid PMPro %1$s License Key</a> to update PMPro %2$s add ons. The following plugins will not be updated:"
 msgstr ""
 
 #: classes/class-pmpro-addons.php:1023
 #: classes/class-pmpro-addons.php:1033
+#: classes/class-pmpro-addons.php:1034
 #, php-format
 msgid "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">valid PMPro %1$s License Key</a> to update PMPro %2$s add ons."
 msgstr ""
 
 #: classes/class-pmpro-addons.php:1028
 #: classes/class-pmpro-addons.php:1038
+#: classes/class-pmpro-addons.php:1039
 msgid "Update Plugin"
 msgstr ""
 
@@ -43230,6 +43346,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1396
 #: classes/gateways/class.pmprogateway_stripe.php:4523
 #: classes/gateways/class.pmprogateway_stripe.php:4521
+#: classes/gateways/class.pmprogateway_paypalexpress.php:1398
 #, php-format
 msgid "Admin: Order successfully refunded for transaction ID %1$s by %2$s."
 msgstr ""
