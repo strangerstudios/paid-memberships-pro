@@ -80,6 +80,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			'gateway_environment',
 			'loginname',
 			'transactionkey',
+			'authnet_silent_post_token',
 			'currency',
 			'tax_state',
 			'tax_rate',
@@ -134,15 +135,93 @@ class PMProGateway_authorizenet extends PMProGateway
 			<input type="text" id="transactionkey" name="transactionkey" value="<?php echo esc_attr($values['transactionkey'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 		</td>
 	</tr>
+	<?php
+	$_pmpro_authnet_token = ! empty( $values['authnet_silent_post_token'] )
+		? $values['authnet_silent_post_token']
+		: get_option( 'pmpro_authnet_silent_post_token' );
+	if ( is_scalar( $_pmpro_authnet_token ) ) {
+		$_pmpro_authnet_token = (string) $_pmpro_authnet_token;
+	} else {
+		$_pmpro_authnet_token = '';
+	}
+	$_pmpro_silent_post_base_url = admin_url( 'admin-ajax.php' ) . '?action=authnet_silent_post';
+	$_pmpro_silent_post_url = $_pmpro_silent_post_base_url;
+	if ( ! empty( $_pmpro_authnet_token ) ) {
+		$_pmpro_silent_post_url .= '&pmpro_authnet_token=' . urlencode( $_pmpro_authnet_token );
+	}
+	?>
+	<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+		<th scope="row" valign="top">
+			<label for="authnet_silent_post_token"><?php esc_html_e('Silent Post Token', 'paid-memberships-pro' );?></label>
+		</th>
+		<td>
+			<input type="text" id="authnet_silent_post_token" name="authnet_silent_post_token"
+			       value="<?php echo esc_attr( $_pmpro_authnet_token ); ?>"
+			       data-initial-token="<?php echo esc_attr( $_pmpro_authnet_token ); ?>"
+			       class="regular-text code" autocomplete="off" />
+			<button type="button" class="button" id="pmpro_authnet_generate_token">
+				<?php esc_html_e('Generate Token', 'paid-memberships-pro' ); ?>
+			</button>
+			<p class="description">
+				<?php esc_html_e('A secret token to authenticate ARB Silent Post requests. When set, the Silent Post URL below will include this token — copy the updated URL into Authorize.net. Leave empty to disable token validation (not recommended).', 'paid-memberships-pro' ); ?>
+			</p>
+		</td>
+	</tr>
 	<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 		<th scope="row" valign="top">
 			<label><?php esc_html_e('Silent Post URL', 'paid-memberships-pro' );?></label>
 		</th>
 		<td>
 			<p><?php esc_html_e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'paid-memberships-pro' ); ?></p>
-			<p><code><?php echo esc_url( admin_url("admin-ajax.php") . "?action=authnet_silent_post" );?></code></p>
+			<p><code id="pmpro_authnet_silent_post_url"><?php echo esc_url( $_pmpro_silent_post_url ); ?></code></p>
+			<p class="description" id="pmpro_authnet_silent_post_url_unsaved" style="display:none;">
+				<?php esc_html_e( 'Save settings to get the updated Silent Post URL, then copy it into Authorize.net.', 'paid-memberships-pro' ); ?>
+			</p>
+			<p class="description" id="pmpro_authnet_no_token_warning" style="color:#b32d2e;<?php echo ! empty( $_pmpro_authnet_token ) ? 'display:none;' : ''; ?>">
+				<?php esc_html_e('No token is set. Generate a token above to protect this endpoint.', 'paid-memberships-pro' ); ?>
+			</p>
 		</td>
 	</tr>
+	<script>
+	(function() {
+		var btn = document.getElementById('pmpro_authnet_generate_token');
+		var tokenInput = document.getElementById('authnet_silent_post_token');
+		var urlCode = document.getElementById('pmpro_authnet_silent_post_url');
+		var unsavedNotice = document.getElementById('pmpro_authnet_silent_post_url_unsaved');
+		var noTokenWarning = document.getElementById('pmpro_authnet_no_token_warning');
+		if (!btn || !tokenInput || !urlCode || !unsavedNotice) return;
+
+		function updateSilentPostUrlState() {
+			var initialToken = tokenInput.getAttribute('data-initial-token') || '';
+			var currentToken = tokenInput.value || '';
+			var isChanged = currentToken !== initialToken;
+			var hasCurrentToken = currentToken.length > 0;
+			urlCode.style.display = isChanged ? 'none' : '';
+			unsavedNotice.style.display = isChanged ? '' : 'none';
+			if (noTokenWarning) {
+				noTokenWarning.style.display = hasCurrentToken ? 'none' : '';
+			}
+		}
+
+		tokenInput.addEventListener('input', updateSilentPostUrlState);
+		btn.addEventListener('click', function() {
+			if (!window.crypto || typeof window.crypto.getRandomValues !== 'function') {
+				window.alert('<?php echo esc_js( __( 'Your browser does not support secure token generation. Please enter a token manually.', 'paid-memberships-pro' ) ); ?>');
+				tokenInput.focus();
+				return;
+			}
+			var arr = new Uint8Array(24);
+			window.crypto.getRandomValues(arr);
+			var hex = '';
+			for (var i = 0; i < arr.length; i++) {
+				hex += ('0' + arr[i].toString(16)).slice(-2);
+			}
+			tokenInput.value = hex;
+			updateSilentPostUrlState();
+		});
+		updateSilentPostUrlState();
+	})();
+	</script>
 	<?php
 	}
 
