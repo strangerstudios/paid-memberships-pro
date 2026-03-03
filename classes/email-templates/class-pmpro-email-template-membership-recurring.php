@@ -49,7 +49,11 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return esc_html__( 'This email is sent when a subscription is approaching its renewal date. The additional placeholders !!renewaldate!! and !!billing_amount!! can be used to print the date that the subscription will renew and the renewal price.', 'paid-memberships-pro' );
+		return sprintf(
+			esc_html__( 'This email is sent when a subscription is approaching its renewal date. The additional placeholders %1$s and %2$s can be used to print the date that the subscription will renew and the renewal price.', 'paid-memberships-pro' ),
+			'{{ renewaldate }}',
+			'{{ billing_amount }}'
+		);
 	}
 
 	/**
