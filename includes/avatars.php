@@ -20,6 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param object $level The membership level being edited.
  */
 function pmpro_membership_level_after_other_settings_avatar( $level ) {
+	// Bail if WP Discussion "Show Avatars" is unchecked.
+	if ( ! get_option( 'show_avatars' ) ) {
+		return;
+	}
+
 	$enabled = ! empty( get_pmpro_membership_level_meta( $level->id, 'enable_avatars', true ) );
 	?>
 	<table class="form-table">
@@ -93,6 +98,11 @@ function pmpro_avatar_get_enabled_levels() {
  * @return bool        Whether the user has a level with "user avatars" enabled.
  */
 function pmpro_user_has_avatar_level( $user_id ) {
+	// Bail if WP Discussion "Show Avatars" is unchecked.
+	if ( ! get_option( 'show_avatars' ) ) {
+		return false;
+	}
+
 	// If sitewide avatars enabled, any user qualifies.
 	if ( pmpro_getOption( 'avatar_enabled_sitewide' ) ) {
 		$has_avatar_level = ! empty( $user_id );
@@ -121,14 +131,7 @@ function pmpro_user_has_avatar_level( $user_id ) {
  * @return array Array of allowed file extensions.
  */
 function pmpro_avatar_get_allowed_file_types() {
-	/**
-	 * Filter the allowed file types for avatar uploads.
-	 *
-	 * @since TBD
-	 *
-	 * @param array $allowed_types Array of allowed file extensions.
-	 */
-	return apply_filters( 'pmpro_avatar_allowed_file_types', array( 'png', 'jpg', 'jpeg', 'jpe', 'gif', 'webp' ) );
+	return array( 'png', 'jpg', 'jpeg', 'jpe', 'gif', 'webp' );
 }
 
 /**
@@ -139,14 +142,7 @@ function pmpro_avatar_get_allowed_file_types() {
  * @return int Maximum file size in bytes.
  */
 function pmpro_avatar_get_max_file_size() {
-	/**
-	 * Filter the maximum file size for avatar uploads.
-	 *
-	 * @since TBD
-	 *
-	 * @param int $max_size Maximum file size in bytes. Default 2MB.
-	 */
-	return apply_filters( 'pmpro_avatar_max_file_size', 2 * 1024 * 1024 );
+	return 2 * 1024 * 1024;
 }
 
 /**
@@ -159,14 +155,7 @@ function pmpro_avatar_get_max_file_size() {
  * @return int Maximum width/height in pixels.
  */
 function pmpro_avatar_get_max_dimension() {
-	/**
-	 * Filter the maximum dimension for stored avatars.
-	 *
-	 * @since TBD
-	 *
-	 * @param int $max_dimension Maximum width/height in pixels. Default 1024.
-	 */
-	return apply_filters( 'pmpro_avatar_max_dimension', 1024 );
+	return 1024;
 }
 
 /**
@@ -180,14 +169,7 @@ function pmpro_avatar_get_max_dimension() {
  * @return array Array of allowed bucket sizes in pixels.
  */
 function pmpro_avatar_get_bucket_sizes() {
-	/**
-	 * Filter the allowed bucket sizes for avatar resizing.
-	 *
-	 * @since TBD
-	 *
-	 * @param array $bucket_sizes Array of allowed bucket sizes.
-	 */
-	return apply_filters( 'pmpro_avatar_bucket_sizes', array( 96, 256, 512 ) );
+	return array( 96, 256, 512 );
 }
 
 /**
@@ -678,6 +660,11 @@ function pmpro_avatar_get_url( $user_id, $size = 96 ) {
  * @return array             The filtered avatar data.
  */
 function pmpro_get_avatar_data( $args, $id_or_email ) {
+	// Bail if WP Discussion "Show Avatars" is unchecked.
+	if ( ! get_option( 'show_avatars' ) ) {
+		return $args;
+	}
+
 	if ( ! empty( $args['force_default'] ) ) {
 		return $args;
 	}
@@ -737,6 +724,53 @@ function pmpro_avatar_get_user_id_from_identifier( $id_or_email ) {
 	}
 
 	return $user_id;
+}
+
+/**
+ * Output the shared JavaScript for avatar delete/replace/cancel buttons.
+ *
+ * Used by both pmpro_display_avatar_field() and pmpro_change_avatar_form()
+ * to avoid duplicating the same jQuery event handlers.
+ *
+ * @since TBD
+ */
+function pmpro_avatar_inline_js() {
+	?>
+	<script>
+		jQuery(document).ready(function($) {
+			// Delete button - mark for deletion with strikethrough.
+			$('#pmpro_delete_file_pmpro_avatar_button').on('click', function() {
+				$('#pmpro_delete_file_pmpro_avatar_field').val('1');
+				$('.pmpro_file_pmpro_avatar_name').css('text-decoration', 'line-through');
+				$('#pmpro_cancel_change_file_pmpro_avatar_button').show();
+				$('#pmpro_delete_file_pmpro_avatar_button').hide();
+				$('#pmpro_replace_file_pmpro_avatar_button').hide();
+				$('#pmpro_file_pmpro_avatar_upload').hide();
+			});
+
+			// Replace button - show file input.
+			$('#pmpro_replace_file_pmpro_avatar_button').on('click', function() {
+				$('#pmpro_delete_file_pmpro_avatar_field').val('1');
+				$('.pmpro_file_pmpro_avatar_name').css('text-decoration', 'line-through');
+				$('#pmpro_cancel_change_file_pmpro_avatar_button').show();
+				$('#pmpro_delete_file_pmpro_avatar_button').hide();
+				$('#pmpro_replace_file_pmpro_avatar_button').hide();
+				$('#pmpro_file_pmpro_avatar_upload').show();
+			});
+
+			// Cancel button - reset everything.
+			$('#pmpro_cancel_change_file_pmpro_avatar_button').on('click', function() {
+				$('#pmpro_delete_file_pmpro_avatar_field').val('0');
+				$('#pmpro_avatar').val('');
+				$('.pmpro_file_pmpro_avatar_name').css('text-decoration', 'none');
+				$('#pmpro_delete_file_pmpro_avatar_button').show();
+				$('#pmpro_replace_file_pmpro_avatar_button').show();
+				$('#pmpro_cancel_change_file_pmpro_avatar_button').hide();
+				$('#pmpro_file_pmpro_avatar_upload').hide();
+			});
+		});
+	</script>
+	<?php
 }
 
 /**
@@ -837,40 +871,7 @@ function pmpro_display_avatar_field( $user_id, $show_default = true ) {
 				<button type="button" class="<?php echo esc_attr( pmpro_get_element_class( 'button button-secondary pmpro_btn pmpro_btn-cancel' ) ); ?>" id="pmpro_cancel_change_file_pmpro_avatar_button" style="display: none;" onclick="return false;"><?php esc_html_e( 'Cancel', 'paid-memberships-pro' ); ?></button>
 				<input type="hidden" id="pmpro_delete_file_pmpro_avatar_field" name="pmpro_avatar_delete" value="0">
 			</div>
-			<script>
-				jQuery(document).ready(function($) {
-					// Delete button - mark for deletion with strikethrough.
-					$('#pmpro_delete_file_pmpro_avatar_button').on('click', function() {
-						$('#pmpro_delete_file_pmpro_avatar_field').val('1');
-						$('.pmpro_file_pmpro_avatar_name').css('text-decoration', 'line-through');
-						$('#pmpro_cancel_change_file_pmpro_avatar_button').show();
-						$('#pmpro_delete_file_pmpro_avatar_button').hide();
-						$('#pmpro_replace_file_pmpro_avatar_button').hide();
-						$('#pmpro_file_pmpro_avatar_upload').hide();
-					});
-
-					// Replace button - show file input.
-					$('#pmpro_replace_file_pmpro_avatar_button').on('click', function() {
-						$('#pmpro_delete_file_pmpro_avatar_field').val('1');
-						$('.pmpro_file_pmpro_avatar_name').css('text-decoration', 'line-through');
-						$('#pmpro_cancel_change_file_pmpro_avatar_button').show();
-						$('#pmpro_delete_file_pmpro_avatar_button').hide();
-						$('#pmpro_replace_file_pmpro_avatar_button').hide();
-						$('#pmpro_file_pmpro_avatar_upload').show();
-					});
-
-					// Cancel button - reset everything.
-					$('#pmpro_cancel_change_file_pmpro_avatar_button').on('click', function() {
-						$('#pmpro_delete_file_pmpro_avatar_field').val('0');
-						$('#pmpro_avatar').val('');
-						$('.pmpro_file_pmpro_avatar_name').css('text-decoration', 'none');
-						$('#pmpro_delete_file_pmpro_avatar_button').show();
-						$('#pmpro_replace_file_pmpro_avatar_button').show();
-						$('#pmpro_cancel_change_file_pmpro_avatar_button').hide();
-						$('#pmpro_file_pmpro_avatar_upload').hide();
-					});
-				});
-			</script>
+			<?php pmpro_avatar_inline_js(); ?>
 			<?php
 		}
 
@@ -1164,37 +1165,7 @@ function pmpro_change_avatar_form() {
 												<button type="button" class="<?php echo esc_attr( pmpro_get_element_class( 'button button-secondary pmpro_btn pmpro_btn-cancel' ) ); ?>" id="pmpro_cancel_change_file_pmpro_avatar_button" style="display: none;" onclick="return false;"><?php esc_html_e( 'Cancel', 'paid-memberships-pro' ); ?></button>
 												<input type="hidden" id="pmpro_delete_file_pmpro_avatar_field" name="pmpro_avatar_delete" value="0">
 											</div>
-											<script>
-												jQuery(document).ready(function($) {
-													$('#pmpro_delete_file_pmpro_avatar_button').on('click', function() {
-														$('#pmpro_delete_file_pmpro_avatar_field').val('1');
-														$('.pmpro_file_pmpro_avatar_name').css('text-decoration', 'line-through');
-														$('#pmpro_cancel_change_file_pmpro_avatar_button').show();
-														$('#pmpro_delete_file_pmpro_avatar_button').hide();
-														$('#pmpro_replace_file_pmpro_avatar_button').hide();
-														$('#pmpro_file_pmpro_avatar_upload').hide();
-													});
-
-													$('#pmpro_replace_file_pmpro_avatar_button').on('click', function() {
-														$('#pmpro_delete_file_pmpro_avatar_field').val('1');
-														$('.pmpro_file_pmpro_avatar_name').css('text-decoration', 'line-through');
-														$('#pmpro_cancel_change_file_pmpro_avatar_button').show();
-														$('#pmpro_delete_file_pmpro_avatar_button').hide();
-														$('#pmpro_replace_file_pmpro_avatar_button').hide();
-														$('#pmpro_file_pmpro_avatar_upload').show();
-													});
-
-													$('#pmpro_cancel_change_file_pmpro_avatar_button').on('click', function() {
-														$('#pmpro_delete_file_pmpro_avatar_field').val('0');
-														$('#pmpro_avatar').val('');
-														$('.pmpro_file_pmpro_avatar_name').css('text-decoration', 'none');
-														$('#pmpro_delete_file_pmpro_avatar_button').show();
-														$('#pmpro_replace_file_pmpro_avatar_button').show();
-														$('#pmpro_cancel_change_file_pmpro_avatar_button').hide();
-														$('#pmpro_file_pmpro_avatar_upload').hide();
-													});
-												});
-											</script>
+											<?php pmpro_avatar_inline_js(); ?>
 										<?php } ?>
 
 										<?php $upload_style = $has_avatar ? 'display: none;' : ''; ?>
@@ -1240,6 +1211,11 @@ function pmpro_change_avatar_form() {
  * @return array       The modified profile action links.
  */
 function pmpro_avatar_add_account_action_link( $links ) {
+	// Bail if WP Discussion "Show Avatars" is unchecked.
+	if ( ! get_option( 'show_avatars' ) ) {
+		return $links;
+	}
+
 	global $current_user;
 
 	// Only add link if user has an avatar-enabled level.

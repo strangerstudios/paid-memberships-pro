@@ -586,6 +586,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 							</p>
 						</td>
 					</tr>
+					<?php if ( get_option( 'show_avatars' ) ) { ?>
 					<tr>
 						<th scope="row" valign="top">
 							<label for="avatar_enabled_sitewide"><?php esc_html_e( 'Profile Pictures', 'paid-memberships-pro' ); ?></label>
@@ -595,6 +596,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 							<p class="description"><?php esc_html_e( 'When enabled, all logged-in users can upload a custom profile picture. When disabled, profile pictures are only available for membership levels with the "Enable Profile Pictures" setting checked.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
+					<?php } ?>
 					<tr>
 						<th scope="row" valign="top">
 							<label for="uninstall"><?php esc_html_e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
