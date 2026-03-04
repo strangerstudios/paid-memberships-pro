@@ -221,10 +221,6 @@
 			$email_header = '';
 			if ( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
 				$email_header = pmpro_email_templates_get_template_body( 'header' );
-				if ( has_filter( 'pmpro_email_body', 'pmpro_kses' ) ) {
-					$email_header = pmpro_kses( $email_header );
-				}
-
 				$email_header = apply_filters( 'pmpro_email_header', $email_header, $this );
 			}
 
@@ -232,10 +228,6 @@
 			$email_footer = '';
 			if ( get_option( 'pmpro_email_footer_disabled' ) != 'true' ) {
 				$email_footer = pmpro_email_templates_get_template_body( 'footer' );
-				if ( has_filter( 'pmpro_email_body', 'pmpro_kses' ) ) {
-					$email_footer = pmpro_kses( $email_footer );
-				}
-
 				$email_footer = apply_filters( 'pmpro_email_footer', $email_footer, $this );
 			}
 
@@ -245,9 +237,23 @@
 			// Process Liquid-style template syntax in the email body and subject line.
 			if ( is_array( $this->data ) ) {
 				$render_data = $this->data;
+				$render_args = array();
+
+				// Optionally allow Liquid to fall back to usermeta for unresolved variables.
+				$render_user = false;
+				if ( ! empty( $this->data['user_login'] ) ) {
+					$render_user = get_user_by( 'login', $this->data['user_login'] );
+				}
+				if ( ! $render_user && ! empty( $this->email ) ) {
+					$render_user = get_user_by( 'email', $this->email );
+				}
+				if ( $render_user instanceof WP_User ) {
+					$render_args['usermeta_fallback_user_id'] = (int) $render_user->ID;
+				}
+
 				unset( $render_data['body'] );
-				$this->body = PMPro_Liquid_Renderer::render( $this->body, $render_data );
-				$this->subject = PMPro_Liquid_Renderer::render( $this->subject, $render_data );
+				$this->body = PMPro_Liquid_Renderer::render( $this->body, $render_data, $render_args );
+				$this->subject = PMPro_Liquid_Renderer::render( $this->subject, $render_data, $render_args );
 			}
 
 			// Swap data into body and subject line again in case filters changed them or in case we added header/footer.
@@ -257,6 +263,21 @@
 						$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
 						$this->subject = str_replace("!!" . $key . "!!", $value, $this->subject);
 					}
+				}
+			}
+
+			// Sanitize the fully assembled email body before sending.
+			if ( has_filter( 'pmpro_email_body', 'pmpro_kses' ) ) {
+				$this->body = pmpro_kses( $this->body );
+			} else {
+				static $pmpro_kses_not_hooked_warning_shown = false;
+				if ( ! $pmpro_kses_not_hooked_warning_shown ) {
+					$pmpro_kses_not_hooked_warning_shown = true;
+					_doing_it_wrong(
+						__METHOD__,
+						esc_html__( 'The pmpro_kses callback is not hooked to pmpro_email_body. Email sanitization is required for security. Use the pmpro_kses filter hook to customize allowed HTML. In a future version of Paid Memberships Pro, pmpro_kses will be called unconditionally.', 'paid-memberships-pro' ),
+						'TBD'
+					);
 				}
 			}
 			

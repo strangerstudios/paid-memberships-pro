@@ -16,18 +16,19 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * @param string $content The content to process.
 	 * @param array  $data    Key-value pairs for variable resolution.
+	 * @param array  $args    Optional renderer arguments.
 	 * @return string The processed content.
 	 */
-	public static function render( $content, $data ) {
+	public static function render( $content, $data, $args = array() ) {
 		if ( empty( $content ) || ! is_array( $data ) ) {
 			return $content;
 		}
 
 		// Process conditionals first so we only render the winning branches.
-		$content = self::process_conditionals( $content, $data );
+		$content = self::process_conditionals( $content, $data, $args );
 
 		// Then process {{ variable | filter }} output tags.
-		$content = self::process_output_tags( $content, $data );
+		$content = self::process_output_tags( $content, $data, $args );
 
 		return $content;
 	}
@@ -82,9 +83,10 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * @param string $content The content containing conditional blocks.
 	 * @param array  $data    Key-value pairs for variable resolution.
+	 * @param array  $args    Optional renderer arguments.
 	 * @return string The content with all conditional blocks resolved.
 	 */
-	private static function process_conditionals( $content, $data ) {
+	private static function process_conditionals( $content, &$data, $args ) {
 		// Keep processing until no more outermost {% if %} blocks are found.
 		while ( true ) {
 			// Find the first {% if ... %} tag.
@@ -116,7 +118,7 @@ class PMPro_Liquid_Renderer {
 					// Found matching {% endif %}.
 					$block_end   = $tag_pos + strlen( $tag_text );
 					$block_inner = substr( $content, $search_from, $tag_pos - $search_from );
-					$replacement = self::evaluate_conditional_block( $condition, $block_inner, $data );
+					$replacement = self::evaluate_conditional_block( $condition, $block_inner, $data, $args );
 					$content     = substr( $content, 0, $block_start ) . $replacement . substr( $content, $block_end );
 					$found       = true;
 					break;
@@ -142,9 +144,10 @@ class PMPro_Liquid_Renderer {
 	 * @param string $condition   The condition expression from the {% if %} tag.
 	 * @param string $block_inner The content between {% if %} and {% endif %}.
 	 * @param array  $data        Key-value pairs for variable resolution.
+	 * @param array  $args        Optional renderer arguments.
 	 * @return string The content of the first branch whose condition is truthy.
 	 */
-	private static function evaluate_conditional_block( $condition, $block_inner, $data ) {
+	private static function evaluate_conditional_block( $condition, $block_inner, &$data, $args ) {
 		// Split block_inner into branches at top-level {% elsif %} and {% else %} tags.
 		$branches = array();
 		$depth    = 0;
@@ -193,10 +196,10 @@ class PMPro_Liquid_Renderer {
 
 		// Evaluate each branch and return the first truthy one.
 		foreach ( $branches as $branch ) {
-			$is_match = ( $branch['condition'] === '__else__' ) || self::evaluate_condition( $branch['condition'], $data );
+			$is_match = ( $branch['condition'] === '__else__' ) || self::evaluate_condition( $branch['condition'], $data, $args );
 			if ( $is_match ) {
 				// Recursively process nested conditionals in the winning branch.
-				return self::process_conditionals( $branch['content'], $data );
+				return self::process_conditionals( $branch['content'], $data, $args );
 			}
 		}
 
@@ -213,18 +216,19 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * @param string $condition_string The condition expression to evaluate.
 	 * @param array  $data             Key-value pairs for variable resolution.
+	 * @param array  $args             Optional renderer arguments.
 	 * @return bool The result of the condition evaluation.
 	 */
-	private static function evaluate_condition( $condition_string, $data ) {
+	private static function evaluate_condition( $condition_string, &$data, $args ) {
 		$condition_string = trim( $condition_string );
 
 		// Evaluate top-level boolean operators from right-to-left to match Liquid semantics.
 		$boolean_chain = self::parse_boolean_condition_chain( $condition_string );
 		if ( ! empty( $boolean_chain ) ) {
-			return self::evaluate_boolean_chain( $boolean_chain, $data );
+			return self::evaluate_boolean_chain( $boolean_chain, $data, $args );
 		}
 
-		return self::evaluate_single_condition( $condition_string, $data );
+		return self::evaluate_single_condition( $condition_string, $data, $args );
 	}
 
 	/**
@@ -234,9 +238,10 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * @param string $condition_string The condition expression to evaluate.
 	 * @param array  $data             Key-value pairs for variable resolution.
+	 * @param array  $args             Optional renderer arguments.
 	 * @return bool The result of the condition evaluation.
 	 */
-	private static function evaluate_single_condition( $condition_string, $data ) {
+	private static function evaluate_single_condition( $condition_string, &$data, $args ) {
 		// Check for comparison operators.
 		$comparison = self::parse_comparison_condition( $condition_string );
 		if ( ! empty( $comparison ) ) {
@@ -244,7 +249,7 @@ class PMPro_Liquid_Renderer {
 			$operator    = $comparison['operator'];
 			$right_token = $comparison['right'];
 
-			$left_value = self::resolve_value( $left_token, $data );
+			$left_value = self::resolve_value( $left_token, $data, $args );
 
 			// Handle "empty" keyword on the right side.
 			if ( $right_token === 'empty' ) {
@@ -252,7 +257,7 @@ class PMPro_Liquid_Renderer {
 				return ( $operator === '==' ) ? $is_empty : ! $is_empty;
 			}
 
-			$right_value = self::resolve_value( $right_token, $data );
+			$right_value = self::resolve_value( $right_token, $data, $args );
 
 			switch ( $operator ) {
 				case '==':
@@ -271,7 +276,7 @@ class PMPro_Liquid_Renderer {
 		}
 
 		// Simple truthy check.
-		$value = self::resolve_value( $condition_string, $data );
+		$value = self::resolve_value( $condition_string, $data, $args );
 		return ! empty( $value );
 	}
 
@@ -285,9 +290,10 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * @param array $boolean_chain The parsed boolean chain.
 	 * @param array $data          Key-value pairs for variable resolution.
+	 * @param array $args          Optional renderer arguments.
 	 * @return bool The result of the boolean evaluation.
 	 */
-	private static function evaluate_boolean_chain( $boolean_chain, $data ) {
+	private static function evaluate_boolean_chain( $boolean_chain, &$data, $args ) {
 		$operators = $boolean_chain['operators'];
 		$operands  = $boolean_chain['operands'];
 
@@ -295,7 +301,7 @@ class PMPro_Liquid_Renderer {
 			return false;
 		}
 
-		$result = self::evaluate_condition( $operands[ count( $operands ) - 1 ], $data );
+		$result = self::evaluate_condition( $operands[ count( $operands ) - 1 ], $data, $args );
 
 		for ( $index = count( $operators ) - 1; $index >= 0; $index-- ) {
 			$operator = $operators[ $index ];
@@ -305,14 +311,14 @@ class PMPro_Liquid_Renderer {
 					continue;
 				}
 
-				$left_result = self::evaluate_condition( $operands[ $index ], $data );
+				$left_result = self::evaluate_condition( $operands[ $index ], $data, $args );
 				$result      = $left_result && $result;
 			} else {
 				if ( $result ) {
 					continue;
 				}
 
-				$left_result = self::evaluate_condition( $operands[ $index ], $data );
+				$left_result = self::evaluate_condition( $operands[ $index ], $data, $args );
 				$result      = $left_result || $result;
 			}
 		}
@@ -544,9 +550,10 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * @param string $token The token to resolve.
 	 * @param array  $data  Key-value pairs for variable resolution.
+	 * @param array  $args  Optional renderer arguments.
 	 * @return mixed The resolved value.
 	 */
-	private static function resolve_value( $token, $data ) {
+	private static function resolve_value( $token, &$data, $args ) {
 		$token = trim( $token );
 
 		// Quoted strings.
@@ -573,11 +580,51 @@ class PMPro_Liquid_Renderer {
 		}
 
 		// Variable lookup in $data.
-		if ( isset( $data[ $token ] ) ) {
+		if ( array_key_exists( $token, $data ) ) {
 			return $data[ $token ];
 		}
 
+		// Optionally fall back to usermeta for unresolved variables.
+		if ( ! empty( $args['usermeta_fallback_user_id'] ) ) {
+			$user_id = (int) $args['usermeta_fallback_user_id'];
+			if ( $user_id > 0 ) {
+				$usermeta      = get_user_meta( $user_id, $token, true );
+				$resolved_meta = self::normalize_usermeta_value( $usermeta );
+
+				// Memoize lookups (including misses) for the remainder of this render call.
+				$data[ $token ] = $resolved_meta;
+
+				return $resolved_meta;
+			}
+		}
+
 		return null;
+	}
+
+	/**
+	 * Normalize usermeta values for Liquid variable usage.
+	 *
+	 * Mirrors legacy email usermeta handling.
+	 *
+	 * @since TBD
+	 *
+	 * @param mixed $usermeta Raw usermeta value.
+	 * @return mixed Normalized value or null when empty.
+	 */
+	private static function normalize_usermeta_value( $usermeta ) {
+		if ( empty( $usermeta ) ) {
+			return null;
+		}
+
+		if ( is_array( $usermeta ) && ! empty( $usermeta['fullurl'] ) ) {
+			return $usermeta['fullurl'];
+		}
+
+		if ( is_array( $usermeta ) ) {
+			return implode( ', ', $usermeta );
+		}
+
+		return $usermeta;
 	}
 
 	/**
@@ -587,22 +634,23 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * @param string $content The content containing output tags.
 	 * @param array  $data    Key-value pairs for variable resolution.
+	 * @param array  $args    Optional renderer arguments.
 	 * @return string The content with all output tags resolved.
 	 */
-	private static function process_output_tags( $content, $data ) {
+	private static function process_output_tags( $content, &$data, $args ) {
 		return preg_replace_callback(
 			'/\{\{(.+?)\}\}/s',
-			function ( $matches ) use ( $data ) {
+			function ( $matches ) use ( &$data, $args ) {
 				$expression = $matches[1];
 				$parts      = self::split_filter_expression( $expression );
 
 				// First part is the variable name.
 				$var_name = trim( $parts[0] );
-				$value    = self::resolve_value( $var_name, $data );
+				$value    = self::resolve_value( $var_name, $data, $args );
 
 				// Remaining parts are filters.
 				for ( $i = 1; $i < count( $parts ); $i++ ) {
-					$value = self::apply_filter( $value, $parts[ $i ], $data );
+					$value = self::apply_filter( $value, $parts[ $i ], $data, $args );
 				}
 
 				return ( $value === null ) ? '' : (string) $value;
@@ -664,24 +712,25 @@ class PMPro_Liquid_Renderer {
 	 * @param mixed  $value             The current value.
 	 * @param string $filter_expression The filter expression (e.g., "upcase" or "default: 'N/A'").
 	 * @param array  $data              Key-value pairs for variable resolution in filter args.
+	 * @param array  $render_args       Optional renderer arguments.
 	 * @return mixed The filtered value.
 	 */
-	private static function apply_filter( $value, $filter_expression, $data ) {
+	private static function apply_filter( $value, $filter_expression, &$data, $render_args ) {
 		$filter_expression = trim( $filter_expression );
 
 		// Split on first colon to separate filter name from arguments.
 		$parts       = explode( ':', $filter_expression, 2 );
 		$filter_name = trim( $parts[0] );
-		$args        = array();
+		$filter_args = array();
 
 		if ( isset( $parts[1] ) ) {
-			$args = self::parse_filter_args( $parts[1], $data );
+			$filter_args = self::parse_filter_args( $parts[1], $data, $render_args );
 		}
 
 		$filters = self::get_filters();
 
 		if ( isset( $filters[ $filter_name ]['callback'] ) && is_callable( $filters[ $filter_name ]['callback'] ) ) {
-			return call_user_func( $filters[ $filter_name ]['callback'], $value, ...$args );
+			return call_user_func( $filters[ $filter_name ]['callback'], $value, ...$filter_args );
 		}
 
 		// Unknown filter: return value unchanged.
@@ -693,11 +742,12 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * @since TBD
 	 *
-	 * @param string $args_string The arguments string (everything after the colon).
-	 * @param array  $data        Key-value pairs for variable resolution.
+	 * @param string $args_string  The arguments string (everything after the colon).
+	 * @param array  $data         Key-value pairs for variable resolution.
+	 * @param array  $render_args  Optional renderer arguments.
 	 * @return array The parsed arguments.
 	 */
-	private static function parse_filter_args( $args_string, $data ) {
+	private static function parse_filter_args( $args_string, &$data, $render_args ) {
 		$args_string = trim( $args_string );
 		if ( $args_string === '' ) {
 			return array();
@@ -717,7 +767,7 @@ class PMPro_Liquid_Renderer {
 				$args[] = $arg + 0;
 			} else {
 				// Resolve as a variable reference.
-				$args[] = self::resolve_value( $arg, $data );
+				$args[] = self::resolve_value( $arg, $data, $render_args );
 			}
 		}
 
