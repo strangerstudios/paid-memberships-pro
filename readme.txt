@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.9
 Requires PHP: 5.6
-Stable tag: 3.6.4
+Stable tag: 3.6.5
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,9 +27,9 @@ PMPro supports any kind of member-focused business or organization. With over 12
 * [Blog & News](https://www.paidmembershipspro.com/blog-news/)
 * [Communities](https://www.paidmembershipspro.com/communities/)
 * [Courses & Coaching](https://www.paidmembershipspro.com/courses/)
-* [Directory & Listings](https://www.paidmembershipspro.com/add-ons/member-directory/)
+* [Directory & Listings](https://www.paidmembershipspro.com/member-directories/)
 * [Paid Newsletters](https://www.paidmembershipspro.com/paid-newsletters/)
-* [Podcasting](https://www.paidmembershipspro.com/membership-site-podcasting-benefits/)
+* [Podcasting](https://www.paidmembershipspro.com/podcasting/)
 * [Private Video](https://www.paidmembershipspro.com/private-videos/)
 
 You can also browse [Case Studies for successful membership sites that are using PMPro](https://www.paidmembershipspro.com/category/case-study/) to get paid for their content and reach their personal or business goals with 100% open source software.
@@ -210,6 +210,20 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.6.5 - 2026-02-26 =
+* SECURITY: Gated the unverified Stripe webhook event fallback behind a new `pmpro_stripe_webhook_allow_unverified_post_event` filter, which defaults to `false`. #3592 (@dparker1005)
+* ENHANCEMENT: Updated links to the Member Directory and Podcasting Use Case landing pages and hubs. #3593 (@kimcoleman)
+* ENHANCEMENT: Added a new `pmpro_memberships_widget_periods` filter to allow customizing the time periods shown in the Memberships Report widget. (@kimcoleman)
+* ENHANCEMENT: Added a new icon for the PMPro Kit Add On. #3575 (@kimcoleman)
+* ENHANCEMENT: Now clearing the object cache when user fields are created, updated, or deleted to ensure changes show immediately when using persistent object caching. #3565 (@dalemugford)
+* ENHANCEMENT: Updated the WP Fusion Lite integration through v3.47.6. #3583 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Now ignoring PayPal error code 11556 when cancelling a subscription that is already inactive to avoid unnecessary admin notifications. #3572 (@dparker1005)
+* BUG FIX: Fixed an issue where the field group description was not showing due to an incorrect variable reference. #3591 (@mircobabini)
+* BUG FIX: Fixed an issue where failed Stripe recurring payment orders were missing card info and billing address data. #3590 (@dparker1005)
+* BUG FIX: Fixed an issue where the membership level billing amount could be recalculated incorrectly when processing checkout via webhook, potentially losing discount code pricing. #3585 (@dparker1005)
+* BUG FIX: Fixed an issue where the timestamp for new orders created in the admin could default to 1970 when the site timezone is not UTC. #3582 (@dparker1005)
+* BUG FIX: Resolved PHP 8.5+ deprecation warnings for non-canonical cast names. #3560 (@dwanjuki)
+
 = 3.6.4 - 2026-01-08 =
 * ENHANCEMENT: Adding a new `!!order_url!!` email template variable to checkout email templates. #3555 (@kimcoleman)
 * ENHANCEMENT: Now limiting failed payment emails to be sent a maximum of once daily per subscription. #3552 (@dparker1005)

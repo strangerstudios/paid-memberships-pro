@@ -194,6 +194,7 @@ class PMPro_AddOns {
 				'pmpro-events',
 				'pmpro-google-analytics',
 				'pmpro-invite-only',
+				'pmpro-member-rss',
 				'pmpro-testimonials',
 				'seriously-simple-podcasting',
 			),

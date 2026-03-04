@@ -79,8 +79,24 @@
 		catch(Exception $e)
 		{
 			$logstr .= "Could not find an event with ID #" . $event_id . ". " . $e->getMessage();
-			// pmpro_stripeWebhookExit();
-			$pmpro_stripe_event = $post_event;			//for testing you may want to assume that the passed in event is legit
+
+			/**
+			 * Filter whether the Stripe webhook handler can trust a posted event payload
+			 * when retrieving the event from Stripe fails.
+			 *
+			 * @since 3.6.5
+			 *
+			 * @param bool        $allow_unverified_post_event Whether to trust the posted event payload fallback.
+			 * @param object|null $post_event                  Parsed event payload from the request body.
+			 * @param string      $event_id                    Stripe event ID being retrieved.
+			 */
+			$allow_unverified_post_event = (bool) apply_filters( 'pmpro_stripe_webhook_allow_unverified_post_event', false, $post_event, $event_id );
+
+			// This fallback is intended for controlled testing/debug scenarios only.
+			if ( $allow_unverified_post_event && ! empty( $post_event ) && ! empty( $post_event->id ) && sanitize_text_field( $post_event->id ) === $event_id ) {
+				$pmpro_stripe_event = $post_event;
+				$logstr .= ' Falling back to the unverified posted event payload.';
+			}
 		}
 	}
 
@@ -219,7 +235,7 @@
 				pmpro_stripeWebhookExit();
 			}
 
-			$logstr .= pmpro_handle_recurring_payment_failure_at_gateway( pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) );
+			$logstr .= pmpro_handle_recurring_payment_failure_at_gateway( pmpro_stripe_webhook_get_order_data_from_invoice( $invoice, $charge->payment_method ) );
 			pmpro_stripeWebhookExit();
 		}
 		elseif($pmpro_stripe_event->type == "customer.subscription.deleted")
@@ -705,10 +721,12 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
  *
  * @since 3.6
  *
- * @param Stripe_Invoice $invoice The invoice object from Stripe.
+ * @param Stripe_Invoice $invoice   The invoice object from Stripe.
+ * @param string         $payment_method_id Optional payment method ID to retrieve from Stripe.
+ *                                          Useful for failed payments where the invoice has no payment data.
  * @return array The order data array.
  */
-function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
+function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice, $payment_method_id = '' ) {
 	global $pmpro_currency, $pmpro_currencies;
 
 	// Build the order data array.
@@ -733,8 +751,17 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 	$order_data['total'] = (! empty($invoice->total) ? $invoice->total / $currency_unit_multiplier : 0);
 
 	// Set payment information data.
-	// Find the payment intent.
-	if ( ! empty( $invoice->payments->data[0]->payment->payment_intent ) ) {
+	// Find the payment method.
+	$payment_method = null;
+
+	// If we have a payment method ID, retrieve it directly from Stripe.
+	// This is needed for failed payments where the invoice has no payment data.
+	if ( ! empty( $payment_method_id ) ) {
+		$payment_method = \Stripe\PaymentMethod::retrieve( $payment_method_id );
+	}
+
+	// If we don't have a payment method yet, try to get it from the invoice's payment intent.
+	if ( empty( $payment_method ) && ! empty( $invoice->payments->data[0]->payment->payment_intent ) ) {
 		$payment_intent_args = array(
 			'id'     => $invoice->payments->data[0]->payment->payment_intent,
 			'expand' => array(
@@ -744,8 +771,6 @@ function pmpro_stripe_webhook_get_order_data_from_invoice( $invoice ) {
 		);
 		$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
 
-		// Find the payment method.
-		$payment_method = null;
 		if ( ! empty( $payment_intent->payment_method ) ) {
 			$payment_method = $payment_intent->payment_method;
 		} elseif( ! empty( $payment_intent->latest_charge ) ) {

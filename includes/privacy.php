@@ -7,7 +7,9 @@
 
 /** 
  * Add suggested Privacy Policy language for PMPro
+ *
  * @since 1.9.5
+ * @since TBD Add information about email logging to the suggested language.
  */
 function pmpro_add_privacy_policy_content() {	
 	// Check for support.
@@ -21,6 +23,31 @@ function pmpro_add_privacy_policy_content() {
 	$content .= '<p>' . __( "At checkout, we may also collect your billing address and phone number. This information is used to confirm your credit card. The billing address and phone number are saved by our site to prepopulate the checkout form for future purchases and so we can get in touch with you if needed to discuss your order.", 'paid-memberships-pro' ) . '</p>';
 	$content .= '<p>' . __( "At checkout, we may also collect your credit card number, expiration date, and security code. This information is passed to our payment gateway to process your purchase. The last 4 digits of your credit card number and the expiration date are saved by our site to use for reference and to send you an email if your credit card will expire before the next recurring payment.", 'paid-memberships-pro' ) . '</p>';
 	$content .= '<p>' . __( "When logged in, we use cookies to track some of your activity on our site including logins, visits, and page views.", 'paid-memberships-pro' ) . '</p>';
+
+	// Check if email logging is enabled
+	$email_logging_disabled = get_option( 'pmpro_email_logging_disabled' );
+	$email_log_purge_days = get_option( 'pmpro_email_log_purge_days', 90 );
+
+	if ( empty( $email_logging_disabled ) ) {
+		$content .= '<p>' . __( "We maintain logs of transactional emails sent to you for operational and support purposes. These logs include the email content, recipient address, subject line, and delivery status.", 'paid-memberships-pro' ) . '</p>';
+
+		   if ( ! empty( $email_log_purge_days ) ) {
+			   // translators: %s is the number of days after which email log entries are automatically purged.
+			   $content .= '<p>';
+			   $content .= sprintf(
+				   _n(
+					   'Entries are automatically purged after %s day.',
+					   'Entries are automatically purged after %s days.',
+					   $email_log_purge_days,
+					   'paid-memberships-pro'
+				   ),
+				   number_format_i18n( $email_log_purge_days )
+			   );
+			   $content .= '</p>';
+		   }
+
+		$content .= '<p>' . __( 'If you request deletion of your personal data, all email log entries associated with your account will be permanently removed.', 'paid-memberships-pro' ) . '</p>';
+	}
 
 	wp_add_privacy_policy_content( 'Paid Memberships Pro', $content );
 }
@@ -84,6 +111,17 @@ function pmpro_personal_data_eraser( $email_address, $page = 1 ) {
 			}
 		}
 
+		// Delete email log entries for this user.
+		$num_email_logs = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM {$wpdb->pmpro_email_log} WHERE user_id = %d", intval( $user->ID ) ) );
+		if ( $num_email_logs > 0 ) {
+			$wpdb->delete(
+				$wpdb->pmpro_email_log,
+				array( 'user_id' => $user->ID ),
+				array( '%d' )
+			);
+			$num_items_removed += intval( $num_email_logs );
+		}
+
 		// Warn the admin if this user has an active subscription
 		$messages[] = __( "Please note that data erasure will not cancel a user's membership level or any active subscriptions. Please edit or delete the user through the WordPress dashboard.", 'paid-memberships-pro' );
 	}
@@ -116,7 +154,10 @@ add_filter( 'wp_privacy_personal_data_exporters', 'pmpro_register_personal_data_
 
 /**
  * Personal data exporter for PMPro data.
+ *
  * @since 1.9.5
+ * @since TBD Add support for exporting email log entries.
+ *
  */
 function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 	global $wpdb;
@@ -334,7 +375,40 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 				'item_id'     => "membership_order-{$order->id}",
 				'data'        => $order_data_to_export,
 			);
-		}		
+		}
+
+		// Add email log entries for any email where this user is the recipient.
+		$email_logs = $wpdb->get_results( $wpdb->prepare(
+			"SELECT * FROM {$wpdb->pmpro_email_log}
+			WHERE user_id = %d AND email_to = %s
+			ORDER BY timestamp DESC",
+			intval( $user->ID ),
+			$email_address
+		) );
+
+		foreach ( $email_logs as $log ) {
+			$email_data_to_export = array(
+				array(
+					'name'  => __( 'Date', 'paid-memberships-pro' ),
+					'value' => date( get_option( 'date_format' ), strtotime( $log->timestamp ) ),
+				),
+				array(
+					'name'  => __( 'Subject', 'paid-memberships-pro' ),
+					'value' => $log->subject,
+				),
+				array(
+					'name'  => __( 'Email Content', 'paid-memberships-pro' ),
+					'value' => $log->body,
+				),
+			);
+
+			$data_to_export[] = array(
+				'group_id'    => 'pmpro_email_log',
+				'group_label' => __( 'Paid Memberships Pro Email Log', 'paid-memberships-pro' ),
+				'item_id'     => "email_log-{$log->id}",
+				'data'        => $email_data_to_export,
+			);
+		}
 	}
 
 	$done = true;

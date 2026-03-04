@@ -172,8 +172,6 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 			'display_name' => $user->display_name,
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
-			'sitename' => get_option( 'blogname' ),
-			'siteemail' => get_option( 'pmpro_from_email' ),
 			'membership_id' => $membership_level->id,
 			'membership_level_name' => $membership_level->name,
 			'billing_name' => $order->billing->name,

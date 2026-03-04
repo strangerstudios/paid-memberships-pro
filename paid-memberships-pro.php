@@ -3,20 +3,20 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.6.4
+ * Version: 3.6.5
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
  * Domain Path: /languages
  */
 /**
- * Copyright 2011-2025	Stranger Studios
+ * Copyright 2011-2026	Stranger Studios
  * (email : info@paidmembershipspro.com)
  * GPLv2 Full license details in license.txt
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.6.4' );
+define( 'PMPRO_VERSION', '3.6.5' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -50,6 +50,7 @@ require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
+require_once( PMPRO_DIR . '/classes/class-pmpro-exports.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );	// setup the admin activity email
 
 //  Add On Management
@@ -96,6 +97,7 @@ require_once( PMPRO_DIR . '/adminpages/reports/logins.php' );            // load
 require_once( PMPRO_DIR . '/adminpages/reports/memberships.php' );       // load the Memberships report
 require_once( PMPRO_DIR . '/adminpages/reports/members-per-level.php' ); // load the Members Per Level report
 require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );             // load the Sales report
+require_once( PMPRO_DIR . '/adminpages/reports/email_log.php' );        // load the Email Log report
 
 require_once( PMPRO_DIR . '/adminpages/member-edit.php' ); // load the Member Edit admin page.
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-abstract-class-member-edit-panel.php' );
@@ -105,6 +107,7 @@ require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-orders.php' );
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-tos.php' );
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-user-fields.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-email-log.php' );
 
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
@@ -127,6 +130,7 @@ require_once( PMPRO_DIR . '/includes/page-templates.php' );         // page temp
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for membership and protect content
 require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
+require_once( PMPRO_DIR . '/includes/email-logging.php' );           // email logging functionality
 require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fields
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cloudflare-turnstile.php' );   // load CloudFlare Turnstile files if needed
@@ -178,7 +182,7 @@ require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-integration.php';
 $wisdom_integration = PMPro_Wisdom_Integration::instance();
 $wisdom_integration->setup_wisdom();
 
-// Setup our PMPro Action Scheduler.
+// Setup PMPro Action Scheduler & Exports.
 add_action( 'plugins_loaded', function() {
 
 	// Load our Action Scheduler class.
@@ -186,6 +190,10 @@ add_action( 'plugins_loaded', function() {
 
 	// Add our recurring actions.
 	PMPro_Recurring_Actions::instance();
+
+	// Ensure Exports system is initialized so its filters are registered on all requests
+	// (needed for restricted files to validate access).
+	PMPro_Exports::instance();
 
 } );
 

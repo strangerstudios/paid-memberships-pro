@@ -295,7 +295,7 @@ class PMPro_Field_Group {
 				}
 
 				// Check if this field should only be shown to admins.
-				if ( ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_membership_manager' ) ) && in_array( $field->profile, array( 'admins', 'admin', 'only_admin' ), true ) ) {
+				if ( ! current_user_can( pmpro_get_edit_member_capability() ) && in_array( $field->profile, array( 'admins', 'admin', 'only_admin' ), true ) ) {
 					continue;
 				}
 
@@ -404,7 +404,7 @@ class PMPro_Field_Group {
 			?>
 			<h2><?php echo wp_kses_post( $this->label ); ?></h2>
 			<?php
-			if ( ! empty( $box->description ) ) {
+			if ( ! empty( $this->description ) ) {
 				?>
 				<p><?php echo wp_kses_post( $this->description ); ?></p>
 				<?php
