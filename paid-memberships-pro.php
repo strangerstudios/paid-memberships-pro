@@ -44,6 +44,7 @@ if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 }
 
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       			// class to process and save orders
+require_once( PMPRO_DIR . '/classes/class-pmpro-liquid-renderer.php' );		// Liquid-style template rendering
 require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        			// setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );

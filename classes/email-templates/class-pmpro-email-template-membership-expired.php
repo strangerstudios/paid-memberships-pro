@@ -69,7 +69,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( 'Your membership at !!sitename!! has ended', 'paid-memberships-pro' );
+		return esc_html__( 'Your membership at {{ sitename }} has ended', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -80,13 +80,13 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Your membership at !!sitename!! has ended.</p>
+		return wp_kses_post( __( '<p>Your membership at {{ sitename }} has ended.</p>
 
 <p>Thank you for your support.</p>
 
-<p>View our current membership offerings here: !!levels_url!!</p>
+<p>View our current membership offerings here: {{ levels_url }}</p>
 
-<p>Log in to manage your account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to manage your account here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -121,12 +121,12 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!renew_url!!' => esc_html__( 'The URL of the Membership Checkout page for the expired level.', 'paid-memberships-pro' ),
+			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ renew_url }}' => esc_html__( 'The URL of the Membership Checkout page for the expired level.', 'paid-memberships-pro' ),
 		);
 	}
 
