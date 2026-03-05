@@ -73,7 +73,7 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( "Membership for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' );
+		return esc_html__( 'Membership for {{ user_login }} at {{ sitename }} has been CANCELLED', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -84,17 +84,17 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>The membership for !!user_login!! at !!sitename!! has been cancelled.</p>
+		return wp_kses_post( __( '<p>The membership for {{ user_login }} at {{ sitename }} has been cancelled.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: !!membership_level_name!!</p>
+<p>Membership Level: {{ membership_level_name }}</p>
 
-<p>Start Date: !!startdate!!</p>
+{% if startdate %}<p>Start Date: {{ startdate }}</p>{% endif %}
 
-<p>End Date: !!enddate!!</p>
+{% if enddate %}<p>End Date: {{ enddate }}</p>{% endif %}
 
-<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+<p>Log in to your WordPress admin here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -106,13 +106,13 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		 return array(
-			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!startdate!!' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
-			'!!enddate!!' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' )
+			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ startdate }}' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
+			'{{ enddate }}' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' )
 		 );
 	}
 
