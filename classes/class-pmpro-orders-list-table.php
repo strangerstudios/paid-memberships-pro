@@ -730,14 +730,17 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			var $toggleBtn = $('#pmpro-orders-toggle-filters');
 
 			// Move the filter panel from inside the tablenav into the layout wrapper as the sidebar.
-			$panel.appendTo($layout).show();
+			$panel.prependTo($layout).css('display', '');
 
 			// Position the panel top to align with the table header.
 			var $table = $layout.find('.wp-list-table');
-			if ($table.length) {
-				var tableTop = $table[0].offsetTop;
-				$panel.css('top', tableTop + 'px');
+			function alignPanelTop() {
+				if ($table.length) {
+					$panel.css('top', $table[0].offsetTop + 'px');
+				}
 			}
+			alignPanelTop();
+			$(window).on('resize', alignPanelTop);
 
 			// Toggle sidebar open/closed.
 			function toggleSidebar(open) {
@@ -746,7 +749,6 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				}
 				$layout.toggleClass('pmpro-sidebar-open', open);
 				$toggleBtn.toggleClass('active', open);
-				try { sessionStorage.setItem('pmpro_orders_sidebar_open', open ? '1' : '0'); } catch(e) {}
 			}
 
 			$toggleBtn.on('click', function() {
@@ -757,15 +759,24 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				toggleSidebar(false);
 			});
 
-			// Restore sidebar state from sessionStorage.
-			try {
-				if (sessionStorage.getItem('pmpro_orders_sidebar_open') === '1') {
-					toggleSidebar(true);
-				}
-			} catch(e) {}
-
 			// Initialize Select2 on sidebar selects (not the date mode select).
 			$panel.find('select').not('.pmpro-orders-date-mode-select').select2({ width: '100%', minimumResultsForSearch: 5 });
+
+			// Highlight filter sections that have an active (non-default) value.
+			$panel.find('.pmpro-orders-filter-section').each(function() {
+				var $section = $(this);
+				function updateActiveClass() {
+					var hasValue = false;
+					$section.find('select, input').not(':disabled').each(function() {
+						if ($(this).val() !== '' && $(this).val() !== null) {
+							hasValue = true;
+						}
+					});
+					$section.toggleClass('pmpro-orders-filter-active', hasValue);
+				}
+				updateActiveClass();
+				$section.find('select, input').on('change', updateActiveClass);
+			});
 
 			// Date mode toggle.
 			$('#pmpro-filter-date-mode').on('change', function() {

@@ -1735,6 +1735,11 @@ a.pmpro_order-renewal {
 	width: 100%;
 }
 
+.pmpro-orders-filter-section.pmpro-orders-filter-active {
+	border-left: 3px solid #2271b1;
+	padding-left: 13px;
+}
+
 .pmpro-orders-date-predefined,
 .pmpro-orders-date-custom {
 	margin-top: 8px;
@@ -1779,13 +1784,16 @@ a.pmpro_order-renewal {
 	}
 
 	#pmpro-orders-filter-panel {
+		display: none;
 		max-height: none;
+		opacity: 1;
 		position: static;
 		transform: none;
 		width: 100%;
 	}
 
 	#pmpro-orders-layout.pmpro-sidebar-open > #pmpro-orders-filter-panel {
+		display: block;
 		transform: none;
 		width: 100%;
 	}
