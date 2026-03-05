@@ -626,6 +626,11 @@ function pmpro_display_post_states( $post_states, $post ) {
 	// Get assigned page settings.
 	global $pmpro_pages;
 
+	// Bail if $post is empty.
+	if ( empty( $post ) ) {
+		return $post_states;
+	}
+
 	if ( intval( $pmpro_pages['account'] ) === $post->ID ) {
 		$post_states['pmpro_account_page'] = __( 'Membership Account Page', 'paid-memberships-pro' );
 	}
