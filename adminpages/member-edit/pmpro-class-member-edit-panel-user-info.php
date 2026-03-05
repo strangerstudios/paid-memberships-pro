@@ -22,7 +22,14 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		if ( isset( $_REQUEST['user_id'] ) && ! empty( $_REQUEST['user_id'] && ! empty( $_REQUEST['user_info_action'] ) ) ) {
 			// Check if there was an avatar error.
 			if ( ! empty( $_REQUEST['avatar_error'] ) ) {
-				pmpro_setMessage( sanitize_text_field( wp_unslash( $_REQUEST['avatar_error'] ) ), 'pmpro_error' );
+				$avatar_error_messages = array(
+					'processing_failed' => __( 'Unable to process the uploaded image.', 'paid-memberships-pro' ),
+					'save_failed'       => __( 'Unable to save the processed image.', 'paid-memberships-pro' ),
+					'upload_failed'     => __( 'There was a problem uploading the avatar.', 'paid-memberships-pro' ),
+				);
+				$avatar_error_code = sanitize_key( $_REQUEST['avatar_error'] );
+				$avatar_error_msg = isset( $avatar_error_messages[ $avatar_error_code ] ) ? $avatar_error_messages[ $avatar_error_code ] : __( 'There was a problem with the avatar upload.', 'paid-memberships-pro' );
+				pmpro_setMessage( $avatar_error_msg, 'pmpro_error' );
 			} elseif ( 'updated' === $_REQUEST['user_info_action'] ) {
 				pmpro_setMessage( __( 'User updated.', 'paid-memberships-pro' ), 'pmpro_success' );
 			} elseif ( 'created' === $_REQUEST['user_info_action'] ) {
@@ -328,7 +335,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			if ( function_exists( 'pmpro_save_avatar_field' ) ) {
 				$avatar_result = pmpro_save_avatar_field( $user_id );
 				if ( is_wp_error( $avatar_result ) ) {
-					$avatar_error = '&avatar_error=' . rawurlencode( $avatar_result->get_error_message() );
+					$avatar_error = '&avatar_error=' . rawurlencode( $avatar_result->get_error_code() );
 				}
 			}
 

@@ -272,6 +272,12 @@ function pmpro_avatar_setup_directory() {
 	if ( ! file_exists( $avatar_dir ) ) {
 		wp_mkdir_p( $avatar_dir );
 	}
+
+	// Add index.php to prevent directory listing.
+	$index_file = trailingslashit( $avatar_dir ) . 'index.php';
+	if ( ! file_exists( $index_file ) ) {
+		file_put_contents( $index_file, '<?php // Silence is golden.' );
+	}
 }
 
 /**
@@ -414,15 +420,12 @@ function pmpro_avatar_process_upload( $user_id, $file_key = 'pmpro_avatar' ) {
 		wp_mkdir_p( $user_dir );
 	}
 
-	// Delete old avatar files before saving new one.
-	pmpro_avatar_delete_files( $user_id );
-
 	// Process the image - crop to square and resize to max dimension.
 	$max_dimension = pmpro_avatar_get_max_dimension();
 	$image = wp_get_image_editor( $file['tmp_name'] );
 
 	if ( is_wp_error( $image ) ) {
-		return new WP_Error( 'pmpro_avatar_error', __( 'Unable to process the uploaded image.', 'paid-memberships-pro' ) );
+		return new WP_Error( 'processing_failed', __( 'Unable to process the uploaded image.', 'paid-memberships-pro' ) );
 	}
 
 	// Get original dimensions.
@@ -445,13 +448,30 @@ function pmpro_avatar_process_upload( $user_id, $file_key = 'pmpro_avatar' ) {
 	// Set quality.
 	$image->set_quality( 90 );
 
-	// Save the base avatar with deterministic filename.
-	$base_filename = 'avatar.' . $save_ext;
-	$base_path = $user_dir . $base_filename;
-	$saved = $image->save( $base_path );
+	// Save to a temporary filename first so the old avatar is preserved on failure.
+	$temp_filename = 'avatar-tmp.' . $save_ext;
+	$temp_path = $user_dir . $temp_filename;
+	$saved = $image->save( $temp_path );
 
 	if ( is_wp_error( $saved ) ) {
-		return new WP_Error( 'pmpro_avatar_error', __( 'Unable to save the processed image.', 'paid-memberships-pro' ) );
+		@unlink( $temp_path );
+		return new WP_Error( 'save_failed', __( 'Unable to save the processed image.', 'paid-memberships-pro' ) );
+	}
+
+	// New image saved successfully — now safe to replace old avatar files.
+	// Rename temp to the final deterministic filename first (overwrites old base of same extension).
+	$base_filename = 'avatar.' . $save_ext;
+	$base_path = $user_dir . $base_filename;
+	rename( $saved['path'], $base_path );
+
+	// Delete old sized variants and any old base files with a different extension.
+	$old_files = glob( $user_dir . 'avatar*' );
+	if ( ! empty( $old_files ) ) {
+		foreach ( $old_files as $old_file ) {
+			if ( is_file( $old_file ) && $old_file !== $base_path ) {
+				@unlink( $old_file );
+			}
+		}
 	}
 
 	// Pre-generate bucket sizes from the saved base image.
@@ -462,7 +482,7 @@ function pmpro_avatar_process_upload( $user_id, $file_key = 'pmpro_avatar' ) {
 	foreach ( $bucket_sizes as $bucket ) {
 		// Only generate buckets smaller than the base.
 		if ( $bucket < $base_dimension ) {
-			$bucket_image = wp_get_image_editor( $saved['path'] );
+			$bucket_image = wp_get_image_editor( $base_path );
 			if ( ! is_wp_error( $bucket_image ) ) {
 				$bucket_image->resize( $bucket, $bucket, true );
 				$bucket_image->set_quality( 90 );
@@ -598,13 +618,12 @@ function pmpro_avatar_get_url( $user_id, $size = 96 ) {
 	$ext = ! empty( $avatar_data['extension'] ) ? $avatar_data['extension'] : 'jpg';
 	$max_dimension = pmpro_avatar_get_max_dimension();
 
-	// Get the bucketed size (includes 2x for retina).
-	$bucketed_size = pmpro_avatar_get_bucketed_size( $size );
-
-	// If bucketed size >= max dimension, use the base avatar.
-	if ( $bucketed_size >= $max_dimension ) {
+	// If the requested size (with 2x retina) meets or exceeds the base image, use the base avatar directly.
+	if ( $size * 2 >= $max_dimension ) {
 		$filename = 'avatar.' . $ext;
 	} else {
+		// Get the bucketed size (includes 2x for retina).
+		$bucketed_size = pmpro_avatar_get_bucketed_size( $size );
 		$filename = sprintf( 'avatar-%dx%d.%s', $bucketed_size, $bucketed_size, $ext );
 	}
 
@@ -1021,7 +1040,7 @@ function pmpro_change_avatar_process() {
 	}
 
 	// Check the nonce.
-	if ( ! wp_verify_nonce( sanitize_key( $_POST['pmpro_avatar_nonce'] ), 'pmpro_avatar_upload_' . $current_user->ID ) ) {
+	if ( ! isset( $_POST['pmpro_avatar_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['pmpro_avatar_nonce'] ), 'pmpro_avatar_upload_' . $current_user->ID ) ) {
 		pmpro_setMessage( __( 'Security check failed.', 'paid-memberships-pro' ), 'pmpro_error' );
 		return;
 	}
