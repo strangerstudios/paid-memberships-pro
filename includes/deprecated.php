@@ -893,6 +893,10 @@ function pmpro_get_deprecated_add_ons() {
 			'file' => 'pmpro-recurring-emails.php',
 			'label' => 'Recurring Emails'
 		),
+		'pmpro-subscription-check' => array(
+			'file' => 'pmpro-subscription-check.php',
+			'label' => 'Subscription Check'
+		),
 	);
 	
 	$deprecated = apply_filters( 'pmpro_deprecated_add_ons_list', $deprecated );
