@@ -249,6 +249,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
 		$level = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : false;
 		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
 		$items_per_page = $this->get_items_per_page( 'pmpro_subscriptions_per_page' );
 		/**
@@ -275,6 +276,9 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			} else {
 				$condition .= ' AND s.status = "' . esc_sql( $status ) . '"';
 			}
+		}
+		if ( ! empty( $gateway ) ) {
+			$condition .= ' AND s.gateway = "' . esc_sql( $gateway ) . '"';
 		}
 
 		$orderby = '';
@@ -349,55 +353,162 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @param string $which, helps you decide if you add the markup after (bottom) or before (top) the list array( '' => 'Select a Level' )
 	 */
 	function extra_tablenav( $which ) {
-		if ( $which == 'top' ) {
-
-			if ( isset( $_REQUEST['level'] ) ) {
-				$l = intval( $_REQUEST['level'] );
-			} else {
-				$l = false;
-			}
-
-			if ( isset( $_REQUEST['status'] ) ) {
-				$status = sanitize_text_field( $_REQUEST['status'] );
-			} else {
-				$status = '';
-			}
-
-			// The code that goes before the table is here
-			if ( ! empty( $pmpro_msg ) ) { ?>
-				<div id="message" class="
-				<?php
-				if ( $pmpro_msgt == 'success' ) {
-					echo 'updated fade';
-				} else {
-					echo 'error';
-				}
-				?>
-				"><p><?php echo wp_kses_post( $pmpro_msg ); ?></p></div>
-			<?php } ?>
-				<?php
-				// Note: Only subscriptions belonging to current levels can be filtered. There is no option for subscriptions belonging to deleted levels.
-				$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
-				?>
-				<?php esc_html_e( 'Show', 'paid-memberships-pro' ); ?>
-				<select id="level" name="level">
-					<option value=""><?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?></option>
-					<?php foreach ( $levels as $level ) { ?>
-						<option
-							value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
-					<?php } ?>
-				</select>
-				<span id="filterby"><?php esc_html_e( 'filter by ', 'paid-memberships-pro' ); ?></span>
-				<select id="status" name="status">
-					<option value=""><?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?></option>
-					<option value="active" <?php selected( $status, 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
-					<option value="cancelled" <?php selected( $status, 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
-					<option value="sync_error" <?php selected( $status, 'sync_error' ); ?>><?php esc_html_e( 'Sync Error', 'paid-memberships-pro' ); ?></option>
-				</select>
-				<input type="hidden" name="page" value="pmpro-subscriptions"/>
-				<input id="submit" class="button" type="submit" value="<?php esc_attr_e( 'Filter', 'paid-memberships-pro' ); ?>"/>
-			<?php
+		if ( $which !== 'top' ) {
+			return;
 		}
+
+		global $wpdb;
+
+		// Read current filter values from request.
+		$l       = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : 0;
+		$status  = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
+
+		// Count active filters for the toggle button badge.
+		$active_filter_count = 0;
+		if ( ! empty( $l ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $status ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $gateway ) ) {
+			$active_filter_count++;
+		}
+
+		// Prepare data for filter value selectors.
+		$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
+
+		// Get gateways that have been used in subscriptions.
+		$used_gateway_slugs = $wpdb->get_col( "SELECT DISTINCT gateway FROM $wpdb->pmpro_subscriptions WHERE gateway != ''" );
+		$known_gateways     = pmpro_gateways();
+		$gateway_options    = array();
+		foreach ( $used_gateway_slugs as $gw_slug ) {
+			$gateway_options[ $gw_slug ] = isset( $known_gateways[ $gw_slug ] ) ? $known_gateways[ $gw_slug ] : $gw_slug;
+		}
+		?>
+
+		<input type="hidden" name="page" value="pmpro-subscriptions" />
+
+		<div id="pmpro-subscriptions-filter-panel" class="pmpro_section" style="display: none;">
+			<div class="pmpro-orders-sidebar-header">
+				<h3><?php esc_html_e( 'Filters', 'paid-memberships-pro' ); ?></h3>
+				<button type="button" id="pmpro-subscriptions-close-filters" class="pmpro-orders-sidebar-close" aria-label="<?php esc_attr_e( 'Close filters', 'paid-memberships-pro' ); ?>">
+					<span class="dashicons dashicons-no-alt"></span>
+				</button>
+			</div>
+
+			<div class="pmpro-orders-sidebar-body">
+				<?php // Level filter. ?>
+				<div class="pmpro-orders-filter-section">
+					<label for="pmpro-filter-level"><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></label>
+					<select id="pmpro-filter-level" name="level">
+						<option value=""><?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?></option>
+						<?php foreach ( $levels as $level_obj ) { ?>
+							<option value="<?php echo esc_attr( $level_obj->id ); ?>" <?php selected( $l, $level_obj->id ); ?>><?php echo esc_html( $level_obj->name ); ?></option>
+						<?php } ?>
+					</select>
+				</div>
+
+				<?php // Status filter. ?>
+				<div class="pmpro-orders-filter-section">
+					<label for="pmpro-filter-status"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></label>
+					<select id="pmpro-filter-status" name="status">
+						<option value=""><?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?></option>
+						<option value="active" <?php selected( $status, 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
+						<option value="cancelled" <?php selected( $status, 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
+						<option value="sync_error" <?php selected( $status, 'sync_error' ); ?>><?php esc_html_e( 'Sync Error', 'paid-memberships-pro' ); ?></option>
+					</select>
+				</div>
+
+				<?php // Gateway filter. ?>
+				<?php if ( ! empty( $gateway_options ) ) { ?>
+					<div class="pmpro-orders-filter-section">
+						<label for="pmpro-filter-gateway"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></label>
+						<select id="pmpro-filter-gateway" name="gateway">
+							<option value=""><?php esc_html_e( 'All Gateways', 'paid-memberships-pro' ); ?></option>
+							<?php foreach ( $gateway_options as $gw_slug => $gw_name ) { ?>
+								<option value="<?php echo esc_attr( $gw_slug ); ?>" <?php selected( $gateway, $gw_slug ); ?>><?php echo esc_html( $gw_name ); ?></option>
+							<?php } ?>
+						</select>
+					</div>
+				<?php } ?>
+
+				<?php
+				/**
+				 * Fires after the built-in filter sections in the subscriptions sidebar.
+				 *
+				 * @since TBD
+				 */
+				do_action( 'pmpro_admin_subscriptions_filters_sidebar' );
+				?>
+			</div>
+
+			<div class="pmpro-orders-sidebar-actions">
+				<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Apply Filters', 'paid-memberships-pro' ); ?>" />
+				<?php if ( $active_filter_count > 0 ) { ?>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-subscriptions' ) ); ?>" class="pmpro-orders-clear-filters"><?php esc_html_e( 'Clear All', 'paid-memberships-pro' ); ?></a>
+				<?php } ?>
+			</div>
+		</div>
+
+		<script>
+		jQuery(document).ready(function($) {
+			var $panel = $('#pmpro-subscriptions-filter-panel');
+			var $layout = $('#pmpro-subscriptions-layout');
+			var $toggleBtn = $('#pmpro-subscriptions-toggle-filters');
+
+			// Move the filter panel from inside the tablenav into the layout wrapper as the sidebar.
+			$panel.prependTo($layout).css('display', '');
+
+			// Position the panel top to align with the table header.
+			var $table = $layout.find('.wp-list-table');
+			function alignPanelTop() {
+				if ($table.length) {
+					$panel.css('top', $table[0].offsetTop + 'px');
+				}
+			}
+			alignPanelTop();
+			$(window).on('resize', alignPanelTop);
+
+			// Toggle sidebar open/closed.
+			function toggleSidebar(open) {
+				if (typeof open === 'undefined') {
+					open = !$layout.hasClass('pmpro-sidebar-open');
+				}
+				$layout.toggleClass('pmpro-sidebar-open', open);
+				$toggleBtn.toggleClass('active', open);
+			}
+
+			$toggleBtn.on('click', function() {
+				toggleSidebar();
+			});
+
+			$('#pmpro-subscriptions-close-filters').on('click', function() {
+				toggleSidebar(false);
+			});
+
+			// Initialize Select2 on sidebar selects.
+			$panel.find('select').select2({ width: '100%', minimumResultsForSearch: 5 });
+
+			// Highlight filter sections that have an active (non-default) value.
+			$panel.find('.pmpro-orders-filter-section').each(function() {
+				var $section = $(this);
+				function updateActiveClass() {
+					var hasValue = false;
+					$section.find('select, input').not(':disabled').each(function() {
+						if ($(this).val() !== '' && $(this).val() !== null) {
+							hasValue = true;
+						}
+					});
+					$section.toggleClass('pmpro-orders-filter-active', hasValue);
+				}
+				updateActiveClass();
+				$section.find('select, input').on('change', updateActiveClass);
+			});
+		});
+		</script>
+		<?php
 	}
 
 	/**

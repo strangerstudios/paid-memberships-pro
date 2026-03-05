@@ -587,10 +587,30 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 
 		<a
 			href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'action' => 'link' ), admin_url('admin.php' ) ) ) ); ?>"
-			title="<?php esc_attr_e( 'Link Subscription', 'paid-memberships-pro' ); ?>" 
+			title="<?php esc_attr_e( 'Link Subscription', 'paid-memberships-pro' ); ?>"
 			class="page-title-action pmpro-has-icon pmpro-has-icon-plus">
 			<?php esc_html_e( 'Link Subscription', 'paid-memberships-pro' ); ?>
 		</a>
+
+		<?php
+		// Count active filters for the toggle button badge.
+		$active_filter_count = 0;
+		if ( ! empty( $_REQUEST['level'] ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $_REQUEST['status'] ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $_REQUEST['gateway'] ) ) {
+			$active_filter_count++;
+		}
+		?>
+		<button type="button" id="pmpro-subscriptions-toggle-filters" class="page-title-action pmpro-has-icon pmpro-has-icon-filter">
+			<?php esc_html_e( 'Filters', 'paid-memberships-pro' ); ?>
+			<?php if ( $active_filter_count > 0 ) { ?>
+				<span class="pmpro-orders-filter-badge"><?php echo esc_html( $active_filter_count ); ?></span>
+			<?php } ?>
+		</button>
 
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
 			<div id="message" class="
@@ -606,9 +626,13 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 		$subscriptions_list_table = new PMPro_Subscriptions_List_Table();
 		$subscriptions_list_table->prepare_items();
 		$subscriptions_list_table->search_box( __( 'Search Subscriptions', 'paid-memberships-pro' ), 'paid-memberships-pro' );
-		$subscriptions_list_table->display();
-
 		?>
+
+		<div id="pmpro-subscriptions-layout">
+			<div class="pmpro_main">
+				<?php $subscriptions_list_table->display(); ?>
+			</div>
+		</div>
 	</form>
 	<?php
 }
