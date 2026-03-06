@@ -1285,39 +1285,6 @@ class PMPro_Exports {
 	 * @return array
 	 */
 	protected function sanitize_orders_filters( $args ) {
-		$now = current_time( 'timestamp' );
-
-		// Legacy support: translate old single filter= param to new-style individual params.
-		if ( ! empty( $args['filter'] ) && $args['filter'] !== 'all' ) {
-			$legacy_filter = sanitize_text_field( $args['filter'] );
-			switch ( $legacy_filter ) {
-				case 'within-a-date-range':
-					if ( empty( $args['start-date'] ) ) {
-						$start_month = isset( $args['start-month'] ) ? intval( $args['start-month'] ) : 1;
-						$start_day   = isset( $args['start-day'] ) ? intval( $args['start-day'] ) : 1;
-						$start_year  = isset( $args['start-year'] ) ? intval( $args['start-year'] ) : date( 'Y', $now );
-						$end_month   = isset( $args['end-month'] ) ? intval( $args['end-month'] ) : date( 'n', $now );
-						$end_day     = isset( $args['end-day'] ) ? intval( $args['end-day'] ) : date( 'j', $now );
-						$end_year    = isset( $args['end-year'] ) ? intval( $args['end-year'] ) : date( 'Y', $now );
-						$args['start-date'] = sprintf( '%04d-%02d-%02d', $start_year, $start_month, $start_day );
-						$args['end-date']   = sprintf( '%04d-%02d-%02d', $end_year, $end_month, $end_day );
-					}
-					break;
-				case 'predefined-date-range':
-					if ( empty( $args['predefined-date'] ) ) {
-						$args['predefined-date'] = 'This Month';
-					}
-					break;
-				case 'only-paid':
-					$args['total'] = 'paid';
-					break;
-				case 'only-free':
-					$args['total'] = 'free';
-					break;
-				// 'within-a-level', 'with-discount-code', 'within-a-status' already use l=, discount-code=, status= params.
-			}
-		}
-
 		$filters                    = array();
 		$filters['s']               = isset( $args['s'] ) ? trim( sanitize_text_field( $args['s'] ) ) : '';
 		$filters['l']               = isset( $args['l'] ) ? intval( $args['l'] ) : 0;

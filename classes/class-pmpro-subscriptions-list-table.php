@@ -429,14 +429,6 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 					</div>
 				<?php } ?>
 
-				<?php
-				/**
-				 * Fires after the built-in filter sections in the subscriptions sidebar.
-				 *
-				 * @since TBD
-				 */
-				do_action( 'pmpro_admin_subscriptions_filters_sidebar' );
-				?>
 			</div>
 
 			<div class="pmpro-orders-sidebar-actions">
@@ -449,57 +441,15 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 
 		<script>
 		jQuery(document).ready(function($) {
-			var $panel = $('#pmpro-subscriptions-filter-panel');
-			var $layout = $('#pmpro-subscriptions-layout');
-			var $toggleBtn = $('#pmpro-subscriptions-toggle-filters');
-
-			// Move the filter panel from inside the tablenav into the layout wrapper as the sidebar.
-			$panel.prependTo($layout).css('display', '');
-
-			// Position the panel top to align with the table header.
-			var $table = $layout.find('.wp-list-table');
-			function alignPanelTop() {
-				if ($table.length) {
-					$panel.css('top', $table[0].offsetTop + 'px');
-				}
-			}
-			alignPanelTop();
-			$(window).on('resize', alignPanelTop);
-
-			// Toggle sidebar open/closed.
-			function toggleSidebar(open) {
-				if (typeof open === 'undefined') {
-					open = !$layout.hasClass('pmpro-sidebar-open');
-				}
-				$layout.toggleClass('pmpro-sidebar-open', open);
-				$toggleBtn.toggleClass('active', open);
+			if ( typeof window.pmproInitFilterSidebar !== 'function' ) {
+				return;
 			}
 
-			$toggleBtn.on('click', function() {
-				toggleSidebar();
-			});
-
-			$('#pmpro-subscriptions-close-filters').on('click', function() {
-				toggleSidebar(false);
-			});
-
-			// Initialize Select2 on sidebar selects.
-			$panel.find('select').select2({ width: '100%', minimumResultsForSearch: 5 });
-
-			// Highlight filter sections that have an active (non-default) value.
-			$panel.find('.pmpro-orders-filter-section').each(function() {
-				var $section = $(this);
-				function updateActiveClass() {
-					var hasValue = false;
-					$section.find('select, input').not(':disabled').each(function() {
-						if ($(this).val() !== '' && $(this).val() !== null) {
-							hasValue = true;
-						}
-					});
-					$section.toggleClass('pmpro-orders-filter-active', hasValue);
-				}
-				updateActiveClass();
-				$section.find('select, input').on('change', updateActiveClass);
+			window.pmproInitFilterSidebar({
+				panelSelector: '#pmpro-subscriptions-filter-panel',
+				layoutSelector: '#pmpro-subscriptions-layout',
+				toggleButtonSelector: '#pmpro-subscriptions-toggle-filters',
+				closeButtonSelector: '#pmpro-subscriptions-close-filters'
 			});
 		});
 		</script>

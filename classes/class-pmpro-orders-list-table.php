@@ -277,59 +277,24 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		// Build filter conditions. Supports multiple simultaneous filters combined with AND.
 		$conditions = array();
-		$active_filters = array();
 		$needs_discount_code_join = false;
-
-		// Legacy support: translate old single filter= param to new-style individual params.
-		if ( ! empty( $_REQUEST['filter'] ) && $_REQUEST['filter'] !== 'all' ) {
-			$legacy_filter = sanitize_text_field( $_REQUEST['filter'] );
-			switch ( $legacy_filter ) {
-				case 'within-a-date-range':
-					if ( empty( $_REQUEST['start-date'] ) ) {
-						$start_month = isset( $_REQUEST['start-month'] ) ? intval( $_REQUEST['start-month'] ) : 1;
-						$start_day   = isset( $_REQUEST['start-day'] ) ? intval( $_REQUEST['start-day'] ) : 1;
-						$start_year  = isset( $_REQUEST['start-year'] ) ? intval( $_REQUEST['start-year'] ) : date( 'Y', $now );
-						$end_month   = isset( $_REQUEST['end-month'] ) ? intval( $_REQUEST['end-month'] ) : date( 'n', $now );
-						$end_day     = isset( $_REQUEST['end-day'] ) ? intval( $_REQUEST['end-day'] ) : date( 'j', $now );
-						$end_year    = isset( $_REQUEST['end-year'] ) ? intval( $_REQUEST['end-year'] ) : date( 'Y', $now );
-						$_REQUEST['start-date'] = sprintf( '%04d-%02d-%02d', $start_year, $start_month, $start_day );
-						$_REQUEST['end-date']   = sprintf( '%04d-%02d-%02d', $end_year, $end_month, $end_day );
-					}
-					break;
-				case 'predefined-date-range':
-					if ( empty( $_REQUEST['predefined-date'] ) ) {
-						$_REQUEST['predefined-date'] = 'This Month';
-					}
-					break;
-				case 'only-paid':
-					$_REQUEST['total'] = 'paid';
-					break;
-				case 'only-free':
-					$_REQUEST['total'] = 'free';
-					break;
-				// 'within-a-level', 'with-discount-code', 'within-a-status' already use l=, discount-code=, status= params.
-			}
-		}
 
 		// Level filter.
 		$l = isset( $_REQUEST['l'] ) ? intval( $_REQUEST['l'] ) : 0;
 		if ( ! empty( $l ) ) {
 			$conditions[] = $wpdb->prepare( 'o.membership_id = %d', $l );
-			$active_filters[] = 'level';
 		}
 
 		// Status filter.
 		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
 		if ( ! empty( $status ) ) {
 			$conditions[] = $wpdb->prepare( "o.status = %s", $status );
-			$active_filters[] = 'status';
 		}
 
 		// Discount code filter.
 		$discount_code = isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : 0;
 		if ( ! empty( $discount_code ) ) {
 			$conditions[] = $wpdb->prepare( 'dc.code_id = %d', $discount_code );
-			$active_filters[] = 'discount-code';
 			$needs_discount_code_join = true;
 		}
 
@@ -359,30 +324,25 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
 				$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 				$conditions[] = $wpdb->prepare( "o.timestamp BETWEEN %s AND %s", $start_date, $end_date );
-				$active_filters[] = 'date';
 			}
 		} elseif ( ! empty( $start_date_input ) && ! empty( $end_date_input ) ) {
 			$start_date = get_gmt_from_date( $start_date_input . ' 00:00:00' );
 			$end_date   = get_gmt_from_date( $end_date_input . ' 23:59:59' );
 			$conditions[] = $wpdb->prepare( "o.timestamp BETWEEN %s AND %s", $start_date, $end_date );
-			$active_filters[] = 'date';
 		}
 
 		// Gateway filter.
 		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
 		if ( ! empty( $gateway ) ) {
 			$conditions[] = $wpdb->prepare( "o.gateway = %s", $gateway );
-			$active_filters[] = 'gateway';
 		}
 
-		// Total filter (replaces only-paid / only-free).
+		// Total filter.
 		$total_filter = isset( $_REQUEST['total'] ) ? sanitize_text_field( $_REQUEST['total'] ) : '';
 		if ( $total_filter === 'paid' ) {
 			$conditions[] = "o.total > 0";
-			$active_filters[] = 'total';
 		} elseif ( $total_filter === 'free' ) {
 			$conditions[] = "o.total = 0";
-			$active_filters[] = 'total';
 		}
 
 		// Combine conditions with AND.
@@ -699,14 +659,6 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 					</select>
 				</div>
 
-				<?php
-				/**
-				 * Fires after the built-in filter sections in the orders sidebar.
-				 *
-				 * @since TBD
-				 */
-				do_action( 'pmpro_admin_orders_filters_sidebar' );
-				?>
 			</div>
 
 			<div class="pmpro-orders-sidebar-actions">
@@ -719,73 +671,19 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		<script>
 		jQuery(document).ready(function($) {
-			var $panel = $('#pmpro-orders-filter-panel');
-			var $layout = $('#pmpro-orders-layout');
-			var $toggleBtn = $('#pmpro-orders-toggle-filters');
-
-			// Move the filter panel from inside the tablenav into the layout wrapper as the sidebar.
-			$panel.prependTo($layout).css('display', '');
-
-			// Position the panel top to align with the table header.
-			var $table = $layout.find('.wp-list-table');
-			function alignPanelTop() {
-				if ($table.length) {
-					$panel.css('top', $table[0].offsetTop + 'px');
-				}
-			}
-			alignPanelTop();
-			$(window).on('resize', alignPanelTop);
-
-			// Toggle sidebar open/closed.
-			function toggleSidebar(open) {
-				if (typeof open === 'undefined') {
-					open = !$layout.hasClass('pmpro-sidebar-open');
-				}
-				$layout.toggleClass('pmpro-sidebar-open', open);
-				$toggleBtn.toggleClass('active', open);
+			if ( typeof window.pmproInitFilterSidebar !== 'function' ) {
+				return;
 			}
 
-			$toggleBtn.on('click', function() {
-				toggleSidebar();
-			});
-
-			$('#pmpro-orders-close-filters').on('click', function() {
-				toggleSidebar(false);
-			});
-
-			// Initialize Select2 on sidebar selects (not the date mode select).
-			$panel.find('select').not('.pmpro-orders-date-mode-select').select2({ width: '100%', minimumResultsForSearch: 5 });
-
-			// Highlight filter sections that have an active (non-default) value.
-			$panel.find('.pmpro-orders-filter-section').each(function() {
-				var $section = $(this);
-				function updateActiveClass() {
-					var hasValue = false;
-					$section.find('select, input').not(':disabled').each(function() {
-						if ($(this).val() !== '' && $(this).val() !== null) {
-							hasValue = true;
-						}
-					});
-					$section.toggleClass('pmpro-orders-filter-active', hasValue);
-				}
-				updateActiveClass();
-				$section.find('select, input').on('change', updateActiveClass);
-			});
-
-			// Date mode toggle.
-			$('#pmpro-filter-date-mode').on('change', function() {
-				var mode = $(this).val();
-				if (mode === 'predefined') {
-					$panel.find('.pmpro-orders-date-predefined').show().find('select').prop('disabled', false);
-					$panel.find('.pmpro-orders-date-custom').hide().find('input').prop('disabled', true);
-				} else if (mode === 'custom') {
-					$panel.find('.pmpro-orders-date-predefined').hide().find('select').prop('disabled', true);
-					$panel.find('.pmpro-orders-date-custom').show().find('input').prop('disabled', false);
-				} else {
-					// "All Time" — hide both.
-					$panel.find('.pmpro-orders-date-predefined').hide().find('select').prop('disabled', true);
-					$panel.find('.pmpro-orders-date-custom').hide().find('input').prop('disabled', true);
-				}
+			window.pmproInitFilterSidebar({
+				panelSelector: '#pmpro-orders-filter-panel',
+				layoutSelector: '#pmpro-orders-layout',
+				toggleButtonSelector: '#pmpro-orders-toggle-filters',
+				closeButtonSelector: '#pmpro-orders-close-filters',
+				select2ExcludeSelector: '.pmpro-orders-date-mode-select',
+				dateModeSelector: '#pmpro-filter-date-mode',
+				datePredefinedSelector: '.pmpro-orders-date-predefined',
+				dateCustomSelector: '.pmpro-orders-date-custom'
 			});
 		});
 		</script>

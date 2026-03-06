@@ -258,17 +258,7 @@ if ( 'link' === $action ) {
 			<?php } ?>
 		</button>
 
-		<?php if ( ! empty( $pmpro_msg ) ) { ?>
-			<div id="message" class="
-			<?php
-			if ( $pmpro_msgt == 'success' ) {
-				echo 'updated fade';
-			} else {
-				echo 'error';
-			}
-			?>
-			"><p><?php echo wp_kses_post( $pmpro_msg ); ?></p></div>
-		<?php }
+		<?php
 		$subscriptions_list_table = new PMPro_Subscriptions_List_Table();
 		$subscriptions_list_table->prepare_items();
 		$subscriptions_list_table->search_box( __( 'Search Subscriptions', 'paid-memberships-pro' ), 'paid-memberships-pro' );

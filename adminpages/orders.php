@@ -278,8 +278,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 	}
 } else {
 	// Show list of orders.
-	$now = current_time( 'timestamp' );
-	$thisyear = date( 'Y', $now );
 	?>
 
 	<form id="order-list-form" method="get" action="">

@@ -38,6 +38,113 @@ function pmpro_toggle_elements_by_selector(selector, checked) {
 }
 
 /*
+ * Initialize sidebar filters for list table screens.
+ */
+function pmpro_init_filter_sidebar(args) {
+	var settings = jQuery.extend(
+		{
+			panelSelector: '',
+			layoutSelector: '',
+			toggleButtonSelector: '',
+			closeButtonSelector: '',
+			select2ExcludeSelector: '',
+			dateModeSelector: '',
+			datePredefinedSelector: '',
+			dateCustomSelector: ''
+		},
+		args || {}
+	);
+
+	var $panel = jQuery(settings.panelSelector);
+	var $layout = jQuery(settings.layoutSelector);
+	var $toggleButton = jQuery(settings.toggleButtonSelector);
+
+	if (!$panel.length || !$layout.length || !$toggleButton.length) {
+		return;
+	}
+
+	// Move the filter panel from inside the tablenav into the layout wrapper as the sidebar.
+	$panel.prependTo($layout).css('display', '');
+
+	function alignPanelTop() {
+		var $table = $layout.find('.wp-list-table');
+		if ($table.length) {
+			$panel.css('top', $table[0].offsetTop + 'px');
+		}
+	}
+	alignPanelTop();
+	jQuery(window).on('resize', alignPanelTop);
+
+	function toggleSidebar(open) {
+		if (typeof open === 'undefined') {
+			open = !$layout.hasClass('pmpro-sidebar-open');
+		}
+		$layout.toggleClass('pmpro-sidebar-open', open);
+		$toggleButton.toggleClass('active', open);
+	}
+
+	$toggleButton.on('click', function () {
+		toggleSidebar();
+	});
+
+	if (settings.closeButtonSelector) {
+		jQuery(settings.closeButtonSelector).on('click', function () {
+			toggleSidebar(false);
+		});
+	}
+
+	var $selects = $panel.find('select');
+	if (settings.select2ExcludeSelector) {
+		$selects = $selects.not(settings.select2ExcludeSelector);
+	}
+	if (typeof $selects.select2 === 'function') {
+		$selects.select2({ width: '100%', minimumResultsForSearch: 5 });
+	}
+
+	// Highlight filter sections that have an active (non-default) value.
+	$panel.find('.pmpro-orders-filter-section').each(function () {
+		var $section = jQuery(this);
+		function updateActiveClass() {
+			var hasValue = false;
+			$section.find('select, input').not(':disabled').each(function () {
+				if (jQuery(this).val() !== '' && jQuery(this).val() !== null) {
+					hasValue = true;
+				}
+			});
+			$section.toggleClass('pmpro-orders-filter-active', hasValue);
+		}
+		updateActiveClass();
+		$section.find('select, input').on('change', updateActiveClass);
+	});
+
+	// Date mode toggle.
+	if (
+		settings.dateModeSelector &&
+		settings.datePredefinedSelector &&
+		settings.dateCustomSelector
+	) {
+		jQuery(settings.dateModeSelector).on('change', function () {
+			var mode = jQuery(this).val();
+			var $predefined = $panel.find(settings.datePredefinedSelector);
+			var $custom = $panel.find(settings.dateCustomSelector);
+
+			if (mode === 'predefined') {
+				$predefined.show().find('select').prop('disabled', false);
+				$custom.hide().find('input').prop('disabled', true);
+			} else if (mode === 'custom') {
+				$predefined.hide().find('select').prop('disabled', true);
+				$custom.show().find('input').prop('disabled', false);
+			} else {
+				$predefined.hide().find('select').prop('disabled', true);
+				$custom.hide().find('input').prop('disabled', true);
+			}
+		});
+	}
+}
+
+window.pmproInitFilterSidebar = pmpro_init_filter_sidebar;
+
+/*
  * Find inputs with a custom attribute pmpro_toggle_trigger_for,
  * and bind change to toggle the specified elements.
  * @since v2.1
