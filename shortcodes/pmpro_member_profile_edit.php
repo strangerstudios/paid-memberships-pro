@@ -19,9 +19,14 @@ function pmpro_shortcode_member_profile_edit( $atts, $content=null, $code='' ) {
 		$view = NULL;
 	}
 
-	if ( ! empty( $view ) && $view == 'change-password' ) {
+	if ( ! empty( $view ) && $view === 'change-password' ) {
 		// Display the Change Password form.
 		pmpro_change_password_form();
+	} elseif ( ! empty( $view ) && $view === 'change-avatar' ) {
+		// Display the Change Avatar form.
+		if ( function_exists( 'pmpro_change_avatar_form' ) ) {
+			pmpro_change_avatar_form();
+		}
 	} else {
 		// Display the Member Profile Edit form.
 		pmpro_member_profile_edit_form();
