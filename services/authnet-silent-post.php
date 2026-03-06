@@ -14,6 +14,44 @@
 	// Flag if this is an ARB transaction. Set to false by default.
 	$arb = false;
 
+	// Validate the shared-secret token if one is configured.
+	// Authorize.net sends exactly the Silent Post URL you provide, so a token appended to that URL
+	// will be present on every legitimate request and absent on forgeries.
+	$_pmpro_authnet_expected_token = get_option( 'pmpro_authnet_silent_post_token' );
+	if ( is_scalar( $_pmpro_authnet_expected_token ) ) {
+		$_pmpro_authnet_expected_token = (string) $_pmpro_authnet_expected_token;
+	} else {
+		$_pmpro_authnet_expected_token = '';
+	}
+
+	if ( '' !== $_pmpro_authnet_expected_token ) {
+		$_pmpro_authnet_provided_token = isset( $_GET['pmpro_authnet_token'] ) ? $_GET['pmpro_authnet_token'] : '';
+		if ( ! is_scalar( $_pmpro_authnet_provided_token ) ) {
+			$_pmpro_authnet_provided_token = '';
+		} else {
+			$_pmpro_authnet_provided_token = wp_unslash( (string) $_pmpro_authnet_provided_token );
+		}
+		if ( ! hash_equals( $_pmpro_authnet_expected_token, $_pmpro_authnet_provided_token ) ) {
+			// Log failed token checks before exiting so bad or outdated Silent Post URLs are visible in debug logs.
+			if ( defined( 'PMPRO_AUTHNET_SILENT_POST_DEBUG' ) && PMPRO_AUTHNET_SILENT_POST_DEBUG === 'log' ) {
+				$failed_log = "\n----\n";
+				$failed_log .= 'Logged on ' . date( 'Y-m-d H:i:s', current_time( 'timestamp' ) );
+				$failed_log .= "\n----\n";
+				$failed_log .= 'Authorize.net Silent Post token validation failed.';
+				$failed_log .= "\n----\n";
+
+				$logfile = apply_filters( 'pmpro_authnet_silent_post_logfile', pmpro_get_restricted_file_path( 'logs', 'authnet-silent-post.txt' ) );
+				$loghandle = fopen( $logfile, 'a+' );
+				if ( false !== $loghandle ) {
+					fwrite( $loghandle, $failed_log );
+					fclose( $loghandle );
+				}
+			}
+			status_header( 403 );
+			exit;
+		}
+	}
+
 	// Store the posted values in an associative array
 	$fields = array();
 	foreach($_REQUEST as $name => $value)
