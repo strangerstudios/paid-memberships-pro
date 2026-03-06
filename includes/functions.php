@@ -4203,6 +4203,7 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 /**
  * Checks if a webhook is running
  * @since 2.5
+ * @since TBD Calling this function to read webhook status is deprecated.
  * @param string $gateway If passed in, requires that specific gateway.
  * @param bool $set Set to true to set the constant and fire the action hook.
  * @return bool True or false if a PMPro webhook set the constant or not.
@@ -4216,6 +4217,13 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 		do_action( 'pmpro_doing_webhook', $gateway );
 		return true;
 	}
+
+	// Reading webhook status through this function is deprecated.
+	_deprecated_argument(
+		__FUNCTION__,
+		'TBD',
+		esc_html__( 'Reading webhook status via pmpro_doing_webhook() is deprecated and will be removed in a future version of Paid Memberships Pro.', 'paid-memberships-pro' )
+	);
 
 	// Otherwise, check if we were already set up.
 	if( defined( 'PMPRO_DOING_WEBHOOK' ) && !empty ( PMPRO_DOING_WEBHOOK ) ){
