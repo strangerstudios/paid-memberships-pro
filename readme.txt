@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershi
 Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.9
-Requires PHP: 5.6
+Requires PHP: 7.4
 Stable tag: 3.6.5
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
