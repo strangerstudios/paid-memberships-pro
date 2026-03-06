@@ -36,6 +36,11 @@ $mmpu_incompatible_add_ons = pmpro_get_mmpu_incompatible_add_ons();
 		esc_html_e( 'Add New Group', 'paid-memberships-pro' );
 	} ?>
 </h1>
+<p><?php
+	$level_groups_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Level Groups Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/membership-levels/level-groups/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=&utm_term=">' . esc_html__( 'Level Groups', 'paid-memberships-pro' ) . '</a>';
+	// translators: %s: Link to Level Groups doc.
+	printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $level_groups_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+?></p>
 <?php
 if ( ! empty( $mmpu_incompatible_add_ons ) ) {
 ?>

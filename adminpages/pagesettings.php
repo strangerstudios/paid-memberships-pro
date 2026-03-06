@@ -197,7 +197,13 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 		}
 
         if ( $pmpro_some_pages_ready ) { ?>
-            <p><?php esc_html_e('Manage the WordPress pages assigned to each required Paid Memberships Pro page.', 'paid-memberships-pro' ); ?></p>
+            <p><?php
+				esc_html_e('Manage the WordPress pages assigned to each required Paid Memberships Pro page.', 'paid-memberships-pro' );
+				echo ' ';
+				$page_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Page Settings Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/page-settings/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=documentation&utm_content=&utm_term=">' . esc_html__( 'Page Settings', 'paid-memberships-pro' ) . '</a>';
+				// translators: %s: Link to Page Settings doc.
+				printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $page_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			?></p>
         <?php } elseif( ! empty( $_REQUEST['manualpages'] ) ) { ?>
             <p><?php esc_html_e('Assign the WordPress pages for each required Paid Memberships Pro page or', 'paid-memberships-pro' ); ?> <a
                     href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=pmpro-pagesettings&createpages=1' ), 'createpages', 'pmpro_pagesettings_nonce') );?>"><?php esc_html_e('click here to let us generate them for you', 'paid-memberships-pro' ); ?></a>.

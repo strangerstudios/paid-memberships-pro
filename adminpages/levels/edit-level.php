@@ -207,6 +207,12 @@ if ( ! empty( $temp_id ) ) {
 	<h1 class="wp-heading-inline"><?php esc_html_e('Add New Membership Level', 'paid-memberships-pro'); ?></h1>
 <?php } ?>
 
+<p><?php
+	$edit_level_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Membership Level Setup Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/membership-levels/initial-membership-level-setup/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=&utm_term=">' . esc_html__( 'Membership Level Setup', 'paid-memberships-pro' ) . '</a>';
+	// translators: %s: Link to Membership Level Setup doc.
+	printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $edit_level_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+?></p>
+
 <?php
 // Show the settings page message.
 if (!empty($page_msg)) { ?>
@@ -511,6 +517,7 @@ if (!empty($page_msg)) { ?>
 			</button>
 		</div>
 		<div class="pmpro_section_inside" <?php echo $section_visibility === 'hidden' ? 'style="display: none"' : ''; ?>>
+			<p><?php esc_html_e('Control when membership access ends for this level. If left unchecked, membership access will not expire. For recurring memberships, leave expiration unchecked to continue charging members according to your billing settings.', 'paid-memberships-pro'); ?></p>
 			<div id="pmpro_expiration_warning" style="display: none;" class="notice notice-alt notice-error inline">
 				<p><?php
 					$allowed_html = array(

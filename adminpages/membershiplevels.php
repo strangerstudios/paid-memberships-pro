@@ -292,7 +292,13 @@
 			</form>
 
 			<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
-				<p><?php esc_html_e('Drag and drop membership levels within the group to reorder them on the Membership Levels page. Reorder groups using the up/down arrows.', 'paid-memberships-pro' ); ?></p>
+				<p><?php
+					esc_html_e('Drag and drop membership levels within the group to reorder them on the Membership Levels page. Reorder groups using the up/down arrows.', 'paid-memberships-pro' );
+					echo ' ';
+					$membership_levels_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Membership Levels Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/levels-settings/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=&utm_term=">' . esc_html__( 'Membership Levels', 'paid-memberships-pro' ) . '</a>';
+					// translators: %s: Link to Membership Levels doc.
+					printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $membership_levels_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?></p>
 			<?php } ?>
 
 			<?php
