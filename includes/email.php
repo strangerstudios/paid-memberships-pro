@@ -202,10 +202,16 @@ function pmpro_email_templates_save_template_data() {
 	$template = sanitize_text_field( $_REQUEST['template'] );
 	$subject = isset( $_REQUEST['subject'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) ) : '';
 	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ), 'email' );	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$to = isset( $_REQUEST['to'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['to'] ), ", \t\n\r\0\x0B" ) ) : '';
+	$cc = isset( $_REQUEST['cc'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['cc'] ), ", \t\n\r\0\x0B" ) ) : '';
+	$bcc = isset( $_REQUEST['bcc'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['bcc'] ), ", \t\n\r\0\x0B" ) ) : '';
 
 	//update this template's settings
 	update_option( 'pmpro_email_' . $template . '_subject', $subject );
 	update_option( 'pmpro_email_' . $template . '_body', $body );
+	update_option( 'pmpro_email_' . $template . '_to', $to );
+	update_option( 'pmpro_email_' . $template . '_cc', $cc );
+	update_option( 'pmpro_email_' . $template . '_bcc', $bcc );
 	delete_transient( 'pmproet_' . $template );
 	esc_html_e( 'Template Saved', 'paid-memberships-pro' );
 
@@ -233,10 +239,16 @@ function pmpro_email_templates_reset_template_data() {
 
 	delete_option('pmpro_email_' . $template . '_subject');
 	delete_option('pmpro_email_' . $template . '_body');
+	delete_option('pmpro_email_' . $template . '_to');
+	delete_option('pmpro_email_' . $template . '_cc');
+	delete_option('pmpro_email_' . $template . '_bcc');
 	delete_transient( 'pmproet_' . $template );
 
 	$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
 	$template_data['body'] = pmpro_email_templates_get_template_body($template);
+	$template_data['to'] = '';
+	$template_data['cc'] = '';
+	$template_data['bcc'] = '';
 
 	echo json_encode($template_data);
 	exit;
@@ -339,8 +351,10 @@ function pmpro_email_templates_email_data($data, $email) {
 		$data = array();
 
 	//general data
-	$new_data['sitename'] = get_option("blogname");
-	$new_data['siteemail'] = get_option("pmpro_from_email");
+	$new_data['sitename'] = get_option( 'blogname' );
+	$new_data['siteemail'] = get_option( 'pmpro_from_email' );
+	$new_data['pmpro_from_email'] = get_option( 'pmpro_from_email' );
+	$new_data['wordpress_admin_email'] = get_bloginfo( 'admin_email' );
 	if(empty($new_data['login_link'])) {
 		$new_data['login_link'] = wp_login_url();
 		$new_data['login_url'] = wp_login_url();

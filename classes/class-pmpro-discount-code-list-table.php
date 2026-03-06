@@ -260,7 +260,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$sqlQuery = "SELECT COUNT( DISTINCT id ) FROM $wpdb->pmpro_discount_codes ";
 		} else {
 			//Includes uses for each discount code as 'used' so we can sort by it later
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires, (SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = do.id) as used FROM $wpdb->pmpro_discount_codes as do ";			
+			$sqlQuery = "SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires, (SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = do.id) as used FROM $wpdb->pmpro_discount_codes as do ";			
 		}
 
 		if ( ! empty( $s ) ) {
@@ -558,6 +558,26 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			echo wp_kses( implode( ', ', $level_names ), array( 'a' => array( 'href' => array(), 'title' => array(), 'target' => array() ) ) );
 		} else {
 			esc_html_e( 'None', 'paid-memberships-pro' );
+		}
+	}
+
+	/**
+	 * Add the "Learn more" link to the top tablenav area.
+	 *
+	 * @param string $which The location of the extra table nav markup: 'top' or 'bottom'.
+	 * @since 3.x
+	 */
+	protected function extra_tablenav( $which ) {
+		if ( 'top' === $which ) {
+			?>
+			<div class="alignleft actions">
+				<?php
+					$discount_codes_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Discount Codes Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/discount-codes/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=documentation&utm_content=&utm_term=">' . esc_html__( 'Discount Codes', 'paid-memberships-pro' ) . '</a>';
+					// translators: %s: Link to Discount Codes doc.
+					printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $discount_codes_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
+			</div>
+			<?php
 		}
 	}
 

@@ -430,12 +430,12 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		$error_string = __( 'Error', 'paid-memberships-pro' );
 
 		if( $count ) {
-			$calculation_function = 'COUNT(*), ';
+			$sqlQuery = 'SELECT COUNT(DISTINCT o.id) ';
 		} else {
-			$calculation_function = 'SQL_CALC_FOUND_ROWS';
+			$sqlQuery = "SELECT o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' WHEN o.status = 'error' THEN '$error_string' ELSE '$cancelled_string' END as `status_label` ";
 		}
 
-		$sqlQuery = "SELECT $calculation_function o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' WHEN o.status = 'error' THEN '$error_string' ELSE '$cancelled_string' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID ";
+		$sqlQuery .= "FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID ";
 
 		// If we are filtering by discount code, we need to pull that information into the query.
 		if ( $needs_discount_code_join ) {
@@ -518,16 +518,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		}
 
-		// Add the group by and order by.
-		if( ! $count ) {
-			$sqlQuery .= 'GROUP BY o.id ';
-		}
-		$sqlQuery .= $order_query . ' ';
-
 		if( $count ) {
 			return $wpdb->get_var( $sqlQuery );    
 		} else {
-			$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
+			$sqlQuery .= 'GROUP BY o.id ' . $order_query . " LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
 			$order_ids = $wpdb->get_col( $sqlQuery );
 			$order_data = array();
 			foreach ( $order_ids as $order_id ) {
