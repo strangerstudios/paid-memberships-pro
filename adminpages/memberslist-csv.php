@@ -105,7 +105,7 @@
 	}
 
 	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined,startdate";
+	$csv_file_header = "id,username,firstname,lastname,email,membership,membership_id,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined,startdate";
 
 	if($l == "oldmembers")
 		$csv_file_header .= ",ended";
@@ -120,6 +120,7 @@
 		array("metavalues", "last_name"),
 		array("theuser", "user_email"),
 		array("theuser", "membership"),
+		array("theuser", "membership_id"),
 		array("discount_code", "id"),
 		array("discount_code", "code")
 		// Subscription information, joindate, and enddate are handled specifically below
