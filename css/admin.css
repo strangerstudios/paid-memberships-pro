@@ -1806,21 +1806,19 @@ a.pmpro_order-renewal {
 	content: "\f536";
 }
 
-#pmpro-orders-toggle-filters,
-#pmpro-subscriptions-toggle-filters {
+.pmpro-filter-toggle {
 	position: relative;
 }
 
-#pmpro-orders-toggle-filters.active,
-#pmpro-subscriptions-toggle-filters.active {
+.pmpro-filter-toggle.active {
 	background: #f0f0f1;
 	border-color: #0071a1;
 	color: #0071a1;
 }
 
-.pmpro-orders-filter-badge {
+.pmpro-filter-badge {
 	align-items: center;
-	background: #2271b1;
+	background: var(--pmpro--color--success-text-alt);
 	border-radius: 50%;
 	color: #fff;
 	display: inline-flex;
@@ -1829,49 +1827,52 @@ a.pmpro_order-renewal {
 	height: 18px;
 	justify-content: center;
 	line-height: 1;
+	margin-left: 4px;
 	min-width: 18px;
-	vertical-align: middle;
-}
-
-#pmpro-orders-layout,
-#pmpro-subscriptions-layout {
 	position: relative;
+	top: -1px;
 }
 
-#pmpro-orders-layout > .pmpro_main,
-#pmpro-subscriptions-layout > .pmpro_main {
-	transition: margin-left 0.25s ease;
+.pmpro-filter-layout {
+	clear: both;
+	display: flex;
 }
 
-#pmpro-orders-layout.pmpro-sidebar-open > .pmpro_main,
-#pmpro-subscriptions-layout.pmpro-sidebar-open > .pmpro_main {
-	margin-left: 290px;
+.pmpro-filter-layout .pmpro-filter-content {
+	flex: 1;
+	min-width: 0;
+	transition: flex 0.25s ease;
 }
 
-#pmpro-orders-filter-panel,
-#pmpro-subscriptions-filter-panel {
-	left: 0;
-	margin: 0;
-	max-height: calc(100vh - 64px);
+.pmpro-filter-layout .pmpro-filter-content .tablenav {
+	margin-top: var(--pmpro--spacing--medium);
+	padding-top: 0;
+}
+
+.pmpro_admin .pmpro-filter-panel {
+	flex: 0 0 0px;
+	margin: var(--pmpro--spacing--medium) 0;
 	opacity: 0;
 	overflow: hidden;
 	pointer-events: none;
-	position: absolute;
-	top: 0;
-	transition: opacity 0.25s ease, transform 0.25s ease;
 	transform: translateX(-20px);
-	width: 260px;
+	transition: flex-basis 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
 }
 
-#pmpro-orders-layout.pmpro-sidebar-open > #pmpro-orders-filter-panel,
-#pmpro-subscriptions-layout.pmpro-sidebar-open > #pmpro-subscriptions-filter-panel {
+.pmpro-filter-layout.pmpro-filter-open > .pmpro-filter-panel {
+	flex-basis: 260px;
+	margin-right: var(--pmpro--spacing--medium);
 	opacity: 1;
 	overflow-y: auto;
 	pointer-events: auto;
 	transform: translateX(0);
 }
 
-.pmpro-orders-sidebar-header {
+.pmpro_admin .pmpro-filter-panel .pmpro_section {
+	margin: 0;
+}
+
+.pmpro-filter-header {
 	align-items: center;
 	border-bottom: 1px solid var(--pmpro--border--color);
 	display: flex;
@@ -1879,12 +1880,12 @@ a.pmpro_order-renewal {
 	padding: var(--pmpro--spacing--small) 16px;
 }
 
-.pmpro-orders-sidebar-header h3 {
+.pmpro-filter-header h2 {
 	font-size: 14px;
 	margin: 0;
 }
 
-.pmpro-orders-sidebar-close {
+.pmpro-filter-close {
 	background: none;
 	border: none;
 	color: #787c82;
@@ -1892,103 +1893,114 @@ a.pmpro_order-renewal {
 	padding: 0;
 }
 
-.pmpro-orders-sidebar-close:hover {
+.pmpro-filter-close:hover {
 	color: #d63638;
 }
 
-.pmpro-orders-sidebar-body {
-	padding: 16px;
+.pmpro-filter-body {
+	padding: calc(var(--pmpro--spacing--medium) / 2);
 }
 
-.pmpro-orders-filter-section {
+.pmpro-filter-section {
 	border-bottom: 1px solid var(--pmpro--border--color);
-	margin-bottom: 16px;
-	padding-bottom: 16px;
+	padding-top: calc(var(--pmpro--spacing--medium) / 2);
+	padding-bottom: calc(var(--pmpro--spacing--medium) / 2);
 }
 
-.pmpro-orders-filter-section:last-child {
+.pmpro-filter-section:first-child {
+	padding-top: 0;
+}
+
+.pmpro-filter-section:last-child {
 	border-bottom: none;
-	margin-bottom: 0;
 	padding-bottom: 0;
 }
 
-.pmpro-orders-filter-section > label {
+.pmpro-filter-section > label {
 	display: block;
-	font-size: 12px;
-	font-weight: 600;
-	margin-bottom: 6px;
-	text-transform: uppercase;
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: var(--pmpro--spacing--small);
 }
 
-.pmpro-orders-filter-section select,
-.pmpro-orders-filter-section input[type="date"] {
+.pmpro-filter-section select,
+.pmpro-filter-section input[type="date"] {
 	width: 100%;
 }
 
-.pmpro-orders-filter-section.pmpro-orders-filter-active {
-	border-left: 3px solid #2271b1;
-	padding-left: 13px;
+.pmpro-filter-section.pmpro-filter-section-active > label::after {
+	background: var(--pmpro--color--success-text-alt);
+	border-radius: 50%;
+	content: "";
+	display: inline-block;
+	height: 8px;
+	margin-left: 6px;
+	position: relative;
+	top: -1px;
+	width: 8px;
 }
 
-.pmpro-orders-date-predefined,
-.pmpro-orders-date-custom {
+.pmpro-filter-date-predefined,
+.pmpro-filter-date-custom {
 	margin-top: 8px;
 }
 
-.pmpro-orders-date-custom {
+.pmpro-filter-date-custom {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--pmpro--spacing--small);
 }
 
-.pmpro-orders-date-custom span {
+.pmpro-filter-date-custom span {
 	font-size: 12px;
 	text-align: center;
 }
 
-.pmpro-orders-sidebar-actions {
+.pmpro-filter-actions {
 	align-items: center;
 	border-top: 1px solid var(--pmpro--border--color);
 	display: flex;
-	gap: 12px;
-	padding: 16px;
+	flex-direction: column;
+	gap: var(--pmpro--spacing--small);
+	padding: calc(var(--pmpro--spacing--medium) / 2);
 }
 
-.pmpro-orders-sidebar-actions .button-primary {
-	flex: 1;
+.pmpro-filter-actions > * {
+	text-align: center;
+	width: 100%;
 }
 
-.pmpro-orders-clear-filters {
+.pmpro-filter-clear {
 	color: #b32d2e;
 	font-size: 13px;
 	text-decoration: none;
 }
 
-.pmpro-orders-clear-filters:hover {
+.pmpro-filter-clear:hover {
 	color: #a02022;
+	border-color: #a02022;
 }
 
 @media (max-width: 782px) {
-	#pmpro-orders-layout.pmpro-sidebar-open > .pmpro_main,
-	#pmpro-subscriptions-layout.pmpro-sidebar-open > .pmpro_main {
-		margin-left: 0;
+	.pmpro-filter-layout {
+		flex-direction: column;
 	}
 
-	#pmpro-orders-filter-panel,
-	#pmpro-subscriptions-filter-panel {
+	.pmpro-filter-panel {
 		display: none;
-		max-height: none;
+		flex-basis: auto;
 		opacity: 1;
-		position: static;
+		overflow: visible;
+		pointer-events: auto;
 		transform: none;
+		transition: none;
 		width: 100%;
 	}
 
-	#pmpro-orders-layout.pmpro-sidebar-open > #pmpro-orders-filter-panel,
-	#pmpro-subscriptions-layout.pmpro-sidebar-open > #pmpro-subscriptions-filter-panel {
+	.pmpro-filter-layout.pmpro-filter-open > .pmpro-filter-panel {
 		display: block;
-		transform: none;
-		width: 100%;
+		flex-basis: auto;
+		margin-right: 0;
 	}
 }
 

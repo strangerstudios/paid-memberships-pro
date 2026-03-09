@@ -63,24 +63,30 @@ function pmpro_init_filter_sidebar(args) {
 		return;
 	}
 
-	// Move the filter panel from inside the tablenav into the layout wrapper as the sidebar.
-	$panel.prependTo($layout).css('display', '');
+	// Move the filter panel from inside the tablenav into the layout wrapper.
+	$panel.prependTo($layout);
 
-	function alignPanelTop() {
-		var $table = $layout.find('.wp-list-table');
-		if ($table.length) {
-			$panel.css('top', $table[0].offsetTop + 'px');
-		}
-	}
-	alignPanelTop();
-	jQuery(window).on('resize', alignPanelTop);
+	// Accessibility: link the toggle button to the panel.
+	var panelId = $panel.attr('id');
+	$toggleButton.attr({
+		'aria-expanded': 'false',
+		'aria-controls': panelId
+	});
+	$panel.attr('role', 'region').attr('aria-label', $panel.find('.pmpro-filter-header h2, .pmpro-filter-header h3').first().text());
 
 	function toggleSidebar(open) {
 		if (typeof open === 'undefined') {
-			open = !$layout.hasClass('pmpro-sidebar-open');
+			open = !$layout.hasClass('pmpro-filter-open');
 		}
-		$layout.toggleClass('pmpro-sidebar-open', open);
-		$toggleButton.toggleClass('active', open);
+		$layout.toggleClass('pmpro-filter-open', open);
+		$toggleButton.toggleClass('active', open).attr('aria-expanded', open);
+
+		// Move focus to the panel on open, back to the toggle on close.
+		if (open) {
+			$panel.find('.pmpro-filter-section select, .pmpro-filter-section input').first().focus();
+		} else {
+			$toggleButton.focus();
+		}
 	}
 
 	$toggleButton.on('click', function () {
@@ -93,6 +99,13 @@ function pmpro_init_filter_sidebar(args) {
 		});
 	}
 
+	// Close the panel when Escape is pressed while focus is inside it.
+	$panel.on('keydown', function (e) {
+		if (e.key === 'Escape') {
+			toggleSidebar(false);
+		}
+	});
+
 	var $selects = $panel.find('select');
 	if (settings.select2ExcludeSelector) {
 		$selects = $selects.not(settings.select2ExcludeSelector);
@@ -102,16 +115,21 @@ function pmpro_init_filter_sidebar(args) {
 	}
 
 	// Highlight filter sections that have an active (non-default) value.
-	$panel.find('.pmpro-orders-filter-section').each(function () {
+	$panel.find('.pmpro-filter-section').each(function () {
 		var $section = jQuery(this);
+		var $label = $section.find('> label');
+		var $srText = jQuery('<span class="screen-reader-text"></span>');
+		$label.append($srText);
+
 		function updateActiveClass() {
 			var hasValue = false;
-			$section.find('select, input').not(':disabled').each(function () {
+			$section.find('select[name], input[name]').not(':disabled').each(function () {
 				if (jQuery(this).val() !== '' && jQuery(this).val() !== null) {
 					hasValue = true;
 				}
 			});
-			$section.toggleClass('pmpro-orders-filter-active', hasValue);
+			$section.toggleClass('pmpro-filter-section-active', hasValue);
+			$srText.text(hasValue ? ' (active)' : '');
 		}
 		updateActiveClass();
 		$section.find('select, input').on('change', updateActiveClass);

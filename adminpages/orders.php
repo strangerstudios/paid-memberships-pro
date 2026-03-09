@@ -299,7 +299,9 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			'total'           => isset( $_REQUEST['total'] ) ? sanitize_text_field( $_REQUEST['total'] ) : '',
 		);
 		// Remove empty params to keep data clean.
-		$orders_export_filters = array_filter( $orders_export_filters );
+		$orders_export_filters = array_filter( $orders_export_filters, function( $v ) {
+		return $v !== '' && $v !== null;
+	} );
 		?>
 
 		<?php if ( current_user_can( 'pmpro_orderscsv' ) ) { ?>
@@ -318,42 +320,13 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		<?php } ?>
 
 		<?php
-		// Count active filters for the toggle button badge.
-		$active_filter_count = 0;
-		if ( ! empty( $_REQUEST['l'] ) ) {
-			$active_filter_count++;
-		}
-		if ( ! empty( $_REQUEST['status'] ) ) {
-			$active_filter_count++;
-		}
-		if ( ! empty( $_REQUEST['discount-code'] ) ) {
-			$active_filter_count++;
-		}
-		if ( ! empty( $_REQUEST['predefined-date'] ) || ( ! empty( $_REQUEST['start-date'] ) && ! empty( $_REQUEST['end-date'] ) ) ) {
-			$active_filter_count++;
-		}
-		if ( ! empty( $_REQUEST['gateway'] ) ) {
-			$active_filter_count++;
-		}
-		if ( ! empty( $_REQUEST['total'] ) ) {
-			$active_filter_count++;
-		}
-		?>
-		<button type="button" id="pmpro-orders-toggle-filters" class="page-title-action pmpro-has-icon pmpro-has-icon-filter">
-			<?php esc_html_e( 'Filters', 'paid-memberships-pro' ); ?>
-			<?php if ( $active_filter_count > 0 ) { ?>
-				<span class="pmpro-orders-filter-badge"><?php echo esc_html( $active_filter_count ); ?></span>
-			<?php } ?>
-		</button>
-
-		<?php
 			$orders_list_table = new PMPro_Orders_List_Table();
 			$orders_list_table->prepare_items();
 			$orders_list_table->search_box( __( 'Search Orders', 'paid-memberships-pro' ), 'paid-memberships-pro' );
 		?>
 
-		<div id="pmpro-orders-layout">
-			<div class="pmpro_main">
+		<div id="pmpro-orders-layout" class="pmpro-filter-layout">
+			<div class="pmpro-filter-content">
 				<?php $orders_list_table->display(); ?>
 			</div>
 		</div>

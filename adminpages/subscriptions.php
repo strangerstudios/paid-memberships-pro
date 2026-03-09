@@ -239,33 +239,13 @@ if ( 'link' === $action ) {
 		</a>
 
 		<?php
-		// Count active filters for the toggle button badge.
-		$active_filter_count = 0;
-		if ( ! empty( $_REQUEST['level'] ) ) {
-			$active_filter_count++;
-		}
-		if ( ! empty( $_REQUEST['status'] ) ) {
-			$active_filter_count++;
-		}
-		if ( ! empty( $_REQUEST['gateway'] ) ) {
-			$active_filter_count++;
-		}
-		?>
-		<button type="button" id="pmpro-subscriptions-toggle-filters" class="page-title-action pmpro-has-icon pmpro-has-icon-filter">
-			<?php esc_html_e( 'Filters', 'paid-memberships-pro' ); ?>
-			<?php if ( $active_filter_count > 0 ) { ?>
-				<span class="pmpro-orders-filter-badge"><?php echo esc_html( $active_filter_count ); ?></span>
-			<?php } ?>
-		</button>
-
-		<?php
 		$subscriptions_list_table = new PMPro_Subscriptions_List_Table();
 		$subscriptions_list_table->prepare_items();
 		$subscriptions_list_table->search_box( __( 'Search Subscriptions', 'paid-memberships-pro' ), 'paid-memberships-pro' );
 		?>
 
-		<div id="pmpro-subscriptions-layout">
-			<div class="pmpro_main">
+		<div id="pmpro-subscriptions-layout" class="pmpro-filter-layout">
+			<div class="pmpro-filter-content">
 				<?php $subscriptions_list_table->display(); ?>
 			</div>
 		</div>
