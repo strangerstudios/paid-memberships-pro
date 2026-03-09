@@ -1056,6 +1056,7 @@ class PMPro_Exports {
 			array( 'metavalues', 'last_name' ),
 			array( 'theuser', 'user_email' ),
 			array( 'theuser', 'membership' ),
+			array( 'theuser', 'membership_id' ),
 			array( 'discount_code', 'id' ),
 			array( 'discount_code', 'code' ),
 		);
@@ -1071,6 +1072,7 @@ class PMPro_Exports {
 				'metavalues|last_name'  => 'lastname',
 				'theuser|user_email'    => 'email',
 				'theuser|membership'    => 'membership',
+				'theuser|membership_id' => 'membership_id',
 				'discount_code|id'      => 'discount_code_id',
 				'discount_code|code'    => 'discount_code',
 			);
