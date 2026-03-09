@@ -757,6 +757,34 @@ class PMPro_Action_Scheduler {
 	}
 
 	/**
+	 * Dispatch an async request to process the Action Scheduler queue.
+	 *
+	 * This triggers a non-blocking background HTTP request to process
+	 * pending tasks, without running them in the current PHP process.
+	 * Use this instead of do_action('action_scheduler_run_queue') which
+	 * runs synchronously and can exhaust memory.
+	 *
+	 * @since TBD
+	 * @return void
+	 */
+	public static function dispatch_queue() {
+		// Don't dispatch if PMPro is paused or halted.
+		if ( pmpro_is_paused() || get_option( 'pmpro_as_halted', false ) ) {
+			return;
+		}
+
+		$runner = ActionScheduler_QueueRunner::instance();
+
+		// Clear the lock so we can dispatch immediately
+		// (A.S. has a 60-second heartbeat between dispatches).
+		delete_option( 'action_scheduler_lock_async-request-runner' );
+
+		// Fire a non-blocking wp_remote_post() to process the queue
+		// in a separate PHP process.
+		$runner->maybe_dispatch_async_request();
+	}
+
+	/**
 	 * Get the active source path for Action Scheduler.
 	 *
 	 * @access private

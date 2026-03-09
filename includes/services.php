@@ -37,11 +37,32 @@ add_action('wp_ajax_nopriv_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
 add_action('wp_ajax_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
 function pmpro_wp_ajax_stripe_webhook()
 {
-	require_once(dirname(__FILE__) . "/../services/stripe-webhook.php");	
-	exit;	
+	require_once dirname(__FILE__) . '/../services/stripe-webhook.php';
+	exit;
 }
 add_action('wp_ajax_nopriv_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
 add_action('wp_ajax_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
+
+/**
+ * Process a Stripe webhook event via Action Scheduler.
+ *
+ * @param string $event_id Stripe Event ID.
+ * @param bool   $livemode Whether the event was live mode.
+ */
+function pmpro_stripe_webhook_process_scheduled_event( $event_id, $livemode = false ) {
+	if ( ! class_exists( 'PMPro_Stripe_Webhook_Handler' ) ) {
+		require_once dirname(__FILE__) . '/../services/class-pmpro-stripe-webhook-handler.php';
+	}
+	PMPro_Stripe_Webhook_Handler::run(
+		array(
+			'event_id'          => $event_id,
+			'livemode'          => $livemode,
+			'scheduled_request' => true,
+		)
+	);
+}
+add_action( 'pmpro_stripe_webhook_process_scheduled_event', 'pmpro_stripe_webhook_process_scheduled_event', 10, 2 );
+
 function pmpro_wp_ajax_braintree_webhook()
 {
 	require_once(dirname(__FILE__) . "/../services/braintree-webhook.php");	
@@ -56,19 +77,6 @@ function pmpro_wp_ajax_twocheckout_ins()
 }
 add_action('wp_ajax_nopriv_twocheckout-ins', 'pmpro_wp_ajax_twocheckout_ins');
 add_action('wp_ajax_twocheckout-ins', 'pmpro_wp_ajax_twocheckout_ins');
-function pmpro_wp_ajax_memberlist_csv()
-{
-	require_once(dirname(__FILE__) . "/../adminpages/memberslist-csv.php");	
-	exit;	
-}
-add_action('wp_ajax_memberslist_csv', 'pmpro_wp_ajax_memberlist_csv');
-function pmpro_wp_ajax_orders_csv()
-{
-	require_once(dirname(__FILE__) . "/../adminpages/orders-csv.php");	
-	exit;	
-}
-add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
-
 
 /**
  * Handles the Visits, Views and Logins Export

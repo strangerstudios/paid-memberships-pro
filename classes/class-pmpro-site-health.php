@@ -15,6 +15,13 @@ class PMPro_Site_Health {
 	private static $instance;
 
 	/**
+	 * Whether file errors were found.
+	 *
+	 * @var bool
+	 */
+	private static $file_errors = false;
+
+	/**
 	 * Initialize class object and use it for future init calls.
 	 *
 	 * @since 2.6.2
@@ -36,6 +43,7 @@ class PMPro_Site_Health {
 	 */
 	public function hook() {
 		add_filter( 'debug_information', [ $this, 'debug_information' ] );
+		add_filter( 'site_status_tests', [ $this, 'register_site_health_tests' ] );
 	}
 
 	/**
@@ -45,6 +53,7 @@ class PMPro_Site_Health {
 	 */
 	public function unhook() {
 		remove_filter( 'debug_information', [ $this, 'debug_information' ] );
+		remove_filter( 'site_status_tests', [ $this, 'register_site_health_tests' ] );
 	}
 
 	/**
@@ -105,6 +114,10 @@ class PMPro_Site_Health {
 					'label' => __( 'getfile.php Usage', 'paid-memberships-pro' ),
 					'value' => self::get_getfile_usage(),
 				],
+				'pmpro-restricted-files-protection' => [
+					'label' => __( 'Restricted Files Protection', 'paid-memberships-pro' ),
+					'value' => self::get_restricted_files_protection(),
+				],
 				'pmpro-htaccess-cache-usage' => [
 					'label' => __( '.htaccess Cache Usage', 'paid-memberships-pro' ),
 					'value' => self::get_htaccess_cache_usage(),
@@ -120,7 +133,7 @@ class PMPro_Site_Health {
 				'pmpro-add-ons-incorrect-folder-names' => [
 					'label' => __( 'Incorrect Add On Folder Names', 'paid-memberships-pro' ),
 					'value' => self::get_add_ons_with_incorrect_folder_name(),
-        ],
+				],
 				'pmpro-current-site-url' => [
 					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
 					'value' => get_site_url(),
@@ -509,6 +522,31 @@ class PMPro_Site_Health {
 	}
 
 	/**
+	 * Get the restricted files protection information.
+	 *
+	 * @since TBD
+	 *
+	 * @return string The restricted files protection information.
+	 */
+	public function get_restricted_files_protection() {
+		if ( ! function_exists( 'pmpro_is_restricted_directory_protected' ) ) {
+			return __( 'Unable to determine', 'paid-memberships-pro' );
+		}
+
+		$is_protected = pmpro_is_restricted_directory_protected();
+
+		if ( true === $is_protected ) {
+			return __( 'Protected', 'paid-memberships-pro' );
+		}
+
+		if ( false === $is_protected ) {
+			return __( 'Accessible', 'paid-memberships-pro' );
+		}
+
+		return __( 'Unable to determine', 'paid-memberships-pro' );
+	}
+
+	/**
 	 * Get the .htaccess cache usage information.
 	 *
 	 * @since 2.6.4
@@ -575,7 +613,14 @@ class PMPro_Site_Health {
 		return $return_arr;
 	}
 
-	function get_add_ons_with_incorrect_folder_name() {
+	/**
+	 * Get Add Ons with incorrect folder names.
+	 *
+	 * @since TBD
+	 *
+	 * @return string Formatted string of Add Ons with incorrect folder names or a message indicating none were found.
+	 */
+	public static function get_add_ons_with_incorrect_folder_name() {
 		// Get the current list of Add Ons with the wrong name.
 		$incorrect_folder_names = PMPro_AddOns::instance()->get_add_ons_with_incorrect_folder_names();
 
@@ -585,7 +630,15 @@ class PMPro_Site_Health {
 			$errors[] = "{$addon['Name']} ( {$addon['plugin']} => {$installed_name} )";
 		}
 
-		return empty( $errors ) ? __( 'No add ons with incorrect folder names detected.', 'paid-memberships-pro' ) : implode( " | \n", $errors );
+		if ( ! empty( $errors ) ) {
+			self::$file_errors = true;
+			$formatted_response = implode( " | \n", $errors );
+		} else {
+			self::$file_errors = false;
+			$formatted_response = __( 'No Add Ons with incorrect folder names detected.', 'paid-memberships-pro' );
+		}
+
+		return $formatted_response;
 	}
 
 	/**
@@ -696,5 +749,55 @@ class PMPro_Site_Health {
 			// Let's format the issues into a semicolon-separated string.
 			return implode( '; ', array_map( 'esc_html', $issues ) ) . '.';
 		}
+	}
+
+	/**
+	 * Register Site Health tests for incorrect Add On folder names.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $tests The Site Health tests.
+	 * @return array The updated Site Health tests.
+	 */
+	public static function register_site_health_tests( $tests ) {
+		$tests['direct']['pmpro-incorrect-addon-folder-names'] = array(
+			'label' => __( 'Incorrect Paid Memberships Pro Add On Folder Names', 'paid-memberships-pro' ),
+			'test'  => array( __CLASS__, 'site_health_incorrect_addon_folder_names' ),
+		);
+		return $tests;
+	}
+
+	/**
+	 * Check for any incorrect Add On folder names and return a Site Health result.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The Site Health test result.
+	 */
+	public static function site_health_incorrect_addon_folder_names() {
+		$incorrect_folder_names = self::get_add_ons_with_incorrect_folder_name();
+		if ( ! empty( $incorrect_folder_names ) && self::$file_errors ) {
+			return array(
+				'label'       => __( 'Incorrect Paid Memberships Pro Add On Folder Names', 'paid-memberships-pro' ),
+				'status'      => 'critical',
+				'badge'       => array(
+					'label' => __( 'PMPro', 'paid-memberships-pro' ),
+					'color' => 'blue',
+				),
+				'description' => __( 'One or more Paid Memberships Pro Add Ons have incorrect folder names which may cause issues with updates and translations. Please review the Site Health Info > Paid Memberships Pro tab for details.', 'paid-memberships-pro' ),
+				'test'        => 'pmpro-incorrect-addon-folder-names',
+			);
+		}
+
+		return array(
+			'label'       => __( 'Paid Memberships Pro Add On Folder Names', 'paid-memberships-pro' ),
+			'status'      => 'good',
+			'badge'       => array(
+				'label' => __( 'PMPro', 'paid-memberships-pro' ),
+				'color' => 'blue',
+			),
+			'description' => __( 'All Paid Memberships Pro Add On folder names are correct.', 'paid-memberships-pro' ),
+			'test'        => 'pmpro-incorrect-addon-folder-names',
+		);
 	}
 }

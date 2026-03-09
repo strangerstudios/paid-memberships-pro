@@ -70,7 +70,7 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 	 * @return string The email subject.
 	 */
 	public static function get_default_subject() {
-		return sprintf( esc_html__( 'Your membership confirmation for %s', 'paid-memberships-pro' ), get_option( 'blogname' ) );
+		return esc_html__( 'Your membership confirmation for {{ sitename }}', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -81,18 +81,21 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
+		return wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}. Your membership account is now active.</p>
 
-!!membership_level_confirmation_message!!
+{% if membership_level_confirmation_message %}{{ membership_level_confirmation_message }}{% endif %}
 
 <p>Below are details about your membership account.</p>
 
-<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: !!membership_level_name!!</p>
-!!membership_expiration!! !!discount_code!!
+<p>Membership Level: {{ membership_level_name }}</p>
 
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ) );
+{% if membership_expiration %}{{ membership_expiration }}{% endif %}
+
+{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}
+
+<p>Log in to your membership account here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
@@ -127,18 +130,21 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 	public static function get_email_template_variables_with_description() {
 
 		return array(
-			'!!display_name!!' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'!!user_login!!' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'!!user_email!!' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_level_confirmation_message!!' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
-			'!!membership_cost!!' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
-			'!!membership_expiration!!' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
-			'!!order_id!!' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
-			'!!order_date!!' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
-			'!!order_url!!' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
-			'!!discount_code!!' => esc_html__( 'The discount code used for the order.', 'paid-memberships-pro' ),
+			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_level_confirmation_message }}' => esc_html__( 'The confirmation message for the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_cost }}' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_expiration }}' => esc_html__( 'The expiration date of the membership level.', 'paid-memberships-pro' ),
+			'{{ order_id }}' => esc_html__( 'The ID of the order.', 'paid-memberships-pro' ),
+			'{{ order_date }}' => esc_html__( 'The date of the order.', 'paid-memberships-pro' ),
+			'{{ order_url }}' => esc_html__( 'The URL of the order.', 'paid-memberships-pro' ),
+			'{{ discount_code }}' => esc_html__( 'The discount code for the order displayed as a formatted paragraph with label.', 'paid-memberships-pro' ),
+			'{{ discount_code_name }}' => esc_html__( 'The name of the discount code used for the order.', 'paid-memberships-pro' ),
+			'{{ discount_code_id }}' => esc_html__( 'The ID of the discount code used for the order.', 'paid-memberships-pro' ),
+			'{{ order_gateway }}' => esc_html__( 'The gateway used for the order.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -169,8 +175,12 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 		}
 
 		$discount_code = '';
+		$discount_code_name = '';
+		$discount_code_id = '';
 		if( $order->getDiscountCode() ) {
 			$discount_code = "<p>" . esc_html__("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
+			$discount_code_name = $order->discount_code->code;
+			$discount_code_id = $order->discount_code->id;
 		}
 
 
@@ -189,6 +199,9 @@ class PMPro_Email_Template_Checkout_Free extends PMPro_Email_Template {
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 			'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 			'discount_code' => $discount_code,
+			'discount_code_name' => $discount_code_name,
+			'discount_code_id' => $discount_code_id,
+			'order_gateway' => $order->gateway,
 		);
 
 		return $email_template_variables;

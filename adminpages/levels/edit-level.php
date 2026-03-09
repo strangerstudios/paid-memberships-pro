@@ -283,7 +283,7 @@ if (!empty($page_msg)) { ?>
 									),
 									'code' => array(),
 								);
-								echo sprintf(wp_kses(__('Use the placeholder variable <code>%1$s</code> in your checkout <a href="%2$s" title="Edit Membership Email Templates">email templates</a> to include this information.', 'paid-memberships-pro'), $allowed_confirmation_in_email_html), '!!membership_level_confirmation_message!!', esc_url(add_query_arg('page', 'pmpro-emailtemplates', admin_url('admin.php'))));
+								echo sprintf(wp_kses(__('Use the placeholder variable <code>%1$s</code> in your checkout <a href="%2$s" title="Edit Membership Email Templates">email templates</a> to include this information.', 'paid-memberships-pro'), $allowed_confirmation_in_email_html), '{{ membership_level_confirmation_message }}', esc_url(add_query_arg('page', 'pmpro-emailtemplates', admin_url('admin.php'))));
 								?>
 							</p>
 						</td>

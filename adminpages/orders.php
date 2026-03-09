@@ -288,9 +288,8 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => -1, 'edit' => 1 ), admin_url('admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
 		<?php
-		// build the export URL
-		$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
-		$url_params = array(
+		// Gather current filters for the async export handler.
+		$orders_export_filters = array(
 			'filter'          => isset( $_REQUEST['filter'] ) ? trim( sanitize_text_field( $_REQUEST['filter'] ) ) : 'all',
 			's'               => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '',
 			'l'               => isset( $_REQUEST['l'] ) ? sanitize_text_field( $_REQUEST['l'] ) : false,
@@ -304,11 +303,21 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			'discount-code'	  => isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : false,
 			'status'          => isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '',
 		);
-		$export_url = add_query_arg( $url_params, $export_url );
 		?>
 
 		<?php if ( current_user_can( 'pmpro_orderscsv' ) ) { ?>
-			<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+			<button type="button"
+				class="page-title-action pmpro-has-icon pmpro-has-icon-download pmpro-export-button"
+				aria-live="polite"
+				data-status="idle"
+				data-export-id=""
+				data-type="orders"
+				data-start-url="<?php echo esc_url( rest_url( 'pmpro/v1/export/start' ) ); ?>"
+				data-status-url="<?php echo esc_url( rest_url( 'pmpro/v1/export/status' ) ); ?>"
+				data-nonce="<?php echo esc_attr( wp_create_nonce( 'wp_rest' ) ); ?>"
+				data-filters='<?php echo esc_attr( wp_json_encode( $orders_export_filters ) ); ?>'>
+				<?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?>
+			</button>
 		<?php } ?>
 
 		<?php

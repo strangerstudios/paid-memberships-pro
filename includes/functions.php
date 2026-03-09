@@ -44,6 +44,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
+	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
 }
 pmpro_setDBTables();
 
@@ -2455,6 +2456,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				l.confirmation,
 				l.expiration_number,
 				l.expiration_period,
+				l.allow_signups,
 				mu.initial_payment,
 				mu.billing_amount,
 				mu.cycle_number,
@@ -2462,6 +2464,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.billing_limit,
 				mu.trial_amount,
 				mu.trial_limit,
+				mu.status,
 				mu.code_id as code_id,
 				UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate,
 				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
@@ -4200,6 +4203,7 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 /**
  * Checks if a webhook is running
  * @since 2.5
+ * @since TBD Calling this function to read webhook status is deprecated.
  * @param string $gateway If passed in, requires that specific gateway.
  * @param bool $set Set to true to set the constant and fire the action hook.
  * @return bool True or false if a PMPro webhook set the constant or not.
@@ -4207,10 +4211,19 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 function pmpro_doing_webhook( $gateway = null, $set = false ){
 	// If second param is set, set things up.
 	if ( ! empty( $set ) ) {
-		define( 'PMPRO_DOING_WEBHOOK', $gateway );
+		if ( ! defined( 'PMPRO_DOING_WEBHOOK' ) ) {
+			define( 'PMPRO_DOING_WEBHOOK', $gateway );
+		}
 		do_action( 'pmpro_doing_webhook', $gateway );
 		return true;
 	}
+
+	// Reading webhook status through this function is deprecated.
+	_deprecated_argument(
+		__FUNCTION__,
+		'TBD',
+		esc_html__( 'Reading webhook status via pmpro_doing_webhook() is deprecated and will be removed in a future version of Paid Memberships Pro.', 'paid-memberships-pro' )
+	);
 
 	// Otherwise, check if we were already set up.
 	if( defined( 'PMPRO_DOING_WEBHOOK' ) && !empty ( PMPRO_DOING_WEBHOOK ) ){
@@ -4232,11 +4245,17 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 /**
  * Called once a webhook has been run but was not handled.
  *
+ * @param string|null $gateway Optional. The gateway the webhook was not handled for.
+ *
  * @return void
  *
  * @since 2.8
  */
-function pmpro_unhandled_webhook(){
+function pmpro_unhandled_webhook( $gateway = null ) {
+	if ( null === $gateway ) {
+		$gateway = defined( 'PMPRO_DOING_WEBHOOK' ) ? PMPRO_DOING_WEBHOOK : '';
+	}
+
 	/**
 	 * Allow hooking into after a webhook has been run but was not handled.
 	 *
@@ -4244,7 +4263,7 @@ function pmpro_unhandled_webhook(){
 	 *
 	 * @param string $gateway The gateway the webhook was not handled for.
 	 */
-	do_action( 'pmpro_unhandled_webhook', PMPRO_DOING_WEBHOOK );
+	do_action( 'pmpro_unhandled_webhook', $gateway );
 }
 
 /**
@@ -4267,7 +4286,33 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 		$sanitized_string = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $sanitized_string );
 	}
 
+	// Preserve Liquid-style control tags through wp_kses() sanitization.
+	// Only {% %} tags are preserved (conditions use < > operators that wp_kses encodes).
+	// Output tags {{ }} are NOT preserved so wp_kses can still sanitize their contents.
+	$liquid_placeholders = array();
+	if ( 'pmpro_email' === $context ) {
+		$placeholder_id = wp_rand();
+		$sanitized_string = preg_replace_callback(
+			'/(\{%.*?%\})/s',
+			function ( $matches ) use ( &$liquid_placeholders, $placeholder_id ) {
+				$placeholder = '%%PMPRO_LIQUID_' . $placeholder_id . '_' . count( $liquid_placeholders ) . '%%';
+				$liquid_placeholders[ $placeholder ] = $matches[0];
+				return $placeholder;
+			},
+			$sanitized_string
+		);
+	}
+
 	$sanitized_string = wp_kses( $sanitized_string, $context );
+
+	// Restore Liquid template tags.
+	if ( ! empty( $liquid_placeholders ) ) {
+		$sanitized_string = str_replace(
+			array_keys( $liquid_placeholders ),
+			array_values( $liquid_placeholders ),
+			$sanitized_string
+		);
+	}
 
 	/**
 	 * Allow overriding the normal pmpro_kses functionality for a context.
