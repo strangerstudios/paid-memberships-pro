@@ -1806,7 +1806,211 @@ a.pmpro_order-renewal {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.pmpro_admin-pmpro-orders h1.wp-heading-inline {
+/* Sidebar filters (orders + subscriptions) */
+.pmpro_admin .pmpro-has-icon-filter:before {
+	content: "\f536";
+}
+
+.pmpro-filter-toggle {
+	position: relative;
+}
+
+.pmpro-filter-toggle.active {
+	background: #f0f0f1;
+	border-color: #0071a1;
+	color: #0071a1;
+}
+
+.pmpro-filter-badge {
+	align-items: center;
+	background: var(--pmpro--color--success-text-alt);
+	border-radius: 50%;
+	color: #fff;
+	display: inline-flex;
+	font-size: 11px;
+	font-weight: 600;
+	height: 18px;
+	justify-content: center;
+	line-height: 1;
+	margin-left: 4px;
+	min-width: 18px;
+	position: relative;
+	top: -1px;
+}
+
+.pmpro-filter-layout {
+	clear: both;
+	display: flex;
+}
+
+.pmpro-filter-layout .pmpro-filter-content {
+	flex: 1;
+	min-width: 0;
+	transition: flex 0.25s ease;
+}
+
+.pmpro-filter-layout .pmpro-filter-content .tablenav {
+	margin-top: var(--pmpro--spacing--medium);
+	padding-top: 0;
+}
+
+.pmpro_admin .pmpro-filter-panel {
+	flex: 0 0 0px;
+	margin: var(--pmpro--spacing--medium) 0;
+	opacity: 0;
+	overflow: hidden;
+	pointer-events: none;
+	transform: translateX(-20px);
+	transition: flex-basis 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+}
+
+.pmpro-filter-layout.pmpro-filter-open > .pmpro-filter-panel {
+	flex-basis: 260px;
+	margin-right: var(--pmpro--spacing--medium);
+	opacity: 1;
+	overflow-y: auto;
+	pointer-events: auto;
+	transform: translateX(0);
+}
+
+.pmpro_admin .pmpro-filter-panel .pmpro_section {
+	margin: 0;
+}
+
+.pmpro-filter-header {
+	align-items: center;
+	border-bottom: 1px solid var(--pmpro--border--color);
+	display: flex;
+	justify-content: space-between;
+	padding: var(--pmpro--spacing--small) 16px;
+}
+
+.pmpro-filter-header h2 {
+	font-size: 14px;
+	margin: 0;
+}
+
+.pmpro-filter-close {
+	background: none;
+	border: none;
+	color: #787c82;
+	cursor: pointer;
+	padding: 0;
+}
+
+.pmpro-filter-close:hover {
+	color: #d63638;
+}
+
+.pmpro-filter-body {
+	padding: calc(var(--pmpro--spacing--medium) / 2);
+}
+
+.pmpro-filter-section {
+	border-bottom: 1px solid var(--pmpro--border--color);
+	padding-top: calc(var(--pmpro--spacing--medium) / 2);
+	padding-bottom: calc(var(--pmpro--spacing--medium) / 2);
+}
+
+.pmpro-filter-section:first-child {
+	padding-top: 0;
+}
+
+.pmpro-filter-section:last-child {
+	border-bottom: none;
+	padding-bottom: 0;
+}
+
+.pmpro-filter-section > label {
+	display: block;
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: var(--pmpro--spacing--small);
+}
+
+.pmpro-filter-section select,
+.pmpro-filter-section input[type="date"] {
+	width: 100%;
+}
+
+.pmpro-filter-section.pmpro-filter-section-active > label::after {
+	background: var(--pmpro--color--success-text-alt);
+	border-radius: 50%;
+	content: "";
+	display: inline-block;
+	height: 8px;
+	margin-left: 6px;
+	position: relative;
+	top: -1px;
+	width: 8px;
+}
+
+.pmpro-filter-date-predefined,
+.pmpro-filter-date-custom {
+	margin-top: 8px;
+}
+
+.pmpro-filter-date-custom {
+	display: flex;
+	flex-direction: column;
+	gap: var(--pmpro--spacing--small);
+}
+
+.pmpro-filter-date-custom span {
+	font-size: 12px;
+	text-align: center;
+}
+
+.pmpro-filter-actions {
+	align-items: center;
+	border-top: 1px solid var(--pmpro--border--color);
+	display: flex;
+	flex-direction: column;
+	gap: var(--pmpro--spacing--small);
+	padding: calc(var(--pmpro--spacing--medium) / 2);
+}
+
+.pmpro-filter-actions > * {
+	text-align: center;
+	width: 100%;
+}
+
+.pmpro-filter-clear {
+	color: #b32d2e;
+	font-size: 13px;
+	text-decoration: none;
+}
+
+.pmpro-filter-clear:hover {
+	color: #a02022;
+	border-color: #a02022;
+}
+
+@media (max-width: 782px) {
+	.pmpro-filter-layout {
+		flex-direction: column;
+	}
+
+	.pmpro-filter-panel {
+		display: none;
+		flex-basis: auto;
+		opacity: 1;
+		overflow: visible;
+		pointer-events: auto;
+		transform: none;
+		transition: none;
+		width: 100%;
+	}
+
+	.pmpro-filter-layout.pmpro-filter-open > .pmpro-filter-panel {
+		display: block;
+		flex-basis: auto;
+		margin-right: 0;
+	}
+}
+
+.pmpro_admin-pmpro-orders h1.wp-heading-inline,
+.pmpro_admin-pmpro-subscriptions h1.wp-heading-inline {
 	margin-top: 0;
 }
 

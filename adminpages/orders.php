@@ -278,8 +278,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 	}
 } else {
 	// Show list of orders.
-	$now = current_time( 'timestamp' );
-	$thisyear = date( 'Y', $now );
 	?>
 
 	<form id="order-list-form" method="get" action="">
@@ -290,19 +288,20 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		<?php
 		// Gather current filters for the async export handler.
 		$orders_export_filters = array(
-			'filter'          => isset( $_REQUEST['filter'] ) ? trim( sanitize_text_field( $_REQUEST['filter'] ) ) : 'all',
 			's'               => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '',
-			'l'               => isset( $_REQUEST['l'] ) ? sanitize_text_field( $_REQUEST['l'] ) : false,
-			'start-month'     => isset( $_REQUEST['start-month'] ) ? intval( $_REQUEST['start-month'] ) : '1',
-			'start-day'       => isset( $_REQUEST['start-day'] ) ? intval( $_REQUEST['start-day'] ) : '1',
-			'start-year'      => isset( $_REQUEST['start-year'] ) ? intval( $_REQUEST['start-year'] ) : date( 'Y', $now ),
-			'end-month'       => isset( $_REQUEST['end-month'] ) ? intval( $_REQUEST['end-month'] ) : date( 'n', $now ),
-			'end-day'         => isset( $_REQUEST['end-day'] ) ? intval( $_REQUEST['end-day'] ) : date( 'j', $now ),
-			'end-year'        => isset( $_REQUEST['end-year'] ) ? intval( $_REQUEST['end-year'] ) : date( 'Y', $now ),
-			'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : 'This Month',
-			'discount-code'	  => isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : false,
+			'l'               => isset( $_REQUEST['l'] ) ? intval( $_REQUEST['l'] ) : '',
 			'status'          => isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '',
+			'discount-code'   => isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : '',
+			'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : '',
+			'start-date'      => isset( $_REQUEST['start-date'] ) ? sanitize_text_field( $_REQUEST['start-date'] ) : '',
+			'end-date'        => isset( $_REQUEST['end-date'] ) ? sanitize_text_field( $_REQUEST['end-date'] ) : '',
+			'gateway'         => isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '',
+			'total'           => isset( $_REQUEST['total'] ) ? sanitize_text_field( $_REQUEST['total'] ) : '',
 		);
+		// Remove empty params to keep data clean.
+		$orders_export_filters = array_filter( $orders_export_filters, function( $v ) {
+		return $v !== '' && $v !== null;
+	} );
 		?>
 
 		<?php if ( current_user_can( 'pmpro_orderscsv' ) ) { ?>
@@ -324,8 +323,13 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			$orders_list_table = new PMPro_Orders_List_Table();
 			$orders_list_table->prepare_items();
 			$orders_list_table->search_box( __( 'Search Orders', 'paid-memberships-pro' ), 'paid-memberships-pro' );
-			$orders_list_table->display();
 		?>
+
+		<div id="pmpro-orders-layout" class="pmpro-filter-layout">
+			<div class="pmpro-filter-content">
+				<?php $orders_list_table->display(); ?>
+			</div>
+		</div>
 	</form>
 <?php }
 

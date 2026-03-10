@@ -249,6 +249,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
 		$level = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : false;
 		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
 		$items_per_page = $this->get_items_per_page( 'pmpro_subscriptions_per_page' );
 		/**
@@ -274,6 +275,13 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 				$condition .= ' AND sm.meta_value IS NOT NULL';
 			} else {
 				$condition .= ' AND s.status = "' . esc_sql( $status ) . '"';
+			}
+		}
+		if ( ! empty( $gateway ) ) {
+			if ( 'no_gateway' === $gateway ) {
+				$condition .= ' AND ( s.gateway = "" OR s.gateway IS NULL )';
+			} else {
+				$condition .= ' AND s.gateway = "' . esc_sql( $gateway ) . '"';
 			}
 		}
 
@@ -344,55 +352,128 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @param string $which, helps you decide if you add the markup after (bottom) or before (top) the list array( '' => 'Select a Level' )
 	 */
 	function extra_tablenav( $which ) {
-		if ( $which == 'top' ) {
-
-			if ( isset( $_REQUEST['level'] ) ) {
-				$l = intval( $_REQUEST['level'] );
-			} else {
-				$l = false;
-			}
-
-			if ( isset( $_REQUEST['status'] ) ) {
-				$status = sanitize_text_field( $_REQUEST['status'] );
-			} else {
-				$status = '';
-			}
-
-			// The code that goes before the table is here
-			if ( ! empty( $pmpro_msg ) ) { ?>
-				<div id="message" class="
-				<?php
-				if ( $pmpro_msgt == 'success' ) {
-					echo 'updated fade';
-				} else {
-					echo 'error';
-				}
-				?>
-				"><p><?php echo wp_kses_post( $pmpro_msg ); ?></p></div>
-			<?php } ?>
-				<?php
-				// Note: Only subscriptions belonging to current levels can be filtered. There is no option for subscriptions belonging to deleted levels.
-				$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
-				?>
-				<?php esc_html_e( 'Show', 'paid-memberships-pro' ); ?>
-				<select id="level" name="level">
-					<option value=""><?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?></option>
-					<?php foreach ( $levels as $level ) { ?>
-						<option
-							value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
-					<?php } ?>
-				</select>
-				<span id="filterby"><?php esc_html_e( 'filter by ', 'paid-memberships-pro' ); ?></span>
-				<select id="status" name="status">
-					<option value=""><?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?></option>
-					<option value="active" <?php selected( $status, 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
-					<option value="cancelled" <?php selected( $status, 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
-					<option value="sync_error" <?php selected( $status, 'sync_error' ); ?>><?php esc_html_e( 'Sync Error', 'paid-memberships-pro' ); ?></option>
-				</select>
-				<input type="hidden" name="page" value="pmpro-subscriptions"/>
-				<input id="submit" class="button" type="submit" value="<?php esc_attr_e( 'Filter', 'paid-memberships-pro' ); ?>"/>
-			<?php
+		if ( $which !== 'top' ) {
+			return;
 		}
+
+		global $wpdb;
+
+		// Read current filter values from request.
+		$l       = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : 0;
+		$status  = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
+
+		// Count active filters for the toggle button badge.
+		$active_filter_count = 0;
+		if ( ! empty( $l ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $status ) ) {
+			$active_filter_count++;
+		}
+		if ( ! empty( $gateway ) ) {
+			$active_filter_count++;
+		}
+
+		// Prepare data for filter value selectors.
+		$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
+
+		// Get gateways that have been used in subscriptions.
+		$used_gateway_slugs = $wpdb->get_col( "SELECT DISTINCT gateway FROM $wpdb->pmpro_subscriptions WHERE gateway != '' AND gateway IS NOT NULL" );
+		$has_no_gateway     = (bool) $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_subscriptions WHERE gateway = '' OR gateway IS NULL" );
+		$known_gateways     = pmpro_gateways();
+		$gateway_options    = array();
+		foreach ( $used_gateway_slugs as $gw_slug ) {
+			$gateway_options[ $gw_slug ] = isset( $known_gateways[ $gw_slug ] ) ? $known_gateways[ $gw_slug ] : $gw_slug;
+		}
+		if ( $has_no_gateway ) {
+			$gateway_options['no_gateway'] = __( 'No Gateway', 'paid-memberships-pro' );
+		}
+		?>
+
+		<button type="button" id="pmpro-subscriptions-toggle-filters" class="button button-primary pmpro-has-icon pmpro-has-icon-filter pmpro-filter-toggle">
+			<?php esc_html_e( 'Filter Results', 'paid-memberships-pro' ); ?>
+			<?php if ( $active_filter_count > 0 ) { ?>
+				<span class="pmpro-filter-badge"><?php echo esc_html( $active_filter_count ); ?></span>
+			<?php } ?>
+		</button>
+		<?php if ( $active_filter_count > 0 ) { ?>
+			<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'Clear Filters', 'paid-memberships-pro' ); ?></a>
+		<?php } ?>
+
+		<input type="hidden" name="page" value="pmpro-subscriptions" />
+
+		<div id="pmpro-subscriptions-filter-panel" class="pmpro-filter-panel">
+			<div class="pmpro_section">
+				<div class="pmpro-filter-header">
+					<h2><?php esc_html_e( 'Filters', 'paid-memberships-pro' ); ?></h2>
+					<button type="button" id="pmpro-subscriptions-close-filters" class="pmpro-filter-close" aria-label="<?php esc_attr_e( 'Close filters', 'paid-memberships-pro' ); ?>">
+						<span class="dashicons dashicons-no-alt"></span>
+					</button>
+				</div>
+
+				<div class="pmpro-filter-body">
+					<?php // Level filter. ?>
+					<div class="pmpro-filter-section">
+						<label for="pmpro-filter-level"><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></label>
+						<select id="pmpro-filter-level" name="level">
+							<option value=""><?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?></option>
+							<?php foreach ( $levels as $level_obj ) { ?>
+								<option value="<?php echo esc_attr( $level_obj->id ); ?>" <?php selected( $l, $level_obj->id ); ?>><?php echo esc_html( $level_obj->name ); ?></option>
+							<?php } ?>
+						</select>
+					</div>
+
+					<?php // Status filter. ?>
+					<div class="pmpro-filter-section">
+						<label for="pmpro-filter-status"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></label>
+						<select id="pmpro-filter-status" name="status">
+							<option value=""><?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?></option>
+							<option value="active" <?php selected( $status, 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
+							<option value="cancelled" <?php selected( $status, 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
+							<option value="sync_error" <?php selected( $status, 'sync_error' ); ?>><?php esc_html_e( 'Sync Error', 'paid-memberships-pro' ); ?></option>
+						</select>
+					</div>
+
+					<?php // Gateway filter. ?>
+					<?php if ( ! empty( $gateway_options ) ) { ?>
+						<div class="pmpro-filter-section">
+							<label for="pmpro-filter-gateway"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></label>
+							<select id="pmpro-filter-gateway" name="gateway">
+								<option value=""><?php esc_html_e( 'All Gateways', 'paid-memberships-pro' ); ?></option>
+								<?php foreach ( $gateway_options as $gw_slug => $gw_name ) { ?>
+									<option value="<?php echo esc_attr( $gw_slug ); ?>" <?php selected( $gateway, $gw_slug ); ?>><?php echo esc_html( $gw_name ); ?></option>
+								<?php } ?>
+							</select>
+						</div>
+					<?php } ?>
+
+				</div>
+
+				<div class="pmpro-filter-actions">
+					<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Apply Filters', 'paid-memberships-pro' ); ?>" />
+					<?php if ( $active_filter_count > 0 ) { ?>
+						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions' ), admin_url( 'admin.php' ) ) ); ?>" class="pmpro-filter-clear"><?php esc_html_e( 'Clear All', 'paid-memberships-pro' ); ?></a>
+					<?php } ?>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		jQuery(document).ready(function($) {
+			if ( typeof window.pmproInitFilterSidebar !== 'function' ) {
+				return;
+			}
+
+			window.pmproInitFilterSidebar({
+				panelSelector: '#pmpro-subscriptions-filter-panel',
+				layoutSelector: '#pmpro-subscriptions-layout',
+				toggleButtonSelector: '#pmpro-subscriptions-toggle-filters',
+				closeButtonSelector: '#pmpro-subscriptions-close-filters'
+			});
+		});
+		</script>
+		<?php
 	}
 
 	/**

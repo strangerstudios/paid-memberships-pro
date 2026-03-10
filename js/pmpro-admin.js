@@ -38,6 +38,131 @@ function pmpro_toggle_elements_by_selector(selector, checked) {
 }
 
 /*
+ * Initialize sidebar filters for list table screens.
+ */
+function pmpro_init_filter_sidebar(args) {
+	var settings = jQuery.extend(
+		{
+			panelSelector: '',
+			layoutSelector: '',
+			toggleButtonSelector: '',
+			closeButtonSelector: '',
+			select2ExcludeSelector: '',
+			dateModeSelector: '',
+			datePredefinedSelector: '',
+			dateCustomSelector: ''
+		},
+		args || {}
+	);
+
+	var $panel = jQuery(settings.panelSelector);
+	var $layout = jQuery(settings.layoutSelector);
+	var $toggleButton = jQuery(settings.toggleButtonSelector);
+
+	if (!$panel.length || !$layout.length || !$toggleButton.length) {
+		return;
+	}
+
+	// Move the filter panel from inside the tablenav into the layout wrapper.
+	$panel.prependTo($layout);
+
+	// Accessibility: link the toggle button to the panel.
+	var panelId = $panel.attr('id');
+	$toggleButton.attr({
+		'aria-expanded': 'false',
+		'aria-controls': panelId
+	});
+	$panel.attr('role', 'region').attr('aria-label', $panel.find('.pmpro-filter-header h2, .pmpro-filter-header h3').first().text());
+
+	function toggleSidebar(open) {
+		if (typeof open === 'undefined') {
+			open = !$layout.hasClass('pmpro-filter-open');
+		}
+		$layout.toggleClass('pmpro-filter-open', open);
+		$toggleButton.toggleClass('active', open).attr('aria-expanded', open);
+
+		// Move focus to the panel on open, back to the toggle on close.
+		if (open) {
+			$panel.find('.pmpro-filter-section select, .pmpro-filter-section input').first().focus();
+		} else {
+			$toggleButton.focus();
+		}
+	}
+
+	$toggleButton.on('click', function () {
+		toggleSidebar();
+	});
+
+	if (settings.closeButtonSelector) {
+		jQuery(settings.closeButtonSelector).on('click', function () {
+			toggleSidebar(false);
+		});
+	}
+
+	// Close the panel when Escape is pressed while focus is inside it.
+	$panel.on('keydown', function (e) {
+		if (e.key === 'Escape') {
+			toggleSidebar(false);
+		}
+	});
+
+	var $selects = $panel.find('select');
+	if (settings.select2ExcludeSelector) {
+		$selects = $selects.not(settings.select2ExcludeSelector);
+	}
+	if (typeof $selects.select2 === 'function') {
+		$selects.select2({ width: '100%', minimumResultsForSearch: 5 });
+	}
+
+	// Highlight filter sections that have an active (non-default) value.
+	$panel.find('.pmpro-filter-section').each(function () {
+		var $section = jQuery(this);
+		var $label = $section.find('> label');
+		var $srText = jQuery('<span class="screen-reader-text"></span>');
+		$label.append($srText);
+
+		function updateActiveClass() {
+			var hasValue = false;
+			$section.find('select[name], input[name]').not(':disabled').each(function () {
+				if (jQuery(this).val() !== '' && jQuery(this).val() !== null) {
+					hasValue = true;
+				}
+			});
+			$section.toggleClass('pmpro-filter-section-active', hasValue);
+			$srText.text(hasValue ? ' (active)' : '');
+		}
+		updateActiveClass();
+		$section.find('select, input').on('change', updateActiveClass);
+	});
+
+	// Date mode toggle.
+	if (
+		settings.dateModeSelector &&
+		settings.datePredefinedSelector &&
+		settings.dateCustomSelector
+	) {
+		jQuery(settings.dateModeSelector).on('change', function () {
+			var mode = jQuery(this).val();
+			var $predefined = $panel.find(settings.datePredefinedSelector);
+			var $custom = $panel.find(settings.dateCustomSelector);
+
+			if (mode === 'predefined') {
+				$predefined.show().find('select').prop('disabled', false);
+				$custom.hide().find('input').prop('disabled', true);
+			} else if (mode === 'custom') {
+				$predefined.hide().find('select').prop('disabled', true);
+				$custom.show().find('input').prop('disabled', false);
+			} else {
+				$predefined.hide().find('select').prop('disabled', true);
+				$custom.hide().find('input').prop('disabled', true);
+			}
+		});
+	}
+}
+
+window.pmproInitFilterSidebar = pmpro_init_filter_sidebar;
+
+/*
  * Find inputs with a custom attribute pmpro_toggle_trigger_for,
  * and bind change to toggle the specified elements.
  * @since v2.1

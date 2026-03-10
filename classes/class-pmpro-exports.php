@@ -1289,17 +1289,14 @@ class PMPro_Exports {
 	protected function sanitize_orders_filters( $args ) {
 		$filters                    = array();
 		$filters['s']               = isset( $args['s'] ) ? trim( sanitize_text_field( $args['s'] ) ) : '';
-		$filters['filter']          = isset( $args['filter'] ) ? sanitize_text_field( $args['filter'] ) : 'all';
 		$filters['l']               = isset( $args['l'] ) ? intval( $args['l'] ) : 0;
 		$filters['discount_code']   = isset( $args['discount-code'] ) ? intval( $args['discount-code'] ) : 0;
 		$filters['status']          = isset( $args['status'] ) ? sanitize_text_field( $args['status'] ) : '';
-		$filters['predefined_date'] = isset( $args['predefined-date'] ) ? sanitize_text_field( $args['predefined-date'] ) : 'This Month';
-		$filters['start_month']     = isset( $args['start-month'] ) ? intval( $args['start-month'] ) : 1;
-		$filters['start_day']       = isset( $args['start-day'] ) ? intval( $args['start-day'] ) : 1;
-		$filters['start_year']      = isset( $args['start-year'] ) ? intval( $args['start-year'] ) : (int) date_i18n( 'Y' );
-		$filters['end_month']       = isset( $args['end-month'] ) ? intval( $args['end-month'] ) : (int) date_i18n( 'n' );
-		$filters['end_day']         = isset( $args['end-day'] ) ? intval( $args['end-day'] ) : (int) date_i18n( 'j' );
-		$filters['end_year']        = isset( $args['end-year'] ) ? intval( $args['end-year'] ) : (int) date_i18n( 'Y' );
+		$filters['predefined_date'] = isset( $args['predefined-date'] ) ? sanitize_text_field( $args['predefined-date'] ) : '';
+		$filters['start_date']      = isset( $args['start-date'] ) ? sanitize_text_field( $args['start-date'] ) : '';
+		$filters['end_date']        = isset( $args['end-date'] ) ? sanitize_text_field( $args['end-date'] ) : '';
+		$filters['gateway']         = isset( $args['gateway'] ) ? sanitize_text_field( $args['gateway'] ) : '';
+		$filters['total']           = isset( $args['total'] ) ? sanitize_text_field( $args['total'] ) : '';
 		$filters['limit']           = isset( $args['limit'] ) ? intval( $args['limit'] ) : 0;
 		$filters['pn']              = isset( $args['pn'] ) ? intval( $args['pn'] ) : 1;
 
@@ -1324,64 +1321,94 @@ class PMPro_Exports {
 	protected function build_orders_filter_condition( $filters ) {
 		global $wpdb;
 
-		$filter    = isset( $filters['filter'] ) ? $filters['filter'] : 'all';
-		$sql       = '1=1';
-		$params    = array();
-		$join      = array();
-		$now       = current_time( 'timestamp' );
-		$startdate = '';
-		$enddate   = '';
+		$conditions = array();
+		$params     = array();
+		$join       = array();
+		$now        = current_time( 'timestamp' );
 
-		switch ( $filter ) {
-			case 'within-a-date-range':
-				$startdate = sprintf( '%04d-%02d-%02d', max( 1, (int) $filters['start_year'] ), max( 1, (int) $filters['start_month'] ), max( 1, (int) $filters['start_day'] ) );
-				$enddate   = sprintf( '%04d-%02d-%02d', max( 1, (int) $filters['end_year'] ), max( 1, (int) $filters['end_month'] ), max( 1, (int) $filters['end_day'] ) );
-				$startdate = get_gmt_from_date( $startdate . ' 00:00:00' );
-				$enddate   = get_gmt_from_date( $enddate . ' 23:59:59' );
-				$sql       = 'o.timestamp BETWEEN %s AND %s';
-				$params    = array( $startdate, $enddate );
-				break;
-			case 'predefined-date-range':
-				$predefined = isset( $filters['predefined_date'] ) ? $filters['predefined_date'] : 'This Month';
-				if ( 'Last Month' === $predefined ) {
-					$startdate = date_i18n( 'Y-m-d', strtotime( 'first day of last month', $now ) );
-					$enddate   = date_i18n( 'Y-m-d', strtotime( 'last day of last month', $now ) );
-				} elseif ( 'This Year' === $predefined ) {
-					$year      = date_i18n( 'Y', $now );
-					$startdate = date_i18n( 'Y-m-d', strtotime( "first day of January $year", $now ) );
-					$enddate   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", $now ) );
-				} elseif ( 'Last Year' === $predefined ) {
-					$year      = (int) date_i18n( 'Y', $now ) - 1;
-					$startdate = date_i18n( 'Y-m-d', strtotime( "first day of January $year", $now ) );
-					$enddate   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", $now ) );
-				} else {
-					$startdate = date_i18n( 'Y-m-d', strtotime( 'first day of this month', $now ) );
-					$enddate   = date_i18n( 'Y-m-d', strtotime( 'last day of this month', $now ) );
-				}
-				$startdate = get_gmt_from_date( $startdate . ' 00:00:00' );
-				$enddate   = get_gmt_from_date( $enddate . ' 23:59:59' );
-				$sql       = 'o.timestamp BETWEEN %s AND %s';
-				$params    = array( $startdate, $enddate );
-				break;
-			case 'within-a-level':
-				$sql    = 'o.membership_id = %d';
-				$params = array( (int) $filters['l'] );
-				break;
-			case 'with-discount-code':
-				$sql    = 'dc.code_id = %d';
-				$params = array( (int) $filters['discount_code'] );
-				$join[] = "LEFT JOIN {$wpdb->pmpro_discount_codes_uses} dc ON o.id = dc.order_id";
-				break;
-			case 'within-a-status':
-				$sql    = 'o.status = %s';
-				$params = array( sanitize_text_field( $filters['status'] ) );
-				break;
-			case 'only-paid':
-				$sql = 'o.total > 0';
-				break;
-			case 'only-free':
-				$sql = 'o.total = 0';
-				break;
+		// Level filter.
+		if ( ! empty( $filters['l'] ) ) {
+			$conditions[] = 'o.membership_id = %d';
+			$params[]     = (int) $filters['l'];
+		}
+
+		// Status filter.
+		if ( ! empty( $filters['status'] ) ) {
+			$conditions[] = 'o.status = %s';
+			$params[]     = sanitize_text_field( $filters['status'] );
+		}
+
+		// Discount code filter.
+		if ( ! empty( $filters['discount_code'] ) ) {
+			$conditions[] = 'dc.code_id = %d';
+			$params[]     = (int) $filters['discount_code'];
+			$join[]       = "LEFT JOIN {$wpdb->pmpro_discount_codes_uses} dc ON o.id = dc.order_id";
+		}
+
+		// Date filter (predefined or custom range).
+		$predefined_date = isset( $filters['predefined_date'] ) ? $filters['predefined_date'] : '';
+		$start_date      = isset( $filters['start_date'] ) ? $filters['start_date'] : '';
+		$end_date        = isset( $filters['end_date'] ) ? $filters['end_date'] : '';
+
+		if ( ! empty( $predefined_date ) ) {
+			$startdate = '';
+			$enddate   = '';
+			if ( 'Last Month' === $predefined_date ) {
+				$startdate = date_i18n( 'Y-m-d', strtotime( 'first day of last month', $now ) );
+				$enddate   = date_i18n( 'Y-m-d', strtotime( 'last day of last month', $now ) );
+			} elseif ( 'This Year' === $predefined_date ) {
+				$year      = date_i18n( 'Y', $now );
+				$startdate = date_i18n( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+				$enddate   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", $now ) );
+			} elseif ( 'Last Year' === $predefined_date ) {
+				$year      = (int) date_i18n( 'Y', $now ) - 1;
+				$startdate = date_i18n( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+				$enddate   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", $now ) );
+			} else {
+				// Default: This Month.
+				$startdate = date_i18n( 'Y-m-d', strtotime( 'first day of this month', $now ) );
+				$enddate   = date_i18n( 'Y-m-d', strtotime( 'last day of this month', $now ) );
+			}
+
+			if ( ! empty( $startdate ) && ! empty( $enddate ) ) {
+				$startdate    = get_gmt_from_date( $startdate . ' 00:00:00' );
+				$enddate      = get_gmt_from_date( $enddate . ' 23:59:59' );
+				$conditions[] = 'o.timestamp BETWEEN %s AND %s';
+				$params[]     = $startdate;
+				$params[]     = $enddate;
+			}
+		} elseif ( ! empty( $start_date ) && ! empty( $end_date ) ) {
+			$startdate    = get_gmt_from_date( $start_date . ' 00:00:00' );
+			$enddate      = get_gmt_from_date( $end_date . ' 23:59:59' );
+			$conditions[] = 'o.timestamp BETWEEN %s AND %s';
+			$params[]     = $startdate;
+			$params[]     = $enddate;
+		}
+
+		// Gateway filter.
+		if ( ! empty( $filters['gateway'] ) ) {
+			$gateway = sanitize_text_field( $filters['gateway'] );
+			if ( 'no_gateway' === $gateway ) {
+				$conditions[] = '(o.gateway = "" OR o.gateway IS NULL)';
+			} else {
+				$conditions[] = 'o.gateway = %s';
+				$params[]     = $gateway;
+			}
+		}
+
+		// Total filter.
+		$total = isset( $filters['total'] ) ? $filters['total'] : '';
+		if ( 'paid' === $total ) {
+			$conditions[] = 'o.total > 0';
+		} elseif ( 'free' === $total ) {
+			$conditions[] = 'o.total = 0';
+		}
+
+		// Combine conditions with AND.
+		if ( empty( $conditions ) ) {
+			$sql = '1=1';
+		} else {
+			$sql = implode( ' AND ', $conditions );
 		}
 
 		return array(

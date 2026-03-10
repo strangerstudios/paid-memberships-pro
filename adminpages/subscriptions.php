@@ -239,11 +239,16 @@ if ( 'link' === $action ) {
 		</a>
 
 		<?php
-			$subscriptions_list_table = new PMPro_Subscriptions_List_Table();
-			$subscriptions_list_table->prepare_items();
-			$subscriptions_list_table->search_box( __( 'Search Subscriptions', 'paid-memberships-pro' ), 'paid-memberships-pro' );
-			$subscriptions_list_table->display();
+		$subscriptions_list_table = new PMPro_Subscriptions_List_Table();
+		$subscriptions_list_table->prepare_items();
+		$subscriptions_list_table->search_box( __( 'Search Subscriptions', 'paid-memberships-pro' ), 'paid-memberships-pro' );
 		?>
+
+		<div id="pmpro-subscriptions-layout" class="pmpro-filter-layout">
+			<div class="pmpro-filter-content">
+				<?php $subscriptions_list_table->display(); ?>
+			</div>
+		</div>
 	</form>
 	<?php
 }
