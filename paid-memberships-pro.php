@@ -18,7 +18,7 @@
 // version constant
 define( 'PMPRO_VERSION', '3.6.99' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
-define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
+define( 'PMPRO_MIN_PHP_VERSION', '7.4' );
 
 /*
 	Includes
