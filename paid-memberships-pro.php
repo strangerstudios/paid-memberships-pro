@@ -188,6 +188,12 @@ add_action( 'plugins_loaded', function() {
 
 } );
 
+// Load the Pause Engine.
+require_once PMPRO_DIR . '/classes/class-pmpro-pause-engine.php';
+add_action( 'plugins_loaded', function() {
+	PMPro_Pause_Engine::instance();
+}, 5 );
+
 // Add On Management (Deprecated in 3.6, to be removed in 4.0.0)
 require_once( PMPRO_DIR . '/includes/addons.php' );
 
