@@ -186,7 +186,7 @@ function pmpro_admin_bar_menu() {
 	$wp_admin_bar->add_menu(
 		array(
 			'id' => 'paid-memberships-pro',
-			'title' => '<div id="pmpro-ab-icon"><span class="screen-reader-text">Paid Memberships Pro</span></div>',
+			'title' => '<span id="pmpro-ab-icon"></span>' . __( 'Memberships', 'paid-memberships-pro' ),
 			'href' => admin_url( 'admin.php?page=' . $top_menu_page )
 		)
 	);
@@ -462,11 +462,11 @@ function pmpro_admin_membership_access_menu_bar() {
 	// Set the title and the option value.
 	$title = '<span class="pmpro_admin-view pmpro_admin-view-' . esc_attr( $admin_membership_access ) . '">';
 	if ( 'no' === $admin_membership_access ) {
-		$title .= '<span class="ab-icon dashicons dashicons-lock non-member-icon"></span>' . esc_html__( 'View: No Access', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-lock non-member-icon" aria-hidden="true"></span>' . esc_html__( 'View', 'paid-memberships-pro' ) . '<span class="screen-reader-text">: ' . esc_html__( 'No Access', 'paid-memberships-pro' ) . '</span>';
 	} elseif ( 'yes' === $admin_membership_access ) {
-		$title .= '<span class="ab-icon dashicons dashicons-unlock has-access-icon"></span>' . esc_html__( 'View: With Access', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-unlock has-access-icon" aria-hidden="true"></span>' . esc_html__( 'View', 'paid-memberships-pro' ) . '<span class="screen-reader-text">: ' . esc_html__( 'With Access', 'paid-memberships-pro' ) . '</span>';
 	} else {
-		$title .= '<span class="ab-icon dashicons dashicons-admin-users current-access-icon"></span>' . esc_html__( 'View: My Access', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-admin-users current-access-icon" aria-hidden="true"></span>' . esc_html__( 'View', 'paid-memberships-pro' ) . '<span class="screen-reader-text">: ' . esc_html__( 'My Access', 'paid-memberships-pro' ) . '</span>';
 	}
 	$title .= '</span>';
 
