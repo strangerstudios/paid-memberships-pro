@@ -278,7 +278,11 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			}
 		}
 		if ( ! empty( $gateway ) ) {
-			$condition .= ' AND s.gateway = "' . esc_sql( $gateway ) . '"';
+			if ( 'no_gateway' === $gateway ) {
+				$condition .= ' AND ( s.gateway = "" OR s.gateway IS NULL )';
+			} else {
+				$condition .= ' AND s.gateway = "' . esc_sql( $gateway ) . '"';
+			}
 		}
 
 		$orderby = '';
@@ -375,11 +379,15 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 
 		// Get gateways that have been used in subscriptions.
-		$used_gateway_slugs = $wpdb->get_col( "SELECT DISTINCT gateway FROM $wpdb->pmpro_subscriptions WHERE gateway != ''" );
+		$used_gateway_slugs = $wpdb->get_col( "SELECT DISTINCT gateway FROM $wpdb->pmpro_subscriptions WHERE gateway != '' AND gateway IS NOT NULL" );
+		$has_no_gateway     = (bool) $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_subscriptions WHERE gateway = '' OR gateway IS NULL" );
 		$known_gateways     = pmpro_gateways();
 		$gateway_options    = array();
 		foreach ( $used_gateway_slugs as $gw_slug ) {
 			$gateway_options[ $gw_slug ] = isset( $known_gateways[ $gw_slug ] ) ? $known_gateways[ $gw_slug ] : $gw_slug;
+		}
+		if ( $has_no_gateway ) {
+			$gateway_options['no_gateway'] = __( 'No Gateway', 'paid-memberships-pro' );
 		}
 		?>
 

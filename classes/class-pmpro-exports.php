@@ -1385,8 +1385,13 @@ class PMPro_Exports {
 
 		// Gateway filter.
 		if ( ! empty( $filters['gateway'] ) ) {
-			$conditions[] = 'o.gateway = %s';
-			$params[]     = sanitize_text_field( $filters['gateway'] );
+			$gateway = sanitize_text_field( $filters['gateway'] );
+			if ( 'no_gateway' === $gateway ) {
+				$conditions[] = '(o.gateway = "" OR o.gateway IS NULL)';
+			} else {
+				$conditions[] = 'o.gateway = %s';
+				$params[]     = $gateway;
+			}
 		}
 
 		// Total filter.

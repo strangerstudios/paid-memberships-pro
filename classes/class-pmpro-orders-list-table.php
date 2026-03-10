@@ -337,7 +337,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		// Gateway filter.
 		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
 		if ( ! empty( $gateway ) ) {
-			$conditions[] = $wpdb->prepare( "o.gateway = %s", $gateway );
+			if ( 'no_gateway' === $gateway ) {
+				$conditions[] = '(o.gateway = "" OR o.gateway IS NULL)';
+			} else {
+				$conditions[] = $wpdb->prepare( "o.gateway = %s", $gateway );
+			}
 		}
 
 		// Total filter.
@@ -552,11 +556,15 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		$codes    = $wpdb->get_results( "SELECT id, code FROM $wpdb->pmpro_discount_codes ORDER BY id DESC", OBJECT );
 
 		// Get gateways that have been used in orders.
-		$used_gateway_slugs = $wpdb->get_col( "SELECT DISTINCT gateway FROM $wpdb->pmpro_membership_orders WHERE gateway != ''" );
+		$used_gateway_slugs = $wpdb->get_col( "SELECT DISTINCT gateway FROM $wpdb->pmpro_membership_orders WHERE gateway != '' AND gateway IS NOT NULL" );
+		$has_no_gateway     = (bool) $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE gateway = '' OR gateway IS NULL" );
 		$known_gateways     = pmpro_gateways();
 		$gateway_options    = array();
 		foreach ( $used_gateway_slugs as $gw_slug ) {
 			$gateway_options[ $gw_slug ] = isset( $known_gateways[ $gw_slug ] ) ? $known_gateways[ $gw_slug ] : $gw_slug;
+		}
+		if ( $has_no_gateway ) {
+			$gateway_options['no_gateway'] = __( 'No Gateway', 'paid-memberships-pro' );
 		}
 
 		// Determine the date mode for the date filter.
