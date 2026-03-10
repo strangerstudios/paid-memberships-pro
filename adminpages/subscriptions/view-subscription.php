@@ -2,7 +2,7 @@
 /**
  * View a single subscription in the admin.
  *
- * @since TBD
+ * @since 3.7
  */
 
 global $wpdb;
@@ -273,7 +273,7 @@ $sub_membership_level_id = $subscription->get_membership_level_id();
 					/**
 					 * Allow filtering of actions on the single subscription view admin screen.
 					 *
-					 * @since TBD
+					 * @since 3.7
 					 *
 					 * @param array $subscription_actions The array of subscription actions.
 					 * @param PMPro_Subscription $subscription The subscription object.

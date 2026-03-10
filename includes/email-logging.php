@@ -3,7 +3,7 @@
 /**
  * Log an email.
  *
- * @since TBD
+ * @since 3.7
  * 
  * @param PMProEmail $email The email object
  * @param bool $result Result of wp_mail()
@@ -70,7 +70,7 @@ add_action( 'pmpro_after_email_sent', 'pmpro_log_email', 10, 2 );
 /**
  * Capture the error message from a failed wp_mail() call.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param WP_Error $error The error object.
  */
@@ -82,7 +82,7 @@ add_action( 'wp_mail_failed', 'pmpro_capture_wp_mail_error' );
 /**
  * Clear any stale wp_mail error after a successful send.
  *
- * @since TBD
+ * @since 3.7
  */
 function pmpro_clear_wp_mail_error() {
 	pmpro_last_wp_mail_error( '' );
@@ -92,7 +92,7 @@ add_action( 'wp_mail_succeeded', 'pmpro_clear_wp_mail_error' );
 /**
  * Get or set the last wp_mail error message.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param string|null $set Pass a string to set the error, or null to just retrieve it.
  * @return string The last error message, or empty string if none.
@@ -178,7 +178,7 @@ add_action( 'pmpro_schedule_daily', 'pmpro_auto_purge_email_log_entries' );
 /**
  * Render email log details HTML for modal display
  *
- * @since TBD
+ * @since 3.7
  * @param object $log Email log object from database
  * @return string HTML output
  */
@@ -305,7 +305,7 @@ function pmpro_render_email_log_details( $log ) {
 /**
  * Render email log modal HTML structure
  *
- * @since TBD
+ * @since 3.7
  * @return string HTML output
  */
 function pmpro_render_email_log_modal() {

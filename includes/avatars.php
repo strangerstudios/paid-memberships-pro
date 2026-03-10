@@ -4,7 +4,7 @@
  *
  * Handles custom profile picture uploads for members.
  *
- * @since TBD
+ * @since 3.7
  */
 
 // Exit if accessed directly.
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Display "enable profile pictures" checkbox on membership level edit page.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param object $level The membership level being edited.
  */
@@ -45,7 +45,7 @@ add_action( 'pmpro_membership_level_after_other_settings', 'pmpro_membership_lev
 /**
  * Save "enable local avatars" checkbox on membership level edit page.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int $level_id The ID of the membership level being saved.
  */
@@ -63,7 +63,7 @@ add_action( 'pmpro_save_membership_level', 'pmpro_save_membership_level_avatar',
  *
  * Uses a request-level static cache to avoid repeated DB queries.
  *
- * @since TBD
+ * @since 3.7
  *
  * @return array Array of level IDs with avatars enabled.
  */
@@ -92,7 +92,7 @@ function pmpro_avatar_get_enabled_levels() {
 /**
  * Check whether a user has a level with "user avatars" enabled.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int $user_id The ID of the user to check.
  * @return bool        Whether the user has a level with "user avatars" enabled.
@@ -115,7 +115,7 @@ function pmpro_user_has_avatar_level( $user_id ) {
 	/**
 	 * Filter whether a user has a level with "user avatars" enabled.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param bool $has_avatar_level Whether the user has a level with "user avatars" enabled.
 	 * @param int  $user_id          The ID of the user to check.
@@ -126,7 +126,7 @@ function pmpro_user_has_avatar_level( $user_id ) {
 /**
  * Get the allowed file types for avatar uploads.
  *
- * @since TBD
+ * @since 3.7
  *
  * @return array Array of allowed file extensions.
  */
@@ -137,7 +137,7 @@ function pmpro_avatar_get_allowed_file_types() {
 /**
  * Get the maximum file size for avatar uploads in bytes.
  *
- * @since TBD
+ * @since 3.7
  *
  * @return int Maximum file size in bytes.
  */
@@ -150,7 +150,7 @@ function pmpro_avatar_get_max_file_size() {
  *
  * We store a "full" version that is cropped and scaled to this max size.
  *
- * @since TBD
+ * @since 3.7
  *
  * @return int Maximum width/height in pixels.
  */
@@ -164,7 +164,7 @@ function pmpro_avatar_get_max_dimension() {
  * These are the only sizes we generate and cache.
  * Requested sizes are rounded to the nearest bucket.
  *
- * @since TBD
+ * @since 3.7
  *
  * @return array Array of allowed bucket sizes in pixels.
  */
@@ -178,7 +178,7 @@ function pmpro_avatar_get_bucket_sizes() {
  * For retina support, we double the requested size first,
  * then round to the nearest bucket.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int $size The requested size in pixels.
  * @return int      The bucketed size to use.
@@ -210,7 +210,7 @@ function pmpro_avatar_get_bucketed_size( $size ) {
 /**
  * Get the path to the avatars upload directory.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int    $user_id Optional. User ID for user-specific path.
  * @param string $file    Optional. Filename to append.
@@ -234,7 +234,7 @@ function pmpro_avatar_get_upload_dir( $user_id = 0, $file = '' ) {
 /**
  * Get the URL to the avatars upload directory.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int    $user_id Optional. User ID for user-specific path.
  * @param string $file    Optional. Filename to append.
@@ -263,7 +263,7 @@ function pmpro_avatar_get_upload_url( $user_id = 0, $file = '' ) {
 /**
  * Set up the avatars directory.
  *
- * @since TBD
+ * @since 3.7
  */
 function pmpro_avatar_setup_directory() {
 	$avatar_dir = pmpro_avatar_get_upload_dir();
@@ -283,7 +283,7 @@ function pmpro_avatar_setup_directory() {
 /**
  * Validate an avatar upload.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param string $file_key The key in $_FILES array.
  * @return true|WP_Error   True if valid, WP_Error if not.
@@ -367,7 +367,7 @@ function pmpro_avatar_validate_upload( $file_key = 'pmpro_avatar' ) {
 /**
  * Get the file extension to use for saved avatars.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param string $original_ext The original file extension.
  * @return string              The extension to use for saving.
@@ -394,7 +394,7 @@ function pmpro_avatar_get_save_extension( $original_ext ) {
  * Stores the processed avatar as avatar.{ext} and pre-generates bucket sizes.
  * The original uploaded file is discarded after processing.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int    $user_id  The user ID.
  * @param string $file_key The key in $_FILES array.
@@ -506,7 +506,7 @@ function pmpro_avatar_process_upload( $user_id, $file_key = 'pmpro_avatar' ) {
 	/**
 	 * Fires after an avatar has been successfully uploaded and saved.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param int   $user_id     The user ID.
 	 * @param array $avatar_data The saved avatar data.
@@ -519,7 +519,7 @@ function pmpro_avatar_process_upload( $user_id, $file_key = 'pmpro_avatar' ) {
 /**
  * Delete avatar files for a user.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int $user_id The user ID.
  */
@@ -545,7 +545,7 @@ function pmpro_avatar_delete_files( $user_id ) {
 /**
  * Delete a user's avatar completely.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int $user_id The user ID.
  * @return bool        True on success.
@@ -560,7 +560,7 @@ function pmpro_avatar_delete( $user_id ) {
 	/**
 	 * Fires after an avatar has been deleted.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param int $user_id The user ID.
 	 */
@@ -572,7 +572,7 @@ function pmpro_avatar_delete( $user_id ) {
 /**
  * Get a user's avatar data.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int $user_id The user ID.
  * @return array|false Avatar data array or false if not set.
@@ -602,7 +602,7 @@ function pmpro_avatar_get( $user_id ) {
  *
  * Uses bucketed sizes for efficiency. Generates missing sizes on demand.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int $user_id The user ID.
  * @param int $size    The desired size in pixels.
@@ -672,7 +672,7 @@ function pmpro_avatar_get_url( $user_id, $size = 96 ) {
 /**
  * Filter the normal avatar data and show our avatar if set.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param array $args        Arguments passed to get_avatar_data(), after processing.
  * @param mixed $id_or_email The avatar to retrieve.
@@ -713,7 +713,7 @@ add_filter( 'get_avatar_data', 'pmpro_get_avatar_data', 100, 2 );
 /**
  * Get user ID from various avatar identifier types.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param mixed $id_or_email User ID, email, WP_User, WP_Post, or WP_Comment object.
  * @return int|false         User ID or false if not found.
@@ -751,7 +751,7 @@ function pmpro_avatar_get_user_id_from_identifier( $id_or_email ) {
  * Used by both pmpro_display_avatar_field() and pmpro_change_avatar_form()
  * to avoid duplicating the same jQuery event handlers.
  *
- * @since TBD
+ * @since 3.7
  */
 function pmpro_avatar_inline_js() {
 	?>
@@ -795,7 +795,7 @@ function pmpro_avatar_inline_js() {
 /**
  * Display the avatar field for a user.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int  $user_id      The user ID.
  * @param bool $show_default Whether to show the default avatar as preview when no custom avatar is set.
@@ -930,7 +930,7 @@ function pmpro_display_avatar_field( $user_id, $show_default = true ) {
 /**
  * Save the avatar field for a user.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int $user_id The user ID.
  * @return bool|WP_Error True on success, false if not applicable, WP_Error on failure.
@@ -975,7 +975,7 @@ function pmpro_save_avatar_field( $user_id ) {
 /**
  * Clean up avatar files when a user is deleted.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param int $user_id The user ID being deleted.
  */
@@ -994,7 +994,7 @@ add_action( 'wpmu_delete_user', 'pmpro_avatar_cleanup_on_user_delete' );
 /**
  * Allow avatar file uploads through pmpro_check_upload validation.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param bool  $allow_upload Whether to allow the upload.
  * @param array $file         The file info.
@@ -1024,7 +1024,7 @@ add_filter( 'pmpro_allow_uploading_non_user_field_file', 'pmpro_avatar_allow_upl
  *
  * Hooked to init to process the form before headers are sent.
  *
- * @since TBD
+ * @since 3.7
  */
 function pmpro_change_avatar_process() {
 	global $current_user, $pmpro_msg, $pmpro_msgt;
@@ -1080,7 +1080,7 @@ add_action( 'init', 'pmpro_change_avatar_process' );
 /**
  * Display a frontend Change Avatar form.
  *
- * @since TBD
+ * @since 3.7
  */
 function pmpro_change_avatar_form() {
 	global $current_user, $pmpro_msg, $pmpro_msgt;
@@ -1224,7 +1224,7 @@ function pmpro_change_avatar_form() {
 /**
  * Add "Change Profile Picture" link to the account page profile actions.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param array $links The profile action links.
  * @return array       The modified profile action links.
@@ -1271,7 +1271,7 @@ add_filter( 'pmpro_account_profile_action_links', 'pmpro_avatar_add_account_acti
  *
  * Replaces the default Gravatar description with a link to the PMPro member edit page.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param string  $description  The description displayed under the profile picture.
  * @param WP_User $profile_user The user being edited.

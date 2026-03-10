@@ -9,7 +9,7 @@
  * Add suggested Privacy Policy language for PMPro
  *
  * @since 1.9.5
- * @since TBD Add information about email logging to the suggested language.
+ * @since 3.7 Add information about email logging to the suggested language.
  */
 function pmpro_add_privacy_policy_content() {	
 	// Check for support.
@@ -156,7 +156,7 @@ add_filter( 'wp_privacy_personal_data_exporters', 'pmpro_register_personal_data_
  * Personal data exporter for PMPro data.
  *
  * @since 1.9.5
- * @since TBD Add support for exporting email log entries.
+ * @since 3.7 Add support for exporting email log entries.
  *
  */
 function pmpro_personal_data_exporter( $email_address, $page = 1 ) {

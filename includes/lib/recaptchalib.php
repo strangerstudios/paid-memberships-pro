@@ -125,7 +125,7 @@ class pmpro_ReCaptcha
 				/**
 				 * Set the minimum score to mark the submission as successful.
 				 * 
-				 * @since TBD
+				 * @since 3.7
 				 * 
 				 * @param float $min_score Defaults to 0.5 and supports 0.0 - 1.0 values. Any values outside this will default to 0.5.
 				 */

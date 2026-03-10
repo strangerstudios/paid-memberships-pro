@@ -507,7 +507,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * Add extra markup in the toolbars before or after the list.
 	 * Renders the stackable filter UI.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $which 'top' or 'bottom'.
 	 */

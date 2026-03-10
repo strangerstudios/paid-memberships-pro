@@ -327,7 +327,7 @@
 					_doing_it_wrong(
 						__METHOD__,
 						esc_html__( 'The pmpro_kses callback is not hooked to pmpro_email_body. Email sanitization is required for security. Use the pmpro_kses filter hook to customize allowed HTML. In a future version of Paid Memberships Pro, pmpro_kses will be called unconditionally.', 'paid-memberships-pro' ),
-						'TBD'
+						'3.7'
 					);
 				}
 			}
@@ -337,7 +337,7 @@
 			/**
 			 * Fires after an email is sent via wp_mail.
 			 *
-			 * @since TBD
+			 * @since 3.7
 			 *
 			 * @param PMProEmail $this The email object.
 			 * @param bool $result Whether the email was sent successfully.

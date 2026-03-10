@@ -524,7 +524,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the restricted files protection information.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @return string The restricted files protection information.
 	 */
@@ -616,7 +616,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get Add Ons with incorrect folder names.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @return string Formatted string of Add Ons with incorrect folder names or a message indicating none were found.
 	 */
@@ -754,7 +754,7 @@ class PMPro_Site_Health {
 	/**
 	 * Register Site Health tests for incorrect Add On folder names.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param array $tests The Site Health tests.
 	 * @return array The updated Site Health tests.
@@ -770,7 +770,7 @@ class PMPro_Site_Health {
 	/**
 	 * Check for any incorrect Add On folder names and return a Site Health result.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @return array The Site Health test result.
 	 */

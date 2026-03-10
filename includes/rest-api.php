@@ -297,7 +297,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 *
 		 * Example:.../wp-json/pmpro/v1/export/start
 		 *
-		 * @since TBD
+		 * @since 3.7
 		 */
 		register_rest_route( $pmpro_namespace, '/export/start',
 			array(
@@ -342,7 +342,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 *
 		 * Example: .../wp-json/pmpro/v1/export/status?type=members&export_id=12345
 		 *
-		 * @since TBD
+		 * @since 3.7
 		 */
 		register_rest_route( $pmpro_namespace, '/export/status',
 			array(
@@ -378,7 +378,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get email log details.
-		 * @since TBD
+		 * @since 3.7
 		 * Example: https://example.com/wp-json/pmpro/v1/email_log_popup
 		 */
 		register_rest_route( $pmpro_namespace, '/email_log_popup',
@@ -401,7 +401,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get search results for the quick search bar.
 		 *
-		 * @since TBD
+		 * @since 3.7
 		 *
 		 * Example: https://example.com/wp-json/pmpro/v1/quick_search
 		 */
@@ -1305,7 +1305,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get email log details.
 		 *
-		 * @since TBD
+		 * @since 3.7
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response The REST response.
@@ -1339,7 +1339,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get the quick search results for a search string.
 		 *
-		 * @since TBD
+		 * @since 3.7
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response The REST response.

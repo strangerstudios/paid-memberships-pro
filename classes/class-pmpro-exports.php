@@ -8,7 +8,7 @@
  *
  * @package pmpro_plugin
  * @subpackage classes
- * @since TBD
+ * @since 3.7
  */
 
 class PMPro_Exports {

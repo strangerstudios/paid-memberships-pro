@@ -764,7 +764,7 @@ class PMPro_Action_Scheduler {
 	 * Use this instead of do_action('action_scheduler_run_queue') which
 	 * runs synchronously and can exhaust memory.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 * @return void
 	 */
 	public static function dispatch_queue() {

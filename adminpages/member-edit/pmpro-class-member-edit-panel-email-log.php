@@ -4,7 +4,7 @@
  *
  * @package Paid Memberships Pro
  * @subpackage Admin
- * @since TBD
+ * @since 3.7
  */
 
 class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {

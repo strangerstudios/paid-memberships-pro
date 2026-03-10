@@ -158,7 +158,7 @@ class PMPro_Stripe_Webhook_Handler {
 		/**
 		 * Filter whether Stripe webhook events should be processed asynchronously.
 		 *
-		 * @since TBD
+		 * @since 3.7
 		 *
 		 * @param bool   $async_processing_enabled Whether deferred Stripe events should be queued for Action Scheduler processing.
 		 * @param object $pmpro_stripe_event       The Stripe event object currently being processed.

@@ -5,14 +5,14 @@
  * Handles {{ variable | filter }} output tags and
  * {% if %} / {% elsif %} / {% else %} / {% endif %} conditionals.
  *
- * @since TBD
+ * @since 3.7
  */
 class PMPro_Liquid_Renderer {
 
 	/**
 	 * Process Liquid-style template syntax in the given content.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $content The content to process.
 	 * @param array  $data    Key-value pairs for variable resolution.
@@ -38,7 +38,7 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * Returns a map of filter name => array( 'callback' => callable, 'description' => string ).
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @return array The filter registry.
 	 */
@@ -79,7 +79,7 @@ class PMPro_Liquid_Renderer {
 	 * Finds outermost conditional blocks first, evaluates them,
 	 * and recursively processes nested conditionals in the winning segment.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $content The content containing conditional blocks.
 	 * @param array  $data    Key-value pairs for variable resolution.
@@ -139,7 +139,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Evaluate a conditional block and return the content of the winning branch.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $condition   The condition expression from the {% if %} tag.
 	 * @param string $block_inner The content between {% if %} and {% endif %}.
@@ -212,7 +212,7 @@ class PMPro_Liquid_Renderer {
 	 * Supports truthy checks, comparison operators (==, !=, >, <, >=, <=),
 	 * empty checks, and boolean operators (and, or).
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $condition_string The condition expression to evaluate.
 	 * @param array  $data             Key-value pairs for variable resolution.
@@ -234,7 +234,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Evaluate a single condition without top-level boolean chaining.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $condition_string The condition expression to evaluate.
 	 * @param array  $data             Key-value pairs for variable resolution.
@@ -286,7 +286,7 @@ class PMPro_Liquid_Renderer {
 	 * Liquid evaluates mixed boolean operators from right-to-left and does not support
 	 * parenthesized grouping in conditional tags.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param array $boolean_chain The parsed boolean chain.
 	 * @param array $data          Key-value pairs for variable resolution.
@@ -329,7 +329,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Parse a single comparison condition, respecting quoted strings.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $condition_string The condition expression to parse.
 	 * @return array|null {
@@ -410,7 +410,7 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * Returns null when no top-level boolean chain is present.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $condition_string The condition expression to parse.
 	 * @return array|null {
@@ -493,7 +493,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Detect a boolean operator at a specific offset.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $condition_string The condition expression.
 	 * @param int    $offset           The character offset to inspect.
@@ -524,7 +524,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Determine whether a character at a given offset is escaped.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $string The source string.
 	 * @param int    $offset The offset to inspect.
@@ -546,7 +546,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Resolve a value token to its actual value.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $token The token to resolve.
 	 * @param array  $data  Key-value pairs for variable resolution.
@@ -606,7 +606,7 @@ class PMPro_Liquid_Renderer {
 	 *
 	 * Mirrors legacy email usermeta handling.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param mixed $usermeta Raw usermeta value.
 	 * @return mixed Normalized value or null when empty.
@@ -630,7 +630,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Process all {{ variable }} and {{ variable | filter }} output tags.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $content The content containing output tags.
 	 * @param array  $data    Key-value pairs for variable resolution.
@@ -662,7 +662,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Split an output expression by filter pipes, respecting quoted strings.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $expression The expression inside {{ ... }}.
 	 * @return array The split expression parts.
@@ -707,7 +707,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Apply a single filter to a value.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param mixed  $value             The current value.
 	 * @param string $filter_expression The filter expression (e.g., "upcase" or "default: 'N/A'").
@@ -740,7 +740,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Parse filter arguments from a colon-separated argument string.
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param string $args_string  The arguments string (everything after the colon).
 	 * @param array  $data         Key-value pairs for variable resolution.

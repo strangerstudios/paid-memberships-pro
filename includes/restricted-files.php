@@ -154,7 +154,7 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
  * Core implementation for checking if the PMPro restricted files directory
  * is protected from direct access.
  *
- * @since TBD
+ * @since 3.7
  *
  * @return bool|null True if protected, false if accessible, null if unable to determine.
  */
@@ -220,7 +220,7 @@ function pmpro_is_restricted_directory_protected() {
 /**
  * Grab a file in the restricted directory that can be used for access testing.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param string $directory The directory path to search.
  * @return string|null File path if found, null otherwise.

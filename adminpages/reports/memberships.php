@@ -54,7 +54,7 @@ function pmpro_report_memberships_widget() {
 
 		/**
 		 * Filter the periods for the memberships widget.
-		 * @since TBD
+		 * @since 3.7
 		 * @param array $reports The array of periods.
 		 * @return array $reports The array of periods.
 		 */
@@ -577,7 +577,7 @@ function pmpro_getSignups( $period = false, $levels = 'all' ) {
 			_doing_it_wrong(
 				__FUNCTION__,
 				__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
-				'TBD'
+				'3.7'
 			);
 			return 0;
 		}
@@ -588,7 +588,7 @@ function pmpro_getSignups( $period = false, $levels = 'all' ) {
 			_doing_it_wrong(
 				__FUNCTION__,
 				__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
-				'TBD'
+				'3.7'
 			);
 			return 0;
 		}

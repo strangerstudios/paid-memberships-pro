@@ -2,7 +2,7 @@
 /**
  * Link a subscription in the admin.
  *
- * @since TBD
+ * @since 3.7
  */
 
 // Link a subscription.
