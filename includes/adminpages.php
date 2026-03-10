@@ -51,8 +51,12 @@ function pmpro_add_pages() {
 	}
 
 	// Top level menu
-	add_menu_page( __( 'Memberships', 'paid-memberships-pro' ), __( 'Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, 'dashicons-groups', 30 );
-	
+	$svg_path = PMPRO_DIR . '/images/pmpro-icon.svg';
+	$icon_url = file_exists( $svg_path )
+		? 'data:image/svg+xml;base64,' . base64_encode( file_get_contents( $svg_path ) )
+		: 'dashicons-groups';
+	add_menu_page( __( 'Memberships', 'paid-memberships-pro' ), __( 'Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, $icon_url, 30 );
+
 	// Main submenus
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
 	$members_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
@@ -182,9 +186,9 @@ function pmpro_admin_bar_menu() {
 	$wp_admin_bar->add_menu(
 		array(
 			'id' => 'paid-memberships-pro',
-			'title' => __( '<span class="ab-icon"></span>Memberships', 'paid-memberships-pro' ),
+			'title' => '<div id="pmpro-ab-icon"><span class="screen-reader-text">Paid Memberships Pro</span></div>',
 			'href' => admin_url( 'admin.php?page=' . $top_menu_page )
-		) 
+		)
 	);
 
 	// Add menu item for Dashboard.
