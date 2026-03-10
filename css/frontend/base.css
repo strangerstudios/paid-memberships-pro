@@ -17,26 +17,26 @@
 	--pmpro--color--base-2: #ededed;
 	--pmpro--color--contrast: #222222;
 	--pmpro--color--border: #777777;
-	--pmpro--color--info-background: #d9edf7;
-	--pmpro--color--info-border: #bce8f1;
-	--pmpro--color--info-text: #31708f;
-	--pmpro--color--info-link: #245269;
-	--pmpro--color--success-background: #d4edda;
-	--pmpro--color--success-border: #c3e6cb;
-	--pmpro--color--success-text: #0F441C;
-	--pmpro--color--success-link: #2b542c;
-	--pmpro--color--error-background: #f8d7da;
-	--pmpro--color--error-border: #f5c6cb;
-	--pmpro--color--error-text: #721c24;
-	--pmpro--color--error-link: #843534;
-	--pmpro--color--alert-background: #fff8e0;
-	--pmpro--color--alert-border: #ffeeba;
-	--pmpro--color--alert-text: #6C5101;
-	--pmpro--color--alert-link: #66512c;
-	--pmpro--color--alert2-background: #ffecd9;
-    --pmpro--color--alert2-border: #ffddb1;
-    --pmpro--color--alert2-text: #995d1d;
-    --pmpro--color--alert2-link: #a65e3a;
+	--pmpro--color--info-background: light-dark(#d9edf7, #0d2a38);
+	--pmpro--color--info-border: light-dark(#bce8f1, #1a4a5e);
+	--pmpro--color--info-text: light-dark(#31708f, #7ec8e3);
+	--pmpro--color--info-link: light-dark(#245269, #a8d8ea);
+	--pmpro--color--success-background: light-dark(#d4edda, #0d2e17);
+	--pmpro--color--success-border: light-dark(#c3e6cb, #1a4d28);
+	--pmpro--color--success-text: light-dark(#0F441C, #6fcf8e);
+	--pmpro--color--success-link: light-dark(#2b542c, #9de0b0);
+	--pmpro--color--error-background: light-dark(#f8d7da, #2e0d10);
+	--pmpro--color--error-border: light-dark(#f5c6cb, #5a1a20);
+	--pmpro--color--error-text: light-dark(#721c24, #f08a90);
+	--pmpro--color--error-link: light-dark(#843534, #f5aeb3);
+	--pmpro--color--alert-background: light-dark(#fff8e0, #2a2000);
+	--pmpro--color--alert-border: light-dark(#ffeeba, #4d3c00);
+	--pmpro--color--alert-text: light-dark(#6C5101, #f0c050);
+	--pmpro--color--alert-link: light-dark(#66512c, #f5d07a);
+	--pmpro--color--alert2-background: light-dark(#ffecd9, #2e1a00);
+	--pmpro--color--alert2-border: light-dark(#ffddb1, #5a3400);
+	--pmpro--color--alert2-text: light-dark(#995d1d, #f0a060);
+	--pmpro--color--alert2-link: light-dark(#a65e3a, #f5bf8e);
 }
 
 /**
