@@ -223,6 +223,7 @@ button[type="button"]#other_discount_code_toggle:focus {
     margin: 0;
     padding: 0;
     text-decoration: underline;
+	vertical-align: baseline;
 }
 
 #pmpro_tos_fields input[type="checkbox"]#tos {
