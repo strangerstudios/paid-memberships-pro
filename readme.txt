@@ -213,7 +213,7 @@ Not sure? You can find out by doing a bit a research.
 = 3.7 RC1 - 2026-03-10 =
 * FEATURE: Added native profile picture (avatar) support, allowing members to upload custom avatars managed entirely within PMPro instead of relying on Gravatar. #3597 (@ideadude)
 * FEATURE: Added a Quick Search feature for navigating Memberships admin pages. #3563 (@dparker1005)
-* FEATURE: Added Liquid-style template rendering for email bodies with support for variables, filters, conditionals, and loops. #3584 (@dparker1005)
+* FEATURE: Added Liquid-style template rendering for email bodies with support for variables, filters, and conditionals. #3584 (@dparker1005)
 * FEATURE: Added email logging for all emails sent by PMPro. #3573, #3581 (@dparker1005)
 * ENHANCEMENT: Added sidebar filter panels for the orders and subscriptions admin pages with support for level, status, date range, discount code, gateway, and total filters. #3602 (@dparker1005)
 * ENHANCEMENT: Added To, CC, and BCC settings to the Email Templates editor. #3588 (@kimcoleman)
