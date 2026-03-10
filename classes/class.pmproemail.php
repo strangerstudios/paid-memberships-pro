@@ -148,8 +148,6 @@
 				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $locale . "/" . $this->template . ".html");				//localized email folder in WP language folder
 			elseif(file_exists(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html"))
 				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html");								//email folder in WP language folder
-			elseif(file_exists(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html"))
-				$this->body = file_get_contents(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html");					//email folder in PMPro language folder
 			elseif( empty( $this->data['body'] ) && ! empty( $pmpro_email_templates_defaults[$this->template]['body'] ) )
 				$this->body = $pmpro_email_templates_defaults[$this->template]['body'];									//default template in plugin
 			elseif(!empty($this->data) && !empty($this->data['body']))
