@@ -10,9 +10,8 @@
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
 function pmpro_report_email_log_register( $pmpro_reports ) {
-	// If email logging is disabled, do not register the report.
-	$email_logging_disabled = get_option( 'pmpro_email_logging_disabled' );
-	if ( ! empty( $email_logging_disabled ) ) {
+	// If email logging is not enabled, do not register the report.
+	if ( ! pmpro_is_email_logging_enabled() ) {
 		return $pmpro_reports;
 	}
 

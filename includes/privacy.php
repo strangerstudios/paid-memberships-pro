@@ -25,10 +25,9 @@ function pmpro_add_privacy_policy_content() {
 	$content .= '<p>' . __( "When logged in, we use cookies to track some of your activity on our site including logins, visits, and page views.", 'paid-memberships-pro' ) . '</p>';
 
 	// Check if email logging is enabled
-	$email_logging_disabled = get_option( 'pmpro_email_logging_disabled' );
 	$email_log_purge_days = get_option( 'pmpro_email_log_purge_days', 90 );
 
-	if ( empty( $email_logging_disabled ) ) {
+	if ( pmpro_is_email_logging_enabled() ) {
 		$content .= '<p>' . __( "We maintain logs of transactional emails sent to you for operational and support purposes. These logs include the email content, recipient address, subject line, and delivery status.", 'paid-memberships-pro' ) . '</p>';
 
 		   if ( ! empty( $email_log_purge_days ) ) {

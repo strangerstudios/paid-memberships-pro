@@ -1,6 +1,17 @@
 <?php
 
 /**
+ * Check if email logging is enabled.
+ *
+ * @since TBD
+ *
+ * @return bool Whether email logging is enabled.
+ */
+function pmpro_is_email_logging_enabled() {
+	return (bool) get_option( 'pmpro_email_logging_enabled', 1 );
+}
+
+/**
  * Log an email.
  *
  * @since 3.7
@@ -16,8 +27,8 @@ function pmpro_log_email( $email, $result ) {
 		return $email;
 	}
 
-	// Check if logging is disabled
-	if ( pmpro_getOption( 'email_logging_disabled' ) == '1' ) {
+	// Check if logging is enabled.
+	if ( ! pmpro_is_email_logging_enabled() ) {
 		return;
 	}
 	

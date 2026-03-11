@@ -34,7 +34,7 @@
 		pmpro_setOption("email_member_notification");
 
 		// Email logging settings
-		pmpro_setOption( 'email_logging_disabled' );
+		pmpro_setOption( 'email_logging_enabled' );
 		pmpro_setOption( 'email_log_purge_days', null, 'intval' );
 
 		// Handle purge all logs action
@@ -61,7 +61,7 @@
 	
 	$email_member_notification = get_option( "pmpro_email_member_notification");
 
-	$email_logging_disabled = get_option( 'pmpro_email_logging_disabled' );
+	$email_logging_enabled = pmpro_is_email_logging_enabled();
 	$email_log_purge_days = get_option( 'pmpro_email_log_purge_days', 90 );
 
 	// Default to 90 only if the value is null or an empty string, but allow 0 as a valid value.
@@ -236,13 +236,13 @@
 					<tbody>
 						<tr>
 							<th scope="row" valign="top">
-								<label for="email_logging_disabled"><?php esc_html_e( 'Email Logging', 'paid-memberships-pro' ); ?>:</label>
+								<label for="email_logging_enabled"><?php esc_html_e( 'Email Logging', 'paid-memberships-pro' ); ?>:</label>
 							</th>
 							<td>
-								<input type="checkbox" id="email_logging_disabled" name="email_logging_disabled" value="1" <?php checked( $email_logging_disabled, '1' ); ?> />
-								<label for="email_logging_disabled"><?php esc_html_e( 'Disable email logging', 'paid-memberships-pro' ); ?></label>
+								<input type="checkbox" id="email_logging_enabled" name="email_logging_enabled" value="1" <?php checked( $email_logging_enabled ); ?> />
+								<label for="email_logging_enabled"><?php esc_html_e( 'Enable email logging', 'paid-memberships-pro' ); ?></label>
 								<p class="description">
-									<?php esc_html_e( 'Check this to stop logging emails to the database. Existing entries will not be deleted.', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Check this to log emails to the database.', 'paid-memberships-pro' ); ?>
 								</p>
 							</td>
 						</tr>

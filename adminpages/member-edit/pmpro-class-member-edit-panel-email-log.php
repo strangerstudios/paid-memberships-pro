@@ -148,9 +148,8 @@ class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 
 // Register the panel
 add_filter( 'pmpro_member_edit_panels', function( $panels ) {
-	// If email logging is disabled, do not register the panel.
-	$email_logging_disabled = get_option( 'pmpro_email_logging_disabled' );
-	if ( ! empty( $email_logging_disabled ) ) {
+	// If email logging is not enabled, do not register the panel.
+	if ( ! pmpro_is_email_logging_enabled() ) {
 		return $panels;
 	}
 
