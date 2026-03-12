@@ -12,69 +12,145 @@ function pmpro_is_email_logging_enabled() {
 }
 
 /**
- * Log an email.
+ * Log an email to the PMPro email log.
+ *
+ * Accepts either a PMProEmail object (used automatically via the
+ * pmpro_after_email_sent hook) or a plain array of email data
+ * (for logging emails sent via wp_mail() directly by add-ons,
+ * site customizations, or third-party integrations).
+ *
+ * Array usage:
+ *
+ *     pmpro_log_email( array(
+ *         'email_to' => 'user@example.com',
+ *         'subject'  => 'Your ticket has a new reply',
+ *         'body'     => $email_body,
+ *         'template' => 'bbpst_reply_notification',
+ *     ) );
  *
  * @since 3.7
- * 
- * @param PMProEmail $email The email object
- * @param bool $result Result of wp_mail()
+ *
+ * @param PMProEmail|array $email The PMProEmail object, or an array with keys:
+ *     email_to (required), email_from, from_name, subject, body,
+ *     template, headers, user_id, status ('sent'|'failed'), error_message.
+ * @param bool $result Optional. Result of wp_mail(). Default true.
+ *                      Ignored when $email is an array with 'status' set.
+ * @return bool True on success, false on failure or if logging is disabled.
  */
-function pmpro_log_email( $email, $result ) {
+function pmpro_log_email( $email, $result = true ) {
 	global $wpdb;
 
-	// Make sure we have an email object.
+	// Make sure we have something to log.
 	if ( empty( $email ) ) {
-		return $email;
+		return false;
 	}
 
 	// Check if logging is enabled.
 	if ( ! pmpro_is_email_logging_enabled() ) {
-		return;
+		return false;
 	}
-	
-	// Extract user_id from email data or lookup by email address
-	$user_id = 0;
-	if ( ! empty( $email->data['user_id'] ) ) {
-		$user_id = intval( $email->data['user_id'] );
-	} elseif( ! empty( $email->data['user_login'] ) ) {
-		$user = get_user_by( 'login', $email->data['user_login'] );
-		if ( $user ) {
-			$user_id = $user->ID;
-		}
-	} elseif ( ! empty( $email->email ) ) {
-		$user = get_user_by( 'email', $email->email );
-		if ( $user ) {
-			$user_id = $user->ID;
-		}
-	}
-	
-	// Parse headers to extract reply-to, CC, BCC
-	$parsed_headers = pmpro_parse_email_headers( $email->headers );
 
-	// Prepare data for insertion
+	// Make sure the email log table is available.
+	if ( empty( $wpdb->pmpro_email_log ) ) {
+		return false;
+	}
+
+	// Normalize input: array or PMProEmail object.
+	if ( is_array( $email ) ) {
+		// Array mode: for external/third-party emails.
+		if ( empty( $email['email_to'] ) ) {
+			return false;
+		}
+
+		$defaults = array(
+			'user_id'       => 0,
+			'email_to'      => '',
+			'email_from'    => get_option( 'admin_email' ),
+			'from_name'     => wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ),
+			'subject'       => '',
+			'body'          => '',
+			'template'      => '',
+			'headers'       => '',
+			'status'        => $result ? 'sent' : 'failed',
+			'error_message' => '',
+		);
+		$args = wp_parse_args( $email, $defaults );
+
+		// Resolve user_id from email address if not provided.
+		if ( empty( $args['user_id'] ) ) {
+			$user = get_user_by( 'email', $args['email_to'] );
+			if ( $user ) {
+				$args['user_id'] = $user->ID;
+			}
+		}
+
+		$user_id       = intval( $args['user_id'] );
+		$email_to      = $args['email_to'];
+		$email_from    = $args['email_from'];
+		$from_name     = $args['from_name'];
+		$subject       = $args['subject'];
+		$body          = $args['body'];
+		$template      = $args['template'];
+		$headers       = $args['headers'];
+		$status        = in_array( $args['status'], array( 'sent', 'failed' ), true ) ? $args['status'] : 'sent';
+		$error_message = $args['error_message'];
+	} else {
+		// Object mode: PMProEmail from pmpro_after_email_sent hook.
+		$user_id = 0;
+		if ( ! empty( $email->data['user_id'] ) ) {
+			$user_id = intval( $email->data['user_id'] );
+		} elseif ( ! empty( $email->data['user_login'] ) ) {
+			$user = get_user_by( 'login', $email->data['user_login'] );
+			if ( $user ) {
+				$user_id = $user->ID;
+			}
+		} elseif ( ! empty( $email->email ) ) {
+			$user = get_user_by( 'email', $email->email );
+			if ( $user ) {
+				$user_id = $user->ID;
+			}
+		}
+
+		$email_to      = ! empty( $email->email ) ? $email->email : '';
+		$email_from    = ! empty( $email->from ) ? $email->from : '';
+		$from_name     = ! empty( $email->fromname ) ? $email->fromname : '';
+		$subject       = ! empty( $email->subject ) ? $email->subject : '';
+		$body          = ! empty( $email->body ) ? $email->body : '';
+		$template      = ! empty( $email->template ) ? $email->template : '';
+		$headers       = ! empty( $email->headers ) ? $email->headers : '';
+		$status        = $result ? 'sent' : 'failed';
+		$error_message = ! $result ? pmpro_last_wp_mail_error() : '';
+	}
+
+	// Parse headers to extract reply-to, CC, BCC.
+	$parsed_headers = pmpro_parse_email_headers( $headers );
+
+	// Prepare data for insertion.
 	$log_data = array(
 		'user_id'       => $user_id,
-		'email_to'      => ! empty( $email->email ) ? $email->email : '',
-		'email_from'    => ! empty( $email->from ) ? $email->from : '',
-		'from_name'     => ! empty( $email->fromname ) ? $email->fromname : '',
-		'subject'       => ! empty( $email->subject ) ? $email->subject : '',
-		'body'          => ! empty( $email->body ) ? $email->body : '',
-		'template'      => ! empty( $email->template ) ? $email->template : '',
-		'headers'       => maybe_serialize( $email->headers ),
+		'email_to'      => $email_to,
+		'email_from'    => $email_from,
+		'from_name'     => $from_name,
+		'subject'       => $subject,
+		'body'          => $body,
+		'template'      => $template,
+		'headers'       => maybe_serialize( $headers ),
 		'reply_to'      => $parsed_headers['reply_to'],
 		'cc'            => $parsed_headers['cc'],
 		'bcc'           => $parsed_headers['bcc'],
-		'status'        => $result ? 'sent' : 'failed',
+		'status'        => $status,
+		'error_message' => $error_message,
 		'timestamp'     => current_time( 'mysql', true ),
-		'error_message' => ! $result ? pmpro_last_wp_mail_error() : ''
 	);
 
-	// Insert log entry
-	$wpdb->insert(
+	// Insert log entry.
+	$insert_result = $wpdb->insert(
 		$wpdb->pmpro_email_log,
 		$log_data,
 		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 	);
+
+	return $insert_result !== false;
 }
 add_action( 'pmpro_after_email_sent', 'pmpro_log_email', 10, 2 );
 
