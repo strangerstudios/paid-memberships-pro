@@ -149,7 +149,7 @@
 									</div>
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
 								<th scope="row" valign="top">
 									<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?></label>
 								</th>
@@ -157,7 +157,7 @@
 									<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr( get_option( 'pmpro_gateway_email' ) ); ?>" class="regular-text code" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
 								<th scope="row" valign="top">
 									<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
 								</th>

@@ -7,7 +7,7 @@ function pmpro_upgrade_1_4_2()
 		PayPal Express and the test gateway (no gateway) will default to not use ssl.
 	*/
 	$gateway = get_option( "pmpro_gateway");
-	if($gateway == "paypal" || $gateway == "authorizenet" || $gateway == "stripe")
+	if($gateway == "paypalwpp" || $gateway == "authorizenet" || $gateway == "stripe")
 		update_option("pmpro_use_ssl", 1);
 	else
 		update_option("pmpro_use_ssl", 0);

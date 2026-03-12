@@ -153,7 +153,7 @@
 		{
 			_deprecated_function( __METHOD__, '3.5' );
 		?>
-		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+		<tr class="pmpro_settings_divider gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypalwpp" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
 				<h2 class="title"><?php esc_html_e( 'PayPal Settings', 'paid-memberships-pro' ); ?></h2>
@@ -177,7 +177,7 @@
 				</div>
 			</td>
 		</tr>
-		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypalwpp" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?></label>
 			</th>
@@ -185,7 +185,7 @@
 				<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr($values['gateway_email'])?>" class="regular-text code" />
 			</td>
 		</tr>
-		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_paypalwpp gateway_paypalexpress" <?php if($gateway != "paypalwpp" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?></label>
 			</th>
@@ -193,7 +193,7 @@
 				<input type="text" id="apiusername" name="apiusername" value="<?php echo esc_attr($values['apiusername'])?>" class="regular-text code" />
 			</td>
 		</tr>
-		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_paypalwpp gateway_paypalexpress" <?php if($gateway != "paypalwpp" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?></label>
 			</th>
@@ -201,7 +201,7 @@
 				<input type="text" id="apipassword" name="apipassword" value="<?php echo esc_attr($values['apipassword'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 			</td>
 		</tr>
-		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_paypalwpp gateway_paypalexpress" <?php if($gateway != "paypalwpp" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="apisignature"><?php esc_html_e('API Signature', 'paid-memberships-pro' );?></label>
 			</th>
@@ -209,7 +209,7 @@
 				<input type="text" id="apisignature" name="apisignature" value="<?php echo esc_attr($values['apisignature'])?>" class="regular-text code" />
 			</td>
 		</tr>
-		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_paypalwpp gateway_paypalexpress" <?php if($gateway != "paypalwpp" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="paypalexpress_skip_confirmation"><?php esc_html_e('Confirmation Step', 'paid-memberships-pro' );?></label>
 			</th>
@@ -220,7 +220,7 @@
 				</select>
 			</td>
 		</tr>
-		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypalwpp" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
 			</th>
@@ -258,7 +258,7 @@
 				<div class="pmpro_section_inside">
 					<table class="form-table">
 						<tbody>
-							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
 								<th scope="row" valign="top">
 									<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?></label>
 								</th>
@@ -266,7 +266,7 @@
 									<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr( get_option( 'pmpro_gateway_email' ) ); ?>" class="regular-text code" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
 								<th scope="row" valign="top">
 									<label for="apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?></label>
 								</th>
@@ -274,7 +274,7 @@
 									<input type="text" id="apiusername" name="apiusername" value="<?php echo esc_attr( get_option( 'pmpro_apiusername' ) ); ?>" class="regular-text code" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
 								<th scope="row" valign="top">
 									<label for="apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?></label>
 								</th>
@@ -282,7 +282,7 @@
 									<input type="text" id="apipassword" name="apipassword" value="<?php echo esc_attr( get_option( 'pmpro_apipassword' ) ); ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
 								<th scope="row" valign="top">
 									<label for="apisignature"><?php esc_html_e('API Signature', 'paid-memberships-pro' );?></label>
 								</th>
@@ -290,7 +290,7 @@
 									<input type="text" id="apisignature" name="apisignature" value="<?php echo esc_attr( get_option( 'pmpro_apisignature' ) ); ?>" class="regular-text code" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
 								<th scope="row" valign="top">
 									<label for="paypalexpress_skip_confirmation"><?php esc_html_e('Confirmation Step', 'paid-memberships-pro' );?></label>
 								</th>
@@ -301,7 +301,7 @@
 									</select>
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
 								<th scope="row" valign="top">
 									<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
 								</th>

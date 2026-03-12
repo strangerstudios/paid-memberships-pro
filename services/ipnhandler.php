@@ -12,7 +12,7 @@ global $wpdb, $gateway_environment, $logstr;
 $logstr = "";    //will put debug info here and write to ipnlog.txt
 
 // Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
-pmpro_doing_webhook( 'paypal', true );
+pmpro_doing_webhook( 'paypalwpp', true );
 
 //validate?
 if ( ! pmpro_ipnValidate() ) {
@@ -723,7 +723,7 @@ function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
 	}
 
 	// Get card info if appropriate.
-	if ( $morder->gateway == "paypal" ) {   //website payments pro
+	if ( $morder->gateway == "paypalwpp" ) {   //website payments pro
 		//Updates this order with the most recent orders payment method information and saves it. 
 		pmpro_update_order_with_recent_payment_method( $morder );
 	}
