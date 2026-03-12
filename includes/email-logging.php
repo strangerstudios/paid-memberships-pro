@@ -79,6 +79,105 @@ function pmpro_log_email( $email, $result ) {
 add_action( 'pmpro_after_email_sent', 'pmpro_log_email', 10, 2 );
 
 /**
+ * Log an external email to the PMPro email log.
+ *
+ * Use this to log emails sent via wp_mail() directly (not through PMProEmail)
+ * so they appear in the PMPro email log alongside native PMPro emails.
+ *
+ * This is intended for add-ons and site customizations that send emails
+ * outside of the PMProEmail class, such as bbPress notification emails,
+ * custom wp_mail() calls, or third-party integrations.
+ *
+ * @since 3.7
+ *
+ * @param array $args {
+ *     Email data to log.
+ *
+ *     @type int    $user_id       Optional. WordPress user ID of the recipient. Auto-resolved from email_to if not provided.
+ *     @type string $email_to      Required. Recipient email address.
+ *     @type string $email_from    Optional. Sender email address. Defaults to WordPress admin email.
+ *     @type string $from_name     Optional. Sender display name. Defaults to site name.
+ *     @type string $subject       Optional. Email subject line.
+ *     @type string $body          Optional. Email body (HTML or plain text).
+ *     @type string $template      Optional. Template identifier (e.g. 'bbpst_feedback', 'my_custom_email').
+ *     @type string|array $headers Optional. Email headers. Parsed for Reply-To, CC, and BCC.
+ *     @type string $status        Optional. 'sent' or 'failed'. Default 'sent'.
+ *     @type string $error_message Optional. Error message if status is 'failed'.
+ * }
+ * @return bool True on success, false on failure or if logging is disabled.
+ */
+function pmpro_log_external_email( $args ) {
+	global $wpdb;
+
+	// Check if logging is enabled.
+	if ( ! pmpro_is_email_logging_enabled() ) {
+		return false;
+	}
+
+	// Make sure the email log table is available.
+	if ( empty( $wpdb->pmpro_email_log ) ) {
+		return false;
+	}
+
+	// email_to is required.
+	if ( empty( $args['email_to'] ) ) {
+		return false;
+	}
+
+	$defaults = array(
+		'user_id'       => 0,
+		'email_to'      => '',
+		'email_from'    => get_option( 'admin_email' ),
+		'from_name'     => wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ),
+		'subject'       => '',
+		'body'          => '',
+		'template'      => '',
+		'headers'       => '',
+		'status'        => 'sent',
+		'error_message' => '',
+	);
+	$args = wp_parse_args( $args, $defaults );
+
+	// Resolve user_id from email address if not provided.
+	if ( empty( $args['user_id'] ) && ! empty( $args['email_to'] ) ) {
+		$user = get_user_by( 'email', $args['email_to'] );
+		if ( $user ) {
+			$args['user_id'] = $user->ID;
+		}
+	}
+
+	// Parse headers to extract reply-to, CC, BCC.
+	$parsed_headers = pmpro_parse_email_headers( $args['headers'] );
+
+	// Prepare data for insertion.
+	$log_data = array(
+		'user_id'       => intval( $args['user_id'] ),
+		'email_to'      => sanitize_email( $args['email_to'] ),
+		'email_from'    => sanitize_email( $args['email_from'] ),
+		'from_name'     => sanitize_text_field( $args['from_name'] ),
+		'subject'       => sanitize_text_field( $args['subject'] ),
+		'body'          => $args['body'],
+		'template'      => sanitize_text_field( $args['template'] ),
+		'headers'       => maybe_serialize( $args['headers'] ),
+		'reply_to'      => $parsed_headers['reply_to'],
+		'cc'            => $parsed_headers['cc'],
+		'bcc'           => $parsed_headers['bcc'],
+		'status'        => in_array( $args['status'], array( 'sent', 'failed' ), true ) ? $args['status'] : 'sent',
+		'error_message' => sanitize_text_field( $args['error_message'] ),
+		'timestamp'     => current_time( 'mysql', true ),
+	);
+
+	// Insert log entry.
+	$result = $wpdb->insert(
+		$wpdb->pmpro_email_log,
+		$log_data,
+		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+	);
+
+	return $result !== false;
+}
+
+/**
  * Capture the error message from a failed wp_mail() call.
  *
  * @since 3.7
