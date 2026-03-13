@@ -156,6 +156,7 @@ function pmpro_admin_enqueue_scripts() {
 			'all_levels_formatted_text' => $all_levels_formatted_text,
 			'all_level_values_and_labels' => $all_level_values_and_labels,
 			'checkout_url' => pmpro_url( 'checkout' ),
+			'stripe_webhook_nonce' => wp_create_nonce( 'pmpro_stripe_webhook_nonce' ),
 			'user_fields_blank_group' => $empty_field_group_html,
 			'user_fields_blank_field' => $empty_field_html,
 			// We want the core WP translation so we can check for it in JS.
