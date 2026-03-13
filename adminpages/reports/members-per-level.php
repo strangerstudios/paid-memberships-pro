@@ -19,7 +19,7 @@ add_filter( 'pmpro_registered_reports', 'pmpro_report_members_per_level_register
 
 // Enqueue Google Visualization JS on report page
 function pmpro_report_members_per_level_init() {
-	if ( is_admin() && ( isset( $_REQUEST['report'] ) && $_REQUEST[ 'report' ] == 'members_per_level' ) || ( isset( $_REQUEST['page'] ) && $_REQUEST[ 'page' ] == 'pmpro-reports' ) ) {
+	if ( is_admin() && isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-reports' && isset( $_REQUEST['report'] ) && $_REQUEST['report'] == 'members_per_level' ) {
 		wp_enqueue_script( 'corechart', plugins_url( 'js/corechart.js',  plugin_dir_path( __DIR__ ) ) );
 	}
 }
