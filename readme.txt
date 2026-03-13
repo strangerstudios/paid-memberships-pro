@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.9
 Requires PHP: 5.6
-Stable tag: 3.6.5
+Stable tag: 3.6.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,12 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.6.6 - 2026-03-13 =
+* SECURITY: Added capability and nonce checks to Stripe webhook AJAX management endpoints. #3615 (@dparker1005)
+* SECURITY: Added shared-secret token validation for the deprecated Authorize.net ARB Silent Posts integration with a configurable `pmpro_authnet_silent_post_token` option in gateway settings. #3598 (@dparker1005)
+* BUG FIX: Fixed an operator precedence bug causing corechart.js to load on all report pages. #3609 (@flintfromthebasement)
+* BUG FIX: Fixed an "Attempt to read property ID on null" warning in display post states. #3599 (@dwanjuki)
+
 = 3.6.5 - 2026-02-26 =
 * SECURITY: Gated the unverified Stripe webhook event fallback behind a new `pmpro_stripe_webhook_allow_unverified_post_event` filter, which defaults to `false`. #3592 (@dparker1005)
 * ENHANCEMENT: Updated links to the Member Directory and Podcasting Use Case landing pages and hubs. #3593 (@kimcoleman)

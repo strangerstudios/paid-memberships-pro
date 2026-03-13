@@ -1098,7 +1098,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Validate access to Stripe webhook AJAX handlers.
 	 *
-	 * @since 3.2.6
+	 * @since 3.6.6
 	 *
 	 * @param bool $silent Whether to return errors instead of exiting.
 	 * @return true|array
