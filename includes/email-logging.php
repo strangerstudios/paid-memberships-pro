@@ -12,93 +12,303 @@ function pmpro_is_email_logging_enabled() {
 }
 
 /**
- * Log an email.
+ * Get or set stashed wp_mail data.
+ *
+ * The wp_mail filter stashes email data before sending so that
+ * it is available in the wp_mail_failed callback, which only
+ * receives a WP_Error (no email content).
+ *
+ * @since TBD
+ *
+ * @param array|null|false $set Pass an array to stash, false to clear, or null to retrieve.
+ * @return array|null The stashed data, or null if empty.
+ */
+function pmpro_stashed_mail_data( $set = null ) {
+	static $data = null;
+	if ( $set !== null ) {
+		$data = $set === false ? null : $set;
+	}
+	return $data;
+}
+
+/**
+ * Get or set PMPro-specific email metadata for the current send.
+ *
+ * Called by PMProEmail::sendEmail() before wp_mail() to stash
+ * the template name and user_id (the user the email is about).
+ * The wp_mail filter merges this into the stashed email data.
+ *
+ * @since TBD
+ *
+ * @param array|null|false $set Pass an array to set, false to clear, or null to retrieve.
+ * @return array|null The metadata array with 'template' and 'user_id', or null.
+ */
+function pmpro_email_sending_metadata( $set = null ) {
+	static $metadata = null;
+	if ( $set !== null ) {
+		$metadata = $set === false ? null : $set;
+	}
+	return $metadata;
+}
+
+/**
+ * Get or set the resolved From email and name from PHPMailer.
+ *
+ * Hooked to phpmailer_init to capture the final From/FromName
+ * after WordPress applies defaults and filters. This ensures
+ * accurate from data even when no From header was passed to wp_mail().
+ *
+ * @since TBD
+ *
+ * @param array|null|false $set Pass an array to set, false to clear, or null to retrieve.
+ * @return array|null Array with 'from' and 'from_name', or null.
+ */
+function pmpro_stashed_from_data( $set = null ) {
+	static $data = null;
+	if ( $set !== null ) {
+		$data = $set === false ? null : $set;
+	}
+	return $data;
+}
+
+/**
+ * Get the first recipient email address from a wp_mail recipient value.
+ *
+ * Supports arrays of recipients and strings that may include display names.
+ *
+ * @since TBD
+ *
+ * @param string|array $recipients Recipient value passed to wp_mail().
+ * @return string The first email address, or an empty string if none was found.
+ */
+function pmpro_get_primary_recipient_email( $recipients ) {
+	if ( empty( $recipients ) ) {
+		return '';
+	}
+
+	$recipient_string = is_array( $recipients ) ? implode( ', ', $recipients ) : $recipients;
+
+	if ( preg_match( '/[A-Z0-9._%+\'+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i', $recipient_string, $matches ) ) {
+		return sanitize_email( $matches[0] );
+	}
+
+	return sanitize_email( trim( $recipient_string ) );
+}
+
+/**
+ * Capture the resolved From and FromName from PHPMailer.
+ *
+ * Fires after all wp_mail processing and filters, so these
+ * values reflect the actual sender used for the email.
+ *
+ * @since TBD
+ *
+ * @param PHPMailer $phpmailer The fully-configured PHPMailer instance.
+ */
+function pmpro_capture_phpmailer_from( $phpmailer ) {
+	if ( pmpro_is_email_logging_enabled() ) {
+		pmpro_stashed_from_data( array(
+			'from'      => $phpmailer->From,
+			'from_name' => $phpmailer->FromName,
+		) );
+	}
+}
+add_action( 'phpmailer_init', 'pmpro_capture_phpmailer_from', 9999 );
+
+/**
+ * Log an email to the database.
+ *
+ * Single unified function for logging both PMPro and non-PMPro emails.
+ * For PMPro emails, the template name and user_id (the user the email
+ * is about) are enriched from PMProEmail metadata. For non-PMPro emails,
+ * user_id is resolved from the recipient address and template is empty.
  *
  * @since 3.7
- * 
- * @param PMProEmail $email The email object
- * @param bool $result Result of wp_mail()
+ *
+ * @param array  $mail_data {
+ *     Email data from WordPress hooks.
+ *
+ *     @type string|array $to      Recipient(s).
+ *     @type string       $subject Subject line.
+ *     @type string       $message Email body.
+ *     @type string|array $headers Email headers.
+ * }
+ * @param string $status        'sent' or 'failed'.
+ * @param string $error_message Error message for failed emails.
  */
-function pmpro_log_email( $email, $result ) {
+function pmpro_log_email( $mail_data, $status = 'sent', $error_message = '' ) {
 	global $wpdb;
 
-	// Make sure we have an email object.
-	if ( empty( $email ) ) {
-		return $email;
+	if ( empty( $mail_data ) ) {
+		return;
 	}
 
 	// Check if logging is enabled.
 	if ( ! pmpro_is_email_logging_enabled() ) {
 		return;
 	}
-	
-	// Extract user_id from email data or lookup by email address
+
+	// Check if the email log table is available.
+	if ( empty( $wpdb->pmpro_email_log ) ) {
+		return;
+	}
+
+	// Check for PMPro-specific metadata (template, user_id).
+	$metadata = ! empty( $mail_data['pmpro_metadata'] ) ? $mail_data['pmpro_metadata'] : null;
+	$is_pmpro = ! empty( $metadata );
+
+	$email_to = pmpro_get_primary_recipient_email( $mail_data['to'] );
+	$headers  = ! empty( $mail_data['headers'] ) ? $mail_data['headers'] : '';
+	$template = $is_pmpro ? $metadata['template'] : '';
+
+	/**
+	 * Filter whether a specific email should be logged.
+	 *
+	 * By default, only PMPro emails are logged. To log all WordPress
+	 * emails, return true unconditionally:
+	 *
+	 *     add_filter( 'pmpro_should_log_email', '__return_true' );
+	 *
+	 * @since TBD
+	 *
+	 * @param bool  $should_log Whether to log this email. Default true for PMPro emails, false otherwise.
+	 * @param array $email_data {
+	 *     Basic email data for filtering decisions.
+	 *
+	 *     @type string $email_to  Recipient email address.
+	 *     @type string $subject   Email subject line.
+	 *     @type string $template  PMPro email template name, or empty for non-PMPro emails.
+	 * }
+	 */
+	if ( ! apply_filters( 'pmpro_should_log_email', $is_pmpro, array(
+		'email_to' => $email_to,
+		'subject'  => $mail_data['subject'],
+		'template' => $template,
+	) ) ) {
+		return;
+	}
+
+	// Resolve user_id: use PMPro metadata if available, otherwise look up by email.
 	$user_id = 0;
-	if ( ! empty( $email->data['user_id'] ) ) {
-		$user_id = intval( $email->data['user_id'] );
-	} elseif( ! empty( $email->data['user_login'] ) ) {
-		$user = get_user_by( 'login', $email->data['user_login'] );
-		if ( $user ) {
-			$user_id = $user->ID;
-		}
-	} elseif ( ! empty( $email->email ) ) {
-		$user = get_user_by( 'email', $email->email );
+	if ( $is_pmpro && ! empty( $metadata['user_id'] ) ) {
+		$user_id = intval( $metadata['user_id'] );
+	} elseif ( ! empty( $email_to ) ) {
+		$user = get_user_by( 'email', $email_to );
 		if ( $user ) {
 			$user_id = $user->ID;
 		}
 	}
-	
-	// Parse headers to extract reply-to, CC, BCC
-	$parsed_headers = pmpro_parse_email_headers( $email->headers );
 
-	// Prepare data for insertion
+	// Parse headers.
+	$parsed_headers = pmpro_parse_email_headers( $headers );
+
+	// Use PHPMailer's resolved From/FromName as fallback when headers don't contain From.
+	$from_data = pmpro_stashed_from_data();
+	$email_from = ! empty( $parsed_headers['from'] ) ? $parsed_headers['from'] : ( ! empty( $from_data['from'] ) ? $from_data['from'] : '' );
+	$from_name  = ! empty( $parsed_headers['from_name'] ) ? $parsed_headers['from_name'] : ( ! empty( $from_data['from_name'] ) ? $from_data['from_name'] : '' );
+
+	// Prepare data for insertion.
 	$log_data = array(
 		'user_id'       => $user_id,
-		'email_to'      => ! empty( $email->email ) ? $email->email : '',
-		'email_from'    => ! empty( $email->from ) ? $email->from : '',
-		'from_name'     => ! empty( $email->fromname ) ? $email->fromname : '',
-		'subject'       => ! empty( $email->subject ) ? $email->subject : '',
-		'body'          => ! empty( $email->body ) ? $email->body : '',
-		'template'      => ! empty( $email->template ) ? $email->template : '',
-		'headers'       => maybe_serialize( $email->headers ),
+		'email_to'      => $email_to,
+		'email_from'    => $email_from,
+		'from_name'     => $from_name,
+		'subject'       => $mail_data['subject'],
+		'body'          => $mail_data['message'],
+		'template'      => $template,
+		'headers'       => maybe_serialize( $headers ),
 		'reply_to'      => $parsed_headers['reply_to'],
 		'cc'            => $parsed_headers['cc'],
 		'bcc'           => $parsed_headers['bcc'],
-		'status'        => $result ? 'sent' : 'failed',
+		'status'        => $status,
 		'timestamp'     => current_time( 'mysql', true ),
-		'error_message' => ! $result ? pmpro_last_wp_mail_error() : ''
+		'error_message' => $error_message,
 	);
 
-	// Insert log entry
 	$wpdb->insert(
 		$wpdb->pmpro_email_log,
 		$log_data,
 		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 	);
 }
-add_action( 'pmpro_after_email_sent', 'pmpro_log_email', 10, 2 );
 
 /**
- * Capture the error message from a failed wp_mail() call.
+ * Stash email data from the wp_mail filter before sending.
  *
- * @since 3.7
+ * Needed because wp_mail_failed only provides a WP_Error, not
+ * the email content. The stash makes the full email data
+ * available for logging failed emails.
+ *
+ * @since TBD
+ *
+ * @param array $args The wp_mail arguments (to, subject, message, headers, attachments).
+ * @return array The unmodified arguments.
+ */
+function pmpro_stash_outgoing_email( $args ) {
+	if ( pmpro_is_email_logging_enabled() ) {
+		// Merge in PMPro metadata if this is a PMPro email.
+		$metadata = pmpro_email_sending_metadata();
+		if ( ! empty( $metadata ) ) {
+			$args['pmpro_metadata'] = $metadata;
+		}
+		pmpro_stashed_mail_data( $args );
+	}
+	return $args;
+}
+add_filter( 'wp_mail', 'pmpro_stash_outgoing_email' );
+
+/**
+ * Handle a successful wp_mail send.
+ *
+ * Clears any stale error and logs the email.
+ *
+ * @since TBD
+ *
+ * @param array $mail_data {
+ *     The email data from WordPress.
+ *
+ *     @type string|array $to          Recipient(s).
+ *     @type string       $subject     Subject line.
+ *     @type string       $message     Email body.
+ *     @type string|array $headers     Email headers.
+ *     @type array        $attachments Attachments.
+ * }
+ */
+function pmpro_handle_wp_mail_succeeded( $mail_data ) {
+	pmpro_last_wp_mail_error( '' );
+
+	// Use stashed data (which includes pmpro_metadata if applicable).
+	$stashed = pmpro_stashed_mail_data();
+	if ( ! empty( $stashed ) ) {
+		pmpro_log_email( $stashed, 'sent' );
+	}
+
+	pmpro_stashed_mail_data( false );
+	pmpro_stashed_from_data( false );
+}
+add_action( 'wp_mail_succeeded', 'pmpro_handle_wp_mail_succeeded' );
+
+/**
+ * Handle a failed wp_mail send.
+ *
+ * Captures the error message and logs the email using stashed data.
+ *
+ * @since TBD
  *
  * @param WP_Error $error The error object.
  */
-function pmpro_capture_wp_mail_error( $error ) {
+function pmpro_handle_wp_mail_failed( $error ) {
 	pmpro_last_wp_mail_error( $error->get_error_message() );
-}
-add_action( 'wp_mail_failed', 'pmpro_capture_wp_mail_error' );
 
-/**
- * Clear any stale wp_mail error after a successful send.
- *
- * @since 3.7
- */
-function pmpro_clear_wp_mail_error() {
-	pmpro_last_wp_mail_error( '' );
+	$stashed = pmpro_stashed_mail_data();
+	if ( ! empty( $stashed ) ) {
+		pmpro_log_email( $stashed, 'failed', $error->get_error_message() );
+	}
+
+	pmpro_stashed_mail_data( false );
+	pmpro_stashed_from_data( false );
 }
-add_action( 'wp_mail_succeeded', 'pmpro_clear_wp_mail_error' );
+add_action( 'wp_mail_failed', 'pmpro_handle_wp_mail_failed' );
 
 /**
  * Get or set the last wp_mail error message.
@@ -117,48 +327,65 @@ function pmpro_last_wp_mail_error( $set = null ) {
 }
 
 /**
- * Parse email headers to extract reply-to, CC, BCC
- * 
- * @param array|string $headers Email headers
- * @return array Associative array with reply_to, cc, bcc
+ * Parse email headers to extract From, Reply-To, CC, and BCC.
+ *
+ * @since 3.7
+ *
+ * @param array|string $headers Email headers.
+ * @return array Associative array with from, from_name, reply_to, cc, bcc.
  */
 function pmpro_parse_email_headers( $headers ) {
 	$parsed = array(
-		'reply_to' => '',
-		'cc'       => '',
-		'bcc'      => ''
+		'from'      => '',
+		'from_name' => '',
+		'reply_to'  => '',
+		'cc'        => '',
+		'bcc'       => '',
 	);
-	
+
 	if ( empty( $headers ) ) {
 		return $parsed;
 	}
-	
-	// Convert to array if string
+
+	// Convert to array if string.
 	if ( ! is_array( $headers ) ) {
 		$headers = explode( "\n", $headers );
 	}
-	
+
 	foreach ( $headers as $header ) {
-		if ( is_string( $header ) ) {
-			$header = trim( $header );
-			
-			// Parse Reply-To
-			if ( stripos( $header, 'Reply-To:' ) === 0 ) {
-				$parsed['reply_to'] = trim( str_ireplace( 'Reply-To:', '', $header ) );
-			}
-			
-			// Parse CC
-			if ( stripos( $header, 'Cc:' ) === 0 ) {
-				$parsed['cc'] = trim( str_ireplace( 'Cc:', '', $header ) );
-			}
-			
-			// Parse BCC
-			if ( stripos( $header, 'Bcc:' ) === 0 ) {
-				$parsed['bcc'] = trim( str_ireplace( 'Bcc:', '', $header ) );
+		if ( ! is_string( $header ) ) {
+			continue;
+		}
+
+		$header = trim( $header );
+
+		// Parse From (e.g. "Name <email>" or just "email").
+		if ( stripos( $header, 'From:' ) === 0 ) {
+			$from_value = trim( substr( $header, 5 ) );
+			if ( preg_match( '/^(.+?)\s*<(.+?)>$/', $from_value, $matches ) ) {
+				$parsed['from_name'] = trim( $matches[1] );
+				$parsed['from']      = trim( $matches[2] );
+			} else {
+				$parsed['from'] = $from_value;
 			}
 		}
+
+		// Parse Reply-To.
+		if ( stripos( $header, 'Reply-To:' ) === 0 ) {
+			$parsed['reply_to'] = trim( str_ireplace( 'Reply-To:', '', $header ) );
+		}
+
+		// Parse CC.
+		if ( stripos( $header, 'Cc:' ) === 0 ) {
+			$parsed['cc'] = trim( str_ireplace( 'Cc:', '', $header ) );
+		}
+
+		// Parse BCC.
+		if ( stripos( $header, 'Bcc:' ) === 0 ) {
+			$parsed['bcc'] = trim( str_ireplace( 'Bcc:', '', $header ) );
+		}
 	}
-	
+
 	return $parsed;
 }
 
