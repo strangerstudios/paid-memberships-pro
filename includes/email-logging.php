@@ -34,9 +34,10 @@ function pmpro_stashed_mail_data( $set = null ) {
 /**
  * Get or set PMPro-specific email metadata for the current send.
  *
- * Called by PMProEmail::sendEmail() before wp_mail() to stash
- * the template name and user_id (the user the email is about).
- * The wp_mail filter merges this into the stashed email data.
+ * Set via the pmpro_before_email_sent hook to stash the template
+ * name and user_id before wp_mail() fires. The wp_mail filter
+ * merges this into the stashed email data for logging. Cleared
+ * via the pmpro_after_email_sent hook.
  *
  * @since TBD
  *
@@ -50,6 +51,47 @@ function pmpro_email_sending_metadata( $set = null ) {
 	}
 	return $metadata;
 }
+
+/**
+ * Stash PMPro-specific metadata before wp_mail() is called.
+ *
+ * Extracts the template name and user_id from the PMProEmail
+ * object so they are available when the wp_mail filter fires.
+ *
+ * @since TBD
+ *
+ * @param PMProEmail $email The email object about to be sent.
+ */
+function pmpro_stash_email_metadata( $email ) {
+	$user_id = 0;
+	if ( ! empty( $email->data['user_id'] ) ) {
+		$user_id = intval( $email->data['user_id'] );
+	} elseif ( ! empty( $email->data['user_login'] ) ) {
+		$user = get_user_by( 'login', $email->data['user_login'] );
+		if ( $user ) {
+			$user_id = $user->ID;
+		}
+	}
+
+	pmpro_email_sending_metadata( array(
+		'template' => $email->template,
+		'user_id'  => $user_id,
+	) );
+}
+add_action( 'pmpro_before_email_sent', 'pmpro_stash_email_metadata' );
+
+/**
+ * Clear PMPro-specific metadata after wp_mail() returns.
+ *
+ * @since TBD
+ *
+ * @param PMProEmail $email  The email object that was sent.
+ * @param bool       $result Whether wp_mail() returned true.
+ */
+function pmpro_clear_email_metadata( $email, $result ) {
+	pmpro_email_sending_metadata( false );
+}
+add_action( 'pmpro_after_email_sent', 'pmpro_clear_email_metadata', 10, 2 );
 
 /**
  * Get or set the resolved From email and name from PHPMailer.

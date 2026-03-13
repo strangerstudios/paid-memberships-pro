@@ -332,25 +332,26 @@
 				}
 			}
 
-			// Stash PMPro-specific metadata for the email logging handler.
-			$user_id = 0;
-			if ( ! empty( $this->data['user_id'] ) ) {
-				$user_id = intval( $this->data['user_id'] );
-			} elseif ( ! empty( $this->data['user_login'] ) ) {
-				$user = get_user_by( 'login', $this->data['user_login'] );
-				if ( $user ) {
-					$user_id = $user->ID;
-				}
-			}
-
-			pmpro_email_sending_metadata( array(
-				'template' => $this->template,
-				'user_id'  => $user_id,
-			) );
+			/**
+			 * Fires before a PMPro email is sent via wp_mail.
+			 *
+			 * @since TBD
+			 *
+			 * @param PMProEmail $this The email object.
+			 */
+			do_action( 'pmpro_before_email_sent', $this );
 
 			$result = wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
 
-			pmpro_email_sending_metadata( false );
+			/**
+			 * Fires after a PMPro email is sent via wp_mail.
+			 *
+			 * @since 3.7
+			 *
+			 * @param PMProEmail $this The email object.
+			 * @param bool $result Whether the email was sent successfully.
+			 */
+			do_action( 'pmpro_after_email_sent', $this, $result );
 
 			return $result;
 		}
