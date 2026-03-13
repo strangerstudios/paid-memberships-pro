@@ -249,10 +249,14 @@ function pmpro_log_email( $mail_data, $status = 'sent', $error_message = '' ) {
 	$email_from = ! empty( $parsed_headers['from'] ) ? $parsed_headers['from'] : ( ! empty( $from_data['from'] ) ? $from_data['from'] : '' );
 	$from_name  = ! empty( $parsed_headers['from_name'] ) ? $parsed_headers['from_name'] : ( ! empty( $from_data['from_name'] ) ? $from_data['from_name'] : '' );
 
+	// Store the full, unmodified recipient value for reference.
+	$email_to_full = is_array( $mail_data['to'] ) ? implode( ', ', $mail_data['to'] ) : $mail_data['to'];
+
 	// Prepare data for insertion.
 	$log_data = array(
 		'user_id'       => $user_id,
 		'email_to'      => $email_to,
+		'email_to_full' => $email_to_full,
 		'email_from'    => $email_from,
 		'from_name'     => $from_name,
 		'subject'       => $mail_data['subject'],
@@ -270,7 +274,7 @@ function pmpro_log_email( $mail_data, $status = 'sent', $error_message = '' ) {
 	$wpdb->insert(
 		$wpdb->pmpro_email_log,
 		$log_data,
-		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 	);
 }
 
