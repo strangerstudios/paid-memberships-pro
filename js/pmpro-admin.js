@@ -148,6 +148,7 @@ jQuery(document).ready(function () {
 
 		var postData = {
 			action: 'pmpro_stripe_create_webhook',
+			nonce: pmpro.stripe_webhook_nonce,
 			secretkey: pmpro_stripe_get_secretkey(),
 		}
 		jQuery.ajax({
@@ -180,6 +181,7 @@ jQuery(document).ready(function () {
 
 		var postData = {
 			action: 'pmpro_stripe_delete_webhook',
+			nonce: pmpro.stripe_webhook_nonce,
 			secretkey: pmpro_stripe_get_secretkey(),
 		}
 
@@ -213,6 +215,7 @@ jQuery(document).ready(function () {
 
 		var postData = {
 			action: 'pmpro_stripe_rebuild_webhook',
+			nonce: pmpro.stripe_webhook_nonce,
 			secretkey: pmpro_stripe_get_secretkey(),
 		}
 
