@@ -332,10 +332,19 @@
 				}
 			}
 
+			/**
+			 * Fires before a PMPro email is sent via wp_mail.
+			 *
+			 * @since TBD
+			 *
+			 * @param PMProEmail $this The email object.
+			 */
+			do_action( 'pmpro_before_email_sent', $this );
+
 			$result = wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
 
 			/**
-			 * Fires after an email is sent via wp_mail.
+			 * Fires after a PMPro email is sent via wp_mail.
 			 *
 			 * @since 3.7
 			 *
