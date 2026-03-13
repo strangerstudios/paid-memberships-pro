@@ -160,6 +160,7 @@ function pmpro_admin_enqueue_scripts() {
 			'user_fields_blank_field' => $empty_field_html,
 			// We want the core WP translation so we can check for it in JS.
 			'plugin_updated_successfully_text' => __( 'Plugin updated successfully.', 'paid-memberships-pro' ),
+			'stripe_webhook_nonce' => wp_create_nonce( 'pmpro_stripe_webhook' ),
 		)
 	);
 	wp_enqueue_script( 'pmpro_admin' );

@@ -1099,6 +1099,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * AJAX callback to create webhooks.
 	 */
 	public static function wp_ajax_pmpro_stripe_create_webhook( $silent = false ) {
+		if ( ! $silent ) {
+			check_ajax_referer( 'pmpro_stripe_webhook', 'nonce' );
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to perform this action.', 'paid-memberships-pro' ) ) );
+			}
+		}
 		$stripe = new PMProGateway_stripe();
 		$update_webhook_response = $stripe->update_webhook_events();
 
@@ -1129,6 +1135,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * AJAX callback to disable webhooks.
 	 */
 	public static function wp_ajax_pmpro_stripe_delete_webhook( $silent = false ) {
+		if ( ! $silent ) {
+			check_ajax_referer( 'pmpro_stripe_webhook', 'nonce' );
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to perform this action.', 'paid-memberships-pro' ) ) );
+			}
+		}
 		$stripe = new PMProGateway_stripe();
 		$webhook = $stripe->does_webhook_exist();
 
@@ -1162,6 +1174,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * AJAX callback to rebuild webhook.
 	 */
 	public static function wp_ajax_pmpro_stripe_rebuild_webhook() {
+		check_ajax_referer( 'pmpro_stripe_webhook', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to perform this action.', 'paid-memberships-pro' ) ) );
+		}
 		// First try to delete the webhook.
 		$r = self::wp_ajax_pmpro_stripe_delete_webhook( true ) ;
 		if ( $r['success'] ) {
