@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.6.99
+Stable tag: 3.6.991
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,7 +210,7 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
-= 3.7 RC1 - 2026-03-10 =
+= 3.7 RC2 - 2026-03-16 =
 * FEATURE: Added native profile picture (avatar) support, allowing members to upload custom avatars managed entirely within PMPro instead of relying on Gravatar. #3597 (@ideadude)
 * FEATURE: Added a Quick Search feature for navigating Memberships admin pages. #3563 (@dparker1005)
 * FEATURE: Added Liquid-style template rendering for email bodies with support for variables, filters, and conditionals. #3584 (@dparker1005)
@@ -235,6 +235,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed dependencies for the content visibility block component to prevent enqueue issues. #3538 (@dparker1005)
 * BUG FIX: Fixed a default height prop warning in block editor components. #3540 (@dwanjuki)
 * BUG FIX: Fixed a console warning in WordPress 6.3+ by moving block asset enqueuing to the `enqueue_block_assets` hook. #3549 (@andrewlimaza)
+* BUG FIX: Fixed slashed level names displaying with backslashes in the setup wizard. #3617 (@dparker1005)
 * REFACTOR: Refactored the Stripe webhook handler into a new `PMPro_Stripe_Webhook_Handler` class. #3589 (@dparker1005)
 * REFACTOR: Removed unused test scripts. #3600 (@dparker1005)
 * DEPRECATED: Marked the Subscription Check Add On as deprecated on the Add Ons page. #3601 (@dwanjuki)
