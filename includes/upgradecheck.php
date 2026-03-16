@@ -421,9 +421,10 @@ function pmpro_checkForUpgrades() {
 	}
 
 	// Upgrade to 3.7 - Email logging
-	if ( $pmpro_db_version < 3.7 ) {
+	// 3.7001 for changes during RC phase.
+	if ( $pmpro_db_version < 3.7001 ) {
 		pmpro_db_delta();
-		update_option( 'pmpro_db_version', '3.7' );
+		update_option( 'pmpro_db_version', '3.7001' );
 	}
 
 }
@@ -748,6 +749,7 @@ function pmpro_db_delta() {
 		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  `user_id` bigint(20) unsigned NOT NULL DEFAULT '0',
 		  `email_to` varchar(255) NOT NULL,
+		  `email_to_full` text NOT NULL,
 		  `email_from` varchar(255) NOT NULL,
 		  `from_name` varchar(255) NOT NULL DEFAULT '',
 		  `subject` varchar(255) NOT NULL,
