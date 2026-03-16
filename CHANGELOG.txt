@@ -3,7 +3,7 @@
 * FEATURE: Added native profile picture (avatar) support, allowing members to upload custom avatars managed entirely within PMPro instead of relying on Gravatar. #3597 (@ideadude)
 * FEATURE: Added a Quick Search feature for navigating Memberships admin pages. #3563 (@dparker1005)
 * FEATURE: Added Liquid-style template rendering for email bodies with support for variables, filters, and conditionals. #3584 (@dparker1005)
-* FEATURE: Added email logging for all emails sent by PMPro. #3573, #3581 (@dparker1005)
+* FEATURE: Added email logging for all emails sent by PMPro. The new `pmpro_should_log_email` filter can be used to enable email logging for non-PMPro emails as well. #3573, #3581 (@dparker1005)
 * ENHANCEMENT: Added sidebar filter panels for the orders and subscriptions admin pages with support for level, status, date range, discount code, gateway, and total filters. #3602 (@dparker1005)
 * ENHANCEMENT: Added To, CC, and BCC settings to the Email Templates editor. #3588 (@kimcoleman)
 * ENHANCEMENT: Members and orders CSV exports now use Action Scheduler for improved reliability on large datasets. #3543 (@dalemugford)
