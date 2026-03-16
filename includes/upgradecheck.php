@@ -421,9 +421,10 @@ function pmpro_checkForUpgrades() {
 	}
 
 	// Upgrade to 3.7 - Email logging
-	if ( $pmpro_db_version < 3.7 ) {
+	// 3.7001 for changes during RC phase.
+	if ( $pmpro_db_version < 3.7001 ) {
 		pmpro_db_delta();
-		update_option( 'pmpro_db_version', '3.7' );
+		update_option( 'pmpro_db_version', '3.7001' );
 	}
 
 }
