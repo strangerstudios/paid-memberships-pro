@@ -1183,6 +1183,14 @@ class PMPro_AddOns {
 		$api->download_link  = isset( $addon['Download'] ) ? $addon['Download'] : '';
 		$api->package        = isset( $addon['Download'] ) ? $addon['Download'] : '';
 
+		// Automatically update the "Tested Up To" version for any point WP release - like .org does.
+		$wp_version = get_bloginfo( 'version' );
+		$parts = explode( '.', $wp_version, 3 );
+		$trimmed_wp_version = $parts[0] . '.' . $parts[1];
+		if ( version_compare( $api->tested, $trimmed_wp_version, '>=' ) ) {
+			$api->tested = $wp_version;
+		}
+		
 		// add sections
 		if ( ! empty( $addon['Description'] ) ) {
 			$api->sections['description'] = $addon['Description'];
