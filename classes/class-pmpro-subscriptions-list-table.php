@@ -91,6 +91,36 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Override display_tablenav to prevent _wp_http_referer from being added
+	 * to the form. The stale referer in the URL causes Screen Options to
+	 * redirect to the pre-filter page, clearing all active filters.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $which The location of the tablenav: 'top' or 'bottom'.
+	 */
+	protected function display_tablenav( $which ) {
+		if ( 'bottom' === $which && ! $this->has_items() ) {
+			return;
+		}
+		if ( 'top' === $which ) {
+			wp_nonce_field( 'bulk-' . $this->_args['plural'], '_wpnonce', false );
+		}
+		?>
+		<div class="tablenav <?php echo esc_attr( $which ); ?>">
+			<?php if ( $this->has_items() ) : ?>
+			<div class="alignleft actions bulkactions">
+				<?php $this->bulk_actions( $which ); ?>
+			</div>
+			<?php endif; ?>
+			<?php $this->extra_tablenav( $which ); ?>
+			<?php $this->pagination( $which ); ?>
+			<br class="clear" />
+		</div>
+		<?php
+	}
+
+	/**
 	 * Prepares the list of items for displaying.
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
