@@ -644,7 +644,7 @@ function pmpro_avatar_get_url( $user_id, $size = 96 ) {
 		} else {
 			// Don't upscale — if the base image is smaller than the requested bucket, serve the base directly.
 			$base_image_size = @getimagesize( $base_path );
-			if ( $base_image_size && $base_image_size[0] < $bucketed_size ) {
+			if ( $base_image_size && min( $base_image_size[0], $base_image_size[1] ) < $bucketed_size ) {
 				$filename = 'avatar.' . $ext;
 			} else {
 				$image = wp_get_image_editor( $base_path );
