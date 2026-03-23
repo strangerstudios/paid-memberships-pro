@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.6.991\n"
+"Project-Id-Version: Paid Memberships Pro 3.7\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-03-16T14:55:12+00:00\n"
+"POT-Creation-Date: 2026-03-23T14:40:04+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -101,7 +101,7 @@ msgstr ""
 #: adminpages/addons.php:51
 #: adminpages/admin_header.php:256
 #: includes/adminpages.php:67
-#: includes/adminpages.php:272
+#: includes/adminpages.php:298
 msgid "Add Ons"
 msgstr ""
 
@@ -382,14 +382,14 @@ msgstr ""
 
 #: adminpages/admin_header.php:232
 #: includes/adminpages.php:61
-#: includes/adminpages.php:200
+#: includes/adminpages.php:226
 msgid "Dashboard"
 msgstr ""
 
 #: adminpages/admin_header.php:236
 #: adminpages/reports/logins.php:116
 #: includes/adminpages.php:62
-#: includes/adminpages.php:212
+#: includes/adminpages.php:238
 msgid "Members"
 msgstr ""
 
@@ -405,7 +405,7 @@ msgstr ""
 #: classes/class-pmpro-subscriptions-list-table.php:153
 #: includes/admin.php:298
 #: includes/adminpages.php:63
-#: includes/adminpages.php:224
+#: includes/adminpages.php:250
 #: includes/rest-api.php:1497
 msgid "Orders"
 msgstr ""
@@ -416,7 +416,7 @@ msgstr ""
 #: adminpages/subscriptions.php:232
 #: includes/admin.php:297
 #: includes/adminpages.php:64
-#: includes/adminpages.php:236
+#: includes/adminpages.php:262
 #: includes/rest-api.php:1452
 msgid "Subscriptions"
 msgstr ""
@@ -425,7 +425,7 @@ msgstr ""
 #: adminpages/reports.php:50
 #: includes/admin.php:299
 #: includes/adminpages.php:65
-#: includes/adminpages.php:248
+#: includes/adminpages.php:274
 #: includes/rest-api.php:1516
 msgid "Reports"
 msgstr ""
@@ -437,19 +437,19 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalstandard.php:128
 #: includes/admin.php:302
 #: includes/adminpages.php:66
-#: includes/adminpages.php:260
+#: includes/adminpages.php:286
 #: includes/rest-api.php:1648
 msgid "Settings"
 msgstr ""
 
 #: adminpages/admin_header.php:260
 #: includes/adminpages.php:76
-#: includes/adminpages.php:291
+#: includes/adminpages.php:317
 msgid "License"
 msgstr ""
 
 #: adminpages/admin_header.php:264
-#: includes/adminpages.php:107
+#: includes/adminpages.php:114
 msgid "Setup Wizard"
 msgstr ""
 
@@ -1448,9 +1448,9 @@ msgstr ""
 #: adminpages/subscriptions/link-subscription.php:111
 #: classes/class-pmpro-field.php:1184
 #: classes/email-templates/class-pmpro-email-template-cancel.php:53
-#: includes/avatars.php:890
-#: includes/avatars.php:1184
-#: includes/avatars.php:1213
+#: includes/avatars.php:901
+#: includes/avatars.php:1195
+#: includes/avatars.php:1224
 #: includes/profile.php:1165
 #: includes/profile.php:1312
 #: pages/billing.php:369
@@ -2568,14 +2568,14 @@ msgstr ""
 
 #. translators: %s: User's display name.
 #: adminpages/member-edit.php:91
-#: includes/adminpages.php:155
+#: includes/adminpages.php:181
 #, php-format
 msgid "Edit Member: %s"
 msgstr ""
 
 #: adminpages/member-edit.php:93
-#: includes/adminpages.php:110
-#: includes/adminpages.php:152
+#: includes/adminpages.php:117
+#: includes/adminpages.php:178
 msgid "Add Member"
 msgstr ""
 
@@ -2668,7 +2668,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:11
 #: adminpages/wizard/wizard.php:28
 #: includes/adminpages.php:58
-#: includes/adminpages.php:189
+#: includes/adminpages.php:215
 msgid "Memberships"
 msgstr ""
 
@@ -3076,9 +3076,9 @@ msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:78
 #: classes/class-pmpro-orders-list-table.php:885
-#: includes/adminpages.php:465
-#: includes/adminpages.php:467
-#: includes/adminpages.php:469
+#: includes/adminpages.php:491
+#: includes/adminpages.php:493
+#: includes/adminpages.php:495
 msgid "View"
 msgstr ""
 
@@ -3381,10 +3381,10 @@ msgid "This will send the user an email with their username and a link to reset 
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:177
-#: includes/avatars.php:821
-#: includes/avatars.php:846
-#: includes/avatars.php:1112
-#: includes/avatars.php:1147
+#: includes/avatars.php:832
+#: includes/avatars.php:857
+#: includes/avatars.php:1123
+#: includes/avatars.php:1158
 msgid "Profile Picture"
 msgstr ""
 
@@ -3568,8 +3568,8 @@ msgstr ""
 #: classes/class-pmpro-discount-code-list-table.php:431
 #: classes/class-pmpro-field.php:1178
 #: classes/class-pmpro-orders-list-table.php:920
-#: includes/avatars.php:888
-#: includes/avatars.php:1182
+#: includes/avatars.php:899
+#: includes/avatars.php:1193
 msgid "Delete"
 msgstr ""
 
@@ -4294,8 +4294,8 @@ msgstr ""
 #: adminpages/subscriptions/view-subscription.php:181
 #: classes/class-pmpro-members-list-table.php:581
 #: classes/class-pmpro-subscription.php:1227
-#: includes/adminpages.php:320
-#: includes/adminpages.php:754
+#: includes/adminpages.php:346
+#: includes/adminpages.php:780
 #: includes/profile.php:1334
 msgid "Edit Member"
 msgstr ""
@@ -4672,7 +4672,7 @@ msgid "Include the shortcode %s or the Log In Form block."
 msgstr ""
 
 #: adminpages/pagesettings.php:426
-#: includes/adminpages.php:671
+#: includes/adminpages.php:697
 msgid "Member Profile Edit Page"
 msgstr ""
 
@@ -6908,17 +6908,17 @@ msgstr ""
 #. translators: %s: file source
 #: classes/class-pmpro-field.php:1166
 #: classes/class-pmpro-field.php:1168
-#: includes/avatars.php:861
-#: includes/avatars.php:875
-#: includes/avatars.php:1158
-#: includes/avatars.php:1172
+#: includes/avatars.php:872
+#: includes/avatars.php:886
+#: includes/avatars.php:1169
+#: includes/avatars.php:1183
 #, php-format
 msgid "Current File: %s"
 msgstr ""
 
 #: classes/class-pmpro-field.php:1183
-#: includes/avatars.php:889
-#: includes/avatars.php:1183
+#: includes/avatars.php:900
+#: includes/avatars.php:1194
 msgid "Replace"
 msgstr ""
 
@@ -10508,8 +10508,8 @@ msgid "These are users who were created during the Paid Memberships Pro checkout
 msgstr ""
 
 #: includes/admin.php:89
-#: includes/avatars.php:949
-#: includes/avatars.php:1044
+#: includes/avatars.php:960
+#: includes/avatars.php:1055
 #: includes/compatibility/lifterlms.php:546
 msgid "Security check failed."
 msgstr ""
@@ -10596,103 +10596,103 @@ msgstr ""
 msgid "Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">submit a testimonial</a> to help others find %2$s. Thank you from the %3$s team!"
 msgstr ""
 
-#: includes/adminpages.php:97
+#: includes/adminpages.php:104
 msgid "Updates Required"
 msgstr ""
 
 #. translators: Edit/Add Member Admin screen title. 1: Screen name, 2: Site name.
-#: includes/adminpages.php:158
+#: includes/adminpages.php:184
 #, php-format
 msgid "%1$s &lsaquo; %2$s &#8212; WordPress"
 msgstr ""
 
-#: includes/adminpages.php:303
+#: includes/adminpages.php:329
 msgid "Member"
 msgstr ""
 
-#: includes/adminpages.php:465
+#: includes/adminpages.php:491
 msgid "No Access"
 msgstr ""
 
-#: includes/adminpages.php:467
+#: includes/adminpages.php:493
 msgid "With Access"
 msgstr ""
 
-#: includes/adminpages.php:469
+#: includes/adminpages.php:495
 msgid "My Access"
 msgstr ""
 
-#: includes/adminpages.php:485
+#: includes/adminpages.php:511
 msgid "Preview your membership site by changing the selected view below."
 msgstr ""
 
-#: includes/adminpages.php:487
+#: includes/adminpages.php:513
 msgid "View with membership access"
 msgstr ""
 
-#: includes/adminpages.php:488
+#: includes/adminpages.php:514
 msgid "View with current membership levels"
 msgstr ""
 
-#: includes/adminpages.php:489
+#: includes/adminpages.php:515
 msgid "View without membership access"
 msgstr ""
 
-#: includes/adminpages.php:639
+#: includes/adminpages.php:665
 #: blocks/build/account-page/index.js:1
 #: blocks/src/account-page/edit.js:58
 msgid "Membership Account Page"
 msgstr ""
 
-#: includes/adminpages.php:643
+#: includes/adminpages.php:669
 msgid "Membership Billing Information Page"
 msgstr ""
 
-#: includes/adminpages.php:647
+#: includes/adminpages.php:673
 #: blocks/build/cancel-page/index.js:1
 #: blocks/src/cancel-page/edit.js:26
 msgid "Membership Cancel Page"
 msgstr ""
 
-#: includes/adminpages.php:651
+#: includes/adminpages.php:677
 msgid "Membership Checkout Page"
 msgstr ""
 
-#: includes/adminpages.php:655
+#: includes/adminpages.php:681
 #: blocks/build/confirmation-page/index.js:1
 #: blocks/src/confirmation-page/edit.js:26
 msgid "Membership Confirmation Page"
 msgstr ""
 
-#: includes/adminpages.php:659
+#: includes/adminpages.php:685
 msgid "Membership Orders Page"
 msgstr ""
 
-#: includes/adminpages.php:663
+#: includes/adminpages.php:689
 msgid "Membership Levels Page"
 msgstr ""
 
-#: includes/adminpages.php:667
+#: includes/adminpages.php:693
 msgid "Paid Memberships Pro Login Page"
 msgstr ""
 
-#: includes/adminpages.php:691
+#: includes/adminpages.php:717
 msgid "Members Per Page"
 msgstr ""
 
-#: includes/adminpages.php:733
+#: includes/adminpages.php:759
 msgid "View PMPro Documentation"
 msgstr ""
 
-#: includes/adminpages.php:733
+#: includes/adminpages.php:759
 msgid "Docs"
 msgstr ""
 
-#: includes/adminpages.php:734
+#: includes/adminpages.php:760
 msgid "Visit Customer Support Forum"
 msgstr ""
 
-#: includes/adminpages.php:734
+#: includes/adminpages.php:760
 msgid "Support"
 msgstr ""
 
@@ -10768,49 +10768,49 @@ msgstr ""
 msgid "The uploaded file is not a valid image type."
 msgstr ""
 
-#: includes/avatars.php:829
-#: includes/avatars.php:1117
+#: includes/avatars.php:840
+#: includes/avatars.php:1128
 msgid "via Gravatar"
 msgstr ""
 
-#: includes/avatars.php:831
-#: includes/avatars.php:1119
+#: includes/avatars.php:842
+#: includes/avatars.php:1130
 msgid "Site Default"
 msgstr ""
 
-#: includes/avatars.php:901
+#: includes/avatars.php:912
 msgid "Upload Profile Picture"
 msgstr ""
 
 #. translators: 1: allowed file types, 2: max file size
-#: includes/avatars.php:907
-#: includes/avatars.php:1198
+#: includes/avatars.php:918
+#: includes/avatars.php:1209
 #, php-format
 msgid "Allowed types: %1$s. Max size: %2$s."
 msgstr ""
 
-#: includes/avatars.php:1050
-#: includes/avatars.php:1096
+#: includes/avatars.php:1061
+#: includes/avatars.php:1107
 msgid "You do not have permission to change your profile picture."
 msgstr ""
 
-#: includes/avatars.php:1059
+#: includes/avatars.php:1070
 msgid "Your profile picture has been removed."
 msgstr ""
 
-#: includes/avatars.php:1071
+#: includes/avatars.php:1082
 msgid "Your profile picture has been updated."
 msgstr ""
 
-#: includes/avatars.php:1076
+#: includes/avatars.php:1087
 msgid "Please select an image to upload."
 msgstr ""
 
-#: includes/avatars.php:1090
+#: includes/avatars.php:1101
 msgid "Log in to change your profile picture."
 msgstr ""
 
-#: includes/avatars.php:1127
+#: includes/avatars.php:1138
 #: includes/profile.php:1087
 #: includes/profile.php:1259
 #: pages/billing.php:598
@@ -10821,21 +10821,21 @@ msgstr ""
 msgid "View Your Membership Account &rarr;"
 msgstr ""
 
-#: includes/avatars.php:1139
-#: includes/avatars.php:1260
+#: includes/avatars.php:1150
+#: includes/avatars.php:1271
 msgid "Change Profile Picture"
 msgstr ""
 
-#: includes/avatars.php:1192
+#: includes/avatars.php:1203
 msgid "Upload New Profile Picture"
 msgstr ""
 
-#: includes/avatars.php:1212
+#: includes/avatars.php:1223
 msgid "Save Changes"
 msgstr ""
 
 #. translators: %1$s: opening link tag, %2$s: closing link tag.
-#: includes/avatars.php:1290
+#: includes/avatars.php:1301
 #, php-format
 msgid "This user's profile picture is managed by Paid Memberships Pro. %1$sEdit their profile picture%2$s."
 msgstr ""
