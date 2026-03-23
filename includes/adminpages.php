@@ -87,10 +87,17 @@ function pmpro_add_pages() {
 	add_submenu_page( 'admin.php', __( 'Advanced Settings', 'paid-memberships-pro' ), __( 'Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings' );
 
 	// Set up screen settings for list tables.
-	add_action( 'load-' . $members_list_table_hook, 'PMPro_Members_List_Table::hook_screen_options' );
-	add_action( 'load-' . $orders_list_table_hook, 'PMPro_Orders_List_Table::hook_screen_options' );
-	add_action( 'load-' . $subscriptions_list_table_hook, 'PMPro_Subscriptions_List_Table::hook_screen_options' );
-	add_action( 'load-' . $discount_codes_list_table_hook, 'PMPro_Discount_Code_List_Table::hook_screen_options' );
+	$pmpro_list_table_hooks = array(
+		$members_list_table_hook         => 'PMPro_Members_List_Table::hook_screen_options',
+		$orders_list_table_hook          => 'PMPro_Orders_List_Table::hook_screen_options',
+		$subscriptions_list_table_hook   => 'PMPro_Subscriptions_List_Table::hook_screen_options',
+		$discount_codes_list_table_hook  => 'PMPro_Discount_Code_List_Table::hook_screen_options',
+	);
+
+	foreach ( $pmpro_list_table_hooks as $list_table_hook => $hook_screen_options_callback ) {
+		add_action( 'load-' . $list_table_hook, 'pmpro_maybe_redirect_list_table_referer', 5 );
+		add_action( 'load-' . $list_table_hook, $hook_screen_options_callback );
+	}
 
 	//updates page only if needed
 	if ( pmpro_isUpdateRequired() ) {
@@ -110,6 +117,25 @@ function pmpro_add_pages() {
 	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), pmpro_get_edit_member_capability(), 'pmpro-member', 'pmpro_member_edit_display' );
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
+
+/**
+ * Remove stale list table referer parameters from PMPro admin URLs.
+ *
+ * WP_List_Table adds _wp_http_referer to GET forms. Leaving that value in the
+ * URL causes Screen Options submissions to redirect back to the previous URL
+ * because set_screen_options() prefers the request referer. Mirror WordPress
+ * core list screens by stripping the transient referer args once.
+ *
+ * @since TBD
+ */
+function pmpro_maybe_redirect_list_table_referer() {
+	if ( empty( $_REQUEST['_wp_http_referer'] ) || empty( $_SERVER['REQUEST_URI'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return;
+	}
+
+	wp_safe_redirect( remove_query_arg( array( '_wp_http_referer', '_wpnonce' ), esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) );
+	exit;
+}
 
 /**
  * Keep the Memberships menu selected on subpages.
