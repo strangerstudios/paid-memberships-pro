@@ -638,18 +638,29 @@ function pmpro_avatar_get_url( $user_id, $size = 96 ) {
 			return false;
 		}
 
-		$image = wp_get_image_editor( $base_path );
-		if ( is_wp_error( $image ) ) {
-			// Fall back to base avatar URL if we can't resize.
+		// If $bucketed_size isn't set, the base image was used directly above — nothing to generate.
+		if ( empty( $bucketed_size ) ) {
 			$filename = 'avatar.' . $ext;
 		} else {
-			$image->resize( $bucketed_size, $bucketed_size, true );
-			$image->set_quality( 90 );
-			$saved = $image->save( $file_path );
-
-			if ( is_wp_error( $saved ) ) {
-				// Fall back to base avatar URL if save failed.
+			// Don't upscale — if the base image is smaller than the requested bucket, serve the base directly.
+			$base_image_size = @getimagesize( $base_path );
+			if ( $base_image_size && min( $base_image_size[0], $base_image_size[1] ) < $bucketed_size ) {
 				$filename = 'avatar.' . $ext;
+			} else {
+				$image = wp_get_image_editor( $base_path );
+				if ( is_wp_error( $image ) ) {
+					// Fall back to base avatar URL if we can't resize.
+					$filename = 'avatar.' . $ext;
+				} else {
+					$image->resize( $bucketed_size, $bucketed_size, true );
+					$image->set_quality( 90 );
+					$saved = $image->save( $file_path );
+
+					if ( is_wp_error( $saved ) ) {
+						// Fall back to base avatar URL if save failed.
+						$filename = 'avatar.' . $ext;
+					}
+				}
 			}
 		}
 	}
