@@ -335,7 +335,7 @@
 			/**
 			 * Fires before a PMPro email is sent via wp_mail.
 			 *
-			 * @since TBD
+			 * @since 3.7
 			 *
 			 * @param PMProEmail $this The email object.
 			 */

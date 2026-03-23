@@ -3,7 +3,7 @@
 /**
  * Check if email logging is enabled.
  *
- * @since TBD
+ * @since 3.7
  *
  * @return bool Whether email logging is enabled.
  */
@@ -18,7 +18,7 @@ function pmpro_is_email_logging_enabled() {
  * it is available in the wp_mail_failed callback, which only
  * receives a WP_Error (no email content).
  *
- * @since TBD
+ * @since 3.7
  *
  * @param array|null|false $set Pass an array to stash, false to clear, or null to retrieve.
  * @return array|null The stashed data, or null if empty.
@@ -39,7 +39,7 @@ function pmpro_stashed_mail_data( $set = null ) {
  * merges this into the stashed email data for logging. Cleared
  * via the pmpro_after_email_sent hook.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param array|null|false $set Pass an array to set, false to clear, or null to retrieve.
  * @return array|null The metadata array with 'template' and 'user_id', or null.
@@ -58,7 +58,7 @@ function pmpro_email_sending_metadata( $set = null ) {
  * Extracts the template name and user_id from the PMProEmail
  * object so they are available when the wp_mail filter fires.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param PMProEmail $email The email object about to be sent.
  */
@@ -83,7 +83,7 @@ add_action( 'pmpro_before_email_sent', 'pmpro_stash_email_metadata' );
 /**
  * Clear PMPro-specific metadata after wp_mail() returns.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param PMProEmail $email  The email object that was sent.
  * @param bool       $result Whether wp_mail() returned true.
@@ -100,7 +100,7 @@ add_action( 'pmpro_after_email_sent', 'pmpro_clear_email_metadata', 10, 2 );
  * after WordPress applies defaults and filters. This ensures
  * accurate from data even when no From header was passed to wp_mail().
  *
- * @since TBD
+ * @since 3.7
  *
  * @param array|null|false $set Pass an array to set, false to clear, or null to retrieve.
  * @return array|null Array with 'from' and 'from_name', or null.
@@ -118,7 +118,7 @@ function pmpro_stashed_from_data( $set = null ) {
  *
  * Supports arrays of recipients and strings that may include display names.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param string|array $recipients Recipient value passed to wp_mail().
  * @return string The first email address, or an empty string if none was found.
@@ -143,7 +143,7 @@ function pmpro_get_primary_recipient_email( $recipients ) {
  * Fires after all wp_mail processing and filters, so these
  * values reflect the actual sender used for the email.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param PHPMailer $phpmailer The fully-configured PHPMailer instance.
  */
@@ -211,7 +211,7 @@ function pmpro_log_email( $mail_data, $status = 'sent', $error_message = '' ) {
 	 *
 	 *     add_filter( 'pmpro_should_log_email', '__return_true' );
 	 *
-	 * @since TBD
+	 * @since 3.7
 	 *
 	 * @param bool  $should_log Whether to log this email. Default true for PMPro emails, false otherwise.
 	 * @param array $email_data {
@@ -285,7 +285,7 @@ function pmpro_log_email( $mail_data, $status = 'sent', $error_message = '' ) {
  * the email content. The stash makes the full email data
  * available for logging failed emails.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param array $args The wp_mail arguments (to, subject, message, headers, attachments).
  * @return array The unmodified arguments.
@@ -308,7 +308,7 @@ add_filter( 'wp_mail', 'pmpro_stash_outgoing_email' );
  *
  * Clears any stale error and logs the email.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param array $mail_data {
  *     The email data from WordPress.
@@ -339,7 +339,7 @@ add_action( 'wp_mail_succeeded', 'pmpro_handle_wp_mail_succeeded' );
  *
  * Captures the error message and logs the email using stashed data.
  *
- * @since TBD
+ * @since 3.7
  *
  * @param WP_Error $error The error object.
  */
