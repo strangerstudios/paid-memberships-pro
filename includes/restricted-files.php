@@ -132,7 +132,14 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
 	}
 
 	// Get the directory path.
-	$uploads_dir = trailingslashit( wp_upload_dir()['basedir'] );
+	$upload_dir_info = wp_upload_dir();
+
+	// Bail if we can't get a valid uploads basedir (e.g. misconfigured Windows servers).
+	if ( empty( $upload_dir_info['basedir'] ) ) {
+		return '';
+	}
+
+	$uploads_dir = trailingslashit( $upload_dir_info['basedir'] );
 	$restricted_file_path = $uploads_dir . 'pmpro-' . $random_string . '/';
 	if ( ! empty( $file_dir ) ) {
 		$restricted_file_path .= $file_dir . '/';
@@ -161,6 +168,11 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
 function pmpro_is_restricted_directory_protected() {
 	$restricted_dir = pmpro_get_restricted_file_path();
 
+	// Can't test if we couldn't determine the restricted directory path.
+	if ( empty( $restricted_dir ) ) {
+		return null;
+	}
+
 	// Can't test if directory doesn't exist.
 	if ( ! is_dir( $restricted_dir ) ) {
 		return null;
@@ -174,6 +186,11 @@ function pmpro_is_restricted_directory_protected() {
 
 	// Convert file path to URL.
 	$wp_upload_dir = wp_upload_dir();
+
+	// Bail if we can't get a valid basedir (e.g. misconfigured Windows servers).
+	if ( empty( $wp_upload_dir['basedir'] ) ) {
+		return null;
+	}
 
 	// Normalize paths to ensure consistent separators.
 	$normalized_test_file = wp_normalize_path( $test_file );
