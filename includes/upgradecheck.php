@@ -427,6 +427,17 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.7001' );
 	}
 
+	/**
+	 * Version 3.7.1
+	 * Rename the Website Payments Pro gateway slug from 'paypal' to 'paypalwpp'.
+	 * Deprecate PayPal Express and add it to undeprecated gateways for existing sites.
+	 */
+	if ( $pmpro_db_version < 3.71 ) {
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_7_1.php" );
+		pmpro_upgrade_3_7_1();
+		update_option( 'pmpro_db_version', '3.71' );
+	}
+
 }
 
 function pmpro_db_delta() {

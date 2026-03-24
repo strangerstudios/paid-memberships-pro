@@ -3166,7 +3166,7 @@ function pmpro_is_ready() {
 			} else {
 				$pmpro_gateway_ready = false;
 			}
-		} elseif ( $gateway == 'paypal' || $gateway == 'paypalexpress' ) {
+		} elseif ( $gateway == 'paypalwpp' || $gateway == 'paypalexpress' ) {
 			if ( $gateway_environment && get_option( 'pmpro_gateway_email' ) && get_option( 'pmpro_apiusername' ) && get_option( 'pmpro_apipassword' ) && get_option( 'pmpro_apisignature' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {

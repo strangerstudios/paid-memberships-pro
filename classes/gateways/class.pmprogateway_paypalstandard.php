@@ -94,11 +94,13 @@
 		static function pmpro_payment_options($options)
 		{
 			_deprecated_function( __METHOD__, '3.5' );
-			//get stripe options
-			$paypal_options = PMProGateway_paypalexpress::getGatewayOptions();
+			if ( class_exists( 'PMProGateway_paypalexpress' ) ) {
+				//get options
+				$paypal_options = PMProGateway_paypalexpress::getGatewayOptions();
 
-			//merge with others.
-			$options = array_merge($paypal_options, $options);
+				//merge with others.
+				$options = array_merge($paypal_options, $options);
+			}
 
 			return $options;
 		}
@@ -111,7 +113,9 @@
 		 */
 		static function pmpro_payment_option_fields($values, $gateway) {
 			_deprecated_function( __FUNCTION__, '3.1', 'PMProGateway_paypalexpress::pmpro_payment_option_fields()' );
-			PMProGateway_paypalexpress::pmpro_payment_option_fields( $values, $gateway );
+			if ( class_exists( 'PMProGateway_paypalexpress' ) ) {
+				PMProGateway_paypalexpress::pmpro_payment_option_fields( $values, $gateway );
+			}
 		}
 
 		/**
@@ -149,7 +153,7 @@
 									</div>
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
 								<th scope="row" valign="top">
 									<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?></label>
 								</th>
@@ -157,7 +161,7 @@
 									<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr( get_option( 'pmpro_gateway_email' ) ); ?>" class="regular-text code" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
 								<th scope="row" valign="top">
 									<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
 								</th>
