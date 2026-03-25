@@ -78,8 +78,7 @@
 		 * @return string
 		 */
 		public static function get_description_for_gateway_settings() {
-			return '<strong>' . esc_html__( 'PayPal Express is deprecated.', 'paid-memberships-pro' ) . '</strong> '
-				. esc_html__( 'PayPal is retiring the NVP/SOAP API that PayPal Express relies on. We recommend switching to the Paid Memberships Pro - PayPal Gateway Add On or Stripe for new and ongoing payment processing.', 'paid-memberships-pro' );
+			return esc_html__( 'With PayPal, members can pay with their PayPal balance, credit/debit cards, linked bank accounts, or local payment methods. PayPal is accepted worldwide and offers multi-currency support for 200+ markets and 25+ currencies.', 'paid-memberships-pro' );
 		}
 
 		/**
