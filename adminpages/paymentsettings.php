@@ -228,8 +228,13 @@
 											}
 
 											// Special case for deprecated gateways.
-											if ( in_array( $gateway_slug, $deprecated_gateways, true ) && $gateway_slug === pmpro_getOption( 'gateway' ) ) {
-												$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Enabled (Not Supported)', 'paid-memberships-pro' ) . '</span>';
+											if ( in_array( $gateway_slug, $deprecated_gateways, true ) ) {
+												if ( pmpro_getOption( 'gateway' ) === $gateway_slug ) {
+													$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Enabled (Not Supported)', 'paid-memberships-pro' ) . '</span>';
+												} elseif ( $gateway_status_html !== esc_html__( '&#8212;', 'paid-memberships-pro' ) ) {
+													// Gateway is enabled (e.g. via Add PayPal Express Add On) but deprecated.
+													$gateway_status_html .= ' <span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Not Supported', 'paid-memberships-pro' ) . '</span>';
+												}
 											}
 
 											echo wp_kses_post( $gateway_status_html );
