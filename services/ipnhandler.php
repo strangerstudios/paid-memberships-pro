@@ -723,7 +723,7 @@ function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
 	}
 
 	// Get card info if appropriate.
-	if ( $morder->gateway == "paypal" ) {   //website payments pro
+	if ( $morder->gateway == "paypalwpp" ) {   //website payments pro
 		//Updates this order with the most recent orders payment method information and saves it. 
 		pmpro_update_order_with_recent_payment_method( $morder );
 	}

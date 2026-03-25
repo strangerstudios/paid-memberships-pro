@@ -1019,6 +1019,8 @@ add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 
  * PayPal Website Payments Pro was deprecated in 2.10.
  * Authorize.net was deprecated in 3.2.
  * PayFlow, PayPal Standard, and Braintree were deprecated in 3.4.
+ * PayPal Express was deprecated in 3.7.1.
+ * PayPal Website Payments Pro was renamed from 'paypal' to 'paypalwpp' in 3.7.1.
  *
  * @since 3.5
  */
@@ -1026,11 +1028,12 @@ function pmpro_get_deprecated_gateways() {
 	return apply_filters( 'pmpro_deprecated_gateways', array(
 		'twocheckout',
 		'cybersource',
-		'paypal',
+		'paypalwpp',
 		'authorizenet',
 		'payflowpro',
 		'paypalstandard',
 		'braintree',
+		'paypalexpress',
 	) );
 }
 

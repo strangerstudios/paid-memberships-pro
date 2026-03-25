@@ -169,7 +169,6 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway.php' ); // loade
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-codes.php' ); // loaded by memberorder class when needed
 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
 
 pmpro_check_for_deprecated_gateways();
 
@@ -255,7 +254,6 @@ function pmpro_gateways() {
 		''                  => esc_html__( 'Testing Only', 'paid-memberships-pro' ),
 		'check'             => esc_html__( 'Pay by Check', 'paid-memberships-pro' ),
 		'stripe'            => esc_html__( 'Stripe', 'paid-memberships-pro' ),
-		'paypalexpress'     => esc_html__( 'PayPal Express', 'paid-memberships-pro' ),
 	);
 
 	if ( pmpro_onlyFreeLevels() ) {
@@ -284,7 +282,25 @@ function pmpro_get_gateway_nicename( $gateway ) {
 	if ( array_key_exists( $gateway, $gateways ) ) {
 		$gateway_nicename =  $gateways[ $gateway ];
 	} else {
-		$gateway_nicename = ucwords( $gateway );
+		// Fallback nicenames for gateway slugs that may appear in
+		// historical orders/subscriptions even when the gateway
+		// class is not loaded.
+		$legacy_nicenames = array(
+			'paypalwpp'      => __( 'PayPal Website Payments Pro', 'paid-memberships-pro' ),
+			'paypalexpress'  => __( 'PayPal Express', 'paid-memberships-pro' ),
+			'paypalstandard' => __( 'PayPal Standard', 'paid-memberships-pro' ),
+			'authorizenet'   => __( 'Authorize.net', 'paid-memberships-pro' ),
+			'payflowpro'     => __( 'PayPal Payflow Pro', 'paid-memberships-pro' ),
+			'braintree'      => __( 'Braintree', 'paid-memberships-pro' ),
+			'twocheckout'    => __( '2Checkout', 'paid-memberships-pro' ),
+			'cybersource'    => __( 'CyberSource', 'paid-memberships-pro' ),
+		);
+
+		if ( array_key_exists( $gateway, $legacy_nicenames ) ) {
+			$gateway_nicename = $legacy_nicenames[ $gateway ];
+		} else {
+			$gateway_nicename = ucwords( $gateway );
+		}
 	}
 
 	return $gateway_nicename;

@@ -3,9 +3,9 @@
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
 	//load classes init method
-	add_action('init', array('PMProGateway_paypal', 'init'));
+	add_action('init', array('PMProGateway_paypalwpp', 'init'));
 
-	class PMProGateway_paypal extends PMProGateway
+	class PMProGateway_paypalwpp extends PMProGateway
 	{
 		function __construct($gateway = NULL)
 		{
@@ -21,15 +21,15 @@
 		static function init()
 		{
 			//make sure PayPal Website Payments Pro is a gateway option
-			add_filter('pmpro_gateways', array('PMProGateway_paypal', 'pmpro_gateways'));
+			add_filter('pmpro_gateways', array('PMProGateway_paypalwpp', 'pmpro_gateways'));
 
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
-			if($gateway == "paypal")
+			if($gateway == "paypalwpp")
 			{
-				add_action('pmpro_checkout_preheader', array('PMProGateway_paypal', 'pmpro_checkout_preheader'));
-				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypal', 'pmpro_checkout_default_submit_button'));
-				add_action('http_api_curl', array('PMProGateway_paypal', 'http_api_curl'), 10, 3);
+				add_action('pmpro_checkout_preheader', array('PMProGateway_paypalwpp', 'pmpro_checkout_preheader'));
+				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalwpp', 'pmpro_checkout_default_submit_button'));
+				add_action('http_api_curl', array('PMProGateway_paypalwpp', 'http_api_curl'), 10, 3);
 			}
 		}
 
@@ -50,8 +50,8 @@
 		 */
 		static function pmpro_gateways($gateways)
 		{
-			if(empty($gateways['paypal']))
-				$gateways['paypal'] = __('PayPal Website Payments Pro', 'paid-memberships-pro' );
+			if(empty($gateways['paypalwpp']))
+				$gateways['paypalwpp'] = __('PayPal Website Payments Pro', 'paid-memberships-pro' );
 
 			return $gateways;
 		}
@@ -96,7 +96,7 @@
 		{
 			_deprecated_function( __METHOD__, '3.5' );
 			//get options
-			$paypal_options = PMProGateway_paypal::getGatewayOptions();
+			$paypal_options = PMProGateway_paypalwpp::getGatewayOptions();
 
 			//merge with others.
 			$options = array_merge($paypal_options, $options);
@@ -112,7 +112,9 @@
 		 */
 		static function pmpro_payment_option_fields($values, $gateway) {
 			_deprecated_function( __FUNCTION__, '3.1', 'PMProGateway_paypalexpress::pmpro_payment_option_fields()' );
-			PMProGateway_paypalexpress::pmpro_payment_option_fields( $values, $gateway );
+			if ( class_exists( 'PMProGateway_paypalexpress' ) ) {
+				PMProGateway_paypalexpress::pmpro_payment_option_fields( $values, $gateway );
+			}
 		}
 
 		/**
@@ -122,7 +124,7 @@
 		 */
 		public static function show_settings_fields() {
 			?>
-			<div id="pmpro_paypal" class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div id="pmpro_paypalwpp" class="pmpro_section" data-visibility="shown" data-activated="true">
 				<div class="pmpro_section_toggle">
 					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 						<span class="dashicons dashicons-arrow-up-alt2"></span>
@@ -132,7 +134,7 @@
 				<div class="pmpro_section_inside">
 					<table class="form-table">
 						<tbody>
-							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
 								<th scope="row" valign="top">
 									<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?></label>
 								</th>
@@ -140,7 +142,7 @@
 									<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr( get_option( 'pmpro_gateway_email' ) ); ?>" class="regular-text code" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
 								<th scope="row" valign="top">
 									<label for="apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?></label>
 								</th>
@@ -148,7 +150,7 @@
 									<input type="text" id="apiusername" name="apiusername" value="<?php echo esc_attr( get_option( 'pmpro_apiusername' ) ); ?>" class="regular-text code" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
 								<th scope="row" valign="top">
 									<label for="apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?></label>
 								</th>
@@ -156,7 +158,7 @@
 									<input type="text" id="apipassword" name="apipassword" value="<?php echo esc_attr( get_option( 'pmpro_apipassword' ) ); ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
 								<th scope="row" valign="top">
 									<label for="apisignature"><?php esc_html_e('API Signature', 'paid-memberships-pro' );?></label>
 								</th>
@@ -164,7 +166,7 @@
 									<input type="text" id="apisignature" name="apisignature" value="<?php echo esc_attr( get_option( 'pmpro_apisignature' ) ); ?>" class="regular-text code" />
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
 								<th scope="row" valign="top">
 									<label for="paypalexpress_skip_confirmation"><?php esc_html_e('Confirmation Step', 'paid-memberships-pro' );?></label>
 								</th>
@@ -175,7 +177,7 @@
 									</select>
 								</td>
 							</tr>
-							<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard">
+							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
 								<th scope="row" valign="top">
 									<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
 								</th>
@@ -221,7 +223,7 @@
 			global $gateway, $gateway_environment, $pmpro_level;
 			$default_gateway = get_option("pmpro_gateway");
 
-			if ( $gateway == 'paypal' || $default_gateway == 'paypal' ) {
+			if ( $gateway == 'paypalwpp' || $default_gateway == 'paypalwpp' ) {
 				$dependencies = array( 'jquery' );
 				$paypal_enable_3dsecure = get_option( 'pmpro_paypal_enable_3dsecure' );
 				$data = array();
@@ -267,7 +269,7 @@
 
 			//show our submit buttons
 			?>
-			<?php if($gateway == "paypal" || $gateway == "paypalexpress" || $gateway == "paypalstandard") { ?>
+			<?php if($gateway == "paypalwpp" || $gateway == "paypalexpress" || $gateway == "paypalstandard") { ?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
 				<button type="submit" id="pmpro_btn-submit-paypalexpress" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout pmpro_btn-submit-checkout-paypal' ) ); ?>">

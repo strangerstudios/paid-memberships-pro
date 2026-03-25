@@ -662,7 +662,7 @@ class PMPro_Site_Health {
 			'braintree' => [
 				'PMPRO_BRAINTREE_WEBHOOK_DEBUG'   => __( 'Braintree Webhook Debug Mode', 'paid-memberships-pro' ),
 			],
-			'paypal' => [
+			'paypalwpp' => [
 				'PMPRO_IPN_DEBUG'                 => __( 'PayPal IPN Debug Mode', 'paid-memberships-pro' ),
 			],
 			'paypalexpress' => [
