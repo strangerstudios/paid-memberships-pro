@@ -8,6 +8,12 @@
 function pmpro_set_up_restricted_files_directory() {
 	// Create restricted folder if it doesn't exist.
 	$restricted_file_directory = pmpro_get_restricted_file_path();
+
+	// Bail if we couldn't determine a valid path (e.g. misconfigured Windows servers).
+	if ( empty( $restricted_file_directory ) ) {
+		return;
+	}
+
 	if ( ! file_exists( $restricted_file_directory ) ) {
 		wp_mkdir_p( $restricted_file_directory );
 	}
@@ -251,7 +257,7 @@ function pmpro_find_testable_file( $directory ) {
 				$filename = $current->getFilename();
 
 				// Skip dotfiles and dot directories (e.g. .DS_Store, .htaccess).
-				return '' === $filename || '.' !== $filename[0];
+				return ! empty( $filename ) && '.' !== $filename[0];
 			}
 		);
 		$iterator = new RecursiveIteratorIterator( $filtered_iterator, RecursiveIteratorIterator::SELF_FIRST );
