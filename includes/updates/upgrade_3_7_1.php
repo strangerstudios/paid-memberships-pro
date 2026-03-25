@@ -12,21 +12,6 @@
 function pmpro_upgrade_3_7_1() {
 	global $wpdb;
 
-	// Rename the WPP gateway slug in orders.
-	$wpdb->query(
-		"UPDATE {$wpdb->pmpro_membership_orders} SET gateway = 'paypalwpp' WHERE gateway = 'paypal'"
-	);
-
-	// Rename the WPP gateway slug in subscriptions.
-	$wpdb->query(
-		"UPDATE {$wpdb->pmpro_subscriptions} SET gateway = 'paypalwpp' WHERE gateway = 'paypal'"
-	);
-
-	// If the default gateway is 'paypal' (WPP), update it to 'paypalwpp'.
-	if ( 'paypal' === get_option( 'pmpro_gateway' ) ) {
-		update_option( 'pmpro_gateway', 'paypalwpp' );
-	}
-
 	// Get the current undeprecated gateways list.
 	$undeprecated_gateways = get_option( 'pmpro_undeprecated_gateways' );
 	if ( empty( $undeprecated_gateways ) ) {
@@ -35,10 +20,42 @@ function pmpro_upgrade_3_7_1() {
 		$undeprecated_gateways = explode( ',', $undeprecated_gateways );
 	}
 
-	// Rename 'paypal' to 'paypalwpp' in undeprecated gateways.
-	$paypal_key = array_search( 'paypal', $undeprecated_gateways, true );
-	if ( false !== $paypal_key ) {
-		$undeprecated_gateways[ $paypal_key ] = 'paypalwpp';
+	/**
+	 * Only migrate 'paypal' data to 'paypalwpp' if 'paypal' is listed as an
+	 * undeprecated gateway, meaning this site was using legacy WPP before
+	 * this upgrade.
+	 *
+	 * We don't check the default gateway option here because the new PayPal
+	 * REST API Add On also uses the 'paypal' slug as its default gateway.
+	 * If this script were to rerun after that add-on is active, checking the
+	 * default gateway would incorrectly migrate the new add-on's data.
+	 *
+	 * The undeprecated gateways list is safe because pmpro_check_for_deprecated_gateways()
+	 * populates it on every page load, so any site that had WPP active will
+	 * have 'paypal' in this list before the upgrade runs. The new add-on
+	 * would never add 'paypal' to this list since it's deprecated in core.
+	 */
+	if ( in_array( 'paypal', $undeprecated_gateways, true ) ) {
+		// Rename the WPP gateway slug in orders.
+		$wpdb->query(
+			"UPDATE {$wpdb->pmpro_membership_orders} SET gateway = 'paypalwpp' WHERE gateway = 'paypal'"
+		);
+
+		// Rename the WPP gateway slug in subscriptions.
+		$wpdb->query(
+			"UPDATE {$wpdb->pmpro_subscriptions} SET gateway = 'paypalwpp' WHERE gateway = 'paypal'"
+		);
+
+		// Update the default gateway option if needed.
+		if ( 'paypal' === get_option( 'pmpro_gateway' ) ) {
+			update_option( 'pmpro_gateway', 'paypalwpp' );
+		}
+
+		// Rename 'paypal' to 'paypalwpp' in undeprecated gateways.
+		$paypal_key = array_search( 'paypal', $undeprecated_gateways, true );
+		if ( false !== $paypal_key ) {
+			$undeprecated_gateways[ $paypal_key ] = 'paypalwpp';
+		}
 	}
 
 	/**
