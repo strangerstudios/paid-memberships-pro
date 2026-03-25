@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.7
+Stable tag: 3.7.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,12 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.7.1 - 2026-03-25 =
+* BUG FIX: Fixed some admin pages not saving due to POST redirect in list table referer cleanup. #3624 (@kimcoleman)
+* BUG FIX: Fixed PHP 8.1 deprecation warnings in restricted files functions on Windows servers with misconfigured upload directories. #3623 (@flintfromthebasement)
+* DEPRECATED: Deprecated the PayPal Express gateway. PayPal is retiring the NVP/SOAP API that PayPal Express relies on. A new PayPal integration is coming soon. #3622 (@dparker1005)
+* DEPRECATED: Renamed the Website Payments Pro gateway slug from `paypal` to `paypalwpp` to free the `paypal` slug for the upcoming PayPal REST API Add On. #3622 (@dparker1005)
+
 = 3.7 - 2026-03-23 =
 * FEATURE: Added native profile picture (avatar) support, allowing members to upload custom avatars managed entirely within PMPro instead of relying on Gravatar. #3597 (@ideadude)
 * FEATURE: Added a Quick Search feature for navigating Memberships admin pages. #3563 (@dparker1005)

@@ -1,4 +1,10 @@
 == Changelog ==
+= 3.7.1 - 2026-03-25 =
+* BUG FIX: Fixed some admin pages not saving due to POST redirect in list table referer cleanup. #3624 (@kimcoleman)
+* BUG FIX: Fixed PHP 8.1 deprecation warnings in restricted files functions on Windows servers with misconfigured upload directories. #3623 (@flintfromthebasement)
+* DEPRECATED: Deprecated the PayPal Express gateway. PayPal is retiring the NVP/SOAP API that PayPal Express relies on. A new PayPal integration is coming soon. #3622 (@dparker1005)
+* DEPRECATED: Renamed the Website Payments Pro gateway slug from `paypal` to `paypalwpp` to free the `paypal` slug for the upcoming PayPal REST API Add On. #3622 (@dparker1005)
+
 = 3.7 - 2026-03-23 =
 * FEATURE: Added native profile picture (avatar) support, allowing members to upload custom avatars managed entirely within PMPro instead of relying on Gravatar. #3597 (@ideadude)
 * FEATURE: Added a Quick Search feature for navigating Memberships admin pages. #3563 (@dparker1005)
