@@ -129,7 +129,7 @@ add_action( 'admin_menu', 'pmpro_add_pages' );
  * @since 3.7
  */
 function pmpro_maybe_redirect_list_table_referer() {
-	if ( empty( $_REQUEST['_wp_http_referer'] ) || empty( $_SERVER['REQUEST_URI'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( 'GET' !== $_SERVER['REQUEST_METHOD'] || empty( $_REQUEST['_wp_http_referer'] ) || empty( $_SERVER['REQUEST_URI'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return;
 	}
 
