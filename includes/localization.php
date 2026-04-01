@@ -20,7 +20,7 @@ function pmpro_load_textdomain() {
 	//load via plugin_textdomain/glotpress
 	load_plugin_textdomain( 'paid-memberships-pro', false, dirname( __DIR__) . '/languages/' );
 }
-add_action( 'init', 'pmpro_load_textdomain', 1 );
+add_action( 'plugins_loaded', 'pmpro_load_textdomain', 1 );
 
 function pmpro_translate_billing_period($period, $number = 1)
 {	
