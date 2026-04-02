@@ -590,6 +590,17 @@
 						}
 						else
 							$level_checked = false;
+
+						// Load subscription delay and set expiration date for this discount code level.
+						$dc_delay = '';
+						$dc_set_expiration_date = '';
+						if ( $edit > 0 || ! empty( $copy ) ) {
+							$dc_delay = pmpro_get_subscription_delay( $level->id, $temp_code->id );
+							$dc_set_expiration_date = pmpro_get_set_expiration_date( $level->id, $temp_code->id );
+						}
+						$dc_delay_type = ! empty( $dc_delay ) ? ( is_numeric( $dc_delay ) ? 'days' : 'date' ) : 'none';
+						$dc_exp_type = ! empty( $dc_set_expiration_date ) ? 'date' : 'none';
+						$dc_month_names = pmpro_get_month_names();
 					?>
 					<div class="pmpro_discount_level <?php if ( ! pmpro_check_discount_code_level_for_gateway_compatibility( $level ) ) { ?>pmpro_error<?php } ?>">
 						<div class="pmpro_discount_level_select">
@@ -664,6 +675,41 @@
 									</td>
 								</tr>
 
+								<tr class="recurring_info" <?php if ( ! pmpro_isLevelRecurring( $level ) ) echo 'style="display: none;"'; ?>>
+									<th scope="row" valign="top"><label><?php esc_html_e( 'First Recurring Payment', 'paid-memberships-pro' ); ?></label></th>
+									<td>
+										<fieldset>
+											<label>
+												<input type="radio" name="delay_type_<?php echo esc_attr( $level->id ); ?>" value="none" <?php checked( $dc_delay_type, 'none' ); ?>
+													onclick="pmpro_dcToggleDelay(<?php echo esc_attr( $level->id ); ?>, 'none');" />
+												<?php esc_html_e( 'Default (one billing cycle after checkout)', 'paid-memberships-pro' ); ?>
+											</label>
+											<br />
+											<label>
+												<input type="radio" name="delay_type_<?php echo esc_attr( $level->id ); ?>" value="days" <?php checked( $dc_delay_type, 'days' ); ?>
+													onclick="pmpro_dcToggleDelay(<?php echo esc_attr( $level->id ); ?>, 'days');" />
+												<?php esc_html_e( 'After a number of days (trial)', 'paid-memberships-pro' ); ?>
+											</label>
+											<span class="pmpro_dc_delay_days_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_delay_type !== 'days' ) echo 'style="display:none;"'; ?>>
+												&mdash;
+												<input name="subscription_delay_days[]" type="number" min="1" class="small-text"
+													value="<?php echo esc_attr( $dc_delay_type === 'days' ? $dc_delay : '' ); ?>" />
+												<?php esc_html_e( 'days after checkout', 'paid-memberships-pro' ); ?>
+											</span>
+											<br />
+											<label>
+												<input type="radio" name="delay_type_<?php echo esc_attr( $level->id ); ?>" value="date" <?php checked( $dc_delay_type, 'date' ); ?>
+													onclick="pmpro_dcToggleDelay(<?php echo esc_attr( $level->id ); ?>, 'date');" />
+												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
+											</label>
+											<div class="pmpro_dc_delay_date_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_delay_type !== 'date' ) echo 'style="display:none;"'; ?>>
+												<?php pmpro_payment_schedule_render_date_builder( $dc_month_names, 'subscription_delay_date[]', $dc_delay_type === 'date' ? $dc_delay : '' ); ?>
+											</div>
+											<input type="hidden" name="delay_type[]" value="<?php echo esc_attr( $dc_delay_type ); ?>" class="pmpro_dc_delay_type_<?php echo esc_attr( $level->id ); ?>" />
+										</fieldset>
+									</td>
+								</tr>
+
 								<tr class="recurring_info" <?php if (!pmpro_isLevelRecurring($level)) echo "style='display:none;'";?>>
 									<th scope="row" valign="top"><label><?php esc_html_e('Custom Trial', 'paid-memberships-pro' );?></label></th>
 									<td>
@@ -701,27 +747,43 @@
 
 								<tr>
 									<th scope="row" valign="top"><label><?php esc_html_e('Membership Expiration', 'paid-memberships-pro' );?></label></th>
-									<td><input id="expiration_<?php echo esc_attr( $level->id ); ?>" name="expiration[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide();}" /> <label for="expiration_<?php echo esc_attr( $level->id ); ?>"><?php esc_html_e('Check this to set when membership access expires.', 'paid-memberships-pro' );?></label></td>
+									<td><input id="expiration_<?php echo esc_attr( $level->id ); ?>" name="expiration[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php if(pmpro_isLevelExpiring($level) || ! empty( $dc_set_expiration_date )) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); jQuery('.pmpro_dc_exp_wrap_<?php echo esc_attr( $level->id ); ?>').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide(); jQuery('.pmpro_dc_exp_wrap_<?php echo esc_attr( $level->id ); ?>').hide(); }" /> <label for="expiration_<?php echo esc_attr( $level->id ); ?>"><?php esc_html_e('Check this to set when membership access expires.', 'paid-memberships-pro' );?></label></td>
 								</tr>
 
-								<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
-									<th scope="row" valign="top"><label for="billing_amount"><?php esc_html_e('Expires In', 'paid-memberships-pro' );?></label></th>
+								<tr class="expiration_info" <?php if( ! pmpro_isLevelExpiring($level) && empty( $dc_set_expiration_date ) ) {?>style="display: none;"<?php } ?>>
+									<th scope="row" valign="top"><label><?php esc_html_e( 'Expiration Type', 'paid-memberships-pro' ); ?></label></th>
 									<td>
-										<input id="expiration_number" name="expiration_number[]" type="text" size="10" value="<?php echo esc_attr( $level->expiration_number ); ?>" />
-										<select id="expiration_period" name="expiration_period[]">
-										<?php
-
-											$cycles = array( __('Hour(s)', 'paid-memberships-pro' ) => 'Hour', __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
-											foreach ( $cycles as $name => $value ) {
-
-											echo "<option value='" . esc_attr( $value ) . "'";
-											if ( $level->expiration_period == $value ) echo " selected='selected'";
-											echo ">" . esc_html( $name ) . "</option>";
-											}
-										?>
-
-										</select>
-										<p class="description"><?php esc_html_e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></p>
+										<fieldset>
+											<label>
+												<input type="radio" name="expiration_date_type_<?php echo esc_attr( $level->id ); ?>" value="none" <?php checked( $dc_exp_type, 'none' ); ?>
+													onclick="pmpro_dcToggleExpiration(<?php echo esc_attr( $level->id ); ?>, 'none');" />
+												<?php esc_html_e( 'After a set duration', 'paid-memberships-pro' ); ?>
+											</label>
+											<div class="pmpro_dc_exp_duration_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_exp_type === 'date' ) echo 'style="display:none;"'; ?>>
+												<input name="expiration_number[]" type="text" size="10" value="<?php echo esc_attr( $level->expiration_number ); ?>" />
+												<select name="expiration_period[]">
+												<?php
+													$cycles = array( __('Hour(s)', 'paid-memberships-pro' ) => 'Hour', __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
+													foreach ( $cycles as $name => $value ) {
+														echo "<option value='" . esc_attr( $value ) . "'";
+														if ( $level->expiration_period == $value ) echo " selected='selected'";
+														echo ">" . esc_html( $name ) . "</option>";
+													}
+												?>
+												</select>
+												<p class="description"><?php esc_html_e('Membership access will end this long after checkout. Any recurring subscription will be cancelled at that time.', 'paid-memberships-pro' );?></p>
+											</div>
+											<br />
+											<label>
+												<input type="radio" name="expiration_date_type_<?php echo esc_attr( $level->id ); ?>" value="date" <?php checked( $dc_exp_type, 'date' ); ?>
+													onclick="pmpro_dcToggleExpiration(<?php echo esc_attr( $level->id ); ?>, 'date');" />
+												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
+											</label>
+											<div class="pmpro_dc_exp_date_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_exp_type !== 'date' ) echo 'style="display:none;"'; ?>>
+												<?php pmpro_payment_schedule_render_date_builder( $dc_month_names, 'set_expiration_date[]', $dc_set_expiration_date ); ?>
+											</div>
+											<input type="hidden" name="expiration_date_type[]" value="<?php echo esc_attr( $dc_exp_type ); ?>" class="pmpro_dc_exp_type_<?php echo esc_attr( $level->id ); ?>" />
+										</fieldset>
 									</td>
 								</tr>
 							</tbody>
@@ -737,6 +799,28 @@
 				</div> <!-- end pmpro_levels_div -->
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
+
+		<script>
+		function pmpro_dcToggleDelay(levelId, val) {
+			jQuery('.pmpro_dc_delay_days_' + levelId).toggle(val === 'days');
+			jQuery('.pmpro_dc_delay_date_' + levelId).toggle(val === 'date');
+			jQuery('.pmpro_dc_delay_type_' + levelId).val(val);
+		}
+		function pmpro_dcToggleExpiration(levelId, val) {
+			jQuery('.pmpro_dc_exp_duration_' + levelId).toggle(val === 'none');
+			jQuery('.pmpro_dc_exp_date_' + levelId).toggle(val === 'date');
+			jQuery('.pmpro_dc_exp_type_' + levelId).val(val);
+		}
+		jQuery(document).ready(function($) {
+			// Initialize all date pattern builders on the page.
+			$('.pmpro_date_pattern_builder').each(function() {
+				var val = $(this).data('existing-value');
+				if (val) {
+					pmpro_initDateBuilder($(this), val);
+				}
+			});
+		});
+		</script>
 
 		<p class="submit">
 			<input name="save" type="submit" class="button button-primary" value="<?php esc_attr_e( 'Save Code', 'paid-memberships-pro' ) ?>" />

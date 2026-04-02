@@ -183,6 +183,34 @@ if ( ! empty( $temp_id ) ) {
 } else {
 	$membership_account_message = '';
 }
+
+// Get subscription delay and set expiration date settings.
+// Uses same wp_options keys as the old add-on plugins for zero-migration compatibility.
+if ( ! empty( $temp_id ) ) {
+	$subscription_delay  = get_option( 'pmpro_subscription_delay_' . $temp_id, '' );
+	$set_expiration_date = get_option( 'pmprosed_' . $temp_id, '' );
+} else {
+	$subscription_delay  = '';
+	$set_expiration_date = '';
+}
+
+// Determine the delay type and expiration type for the UI.
+if ( ! empty( $subscription_delay ) ) {
+	$delay_type = is_numeric( $subscription_delay ) ? 'days' : 'date';
+} else {
+	$delay_type = 'none';
+}
+
+if ( ! empty( $set_expiration_date ) ) {
+	$expiration_date_type = 'date';
+	// Ensure expiration section shows as active when a date pattern is set.
+	if ( empty( $level->expiration_number ) ) {
+		$level->expiration_number = 1;
+		$level->expiration_period = 'Year';
+	}
+} else {
+	$expiration_date_type = 'none';
+}
 ?>
 <hr class="wp-header-end">
 <?php if (!empty($level->id)) { ?>
@@ -347,9 +375,6 @@ if (!empty($page_msg)) { ?>
 				),
 			);
 			echo '<p>' . wp_kses(__('Set the member pricing for this level. The initial payment is collected immediately at checkout. Recurring payments, if applicable, begin one cycle after the initial payment. Changing the level price only applies to new members and does not affect existing members of this level.', 'paid-memberships-pro'), $allowed_sd_html) . '</p>';
-			if (!function_exists('pmprosd_pmpro_membership_level_after_other_settings')) {
-				echo '<p>' . sprintf(wp_kses(__('Optional: Allow more customizable trial periods and renewal dates using the <a href="%s" title="Paid Memberships Pro - Subscription Delays Add On" target="_blank" rel="nofollow noopener">Subscription Delays Add On</a>.', 'paid-memberships-pro'), $allowed_sd_html), 'https://www.paidmembershipspro.com/add-ons/subscription-delays/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=subscription-delays') . '</p>';
-			}
 			?>
 			<table class="form-table">
 				<tbody>
@@ -436,8 +461,98 @@ if (!empty($page_msg)) { ?>
 							</p>
 						</td>
 					</tr>
-				</tbody>
+					<tr class="recurring_info" <?php if ( ! pmpro_isLevelRecurring( $level ) ) { ?>style="display: none;"<?php } ?>>
+						<th scope="row" valign="top"><label><?php esc_html_e( 'First Recurring Payment', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<fieldset id="pmpro_subscription_delay_fieldset">
+								<label>
+									<input type="radio" name="delay_type" value="none" <?php checked( $delay_type, 'none' ); ?>
+										onchange="pmpro_toggle_delay_fields();" />
+									<?php esc_html_e( 'Default (one billing cycle after checkout)', 'paid-memberships-pro' ); ?>
+								</label>
+								<br />
+								<label>
+									<input type="radio" name="delay_type" value="days" <?php checked( $delay_type, 'days' ); ?>
+										onchange="pmpro_toggle_delay_fields();" />
+									<?php esc_html_e( 'After a number of days (trial)', 'paid-memberships-pro' ); ?>
+								</label>
+								<span class="pmpro_delay_field pmpro_delay_field_days" <?php if ( $delay_type !== 'days' ) echo 'style="display:none;"'; ?>>
+									&mdash;
+									<input id="subscription_delay_days" name="subscription_delay_days" type="number" min="1"
+										value="<?php echo esc_attr( $delay_type === 'days' ? $subscription_delay : '' ); ?>"
+										class="small-text"
+										oninput="pmpro_update_schedule_preview();" />
+									<?php esc_html_e( 'days after checkout', 'paid-memberships-pro' ); ?>
+								</span>
+								<br />
+								<label>
+									<input type="radio" name="delay_type" value="date" <?php checked( $delay_type, 'date' ); ?>
+										onchange="pmpro_toggle_delay_fields();" />
+									<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
+								</label>
+								<div class="pmpro_delay_field pmpro_delay_field_date" <?php if ( $delay_type !== 'date' ) echo 'style="display:none;"'; ?>>
+									<div class="pmpro_date_pattern_builder" id="pmpro_delay_date_builder" data-existing-value="<?php echo esc_attr( $delay_type === 'date' ? $subscription_delay : '' ); ?>">
+										<select class="pmpro_date_pattern_mode" onchange="pmpro_date_mode_changed(this);">
+											<option value=""><?php esc_html_e( 'Choose...', 'paid-memberships-pro' ); ?></option>
+											<option value="monthly"><?php esc_html_e( 'The same day each month', 'paid-memberships-pro' ); ?></option>
+											<option value="yearly"><?php esc_html_e( 'The same date each year', 'paid-memberships-pro' ); ?></option>
+											<option value="custom"><?php esc_html_e( 'Custom pattern', 'paid-memberships-pro' ); ?></option>
+										</select>
+										<span class="pmpro_date_builder_monthly" style="display:none;">
+											<?php esc_html_e( 'on the', 'paid-memberships-pro' ); ?>
+											<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);">
+												<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
+													<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>"><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
+												<?php endfor; ?>
+											</select>
+										</span>
+										<span class="pmpro_date_builder_yearly" style="display:none;">
+											<?php esc_html_e( 'on', 'paid-memberships-pro' ); ?>
+											<select class="pmpro_date_builder_month" onchange="pmpro_assemble_date_pattern(this);">
+												<?php
+												$month_names = array(
+													'01' => __( 'January', 'paid-memberships-pro' ), '02' => __( 'February', 'paid-memberships-pro' ),
+													'03' => __( 'March', 'paid-memberships-pro' ), '04' => __( 'April', 'paid-memberships-pro' ),
+													'05' => __( 'May', 'paid-memberships-pro' ), '06' => __( 'June', 'paid-memberships-pro' ),
+													'07' => __( 'July', 'paid-memberships-pro' ), '08' => __( 'August', 'paid-memberships-pro' ),
+													'09' => __( 'September', 'paid-memberships-pro' ), '10' => __( 'October', 'paid-memberships-pro' ),
+													'11' => __( 'November', 'paid-memberships-pro' ), '12' => __( 'December', 'paid-memberships-pro' ),
+												);
+												foreach ( $month_names as $val => $name ) :
+												?>
+													<option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $name ); ?></option>
+												<?php endforeach; ?>
+											</select>
+											<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);">
+												<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
+													<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>"><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
+												<?php endfor; ?>
+											</select>
+										</span>
+										<span class="pmpro_date_builder_custom" style="display:none;">
+											<input id="subscription_delay_date" type="text"
+												value="<?php echo esc_attr( $delay_type === 'date' ? $subscription_delay : '' ); ?>"
+												class="pmpro_date_pattern_input" placeholder="<?php esc_attr_e( 'e.g. Y-01-01', 'paid-memberships-pro' ); ?>"
+												oninput="jQuery(this).closest('.pmpro_date_pattern_builder').find('.pmpro_date_pattern_value').val(this.value); pmpro_update_schedule_preview();" />
+											<p class="description"><?php echo esc_html__( 'Y = current/next year, M = current/next month.', 'paid-memberships-pro' ); ?></p>
+										</span>
+										<input type="hidden" class="pmpro_date_pattern_value" name="subscription_delay_date" value="<?php echo esc_attr( $delay_type === 'date' ? $subscription_delay : '' ); ?>" />
+									</div>
+								</div>
+							</fieldset>
+						</td>
+					</tr>
+					</tbody>
 			</table>
+			<div class="pmpro_schedule_preview_inline recurring_info" <?php if ( ! pmpro_isLevelRecurring( $level ) ) { ?>style="display: none;"<?php } ?>>
+				<div class="pmpro_schedule_preview_bar">
+					<span class="pmpro_schedule_preview_title"><?php esc_html_e( 'Payment Schedule Preview', 'paid-memberships-pro' ); ?></span>
+					<input type="hidden" id="pmpro_preview_checkout_date" value="<?php echo esc_attr( date( 'Y-m-d' ) ); ?>" />
+					<div id="pmpro_schedule_timeline" class="pmpro_schedule_timeline">
+						<div class="pmpro_schedule_timeline_loading"><?php esc_html_e( 'Configure billing settings to see a preview.', 'paid-memberships-pro' ); ?></div>
+					</div>
+				</div>
+			</div>
 			<?php
 			/**
 			 * Allow adding form fields after the Billing Details Settings section.
@@ -552,44 +667,87 @@ if (!empty($page_msg)) { ?>
 						<th scope="row" valign="top"><label><?php esc_html_e('Membership Expiration', 'paid-memberships-pro'); ?></label></th>
 						<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if (pmpro_isLevelExpiring($level)) {
 																										echo "checked='checked'";
-																									} ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <label for="expiration"><?php esc_html_e('Check this to set when membership access expires.', 'paid-memberships-pro'); ?></label></a></td>
+																									} ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();} pmpro_update_schedule_preview();" /> <label for="expiration"><?php esc_html_e('Check this to set when membership access expires.', 'paid-memberships-pro'); ?></label></td>
 					</tr>
-					<?php if (!function_exists('pmprosed_pmpro_membership_level_after_other_settings')) {
-						$allowed_sed_html = array(
-							'a' => array(
-								'href' => array(),
-								'title' => array(),
-								'target' => array(),
-								'rel' => array(),
-							),
-						);
-						echo '<tr><th>&nbsp;</th><td><p class="description">' . sprintf(wp_kses(__('Optional: Allow more customizable expiration dates using the <a href="%s" title="Paid Memberships Pro - Set Expiration Date Add On" target="_blank" rel="nofollow noopener">Set Expiration Date Add On</a>.', 'paid-memberships-pro'), $allowed_sed_html), 'https://www.paidmembershipspro.com/add-ons/pmpro-expiration-date/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=pmpro-expiration-date') . '</p></td></tr>';
-					} ?>
-					<tr class="expiration_info" <?php if (!pmpro_isLevelExpiring($level)) { ?>style="display: none;" <?php } ?>>
-						<th scope="row" valign="top"><label for="billing_amount"><?php esc_html_e('Expires In', 'paid-memberships-pro'); ?></label></th>
+					<tr class="expiration_info" <?php if ( ! pmpro_isLevelExpiring( $level ) ) { ?>style="display: none;"<?php } ?>>
+						<th scope="row" valign="top"><label><?php esc_html_e( 'Expiration Type', 'paid-memberships-pro' ); ?></label></th>
 						<td>
-							<input id="expiration_number" name="expiration_number" type="text" value="<?php echo esc_attr($level->expiration_number); ?>" class="small-text" />
-							<select id="expiration_period" name="expiration_period">
-								<?php
-								$cycles = array(
-									__('Hour(s)', 'paid-memberships-pro') => 'Hour',
-									__('Day(s)', 'paid-memberships-pro') => 'Day',
-									__('Week(s)', 'paid-memberships-pro') => 'Week',
-									__('Month(s)', 'paid-memberships-pro') => 'Month',
-									__('Year(s)', 'paid-memberships-pro') => 'Year',
-								);
-								foreach ($cycles as $name => $value) {
-									echo '<option value="' . esc_attr( $value ) . '"';
-									if (empty($level->expiration_period) && $value === 'Month') {
-										echo 'selected';
-									} else {
-										selected($level->expiration_period, $value, true);
-									}
-									echo '>' . esc_html( $name ) . '</option>';
-								}
-								?>
-							</select>
-							<p class="description"><?php esc_html_e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro'); ?></p>
+							<fieldset id="pmpro_expiration_type_fieldset">
+								<label>
+									<input type="radio" name="expiration_date_type" value="none" <?php checked( $expiration_date_type, 'none' ); ?>
+										onchange="pmpro_toggle_expiration_type();" />
+									<?php esc_html_e( 'After a set duration', 'paid-memberships-pro' ); ?>
+								</label>
+								<div class="pmpro_expiration_duration_fields" <?php if ( $expiration_date_type === 'date' ) echo 'style="display:none;"'; ?>>
+									<input id="expiration_number" name="expiration_number" type="text" value="<?php echo esc_attr($level->expiration_number); ?>" class="small-text" oninput="pmpro_update_schedule_preview();" />
+									<select id="expiration_period" name="expiration_period" onchange="pmpro_update_schedule_preview();">
+										<?php
+										$cycles = array(
+											__('Hour(s)', 'paid-memberships-pro') => 'Hour',
+											__('Day(s)', 'paid-memberships-pro') => 'Day',
+											__('Week(s)', 'paid-memberships-pro') => 'Week',
+											__('Month(s)', 'paid-memberships-pro') => 'Month',
+											__('Year(s)', 'paid-memberships-pro') => 'Year',
+										);
+										foreach ($cycles as $name => $value) {
+											echo '<option value="' . esc_attr( $value ) . '"';
+											if (empty($level->expiration_period) && $value === 'Month') {
+												echo 'selected';
+											} else {
+												selected($level->expiration_period, $value, true);
+											}
+											echo '>' . esc_html( $name ) . '</option>';
+										}
+										?>
+									</select>
+									<p class="description"><?php esc_html_e('Membership access will end this long after checkout. Any recurring subscription will be cancelled at that time.', 'paid-memberships-pro'); ?></p>
+								</div>
+								<br />
+								<label>
+									<input type="radio" name="expiration_date_type" value="date" <?php checked( $expiration_date_type, 'date' ); ?>
+										onchange="pmpro_toggle_expiration_type();" />
+									<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
+								</label>
+								<div class="pmpro_expiration_date_field" <?php if ( $expiration_date_type !== 'date' ) echo 'style="display:none;"'; ?>>
+									<div class="pmpro_date_pattern_builder" id="pmpro_expiration_date_builder" data-existing-value="<?php echo esc_attr( $set_expiration_date ); ?>">
+										<select class="pmpro_date_pattern_mode" onchange="pmpro_date_mode_changed(this);">
+											<option value=""><?php esc_html_e( 'Choose...', 'paid-memberships-pro' ); ?></option>
+											<option value="monthly"><?php esc_html_e( 'The same day each month', 'paid-memberships-pro' ); ?></option>
+											<option value="yearly"><?php esc_html_e( 'The same date each year', 'paid-memberships-pro' ); ?></option>
+											<option value="custom"><?php esc_html_e( 'Custom pattern', 'paid-memberships-pro' ); ?></option>
+										</select>
+										<span class="pmpro_date_builder_monthly" style="display:none;">
+											<?php esc_html_e( 'on the', 'paid-memberships-pro' ); ?>
+											<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);">
+												<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
+													<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>"><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
+												<?php endfor; ?>
+											</select>
+										</span>
+										<span class="pmpro_date_builder_yearly" style="display:none;">
+											<?php esc_html_e( 'on', 'paid-memberships-pro' ); ?>
+											<select class="pmpro_date_builder_month" onchange="pmpro_assemble_date_pattern(this);">
+												<?php foreach ( $month_names as $val => $name ) : ?>
+													<option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $name ); ?></option>
+												<?php endforeach; ?>
+											</select>
+											<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);">
+												<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
+													<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>"><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
+												<?php endfor; ?>
+											</select>
+										</span>
+										<span class="pmpro_date_builder_custom" style="display:none;">
+											<input id="set_expiration_date" type="text"
+												value="<?php echo esc_attr( $set_expiration_date ); ?>"
+												class="pmpro_date_pattern_input" placeholder="<?php esc_attr_e( 'e.g. Y-12-31', 'paid-memberships-pro' ); ?>"
+												oninput="jQuery(this).closest('.pmpro_date_pattern_builder').find('.pmpro_date_pattern_value').val(this.value); pmpro_update_schedule_preview();" />
+											<p class="description"><?php echo esc_html__( 'Y = current/next year, M = current/next month.', 'paid-memberships-pro' ); ?></p>
+										</span>
+										<input type="hidden" class="pmpro_date_pattern_value" name="set_expiration_date" value="<?php echo esc_attr( $set_expiration_date ); ?>" />
+									</div>
+								</div>
+							</fieldset>
 						</td>
 					</tr>
 				</tbody>
@@ -766,3 +924,392 @@ if (!empty($page_msg)) { ?>
 		<input name="cancel" type="button" class="button" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro'); ?>" onclick="location.href='<?php echo esc_url(add_query_arg('page', 'pmpro-membershiplevels', admin_url('admin.php'))); ?>';" />
 	</p>
 </form>
+<script type="text/javascript">
+(function($) {
+	'use strict';
+
+	var previewDebounceTimer = null;
+	var monthsShort = [
+		'<?php echo esc_js( __( 'Jan', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Feb', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Mar', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Apr', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'May', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Jun', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Jul', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Aug', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Sep', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Oct', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Nov', 'paid-memberships-pro' ) ); ?>',
+		'<?php echo esc_js( __( 'Dec', 'paid-memberships-pro' ) ); ?>'
+	];
+
+	/**
+	 * Get the effective date value for a builder (always from the hidden field).
+	 */
+	function getBuilderValue($builder) {
+		return $builder.find('.pmpro_date_pattern_value').val();
+	}
+
+	/* ── Toggle functions ── */
+
+	window.pmpro_toggle_delay_fields = function() {
+		var delayType = $('input[name="delay_type"]:checked').val();
+		$('.pmpro_delay_field_days').toggle(delayType === 'days');
+		$('.pmpro_delay_field_date').toggle(delayType === 'date');
+		pmpro_update_schedule_preview();
+	};
+
+	window.pmpro_toggle_expiration_type = function() {
+		var expType = $('input[name="expiration_date_type"]:checked').val();
+		$('.pmpro_expiration_duration_fields').toggle(expType === 'none');
+		$('.pmpro_expiration_date_field').toggle(expType === 'date');
+		pmpro_update_schedule_preview();
+	};
+
+	// Keep old name as alias in case hooks use it.
+	window.pmpro_toggle_expiration_date_fields = window.pmpro_toggle_expiration_type;
+
+	/* ── Schedule Preview (client-side) ── */
+
+	var currencySymbol = '<?php echo esc_js( wp_strip_all_tags( $pmpro_currency_symbol ) ); ?>';
+	var currencyLeft = <?php echo pmpro_getCurrencyPosition() === 'left' ? 'true' : 'false'; ?>;
+
+	function formatPrice(amount) {
+		var n = parseFloat(amount) || 0;
+		var formatted = n.toFixed(2);
+		return currencyLeft ? currencySymbol + formatted : formatted + currencySymbol;
+	}
+
+	/**
+	 * Add an interval to a Date. Returns a new Date.
+	 */
+	function addInterval(date, number, period) {
+		var d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+		switch (period) {
+			case 'Day':   d.setDate(d.getDate() + number); break;
+			case 'Week':  d.setDate(d.getDate() + number * 7); break;
+			case 'Month': d.setMonth(d.getMonth() + number); break;
+			case 'Year':  d.setFullYear(d.getFullYear() + number); break;
+			case 'Hour':  d.setDate(d.getDate() + Math.ceil(number / 24)); break;
+		}
+		return d;
+	}
+
+	/**
+	 * Resolve a date pattern string (like Y-M-15 or Y-06-30) relative to a base date.
+	 * Client-side equivalent of pmpro_convert_date_pattern().
+	 */
+	function resolveDatePattern(pattern, baseDate) {
+		if (!pattern || pattern.length > 20) return null;
+		try {
+			var s = pattern.toUpperCase().replace(/Y-/,'Y1-').replace(/M-/,'M1-');
+			var addYears = 0, addMonths = 0;
+			var ym = s.match(/Y(\d+)/);
+			if (ym) addYears = Math.min(parseInt(ym[1]) || 1, 10);
+			var mm = s.match(/M(\d+)/);
+			if (mm) addMonths = Math.min(parseInt(mm[1]) || 1, 24);
+
+			var parts = s.split('-');
+			if (parts.length < 3) return null;
+			var setY = parseInt(parts[0]) || 0;
+			var setM = parseInt(parts[1]) || 0;
+			var setD = parseInt(parts[2]) || 1;
+			var curY = baseDate.getFullYear(), curM = baseDate.getMonth() + 1, curD = baseDate.getDate();
+			var tmpY = setY > 0 ? setY : curY;
+			var tmpM = setM > 0 ? setM : curM;
+			var tmpD = Math.max(1, Math.min(setD, 31));
+
+			// Add months (capped iterations).
+			var monthIter = addMonths;
+			for (var i = 0; i < monthIter && i < 24; i++) {
+				if (i === 0) {
+					if (tmpD < curD) { tmpM++; monthIter--; }
+				} else { tmpM++; }
+				if (tmpM === 13) { tmpM = 1; tmpY++; addYears--; }
+			}
+			// Add years (capped iterations).
+			var yearIter = addYears;
+			for (var i = 0; i < yearIter && i < 10; i++) {
+				if (i === 0) {
+					var tmpDate = new Date(tmpY, tmpM - 1, tmpD);
+					if (tmpDate < baseDate) { tmpY++; yearIter--; }
+				} else { tmpY++; }
+			}
+			// Clamp day to valid range for the month.
+			var maxDay = new Date(tmpY, tmpM, 0).getDate();
+			if (tmpD > maxDay) tmpD = maxDay;
+			var result = new Date(tmpY, tmpM - 1, tmpD);
+			return isNaN(result.getTime()) ? null : result;
+		} catch(e) {
+			return null;
+		}
+	}
+
+	function dateToStr(d) {
+		return d.getFullYear() + '-' +
+			String(d.getMonth() + 1).padStart(2, '0') + '-' +
+			String(d.getDate()).padStart(2, '0');
+	}
+
+	window.pmpro_update_schedule_preview = function() {
+		clearTimeout(previewDebounceTimer);
+		previewDebounceTimer = setTimeout(pmpro_do_schedule_preview, 150);
+	};
+
+	function pmpro_do_schedule_preview() {
+		var $timeline = $('#pmpro_schedule_timeline');
+		try {
+			var isRecurring = $('#recurring').is(':checked');
+			var hasExpiration = $('#expiration').is(':checked');
+
+			if (!isRecurring) {
+				$timeline.html('<div class="pmpro_schedule_timeline_empty"><?php echo esc_js( __( 'Enable recurring billing to see a payment schedule.', 'paid-memberships-pro' ) ); ?></div>');
+				return;
+			}
+
+			// Read form values.
+			var checkoutStr = $('#pmpro_preview_checkout_date').val() || dateToStr(new Date());
+			var parts = checkoutStr.split('-');
+			var checkout = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+			if (isNaN(checkout.getTime())) { checkout = new Date(); }
+
+			var initialPayment = parseFloat($('input[name="initial_payment"]').val()) || 0;
+			var billingAmount = parseFloat($('input[name="billing_amount"]').val()) || 0;
+			var cycleNumber = parseInt($('input[name="cycle_number"]').val()) || 1;
+			if (cycleNumber < 1) cycleNumber = 1;
+			var cyclePeriod = $('select[name="cycle_period"]').val() || 'Month';
+			var billingLimit = parseInt($('input[name="billing_limit"]').val()) || 0;
+			var hasCustomTrial = $('#custom_trial').is(':checked');
+
+			var delayType = $('input[name="delay_type"]:checked').val() || 'none';
+			var subscriptionDelay = '';
+			if (delayType === 'days') {
+				subscriptionDelay = $('#subscription_delay_days').val();
+			} else if (delayType === 'date') {
+				subscriptionDelay = getBuilderValue($('#pmpro_delay_date_builder'));
+			}
+
+			var expirationDateType = $('input[name="expiration_date_type"]:checked').val() || 'none';
+			var expirationNumber = parseInt($('#expiration_number').val()) || 0;
+			var expirationPeriod = $('#expiration_period').val() || 'Month';
+			var setExpirationDate = '';
+			if (expirationDateType === 'date') {
+				setExpirationDate = getBuilderValue($('#pmpro_expiration_date_builder'));
+			}
+
+			var events = [];
+
+			// 1. Determine the expiration date (if any).
+			var expirationDate = null;
+			if (hasExpiration) {
+				if (expirationDateType === 'date' && setExpirationDate) {
+					expirationDate = resolveDatePattern(setExpirationDate, checkout);
+					if (expirationDate && (isNaN(expirationDate.getTime()) || expirationDate <= checkout)) {
+						expirationDate = null;
+					}
+				} else if (expirationNumber > 0) {
+					expirationDate = addInterval(checkout, expirationNumber, expirationPeriod);
+					if (isNaN(expirationDate.getTime())) expirationDate = null;
+				}
+			}
+
+			// 2. Determine the first recurring payment date.
+			var firstRecurring = null;
+			if (billingAmount > 0) {
+				if (delayType === 'days' && subscriptionDelay && !isNaN(subscriptionDelay) && parseInt(subscriptionDelay) > 0) {
+					firstRecurring = addInterval(checkout, parseInt(subscriptionDelay), 'Day');
+				} else if (delayType === 'date' && subscriptionDelay) {
+					firstRecurring = resolveDatePattern(subscriptionDelay, checkout);
+					if (!firstRecurring || isNaN(firstRecurring.getTime()) || firstRecurring <= checkout) {
+						firstRecurring = addInterval(checkout, cycleNumber, cyclePeriod);
+					}
+				} else {
+					firstRecurring = addInterval(checkout, cycleNumber, cyclePeriod);
+				}
+			}
+
+			// 3. Generate all payment dates (up to a safe max).
+			var allPayments = [];
+			if (firstRecurring) {
+				var safeMax = billingLimit > 0 ? billingLimit : 100;
+				for (var i = 0; i < safeMax; i++) {
+					var payDate = (i === 0) ? firstRecurring : addInterval(firstRecurring, cycleNumber * i, cyclePeriod);
+					if (isNaN(payDate.getTime())) break;
+					if (expirationDate && payDate >= expirationDate) break;
+					allPayments.push(payDate);
+				}
+			}
+			var totalPayments = allPayments.length;
+			var hitBillingLimit = (billingLimit > 0 && totalPayments === billingLimit);
+
+			// 4. Build the event list.
+			// Initial payment.
+			events.push({
+				date: dateToStr(checkout),
+				type: 'initial',
+				amount: formatPrice(initialPayment)
+			});
+
+			// Show up to 5 payments inline, then "..." if more, then the last payment.
+			var maxInline = 5;
+			if (totalPayments > 0) {
+				var inlineCount = Math.min(totalPayments, maxInline);
+				if (totalPayments === maxInline + 1) inlineCount = totalPayments;
+
+				for (var i = 0; i < inlineCount; i++) {
+					var isLast = (i === totalPayments - 1);
+					events.push({
+						date: dateToStr(allPayments[i]),
+						type: (isLast && hitBillingLimit) ? 'last_payment' : 'recurring',
+						amount: formatPrice(billingAmount),
+						number: i + 1
+					});
+				}
+
+				if (totalPayments > inlineCount) {
+					events.push({ date: '', type: 'continuation' });
+					events.push({
+						date: dateToStr(allPayments[totalPayments - 1]),
+						type: hitBillingLimit ? 'last_payment' : 'recurring',
+						amount: formatPrice(billingAmount),
+						number: totalPayments
+					});
+				}
+
+				if (!hitBillingLimit && !expirationDate) {
+					events.push({ date: '', type: 'continuation' });
+				}
+			}
+
+
+			// 5. Expiration marker (always at the end of the timeline).
+			if (expirationDate) {
+				events.push({
+					date: dateToStr(expirationDate),
+					type: 'expiration'
+				});
+			}
+
+			renderTimeline(events);
+		} catch (e) {
+			$timeline.html('<div class="pmpro_schedule_timeline_empty"><?php echo esc_js( __( 'Unable to generate preview.', 'paid-memberships-pro' ) ); ?></div>');
+		}
+	}
+
+	function renderTimeline(events) {
+		var $timeline = $('#pmpro_schedule_timeline');
+		var html = '<div class="pmpro_htimeline">';
+		var todayStr = dateToStr(new Date());
+		var checkoutDateStr = $('#pmpro_preview_checkout_date').val() || todayStr;
+		var isToday = (checkoutDateStr === todayStr);
+
+		for (var i = 0; i < events.length; i++) {
+			var event = events[i];
+			var typeClass = 'pmpro_htimeline_item--' + event.type;
+			var formattedDate = event.date ? formatPreviewDate(event.date) : '';
+			var shortLabel = '';
+			var amountLabel = '';
+
+			var subtitle = '';
+			switch (event.type) {
+				case 'initial':
+					shortLabel = '<?php echo esc_js( __( 'Checkout', 'paid-memberships-pro' ) ); ?>';
+					amountLabel = event.amount || '';
+					break;
+				case 'recurring':
+					shortLabel = '#' + (event.number || '?');
+					amountLabel = event.amount || '';
+					break;
+				case 'last_payment':
+					shortLabel = '<?php echo esc_js( __( 'Last Payment', 'paid-memberships-pro' ) ); ?>';
+					amountLabel = event.amount || '';
+					subtitle = '<?php echo esc_js( __( 'Billing stops, membership continues', 'paid-memberships-pro' ) ); ?>';
+					break;
+				case 'expiration':
+					shortLabel = '<?php echo esc_js( __( 'Membership Ends', 'paid-memberships-pro' ) ); ?>';
+					subtitle = '<?php echo esc_js( __( 'Access revoked, billing cancelled', 'paid-memberships-pro' ) ); ?>';
+					break;
+				case 'continuation':
+					shortLabel = '&hellip;';
+					break;
+			}
+
+			html += '<div class="pmpro_htimeline_item ' + typeClass + '">';
+			if (event.type === 'initial') {
+				// Checkout item: inline date picker.
+				html += '<div class="pmpro_htimeline_dot pmpro_htimeline_dot--calendar"><span class="dashicons dashicons-calendar-alt"></span></div>';
+				html += '<div class="pmpro_htimeline_label">' + shortLabel + '</div>';
+				if (amountLabel) {
+					html += '<div class="pmpro_htimeline_amount">' + amountLabel + '</div>';
+				}
+				html += '<div class="pmpro_htimeline_date">';
+				html += '<input type="date" class="pmpro_htimeline_date_input" value="' + checkoutDateStr + '" onchange="pmpro_set_checkout_date(this.value);" />';
+				html += '</div>';
+			} else {
+				html += '<div class="pmpro_htimeline_dot"></div>';
+				html += '<div class="pmpro_htimeline_label">' + shortLabel + '</div>';
+				if (amountLabel) {
+					html += '<div class="pmpro_htimeline_amount">' + amountLabel + '</div>';
+				}
+				if (formattedDate) {
+					html += '<div class="pmpro_htimeline_date">' + escapeHtml(formattedDate) + '</div>';
+				}
+				if (subtitle) {
+					html += '<div class="pmpro_htimeline_subtitle">' + subtitle + '</div>';
+				}
+			}
+			html += '</div>';
+			if (i < events.length - 1) {
+				html += '<div class="pmpro_htimeline_connector"></div>';
+			}
+		}
+		html += '</div>';
+		if ($('#custom_trial').is(':checked')) {
+			html += '<div class="pmpro_htimeline_footnote"><?php echo esc_js( __( 'Note: Custom trial pricing is active. The first payment amounts shown above may differ at checkout.', 'paid-memberships-pro' ) ); ?></div>';
+		}
+		$timeline.html(html);
+	}
+
+	window.pmpro_set_checkout_date = function(val) {
+		$('#pmpro_preview_checkout_date').val(val);
+		pmpro_update_schedule_preview();
+	};
+
+	function formatPreviewDate(dateStr) {
+		var parts = dateStr.split('-');
+		return monthsShort[parseInt(parts[1]) - 1] + ' ' + parseInt(parts[2]) + ', ' + parts[0];
+	}
+
+	function escapeHtml(text) {
+		var div = document.createElement('div');
+		div.appendChild(document.createTextNode(text));
+		return div.innerHTML;
+	}
+
+	/* ── Init ── */
+
+	$(document).ready(function() {
+		// Initialize all date pattern builders from their data attributes.
+		$('.pmpro_date_pattern_builder').each(function() {
+			var val = $(this).data('existing-value');
+			if (val) {
+				pmpro_initDateBuilder($(this), val);
+			}
+		});
+
+		// Trigger preview on page load.
+		pmpro_update_schedule_preview();
+
+		$('#pmpro_preview_checkout_date').on('change', pmpro_update_schedule_preview);
+
+		// Watch all billing/expiration form fields.
+		$('input[name="initial_payment"], input[name="billing_amount"], input[name="cycle_number"], input[name="billing_limit"], #expiration_number').on('input change', pmpro_update_schedule_preview);
+		$('select[name="cycle_period"], #expiration_period').on('change', pmpro_update_schedule_preview);
+		$('#recurring, #expiration').on('change', function() {
+			$('.pmpro_schedule_preview_inline').toggle($('#recurring').is(':checked'));
+			pmpro_update_schedule_preview();
+		});
+	});
+})(jQuery);
+</script>
