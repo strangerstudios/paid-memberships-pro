@@ -234,6 +234,39 @@ jQuery(document).ready(function(){
 			jQuery('input[name="pmpro_checkout_nonce"]').val(response);
 		});
 	}
+
+	// Gateway selector: toggle fields when switching between gateways.
+	var $gatewayRadios = jQuery( 'input[name="gateway"]' );
+	if ( $gatewayRadios.length > 1 ) {
+		$gatewayRadios.on( 'change', function() {
+			var selected = jQuery( this ).val();
+			// Use attr() instead of data() to avoid jQuery's type caching quirks.
+			var requiresBilling = jQuery( this ).attr( 'data-requires-billing' );
+
+			// Show/hide per-gateway field containers and submit buttons.
+			jQuery( '.pmpro_gateway_fields' ).hide();
+			jQuery( '.pmpro_gateway_fields_' + selected ).show();
+			jQuery( '.pmpro_gateway_submit' ).hide();
+			jQuery( '.pmpro_gateway_submit_' + selected ).show();
+
+			// Toggle billing address fields.
+			if ( requiresBilling === '1' ) {
+				jQuery( '#pmpro_billing_address_fields' ).show();
+			} else {
+				jQuery( '#pmpro_billing_address_fields' ).hide();
+			}
+
+			/**
+			 * Fire a custom event that gateway-specific JS can listen for.
+			 *
+			 * Example usage in a gateway's JS:
+			 *   jQuery( document ).on( 'pmpro_gateway_changed', function( e, gateway ) {
+			 *       if ( gateway === 'stripe' ) { // mount Stripe Elements }
+			 *   });
+			 */
+			jQuery( document ).trigger( 'pmpro_gateway_changed', [ selected ] );
+		} );
+	}
 });
 
 // Get non-sensitive checkout form data to be sent to checkout_levels endpoint.

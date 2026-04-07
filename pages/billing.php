@@ -179,8 +179,14 @@
 						</div>
 
 						<?php
-							$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
-							if($pmpro_include_billing_address_fields )
+							// Use the gateway's static method to determine billing address visibility.
+							$billing_gw_class = ! empty( $gateway ) ? 'PMProGateway_' . $gateway : 'PMProGateway';
+							$pmpro_include_billing_address_fields = true;
+							if ( class_exists( $billing_gw_class ) && method_exists( $billing_gw_class, 'requires_billing_address' ) ) {
+								$pmpro_include_billing_address_fields = call_user_func( array( $billing_gw_class, 'requires_billing_address' ) );
+							}
+							$pmpro_include_billing_address_fields = apply_filters( 'pmpro_include_billing_address_fields', $pmpro_include_billing_address_fields );
+							if ( $pmpro_include_billing_address_fields )
 							{
 						?>
 						<fieldset id="pmpro_billing_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_billing_address_fields' ) ); ?>">
@@ -271,92 +277,11 @@
 						global $pmpro_requirebilling;
 						$pmpro_requirebilling = true;
 
-						//do we need to show the payment information (credit card) fields? gateways will override this
-						$pmpro_include_payment_information_fields = apply_filters('pmpro_include_payment_information_fields', true);
-						if($pmpro_include_payment_information_fields)
-						{
-							$pmpro_accepted_credit_cards = get_option("pmpro_accepted_credit_cards");
-							$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
-							$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
-							?>
-							<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>">
-								<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
-									<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' ); ?></h2>
-								</legend>
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-									<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-									<script>
-										jQuery(document).ready(function() {
-												jQuery('#AccountNumber').validateCreditCard(function(result) {
-													var cardtypenames = {
-														"amex"                      : "American Express",
-														"diners_club_carte_blanche" : "Diners Club Carte Blanche",
-														"diners_club_international" : "Diners Club International",
-														"discover"                  : "Discover",
-														"jcb"                       : "JCB",
-														"laser"                     : "Laser",
-														"maestro"                   : "Maestro",
-														"mastercard"                : "Mastercard",
-														"visa"                      : "Visa",
-														"visa_electron"             : "Visa Electron"
-													};
-
-													if(result.card_type)
-														jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-													else
-														jQuery('#CardType').val('Unknown Card Type');
-												});
-										});
-									</script>
-									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
-										<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
-										<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'AccountNumber' ) );?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
-									</div>
-									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-select pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
-										<label for="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Expiration Date', 'paid-memberships-pro' );?></label>
-										<select id="ExpirationMonth" name="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'ExpirationMonth' ) ); ?>">
-											<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
-											<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
-											<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
-											<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
-											<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
-											<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
-											<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
-											<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
-											<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
-											<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
-											<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
-											<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
-										</select>/<select id="ExpirationYear" name="ExpirationYear" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'ExpirationYear' ) ); ?>">
-										<?php
-											$num_years = apply_filters( 'pmpro_num_expiration_years', 10 );
-
-											for ( $i = date_i18n( 'Y' ); $i < intval( date_i18n( 'Y' ) ) + intval( $num_years ); $i++ )
-											{
-												?>
-												<option value="<?php echo esc_attr( $i ) ?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } elseif($i == date_i18n( 'Y' ) + 1) { ?>selected="selected"<?php } ?>><?php echo esc_html( $i )?></option>
-												<?php
-											}
-										?>
-										</select>
-									</div>							
-									<?php
-										$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
-										if($pmpro_show_cvv) {
-											if ( true == ini_get('allow_url_include') ) {
-												$cvv_template = pmpro_loadTemplate('popup-cvv', 'url', 'pages', 'html');
-											} else {
-												$cvv_template = plugins_url( 'paid-memberships-pro/pages/popup-cvv.html', PMPRO_DIR );
-											}
-										?>
-										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
-											<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
-											<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
-										</div>
-									<?php } ?>
-								</div> <!-- end pmpro_form_fields -->
-							</fieldset> <!-- end pmpro_payment_information_fields -->
-							<?php
+						// Use the gateway's static method to render payment fields.
+						if ( class_exists( $billing_gw_class ) && method_exists( $billing_gw_class, 'show_checkout_fields' ) ) {
+							call_user_func( array( $billing_gw_class, 'show_checkout_fields' ) );
+						} else {
+							PMProGateway::show_checkout_fields();
 						}
 						?>
 
