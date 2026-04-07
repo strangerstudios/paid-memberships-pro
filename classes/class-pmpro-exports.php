@@ -625,7 +625,11 @@ class PMPro_Exports {
 		$processed                  = (int) $written;
 		$export['processed_count'] += $processed;
 		$export['next_offset']      = $offset + count( $ids );
-		$export['status']           = ( $export['processed_count'] >= $export['total_count'] ) ? 'complete' : 'running';
+		// Use offset-based completion instead of processed_count. Row count can
+		// exceed ID count when a single user has multiple memberships (GROUP BY
+		// u.ID, mu.membership_id), causing the export to finish early and skip
+		// higher-ID users.
+		$export['status']           = ( $export['next_offset'] >= $export['total_count'] ) ? 'complete' : 'running';
 		$this->save_export_record( $export );
 
 		if ( 'complete' === $export['status'] && 'orders' === $export['type'] ) {
@@ -677,7 +681,7 @@ class PMPro_Exports {
 			return array( 'error' => __( 'You do not have permission to export this data.', 'paid-memberships-pro' ) );
 		}
 
-		// Self-heal: if export is queued/running but no chunk task is pending, enqueue it.
+		// Self-heal: if export is queued/running but no chunk task is pending or running, enqueue it.
 		if ( in_array( $export['status'], array( 'queued', 'running' ), true ) && class_exists( '\ActionScheduler' ) ) {
 			$args   = array(
 				array(
@@ -685,12 +689,28 @@ class PMPro_Exports {
 					'user_id'   => (int) $export['user_id'],
 				),
 			);
-			$exists = PMPro_Action_Scheduler::instance()->has_existing_task( 'pmpro_export_process_chunk', $args, 'pmpro_async_tasks' );
+			$exists_pending = PMPro_Action_Scheduler::instance()->has_existing_task( 'pmpro_export_process_chunk', $args, 'pmpro_async_tasks' );
+
+			// Also check for a currently-running task. has_existing_task only
+			// checks STATUS_PENDING, so a chunk actively being processed by
+			// Action Scheduler would appear as "no task exists", triggering
+			// the self-heal to process the same offset concurrently and
+			// producing duplicate rows in the CSV.
+			$running_actions = as_get_scheduled_actions(
+				array(
+					'hook'   => 'pmpro_export_process_chunk',
+					'args'   => $args,
+					'group'  => 'pmpro_async_tasks',
+					'status' => \ActionScheduler_Store::STATUS_RUNNING,
+				)
+			);
+			$exists = $exists_pending || ! empty( $running_actions );
+
 			if ( $exists && 'queued' === $export['status'] ) {
 				$export['status'] = 'running';
 				$this->save_export_record( $export );
 			}
-			// If no task exists, process a chunk inline (to surface progress) and enqueue the next chunk.
+			// If no task exists (pending or running), process a chunk inline and enqueue the next.
 			if ( ! $exists ) {
 				$result = $this->process_export_chunk_record( $export );
 				if ( is_wp_error( $result ) ) {
