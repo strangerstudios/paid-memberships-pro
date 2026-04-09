@@ -31,19 +31,6 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 		return 'ERROR: Could not cancel membership. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscription_transaction_id . '.';
 	}
 
-	// Legacy Stripe code to add action on subscription cancellation.
-	if ( 'stripe' === $gateway ) {
-		/**
-		 * Action for when a subscription is cancelled at a payment gateway.
-		 * Legacy filter brought over from Stripe.
-		 *
-		 * @deprecated 3.0
-		 *
-		 * @param int $user_id The ID of the user associated with the subscription.
-		 */
-		do_action_deprecated( 'pmpro_stripe_subscription_deleted', array( $user->ID ), '3.0' );
-	}
-
 	// Check if we have already cancelled the subscription in PMPro.
 	if ( 'cancelled' === $subscription->get_status() ) {
 		return 'We have already processed this cancellation. Probably originated from WP/PMPro. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
@@ -67,22 +54,6 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	// Check to see if the user has the membership level associated with this subscription.
 	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
 		return 'The user no longer has the membership level associated with this subscription. No membership cancellation is needed. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
-	}
-
-	// Legacy Braintree code to add action on subscription cancellation.
-	if ( 'braintree' === $gateway ) {
-		$newest_order = $subscription->get_orders( array( 'limit' => 1 ) );
-		if ( ! empty( $newest_order ) ) {
-			/**
-			 * Action for when a subscription is cancelled at a payment gateway.
-			 * Legacy filter brought over from Braintree.
-			 *
-			 * @deprecated 3.0
-			 *
-			 * @param MemberOrder $newest_order The most recent order associated with the subscription.
-			 */
-			do_action_deprecated( 'pmpro_subscription_cancelled', array( current( $newest_order ) ), '3.0' );
-		}
 	}
 
 	// Check if we want to try to extend the user's membership to the next payment date.

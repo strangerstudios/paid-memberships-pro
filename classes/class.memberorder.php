@@ -340,90 +340,6 @@
 			if ( isset( $this->other_properties[ $property ] ) ) {
 				return $this->other_properties[ $property ];
 			}
-
-			/**
-			 * Support some legacy properties. These should be removed in the next major release.
-			 */
-			switch ( $property ) {
-				case 'ExpirationDate':
-					_doing_it_wrong( __METHOD__, esc_html__( 'ExpirationDate is deprecated. Use expirationmonth and expirationyear instead.', 'paid-memberships-pro' ), '3.2' );
-					return $this->expirationmonth . $this->expirationyear;
-				case 'ExpirationDate_YdashM':
-					_doing_it_wrong( __METHOD__, esc_html__( 'ExpirationDate_YdashM is deprecated. Use expirationyear and expirationmonth instead.', 'paid-memberships-pro' ), '3.2' );
-					return $this->expirationyear . '-' . $this->expirationmonth;
-				case 'membership_name':
-					_doing_it_wrong( __METHOD__, esc_html__( 'membership_name is deprecated. Use pmpro_getLevel() instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = pmpro_getLevel( $this->membership_id );
-					return empty( $level->name ) ? '' : $level->name;
-				case 'InitialPayment':
-					_doing_it_wrong( __METHOD__, esc_html__( 'InitialPayment is deprecated. Use subtotal instead.', 'paid-memberships-pro' ), '3.2' );
-					return $this->subtotal;
-				case 'PaymentAmount':
-					_doing_it_wrong( __METHOD__, esc_html__( 'PaymentAmount is deprecated. Get billing_amount from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = $this->getMembershipLevelAtCheckout();
-					return empty( $level->billing_amount ) ? 0 : $level->billing_amount;
-				case 'BillingPeriod':
-					_doing_it_wrong( __METHOD__, esc_html__( 'BillingPeriod is deprecated. Get cycle_period from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = $this->getMembershipLevelAtCheckout();
-					return empty( $level->cycle_period ) ? '' : $level->cycle_period;
-				case 'BillingFrequency':
-					_doing_it_wrong( __METHOD__, esc_html__( 'BillingFrequency is deprecated. Get cycle_number from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = $this->getMembershipLevelAtCheckout();
-					return empty( $level->cycle_number ) ? 0 : $level->cycle_number;
-				case 'TrialBillingPeriod':
-					_doing_it_wrong( __METHOD__, esc_html__( 'TrialBillingPeriod is deprecated. Get cycle_period from $this->getMembershipLevelAtCheckout() if the level is a trial instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = $this->getMembershipLevelAtCheckout();
-					return pmpro_isLevelTrial( $level ) ? $level->cycle_period : '';
-				case 'TrialBillingFrequency':
-					_doing_it_wrong( __METHOD__, esc_html__( 'TrialBillingFrequency is deprecated. Get cycle_number from $this->getMembershipLevelAtCheckout() if the level is a trial instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = $this->getMembershipLevelAtCheckout();
-					return pmpro_isLevelTrial( $level ) ? $level->cycle_number : 0;
-				case 'TrialBillingCycles':
-					_doing_it_wrong( __METHOD__, esc_html__( 'TrialBillingCycles is deprecated. Get trial_limit from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = $this->getMembershipLevelAtCheckout();
-					return $level->trial_limit;
-				case 'TrialAmount':
-					_doing_it_wrong( __METHOD__, esc_html__( 'TrialAmount is deprecated. Get trial_amount from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = $this->getMembershipLevelAtCheckout();
-					return pmpro_round_price( $level->trial_amount );
-				case 'TotalBillingCycles':
-					_doing_it_wrong( __METHOD__, esc_html__( 'TotalBillingCycles is deprecated. Get billing_limit from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = $this->getMembershipLevelAtCheckout();
-					return empty( $level->billing_limit ) ? 0 : $level->billing_limit;
-				case 'ProfileStartDate':
-					_doing_it_wrong( __METHOD__, esc_html__( 'ProfileStartDate is deprecated. Use the pmpro_calculate_profile_start_date() instead.', 'paid-memberships-pro' ), '3.2' );
-					return pmpro_calculate_profile_start_date( $this, 'Y-m-d\TH:i:s' );
-				case 'CVV2':
-					_doing_it_wrong( __METHOD__, esc_html__( 'CVV2 is deprecated. Use the CVV from $_REQUEST instead.', 'paid-memberships-pro' ), '3.2' );
-					return empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] );
-				case 'FirstName':
-					_doing_it_wrong( __METHOD__, esc_html__( 'FirstName is deprecated. Use the the billing name instead.', 'paid-memberships-pro' ), '3.2' );
-					$nameparts = pnp_split_full_name( $this->billing->name );
-					return empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
-				case 'LastName':
-					_doing_it_wrong( __METHOD__, esc_html__( 'LastName is deprecated. Use the the billing name instead.', 'paid-memberships-pro' ), '3.2' );
-					$nameparts = pnp_split_full_name( $this->billing->name );
-					return empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
-				case 'Address1':
-					_doing_it_wrong( __METHOD__, esc_html__( 'Address1 is deprecated. Use the the billing address instead.', 'paid-memberships-pro' ), '3.2' );
-					return empty( $this->billing->street ) ? '' : $this->billing->street;
-				case 'Address2':
-					_doing_it_wrong( __METHOD__, esc_html__( 'Address2 is deprecated. Use the the billing address instead.', 'paid-memberships-pro' ), '3.2' );
-					return empty( $this->billing->street2 ) ? '' : $this->billing->street2;
-				case 'Email':
-					_doing_it_wrong( __METHOD__, esc_html__( 'Email is deprecated. Use the the user email instead.', 'paid-memberships-pro' ), '3.2' );
-					$user = get_userdata( $this->user_id );
-					return empty( $user->user_email ) ? '' : $user->user_email;
-				case 'initial_amount':
-					_doing_it_wrong( __METHOD__, esc_html__( 'initial_amount is deprecated. Use the subtotal and then calculate the tax instead.', 'paid-memberships-pro' ), '3.2' );
-					$initial_tax = $this->getTaxForPrice( $this->subtotal );
-					return pmpro_round_price((float)$this->subtotal + (float)$initial_tax);
-				case 'subscription_amount':
-					_doing_it_wrong( __METHOD__, esc_html__( 'subscription_amount is deprecated. Use the billing_amount from $this->getMembershipLevelAtCheckout() instead.', 'paid-memberships-pro' ), '3.2' );
-					$level = $this->getMembershipLevelAtCheckout();
-					$subscription_tax = $this->getTaxForPrice( $level->billing_amount );
-					return pmpro_round_price( (float)$level->billing_amount + (float)$subscription_tax );
-			}
 		}
 
 		/**
@@ -1641,20 +1557,6 @@
 		}
 
 		/**
-		 * For offsite gateways with a confirm step.
-		 *
-		 * @since 1.8
-		 * @deprecated 3.2
-		 */
-		function confirm()
-		{
-			_deprecated_function( __FUNCTION__, '3.2' );
-			if (is_object($this->Gateway)) {
-				return $this->Gateway->confirm($this);
-			}
-		}
-
-		/**
 		 * Call the cancel step of the order's subscription if needed.
 		 */
 		function cancel() {			
@@ -1676,53 +1578,6 @@
 			if (is_object($this->Gateway)) {
 				return $this->Gateway->update( $this );
 			}
-		}
-
-		/**
-		 * Call the getSubscriptionStatus method of the gateway class.
-		 *
-		 * @deprecated 3.2
-		 */
-		function getGatewaySubscriptionStatus()
-		{
-			_deprecated_function( __FUNCTION__, '3.2' );
-			if (is_object($this->Gateway)) {
-				return $this->Gateway->getSubscriptionStatus( $this );
-			}
-		}
-
-		/**
-		 * Call the getTransactionStatus method of the gateway class.
-		 *
-		 * @deprecated 3.2
-		 */
-		function getGatewayTransactionStatus()
-		{
-			_deprecated_function( __FUNCTION__, '3.2' );
-			if (is_object($this->Gateway)) {
-				return $this->Gateway->getTransactionStatus( $this );
-			}
-		}
-
-		/** 
-		 * Get TOS consent information.
-		 * @since  1.9.5
-		 * @deprecated 3.2 - Use pmpro_get_consent_log_entry_for_order() insetad.
-		 */
-		function get_tos_consent_log_entry() {
-			_deprecated_function( __METHOD__, '3.2', 'pmpro_get_consent_log_entry_for_order()' );
-			if ( empty( $this->id ) ) {
-				return false;
-			}
-			
-			$consent_log = pmpro_get_consent_log( $this->user_id );
-			foreach( $consent_log as $entry ) {
-				if( $entry['order_id'] == $this->id ) {
-					return $entry;
-				}
-			}
-
-			return false;
 		}
 
 		/**

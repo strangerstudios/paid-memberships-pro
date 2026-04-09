@@ -29,14 +29,6 @@ class PMProGateway_authorizenet extends PMProGateway
 	}
 
 	/**
-	 * @deprecated 3.2
-	 */
-	static function pmpro_checkout_order( $morder ) {
-		_deprecated_function( __FUNCTION__, '3.2' );
-		return $morder;
-	}
-
-	/**
 	 * Check whether or not a gateway supports a specific feature.
 	 * 
 	 * @since 3.0

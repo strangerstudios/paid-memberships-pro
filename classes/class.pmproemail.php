@@ -752,32 +752,6 @@
 		}
 
 		/**
-		 * Send the member an email when their credit card is expiring soon.
-		 *
-		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $order The order object that is associated to the member.
-		 * @return bool True if the email was sent, false otherwise.
-		 * @deprecated 3.1
-		 */
-		function sendCreditCardExpiringEmail($user = NULL, $order = NULL) {
-			_deprecated_function( 'sendCreditCardExpiringEmail', '3.1' );
-
-			global $current_user;
-			if(!$user)
-				$user = $current_user;
-			
-			if(!$user || !$order)
-				return false;
-			
-			if ( empty( $order->membership_id ) ) {
-				return false;
-			}
-
-			$email = new PMPro_Email_Template_Credit_Card_Expiring( $user, $order );
-			return $email->send();
-		}
-		
-		/**
 		 * Send the member an email when their recurring payment has succeeded.
 		 *
 		 * @param object $user The WordPress user object.
@@ -798,61 +772,6 @@
 
 			$email = new PMPro_Email_Template_Invoice( $user, $order );
 			return $email->send();
-		}
-		
-		/**
-		 * Send the member an email when their trial is ending soon.
-		 *
-		 * @param object $user The WordPress user object.
-		 * @param int $membership_id The member's membership level ID.
-		 * @deprecated 2.10
-		 */
-		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL ) {
-			global $current_user;
-
-			_deprecated_function( 'sendTrialEndingEmail', '2.10' );
-
-			if(!$user)
-				$user = $current_user;
-
-			if(!$user)
-				return false;
-
-			//make sure we have the current membership level data
-			if ( empty( $membership_id ) ) {
-				$membership_level = pmpro_getMembershipLevelForUser($user->ID);
-			} else {
-				$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $membership_id);
-			}
-
-			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your trial at %s is ending soon", "paid-memberships-pro"), get_option("blogname"));
-
-			$this->data = array(
-				'subject' => $this->subject,
-				'header_name' => $user->display_name,
-				'name' => $user->display_name,
-				'user_login' => $user->user_login,
-				'sitename' => get_option( 'blogname' ),
-				'membership_id' => $membership_level->id,
-				'membership_level_name' => $membership_level->name,
-				'siteemail' => get_option( 'pmpro_from_email' ),
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
-				'display_name' => $user->display_name,
-				'user_email' => $user->user_email,
-				'billing_amount' => pmpro_formatPrice( $membership_level->billing_amount ),
-				'cycle_number' => $membership_level->cycle_number,
-				'cycle_period' => $membership_level->cycle_period,
-				'trial_amount' => pmpro_formatPrice( $membership_level->trial_amount ),
-				'trial_limit' => $membership_level->trial_limit,
-				'trial_end' => date_i18n( get_option( 'date_format' ), strtotime( date_i18n( 'm/d/Y', $membership_level->startdate ) . ' + ' . $membership_level->trial_limit . ' ' . $membership_level->cycle_period ), current_time( 'timestamp' ) ),
-				'levels_url' => pmpro_url( 'levels' )
-			);
-
-			$this->template = apply_filters("pmpro_email_template", "trial_ending", $this);
-
-			return $this->sendEmail();
 		}
 		
 		/**
@@ -935,22 +854,6 @@
 
 			$email = new PMPro_Email_Template_Admin_Change_Admin( $user );
 			return $email->send();
-		}
-
-		/**
-		 * Send billable invoice email.
-		 *
-		 * @since 1.8.6
-		 *
-		 * @param WP_User $user
-		 * @param MemberOrder $order
-		 *
-		 * @return bool Whether the email was sent successfully.
-		 * @deprecated 3.1 Use sendInvoiceEmail instead.
-		 */
-		function sendBillableInvoiceEmail( $user = NULL, $order = NULL ) {
-			_deprecated_function( 'sendBillableInvoiceEmail', '3.1', 'sendInvoiceEmail' );
-			return $this->sendInvoiceEmail( $user, $order );
 		}
 
 		/**

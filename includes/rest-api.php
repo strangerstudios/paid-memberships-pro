@@ -199,20 +199,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		));
 
 		/**
-		 * Get membership levels after checkout options are applied.
-		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
-		 * @deprecated 3.0
-		 */
-		register_rest_route( $pmpro_namespace, '/checkout_levels', 
-		array(
-			array(
-				'methods' => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'pmpro_rest_api_get_checkout_levels' ),
-				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
-			),
-		));
-
-		/**
 		 * Authentication route for Zapier integration.
 		 *
 		 * Used to do authentication when connecting Zapier to PMPro.
@@ -1032,54 +1018,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			return new WP_REST_Response( $checkout_level );
 		}
 
-		/**
-		 * Get membership levels at checkout.
-		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
-		 *
-		 * @deprecated 3.0 Use the /pmpro/v1/checkout_level endpoint instead.
-		 */
-		function pmpro_rest_api_get_checkout_levels( $request ) {
-			$params = $request->get_params();
-
-			global $pmpro_checkout_level_ids;
-			if ( ! empty( $pmpro_checkout_level_ids ) ) {
-				// MMPU Compatibility...
-				$level_ids = $pmpro_checkout_level_ids;
-			} elseif ( isset( $params['pmpro_level' ] ) ) {
-				$level_ids = explode( '+', intval( $params['pmpro_level'] ) );
-			}elseif ( isset( $params['level_id'] ) ) {
-				$level_ids = explode( '+', intval( $params['level_id'] ) );
-			} elseif ( isset( $params['level'] ) ) {
-				$level_ids = explode( '+', intval( $params['level'] ) );
-			}
-
-			if ( empty( $level_ids ) ) {
-				return new WP_REST_Response( 'No levels found.', 400 );
-			}
-			$discount_code = isset( $params['discount_code'] ) ? sanitize_text_field( $params['discount_code'] ) : null;
-
-			$r = array();
-			$r['initial_payment'] = 0.00;
-			foreach ( $level_ids as $level_id ) {
-				$r[ $level_id ] = pmpro_getLevelAtCheckout( $level_id, $discount_code );
-				
-				// Increment the total initial_paymnent.
-				if ( ! empty( $r[ $level_id ]->initial_payment ) ) {
-					$r['initial_payment'] += floatval( $r[ $level_id ]->initial_payment );
-				}
-
-				// Hide confirmation message if not an admin or member.
-				if ( ! empty( $r[ $level_id ]->confirmation ) 
-						&& ! pmpro_hasMembershipLevel( $level_id )
-						&& ! current_user_can( 'pmpro_membershiplevels' ) ) {				
-					$r[ $level_id ]->confirmation = '';					
-				}
-			}
-			$r['initial_payment_formatted'] = pmpro_formatPrice( $r['initial_payment'] );
-			return new WP_REST_Response( $r );
-		}
-
-
 		/// ZAPIER TRIGGERS
 		/**
 		 * Handle authentication testing for the Zapier API.
@@ -1780,7 +1718,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
 				'/pmpro/v1/order' => 'pmpro_orders',
 				'/pmpro/v1/checkout_level' => true,
-				'/pmpro/v1/checkout_levels' => true,
 				'/pmpro/v1/me' => true,
 				'/pmpro/v1/recent_memberships' => 'pmpro_edit_members',
 				'/pmpro/v1/recent_orders' => 'pmpro_orders',

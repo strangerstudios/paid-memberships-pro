@@ -702,28 +702,6 @@ function pmpro_display_post_states( $post_states, $post ) {
 add_filter( 'display_post_states', 'pmpro_display_post_states', 10, 2 );
 
 /**
- * Screen options for the List Table
- *
- * Callback for the load-($page_hook_suffix)
- * Called when the plugin page is loaded
- *
- * @since    2.0.0
- * @deprecated 3.0
- */
-function pmpro_list_table_screen_options() {
-	_deprecated_function( __FUNCTION__, '3.0' );
-
-	$arguments = array(
-		'label'   => __( 'Members Per Page', 'paid-memberships-pro' ),
-		'default' => 13,
-		'option'  => 'users_per_page',
-	);
-	add_screen_option( 'per_page', $arguments );
-	// instantiate the User List Table
-	$user_list_table = new PMPro_Members_List_Table();
-}
-
-/**
  * Add links to the plugin action links
  */
 function pmpro_add_action_links( $links ) {

@@ -104,13 +104,6 @@ if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 	$besecure             = false;
 }
 
-// Allow for filters.
-// TODO: docblock.
-/**
- * @deprecated 3.2
- */
-$pmpro_requirebilling = apply_filters_deprecated( 'pmpro_require_billing', array( $pmpro_requirebilling, $pmpro_level ), '3.2' );
-
 //in case a discount code was used or something else made the level free, but we're already over ssl
 if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
 	$besecure = true;

@@ -18,77 +18,6 @@
 		}
 
 		/**
-		 * @deprecated 3.2
-		 */
-		function authorize(&$order)
-		{
-			_deprecated_function( __METHOD__, '3.2' );
-
-			//create a code for the order
-			if(empty($order->code))
-				$order->code = $order->getRandomCode();
-			
-			//simulate a successful authorization
-			$order->payment_transaction_id = "TEST" . $order->code;
-			$order->updateStatus("authorized");													
-			return true;					
-		}
-
-		/**
-		 * @deprecated 3.2
-		 */
-		function void(&$order)
-		{
-			_deprecated_function( __METHOD__, '3.2' );
-
-			//need a transaction id
-			if(empty($order->payment_transaction_id))
-				return false;
-				
-			//simulate a successful void
-			$order->payment_transaction_id = "TEST" . $order->code;
-			$order->updateStatus("voided");					
-			return true;
-		}	
-
-		/**
-		 * @deprecated 3.2
-		 */
-		function charge(&$order)
-		{
-			_deprecated_function( __METHOD__, '3.2' );
-
-			//create a code for the order
-			if(empty($order->code))
-				$order->code = $order->getRandomCode();
-			
-			//simulate a successful charge
-			$order->payment_transaction_id = "TEST" . $order->code;
-			$order->updateStatus("success");					
-			return true;						
-		}
-
-		/**
-		 * @deprecated 3.2
-		 */
-		function subscribe(&$order)
-		{
-			_deprecated_function( __METHOD__, '3.2' );
-
-			//create a code for the order
-			if(empty($order->code))
-				$order->code = $order->getRandomCode();
-			
-			//filter order before subscription. use with care.
-			$order = apply_filters("pmpro_subscribe_order", $order, $this);
-						
-			//simulate a successful subscription processing
-			$order->status = "success";		
-			$order->subscription_transaction_id = "TEST" . $order->code;				
-			return true;
-		}	
-
-		/**
 		 * Update the billing information for the subscription associated with the passed order.
 		 *
 		 * @param MemberOrder $order The order object associated with the subscription to update.
@@ -124,30 +53,6 @@
 			// Simulate a successful subscription cancelation.
 			return true;
 		}
-
-		/**
-		 * @deprecated 3.2
-		 */
-		function getSubscriptionStatus(&$order)
-		{
-			_deprecated_function( __METHOD__, '3.2' );
-			//require a subscription id
-			if(empty($order->subscription_transaction_id))
-				return false;
-			
-			//this looks different for each gateway, but generally an array of some sort
-			return array();
-		}
-
-		/**
-		 * @deprecated 3.2
-		 */
-		function getTransactionStatus(&$order)
-		{
-			_deprecated_function( __METHOD__, '3.2' );	
-			//this looks different for each gateway, but generally an array of some sort
-			return array();
-		}		
 
 		/**
 		 * Check if the gateway supports a certain feature.

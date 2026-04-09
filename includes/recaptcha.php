@@ -44,14 +44,6 @@ function pmpro_init_recaptcha() {
 	$recaptcha_publickey = 'global deprecated';
 	$recaptcha_privatekey = 'global deprecated';
 
-	// For templates using the old recaptcha_get_html. 
-	// TODO: Remove this in a future version.
-	if ( ! function_exists( 'recaptcha_get_html' ) ) {
-		function recaptcha_get_html() {
-			_deprecated_function( 'recaptcha_get_html', '2.12.3', 'pmpro_recaptcha_get_html');
-			return pmpro_recaptcha_get_html();
-		}
-	}
 }
 add_action( 'pmpro_checkout_preheader', 'pmpro_init_recaptcha' );
 add_action( 'pmpro_billing_preheader', 'pmpro_init_recaptcha', 9 ); // Run before the Stripe class loads pmpro-stripe.js

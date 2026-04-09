@@ -657,38 +657,6 @@ function pmpro_get_membership_expiration_text( $level, $user, $default = null ) 
 		$text = date_i18n( get_option( 'date_format' ), $level->enddate );
 	}
 
-	// Apply legacy filter pmpro_memberslist_expires_column.
-	if ( is_admin() && has_filter( 'pmpro_memberslist_expires_column' ) ) {
-		/**
-		 * Legacy filter for showing the expiration date in the WP Dashboard.
-		 *
-		 * Note: Since level data is not passed, this filter is not MMPU-compatible.
-		 *
-		 * @deprecated 3.0 Use the pmpro_membership_expiration_text filter instead.
-		 *
-		 * @param string  $text The expiration date text to show for this level.
-		 * @param WP_User $user The user that the expiration date is for.
-		 *
-		 * @return string $text The expiration date text to show for this level.
-		 */
-		$text = apply_filters_deprecated( 'pmpro_memberslist_expires_column', array( $text, $user ), '3.0', 'pmpro_membership_expiration_text' );
-	}
-
-	// Apply legacy filter pmpro_account_membership_expiration_text.
-	if ( ! is_admin() && has_filter( 'pmpro_account_membership_expiration_text' ) ) {
-		/**
-		 * Legacy filter for showing the expiration date on the frontend.
-		 *
-		 * @deprecated 3.0 Use the pmpro_membership_expiration_text filter instead.
-		 *
-		 * @param string $text  The expiration date text to show for this level.
-		 * @param object $level The level that the expiration date is for.
-		 *
-		 * @return string $text The expiration date text to show for this level.
-		 */
-		$text = apply_filters_deprecated( 'pmpro_account_membership_expiration_text', array( $text, $level ), '3.0', 'pmpro_membership_expiration_text' );
-	}
-
 	/**
 	 * Filter the expiration date text to show for this level.
 	 *
@@ -883,30 +851,6 @@ if ( ! function_exists( 'formatPhone' ) ) {
 	}
 }
 
-/**
- * Display a message to users based on their current status.
- *
- * @since 2.4.5
- * @deprecated 3.1
- */
-function pmpro_showRequiresMembershipMessage() {
-	_deprecated_function( __FUNCTION__, '3.1' );
-	global $current_user, $post_membership_levels_names;
-
-	// get the correct message
-	if ( is_feed() ) {
-		$content = get_option( 'pmpro_rsstext' );
-		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
-	} elseif ( $current_user->ID ) {
-		// not a member
-		$content = get_option( 'pmpro_nonmembertext' );
-		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
-	} else {
-		// not logged in!
-		$content = get_option( 'pmpro_notloggedintext' );
-		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
-	}
-}
 
 /**
  * Function to check if a user has specified membership levels.
@@ -2234,17 +2178,6 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			 * @param array $level_ids The array of level IDs this post is protected for.
 			 */
 			$body = apply_filters( 'pmpro_no_access_message_body', $body, $level_ids );
-
-			/**
-			 * Legacy filter for logged-out message for non-members/logged-out visitors.
-			 *
-			 * @deprecated 3.1
-			 */
-			if ( ! is_user_logged_in() ) {
-				$body = apply_filters_deprecated( 'pmpro_not_logged_in_text_filter', array( $body ), '3.1', 'pmpro_no_access_message_body' );
-			} else {
-				$body = apply_filters_deprecated( 'pmpro_non_member_text_filter', array( $body ), '3.1', 'pmpro_no_access_message_body' );
-			}
 
 			// Build the content message.
 			$no_access_message_inner = '<h2 class="' . pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) . '">';
@@ -4056,50 +3989,6 @@ function pmpro_show_discount_code() {
 	 return $submit;
  }
 
- /**
-  * Build the order object used at checkout.
-  * @since 2.1
-  * @deprecated 3.2
-  * @return mixed $order Order object.
-  */
- function pmpro_build_order_for_checkout() {
-	_deprecated_function( __FUNCTION__, '3.2' );
-
-	global $gateway, $pmpro_level, $current_user, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $CVV;
-
-	// Create a new order object.
-	$morder                   = new MemberOrder();
-	$morder->user_id          = $current_user->ID;
-	$morder->membership_id    = $pmpro_level->id;
-	$morder->cardtype         = $CardType;
-	$morder->accountnumber    = $AccountNumber;
-	$morder->expirationmonth  = $ExpirationMonth;
-	$morder->expirationyear   = $ExpirationYear;
-	$morder->gateway          = $gateway;
-	$morder->billing          = new stdClass();
-	$morder->billing->name    = $bfirstname . " " . $blastname;
-	$morder->billing->street  = trim( $baddress1 );
-	$morder->billing->street2 = trim( $baddress2 );
-	$morder->billing->city    = $bcity;
-	$morder->billing->state   = $bstate;
-	$morder->billing->country = $bcountry;
-	$morder->billing->zip     = $bzipcode;
-	$morder->billing->phone   = $bphone;
-
-	// Calculate the order subtotal, tax, and total.
-	$morder->subtotal         = pmpro_round_price( $pmpro_level->initial_payment );
-	$morder->tax              = pmpro_round_price( $morder->getTax( true ) );
-	$morder->total            = pmpro_round_price( $morder->subtotal + $morder->tax );
-
-	// Finish setting up the order.
-	$morder->setGateway();
-	$morder->getMembershipLevelAtCheckout();	
-
-	// Filter for order, since v1.8
-	$morder = apply_filters( 'pmpro_checkout_order', $morder );
-
-	return $morder;
-}
 
 /**
  * Compare a plugin's version to a given version number.
