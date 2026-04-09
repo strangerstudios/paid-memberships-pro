@@ -408,66 +408,6 @@ pmpro_unhandled_webhook();
 pmpro_braintreeWebhookExit();
 
 /**
- * Fix address info for order/transaction
- *
- * @deprecated 3.2
- *
- * @param int          $user_id
- * @param \MemberOrder $old_order
- *
- * @return \stdClass
- */
-function pmpro_braintreeAddressInfo( $user_id, $old_order ) {
-	_deprecated_function( __FUNCTION__, '3.2' );
-	
-	// Grab billing info from the saved metadata as needed
-	
-	if ( ! isset( $old_order->billing ) ) {
-		$old_order->billing = new \stdClass();
-	}
-	
-	if ( empty ( $old_order->billing->name ) ) {
-		$first_name = get_user_meta( $user_id, 'pmpro_bfirstname', true );
-		$last_name  = get_user_meta( $user_id, 'pmpro_blastname', true );
-		
-		if ( ! empty( $first_name ) && ! empty( $last_name ) ) {
-			$old_order->billing->name = trim( "{$first_name} {$last_name}" );
-		}
-	}
-	
-	if ( empty( $old_order->billing->street ) ) {
-		$address1                   = get_user_meta( $user_id, 'pmpro_baddress', true );
-		$address2                   = get_user_meta( $user_id, 'pmpro_baddress2', true );
-		$old_order->billing->street = ! empty( $address1 ) ? trim( $address1 ) : '';
-		$old_order->billing->street .= ! empty( $address2 ) ? "\n" . trim( $address2 ) : '';
-	}
-	
-	if ( empty( $old_order->billing->city ) ) {
-		$city                     = get_user_meta( $user_id, 'pmpro_bcity', true );
-		$old_order->billing->city = ! empty( $city ) ? trim( $city ) : '';
-	}
-	
-	if ( empty( $old_order->billing->state ) ) {
-		$state                     = get_user_meta( $user_id, 'pmpro_bstate', true );
-		$old_order->billing->state = ! empty( $state ) ? trim( $state ) : '';
-	}
-	
-	if ( empty( $old_order->billing->zip ) ) {
-		$zip                     = get_user_meta( $user_id, 'pmpro_bzipcode', true );
-		$old_order->billing->zip = ! empty( $zip ) ? trim( $zip ) : '';
-	}
-	
-	if ( empty( $old_order->billing->country ) ) {
-		$country                     = get_user_meta( $user_id, 'pmpro_bcountry', true );
-		$old_order->billing->country = ! empty( $country ) ? trim( $country ) : '';
-	}
-	
-	$old_order->updateBilling();
-	
-	return $old_order->billing;
-}
-
-/**
  * Exit the Webhook handler, and save the debug log (if needed)
  */
 function pmpro_braintreeWebhookExit() {

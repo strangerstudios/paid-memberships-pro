@@ -60,65 +60,6 @@
 		}
 
 		/**
-		 * Get a list of payment options that the this gateway needs/supports.
-		 *
-		 * @return array
-         *
-		 * @since 1.8
-		 * @deprecated 3.5
-		 */
-		static function getGatewayOptions()
-		{
-			_deprecated_function( __METHOD__, '3.5' );
-			$options = array(
-				'gateway_environment',
-				'gateway_email',
-				'currency',
-				'tax_state',
-				'tax_rate',
-			);
-
-			return $options;
-		}
-
-		/**
-		 * Set payment options for payment settings page.
-		 *
-		 * @param array $options
-         *
-         * @return array
-         *
-		 * @since 1.8
-		 * @deprecated 3.5
-		 */
-		static function pmpro_payment_options($options)
-		{
-			_deprecated_function( __METHOD__, '3.5' );
-			if ( class_exists( 'PMProGateway_paypalexpress' ) ) {
-				//get options
-				$paypal_options = PMProGateway_paypalexpress::getGatewayOptions();
-
-				//merge with others.
-				$options = array_merge($paypal_options, $options);
-			}
-
-			return $options;
-		}
-
-		/**
-		 * Display fields for this gateway's options.
-		 *
-		 * @since 1.8
-		 * @deprecated 3.1
-		 */
-		static function pmpro_payment_option_fields($values, $gateway) {
-			_deprecated_function( __FUNCTION__, '3.1', 'PMProGateway_paypalexpress::pmpro_payment_option_fields()' );
-			if ( class_exists( 'PMProGateway_paypalexpress' ) ) {
-				PMProGateway_paypalexpress::pmpro_payment_option_fields( $values, $gateway );
-			}
-		}
-
-		/**
 		 * Display fields for PayPal options.
 		 *
 		 * @since 3.5

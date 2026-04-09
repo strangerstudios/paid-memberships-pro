@@ -310,20 +310,22 @@ class PMPro_Field {
 	}
 
 	/**
-	 * Magic setter to allow setting private class properties and
-	 * throwing warnings when we want to phase out a property.
+	 * Magic __set to prevent direct property modification.
 	 *
-	 * @param string $name The property name.
-	 * @param mixed $value The property value.
+	 * @param string $name  The property name.
+	 * @param mixed  $value The value to set.
 	 */
 	function __set( $name, $value ) {
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'PMPro_Field properties should not be modified directly. Instead, create a new PMPro_Field object.', 'paid-memberships-pro' ), 'TBD' );
+
+		// Changing the field type is no longer allowed.
 		if ( 'type' === $name ) {
-			_doing_it_wrong( __FUNCTION__, esc_html__( 'PMPro_Field properties should not be modified directly and may break in a future version. Instead, create a new PMPro_Field object.', 'paid-memberships-pro' ), '3.4' );
+			return;
 		}
 
 		$this->$name = $value;
 	}
-	
+
 	/**
 	 * Magic isset to check if a private class property is set.
 	 *
@@ -332,31 +334,6 @@ class PMPro_Field {
 	 */
 	function __isset( $name ) {
 		return isset( $this->$name );
-	}
-
-	/**
-	 * Magic __call to allow calling private class methods and throwing warnings
-	 * when we want to phase out a method.
-	 */
-	function __call( $name, $arguments ) {
-		switch( $name ) {
-			case 'set':
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the $args property of the constructor when creating a new PMPro_Field object.', 'paid-memberships-pro' ), esc_html( $name ) ), '3.4' );
-				break;
-			case 'saveUsersTable':
-			case 'saveTermRelationshipsTable':
-			case 'saveFile':
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the save_field_for_user method of the PMPro_Field object.', 'paid-memberships-pro' ), esc_html( $name ) ), '3.4' );
-				break;
-			case 'getHTML':
-			case 'getDependenciesJS':
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version. Instead, use the display() method of the PMPro_Field object.', 'paid-memberships-pro' ), esc_html( $name ) ), '3.4' );
-				break;
-			default:
-				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The method %s of PMPro_Field has become private and will not be available in a future version.', 'paid-memberships-pro' ), esc_html( $name ) ), '3.4' );
-				break;
-		}
-		return call_user_func( array( $this, $name ), $arguments );
 	}
 
 	/**
@@ -478,13 +455,6 @@ class PMPro_Field {
 			$this->name = "pmprorhprefix_" . $this->name;
 
 		/**
-		 * Legacy filter to define what field keys are saved to the wp_users table. 
-		 *
-		 * @deprecated 3.1
-		 */
-		$user_table_fields = apply_filters_deprecated( 'pmprorh_user_table_fields', array( array( 'user_url' ) ), '3.1', 'pmpro_user_table_fields' );
-
-		/**
 		 * Filter to define what field keys are saved to the wp_users table.
 		 *
 		 * @since 3.1
@@ -492,7 +462,7 @@ class PMPro_Field {
 		 * @param array $user_table_fields Array of field keys saved to the wp_users table.
 		 * @return array $user_table_fields Array of field keys saved to the wp_users table.
 		 */
-		$user_table_fields = apply_filters( 'pmpro_user_table_fields', $user_table_fields );
+		$user_table_fields = apply_filters( 'pmpro_user_table_fields', array( 'user_url' ) );
 
 		// Save wp_users table fields to the WP_User, not usermeta.
 		if ( in_array( $this->name, $user_table_fields ) ) {
@@ -538,13 +508,6 @@ class PMPro_Field {
 				$this->options = array( '', esc_html__( '- choose one -', 'paid-memberships-pro' ) );
 
 			/**
-			 * Legacy filter to repair non-associative options.
-			 *
-			 * @deprecated 3.1
-			 */
-			$repair_non_associative_options = apply_filters_deprecated( 'pmprorh_repair_non_associative_options', array( true ), '3.1', 'pmpro_field_repair_non_associative_options' );
-
-			/**
 			 * Filter to repair non-associative options.
 			 *
 			 * @since 3.1
@@ -552,7 +515,7 @@ class PMPro_Field {
 			 * @param bool $repair_non_associative_options Whether to repair non-associative options.
 			 * @return bool $repair_non_associative_options Whether to repair non-associative options.
 			 */
-			$repair_non_associative_options = apply_filters( 'pmpro_field_repair_non_associative_options', $repair_non_associative_options );
+			$repair_non_associative_options = apply_filters( 'pmpro_field_repair_non_associative_options', true );
 
 			// Is a non associative array is passed? Set values to labels.
 			if($repair_non_associative_options && !$this->is_assoc($this->options))
@@ -1295,16 +1258,6 @@ class PMPro_Field {
 			$this->showrequired = true;
 
 		/**
-		 * Legacy filter to show a field as required on the profile page.
-		 *
-		 * @deprecated 3.1 Use the pmpro_show_required_on_profile filter instead.
-		 *
-		 * @param bool $showrequired Whether to show the field as required on the profile page.
-		 * @return bool Whether to show the field as required on the profile page.
-		 */
-		$show_required_on_profile = apply_filters_deprecated( 'pmprorh_show_required_on_profile', array( false, $this ), '3.1', 'pmpro_field_show_required_on_profile' );
-
-		/**
 		 * Filter to show a field as required on the profile page.
 		 *
 		 * @since 3.1
@@ -1472,120 +1425,6 @@ class PMPro_Field {
 			<?php
 			}
 		}
-	}
-
-	/**
-	 * Display the field at checkout.
-	 *
-	 * @deprecated 3.4 Use PMPro_Field_Group::display() instead.
-	 */
-	function displayAtCheckout()
-	{
-		_deprecated_function( __METHOD__, '3.4', 'PMPro_Field_Group::display()' );
-		global $current_user;
-
-		if( null !== $this->get_value_from_request() ) {
-			$value = $this->get_value_from_request();
-		} elseif(!empty($current_user->ID) && metadata_exists("user", $current_user->ID, $this->meta_key)) {
-			$value = get_user_meta($current_user->ID, $this->meta_key, true);
-		} elseif ( ! empty( $current_user->ID ) ) {
-			$userdata = get_userdata( $current_user->ID );
-			if ( ! empty( $userdata->{$this->name} ) ) {
-				$value = $userdata->{$this->name};
-			} elseif(isset($this->value)) {
-				$value = $this->value;
-			} else {
-				$value = '';
-			}
-		} elseif(isset($this->value)) {
-			$value = $this->value;
-		} else {
-			$value = "";
-		}
-
-		// Fix divclass.
-		if ( ! empty( $this->divclass ) ) {
-			$this->divclass .= " ";
-		}
-
-		// Add a class to the field based on the type.
-		$this->divclass .= "pmpro_form_field pmpro_form_field-" . $this->type;
-		$this->class .= " pmpro_form_input-" . $this->type;
-
-		// Add the required class to field.
-		if ( ! empty( $this->required ) ) {
-			$this->divclass .= " pmpro_form_field-required";
-			$this->class .= " pmpro_form_input-required";
-		}
-
-		// Add the class to not show a field is required if set.
-		if ( empty( $this->showrequired ) || is_string( $this->showrequired ) ) {
-			$this->divclass .= " pmpro_form_field-hide-required";
-		}
-
-		// Run the class through the filter.
-		$this->divclass = pmpro_get_element_class( $this->divclass );
-		$this->class = pmpro_get_element_class( $this->class );
-
-		?>
-		<div id="<?php echo esc_attr( $this->id );?>_div" <?php if ( ! empty( $this->divclass ) ) { echo 'class="' . esc_attr( $this->divclass ) . '"'; } ?>>
-			<?php if(!empty($this->showmainlabel)) { ?>
-				<label class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>" for="<?php echo esc_attr($this->name);?>">
-					<?php echo wp_kses_post( $this->label );?>
-					<?php 
-						if(!empty($this->required) && !empty($this->showrequired) && $this->showrequired === 'label')
-						{
-						?><span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_attr_e( 'Required Field' ,'paid-memberships-pro' ); ?>">*</abbr></span><?php
-						}
-					?>
-				</label>
-				<?php $this->display($value); ?>
-			<?php } else { ?>
-				<?php $this->display($value); ?>
-			<?php } ?>
-
-			<?php if(!empty($this->hint)) { ?>
-				<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_hint' ) ); ?>"><?php echo wp_kses_post( $this->hint );?></p>
-			<?php } ?>
-		</div>
-		<?php
-	}
-
-	/**
-	 * @deprecated 3.4 Use PMPro_Field_Group::display() instead.
-	 */
-	function displayInProfile($user_id, $edit = NULL)
-	{
-		_deprecated_function( __METHOD__, '3.4', 'PMPro_Field_Group::display()' );
-		global $current_user;
-		if(metadata_exists("user", $user_id, $this->meta_key))
-		{
-			$value = get_user_meta($user_id, $this->meta_key, true);
-		}
-		elseif(!empty($this->value))
-			$value = $this->value;
-		else
-			$value = "";
-		?>
-		<tr id="<?php echo esc_attr( $this->id );?>_tr">
-			<th>
-				<?php if ( ! empty( $this->showmainlabel ) ) { ?>
-					<label for="<?php echo esc_attr($this->name);?>"><?php echo wp_kses_post( $this->label );?></label>
-				<?php } ?>
-			</th>
-			<td>
-				<?php
-					if(current_user_can("edit_user", $user_id) && $edit !== false)
-						$this->display($value);
-					else
-						echo "<div>" . wp_kses_post( $this->displayValue($value) ) . "</div>";
-				?>
-				<?php if(!empty($this->hint)) { ?>
-					<p class="description"><?php echo wp_kses_post( $this->hint );?></p>
-				<?php } ?>
-			</td>
-		</tr>
-		<?php
 	}
 
 	/**
@@ -1819,81 +1658,6 @@ class PMPro_Field {
 			return false;
 		}
 		return array_keys( $array ) !== range( 0, count( $array ) - 1) ;
-	}
-
-	/**
-	 * @deprecated 3.4 Use PMPro_Field_Group::get_group_for_field() instead.
-	 */
-	static function get_checkout_box_name_for_field( $field_name ) {
-		_deprecated_function( __METHOD__, '3.4', 'PMPro_Field_Group::get_group_for_field()' );
-		$field = PMPro_Field_Group::get_field( $field_name );
-		if ( empty( $field ) ) {
-			return '';
-		}
-	
-		$field_group = PMPro_Field_Group::get_group_for_field( $field );
-		return $field_group ? $field_group->name : '';
-	}
-
-	/**
-	 * @deprecated 3.4
-	 */
-	function was_present_on_checkout_page() {
-		_deprecated_function( __METHOD__, '3.4' );
-		// Check if checkout box that field is in is on page.
-		$checkout_box = PMPro_Field_Group::get_group_for_field( $this );
-		if ( empty( $checkout_box ) ) {
-			// Checkout box does not exist.
-			return false;
-		}
-
-		$user_fields_locations = array(
-			'after_username',
-			'after_password',
-			'after_email',
-			'after_captcha',
-		);
-		if ( is_user_logged_in() && in_array( $checkout_box->name, $user_fields_locations ) ) {
-			// User is logged in and field is only for new users.
-			return false;
-		}
-
-		// Check if field is hidden because of "depends" option.
-		if ( ! empty( $this->depends ) ) {
-			//build the checks
-			$checks = array();
-			foreach($this->depends as $check) {
-				if( ! empty( $check['id'] ) && isset( $check['value'] ) ) {
-					// We have a valid depends statement.
-					if ( isset( $_REQUEST[ $check['id'] . '_checkbox' ] ) ) {
-						// This fields depends on a checkbox or checkbox_grouped input.
-						if ( isset( $_REQUEST[ $check['id'] ] ) && is_array( $_REQUEST[ $check['id'] ] ) ) {
-							// checkbox_grouped input.
-							if ( ! in_array( $check['value'], $_REQUEST[ $check['id'] ] ) ) {
-								return false;
-							}
-						} elseif ( isset( $_REQUEST[ $check['id'] ] ) && '1' === $_REQUEST[ $check['id'] ] ) {
-							// Single checkbox that is checked.
-							if ( empty( $check['value'] ) ) {
-								// Set to show field only if checkbox is unchecked.
-								return false;
-							}
-						} else {
-							// Single checkbox that is unchecked. Set to show field only if checkbox is checked.
-							if ( ! empty( $check['value'] ) ) {
-								return false;
-							}
-						}
-					} elseif ( isset( $_REQUEST[ $check['id'] ] ) && $check['value'] != $_REQUEST[ $check['id'] ] ) {
-						// This fields depends on another field type.
-						return false;
-					}
-				}
-			}
-		}
-
-		// Field should have been showed at checkout.
-		return true;
 	}
 
 	/**

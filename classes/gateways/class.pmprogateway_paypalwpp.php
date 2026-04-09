@@ -57,67 +57,6 @@
 		}
 
 		/**
-		 * Get a list of payment options that the this gateway needs/supports.
-		 *
-		 * @since 1.8
-		 * @deprecated 3.5
-		 */
-		static function getGatewayOptions()
-		{
-			_deprecated_function( __METHOD__, '3.5' );
-			$options = array(
-				'gateway_environment',
-				'gateway_email',
-				'apiusername',
-				'apipassword',
-				'apisignature',
-				'currency',
-				'tax_state',
-				'tax_rate',
-				'paypalexpress_skip_confirmation',
-				///'paypal_enable_3dsecure',
-				//'paypal_cardinal_apikey',
-				//'paypal_cardinal_apiidentifier',
-				//'paypal_cardinal_orgunitid',
-				//'paypal_cardinal_merchantid',
-				//'paypal_cardinal_processorid'
-			);
-
-			return $options;
-		}
-
-		/**
-		 * Set payment options for payment settings page.
-		 *
-		 * @since 1.8
-		 * @deprecated 3.5
-		 */
-		static function pmpro_payment_options($options)
-		{
-			_deprecated_function( __METHOD__, '3.5' );
-			//get options
-			$paypal_options = PMProGateway_paypalwpp::getGatewayOptions();
-
-			//merge with others.
-			$options = array_merge($paypal_options, $options);
-
-			return $options;
-		}
-
-		/**
-		 * Display fields for this gateway's options.
-		 *
-		 * @since 1.8
-		 * @deprecated 3.1
-		 */
-		static function pmpro_payment_option_fields($values, $gateway) {
-			_deprecated_function( __FUNCTION__, '3.1', 'PMProGateway_paypalexpress::pmpro_payment_option_fields()' );
-			if ( class_exists( 'PMProGateway_paypalexpress' ) ) {
-				PMProGateway_paypalexpress::pmpro_payment_option_fields( $values, $gateway );
-			}
-		}
-
-		/**
 		 * Display fields for PayPal options.
 		 *
 		 * @since 3.5

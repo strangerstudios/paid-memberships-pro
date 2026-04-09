@@ -261,33 +261,5 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 		return $container;
 	}
 
-	/**
-	 * Figure out if the user has access to restricted content.
-	 * @return bool True or false based if the user has access to the content or not.
-	 * @since 2.3
-     * @deprecated 3.5
-	 */
-	public function pmpro_elementor_has_access( $element ) {
-        _deprecated_function( __METHOD__, '3.5' );
-
-		$element_settings = $element->get_active_settings();
-
-        // If the block is not being restricted, then the user has access.
-        if ( empty( $element_settings['pmpro_enable'] ) || 'no' === $element_settings['pmpro_enable'] ) {
-            return true;
-        }
-
-        // If pmpro_apply_block_visibility returns content, then we want the user to see it.
-        $apply_block_visibility_params = array(
-            'segment' => $element_settings['pmpro_segment'],
-            'levels' => $element_settings['pmpro_levels'],
-            'invert_restrictions' => $element_settings['pmpro_invert_restrictions'],
-            'show_noaccess' => $element_settings['pmpro_show_noaccess'],
-        );
-        $access = ! empty( pmpro_apply_block_visibility( $apply_block_visibility_params, 'sample content' ) );
-        
-		return apply_filters( 'pmpro_elementor_has_access', $access, $element, $element_settings['pmpro_levels'] );
-	}
-
 }
 new PMPro_Elementor_Content_Restriction;

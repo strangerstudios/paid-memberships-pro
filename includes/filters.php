@@ -169,26 +169,6 @@ function pmpro_pmpro_level_description( $description ) {
 }
 add_filter( 'pmpro_level_description', 'pmpro_pmpro_level_description' );
 
-/*
-	PayPal doesn't allow start dates > 1 year out.
-	So if we detect that, let's try to squeeze some of
-	that time into a trial.
-
-	Otherwise, let's cap at 1 year out.
-
-	Note that this affects PayPal Standard as well, but the fix
-	for that flavor of PayPal is different and may be included in future
-	updates.
-
-	This function is being deprecated as ProfileStartDate is no longer stored as an order property.
-	This is now coded directly into the PayPal Express subscribe() function.
-	@deprecated 3.2
-*/
-function pmpro_pmpro_subscribe_order_startdate_limit( $order, $gateway ) {
-	_deprecated_function( __FUNCTION__, '3.2' );
-	return $order;
-}
-
 /**
  * Before changing membership at checkout,
  * let's remember the order for checkout
