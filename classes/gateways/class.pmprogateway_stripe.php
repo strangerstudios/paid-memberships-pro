@@ -1433,12 +1433,10 @@ class PMProGateway_stripe extends PMProGateway {
 		// If the level is recurring, check if we can combine the initial and recurring payments.
 		$level = $morder->getMembershipLevelAtCheckout();
 		if ( pmpro_isLevelRecurring( $level ) ) {
-			$filtered_trial_period_days = $stripe->calculate_trial_period_days( $morder );
-			$unfiltered_trial_period_days = $stripe->calculate_trial_period_days( $morder, false );
+			$trial_period_days = $stripe->calculate_trial_period_days( $morder );
 
 			$combine_initial_and_recurring = (
 				empty( $level->trial_limit ) && // Check if there is a trial period.
-				$filtered_trial_period_days === $unfiltered_trial_period_days && // Check if the trial period is the same as the filtered trial period.
 				empty( $level->profile_start_date ) && // Check if the profile start date set directly on the level is empty.
 				! empty( $level->initial_payment ) && // Check if there is an initial payment.
 				$level->initial_payment === $level->billing_amount // Check if the initial payment and recurring payment prices are the same.
@@ -1493,7 +1491,7 @@ class PMProGateway_stripe extends PMProGateway {
 			// If we're sending an initial payment and a recurring payment separately, we need to set a trial period.
 			if ( empty( $combine_initial_and_recurring ) ) {
 				// We need to set the trial period days and send initial and recurring payments as separate line items.
-				$subscription_data['trial_period_days'] = $filtered_trial_period_days;
+				$subscription_data['trial_period_days'] = $trial_period_days;
 			}
 
 			// Add application fee for Stripe Connect.
@@ -2825,10 +2823,9 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7.0.
 	 *
 	 * @param MemberOrder $order to calculate trial period days for.
-	 * @param bool        $filtered whether to filter the result.
 	 * @return int trial period days.
 	 */
-	private function calculate_trial_period_days( $order, $filtered = true ) {
+	private function calculate_trial_period_days( $order ) {
 		// Get the checkout level for this order.
 		$level = $order->getMembershipLevelAtCheckout();
 
@@ -2842,7 +2839,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Calculate the profile start date.
 		// Getting return value as Unix Timestamp so that we can calculate days more easily.
-		$profile_start_date = pmpro_calculate_profile_start_date( $order, 'U', $filtered );
+		$profile_start_date = pmpro_calculate_profile_start_date( $order, 'U' );
 
 		// Restore the original billing frequency if needed so that the rest of the checkout has the correct info.
 		if ( ! empty( $original_cycle_number ) ) {

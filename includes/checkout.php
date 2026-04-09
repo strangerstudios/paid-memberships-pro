@@ -7,11 +7,10 @@
  *
  * @param MemberOrder $order       The order to calculate the start date for.
  * @param string      $date_format The format to use when formatting the profile start date.
- * @param bool        $filter      Whether to filter the profile start date.
  *
  * @return string The profile start date in UTC time and the desired $date_format.
  */
-function pmpro_calculate_profile_start_date( $order, $date_format, $filter = true ) {
+function pmpro_calculate_profile_start_date( $order, $date_format ) {
 	// Get the checkout level.
 	$level = $order->getMembershipLevelAtCheckout();
 

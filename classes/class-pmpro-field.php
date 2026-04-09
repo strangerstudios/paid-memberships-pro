@@ -310,14 +310,15 @@ class PMPro_Field {
 	}
 
 	/**
-	 * Magic __set to prevent direct property modification.
+	 * Magic __set to allow setting private properties
+	 * while preventing changes to the field type.
+	 *
+	 * @since 3.4
 	 *
 	 * @param string $name  The property name.
 	 * @param mixed  $value The value to set.
 	 */
 	function __set( $name, $value ) {
-		_doing_it_wrong( __FUNCTION__, esc_html__( 'PMPro_Field properties should not be modified directly. Instead, create a new PMPro_Field object.', 'paid-memberships-pro' ), 'TBD' );
-
 		// Changing the field type is no longer allowed.
 		if ( 'type' === $name ) {
 			return;
