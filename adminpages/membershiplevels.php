@@ -486,11 +486,7 @@
 											</div>
 										</td>
 										<td>
-											<?php if(pmpro_isLevelFree($level)) { ?>
-												<?php esc_html_e( 'Free', 'paid-memberships-pro' ); ?>
-											<?php } else { ?>
-												<?php echo wp_kses_post( str_replace( 'The price for membership is', '', pmpro_getLevelCost($level) ) ); ?>
-											<?php } ?>
+											<?php echo wp_kses_post( pmpro_getLevelCost( $level, true, true ) ); ?>
 										</td>
 										<td>
 											<?php if(!pmpro_isLevelExpiring($level)) {
