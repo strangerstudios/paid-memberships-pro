@@ -359,6 +359,16 @@ $subscription = $order->get_subscription();
 				<?php } else { ?>
 					<p><?php esc_html_e( 'The user ID associated with this order is not a valid user.', 'paid-memberships-pro' ); ?></p>
 				<?php } ?>
+				<?php
+				/**
+				 * Fires after the member information content in the order view sidebar.
+				 *
+				 * @since TBD
+				 *
+				 * @param MemberOrder $order The order being viewed.
+				 */
+				do_action( 'pmpro_order_view_after_member_info', $order );
+				?>
 			</div><!-- .pmpro_section_inside -->
 		</div><!-- .pmpro_section -->
 

@@ -179,10 +179,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 	public function get_email_template_variables() {
 		$order = $this->order;
 		$user = $this->user;
-		$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
-		if ( empty( $membership_level ) ) {
-			$membership_level = pmpro_getLevel( $order->membership_id );
-		}
+		$membership_level = $order->getMembershipLevelAtCheckout();
 
 		$discount_code = "";
 		$discount_code_name = '';

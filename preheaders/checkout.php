@@ -367,8 +367,21 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		}
 	}
 
-	// If we don't have a user yet, check the user fields.
-	if ( empty( $current_user->ID ) ) {
+	/**
+	 * Filter whether to skip user creation during checkout.
+	 *
+	 * When true, the checkout will proceed without creating a WordPress user
+	 * and will skip user field validation. Used by guest checkouts.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool   $skip_user_creation Whether to skip user creation. Default false.
+	 * @param object $pmpro_level        The level being purchased.
+	 */
+	$pmpro_skip_user_creation = apply_filters( 'pmpro_skip_user_creation', false, $pmpro_level );
+
+	// If we don't have a user yet and we're not skipping user creation, check the user fields.
+	if ( empty( $current_user->ID ) && ! $pmpro_skip_user_creation ) {
 		foreach ( $pmpro_required_user_fields as $key => $field ) {
 			if ( ! $field ) {
 				$pmpro_error_fields[] = $key;
@@ -451,8 +464,8 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		}
 	}
 
-	// If there is still a vaild checkout submission but we don't have a user yet, create one.
-	if ( $pmpro_msgt != "pmpro_error" && empty( $current_user->ID ) ) {
+	// If there is still a valid checkout submission but we don't have a user yet, create one.
+	if ( $pmpro_msgt != "pmpro_error" && empty( $current_user->ID ) && ! $pmpro_skip_user_creation ) {
 		//first name
 		if ( ! empty( $_REQUEST['first_name'] ) ) {
 			$first_name = sanitize_text_field( $_REQUEST['first_name'] );

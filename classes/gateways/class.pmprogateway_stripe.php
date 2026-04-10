@@ -2466,11 +2466,23 @@ class PMProGateway_stripe extends PMProGateway {
 		$user = empty( $user_id ) ? null : get_userdata( $user_id );
 		$customer = empty( $user_id ) ? null : $this->get_customer_for_user( $user_id );
 
-		// Get customer name.
-		$name = empty( $order->billing->name ) ? $user->user_login : $order->billing->name;
+		// Get customer name. Fall back to billing info for guest checkouts.
+		if ( ! empty( $order->billing->name ) ) {
+			$name = $order->billing->name;
+		} elseif ( ! empty( $user->user_login ) ) {
+			$name = $user->user_login;
+		} else {
+			$name = '';
+		}
 
-		// Get user's email.
-		$email = empty( $user->user_email ) ? "No Email" : $user->user_email;
+		// Get user's email. Fall back to the email submitted at checkout.
+		if ( ! empty( $user->user_email ) ) {
+			$email = $user->user_email;
+		} elseif ( ! empty( $_REQUEST['bemail'] ) ) {
+			$email = sanitize_email( $_REQUEST['bemail'] );
+		} else {
+			$email = '';
+		}
 
 		// Build data to update customer with.
 		$customer_args = array(

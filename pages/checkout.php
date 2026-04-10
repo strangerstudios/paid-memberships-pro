@@ -97,39 +97,44 @@ if ( empty( $default_gateway ) ) {
 
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 
-						<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
-							<?php
-							// Tell the user which level they are signing up for.
-							printf( esc_html__('You have selected the %s membership level.', 'paid-memberships-pro' ), '<strong>' . esc_html( $pmpro_level->name ) . '</strong>' );
+						<?php
+							// Build the level name and membership change text.
+							$level_name_text = sprintf( esc_html__('You have selected the %s membership level.', 'paid-memberships-pro' ), '<strong>' . esc_html( $pmpro_level->name ) . '</strong>' );
 
 							// If a level will be removed with this purchase, let them know that too.
-							// First off, get the group for this level and check if it allows a user to have multiple levels.
 							$group_id = pmpro_get_group_id_for_level( $pmpro_level->id );
 							$group    = pmpro_get_level_group( $group_id );
 							if ( ! empty( $group ) && empty( $group->allow_multiple_selections ) ) {
-								// Get all of the user's current membership levels.
 								$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
-
-								// Loop through the levels and see if any are in the same group as the level being purchased.
 								if ( ! empty( $levels ) ) {
 									foreach ( $levels as $level ) {
-										// If this is the level that the user is purchasing, continue.
 										if ( $level->id == $pmpro_level->id ) {
 											continue;
 										}
-
-										// If this level is not in the same group, continue.
 										if ( pmpro_get_group_id_for_level( $level->id ) != $group_id ) {
 											continue;
 										}
-
-										// If we made it this far, the user is going to lose this level after checkout.
-										printf( ' ' . esc_html__( 'Your current membership level of %s will be removed when you complete your purchase.', 'paid-memberships-pro' ), '<strong>' . esc_html( $level->name ) . '</strong>' );
+										$level_name_text .= ' ' . sprintf( esc_html__( 'Your current membership level of %s will be removed when you complete your purchase.', 'paid-memberships-pro' ), '<strong>' . esc_html( $level->name ) . '</strong>' );
 									}
 								}
 							}
-							?>
+
+							/**
+							 * Filter the level name and membership change text at checkout.
+							 *
+							 * @since TBD
+							 *
+							 * @param string $level_name_text The text to display.
+							 * @param object $pmpro_level     The level being purchased.
+							 */
+							$level_name_text = apply_filters( 'pmpro_checkout_level_name_text', $level_name_text, $pmpro_level );
+
+							if ( ! empty( $level_name_text ) ) {
+						?>
+						<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
+							<?php echo wp_kses_post( $level_name_text ); ?>
 						</p> <!-- end pmpro_level_name_text -->
+						<?php } ?>
 
 						<?php
 							/**
@@ -246,6 +251,7 @@ if ( empty( $default_gateway ) ) {
 							</legend>
 							<?php if ( ! $skip_account_fields ) { ?>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+									<?php do_action( 'pmpro_checkout_before_account_fields' ); ?>
 									<?php
 										// Get discount code from URL parameter, so if the user logs in it will keep it applied.
 										$discount_code_link = ! empty( $discount_code) ? '&pmpro_discount_code=' . $discount_code : '';

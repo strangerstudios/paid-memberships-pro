@@ -140,10 +140,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 	public function get_email_template_variables() {
 		$order = $this->order;
 		$user = $this->user;
-		$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
-		if ( empty( $membership_level ) ) {
-			$membership_level = pmpro_getLevel( $order->membership_id );
-		}
+		$membership_level = $order->getMembershipLevelAtCheckout();
 
 		$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
 		if ( ! empty( $confirmation_in_email ) ) {

@@ -1066,6 +1066,15 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		} else {
 			echo '['. esc_html__( 'none', 'paid-memberships-pro' ) . ']';
 		}
+
+		/**
+		 * Fires after the user column content in the orders list table.
+		 *
+		 * @since TBD
+		 *
+		 * @param MemberOrder $item The order being displayed.
+		 */
+		do_action( 'pmpro_orders_column_after_user', $item );
 	}
 
 	/**
