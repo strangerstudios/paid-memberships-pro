@@ -155,7 +155,7 @@ class PMPro_Exports {
 	 * @return void
 	 */
 	public function handle_restricted_file_served( $file_dir, $file ) {
-		if ( 'exports' !== $file_dir || empty( $this->pending_post_serve ) ) {
+		if ( 'exports' !== $file_dir || empty( $this->pending_post_serve ) || $file !== $this->pending_post_serve['file'] ) {
 			return;
 		}
 		$ctx                    = $this->pending_post_serve;
