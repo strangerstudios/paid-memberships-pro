@@ -95,6 +95,7 @@ function pmpro_restricted_files_check_request() {
 		header( 'Content-Type: ' . $content_type );
 		header( 'Content-Disposition: ' . $content_disposition . '; filename="' . $file . '"' );
 		readfile( $file_path );
+		do_action( 'pmpro_restricted_file_served', $file_dir, $file );
 		exit;
 	} else {
 		wp_die(	esc_html__( 'File not found.', 'paid-memberships-pro' ), 404 );
