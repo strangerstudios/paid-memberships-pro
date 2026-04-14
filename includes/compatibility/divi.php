@@ -2,6 +2,11 @@
 
 class PMProDivi {
 
+	/**
+	 * Constructor. Registers Divi 4 and Divi 5 hooks for membership content restriction.
+	 *
+	 * @since 2.8.2
+	 */
 	function __construct() {
 
 		$is_d5 = function_exists( 'et_builder_d5_enabled' ) && et_builder_d5_enabled();
@@ -17,10 +22,8 @@ class PMProDivi {
 			// than return an empty string when showNoAccessMessage is enabled.
 			add_filter( 'divi_module_wrapper_render', array( __CLASS__, 'd5_no_access_message' ), 1, 2 );
 
-			// Divi 5: enqueue the VB conditions UI script and register the membership
-			// levels REST endpoint used by that script.
+			// Divi 5: enqueue the VB conditions UI script.
 			add_action( 'divi_visual_builder_assets_before_enqueue_scripts', array( __CLASS__, 'd5_enqueue_vb_script' ) );
-			add_action( 'rest_api_init', array( __CLASS__, 'd5_register_rest_routes' ) );
 
 			// Divi 5: D4 → D5 migration. Mark our D4 attrs as legacy so they don't
 			// get preserved as unknownAttributes (which would keep the module as a
@@ -84,27 +87,26 @@ class PMProDivi {
 			return $is_condition_true;
 		}
 
-		$level_ids   = isset( $condition_settings['levelIds'] ) ? trim( $condition_settings['levelIds'] ) : '';
+		$level_ids    = isset( $condition_settings['levelIds'] ) ? trim( $condition_settings['levelIds'] ) : '';
 		$display_rule = isset( $condition_settings['displayRule'] ) ? $condition_settings['displayRule'] : 'hasMembership';
 		$show_message = isset( $condition_settings['showNoAccessMessage'] ) ? $condition_settings['showNoAccessMessage'] : 'off';
+		$segment      = isset( $condition_settings['segment'] ) ? $condition_settings['segment'] : 'all';
 
-		if ( empty( $level_ids ) || '0' === $level_ids ) {
-			return $is_condition_true;
+		// Determine whether the user matches the membership criteria based on segment.
+		if ( 'logged_in' === $segment ) {
+			$has_level = is_user_logged_in();
+		} elseif ( 'specific' === $segment ) {
+			$levels = array_filter( array_map( 'trim', explode( ',', $level_ids ) ) );
+			// Specific with no levels selected is treated as "all levels".
+			$has_level = empty( $levels ) ? pmpro_hasMembershipLevel() : pmpro_hasMembershipLevel( $levels );
+		} else {
+			// 'all' — any membership level.
+			$has_level = pmpro_hasMembershipLevel();
 		}
 
-		$levels = array_filter( array_map( 'trim', explode( ',', $level_ids ) ) );
-
-		if ( empty( $levels ) ) {
-			return $is_condition_true;
-		}
-
-		$has_level     = pmpro_hasMembershipLevel( $levels );
 		$should_display = ( 'hasMembership' === $display_rule ) ? $has_level : ! $has_level;
 
-		// When a no-access message is requested we must not return false here — if we did
-		// Divi would skip the render callback entirely and d5_no_access_message() would
-		// never get a chance to swap the output.  Return true so the module renders, then
-		// let d5_no_access_message() replace the HTML with the notice.
+		// Returns true here so the d5_no_access_message() function can swap the module output for the no-access message.
 		if ( ! $should_display && 'on' === $show_message ) {
 			return true;
 		}
@@ -161,18 +163,22 @@ class PMProDivi {
 
 			$level_ids    = isset( $settings['levelIds'] ) ? trim( $settings['levelIds'] ) : '';
 			$display_rule = isset( $settings['displayRule'] ) ? $settings['displayRule'] : 'hasMembership';
+			$segment      = isset( $settings['segment'] ) ? $settings['segment'] : 'all';
 
-			if ( empty( $level_ids ) || '0' === $level_ids ) {
-				continue;
+			// Determine membership match based on segment.
+			if ( 'logged_in' === $segment ) {
+				$has_level = is_user_logged_in();
+				$levels    = array();
+			} elseif ( 'specific' === $segment ) {
+				$levels = array_filter( array_map( 'trim', explode( ',', $level_ids ) ) );
+				// Specific with no levels selected is treated as "all levels".
+				$has_level = empty( $levels ) ? pmpro_hasMembershipLevel() : pmpro_hasMembershipLevel( $levels );
+			} else {
+				// 'all' — any membership level.
+				$has_level = pmpro_hasMembershipLevel();
+				$levels    = array();
 			}
 
-			$levels = array_filter( array_map( 'trim', explode( ',', $level_ids ) ) );
-
-			if ( empty( $levels ) ) {
-				continue;
-			}
-
-			$has_level      = pmpro_hasMembershipLevel( $levels );
 			$should_display = ( 'hasMembership' === $display_rule ) ? $has_level : ! $has_level;
 
 			if ( ! $should_display ) {
@@ -199,62 +205,20 @@ class PMProDivi {
 			PMPRO_VERSION,
 			true
 		);
-	}
 
-	/**
-	 * Register the REST endpoint that returns available PMPro membership levels.
-	 *
-	 * Endpoint: GET /divi/v1/pmpro/membership-levels
-	 * Response: [ { label: 'Gold', value: '1' }, … ]
-	 *
-	 * Hooked into rest_api_init.
-	 *
-	 * @since TBD
-	 */
-	public static function d5_register_rest_routes() {
-		register_rest_route(
-			'divi/v1',
-			'/pmpro/membership-levels',
-			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( __CLASS__, 'd5_rest_membership_levels' ),
-				'permission_callback' => array( __CLASS__, 'd5_rest_permission' ),
-			)
-		);
-	}
-
-	/**
-	 * REST callback: return all active PMPro membership levels.
-	 *
-	 * @since TBD
-	 *
-	 * @return \WP_REST_Response
-	 */
-	public static function d5_rest_membership_levels() {
-		$data   = array();
-		$levels = pmpro_getAllLevels();
-
-		if ( ! empty( $levels ) ) {
-			foreach ( $levels as $level ) {
-				$data[] = array(
-					'label' => esc_html( $level->name ),
-					'value' => (string) $level->id,
-				);
-			}
+		$all_levels = pmpro_getAllLevels( true, true );
+		$levels_data = array();
+		foreach ( $all_levels as $level ) {
+			$levels_data[] = array(
+				'value' => (string) $level->id,
+				'label' => esc_html( $level->name ),
+			);
 		}
 
-		return rest_ensure_response( $data );
-	}
+		wp_localize_script( 'pmpro-divi-vb', 'pmproDivi', array(
+			'levels' => $levels_data,
+		) );
 
-	/**
-	 * REST permission callback: only VB-capable users may fetch levels.
-	 *
-	 * @since TBD
-	 *
-	 * @return bool
-	 */
-	public static function d5_rest_permission() {
-		return current_user_can( 'edit_posts' );
 	}
 
 	/**
@@ -318,6 +282,7 @@ class PMProDivi {
 			'conditionSettings' => array(
 				'levelIds'            => $level_ids,
 				'displayRule'         => 'hasMembership',
+				'segment'             => 'specific',
 				'showNoAccessMessage' => $show_message,
 				'enableCondition'     => 'on',
 			),
@@ -344,6 +309,17 @@ class PMProDivi {
 	// Divi 4 methods (unchanged)
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Add a "Paid Memberships Pro" toggle to the Divi 4 row and section settings modals.
+	 *
+	 * Hooked into et_builder_get_parent_modules.
+	 *
+	 * @since 2.8.2
+	 *
+	 * @param array $modules Array of Divi module objects.
+	 *
+	 * @return array
+	 */
 	public static function toggle( $modules ) {
 
 		if ( isset( $modules['et_pb_row'] ) && is_object( $modules['et_pb_row'] ) ) {
@@ -357,6 +333,18 @@ class PMProDivi {
 		return $modules;
 	}
 
+	/**
+	 * Add PMPro membership restriction fields to Divi 4 row and section settings.
+	 *
+	 * Hooked into et_pb_all_fields_unprocessed_et_pb_row and
+	 * et_pb_all_fields_unprocessed_et_pb_section.
+	 *
+	 * @since 2.8.2
+	 *
+	 * @param array $settings Array of field definitions.
+	 *
+	 * @return array
+	 */
 	public static function row_settings( $settings ) {
 
 		$settings['paid-memberships-pro'] = array(
@@ -384,6 +372,24 @@ class PMProDivi {
 		return $settings;
 	}
 
+	/**
+	 * Restrict Divi 4 row/section content based on membership level.
+	 *
+	 * Returns empty string or the no-access message when the current user
+	 * does not have the required membership level. Skipped inside the
+	 * Divi front-end builder.
+	 *
+	 * Hooked into et_pb_module_content.
+	 *
+	 * @since 2.8.2
+	 *
+	 * @param string $output The module HTML output.
+	 * @param array  $props  Module properties including PMPro attributes.
+	 * @param array  $attrs  Module attributes.
+	 * @param string $slug   Module slug.
+	 *
+	 * @return string
+	 */
 	public static function restrict_content( $output, $props, $attrs, $slug ) {
 
 		if ( et_fb_is_enabled() ) {
@@ -416,10 +422,6 @@ class PMProDivi {
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
-	// Shared
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Filter the element classes added to the no_access messages for improved

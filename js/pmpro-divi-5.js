@@ -23,8 +23,6 @@
 
 	var createElement = React.createElement;
 	var Fragment      = React.Fragment;
-	var useState      = React.useState;
-	var useEffect     = React.useEffect;
 
 	var __        = ( window.vendor && window.vendor.wp && window.vendor.wp.i18n && window.vendor.wp.i18n.__ ) || function ( s ) { return s; };
 	var addFilter = wpHooks.addFilter;
@@ -33,27 +31,35 @@
 	// all other condition settings panels.
 	var FieldWrapper = window.divi && window.divi.modal && window.divi.modal.FieldWrapper;
 
-	// REST endpoint registered by divi.php for fetching available levels.
-	var LEVELS_REST_ROUTE = '/divi/v1/pmpro/membership-levels';
+	// Membership levels localized from PHP via wp_localize_script.
+	var allLevels = ( window.pmproDivi && window.pmproDivi.levels ) || [];
 
-	// -------------------------------------------------------------------------
-	// 1. Add condition to the dropdown list
-	// -------------------------------------------------------------------------
+	// Register our custom category "PMPro" and condition type "Content Visibility" in the dropdown.
+	addFilter(
+		'divi.fieldLibrary.conditionalDisplay.conditionCategories',
+		'pmpro/divi/condition-categories',
+		function ( categories ) {
+			categories.pmpro = {
+				label:   __( 'PMPro', 'paid-memberships-pro' ),
+				options: {},
+			};
+			return categories;
+		}
+	);
+
 	addFilter(
 		'divi.fieldLibrary.conditionalDisplay.conditionsStore',
 		'pmpro/divi/conditions-store',
 		function ( conditions ) {
 			return conditions.concat( [ {
 				name:     'pmproMembershipLevel',
-				label:    __( 'Membership Level', 'paid-memberships-pro' ),
-				category: 'user',
+				label:    __( 'Content Visibility', 'paid-memberships-pro' ),
+				category: 'pmpro',
 			} ] );
 		}
 	);
 
-	// -------------------------------------------------------------------------
-	// 2. Default condition state when user selects it from the dropdown
-	// -------------------------------------------------------------------------
+	// Add defaults to the content visibility Divi 5 condition.
 	addFilter(
 		'divi.fieldLibrary.conditionalDisplay.initialCustomItemEdit',
 		'pmpro/divi/initial-item',
@@ -66,6 +72,7 @@
 				conditionName:    'pmproMembershipLevel',
 				conditionSettings: {
 					displayRule:         'hasMembership',
+					segment:             'all',
 					levelIds:            '',
 					showNoAccessMessage: 'off',
 					enableCondition:     'on',
@@ -75,9 +82,7 @@
 		}
 	);
 
-	// -------------------------------------------------------------------------
-	// 3. Summary title shown in the collapsed condition row
-	// -------------------------------------------------------------------------
+	// Show summary/title when condition is collapsed.
 	addFilter(
 		'divi.fieldLibrary.conditionalDisplay.customTitle',
 		'pmpro/divi/custom-title',
@@ -87,18 +92,20 @@
 			}
 			var s        = condition.conditionSettings || {};
 			var ruleText = s.displayRule === 'doesNotHaveMembership'
-				? __( "Doesn't Have", 'paid-memberships-pro' )
-				: __( 'Has', 'paid-memberships-pro' );
-			var levelText = s.levelIds
-				? 'ID: ' + s.levelIds
-				: __( 'Any Level', 'paid-memberships-pro' );
-			return __( 'Membership Level', 'paid-memberships-pro' ) + ' — ' + ruleText + ' ' + levelText;
+				? __( 'Hide from', 'paid-memberships-pro' )
+				: __( 'Show to', 'paid-memberships-pro' );
+			var segment  = s.segment || 'all';
+			var segmentText;
+			if ( segment === 'logged_in' ) {
+				segmentText = __( 'Logged-In Users', 'paid-memberships-pro' );
+			} else if ( segment === 'specific' && s.levelIds ) {
+				segmentText = __( 'Levels', 'paid-memberships-pro' ) + ' ' + s.levelIds;
+			} else {
+				segmentText = __( 'All Members', 'paid-memberships-pro' );
+			}
+			return 'PMPro — ' + ruleText + ' ' + segmentText;
 		}
 	);
-
-	// -------------------------------------------------------------------------
-	// 4. Settings panel React component
-	// -------------------------------------------------------------------------
 
 	/**
 	 * PMPro membership level condition settings component.
@@ -112,39 +119,8 @@
 		var onChange  = props.onChange;
 		var settings  = ( condition && condition.conditionSettings ) || {};
 
-		// Levels loaded from the REST endpoint.
-		var levelsState = useState( [] );
-		var levels      = levelsState[ 0 ];
-		var setLevels   = levelsState[ 1 ];
-
-		var loadingState = useState( true );
-		var loading      = loadingState[ 0 ];
-		var setLoading   = loadingState[ 1 ];
-
-		useEffect( function () {
-			var restBase = window.wpApiSettings && window.wpApiSettings.root
-				? window.wpApiSettings.root.replace( /\/$/, '' )
-				: '';
-			var nonce = window.wpApiSettings && window.wpApiSettings.nonce
-				? window.wpApiSettings.nonce
-				: '';
-
-			fetch( restBase + LEVELS_REST_ROUTE, {
-				headers: {
-					'X-WP-Nonce': nonce,
-				},
-			} )
-				.then( function ( r ) { return r.json(); } )
-				.then( function ( data ) {
-					if ( Array.isArray( data ) ) {
-						setLevels( data );
-					}
-					setLoading( false );
-				} )
-				.catch( function () {
-					setLoading( false );
-				} );
-		}, [] );
+		// Levels localized from PHP.
+		var levels = allLevels;
 
 		/**
 		 * Merge changes into conditionSettings and call the parent setter.
@@ -160,21 +136,22 @@
 		}
 
 		var displayRuleOptions = [
-			{ value: 'hasMembership',          label: __( 'Has Membership Level', 'paid-memberships-pro' ) },
-			{ value: 'doesNotHaveMembership',   label: __( 'Does Not Have Membership Level', 'paid-memberships-pro' ) },
+			{ value: 'hasMembership',          label: __( 'Show', 'paid-memberships-pro' ) },
+			{ value: 'doesNotHaveMembership',   label: __( 'Hide', 'paid-memberships-pro' ) },
+		];
+
+		var segmentOptions = [
+			{ value: 'all',      label: __( 'All Members', 'paid-memberships-pro' ) },
+			{ value: 'specific', label: __( 'Specific Membership Levels', 'paid-memberships-pro' ) },
+			{ value: 'logged_in', label: __( 'Logged-In Users', 'paid-memberships-pro' ) },
 		];
 
 		var yesNoOptions = [
-			{ value: 'off', label: __( 'No', 'paid-memberships-pro' ) },
-			{ value: 'on',  label: __( 'Yes', 'paid-memberships-pro' ) },
+			{ value: 'off', label: __( 'No - Hide this content if the user does not have access', 'paid-memberships-pro' ) },
+			{ value: 'on',  label: __( "Yes - Show the 'no access' message if the user does not have access", 'paid-memberships-pro' ) },
 		];
 
-		var enableOptions = [
-			{ value: 'on',  label: __( 'Yes', 'paid-memberships-pro' ) },
-			{ value: 'off', label: __( 'No', 'paid-memberships-pro' ) },
-		];
-
-		function renderSelect( name, value, options, onChangeFn ) {
+function renderSelect( name, value, options, onChangeFn ) {
 			return createElement(
 				'select',
 				{
@@ -190,12 +167,8 @@
 			);
 		}
 
-		// Build the levels multi-select (or a text fallback if no levels loaded).
+		// Build the levels checkboxes (or a text fallback if no levels loaded).
 		function renderLevelSelect() {
-			if ( loading ) {
-				return createElement( 'span', null, __( 'Loading levels…', 'paid-memberships-pro' ) );
-			}
-
 			if ( ! levels.length ) {
 				// Fallback: plain text input for manual IDs.
 				return createElement(
@@ -217,35 +190,67 @@
 				);
 			}
 
-			// Multi-select: Ctrl/Cmd-click to pick multiple levels.
-			// We store them as a comma-separated string to match the PHP side.
 			var selectedSet = new Set(
 				( settings.levelIds || '' ).split( ',' ).map( function ( id ) { return id.trim(); } ).filter( Boolean )
 			);
 
+			function toggleLevel( value ) {
+				var newSet = new Set( selectedSet );
+				if ( newSet.has( value ) ) {
+					newSet.delete( value );
+				} else {
+					newSet.add( value );
+				}
+				update( { levelIds: Array.from( newSet ).join( ',' ) } );
+			}
+
+			function selectAllLevels() {
+				update( { levelIds: levels.map( function ( l ) { return l.value; } ).join( ',' ) } );
+			}
+
+			function selectNone() {
+				update( { levelIds: '' } );
+			}
+
 			return createElement(
 				Fragment,
 				null,
-				createElement(
-					'select',
-					{
-						multiple:  true,
-						className: 'et-vb-field-input et-vb-field-input-select',
-						style:     { width: '100%', minHeight: '80px' },
-						value:     Array.from( selectedSet ),
-						onChange:  function ( e ) {
-							var selected = Array.from( e.target.selectedOptions ).map( function ( o ) { return o.value; } );
-							update( { levelIds: selected.join( ',' ) } );
-						},
-					},
-					levels.map( function ( level ) {
-						return createElement( 'option', { key: level.value, value: level.value }, level.label );
-					} )
-				),
+				// Select All | None links
 				createElement(
 					'p',
-					{ className: 'et-vb-field-description', style: { marginTop: '4px' } },
-					__( 'Hold Ctrl / Cmd to select multiple levels.', 'paid-memberships-pro' )
+					{ style: { margin: '0 0 8px' } },
+					__( 'Select', 'paid-memberships-pro' ),
+					' ',
+					createElement( 'a', {
+						href:    '#',
+						onClick: function ( e ) { e.preventDefault(); selectAllLevels(); },
+					}, __( 'All', 'paid-memberships-pro' ) ),
+					' | ',
+					createElement( 'a', {
+						href:    '#',
+						onClick: function ( e ) { e.preventDefault(); selectNone(); },
+					}, __( 'None', 'paid-memberships-pro' ) )
+				),
+				// Scrollable checkbox list
+				createElement(
+					'div',
+					{ className: 'pmpro-divi-vb-scrollable', style: { height: '170px', overflow: 'auto', padding: '8px' } },
+					levels.map( function ( level ) {
+						var isChecked = selectedSet.has( level.value );
+						return createElement(
+							'label',
+							{
+								key:   level.value,
+								style: { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', cursor: 'pointer' },
+							},
+							createElement( 'input', {
+								type:     'checkbox',
+								checked:  isChecked,
+								onChange: function () { toggleLevel( level.value ); },
+							} ),
+							level.label
+						);
+					} )
 				)
 			);
 		}
@@ -263,48 +268,62 @@
 			);
 		}
 
+		var currentSegment    = settings.segment || 'all';
+		var currentRule       = settings.displayRule || 'hasMembership';
+
 		return createElement(
 			Fragment,
 			null,
 
-			// Display Rule
+			// Display Rule (Show / Hide)
 			wrapField(
 				__( 'Display Rule', 'paid-memberships-pro' ),
 				renderSelect(
 					'pmpro-display-rule',
-					settings.displayRule || 'hasMembership',
+					currentRule,
 					displayRuleOptions,
 					function ( val ) { update( { displayRule: val } ); }
 				)
 			),
 
-			// Membership Level(s)
+			// Segment (All Members / Specific Levels / Logged-In Users)
 			wrapField(
-				__( 'Membership Level(s)', 'paid-memberships-pro' ),
+				currentRule === 'doesNotHaveMembership'
+					? __( 'Hide content from:', 'paid-memberships-pro' )
+					: __( 'Show content to:', 'paid-memberships-pro' ),
+				renderSelect(
+					'pmpro-segment',
+					currentSegment,
+					segmentOptions,
+					function ( val ) { update( { segment: val, levelIds: '' } ); }
+				)
+			),
+
+			// Membership Level(s) — only when segment is 'specific'
+			currentSegment === 'specific' ? wrapField(
+				__( 'Membership Levels', 'paid-memberships-pro' ),
 				renderLevelSelect()
-			),
+			) : null,
 
-			// Show No Access Message
-			wrapField(
+			// Show No Access Message — only in "show" mode
+			currentRule === 'hasMembership' ? wrapField(
 				__( 'Show No Access Message', 'paid-memberships-pro' ),
-				renderSelect(
-					'pmpro-show-no-access',
-					settings.showNoAccessMessage || 'off',
-					yesNoOptions,
-					function ( val ) { update( { showNoAccessMessage: val } ); }
+				createElement(
+					Fragment,
+					null,
+					renderSelect(
+						'pmpro-show-no-access',
+						settings.showNoAccessMessage || 'off',
+						yesNoOptions,
+						function ( val ) { update( { showNoAccessMessage: val } ); }
+					),
+					createElement(
+						'p',
+						{ className: 'et-vb-field-description', style: { marginTop: '4px' } },
+						__( "Modify the 'no access' message on the Memberships > Advanced Settings page.", 'paid-memberships-pro' )
+					)
 				)
-			),
-
-			// Enable Condition
-			wrapField(
-				__( 'Enable Condition', 'paid-memberships-pro' ),
-				renderSelect(
-					'pmpro-enable-condition',
-					settings.enableCondition || 'on',
-					enableOptions,
-					function ( val ) { update( { enableCondition: val } ); }
-				)
-			)
+			) : null
 		);
 	}
 
