@@ -971,6 +971,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			// Check if the user does not have access but is trying to get an order.
 			if ( ! $permission && 'GET' === $method && '/pmpro/v1/order' === $route ) {
+				// Only a logged-in user can own an order, so bail early for anonymous requests.
+				if ( ! is_user_logged_in() ) {
+					return $permission;
+				}
+
 				// Check if the order belongs to the user.
 				$params = $request->get_params();
 				$code   = isset( $params['code'] ) ? sanitize_text_field( $params['code'] ) : null;
@@ -978,7 +983,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				if ( ! empty( $code ) ) {
 					$order = new MemberOrder( $code );
 
-					if ( $order->user_id == get_current_user_id() ) {
+					if ( ! empty( $order->id ) && (int) $order->user_id === get_current_user_id() ) {
 						return true;
 					}
 				}
