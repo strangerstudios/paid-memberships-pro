@@ -52,7 +52,7 @@
 		<hr class="wp-header-end">
 		<h1><?php esc_html_e( 'Design Settings', 'paid-memberships-pro' ); ?></h1>
 		<p><?php
-			$design_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Design Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/appearance/design-settings/?utm_source=plugin&utm_medium=pmpro-designsettings&utm_campaign=documentation&utm_content=design-settings">' . esc_html__( 'Design Settings', 'paid-memberships-pro' ) . '</a>';
+			$design_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Design Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/settings/design-settings/?utm_source=plugin&utm_medium=pmpro-designsettings&utm_campaign=documentation&utm_content=design-settings">' . esc_html__( 'Design Settings', 'paid-memberships-pro' ) . '</a>';
 			// translators: %s: Link to Design Settings doc.
 			printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $design_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		?></p>
