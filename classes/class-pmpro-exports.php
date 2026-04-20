@@ -40,6 +40,14 @@ class PMPro_Exports {
 	protected $default_export_exp = 6 * HOUR_IN_SECONDS;
 
 	/**
+	 * Pending post-serve cleanup context.
+	 * Populated by export_can_access_restricted_files() and consumed by handle_restricted_file_served().
+	 *
+	 * @var array|null
+	 */
+	protected $pending_post_serve = null;
+
+	/**
 	 * Get singleton instance.
 	 *
 	 * @return PMPro_Exports
@@ -61,6 +69,8 @@ class PMPro_Exports {
 		add_action( 'pmpro_export_delete_file', array( $this, 'delete_file_task' ), 10, 1 );
 		// File access filter.
 		add_filter( 'pmpro_can_access_restricted_file', array( $this, 'export_can_access_restricted_files' ), 10, 2 );
+		// Post-serve cleanup (fires after readfile() confirms the file was delivered).
+		add_action( 'pmpro_restricted_file_served', array( $this, 'handle_restricted_file_served' ), 10, 2 );
 	}
 
 	/**
@@ -89,10 +99,14 @@ class PMPro_Exports {
 			}
 			if ( ! empty( $export_id ) && ! empty( $token ) && ! empty( $file ) ) {
 				$can_access = $this->validate_file_access( $current_user_id, $export_id, $token, $file );
-				// If access is granted, perform cleanup and schedule file deletion.
+				// If access is granted, store cleanup context for after the file is confirmed served.
+				// Actual cleanup runs in handle_restricted_file_served() once readfile() completes.
 				if ( $can_access ) {
-					$this->cleanup_after_download( $current_user_id, $export_id );
-					$this->schedule_file_deletion( $file, $this->default_export_exp, $current_user_id, $export_id );
+					$this->pending_post_serve = array(
+						'user_id'   => $current_user_id,
+						'export_id' => $export_id,
+						'file'      => $file,
+					);
 				}
 			}
 		}
@@ -128,6 +142,26 @@ class PMPro_Exports {
 		// Clear transients.
 		delete_transient( 'pmpro_export_owner_' . $export_id );
 		delete_transient( 'pmpro_export_token_' . $export_id );
+	}
+
+	/**
+	 * Perform cleanup after a restricted export file has been successfully served.
+	 * Fires on the pmpro_restricted_file_served action, which is triggered by
+	 * pmpro_restricted_files_check_request() immediately after readfile() completes.
+	 * This ensures the export record is only removed once file delivery is confirmed.
+	 *
+	 * @param string $file_dir Directory of the file that was served.
+	 * @param string $file     File name of the file that was served.
+	 * @return void
+	 */
+	public function handle_restricted_file_served( $file_dir, $file ) {
+		if ( 'exports' !== $file_dir || empty( $this->pending_post_serve ) || $file !== $this->pending_post_serve['file'] ) {
+			return;
+		}
+		$ctx                    = $this->pending_post_serve;
+		$this->pending_post_serve = null;
+		$this->cleanup_after_download( $ctx['user_id'], $ctx['export_id'] );
+		$this->schedule_file_deletion( $ctx['file'], $this->default_export_exp, $ctx['user_id'], $ctx['export_id'] );
 	}
 
 	/**
@@ -449,6 +483,11 @@ class PMPro_Exports {
 		$chunk_size = $this->get_chunk_size_for_type( $type );
 		$threshold  = $this->get_async_threshold_for_type( $type );
 
+		// Bail early if there is nothing to export.
+		if ( 0 === $total ) {
+			return array( 'error' => __( 'No records match the selected filters. Nothing to export.', 'paid-memberships-pro' ) );
+		}
+
 		// Create export record in user meta.
 		$export = $this->create_export_record( $user_id, $type, $filters, $total, $chunk_size );
 
@@ -651,7 +690,10 @@ class PMPro_Exports {
 			'processed_count' => (int) $export['processed_count'],
 		);
 		if ( 'complete' === $export['status'] ) {
-			$resp['download_url'] = $this->get_download_url( $export );
+			$url = $this->get_download_url( $export );
+			if ( ! empty( $url ) ) {
+				$resp['download_url'] = $url;
+			}
 		}
 		if ( ! empty( $export['error'] ) ) {
 			$resp['error'] = $export['error'];
@@ -731,12 +773,17 @@ class PMPro_Exports {
 	 * Secure download URL for export file.
 	 */
 	protected function get_download_url( $export ) {
+		// Token is stored transiently; fallback to in-memory value if present (e.g. fresh sync export).
+		$token = isset( $export['token'] ) ? $export['token'] : get_transient( 'pmpro_export_token_' . $export['id'] );
+		if ( empty( $token ) ) {
+			// Token has expired; cannot build a valid download URL.
+			return null;
+		}
 		$query = array(
 			'pmpro_restricted_file_dir' => 'exports',
 			'pmpro_restricted_file'     => $export['file_name'],
 			'export_id'                 => $export['id'],
-			// Token is stored transiently; fallback to record if present.
-			'token'                     => isset( $export['token'] ) ? $export['token'] : get_transient( 'pmpro_export_token_' . $export['id'] ),
+			'token'                     => $token,
 			'_wpnonce'                  => wp_create_nonce( 'pmpro_export_download_' . $export['id'] ),
 		);
 		return add_query_arg( $query, home_url( '/' ) );
@@ -837,7 +884,7 @@ class PMPro_Exports {
 		// Mark active for this user/type.
 		update_user_meta( $user_id, $this->get_active_meta_key( $type ), $export_id );
 		// Store a transient so async Action Scheduler contexts can resolve the owner.
-		set_transient( 'pmpro_export_owner_' . $export_id, (int) $user_id, DAY_IN_SECONDS );
+		set_transient( 'pmpro_export_owner_' . $export_id, (int) $user_id, 7 * DAY_IN_SECONDS );
 		return $record;
 	}
 
@@ -853,7 +900,7 @@ class PMPro_Exports {
 		$to_store = $record;
 		if ( isset( $record['token'] ) ) {
 			// Persist token so download_url can be built after async completion.
-			set_transient( 'pmpro_export_token_' . $record['id'], $record['token'], DAY_IN_SECONDS );
+			set_transient( 'pmpro_export_token_' . $record['id'], $record['token'], 7 * DAY_IN_SECONDS );
 		}
 		unset( $to_store['token'] );
 		update_user_meta( (int) $record['user_id'], $key, wp_json_encode( $to_store ) );

@@ -94,7 +94,22 @@ function pmpro_restricted_files_check_request() {
 		finfo_close( $finfo );
 		header( 'Content-Type: ' . $content_type );
 		header( 'Content-Disposition: ' . $content_disposition . '; filename="' . $file . '"' );
-		readfile( $file_path );
+		$bytes = readfile( $file_path );
+		if ( false !== $bytes ) {
+			// Buffer the action so a misbehaving hook can't append output to the response body and corrupt the download.
+			ob_start();
+			/**
+			 * Fires after a restricted file has been successfully streamed to the client.
+			 * Handlers MUST NOT produce output; any bytes written here are discarded.
+			 *
+			 * @since 3.7
+			 *
+			 * @param string $file_dir Directory of the file that was served.
+			 * @param string $file     File name of the file that was served.
+			 */
+			do_action( 'pmpro_restricted_file_served', $file_dir, $file );
+			ob_end_clean();
+		}
 		exit;
 	} else {
 		wp_die(	esc_html__( 'File not found.', 'paid-memberships-pro' ), 404 );
