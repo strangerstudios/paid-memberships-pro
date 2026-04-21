@@ -218,7 +218,17 @@ function pmpro_avatar_get_bucketed_size( $size ) {
  */
 function pmpro_avatar_get_upload_dir( $user_id = 0, $file = '' ) {
 	$upload_dir = wp_upload_dir();
-	$avatar_dir = trailingslashit( $upload_dir['basedir'] ) . 'pmpro-avatars/';
+
+	/**
+	 * Filter the base directory used for PMPro avatar storage.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $basedir The base upload directory path.
+	 * @param int    $user_id The user ID (0 if not user-specific).
+	 */
+	$basedir    = apply_filters( 'pmpro_avatar_basedir', $upload_dir['basedir'], $user_id );
+	$avatar_dir = trailingslashit( $basedir ) . 'pmpro-avatars/';
 
 	if ( $user_id ) {
 		$avatar_dir .= $user_id . '/';
@@ -242,7 +252,17 @@ function pmpro_avatar_get_upload_dir( $user_id = 0, $file = '' ) {
  */
 function pmpro_avatar_get_upload_url( $user_id = 0, $file = '' ) {
 	$upload_dir = wp_upload_dir();
-	$avatar_url = trailingslashit( $upload_dir['baseurl'] ) . 'pmpro-avatars/';
+
+	/**
+	 * Filter the base URL used for PMPro avatar storage.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $baseurl The base upload URL.
+	 * @param int    $user_id The user ID (0 if not user-specific).
+	 */
+	$baseurl    = apply_filters( 'pmpro_avatar_baseurl', $upload_dir['baseurl'], $user_id );
+	$avatar_url = trailingslashit( $baseurl ) . 'pmpro-avatars/';
 
 	if ( $user_id ) {
 		$avatar_url .= $user_id . '/';
