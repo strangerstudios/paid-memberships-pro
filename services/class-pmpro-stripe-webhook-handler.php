@@ -576,19 +576,7 @@ class PMPro_Stripe_Webhook_Handler {
 
 		// Was the checkout session successful?
 		if ( 'paid' === $checkout_session->payment_status || 'no_payment_required' === $checkout_session->payment_status ) {
-			// Yes. But did we already process this order?
-			if ( ! in_array( $order->status, array( 'token', 'pending' ), true ) ) {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
-				return;
-			}
-			// No we have not processed this order. Let's process it now.
-			if ( self::change_membership_level( $order ) ) {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
-			} else {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
-				$order->status = 'error';
-				$order->saveOrder();
-			}
+			self::process_checkout_session_completion( $order, $checkout_session, $logstr );
 		} else {
 			// No. The user is probably using a delayed notification payment method.
 			// Set to pending in the meantime and wait for the next webhook.
@@ -623,20 +611,7 @@ class PMPro_Stripe_Webhook_Handler {
 			return;
 		}
 
-		// Have we already processed this order?
-		if ( ! in_array( $order->status, array( 'token', 'pending' ), true ) ) {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
-			return;
-		}
-
-		// No we have not processed this order. Let's process it now.
-		if ( self::change_membership_level( $order ) ) {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
-		} else {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
-			$order->status = 'error';
-			$order->saveOrder();
-		}
+		self::process_checkout_session_completion( $order, $checkout_session, $logstr );
 	}
 
 	/**
@@ -805,26 +780,56 @@ class PMPro_Stripe_Webhook_Handler {
 	}
 
 	/**
-	 * Assign a membership level when a checkout is completed via Stripe webhook.
+	 * Process a successful Stripe Checkout Session for a PMPro order.
+	 *
+	 * Dedupes against orders that have already reached a terminal status,
+	 * guards against concurrent webhook deliveries via an ordermeta processing
+	 * lock, then completes the checkout and assigns the membership level.
 	 *
 	 * Steps:
-	 * 1. Pull checkout data from order meta.
-	 * 2. Build checkout level.
-	 * 3. Change membership level.
-	 * 4. Mark order as successful.
-	 * 5. Record discount code use.
-	 * 6. Save some user meta.
-	 * 7. Run pmpro_after_checkout.
-	 * 8. Send checkout emails.
+	 * 1. Skip if the order has already been processed.
+	 * 2. Skip if another webhook is currently processing this order.
+	 * 3. Set the processing lock.
+	 * 4. Pull checkout data from order meta.
+	 * 5. Complete the checkout (change membership level, mark order successful,
+	 *    record discount code use, save user meta, run pmpro_after_checkout,
+	 *    send checkout emails).
+	 * 6. Mark the order as errored if the checkout could not be completed.
+	 * 7. Release the processing lock.
 	 *
 	 * @since 2.8
+	 * @since TBD Renamed from change_membership_level. Added concurrent-webhook
+	 *            processing lock and moved status/log handling inside.
 	 *
-	 * @param MemberOrder $morder The order for the checkout being completed.
-	 * @return bool
+	 * @param MemberOrder $morder           The order for the checkout being completed.
+	 * @param object      $checkout_session The Stripe Checkout Session object.
+	 * @param string      $logstr           Log output.
+	 * @return void
 	 */
-	private static function change_membership_level( $morder ) {
+	private static function process_checkout_session_completion( $morder, $checkout_session, &$logstr ) {
+		// Have we already processed this order?
+		if ( ! in_array( $morder->status, array( 'token', 'pending' ), true ) ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
+			return;
+		}
+
+		// Is another webhook currently processing this order?
+		$processing_since = get_pmpro_membership_order_meta( $morder->id, '_pmpro_webhook_processing_since', true );
+		if ( ! empty( $processing_since ) && ( time() - (int) $processing_since ) < 5 * MINUTE_IN_SECONDS ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' is already being processed by a concurrent webhook. Ignoring.';
+			return;
+		}
+		update_pmpro_membership_order_meta( $morder->id, '_pmpro_webhook_processing_since', time() );
+
 		pmpro_pull_checkout_data_from_order( $morder );
-		return pmpro_complete_async_checkout( $morder );
+		if ( pmpro_complete_async_checkout( $morder ) ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
+		} else {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
+			$morder->status = 'error';
+			$morder->saveOrder();
+		}
+		delete_pmpro_membership_order_meta( $morder->id, '_pmpro_webhook_processing_since' );
 	}
 
 	/**
