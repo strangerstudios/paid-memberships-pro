@@ -135,8 +135,6 @@ class PMProDivi {
 	 */
 	public static function d5_no_access_message( $output, $args ) {
 
-		$name = isset( $args['name'] ) ? $args['name'] : '';
-
 		$conditions = isset( $args['attrs']['module']['decoration']['conditions']['desktop']['value'] )
 			? $args['attrs']['module']['decoration']['conditions']['desktop']['value']
 			: array();
@@ -152,7 +150,13 @@ class PMProDivi {
 			}
 
 			$settings = isset( $condition['conditionSettings'] ) ? $condition['conditionSettings'] : array();
-			$params   = self::d5_visibility_params_from_settings( $settings );
+
+			// Respect Divi's Enable Condition toggle — matches native is_displayable() behavior.
+			if ( isset( $settings['enableCondition'] ) && 'off' === $settings['enableCondition'] ) {
+				continue;
+			}
+
+			$params = self::d5_visibility_params_from_settings( $settings );
 
 			if ( ! $params['show_noaccess'] ) {
 				continue;
