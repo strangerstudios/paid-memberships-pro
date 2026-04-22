@@ -120,7 +120,7 @@ class PMProDivi {
 	 * This only fires when a 'pmproMembershipLevel' condition is present with
 	 * showNoAccessMessage = 'on' and the current user lacks the required level.
 	 *
-	 * Applies to divi/row and divi/section only.
+	 * Applies to any module type (rows, sections, text blocks, etc.).
 	 *
 	 * Hooked into divi_module_wrapper_render at priority 1 so it runs before any
 	 * other modifications to the wrapper output.
@@ -135,10 +135,6 @@ class PMProDivi {
 	public static function d5_no_access_message( $output, $args ) {
 
 		$name = isset( $args['name'] ) ? $args['name'] : '';
-
-		if ( ! in_array( $name, array( 'divi/row', 'divi/section' ), true ) ) {
-			return $output;
-		}
 
 		$conditions = isset( $args['attrs']['module']['decoration']['conditions']['desktop']['value'] )
 			? $args['attrs']['module']['decoration']['conditions']['desktop']['value']
