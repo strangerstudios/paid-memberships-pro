@@ -60,15 +60,40 @@ class PMProDivi {
 	// -------------------------------------------------------------------------
 
 	/**
+	 * Translate Divi 5 pmproMembershipLevel condition settings into the
+	 * argument shape expected by pmpro_apply_block_visibility().
+	 *
+	 * @since TBD
+	 *
+	 * @param array $settings D5 conditionSettings array.
+	 *
+	 * @return array Params suitable for pmpro_apply_block_visibility().
+	 */
+	private static function d5_visibility_params_from_settings( $settings ) {
+
+		$segment = isset( $settings['segment'] ) ? $settings['segment'] : 'all';
+
+		$levels = array();
+		if ( 'specific' === $segment && ! empty( $settings['levelIds'] ) ) {
+			$levels = array_filter( array_map( 'trim', explode( ',', $settings['levelIds'] ) ) );
+		}
+
+		return array(
+			'segment'             => $segment,
+			'levels'              => $levels,
+			'invert_restrictions' => isset( $settings['displayRule'] ) && 'doesNotHaveMembership' === $settings['displayRule'],
+			'show_noaccess'       => isset( $settings['showNoAccessMessage'] ) && 'on' === $settings['showNoAccessMessage'],
+		);
+	}
+
+	/**
 	 * Evaluate the custom 'pmproMembershipLevel' condition for the Divi 5
 	 * Display Conditions system.
 	 *
-	 * Expected conditionSettings keys:
-	 *   levelIds           string  Comma-separated membership level IDs, e.g. "1,2,3".
-	 *   displayRule        string  'hasMembership' (default) or 'doesNotHaveMembership'.
-	 *   showNoAccessMessage string 'on' | 'off'. When 'on', this filter returns true so
-	 *                              the module still renders and d5_no_access_message() can
-	 *                              swap the output for the no-access notice.
+	 * Delegates to pmpro_apply_block_visibility() so behavior stays in sync
+	 * with the Content Visibility block. Returns true when the helper produces
+	 * any output — either the real content (user has access) or the no-access
+	 * message (which d5_no_access_message() swaps in).
 	 *
 	 * Hooked into divi_module_options_conditions_is_custom_condition_true.
 	 *
@@ -87,43 +112,19 @@ class PMProDivi {
 			return $is_condition_true;
 		}
 
-		$level_ids    = isset( $condition_settings['levelIds'] ) ? trim( $condition_settings['levelIds'] ) : '';
-		$display_rule = isset( $condition_settings['displayRule'] ) ? $condition_settings['displayRule'] : 'hasMembership';
-		$show_message = isset( $condition_settings['showNoAccessMessage'] ) ? $condition_settings['showNoAccessMessage'] : 'off';
-		$segment      = isset( $condition_settings['segment'] ) ? $condition_settings['segment'] : 'all';
+		$params = self::d5_visibility_params_from_settings( $condition_settings );
 
-		// Determine whether the user matches the membership criteria based on segment.
-		if ( 'logged_in' === $segment ) {
-			$has_level = is_user_logged_in();
-		} elseif ( 'specific' === $segment ) {
-			$levels = array_filter( array_map( 'trim', explode( ',', $level_ids ) ) );
-			// Specific with no levels selected is treated as "all levels".
-			$has_level = empty( $levels ) ? pmpro_hasMembershipLevel() : pmpro_hasMembershipLevel( $levels );
-		} else {
-			// 'all' — any membership level.
-			$has_level = pmpro_hasMembershipLevel();
-		}
-
-		$should_display = ( 'hasMembership' === $display_rule ) ? $has_level : ! $has_level;
-
-		// Returns true here so the d5_no_access_message() function can swap the module output for the no-access message.
-		if ( ! $should_display && 'on' === $show_message ) {
-			return true;
-		}
-
-		return $should_display;
+		return ! empty( pmpro_apply_block_visibility( $params, 'sample content' ) );
 	}
 
 	/**
 	 * Replace a restricted module's rendered output with the PMPro no-access message.
 	 *
-	 * This only fires when a 'pmproMembershipLevel' condition is present with
-	 * showNoAccessMessage = 'on' and the current user lacks the required level.
+	 * Only fires when a 'pmproMembershipLevel' condition has showNoAccessMessage = 'on'
+	 * and the current user lacks the required level. Applies to any module type
+	 * (rows, sections, text blocks, etc.).
 	 *
-	 * Applies to any module type (rows, sections, text blocks, etc.).
-	 *
-	 * Hooked into divi_module_wrapper_render at priority 1 so it runs before any
-	 * other modifications to the wrapper output.
+	 * Hooked into divi_module_wrapper_render at priority 1.
 	 *
 	 * @since TBD
 	 *
@@ -150,35 +151,21 @@ class PMProDivi {
 				continue;
 			}
 
-			$settings     = isset( $condition['conditionSettings'] ) ? $condition['conditionSettings'] : array();
-			$show_message = isset( $settings['showNoAccessMessage'] ) ? $settings['showNoAccessMessage'] : 'off';
+			$settings = isset( $condition['conditionSettings'] ) ? $condition['conditionSettings'] : array();
+			$params   = self::d5_visibility_params_from_settings( $settings );
 
-			if ( 'on' !== $show_message ) {
+			if ( ! $params['show_noaccess'] ) {
 				continue;
 			}
 
-			$level_ids    = isset( $settings['levelIds'] ) ? trim( $settings['levelIds'] ) : '';
-			$display_rule = isset( $settings['displayRule'] ) ? $settings['displayRule'] : 'hasMembership';
-			$segment      = isset( $settings['segment'] ) ? $settings['segment'] : 'all';
+			// Probe the block helper with a placeholder: if it returns a non-empty
+			// result that differs from the placeholder, the user failed the check
+			// and the return value is the no-access message.
+			$placeholder = 'pmpro-divi-access-probe';
+			$result      = pmpro_apply_block_visibility( $params, $placeholder );
 
-			// Determine membership match based on segment.
-			if ( 'logged_in' === $segment ) {
-				$has_level = is_user_logged_in();
-				$levels    = array();
-			} elseif ( 'specific' === $segment ) {
-				$levels = array_filter( array_map( 'trim', explode( ',', $level_ids ) ) );
-				// Specific with no levels selected is treated as "all levels".
-				$has_level = empty( $levels ) ? pmpro_hasMembershipLevel() : pmpro_hasMembershipLevel( $levels );
-			} else {
-				// 'all' — any membership level.
-				$has_level = pmpro_hasMembershipLevel();
-				$levels    = array();
-			}
-
-			$should_display = ( 'hasMembership' === $display_rule ) ? $has_level : ! $has_level;
-
-			if ( ! $should_display ) {
-				return pmpro_get_no_access_message( null, $levels );
+			if ( ! empty( $result ) && $result !== $placeholder ) {
+				return $result;
 			}
 		}
 
