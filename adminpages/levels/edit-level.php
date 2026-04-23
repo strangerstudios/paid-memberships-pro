@@ -448,6 +448,12 @@ if (!empty($page_msg)) { ?>
 			 */
 			do_action('pmpro_membership_level_after_billing_details_settings', $level);
 			?>
+			<?php
+			// Only show trial settings if the active gateway supports recurring trials or if the level already has a trial set.
+			$gateway_class = 'PMProGateway_' . $gateway;
+			$gateway_supports_recurring_trials = method_exists( $gateway_class, 'supports' ) && $gateway_class::supports( 'recurring_trials' );
+			if ( $gateway_supports_recurring_trials || pmpro_isLevelTrial( $level ) ) {
+			?>
 			<table class="form-table">
 				<tr class="recurring_info" <?php if (!pmpro_isLevelRecurring($level)) echo "style='display:none;'"; ?>>
 					<th scope="row" valign="top"><label><?php esc_html_e('Custom Trial', 'paid-memberships-pro'); ?></label></th>
@@ -455,9 +461,8 @@ if (!empty($page_msg)) { ?>
 						<input id="custom_trial" name="custom_trial" type="checkbox" value="yes" <?php if (pmpro_isLevelTrial($level)) {
 																										echo "checked='checked'";
 																									} ?> onclick="jQuery('.trial_info').toggle();" /> <label for="custom_trial"><?php esc_html_e('Check to add a custom trial period.', 'paid-memberships-pro'); ?></label>
-
-						<?php if ($gateway == "twocheckout") { ?>
-							<p class="description"><strong <?php if (!empty($pmpro_twocheckout_error)) { ?>class="pmpro_red" <?php } ?>><?php esc_html_e('2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount.', 'paid-memberships-pro'); ?></strong></p>
+						<?php if ( ! $gateway_supports_recurring_trials ) { ?>
+							<p class="description"><strong class="pmpro_red"><?php esc_html_e( 'The current payment gateway does not support recurring trials.', 'paid-memberships-pro' ); ?></strong></p>
 						<?php } ?>
 					</td>
 				</tr>
@@ -476,17 +481,11 @@ if (!empty($page_msg)) { ?>
 						<?php esc_html_e('for the first', 'paid-memberships-pro'); ?>
 						<input name="trial_limit" type="text" value="<?php echo esc_attr($level->trial_limit); ?>" class="small-text" />
 						<?php esc_html_e('subscription payments', 'paid-memberships-pro'); ?>.
-						<?php if ($gateway == "stripe") { ?>
-							<p class="description"><strong <?php if (!empty($pmpro_stripe_error)) { ?>class="pmpro_red" <?php } ?>><?php esc_html_e('Stripe integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro'); ?></strong></p>
-						<?php } elseif ($gateway == "braintree") { ?>
-							<p class="description"><strong <?php if (!empty($pmpro_braintree_error)) { ?>class="pmpro_red" <?php } ?>><?php esc_html_e('Braintree integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro'); ?></strong></p>
-						<?php } elseif ($gateway == "payflowpro") { ?>
-							<p class="description"><strong <?php if (!empty($pmpro_payflow_error)) { ?>class="pmpro_red" <?php } ?>><?php esc_html_e('Payflow integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro'); ?></strong></p>
-						<?php } ?>
 					</td>
 				</tr>
 				</tbody>
 			</table>
+			<?php } ?>
 			<?php
 			/**
 			 * Allow adding form fields after the Trial Settings section.
