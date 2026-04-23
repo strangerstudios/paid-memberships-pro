@@ -151,4 +151,34 @@ if ( ! empty( $_REQUEST['level_group'] ) ) {
 // Update the Membership Account Message.
 update_pmpro_membership_level_meta( $saveid, 'membership_account_message', $ml_membership_account_message );
 
+// Save subscription delay settings.
+// Uses same wp_options keys as the Subscription Delays Add On: pmpro_subscription_delay_{level_id}
+$delay_type = isset( $_REQUEST['delay_type'] ) ? sanitize_text_field( $_REQUEST['delay_type'] ) : 'none';
+if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) ) {
+	update_option( 'pmpro_subscription_delay_' . $saveid, intval( $_REQUEST['subscription_delay_days'] ) );
+} elseif ( $delay_type === 'date' && ! empty( $_REQUEST['subscription_delay_date'] ) ) {
+	update_option( 'pmpro_subscription_delay_' . $saveid, sanitize_text_field( $_REQUEST['subscription_delay_date'] ) );
+} else {
+	delete_option( 'pmpro_subscription_delay_' . $saveid );
+}
+
+// Save set expiration date settings.
+// Uses same wp_options keys as the Set Expiration Dates Add On: pmprosed_{level_id}
+$expiration_date_type = isset( $_REQUEST['expiration_date_type'] ) ? sanitize_text_field( $_REQUEST['expiration_date_type'] ) : 'none';
+if ( $expiration_date_type === 'date' && ! empty( $_REQUEST['set_expiration_date'] ) ) {
+	update_option( 'pmprosed_' . $saveid, sanitize_text_field( $_REQUEST['set_expiration_date'] ), false );
+	// Ensure the level is recognized as expiring by setting a placeholder expiration if none was set.
+	if ( empty( $ml_expiration_number ) ) {
+		$wpdb->update(
+			$wpdb->pmpro_membership_levels,
+			array( 'expiration_number' => 1, 'expiration_period' => 'Year' ),
+			array( 'id' => $saveid ),
+			array( '%d', '%s' ),
+			array( '%d' )
+		);
+	}
+} else {
+	delete_option( 'pmprosed_' . $saveid );
+}
+
 do_action("pmpro_save_membership_level", $saveid);

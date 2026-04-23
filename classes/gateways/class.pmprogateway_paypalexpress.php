@@ -92,6 +92,7 @@
 			$supports = array(
 				'subscription_sync' => true,
 				'payment_method_updates' => false,
+				'recurring_trials' => true,
 			);
 
 			if ( empty( $supports[$feature] ) ) {
