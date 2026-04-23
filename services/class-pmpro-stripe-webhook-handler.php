@@ -820,6 +820,9 @@ class PMPro_Stripe_Webhook_Handler {
 		$lock_name = 'pmpro_stripe_order_' . $morder->id;
 		$got_lock = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, 0)", $lock_name ) );
 
+		// $wpdb->get_var() returns numeric results as strings, hence the '0'/'1'
+		// comparisons. Any other value (typically null) means GET_LOCK errored
+		// or is not supported on this host.
 		if ( '0' === $got_lock ) {
 			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' is already being processed by a concurrent webhook. Ignoring.';
 			return;
@@ -830,6 +833,19 @@ class PMPro_Stripe_Webhook_Handler {
 			// concurrency protection so webhooks still work, but log a warning
 			// so the admin can correlate if race-related anomalies appear.
 			$logstr .= 'WARNING: MySQL GET_LOCK unavailable on this host. Processing order #' . $morder->id . ' without concurrency protection. ';
+		}
+
+		// Re-read order status now that we hold the lock. The $morder in memory
+		// may have been loaded before a prior concurrent worker persisted a
+		// terminal status, so the pre-lock fast-path check above can't be
+		// trusted as the correctness guard. This post-lock check is.
+		$current_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM $wpdb->pmpro_membership_orders WHERE id = %d", $morder->id ) );
+		if ( ! in_array( $current_status, array( 'token', 'pending' ), true ) ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed by a concurrent webhook while we waited for the lock. Ignoring.';
+			if ( '1' === $got_lock ) {
+				$wpdb->get_var( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) );
+			}
+			return;
 		}
 
 		pmpro_pull_checkout_data_from_order( $morder );
