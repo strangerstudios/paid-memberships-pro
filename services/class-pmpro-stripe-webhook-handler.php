@@ -783,23 +783,22 @@ class PMPro_Stripe_Webhook_Handler {
 	 * Process a successful Stripe Checkout Session for a PMPro order.
 	 *
 	 * Dedupes against orders that have already reached a terminal status,
-	 * guards against concurrent webhook deliveries via an ordermeta processing
-	 * lock, then completes the checkout and assigns the membership level.
+	 * guards against concurrent webhook deliveries via a MySQL advisory lock,
+	 * then completes the checkout and assigns the membership level.
 	 *
 	 * Steps:
 	 * 1. Skip if the order has already been processed.
-	 * 2. Skip if another webhook is currently processing this order.
-	 * 3. Set the processing lock.
-	 * 4. Pull checkout data from order meta.
-	 * 5. Complete the checkout (change membership level, mark order successful,
+	 * 2. Acquire an advisory lock on the order; skip if another webhook holds it.
+	 * 3. Pull checkout data from order meta.
+	 * 4. Complete the checkout (change membership level, mark order successful,
 	 *    record discount code use, save user meta, run pmpro_after_checkout,
 	 *    send checkout emails).
-	 * 6. Mark the order as errored if the checkout could not be completed.
-	 * 7. Release the processing lock.
+	 * 5. Mark the order as errored if the checkout could not be completed.
+	 * 6. Release the advisory lock.
 	 *
 	 * @since 2.8
 	 * @since TBD Renamed from change_membership_level. Added concurrent-webhook
-	 *            processing lock and moved status/log handling inside.
+	 *            advisory lock and moved status/log handling inside.
 	 *
 	 * @param MemberOrder $morder           The order for the checkout being completed.
 	 * @param object      $checkout_session The Stripe Checkout Session object.
@@ -807,19 +806,31 @@ class PMPro_Stripe_Webhook_Handler {
 	 * @return void
 	 */
 	private static function process_checkout_session_completion( $morder, $checkout_session, &$logstr ) {
+		global $wpdb;
+
 		// Have we already processed this order?
 		if ( ! in_array( $morder->status, array( 'token', 'pending' ), true ) ) {
 			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
 			return;
 		}
 
-		// Is another webhook currently processing this order?
-		$processing_since = get_pmpro_membership_order_meta( $morder->id, '_pmpro_webhook_processing_since', true );
-		if ( ! empty( $processing_since ) && ( time() - (int) $processing_since ) < 5 * MINUTE_IN_SECONDS ) {
+		// Acquire a MySQL advisory lock scoped to this order. 0-second timeout:
+		// try immediately, don't wait. Returns '1' if acquired, '0' if another
+		// worker holds it, NULL on error (including hosts that disable GET_LOCK).
+		$lock_name = 'pmpro_stripe_order_' . $morder->id;
+		$got_lock = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, 0)", $lock_name ) );
+
+		if ( '0' === $got_lock ) {
 			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' is already being processed by a concurrent webhook. Ignoring.';
 			return;
 		}
-		update_pmpro_membership_order_meta( $morder->id, '_pmpro_webhook_processing_since', time() );
+
+		if ( '1' !== $got_lock ) {
+			// GET_LOCK errored or is unavailable on this host. Proceed without
+			// concurrency protection so webhooks still work, but log a warning
+			// so the admin can correlate if race-related anomalies appear.
+			$logstr .= 'WARNING: MySQL GET_LOCK unavailable on this host. Processing order #' . $morder->id . ' without concurrency protection. ';
+		}
 
 		pmpro_pull_checkout_data_from_order( $morder );
 		if ( pmpro_complete_async_checkout( $morder ) ) {
@@ -829,7 +840,10 @@ class PMPro_Stripe_Webhook_Handler {
 			$morder->status = 'error';
 			$morder->saveOrder();
 		}
-		delete_pmpro_membership_order_meta( $morder->id, '_pmpro_webhook_processing_since' );
+
+		if ( '1' === $got_lock ) {
+			$wpdb->get_var( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) );
+		}
 	}
 
 	/**
