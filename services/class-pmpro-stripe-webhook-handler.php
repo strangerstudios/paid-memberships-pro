@@ -514,7 +514,11 @@ class PMPro_Stripe_Webhook_Handler {
 					),
 				);
 				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-				$order->payment_transaction_id = empty( $checkout_session->invoice ) ? $payment_intent->latest_charge->id : $checkout_session->invoice;
+				if ( ! empty( $checkout_session->invoice ) ) {
+					$order->payment_transaction_id = $checkout_session->invoice;
+				} elseif ( ! empty( $payment_intent->latest_charge ) ) {
+					$order->payment_transaction_id = $payment_intent->latest_charge->id;
+				}
 				if ( ! empty( $payment_intent->payment_method ) ) {
 					$payment_method = $payment_intent->payment_method;
 				}
