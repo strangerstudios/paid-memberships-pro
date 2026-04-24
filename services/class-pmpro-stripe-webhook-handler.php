@@ -633,6 +633,26 @@ class PMPro_Stripe_Webhook_Handler {
 			return;
 		}
 
+		// For one-time payments, the Charge didn't exist at checkout.session.completed time, so fill in the transaction ID now.
+		if ( 'payment' === $checkout_session->mode
+			&& empty( $order->payment_transaction_id )
+			&& ! empty( $checkout_session->payment_intent )
+		) {
+			try {
+				$payment_intent = \Stripe\PaymentIntent::retrieve(
+					array(
+						'id'     => $checkout_session->payment_intent,
+						'expand' => array( 'latest_charge' ),
+					)
+				);
+				if ( ! empty( $payment_intent->latest_charge ) ) {
+					$order->payment_transaction_id = $payment_intent->latest_charge->id;
+				}
+			} catch ( \Stripe\Error\Base $e ) {
+				// Could not get payment intent. We just won't set a payment transaction ID.
+			}
+		}
+
 		// No we have not processed this order. Let's process it now.
 		if ( self::change_membership_level( $order ) ) {
 			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
