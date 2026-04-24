@@ -26,15 +26,6 @@
 			//add fields to payment settings
 			add_filter('pmpro_checkout_after_payment_information_fields', array('PMProGateway_check', 'pmpro_checkout_after_payment_information_fields'));
 			add_action( 'pmpro_order_single_before_order_details', array( 'PMProGateway_check', 'pmpro_order_single_before_order_details' ) );
-
-			//code to add at checkout
-			$gateway = pmpro_getGateway();
-			if($gateway == "check")
-			{
-				add_filter('pmpro_include_billing_address_fields', '__return_false');
-				add_filter('pmpro_include_payment_information_fields', '__return_false');
-				add_filter('pmpro_required_billing_fields', array('PMProGateway_check', 'pmpro_required_billing_fields'));
-			}
 		}
 		
 		/**
@@ -59,6 +50,65 @@
 		 */
 		public static function get_description_for_gateway_settings() {
 			return esc_html__( 'Allow members to pay by check or other manual payment methods like Bank Transfer or Venmo. After receiving a payment, you must manually update the order status to "success" in order to activate the membership.', 'paid-memberships-pro' );
+		}
+
+		/**
+		 * Get the checkout label for this gateway.
+		 *
+		 * @since TBD
+		 *
+		 * @return string
+		 */
+		public static function get_checkout_label() {
+			$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
+			if ( ! empty( $check_gateway_label ) ) {
+				return esc_html( sprintf( __( 'Pay by %s', 'paid-memberships-pro' ), $check_gateway_label ) );
+			}
+			return esc_html__( 'Pay by Check', 'paid-memberships-pro' );
+		}
+
+		/**
+		 * Render checkout fields for the Check gateway.
+		 *
+		 * The check gateway has no payment fields -- just shows instructions.
+		 *
+		 * @since TBD
+		 */
+		public static function show_checkout_fields() {
+			$instructions = get_option( 'pmpro_instructions' );
+			if ( ! empty( $instructions ) ) {
+				?>
+				<div id="pmpro_check_instructions" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_check_instructions' ) ); ?>">
+					<?php echo wp_kses_post( wpautop( $instructions ) ); ?>
+				</div>
+				<?php
+			}
+		}
+
+		/**
+		 * The Check gateway does not require billing address fields.
+		 *
+		 * @since TBD
+		 *
+		 * @return bool
+		 */
+		public static function requires_billing_address() {
+			return false;
+		}
+
+		/**
+		 * Modify the required billing fields for the Check gateway.
+		 *
+		 * Removes all billing address and card fields since check payments
+		 * don't require any of them.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $fields Associative array of field_name => value.
+		 * @return array Modified array of required fields.
+		 */
+		public static function get_required_billing_fields( $fields ) {
+			return self::pmpro_required_billing_fields( $fields );
 		}
 
 		/**

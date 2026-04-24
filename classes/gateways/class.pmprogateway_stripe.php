@@ -121,46 +121,29 @@ class PMProGateway_stripe extends PMProGateway {
 		global $pmpro_stripe_lite;
 		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! get_option( "pmpro_stripe_billingaddress" ) );    //default is opposite of the stripe_billingaddress setting
 
-		$gateway = pmpro_getGateway();
-		if($gateway == "stripe")
-		{
-			add_filter( 'pmpro_required_billing_fields', array( 'PMProGateway_stripe', 'pmpro_required_billing_fields' ) );
-		}
-
-		//AJAX services for creating/disabling webhooks
+		// AJAX services for creating/disabling webhooks.
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_rebuild_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_rebuild_webhook' ) );
 
-		//code to add at checkout if Stripe is the current gateway
-		$default_gateway = get_option( 'pmpro_gateway' );
-		$current_gateway = pmpro_getGateway();
-
-		// $_REQUEST['review'] here means the PayPal Express review pag
-		if ( ( $default_gateway == "stripe" || $current_gateway == "stripe" ) && empty( $_REQUEST['review'] ) ) {
-			add_filter( 'pmpro_include_billing_address_fields', array(
-				'PMProGateway_stripe',
-				'pmpro_include_billing_address_fields'
-			) );
+		// Hooks for order processing and checkout state that can't be handled by static methods
+		// (these need the $order object or checkout-specific context).
+		$enabled_gateways = pmpro_get_enabled_gateways();
+		$stripe_is_enabled = in_array( 'stripe', $enabled_gateways, true );
+		if ( $stripe_is_enabled && empty( $_REQUEST['review'] ) ) {
+			// Billing address filter for the billing update page (checkout uses requires_billing_address() instead).
+			add_filter( 'pmpro_include_billing_address_fields', array( 'PMProGateway_stripe', 'pmpro_include_billing_address_fields' ) );
 
 			if ( ! self::using_stripe_checkout() ) {
-				// On-site checkout flow.
-				add_action( 'pmpro_after_checkout_preheader', array(
-					'PMProGateway_stripe',
-					'pmpro_checkout_after_preheader'
-				) );
-
+				// Localizes paymentIntent/setupIntent for SCA and enqueues scripts for billing page.
+				add_action( 'pmpro_after_checkout_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
 				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
 				add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
 				add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
-				add_filter( 'pmpro_include_payment_information_fields', array(
-					'PMProGateway_stripe',
-					'pmpro_include_payment_information_fields'
-				) );	
-				add_filter( 'pmpro_after_checkout_preheader', array( 'PMProGateway_stripe', 'clear_pmpro_review' ) );			
+				add_filter( 'pmpro_after_checkout_preheader', array( 'PMProGateway_stripe', 'clear_pmpro_review' ) );
 			} else {
-				// Checkout flow for Stripe Checkout.
-				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
+				// Stripe Checkout (offsite) flow.
+				add_filter( 'pmpro_include_payment_information_fields', array( 'PMProGateway_stripe', 'show_stripe_checkout_pending_warning' ) );
 			}
 		}
 
@@ -229,6 +212,169 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function get_description_for_gateway_settings() {
 		return esc_html__( 'With Stripe, you can accept membership payment onsite or offsite. The Stripe gateway supports over 135 currencies, built-in tax collection, and multiple payment methods like credit card, Google Pay, Apple Pay, and over 40 region-specific options.', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Get the checkout label for this gateway.
+	 *
+	 * @since TBD
+	 *
+	 * @return string
+	 */
+	public static function get_checkout_label() {
+		if ( self::using_stripe_checkout() ) {
+			return esc_html__( 'Pay with Stripe', 'paid-memberships-pro' );
+		}
+		return esc_html__( 'Pay with Credit Card', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Enqueue Stripe-specific scripts for checkout.
+	 *
+	 * @since TBD
+	 */
+	public static function enqueue_checkout_scripts() {
+		// Only enqueue for on-site checkout flow. Stripe Checkout (offsite) doesn't need these.
+		if ( self::using_stripe_checkout() ) {
+			return;
+		}
+
+		global $pmpro_level, $pmpro_requirebilling, $pmpro_currency;
+
+		// Stripe.js library.
+		wp_enqueue_script( 'stripe', 'https://js.stripe.com/v3/', array(), null );
+
+		// Skip if already registered by pmpro_checkout_after_preheader (which includes intent data for SCA).
+		if ( ! function_exists( 'pmpro_stripe_javascript' ) && ! wp_script_is( 'pmpro_stripe', 'registered' ) ) {
+			$stripe = new PMProGateway_stripe();
+			$localize_vars = array(
+				'publishableKey'               => $stripe->get_publishablekey(),
+				'user_id'                       => $stripe->get_connect_user_id(),
+				'verifyAddress'                 => apply_filters( 'pmpro_stripe_verify_address', get_option( 'pmpro_stripe_billingaddress' ) ),
+				'ajaxUrl'                       => admin_url( 'admin-ajax.php' ),
+				'msgAuthenticationValidated'    => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
+				'pmpro_require_billing'         => $pmpro_requirebilling,
+				'restUrl'                       => get_rest_url(),
+				'siteName'                      => get_bloginfo( 'name' ),
+				'updatePaymentRequestButton'    => apply_filters( 'pmpro_stripe_update_payment_request_button', true ),
+				'currency'                      => strtolower( $pmpro_currency ),
+				'accountCountry'                => $stripe->get_account_country(),
+				'style'                         => apply_filters( 'pmpro_stripe_card_element_style', array( 'base' => array( 'fontSize' => '16px' ) ) ),
+			);
+
+			wp_register_script( 'pmpro_stripe',
+				plugins_url( 'js/pmpro-stripe.js', PMPRO_BASE_FILE ),
+				array( 'jquery' ),
+				PMPRO_VERSION );
+			wp_localize_script( 'pmpro_stripe', 'pmproStripe', $localize_vars );
+			wp_enqueue_script( 'pmpro_stripe' );
+		}
+	}
+
+	/**
+	 * Render Stripe-specific checkout fields (Stripe Elements containers).
+	 *
+	 * @since TBD
+	 */
+	public static function show_checkout_fields() {
+		// If using Stripe Checkout (offsite), don't show on-site card fields.
+		if ( self::using_stripe_checkout() ) {
+			// Show pending order warning if applicable.
+			self::show_stripe_checkout_pending_warning( true );
+			return;
+		}
+
+		global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType;
+		?>
+		<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>" <?php if ( ! $pmpro_requirebilling || apply_filters( 'pmpro_hide_payment_information_fields', false ) ) { ?>style="display: none;"<?php } ?>>
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+					<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+						<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></h2>
+					</legend>
+				<?php
+					if ( get_option( 'pmpro_stripe_payment_request_button' ) ) { ?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-request-button', 'pmpro_payment-request-button' ) ); ?>">
+							<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
+							<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>">
+								<?php
+								echo esc_html( pmpro_is_checkout() ? __( 'Pay with Credit Card', 'paid-memberships-pro' ) : __( 'Credit Card', 'paid-memberships-pro' ) );
+								?>
+							</h3>
+						</div>
+						<?php
+					}
+				?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+							<input type="hidden" id="CardType" name="CardType"
+								value="<?php echo esc_attr( $CardType ); ?>"/>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
+								<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
+								<div id="AccountNumber"></div>
+							</div>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
+									<label for="Expiry" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
+									<div id="Expiry"></div>
+								</div>
+								<?php
+								$pmpro_show_cvv = apply_filters( 'pmpro_show_cvv', true );
+								if ( $pmpro_show_cvv ) { ?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
+										<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'CVC', 'paid-memberships-pro' ); ?></label>
+										<div id="CVV"></div>
+									</div>
+								<?php } ?>
+							</div> <!-- end pmpro_cols-2 -->
+							<?php if ( $pmpro_show_discount_code ) { ?>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
+										<label for="pmpro_discount_code" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
+										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
+											<input id="pmpro_discount_code" name="pmpro_discount_code" type="text" value="<?php echo esc_attr( $discount_code ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_alter_price', 'pmpro_discount_code' ) ); ?>" />
+											<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-discount-code', 'discount_code_button' ) ); ?>" />
+										</div> <!-- end pmpro_form_fields-inline -->
+										<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
+									</div>
+								</div> <!-- end pmpro_cols-2 -->
+							<?php } ?>
+						</div> <!-- end pmpro_form_fields -->
+				</div> <!-- end pmpro_card_content -->
+			</div> <!-- end pmpro_card -->
+		</fieldset> <!-- end pmpro_payment_information_fields -->
+		<?php
+	}
+
+	/**
+	 * Modify the required billing fields for Stripe.
+	 *
+	 * Stripe handles card validation via Elements, so card fields aren't
+	 * submitted directly. Billing address fields depend on the stripe_lite setting.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $fields Associative array of field_name => value.
+	 * @return array Modified array of required fields.
+	 */
+	public static function get_required_billing_fields( $fields ) {
+		return self::pmpro_required_billing_fields( $fields );
+	}
+
+	/**
+	 * Whether Stripe requires billing address fields.
+	 *
+	 * Depends on the billing address setting for on-site checkout.
+	 * Stripe Checkout (offsite) handles billing address on Stripe's side.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool
+	 */
+	public static function requires_billing_address() {
+		if ( self::using_stripe_checkout() ) {
+			return false;
+		}
+		return (bool) get_option( 'pmpro_stripe_billingaddress' );
 	}
 
 	/**
