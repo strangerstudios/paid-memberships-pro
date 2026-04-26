@@ -264,9 +264,9 @@
 							<?php
 							$license_labels = array(
 								'free'         => __( 'Free', 'paid-memberships-pro' ),
-								'standard'     => __( 'Standard', 'paid-memberships-pro' ),
-								'plus'         => __( 'Max', 'paid-memberships-pro' ),
-								'builder'      => __( 'Max', 'paid-memberships-pro' ),
+								'standard'     => __( 'Premium', 'paid-memberships-pro' ),
+								'plus'         => __( 'Premium', 'paid-memberships-pro' ),
+								'builder'      => __( 'Premium', 'paid-memberships-pro' ),
 								'wordpress.org'=> __( 'Free', 'paid-memberships-pro' ),
 							);
 
