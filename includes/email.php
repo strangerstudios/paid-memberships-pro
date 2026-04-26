@@ -537,7 +537,155 @@ function pmpro_sanitize_email_data( $data ) {
 			$data[$key] = str_replace( '://', ': ', $data[$key] );
 		}
 	}
-	
+
 	return $data;
 }
 add_filter( 'pmpro_email_data', 'pmpro_sanitize_email_data' );
+
+/**
+ * Detect how outbound email is being sent from this site.
+ *
+ * Runs these checks in order and returns on the first hit:
+ *   1. An active SMTP/transactional-email plugin we recognize.
+ *   2. wp-config.php SMTP constants (manual SMTP setup).
+ *   3. PMPro Max hosting (handles transactional email at the server level).
+ *   4. Fallback: unknown / WordPress default (PHP `mail()`).
+ *
+ * Plugin checks run first so that a plugin overriding the default on Max is
+ * reported accurately.
+ *
+ * @since TBD
+ *
+ * @return array {
+ *     @type string      $method Machine key for the detected method.
+ *     @type string      $label  Human-readable label.
+ *     @type string|null $relay  Mail relay host if known, otherwise null.
+ *     @type string      $source How it was detected: 'plugin', 'constant', 'hosting', 'default'.
+ * }
+ */
+function pmpro_detect_email_method() {
+	// Known SMTP/transactional-email plugins, roughly by popularity.
+	// `class`, `function`, and `constant` may each be a string or array of strings.
+	$plugin_signatures = array(
+		'wp-mail-smtp' => array(
+			'label' => 'WP Mail SMTP',
+			'class' => array( 'WPMailSMTP\\Plugin', 'WPMailSMTP\\Core' ),
+		),
+		'fluent-smtp' => array(
+			'label'    => 'FluentSMTP',
+			'function' => 'fluentmail',
+		),
+		'post-smtp' => array(
+			'label' => 'Post SMTP',
+			'class' => 'PostmanOptions',
+		),
+		'easy-wp-smtp' => array(
+			'label'    => 'Easy WP SMTP',
+			'class'    => 'EasyWPSMTP',
+			'constant' => 'EasyWPSMTP_PLUGIN_VERSION',
+		),
+		'gravitysmtp'  => array(
+			'label'    => 'Gravity SMTP',
+			'constant' => 'GF_GRAVITY_SMTP_VERSION',
+		),
+		'wp-offload-ses' => array(
+			'label' => 'WP Offload SES',
+			'class' => 'DeliciousBrains\\WP_Offload_SES\\WP_Offload_SES',
+		),
+		'gmail-smtp' => array(
+			'label' => 'Gmail SMTP',
+			'class' => 'Gmail_SMTP',
+		),
+		'postmark' => array(
+			'label' => 'Postmark',
+			'class' => 'Postmark_Mail',
+		),
+		'brevo' => array(
+			'label' => 'Brevo',
+			'class' => 'SIB_Manager',
+		),
+		'mailgun' => array(
+			'label'    => 'Mailgun',
+			'function' => 'mg_api_last_error',
+		),
+		'sendwp' => array(
+			'label'    => 'SendWP',
+			'function' => 'sendwp_forwarding_enabled',
+		),
+		'sendgrid' => array (
+			'label' => 'SendGrid',
+			'class' => 'Sendgrid_Settings',
+		),
+	);
+
+	foreach ( $plugin_signatures as $method => $signature ) {
+		$detected = false;
+
+		if ( ! empty( $signature['class'] ) ) {
+			foreach ( (array) $signature['class'] as $class ) {
+				if ( class_exists( $class ) ) {
+					$detected = true;
+					break;
+				}
+			}
+		}
+
+		if ( ! $detected && ! empty( $signature['function'] ) ) {
+			foreach ( (array) $signature['function'] as $function ) {
+				if ( function_exists( $function ) ) {
+					$detected = true;
+					break;
+				}
+			}
+		}
+
+		if ( ! $detected && ! empty( $signature['constant'] ) ) {
+			foreach ( (array) $signature['constant'] as $constant ) {
+				if ( defined( $constant ) ) {
+					$detected = true;
+					break;
+				}
+			}
+		}
+
+		if ( $detected ) {
+			return apply_filters( 'pmpro_detect_email_method', array(
+				'method' => $method,
+				'label'  => $signature['label'],
+				'relay'  => null,
+				'source' => 'plugin',
+			) );
+		}
+	}
+
+	// Manual SMTP configured via wp-config.php.
+	if ( defined( 'SMTP_HOST' ) && SMTP_HOST ) {
+		return apply_filters( 'pmpro_detect_email_method', array(
+			'method' => 'wp-config-smtp',
+			'label'  => __( 'SMTP (wp-config.php)', 'paid-memberships-pro' ),
+			'relay'  => SMTP_HOST,
+			'source' => 'constant',
+		) );
+	}
+
+	// PMPro Max handles transactional email at the server level.
+	if ( class_exists( 'PMPro_Hosting_Transactional_Emails' ) ) {
+		$emails = PMPro_Hosting_Transactional_Emails::get_instance();
+		if ( ! $emails->has_third_party_mailer() && getenv( 'PMPRO_HOSTING' ) === '1' ) {
+			return apply_filters( 'pmpro_detect_email_method', array(
+				'method' => 'pmpro-max',
+				'label'  => __( 'PMPro Max', 'paid-memberships-pro' ),
+				'relay'  => null,
+				'source' => 'hosting',
+			) );
+		}
+	}
+
+	// No known mailer detected — could be PHP mail() or something we don't recognize.
+	return apply_filters( 'pmpro_detect_email_method', array(
+		'method' => 'default',
+		'label'  => __( 'Unknown / WordPress default (PHP mail)', 'paid-memberships-pro' ),
+		'relay'  => null,
+		'source' => 'default',
+	) );
+}
