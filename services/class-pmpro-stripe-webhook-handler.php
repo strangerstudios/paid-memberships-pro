@@ -576,19 +576,7 @@ class PMPro_Stripe_Webhook_Handler {
 
 		// Was the checkout session successful?
 		if ( 'paid' === $checkout_session->payment_status || 'no_payment_required' === $checkout_session->payment_status ) {
-			// Yes. But did we already process this order?
-			if ( ! in_array( $order->status, array( 'token', 'pending' ), true ) ) {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
-				return;
-			}
-			// No we have not processed this order. Let's process it now.
-			if ( self::change_membership_level( $order ) ) {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
-			} else {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
-				$order->status = 'error';
-				$order->saveOrder();
-			}
+			self::process_checkout_session_completion( $order, $checkout_session, $logstr );
 		} else {
 			// No. The user is probably using a delayed notification payment method.
 			// Set to pending in the meantime and wait for the next webhook.
@@ -623,20 +611,7 @@ class PMPro_Stripe_Webhook_Handler {
 			return;
 		}
 
-		// Have we already processed this order?
-		if ( ! in_array( $order->status, array( 'token', 'pending' ), true ) ) {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
-			return;
-		}
-
-		// No we have not processed this order. Let's process it now.
-		if ( self::change_membership_level( $order ) ) {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
-		} else {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
-			$order->status = 'error';
-			$order->saveOrder();
-		}
+		self::process_checkout_session_completion( $order, $checkout_session, $logstr );
 	}
 
 	/**
@@ -805,26 +780,86 @@ class PMPro_Stripe_Webhook_Handler {
 	}
 
 	/**
-	 * Assign a membership level when a checkout is completed via Stripe webhook.
+	 * Process a successful Stripe Checkout Session for a PMPro order.
+	 *
+	 * Dedupes against orders that have already reached a terminal status,
+	 * guards against concurrent webhook deliveries via a MySQL advisory lock,
+	 * then completes the checkout and assigns the membership level.
 	 *
 	 * Steps:
-	 * 1. Pull checkout data from order meta.
-	 * 2. Build checkout level.
-	 * 3. Change membership level.
-	 * 4. Mark order as successful.
-	 * 5. Record discount code use.
-	 * 6. Save some user meta.
-	 * 7. Run pmpro_after_checkout.
-	 * 8. Send checkout emails.
+	 * 1. Skip if the order has already been processed.
+	 * 2. Acquire an advisory lock on the order; skip if another webhook holds it.
+	 * 3. Pull checkout data from order meta.
+	 * 4. Complete the checkout (change membership level, mark order successful,
+	 *    record discount code use, save user meta, run pmpro_after_checkout,
+	 *    send checkout emails).
+	 * 5. Mark the order as errored if the checkout could not be completed.
+	 * 6. Release the advisory lock.
 	 *
 	 * @since 2.8
+	 * @since TBD Renamed from change_membership_level. Added concurrent-webhook
+	 *            advisory lock and moved status/log handling inside.
 	 *
-	 * @param MemberOrder $morder The order for the checkout being completed.
-	 * @return bool
+	 * @param MemberOrder $morder           The order for the checkout being completed.
+	 * @param object      $checkout_session The Stripe Checkout Session object.
+	 * @param string      $logstr           Log output.
+	 * @return void
 	 */
-	private static function change_membership_level( $morder ) {
+	private static function process_checkout_session_completion( $morder, $checkout_session, &$logstr ) {
+		global $wpdb;
+
+		// Have we already processed this order?
+		if ( ! in_array( $morder->status, array( 'token', 'pending' ), true ) ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
+			return;
+		}
+
+		// Acquire a MySQL advisory lock scoped to this order. 0-second timeout:
+		// try immediately, don't wait. Returns '1' if acquired, '0' if another
+		// worker holds it, NULL on error (including hosts that disable GET_LOCK).
+		$lock_name = 'pmpro_stripe_order_' . $morder->id;
+		$got_lock = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, 0)", $lock_name ) );
+
+		// $wpdb->get_var() returns numeric results as strings, hence the '0'/'1'
+		// comparisons. Any other value (typically null) means GET_LOCK errored
+		// or is not supported on this host.
+		if ( '0' === $got_lock ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' is already being processed by a concurrent webhook. Ignoring.';
+			return;
+		}
+
+		if ( '1' !== $got_lock ) {
+			// GET_LOCK errored or is unavailable on this host. Proceed without
+			// concurrency protection so webhooks still work, but log a warning
+			// so the admin can correlate if race-related anomalies appear.
+			$logstr .= 'WARNING: MySQL GET_LOCK unavailable on this host. Processing order #' . $morder->id . ' without concurrency protection. ';
+		}
+
+		// Re-read order status now that we hold the lock. The $morder in memory
+		// may have been loaded before a prior concurrent worker persisted a
+		// terminal status, so the pre-lock fast-path check above can't be
+		// trusted as the correctness guard. This post-lock check is.
+		$current_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM $wpdb->pmpro_membership_orders WHERE id = %d", $morder->id ) );
+		if ( ! in_array( $current_status, array( 'token', 'pending' ), true ) ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed by a concurrent webhook while we waited for the lock. Ignoring.';
+			if ( '1' === $got_lock ) {
+				$wpdb->get_var( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) );
+			}
+			return;
+		}
+
 		pmpro_pull_checkout_data_from_order( $morder );
-		return pmpro_complete_async_checkout( $morder );
+		if ( pmpro_complete_async_checkout( $morder ) ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
+		} else {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
+			$morder->status = 'error';
+			$morder->saveOrder();
+		}
+
+		if ( '1' === $got_lock ) {
+			$wpdb->get_var( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) );
+		}
 	}
 
 	/**
