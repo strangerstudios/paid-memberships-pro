@@ -146,6 +146,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
 					'value' => self::get_pause_mode_state(),
 				],
+				'pmpro-email-method' => [
+					'label' => __( 'Email Sending Method', 'paid-memberships-pro' ),
+					'value' => self::get_email_method_info(),
+				],
 			],
 		];
 
@@ -730,6 +734,33 @@ class PMPro_Site_Health {
 
 		return __( 'Disabled', 'paid-memberships-pro' );
 
+	}
+
+	/**
+	 * Get a snapshot of how outbound mail is being handled.
+	 *
+	 * Includes the detected method/source plus any known SMTP relay. Detection
+	 * is best-effort — class/function existence checks can over-report (plugin
+	 * installed but not configured) or under-report (late-loading hooks). When
+	 * we can't identify a known mailer the catchall reports "unknown/default".
+	 *
+	 * @since TBD
+	 *
+	 * @return array Key/value pairs rendered by Site Health.
+	 */
+	public static function get_email_method_info() {
+		$detection = pmpro_detect_email_method();
+
+		$info = array(
+			'method' => $detection['label'],
+			'source' => $detection['source'],
+		);
+
+		if ( ! empty( $detection['relay'] ) ) {
+			$info['relay'] = $detection['relay'];
+		}
+
+		return $info;
 	}
 
 	/**

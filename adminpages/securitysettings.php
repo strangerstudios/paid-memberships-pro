@@ -104,7 +104,7 @@
 			</div>
 			<div class="pmpro_section_inside">
 				<p>
-					<?php echo wp_kses( sprintf( __( 'To ensure your site is as protected as possible, we recommend setting up several spam protection methods. Read our full guide on <a href="%s" target="_blank">how to stop spam in your membership site</a> for more information about these options.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/how-to-stop-spam/' ), $allowed_pmpro_spam_protection_strings_html ); ?>
+					<?php echo wp_kses( sprintf( __( 'To ensure your site is as protected as possible, we recommend setting up several spam protection methods. Read our full guide on <a href="%s" target="_blank">how to stop spam in your membership site</a> for more information about these options.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/how-to-stop-spam/?utm_source=plugin&utm_medium=pmpro-securitysettings&utm_campaign=blog&utm_content=stop-spam' ), $allowed_pmpro_spam_protection_strings_html ); ?>
 				</p>
 				<table class="form-table">
 					<tbody>
@@ -149,7 +149,7 @@
 									}
 								?>
 								<p class="description">
-									<?php echo wp_kses( sprintf( __('With the Akismet Integration for Paid Memberships Pro, the same comment spam filters built into Akismet are used to detect and prevent membership checkout form abuse. This integration requires both the <a href="%1$s" target="_blank">Akismet plugin</a> and the <a href="%2$s" target="_blank">Akismet Integration for Paid Memberships Pro</a>.', 'paid-memberships-pro' ), 'https://wordpress.org/plugins/akismet/', 'https://www.paidmembershipspro.com/add-ons/pmpro-akismet/' ), $allowed_pmpro_spam_protection_strings_html ); ?>
+									<?php echo wp_kses( sprintf( __('With the Akismet Integration for Paid Memberships Pro, the same comment spam filters built into Akismet are used to detect and prevent membership checkout form abuse. This integration requires both the <a href="%1$s" target="_blank">Akismet plugin</a> and the <a href="%2$s" target="_blank">Akismet Integration for Paid Memberships Pro</a>.', 'paid-memberships-pro' ), 'https://wordpress.org/plugins/akismet/', 'https://www.paidmembershipspro.com/add-ons/pmpro-akismet/?utm_source=plugin&utm_medium=pmpro-securitysettings&utm_campaign=add-ons&utm_content=pmpro-akismet' ), $allowed_pmpro_spam_protection_strings_html ); ?>
 								</p>
 							</td>
 						</tr>
@@ -331,12 +331,11 @@ location ~ ^/wp-content/uploads/pmpro-[^/]+/ {
 									if ( $cloudflare_active === 'inactive' ) {
 										?>
 										<p class="description">
-											<?php echo wp_kses( sprintf( __( 'Consider setting up the <a href="%s" target="_blank">Cloudflare DNS firewall</a> to protect your site.', 'paid-memberships-pro' ), 'https://www.cloudflare.com/dns/dns-firewall/' ), $allowed_pmpro_spam_protection_strings_html ); ?>
+											<?php echo wp_kses( sprintf( __( 'Consider setting up the <a href="%s" target="_blank">Cloudflare DNS firewall</a> to protect your site.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/documentation/hosting-docs/dns/?utm_source=plugin&utm_medium=pmpro-securitysettings&utm_campaign=documentation&utm_content=dns-firewall' ), $allowed_pmpro_spam_protection_strings_html ); ?>
 										</p>
 										<?php
 									}
 								?>
-							</td>
 							</td>
 						</tr>
 					</tbody>
@@ -347,94 +346,81 @@ location ~ ^/wp-content/uploads/pmpro-[^/]+/ {
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'WordPress Security Plugins', 'paid-memberships-pro' ); ?>
+					<?php esc_html_e( 'WordPress Security', 'paid-memberships-pro' ); ?>
 				</button>
 			</div>
 			<div class="pmpro_section_inside">
+				<?php
+					// Arrays to store information about installed security plugins.
+					$installed_security_plugins = array();
+
+					// Check if PMPro Hosting is installed.
+					$pmpro_max_status = getenv( 'PMPRO_HOSTING' ) === '1' ? 'active' : 'not-installed';
+					if ( $pmpro_max_status === 'active' ) {
+						$installed_security_plugins[] = array( 'pmpro-hosting/pmpro-hosting.php', __( 'PMPro Max', 'paid-memberships-pro' ) );
+					}
+
+					// Check if other known security plugins are installed.
+					$security_plugins_to_check = array(
+						'malcare-security'   => __( 'MalCare', 'paid-memberships-pro' ),
+						'wordfence'          => __( 'Wordfence', 'paid-memberships-pro' ),
+						'better-wp-security' => __( 'Solid Security', 'paid-memberships-pro' ),
+					);
+					foreach ( $security_plugins_to_check as $slug => $label ) {
+						$status = pmpro_is_plugin_installed_or_active( $plugin_files[ $slug ] );
+						if ( $status === 'active' ) {
+							$installed_security_plugins[] = array( $plugin_files[ $slug ], $label );
+						}
+					}
+
+					// Build some links for use in this section.
+					$pmpro_max_security_url = 'https://www.paidmembershipspro.com/documentation/hosting-docs/?utm_source=plugin&utm_medium=pmpro-securitysettings&utm_campaign=documentation&utm_content=security-malware';
+				?>
+				<p>
+					<?php if ( $pmpro_max_status === 'active' ) { ?>
+						<?php esc_html_e( 'Your PMPro Max site has built-in security at multiple layers: from the server to your WordPress site. Malware scanning and removal are included with your plan.', 'paid-memberships-pro' ); ?>
+					<?php } else { ?>
+						<?php esc_html_e( 'A secure WordPress environment requires multiple layers of protection: from the server to the WordPress site itself. This section highlights if you are using a known security plugin to safeguard your WordPress site. PMPro Max customers have security handled for them, no additional plugins or services required.', 'paid-memberships-pro' ); ?>
+					<?php } ?>
+
+					<?php
+						// translators: %s: Link to information about PMPro Max security.
+						printf(
+							esc_html__( 'Learn more about %s.', 'paid-memberships-pro' ),
+							'<a title="' . esc_attr__( 'Paid Memberships Pro - Security and Malware Protection', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="' . esc_url( $pmpro_max_security_url ) . '">' . esc_html__( 'security, performance, and malware protection in PMPro Max', 'paid-memberships-pro' ) . '</a>'
+						); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
+				</p>
 				<table class="form-table">
 					<tbody>
-						<tr>
-							<p>
-								<?php esc_html_e( 'WordPress security plugins are important for safeguarding your WordPress site. They protect your site by offering backups, real-time threat detection, firewalls, and performance optimization.', 'paid-memberships-pro' ); ?>
-							</p>
-						</tr>
-						<?php 
-						// Arrays to store information about installed security plugins.
-						$installed_security_plugins = array();
-						$active_security_plugins_count = 0;
-
-						// Check if Malcare Security is installed.
-						$malcare_status = pmpro_is_plugin_installed_or_active( $plugin_files['malcare-security'] );
-						if ( $malcare_status === 'active' ) {
-							$installed_security_plugins[] = array ( $plugin_files['malcare-security'], __( 'MalCare', 'paid-memberships-pro' ), $malcare_status );
-							$active_security_plugins_count++;
-						}
-
-						// Check if Wordfence is installed.
-						$wordfence_status = pmpro_is_plugin_installed_or_active( $plugin_files['wordfence'] );
-						if ( $wordfence_status === 'active' ) {
-							$installed_security_plugins[] = array ( $plugin_files['wordfence'], __( 'Wordfence', 'paid-memberships-pro' ), $wordfence_status );
-							$active_security_plugins_count++;
-						}
-
-						// Check if Solid Security is installed.
-						$solid_security_status = pmpro_is_plugin_installed_or_active( $plugin_files['better-wp-security'] );
-						if ( $solid_security_status === 'active' ) {
-							$installed_security_plugins[] = array ( $plugin_files['better-wp-security'], __( 'Solid Security',  'paid-memberships-pro' ), $solid_security_status );
-							$active_security_plugins_count++;
-						}
-
+						<?php
 						if ( empty( $installed_security_plugins ) ) {
 							?>
 							<tr>
 								<th>
-									<?php esc_html_e( 'MalCare', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Security Status', 'paid-memberships-pro' ); ?>
 								</th>
 								<td>
 									<?php
-										// Check MalCare status.
-										if ( $malcare_status === 'not-installed' ) {
-											echo '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-' . esc_attr( $malcare_status ) . '">' . esc_html__( 'Not Installed', 'paid-memberships-pro' ) . '</span> ';
-											$malcare_link_url = wp_nonce_url(
-												self_admin_url(
-													add_query_arg( array(
-														'action' => 'install-plugin',
-														'plugin' => 'malcare-security'
-													),
-													'update.php'
-													)
-												),
-												'install-plugin_malcare-security'
-											);
-											echo '<a href="' . esc_url( $malcare_link_url ) . '">' . esc_html__( 'Click here to install', 'paid-memberships-pro' ) . '</a>';
-											// translators: %s: Link to install MalCare security plugin.
-											echo '<p class="description">' . wp_kses( sprintf( __( 'We do not detect an active security plugin on your site. <a href="%s">Install MalCare for free now</a> to protect your site. MalCare protects your site without slowing it down.', 'paid-memberships-pro' ), $malcare_link_url ), $allowed_pmpro_spam_protection_strings_html ) . '</p>';
-										} else {
-											echo '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-' . esc_attr( $malcare_status ) . '">' . esc_html__( 'Inactive', 'paid-memberships-pro' ) . '</span> ';
-											$malcare_link_url = wp_nonce_url(
-												self_admin_url(
-													add_query_arg( array(
-														'action' => 'activate',
-														'plugin' => $plugin_files['malcare-security'],
-													),
-													'plugins.php'
-												)
-												),
-												'activate-plugin_' . $plugin_files['malcare-security']
-											);
-											echo '<a href="' . esc_url( $malcare_link_url ) . '">' . esc_html__( 'Click here to activate', 'paid-memberships-pro' ) . '</a>';
-										}
+										echo '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-inactive">' . esc_html__( 'No Security Detected', 'paid-memberships-pro' ) . '</span> ';
 									?>
+									<p class="description">
+										<?php
+											esc_html_e( 'We do not detect an active security plugin on your site.', 'paid-memberships-pro' );
+											echo ' ';
+										?>
+										<a target="_blank" rel="nofollow noopener" href="<?php echo esc_url( $pmpro_max_security_url ); ?>"><?php esc_html_e( 'Explore PMPro Max now to protect your site', 'paid-memberships-pro' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<?php
 						} else {
 							// If there are more than one active security plugins, display a warning.
-							if ( $active_security_plugins_count > 1 ) {
+							if ( count( $installed_security_plugins ) > 1 ) {
 								?>
 								<tr>
 									<td colspan="2">
-										<div class="notice notice-warning notice-large inline"><p><strong><?php esc_html_e( 'Multiple Security Plugins Active', 'paid-memberships-pro' ); ?></strong><br /><?php esc_html_e( 'Having multiple security plugins active can cause conflicts and slow down your site. Consider deactivating one of the plugins listed as active below.', 'paid-memberships-pro' ); ?></p></div>
+										<div class="pmpro_message pmpro_alert"><p><strong><?php esc_html_e( 'Multiple Security Plugins Active', 'paid-memberships-pro' ); ?></strong><br /><?php esc_html_e( 'Having multiple security plugins active can cause conflicts and slow down your site. Consider deactivating one of the plugins listed as active below.', 'paid-memberships-pro' ); ?></p></div>
 									</td>
 								</tr>
 								<?php
@@ -444,7 +430,21 @@ location ~ ^/wp-content/uploads/pmpro-[^/]+/ {
 								?>
 								<tr>
 									<th><?php echo esc_html( $plugin[1] ); ?></th>
-									<td><?php echo '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-' . esc_attr( $plugin[2] ) . '">' . esc_html__( 'Active', 'paid-memberships-pro' ) . '</span> '; ?></td>
+									<td>
+										<?php echo '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-active">' . esc_html__( 'Active', 'paid-memberships-pro' ) . '</span> '; ?>
+
+										<?php if ( $pmpro_max_status === 'active' && count( $installed_security_plugins ) > 1 && $plugin[0] !== 'pmpro-hosting/pmpro-hosting.php' ) { ?>
+											<p class="description">
+												<?php
+													// translators: %s: The name of the installed security plugin.
+													printf(
+														esc_html__( 'Security plugins like %s are not needed on PMPro Max and may negatively impact your performance. We recommend deactivating this plugin.', 'paid-memberships-pro' ),
+														esc_html( $plugin[1] )
+													);
+												?>
+											</p>
+										<?php } ?>
+									</td>
 								</tr>
 								<?php
 							}
