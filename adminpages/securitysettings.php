@@ -355,9 +355,9 @@ location ~ ^/wp-content/uploads/pmpro-[^/]+/ {
 					$installed_security_plugins = array();
 
 					// Check if PMPro Hosting is installed.
-					$pmpro_max_status = getenv( 'PMPRO_HOSTING' ) ? 'active' : 'not-installed';
+					$pmpro_max_status = getenv( 'PMPRO_HOSTING' ) === '1' ? 'active' : 'not-installed';
 					if ( $pmpro_max_status === 'active' ) {
-						$installed_security_plugins[] = array( 'pmpro-hosting/pmpro-hosting.php', __( 'PMPro Max', 'paid-memberships-pro' ), $pmpro_max_status );
+						$installed_security_plugins[] = array( 'pmpro-hosting/pmpro-hosting.php', __( 'PMPro Max', 'paid-memberships-pro' ) );
 					}
 
 					// Check if other known security plugins are installed.
@@ -369,7 +369,7 @@ location ~ ^/wp-content/uploads/pmpro-[^/]+/ {
 					foreach ( $security_plugins_to_check as $slug => $label ) {
 						$status = pmpro_is_plugin_installed_or_active( $plugin_files[ $slug ] );
 						if ( $status === 'active' ) {
-							$installed_security_plugins[] = array( $plugin_files[ $slug ], $label, $status );
+							$installed_security_plugins[] = array( $plugin_files[ $slug ], $label );
 						}
 					}
 
@@ -433,7 +433,7 @@ location ~ ^/wp-content/uploads/pmpro-[^/]+/ {
 									<td>
 										<?php echo '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-active">' . esc_html__( 'Active', 'paid-memberships-pro' ) . '</span> '; ?>
 
-										<?php if ( $pmpro_max_status === 'active' && count( $installed_security_plugins ) > 1 && $plugin[0] != 'pmpro-hosting/pmpro-hosting.php' ) { ?>
+										<?php if ( $pmpro_max_status === 'active' && count( $installed_security_plugins ) > 1 && $plugin[0] !== 'pmpro-hosting/pmpro-hosting.php' ) { ?>
 											<p class="description">
 												<?php
 													// translators: %s: The name of the installed security plugin.
