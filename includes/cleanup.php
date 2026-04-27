@@ -22,7 +22,9 @@ function pmpro_delete_user( $user_id ) {
 	 * @param int  $user_id                     The WordPress user ID.
 	 */
 	if ( apply_filters( 'pmpro_user_deletion_cancel_active_subscriptions', $cancel_active_subscriptions, $user_id ) ) {
-		pmpro_changeMembershipLevel( 0, $user_id );
+		foreach ( pmpro_getMembershipLevelsForUser( $user_id ) as $level ) {
+			pmpro_cancelMembershipLevel( $level->id, $user_id );
+		}
 	}
 
 	//Remove all membership history for this user from the pmpro_memberships_users table
