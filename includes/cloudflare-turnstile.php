@@ -22,9 +22,18 @@ function pmpro_cloudflare_turnstile_get_html() {
 	if ( $cf_theme !== 'light' ) {
 		$cf_theme = 'dark';
 	}
+
+	// Get the widget mode setting.
+	$cf_mode = get_option( 'pmpro_cloudflare_turnstile_mode', 'managed' );
+
+	// Set the appearance attribute based on mode.
+	$appearance_attr = '';
+	if ( $cf_mode === 'invisible' ) {
+		$appearance_attr = ' data-appearance="interaction-only"';
+	}
 	?>
 	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-	<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( get_option( 'pmpro_cloudflare_turnstile_site_key' ) ); ?>" data-theme="<?php echo esc_attr( $cf_theme ); ?>"></div>
+	<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( get_option( 'pmpro_cloudflare_turnstile_site_key' ) ); ?>" data-theme="<?php echo esc_attr( $cf_theme ); ?>"<?php echo $appearance_attr; ?>></div>
 	<?php
 
 }
@@ -93,6 +102,7 @@ add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validatio
 function pmpro_cloudflare_turnstile_settings() {
 	// Get the options
 	$cloudflare_turnstile  = get_option( 'pmpro_cloudflare_turnstile', '0' );
+	$cloudflare_mode = get_option( 'pmpro_cloudflare_turnstile_mode', 'managed' );
 	$cloudflare_site_key = get_option( 'pmpro_cloudflare_turnstile_site_key', '' );
 	$cloudflare_secret_key = get_option( 'pmpro_cloudflare_turnstile_secret_key', '' );
 
@@ -111,6 +121,16 @@ function pmpro_cloudflare_turnstile_settings() {
 				<option value="1" <?php selected( $cloudflare_turnstile, 1 ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 			</select>
 			<p class="description"><?php esc_html_e( 'A free CloudFlare Turnstile key is required.', 'paid-memberships-pro' ); ?> <a href="https://www.cloudflare.com/products/turnstile/" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Click here to signup for CloudFlare Turnstile', 'paid-memberships-pro' ); ?></a>.</p>
+		</td>
+	</tr>
+	<tr class="pmpro_cloudflare_turnstile_settings" style="<?php echo esc_attr( $tr_style ); ?>">
+		<th scope="row" valign="top"><label for="cloudflare_turnstile_mode"><?php esc_html_e( 'Widget Mode', 'paid-memberships-pro' ); ?></label></th>
+		<td>
+			<select id="cloudflare_turnstile_mode" name="cloudflare_turnstile_mode">
+				<option value="managed" <?php selected( 'managed', $cloudflare_mode ); ?>><?php esc_html_e( 'Managed (Recommended)', 'paid-memberships-pro' ); ?></option>
+				<option value="invisible" <?php selected( 'invisible', $cloudflare_mode ); ?>><?php esc_html_e( 'Invisible (Non-interactive)', 'paid-memberships-pro' ); ?></option>
+			</select>
+			<p class="description"><?php esc_html_e( 'Managed mode lets Cloudflare decide when to show a challenge. Invisible mode always attempts invisible verification first, showing a challenge only when needed.', 'paid-memberships-pro' ); ?></p>
 		</td>
 	</tr>
    <tr class="pmpro_cloudflare_turnstile_settings" style="<?php echo esc_attr( $tr_style ); ?>">
@@ -147,6 +167,7 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_cloudflare_turnstile_settings' 
  */
 function pmpro_cloudflare_turnstile_settings_save() {
 	pmpro_setOption( 'cloudflare_turnstile', intval( $_POST['cloudflare_turnstile'] ) );
+	pmpro_setOption( 'cloudflare_turnstile_mode', sanitize_text_field( $_POST['cloudflare_turnstile_mode'] ) );
 	pmpro_setOption( 'cloudflare_turnstile_site_key', sanitize_text_field( $_POST['cloudflare_turnstile_site_key'] ) );
 	pmpro_setOption( 'cloudflare_turnstile_secret_key', sanitize_text_field( $_POST['cloudflare_turnstile_secret_key'] ) );
 }
