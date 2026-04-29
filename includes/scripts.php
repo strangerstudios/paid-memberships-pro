@@ -167,6 +167,20 @@ function pmpro_admin_enqueue_scripts() {
 	);
 	wp_enqueue_script( 'pmpro_admin' );
 
+	// On the email template edit screen, also load TinyMCE 8 (vendored) and wp.media.
+	// The editor init lives in pmpro-admin.js inside a document.ready handler, which fires
+	// after both the head-loaded admin script and the footer-loaded TinyMCE library are in.
+	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-emailtemplates' && ! empty( $_REQUEST['edit'] ) ) {
+		wp_enqueue_media();
+		wp_enqueue_script(
+			'pmpro_tinymce',
+			plugins_url( 'includes/lib/tinymce/tinymce.min.js', __DIR__ ),
+			array(),
+			'8.5.0',
+			true
+		);
+	}
+
     // Enqueue styles.
 	// Figure out which admin.css to load.
 	if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/css/admin.css' ) ) {

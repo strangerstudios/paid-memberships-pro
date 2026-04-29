@@ -738,11 +738,299 @@ function pmpro_stripe_get_secretkey() {
 	}
 }
 
+// EMAIL TEMPLATE EDITOR — TinyMCE 8 with Liquid autocomplete.
+//
+// Initializes the vendored TinyMCE 8 instance for the email template body and registers
+// Liquid autocompleters keyed off the trigger characters:
+//   `{`   → initial dropdown of variables + tags
+//   `{{`  → variables, filtered as you type
+//   `|`   → filters (only fires inside an unclosed `{{ ... }}`)
+//
+// Conditionals (`{% if %} ... {% endif %}`) are inserted as a paired template with the
+// cursor positioned at the condition. Autocompleter data (variables, baseUrl, etc.)
+// comes from `window.pmproEmailTemplateEditor`, localized in the page render before the
+// footer-loaded TinyMCE script tag.
+jQuery(document).ready(function () {
+	if ( typeof window.tinymce === 'undefined' || typeof window.pmproEmailTemplateEditor === 'undefined' ) {
+		return;
+	}
+
+	var config = window.pmproEmailTemplateEditor;
+
+	// Filters, tags, and translatable UI strings come from the PHP-localized payload — see
+	// adminpages/emailtemplates-edit.php. Filter data is sourced from `PMPro_Liquid_Renderer::get_filters()`
+	// so it stays in sync with what the renderer actually supports; tag data is defined alongside the
+	// localize call (Liquid block syntax is stable and doesn't have a programmatic registry).
+	var LIQUID_FILTERS = config.filters || [];
+	var LIQUID_TAGS    = config.tags || [];
+	var STRINGS        = config.strings || {};
+
+	// TinyMCE needs to know where to load themes/plugins/skins from since we vendor it.
+	window.tinymce.baseURL = config.baseUrl;
+	window.tinymce.suffix  = '.min';
+
+	// Toolbar/plugin set is intentionally trimmed to formatting that survives `pmpro_kses` sanitization
+	// and renders consistently across email clients. Excluded on purpose: fontfamily (multi-word fallbacks
+	// get stripped by wp_kses' style filter), media/video (email clients block iframes/scripts), codesample
+	// (not relevant), anchors (limited email-client support), insertdatetime/pagebreak/directionality, and
+	// fullscreen (collides with the WordPress admin chrome).
+	window.tinymce.init( {
+		selector:        '#pmpro_email_template_body',
+		license_key:     'gpl',
+		base_url:        config.baseUrl,
+		suffix:          '.min',
+		menubar:         false,
+		branding:        false,
+		promotion:       false,
+		convert_urls:    false,
+		relative_urls:   false,
+		height:          500,
+		readonly:        !! config.isDisabled,
+		plugins: [
+			'advlist', 'autolink', 'charmap', 'code', 'emoticons',
+			'help', 'image', 'link', 'lists', 'preview', 'searchreplace',
+			'table', 'visualblocks', 'wordcount'
+		].join( ' ' ),
+		// Two rows grouped by function. Row 1 is text-level styling — how the text looks. Row 2 is
+		// content/layout — what's in the document and where it sits. Heading levels and font size
+		// share the structure-of-text bucket so they sit next to each other.
+		toolbar: [
+			'undo redo | blocks fontsize | bold italic underline strikethrough | forecolor backcolor removeformat',
+			'bullist numlist | alignleft aligncenter alignright | link image | table hr | charmap emoticons | code preview'
+		],
+		image_advtab:    true,
+		image_caption:   true,
+		image_title:     true,
+		file_picker_types: 'image',
+		file_picker_callback: pmproOpenWpMediaPicker,
+		setup: function( editor ) {
+			if ( config.autocompleteEnabled ) {
+				registerLiquidAutocompleter( editor );
+			}
+		}
+	} );
+
+	// Open the WordPress media library when TinyMCE asks for an image. The editor only requests
+	// images (file_picker_types: 'image'), so we don't handle other media types here.
+	function pmproOpenWpMediaPicker( callback, value, meta ) {
+		if ( typeof window.wp === 'undefined' || typeof window.wp.media === 'undefined' ) {
+			return;
+		}
+		var frame = window.wp.media( {
+			title:    STRINGS.imagePickerTitle,
+			button:   { text: STRINGS.imagePickerButton },
+			multiple: false,
+			library:  { type: 'image' }
+		} );
+		frame.on( 'select', function() {
+			var attachment = frame.state().get( 'selection' ).first().toJSON();
+			callback( attachment.url, { alt: attachment.alt || '' } );
+		} );
+		frame.open();
+	}
+
+	// TinyMCE's autocompleter terminates the pattern at any whitespace BEFORE the trigger walking
+	// hits the trigger char, so we register one autocompleter per Liquid trigger:
+	//
+	//   pmpro_liquid_initial  — fires on the FIRST `{` (no preceding `{`). Shows variables + tag
+	//                           templates initially, narrows to tags once the user types `%`.
+	//   pmpro_liquid_var      — fires on the SECOND `{` of `{{` (preceding char is `{`). Shows
+	//                           variables only, filtered as the user types (e.g. `{{site`).
+	//   pmpro_liquid_filter   — fires on `|` when the cursor sits inside an unclosed `{{ ... }}`.
+	//                           User types `|filter` (no space after the `|`); insertion adds the
+	//                           leading space so the saved template reads `{{ var | filter`.
+	function registerLiquidAutocompleter( editor ) {
+		editor.ui.registry.addAutocompleter( 'pmpro_liquid_initial', {
+			trigger:    '{',
+			minChars:   0,
+			columns:    1,
+			maxResults: 100,
+			matches:    pmproMatchesInitial,
+			fetch:      pmproFetchInitial,
+			onAction:   function( api, rng, value, meta ) {
+				api.hide();
+				editor.selection.setRng( rng );
+				pmproInsertLiquid( editor, meta || {} );
+			}
+		} );
+
+		editor.ui.registry.addAutocompleter( 'pmpro_liquid_var', {
+			trigger:    '{',
+			minChars:   0,
+			columns:    1,
+			maxResults: 100,
+			matches:    pmproMatchesVar,
+			fetch:      pmproFetchVar,
+			onAction:   function( api, rng, value, meta ) {
+				api.hide();
+				// Extend the range back one char so we also replace the leading `{` of `{{`.
+				if ( rng.startContainer && rng.startContainer.nodeType === 3 && rng.startOffset > 0 ) {
+					rng.setStart( rng.startContainer, rng.startOffset - 1 );
+				}
+				editor.selection.setRng( rng );
+				pmproInsertLiquid( editor, meta || {} );
+			}
+		} );
+
+		editor.ui.registry.addAutocompleter( 'pmpro_liquid_filter', {
+			trigger:    '|',
+			minChars:   0,
+			columns:    1,
+			maxResults: 50,
+			matches:    pmproMatchesFilter,
+			fetch:      pmproFetchFilter,
+			onAction:   function( api, rng, value, meta ) {
+				api.hide();
+				editor.selection.setRng( rng );
+				pmproInsertLiquid( editor, meta || {} );
+			}
+		} );
+	}
+
+	// Fires when the trigger `{` is NOT preceded by another `{` — i.e. the very first brace.
+	function pmproMatchesInitial( rng, text, pattern ) {
+		if ( ! rng || rng.startContainer.nodeType !== 3 ) {
+			return false;
+		}
+		var charBefore = rng.startOffset > 0 ? text.charAt( rng.startOffset - 1 ) : '';
+		if ( charBefore === '{' ) {
+			return false;
+		}
+		if ( pattern === '' ) {
+			return true;
+		}
+		if ( pattern.charAt( 0 ) === '%' ) {
+			return pattern.indexOf( '%}' ) === -1;
+		}
+		return false;
+	}
+
+	function pmproFetchInitial( pattern ) {
+		var results;
+		if ( pattern === '' ) {
+			// Just typed `{` — surface both paths so the user can discover them.
+			results = pmproSuggestVariables( '' )
+				.concat( [ { type: 'separator', text: STRINGS.liquidTagsHeader } ] )
+				.concat( pmproSuggestTags( '' ) );
+		} else if ( pattern.charAt( 0 ) === '%' ) {
+			results = pmproSuggestTags( pattern.substring( 1 ).toLowerCase() );
+		} else {
+			results = [];
+		}
+		return Promise.resolve( results );
+	}
+
+	// Fires when the trigger `{` IS preceded by another `{` — i.e. inside `{{ ... }}`.
+	function pmproMatchesVar( rng, text, pattern ) {
+		if ( ! rng || rng.startContainer.nodeType !== 3 ) {
+			return false;
+		}
+		var charBefore = rng.startOffset > 0 ? text.charAt( rng.startOffset - 1 ) : '';
+		if ( charBefore !== '{' ) {
+			return false;
+		}
+		return pattern.indexOf( '}}' ) === -1;
+	}
+
+	function pmproFetchVar( pattern ) {
+		return Promise.resolve( pmproSuggestVariables( pattern.toLowerCase() ) );
+	}
+
+	// Fires on `|` when the cursor sits inside an unclosed `{{ ... }}`.
+	function pmproMatchesFilter( rng, text, pattern ) {
+		if ( ! rng || rng.startContainer.nodeType !== 3 ) {
+			return false;
+		}
+		var before = text.substring( 0, rng.startOffset );
+		var lastOpen  = before.lastIndexOf( '{{' );
+		var lastClose = before.lastIndexOf( '}}' );
+		if ( lastOpen === -1 || lastClose > lastOpen ) {
+			return false;
+		}
+		return pattern.indexOf( '}}' ) === -1;
+	}
+
+	function pmproFetchFilter( pattern ) {
+		return Promise.resolve( pmproSuggestFilters( pattern.toLowerCase() ) );
+	}
+
+	function pmproSuggestFilters( search ) {
+		// `insert` is computed by PHP — leading ` | ` is added so the result reads `{{ var | filter`
+		// with proper spacing, and `default` gets the special `| default: "` form so the cursor
+		// lands inside the opening quote.
+		return LIQUID_FILTERS
+			.filter( function( f ) { return f.name.indexOf( search ) !== -1; } )
+			.map( function( f ) {
+				return {
+					type:  'autocompleteitem',
+					text:  f.name + '  —  ' + f.description,
+					value: f.name,
+					meta:  { insert: f.insert }
+				};
+			} );
+	}
+
+	function pmproSuggestVariables( search ) {
+		return ( config.variables || [] )
+			.filter( function( v ) { return v.name.toLowerCase().indexOf( search ) !== -1; } )
+			.map( function( v ) {
+				return {
+					type:  'autocompleteitem',
+					text:  v.display,
+					value: v.display,
+					meta:  { insert: v.display }
+				};
+			} );
+	}
+
+	function pmproSuggestTags( search ) {
+		return LIQUID_TAGS
+			.filter( function( t ) { return t.name.indexOf( search ) !== -1; } )
+			.map( function( t ) {
+				return {
+					type:  'autocompleteitem',
+					text:  t.label + '  —  ' + t.description,
+					value: t.name,
+					meta:  { insert: t.template }
+				};
+			} );
+	}
+
+	// Replace the autocompleter range with `meta.insert`. If `insert` contains `§`,
+	// place the cursor at that sentinel (used by `{% if § %}{% endif %}` for the condition).
+	function pmproInsertLiquid( editor, meta ) {
+		var content = meta.insert || '';
+		if ( content.indexOf( '§' ) !== -1 ) {
+			var marker = '<span id="pmpro-cursor-marker"></span>';
+			editor.insertContent( content.replace( '§', marker ) );
+			var node = editor.dom.get( 'pmpro-cursor-marker' );
+			if ( node ) {
+				editor.selection.select( node );
+				editor.selection.collapse( true );
+				editor.dom.remove( node );
+			}
+		} else {
+			editor.insertContent( content );
+		}
+	}
+});
+
 // EMAIL TEMPLATES.
 jQuery(document).ready(function ($) {
 
 	/* Variables */
 	$template = $('#edit').val();
+
+	// If this template is disabled, put the WYSIWYG editor in readonly mode once it initializes.
+	if ( typeof tinymce !== 'undefined' && $('#pmpro_email_template_disable').is(':checked') ) {
+		tinymce.on( 'AddEditor', function( e ) {
+			if ( e.editor.id === 'pmpro_email_template_body' ) {
+				e.editor.on( 'init', function() {
+					e.editor.mode.set( 'readonly' );
+				} );
+			}
+		} );
+	}
 
 	$("#pmpro_submit_template_data").click(function () {
 		pmpro_save_template()
@@ -774,6 +1062,14 @@ jQuery(document).ready(function ($) {
 		return value.split( ',' ).map( function( s ) { return s.trim(); } ).filter( Boolean ).join( ', ' );
 	}
 
+	// Get the initialized TinyMCE editor instance for the email body, if available.
+	function pmpro_email_template_body_editor() {
+		if ( typeof tinymce === 'undefined' ) {
+			return null;
+		}
+		return tinymce.get( 'pmpro_email_template_body' ) || null;
+	}
+
 	function pmpro_save_template() {
 
 		$("#pmpro_submit_template_data").attr("disabled", true);
@@ -785,6 +1081,11 @@ jQuery(document).ready(function ($) {
 		var bcc_val = pmpro_clean_email_list( $("#pmpro_email_template_bcc").val() );
 		$("#pmpro_email_template_cc").val( cc_val );
 		$("#pmpro_email_template_bcc").val( bcc_val );
+
+		// Sync the TinyMCE editor content into the underlying textarea so the latest body is sent.
+		if ( typeof tinymce !== 'undefined' ) {
+			tinymce.triggerSave();
+		}
 
 		$data = {
 			template: $template,
@@ -827,6 +1128,10 @@ jQuery(document).ready(function ($) {
 			var template_data = $.parseJSON(response);
 			$('#pmpro_email_template_subject').val(template_data['subject']);
 			$('#pmpro_email_template_body').val(template_data['body']);
+			var ed = pmpro_email_template_body_editor();
+			if ( ed ) {
+				ed.setContent( template_data['body'] );
+			}
 			$('#pmpro_email_template_to').val(template_data['to']);
 			$('#pmpro_email_template_cc').val(template_data['cc']);
 			$('#pmpro_email_template_bcc').val(template_data['bcc']);
@@ -907,6 +1212,7 @@ jQuery(document).ready(function ($) {
 	}
 
 	function pmpro_toggle_form_disabled(disabled) {
+		var ed = pmpro_email_template_body_editor();
 		if (disabled == 'true') {
 			$("#pmpro_email_template_disable").prop('checked', true);
 			$("#pmpro_email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
@@ -914,6 +1220,9 @@ jQuery(document).ready(function ($) {
 			$("#pmpro_email_template_to").attr('readonly', 'readonly').attr('disabled', 'disabled');
 			$("#pmpro_email_template_cc").attr('readonly', 'readonly').attr('disabled', 'disabled');
 			$("#pmpro_email_template_bcc").attr('readonly', 'readonly').attr('disabled', 'disabled');
+			if ( ed ) {
+				ed.mode.set( 'readonly' );
+			}
 		}
 		else {
 			$("#pmpro_email_template_disable").prop('checked', false);
@@ -922,6 +1231,9 @@ jQuery(document).ready(function ($) {
 			$("#pmpro_email_template_to").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
 			$("#pmpro_email_template_cc").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
 			$("#pmpro_email_template_bcc").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
+			if ( ed ) {
+				ed.mode.set( 'design' );
+			}
 		}
 
 	}

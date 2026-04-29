@@ -74,6 +74,89 @@
 			esc_html__( 'Global Variables', 'paid-memberships-pro' ) => PMPro_Email_Template::get_base_email_template_variables_with_description(),
 		);
 	}
+
+	// Liquid is supported when the template uses a PMPro_Email_Template class (or is the shared header/footer).
+	$pmpro_template_supports_liquid = (bool) $email_template_class || in_array( $edit, array( 'header', 'footer' ), true );
+
+	// Flatten the variable list for the TinyMCE autocompleter.
+	// `display` is the full Liquid expression (e.g. `{{ display_name }}`) — what gets inserted on selection.
+	// `name`    is the bare variable name (e.g. `display_name`)          — used as the autocompleter's filter key.
+	$pmpro_autocomplete_variables = array();
+	foreach ( $email_variables as $variables ) {
+		foreach ( array_keys( $variables ) as $key ) {
+			$name = $key;
+			if ( preg_match( '/^\{\{\s*([^}|\s]+)/', $key, $m ) ) {
+				$name = $m[1];
+			}
+			$pmpro_autocomplete_variables[] = array(
+				'name'    => $name,
+				'display' => $key,
+			);
+		}
+	}
+
+	// Build the filter list from the Liquid renderer so descriptions and the supported set stay in sync
+	// with PHP. The `default` filter gets a special insert so the cursor lands inside the opening quote.
+	$pmpro_autocomplete_filters = array();
+	foreach ( PMPro_Liquid_Renderer::get_filters() as $filter_name => $filter ) {
+		$pmpro_autocomplete_filters[] = array(
+			'name'        => $filter_name,
+			'description' => $filter['description'],
+			'insert'      => ( 'default' === $filter_name ) ? ' | default: "' : ' | ' . $filter_name,
+		);
+	}
+
+	// Liquid block tags supported by `PMPro_Liquid_Renderer`. `§` is the cursor sentinel so the cursor
+	// lands at the condition position after `if`/`elsif` insertion. Labels and descriptions are
+	// translatable; templates are syntax (not translated).
+	$pmpro_autocomplete_tags = array(
+		array(
+			'name'        => 'if',
+			'label'       => '{% if … %} … {% endif %}',
+			'description' => __( 'Show content when a condition is true', 'paid-memberships-pro' ),
+			'template'    => '{% if § %}{% endif %}',
+		),
+		array(
+			'name'        => 'elsif',
+			'label'       => '{% elsif … %}',
+			'description' => __( 'Additional condition inside an if block', 'paid-memberships-pro' ),
+			'template'    => '{% elsif § %}',
+		),
+		array(
+			'name'        => 'else',
+			'label'       => '{% else %}',
+			'description' => __( 'Fallback content inside an if block', 'paid-memberships-pro' ),
+			'template'    => '{% else %}',
+		),
+		array(
+			'name'        => 'endif',
+			'label'       => '{% endif %}',
+			'description' => __( 'Close an if block', 'paid-memberships-pro' ),
+			'template'    => '{% endif %}',
+		),
+	);
+
+	// Attach to `pmpro_tinymce` (footer-loaded) rather than `pmpro_admin` (head-loaded) — by the time
+	// this page callback runs, the head has already been printed, so inline data attached to a
+	// head script wouldn't make it onto the page. The editor init in pmpro-admin.js waits for
+	// document.ready, by which point both head and footer scripts (and this localized data) are in.
+	wp_localize_script(
+		'pmpro_tinymce',
+		'pmproEmailTemplateEditor',
+		array(
+			'baseUrl'             => plugins_url( 'includes/lib/tinymce', PMPRO_BASE_FILE ),
+			'variables'           => $pmpro_autocomplete_variables,
+			'filters'             => $pmpro_autocomplete_filters,
+			'tags'                => $pmpro_autocomplete_tags,
+			'autocompleteEnabled' => $pmpro_template_supports_liquid,
+			'isDisabled'          => filter_var( $template_data['disabled'], FILTER_VALIDATE_BOOLEAN ),
+			'strings'             => array(
+				'liquidTagsHeader'  => __( 'Liquid Tags', 'paid-memberships-pro' ),
+				'imagePickerTitle'  => __( 'Select or upload an image', 'paid-memberships-pro' ),
+				'imagePickerButton' => __( 'Use this image', 'paid-memberships-pro' ),
+			),
+		)
+	);
 ?>
 <hr class="wp-header-end">
 <div id="message" class="status_message_wrapper">
