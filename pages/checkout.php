@@ -380,9 +380,97 @@ if ( empty( $default_gateway ) ) {
 			?>
 
 			<?php
+			// Determine valid gateways and current gateway for the selector, field rendering, and submit buttons below.
+			$valid_gateways = apply_filters( 'pmpro_valid_gateways', pmpro_get_enabled_gateways() );
+			$valid_gateways = array_unique( array_values( $valid_gateways ) );
+
+			// Determine the currently selected gateway.
+			if ( ! empty( $_REQUEST['gateway'] ) ) {
+				$current_gateway = sanitize_text_field( $_REQUEST['gateway'] );
+			} else {
+				$current_gateway = ! empty( $valid_gateways ) ? $valid_gateways[0] : '';
+			}
+			if ( ! in_array( $current_gateway, $valid_gateways, true ) ) {
+				$current_gateway = ! empty( $valid_gateways ) ? $valid_gateways[0] : '';
+			}
+
+			// Check if the current gateway requires billing address (for initial page load visibility).
+			$current_gw_class = ! empty( $current_gateway ) ? 'PMProGateway_' . $current_gateway : 'PMProGateway';
+			$current_gw_requires_billing = true;
+			if ( class_exists( $current_gw_class ) && method_exists( $current_gw_class, 'requires_billing_address' ) ) {
+				$current_gw_requires_billing = call_user_func( array( $current_gw_class, 'requires_billing_address' ) );
+			}
+
+			/**
+			 * Filter to disable the core gateway selector at checkout.
+			 *
+			 * @since TBD
+			 *
+			 * @param bool   $show        Whether to show the gateway selector. Default true.
+			 * @param object $pmpro_level The level being purchased.
+			 */
+			$show_gateway_selector = apply_filters( 'pmpro_show_gateway_selector', true, $pmpro_level );
+
+			if ( $show_gateway_selector && count( $valid_gateways ) > 1 && ! pmpro_isLevelFree( $pmpro_level ) ) {
+				$all_gateways = pmpro_gateways();
+				?>
+				<fieldset id="pmpro_payment_method" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_method' ) ); ?>">
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+							<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>">
+									<?php esc_html_e( 'Choose Your Payment Method', 'paid-memberships-pro' ); ?>
+								</h2>
+							</legend>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-radio' ) ); ?>">
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-radio-items' ) ); ?>">
+										<?php foreach ( $valid_gateways as $gw_slug ) :
+											$gw_class = ! empty( $gw_slug ) ? 'PMProGateway_' . $gw_slug : 'PMProGateway';
+
+											// Get the checkout label.
+											if ( class_exists( $gw_class ) && method_exists( $gw_class, 'get_checkout_label' ) ) {
+												$label = call_user_func( array( $gw_class, 'get_checkout_label' ) );
+											} elseif ( isset( $all_gateways[ $gw_slug ] ) ) {
+												$label = $all_gateways[ $gw_slug ];
+											} else {
+												$label = ucwords( $gw_slug );
+											}
+
+											// Check if this gateway requires billing address (for JS data attribute).
+											$requires_billing = true;
+											if ( class_exists( $gw_class ) && method_exists( $gw_class, 'requires_billing_address' ) ) {
+												$requires_billing = call_user_func( array( $gw_class, 'requires_billing_address' ) );
+											}
+										?>
+											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-radio-item' ) ); ?> gateway_<?php echo esc_attr( $gw_slug ); ?>">
+												<input type="radio"
+													id="gateway_<?php echo esc_attr( $gw_slug ); ?>"
+													name="gateway"
+													class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-radio' ) ); ?>"
+													value="<?php echo esc_attr( $gw_slug ); ?>"
+													<?php checked( $current_gateway, $gw_slug ); ?>
+													data-requires-billing="<?php echo esc_attr( $requires_billing ? '1' : '0' ); ?>"
+												/>
+												<label for="gateway_<?php echo esc_attr( $gw_slug ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_form_label-inline pmpro_clickable' ) ); ?>">
+													<?php echo esc_html( $label ); ?>
+												</label>
+											</div>
+										<?php endforeach; ?>
+									</div> <!-- end pmpro_form_field-radio-items -->
+								</div> <!-- end pmpro_form_field pmpro_form_field-radio -->
+							</div> <!-- end pmpro_form_fields -->
+						</div> <!-- end pmpro_card_content -->
+					</div> <!-- end pmpro_card -->
+				</fieldset> <!-- end pmpro_payment_method -->
+				<?php
+			}
+			?>
+
+			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 				if ( $pmpro_include_billing_address_fields ) { ?>
-			<fieldset id="pmpro_billing_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_billing_address_fields' ) ); ?>" <?php if ( ! $pmpro_requirebilling || apply_filters("pmpro_hide_billing_address_fields", false) ) { ?>style="display: none;"<?php } ?>>
+			<fieldset id="pmpro_billing_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_billing_address_fields' ) ); ?>" <?php if ( ! $pmpro_requirebilling || ! $current_gw_requires_billing || apply_filters("pmpro_hide_billing_address_fields", false) ) { ?>style="display: none;"<?php } ?>>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 						<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
@@ -476,83 +564,45 @@ if ( empty( $default_gateway ) ) {
 
 			<?php
 				/**
-				 * Filter to set if the payment information fields should be shown.
+				 * Render per-gateway payment fields.
 				 *
-				 * @param bool $include_payment_information_fields
-				 * @return bool
+				 * When multiple gateways are enabled, each gateway's fields are
+				 * rendered inside a container div. Only the selected gateway's
+				 * container is visible; the JS toggles the others.
+				 *
+				 * When only one gateway is enabled, we still use show_checkout_fields()
+				 * but also respect the legacy pmpro_include_payment_information_fields filter.
+				 *
+				 * Uses $valid_gateways and $current_gateway set above in the gateway selector section.
 				 */
-				$pmpro_include_payment_information_fields = apply_filters( 'pmpro_include_payment_information_fields', true );
-				if ( $pmpro_include_payment_information_fields ) {
-					?>
-					<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>" <?php if ( ! $pmpro_requirebilling || apply_filters( 'pmpro_hide_payment_information_fields', false ) ) { ?>style="display: none;"<?php } ?>>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-								<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
-									<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></h2>
-								</legend>
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-									<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
-										<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
-										<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'AccountNumber' ) ); ?>" type="text" value="<?php echo esc_attr($AccountNumber); ?>" data-encrypted-name="number" autocomplete="off" />
-									</div>
-									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
-										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-select pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
-											<label for="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Expiration Date', 'paid-memberships-pro' );?></label>
-											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
-												<select id="ExpirationMonth" name="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'ExpirationMonth' ) ); ?>">
-													<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
-													<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
-													<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
-													<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
-													<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
-													<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
-													<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
-													<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
-													<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
-													<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
-													<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
-													<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
-												</select>/<select id="ExpirationYear" name="ExpirationYear" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'ExpirationYear' ) ); ?>">
-												<?php
-													$num_years = apply_filters( 'pmpro_num_expiration_years', 10 );
-
-													for ( $i = date_i18n( 'Y' ); $i < intval( date_i18n( 'Y' ) ) + intval( $num_years ); $i++ )
-													{
-														?>
-														<option value="<?php echo esc_attr( $i ) ?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } elseif($i == date_i18n( 'Y' ) + 1) { ?>selected="selected"<?php } ?>><?php echo esc_html( $i )?></option>
-														<?php
-													}
-												?>
-												</select>
-											</div> <!-- end pmpro_form_fields-inline -->
-										</div>
-										<?php
-											$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
-											if($pmpro_show_cvv) { ?>
-											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
-												<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Security Code (CVC)', 'paid-memberships-pro' );?></label>
-												<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
-											</div>
-										<?php } ?>
-									</div> <!-- end pmpro_cols-2 -->
-									<?php if($pmpro_show_discount_code) { ?>
-										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
-											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
-												<label for="pmpro_discount_code" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
-												<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
-													<input class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_alter_price', 'discount_code' ) ); ?>" id="pmpro_discount_code" name="pmpro_discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code); ?>" />
-													<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-discount-code', 'other_discount_code_button' ) ); ?>" />
-												</div> <!-- end pmpro_form_fields-inline -->
-												<div id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ) ); ?>" style="display: none;"></div>
-											</div>
-										</div> <!-- end pmpro_cols-2 -->
-									<?php } ?>
-								</div> <!-- end pmpro_form_fields -->
-							</div> <!-- end pmpro_card_content -->
-						</div> <!-- end pmpro_card -->
-					</fieldset> <!-- end pmpro_payment_information_fields -->
-					<?php
+				if ( count( $valid_gateways ) > 1 ) {
+					// Multi-gateway: render each gateway's fields in a container.
+					foreach ( $valid_gateways as $gw_slug ) {
+						$gw_class = ! empty( $gw_slug ) ? 'PMProGateway_' . $gw_slug : 'PMProGateway';
+						$is_selected = ( $gw_slug === $current_gateway );
+						?>
+						<div class="pmpro_gateway_fields pmpro_gateway_fields_<?php echo esc_attr( $gw_slug ); ?>" <?php if ( ! $is_selected ) { ?>style="display: none;"<?php } ?>>
+							<?php
+							if ( class_exists( $gw_class ) && method_exists( $gw_class, 'show_checkout_fields' ) ) {
+								call_user_func( array( $gw_class, 'show_checkout_fields' ) );
+							}
+							?>
+						</div>
+						<?php
+					}
+				} else {
+					// Single gateway: use the legacy filter for backward compatibility.
+					$pmpro_include_payment_information_fields = apply_filters( 'pmpro_include_payment_information_fields', true );
+					if ( $pmpro_include_payment_information_fields ) {
+						$gw_slug = reset( $valid_gateways );
+						$gw_class = ! empty( $gw_slug ) ? 'PMProGateway_' . $gw_slug : 'PMProGateway';
+						if ( class_exists( $gw_class ) && method_exists( $gw_class, 'show_checkout_fields' ) ) {
+							call_user_func( array( $gw_class, 'show_checkout_fields' ) );
+						} else {
+							// Fall back to base class default fields.
+							PMProGateway::show_checkout_fields();
+						}
+					}
 				}
 			?>
 
@@ -599,22 +649,46 @@ if ( empty( $default_gateway ) ) {
 				<?php } else { ?>
 
 					<?php
-						/**
-						 * Filter to set the default submit button on the checkout page.
-						 *
-						 * @param bool $pmpro_checkout_default_submit_button Default is true.
-						 * @return bool
-						 */
-						$pmpro_checkout_default_submit_button = apply_filters('pmpro_checkout_default_submit_button', true);
-						if ( $pmpro_checkout_default_submit_button ) {
+					// Uses $valid_gateways and $current_gateway set above in the gateway selector section.
+					if ( count( $valid_gateways ) > 1 ) {
+						// Multi-gateway: render each gateway's submit button in a container.
+						foreach ( $valid_gateways as $gw_slug ) {
+							$gw_class = ! empty( $gw_slug ) ? 'PMProGateway_' . $gw_slug : 'PMProGateway';
+							$is_selected = ( $gw_slug === $current_gateway );
 							?>
-							<span id="pmpro_submit_span">
-								<input type="hidden" name="submit-checkout" value="1" />
-								<input type="submit" id="pmpro_btn-submit" class="<?php echo esc_attr( pmpro_get_element_class(  'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php if($pmpro_requirebilling) { esc_html_e('Submit and Check Out', 'paid-memberships-pro' ); } else { esc_html_e('Submit and Confirm', 'paid-memberships-pro' );}?>" />
-							</span>
+							<div class="pmpro_gateway_submit pmpro_gateway_submit_<?php echo esc_attr( $gw_slug ); ?>" <?php if ( ! $is_selected ) { ?>style="display: none;"<?php } ?>>
+								<?php
+								if ( class_exists( $gw_class ) && method_exists( $gw_class, 'show_submit_button' ) ) {
+									call_user_func( array( $gw_class, 'show_submit_button' ) );
+								} else {
+									PMProGateway::show_submit_button();
+								}
+								?>
+							</div>
 							<?php
-							}
-						?>
+						}
+					} else {
+						// Single gateway: use static method with legacy filter fallback.
+						$gw_slug = reset( $valid_gateways );
+						$gw_class = ! empty( $gw_slug ) ? 'PMProGateway_' . $gw_slug : 'PMProGateway';
+						if ( class_exists( $gw_class ) && method_exists( $gw_class, 'show_submit_button' ) ) {
+							call_user_func( array( $gw_class, 'show_submit_button' ) );
+						} else {
+							PMProGateway::show_submit_button();
+						}
+					}
+					?>
+
+					<?php
+					// Free-level fallback submit button, shown when a discount code makes a level free.
+					// In multi-gateway mode, the per-gateway submit buttons are inside .pmpro_gateway_submit
+					// wrappers that get hidden for free levels. This standalone button sits outside those wrappers.
+					if ( count( $valid_gateways ) > 1 ) { ?>
+						<span id="pmpro_free_submit_span" style="display: none;">
+							<input type="hidden" name="submit-checkout" value="1" />
+							<input type="submit" id="pmpro_btn-submit-free" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php esc_attr_e( 'Submit and Confirm', 'paid-memberships-pro' ); ?>" />
+						</span>
+					<?php } ?>
 
 				<?php } ?>
 

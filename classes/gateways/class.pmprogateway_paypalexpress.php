@@ -33,16 +33,8 @@
 			//make sure PayPal Express is a gateway option
 			add_filter('pmpro_gateways', array('PMProGateway_paypalexpress', 'pmpro_gateways'));
 
-			//code to add at checkout
-			$gateway = pmpro_getGateway();
-			if($gateway == "paypalexpress")
-			{
-				add_filter('pmpro_include_billing_address_fields', '__return_false');
-				add_filter('pmpro_include_payment_information_fields', '__return_false');
-				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
-				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
-				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);				
-			}
+			// Hooks not handled by static methods.
+			add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
             add_action('pmpro_checkout_preheader', array('PMProGateway_paypalexpress', 'pmpro_checkout_preheader'));
 			add_filter( 'pmpro_process_refund_paypalexpress', array('PMProGateway_paypalexpress', 'process_refund' ), 10, 2 );
 		}
@@ -79,6 +71,84 @@
 		 */
 		public static function get_description_for_gateway_settings() {
 			return esc_html__( 'With PayPal, members can pay with their PayPal balance, credit/debit cards, linked bank accounts, or local payment methods. PayPal is accepted worldwide and offers multi-currency support for 200+ markets and 25+ currencies.', 'paid-memberships-pro' );
+		}
+
+		/**
+		 * Get the checkout label for this gateway.
+		 *
+		 * @since TBD
+		 *
+		 * @return string
+		 */
+		public static function get_checkout_label() {
+			return esc_html__( 'Check Out with PayPal', 'paid-memberships-pro' );
+		}
+
+		/**
+		 * Render checkout fields for PayPal Express.
+		 *
+		 * PayPal Express is an offsite gateway -- no payment fields needed.
+		 *
+		 * @since TBD
+		 */
+		public static function show_checkout_fields() {
+			// Offsite gateway: no checkout fields to render.
+		}
+
+		/**
+		 * PayPal Express does not require billing address fields.
+		 *
+		 * @since TBD
+		 *
+		 * @return bool
+		 */
+		public static function requires_billing_address() {
+			return false;
+		}
+
+		/**
+		 * Modify the required billing fields for PayPal Express.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $fields Associative array of field_name => value.
+		 * @return array Modified array of required fields.
+		 */
+		public static function get_required_billing_fields( $fields ) {
+			return self::pmpro_required_billing_fields( $fields );
+		}
+
+		/**
+		 * Render the submit button for PayPal Express.
+		 *
+		 * Shows the branded "Check Out With PayPal" button.
+		 *
+		 * @since TBD
+		 */
+		public static function show_submit_button() {
+			global $pmpro_requirebilling;
+
+			// If billing is not required (free level), show the standard submit button.
+			if ( ! $pmpro_requirebilling ) {
+				PMProGateway::show_submit_button();
+				return;
+			}
+
+			?>
+			<span id="pmpro_paypalexpress_checkout">
+				<input type="hidden" name="submit-checkout" value="1" />
+				<button type="submit" id="pmpro_btn-submit-paypalexpress" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout pmpro_btn-submit-checkout-paypal' ) ); ?>">
+					<?php
+						printf(
+							/* translators: %s is the PayPal logo */
+							esc_html__( 'Check Out With %s', 'paid-memberships-pro' ),
+							'<span class="pmpro_btn-submit-checkout-paypal-image"></span>'
+						);
+					?>
+					<span class="screen-reader-text"><?php esc_html_e( 'PayPal', 'paid-memberships-pro' ); ?></span>
+				</button>
+			</span>
+			<?php
 		}
 
 		/**

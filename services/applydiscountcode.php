@@ -176,39 +176,35 @@
 			<?php
 			}
 
-			//hide/show billing
-			if(pmpro_areLevelsFree($code_levels) || pmpro_getGateway() == "paypalexpress" || pmpro_getGateway() == "paypalstandard" || pmpro_getGateway() == 'check')
+			//hide/show billing and gateway-specific UI
+			if(pmpro_areLevelsFree($code_levels))
 			{
 				?>
 				jQuery('#pmpro_billing_address_fields').hide();
 				jQuery('#pmpro_payment_information_fields').hide();
+				jQuery('.pmpro_gateway_fields').hide();
+				jQuery('.pmpro_gateway_submit').hide();
+				jQuery('#pmpro_payment_method').hide();
+				// Show the free-level fallback button (outside gateway wrappers) or the single-gateway submit.
+				jQuery('#pmpro_free_submit_span').show();
+				jQuery('#pmpro_submit_span').show();
 				<?php
 			}
 			else
 			{
 				?>
-				jQuery('#pmpro_billing_address_fields').show();
-				jQuery('#pmpro_payment_information_fields').show();
+				jQuery('#pmpro_payment_method').show();
+				jQuery('#pmpro_free_submit_span').hide();
+				// Re-trigger the selected gateway's UI.
+				var $selectedGateway = jQuery('input[name="gateway"]:checked');
+				if ( $selectedGateway.length ) {
+					$selectedGateway.trigger('change');
+				} else {
+					jQuery('#pmpro_billing_address_fields').show();
+					jQuery('.pmpro_gateway_fields').first().show();
+					jQuery('.pmpro_gateway_submit').first().show();
+				}
 				<?php
-			}
-
-			//hide/show paypal button
-			if(pmpro_getGateway() == "paypalexpress" || pmpro_getGateway() == "paypalstandard")
-			{
-				if(pmpro_areLevelsFree($code_levels))
-				{
-					?>
-					jQuery('#pmpro_paypalexpress_checkout').hide();
-					jQuery('#pmpro_submit_span').show();
-					<?php
-				}
-				else
-				{
-					?>
-					jQuery('#pmpro_submit_span').hide();
-					jQuery('#pmpro_paypalexpress_checkout').show();
-					<?php
-				}
 			}
 
 			//filter to insert your own code. Not MMPU compatible.

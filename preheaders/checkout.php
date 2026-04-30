@@ -54,8 +54,8 @@ if ( ! empty( $pmpro_review ) ) {
 	$gateway = get_option( "pmpro_gateway" );
 }
 
-//set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-$valid_gateways = apply_filters( "pmpro_valid_gateways", array( get_option( "pmpro_gateway" ) ) );
+//set valid gateways - all enabled gateways and any gateway added through the filter will be allowed
+$valid_gateways = apply_filters( "pmpro_valid_gateways", pmpro_get_enabled_gateways() );
 
 //let's add an error now, if an invalid gateway is set
 if ( ! in_array( $gateway, $valid_gateways ) ) {
@@ -302,6 +302,11 @@ $pmpro_required_billing_fields = array(
 	"ExpirationYear"  => $ExpirationYear,
 	"CVV"             => $CVV
 );
+// Let the selected gateway modify required billing fields via static method.
+$gw_class = ! empty( $gateway ) && $gateway !== 'free' ? 'PMProGateway_' . $gateway : 'PMProGateway';
+if ( class_exists( $gw_class ) && method_exists( $gw_class, 'get_required_billing_fields' ) ) {
+	$pmpro_required_billing_fields = call_user_func( array( $gw_class, 'get_required_billing_fields' ), $pmpro_required_billing_fields );
+}
 $pmpro_required_billing_fields = apply_filters( "pmpro_required_billing_fields", $pmpro_required_billing_fields );
 $pmpro_required_user_fields    = array(
 	"username"      => $username,
@@ -721,3 +726,14 @@ pmpro_getAllLevels();
  * @since 2.1
  */
 do_action( 'pmpro_after_checkout_preheader', $pmpro_review );
+
+// Enqueue checkout scripts for all enabled gateways.
+foreach ( $valid_gateways as $gw_slug ) {
+	if ( empty( $gw_slug ) || $gw_slug === 'free' ) {
+		continue;
+	}
+	$gw_class = 'PMProGateway_' . $gw_slug;
+	if ( class_exists( $gw_class ) && method_exists( $gw_class, 'enqueue_checkout_scripts' ) ) {
+		call_user_func( array( $gw_class, 'enqueue_checkout_scripts' ) );
+	}
+}

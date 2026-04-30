@@ -897,6 +897,11 @@ function pmpro_get_deprecated_add_ons() {
 			'file' => 'pmpro-subscription-check.php',
 			'label' => 'Subscription Check'
 		),
+		'pmpro-add-paypal-express' => array(
+			'file' => 'pmpro-add-paypal-express.php',
+			'label' => 'Add PayPal Express',
+			'message' => __( 'Offering multiple payment gateways at checkout is now a built-in feature. Enable PayPal Express as an active gateway in your Payment Settings.', 'paid-memberships-pro' ),
+		),
 	);
 	
 	$deprecated = apply_filters( 'pmpro_deprecated_add_ons_list', $deprecated );
@@ -1052,10 +1057,11 @@ function pmpro_check_for_deprecated_gateways() {
 		$undeprecated_gateways = explode( ',', $undeprecated_gateways );
 	}
 	$default_gateway = get_option( 'pmpro_gateway' );
+	$enabled_gateways = function_exists( 'pmpro_get_enabled_gateways' ) ? pmpro_get_enabled_gateways() : array( $default_gateway );
 
 	$deprecated_gateways = pmpro_get_deprecated_gateways();
 	foreach ( $deprecated_gateways as $deprecated_gateway ) {
-		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
+		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways ) || in_array( $deprecated_gateway, $enabled_gateways, true ) ) {
 			require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_' . $deprecated_gateway . '.php' );
 			if ( ! in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
 				$undeprecated_gateways[] = $deprecated_gateway;
@@ -1064,6 +1070,22 @@ function pmpro_check_for_deprecated_gateways() {
 		}
 	}
 }
+
+/**
+ * Disable the core gateway selector when the Pay by Check add-on is active
+ * and providing its own gateway selection UI. This prevents duplicate radio buttons.
+ *
+ * Hooked on init so that the add-on's hooks are already registered when we check.
+ *
+ * @since TBD
+ */
+function pmpro_maybe_disable_gateway_selector_for_pbc() {
+	if ( defined( 'PMPROPBC_VER' ) && has_action( 'pmpro_checkout_boxes', 'pmpropbc_checkout_boxes' ) ) {
+		add_filter( 'pmpro_show_gateway_selector', '__return_false' );
+	}
+}
+add_action( 'init', 'pmpro_maybe_disable_gateway_selector_for_pbc', 20 );
+
 
 /**
  * Disable uninstall script for duplicates

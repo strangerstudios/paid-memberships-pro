@@ -334,6 +334,45 @@
 		}
 
 		/**
+		 * Find a legacy callback for a gateway class on a given filter hook.
+		 *
+		 * First checks if the callback is hooked to the filter (covers cases where
+		 * init() added it for the active gateway). Then falls back to checking if the
+		 * gateway class has a static method by that name (covers secondary gateways
+		 * whose init() didn't fire for this page load).
+		 *
+		 * @since TBD
+		 *
+		 * @param string $gateway_class The gateway class name (e.g. 'PMProGateway_stripe').
+		 * @param string $filter_name   The filter hook name to check.
+		 * @return callable|false The callback if found, false otherwise.
+		 */
+		private static function get_legacy_gateway_callback( $gateway_class, $filter_name ) {
+			if ( $gateway_class === 'PMProGateway' ) {
+				return false;
+			}
+
+			// First, check if the gateway has hooked this filter (active gateway path).
+			global $wp_filter;
+			if ( ! empty( $wp_filter[ $filter_name ]->callbacks ) ) {
+				foreach ( $wp_filter[ $filter_name ]->callbacks as $priority => $filters ) {
+					foreach ( $filters as $filter ) {
+						if ( is_array( $filter['function'] ) && $gateway_class === $filter['function'][0] ) {
+							return $filter['function'];
+						}
+					}
+				}
+			}
+
+			// Fall back to checking if the class has a method by that name (secondary gateway path).
+			if ( method_exists( $gateway_class, $filter_name ) ) {
+				return array( $gateway_class, $filter_name );
+			}
+
+			return false;
+		}
+
+		/**
 		 * Get a description for this gateway.
 		 *
 		 * @since 3.5
@@ -342,5 +381,210 @@
 		 */
 		public static function get_description_for_gateway_settings() {
 			return esc_html__( '&#8212;', 'paid-memberships-pro' );
+		}
+
+		/**
+		 * Get the human-readable label for the gateway at checkout.
+		 *
+		 * Used for the radio button label when multiple gateways are available.
+		 * Override in subclasses for a friendlier label (e.g., "Pay with Credit Card").
+		 *
+		 * @since TBD
+		 *
+		 * @return string The checkout label for this gateway.
+		 */
+		public static function get_checkout_label() {
+			$gateways = pmpro_gateways();
+			$gateway_slug = str_replace( 'PMProGateway_', '', get_called_class() );
+			if ( get_called_class() === 'PMProGateway' ) {
+				$gateway_slug = '';
+			}
+			if ( isset( $gateways[ $gateway_slug ] ) ) {
+				return $gateways[ $gateway_slug ];
+			}
+			return ucwords( $gateway_slug );
+		}
+
+		/**
+		 * Enqueue gateway-specific scripts and styles for checkout.
+		 *
+		 * Called by the checkout preheader for each enabled gateway so that
+		 * all necessary JS/CSS is loaded when multiple gateways are available.
+		 * Override in subclasses to enqueue gateway-specific assets.
+		 *
+		 * @since TBD
+		 */
+		public static function enqueue_checkout_scripts() {
+			// Base class does nothing. Gateways override to enqueue their scripts.
+		}
+
+		/**
+		 * Render the payment fields for this gateway at checkout.
+		 *
+		 * Called by the checkout page inside a gateway-specific container div.
+		 * The default implementation first checks if the gateway has hooked
+		 * `pmpro_include_payment_information_fields` (legacy pattern) and uses
+		 * that if found. Otherwise, renders the standard credit card fields.
+		 *
+		 * Gateways that use their own fields (e.g., Stripe Elements) should
+		 * override this method. Offsite gateways should override to render
+		 * nothing or their redirect/submit button.
+		 *
+		 * @since TBD
+		 */
+		public static function show_checkout_fields() {
+			global $wp_filter, $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code,
+				$CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+
+			// Check if this gateway has a legacy pmpro_include_payment_information_fields callback
+			// (for gateways that haven't been updated to override show_checkout_fields).
+			// First check hooked filters, then check for a class method by that name.
+			$gateway_class = get_called_class();
+			$legacy_callback = self::get_legacy_gateway_callback( $gateway_class, 'pmpro_include_payment_information_fields' );
+			if ( $legacy_callback ) {
+				call_user_func( $legacy_callback, true );
+				return;
+			}
+			?>
+			<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>" <?php if ( ! $pmpro_requirebilling || apply_filters( 'pmpro_hide_payment_information_fields', false ) ) { ?>style="display: none;"<?php } ?>>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+						<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+							<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></h2>
+						</legend>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+							<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr( $CardType ); ?>" />
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
+								<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
+								<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'AccountNumber' ) ); ?>" type="text" value="<?php echo esc_attr( $AccountNumber ); ?>" data-encrypted-name="number" autocomplete="off" />
+							</div>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-select pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
+									<label for="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
+										<select id="ExpirationMonth" name="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'ExpirationMonth' ) ); ?>">
+											<?php for ( $i = 1; $i <= 12; $i++ ) {
+												$val = str_pad( $i, 2, '0', STR_PAD_LEFT ); ?>
+												<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $ExpirationMonth, $val ); ?>><?php echo esc_html( $val ); ?></option>
+											<?php } ?>
+										</select>/<select id="ExpirationYear" name="ExpirationYear" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'ExpirationYear' ) ); ?>">
+										<?php
+											$num_years = apply_filters( 'pmpro_num_expiration_years', 10 );
+											for ( $i = date_i18n( 'Y' ); $i < intval( date_i18n( 'Y' ) ) + intval( $num_years ); $i++ ) {
+												?>
+												<option value="<?php echo esc_attr( $i ); ?>" <?php if ( $ExpirationYear == $i ) { ?>selected="selected"<?php } elseif ( $i == date_i18n( 'Y' ) + 1 ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $i ); ?></option>
+												<?php
+											}
+										?>
+										</select>
+									</div> <!-- end pmpro_form_fields-inline -->
+								</div>
+								<?php
+									$pmpro_show_cvv = apply_filters( 'pmpro_show_cvv', true );
+									if ( $pmpro_show_cvv ) { ?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
+										<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Security Code (CVC)', 'paid-memberships-pro' ); ?></label>
+										<input id="CVV" name="CVV" type="text" size="4" value="<?php if ( ! empty( $_REQUEST['CVV'] ) ) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); } ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
+									</div>
+								<?php } ?>
+							</div> <!-- end pmpro_cols-2 -->
+							<?php if ( $pmpro_show_discount_code ) { ?>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
+										<label for="pmpro_discount_code" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
+										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
+											<input class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_alter_price', 'discount_code' ) ); ?>" id="pmpro_discount_code" name="pmpro_discount_code" type="text" size="10" value="<?php echo esc_attr( $discount_code ); ?>" />
+											<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-discount-code', 'other_discount_code_button' ) ); ?>" />
+										</div> <!-- end pmpro_form_fields-inline -->
+										<div id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ) ); ?>" style="display: none;"></div>
+									</div>
+								</div> <!-- end pmpro_cols-2 -->
+							<?php } ?>
+						</div> <!-- end pmpro_form_fields -->
+					</div> <!-- end pmpro_card_content -->
+				</div> <!-- end pmpro_card -->
+			</fieldset> <!-- end pmpro_payment_information_fields -->
+			<?php
+		}
+
+		/**
+		 * Whether this gateway requires billing address fields at checkout.
+		 *
+		 * Used by the checkout JS to toggle billing address visibility when
+		 * switching between gateways. Override in subclasses to return false
+		 * for gateways that don't need billing address (e.g., PayPal, Check).
+		 *
+		 * @since TBD
+		 *
+		 * @return bool True if billing address fields should be shown, false otherwise.
+		 */
+		public static function requires_billing_address() {
+			// Check for legacy pmpro_include_billing_address_fields callback.
+			$gateway_class = get_called_class();
+			$legacy_callback = self::get_legacy_gateway_callback( $gateway_class, 'pmpro_include_billing_address_fields' );
+			if ( $legacy_callback ) {
+				return (bool) call_user_func( $legacy_callback, true );
+			}
+
+			return true;
+		}
+
+		/**
+		 * Modify the required billing fields for this gateway.
+		 *
+		 * Called by the checkout preheader to let the selected gateway remove
+		 * fields it doesn't need (e.g., an offsite gateway removes all card fields,
+		 * a gateway using hosted fields removes card fields since validation is remote).
+		 *
+		 * The default implementation checks if the gateway has hooked the legacy
+		 * `pmpro_required_billing_fields` filter and calls that if found.
+		 * Otherwise, returns the fields unchanged (all fields required).
+		 *
+		 * @since TBD
+		 *
+		 * @param array $fields Associative array of field_name => value.
+		 * @return array Modified array of required fields.
+		 */
+		public static function get_required_billing_fields( $fields ) {
+			// Check for legacy pmpro_required_billing_fields callback.
+			$gateway_class = get_called_class();
+			$legacy_callback = self::get_legacy_gateway_callback( $gateway_class, 'pmpro_required_billing_fields' );
+			if ( $legacy_callback ) {
+				return call_user_func( $legacy_callback, $fields );
+			}
+
+			return $fields;
+		}
+
+		/**
+		 * Render the submit button for this gateway at checkout.
+		 *
+		 * The default implementation renders the standard "Submit and Check Out"
+		 * button. Offsite gateways (PayPal, etc.) should override this to render
+		 * their branded redirect button instead.
+		 *
+		 * The default implementation checks if the gateway has hooked the legacy
+		 * `pmpro_checkout_default_submit_button` filter and calls that if found.
+		 *
+		 * @since TBD
+		 */
+		public static function show_submit_button() {
+			global $pmpro_requirebilling;
+
+			// Check for legacy pmpro_checkout_default_submit_button callback.
+			$gateway_class = get_called_class();
+			$legacy_callback = self::get_legacy_gateway_callback( $gateway_class, 'pmpro_checkout_default_submit_button' );
+			if ( $legacy_callback ) {
+				call_user_func( $legacy_callback, true );
+				return;
+			}
+
+			// Default submit button.
+			?>
+			<span id="pmpro_submit_span">
+				<input type="hidden" name="submit-checkout" value="1" />
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php if ( $pmpro_requirebilling ) { esc_attr_e( 'Submit and Check Out', 'paid-memberships-pro' ); } else { esc_attr_e( 'Submit and Confirm', 'paid-memberships-pro' ); } ?>" />
+			</span>
+			<?php
 		}
 	}

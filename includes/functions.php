@@ -3669,9 +3669,46 @@ function pmpro_filter_price_for_text_field( $price ) {
 }
 
 /**
+ * Get the list of enabled gateways.
+ *
+ * Returns an array of gateway slugs that have been enabled in the
+ * Payment Settings admin page.
+ *
+ * When the `pmpro_enabled_gateways` option has not been set yet (pre-multi-gateway
+ * sites or fresh upgrades), this function handles the migration automatically by
+ * falling back to the single `pmpro_gateway` option and persisting the result.
+ *
+ * @since TBD
+ *
+ * @return array Array of enabled gateway slugs.
+ */
+function pmpro_get_enabled_gateways() {
+	$enabled = get_option( 'pmpro_enabled_gateways' );
+
+	if ( is_array( $enabled ) && ! empty( $enabled ) ) {
+		return $enabled;
+	}
+
+	// First-time migration: build the enabled gateways from the legacy single gateway option.
+	$primary = get_option( 'pmpro_gateway' );
+	$enabled = array( ! empty( $primary ) ? $primary : '' );
+
+	// If the Pay by Check add-on is active and check isn't already the primary, include it.
+	if ( defined( 'PMPROPBC_VER' ) && ! in_array( 'check', $enabled, true ) ) {
+		$enabled[] = 'check';
+	}
+
+	// Persist so we only migrate once.
+	update_option( 'pmpro_enabled_gateways', $enabled );
+
+	return $enabled;
+}
+
+/**
  * What gateway should we be using?
  *
  * @since 1.8
+ * @deprecated TBD Use pmpro_get_enabled_gateways() and check $_REQUEST['gateway'] directly.
  */
 function pmpro_getGateway() {
 	// grab from param or options
@@ -3683,8 +3720,8 @@ function pmpro_getGateway() {
 		$gateway = get_option( 'pmpro_gateway' );  // get from options
 	}
 
-	// set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-	$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( get_option( 'pmpro_gateway' ) ) );
+	// set valid gateways - all enabled gateways and any gateway added through the filter will be allowed
+	$valid_gateways = apply_filters( 'pmpro_valid_gateways', pmpro_get_enabled_gateways() );
 
 	// make sure it's valid
 	if ( ! in_array( $gateway, $valid_gateways ) ) {
@@ -4203,7 +4240,7 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 /**
  * Checks if a webhook is running
  * @since 2.5
- * @since 3.7 Calling this function to read webhook status is deprecated.
+ * @since TBD Calling this function to read webhook status is deprecated.
  * @param string $gateway If passed in, requires that specific gateway.
  * @param bool $set Set to true to set the constant and fire the action hook.
  * @return bool True or false if a PMPro webhook set the constant or not.
