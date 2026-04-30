@@ -207,7 +207,7 @@
 											printf(
 												esc_html__( 'We detected %s active on this site. This confirms a sending plugin is in place, but does not verify that emails are being delivered successfully.', 'paid-memberships-pro' ),
 												'<strong>' . esc_html( $email_method['label'] ) . '</strong>'
-											);
+											); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 											break;
 
 										case 'constant':
@@ -222,7 +222,7 @@
 											printf(
 												esc_html__( 'Outbound email is using the default WordPress %s function, which relies on the server-level PHP mail configuration. Consider connecting a transactional email service for reliable delivery.', 'paid-memberships-pro' ),
 												'<code>wp_mail()</code>'
-											);
+											); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 											break;
 									}
 									?>
