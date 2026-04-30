@@ -837,6 +837,10 @@ if ( ! function_exists( 'cleanPhone' ) ) {
 	 * @param string $phone The phone number to clean.
 	 */
 	function cleanPhone( $phone ) {
+		// Return an empty string if no phone number is provided.
+		if ( empty( $phone ) ) {
+			return '';
+		}
 		// if a + is passed, just pass it along
 		if ( strpos( $phone, '+' ) !== false ) {
 			return $phone;
