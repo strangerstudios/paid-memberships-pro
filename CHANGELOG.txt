@@ -1,4 +1,21 @@
 == Changelog ==
+= 3.7.2 - 2026-05-01 =
+* SECURITY: Tightened ownership check in the `/pmpro/v1/order` REST permission callback to bail early for anonymous requests, require a non-empty order ID, and use a strict integer comparison. #3643 (@flintfromthebasement)
+* SECURITY: Scoped the `/pmpro/v1/quick_search` users meta lookups to custom profile fields by skipping internal WP/plugin meta keys. Added the `pmpro_rest_api_quick_search_meta_key_blocklist` filter so sites can extend the blocklist. #3644 (@flintfromthebasement)
+* SECURITY: Fixed a non-functional capability guard in `PMPro_Field_Group::save_fields()` where a literal string comparison made the `current_user_can( 'edit_user' )` check unreachable. #3645 (@flintfromthebasement)
+* ENHANCEMENT: Reworked the Email Settings and Security Settings admin pages to detect the active email sending method and security provider, surface that information in Site Health, recognize PMPro Max as a provider, and remove the legacy built-in SendWP integration. #3656 (@kimcoleman)
+* ENHANCEMENT: Renamed the Builder and Plus Add Ons to Max throughout the admin and labeled all paid Add Ons under the new Premium license tier. #3650 (@dparker1005)
+* ENHANCEMENT: Added the new PayPal Gateway Add On to the Payment Gateway settings page, surfacing it as "Enabled (via Add On)" when active as a secondary gateway. #3657 (@dparker1005)
+* ENHANCEMENT: Added new filters for avatar upload location and render location to support multisite installations. #3648 (@kimcoleman)
+* ENHANCEMENT: Updated the Design Settings page link to a direct URL so tracking parameters work without a redirect. #3625 (@kimwhite)
+* ENHANCEMENT: Added/updated Add On icons including a new MailerLite icon for an upcoming Add On. #3627, #3652 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Fixed three bugs that caused member CSV export downloads to return 403/404: deferred export record cleanup until after the file is served, extended download token TTL to 7 days and hardened the URL builder when no token is available, and prevented zero-record exports from creating a ghost "complete" state. Introduced the `pmpro_restricted_file_served` action and buffered handler output to avoid corrupting the response. #3637 (@dalemugford)
+* BUG FIX: Fixed a deprecated `pmpro_changeMembershipLevel()` call when deleting a WP user. #3660 (@kimwhite)
+* BUG FIX: Fixed deprecation notices in `pmpro_cleanPhone()` when the phone value is `null`. #3654 (@dwanjuki)
+* BUG FIX: Fixed the All Levels member export producing duplicate rows and omitting members with higher user IDs in large exports. #3632 (@flintfromthebasement)
+* BUG FIX: Fixed the `checkbox_grouped` field input not receiving the correct CSS selectors. #3646 (@kimcoleman)
+* BUG FIX: Skipped content visibility controls for unsupported blocks in widget editors to prevent JS errors. #3653 (@dwanjuki)
+
 = 3.7.1 - 2026-03-25 =
 * BUG FIX: Fixed some admin pages not saving due to POST redirect in list table referer cleanup. #3624 (@kimcoleman)
 * BUG FIX: Fixed PHP 8.1 deprecation warnings in restricted files functions on Windows servers with misconfigured upload directories. #3623 (@flintfromthebasement)

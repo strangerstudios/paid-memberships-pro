@@ -744,7 +744,7 @@ class PMPro_Site_Health {
 	 * installed but not configured) or under-report (late-loading hooks). When
 	 * we can't identify a known mailer the catchall reports "unknown/default".
 	 *
-	 * @since TBD
+	 * @since 3.7.2
 	 *
 	 * @return array Key/value pairs rendered by Site Health.
 	 */

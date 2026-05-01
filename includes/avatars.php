@@ -222,7 +222,7 @@ function pmpro_avatar_get_upload_dir( $user_id = 0, $file = '' ) {
 	/**
 	 * Filter the base directory used for PMPro avatar storage.
 	 *
-	 * @since TBD
+	 * @since 3.7.2
 	 *
 	 * @param string $basedir The base upload directory path.
 	 * @param int    $user_id The user ID (0 if not user-specific).
@@ -256,7 +256,7 @@ function pmpro_avatar_get_upload_url( $user_id = 0, $file = '' ) {
 	/**
 	 * Filter the base URL used for PMPro avatar storage.
 	 *
-	 * @since TBD
+	 * @since 3.7.2
 	 *
 	 * @param string $baseurl The base upload URL.
 	 * @param int    $user_id The user ID (0 if not user-specific).

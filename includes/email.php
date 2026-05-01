@@ -554,7 +554,7 @@ add_filter( 'pmpro_email_data', 'pmpro_sanitize_email_data' );
  * Plugin checks run first so that a plugin overriding the default on Max is
  * reported accurately.
  *
- * @since TBD
+ * @since 3.7.2
  *
  * @return array {
  *     @type string      $method Machine key for the detected method.

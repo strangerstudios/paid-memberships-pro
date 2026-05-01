@@ -1390,7 +1390,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					 * convention, and a handful of well-known keys hold authentication
 					 * or capability data that the quick search isn't meant to surface.
 					 *
-					 * @since TBD
+					 * @since 3.7.2
 					 *
 					 * @param array $blocklist List of meta_key names (lowercase) to skip.
 					 */
