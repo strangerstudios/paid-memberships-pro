@@ -30,7 +30,7 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 		exit;
 	}
 
-	// Get the order for this subscription.
+	// Get the most recent successful order for this subscription, if any.
 	$newest_orders = $pmpro_billing_subscription->get_orders(
 		array(
 			'status'  => 'success',
@@ -38,12 +38,19 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			'orderby' => '`timestamp` DESC, `id` DESC',
 		)
 	);
-
-	// Get the newest successful order for this subscription, if any. The order may be null and the billing page will handle that scenario gracefully.
 	$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
+
+	// If there is no successful order yet (e.g. the subscription was linked manually in the admin),
+	// build a transient MemberOrder from the subscription so the billing page can still render and
+	// the gateway can update the payment method on the underlying subscription. This order is not
+	// saved to the database; it only carries the fields the gateway's update() method needs.
 	if ( ! is_a( $pmpro_billing_order, 'MemberOrder' ) ) {
-		wp_redirect( pmpro_url( 'account' ) );
-		exit;
+		$pmpro_billing_order                              = new MemberOrder();
+		$pmpro_billing_order->user_id                     = $pmpro_billing_subscription->get_user_id();
+		$pmpro_billing_order->membership_id               = $pmpro_billing_subscription->get_membership_level_id();
+		$pmpro_billing_order->gateway                     = $pmpro_billing_subscription->get_gateway();
+		$pmpro_billing_order->gateway_environment         = $pmpro_billing_subscription->get_gateway_environment();
+		$pmpro_billing_order->subscription_transaction_id = $pmpro_billing_subscription->get_subscription_transaction_id();
 	}
 
 	// Get the user's current membership level.
