@@ -835,30 +835,33 @@ class PMPro_Stripe_Webhook_Handler {
 			$logstr .= 'WARNING: MySQL GET_LOCK unavailable on this host. Processing order #' . $morder->id . ' without concurrency protection. ';
 		}
 
-		// Re-read order status now that we hold the lock. The $morder in memory
-		// may have been loaded before a prior concurrent worker persisted a
-		// terminal status, so the pre-lock fast-path check above can't be
-		// trusted as the correctness guard. This post-lock check is.
-		$current_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM $wpdb->pmpro_membership_orders WHERE id = %d", $morder->id ) );
-		if ( ! in_array( $current_status, array( 'token', 'pending' ), true ) ) {
-			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed by a concurrent webhook while we waited for the lock. Ignoring.';
+		try {
+			// Re-read order status now that we hold the lock. The $morder in memory
+			// may have been loaded before a prior concurrent worker persisted a
+			// terminal status, so the pre-lock fast-path check above can't be
+			// trusted as the correctness guard. This post-lock check is.
+			$current_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM $wpdb->pmpro_membership_orders WHERE id = %d", $morder->id ) );
+			if ( ! in_array( $current_status, array( 'token', 'pending' ), true ) ) {
+				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed by a concurrent webhook while we waited for the lock. Ignoring.';
+				return;
+			}
+
+			pmpro_pull_checkout_data_from_order( $morder );
+			if ( pmpro_complete_async_checkout( $morder ) ) {
+				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
+			} else {
+				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
+				$morder->status = 'error';
+				$morder->saveOrder();
+			}
+		} finally {
+			// Release the advisory lock on every exit path: normal completion,
+			// early return after the post-lock status re-check, or an exception
+			// thrown by the checkout pipeline. Belt-and-suspenders alongside the
+			// connection-close auto-release MySQL provides for advisory locks.
 			if ( '1' === $got_lock ) {
 				$wpdb->get_var( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) );
 			}
-			return;
-		}
-
-		pmpro_pull_checkout_data_from_order( $morder );
-		if ( pmpro_complete_async_checkout( $morder ) ) {
-			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
-		} else {
-			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
-			$morder->status = 'error';
-			$morder->saveOrder();
-		}
-
-		if ( '1' === $got_lock ) {
-			$wpdb->get_var( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) );
 		}
 	}
 
