@@ -1,6 +1,6 @@
 <?php
 
-global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling, $pmpro_billing_subscription, $pmpro_billing_level;
+global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling, $pmpro_billing_subscription, $pmpro_billing_level;
 
 // Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
 if ( ! is_user_logged_in() ) {
@@ -113,10 +113,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			$bcountry = trim(sanitize_text_field($_REQUEST['bcountry']));
 		if (isset($_REQUEST['bphone']))
 			$bphone = trim(sanitize_text_field($_REQUEST['bphone']));
-		if (isset($_REQUEST['bemail']))
-			$bemail = trim(sanitize_email($_REQUEST['bemail']));
-		if (isset($_REQUEST['bconfirmemail']))
-			$bconfirmemail = trim(sanitize_email($_REQUEST['bconfirmemail']));
 		if (isset($_REQUEST['CardType']))
 			$CardType = sanitize_text_field($_REQUEST['CardType']);
 		if (isset($_REQUEST['AccountNumber']))
@@ -143,8 +139,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			$bzipcode = "";
 		if (!isset($bphone))
 			$bphone = "";
-		if (!isset($bemail))
-			$bemail = "";
 		if (!isset($bcountry))
 			$bcountry = "";
 		if (!isset($CardType))
@@ -166,7 +160,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			"bstate" => $bstate,
 			"bzipcode" => $bzipcode,
 			"bphone" => $bphone,
-			"bemail" => $bemail,
 			"bcountry" => $bcountry,
 			"CardType" => $CardType,
 			"AccountNumber" => $AccountNumber,
@@ -196,12 +189,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 		
 		if (!empty($missing_billing_field)) {
 			$pmpro_msg = __("Please complete all required fields.", 'paid-memberships-pro' );
-			$pmpro_msgt = "pmpro_error";
-		} elseif ($bemail != $bconfirmemail) {
-			$pmpro_msg = __("Your email addresses do not match. Please try again.", 'paid-memberships-pro' );
-			$pmpro_msgt = "pmpro_error";
-		} elseif (!is_email($bemail)) {
-			$pmpro_msg = __("The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' );
 			$pmpro_msgt = "pmpro_error";
 		} elseif ( empty( $continue_billing_update ) || $pmpro_msgt == 'pmpro_error' ) {
 			// Something else threw an error, maybe reCAPTCHA.		
@@ -246,50 +233,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendBillingAdminEmail($current_user, $pmpro_billing_order);
 
-				// Save billing info etc, as user meta.
-				$meta_keys   = array();
-				$meta_values = array();
-
-				// Check if firstname and last name fields are set.
-				if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
-					$meta_keys = array_merge( $meta_keys, array(
-						"pmpro_bfirstname",
-						"pmpro_blastname",
-					) );
-
-					$meta_values = array_merge( $meta_values, array(
-						$bfirstname,
-						$blastname,
-					) );
-				}
-
-				// Check if billing details are available, if not adjust the arrays.
-				if ( ! empty( $baddress1 ) ) {
-					$meta_keys = array_merge( $meta_keys, array(
-						"pmpro_baddress1",
-						"pmpro_baddress2",
-						"pmpro_bcity",
-						"pmpro_bstate",
-						"pmpro_bzipcode",
-						"pmpro_bcountry",
-						"pmpro_bphone",
-						"pmpro_bemail",
-					) );
-
-					$meta_values = array_merge( $meta_values, array(
-						$baddress1,
-						$baddress2,
-						$bcity,
-						$bstate,
-						$bzipcode,
-						$bcountry,
-						$bphone,
-						$bemail,
-					) );
-				}
-
-				pmpro_replaceUserMeta( $current_user->ID, $meta_keys, $meta_values );
-
 				//message
 				$pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'paid-memberships-pro' ), pmpro_url("account"));
 				$pmpro_msgt = "pmpro_success";
@@ -313,24 +256,17 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			}
 		}
 	} else {
-		//default values from DB
-		$bfirstname = get_user_meta($current_user->ID, "pmpro_bfirstname", true);
-		$blastname = get_user_meta($current_user->ID, "pmpro_blastname", true);
-		$baddress1 = get_user_meta($current_user->ID, "pmpro_baddress1", true);
-		$baddress2 = get_user_meta($current_user->ID, "pmpro_baddress2", true);
-		$bcity = get_user_meta($current_user->ID, "pmpro_bcity", true);
-		$bstate = get_user_meta($current_user->ID, "pmpro_bstate", true);
-		$bzipcode = get_user_meta($current_user->ID, "pmpro_bzipcode", true);
-		$bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
-		$bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
-		$bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-		$bconfirmemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-
-		// Fallback for email fields.
-		if ( empty( $bemail ) && ! empty( $current_user->user_email ) ) {
-			$bemail = empty( $current_user->user_email ) ? '' : $current_user->user_email;
-			$bconfirmemail = empty( $current_user->user_email ) ? '' : $current_user->user_email;
-		}
+		// Default billing address fields from the values stored in user meta.
+		// Note that this will be removed in a future update as billing addresses are no longer stored in user meta by default.
+		$bfirstname = get_user_meta( $current_user->ID, "pmpro_bfirstname", true );
+		$blastname  = get_user_meta( $current_user->ID, "pmpro_blastname", true );
+		$baddress1  = get_user_meta( $current_user->ID, "pmpro_baddress1", true );
+		$baddress2  = get_user_meta( $current_user->ID, "pmpro_baddress2", true );
+		$bcity      = get_user_meta( $current_user->ID, "pmpro_bcity", true );
+		$bstate     = get_user_meta( $current_user->ID, "pmpro_bstate", true );
+		$bzipcode   = get_user_meta( $current_user->ID, "pmpro_bzipcode", true );
+		$bcountry   = get_user_meta( $current_user->ID, "pmpro_bcountry", true );
+		$bphone     = get_user_meta( $current_user->ID, "pmpro_bphone", true );
 	}
 } // End of object check.
 
