@@ -818,21 +818,40 @@ class PMPro_Stripe_Webhook_Handler {
 		// try immediately, don't wait. Returns '1' if acquired, '0' if another
 		// worker holds it, NULL on error (including hosts that disable GET_LOCK).
 		$lock_name = 'pmpro_stripe_order_' . $morder->id;
-		$got_lock = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, 0)", $lock_name ) );
+
+		/**
+		 * Filter whether to acquire MySQL advisory locks around critical
+		 * sections that need protection from concurrent execution. Defaults
+		 * to true. Site owners can return false as a system-wide escape
+		 * hatch on hosts where persistent MySQL sessions or other
+		 * environment quirks cause stuck advisory locks.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool $use_lock Whether to acquire the lock.
+		 */
+		if ( apply_filters( 'pmpro_use_advisory_locks', true ) ) {
+			$got_lock = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, 0)", $lock_name ) );
+		} else {
+			// Advisory locks disabled site-wide via filter. Take the same
+			// no-protection path as hosts where GET_LOCK is unavailable.
+			$got_lock = null;
+		}
 
 		// $wpdb->get_var() returns numeric results as strings, hence the '0'/'1'
-		// comparisons. Any other value (typically null) means GET_LOCK errored
-		// or is not supported on this host.
+		// comparisons. Any other value (typically null) means GET_LOCK errored,
+		// is not supported on this host, or was disabled via filter.
 		if ( '0' === $got_lock ) {
 			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' is already being processed by a concurrent webhook. Ignoring.';
 			return;
 		}
 
 		if ( '1' !== $got_lock ) {
-			// GET_LOCK errored or is unavailable on this host. Proceed without
+			// GET_LOCK errored, is unavailable on this host, or was disabled
+			// via the pmpro_use_advisory_locks filter. Proceed without
 			// concurrency protection so webhooks still work, but log a warning
 			// so the admin can correlate if race-related anomalies appear.
-			$logstr .= 'WARNING: MySQL GET_LOCK unavailable on this host. Processing order #' . $morder->id . ' without concurrency protection. ';
+			$logstr .= 'WARNING: MySQL advisory lock unavailable. Processing order #' . $morder->id . ' without concurrency protection. ';
 		}
 
 		try {
