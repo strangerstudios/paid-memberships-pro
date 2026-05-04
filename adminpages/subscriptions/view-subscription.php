@@ -154,6 +154,16 @@ $sub_membership_level_id = $subscription->get_membership_level_id();
 				</ul>
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
+		<?php
+			/**
+			 * Allow adding additional content to the subscription view page.
+			 *
+			 * @since TBD
+			 *
+			 * @param PMPro_Subscription $subscription The subscription object.
+			 */
+			do_action( 'pmpro_after_subscription_view_main', $subscription );
+		?>
 	</div> <!-- end pmpro_main -->
 
 	<div class="pmpro_sidebar">
