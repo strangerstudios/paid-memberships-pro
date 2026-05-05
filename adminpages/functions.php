@@ -396,7 +396,8 @@ function pmpro_add_email_order_modal() {
 				// Get email address from order ID
 				data = {
 					action: 'pmpro_get_order_json',
-					order_id: order_id
+					order_id: order_id,
+					nonce: '<?php echo esc_js( wp_create_nonce( 'pmpro_get_order_json' ) ); ?>'
 				};
 				$.post(ajaxurl, data, function (response) {
 					order = JSON.parse(response);

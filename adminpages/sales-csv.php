@@ -4,6 +4,11 @@ if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_op
 	die( esc_html__( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
 }
 
+// Check the nonce.
+if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'sales_report_csv' ) ) {
+	die( esc_html__( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
+}
+
 //get values from form
 if(isset($_REQUEST['type']))
 	$type = sanitize_text_field($_REQUEST['type']);

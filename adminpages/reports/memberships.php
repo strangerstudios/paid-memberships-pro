@@ -318,6 +318,7 @@ function pmpro_report_memberships_page() {
 			'startdate'     => $startdate,
 			'enddate'       => $enddate,
 			'level'         => $l,
+			'nonce'         => wp_create_nonce( 'membership_stats_csv' ),
 		),
 		$csv_export_link
 	);
