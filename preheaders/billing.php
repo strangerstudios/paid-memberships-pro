@@ -90,6 +90,20 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 	if ($submit === "0")
 		$submit = true;
 
+	// If there was a billing submission, verify the nonce before processing.
+	if ( $submit ) {
+		if ( empty( $_REQUEST['pmpro_billing_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_billing_nonce'] ), 'pmpro_billing_nonce' ) ) {
+			// Nonce field was added in the 3.5 billing template. Only fail if the loaded template is 3.5 or later so older custom templates keep working.
+			$loaded_path = pmpro_get_template_path_to_load( 'billing' );
+			$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+			if ( ! empty( $loaded_version ) && version_compare( $loaded_version, '3.5', '>=' ) ) {
+				$pmpro_msg = __( 'Nonce security check failed.', 'paid-memberships-pro' );
+				$pmpro_msgt = 'pmpro_error';
+				$submit = false;
+			}
+		}
+	}
+
 	//check their fields if they clicked continue
 	if ($submit) {
 		//load em up (other fields)

@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Billing
- * Version: 3.4
+ * Version: 3.5
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.4
+ * @version 3.5
  *
  * @author Paid Memberships Pro
  */
@@ -172,6 +172,7 @@
 			<div id="pmpro_level-<?php echo intval( $pmpro_billing_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_billing_gateway_class, 'pmpro_level-' . $pmpro_billing_level->id ) ); ?>">
 				<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form pmpro_card' ) ); ?>" action="<?php echo esc_url( pmpro_url( "billing", "", "https") ) ?>" method="post">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+						<?php wp_nonce_field( 'pmpro_billing_nonce', 'pmpro_billing_nonce' ); ?>
 						<input type="hidden" name="pmpro_subscription_id" value="<?php echo empty( $pmpro_billing_subscription->get_id() ) ? '' : (int) $pmpro_billing_subscription->get_id(); ?>" />
 						<input type="hidden" name="pmpro_level" value="<?php echo esc_attr($pmpro_billing_level->id);?>" />
 						<div id="pmpro_message" <?php if(! $pmpro_msg) { ?> style="display:none" <?php } ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
