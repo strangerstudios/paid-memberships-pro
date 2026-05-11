@@ -169,6 +169,7 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway.php' ); // loade
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-codes.php' ); // loaded by memberorder class when needed
 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
+require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_blockonomics.php' );
 
 pmpro_check_for_deprecated_gateways();
 
