@@ -1085,10 +1085,6 @@ class PMPro_Field {
 			$counter = 1;
 			foreach($this->options as $ovalue => $option)
 			{
-				if ( ! empty( $this->class ) ) {
-					$class = $this->class;
-				}
-
 				$r .= '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ) . '">';
 				$r .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped-item' ) ) . '">';
 				$r .= sprintf(
@@ -1096,7 +1092,7 @@ class PMPro_Field {
 					esc_attr( $this->name ),
 					esc_html( $ovalue ),
 					esc_attr( "{$this->id}_{$counter}" ),
-					esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-checkbox ' . $this->id ), $this->id ),
+					esc_attr( $this->class ),
 					( in_array($ovalue, $value) ? 'checked="checked"' : null ),
 					( !empty( $this->readonly ) ? 'readonly="readonly"' : null ),
 					$this->getHTMLAttributes()

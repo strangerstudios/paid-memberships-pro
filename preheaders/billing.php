@@ -30,7 +30,7 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 		exit;
 	}
 
-	// Get the order for this subscription.
+	// Get the most recent successful order for this subscription, if any.
 	$newest_orders = $pmpro_billing_subscription->get_orders(
 		array(
 			'status'  => 'success',
@@ -38,12 +38,19 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			'orderby' => '`timestamp` DESC, `id` DESC',
 		)
 	);
-
-	// Get the newest successful order for this subscription, if any. The order may be null and the billing page will handle that scenario gracefully.
 	$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
+
+	// If there is no successful order yet (e.g. the subscription was linked manually in the admin),
+	// build a transient MemberOrder from the subscription so the billing page can still render and
+	// the gateway can update the payment method on the underlying subscription. This order is not
+	// saved to the database; it only carries the fields the gateway's update() method needs.
 	if ( ! is_a( $pmpro_billing_order, 'MemberOrder' ) ) {
-		wp_redirect( pmpro_url( 'account' ) );
-		exit;
+		$pmpro_billing_order                              = new MemberOrder();
+		$pmpro_billing_order->user_id                     = $pmpro_billing_subscription->get_user_id();
+		$pmpro_billing_order->membership_id               = $pmpro_billing_subscription->get_membership_level_id();
+		$pmpro_billing_order->gateway                     = $pmpro_billing_subscription->get_gateway();
+		$pmpro_billing_order->gateway_environment         = $pmpro_billing_subscription->get_gateway_environment();
+		$pmpro_billing_order->subscription_transaction_id = $pmpro_billing_subscription->get_subscription_transaction_id();
 	}
 
 	// Get the user's current membership level.
@@ -89,6 +96,30 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 
 	if ($submit === "0")
 		$submit = true;
+
+	// If there was a billing submission, verify the nonce before processing.
+	if ( $submit ) {
+		if ( empty( $_REQUEST['pmpro_billing_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_billing_nonce'] ), 'pmpro_billing_nonce' ) ) {
+			// The nonce field was added in the 3.7.3 billing template. Skip enforcement only when
+			// the site has explicitly opted in to a pre-3.7.3 custom template via the Page Settings
+			// "Use Custom Page Template" option. In every other case (default template, or custom
+			// template at 3.7.3+, or custom template that pmpro_loadTemplate silently falls back to
+			// the default for) the rendered form includes the nonce field, so we can enforce.
+			$skip_nonce_check = false;
+			if ( 'yes' === get_option( 'pmpro_use_custom_page_template_billing' ) ) {
+				$loaded_path = pmpro_get_template_path_to_load( 'billing' );
+				$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+				if ( empty( $loaded_version ) || version_compare( $loaded_version, '3.7.3', '<' ) ) {
+					$skip_nonce_check = true;
+				}
+			}
+			if ( ! $skip_nonce_check ) {
+				$pmpro_msg = __( 'Nonce security check failed.', 'paid-memberships-pro' );
+				$pmpro_msgt = 'pmpro_error';
+				$submit = false;
+			}
+		}
+	}
 
 	//check their fields if they clicked continue
 	if ($submit) {

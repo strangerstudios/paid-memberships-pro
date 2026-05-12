@@ -514,7 +514,11 @@ class PMPro_Stripe_Webhook_Handler {
 					),
 				);
 				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-				$order->payment_transaction_id = empty( $checkout_session->invoice ) ? $payment_intent->latest_charge->id : $checkout_session->invoice;
+				if ( ! empty( $checkout_session->invoice ) ) {
+					$order->payment_transaction_id = $checkout_session->invoice;
+				} elseif ( ! empty( $payment_intent->latest_charge ) ) {
+					$order->payment_transaction_id = $payment_intent->latest_charge->id;
+				}
 				if ( ! empty( $payment_intent->payment_method ) ) {
 					$payment_method = $payment_intent->payment_method;
 				}
@@ -817,7 +821,11 @@ class PMPro_Stripe_Webhook_Handler {
 		// Acquire a MySQL advisory lock scoped to this order. 0-second timeout:
 		// try immediately, don't wait. Returns '1' if acquired, '0' if another
 		// worker holds it, NULL on error (including hosts that disable GET_LOCK).
-		$lock_name = 'pmpro_stripe_order_' . $morder->id;
+		// Lock names are scoped to the MySQL server (not the database), so the
+		// lock name is namespaced with a hash of DB_NAME + table prefix to avoid
+		// cross-site collisions on shared MySQL instances where two PMPro sites
+		// could otherwise share a lock when their order IDs happen to match.
+		$lock_name = 'pmpro_stripe_order_' . substr( md5( DB_NAME . $wpdb->prefix ), 0, 12 ) . '_' . $morder->id;
 
 		/**
 		 * Filter whether to acquire MySQL advisory locks around critical
@@ -863,6 +871,29 @@ class PMPro_Stripe_Webhook_Handler {
 			if ( ! in_array( $current_status, array( 'token', 'pending' ), true ) ) {
 				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed by a concurrent webhook while we waited for the lock. Ignoring.';
 				return;
+			}
+
+			// For one-time payments, the Charge may not have existed yet at the original
+			// checkout.session.completed event (e.g. async-cleared methods like bank transfers).
+			// Fill in the transaction ID now while we hold the lock so it gets saved with the
+			// rest of the order in pmpro_complete_async_checkout().
+			if ( 'payment' === $checkout_session->mode
+				&& empty( $morder->payment_transaction_id )
+				&& ! empty( $checkout_session->payment_intent )
+			) {
+				try {
+					$payment_intent = \Stripe\PaymentIntent::retrieve(
+						array(
+							'id'     => $checkout_session->payment_intent,
+							'expand' => array( 'latest_charge' ),
+						)
+					);
+					if ( ! empty( $payment_intent->latest_charge ) ) {
+						$morder->payment_transaction_id = $payment_intent->latest_charge->id;
+					}
+				} catch ( \Stripe\Error\Base $e ) {
+					// Could not get payment intent. We just won't set a payment transaction ID.
+				}
 			}
 
 			pmpro_pull_checkout_data_from_order( $morder );

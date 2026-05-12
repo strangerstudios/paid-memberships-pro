@@ -541,7 +541,7 @@ class PMPro_Field_Group {
 		$user_id = empty( $args['user_id'] ) ? get_current_user_id() : $args['user_id'];
 
 		// Make sure the current user can edit this user.
-		if ( 'scope' == 'profile' && ! current_user_can( 'edit_user', $user_id ) ) {
+		if ( 'profile' === $args['scope'] && ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
 		}
 

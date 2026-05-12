@@ -2,6 +2,13 @@ import { __ } from '@wordpress/i18n';
 
 import ContentVisibilityControls from './content-visibility-controls';
 
+// Content Visibility Controls will not be added to these blocks in the widget context.
+const WIDGET_EXCLUDED_BLOCKS = [ 'core/html', 'core/legacy-widget' ];
+
+// WordPress sets window.pagenow to 'widgets' on the block-based Widgets screen
+// and 'customize' in the Customizer, so we can detect both without touching the data stores.
+const IS_WIDGETS_CONTEXT = window.pagenow === 'widgets' || window.pagenow === 'customize';
+
 /**
  * Add the visibility attributes to the block settings.
  *
@@ -11,6 +18,12 @@ import ContentVisibilityControls from './content-visibility-controls';
 function addContentVisibilityAttribute(settings, name) {
 	if (typeof settings.attributes !== 'undefined') {
 		if (name.startsWith('core/')) {
+
+			// Skip unsupported blocks when in widget editors.
+			if (IS_WIDGETS_CONTEXT && WIDGET_EXCLUDED_BLOCKS.includes(name)) {
+				return settings;
+			}
+
 			settings.attributes = Object.assign(settings.attributes, {
 				"visibilityBlockEnabled": {
 					"type": 'boolean',
@@ -54,11 +67,12 @@ const contentVisibilityComponent = wp.compose.createHigherOrderComponent((BlockE
 	 return (props) => {
 
 		const { Fragment } = wp.element;
-		const {  isSelected } = props;
-		 return (	
+		const { isSelected } = props;
+		const isExcludedInWidgetContext = IS_WIDGETS_CONTEXT && WIDGET_EXCLUDED_BLOCKS.includes(props.name);
+		return (
 			<Fragment>
 				<BlockEdit {...props} />
-				{ isSelected && (props.name.startsWith('core/')) &&	ContentVisibilityControls(props) }
+				{ isSelected && props.name.startsWith('core/') && !isExcludedInWidgetContext && ContentVisibilityControls(props) }
 			</Fragment>
 		);
 

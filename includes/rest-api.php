@@ -971,6 +971,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			// Check if the user does not have access but is trying to get an order.
 			if ( ! $permission && 'GET' === $method && '/pmpro/v1/order' === $route ) {
+				// Only a logged-in user can own an order, so bail early for anonymous requests.
+				if ( ! is_user_logged_in() ) {
+					return $permission;
+				}
+
 				// Check if the order belongs to the user.
 				$params = $request->get_params();
 				$code   = isset( $params['code'] ) ? sanitize_text_field( $params['code'] ) : null;
@@ -978,7 +983,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				if ( ! empty( $code ) ) {
 					$order = new MemberOrder( $code );
 
-					if ( $order->user_id == get_current_user_id() ) {
+					if ( ! empty( $order->id ) && (int) $order->user_id === get_current_user_id() ) {
 						return true;
 					}
 				}
@@ -1378,22 +1383,50 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					$meta_key = sanitize_text_field( trim( $meta_key ) );
 					$meta_value = sanitize_text_field( trim( $meta_value ) );
 
-					$user_ids = $wpdb->get_col( $wpdb->prepare(
-						"SELECT user_id FROM {$wpdb->usermeta}
-						WHERE meta_key = %s
-						AND meta_value LIKE %s
-						LIMIT %d",
-						$meta_key,
-						$meta_value . '%',
-						$limit
+					/**
+					 * Limit the meta_key lookup to custom profile fields.
+					 *
+					 * Keys that start with an underscore are WP/plugin-internal by
+					 * convention, and a handful of well-known keys hold authentication
+					 * or capability data that the quick search isn't meant to surface.
+					 *
+					 * @since 3.7.2
+					 *
+					 * @param array $blocklist List of meta_key names (lowercase) to skip.
+					 */
+					$meta_key_blocklist = apply_filters( 'pmpro_rest_api_quick_search_meta_key_blocklist', array(
+						'session_tokens',
+						'wp_capabilities',
+						'wp_user_level',
+						'user_activation_key',
 					) );
+
+					$meta_key_is_internal = (
+						'' === $meta_key
+						|| '_' === $meta_key[0]
+						|| in_array( strtolower( $meta_key ), $meta_key_blocklist, true )
+					);
+
+					if ( $meta_key_is_internal ) {
+						$user_ids = array();
+					} else {
+						$user_ids = $wpdb->get_col( $wpdb->prepare(
+							"SELECT user_id FROM {$wpdb->usermeta}
+							WHERE meta_key = %s
+							AND meta_value LIKE %s
+							LIMIT %d",
+							$meta_key,
+							$meta_value . '%',
+							$limit
+						) );
+					}
 					$users = array();
 					foreach( $user_ids as $user_id ) {
 						$user = get_userdata( $user_id );
 						if ( $user ) {
 							$users[] = $user;
 						}
-					}	
+					}
 				} else {
 					// Normal user search by ID, login, or email.
 					$users = $wpdb->get_results( $wpdb->prepare(

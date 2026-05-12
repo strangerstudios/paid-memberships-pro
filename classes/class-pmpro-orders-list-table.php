@@ -933,6 +933,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 							[
 								'action' => 'pmpro_orders_print_view',
 								'id'  => $item->id,
+								'nonce' => wp_create_nonce( 'pmpro_orders_print_view' ),
 							],
 							admin_url( 'admin-ajax.php' )
 						)

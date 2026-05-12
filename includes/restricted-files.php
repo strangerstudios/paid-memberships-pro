@@ -29,6 +29,20 @@ function pmpro_set_up_restricted_files_directory() {
 		'  </IfModule>' . "\n" .
 		'</FilesMatch>';
 	file_put_contents( trailingslashit( $restricted_file_directory ) . '.htaccess', $htaccess );
+
+	// Write a non-dotfile marker so pmpro_is_restricted_directory_protected()
+	// has something to HEAD-test against. Without this, sites that have not
+	// yet stored any member-uploaded files report "Unable to determine"
+	// because pmpro_find_testable_file() deliberately skips dotfiles (and
+	// .htaccess is the only file present on a fresh install).
+	$marker_path = trailingslashit( $restricted_file_directory ) . 'pmpro-protection-test.txt';
+	if ( ! file_exists( $marker_path ) ) {
+		$marker_content  = "PMPro restricted-files protection test marker.\n";
+		$marker_content .= "This file is intentional. PMPro uses it to verify the directory is\n";
+		$marker_content .= "correctly protected from public access. It is safe to delete; PMPro\n";
+		$marker_content .= "will recreate it on the next daily run.\n";
+		file_put_contents( $marker_path, $marker_content );
+	}
 }
 
 /**
@@ -94,7 +108,22 @@ function pmpro_restricted_files_check_request() {
 		finfo_close( $finfo );
 		header( 'Content-Type: ' . $content_type );
 		header( 'Content-Disposition: ' . $content_disposition . '; filename="' . $file . '"' );
-		readfile( $file_path );
+		$bytes = readfile( $file_path );
+		if ( false !== $bytes ) {
+			// Buffer the action so a misbehaving hook can't append output to the response body and corrupt the download.
+			ob_start();
+			/**
+			 * Fires after a restricted file has been successfully streamed to the client.
+			 * Handlers MUST NOT produce output; any bytes written here are discarded.
+			 *
+			 * @since 3.7
+			 *
+			 * @param string $file_dir Directory of the file that was served.
+			 * @param string $file     File name of the file that was served.
+			 */
+			do_action( 'pmpro_restricted_file_served', $file_dir, $file );
+			ob_end_clean();
+		}
 		exit;
 	} else {
 		wp_die(	esc_html__( 'File not found.', 'paid-memberships-pro' ), 404 );

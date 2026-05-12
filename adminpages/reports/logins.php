@@ -104,6 +104,7 @@ function pmpro_report_login_page()
 	if ( ! empty( $l ) ) {
 		$csv_export_link = add_query_arg( 'l', $l, $csv_export_link );
 	}
+	$csv_export_link = add_query_arg( 'nonce', wp_create_nonce( 'login_report_csv' ), $csv_export_link );
 ?>
 	<form id="visits-views-logins-form" method="get" action="">
 	<h1 class="wp-heading-inline">

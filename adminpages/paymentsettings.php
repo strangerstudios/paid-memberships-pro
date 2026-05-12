@@ -215,7 +215,8 @@
 											// Special Cases for Add Ons that add secondary gateways. These will be removed when core natively supports multiple gateways.
 											if (
 												( function_exists( 'pmproappe_pmpro_valid_gateways' ) && $gateway_slug === 'paypalexpress' ) || // Add PayPal Express Add On.
-												( defined( 'PMPROPBC_VER' ) && $gateway_slug === 'check' ) // Pay by Check Add On.
+												( defined( 'PMPROPBC_VER' ) && $gateway_slug === 'check' ) || // Pay by Check Add On.
+												( $gateway_slug === 'paypal' && function_exists( 'pmpro_paypal_is_secondary' ) && pmpro_paypal_is_secondary() ) // PayPal Gateway Add On (only when configured to act as a secondary).
 											) {
 												// The Add On is active for the gateway being shown.
 												if ( pmpro_getOption( 'gateway' ) === $gateway_slug ) {

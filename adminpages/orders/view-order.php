@@ -414,7 +414,7 @@ $subscription = $order->get_subscription();
 
 					$order_actions['print'] = array(
 						'title'   => esc_attr( sprintf( __( 'Print or save order # %s as PDF', 'paid-memberships-pro' ), esc_html( $order->code ) ) ),
-						'href'    => esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'id' => $order->id ), admin_url( 'admin-ajax.php' ) ) ),
+						'href'    => esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'id' => $order->id, 'nonce' => wp_create_nonce( 'pmpro_orders_print_view' ) ), admin_url( 'admin-ajax.php' ) ) ),
 						'target'  => '_blank',
 						'class'   => 'button button-secondary pmpro-has-icon pmpro-has-icon-printer',
 						'label'   => esc_html__( 'Print or Save as PDF', 'paid-memberships-pro' ),

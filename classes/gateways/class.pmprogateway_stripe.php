@@ -553,7 +553,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<option value="1"
 							<?php if ( ! empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 				</select>
-				<p class="description"><?php echo wp_kses_post( __( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ) ); ?></p>
+				<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe doesn\'t require billing address fields. Choose \'No\' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in your <a target="_blank" href="%s">Stripe Radar rules</a>.</strong>', 'paid-memberships-pro' ), array( 'br' => array(), 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array() ) ) ), 'https://dashboard.stripe.com/settings/radar/rules' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -970,7 +970,7 @@ class PMProGateway_stripe extends PMProGateway {
 									<option value="1"
 											<?php if ( ! empty( $billing_address ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 								</select>
-								<p class="description"><?php echo wp_kses_post( __( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ) ); ?></p>
+								<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe doesn\'t require billing address fields. Choose \'No\' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in your <a target="_blank" href="%s">Stripe Radar rules</a>.</strong>', 'paid-memberships-pro' ), array( 'br' => array(), 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array() ) ) ), 'https://dashboard.stripe.com/settings/radar/rules' ); ?></p>
 							</td>
 						</tr>
 						<tr class="gateway_stripe_checkout_fields">

@@ -4,7 +4,6 @@
 */
 // Wizard pre-header
 include( PMPRO_DIR . '/adminpages/wizard/save-steps.php' );
-require_once( PMPRO_DIR . '/includes/lib/SendWP/sendwp.php' );
 
 /**
  * Redirect to Setup Wizard if the user hasn't been there yet.
