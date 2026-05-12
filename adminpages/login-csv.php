@@ -5,6 +5,11 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
+// Check the nonce.
+if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'login_report_csv' ) ) {
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+}
+
 if ( ! defined( 'PMPRO_BENCHMARK' ) ) {
 	define( 'PMPRO_BENCHMARK', false );
 }
