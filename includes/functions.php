@@ -3619,11 +3619,15 @@ function pmpro_get_price_info( $amount, $currency = null ) {
 		)
 	);
 
-	// Get the zero-padded decimal amount.
-	$price_info['parts']['decimal_string'] = sprintf( '%02d', $price_info['parts']['decimal'] );
+	// Get the zero-padded decimal amount, sized to the currency's decimal count.
+	$price_info['parts']['decimal_string'] = $currency_info['decimals'] > 0
+		? sprintf( '%0' . $currency_info['decimals'] . 'd', $price_info['parts']['decimal'] )
+		: '';
 
-	// Get the amount as a string.
-	$price_info['amount_string'] = sprintf( '%s.%s', $price_info['parts']['number'], $price_info['parts']['decimal_string'] );
+	// Get the amount as a string. Zero-decimal currencies have no fractional part.
+	$price_info['amount_string'] = $currency_info['decimals'] > 0
+		? sprintf( '%s.%s', $price_info['parts']['number'], $price_info['parts']['decimal_string'] )
+		: (string) $price_info['parts']['number'];
 
 	return $price_info;
 }
