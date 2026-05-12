@@ -29,6 +29,20 @@ function pmpro_set_up_restricted_files_directory() {
 		'  </IfModule>' . "\n" .
 		'</FilesMatch>';
 	file_put_contents( trailingslashit( $restricted_file_directory ) . '.htaccess', $htaccess );
+
+	// Write a non-dotfile marker so pmpro_is_restricted_directory_protected()
+	// has something to HEAD-test against. Without this, sites that have not
+	// yet stored any member-uploaded files report "Unable to determine"
+	// because pmpro_find_testable_file() deliberately skips dotfiles (and
+	// .htaccess is the only file present on a fresh install).
+	$marker_path = trailingslashit( $restricted_file_directory ) . 'pmpro-protection-test.txt';
+	if ( ! file_exists( $marker_path ) ) {
+		$marker_content  = "PMPro restricted-files protection test marker.\n";
+		$marker_content .= "This file is intentional. PMPro uses it to verify the directory is\n";
+		$marker_content .= "correctly protected from public access. It is safe to delete; PMPro\n";
+		$marker_content .= "will recreate it on the next daily run.\n";
+		file_put_contents( $marker_path, $marker_content );
+	}
 }
 
 /**
