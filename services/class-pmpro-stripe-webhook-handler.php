@@ -822,10 +822,13 @@ class PMPro_Stripe_Webhook_Handler {
 		// try immediately, don't wait. Returns '1' if acquired, '0' if another
 		// worker holds it, NULL on error (including hosts that disable GET_LOCK).
 		// Lock names are scoped to the MySQL server (not the database), so the
-		// lock name is namespaced with a hash of DB_NAME + table prefix to avoid
-		// cross-site collisions on shared MySQL instances where two PMPro sites
-		// could otherwise share a lock when their order IDs happen to match.
-		$lock_name = 'pmpro_stripe_order_' . substr( md5( DB_NAME . $wpdb->prefix ), 0, 12 ) . '_' . $morder->id;
+		// lock name is namespaced with a hash of the database name + table prefix
+		// to avoid cross-site collisions on shared MySQL instances where two
+		// PMPro sites could otherwise share a lock when their order IDs happen
+		// to match. Uses $wpdb->dbname rather than DB_NAME so hosts where the
+		// constant isn't defined (per core's wp_set_wpdb_vars defensive default)
+		// don't fatal here.
+		$lock_name = 'pmpro_stripe_order_' . substr( md5( $wpdb->dbname . $wpdb->prefix ), 0, 12 ) . '_' . $morder->id;
 
 		/**
 		 * Filter whether to acquire MySQL advisory locks around critical
