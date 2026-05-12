@@ -580,19 +580,7 @@ class PMPro_Stripe_Webhook_Handler {
 
 		// Was the checkout session successful?
 		if ( 'paid' === $checkout_session->payment_status || 'no_payment_required' === $checkout_session->payment_status ) {
-			// Yes. But did we already process this order?
-			if ( ! in_array( $order->status, array( 'token', 'pending' ), true ) ) {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
-				return;
-			}
-			// No we have not processed this order. Let's process it now.
-			if ( self::change_membership_level( $order ) ) {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
-			} else {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
-				$order->status = 'error';
-				$order->saveOrder();
-			}
+			self::process_checkout_session_completion( $order, $checkout_session, $logstr );
 		} else {
 			// No. The user is probably using a delayed notification payment method.
 			// Set to pending in the meantime and wait for the next webhook.
@@ -627,40 +615,7 @@ class PMPro_Stripe_Webhook_Handler {
 			return;
 		}
 
-		// Have we already processed this order?
-		if ( ! in_array( $order->status, array( 'token', 'pending' ), true ) ) {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
-			return;
-		}
-
-		// For one-time payments, the Charge didn't exist at checkout.session.completed time, so fill in the transaction ID now.
-		if ( 'payment' === $checkout_session->mode
-			&& empty( $order->payment_transaction_id )
-			&& ! empty( $checkout_session->payment_intent )
-		) {
-			try {
-				$payment_intent = \Stripe\PaymentIntent::retrieve(
-					array(
-						'id'     => $checkout_session->payment_intent,
-						'expand' => array( 'latest_charge' ),
-					)
-				);
-				if ( ! empty( $payment_intent->latest_charge ) ) {
-					$order->payment_transaction_id = $payment_intent->latest_charge->id;
-				}
-			} catch ( \Stripe\Error\Base $e ) {
-				// Could not get payment intent. We just won't set a payment transaction ID.
-			}
-		}
-
-		// No we have not processed this order. Let's process it now.
-		if ( self::change_membership_level( $order ) ) {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
-		} else {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
-			$order->status = 'error';
-			$order->saveOrder();
-		}
+		self::process_checkout_session_completion( $order, $checkout_session, $logstr );
 	}
 
 	/**
@@ -829,26 +784,138 @@ class PMPro_Stripe_Webhook_Handler {
 	}
 
 	/**
-	 * Assign a membership level when a checkout is completed via Stripe webhook.
+	 * Process a successful Stripe Checkout Session for a PMPro order.
+	 *
+	 * Dedupes against orders that have already reached a terminal status,
+	 * guards against concurrent webhook deliveries via a MySQL advisory lock,
+	 * then completes the checkout and assigns the membership level.
 	 *
 	 * Steps:
-	 * 1. Pull checkout data from order meta.
-	 * 2. Build checkout level.
-	 * 3. Change membership level.
-	 * 4. Mark order as successful.
-	 * 5. Record discount code use.
-	 * 6. Save some user meta.
-	 * 7. Run pmpro_after_checkout.
-	 * 8. Send checkout emails.
+	 * 1. Skip if the order has already been processed.
+	 * 2. Acquire an advisory lock on the order; skip if another webhook holds it.
+	 * 3. Pull checkout data from order meta.
+	 * 4. Complete the checkout (change membership level, mark order successful,
+	 *    record discount code use, save user meta, run pmpro_after_checkout,
+	 *    send checkout emails).
+	 * 5. Mark the order as errored if the checkout could not be completed.
+	 * 6. Release the advisory lock.
 	 *
 	 * @since 2.8
+	 * @since TBD Renamed from change_membership_level. Added concurrent-webhook
+	 *            advisory lock and moved status/log handling inside.
 	 *
-	 * @param MemberOrder $morder The order for the checkout being completed.
-	 * @return bool
+	 * @param MemberOrder $morder           The order for the checkout being completed.
+	 * @param object      $checkout_session The Stripe Checkout Session object.
+	 * @param string      $logstr           Log output.
+	 * @return void
 	 */
-	private static function change_membership_level( $morder ) {
-		pmpro_pull_checkout_data_from_order( $morder );
-		return pmpro_complete_async_checkout( $morder );
+	private static function process_checkout_session_completion( $morder, $checkout_session, &$logstr ) {
+		global $wpdb;
+
+		// Have we already processed this order?
+		if ( ! in_array( $morder->status, array( 'token', 'pending' ), true ) ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
+			return;
+		}
+
+		// Acquire a MySQL advisory lock scoped to this order. 0-second timeout:
+		// try immediately, don't wait. Returns '1' if acquired, '0' if another
+		// worker holds it, NULL on error (including hosts that disable GET_LOCK).
+		// Lock names are scoped to the MySQL server (not the database), so the
+		// lock name is namespaced with a hash of the database name + table prefix
+		// to avoid cross-site collisions on shared MySQL instances where two
+		// PMPro sites could otherwise share a lock when their order IDs happen
+		// to match. Uses $wpdb->dbname rather than DB_NAME so hosts where the
+		// constant isn't defined (per core's wp_set_wpdb_vars defensive default)
+		// don't fatal here.
+		$lock_name = 'pmpro_stripe_order_' . substr( md5( $wpdb->dbname . $wpdb->prefix ), 0, 12 ) . '_' . $morder->id;
+
+		/**
+		 * Filter whether to acquire MySQL advisory locks around critical
+		 * sections that need protection from concurrent execution. Defaults
+		 * to true. Site owners can return false as a system-wide escape
+		 * hatch on hosts where persistent MySQL sessions or other
+		 * environment quirks cause stuck advisory locks.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool $use_lock Whether to acquire the lock.
+		 */
+		if ( apply_filters( 'pmpro_use_advisory_locks', true ) ) {
+			$got_lock = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, 0)", $lock_name ) );
+		} else {
+			// Advisory locks disabled site-wide via filter. Take the same
+			// no-protection path as hosts where GET_LOCK is unavailable.
+			$got_lock = null;
+		}
+
+		// $wpdb->get_var() returns numeric results as strings, hence the '0'/'1'
+		// comparisons. Any other value (typically null) means GET_LOCK errored,
+		// is not supported on this host, or was disabled via filter.
+		if ( '0' === $got_lock ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' is already being processed by a concurrent webhook. Ignoring.';
+			return;
+		}
+
+		if ( '1' !== $got_lock ) {
+			// GET_LOCK errored, is unavailable on this host, or was disabled
+			// via the pmpro_use_advisory_locks filter. Proceed without
+			// concurrency protection so webhooks still work, but log a warning
+			// so the admin can correlate if race-related anomalies appear.
+			$logstr .= 'WARNING: MySQL advisory lock unavailable. Processing order #' . $morder->id . ' without concurrency protection. ';
+		}
+
+		try {
+			// Re-read order status now that we hold the lock. The $morder in memory
+			// may have been loaded before a prior concurrent worker persisted a
+			// terminal status, so the pre-lock fast-path check above can't be
+			// trusted as the correctness guard. This post-lock check is.
+			$current_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM $wpdb->pmpro_membership_orders WHERE id = %d", $morder->id ) );
+			if ( ! in_array( $current_status, array( 'token', 'pending' ), true ) ) {
+				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed by a concurrent webhook while we waited for the lock. Ignoring.';
+				return;
+			}
+
+			// For one-time payments, the Charge may not have existed yet at the original
+			// checkout.session.completed event (e.g. async-cleared methods like bank transfers).
+			// Fill in the transaction ID now while we hold the lock so it gets saved with the
+			// rest of the order in pmpro_complete_async_checkout().
+			if ( 'payment' === $checkout_session->mode
+				&& empty( $morder->payment_transaction_id )
+				&& ! empty( $checkout_session->payment_intent )
+			) {
+				try {
+					$payment_intent = \Stripe\PaymentIntent::retrieve(
+						array(
+							'id'     => $checkout_session->payment_intent,
+							'expand' => array( 'latest_charge' ),
+						)
+					);
+					if ( ! empty( $payment_intent->latest_charge ) ) {
+						$morder->payment_transaction_id = $payment_intent->latest_charge->id;
+					}
+				} catch ( \Stripe\Error\Base $e ) {
+					// Could not get payment intent. We just won't set a payment transaction ID.
+				}
+			}
+
+			pmpro_pull_checkout_data_from_order( $morder );
+			if ( pmpro_complete_async_checkout( $morder ) ) {
+				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
+			} else {
+				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
+				$morder->status = 'error';
+				$morder->saveOrder();
+			}
+		} finally {
+			// Release the advisory lock on every exit path: normal completion,
+			// early return after the post-lock status re-check, or an exception
+			// thrown by the checkout pipeline. Belt-and-suspenders alongside the
+			// connection-close auto-release MySQL provides for advisory locks.
+			if ( '1' === $got_lock ) {
+				$wpdb->get_var( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) );
+			}
+		}
 	}
 
 	/**
