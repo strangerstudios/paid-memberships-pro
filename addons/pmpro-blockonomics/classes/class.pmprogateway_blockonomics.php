@@ -340,6 +340,12 @@ class PMProGateway_blockonomics extends PMProGateway {
 			exit;
 		}
 
+		if ( 'success' === $order->status ) {
+			status_header( 200 );
+			echo esc_html__( 'Blockonomics payment was already processed.', 'pmpro-blockonomics' );
+			exit;
+		}
+
 		if ( $status < 0 ) {
 			$order->status = 'error';
 			$order->add_order_note( sprintf( __( 'Blockonomics reported payment status %1$d for transaction %2$s.', 'pmpro-blockonomics' ), $status, $txid ) );
@@ -374,12 +380,6 @@ class PMProGateway_blockonomics extends PMProGateway {
 			$order->saveOrder();
 			status_header( 200 );
 			echo esc_html__( 'Blockonomics payment amount is too low.', 'pmpro-blockonomics' );
-			exit;
-		}
-
-		if ( 'success' === $order->status ) {
-			status_header( 200 );
-			echo esc_html__( 'Blockonomics payment was already processed.', 'pmpro-blockonomics' );
 			exit;
 		}
 
@@ -429,8 +429,14 @@ class PMProGateway_blockonomics extends PMProGateway {
 			return sanitize_text_field( $filtered_address );
 		}
 
-		$response = wp_remote_post(
-			self::get_api_url( 'new_address' ),
+		$match_callback = apply_filters( 'pmpro_blockonomics_match_callback', self::get_callback_url() );
+		$response       = wp_remote_post(
+			add_query_arg(
+				array(
+					'match_callback' => $match_callback,
+				),
+				self::get_api_url( 'new_address' )
+			),
 			array(
 				'timeout' => 20,
 				'headers' => array(
