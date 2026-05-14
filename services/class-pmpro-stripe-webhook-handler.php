@@ -801,7 +801,7 @@ class PMPro_Stripe_Webhook_Handler {
 	 * 6. Release the advisory lock.
 	 *
 	 * @since 2.8
-	 * @since TBD Renamed from change_membership_level. Added concurrent-webhook
+	 * @since 3.7.3 Renamed from change_membership_level. Added concurrent-webhook
 	 *            advisory lock and moved status/log handling inside.
 	 *
 	 * @param MemberOrder $morder           The order for the checkout being completed.
@@ -837,7 +837,7 @@ class PMPro_Stripe_Webhook_Handler {
 		 * hatch on hosts where persistent MySQL sessions or other
 		 * environment quirks cause stuck advisory locks.
 		 *
-		 * @since TBD
+		 * @since 3.7.3
 		 *
 		 * @param bool $use_lock Whether to acquire the lock.
 		 */

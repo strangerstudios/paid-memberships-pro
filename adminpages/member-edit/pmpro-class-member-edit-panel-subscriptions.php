@@ -109,7 +109,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 						/**
 						 * Allow adding extra columns to the subscriptions table.
 						 *
-						 * @since TBD
+						 * @since 3.7.3
 						 */
 						do_action('pmpro_edit_member_subscriptions_extra_cols_header');
 					?>
@@ -259,7 +259,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 							/**
 							 * Allow adding extra columns to the subscriptions table.
 							 *
-							 * @since TBD
+							 * @since 3.7.3
 							 *
 							 * @param PMPro_Subscription $subscription The subscription for the current row in the table.
 							 */

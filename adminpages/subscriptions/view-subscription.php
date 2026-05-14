@@ -158,7 +158,7 @@ $sub_membership_level_id = $subscription->get_membership_level_id();
 			/**
 			 * Allow adding additional content to the subscription view page.
 			 *
-			 * @since TBD
+			 * @since 3.7.3
 			 *
 			 * @param PMPro_Subscription $subscription The subscription object.
 			 */
