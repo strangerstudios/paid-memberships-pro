@@ -110,6 +110,7 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ level_group_id }}' => esc_html__( 'The ID of the level group that the membership level belongs to.', 'paid-memberships-pro' ),
 			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
 			'{{ startdate }}' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
 			'{{ enddate }}' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' )
@@ -159,12 +160,15 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 
 		if ( empty( $this->cancelled_level_ids ) ) {
 			$email_template_variables['membership_id'] = '';
+			$email_template_variables['level_group_id'] = '';
 			$email_template_variables['membership_level_name'] = esc_html__( 'All Levels', 'paid-memberships-pro' );
 		} elseif ( is_array( $this->cancelled_level_ids ) ) {
 			$email_template_variables['membership_id'] = $this->cancelled_level_ids[0]; // Pass just the first as the level id.
+			$email_template_variables['level_group_id'] = pmpro_get_group_id_for_level( $this->cancelled_level_ids[0] );
 			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode( "','", $this->cancelled_level_ids ) . "')" ) );
 		} else {
 			$email_template_variables['membership_id'] = $this->cancelled_level_ids;
+			$email_template_variables['level_group_id'] = pmpro_get_group_id_for_level( $this->cancelled_level_ids );
 			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $this->cancelled_level_ids . "'" ) );
 		}
 
