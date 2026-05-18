@@ -50,7 +50,7 @@ if ( empty( $pmpro_invoice ) ) {
 				if ( 'success' == $pmpro_invoice->status ) {
 					$level_message = $wpdb->get_var("SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . intval( $pmpro_invoice->membership_id ) . "' LIMIT 1");
 					if ( ! empty( $level_message ) ) {
-						$confirmation_message .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_confirmation-confirmation-message' ) ) . '">';
+						$confirmation_message .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_confirmation-level-message' ) ) . '">';
 						$confirmation_message .= wpautop( stripslashes( $level_message ) );
 						$confirmation_message .= '</div>';
 					}
