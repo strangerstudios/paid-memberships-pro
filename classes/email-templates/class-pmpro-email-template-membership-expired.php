@@ -170,7 +170,7 @@ class PMPro_Email_Template_Membership_Expired extends PMPro_Email_Template {
 			"user_login" => $this->user->user_login,
 			"user_email" => $this->user->user_email,
 			"membership_id" => ( ! empty( $membership_level ) && ! empty( $membership_level->id ) ) ? $membership_level->id : 0,
-			"level_group_id" => ( ! empty( $membership_level ) && ! empty( $membership_level->id ) ) ? pmpro_get_group_id_for_level( $membership_level->id ) : 0,
+			"level_group_id" => ( ! empty( $membership_level ) && ! empty( $membership_level->id ) ) ? ( pmpro_get_group_id_for_level( $membership_level->id ) ?: 0 ) : 0,
 			"membership_level_name" => ( ! empty( $membership_level ) && ! empty( $membership_level->name ) ) ? $membership_level->name : '[' . esc_html( 'deleted', 'paid-memberships-pro' ) . ']',
 			"renew_url" => ( ! empty( $membership_level ) && ! empty( $membership_level->id ) ) ? pmpro_url( 'checkout', '?pmpro_level=' . $membership_level->id ) : pmpro_url( 'levels' ),
 		);

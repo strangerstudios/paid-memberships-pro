@@ -150,7 +150,7 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
 			'membership_id' => $membership_id,
-			'level_group_id' => pmpro_get_group_id_for_level( $membership_id ),
+			'level_group_id' => pmpro_get_group_id_for_level( $membership_id ) ?: 0,
 			'membership_level_name' => $membership_level->name,
 			'membership_cost' => $subscription_obj->get_cost_text(),
 			'billing_amount' =>  pmpro_formatPrice( $subscription_obj->get_billing_amount() ),

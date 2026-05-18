@@ -149,7 +149,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date extends PMPro_Email_Templ
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
 			'membership_id' => $level->id,
-			'level_group_id' => pmpro_get_group_id_for_level( $level->id ),
+			'level_group_id' => pmpro_get_group_id_for_level( $level->id ) ?: 0,
 			'membership_level_name' => $level->name,
 			'startdate' => date_i18n( get_option( 'date_format' ), $level->startdate ),
 			'enddate' => date_i18n( get_option( 'date_format' ), $level->enddate ),

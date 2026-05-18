@@ -194,7 +194,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
 			'membership_id' => $membership_level->id,
-			'level_group_id' => pmpro_get_group_id_for_level( $membership_level->id ),
+			'level_group_id' => pmpro_get_group_id_for_level( $membership_level->id ) ?: 0,
 			'membership_level_name' => $membership_level->name,
 			'membership_level_confirmation_message' => $confirmation_message,
 			'membership_cost' => pmpro_getLevelCost( $membership_level ),

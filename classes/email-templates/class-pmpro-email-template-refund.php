@@ -174,7 +174,7 @@ class PMPro_Email_Template_Refund extends PMPro_Email_Template {
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
 			'membership_id' => $order->membership_id,
-			'level_group_id' => pmpro_get_group_id_for_level( $order->membership_id ),
+			'level_group_id' => pmpro_get_group_id_for_level( $order->membership_id ) ?: 0,
 			'membership_level_name' => $level->name,
 			'order_id' => $order->code,
 			'order_total' => $order->get_formatted_total(),

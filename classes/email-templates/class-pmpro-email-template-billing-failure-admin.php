@@ -163,7 +163,7 @@ class PMPro_Email_Template_Billing_Failure_Admin extends PMPro_Email_Template {
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
 			'membership_id' => $membership_level->id,
-			'level_group_id' => pmpro_get_group_id_for_level( $membership_level->id ),
+			'level_group_id' => pmpro_get_group_id_for_level( $membership_level->id ) ?: 0,
 			'membership_level_name' => $membership_level->name,
 			'billing_name' => $order->billing->name,
 			'billing_street' => $order->billing->street,
