@@ -1692,10 +1692,6 @@ td > .pmpro_tag {
 }
 
 /* buttons */
-.pmpro_admin .button-hero .dashicons {
-	vertical-align: middle;
-}
-
 .pmpro_admin .pmpro_section .button.is-destructive {
 	border-color: #AA0000;
 	color: #AA0000;
@@ -1712,6 +1708,10 @@ td > .pmpro_tag {
  */
  #member-list-form {
 	margin-top: var(--pmpro--spacing--medium);
+}
+
+.wp-core-ui #member-list-form .tablenav select {
+	float: none;
 }
 
 #member-list-form h1.wp-heading-inline {
