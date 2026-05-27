@@ -1287,6 +1287,7 @@ class PMPro_Exports {
 		$filter = '';
 		if ( 'oldmembers' === $l ) {
 			$filter = " AND mu.status <> 'active' ";
+			$filter .= " AND NOT EXISTS ( SELECT 1 FROM {$wpdb->pmpro_memberships_users} mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active' ) ";
 		}
 		if ( 'expired' === $l || 'cancelled' === $l ) {
 			$statuses = ( 'expired' === $l ) ? array( 'expired' ) : array( 'cancelled', 'admin_cancelled' );

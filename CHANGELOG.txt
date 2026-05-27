@@ -1,4 +1,18 @@
 == Changelog ==
+= 3.7.3 - 2026-05-14 =
+* SECURITY: Added a nonce check to the Update Billing Information page to prevent CSRF, and tightened the gate so enforcement only skips on sites explicitly opted into a pre-3.7.3 custom billing template. The billing template version has been bumped to 3.7.3. #3671 (@dparker1005)
+* SECURITY: Tightened the checkout page nonce enforcement gate so it only skips on sites explicitly opted into a pre-3.0 custom checkout template, closing a gap where sites with a pre-3.0 custom `checkout.php` in their theme could bypass nonce checks without opting in. #3674 (@dparker1005)
+* ENHANCEMENT: Added new action hooks to the subscriptions panel of the Edit Member screen and the single subscription view. #3666 (@kimcoleman)
+* ENHANCEMENT: Added nonce checks to read-only admin AJAX handlers (`pmpro_orders_print_view`, `pmpro_get_order_json`, `login_report_csv`, `sales_report_csv`, `membership_stats_csv`) for consistency with other admin AJAX endpoints. #3673 (@dparker1005)
+* ENHANCEMENT: Added the new `pmpro_use_advisory_locks` filter as a system-wide escape hatch to disable MySQL advisory locking on hosts where persistent MySQL sessions or other environment quirks cause stuck locks. #3649 (@dparker1005)
+* ENHANCEMENT: Replaced the vague "Stripe dashboard settings" wording with a direct link to the Stripe Radar rules page in the billing address field description. #3677 (@dparker1005)
+* BUG FIX: Prevented concurrent Stripe webhook deliveries from racing on the same order by introducing a MySQL advisory lock around webhook processing. This fixes cases where "at least once" Stripe delivery from multiple infrastructure nodes could create duplicate membership rows or cancel a freshly-created subscription. #3649 (@dparker1005)
+* BUG FIX: Fixed the Old Members CSV export to exclude users who currently have any active membership, matching the logic already used by the expired and cancelled filters. #3680 (@dwanjuki)
+* BUG FIX: Fixed a PHP warning and a missing payment transaction ID when Stripe checkout sessions complete asynchronously (e.g. Bank Transfer), where the PaymentIntent has no `latest_charge` at completion time. #3655 (@dwanjuki)
+* BUG FIX: Honored the configured currency decimals in `pmpro_get_price_info()`'s `amount_string` so zero-decimal currencies (JPY, KRW, VND, UAH, ALL) no longer produce strings like "25.00" that PayPal billing rejects. Also fixed `pmpro_get_currency()` so it actually honors the `$currency` parameter it advertises. #3676 (@dparker1005)
+* BUG FIX: Allowed updating billing for subscriptions without a successful order on file, so manually-linked subscriptions in the admin no longer redirect users away from the billing page. #3667 (@dparker1005)
+* BUG FIX: Fixed the Restricted Files protection self-test reporting "Unable to determine" on sites with no member uploads, by writing a non-dotfile marker (`pmpro-protection-test.txt`) alongside the existing `.htaccess`. #3675 (@dalemugford)
+
 = 3.7.2 - 2026-05-01 =
 * SECURITY: Tightened ownership check in the `/pmpro/v1/order` REST permission callback to bail early for anonymous requests, require a non-empty order ID, and use a strict integer comparison. #3643 (@flintfromthebasement)
 * SECURITY: Scoped the `/pmpro/v1/quick_search` users meta lookups to custom profile fields by skipping internal WP/plugin meta keys. Added the `pmpro_rest_api_quick_search_meta_key_blocklist` filter so sites can extend the blocklist. #3644 (@flintfromthebasement)
