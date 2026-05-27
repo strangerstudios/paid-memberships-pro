@@ -18,50 +18,58 @@ function pmpro_status_filter( $s ) {
 add_filter('status_header', 'pmpro_status_filter');
 
 /**
- * Detect HTTPS context, including when SSL is terminated by an upstream proxy
- * (Cloudflare, NGINX, AWS ELB, etc.) and the origin only sees plain HTTP.
+ * Detect HTTPS context for PMPro's own URL rewriting.
  *
- * WordPress's is_ssl() checks $_SERVER['HTTPS'] and SERVER_PORT == 443. Behind
- * a proxy that terminates TLS, both can be empty, so is_ssl() returns false
- * even though the visitor's request was HTTPS end-to-end. That makes
- * pmpro_https_filter() flip URLs to http:// inside cached HTML, which then
- * forces another redirect or breaks mixed-content on a properly secured site.
+ * Mirrors WordPress's is_ssl() by default and exposes a `pmpro_is_ssl` filter
+ * so sites behind a TLS-terminating reverse proxy (Cloudflare Flexible, NGINX
+ * with TLS upstream, AWS ELB, etc.) can opt into HTTPS detection based on
+ * their proxy's signaling. Why a filter and not a default fallback to common
+ * forwarded headers:
  *
- * This helper falls back to the conventional reverse-proxy headers when
- * is_ssl() is false. Wrapped in an apply_filters() call so site owners with
- * non-standard proxy headers (e.g. CF-Visitor) can plug in their own check.
+ * - Trusting `X-Forwarded-Proto` is only safe when the origin is not directly
+ *   reachable by clients. Whether that's true depends on the site's network,
+ *   not the plugin. WordPress core itself keeps `is_ssl()` conservative for
+ *   this reason.
+ * - Multi-proxy setups send comma-separated values like `https, http` that
+ *   need site-specific parsing; the safe default is to do nothing.
  *
- * Note: trusting X-Forwarded-Proto only widens trust for URL rewriting inside
- * this filter — it does not change WordPress's own cookie-secure or redirect
- * logic. Sites that need the rest of WP to recognize HTTPS from a proxy header
- * should set $_SERVER['HTTPS'] = 'on' early (e.g. via wp-config.php).
+ * Example: enable trust of `X-Forwarded-Proto` on a site that's always
+ * fronted by a proxy. Apply once in a mu-plugin or theme functions.php:
+ *
+ *     add_filter( 'pmpro_is_ssl', function( $is_ssl ) {
+ *         if ( $is_ssl ) {
+ *             return true;
+ *         }
+ *         if ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
+ *             $first = trim( strtok( $_SERVER['HTTP_X_FORWARDED_PROTO'], ',' ) );
+ *             if ( 'https' === strtolower( $first ) ) {
+ *                 return true;
+ *             }
+ *         }
+ *         return $is_ssl;
+ *     } );
+ *
+ * Sites that need the rest of WordPress (cookies, redirects, etc.) to also
+ * recognize HTTPS from a proxy header should normalize at the WP level by
+ * setting $_SERVER['HTTPS'] = 'on' early in wp-config.php.
  *
  * @since TBD
  *
- * @return bool True if the current request is HTTPS or appears proxied from HTTPS.
+ * @return bool True if the current request should be treated as HTTPS for
+ *              PMPro URL rewriting purposes.
  */
 function pmpro_is_ssl() {
-	if ( is_ssl() ) {
-		$is_ssl = true;
-	} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === strtolower( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
-		$is_ssl = true;
-	} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_SSL'] ) && 'on' === strtolower( $_SERVER['HTTP_X_FORWARDED_SSL'] ) ) {
-		$is_ssl = true;
-	} else {
-		$is_ssl = false;
-	}
-
 	/**
 	 * Filter PMPro's HTTPS detection.
 	 *
-	 * Use this to add support for proxy headers other than X-Forwarded-Proto /
-	 * X-Forwarded-SSL (for example, Cloudflare's CF-Visitor JSON header).
+	 * Default mirrors WordPress's is_ssl(). Hook this to extend detection
+	 * for proxy-fronted sites — see pmpro_is_ssl() docblock for an example.
 	 *
 	 * @since TBD
 	 *
-	 * @param bool $is_ssl Whether the current request is HTTPS or proxied from HTTPS.
+	 * @param bool $is_ssl Whether the current request is HTTPS.
 	 */
-	return (bool) apply_filters( 'pmpro_is_ssl', $is_ssl );
+	return (bool) apply_filters( 'pmpro_is_ssl', is_ssl() );
 }
 
 /**
