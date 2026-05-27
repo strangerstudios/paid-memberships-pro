@@ -34,7 +34,13 @@ add_filter('status_header', 'pmpro_status_filter');
  *   need site-specific parsing; the safe default is to do nothing.
  *
  * Example: enable trust of `X-Forwarded-Proto` on a site that's always
- * fronted by a proxy. Apply once in a mu-plugin or theme functions.php:
+ * fronted by a proxy. Apply once in a mu-plugin or theme functions.php.
+ *
+ * WARNING: Only use this example if (1) your proxy strips or overwrites any
+ * inbound `X-Forwarded-Proto` header from clients, and (2) the origin server
+ * is not directly reachable on the public internet. If either is false a
+ * client can forge the header and influence PMPro's URL output for their own
+ * responses. Verify those conditions for your setup before adding the filter.
  *
  *     add_filter( 'pmpro_is_ssl', function( $is_ssl ) {
  *         if ( $is_ssl ) {
