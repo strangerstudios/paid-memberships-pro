@@ -466,7 +466,7 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 		 * Default: skip setting the cookie when WP_CACHE is true (a page cache
 		 * is installed). Set to true to force the cookie regardless.
 		 *
-		 * @since TBD
+		 * @since 3.7.4
 		 *
 		 * @param bool $should_set Default !( WP_CACHE === true ).
 		 */

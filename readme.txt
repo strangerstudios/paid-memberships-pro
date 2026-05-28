@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.7.3
+Stable tag: 3.7.4
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,12 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.7.4 - 2026-05-28 =
+* BUG FIX/ENHANCEMENT: Skip the `pmpro_visit` cookie when `WP_CACHE` is active so page caches like Surge, Cloudflare, Varnish, and WP Super Cache aren't bypassed on anonymous front-end requests. Added a new `pmpro_set_visit_cookie` filter to override the default behavior. #3690 (@flintfromthebasement)
+* BUG FIX: Fixed Stripe recurring orders silently saving `tax = 0` after the Stripe API version bump by deriving tax from `invoice->total_excluding_tax` instead of the deprecated `invoice->tax`. #3685 (@dwanjuki)
+* BUG FIX: Fixed Site Health reporting a false-positive Action Scheduler library conflict on Windows hosts by normalizing the library path before the conflict check. #3687 (@dparker1005)
+* BUG FIX: Fixed button icons no longer being inline in the WordPress 7.0 admin and the "Show" label floating to the right of the levels dropdown on the Members List screen. #3689 (@RachelRVasquez)
+
 = 3.7.3 - 2026-05-14 =
 * SECURITY: Added a nonce check to the Update Billing Information page to prevent CSRF, and tightened the gate so enforcement only skips on sites explicitly opted into a pre-3.7.3 custom billing template. The billing template version has been bumped to 3.7.3. #3671 (@dparker1005)
 * SECURITY: Tightened the checkout page nonce enforcement gate so it only skips on sites explicitly opted into a pre-3.0 custom checkout template, closing a gap where sites with a pre-3.0 custom `checkout.php` in their theme could bypass nonce checks without opting in. #3674 (@dparker1005)
