@@ -574,8 +574,8 @@ class PMPro_Stripe_Webhook_Handler {
 		$order->total = (float) $checkout_session->amount_total / $currency_unit_multiplier;
 		if ( in_array( get_option( 'pmpro_stripe_tax' ), array( 'inclusive', 'exclusive' ), true ) ) {
 			// If Stripe calculated tax, use that. Otherwise, keep the tax calculated by PMPro.
+			$order->subtotal = (float) $checkout_session->amount_subtotal / $currency_unit_multiplier;
 			$order->tax = (float) $checkout_session->total_details->amount_tax / $currency_unit_multiplier;
-			$order->subtotal = $order->total - $order->tax;
 		}
 
 		// Was the checkout session successful?
@@ -1020,14 +1020,13 @@ class PMPro_Stripe_Webhook_Handler {
 		if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ) {
 			$currency_unit_multiplier = pow( 10, intval( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) );
 		}
-		$order_data['total'] = ( ! empty( $invoice->total ) ? $invoice->total / $currency_unit_multiplier : 0 );
-		// invoice->tax was removed in Stripe API 2025-09-30.clover. Derive tax from total_excluding_tax instead.
+		$order_data['total']    = ( ! empty( $invoice->total ) ? $invoice->total / $currency_unit_multiplier : 0 );
+		$order_data['subtotal'] = ( ! empty( $invoice->subtotal ) ? $invoice->subtotal / $currency_unit_multiplier : 0 );
+		// invoice->tax was removed in Stripe API 2025-03-31.basil. Derive tax from total_excluding_tax instead.
 		if ( null !== $invoice->total_excluding_tax ) {
-			$order_data['subtotal'] = $invoice->total_excluding_tax / $currency_unit_multiplier;
-			$order_data['tax']      = pmpro_round_price( $order_data['total'] - $order_data['subtotal'] );
+			$order_data['tax'] = pmpro_round_price( $order_data['total'] - ( $invoice->total_excluding_tax / $currency_unit_multiplier ) );
 		} else {
-			$order_data['subtotal'] = $order_data['total'];
-			$order_data['tax']      = 0;
+			$order_data['tax'] = 0;
 		}
 
 		// Set payment information data.
