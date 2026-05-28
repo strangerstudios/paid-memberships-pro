@@ -1020,9 +1020,14 @@ class PMPro_Stripe_Webhook_Handler {
 		if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ) {
 			$currency_unit_multiplier = pow( 10, intval( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) );
 		}
+		$order_data['total']    = ( ! empty( $invoice->total ) ? $invoice->total / $currency_unit_multiplier : 0 );
 		$order_data['subtotal'] = ( ! empty( $invoice->subtotal ) ? $invoice->subtotal / $currency_unit_multiplier : 0 );
-		$order_data['tax'] = ( ! empty( $invoice->tax ) ? $invoice->tax / $currency_unit_multiplier : 0 );
-		$order_data['total'] = ( ! empty( $invoice->total ) ? $invoice->total / $currency_unit_multiplier : 0 );
+		// invoice->tax was removed in Stripe API 2025-03-31.basil. Derive tax from total_excluding_tax instead.
+		if ( null !== $invoice->total_excluding_tax ) {
+			$order_data['tax'] = pmpro_round_price( $order_data['total'] - ( $invoice->total_excluding_tax / $currency_unit_multiplier ) );
+		} else {
+			$order_data['tax'] = 0;
+		}
 
 		// Set payment information data.
 		// Find the payment method.
