@@ -374,21 +374,13 @@ class PMPro_Liquid_Renderer {
 				continue;
 			}
 
-			$operator        = null;
-			$operator_length = 0;
+			$operator_match = self::parse_comparison_operator_at_position( $condition_string, $i );
 
-			$two_char_operator = substr( $condition_string, $i, 2 );
-			if ( in_array( $two_char_operator, array( '==', '!=', '>=', '<=' ), true ) ) {
-				$operator        = $two_char_operator;
-				$operator_length = 2;
-			} elseif ( $char === '>' || $char === '<' ) {
-				$operator        = $char;
-				$operator_length = 1;
-			}
-
-			if ( $operator !== null ) {
-				$left_token  = trim( substr( $condition_string, 0, $i ) );
-				$right_token = trim( substr( $condition_string, $i + $operator_length ) );
+			if ( ! empty( $operator_match ) ) {
+				$operator        = $operator_match['operator'];
+				$operator_length = $operator_match['length'];
+				$left_token      = trim( substr( $condition_string, 0, $i ) );
+				$right_token     = trim( substr( $condition_string, $i + $operator_length ) );
 
 				if ( $left_token === '' || $right_token === '' ) {
 					return null;
@@ -400,6 +392,58 @@ class PMPro_Liquid_Renderer {
 					'right'    => $right_token,
 				);
 			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Parse a comparison operator at a specific position in a condition string.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $condition_string The condition expression to parse.
+	 * @param int    $position         The position to check for a comparison operator.
+	 * @return array|null {
+	 *     Parsed comparison operator.
+	 *
+	 *     @type string $operator Canonical comparison operator.
+	 *     @type int    $length   Length of the matched operator string.
+	 * }
+	 */
+	private static function parse_comparison_operator_at_position( $condition_string, $position ) {
+		$operators = array(
+			'=='      => '==',
+			'!='      => '!=',
+			'>='      => '>=',
+			'<='      => '<=',
+			'&gt;='   => '>=',
+			'&#62;='  => '>=',
+			'&#x3e;=' => '>=',
+			'&lt;='   => '<=',
+			'&#60;='  => '<=',
+			'&#x3c;=' => '<=',
+			'>'       => '>',
+			'<'       => '<',
+			'&gt;'    => '>',
+			'&#62;'   => '>',
+			'&#x3e;'  => '>',
+			'&lt;'    => '<',
+			'&#60;'   => '<',
+			'&#x3c;'  => '<',
+		);
+
+		foreach ( $operators as $operator_string => $canonical_operator ) {
+			$operator_length = strlen( $operator_string );
+
+			if ( strtolower( substr( $condition_string, $position, $operator_length ) ) !== $operator_string ) {
+				continue;
+			}
+
+			return array(
+				'operator' => $canonical_operator,
+				'length'   => $operator_length,
+			);
 		}
 
 		return null;
