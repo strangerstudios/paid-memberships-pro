@@ -3318,6 +3318,128 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Create a Stripe subscription used to migrate a deprecated gateway subscription.
+	 *
+	 * This intentionally creates a trialing subscription without a payment method. The
+	 * member is then sent through the billing update flow to attach a payment method
+	 * before the trial ends.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Subscription $old_subscription The subscription being migrated.
+	 * @param array              $args {
+	 *     Migration arguments.
+	 *
+	 *     @type int $trial_end Unix timestamp when the Stripe subscription should start billing.
+	 * }
+	 * @return Stripe_Subscription|WP_Error
+	 */
+	public function create_deprecated_gateway_migration_subscription( $old_subscription, $args = array() ) {
+		if ( ! is_a( $old_subscription, 'PMPro_Subscription' ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_invalid_subscription', __( 'Invalid subscription.', 'paid-memberships-pro' ) );
+		}
+
+		$args = wp_parse_args(
+			$args,
+			array(
+				'trial_end' => 0,
+			)
+		);
+
+		$trial_end = (int) $args['trial_end'];
+		if ( $trial_end <= time() ) {
+			return new WP_Error( 'pmpro_stripe_migration_invalid_trial_end', __( 'The next billing date must be in the future to create a Stripe migration subscription.', 'paid-memberships-pro' ) );
+		}
+
+		if ( ! empty( $old_subscription->get_billing_limit() ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_billing_limit_unsupported', __( 'Subscriptions with billing limits must be migrated manually or handled with the expiration-date path.', 'paid-memberships-pro' ) );
+		}
+
+		$user = get_userdata( $old_subscription->get_user_id() );
+		if ( empty( $user ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_user', __( 'Could not find the subscription user.', 'paid-memberships-pro' ) );
+		}
+
+		$level = new PMPro_Membership_Level( $old_subscription->get_membership_level_id() );
+		if ( empty( $level->ID ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_level', __( 'Could not find the subscription membership level.', 'paid-memberships-pro' ) );
+		}
+
+		$customer = $this->get_customer_for_user( $old_subscription->get_user_id() );
+		if ( empty( $customer ) ) {
+			$order = new MemberOrder();
+			$order->user_id = $old_subscription->get_user_id();
+			$order->membership_id = $old_subscription->get_membership_level_id();
+			$customer = $this->update_customer_at_checkout( $order );
+		}
+		if ( empty( $customer ) || empty( $customer->id ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_customer', __( 'Could not create or retrieve the Stripe customer.', 'paid-memberships-pro' ) );
+		}
+
+		$product_id = $this->get_product_id_for_level( $level );
+		if ( empty( $product_id ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_product', __( 'Cannot find product for membership level.', 'paid-memberships-pro' ) );
+		}
+
+		$billing_amount = $old_subscription->get_billing_amount();
+		if ( '' === $billing_amount || null === $billing_amount ) {
+			$billing_amount = $level->billing_amount;
+		}
+
+		$price = $this->get_price_for_product( $product_id, $billing_amount, $old_subscription->get_cycle_period(), $old_subscription->get_cycle_number() );
+		if ( is_string( $price ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_price', $price );
+		}
+
+		$subscription_params = array(
+			'customer'       => $customer->id,
+			'items'          => array(
+				array(
+					'price' => $price->id,
+				),
+			),
+			'trial_end'      => $trial_end,
+			'trial_settings' => array(
+				'end_behavior' => array(
+					'missing_payment_method' => 'cancel',
+				),
+			),
+			'description'    => sprintf(
+				// translators: %d: PMPro subscription ID.
+				__( 'PMPro deprecated gateway migration for subscription #%d', 'paid-memberships-pro' ),
+				$old_subscription->get_id()
+			),
+			'metadata'       => array(
+				'pmpro_user_id'             => (string) $old_subscription->get_user_id(),
+				'pmpro_membership_level_id' => (string) $old_subscription->get_membership_level_id(),
+				'pmpro_old_subscription_id' => (string) $old_subscription->get_id(),
+				'pmpro_old_gateway'         => (string) $old_subscription->get_gateway(),
+				'pmpro_migration_type'      => 'deprecated_gateway',
+			),
+		);
+
+		$application_fee_percentage = $this->get_application_fee_percentage();
+		if ( ! empty( $application_fee_percentage ) ) {
+			$subscription_params['application_fee_percent'] = $application_fee_percentage;
+		}
+
+		try {
+			return Stripe_Subscription::create(
+				$subscription_params,
+				array(
+					'idempotency_key' => 'pmpro-deprecated-gateway-' . $old_subscription->get_gateway_environment() . '-' . $old_subscription->get_id(),
+				)
+			);
+		} catch ( Stripe\Error\Base $e ) {
+			return new WP_Error( 'pmpro_stripe_migration_subscription_error', $e->getMessage() );
+		} catch ( \Throwable $e ) {
+			return new WP_Error( 'pmpro_stripe_migration_subscription_error', $e->getMessage() );
+		} catch ( \Exception $e ) {
+			return new WP_Error( 'pmpro_stripe_migration_subscription_error', $e->getMessage() );
+		}
+	}
+
+	/**
 	 * Convert a price to a positive integer in cents (or 0 for a free price)
 	 * representing how much to charge. This is how Stripe wants us to send price amounts.
 	 *

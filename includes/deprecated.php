@@ -1038,26 +1038,52 @@ function pmpro_get_deprecated_gateways() {
 }
 
 /**
+ * Get the list of deprecated gateways that are still loaded by this site.
+ *
+ * @since TBD
+ *
+ * @return array
+ */
+function pmpro_get_undeprecated_gateways() {
+	$undeprecated_gateways = get_option( 'pmpro_undeprecated_gateways' );
+	if ( empty( $undeprecated_gateways ) ) {
+		return array();
+	}
+
+	if ( is_string( $undeprecated_gateways ) ) {
+		// pmpro_setOption turns this into a comma separated string.
+		$undeprecated_gateways = explode( ',', $undeprecated_gateways );
+	}
+
+	return array_values( array_filter( array_map( 'sanitize_key', (array) $undeprecated_gateways ) ) );
+}
+
+/**
+ * Whether the site has any deprecated gateways still loaded.
+ *
+ * @since TBD
+ *
+ * @return bool
+ */
+function pmpro_has_undeprecated_gateways() {
+	return ! empty( pmpro_get_undeprecated_gateways() );
+}
+
+/**
  * Adds back deprecated gateways if they have ever been the selected gateway.
  * In future versions, we will remove gateway code entirely.
  * And you will have to use a stand alone add on for those gateways
  * or choose a new gateway.
  */
 function pmpro_check_for_deprecated_gateways() {
-	$undeprecated_gateways = get_option( 'pmpro_undeprecated_gateways' );
-	if ( empty( $undeprecated_gateways ) ) {
-		$undeprecated_gateways = array();
-	} elseif ( is_string( $undeprecated_gateways ) ) {
-		// pmpro_setOption turns this into a comma separated string
-		$undeprecated_gateways = explode( ',', $undeprecated_gateways );
-	}
+	$undeprecated_gateways = pmpro_get_undeprecated_gateways();
 	$default_gateway = get_option( 'pmpro_gateway' );
 
 	$deprecated_gateways = pmpro_get_deprecated_gateways();
 	foreach ( $deprecated_gateways as $deprecated_gateway ) {
-		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
+		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways, true ) ) {
 			require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_' . $deprecated_gateway . '.php' );
-			if ( ! in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
+			if ( ! in_array( $deprecated_gateway, $undeprecated_gateways, true ) ) {
 				$undeprecated_gateways[] = $deprecated_gateway;
 				update_option( 'pmpro_undeprecated_gateways', $undeprecated_gateways );
 			}

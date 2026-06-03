@@ -32,6 +32,47 @@
 		unset($_REQUEST['savesettings']);
 	}
 
+	// Handle deprecated gateway sunset actions before saving payment settings.
+	if ( ! empty( $_POST['pmpro_deprecated_gateway_sunset_action'] ) ) {
+		unset( $_REQUEST['savesettings'], $_POST['savesettings'] );
+		$deprecated_gateway_action = sanitize_key( wp_unslash( $_POST['pmpro_deprecated_gateway_sunset_action'] ) );
+		$deprecated_gateway_result = null;
+
+		if (
+			empty( $_POST['pmpro_deprecated_gateway_sunset_nonce'] ) ||
+			! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['pmpro_deprecated_gateway_sunset_nonce'] ) ), 'pmpro_deprecated_gateway_sunset_' . $edit_gateway )
+		) {
+			$msg = -1;
+			$msgt = __( 'Are you sure you want to do that? Try again.', 'paid-memberships-pro' );
+		} elseif ( ! in_array( $edit_gateway, pmpro_get_deprecated_gateways(), true ) ) {
+			$msg = -1;
+			$msgt = __( 'This workflow is only available for deprecated gateways.', 'paid-memberships-pro' );
+		} elseif ( 'start_migration' === $deprecated_gateway_action ) {
+			$deprecated_gateway_strategy = ! empty( $_POST['pmpro_deprecated_gateway_sunset_strategy'] ) ? sanitize_key( wp_unslash( $_POST['pmpro_deprecated_gateway_sunset_strategy'] ) ) : 'stripe';
+			$deprecated_gateway_email_choice = ! empty( $_POST['pmpro_deprecated_gateway_sunset_email'] ) ? sanitize_key( wp_unslash( $_POST['pmpro_deprecated_gateway_sunset_email'] ) ) : 'yes';
+			$deprecated_gateway_result = pmpro_deprecated_gateway_sunset_schedule( $edit_gateway, $deprecated_gateway_strategy, 'no' !== $deprecated_gateway_email_choice );
+		} elseif ( 'cleanup' === $deprecated_gateway_action ) {
+			$deprecated_gateway_result = pmpro_deprecated_gateway_sunset_cleanup_gateway( $edit_gateway );
+		} else {
+			$msg = -1;
+			$msgt = __( 'Invalid deprecated gateway action.', 'paid-memberships-pro' );
+		}
+
+		if ( isset( $deprecated_gateway_result ) ) {
+			if ( is_wp_error( $deprecated_gateway_result ) ) {
+				$msg = -1;
+				$msgt = $deprecated_gateway_result->get_error_message();
+			} else {
+				$msg = true;
+				if ( 'cleanup' === $deprecated_gateway_action ) {
+					$msgt = __( 'The deprecated gateway has been removed from this site.', 'paid-memberships-pro' );
+				} else {
+					$msgt = __( 'The deprecated gateway subscription workflow has been scheduled.', 'paid-memberships-pro' );
+				}
+			}
+		}
+	}
+
 	//get/set settings
 	if ( ! empty( $_REQUEST['savesettings'] ) ) {
 		// Check whether we are saving the settings for a specific gateway.
@@ -342,6 +383,33 @@
 			<?php
 			// If this gateway is deprecated, show a warning.
 			if ( in_array( $edit_gateway, $deprecated_gateways, true ) ) {
+				$deprecated_gateway_environment = get_option( 'pmpro_gateway_environment', 'sandbox' );
+				$deprecated_gateway_has_active_subscriptions = pmpro_deprecated_gateway_sunset_has_active_subscriptions( $edit_gateway, $deprecated_gateway_environment );
+				$deprecated_gateway_has_replacement = $edit_gateway !== get_option( 'pmpro_gateway' );
+				$deprecated_gateway_stripe_available = $deprecated_gateway_has_replacement && 'stripe' === get_option( 'pmpro_gateway' );
+				$deprecated_gateway_cleanup_available = $deprecated_gateway_has_replacement && pmpro_deprecated_gateway_sunset_can_cleanup_gateway( $edit_gateway, $deprecated_gateway_environment );
+				$deprecated_gateway_log_url = add_query_arg(
+					array(
+						'pmpro_restricted_file_dir' => 'logs',
+						'pmpro_restricted_file'     => 'deprecated-gateway-sunset.txt',
+					),
+					admin_url( 'admin.php' )
+				);
+				$deprecated_gateway_default_strategy = $deprecated_gateway_stripe_available ? 'stripe' : 'expiration';
+				$deprecated_gateway_stripe_email_template_url = add_query_arg(
+					array(
+						'page' => 'pmpro-emailtemplates',
+						'edit' => 'deprecated_gateway_stripe_migration',
+					),
+					admin_url( 'admin.php' )
+				);
+				$deprecated_gateway_checkout_email_template_url = add_query_arg(
+					array(
+						'page' => 'pmpro-emailtemplates',
+						'edit' => 'deprecated_gateway_checkout_required',
+					),
+					admin_url( 'admin.php' )
+				);
 				?>
 				<div class="pmpro_message pmpro_error">
 					<p><strong><?php esc_html_e('Notice: You Are Using a Deprecated Gateway', 'paid-memberships-pro' ); ?></strong></p>
@@ -360,6 +428,67 @@
 						<?php } ?>
 						<a class="button button-secondary" href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e('About Deprecated Gateways', 'paid-memberships-pro' ); ?></a>
 						<a class="button" href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e('How to Switch Payment Gateways', 'paid-memberships-pro' ); ?></a>
+					</p>
+
+					<hr />
+					<p>
+						<?php if ( $deprecated_gateway_has_active_subscriptions ) { ?>
+							<?php esc_html_e( 'Active payment subscriptions were found for this gateway. Start a migration before removing deprecated gateway data.', 'paid-memberships-pro' ); ?>
+						<?php } else { ?>
+							<?php esc_html_e( 'No active payment subscriptions were found for this gateway. You can remove deprecated gateway data when no scheduled workflow is running.', 'paid-memberships-pro' ); ?>
+						<?php } ?>
+					</p>
+					<p>
+						<?php esc_html_e( 'Use this workflow to stop relying on a deprecated gateway. The scheduled jobs write each success and failure to a deterministic text log.', 'paid-memberships-pro' ); ?>
+						<a href="<?php echo esc_url( $deprecated_gateway_log_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View log', 'paid-memberships-pro' ); ?></a>
+					</p>
+					<?php if ( ! $deprecated_gateway_has_replacement ) { ?>
+						<p><strong><?php esc_html_e( 'Activate a different payment gateway before starting this workflow.', 'paid-memberships-pro' ); ?></strong></p>
+					<?php } ?>
+					<?php wp_nonce_field( 'pmpro_deprecated_gateway_sunset_' . $edit_gateway, 'pmpro_deprecated_gateway_sunset_nonce' ); ?>
+					<table class="form-table" role="presentation">
+						<tbody>
+							<tr>
+								<th scope="row">
+									<label for="pmpro_deprecated_gateway_sunset_strategy"><?php esc_html_e( 'Migration Type', 'paid-memberships-pro' ); ?></label>
+								</th>
+								<td>
+									<select id="pmpro_deprecated_gateway_sunset_strategy" name="pmpro_deprecated_gateway_sunset_strategy">
+										<option value="stripe" <?php selected( $deprecated_gateway_default_strategy, 'stripe' ); disabled( ! $deprecated_gateway_stripe_available ); ?>><?php esc_html_e( 'Migrate to Stripe subscriptions', 'paid-memberships-pro' ); ?></option>
+										<option value="expiration" <?php selected( $deprecated_gateway_default_strategy, 'expiration' ); disabled( ! $deprecated_gateway_has_replacement ); ?>><?php esc_html_e( 'Cancel subscriptions and set expiration dates', 'paid-memberships-pro' ); ?></option>
+									</select>
+									<p class="description"><?php esc_html_e( 'Stripe migration creates matching Stripe subscriptions with no payment method and does not change membership expiration dates. The expiration-date option sets each member\'s expiration date to the old next payment date, cancels the deprecated gateway subscription, and members will need to check out again.', 'paid-memberships-pro' ); ?></p>
+									<?php if ( ! $deprecated_gateway_stripe_available ) { ?>
+										<p class="description"><?php esc_html_e( 'Stripe must be the active payment gateway before subscriptions can be migrated to Stripe.', 'paid-memberships-pro' ); ?></p>
+									<?php } ?>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<label for="pmpro_deprecated_gateway_sunset_email"><?php esc_html_e( 'Email Members', 'paid-memberships-pro' ); ?></label>
+								</th>
+								<td>
+									<select id="pmpro_deprecated_gateway_sunset_email" name="pmpro_deprecated_gateway_sunset_email">
+										<option value="yes"><?php esc_html_e( 'Email members', 'paid-memberships-pro' ); ?></option>
+										<option value="no"><?php esc_html_e( 'Do not email members', 'paid-memberships-pro' ); ?></option>
+									</select>
+									<p class="description">
+										<?php esc_html_e( 'Emails tell members that their saved payment method is no longer valid and what action they need to take. The selected migration type controls which template is sent.', 'paid-memberships-pro' ); ?>
+										<a href="<?php echo esc_url( $deprecated_gateway_stripe_email_template_url ); ?>"><?php esc_html_e( 'Edit Stripe migration email template', 'paid-memberships-pro' ); ?></a>
+										|
+										<a href="<?php echo esc_url( $deprecated_gateway_checkout_email_template_url ); ?>"><?php esc_html_e( 'Edit checkout required email template', 'paid-memberships-pro' ); ?></a>
+									</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<p>
+						<button type="submit" class="button button-primary" name="pmpro_deprecated_gateway_sunset_action" value="start_migration" onclick="return confirm('<?php echo esc_js( __( 'This will queue the selected migration for active deprecated gateway subscriptions. Continue?', 'paid-memberships-pro' ) ); ?>');" <?php disabled( ! $deprecated_gateway_has_replacement || ! $deprecated_gateway_has_active_subscriptions ); ?>>
+							<?php esc_html_e( 'Start Migration', 'paid-memberships-pro' ); ?>
+						</button>
+						<button type="submit" class="button button-secondary" name="pmpro_deprecated_gateway_sunset_action" value="cleanup" onclick="return confirm('<?php echo esc_js( __( 'This will remove stored deprecated gateway settings selected for cleanup. Continue?', 'paid-memberships-pro' ) ); ?>');" <?php disabled( ! $deprecated_gateway_cleanup_available ); ?>>
+							<?php esc_html_e( 'Remove Deprecated Gateway Data', 'paid-memberships-pro' ); ?>
+						</button>
 					</p>
 				</div>
 				<?php
