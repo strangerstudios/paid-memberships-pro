@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Billing
- * Version: 3.7.3
+ * Version: TBD
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.7.3
+ * @version TBD
  *
  * @author Paid Memberships Pro
  */
