@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Billing
- * Version: 3.7.3
+ * Version: TBD
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.7.3
+ * @version TBD
  *
  * @author Paid Memberships Pro
  */
@@ -524,6 +524,11 @@
 	
 	// Get all previous memberships, this includes cancelled and 'active' memberships.
 	$previous_memberships = pmpro_getMembershipLevelsForUser( $current_user->ID, true );
+
+	// pmpro_getMembershipLevelsForUser() returns false when there is no user (e.g. a logged-out visitor), so normalize to an array before filtering.
+	if ( ! is_array( $previous_memberships ) ) {
+		$previous_memberships = array();
+	}
 
 	// Let's remove active ones from the list before looping through.
 	$previous_memberships = array_filter( $previous_memberships, function( $membership ) {
