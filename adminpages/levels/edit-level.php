@@ -455,6 +455,7 @@ if (!empty($page_msg)) { ?>
 			if ( $gateway_supports_recurring_trials || pmpro_isLevelTrial( $level ) ) {
 			?>
 			<table class="form-table">
+				<tbody>
 				<tr class="recurring_info" <?php if (!pmpro_isLevelRecurring($level)) echo "style='display:none;'"; ?>>
 					<th scope="row" valign="top"><label><?php esc_html_e('Custom Trial', 'paid-memberships-pro'); ?></label></th>
 					<td>

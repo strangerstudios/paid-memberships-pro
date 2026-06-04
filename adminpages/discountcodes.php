@@ -142,8 +142,8 @@
 
 			if(!empty($_REQUEST['custom_trial']))
 				$custom_trial_a = array_map( 'intval', $_REQUEST['custom_trial'] );
-			$trial_amount_a = array_map( 'sanitize_text_field', $_REQUEST['trial_amount'] );
-			$trial_limit_a = array_map( 'intval', $_REQUEST['trial_limit'] );
+			$trial_amount_a = ! empty( $_REQUEST['trial_amount'] ) ? array_map( 'sanitize_text_field', $_REQUEST['trial_amount'] ) : array();
+			$trial_limit_a = ! empty( $_REQUEST['trial_limit'] ) ? array_map( 'intval', $_REQUEST['trial_limit'] ) : array();
 
 			if(!empty($_REQUEST['expiration']))
 				$expiration_a = array_map( 'intval', $_REQUEST['expiration'] );
@@ -195,8 +195,8 @@
 
 						if(!empty($custom_trial))
 						{
-							$trial_amount = sanitize_text_field($trial_amount_a[$n]);
-							$trial_limit = intval($trial_limit_a[$n]);
+							$trial_amount = isset( $trial_amount_a[$n] ) ? sanitize_text_field( $trial_amount_a[$n] ) : '';
+							$trial_limit = isset( $trial_limit_a[$n] ) ? intval( $trial_limit_a[$n] ) : '';
 						}
 						else
 						{
@@ -695,6 +695,13 @@
 											<?php esc_html_e('for the first', 'paid-memberships-pro' );?>
 											<input name="trial_limit[]" type="text" size="10" value="<?php echo esc_attr( $level->trial_limit ); ?>" />
 											<?php esc_html_e('subscription payments', 'paid-memberships-pro' );?>.
+										</td>
+									</tr>
+								<?php } else { ?>
+									<tr style="display:none;">
+										<td>
+											<input type="hidden" name="trial_amount[]" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->trial_amount ) ); ?>" />
+											<input type="hidden" name="trial_limit[]" value="<?php echo esc_attr( $level->trial_limit ); ?>" />
 										</td>
 									</tr>
 								<?php } ?>
