@@ -4348,6 +4348,7 @@ function pmpro_get_liquid_autocomplete_settings( $variables = array() ) {
 		'filters'   => pmpro_get_liquid_autocomplete_filter_suggestions(),
 		'tags'      => pmpro_get_liquid_autocomplete_tag_suggestions(),
 		'strings'   => array(
+			'autocompleteLabel' => __( 'Liquid autocomplete', 'paid-memberships-pro' ),
 			'liquidTagsHeader' => __( 'Liquid Tags', 'paid-memberships-pro' ),
 		),
 	);

@@ -50,7 +50,10 @@
 				menu = document.createElement( 'div' );
 				menu.className = MENU_CLASS;
 				menu.setAttribute( 'role', 'listbox' );
-				menu.setAttribute( 'aria-label', 'Liquid autocomplete' );
+				menu.setAttribute(
+					'aria-label',
+					strings.autocompleteLabel || 'Liquid autocomplete'
+				);
 				menu.hidden = true;
 				document.body.appendChild( menu );
 
@@ -353,11 +356,20 @@
 					}
 
 					if ( pipeOffset !== -1 ) {
+						let start = lastVariableOpen + 2 + pipeOffset;
+
+						while (
+							start > lastVariableOpen + 2 &&
+							/\s/.test( before.charAt( start - 1 ) )
+						) {
+							start--;
+						}
+
 						return {
 							type: 'filter',
 							query: cleanQuery( raw.slice( pipeOffset + 1 ) ),
 							node,
-							start: lastVariableOpen + 2 + pipeOffset,
+							start,
 							end: offset,
 						};
 					}

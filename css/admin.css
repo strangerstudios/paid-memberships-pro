@@ -2576,6 +2576,8 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 }
 
 .pmpro-liquid-autocomplete__item:hover,
+.pmpro-liquid-autocomplete__item:focus,
+.pmpro-liquid-autocomplete__item:focus-visible,
 .pmpro-liquid-autocomplete__item.is-active {
 	background: #2271b1;
 	color: #fff;
