@@ -256,16 +256,16 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			}
 		}
 	} else {
-		// Default billing address fields to empty. Billing addresses are no longer stored in user meta by default.
-		$bfirstname = '';
-		$blastname  = '';
-		$baddress1  = '';
-		$baddress2  = '';
-		$bcity      = '';
-		$bstate     = '';
-		$bzipcode   = '';
-		$bcountry   = '';
-		$bphone     = '';
+		// Avoid defaulting billing address fields from user meta. Preserve any values set earlier in this request.
+		$bfirstname = isset( $bfirstname ) ? $bfirstname : '';
+		$blastname  = isset( $blastname ) ? $blastname : '';
+		$baddress1  = isset( $baddress1 ) ? $baddress1 : '';
+		$baddress2  = isset( $baddress2 ) ? $baddress2 : '';
+		$bcity      = isset( $bcity ) ? $bcity : '';
+		$bstate     = isset( $bstate ) ? $bstate : '';
+		$bzipcode   = isset( $bzipcode ) ? $bzipcode : '';
+		$bcountry   = isset( $bcountry ) ? $bcountry : '';
+		$bphone     = isset( $bphone ) ? $bphone : '';
 	}
 } // End of object check.
 
