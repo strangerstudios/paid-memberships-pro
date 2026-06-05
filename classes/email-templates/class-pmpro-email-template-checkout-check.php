@@ -201,7 +201,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 		$confirmation_message = '';
 		$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
 		if ( ! empty( $confirmation_in_email ) ) {
-			$confirmation_message = do_shortcode( shortcode_unautop( wpautop( $membership_level->confirmation ) ) );
+			$confirmation_message = $membership_level->confirmation;
 		}
 
 		$email_template_variables = array(

@@ -159,7 +159,7 @@ if ( empty( $_GET['pmpro_discount_code'] ) && ! empty( $_GET['pmpro_other_discou
 
 // apply all the_content filters to confirmation messages for levels
 function pmpro_pmpro_confirmation_message( $message ) {
-	return do_shortcode( shortcode_unautop( wpautop( $message ) ) );
+	return wpautop( $message );
 }
 add_filter( 'pmpro_confirmation_message', 'pmpro_pmpro_confirmation_message' );
 

@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Confirmation
- * Version: TBD
+ * Version: 3.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version TBD
+ * @version 3.1
  *
  * @author Paid Memberships Pro
  */
@@ -46,14 +46,10 @@ if ( empty( $pmpro_invoice ) ) {
 					$confirmation_message = '<p>' . sprintf(__('Thank you for your membership to %s. Your %s membership is now active.', 'paid-memberships-pro' ), get_bloginfo("name"), $pmpro_invoice->membership_level->name) . '</p>';
 				}
 
-				// Add the level confirmation message if set and the order is successful.
-				if ( 'success' == $pmpro_invoice->status ) {
-					$level_message = $wpdb->get_var("SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . intval( $pmpro_invoice->membership_id ) . "' LIMIT 1");
-					if ( ! empty( $level_message ) ) {
-						$confirmation_message .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_confirmation-level-message' ) ) . '">';
-						$confirmation_message .= wpautop( stripslashes( $level_message ) );
-						$confirmation_message .= '</div>';
-					}
+				// Add the level confirmation message if set.
+				$level_message = $wpdb->get_var("SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . intval( $pmpro_invoice->membership_id ) . "' LIMIT 1");
+				if ( ! empty( $level_message ) ) {
+					$confirmation_message .= wpautop( stripslashes( $level_message ) );
 				}
 
 				// Add some details to the confirmation message about the order.
