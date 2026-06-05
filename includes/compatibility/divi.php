@@ -78,11 +78,13 @@ class PMProDivi {
 			$levels = array_filter( array_map( 'trim', explode( ',', $settings['levelIds'] ) ) );
 		}
 
+		$invert_restrictions = isset( $settings['displayRule'] ) && 'doesNotHaveMembership' === $settings['displayRule'];
+
 		return array(
 			'segment'             => $segment,
 			'levels'              => $levels,
-			'invert_restrictions' => isset( $settings['displayRule'] ) && 'doesNotHaveMembership' === $settings['displayRule'],
-			'show_noaccess'       => isset( $settings['showNoAccessMessage'] ) && 'on' === $settings['showNoAccessMessage'],
+			'invert_restrictions' => $invert_restrictions,
+			'show_noaccess'       => ! $invert_restrictions && isset( $settings['showNoAccessMessage'] ) && 'on' === $settings['showNoAccessMessage'],
 		);
 	}
 
@@ -92,8 +94,9 @@ class PMProDivi {
 	 *
 	 * Delegates to pmpro_apply_block_visibility() so behavior stays in sync
 	 * with the Content Visibility block. Returns true when the helper produces
-	 * any output — either the real content (user has access) or the no-access
-	 * message (which d5_no_access_message() swaps in).
+	 * any output — either the real content (user has access) or, for positive
+	 * access requirements, the no-access message (which d5_no_access_message()
+	 * swaps in).
 	 *
 	 * Hooked into divi_module_options_conditions_is_custom_condition_true.
 	 *
@@ -273,7 +276,7 @@ class PMProDivi {
 				'showNoAccessMessage' => $show_message,
 				'enableCondition'     => 'on',
 			),
-			'operator'          => 'OR',
+			'operator'          => 'AND',
 		);
 
 		// Merge with any existing D5 conditions rather than overwriting them.

@@ -34,7 +34,7 @@
 	// Membership levels localized from PHP via wp_localize_script.
 	var allLevels = ( window.pmproDivi && window.pmproDivi.levels ) || [];
 
-	// Register our custom category "PMPro" and condition type "Content Visibility" in the dropdown.
+	// Register our custom category "PMPro" and condition type in the dropdown.
 	addFilter(
 		'divi.fieldLibrary.conditionalDisplay.conditionCategories',
 		'pmpro/divi/condition-categories',
@@ -53,7 +53,7 @@
 		function ( conditions ) {
 			return conditions.concat( [ {
 				name:     'pmproMembershipLevel',
-				label:    __( 'Content Visibility', 'paid-memberships-pro' ),
+				label:    __( 'Membership Access', 'paid-memberships-pro' ),
 				category: 'pmpro',
 			} ] );
 		}
@@ -90,20 +90,27 @@
 			if ( ! condition || 'pmproMembershipLevel' !== condition.conditionName ) {
 				return title;
 			}
-			var s        = condition.conditionSettings || {};
-			var ruleText = s.displayRule === 'doesNotHaveMembership'
-				? __( 'Hide from', 'paid-memberships-pro' )
-				: __( 'Show to', 'paid-memberships-pro' );
-			var segment  = s.segment || 'all';
-			var segmentText;
+			var s             = condition.conditionSettings || {};
+			var rule          = s.displayRule || 'hasMembership';
+			var segment       = s.segment || 'all';
+			var isNegative    = rule === 'doesNotHaveMembership';
+			var predicateText = isNegative
+				? __( 'User does not have', 'paid-memberships-pro' )
+				: __( 'User has', 'paid-memberships-pro' );
+
 			if ( segment === 'logged_in' ) {
-				segmentText = __( 'Logged-In Users', 'paid-memberships-pro' );
-			} else if ( segment === 'specific' && s.levelIds ) {
-				segmentText = __( 'Levels', 'paid-memberships-pro' ) + ' ' + s.levelIds;
-			} else {
-				segmentText = __( 'All Members', 'paid-memberships-pro' );
+				return isNegative
+					? __( 'PMPro - User is not logged in', 'paid-memberships-pro' )
+					: __( 'PMPro - User is logged in', 'paid-memberships-pro' );
 			}
-			return 'PMPro — ' + ruleText + ' ' + segmentText;
+
+			var segmentText;
+			if ( segment === 'specific' && s.levelIds ) {
+				segmentText = __( 'level(s)', 'paid-memberships-pro' ) + ' ' + s.levelIds;
+			} else {
+				segmentText = __( 'any membership level', 'paid-memberships-pro' );
+			}
+			return 'PMPro - ' + predicateText + ' ' + segmentText;
 		}
 	);
 
@@ -136,22 +143,22 @@
 		}
 
 		var displayRuleOptions = [
-			{ value: 'hasMembership',          label: __( 'Show', 'paid-memberships-pro' ) },
-			{ value: 'doesNotHaveMembership',   label: __( 'Hide', 'paid-memberships-pro' ) },
+			{ value: 'hasMembership',          label: __( 'User has required access', 'paid-memberships-pro' ) },
+			{ value: 'doesNotHaveMembership',  label: __( 'User does not have required access', 'paid-memberships-pro' ) },
 		];
 
 		var segmentOptions = [
-			{ value: 'all',      label: __( 'All Members', 'paid-memberships-pro' ) },
-			{ value: 'specific', label: __( 'Specific Membership Levels', 'paid-memberships-pro' ) },
-			{ value: 'logged_in', label: __( 'Logged-In Users', 'paid-memberships-pro' ) },
+			{ value: 'all',       label: __( 'Any membership level', 'paid-memberships-pro' ) },
+			{ value: 'specific',  label: __( 'Specific membership levels', 'paid-memberships-pro' ) },
+			{ value: 'logged_in', label: __( 'Logged-in user', 'paid-memberships-pro' ) },
 		];
 
 		var yesNoOptions = [
-			{ value: 'off', label: __( 'No - Hide this content if the user does not have access', 'paid-memberships-pro' ) },
-			{ value: 'on',  label: __( "Yes - Show the 'no access' message if the user does not have access", 'paid-memberships-pro' ) },
+			{ value: 'off', label: __( 'Hide restricted content', 'paid-memberships-pro' ) },
+			{ value: 'on',  label: __( 'Replace restricted content with the no access message', 'paid-memberships-pro' ) },
 		];
 
-function renderSelect( name, value, options, onChangeFn ) {
+		function renderSelect( name, value, options, onChangeFn ) {
 			return createElement(
 				'select',
 				{
@@ -275,9 +282,9 @@ function renderSelect( name, value, options, onChangeFn ) {
 			Fragment,
 			null,
 
-			// Display Rule (Show / Hide)
+			// Predicate.
 			wrapField(
-				__( 'Display Rule', 'paid-memberships-pro' ),
+				__( 'Condition', 'paid-memberships-pro' ),
 				renderSelect(
 					'pmpro-display-rule',
 					currentRule,
@@ -286,11 +293,9 @@ function renderSelect( name, value, options, onChangeFn ) {
 				)
 			),
 
-			// Segment (All Members / Specific Levels / Logged-In Users)
+			// Access requirement.
 			wrapField(
-				currentRule === 'doesNotHaveMembership'
-					? __( 'Hide content from:', 'paid-memberships-pro' )
-					: __( 'Show content to:', 'paid-memberships-pro' ),
+				__( 'Requirement', 'paid-memberships-pro' ),
 				renderSelect(
 					'pmpro-segment',
 					currentSegment,
@@ -305,9 +310,9 @@ function renderSelect( name, value, options, onChangeFn ) {
 				renderLevelSelect()
 			) : null,
 
-			// Show No Access Message — only in "show" mode
+			// No access message only applies to positive access requirements.
 			currentRule === 'hasMembership' ? wrapField(
-				__( 'Show No Access Message', 'paid-memberships-pro' ),
+				__( 'No Access Message', 'paid-memberships-pro' ),
 				createElement(
 					Fragment,
 					null,
