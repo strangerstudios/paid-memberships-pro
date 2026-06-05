@@ -207,21 +207,3 @@ function pmpro_update_level_group_order() {
 }
 add_action('wp_ajax_pmpro_update_level_group_order', 'pmpro_update_level_group_order');
 
-// User fields AJAX.
-/**
- * Callback to draw a field group.
- */
-function pmpro_userfields_get_group_ajax() {	
-	pmpro_get_field_group_html();
-    exit;
-}
-add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_ajax' );
- 
-/**
- * Callback to draw a field.
- */
-function pmpro_userfields_get_field_ajax() {
- 	pmpro_get_field_html();
-	exit;
-}
-add_action( 'wp_ajax_pmpro_userfields_get_field', 'pmpro_userfields_get_field_ajax' );
