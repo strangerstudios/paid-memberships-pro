@@ -5189,7 +5189,7 @@ function pmpro_display_member_account_level_message( $level ) {
 	if ( $membership_account_message ) {
 		?>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-message' ) ); ?>">
-			<?php echo wp_kses_post( wpautop( $membership_account_message ) ); ?>
+			<?php echo wp_kses_post( do_shortcode( shortcode_unautop( wpautop( $membership_account_message ) ) ) ); ?>
 		</div>
 		<?php
 	}
