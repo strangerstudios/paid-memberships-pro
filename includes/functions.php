@@ -728,6 +728,124 @@ function delete_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value =
 }
 
 /**
+ * Get PMPro tables that store non-historical relationships to a membership level.
+ *
+ * This intentionally excludes orders, subscriptions, and membership history.
+ *
+ * @since 3.8
+ *
+ * @return array[] {
+ *     An array of table/column pairs.
+ *
+ *     @type string $table  The table name.
+ *     @type string $column The column containing the membership level ID.
+ * }
+ */
+function pmpro_get_membership_level_relationship_tables() {
+	global $wpdb;
+
+	return array(
+		array(
+			'table'  => $wpdb->pmpro_memberships_categories,
+			'column' => 'membership_id',
+		),
+		array(
+			'table'  => $wpdb->pmpro_memberships_pages,
+			'column' => 'membership_id',
+		),
+		array(
+			'table'  => $wpdb->pmpro_discount_codes_levels,
+			'column' => 'level_id',
+		),
+		array(
+			'table'  => $wpdb->pmpro_membership_levels_groups,
+			'column' => 'level',
+		),
+		array(
+			'table'  => $wpdb->pmpro_membership_levelmeta,
+			'column' => 'pmpro_membership_level_id',
+		),
+	);
+}
+
+/**
+ * Delete non-historical records related to a membership level.
+ *
+ * @since 3.8
+ *
+ * @param int $level_id The membership level ID.
+ * @return bool True if all related records were deleted or no related records existed; false on database error.
+ */
+function pmpro_delete_membership_level_relationships( $level_id ) {
+	global $wpdb;
+
+	$level_id = intval( $level_id );
+	if ( empty( $level_id ) ) {
+		return false;
+	}
+
+	$success = true;
+	foreach ( pmpro_get_membership_level_relationship_tables() as $relationship_table ) {
+		$deleted = $wpdb->delete(
+			$relationship_table['table'],
+			array( $relationship_table['column'] => $level_id ),
+			array( '%d' )
+		);
+
+		if ( false === $deleted ) {
+			$success = false;
+		}
+	}
+
+	wp_cache_delete( $level_id, 'pmpro_membership_level_meta' );
+
+	return $success;
+}
+
+/**
+ * Delete orphaned non-historical membership level relationship records.
+ *
+ * @since 3.8
+ *
+ * @return bool True if all orphaned records were deleted or no orphaned records existed; false on database error.
+ */
+function pmpro_delete_orphaned_membership_level_relationships() {
+	global $wpdb;
+
+	$success = true;
+	foreach ( pmpro_get_membership_level_relationship_tables() as $relationship_table ) {
+		$orphaned_level_ids = array();
+		if ( $relationship_table['table'] === $wpdb->pmpro_membership_levelmeta ) {
+			$orphaned_level_ids = (array) $wpdb->get_col(
+				"SELECT DISTINCT pmpro_level_relationship.`{$relationship_table['column']}`
+				FROM {$relationship_table['table']} AS pmpro_level_relationship
+				LEFT JOIN {$wpdb->pmpro_membership_levels} AS pmpro_membership_level
+					ON pmpro_level_relationship.`{$relationship_table['column']}` = pmpro_membership_level.id
+				WHERE pmpro_membership_level.id IS NULL"
+			);
+		}
+
+		$deleted = $wpdb->query(
+			"DELETE pmpro_level_relationship
+			FROM {$relationship_table['table']} AS pmpro_level_relationship
+			LEFT JOIN {$wpdb->pmpro_membership_levels} AS pmpro_membership_level
+				ON pmpro_level_relationship.`{$relationship_table['column']}` = pmpro_membership_level.id
+			WHERE pmpro_membership_level.id IS NULL"
+		);
+
+		if ( false === $deleted ) {
+			$success = false;
+		}
+
+		foreach ( $orphaned_level_ids as $level_id ) {
+			wp_cache_delete( intval( $level_id ), 'pmpro_membership_level_meta' );
+		}
+	}
+
+	return $success;
+}
+
+/**
  * pmpro_membership_order Meta Functions
  */
 function add_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value, $unique = false ) {

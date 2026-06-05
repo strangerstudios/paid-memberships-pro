@@ -438,6 +438,16 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.71' );
 	}
 
+	/**
+	 * Version 3.8
+	 * Clean up membership level relationship rows orphaned by deleted levels.
+	 */
+	if ( $pmpro_db_version < 3.8 ) {
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_8.php" );
+		pmpro_upgrade_3_8();
+		update_option( 'pmpro_db_version', '3.8' );
+	}
+
 }
 
 function pmpro_db_delta() {
