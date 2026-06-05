@@ -256,17 +256,16 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			}
 		}
 	} else {
-		// Default billing address fields from the values stored in user meta.
-		// Note that this will be removed in a future update as billing addresses are no longer stored in user meta by default.
-		$bfirstname = get_user_meta( $current_user->ID, "pmpro_bfirstname", true );
-		$blastname  = get_user_meta( $current_user->ID, "pmpro_blastname", true );
-		$baddress1  = get_user_meta( $current_user->ID, "pmpro_baddress1", true );
-		$baddress2  = get_user_meta( $current_user->ID, "pmpro_baddress2", true );
-		$bcity      = get_user_meta( $current_user->ID, "pmpro_bcity", true );
-		$bstate     = get_user_meta( $current_user->ID, "pmpro_bstate", true );
-		$bzipcode   = get_user_meta( $current_user->ID, "pmpro_bzipcode", true );
-		$bcountry   = get_user_meta( $current_user->ID, "pmpro_bcountry", true );
-		$bphone     = get_user_meta( $current_user->ID, "pmpro_bphone", true );
+		// Default billing address fields to empty. Billing addresses are no longer stored in user meta by default.
+		$bfirstname = '';
+		$blastname  = '';
+		$baddress1  = '';
+		$baddress2  = '';
+		$bcity      = '';
+		$bstate     = '';
+		$bzipcode   = '';
+		$bcountry   = '';
+		$bphone     = '';
 	}
 } // End of object check.
 
