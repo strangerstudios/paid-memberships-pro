@@ -26,8 +26,8 @@ if(!empty($_REQUEST['custom_trial']))
 	$ml_custom_trial = 1;
 else
 	$ml_custom_trial = 0;
-$ml_trial_amount = sanitize_text_field($_REQUEST['trial_amount']);
-$ml_trial_limit = intval($_REQUEST['trial_limit']);
+$ml_trial_amount = isset( $_REQUEST['trial_amount'] ) ? sanitize_text_field( $_REQUEST['trial_amount'] ) : '';
+$ml_trial_limit = isset( $_REQUEST['trial_limit'] ) ? intval( $_REQUEST['trial_limit'] ) : 0;
 if(!empty($_REQUEST['expiration']))
 	$ml_expiration = 1;
 else
