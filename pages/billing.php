@@ -16,15 +16,6 @@
 	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $pmpro_billing_subscription, $pmpro_billing_level;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
-	/**
-	 * Filter to set if PMPro uses email or text as the type for email field inputs.
-	 *
-	 * @since 1.8.4.5
-	 *
-	 * @param bool $use_email_type, true to use email type, false to use text type
-	 */
-	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
-
 	// Get the default gateway for the site.
 	$default_gateway = get_option( 'pmpro_gateway' );
 
