@@ -373,6 +373,47 @@ function pmpro_last_wp_mail_error( $set = null ) {
 }
 
 /**
+ * Fallback logging for PMPro emails when wp_mail_succeeded/wp_mail_failed never fire.
+ *
+ * Some mailer plugins (e.g. Gravity SMTP) replace the pluggable wp_mail()
+ * function and route sending through their own connectors without firing the
+ * wp_mail_succeeded / wp_mail_failed actions that pmpro_log_email() relies on.
+ * In that case the email is stashed by the wp_mail filter but never logged.
+ *
+ * This fallback runs on pmpro_after_email_sent, which always fires from
+ * PMProEmail::sendEmail() with the wp_mail() return value. If the stash is
+ * still set, the standard actions did not fire, so we log the email here. When
+ * the standard actions did fire they already logged and cleared the stash, so
+ * the empty check below makes this a no-op and prevents double logging.
+ *
+ * @since TBD
+ *
+ * @param PMProEmail $email  The email object that was sent.
+ * @param bool       $result Whether wp_mail() returned true.
+ */
+function pmpro_log_email_after_send_fallback( $email, $result ) {
+	if ( ! pmpro_is_email_logging_enabled() ) {
+		return;
+	}
+
+	$stashed = pmpro_stashed_mail_data();
+	if ( empty( $stashed ) ) {
+		// Already logged and cleared by wp_mail_succeeded/wp_mail_failed.
+		return;
+	}
+
+	if ( $result ) {
+		pmpro_log_email( $stashed, 'sent' );
+	} else {
+		pmpro_log_email( $stashed, 'failed', pmpro_last_wp_mail_error() );
+	}
+
+	pmpro_stashed_mail_data( false );
+	pmpro_stashed_from_data( false );
+}
+add_action( 'pmpro_after_email_sent', 'pmpro_log_email_after_send_fallback', 99, 2 );
+
+/**
  * Parse email headers to extract From, Reply-To, CC, and BCC.
  *
  * @since 3.7
