@@ -4453,6 +4453,142 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 }
 
 /**
+ * Get TinyMCE autocomplete settings for Liquid syntax.
+ *
+ * @since TBD
+ *
+ * @param array $variables Variables to include in autocomplete. Supports a flat variable => description map or grouped maps.
+ * @return array Liquid autocomplete settings.
+ */
+function pmpro_get_liquid_autocomplete_settings( $variables = array() ) {
+	$settings = array(
+		'variables' => pmpro_get_liquid_autocomplete_variable_suggestions( $variables ),
+		'filters'   => pmpro_get_liquid_autocomplete_filter_suggestions(),
+		'tags'      => pmpro_get_liquid_autocomplete_tag_suggestions(),
+		'strings'   => array(
+			'autocompleteLabel' => __( 'Liquid autocomplete', 'paid-memberships-pro' ),
+			'liquidTagsHeader' => __( 'Liquid Tags', 'paid-memberships-pro' ),
+		),
+	);
+
+	return $settings;
+}
+
+/**
+ * Convert a list of Liquid variables into autocomplete suggestions.
+ *
+ * @since TBD
+ *
+ * @param array $variables Variables to include in autocomplete. Supports a flat variable => description map or grouped maps.
+ * @return array Variable autocomplete suggestions.
+ */
+function pmpro_get_liquid_autocomplete_variable_suggestions( $variables ) {
+	$suggestions = array();
+
+	foreach ( (array) $variables as $key => $description ) {
+		if ( is_array( $description ) ) {
+			foreach ( $description as $group_key => $group_description ) {
+				$suggestions[] = pmpro_get_liquid_autocomplete_variable_suggestion( $group_key, $group_description );
+			}
+
+			continue;
+		}
+
+		$suggestions[] = pmpro_get_liquid_autocomplete_variable_suggestion( $key, $description );
+	}
+
+	return $suggestions;
+}
+
+/**
+ * Convert a single Liquid variable into an autocomplete suggestion.
+ *
+ * @since TBD
+ *
+ * @param string $variable    The variable token.
+ * @param string $description The variable description.
+ * @return array Variable autocomplete suggestion.
+ */
+function pmpro_get_liquid_autocomplete_variable_suggestion( $variable, $description = '' ) {
+	$name = $variable;
+
+	if ( preg_match( '/^\{\{\s*([^}|\s]+)/', $variable, $match ) ) {
+		$name = $match[1];
+	}
+
+	return array(
+		'name'        => $name,
+		'label'       => $variable,
+		'description' => $description,
+		'insert'      => $variable,
+	);
+}
+
+/**
+ * Get Liquid filter autocomplete suggestions.
+ *
+ * @since TBD
+ *
+ * @return array Liquid filter autocomplete suggestions.
+ */
+function pmpro_get_liquid_autocomplete_filter_suggestions() {
+	$suggestions = array();
+
+	if ( ! class_exists( 'PMPro_Liquid_Renderer' ) ) {
+		return $suggestions;
+	}
+
+	foreach ( PMPro_Liquid_Renderer::get_filters() as $filter_name => $filter ) {
+		$suggestions[] = array(
+			'name'        => $filter_name,
+			'label'       => $filter_name,
+			'description' => isset( $filter['description'] ) ? $filter['description'] : '',
+			'insert'      => ( 'default' === $filter_name ) ? ' | default: "__pmpro_cursor__"' : ' | ' . $filter_name,
+		);
+	}
+
+	return $suggestions;
+}
+
+/**
+ * Get Liquid tag autocomplete suggestions.
+ *
+ * @since TBD
+ *
+ * @return array Liquid tag autocomplete suggestions.
+ */
+function pmpro_get_liquid_autocomplete_tag_suggestions() {
+	$suggestions = array(
+		array(
+			'name'        => 'if',
+			'label'       => '{% if ... %} ... {% endif %}',
+			'description' => __( 'Show content when a condition is true', 'paid-memberships-pro' ),
+			'insert'      => '{% if __pmpro_cursor__ %}{% endif %}',
+		),
+		array(
+			'name'        => 'elsif',
+			'label'       => '{% elsif ... %}',
+			'description' => __( 'Add another condition inside an if block', 'paid-memberships-pro' ),
+			'insert'      => '{% elsif __pmpro_cursor__ %}',
+		),
+		array(
+			'name'        => 'else',
+			'label'       => '{% else %}',
+			'description' => __( 'Add fallback content inside an if block', 'paid-memberships-pro' ),
+			'insert'      => '{% else %}',
+		),
+		array(
+			'name'        => 'endif',
+			'label'       => '{% endif %}',
+			'description' => __( 'Close an if block', 'paid-memberships-pro' ),
+			'insert'      => '{% endif %}',
+		),
+	);
+
+	return $suggestions;
+}
+
+/**
  * Replace last occurrence of a string.
  * From: http://stackoverflow.com/a/3835653/1154321
  * @since 2.6

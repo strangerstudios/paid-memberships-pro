@@ -743,9 +743,16 @@ jQuery(document).ready(function ($) {
 
 	/* Variables */
 	$template = $('#edit').val();
+	var $emailTemplateForm = $("#pmpro_submit_template_data").closest('form');
 
-	$("#pmpro_submit_template_data").click(function () {
-		pmpro_save_template()
+	$emailTemplateForm.submit(function (e) {
+		e.preventDefault();
+		pmpro_save_template();
+	});
+
+	$("#pmpro_submit_template_data").click(function (e) {
+		e.preventDefault();
+		pmpro_save_template();
 	});
 
 	$("#pmpro_reset_template_data").click(function () {
@@ -757,7 +764,12 @@ jQuery(document).ready(function ($) {
 	});
 
 	$("#send_test_email").click(function (e) {
-		pmpro_save_template().done(setTimeout(function () { pmpro_send_test_email(); }, '1000'));
+		e.preventDefault();
+		pmpro_save_template().done(function () {
+			setTimeout(function () {
+				pmpro_send_test_email();
+			}, 1000);
+		});
 	});
 
 	/**
@@ -774,6 +786,46 @@ jQuery(document).ready(function ($) {
 		return value.split( ',' ).map( function( s ) { return s.trim(); } ).filter( Boolean ).join( ', ' );
 	}
 
+	function pmpro_email_template_body_editor() {
+		if ( typeof tinymce === 'undefined' ) {
+			return null;
+		}
+
+		return tinymce.get( 'pmpro_email_template_body' ) || null;
+	}
+
+	function pmpro_set_email_template_body_disabled( disabled ) {
+		var isDisabled = disabled === true || disabled === 'true';
+		var editor = pmpro_email_template_body_editor();
+		var $editorWrap = $('#wp-pmpro_email_template_body-wrap');
+
+		if ( isDisabled ) {
+			$("#pmpro_email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
+			$editorWrap.find('.quicktags-toolbar input, .wp-switch-editor').prop('disabled', true);
+		} else {
+			$("#pmpro_email_template_body").removeAttr('readonly').removeAttr('disabled');
+			$editorWrap.find('.quicktags-toolbar input, .wp-switch-editor').prop('disabled', false);
+		}
+
+		if ( editor && typeof editor.setMode === 'function' ) {
+			editor.setMode( isDisabled ? 'readonly' : 'design' );
+		}
+	}
+
+	if ( typeof tinymce !== 'undefined' && typeof tinymce.on === 'function' ) {
+		tinymce.on( 'AddEditor', function( event ) {
+			if ( event.editor.id === 'pmpro_email_template_body' ) {
+				event.editor.on( 'init', function() {
+					pmpro_set_email_template_body_disabled( $("#pmpro_email_template_disable").is(":checked") );
+				} );
+			}
+		} );
+	}
+
+	if ( $("#pmpro_email_template_disable").is(":checked") ) {
+		pmpro_set_email_template_body_disabled( true );
+	}
+
 	function pmpro_save_template() {
 
 		$("#pmpro_submit_template_data").attr("disabled", true);
@@ -786,6 +838,15 @@ jQuery(document).ready(function ($) {
 		$("#pmpro_email_template_cc").val( cc_val );
 		$("#pmpro_email_template_bcc").val( bcc_val );
 
+		// Sync the visual editor to the textarea before reading its value, but
+		// only when TinyMCE is the active mode. When the user is in Text mode,
+		// the textarea already holds the live edits and calling editor.save()
+		// would overwrite them with the iframe's stale content.
+		var editor = pmpro_email_template_body_editor();
+		if ( editor && ! editor.isHidden() ) {
+			editor.save();
+		}
+
 		$data = {
 			template: $template,
 			subject: $("#pmpro_email_template_subject").val(),
@@ -796,7 +857,7 @@ jQuery(document).ready(function ($) {
 			action: 'pmpro_email_templates_save_template_data',
 			security: $('input[name=security]').val()
 		};
-		$.post(ajaxurl, $data, function (response) {
+		return $.post(ajaxurl, $data, function (response) {
 			if (response != 0) {
 				$(".status_message_wrapper").addClass('updated');
 			}
@@ -808,8 +869,6 @@ jQuery(document).ready(function ($) {
 			$(".status_message").show();
 			$('html, body').animate({ scrollTop : 0 }, 'fast');
 		});
-
-		return $.Deferred().resolve();
 	}
 
 	function pmpro_reset_template() {
@@ -827,6 +886,10 @@ jQuery(document).ready(function ($) {
 			var template_data = $.parseJSON(response);
 			$('#pmpro_email_template_subject').val(template_data['subject']);
 			$('#pmpro_email_template_body').val(template_data['body']);
+			var editor = pmpro_email_template_body_editor();
+			if ( editor ) {
+				editor.setContent( template_data['body'] );
+			}
 			$('#pmpro_email_template_to').val(template_data['to']);
 			$('#pmpro_email_template_cc').val(template_data['cc']);
 			$('#pmpro_email_template_bcc').val(template_data['bcc']);
@@ -907,9 +970,10 @@ jQuery(document).ready(function ($) {
 	}
 
 	function pmpro_toggle_form_disabled(disabled) {
+		pmpro_set_email_template_body_disabled( disabled );
+
 		if (disabled == 'true') {
 			$("#pmpro_email_template_disable").prop('checked', true);
-			$("#pmpro_email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
 			$("#pmpro_email_template_subject").attr('readonly', 'readonly').attr('disabled', 'disabled');
 			$("#pmpro_email_template_to").attr('readonly', 'readonly').attr('disabled', 'disabled');
 			$("#pmpro_email_template_cc").attr('readonly', 'readonly').attr('disabled', 'disabled');
@@ -917,7 +981,6 @@ jQuery(document).ready(function ($) {
 		}
 		else {
 			$("#pmpro_email_template_disable").prop('checked', false);
-			$("#pmpro_email_template_body").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
 			$("#pmpro_email_template_subject").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
 			$("#pmpro_email_template_to").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
 			$("#pmpro_email_template_cc").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');

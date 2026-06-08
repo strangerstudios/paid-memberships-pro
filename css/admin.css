@@ -2544,6 +2544,79 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	max-width: 900px;
 }
 
+.pmpro-liquid-autocomplete {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+	box-sizing: border-box;
+	max-height: 280px;
+	overflow-y: auto;
+	position: absolute;
+	max-width: calc(100vw - 24px);
+	width: 380px;
+	z-index: 100100;
+}
+
+.pmpro-liquid-autocomplete[hidden] {
+	display: none;
+}
+
+.pmpro-liquid-autocomplete__item {
+	background: transparent;
+	border: 0;
+	box-sizing: border-box;
+	color: #1d2327;
+	cursor: pointer;
+	display: block;
+	margin: 0;
+	padding: 8px 10px;
+	text-align: left;
+	width: 100%;
+}
+
+.pmpro-liquid-autocomplete__item:hover,
+.pmpro-liquid-autocomplete__item:focus,
+.pmpro-liquid-autocomplete__item:focus-visible,
+.pmpro-liquid-autocomplete__item.is-active {
+	background: #2271b1;
+	color: #fff;
+}
+
+.pmpro-liquid-autocomplete__label,
+.pmpro-liquid-autocomplete__description {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.pmpro-liquid-autocomplete__label {
+	font-family: Consolas, Monaco, monospace;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.pmpro-liquid-autocomplete__description {
+	font-size: 12px;
+	line-height: 1.35;
+	margin-top: 2px;
+	opacity: 0.78;
+}
+
+.pmpro-liquid-autocomplete__separator {
+	background: #f6f7f7;
+	border-bottom: 1px solid #dcdcde;
+	border-top: 1px solid #dcdcde;
+	color: #50575e;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0;
+	padding: 6px 10px;
+	text-transform: uppercase;
+}
+
 /**
  * User Fields Settings
  */
