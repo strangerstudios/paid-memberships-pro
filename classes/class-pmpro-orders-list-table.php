@@ -238,7 +238,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	/**
 	 * Gets the name of the default primary column.
 	 *
-	 * @since TBD
+	 * @since 3.8
 	 *
 	 * @return string Name of the default primary column.
 	 */

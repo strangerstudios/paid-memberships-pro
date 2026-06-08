@@ -400,7 +400,7 @@ class PMPro_Liquid_Renderer {
 	/**
 	 * Parse a comparison operator at a specific position in a condition string.
 	 *
-	 * @since TBD
+	 * @since 3.8
 	 *
 	 * @param string $condition_string The condition expression to parse.
 	 * @param int    $position         The position to check for a comparison operator.

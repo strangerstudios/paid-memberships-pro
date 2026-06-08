@@ -4455,7 +4455,7 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 /**
  * Get TinyMCE autocomplete settings for Liquid syntax.
  *
- * @since TBD
+ * @since 3.8
  *
  * @param array $variables Variables to include in autocomplete. Supports a flat variable => description map or grouped maps.
  * @return array Liquid autocomplete settings.
@@ -4477,7 +4477,7 @@ function pmpro_get_liquid_autocomplete_settings( $variables = array() ) {
 /**
  * Convert a list of Liquid variables into autocomplete suggestions.
  *
- * @since TBD
+ * @since 3.8
  *
  * @param array $variables Variables to include in autocomplete. Supports a flat variable => description map or grouped maps.
  * @return array Variable autocomplete suggestions.
@@ -4503,7 +4503,7 @@ function pmpro_get_liquid_autocomplete_variable_suggestions( $variables ) {
 /**
  * Convert a single Liquid variable into an autocomplete suggestion.
  *
- * @since TBD
+ * @since 3.8
  *
  * @param string $variable    The variable token.
  * @param string $description The variable description.
@@ -4527,7 +4527,7 @@ function pmpro_get_liquid_autocomplete_variable_suggestion( $variable, $descript
 /**
  * Get Liquid filter autocomplete suggestions.
  *
- * @since TBD
+ * @since 3.8
  *
  * @return array Liquid filter autocomplete suggestions.
  */
@@ -4553,7 +4553,7 @@ function pmpro_get_liquid_autocomplete_filter_suggestions() {
 /**
  * Get Liquid tag autocomplete suggestions.
  *
- * @since TBD
+ * @since 3.8
  *
  * @return array Liquid tag autocomplete suggestions.
  */

@@ -200,7 +200,7 @@ add_action( 'admin_enqueue_scripts', 'pmpro_admin_enqueue_scripts' );
 /**
  * Register a wp_editor() instance for PMPro Liquid autocomplete support.
  *
- * @since TBD
+ * @since 3.8
  *
  * @param string $editor_id TinyMCE editor ID.
  */
@@ -219,7 +219,7 @@ function pmpro_register_liquid_autocomplete_editor( $editor_id ) {
 /**
  * Load PMPro's TinyMCE plugin for registered Liquid autocomplete editors.
  *
- * @since TBD
+ * @since 3.8
  *
  * @param array  $external_plugins External TinyMCE plugins.
  * @param string $editor_id        TinyMCE editor ID. Empty on WordPress versions before 5.3.

@@ -4,7 +4,7 @@
  *
  * Example: [pmpro_membership_level field='name' level='1']
  *
- * @since TBD
+ * @since 3.8
  *
  * @param array       $atts The shortcode attributes passed in.
  * @param string|null $content The content passed in or null if not set.
@@ -110,7 +110,7 @@ function pmpro_membership_level_shortcode( $atts, $content = null, $shortcode_ta
 	/**
 	 * Filter the output of the pmpro_membership_level shortcode.
 	 *
-	 * @since TBD
+	 * @since 3.8
 	 *
 	 * @param string $r The output of the pmpro_membership_level shortcode.
 	 * @param object $pmpro_level The PMPro Level object.

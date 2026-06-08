@@ -63,7 +63,7 @@ class PMProDivi {
 	 * Translate Divi 5 pmproMembershipLevel condition settings into the
 	 * argument shape expected by pmpro_apply_block_visibility().
 	 *
-	 * @since TBD
+	 * @since 3.8
 	 *
 	 * @param array $settings D5 conditionSettings array.
 	 *
@@ -100,7 +100,7 @@ class PMProDivi {
 	 *
 	 * Hooked into divi_module_options_conditions_is_custom_condition_true.
 	 *
-	 * @since TBD
+	 * @since 3.8
 	 *
 	 * @param bool|null $is_condition_true  Null if not yet handled, bool if handled.
 	 * @param string    $condition_name     The condition identifier.
@@ -129,7 +129,7 @@ class PMProDivi {
 	 *
 	 * Hooked into divi_module_wrapper_render at priority 1.
 	 *
-	 * @since TBD
+	 * @since 3.8
 	 *
 	 * @param string $output The rendered module HTML.
 	 * @param array  $args   Filter arguments including 'name' and 'attrs'.
@@ -185,7 +185,7 @@ class PMProDivi {
 	 *
 	 * Hooked into divi_visual_builder_assets_before_enqueue_scripts.
 	 *
-	 * @since TBD
+	 * @since 3.8
 	 */
 	public static function d5_enqueue_vb_script() {
 		wp_enqueue_script(
@@ -221,7 +221,7 @@ class PMProDivi {
 	 *
 	 * Hooked into divi.conversion.legacyAttributeNames.
 	 *
-	 * @since TBD
+	 * @since 3.8
 	 *
 	 * @param array $attrs Existing list of legacy attribute names.
 	 *
@@ -243,7 +243,7 @@ class PMProDivi {
 	 *
 	 * Hooked into divi.conversion.postConvertAttrs at priority 10.
 	 *
-	 * @since TBD
+	 * @since 3.8
 	 *
 	 * @param array  $converted  The converted D5 attribute array.
 	 * @param string $module     Module name, e.g. 'divi/row' or 'divi/section'.

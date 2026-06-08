@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Confirmation
- * Version: TBD
+ * Version: 3.8
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version TBD
+ * @version 3.8
  *
  * @author Paid Memberships Pro
  */
