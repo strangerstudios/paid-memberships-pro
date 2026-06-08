@@ -838,8 +838,13 @@ jQuery(document).ready(function ($) {
 		$("#pmpro_email_template_cc").val( cc_val );
 		$("#pmpro_email_template_bcc").val( bcc_val );
 
-		if ( typeof tinymce !== 'undefined' ) {
-			tinymce.triggerSave();
+		// Sync the visual editor to the textarea before reading its value, but
+		// only when TinyMCE is the active mode. When the user is in Text mode,
+		// the textarea already holds the live edits and calling editor.save()
+		// would overwrite them with the iframe's stale content.
+		var editor = pmpro_email_template_body_editor();
+		if ( editor && ! editor.isHidden() ) {
+			editor.save();
 		}
 
 		$data = {
