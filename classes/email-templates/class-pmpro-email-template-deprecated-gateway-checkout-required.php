@@ -16,16 +16,25 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	protected $membership_level_id;
 
 	/**
+	 * Unix timestamp when the membership expires.
+	 *
+	 * @var int
+	 */
+	protected $expiration_timestamp;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since TBD
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
 	 * @param int     $membership_level_id The ID of the membership level.
+	 * @param int     $expiration_timestamp Unix timestamp when the membership expires.
 	 */
-	public function __construct( WP_User $user, int $membership_level_id ) {
+	public function __construct( WP_User $user, int $membership_level_id, int $expiration_timestamp ) {
 		$this->user = $user;
 		$this->membership_level_id = $membership_level_id;
+		$this->expiration_timestamp = $expiration_timestamp;
 	}
 
 	/**
@@ -144,13 +153,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 			$level = pmpro_getLevel( $this->membership_level_id );
 		}
 
-		$expiration_date = '';
-		if ( ! empty( $level->enddate ) ) {
-			$expiration_timestamp = is_numeric( $level->enddate ) ? $level->enddate : strtotime( $level->enddate );
-			if ( ! empty( $expiration_timestamp ) ) {
-				$expiration_date = date_i18n( get_option( 'date_format' ), $expiration_timestamp );
-			}
-		}
+		$expiration_date = date_i18n( get_option( 'date_format' ), $this->expiration_timestamp );
 
 		return array(
 			'name' => $user->display_name,
@@ -172,27 +175,13 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	 * @return array The arguments to send the test email from the abstract class.
 	 */
 	public static function get_test_email_constructor_args() {
-		global $current_user, $pmpro_deprecated_gateway_checkout_required_email_test_level;
+		global $current_user;
 
 		$levels = pmpro_getAllLevels( true );
-		$pmpro_deprecated_gateway_checkout_required_email_test_level = current( $levels );
-		if ( empty( $pmpro_deprecated_gateway_checkout_required_email_test_level ) ) {
-			$pmpro_deprecated_gateway_checkout_required_email_test_level = (object) array(
-				'id'   => 1,
-				'name' => __( 'Membership Level', 'paid-memberships-pro' ),
-			);
-		}
+		$level  = current( $levels );
+		$level_id = empty( $level ) ? 1 : (int) $level->id;
 
-		add_filter(
-			'pmpro_get_membership_levels_for_user',
-			function() {
-				global $pmpro_deprecated_gateway_checkout_required_email_test_level;
-				$pmpro_deprecated_gateway_checkout_required_email_test_level->enddate = strtotime( '+1 month' );
-				return array( $pmpro_deprecated_gateway_checkout_required_email_test_level->id => $pmpro_deprecated_gateway_checkout_required_email_test_level );
-			}
-		);
-
-		return array( $current_user, (int) $pmpro_deprecated_gateway_checkout_required_email_test_level->id );
+		return array( $current_user, $level_id, strtotime( '+1 month' ) );
 	}
 }
 
@@ -204,11 +193,11 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
  * @param array $email_templates The email templates.
  * @return array The modified email templates array.
  */
-function pmpro_deprecated_gateway_sunset_register_checkout_required_email_template( $email_templates ) {
+function pmpro_deprecated_gateway_register_checkout_required_email_template( $email_templates ) {
 	if ( function_exists( 'pmpro_has_undeprecated_gateways' ) && pmpro_has_undeprecated_gateways() ) {
 		$email_templates['deprecated_gateway_checkout_required'] = 'PMPro_Email_Template_Deprecated_Gateway_Checkout_Required';
 	}
 
 	return $email_templates;
 }
-add_filter( 'pmpro_email_templates', 'pmpro_deprecated_gateway_sunset_register_checkout_required_email_template' );
+add_filter( 'pmpro_email_templates', 'pmpro_deprecated_gateway_register_checkout_required_email_template' );

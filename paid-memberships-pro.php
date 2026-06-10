@@ -37,7 +37,7 @@ require_once( PMPRO_DIR . '/includes/functions.php' );              		// misc fu
 require_once( PMPRO_DIR . '/includes/updates.php' );                		// database and other updates
 require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           		// database and other updates
 require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// deprecated hooks and functions
-require_once( PMPRO_DIR . '/includes/deprecated-gateway-sunset.php' );      // Deprecated gateway sunset workflow.
+require_once( PMPRO_DIR . '/includes/deprecated-gateways.php' );          // Deprecated gateway loading and migration workflow.
 require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {

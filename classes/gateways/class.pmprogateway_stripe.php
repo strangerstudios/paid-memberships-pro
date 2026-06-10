@@ -3351,10 +3351,6 @@ class PMProGateway_stripe extends PMProGateway {
 			return new WP_Error( 'pmpro_stripe_migration_invalid_trial_end', __( 'The next billing date must be in the future to create a Stripe migration subscription.', 'paid-memberships-pro' ) );
 		}
 
-		if ( ! empty( $old_subscription->get_billing_limit() ) ) {
-			return new WP_Error( 'pmpro_stripe_migration_billing_limit_unsupported', __( 'Subscriptions with billing limits must be migrated manually or handled with the expiration-date path.', 'paid-memberships-pro' ) );
-		}
-
 		$user = get_userdata( $old_subscription->get_user_id() );
 		if ( empty( $user ) ) {
 			return new WP_Error( 'pmpro_stripe_migration_missing_user', __( 'Could not find the subscription user.', 'paid-memberships-pro' ) );

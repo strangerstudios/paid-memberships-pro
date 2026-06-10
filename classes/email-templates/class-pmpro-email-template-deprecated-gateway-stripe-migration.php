@@ -199,11 +199,11 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
  * @param array $email_templates The email templates.
  * @return array The modified email templates array.
  */
-function pmpro_deprecated_gateway_sunset_register_stripe_migration_email_template( $email_templates ) {
+function pmpro_deprecated_gateway_register_stripe_migration_email_template( $email_templates ) {
 	if ( function_exists( 'pmpro_has_undeprecated_gateways' ) && pmpro_has_undeprecated_gateways() ) {
 		$email_templates['deprecated_gateway_stripe_migration'] = 'PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration';
 	}
 
 	return $email_templates;
 }
-add_filter( 'pmpro_email_templates', 'pmpro_deprecated_gateway_sunset_register_stripe_migration_email_template' );
+add_filter( 'pmpro_email_templates', 'pmpro_deprecated_gateway_register_stripe_migration_email_template' );
