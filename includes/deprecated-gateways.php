@@ -576,11 +576,14 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 
 	// If the user already has another active subscription for this level (e.g. they
 	// already checked out again on the new gateway), just cancel the old gateway
-	// subscription instead of migrating or setting an expiration date.
+	// subscription instead of migrating or setting an expiration date. Only
+	// subscriptions in the same environment count: a leftover sandbox subscription
+	// must never decide the fate of a live one.
 	$other_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $subscription->get_user_id(), $subscription->get_membership_level_id() );
 	foreach ( $other_subscriptions as $other_subscription ) {
 		if (
-			(int) $other_subscription->get_id() === (int) $subscription_id
+			$environment !== $other_subscription->get_gateway_environment()
+			|| (int) $other_subscription->get_id() === (int) $subscription_id
 			|| ( ! empty( $placeholder ) && (int) $other_subscription->get_id() === (int) $placeholder->get_id() )
 			|| ( '' !== $transaction_id && (string) $other_subscription->get_subscription_transaction_id() === $transaction_id )
 		) {
@@ -794,6 +797,20 @@ function pmpro_deprecated_gateway_cleanup_gateway( $gateway ) {
 		);
 	}
 
+	// The panel only offers cleanup once both environments are at zero; enforce the
+	// same rule here so a direct request cannot orphan active sandbox subscriptions
+	// by unloading the gateway class they rely on.
+	if ( ! empty( $counts['sandbox'] ) ) {
+		return new WP_Error(
+			'pmpro_deprecated_gateway_cleanup_sandbox_subscriptions',
+			sprintf(
+				// translators: %d: Number of sandbox subscriptions.
+				_n( '%d sandbox subscription is still active for this gateway. Process it in the sandbox environment before removing gateway data.', '%d sandbox subscriptions are still active for this gateway. Process them in the sandbox environment before removing gateway data.', $counts['sandbox'], 'paid-memberships-pro' ),
+				$counts['sandbox']
+			)
+		);
+	}
+
 	if ( pmpro_deprecated_gateway_has_scheduled_actions( $gateway, 'live' ) || pmpro_deprecated_gateway_has_scheduled_actions( $gateway, 'sandbox' ) ) {
 		return new WP_Error( 'pmpro_deprecated_gateway_cleanup_blocked', __( 'A workflow is queued or running for this gateway. Wait for it to finish or stop it before removing gateway data.', 'paid-memberships-pro' ) );
 	}
@@ -898,6 +915,13 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 			// translators: %d: Number of live subscriptions.
 			_n( '%d live subscription is still active for this gateway. Live subscriptions must be migrated before gateway data can be removed, even while testing in the sandbox environment.', '%d live subscriptions are still active for this gateway. Live subscriptions must be migrated before gateway data can be removed, even while testing in the sandbox environment.', $counts['live'], 'paid-memberships-pro' ),
 			$counts['live']
+		);
+	}
+	if ( ! empty( $counts['sandbox'] ) ) {
+		$cleanup_blockers[] = sprintf(
+			// translators: %d: Number of sandbox subscriptions.
+			_n( '%d sandbox subscription is still active for this gateway. Process it in the sandbox environment before removing gateway data.', '%d sandbox subscriptions are still active for this gateway. Process them in the sandbox environment before removing gateway data.', $counts['sandbox'], 'paid-memberships-pro' ),
+			$counts['sandbox']
 		);
 	}
 	if ( $has_actions || pmpro_deprecated_gateway_has_scheduled_actions( $gateway, 'live' === $environment ? 'sandbox' : 'live' ) ) {
@@ -1208,7 +1232,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 						<button type="button" class="button button-primary" id="pmpro-dgs-activate-stripe"><?php esc_html_e( 'Make Stripe the Active Gateway', 'paid-memberships-pro' ); ?></button>
 						<span class="description"><?php esc_html_e( 'Your Stripe account is already connected in this environment.', 'paid-memberships-pro' ); ?></span>
 					<?php } else { ?>
-						<a href="<?php echo esc_url_raw( $stripe_connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
+						<a href="<?php echo esc_url( $stripe_connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 					<?php } ?>
 				</p>
 				<p class="description">

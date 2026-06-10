@@ -115,7 +115,8 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	 * @return string The email address.
 	 */
 	public function get_recipient_email() {
-		return $this->user->user_email;
+		// The user may have been deleted since the subscription was created.
+		return empty( $this->user->user_email ) ? '' : $this->user->user_email;
 	}
 
 	/**
@@ -126,7 +127,8 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	 * @return string The name.
 	 */
 	public function get_recipient_name() {
-		return $this->user->display_name;
+		// The user may have been deleted since the subscription was created.
+		return empty( $this->user->display_name ) ? '' : $this->user->display_name;
 	}
 
 	/**
