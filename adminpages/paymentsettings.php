@@ -96,13 +96,13 @@
 	$deprecated_gateways = pmpro_get_deprecated_gateways();
 
 	// Show a confirmation after deprecated gateway data is removed.
-	if ( ! empty( $_REQUEST['deprecated_gateway_removed'] ) && empty( $msg ) ) {
+	$deprecated_gateway_removed_message = '';
+	if ( ! empty( $_REQUEST['deprecated_gateway_removed'] ) ) {
 		$removed_gateway = sanitize_key( wp_unslash( $_REQUEST['deprecated_gateway_removed'] ) );
-		$msg  = true;
-		$msgt = sprintf(
+		$deprecated_gateway_removed_message = sprintf(
 			// translators: %s is the gateway name.
 			__( 'The %s gateway and its stored data have been removed from this site.', 'paid-memberships-pro' ),
-			isset( $pmpro_gateways[ $removed_gateway ] ) ? $pmpro_gateways[ $removed_gateway ] : $removed_gateway
+			pmpro_get_gateway_nicename( $removed_gateway )
 		);
 	}
 
@@ -117,6 +117,11 @@
 			// Show the table of gateways and global settings.
 			?>
 			<h1><?php esc_html_e( 'Payment Settings', 'paid-memberships-pro' );?></h1>
+			<?php if ( ! empty( $deprecated_gateway_removed_message ) ) { ?>
+				<div class="notice notice-success inline">
+					<p><?php echo esc_html( $deprecated_gateway_removed_message ); ?></p>
+				</div>
+			<?php } ?>
 			<div id="global-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 				<div class="pmpro_section_toggle">
 					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
