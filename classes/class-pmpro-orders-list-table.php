@@ -236,6 +236,23 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Gets the name of the default primary column.
+	 *
+	 * @since 3.8
+	 *
+	 * @return string Name of the default primary column.
+	 */
+	protected function get_default_primary_column_name() {
+		$columns = $this->get_columns();
+
+		if ( isset( $columns['order_code'] ) ) {
+			return 'order_code';
+		}
+
+		return parent::get_default_primary_column_name();
+	}
+
+	/**
 	 * Text displayed when no user data is available
 	 *
 	 * @since 2.11
