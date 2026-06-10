@@ -1113,6 +1113,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'confirm_start'           => __( 'This will process %1$s active subscriptions in the %2$s and cancel them at the old gateway.', 'paid-memberships-pro' ),
 			'confirm_start_email'     => __( 'Members WILL be emailed.', 'paid-memberships-pro' ),
 			'confirm_start_noemail'   => __( 'Members will NOT be emailed.', 'paid-memberships-pro' ),
+			'confirm_start_stripe'    => __( 'Members who do not add a payment method before their next payment date will have their membership cancelled.', 'paid-memberships-pro' ),
 			'confirm_start_force'     => __( 'Force is enabled: subscriptions without an upcoming payment date will be cancelled and their memberships expired.', 'paid-memberships-pro' ),
 			'confirm_continue'        => __( 'Continue?', 'paid-memberships-pro' ),
 			'download_log'            => __( 'Download Migration Log', 'paid-memberships-pro' ),
@@ -1243,7 +1244,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<option value="expiration"><?php esc_html_e( 'Cancel subscriptions and set expiration dates', 'paid-memberships-pro' ); ?></option>
 							</select>
 							<p class="description" id="pmpro-dgs-desc-stripe" hidden>
-								<?php esc_html_e( 'Each subscription is recreated at Stripe with no payment method on file and the old gateway subscription is cancelled. Memberships and expiration dates do not change. Members are emailed to add billing information before their next payment date; if they do not, the Stripe subscription is cancelled on that date.', 'paid-memberships-pro' ); ?>
+								<?php esc_html_e( 'Each subscription is recreated at Stripe with no payment method on file and the old gateway subscription is cancelled. Memberships and expiration dates do not change. Members are emailed to add billing information before their next payment date. Members who do not add a payment method by that date will have their Stripe subscription and membership cancelled.', 'paid-memberships-pro' ); ?>
 								<a href="<?php echo esc_url( $stripe_template_url ); ?>"><?php esc_html_e( 'Edit the Stripe migration email', 'paid-memberships-pro' ); ?></a>
 							</p>
 							<p class="description" id="pmpro-dgs-desc-expiration" hidden>
@@ -1489,8 +1490,10 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				var envLabel = 'live' === d.environment ? cfg.i18n.env_live : cfg.i18n.env_sandbox;
 				var sendEmail = 'yes' === $( 'pmpro-dgs-email' ).value;
 				var force = $( 'pmpro-dgs-force' ).checked;
+				var isStripe = 'stripe' === $( 'pmpro-dgs-strategy' ).value;
 				var text = sprintf( cfg.i18n.confirm_start, count, envLabel ) + ' ' +
 					( sendEmail ? cfg.i18n.confirm_start_email : cfg.i18n.confirm_start_noemail ) +
+					( isStripe ? ' ' + cfg.i18n.confirm_start_stripe : '' ) +
 					( force ? ' ' + cfg.i18n.confirm_start_force : '' ) + ' ' + cfg.i18n.confirm_continue;
 				if ( window.confirm( text ) ) {
 					api( 'start', { strategy: $( 'pmpro-dgs-strategy' ).value, skip_email: sendEmail ? '' : '1', force: force ? '1' : '' } );

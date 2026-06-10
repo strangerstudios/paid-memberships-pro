@@ -57,7 +57,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	 * @return string The help text.
 	 */
 	public static function get_template_description() {
-		return esc_html__( 'This email is sent when an administrator migrates a deprecated gateway subscription to Stripe. It asks the member to add billing information to the new Stripe subscription before its next payment date.', 'paid-memberships-pro' );
+		return esc_html__( 'This email is sent when an administrator migrates a deprecated gateway subscription to Stripe. It asks the member to add billing information to the new Stripe subscription before its next payment date. Members who do not add a payment method by that date will have their membership cancelled.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -83,7 +83,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 
 <p>Your membership remains active, and your next payment is scheduled for {{ next_payment_date }}.</p>
 
-<p><strong>Please update your billing information before {{ next_payment_date }} to keep your membership active.</strong></p>
+<p><strong>Please update your billing information before {{ next_payment_date }}. If no payment method is on file by that date, your membership will be cancelled.</strong></p>
 
 <p><a href="{{ billing_update_url }}">Update Billing Information</a></p>', 'paid-memberships-pro' ) );
 	}
