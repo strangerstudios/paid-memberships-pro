@@ -3331,6 +3331,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 *     Migration arguments.
 	 *
 	 *     @type int $trial_end Unix timestamp when the Stripe subscription should start billing.
+	 *     @type int $attempt   Creation attempt number. The workflow increments this after a
+	 *                          previously created placeholder dies so the idempotency key
+	 *                          changes; reusing the old key within Stripe's 24-hour replay
+	 *                          window would return the original (now-cancelled) subscription.
 	 * }
 	 * @return Stripe_Subscription|WP_Error
 	 */
@@ -3343,6 +3347,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$args,
 			array(
 				'trial_end' => 0,
+				'attempt'   => 0,
 			)
 		);
 
@@ -3423,7 +3428,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return Stripe_Subscription::create(
 				$subscription_params,
 				array(
-					'idempotency_key' => 'pmpro-deprecated-gateway-' . $old_subscription->get_gateway_environment() . '-' . $old_subscription->get_id(),
+					'idempotency_key' => 'pmpro-deprecated-gateway-' . $old_subscription->get_gateway_environment() . '-' . $old_subscription->get_id() . '-' . (int) $args['attempt'],
 				)
 			);
 		} catch ( Stripe\Error\Base $e ) {
