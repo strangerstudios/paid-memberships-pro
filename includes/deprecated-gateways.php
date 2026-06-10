@@ -610,6 +610,10 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 
 	$use_stripe = ( 'stripe' === $strategy && ! $force_expiration ) || ! empty( $placeholder );
 
+	// Set below if the $0 billing limit bridge order cannot be saved.
+	$bridge_note         = '';
+	$bridge_needs_review = false;
+
 	if ( $use_stripe ) {
 		if ( empty( $placeholder ) ) {
 			// Billing limits migrate as a remaining-payment count on the new
@@ -690,8 +694,9 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 
 			// Billing limits do not count a subscription's initial order, but a
 			// migrated subscription never has one. Record a $0 migration order so
-			// the remaining-payment count is enforced exactly.
-			if ( $remaining_payments >= 1 && empty( $placeholder->get_orders( array( 'limit' => 1 ) ) ) ) {
+			// the remaining-payment count is enforced exactly. The lookup mirrors
+			// billing limit enforcement, which only counts successful orders.
+			if ( ! empty( $placeholder->get_billing_limit() ) && empty( $placeholder->get_orders( array( 'status' => 'success', 'limit' => 1 ) ) ) ) {
 				$bridge_order                              = new MemberOrder();
 				$bridge_order->user_id                     = $subscription->get_user_id();
 				$bridge_order->membership_id               = $subscription->get_membership_level_id();
@@ -700,8 +705,13 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 				$bridge_order->subscription_transaction_id = $transaction_id;
 				$bridge_order->total                       = 0;
 				$bridge_order->status                      = 'success';
-				$bridge_order->notes                       = 'Deprecated gateway migration: stands in for the original checkout order of ' . $gateway . ' ' . $subscription_description . ' so the remaining billing limit of ' . $remaining_payments . ' is enforced.';
-				$bridge_order->saveOrder();
+				$bridge_order->notes                       = 'Deprecated gateway migration: stands in for the original checkout order of ' . $gateway . ' ' . $subscription_description . ' so the remaining billing limit of ' . (int) $placeholder->get_billing_limit() . ' is enforced.';
+				if ( ! $bridge_order->saveOrder() ) {
+					// Reruns never reach this branch again once the placeholder exists,
+					// so a silent failure here would permanently under-enforce the limit.
+					$bridge_note         = ' Could not save the $0 billing limit order, so the billing limit may allow one extra payment; review this subscription\'s billing limit in PMPro.';
+					$bridge_needs_review = true;
+				}
 			}
 		}
 	} else {
@@ -735,14 +745,14 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	}
 
 	if ( ! $subscription->cancel_at_gateway() ) {
-		return array( 'outcome' => 'needs_review', 'message' => ( $force_expiration ? 'Force: set the membership expiration date for ' . $subscription_description . ', but could not confirm cancellation' : 'Could not confirm cancellation of ' . $subscription_description ) . ' at the gateway. Verify this subscription in the gateway; an error email was sent to the admin.' . $email_note );
+		return array( 'outcome' => 'needs_review', 'message' => ( $force_expiration ? 'Force: set the membership expiration date for ' . $subscription_description . ', but could not confirm cancellation' : 'Could not confirm cancellation of ' . $subscription_description ) . ' at the gateway. Verify this subscription in the gateway; an error email was sent to the admin.' . $bridge_note . $email_note );
 	}
 
-	$outcome = $email_needs_review ? 'needs_review' : 'complete';
+	$outcome = ( $email_needs_review || $bridge_needs_review ) ? 'needs_review' : 'complete';
 	if ( $use_stripe ) {
-		return array( 'outcome' => $outcome, 'message' => 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . ' and cancelled the old gateway subscription.' . $email_note );
+		return array( 'outcome' => $outcome, 'message' => 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note );
 	}
-	return array( 'outcome' => $outcome, 'message' => ( $force_expiration ? 'Force: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' and cancelled the old gateway subscription.' . $email_note );
+	return array( 'outcome' => $outcome, 'message' => ( $force_expiration ? 'Force: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note );
 }
 
 /**
