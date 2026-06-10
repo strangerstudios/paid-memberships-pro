@@ -216,10 +216,14 @@ function pmpro_deprecated_gateway_update_state( $gateway, $environment, $changes
  *
  * @param string $gateway Gateway slug.
  * @param string $environment Gateway environment.
- * @param string $outcome One of 'complete', 'skipped', 'failed'.
+ * @param string $outcome One of 'complete', 'skipped', 'needs_review'.
  * @param string $message Log message.
  */
 function pmpro_deprecated_gateway_record_result( $gateway, $environment, $outcome, $message ) {
+	if ( ! in_array( $outcome, array( 'complete', 'skipped', 'needs_review' ), true ) ) {
+		$outcome = 'needs_review';
+	}
+
 	$state              = pmpro_deprecated_gateway_get_state( $gateway, $environment );
 	$state['processed'] = empty( $state['processed'] ) ? 1 : $state['processed'] + 1;
 	$state[ $outcome ]  = empty( $state[ $outcome ] ) ? 1 : $state[ $outcome ] + 1;
@@ -301,7 +305,7 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 			'processed'    => 0,
 			'complete'     => 0,
 			'skipped'      => 0,
-			'failed'       => 0,
+			'needs_review' => 0,
 			'note'         => '',
 		)
 	);
@@ -496,7 +500,7 @@ function pmpro_deprecated_gateway_get_subscription_log_description( $subscriptio
  * @param bool   $force Process subscriptions without an upcoming payment date by
  *               expiring the membership and cancelling at the gateway.
  * @return array {
- *     @type string $outcome One of 'complete', 'skipped', 'failed'.
+ *     @type string $outcome One of 'complete', 'skipped', 'needs_review'.
  *     @type string $message Log message.
  * }
  */
@@ -519,7 +523,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 		if ( $subscription->cancel_at_gateway() ) {
 			return array( 'outcome' => 'complete', 'message' => 'Cancelled ' . $subscription_description . ' without migration because the user no longer has the associated membership level.' );
 		}
-		return array( 'outcome' => 'failed', 'message' => 'Could not cancel ' . $subscription_description . ' at the gateway. The user no longer has the associated membership level. Verify this subscription at the gateway; an error email was sent to the admin.' );
+		return array( 'outcome' => 'needs_review', 'message' => 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. The user no longer has the associated membership level. Verify this subscription in the gateway; an error email was sent to the admin.' );
 	}
 
 	// Load a Stripe placeholder created by an earlier run, if any. If one exists,
@@ -550,7 +554,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 		if ( $subscription->cancel_at_gateway() ) {
 			return array( 'outcome' => 'complete', 'message' => 'Cancelled ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.' );
 		}
-		return array( 'outcome' => 'failed', 'message' => 'Could not cancel ' . $subscription_description . ' at the gateway. The user already has active subscription #' . $other_subscription->get_id() . ' for this level. Verify this subscription at the gateway; an error email was sent to the admin.' );
+		return array( 'outcome' => 'needs_review', 'message' => 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. The user already has active subscription #' . $other_subscription->get_id() . ' for this level. Verify this subscription in the gateway; an error email was sent to the admin.' );
 	}
 
 	// The next payment date is the handoff point: when the new Stripe subscription
@@ -585,7 +589,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 					if ( $subscription->cancel_at_gateway() ) {
 						return array( 'outcome' => 'complete', 'message' => 'Cancelled ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership was left unchanged and no email was sent.' );
 					}
-					return array( 'outcome' => 'failed', 'message' => 'Could not cancel ' . $subscription_description . ' at the gateway. Its billing limit has already been reached. Verify this subscription at the gateway; an error email was sent to the admin.' );
+					return array( 'outcome' => 'needs_review', 'message' => 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. Its billing limit has already been reached. Verify this subscription in the gateway; an error email was sent to the admin.' );
 				}
 			}
 
@@ -595,12 +599,12 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 
 			if ( '' === $transaction_id ) {
 				if ( ! class_exists( 'PMProGateway_stripe' ) || ! method_exists( 'PMProGateway_stripe', 'create_deprecated_gateway_migration_subscription' ) ) {
-					return array( 'outcome' => 'failed', 'message' => 'Could not create a Stripe placeholder for ' . $subscription_description . ' because the Stripe gateway is not available.' );
+					return array( 'outcome' => 'needs_review', 'message' => 'Could not create a Stripe placeholder for ' . $subscription_description . ' because the Stripe gateway is not available.' );
 				}
 				$stripe_gateway          = new PMProGateway_stripe( 'stripe' );
 				$stripe_api_subscription = $stripe_gateway->create_deprecated_gateway_migration_subscription( $subscription, array( 'trial_end' => $handoff_timestamp ) );
 				if ( is_wp_error( $stripe_api_subscription ) ) {
-					return array( 'outcome' => 'failed', 'message' => 'Could not create a Stripe placeholder for ' . $subscription_description . '. Error: ' . $stripe_api_subscription->get_error_message() );
+					return array( 'outcome' => 'needs_review', 'message' => 'Could not create a Stripe placeholder for ' . $subscription_description . '. Error: ' . $stripe_api_subscription->get_error_message() );
 				}
 				$transaction_id = $stripe_api_subscription->id;
 				update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_transaction_id', $transaction_id );
@@ -627,7 +631,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 				);
 			}
 			if ( empty( $placeholder ) ) {
-				return array( 'outcome' => 'failed', 'message' => 'Created Stripe subscription ' . $transaction_id . ' for ' . $subscription_description . ', but the local PMPro subscription record could not be created.' );
+				return array( 'outcome' => 'needs_review', 'message' => 'Created Stripe subscription ' . $transaction_id . ' for ' . $subscription_description . ', but the local PMPro subscription record could not be created. Verify this subscription in Stripe and PMPro.' );
 			}
 
 			update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_subscription_id', $placeholder->get_id() );
@@ -658,11 +662,13 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 
 	// Email the member before cancelling so a cancellation failure never leaves
 	// a member unnotified. A meta flag prevents duplicate emails across reruns.
-	$email_note = '';
+	$email_note         = '';
+	$email_needs_review = false;
 	if ( $send_email && ! get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_email_sent', true ) ) {
 		$user = get_userdata( $subscription->get_user_id() );
 		if ( empty( $user ) ) {
-			$email_note = ' Could not email the member because the user no longer exists.';
+			$email_note         = ' Could not email the member because the user no longer exists.';
+			$email_needs_review = true;
 		} else {
 			$email = $use_stripe
 				? new PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration( $placeholder )
@@ -671,19 +677,21 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 				update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_email_sent', time() );
 				$email_note = ' Emailed the member.';
 			} else {
-				$email_note = ' The member email failed to send.';
+				$email_note         = ' The member email failed to send.';
+				$email_needs_review = true;
 			}
 		}
 	}
 
 	if ( ! $subscription->cancel_at_gateway() ) {
-		return array( 'outcome' => 'failed', 'message' => ( $force_expiration ? 'Force: set the membership expiration date for ' . $subscription_description . ', but could not cancel it' : 'Could not cancel ' . $subscription_description ) . ' at the gateway. Verify this subscription at the gateway; an error email was sent to the admin.' . $email_note );
+		return array( 'outcome' => 'needs_review', 'message' => ( $force_expiration ? 'Force: set the membership expiration date for ' . $subscription_description . ', but could not confirm cancellation' : 'Could not confirm cancellation of ' . $subscription_description ) . ' at the gateway. Verify this subscription in the gateway; an error email was sent to the admin.' . $email_note );
 	}
 
+	$outcome = $email_needs_review ? 'needs_review' : 'complete';
 	if ( $use_stripe ) {
-		return array( 'outcome' => 'complete', 'message' => 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . ' and cancelled the old gateway subscription.' . $email_note );
+		return array( 'outcome' => $outcome, 'message' => 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . ' and cancelled the old gateway subscription.' . $email_note );
 	}
-	return array( 'outcome' => 'complete', 'message' => ( $force_expiration ? 'Force: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' and cancelled the old gateway subscription.' . $email_note );
+	return array( 'outcome' => $outcome, 'message' => ( $force_expiration ? 'Force: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' and cancelled the old gateway subscription.' . $email_note );
 }
 
 /**
@@ -845,7 +853,7 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 			'processed'         => empty( $state['processed'] ) ? 0 : (int) $state['processed'],
 			'complete'          => empty( $state['complete'] ) ? 0 : (int) $state['complete'],
 			'skipped'           => empty( $state['skipped'] ) ? 0 : (int) $state['skipped'],
-			'failed'            => empty( $state['failed'] ) ? 0 : (int) $state['failed'],
+			'needs_review'      => empty( $state['needs_review'] ) ? 0 : (int) $state['needs_review'],
 			'note'              => empty( $state['note'] ) ? '' : $state['note'],
 			'started_display'   => empty( $state['started_at'] ) ? '' : wp_date( $datetime_format, (int) $state['started_at'] ),
 			'completed_display' => empty( $state['completed_at'] ) ? '' : wp_date( $datetime_format, (int) $state['completed_at'] ),
@@ -1037,8 +1045,8 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'stopped'                 => __( 'Workflow stopped', 'paid-memberships-pro' ),
 			'chip_complete'           => __( 'Complete', 'paid-memberships-pro' ),
 			'chip_skipped'            => __( 'Skipped', 'paid-memberships-pro' ),
-			'chip_failed'             => __( 'Failed', 'paid-memberships-pro' ),
-			'failed_warning'          => __( 'Some subscriptions failed. Search the migration log for "failed" entries and verify each one in your gateway account.', 'paid-memberships-pro' ),
+			'chip_needs_review'       => __( 'Needs Review', 'paid-memberships-pro' ),
+			'needs_review_warning'    => __( 'Some subscriptions need review. Search the migration log for "[needs_review]" entries and review each note before removing gateway data.', 'paid-memberships-pro' ),
 			'skipped_warning'         => __( 'Some subscriptions were skipped. Search the migration log for "skipped" entries and handle them manually, or run the migration again with Force Migration enabled.', 'paid-memberships-pro' ),
 			// translators: %1$s: number of subscriptions, %2$s: environment label.
 			'confirm_start'           => __( 'This will process %1$s active subscriptions in the %2$s and cancel them at the old gateway.', 'paid-memberships-pro' ),
@@ -1156,7 +1164,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					</p>
 				</div>
 				<div id="pmpro-dgs-finish-clear" hidden>
-					<p><?php esc_html_e( 'All subscriptions have been migrated off this gateway. Before removing gateway data, download the migration log and search it for "failed" entries to verify those subscriptions in your gateway account. Removing gateway data deletes the stored API credentials and stops loading this gateway on your site.', 'paid-memberships-pro' ); ?></p>
+					<p><?php esc_html_e( 'All subscriptions have been migrated off this gateway. Before removing gateway data, download the migration log and search it for "[needs_review]" entries. Review those notes before removing gateway data. Removing gateway data deletes the stored API credentials and stops loading this gateway on your site.', 'paid-memberships-pro' ); ?></p>
 					<p>
 						<button type="button" class="button button-primary" id="pmpro-dgs-cleanup"><?php esc_html_e( 'Remove Gateway Data', 'paid-memberships-pro' ); ?></button>
 					</p>
@@ -1282,7 +1290,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				var wrap = el( 'p', 'pmpro-dgs-summary' );
 				wrap.appendChild( el( 'span', 'pmpro_tag pmpro_tag-success', cfg.i18n.chip_complete + ': ' + w.complete ) );
 				wrap.appendChild( el( 'span', 'pmpro_tag pmpro_tag-' + ( w.skipped > 0 ? 'alert' : 'info' ), cfg.i18n.chip_skipped + ': ' + w.skipped ) );
-				wrap.appendChild( el( 'span', 'pmpro_tag pmpro_tag-' + ( w.failed > 0 ? 'error pmpro_tag-has_icon' : 'info' ), cfg.i18n.chip_failed + ': ' + w.failed ) );
+				wrap.appendChild( el( 'span', 'pmpro_tag pmpro_tag-' + ( w.needs_review > 0 ? 'alert pmpro_tag-has_icon' : 'info' ), cfg.i18n.chip_needs_review + ': ' + w.needs_review ) );
 				return wrap;
 			}
 
@@ -1314,7 +1322,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					if ( w.note ) { box.appendChild( el( 'p', 'pmpro-dgs-meta', w.note ) ); }
 				}
 				box.appendChild( summary( w ) );
-				if ( w.failed > 0 ) { box.appendChild( warning( cfg.i18n.failed_warning ) ); }
+				if ( w.needs_review > 0 ) { box.appendChild( warning( cfg.i18n.needs_review_warning ) ); }
 				if ( 'running' !== w.status && w.skipped > 0 ) { box.appendChild( warning( cfg.i18n.skipped_warning ) ); }
 				if ( 'completed' === w.status ) {
 					var download = el( 'a', 'button button-secondary', cfg.i18n.download_log );
