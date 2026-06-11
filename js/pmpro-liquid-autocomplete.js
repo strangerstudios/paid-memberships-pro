@@ -93,6 +93,7 @@
 				if ( menu ) {
 					menu.hidden = true;
 					menu.innerHTML = '';
+					menu.removeAttribute( 'aria-activedescendant' );
 				}
 
 				items = [];
@@ -134,11 +135,11 @@
 						firstSelectable = index;
 					}
 
-					itemNode = document.createElement( 'button' );
-					itemNode.type = 'button';
+					itemNode = document.createElement( 'div' );
 					itemNode.className = 'pmpro-liquid-autocomplete__item';
 					itemNode.setAttribute( 'role', 'option' );
 					itemNode.setAttribute( 'data-index', index );
+					itemNode.setAttribute( 'id', 'pmpro-liquid-autocomplete-option-' + index );
 
 					const labelNode = document.createElement( 'span' );
 					labelNode.className = 'pmpro-liquid-autocomplete__label';
@@ -189,6 +190,11 @@
 							optionNode.scrollIntoView( { block: 'nearest' } );
 						}
 					}
+				);
+
+				ensureMenu().setAttribute(
+					'aria-activedescendant',
+					'pmpro-liquid-autocomplete-option-' + activeIndex
 				);
 			}
 
