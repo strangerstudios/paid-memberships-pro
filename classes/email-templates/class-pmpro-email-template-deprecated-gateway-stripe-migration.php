@@ -202,7 +202,13 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
  * @return array The modified email templates array.
  */
 function pmpro_deprecated_gateway_register_stripe_migration_email_template( $email_templates ) {
-	if ( function_exists( 'pmpro_has_undeprecated_gateways' ) && pmpro_has_undeprecated_gateways() ) {
+	// Keep this template registered after gateway cleanup while migrated
+	// subscriptions are still waiting for a payment method, since it is
+	// also sent in place of their recurring payment reminders.
+	if (
+		( function_exists( 'pmpro_has_undeprecated_gateways' ) && pmpro_has_undeprecated_gateways() ) ||
+		( function_exists( 'pmpro_deprecated_gateway_get_needs_payment_method_count' ) && pmpro_deprecated_gateway_get_needs_payment_method_count() > 0 )
+	) {
 		$email_templates['deprecated_gateway_stripe_migration'] = 'PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration';
 	}
 

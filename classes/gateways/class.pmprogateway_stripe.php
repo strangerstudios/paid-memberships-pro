@@ -3441,6 +3441,92 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Check whether Stripe is ready to receive deprecated gateway migrations.
+	 *
+	 * Verifies that credentials exist for the current gateway environment and,
+	 * optionally, that the site's webhook is set up: migrated subscriptions
+	 * rely on the webhook for renewal orders, billing limit enforcement, and
+	 * syncing cancellations when a trial lapses without a payment method.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $check_webhook Whether to also verify the webhook. Requires a
+	 *             Stripe API call, so skip when checking frequently.
+	 * @return true|WP_Error True if ready, otherwise an error describing the problem.
+	 */
+	public function check_deprecated_gateway_migration_readiness( $check_webhook = true ) {
+		if ( empty( $this->get_secretkey() ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_no_credentials', __( 'Stripe is not connected for the current gateway environment, so subscriptions cannot be migrated to Stripe.', 'paid-memberships-pro' ) );
+		}
+
+		if ( ! $check_webhook ) {
+			return true;
+		}
+
+		$webhook = $this->does_webhook_exist();
+		if ( empty( $webhook ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_no_webhook', __( 'A Stripe webhook is not set up for this site. Migrated subscriptions rely on the webhook to record renewal payments and sync cancellations. Set up the webhook from the Stripe gateway settings before migrating subscriptions to Stripe.', 'paid-memberships-pro' ) );
+		}
+		if ( ! empty( $webhook['status'] ) && 'enabled' !== $webhook['status'] ) {
+			return new WP_Error( 'pmpro_stripe_migration_webhook_disabled', __( 'The Stripe webhook for this site is disabled. Enable it from the Stripe gateway settings before migrating subscriptions to Stripe.', 'paid-memberships-pro' ) );
+		}
+		if ( ! empty( $this->check_missing_webhook_events( $webhook['enabled_events'] ) ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_webhook_events', __( 'The Stripe webhook for this site is missing required events. Update the webhook from the Stripe gateway settings before migrating subscriptions to Stripe.', 'paid-memberships-pro' ) );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check whether a Stripe subscription has a payment method to charge.
+	 *
+	 * Checks the subscription's default payment method and source, then falls
+	 * back to the customer's defaults, which is also what Stripe falls back to
+	 * when invoicing. Used to verify migrated subscriptions that were created
+	 * without a payment method.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Subscription $subscription The subscription to check.
+	 * @return bool|WP_Error Whether a payment method is attached, or WP_Error on API failure.
+	 */
+	public function subscription_has_payment_method( $subscription ) {
+		if ( ! is_a( $subscription, 'PMPro_Subscription' ) ) {
+			return new WP_Error( 'pmpro_stripe_invalid_subscription', __( 'Invalid subscription.', 'paid-memberships-pro' ) );
+		}
+
+		if ( empty( $this->get_secretkey() ) ) {
+			return new WP_Error( 'pmpro_stripe_no_credentials', __( 'Stripe login credentials are not set.', 'paid-memberships-pro' ) );
+		}
+
+		try {
+			$stripe_subscription = Stripe_Subscription::retrieve(
+				array(
+					'id'     => $subscription->get_subscription_transaction_id(),
+					'expand' => array( 'customer' ),
+				)
+			);
+		} catch ( Stripe\Error\Base $e ) {
+			return new WP_Error( 'pmpro_stripe_subscription_error', $e->getMessage() );
+		} catch ( \Throwable $e ) {
+			return new WP_Error( 'pmpro_stripe_subscription_error', $e->getMessage() );
+		} catch ( \Exception $e ) {
+			return new WP_Error( 'pmpro_stripe_subscription_error', $e->getMessage() );
+		}
+
+		if ( ! empty( $stripe_subscription->default_payment_method ) || ! empty( $stripe_subscription->default_source ) ) {
+			return true;
+		}
+
+		$customer = $stripe_subscription->customer;
+		if ( ! empty( $customer ) && empty( $customer->deleted ) && ( ! empty( $customer->invoice_settings->default_payment_method ) || ! empty( $customer->default_source ) ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Convert a price to a positive integer in cents (or 0 for a free price)
 	 * representing how much to charge. This is how Stripe wants us to send price amounts.
 	 *
