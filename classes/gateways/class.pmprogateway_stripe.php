@@ -3441,40 +3441,17 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Check whether Stripe is ready to receive deprecated gateway migrations.
+	 * Check whether Stripe credentials are set for the current gateway environment.
 	 *
-	 * Verifies that credentials exist for the current gateway environment and,
-	 * optionally, that the site's webhook is set up: migrated subscriptions
-	 * rely on the webhook for renewal orders, billing limit enforcement, and
-	 * syncing cancellations when a trial lapses without a payment method.
+	 * Unlike has_connect_credentials(), this also covers sites using legacy
+	 * API keys.
 	 *
 	 * @since TBD
 	 *
-	 * @param bool $check_webhook Whether to also verify the webhook. Requires a
-	 *             Stripe API call, so skip when checking frequently.
-	 * @return true|WP_Error True if ready, otherwise an error describing the problem.
+	 * @return bool
 	 */
-	public function check_deprecated_gateway_migration_readiness( $check_webhook = true ) {
-		if ( empty( $this->get_secretkey() ) ) {
-			return new WP_Error( 'pmpro_stripe_migration_no_credentials', __( 'Stripe is not connected for the current gateway environment, so subscriptions cannot be migrated to Stripe.', 'paid-memberships-pro' ) );
-		}
-
-		if ( ! $check_webhook ) {
-			return true;
-		}
-
-		$webhook = $this->does_webhook_exist();
-		if ( empty( $webhook ) ) {
-			return new WP_Error( 'pmpro_stripe_migration_no_webhook', __( 'A Stripe webhook is not set up for this site. Migrated subscriptions rely on the webhook to record renewal payments and sync cancellations. Set up the webhook from the Stripe gateway settings before migrating subscriptions to Stripe.', 'paid-memberships-pro' ) );
-		}
-		if ( ! empty( $webhook['status'] ) && 'enabled' !== $webhook['status'] ) {
-			return new WP_Error( 'pmpro_stripe_migration_webhook_disabled', __( 'The Stripe webhook for this site is disabled. Enable it from the Stripe gateway settings before migrating subscriptions to Stripe.', 'paid-memberships-pro' ) );
-		}
-		if ( ! empty( $this->check_missing_webhook_events( $webhook['enabled_events'] ) ) ) {
-			return new WP_Error( 'pmpro_stripe_migration_webhook_events', __( 'The Stripe webhook for this site is missing required events. Update the webhook from the Stripe gateway settings before migrating subscriptions to Stripe.', 'paid-memberships-pro' ) );
-		}
-
-		return true;
+	public function has_credentials() {
+		return ! empty( $this->get_secretkey() );
 	}
 
 	/**

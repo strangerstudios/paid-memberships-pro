@@ -278,17 +278,12 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 		return new WP_Error( 'pmpro_deprecated_gateway_stripe_unavailable', __( 'Stripe must be the active payment gateway before subscriptions can be migrated to Stripe.', 'paid-memberships-pro' ) );
 	}
 
-	// Refuse to start a Stripe migration that would fail for every subscription:
-	// without credentials each one would be flagged needs_review, and without a
-	// webhook the placeholders would be created but never sync.
+	// Refuse to start a Stripe migration without credentials: every subscription
+	// would be flagged needs_review.
 	if ( 'stripe' === $strategy ) {
-		if ( ! class_exists( 'PMProGateway_stripe' ) || ! method_exists( 'PMProGateway_stripe', 'check_deprecated_gateway_migration_readiness' ) ) {
-			return new WP_Error( 'pmpro_deprecated_gateway_stripe_unavailable', __( 'The Stripe gateway is not available.', 'paid-memberships-pro' ) );
-		}
-		$stripe_gateway   = new PMProGateway_stripe( 'stripe' );
-		$stripe_readiness = $stripe_gateway->check_deprecated_gateway_migration_readiness();
-		if ( is_wp_error( $stripe_readiness ) ) {
-			return $stripe_readiness;
+		$stripe_blockers = pmpro_deprecated_gateway_get_stripe_migration_blockers();
+		if ( ! empty( $stripe_blockers ) ) {
+			return new WP_Error( 'pmpro_deprecated_gateway_stripe_not_ready', $stripe_blockers[0] );
 		}
 	}
 
@@ -442,20 +437,11 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 
 	// Stripe credentials can be disconnected while a workflow is queued. Stop the
 	// run instead of recording a needs_review failure for every remaining
-	// subscription. Credentials only; checking the webhook here would mean a
-	// Stripe API call on every batch.
-	if ( 'stripe' === $strategy ) {
-		if ( class_exists( 'PMProGateway_stripe' ) && method_exists( 'PMProGateway_stripe', 'check_deprecated_gateway_migration_readiness' ) ) {
-			$stripe_gateway   = new PMProGateway_stripe( 'stripe' );
-			$stripe_readiness = $stripe_gateway->check_deprecated_gateway_migration_readiness( false );
-		} else {
-			$stripe_readiness = new WP_Error( 'pmpro_deprecated_gateway_stripe_unavailable', __( 'The Stripe gateway is not available.', 'paid-memberships-pro' ) );
-		}
-		if ( is_wp_error( $stripe_readiness ) ) {
-			pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'stopped', 'note' => __( 'Stopped because Stripe is no longer connected for this gateway environment. Reconnect Stripe and start the workflow again to continue.', 'paid-memberships-pro' ) ) );
-			pmpro_deprecated_gateway_log( 'Stopped deprecated gateway workflow because Stripe is not ready: ' . $stripe_readiness->get_error_message() . ' Gateway=' . $gateway . ', environment=' . $environment . '.' );
-			return;
-		}
+	// subscription.
+	if ( 'stripe' === $strategy && ! empty( pmpro_deprecated_gateway_get_stripe_migration_blockers() ) ) {
+		pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'stopped', 'note' => __( 'Stopped because Stripe is no longer connected for this gateway environment. Reconnect Stripe and start the workflow again to continue.', 'paid-memberships-pro' ) ) );
+		pmpro_deprecated_gateway_log( 'Stopped deprecated gateway workflow because Stripe credentials are missing. Gateway=' . $gateway . ', environment=' . $environment . '.' );
+		return;
 	}
 
 	$batch_size       = 10;
@@ -1214,36 +1200,24 @@ add_action( 'admin_notices', 'pmpro_deprecated_gateway_needs_payment_method_admi
 /**
  * Get the reasons the Stripe migration strategy cannot be offered right now.
  *
- * Cached briefly because the webhook check requires a Stripe API call and this
- * runs on panel renders and status polls.
+ * Credentials only: webhook detection and warnings live on the Stripe gateway
+ * settings page and intentionally do not gate or annotate the migration.
  *
  * @since TBD
  *
- * @return string[] Empty when Stripe is ready for migrations.
+ * @return string[] Empty when Stripe can receive migrations.
  */
 function pmpro_deprecated_gateway_get_stripe_migration_blockers() {
-	$environment   = 'live' === get_option( 'pmpro_gateway_environment', 'sandbox' ) ? 'live' : 'sandbox';
-	$transient_key = 'pmpro_dgs_stripe_ready_' . $environment;
-
-	$blockers = get_transient( $transient_key );
-	if ( false !== $blockers ) {
-		return is_array( $blockers ) ? $blockers : array();
+	if ( ! class_exists( 'PMProGateway_stripe' ) || ! method_exists( 'PMProGateway_stripe', 'has_credentials' ) ) {
+		return array( __( 'The Stripe gateway is not available.', 'paid-memberships-pro' ) );
 	}
 
-	$blockers = array();
-	if ( ! class_exists( 'PMProGateway_stripe' ) || ! method_exists( 'PMProGateway_stripe', 'check_deprecated_gateway_migration_readiness' ) ) {
-		$blockers[] = __( 'The Stripe gateway is not available.', 'paid-memberships-pro' );
-	} else {
-		$stripe_gateway   = new PMProGateway_stripe( 'stripe' );
-		$stripe_readiness = $stripe_gateway->check_deprecated_gateway_migration_readiness();
-		if ( is_wp_error( $stripe_readiness ) ) {
-			$blockers[] = $stripe_readiness->get_error_message();
-		}
+	$stripe_gateway = new PMProGateway_stripe( 'stripe' );
+	if ( ! $stripe_gateway->has_credentials() ) {
+		return array( __( 'Stripe is not connected for the current gateway environment, so subscriptions cannot be migrated to Stripe.', 'paid-memberships-pro' ) );
 	}
 
-	set_transient( $transient_key, $blockers, 2 * MINUTE_IN_SECONDS );
-
-	return $blockers;
+	return array();
 }
 
 /**
@@ -1333,7 +1307,7 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 		);
 	}
 
-	// Only offer the Stripe strategy when Stripe is actually ready to receive
+	// Only offer the Stripe strategy when Stripe can actually receive
 	// migrations; the blockers explain a disabled Stripe option to the admin.
 	$stripe_blockers = ( 'stripe' === $active && $gateway !== $active ) ? pmpro_deprecated_gateway_get_stripe_migration_blockers() : array();
 
@@ -1403,7 +1377,6 @@ function pmpro_deprecated_gateway_ajax() {
 				// limit enforcement, and syncing cancellations when a trial lapses.
 				$stripe_gateway          = new PMProGateway_stripe();
 				$update_webhook_response = $stripe_gateway->update_webhook_events();
-				delete_transient( 'pmpro_dgs_stripe_ready_' . $environment );
 				if ( empty( $update_webhook_response ) || is_wp_error( $update_webhook_response ) ) {
 					$result = new WP_Error( 'pmpro_deprecated_gateway_stripe_webhook', __( 'Stripe is now the active payment gateway, but a webhook could not be created automatically. Set up the webhook from the Stripe gateway settings before migrating subscriptions.', 'paid-memberships-pro' ) );
 				} else {
@@ -1672,7 +1645,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<option value="expiration"><?php esc_html_e( 'Cancel subscriptions and set expiration dates', 'paid-memberships-pro' ); ?></option>
 							</select>
 							<p class="description" id="pmpro-dgs-desc-stripe" hidden>
-								<?php esc_html_e( 'Each subscription is recreated at Stripe at its current price and billing schedule, with no payment method on file, and the old gateway subscription is cancelled. Memberships and expiration dates do not change. Members are emailed to add billing information, see a notice on their account page, and receive a reminder before their next payment date until a payment method is added. Members who do not add one by that date will have their Stripe subscription and membership cancelled. Track these members on the Subscriptions list under Awaiting Payment Method.', 'paid-memberships-pro' ); ?>
+								<?php esc_html_e( 'Each subscription is recreated at Stripe at its current price and billing schedule, with no payment method on file, and the old gateway subscription is cancelled. Trial pricing cannot be migrated: members still in a trial period will be billed their subscription\'s regular price beginning with their next payment. Memberships and expiration dates do not change. Members are emailed to add billing information, see a notice on their account page, and receive a reminder before their next payment date until a payment method is added. Members who do not add one by that date will have their Stripe subscription and membership cancelled. Track these members on the Subscriptions list under Awaiting Payment Method.', 'paid-memberships-pro' ); ?>
 								<a href="<?php echo esc_url( $stripe_template_url ); ?>"><?php esc_html_e( 'Edit the Stripe migration email', 'paid-memberships-pro' ); ?></a>
 							</p>
 							<p class="description" id="pmpro-dgs-desc-expiration" hidden>
