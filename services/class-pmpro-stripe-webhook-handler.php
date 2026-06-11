@@ -1066,9 +1066,19 @@ class PMPro_Stripe_Webhook_Handler {
 				$order_data['accountnumber'] = hideCardNumber( $payment_method->card->last4 );
 				$order_data['expirationmonth'] = $payment_method->card->exp_month;
 				$order_data['expirationyear'] = $payment_method->card->exp_year;
+			} else {
+				// Not a card. Clear card fields in case the order being updated has card info from a previous payment attempt.
+				$order_data['cardtype'] = '';
+				$order_data['accountnumber'] = '';
+				$order_data['expirationmonth'] = '';
+				$order_data['expirationyear'] = '';
 			}
 		} else {
 			$order_data['payment_type'] = 'Stripe';
+			$order_data['cardtype'] = '';
+			$order_data['accountnumber'] = '';
+			$order_data['expirationmonth'] = '';
+			$order_data['expirationyear'] = '';
 		}
 
 		// Set the billing address.
