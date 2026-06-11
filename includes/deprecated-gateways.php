@@ -1536,7 +1536,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'chip_skipped'            => __( 'Skipped', 'paid-memberships-pro' ),
 			'chip_needs_review'       => __( 'Needs Review', 'paid-memberships-pro' ),
 			'needs_review_warning'    => __( 'Some subscriptions need review. Search the migration log for "[needs_review]" entries and review each note before removing gateway data.', 'paid-memberships-pro' ),
-			'skipped_warning'         => __( 'Some subscriptions were skipped. Search the migration log for "skipped" entries and handle them manually, or run the migration again with Force Migration enabled.', 'paid-memberships-pro' ),
+			'skipped_warning'         => __( 'Some subscriptions were skipped. Search the migration log for "[skipped]" entries and handle them manually, or run the migration again with Force Migration enabled.', 'paid-memberships-pro' ),
 			// translators: %1$s: number of subscriptions, %2$s: environment label.
 			'confirm_start'           => __( 'This will process %1$s active subscriptions in the %2$s and cancel them at the old gateway.', 'paid-memberships-pro' ),
 			'confirm_start_email'     => __( 'Members WILL be emailed.', 'paid-memberships-pro' ),
@@ -1619,7 +1619,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			<div id="pmpro-dgs-switch" <?php if ( $data['has_replacement'] ) { echo 'hidden'; } ?>>
 				<p>
 					<strong><?php esc_html_e( 'First, activate a new payment gateway.', 'paid-memberships-pro' ); ?></strong>
-					<?php esc_html_e( 'We recommend Stripe: it is the only gateway with an automatic migration flow. Each active subscription is recreated at Stripe with its billing schedule intact, and members simply add a payment method. No new checkout is required.', 'paid-memberships-pro' ); ?>
+					<?php esc_html_e( 'We recommend Stripe: it is the only gateway with an automatic migration flow. Each active subscription is recreated at Stripe with its price and billing schedule intact, and members add a payment method instead of checking out again.', 'paid-memberships-pro' ); ?>
 				</p>
 				<p>
 					<?php if ( $stripe_connected ) { ?>
@@ -1654,7 +1654,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					</p>
 				</div>
 				<div id="pmpro-dgs-finish-clear" hidden>
-					<p><?php esc_html_e( 'All subscriptions have been migrated off this gateway. Before removing gateway data, download the migration log and search it for "[needs_review]" entries. Review those notes before removing gateway data. Removing gateway data deletes the stored API credentials and stops loading this gateway on your site.', 'paid-memberships-pro' ); ?></p>
+					<p><?php esc_html_e( 'All subscriptions have been migrated off this gateway. Before removing gateway data, download the migration log and review any "[needs_review]" entries. Removing gateway data deletes the stored API credentials and stops loading this gateway on your site.', 'paid-memberships-pro' ); ?></p>
 					<p>
 						<button type="button" class="button button-primary" id="pmpro-dgs-cleanup"><?php esc_html_e( 'Remove Gateway Data', 'paid-memberships-pro' ); ?></button>
 					</p>
@@ -1672,11 +1672,11 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<option value="expiration"><?php esc_html_e( 'Cancel subscriptions and set expiration dates', 'paid-memberships-pro' ); ?></option>
 							</select>
 							<p class="description" id="pmpro-dgs-desc-stripe" hidden>
-								<?php esc_html_e( 'Each subscription is recreated at Stripe with no payment method on file and the old gateway subscription is cancelled. Memberships and expiration dates do not change. Members are emailed to add billing information before their next payment date. Members who do not add a payment method by that date will have their Stripe subscription and membership cancelled.', 'paid-memberships-pro' ); ?>
+								<?php esc_html_e( 'Each subscription is recreated at Stripe at its current price and billing schedule, with no payment method on file, and the old gateway subscription is cancelled. Memberships and expiration dates do not change. Members are emailed to add billing information, see a notice on their account page, and receive a reminder before their next payment date until a payment method is added. Members who do not add one by that date will have their Stripe subscription and membership cancelled. Track these members on the Subscriptions list under Awaiting Payment Method.', 'paid-memberships-pro' ); ?>
 								<a href="<?php echo esc_url( $stripe_template_url ); ?>"><?php esc_html_e( 'Edit the Stripe migration email', 'paid-memberships-pro' ); ?></a>
 							</p>
 							<p class="description" id="pmpro-dgs-desc-expiration" hidden>
-								<?php esc_html_e( 'Each membership is set to expire on the subscription\'s old next payment date and the old gateway subscription is cancelled. Members are emailed to check out again before their membership expires.', 'paid-memberships-pro' ); ?>
+								<?php esc_html_e( 'Each membership is set to expire on the subscription\'s old next payment date and the old gateway subscription is cancelled. Members are emailed to check out again, and also receive the standard membership expiration emails before their membership ends. A new checkout uses your current level pricing, so members do not keep grandfathered prices or billing schedules.', 'paid-memberships-pro' ); ?>
 								<a href="<?php echo esc_url( $checkout_template_url ); ?>"><?php esc_html_e( 'Edit the checkout required email', 'paid-memberships-pro' ); ?></a>
 							</p>
 						</td>

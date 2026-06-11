@@ -57,7 +57,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	 * @return string The help text.
 	 */
 	public static function get_template_description() {
-		return esc_html__( 'This email is sent when an administrator migrates a deprecated gateway subscription to Stripe. It asks the member to add billing information to the new Stripe subscription before its next payment date. Members who do not add a payment method by that date will have their membership cancelled.', 'paid-memberships-pro' );
+		return esc_html__( 'This email is sent when an administrator migrates a deprecated gateway subscription to Stripe. It asks the member to add billing information to the new Stripe subscription before its next payment date. It is also sent in place of the upcoming payment reminder while the subscription has no payment method on file. Members who do not add a payment method by that date will have their membership cancelled.', 'paid-memberships-pro' );
 	}
 
 	/**
