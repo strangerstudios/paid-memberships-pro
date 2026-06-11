@@ -83,6 +83,25 @@ function pmpro_check_for_deprecated_gateways() {
 }
 
 /**
+ * Normalize a gateway environment value to 'live' or 'sandbox'.
+ *
+ * Subscriptions can carry nonstandard environment values (imports, hand-edited
+ * data, very old rows). The workflow treats anything that is not 'live' as
+ * sandbox everywhere: in the counts, in the batch queries, and in the
+ * per-subscription checks. Counting a subscription in one place but refusing
+ * to process it in another would leave the workflow unable to finish and
+ * cleanup permanently blocked.
+ *
+ * @since TBD
+ *
+ * @param string $environment Gateway environment value.
+ * @return string 'live' or 'sandbox'.
+ */
+function pmpro_deprecated_gateway_normalize_environment( $environment ) {
+	return 'live' === $environment ? 'live' : 'sandbox';
+}
+
+/**
  * Get the number of active subscriptions for a gateway in each environment.
  *
  * @since TBD
@@ -108,8 +127,7 @@ function pmpro_deprecated_gateway_get_subscription_counts( $gateway ) {
 		)
 	);
 	foreach ( $rows as $row ) {
-		$environment = 'live' === $row->gateway_environment ? 'live' : 'sandbox';
-		$counts[ $environment ] += (int) $row->count;
+		$counts[ pmpro_deprecated_gateway_normalize_environment( $row->gateway_environment ) ] += (int) $row->count;
 	}
 
 	return $counts;
@@ -121,7 +139,9 @@ function pmpro_deprecated_gateway_get_subscription_counts( $gateway ) {
  * @since TBD
  *
  * @param string $gateway Gateway slug.
- * @param string $environment Gateway environment.
+ * @param string $environment Gateway environment. 'sandbox' matches every
+ *               non-live environment value, mirroring how
+ *               pmpro_deprecated_gateway_get_subscription_counts() buckets them.
  * @param int    $last_subscription_id Last subscription ID already queried.
  * @param int    $limit Number of subscription IDs to return.
  * @return int[]
@@ -129,18 +149,19 @@ function pmpro_deprecated_gateway_get_subscription_counts( $gateway ) {
 function pmpro_deprecated_gateway_get_active_subscription_ids( $gateway, $environment, $last_subscription_id = 0, $limit = 10 ) {
 	global $wpdb;
 
+	$environment_condition = 'live' === $environment ? "gateway_environment = 'live'" : "gateway_environment != 'live'";
+
 	$subscription_ids = $wpdb->get_col(
 		$wpdb->prepare(
 			"SELECT id
 				FROM {$wpdb->pmpro_subscriptions}
 				WHERE gateway = %s
-					AND gateway_environment = %s
+					AND {$environment_condition}
 					AND status = 'active'
 					AND id > %d
 				ORDER BY id ASC
 				LIMIT %d",
 			$gateway,
-			$environment,
 			(int) $last_subscription_id,
 			(int) $limit
 		)
@@ -250,9 +271,8 @@ function pmpro_deprecated_gateway_record_result( $gateway, $environment, $outcom
  * @return true|WP_Error
  */
 function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = true, $force = false ) {
-	// Normalize the environment the same way pmpro_deprecated_gateway_get_status_data()
-	// does so the state option key always matches what the panel reads.
-	$environment = 'live' === get_option( 'pmpro_gateway_environment', 'sandbox' ) ? 'live' : 'sandbox';
+	// Normalize the environment so the state option key always matches what the panel reads.
+	$environment = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
 	$gateway     = sanitize_key( $gateway );
 	$strategy    = sanitize_key( $strategy );
 	$send_email  = ! empty( $send_email );
@@ -370,7 +390,7 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
  * @return true|WP_Error
  */
 function pmpro_deprecated_gateway_stop( $gateway ) {
-	$environment = 'live' === get_option( 'pmpro_gateway_environment', 'sandbox' ) ? 'live' : 'sandbox';
+	$environment = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
 	$gateway     = sanitize_key( $gateway );
 
 	$state = pmpro_deprecated_gateway_get_state( $gateway, $environment );
@@ -425,7 +445,7 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 
 	// The gateway calls below all use the current environment's endpoints, so bail if
 	// the environment or replacement gateway changed since the workflow was scheduled.
-	if ( $environment !== ( 'live' === get_option( 'pmpro_gateway_environment', 'sandbox' ) ? 'live' : 'sandbox' )
+	if ( $environment !== pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) )
 		|| ! in_array( $strategy, array( 'stripe', 'expiration' ), true )
 		|| $gateway === get_option( 'pmpro_gateway' )
 		|| ( 'stripe' === $strategy && 'stripe' !== get_option( 'pmpro_gateway' ) )
@@ -553,7 +573,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	// the subscription at the gateway without cross-referencing IDs.
 	$subscription_description = pmpro_deprecated_gateway_get_subscription_log_description( $subscription );
 
-	if ( 'active' !== $subscription->get_status() || $gateway !== $subscription->get_gateway() || $environment !== $subscription->get_gateway_environment() ) {
+	if ( 'active' !== $subscription->get_status() || $gateway !== $subscription->get_gateway() || $environment !== pmpro_deprecated_gateway_normalize_environment( $subscription->get_gateway_environment() ) ) {
 		return array( 'outcome' => 'skipped', 'message' => ucfirst( $subscription_description ) . ' is no longer an active subscription for this gateway and environment.' );
 	}
 
@@ -600,7 +620,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	$other_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $subscription->get_user_id(), $subscription->get_membership_level_id() );
 	foreach ( $other_subscriptions as $other_subscription ) {
 		if (
-			$environment !== $other_subscription->get_gateway_environment()
+			$environment !== pmpro_deprecated_gateway_normalize_environment( $other_subscription->get_gateway_environment() )
 			|| (int) $other_subscription->get_id() === (int) $subscription_id
 			|| ( ! empty( $placeholder ) && (int) $other_subscription->get_id() === (int) $placeholder->get_id() )
 			|| ( '' !== $transaction_id && (string) $other_subscription->get_subscription_transaction_id() === $transaction_id )
@@ -940,7 +960,7 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
 	}
 
 	// Only call Stripe when the active API keys match this subscription's environment.
-	if ( $subscription->get_gateway_environment() !== ( 'live' === get_option( 'pmpro_gateway_environment', 'sandbox' ) ? 'live' : 'sandbox' ) ) {
+	if ( $subscription->get_gateway_environment() !== pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) ) ) {
 		return true;
 	}
 
@@ -1232,7 +1252,7 @@ function pmpro_deprecated_gateway_get_stripe_migration_blockers() {
  */
 function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 	$gateway     = sanitize_key( $gateway );
-	$environment = 'live' === get_option( 'pmpro_gateway_environment', 'sandbox' ) ? 'live' : 'sandbox';
+	$environment = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
 	$counts      = pmpro_deprecated_gateway_get_subscription_counts( $gateway );
 	$paused      = pmpro_is_paused();
 	$active      = get_option( 'pmpro_gateway' );
@@ -1366,7 +1386,7 @@ function pmpro_deprecated_gateway_ajax() {
 			$redirect = add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'deprecated_gateway_removed' => $gateway ), admin_url( 'admin.php' ) );
 			break;
 		case 'activate_stripe':
-			$environment = 'live' === get_option( 'pmpro_gateway_environment', 'sandbox' ) ? 'live' : 'sandbox';
+			$environment = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
 			if ( ! class_exists( 'PMProGateway_stripe' ) || ! PMProGateway_stripe::has_connect_credentials( $environment ) ) {
 				$result = new WP_Error( 'pmpro_deprecated_gateway_stripe_not_connected', __( 'Connect to Stripe before making it the active gateway.', 'paid-memberships-pro' ) );
 			} else {
