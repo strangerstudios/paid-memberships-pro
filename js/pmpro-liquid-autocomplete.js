@@ -77,6 +77,31 @@
 				return menu;
 			}
 
+			function ensureAnnouncer() {
+				let announcer = document.getElementById(
+					'pmpro-liquid-autocomplete-announcer'
+				);
+
+				if ( ! announcer ) {
+					announcer = document.createElement( 'div' );
+					announcer.id = 'pmpro-liquid-autocomplete-announcer';
+					announcer.setAttribute( 'aria-live', 'assertive' );
+					announcer.setAttribute( 'aria-atomic', 'true' );
+					announcer.className = 'screen-reader-text';
+					document.body.appendChild( announcer );
+				}
+
+				return announcer;
+			}
+
+			function announce( text ) {
+				const announcer = ensureAnnouncer();
+				announcer.textContent = '';
+				requestAnimationFrame( function () {
+					announcer.textContent = text;
+				} );
+			}
+
 			function closest( node, selector ) {
 				while ( node && node !== document ) {
 					if ( node.matches && node.matches( selector ) ) {
@@ -94,6 +119,14 @@
 					menu.hidden = true;
 					menu.innerHTML = '';
 					menu.removeAttribute( 'aria-activedescendant' );
+				}
+
+				const announcer = document.getElementById(
+					'pmpro-liquid-autocomplete-announcer'
+				);
+
+				if ( announcer ) {
+					announcer.textContent = '';
 				}
 
 				items = [];
@@ -195,6 +228,18 @@
 				ensureMenu().setAttribute(
 					'aria-activedescendant',
 					'pmpro-liquid-autocomplete-option-' + activeIndex
+				);
+
+				const item = items[ activeIndex ];
+				const selectableItems = items.filter( function ( i ) {
+					return i.type !== 'separator';
+				} );
+				const position = selectableItems.indexOf( item ) + 1;
+				const total = selectableItems.length;
+				announce(
+					item.label +
+					( item.description ? ', ' + item.description : '' ) +
+					', ' + position + ' of ' + total
 				);
 			}
 
@@ -553,6 +598,10 @@
 						event.preventDefault();
 						event.stopPropagation();
 						closeMenu();
+						announce(
+							strings.autocompleteClosed ||
+							'Autocomplete list closed'
+						);
 					} else if ( event.keyCode === 38 ) {
 						event.preventDefault();
 						event.stopPropagation();
