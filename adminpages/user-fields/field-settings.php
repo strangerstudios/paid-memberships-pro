@@ -73,7 +73,7 @@ $levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 		<div id="pmpro_userfield-field-setting_name" class="pmpro_userfield-field-setting pmpro_userfield-field-setting_1-2">
 			<label for="pmpro_userfields_field_name"><?php esc_html_e( 'Name', 'paid-memberships-pro' ); ?></label>
 			<input type="text" name="pmpro_userfields_field_name" id="pmpro_userfields_field_name" value="<?php echo esc_attr( $field_name );?>" />
-			<span class="description"><?php esc_html_e( 'Single word with no spaces. Underscores are allowed.', 'paid-memberships-pro' ); ?></span>
+			<span class="description"><?php esc_html_e( 'Single word with no spaces. Underscores are allowed. This is used as the user meta key.', 'paid-memberships-pro' ); ?></span>
 		</div> <!-- end pmpro_userfield-field-setting -->
 
 		<div id="pmpro_userfield-field-setting_type" class="pmpro_userfield-field-setting pmpro_userfield-field-setting_1-2">
