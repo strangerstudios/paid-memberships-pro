@@ -636,60 +636,68 @@ if (!empty($page_msg)) { ?>
 				),
 			);
 			?>
-			<p><?php echo wp_kses( sprintf( __('Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href="%s" rel="nofollow noopener" target="_blank">read our documentation on restricting content</a>.', 'paid-memberships-pro'), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings'), $allowed_html ); ?></p>
+			<p>
+				<?php echo wp_kses( sprintf( __('Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href="%s" rel="nofollow noopener" target="_blank">read our documentation on restricting content</a>.', 'paid-memberships-pro'), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings'), $allowed_html ); ?>
+				<?php
+					// Show a single message about how protected content displays to non-members, based on the Advanced Settings.
+					$filterqueries = get_option( 'pmpro_filterqueries' );
+					$showexcerpts = get_option( 'pmpro_showexcerpts' );
+					if ( $filterqueries == 1 ) {
+						esc_html_e( 'Based on your advanced settings, protected content is hidden from non-members in searches and archives.', 'paid-memberships-pro' );
+					} elseif ( $showexcerpts == 1 ) {
+						esc_html_e( 'Based on your advanced settings, non-members will see the title and excerpt of protected content.', 'paid-memberships-pro' );
+					} else {
+						esc_html_e( 'Based on your advanced settings, non-members will see the title only for protected content.', 'paid-memberships-pro' );
+					}
+					echo ' ';
+					echo sprintf( wp_kses( __( 'Display can vary by content type and theme. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro' ), $allowed_html ), esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) ) );
+				?>
+			</p>
 			<table class="form-table">
 				<tbody>
-					<tr class="membership_categories">
-						<th scope="row" valign="top"><label><?php esc_html_e('Categories', 'paid-memberships-pro'); ?></label></th>
+					<?php
+					// Show a checklist of terms for every restrictable taxonomy.
+					foreach ( pmpro_get_restrictable_taxonomies() as $restrictable_taxonomy ) {
+						$taxonomy_object = get_taxonomy( $restrictable_taxonomy );
+						if ( empty( $taxonomy_object ) || ! $taxonomy_object->show_ui ) {
+							continue;
+						}
+					?>
+					<tr class="membership_categories membership_categories-<?php echo esc_attr( $restrictable_taxonomy ); ?>">
+						<th scope="row" valign="top"><label><?php echo esc_html( $taxonomy_object->labels->name ); ?></label></th>
 						<td>
-							<p><?php esc_html_e('Select:', 'paid-memberships-pro'); ?> <a id="pmpro-membership-categories-checklist-select-all" href="javascript:void(0);"><?php esc_html_e('All', 'paid-memberships-pro'); ?></a> | <a id="pmpro-membership-categories-checklist-select-none" href="javascript:void(0);"><?php esc_html_e('None', 'paid-memberships-pro'); ?></a></p>
+							<p><?php esc_html_e('Select:', 'paid-memberships-pro'); ?> <a id="pmpro-membership-categories-checklist-select-all-<?php echo esc_attr( $restrictable_taxonomy ); ?>" href="javascript:void(0);"><?php esc_html_e('All', 'paid-memberships-pro'); ?></a> | <a id="pmpro-membership-categories-checklist-select-none-<?php echo esc_attr( $restrictable_taxonomy ); ?>" href="javascript:void(0);"><?php esc_html_e('None', 'paid-memberships-pro'); ?></a></p>
 							<script type="text/javascript">
-								jQuery('#pmpro-membership-categories-checklist-select-all').on('click',function() {
-									jQuery('#pmpro-membership-categories-checklist input').prop('checked', true);
+								jQuery('#pmpro-membership-categories-checklist-select-all-<?php echo esc_js( $restrictable_taxonomy ); ?>').on('click',function() {
+									jQuery('#pmpro-membership-categories-checklist-<?php echo esc_js( $restrictable_taxonomy ); ?> input').prop('checked', true);
 								});
-								jQuery('#pmpro-membership-categories-checklist-select-none').on('click',function() {
-									jQuery('#pmpro-membership-categories-checklist input').prop('checked', false);
+								jQuery('#pmpro-membership-categories-checklist-select-none-<?php echo esc_js( $restrictable_taxonomy ); ?>').on('click',function() {
+									jQuery('#pmpro-membership-categories-checklist-<?php echo esc_js( $restrictable_taxonomy ); ?> input').prop('checked', false);
 								});
 							</script>
 							<?php
-							$args = array(
-								'hide_empty' => false,
-							);
-							$cats = get_categories(apply_filters('pmpro_list_categories_args', $args));
-							// Build the selectors for the checkbox list based on number of levels.
+							$term_count = wp_count_terms( array( 'taxonomy' => $restrictable_taxonomy, 'hide_empty' => false ) );
+							// Build the selectors for the checkbox list based on number of terms.
 							$classes = array();
 							$classes[] = 'pmpro_checkbox_box';
 
-							if (count($cats) > 5) {
+							if ( ! is_wp_error( $term_count ) && $term_count > 5 ) {
 								$classes[] = 'pmpro_scrollable';
 							}
 							$class = implode(' ', array_unique($classes));
 							?>
-							<div id="pmpro-membership-categories-checklist" class="<?php echo esc_attr($class); ?>">
-								<?php pmpro_listCategories(0, $level->categories); ?>
+							<div id="pmpro-membership-categories-checklist-<?php echo esc_attr( $restrictable_taxonomy ); ?>" class="<?php echo esc_attr($class); ?>">
+								<?php pmpro_list_restrictable_terms( $restrictable_taxonomy, 0, $level->categories ); ?>
 							</div>
 							<p class="description">
-								<?php esc_html_e('Select categories to bulk protect posts.', 'paid-memberships-pro'); ?>
 								<?php
-								// Get the Advanced Settings for filtering queries and showing excerpts.
-								$filterqueries = get_option('pmpro_filterqueries');
-								$showexcerpts = get_option("pmpro_showexcerpts");
-								if ($filterqueries == 1) {
-									// Show a message that posts in these categories are hidden.
-									echo sprintf(wp_kses(__('Non-members will not see posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), esc_url( admin_url('admin.php?page=pmpro-advancedsettings')));
-								} else {
-									if ($showexcerpts == 1) {
-										// Show a message that posts in these categories will show title and excerpt.
-										echo sprintf(wp_kses(__('Non-members will see the title and excerpt for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), esc_url( admin_url('admin.php?page=pmpro-advancedsettings')));
-									} else {
-										// Show a message that posts in these categories will show only the title.
-										echo sprintf(wp_kses(__('Non-members will see the title only for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), esc_url( admin_url('admin.php?page=pmpro-advancedsettings')));
-									}
-								}
+								// translators: %s is the lowercase plural taxonomy label.
+								echo esc_html( sprintf( __( 'Select %s to bulk protect content.', 'paid-memberships-pro' ), strtolower( $taxonomy_object->labels->name ) ) );
 								?>
 							</p>
 						</td>
 					</tr>
+					<?php } // end foreach restrictable taxonomy. ?>
 					<tr class="membership_posts">
 						<th scope="row" valign="top"><label><?php esc_html_e('Single Posts', 'paid-memberships-pro'); ?></label></th>
 						<td>

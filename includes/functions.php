@@ -1437,27 +1437,60 @@ add_action( 'shutdown', 'pmpro_do_action_after_all_membership_level_changes' );
  * @param array $level_categories
  */
 function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
+	pmpro_list_restrictable_terms( 'category', $parent_id, $level_categories );
+}
+
+/**
+ * Function to list the terms of a restrictable taxonomy in hierarchical format.
+ *
+ * This is a helper function for the Content Settings section in adminpages/membershiplevels.php
+ *
+ * @since 3.8
+ *
+ * @param string $taxonomy    The taxonomy to list terms for.
+ * @param int    $parent_id   The parent term to list terms under.
+ * @param array  $level_terms Term IDs already associated with the level.
+ */
+function pmpro_list_restrictable_terms( $taxonomy, $parent_id = 0, $level_terms = array() ) {
 
 	$args = array(
+		'taxonomy' => $taxonomy,
 		'parent' => $parent_id,
 		'hide_empty' => false,
 	);
 
-	$cats = get_categories( apply_filters( 'pmpro_list_categories_args', $args ) );
+	// Back-compat: the category checklist args have been filterable since 1.8.11.
+	if ( 'category' === $taxonomy ) {
+		$args = apply_filters( 'pmpro_list_categories_args', $args );
+	}
 
-	if ( $cats ) {
-		foreach ( $cats as $cat ) {
-			if ( ! empty( $level_categories ) ) {
-				$checked = checked( in_array( $cat->term_id, $level_categories ), true, false );
+	/**
+	 * Filter the get_terms() args used to build the term checklists on the edit level page.
+	 *
+	 * @since 3.8
+	 *
+	 * @param array  $args     The get_terms() args.
+	 * @param string $taxonomy The taxonomy being listed.
+	 */
+	$args = apply_filters( 'pmpro_list_restrictable_terms_args', $args, $taxonomy );
+
+	$terms = get_terms( $args );
+
+	if ( $terms && ! is_wp_error( $terms ) ) {
+		foreach ( $terms as $term ) {
+			if ( ! empty( $level_terms ) ) {
+				$checked = checked( in_array( $term->term_id, $level_terms ), true, false );
 			} else {
 				$checked = '';
 			} ?>
 			<div class="pmpro_clickable">
-				<input type="checkbox" name="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" id="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
-				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo esc_html( $cat->name ); ?></label>
+				<input type="checkbox" name="membershipcategory_<?php echo esc_attr( $term->term_id ); ?>" id="membershipcategory_<?php echo esc_attr( $term->term_id ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
+				<label for="membershipcategory_<?php echo esc_attr( $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></label>
 			</div>
-			<?php pmpro_listCategories( $cat->term_id, $level_categories ); ?>
 			<?php
+			if ( is_taxonomy_hierarchical( $taxonomy ) ) {
+				pmpro_list_restrictable_terms( $taxonomy, $term->term_id, $level_terms );
+			}
 		}
 	}
 }
@@ -1503,11 +1536,16 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 }
 
 /**
- * pmpro_updateMembershipCategories() ensures that all those and only those categories given
+ * pmpro_updateMembershipCategories() ensures that all those and only those terms given
  * are associated with the given membership level.
  *
+ * Only term links in currently restrictable taxonomies (and links to terms that no
+ * longer exist) are removed. Links for taxonomies that are not currently restrictable,
+ * e.g. from a deactivated add on, are preserved since they cannot be managed from
+ * the edit level page.
+ *
  * @param string|int $level is a valid membership level ID or name
- * @param int[] $categories is an array of post category IDs
+ * @param int[] $categories is an array of term IDs in restrictable taxonomies
  *
  * @return string|true
  * Return values:
@@ -1524,8 +1562,12 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 		}
 	}
 
-	// remove all existing links...
-	$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = '" . esc_sql( $level ) . "'";
+	// remove all existing links for restrictable taxonomies and deleted terms...
+	$taxonomies = implode( "','", array_map( 'esc_sql', pmpro_get_restrictable_taxonomies() ) );
+	$sqlQuery = "DELETE mc FROM $wpdb->pmpro_memberships_categories mc
+				 LEFT JOIN $wpdb->term_taxonomy tt ON tt.term_id = mc.category_id
+				 WHERE mc.membership_id = '" . esc_sql( $level ) . "'
+				 AND ( tt.term_taxonomy_id IS NULL OR tt.taxonomy IN ('" . $taxonomies . "') )";
 	$wpdb->query( $sqlQuery );
 	if ( $wpdb->last_error ) {
 		return $wpdb->last_error;
