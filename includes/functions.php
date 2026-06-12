@@ -1445,7 +1445,7 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
  *
  * This is a helper function for the Content Settings section in adminpages/membershiplevels.php
  *
- * @since 3.8
+ * @since TBD
  *
  * @param string $taxonomy    The taxonomy to list terms for.
  * @param int    $parent_id   The parent term to list terms under.
@@ -1467,7 +1467,7 @@ function pmpro_list_restrictable_terms( $taxonomy, $parent_id = 0, $level_terms 
 	/**
 	 * Filter the get_terms() args used to build the term checklists on the edit level page.
 	 *
-	 * @since 3.8
+	 * @since TBD
 	 *
 	 * @param array  $args     The get_terms() args.
 	 * @param string $taxonomy The taxonomy being listed.
