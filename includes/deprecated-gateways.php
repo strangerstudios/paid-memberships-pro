@@ -268,15 +268,18 @@ function pmpro_deprecated_gateway_record_result( $gateway, $environment, $outcom
  * @param bool   $send_email Whether to email members.
  * @param bool   $force Process subscriptions without an upcoming payment date by
  *               expiring the membership and cancelling at the gateway.
+ * @param bool   $dry_run Preview the workflow without making changes. Outcomes are
+ *               logged, but nothing is created, cancelled, emailed, or saved.
  * @return true|WP_Error
  */
-function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = true, $force = false ) {
+function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = true, $force = false, $dry_run = false ) {
 	// Normalize the environment so the state option key always matches what the panel reads.
 	$environment = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
 	$gateway     = sanitize_key( $gateway );
 	$strategy    = sanitize_key( $strategy );
 	$send_email  = ! empty( $send_email );
 	$force       = ! empty( $force );
+	$dry_run     = ! empty( $dry_run );
 
 	if ( ! in_array( $gateway, pmpro_get_deprecated_gateways(), true ) ) {
 		return new WP_Error( 'pmpro_deprecated_gateway_not_deprecated', __( 'This workflow is only available for deprecated gateways.', 'paid-memberships-pro' ) );
@@ -337,6 +340,7 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 			'strategy'     => $strategy,
 			'send_email'   => $send_email,
 			'force'        => $force,
+			'dry_run'      => $dry_run,
 			'started_at'   => time(),
 			'completed_at' => 0,
 			'total'        => $total,
@@ -354,7 +358,7 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 	// pmpro_deprecated_gateway_process_batch() would block the next batch.
 	$action_id = as_enqueue_async_action(
 		'pmpro_deprecated_gateway_process_batch',
-		array( $gateway, $environment, $strategy, $send_email ? 1 : 0, $force ? 1 : 0, 0 ),
+		array( $gateway, $environment, $strategy, $send_email ? 1 : 0, $force ? 1 : 0, $dry_run ? 1 : 0, 0 ),
 		pmpro_deprecated_gateway_get_action_group( $gateway, $environment ),
 		true
 	);
@@ -368,7 +372,7 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 		return new WP_Error( 'pmpro_deprecated_gateway_schedule_failed', __( 'The workflow could not be scheduled. Check the migration log for details.', 'paid-memberships-pro' ) );
 	}
 
-	pmpro_deprecated_gateway_log( sprintf( 'Queued deprecated gateway workflow. Gateway=%s, environment=%s, strategy=%s, send_email=%s, force=%s, subscriptions=%d.', $gateway, $environment, $strategy, $send_email ? 'yes' : 'no', $force ? 'yes' : 'no', $total ) );
+	pmpro_deprecated_gateway_log( sprintf( 'Queued deprecated gateway workflow. Gateway=%s, environment=%s, strategy=%s, send_email=%s, force=%s, dry_run=%s, subscriptions=%d.', $gateway, $environment, $strategy, $send_email ? 'yes' : 'no', $force ? 'yes' : 'no', $dry_run ? 'yes' : 'no', $total ) );
 
 	// Kick the Action Scheduler queue so the workflow starts right away.
 	if ( is_callable( array( 'PMPro_Action_Scheduler', 'dispatch_queue' ) ) ) {
@@ -401,7 +405,11 @@ function pmpro_deprecated_gateway_stop( $gateway ) {
 	if ( function_exists( 'as_unschedule_all_actions' ) ) {
 		as_unschedule_all_actions( '', array(), pmpro_deprecated_gateway_get_action_group( $gateway, $environment ) );
 	}
-	pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'stopped', 'note' => __( 'Stopped by an administrator. Start the workflow again to continue; subscriptions that were already processed will be skipped.', 'paid-memberships-pro' ) ) );
+	// A stopped dry run changed nothing, so restarting previews everything again.
+	$note = empty( $state['dry_run'] )
+		? __( 'Stopped by an administrator. Start the workflow again to continue; subscriptions that were already processed will be skipped.', 'paid-memberships-pro' )
+		: __( 'Dry run stopped by an administrator. Start it again to preview the migration from the beginning.', 'paid-memberships-pro' );
+	pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'stopped', 'note' => $note ) );
 	pmpro_deprecated_gateway_log( 'Deprecated gateway workflow stopped by an administrator. Gateway=' . $gateway . ', environment=' . $environment . '.' );
 
 	return true;
@@ -418,14 +426,16 @@ function pmpro_deprecated_gateway_stop( $gateway ) {
  * @param bool   $send_email Whether to email members.
  * @param bool   $force Process subscriptions without an upcoming payment date by
  *               expiring the membership and cancelling at the gateway.
+ * @param bool   $dry_run Preview the workflow without making changes.
  * @param int    $last_subscription_id Last subscription ID processed by the previous batch.
  */
-function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strategy, $send_email = true, $force = false, $last_subscription_id = 0 ) {
+function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strategy, $send_email = true, $force = false, $dry_run = false, $last_subscription_id = 0 ) {
 	$gateway              = sanitize_key( $gateway );
 	$environment          = sanitize_key( $environment );
 	$strategy             = sanitize_key( $strategy );
 	$send_email           = ! empty( $send_email );
 	$force                = ! empty( $force );
+	$dry_run              = ! empty( $dry_run );
 	$last_subscription_id = (int) $last_subscription_id;
 
 	// Never touch gateway APIs from a paused (likely cloned) site. This also protects
@@ -468,24 +478,24 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 	$subscription_ids = pmpro_deprecated_gateway_get_active_subscription_ids( $gateway, $environment, $last_subscription_id, $batch_size );
 	if ( empty( $subscription_ids ) ) {
 		pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'completed', 'completed_at' => time() ) );
-		pmpro_deprecated_gateway_log( 'Deprecated gateway workflow completed. Gateway=' . $gateway . ', environment=' . $environment . '.' );
+		pmpro_deprecated_gateway_log( ( $dry_run ? 'Deprecated gateway dry run completed; no changes were made. ' : 'Deprecated gateway workflow completed. ' ) . 'Gateway=' . $gateway . ', environment=' . $environment . '.' );
 		return;
 	}
 
 	foreach ( $subscription_ids as $subscription_id ) {
-		$result = pmpro_deprecated_gateway_process_subscription( (int) $subscription_id, $gateway, $environment, $strategy, $send_email, $force );
-		pmpro_deprecated_gateway_record_result( $gateway, $environment, $result['outcome'], $result['message'] );
+		$result = pmpro_deprecated_gateway_process_subscription( (int) $subscription_id, $gateway, $environment, $strategy, $send_email, $force, $dry_run );
+		pmpro_deprecated_gateway_record_result( $gateway, $environment, $result['outcome'], ( $dry_run ? 'Dry run: ' : '' ) . $result['message'] );
 	}
 
 	if ( count( $subscription_ids ) < $batch_size ) {
 		pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'completed', 'completed_at' => time() ) );
-		pmpro_deprecated_gateway_log( 'Deprecated gateway workflow completed. Gateway=' . $gateway . ', environment=' . $environment . '.' );
+		pmpro_deprecated_gateway_log( ( $dry_run ? 'Deprecated gateway dry run completed; no changes were made. ' : 'Deprecated gateway workflow completed. ' ) . 'Gateway=' . $gateway . ', environment=' . $environment . '.' );
 		return;
 	}
 
 	$action_id = as_enqueue_async_action(
 		'pmpro_deprecated_gateway_process_batch',
-		array( $gateway, $environment, $strategy, $send_email ? 1 : 0, $force ? 1 : 0, max( $subscription_ids ) ),
+		array( $gateway, $environment, $strategy, $send_email ? 1 : 0, $force ? 1 : 0, $dry_run ? 1 : 0, max( $subscription_ids ) ),
 		pmpro_deprecated_gateway_get_action_group( $gateway, $environment )
 	);
 	if ( empty( $action_id ) ) {
@@ -493,7 +503,7 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 		pmpro_deprecated_gateway_log( 'Could not queue the next deprecated gateway workflow batch. Gateway=' . $gateway . ', environment=' . $environment . '.' );
 	}
 }
-add_action( 'pmpro_deprecated_gateway_process_batch', 'pmpro_deprecated_gateway_process_batch', 10, 6 );
+add_action( 'pmpro_deprecated_gateway_process_batch', 'pmpro_deprecated_gateway_process_batch', 10, 7 );
 
 
 /**
@@ -558,12 +568,15 @@ function pmpro_deprecated_gateway_get_subscription_log_description( $subscriptio
  * @param bool   $send_email Whether to email members.
  * @param bool   $force Process subscriptions without an upcoming payment date by
  *               expiring the membership and cancelling at the gateway.
+ * @param bool   $dry_run Report what would happen without making changes. No
+ *               gateway calls, emails, or database writes; gateway-side failures
+ *               can only be detected by a real run.
  * @return array {
  *     @type string $outcome One of 'complete', 'skipped', 'needs_review'.
  *     @type string $message Log message.
  * }
  */
-function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gateway, $environment, $strategy, $send_email = true, $force = false ) {
+function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gateway, $environment, $strategy, $send_email = true, $force = false, $dry_run = false ) {
 	$subscription = PMPro_Subscription::get_subscription( $subscription_id );
 	if ( empty( $subscription ) ) {
 		return array( 'outcome' => 'skipped', 'message' => 'Subscription #' . $subscription_id . ' no longer exists.' );
@@ -579,10 +592,20 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 
 	// If the user no longer has the level, just cancel the old gateway subscription.
 	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $subscription->get_user_id() ) ) {
+		if ( $dry_run ) {
+			return array( 'outcome' => 'complete', 'message' => 'would cancel ' . $subscription_description . ' without migration because the user no longer has the associated membership level.' );
+		}
 		if ( $subscription->cancel_at_gateway() ) {
 			return array( 'outcome' => 'complete', 'message' => 'Cancelled ' . $subscription_description . ' without migration because the user no longer has the associated membership level.' );
 		}
 		return array( 'outcome' => 'needs_review', 'message' => 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. The user no longer has the associated membership level. Verify this subscription in the gateway; an error email was sent to the admin.' );
+	}
+
+	// A subscription with Stripe placeholder meta is already mid-migration from an
+	// earlier run. A dry run reports that a real run would resume it instead of
+	// running the recovery logic below, which clears and rewrites meta.
+	if ( $dry_run && ( get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_subscription_id', true ) || get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_transaction_id', true ) ) ) {
+		return array( 'outcome' => 'complete', 'message' => ucfirst( $subscription_description ) . ' is already mid-migration from an earlier run. A real run would complete the handoff to Stripe and cancel the old gateway subscription.' );
 	}
 
 	// Load a Stripe placeholder created by an earlier run, if any. If one exists,
@@ -627,6 +650,9 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 		) {
 			continue;
 		}
+		if ( $dry_run ) {
+			return array( 'outcome' => 'complete', 'message' => 'would cancel ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.' );
+		}
 		if ( $subscription->cancel_at_gateway() ) {
 			return array( 'outcome' => 'complete', 'message' => 'Cancelled ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.' );
 		}
@@ -666,6 +692,9 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 				if ( $remaining_payments < 1 ) {
 					// The limit was already reached, so no replacement is needed and
 					// the membership is left unchanged, matching billing limit semantics.
+					if ( $dry_run ) {
+						return array( 'outcome' => 'complete', 'message' => 'would cancel ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership would be left unchanged and no email would be sent.' );
+					}
 					if ( $subscription->cancel_at_gateway() ) {
 						return array( 'outcome' => 'complete', 'message' => 'Cancelled ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership was left unchanged and no email was sent.' );
 					}
@@ -680,86 +709,103 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 				if ( ! class_exists( 'PMProGateway_stripe' ) || ! method_exists( 'PMProGateway_stripe', 'create_deprecated_gateway_migration_subscription' ) ) {
 					return array( 'outcome' => 'needs_review', 'message' => 'Could not create a Stripe placeholder for ' . $subscription_description . ' because the Stripe gateway is not available.' );
 				}
-				$stripe_gateway          = new PMProGateway_stripe( 'stripe' );
-				$stripe_api_subscription = $stripe_gateway->create_deprecated_gateway_migration_subscription(
-					$subscription,
-					array(
-						'trial_end' => $handoff_timestamp,
-						'attempt'   => (int) get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_attempt', true ),
-					)
-				);
-				if ( is_wp_error( $stripe_api_subscription ) ) {
-					return array( 'outcome' => 'needs_review', 'message' => 'Could not create a Stripe placeholder for ' . $subscription_description . '. Error: ' . $stripe_api_subscription->get_error_message() );
+				if ( $dry_run ) {
+					// No Stripe calls in a dry run. Replicate the create call's local
+					// validations so data problems a real run would hit still show up
+					// in the preview; Stripe-side failures only surface in a real run.
+					if ( empty( get_userdata( $subscription->get_user_id() ) ) ) {
+						return array( 'outcome' => 'needs_review', 'message' => 'could not create a Stripe placeholder for ' . $subscription_description . ' because the user no longer exists.' );
+					}
+					$dry_run_level = new PMPro_Membership_Level( $subscription->get_membership_level_id() );
+					if ( empty( $dry_run_level->ID ) ) {
+						return array( 'outcome' => 'needs_review', 'message' => 'could not create a Stripe placeholder for ' . $subscription_description . ' because the membership level no longer exists.' );
+					}
+				} else {
+					$stripe_gateway          = new PMProGateway_stripe( 'stripe' );
+					$stripe_api_subscription = $stripe_gateway->create_deprecated_gateway_migration_subscription(
+						$subscription,
+						array(
+							'trial_end' => $handoff_timestamp,
+							'attempt'   => (int) get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_attempt', true ),
+						)
+					);
+					if ( is_wp_error( $stripe_api_subscription ) ) {
+						return array( 'outcome' => 'needs_review', 'message' => 'Could not create a Stripe placeholder for ' . $subscription_description . '. Error: ' . $stripe_api_subscription->get_error_message() );
+					}
+					$transaction_id = $stripe_api_subscription->id;
+					update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_transaction_id', $transaction_id );
 				}
-				$transaction_id = $stripe_api_subscription->id;
-				update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_transaction_id', $transaction_id );
 			}
 
-			// The Stripe webhook or an earlier run may have already created the local
-			// record. Only adopt an active one: a cancelled record with this
-			// transaction ID means the Stripe subscription is dead, and create()
-			// below will return null for it, surfacing this as needs_review instead
-			// of silently migrating the member onto a dead subscription.
-			$placeholder = PMPro_Subscription::get_subscription(
-				array(
-					'subscription_transaction_id' => $transaction_id,
-					'gateway'                     => 'stripe',
-					'gateway_environment'         => $environment,
-					'status'                      => 'active',
-				)
-			);
-			if ( empty( $placeholder ) ) {
-				$placeholder = PMPro_Subscription::create(
+			// Everything below saves the new placeholder, so a dry run is done with
+			// this subscription once the validations above have passed.
+			if ( ! $dry_run ) {
+				// The Stripe webhook or an earlier run may have already created the local
+				// record. Only adopt an active one: a cancelled record with this
+				// transaction ID means the Stripe subscription is dead, and create()
+				// below will return null for it, surfacing this as needs_review instead
+				// of silently migrating the member onto a dead subscription.
+				$placeholder = PMPro_Subscription::get_subscription(
 					array(
-						'user_id'                     => $subscription->get_user_id(),
-						'membership_level_id'         => $subscription->get_membership_level_id(),
+						'subscription_transaction_id' => $transaction_id,
 						'gateway'                     => 'stripe',
 						'gateway_environment'         => $environment,
-						'subscription_transaction_id' => $transaction_id,
 						'status'                      => 'active',
-						'startdate'                   => gmdate( 'Y-m-d H:i:s' ),
-						'next_payment_date'           => gmdate( 'Y-m-d H:i:s', $handoff_timestamp ),
-						'billing_amount'              => $subscription->get_billing_amount(),
-						'cycle_number'                => $subscription->get_cycle_number(),
-						'cycle_period'                => $subscription->get_cycle_period(),
-						'billing_limit'               => $remaining_payments,
 					)
 				);
-			}
-			if ( empty( $placeholder ) ) {
-				return array( 'outcome' => 'needs_review', 'message' => 'Created Stripe subscription ' . $transaction_id . ' for ' . $subscription_description . ', but the local PMPro subscription record could not be created. Verify this subscription in Stripe and PMPro.' );
-			}
+				if ( empty( $placeholder ) ) {
+					$placeholder = PMPro_Subscription::create(
+						array(
+							'user_id'                     => $subscription->get_user_id(),
+							'membership_level_id'         => $subscription->get_membership_level_id(),
+							'gateway'                     => 'stripe',
+							'gateway_environment'         => $environment,
+							'subscription_transaction_id' => $transaction_id,
+							'status'                      => 'active',
+							'startdate'                   => gmdate( 'Y-m-d H:i:s' ),
+							'next_payment_date'           => gmdate( 'Y-m-d H:i:s', $handoff_timestamp ),
+							'billing_amount'              => $subscription->get_billing_amount(),
+							'cycle_number'                => $subscription->get_cycle_number(),
+							'cycle_period'                => $subscription->get_cycle_period(),
+							'billing_limit'               => $remaining_payments,
+						)
+					);
+				}
+				if ( empty( $placeholder ) ) {
+					return array( 'outcome' => 'needs_review', 'message' => 'Created Stripe subscription ' . $transaction_id . ' for ' . $subscription_description . ', but the local PMPro subscription record could not be created. Verify this subscription in Stripe and PMPro.' );
+				}
 
-			update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_subscription_id', $placeholder->get_id() );
-			update_pmpro_subscription_meta( $placeholder->get_id(), 'deprecated_gateway_old_subscription_id', $subscription_id );
-			pmpro_deprecated_gateway_flag_needs_payment_method( $placeholder->get_id() );
+				update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_subscription_id', $placeholder->get_id() );
+				update_pmpro_subscription_meta( $placeholder->get_id(), 'deprecated_gateway_old_subscription_id', $subscription_id );
+				pmpro_deprecated_gateway_flag_needs_payment_method( $placeholder->get_id() );
 
-			// Billing limits do not count a subscription's initial order, but a
-			// migrated subscription never has one. Record a $0 migration order so
-			// the remaining-payment count is enforced exactly. The lookup mirrors
-			// billing limit enforcement, which only counts successful orders.
-			if ( ! empty( $placeholder->get_billing_limit() ) && empty( $placeholder->get_orders( array( 'status' => 'success', 'limit' => 1 ) ) ) ) {
-				$bridge_order                              = new MemberOrder();
-				$bridge_order->user_id                     = $subscription->get_user_id();
-				$bridge_order->membership_id               = $subscription->get_membership_level_id();
-				$bridge_order->gateway                     = 'stripe';
-				$bridge_order->gateway_environment         = $environment;
-				$bridge_order->subscription_transaction_id = $transaction_id;
-				$bridge_order->total                       = 0;
-				$bridge_order->status                      = 'success';
-				$bridge_order->notes                       = 'Deprecated gateway migration: stands in for the original checkout order of ' . $gateway . ' ' . $subscription_description . ' so the remaining billing limit of ' . (int) $placeholder->get_billing_limit() . ' is enforced.';
-				if ( ! $bridge_order->saveOrder() ) {
-					// Reruns never reach this branch again once the placeholder exists,
-					// so a silent failure here would permanently under-enforce the limit.
-					$bridge_note         = ' Could not save the $0 billing limit order, so the billing limit may allow one extra payment; review this subscription\'s billing limit in PMPro.';
-					$bridge_needs_review = true;
+				// Billing limits do not count a subscription's initial order, but a
+				// migrated subscription never has one. Record a $0 migration order so
+				// the remaining-payment count is enforced exactly. The lookup mirrors
+				// billing limit enforcement, which only counts successful orders.
+				if ( ! empty( $placeholder->get_billing_limit() ) && empty( $placeholder->get_orders( array( 'status' => 'success', 'limit' => 1 ) ) ) ) {
+					$bridge_order                              = new MemberOrder();
+					$bridge_order->user_id                     = $subscription->get_user_id();
+					$bridge_order->membership_id               = $subscription->get_membership_level_id();
+					$bridge_order->gateway                     = 'stripe';
+					$bridge_order->gateway_environment         = $environment;
+					$bridge_order->subscription_transaction_id = $transaction_id;
+					$bridge_order->total                       = 0;
+					$bridge_order->status                      = 'success';
+					$bridge_order->notes                       = 'Deprecated gateway migration: stands in for the original checkout order of ' . $gateway . ' ' . $subscription_description . ' so the remaining billing limit of ' . (int) $placeholder->get_billing_limit() . ' is enforced.';
+					if ( ! $bridge_order->saveOrder() ) {
+						// Reruns never reach this branch again once the placeholder exists,
+						// so a silent failure here would permanently under-enforce the limit.
+						$bridge_note         = ' Could not save the $0 billing limit order, so the billing limit may allow one extra payment; review this subscription\'s billing limit in PMPro.';
+						$bridge_needs_review = true;
+					}
 				}
 			}
 		}
-	} else {
+	} elseif ( ! $dry_run ) {
 		pmpro_set_expiration_date( $subscription->get_user_id(), $subscription->get_membership_level_id(), $handoff_timestamp );
 	}
-	if ( ! empty( $handoff_timestamp ) ) {
+	if ( ! $dry_run && ! empty( $handoff_timestamp ) ) {
 		update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_handoff_date', gmdate( 'Y-m-d H:i:s', $handoff_timestamp ) );
 	}
 
@@ -772,6 +818,8 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 		if ( empty( $user ) ) {
 			$email_note         = ' Could not email the member because the user no longer exists.';
 			$email_needs_review = true;
+		} elseif ( $dry_run ) {
+			$email_note = ' Would email the member.';
 		} else {
 			$email = $use_stripe
 				? new PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration( $placeholder )
@@ -784,6 +832,17 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 				$email_needs_review = true;
 			}
 		}
+	}
+
+	// A dry run reaching this point is always a fresh migration: mid-migration
+	// subscriptions returned earlier, so $placeholder is null and
+	// $handoff_timestamp is set.
+	if ( $dry_run ) {
+		$outcome = $email_needs_review ? 'needs_review' : 'complete';
+		if ( $use_stripe ) {
+			return array( 'outcome' => $outcome, 'message' => 'would migrate ' . $subscription_description . ' to a new Stripe placeholder subscription (no payment method, trial ending ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ( empty( $remaining_payments ) ? '' : ', remaining billing limit of ' . $remaining_payments ) . ') and cancel the old gateway subscription.' . $email_note );
+		}
+		return array( 'outcome' => $outcome, 'message' => ( $force_expiration ? 'force is enabled: would set' : 'would set' ) . ' the membership expiration date for ' . $subscription_description . ' to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' and cancel the old gateway subscription.' . $email_note );
 	}
 
 	if ( ! $subscription->cancel_at_gateway() ) {
@@ -1263,7 +1322,10 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 	// (e.g. a batch action failed fatally), mark the workflow stopped so the admin
 	// can start it again. The 60 second grace period avoids racing a fresh start.
 	if ( ! empty( $state['status'] ) && 'running' === $state['status'] && ! $has_actions && time() - (int) $state['updated_at'] > 60 ) {
-		$state = pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'stopped', 'note' => __( 'The workflow stopped unexpectedly. Start it again to continue; subscriptions that were already processed will be skipped.', 'paid-memberships-pro' ) ) );
+		$note  = empty( $state['dry_run'] )
+			? __( 'The workflow stopped unexpectedly. Start it again to continue; subscriptions that were already processed will be skipped.', 'paid-memberships-pro' )
+			: __( 'The dry run stopped unexpectedly. Start it again to preview the migration from the beginning.', 'paid-memberships-pro' );
+		$state = pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'stopped', 'note' => $note ) );
 	}
 
 	$is_running = ! empty( $state['status'] ) && 'running' === $state['status'];
@@ -1316,6 +1378,7 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 		$workflow        = array(
 			'status'            => $state['status'],
 			'strategy'          => empty( $state['strategy'] ) ? '' : $state['strategy'],
+			'dry_run'           => ! empty( $state['dry_run'] ),
 			'total'             => empty( $state['total'] ) ? 0 : (int) $state['total'],
 			'processed'         => empty( $state['processed'] ) ? 0 : (int) $state['processed'],
 			'complete'          => empty( $state['complete'] ) ? 0 : (int) $state['complete'],
@@ -1373,8 +1436,9 @@ function pmpro_deprecated_gateway_ajax() {
 			$strategy   = isset( $_POST['strategy'] ) ? sanitize_key( wp_unslash( $_POST['strategy'] ) ) : '';
 			$send_email = empty( $_POST['skip_email'] );
 			$force      = ! empty( $_POST['force'] );
-			$result     = pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email, $force );
-			$message    = __( 'Migration workflow started.', 'paid-memberships-pro' );
+			$dry_run    = ! empty( $_POST['dry_run'] );
+			$result     = pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email, $force, $dry_run );
+			$message    = $dry_run ? __( 'Dry run started. No changes will be made.', 'paid-memberships-pro' ) : __( 'Migration workflow started.', 'paid-memberships-pro' );
 			break;
 		case 'stop':
 			$result  = pmpro_deprecated_gateway_stop( $gateway );
@@ -1518,10 +1582,13 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'finish_other_sandbox'    => __( '%s sandbox subscriptions still need to be migrated. Switch the Gateway Environment to Sandbox/Testing, updating the gateway API keys as needed, then return to this page to migrate them.', 'paid-memberships-pro' ),
 			'no_workflow'             => __( 'No workflow has been run for this gateway in the current environment yet.', 'paid-memberships-pro' ),
 			'running'                 => __( 'Migration in progress', 'paid-memberships-pro' ),
+			'running_dry'             => __( 'Dry run in progress', 'paid-memberships-pro' ),
 			// translators: %1$s: number processed, %2$s: total number.
 			'progress_of'             => __( '%1$s of %2$s subscriptions processed', 'paid-memberships-pro' ),
 			// translators: %s: date and time.
 			'completed_on'            => __( 'Workflow completed %s', 'paid-memberships-pro' ),
+			// translators: %s: date and time.
+			'completed_on_dry'        => __( 'Dry run completed %s. No changes were made.', 'paid-memberships-pro' ),
 			// translators: %s: date and time.
 			'started_on'              => __( 'Started %s', 'paid-memberships-pro' ),
 			'stopped'                 => __( 'Workflow stopped', 'paid-memberships-pro' ),
@@ -1532,6 +1599,8 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'skipped_warning'         => __( 'Some subscriptions were skipped. Search the migration log for "[skipped]" entries and handle them manually, or run the migration again with Force Migration enabled.', 'paid-memberships-pro' ),
 			// translators: %1$s: number of subscriptions, %2$s: environment label.
 			'confirm_start'           => __( 'This will process %1$s active subscriptions in the %2$s and cancel them at the old gateway.', 'paid-memberships-pro' ),
+			// translators: %1$s: number of subscriptions, %2$s: environment label.
+			'confirm_start_dry'       => __( 'Dry run: this will preview the migration of %1$s active subscriptions in the %2$s and record the planned outcomes in the migration log. No changes will be made and no emails will be sent.', 'paid-memberships-pro' ),
 			'confirm_start_email'     => __( 'Members WILL be emailed.', 'paid-memberships-pro' ),
 			'confirm_start_noemail'   => __( 'Members will NOT be emailed.', 'paid-memberships-pro' ),
 			'confirm_start_stripe'    => __( 'Members who do not add a payment method before their next payment date will have their membership cancelled.', 'paid-memberships-pro' ),
@@ -1697,6 +1766,18 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 							<p class="description"><?php esc_html_e( 'Subscriptions without an upcoming payment date are cancelled and their membership is expired on the missed payment date.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
+					<tr>
+						<th scope="row">
+							<label for="pmpro-dgs-dry-run"><?php esc_html_e( 'Dry Run', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<label for="pmpro-dgs-dry-run">
+								<input type="checkbox" id="pmpro-dgs-dry-run" />
+								<?php esc_html_e( 'Preview the migration without making any changes', 'paid-memberships-pro' ); ?>
+							</label>
+							<p class="description"><?php esc_html_e( 'Each subscription is analyzed and the planned outcome is recorded in the migration log, but nothing is changed: no subscriptions are created or cancelled, no emails are sent, and no memberships are modified. Problems that only occur at the gateway can still surface during the real migration.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 			<div class="pmpro-dgs-actions">
@@ -1795,7 +1876,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				var title = el( 'p', 'pmpro-dgs-workflow-title' );
 				if ( 'running' === w.status ) {
 					title.appendChild( el( 'span', 'spinner is-active' ) );
-					title.appendChild( document.createTextNode( cfg.i18n.running ) );
+					title.appendChild( document.createTextNode( w.dry_run ? cfg.i18n.running_dry : cfg.i18n.running ) );
 					box.appendChild( title );
 					box.appendChild( el( 'p', 'pmpro-dgs-meta', sprintf( cfg.i18n.started_on, w.started_display ) ) );
 					var bar = el( 'div', 'pmpro-dgs-bar' ), fill = el( 'div', 'pmpro-dgs-bar-fill' );
@@ -1805,7 +1886,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					box.appendChild( bar );
 					box.appendChild( el( 'p', 'pmpro-dgs-meta', sprintf( cfg.i18n.progress_of, w.processed, w.total ) ) );
 				} else if ( 'completed' === w.status ) {
-					title.textContent = sprintf( cfg.i18n.completed_on, w.completed_display );
+					title.textContent = sprintf( w.dry_run ? cfg.i18n.completed_on_dry : cfg.i18n.completed_on, w.completed_display );
 					box.appendChild( title );
 				} else {
 					title.textContent = cfg.i18n.stopped;
@@ -1871,6 +1952,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				}
 				$( 'pmpro-dgs-email' ).disabled = d.is_running;
 				$( 'pmpro-dgs-force' ).disabled = d.is_running;
+				$( 'pmpro-dgs-dry-run' ).disabled = d.is_running;
 				updateDescription();
 
 				var blockers = $( 'pmpro-dgs-blockers' );
@@ -1913,13 +1995,16 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				var envLabel = 'live' === d.environment ? cfg.i18n.env_live : cfg.i18n.env_sandbox;
 				var sendEmail = 'yes' === $( 'pmpro-dgs-email' ).value;
 				var force = $( 'pmpro-dgs-force' ).checked;
+				var dryRun = $( 'pmpro-dgs-dry-run' ).checked;
 				var isStripe = 'stripe' === $( 'pmpro-dgs-strategy' ).value;
-				var text = sprintf( cfg.i18n.confirm_start, count, envLabel ) + ' ' +
-					( sendEmail ? cfg.i18n.confirm_start_email : cfg.i18n.confirm_start_noemail ) +
-					( isStripe ? ' ' + cfg.i18n.confirm_start_stripe : '' ) +
-					( force ? ' ' + cfg.i18n.confirm_start_force : '' ) + ' ' + cfg.i18n.confirm_continue;
+				var text = dryRun
+					? sprintf( cfg.i18n.confirm_start_dry, count, envLabel ) + ' ' + cfg.i18n.confirm_continue
+					: sprintf( cfg.i18n.confirm_start, count, envLabel ) + ' ' +
+						( sendEmail ? cfg.i18n.confirm_start_email : cfg.i18n.confirm_start_noemail ) +
+						( isStripe ? ' ' + cfg.i18n.confirm_start_stripe : '' ) +
+						( force ? ' ' + cfg.i18n.confirm_start_force : '' ) + ' ' + cfg.i18n.confirm_continue;
 				if ( window.confirm( text ) ) {
-					api( 'start', { strategy: $( 'pmpro-dgs-strategy' ).value, skip_email: sendEmail ? '' : '1', force: force ? '1' : '' } );
+					api( 'start', { strategy: $( 'pmpro-dgs-strategy' ).value, skip_email: sendEmail ? '' : '1', force: force ? '1' : '', dry_run: dryRun ? '1' : '' } );
 				}
 			} );
 
