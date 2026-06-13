@@ -1894,3 +1894,90 @@ jQuery(document).ready(function($) {
 	// Optionally improve first render robustness: recalc after layout is stable
 	setTimeout(pmproqsUpdateSelectWidth, 0);
 });
+
+/**
+ * Date Pattern Builder
+ *
+ * Shared functions for the date pattern builder UI used on the
+ * Edit Level and Edit Discount Code pages. The builder lets admins
+ * pick "same day each month", "same date each year", or a custom
+ * pattern like Y-01-01. The pattern is stored in a hidden input
+ * with class .pmpro_date_pattern_value.
+ *
+ * @since TBD
+ */
+
+/**
+ * Called when the mode select (monthly/yearly/custom) changes.
+ */
+function pmpro_date_mode_changed(selectEl) {
+	var $ = jQuery;
+	var $builder = $(selectEl).closest('.pmpro_date_pattern_builder');
+	var mode = $(selectEl).val();
+	$builder.find('.pmpro_date_builder_monthly').toggle(mode === 'monthly');
+	$builder.find('.pmpro_date_builder_yearly').toggle(mode === 'yearly');
+	$builder.find('.pmpro_date_builder_custom').toggle(mode === 'custom');
+	if (mode === 'custom') {
+		$builder.find('.pmpro_date_pattern_input').focus();
+	}
+	if (mode === 'monthly' || mode === 'yearly') {
+		pmpro_assemble_date_pattern(selectEl);
+	}
+	if (typeof pmpro_update_schedule_preview === 'function') {
+		pmpro_update_schedule_preview();
+	}
+}
+
+/**
+ * Assemble a date pattern from the builder dropdowns into the hidden field.
+ */
+function pmpro_assemble_date_pattern(el) {
+	var $ = jQuery;
+	var $builder = $(el).closest('.pmpro_date_pattern_builder');
+	var mode = $builder.find('.pmpro_date_pattern_mode').val();
+	var pattern = '';
+	if (mode === 'monthly') {
+		pattern = 'Y-M-' + $builder.find('.pmpro_date_builder_monthly .pmpro_date_builder_day').val();
+	} else if (mode === 'yearly') {
+		pattern = 'Y-' + $builder.find('.pmpro_date_builder_yearly .pmpro_date_builder_month').val() + '-' + $builder.find('.pmpro_date_builder_yearly .pmpro_date_builder_day').val();
+	}
+	$builder.find('.pmpro_date_pattern_value').val(pattern);
+	if (typeof pmpro_update_schedule_preview === 'function') {
+		pmpro_update_schedule_preview();
+	}
+}
+
+/**
+ * Parse an existing date pattern and set the builder UI to match.
+ */
+function pmpro_initDateBuilder($builder, existingValue) {
+	var $ = jQuery;
+	if (!existingValue) return;
+	var val = existingValue.toUpperCase().trim();
+	// Normalize single digits: Y-M-5 -> Y-M-05, Y-1-5 -> Y-01-05.
+	val = val.replace(/-(\d)$/, '-0$1');
+	val = val.replace(/-(\d)-/, '-0$1-');
+
+	var monthlyMatch = val.match(/^Y-M-(\d{2})$/);
+	if (monthlyMatch) {
+		$builder.find('.pmpro_date_pattern_mode').val('monthly');
+		$builder.find('.pmpro_date_builder_monthly .pmpro_date_builder_day').val(monthlyMatch[1]);
+		$builder.find('.pmpro_date_builder_monthly').show();
+		$builder.find('.pmpro_date_pattern_value').val(val);
+		return;
+	}
+	var yearlyMatch = val.match(/^Y-(\d{2})-(\d{2})$/);
+	if (yearlyMatch) {
+		$builder.find('.pmpro_date_pattern_mode').val('yearly');
+		$builder.find('.pmpro_date_builder_yearly .pmpro_date_builder_month').val(yearlyMatch[1]);
+		$builder.find('.pmpro_date_builder_yearly .pmpro_date_builder_day').val(yearlyMatch[2]);
+		$builder.find('.pmpro_date_builder_yearly').show();
+		$builder.find('.pmpro_date_pattern_value').val(val);
+		return;
+	}
+	// Anything else is custom.
+	$builder.find('.pmpro_date_pattern_mode').val('custom');
+	$builder.find('.pmpro_date_builder_custom').show();
+	$builder.find('.pmpro_date_pattern_input').val(existingValue);
+	$builder.find('.pmpro_date_pattern_value').val(existingValue);
+}
