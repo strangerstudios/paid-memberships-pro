@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.7.99\n"
+"Project-Id-Version: Paid Memberships Pro 3.8\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-08T18:50:24+00:00\n"
+"POT-Creation-Date: 2026-06-15T16:20:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -15939,12 +15939,14 @@ msgstr ""
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:129
+#: blocks/src/component-content-visibility/content-visibility-controls.js:128
 msgid "No - Hide this block if the user does not have access"
 msgstr ""
 
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:130
+#: blocks/src/component-content-visibility/content-visibility-controls.js:129
 msgid "Yes - Show the 'no access' message if the user does not have access"
 msgstr ""
 
@@ -17058,4 +17060,8 @@ msgstr ""
 
 #: js/pmpro-divi-5.js:315
 msgid "No Access Message"
+msgstr ""
+
+#: adminpages/user-fields/field-settings.php:76
+msgid "Single word with no spaces. Underscores are allowed. This is used as the user meta key."
 msgstr ""
