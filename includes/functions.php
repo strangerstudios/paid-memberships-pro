@@ -5185,6 +5185,11 @@ function pmpro_check_token_order_for_completion( $order_id ) {
  * Show a message on the account page for a specific membership level.
  */
 function pmpro_display_member_account_level_message( $level ) {
+	// Only show the message to users who have this level. Cards may also be shown for memberships that are waiting on payment.
+	if ( ! pmpro_hasMembershipLevel( $level->id ) ) {
+		return;
+	}
+
 	$membership_account_message = get_pmpro_membership_level_meta( $level->id, 'membership_account_message', true );
 	if ( $membership_account_message ) {
 		?>
@@ -5195,6 +5200,97 @@ function pmpro_display_member_account_level_message( $level ) {
 	}
 }
 add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );
+
+/**
+ * Get the most recent pending order for a user and level.
+ *
+ * @since TBD
+ *
+ * @param int $user_id  The ID of the user to check.
+ * @param int $level_id The ID of the level to check.
+ * @return MemberOrder|null The most recent pending order or null if there is none.
+ */
+function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
+	static $cache = array();
+
+	$cache_key = $user_id . ':' . $level_id;
+	if ( ! array_key_exists( $cache_key, $cache ) ) {
+		$pending_orders = MemberOrder::get_orders(
+			array(
+				'user_id'             => $user_id,
+				'membership_level_id' => $level_id,
+				'status'              => 'pending',
+				'limit'               => 1,
+			)
+		);
+		$cache[ $cache_key ] = empty( $pending_orders ) ? null : current( $pending_orders );
+	}
+
+	return $cache[ $cache_key ];
+}
+
+/**
+ * Show a message on the level card on the Membership Account page when the user has a pending order for that level.
+ *
+ * @since TBD
+ *
+ * @param object $level The membership level object for the card being shown.
+ */
+function pmpro_account_pending_order_message( $level ) {
+	global $current_user;
+
+	// Check for a pending order for this user and level.
+	$pending_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $level->id );
+	if ( empty( $pending_order ) ) {
+		return;
+	}
+
+	// If the user has this level, a renewal payment is past due. Otherwise, the membership is waiting on its first payment.
+	if ( pmpro_hasMembershipLevel( $level->id, $current_user->ID ) ) {
+		$message = __( 'Your latest payment for this membership is past due. We are waiting for your payment to be completed.', 'paid-memberships-pro' );
+	} else {
+		$message = __( 'We are waiting for your payment to be completed. Your membership will be activated once the payment has been confirmed.', 'paid-memberships-pro' );
+	}
+	?>
+	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>"><?php echo esc_html( $message ); ?></div>
+	<?php
+}
+add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_account_pending_order_message' );
+
+/**
+ * Add a link to view the pending order to the level card actions on the Membership Account page.
+ *
+ * If the card is already showing an "Update Billing Information" link, members can complete
+ * their payment there instead, so the order link is not added.
+ *
+ * @since TBD
+ *
+ * @param array $pmpro_member_action_links Member action links.
+ * @param int   $level_id The ID of the membership level.
+ * @return array Member action links.
+ */
+function pmpro_account_pending_order_action_links( $pmpro_member_action_links, $level_id ) {
+	global $current_user;
+
+	// Check for a pending order for this user and level.
+	$pending_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $level_id );
+	if ( empty( $pending_order ) ) {
+		return $pmpro_member_action_links;
+	}
+
+	// If we are already showing an update billing link, the member can complete their payment there.
+	if ( isset( $pmpro_member_action_links['update-billing'] ) ) {
+		return $pmpro_member_action_links;
+	}
+
+	$invoice_url = pmpro_url( 'invoice', '?invoice=' . $pending_order->code );
+	if ( ! empty( $invoice_url ) ) {
+		$pmpro_member_action_links['view-order'] = '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_action' ) ) . '"><a id="pmpro_actionlink-view-order" href="' . esc_url( $invoice_url ) . '" aria-label="' . esc_attr( __( 'View Pending Order', 'paid-memberships-pro' ) ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a></span>';
+	}
+
+	return $pmpro_member_action_links;
+}
+add_filter( 'pmpro_member_action_links', 'pmpro_account_pending_order_action_links', 10, 2 );
 
 /**
  * Update the level restrictions for a post.

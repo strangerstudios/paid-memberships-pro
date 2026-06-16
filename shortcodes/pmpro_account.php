@@ -140,6 +140,25 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		<?php } ?>
 
 		<?php if ( in_array( 'membership', $sections) || in_array( 'memberships', $sections ) ) {
+			// Get levels that the user does not have yet but has a pending order for. These memberships are waiting on payment.
+			$pending_order_levels = array();
+			$pending_orders = MemberOrder::get_orders(
+				array(
+					'user_id' => $current_user->ID,
+					'status'  => 'pending',
+				)
+			);
+			$mylevel_ids = empty( $mylevels ) ? array() : wp_list_pluck( $mylevels, 'id' );
+			foreach ( $pending_orders as $pending_order ) {
+				// Skip if the user has this level or if we already found a pending order for it.
+				if ( in_array( $pending_order->membership_id, $mylevel_ids ) || isset( $pending_order_levels[ $pending_order->membership_id ] ) ) {
+					continue;
+				}
+				$pending_order_level = pmpro_getLevel( $pending_order->membership_id );
+				if ( ! empty( $pending_order_level ) ) {
+					$pending_order_levels[ $pending_order->membership_id ] = $pending_order_level;
+				}
+			}
 			?>
 			<section id="pmpro_account-membership" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_account-membership' ) ); ?>">
 				<?php
@@ -151,8 +170,8 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					}
 				?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
-					<?php if ( empty( $mylevels ) ) {
-						
+					<?php if ( empty( $mylevels ) && empty( $pending_order_levels ) ) {
+
 						?>
 						<div id="pmpro_account-membership-none" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
@@ -171,7 +190,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 							</div> <!-- end pmpro_card_content -->
 						</div> <!-- end pmpro_card -->
 						<?php
-					} else {
+					}
+
+					if ( ! empty( $mylevels ) ) {
 						foreach ( $mylevels as $level ) {
 							?>
 							<div id="pmpro_account-membership-<?php echo esc_attr( $level->ID ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
@@ -325,6 +346,61 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								</div> <!-- end pmpro_card_actions -->
 							</div> <!-- end pmpro_card -->
 						<?php } ?>
+					<?php } ?>
+
+					<?php
+					// Show a card for each level that the user has a pending order for but does not have yet.
+					foreach ( $pending_order_levels as $pending_order_level ) {
+						?>
+						<div id="pmpro_account-membership-pending-<?php echo esc_attr( $pending_order_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+
+							<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php echo esc_html( $pending_order_level->name ); ?></h3>
+
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+								<?php
+									/** This action is documented in shortcodes/pmpro_account.php */
+									do_action( 'pmpro_membership_account_after_level_card_content', $pending_order_level );
+								?>
+							</div> <!-- end pmpro_card_content -->
+
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
+
+								<?php
+									/**
+									 * Fires before the member action links.
+									 */
+									do_action( 'pmpro_member_action_links_before' );
+								?>
+
+								<?php
+									/** This filter is documented in shortcodes/pmpro_account.php */
+									$pmpro_member_action_links = apply_filters( 'pmpro_member_action_links', array(), $pending_order_level->id );
+
+									$allowed_html = array(
+										'a' => array (
+											'class' => array(),
+											'href' => array(),
+											'id' => array(),
+											'target' => array(),
+											'title' => array(),
+											'aria-label' => array(),
+										),
+										'span' => array(
+											'class' => array(),
+										),
+									);
+									echo wp_kses( implode( '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_action_separator' ) ) . '">' . pmpro_actions_nav_separator() . '</span>', $pmpro_member_action_links ), $allowed_html );
+								?>
+
+								<?php
+									/**
+									 * Fires after the member action links.
+									 */
+									do_action( 'pmpro_member_action_links_after' );
+								?>
+
+							</div> <!-- end pmpro_card_actions -->
+						</div> <!-- end pmpro_card -->
 					<?php } ?>
 				</div> <!-- end pmpro_section_content -->
 			</section> <!-- end pmpro_account-membership -->
