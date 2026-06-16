@@ -1,6 +1,46 @@
 <?php
 
 /**
+ * Get the taxonomies whose terms can be restricted by membership level.
+ *
+ * @since TBD
+ *
+ * @return string[] Taxonomy names.
+ */
+function pmpro_get_restrictable_taxonomies() {
+	/**
+	 * Filter the taxonomies whose terms can be restricted by membership level.
+	 *
+	 * Add-ons can add their own taxonomies here to get the "Require Membership"
+	 * term checkboxes, term restriction enforcement in pmpro_has_membership_access(),
+	 * search/archive filtering, and the checklists on the edit level admin page.
+	 *
+	 * @since TBD
+	 *
+	 * @param string[] $taxonomies Taxonomy names. Defaults to category and post_tag.
+	 */
+	return apply_filters( 'pmpro_restrictable_taxonomies', array( 'category', 'post_tag' ) );
+}
+
+/**
+ * Hook the term restriction UI, save handler, and delete cleanup
+ * for every restrictable taxonomy.
+ *
+ * Runs late on init so taxonomies registered by add-ons are included.
+ *
+ * @since TBD
+ */
+function pmpro_init_term_restrictions() {
+	foreach ( pmpro_get_restrictable_taxonomies() as $taxonomy ) {
+		add_action( $taxonomy . '_add_form_fields', 'pmpro_term_add_form_fields' );
+		add_action( $taxonomy . '_edit_form_fields', 'pmpro_term_edit_form_fields', 10, 2 );
+		add_action( 'saved_' . $taxonomy, 'pmpro_term_saved' );
+		add_action( 'delete_' . $taxonomy, 'pmpro_delete_category' );
+	}
+}
+add_action( 'init', 'pmpro_init_term_restrictions', 99 );
+
+/**
  * Show checkboxes to restrict content when creating a new term.
  *
  * @since 2.10
@@ -52,8 +92,6 @@ function pmpro_term_add_form_fields() {
 	</div>
 	<?php
 }
-add_action( 'category_add_form_fields', 'pmpro_term_add_form_fields' );
-add_action( 'post_tag_add_form_fields', 'pmpro_term_add_form_fields' );
 
 /**
  * Show checkboxes to restrict content when editing a term.
@@ -112,8 +150,6 @@ function pmpro_term_edit_form_fields( $term ) {
 	</tr>
 	<?php
 }
-add_action( 'category_edit_form_fields', 'pmpro_term_edit_form_fields', 10, 2 );
-add_action( 'post_tag_edit_form_fields', 'pmpro_term_edit_form_fields', 10, 2 );
 
 /**
  * Save checkboxes to restrict categories and tags when saving a term.
@@ -139,5 +175,3 @@ function pmpro_term_saved( $term_id ) {
 		}
 	}
 }
-add_action( 'saved_category', 'pmpro_term_saved' );
-add_action( 'saved_post_tag', 'pmpro_term_saved' );
