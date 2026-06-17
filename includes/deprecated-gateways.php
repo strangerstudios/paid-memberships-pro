@@ -474,7 +474,20 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 		return;
 	}
 
-	$batch_size       = 10;
+	/**
+	 * Filter the number of subscriptions processed per batch.
+	 *
+	 * Each batch chains the next one through Action Scheduler, so this controls
+	 * how much work happens in a single request, not the total processed.
+	 *
+	 * @since TBD
+	 *
+	 * @param int    $batch_size Number of subscriptions per batch.
+	 * @param string $gateway Gateway slug.
+	 * @param string $environment Gateway environment.
+	 */
+	$batch_size       = (int) apply_filters( 'pmpro_deprecated_gateway_batch_size', 10, $gateway, $environment );
+	$batch_size       = $batch_size > 0 ? $batch_size : 10;
 	$subscription_ids = pmpro_deprecated_gateway_get_active_subscription_ids( $gateway, $environment, $last_subscription_id, $batch_size );
 	if ( empty( $subscription_ids ) ) {
 		pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'completed', 'completed_at' => time() ) );
@@ -1610,6 +1623,8 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'confirm_stop'            => __( 'Stop this workflow? Subscriptions that were already processed stay processed. You can start the workflow again later to continue.', 'paid-memberships-pro' ),
 			'confirm_cleanup'         => __( 'This will permanently delete the stored credentials for this gateway and stop loading it on this site.', 'paid-memberships-pro' ),
 			'error_generic'           => __( 'Something went wrong. Please reload the page and try again.', 'paid-memberships-pro' ),
+			'start_dry'               => __( 'Preview Migration (Dry Run)', 'paid-memberships-pro' ),
+			'start_real'              => __( 'Start Real Migration', 'paid-memberships-pro' ),
 		),
 	);
 	?>
@@ -1642,6 +1657,19 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			.pmpro-dgs-actions .button { margin-right: 8px; }
 			.pmpro-dgs-blockers { margin: 10px 0 0 20px; color: #646970; font-size: 12px; list-style: disc; }
 			.pmpro-dgs-footer { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--pmpro--border--color, #E5E7EB); }
+			.pmpro-dgs a .dashicons-external { font-size: 14px; width: 14px; height: 14px; vertical-align: text-bottom; text-decoration: none; }
+			/* Real-run emphasis: the panel goes from a calm dry-run preview to a
+			   serious, permanent migration when Dry Run is unchecked. */
+			.pmpro-dgs-realbar { display: none; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--pmpro--color--error-text, #721c24); border-left-width: 4px; border-radius: var(--pmpro--border--radius, 6px); background: #FCEBEC; color: var(--pmpro--color--error-text, #721c24); font-weight: 600; }
+			.pmpro-dgs-realbar .dashicons { color: inherit; flex: 0 0 auto; }
+			.pmpro-dgs.is-real .pmpro-dgs-realbar { display: flex; }
+			.pmpro-dgs.is-real #pmpro-dgs-start { background: #b32d2e; border-color: #9b2226; color: #fff; box-shadow: none; }
+			.pmpro-dgs.is-real #pmpro-dgs-start:hover:not(:disabled) { background: #9b2226; border-color: #7d1c1f; }
+			@keyframes pmpro-dgs-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+			@keyframes pmpro-dgs-flash { 0% { background: #f3a7ab; } 100% { background: #FCEBEC; } }
+			.pmpro-dgs-shake { animation: pmpro-dgs-shake 0.45s ease; }
+			.pmpro-dgs-flash { animation: pmpro-dgs-flash 0.7s ease; }
+			@media ( prefers-reduced-motion: reduce ) { .pmpro-dgs-shake, .pmpro-dgs-flash { animation: none; } }
 		</style>
 		<div class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
@@ -1693,7 +1721,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				</p>
 				<p class="description">
 					<?php esc_html_e( 'Prefer PayPal? The new PayPal Add On is also supported, but subscriptions cannot be migrated automatically, so members will be emailed to check out again.', 'paid-memberships-pro' ); ?>
-					<a href="https://www.paidmembershipspro.com/add-ons/pmpro-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-paypal" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Get the PayPal Add On', 'paid-memberships-pro' ); ?></a>
+					<a href="https://www.paidmembershipspro.com/add-ons/pmpro-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-paypal" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Get the PayPal Add On', 'paid-memberships-pro' ); ?> <span class="dashicons dashicons-external"></span></a>
 				</p>
 			</div>
 			<div id="pmpro-dgs-main" <?php if ( ! $data['has_replacement'] ) { echo 'hidden'; } ?>>
@@ -1772,7 +1800,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 						</th>
 						<td>
 							<label for="pmpro-dgs-dry-run">
-								<input type="checkbox" id="pmpro-dgs-dry-run" />
+								<input type="checkbox" id="pmpro-dgs-dry-run" checked />
 								<?php esc_html_e( 'Preview the migration without making any changes', 'paid-memberships-pro' ); ?>
 							</label>
 							<p class="description"><?php esc_html_e( 'Each subscription is analyzed and the planned outcome is recorded in the migration log, but nothing is changed: no subscriptions are created or cancelled, no emails are sent, and no memberships are modified. Problems that only occur at the gateway can still surface during the real migration.', 'paid-memberships-pro' ); ?></p>
@@ -1780,6 +1808,10 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					</tr>
 				</tbody>
 			</table>
+			<div class="pmpro-dgs-realbar" id="pmpro-dgs-realbar" hidden>
+				<span class="dashicons dashicons-warning"></span>
+				<span><?php esc_html_e( 'Dry run is off, so this is a real migration. These changes are permanent and cannot be undone: subscriptions will be migrated and cancelled at the old gateway.', 'paid-memberships-pro' ); ?></span>
+			</div>
 			<div class="pmpro-dgs-actions">
 				<button type="button" class="button button-primary" id="pmpro-dgs-start"><?php esc_html_e( 'Start Migration', 'paid-memberships-pro' ); ?></button>
 				<button type="button" class="button" id="pmpro-dgs-stop" hidden><?php esc_html_e( 'Stop Workflow', 'paid-memberships-pro' ); ?></button>
@@ -1788,10 +1820,10 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			</div><!-- end pmpro-dgs-main -->
 			<div class="pmpro-dgs-footer">
 				<a href="<?php echo esc_url( $log_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View the full migration log', 'paid-memberships-pro' ); ?></a> |
-				<a href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'About Deprecated Gateways', 'paid-memberships-pro' ); ?></a> |
-				<a href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'How to Switch Payment Gateways', 'paid-memberships-pro' ); ?></a>
+				<a href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'About Deprecated Gateways', 'paid-memberships-pro' ); ?> <span class="dashicons dashicons-external"></span></a> |
+				<a href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'How to Switch Payment Gateways', 'paid-memberships-pro' ); ?> <span class="dashicons dashicons-external"></span></a>
 				<?php if ( 'paypalexpress' === $gateway ) { ?>
-					| <a href="https://www.paidmembershipspro.com/paypal-express-deprecation-hub/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=paypal-express-deprecation" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'PayPal Express Deprecation Hub', 'paid-memberships-pro' ); ?></a>
+					| <a href="https://www.paidmembershipspro.com/paypal-express-deprecation-hub/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=paypal-express-deprecation" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'PayPal Express Deprecation Hub', 'paid-memberships-pro' ); ?> <span class="dashicons dashicons-external"></span></a>
 				<?php } ?>
 			</div>
 			</div><!-- end pmpro_section_inside -->
@@ -1955,6 +1987,11 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				$( 'pmpro-dgs-dry-run' ).disabled = d.is_running;
 				updateDescription();
 
+				// Hide the real-run warning bar whenever the Start button is hidden
+				// (running or on the cleanup step) and keep the button label/styling in sync.
+				$( 'pmpro-dgs-realbar' ).hidden = $( 'pmpro-dgs-start' ).hidden;
+				updateDryRunMode( false );
+
 				var blockers = $( 'pmpro-dgs-blockers' );
 				blockers.textContent = '';
 				if ( ! d.is_running ) {
@@ -1980,6 +2017,24 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				$( 'pmpro-dgs-desc-expiration' ).hidden = isStripe;
 			}
 			$( 'pmpro-dgs-strategy' ).addEventListener( 'change', updateDescription );
+
+			// Switch the panel between the calm dry-run preview and the serious
+			// real-run treatment. Animate only when the admin actively turns dry
+			// run off, so unchecking the box feels like a real, deliberate choice.
+			function updateDryRunMode( animate ) {
+				var dryRun = $( 'pmpro-dgs-dry-run' ).checked;
+				$( 'pmpro-dgs' ).classList.toggle( 'is-real', ! dryRun );
+				$( 'pmpro-dgs-start' ).textContent = dryRun ? cfg.i18n.start_dry : cfg.i18n.start_real;
+				if ( animate && ! dryRun ) {
+					[ [ 'pmpro-dgs-start', 'pmpro-dgs-shake' ], [ 'pmpro-dgs-realbar', 'pmpro-dgs-flash' ] ].forEach( function( pair ) {
+						var node = $( pair[0] );
+						node.classList.remove( pair[1] );
+						void node.offsetWidth; // Force a reflow so the animation can replay on repeated toggles.
+						node.classList.add( pair[1] );
+					} );
+				}
+			}
+			$( 'pmpro-dgs-dry-run' ).addEventListener( 'change', function() { updateDryRunMode( true ); } );
 
 			if ( $( 'pmpro-dgs-activate-stripe' ) ) {
 				$( 'pmpro-dgs-activate-stripe' ).addEventListener( 'click', function() {

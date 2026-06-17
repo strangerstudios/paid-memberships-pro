@@ -89,13 +89,15 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	 * @return string The default body content.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Your saved payment method for {{ membership_level_name }} at {{ sitename }} is no longer valid because the payment processor that stored it is no longer supported.</p>
+		return wp_kses_post( __( '<p>Hi {{ display_name }},</p>
 
-<p>Your membership remains active until {{ expiration_date }}.</p>
+<p>We\'ve updated the way {{ sitename }} processes payments, so we can no longer renew your {{ membership_level_name }} membership automatically.</p>
 
-<p>To continue your membership, you will need to check out again. Checking out before {{ expiration_date }} may replace your remaining access time.</p>
+<p>Your membership stays active until {{ expiration_date }}.</p>
 
-<p><a href="{{ checkout_url }}">Check Out Again</a></p>', 'paid-memberships-pro' ) );
+<p>To keep your membership, please check out again before {{ expiration_date }} so you don\'t lose access. Note that checking out again before that date may replace any remaining time on your current membership.</p>
+
+<p><a href="{{ checkout_url }}">Renew Your Membership</a></p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
