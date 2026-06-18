@@ -266,20 +266,20 @@ function pmpro_deprecated_gateway_record_result( $gateway, $environment, $outcom
  * @param string $gateway Gateway slug.
  * @param string $strategy Strategy slug: 'stripe' or 'expiration'.
  * @param bool   $send_email Whether to email members.
- * @param bool   $force Process subscriptions without an upcoming payment date by
- *               expiring the membership and cancelling at the gateway.
+ * @param bool   $expire_past_due Expire the membership and cancel at the gateway for subscriptions
+ *               whose next payment date is missing or in the past (instead of skipping them).
  * @param bool   $dry_run Preview the workflow without making changes. Outcomes are
  *               logged, but nothing is created, cancelled, emailed, or saved.
  * @return true|WP_Error
  */
-function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = true, $force = false, $dry_run = false ) {
+function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = true, $expire_past_due = false, $dry_run = false ) {
 	// Normalize the environment so the state option key always matches what the panel reads.
 	$environment = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
-	$gateway     = sanitize_key( $gateway );
-	$strategy    = sanitize_key( $strategy );
-	$send_email  = ! empty( $send_email );
-	$force       = ! empty( $force );
-	$dry_run     = ! empty( $dry_run );
+	$gateway         = sanitize_key( $gateway );
+	$strategy        = sanitize_key( $strategy );
+	$send_email      = ! empty( $send_email );
+	$expire_past_due = ! empty( $expire_past_due );
+	$dry_run         = ! empty( $dry_run );
 
 	if ( ! in_array( $gateway, pmpro_get_deprecated_gateways(), true ) ) {
 		return new WP_Error( 'pmpro_deprecated_gateway_not_deprecated', __( 'This workflow is only available for deprecated gateways.', 'paid-memberships-pro' ) );
@@ -336,19 +336,19 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 		$gateway,
 		$environment,
 		array(
-			'status'       => 'running',
-			'strategy'     => $strategy,
-			'send_email'   => $send_email,
-			'force'        => $force,
-			'dry_run'      => $dry_run,
-			'started_at'   => time(),
-			'completed_at' => 0,
-			'total'        => $total,
-			'processed'    => 0,
-			'complete'     => 0,
-			'skipped'      => 0,
-			'needs_review' => 0,
-			'note'         => '',
+			'status'          => 'running',
+			'strategy'        => $strategy,
+			'send_email'      => $send_email,
+			'expire_past_due' => $expire_past_due,
+			'dry_run'         => $dry_run,
+			'started_at'      => time(),
+			'completed_at'    => 0,
+			'total'           => $total,
+			'processed'       => 0,
+			'complete'        => 0,
+			'skipped'         => 0,
+			'needs_review'    => 0,
+			'note'            => '',
 		)
 	);
 
@@ -358,7 +358,7 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 	// pmpro_deprecated_gateway_process_batch() would block the next batch.
 	$action_id = as_enqueue_async_action(
 		'pmpro_deprecated_gateway_process_batch',
-		array( $gateway, $environment, $strategy, $send_email ? 1 : 0, $force ? 1 : 0, $dry_run ? 1 : 0, 0 ),
+		array( $gateway, $environment, $strategy, $send_email ? 1 : 0, $expire_past_due ? 1 : 0, $dry_run ? 1 : 0, 0 ),
 		pmpro_deprecated_gateway_get_action_group( $gateway, $environment ),
 		true
 	);
@@ -372,7 +372,7 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 		return new WP_Error( 'pmpro_deprecated_gateway_schedule_failed', __( 'The workflow could not be scheduled. Check the migration log for details.', 'paid-memberships-pro' ) );
 	}
 
-	pmpro_deprecated_gateway_log( sprintf( 'Queued deprecated gateway workflow. Gateway=%s, environment=%s, strategy=%s, send_email=%s, force=%s, dry_run=%s, subscriptions=%d.', $gateway, $environment, $strategy, $send_email ? 'yes' : 'no', $force ? 'yes' : 'no', $dry_run ? 'yes' : 'no', $total ) );
+	pmpro_deprecated_gateway_log( sprintf( 'Queued deprecated gateway workflow. Gateway=%s, environment=%s, strategy=%s, send_email=%s, expire_past_due=%s, dry_run=%s, subscriptions=%d.', $gateway, $environment, $strategy, $send_email ? 'yes' : 'no', $expire_past_due ? 'yes' : 'no', $dry_run ? 'yes' : 'no', $total ) );
 
 	// Kick the Action Scheduler queue so the workflow starts right away.
 	if ( is_callable( array( 'PMPro_Action_Scheduler', 'dispatch_queue' ) ) ) {
@@ -424,17 +424,17 @@ function pmpro_deprecated_gateway_stop( $gateway ) {
  * @param string $environment Gateway environment.
  * @param string $strategy Strategy slug.
  * @param bool   $send_email Whether to email members.
- * @param bool   $force Process subscriptions without an upcoming payment date by
- *               expiring the membership and cancelling at the gateway.
+ * @param bool   $expire_past_due Expire the membership and cancel at the gateway for subscriptions
+ *               whose next payment date is missing or in the past (instead of skipping them).
  * @param bool   $dry_run Preview the workflow without making changes.
  * @param int    $last_subscription_id Last subscription ID processed by the previous batch.
  */
-function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strategy, $send_email = true, $force = false, $dry_run = false, $last_subscription_id = 0 ) {
+function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strategy, $send_email = true, $expire_past_due = false, $dry_run = false, $last_subscription_id = 0 ) {
 	$gateway              = sanitize_key( $gateway );
 	$environment          = sanitize_key( $environment );
 	$strategy             = sanitize_key( $strategy );
 	$send_email           = ! empty( $send_email );
-	$force                = ! empty( $force );
+	$expire_past_due      = ! empty( $expire_past_due );
 	$dry_run              = ! empty( $dry_run );
 	$last_subscription_id = (int) $last_subscription_id;
 
@@ -499,7 +499,7 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 	}
 
 	foreach ( $subscription_ids as $subscription_id ) {
-		$result = pmpro_deprecated_gateway_process_subscription( (int) $subscription_id, $gateway, $environment, $strategy, $send_email, $force, $dry_run );
+		$result = pmpro_deprecated_gateway_process_subscription( (int) $subscription_id, $gateway, $environment, $strategy, $send_email, $expire_past_due, $dry_run );
 		pmpro_deprecated_gateway_record_result( $gateway, $environment, $result['outcome'], ( $dry_run ? 'Dry run: ' : '' ) . $result['message'] );
 	}
 
@@ -511,7 +511,7 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 
 	$action_id = as_enqueue_async_action(
 		'pmpro_deprecated_gateway_process_batch',
-		array( $gateway, $environment, $strategy, $send_email ? 1 : 0, $force ? 1 : 0, $dry_run ? 1 : 0, max( $subscription_ids ) ),
+		array( $gateway, $environment, $strategy, $send_email ? 1 : 0, $expire_past_due ? 1 : 0, $dry_run ? 1 : 0, max( $subscription_ids ) ),
 		pmpro_deprecated_gateway_get_action_group( $gateway, $environment )
 	);
 	if ( empty( $action_id ) ) {
@@ -582,8 +582,8 @@ function pmpro_deprecated_gateway_get_subscription_log_description( $subscriptio
  * @param string $environment Gateway environment.
  * @param string $strategy Strategy slug.
  * @param bool   $send_email Whether to email members.
- * @param bool   $force Process subscriptions without an upcoming payment date by
- *               expiring the membership and cancelling at the gateway.
+ * @param bool   $expire_past_due Expire the membership and cancel at the gateway for subscriptions
+ *               whose next payment date is missing or in the past (instead of skipping them).
  * @param bool   $dry_run Report what would happen without making changes. No
  *               gateway calls, emails, or database writes; gateway-side failures
  *               can only be detected by a real run.
@@ -592,7 +592,7 @@ function pmpro_deprecated_gateway_get_subscription_log_description( $subscriptio
  *     @type string $message Log message.
  * }
  */
-function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gateway, $environment, $strategy, $send_email = true, $force = false, $dry_run = false ) {
+function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gateway, $environment, $strategy, $send_email = true, $expire_past_due = false, $dry_run = false ) {
 	$subscription = PMPro_Subscription::get_subscription( $subscription_id );
 	if ( empty( $subscription ) ) {
 		return array( 'outcome' => 'skipped', 'message' => 'Subscription #' . $subscription_id . ' no longer exists.' );
@@ -678,20 +678,22 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	// The next payment date is the handoff point: when the new Stripe subscription
 	// starts billing or when the membership expires. It is only needed when a
 	// replacement has not been created yet by an earlier run. An active subscription
-	// should always have an upcoming payment date, so a missing date is treated the
-	// same as a past one: the gateway may no longer be billing this subscription.
+	// should always have an upcoming payment date, so a missing or past date is
+	// treated the same: it usually means a payment notification (IPN/webhook) was
+	// missed and the gateway may actually still be billing, so these are skipped by
+	// default and only expired when the admin explicitly opts in.
 	$handoff_timestamp = $subscription->get_next_payment_date( 'timestamp', false );
-	$force_expiration  = false;
+	$expire_this_subscription  = false;
 	if ( empty( $placeholder ) && ( empty( $handoff_timestamp ) || $handoff_timestamp <= time() ) ) {
-		if ( ! $force ) {
-			return array( 'outcome' => 'skipped', 'message' => ucfirst( $subscription_description ) . ' has no upcoming payment date, so the gateway may no longer be billing it. Migrate this subscription manually, or run the migration with the force option to cancel it and expire the membership.' );
+		if ( ! $expire_past_due ) {
+			return array( 'outcome' => 'skipped', 'message' => ucfirst( $subscription_description ) . ' has a next payment date in the past (or none at all). This is often caused by a missed IPN or webhook, so the gateway may still be billing it. Verify this subscription at the gateway and migrate it manually, or run the migration again set to cancel and expire subscriptions with a missed payment.' );
 		}
-		// Force: expire the membership on the missed payment date and cancel below.
-		$force_expiration  = true;
+		// Admin chose to expire: set the expiration to the missed payment date and cancel below.
+		$expire_this_subscription  = true;
 		$handoff_timestamp = empty( $handoff_timestamp ) ? time() : $handoff_timestamp;
 	}
 
-	$use_stripe = ( 'stripe' === $strategy && ! $force_expiration ) || ! empty( $placeholder );
+	$use_stripe = ( 'stripe' === $strategy && ! $expire_this_subscription ) || ! empty( $placeholder );
 
 	// Set below if the $0 billing limit bridge order cannot be saved.
 	$bridge_note         = '';
@@ -858,18 +860,18 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 		if ( $use_stripe ) {
 			return array( 'outcome' => $outcome, 'message' => 'would migrate ' . $subscription_description . ' to a new Stripe placeholder subscription (no payment method, trial ending ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ( empty( $remaining_payments ) ? '' : ', remaining billing limit of ' . $remaining_payments ) . ') and cancel the old gateway subscription.' . $email_note );
 		}
-		return array( 'outcome' => $outcome, 'message' => ( $force_expiration ? 'force is enabled: would set' : 'would set' ) . ' the membership expiration date for ' . $subscription_description . ' to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' and cancel the old gateway subscription.' . $email_note );
+		return array( 'outcome' => $outcome, 'message' => ( $expire_this_subscription ? 'missed payment: would set' : 'would set' ) . ' the membership expiration date for ' . $subscription_description . ' to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' and cancel the old gateway subscription.' . $email_note );
 	}
 
 	if ( ! $subscription->cancel_at_gateway() ) {
-		return array( 'outcome' => 'needs_review', 'message' => ( $force_expiration ? 'Force: set the membership expiration date for ' . $subscription_description . ', but could not confirm cancellation' : 'Could not confirm cancellation of ' . $subscription_description ) . ' at the gateway. Verify this subscription in the gateway; an error email was sent to the admin.' . $bridge_note . $email_note );
+		return array( 'outcome' => 'needs_review', 'message' => ( $expire_this_subscription ? 'Missed payment: set the membership expiration date for ' . $subscription_description . ', but could not confirm cancellation' : 'Could not confirm cancellation of ' . $subscription_description ) . ' at the gateway. Verify this subscription in the gateway; an error email was sent to the admin.' . $bridge_note . $email_note );
 	}
 
 	$outcome = ( $email_needs_review || $bridge_needs_review ) ? 'needs_review' : 'complete';
 	if ( $use_stripe ) {
 		return array( 'outcome' => $outcome, 'message' => 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note );
 	}
-	return array( 'outcome' => $outcome, 'message' => ( $force_expiration ? 'Force: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note );
+	return array( 'outcome' => $outcome, 'message' => ( $expire_this_subscription ? 'Missed payment: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note );
 }
 
 /**
@@ -1449,12 +1451,12 @@ function pmpro_deprecated_gateway_ajax() {
 	$redirect = '';
 	switch ( $task ) {
 		case 'start':
-			$strategy   = isset( $_POST['strategy'] ) ? sanitize_key( wp_unslash( $_POST['strategy'] ) ) : '';
-			$send_email = empty( $_POST['skip_email'] );
-			$force      = ! empty( $_POST['force'] );
-			$dry_run    = ! empty( $_POST['dry_run'] );
-			$result     = pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email, $force, $dry_run );
-			$message    = $dry_run ? __( 'Dry run started. No changes will be made.', 'paid-memberships-pro' ) : __( 'Migration workflow started.', 'paid-memberships-pro' );
+			$strategy        = isset( $_POST['strategy'] ) ? sanitize_key( wp_unslash( $_POST['strategy'] ) ) : '';
+			$send_email      = empty( $_POST['skip_email'] );
+			$expire_past_due = ! empty( $_POST['expire_past_due'] );
+			$dry_run         = ! empty( $_POST['dry_run'] );
+			$result          = pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email, $expire_past_due, $dry_run );
+			$message         = $dry_run ? __( 'Dry run started. No changes will be made.', 'paid-memberships-pro' ) : __( 'Migration workflow started.', 'paid-memberships-pro' );
 			break;
 		case 'stop':
 			$result  = pmpro_deprecated_gateway_stop( $gateway );
@@ -1612,7 +1614,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'chip_skipped'            => __( 'Skipped', 'paid-memberships-pro' ),
 			'chip_needs_review'       => __( 'Needs Review', 'paid-memberships-pro' ),
 			'needs_review_warning'    => __( 'Some subscriptions need review. Search the migration log for "[needs_review]" entries and review each note before removing gateway data.', 'paid-memberships-pro' ),
-			'skipped_warning'         => __( 'Some subscriptions were skipped. Search the migration log for "[skipped]" entries and handle them manually, or run the migration again with Force Migration enabled.', 'paid-memberships-pro' ),
+			'skipped_warning'         => __( 'Some subscriptions were skipped. Search the migration log for "[skipped]" entries and handle them manually, or run the migration again and set "Subscriptions With a Missed Payment" to cancel and expire them.', 'paid-memberships-pro' ),
 			// translators: %1$s: number of subscriptions, %2$s: environment label.
 			'confirm_start'           => __( 'This will process %1$s active subscriptions in the %2$s and cancel them at the old gateway.', 'paid-memberships-pro' ),
 			// translators: %1$s: number of subscriptions, %2$s: environment label.
@@ -1620,7 +1622,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'confirm_start_email'     => __( 'Members WILL be emailed.', 'paid-memberships-pro' ),
 			'confirm_start_noemail'   => __( 'Members will NOT be emailed.', 'paid-memberships-pro' ),
 			'confirm_start_stripe'    => __( 'Members who do not add a payment method before their next payment date will have their membership cancelled.', 'paid-memberships-pro' ),
-			'confirm_start_force'     => __( 'Force is enabled: subscriptions without an upcoming payment date will be cancelled and their memberships expired.', 'paid-memberships-pro' ),
+			'confirm_start_expire_past_due' => __( 'Subscriptions with a missed payment (a next payment date in the past) will be cancelled and their memberships expired.', 'paid-memberships-pro' ),
 			'confirm_continue'        => __( 'Continue?', 'paid-memberships-pro' ),
 			'download_log'            => __( 'Download Migration Log', 'paid-memberships-pro' ),
 			'confirm_stop'            => __( 'Stop this workflow? Subscriptions that were already processed stay processed. You can start the workflow again later to continue.', 'paid-memberships-pro' ),
@@ -1787,14 +1789,14 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					</tr>
 					<tr>
 						<th scope="row">
-							<label for="pmpro-dgs-force"><?php esc_html_e( 'Force Migration', 'paid-memberships-pro' ); ?></label>
+							<label for="pmpro-dgs-no-payment"><?php esc_html_e( 'Subscriptions With a Missed Payment', 'paid-memberships-pro' ); ?></label>
 						</th>
 						<td>
-							<label for="pmpro-dgs-force">
-								<input type="checkbox" id="pmpro-dgs-force" />
-								<?php esc_html_e( 'Also process subscriptions that would otherwise be skipped', 'paid-memberships-pro' ); ?>
-							</label>
-							<p class="description"><?php esc_html_e( 'Subscriptions without an upcoming payment date are cancelled and their membership is expired on the missed payment date.', 'paid-memberships-pro' ); ?></p>
+							<select id="pmpro-dgs-no-payment">
+								<option value="skip"><?php esc_html_e( 'Skip them and log them for manual review', 'paid-memberships-pro' ); ?></option>
+								<option value="expire"><?php esc_html_e( 'Cancel them and expire the membership', 'paid-memberships-pro' ); ?></option>
+							</select>
+							<p class="description"><?php esc_html_e( 'Some active subscriptions have a next payment date in the past (or none at all). This is most often caused by a missed payment notification (an IPN or webhook the old gateway never delivered), which means the gateway may still be billing the member even though the record looks overdue. Skip them to verify each one at the gateway and handle it yourself, or cancel the subscriptions at the old gateway and expire the memberships on your site. This applies regardless of the migration type selected above.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -1986,7 +1988,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					$( 'pmpro-dgs-strategy' ).value = 'expiration';
 				}
 				$( 'pmpro-dgs-email' ).disabled = d.is_running;
-				$( 'pmpro-dgs-force' ).disabled = d.is_running;
+				$( 'pmpro-dgs-no-payment' ).disabled = d.is_running;
 				$( 'pmpro-dgs-dry-run' ).disabled = d.is_running;
 				updateDescription();
 
@@ -2052,7 +2054,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				var count = 'live' === d.environment ? d.counts.live : d.counts.sandbox;
 				var envLabel = 'live' === d.environment ? cfg.i18n.env_live : cfg.i18n.env_sandbox;
 				var sendEmail = 'yes' === $( 'pmpro-dgs-email' ).value;
-				var force = $( 'pmpro-dgs-force' ).checked;
+				var expirePastDue = 'expire' === $( 'pmpro-dgs-no-payment' ).value;
 				var dryRun = $( 'pmpro-dgs-dry-run' ).checked;
 				var isStripe = 'stripe' === $( 'pmpro-dgs-strategy' ).value;
 				var text = dryRun
@@ -2060,9 +2062,9 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					: sprintf( cfg.i18n.confirm_start, count, envLabel ) + ' ' +
 						( sendEmail ? cfg.i18n.confirm_start_email : cfg.i18n.confirm_start_noemail ) +
 						( isStripe ? ' ' + cfg.i18n.confirm_start_stripe : '' ) +
-						( force ? ' ' + cfg.i18n.confirm_start_force : '' ) + ' ' + cfg.i18n.confirm_continue;
+						( expirePastDue ? ' ' + cfg.i18n.confirm_start_expire_past_due : '' ) + ' ' + cfg.i18n.confirm_continue;
 				if ( window.confirm( text ) ) {
-					api( 'start', { strategy: $( 'pmpro-dgs-strategy' ).value, skip_email: sendEmail ? '' : '1', force: force ? '1' : '', dry_run: dryRun ? '1' : '' } );
+					api( 'start', { strategy: $( 'pmpro-dgs-strategy' ).value, skip_email: sendEmail ? '' : '1', expire_past_due: expirePastDue ? '1' : '', dry_run: dryRun ? '1' : '' } );
 				}
 			} );
 
