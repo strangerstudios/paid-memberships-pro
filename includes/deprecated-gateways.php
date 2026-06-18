@@ -478,7 +478,10 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 	 * Filter the number of subscriptions processed per batch.
 	 *
 	 * Each batch chains the next one through Action Scheduler, so this controls
-	 * how much work happens in a single request, not the total processed.
+	 * how much work happens in a single request, not the total processed. The
+	 * default is deliberately small: each Stripe migration can make several
+	 * sequential gateway API calls, so a larger batch risks exceeding the PHP
+	 * execution time limit mid-run, which would break the chain to the next batch.
 	 *
 	 * @since TBD
 	 *
@@ -486,8 +489,8 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 	 * @param string $gateway Gateway slug.
 	 * @param string $environment Gateway environment.
 	 */
-	$batch_size       = (int) apply_filters( 'pmpro_deprecated_gateway_batch_size', 10, $gateway, $environment );
-	$batch_size       = $batch_size > 0 ? $batch_size : 10;
+	$batch_size       = (int) apply_filters( 'pmpro_deprecated_gateway_batch_size', 5, $gateway, $environment );
+	$batch_size       = $batch_size > 0 ? $batch_size : 5;
 	$subscription_ids = pmpro_deprecated_gateway_get_active_subscription_ids( $gateway, $environment, $last_subscription_id, $batch_size );
 	if ( empty( $subscription_ids ) ) {
 		pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'completed', 'completed_at' => time() ) );
