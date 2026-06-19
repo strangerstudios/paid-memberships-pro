@@ -330,6 +330,10 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 		return new WP_Error( 'pmpro_deprecated_gateway_already_running', __( 'A workflow is already queued or running for this gateway.', 'paid-memberships-pro' ) );
 	}
 
+	// A unique, sortable ID for this run. Names the per-run migration CSV and lets
+	// each batch write to the same file. A new run (new schedule) gets a new ID.
+	$run_id = $gateway . '_' . $environment . '_' . gmdate( 'Ymd-His' ) . ( $dry_run ? '_dryrun' : '' );
+
 	// Start from a clean state so the new run's counters and feed are fresh.
 	delete_option( 'pmpro_deprecated_gateway_state_' . $gateway . '_' . $environment );
 	pmpro_deprecated_gateway_update_state(
@@ -341,6 +345,7 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 			'send_email'      => $send_email,
 			'expire_past_due' => $expire_past_due,
 			'dry_run'         => $dry_run,
+			'run_id'          => $run_id,
 			'started_at'      => time(),
 			'completed_at'    => 0,
 			'total'           => $total,
@@ -371,6 +376,9 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 		pmpro_deprecated_gateway_update_state( $gateway, $environment, array( 'status' => 'stopped', 'note' => __( 'The workflow could not be scheduled.', 'paid-memberships-pro' ) ) );
 		return new WP_Error( 'pmpro_deprecated_gateway_schedule_failed', __( 'The workflow could not be scheduled. Check the migration log for details.', 'paid-memberships-pro' ) );
 	}
+
+	// Create the per-run CSV with its header row now that the workflow is queued.
+	pmpro_deprecated_gateway_csv_init( $run_id );
 
 	pmpro_deprecated_gateway_log( sprintf( 'Queued deprecated gateway workflow. Gateway=%s, environment=%s, strategy=%s, send_email=%s, expire_past_due=%s, dry_run=%s, subscriptions=%d.', $gateway, $environment, $strategy, $send_email ? 'yes' : 'no', $expire_past_due ? 'yes' : 'no', $dry_run ? 'yes' : 'no', $total ) );
 
@@ -498,9 +506,11 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 		return;
 	}
 
+	$run_id = empty( $state['run_id'] ) ? '' : $state['run_id'];
 	foreach ( $subscription_ids as $subscription_id ) {
 		$result = pmpro_deprecated_gateway_process_subscription( (int) $subscription_id, $gateway, $environment, $strategy, $send_email, $expire_past_due, $dry_run );
 		pmpro_deprecated_gateway_record_result( $gateway, $environment, $result['outcome'], ( $dry_run ? 'Dry run: ' : '' ) . $result['message'] );
+		pmpro_deprecated_gateway_csv_append( $run_id, (int) $subscription_id, $result );
 	}
 
 	if ( count( $subscription_ids ) < $batch_size ) {
@@ -568,6 +578,39 @@ function pmpro_deprecated_gateway_get_subscription_log_description( $subscriptio
 }
 
 /**
+ * Build a process-subscription result, including the structured fields recorded
+ * in the per-run migration CSV.
+ *
+ * @since TBD
+ *
+ * @param string $outcome One of 'complete', 'skipped', 'needs_review'.
+ * @param string $message Log message.
+ * @param string $action The action taken (or attempted) for this subscription, for
+ *               the CSV (e.g. 'migrated_to_stripe', 'membership_expired',
+ *               'cancelled_no_migration', 'cancelled_limit_reached',
+ *               'skipped_missed_payment', 'skipped_not_applicable', 'skipped_deleted').
+ *               This is the intended path; the 'outcome' field reports whether it
+ *               succeeded ('complete'), was 'skipped', or 'needs_review'.
+ * @param array  $extra Optional CSV fields: 'handoff_date', 'new_subscription_id',
+ *               'new_subscription_transaction_id', 'email_sent'.
+ * @return array
+ */
+function pmpro_deprecated_gateway_subscription_result( $outcome, $message, $action, $extra = array() ) {
+	return array_merge(
+		array(
+			'outcome'                         => $outcome,
+			'message'                         => $message,
+			'action'                          => $action,
+			'handoff_date'                    => '',
+			'new_subscription_id'             => '',
+			'new_subscription_transaction_id' => '',
+			'email_sent'                      => '',
+		),
+		$extra
+	);
+}
+
+/**
  * Process one deprecated gateway subscription.
  *
  * Order of operations is deliberate: create the replacement (Stripe placeholder
@@ -587,15 +630,12 @@ function pmpro_deprecated_gateway_get_subscription_log_description( $subscriptio
  * @param bool   $dry_run Report what would happen without making changes. No
  *               gateway calls, emails, or database writes; gateway-side failures
  *               can only be detected by a real run.
- * @return array {
- *     @type string $outcome One of 'complete', 'skipped', 'needs_review'.
- *     @type string $message Log message.
- * }
+ * @return array See pmpro_deprecated_gateway_subscription_result() for the shape.
  */
 function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gateway, $environment, $strategy, $send_email = true, $expire_past_due = false, $dry_run = false ) {
 	$subscription = PMPro_Subscription::get_subscription( $subscription_id );
 	if ( empty( $subscription ) ) {
-		return array( 'outcome' => 'skipped', 'message' => 'Subscription #' . $subscription_id . ' no longer exists.' );
+		return pmpro_deprecated_gateway_subscription_result( 'skipped', 'Subscription #' . $subscription_id . ' no longer exists.', 'skipped_deleted' );
 	}
 
 	// Used in every log message so entries can be traced back to the member and
@@ -603,25 +643,25 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	$subscription_description = pmpro_deprecated_gateway_get_subscription_log_description( $subscription );
 
 	if ( 'active' !== $subscription->get_status() || $gateway !== $subscription->get_gateway() || $environment !== pmpro_deprecated_gateway_normalize_environment( $subscription->get_gateway_environment() ) ) {
-		return array( 'outcome' => 'skipped', 'message' => ucfirst( $subscription_description ) . ' is no longer an active subscription for this gateway and environment.' );
+		return pmpro_deprecated_gateway_subscription_result( 'skipped', ucfirst( $subscription_description ) . ' is no longer an active subscription for this gateway and environment.', 'skipped_not_applicable' );
 	}
 
 	// If the user no longer has the level, just cancel the old gateway subscription.
 	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $subscription->get_user_id() ) ) {
 		if ( $dry_run ) {
-			return array( 'outcome' => 'complete', 'message' => 'would cancel ' . $subscription_description . ' without migration because the user no longer has the associated membership level.' );
+			return pmpro_deprecated_gateway_subscription_result( 'complete', 'would cancel ' . $subscription_description . ' without migration because the user no longer has the associated membership level.', 'cancelled_no_migration' );
 		}
 		if ( $subscription->cancel_at_gateway() ) {
-			return array( 'outcome' => 'complete', 'message' => 'Cancelled ' . $subscription_description . ' without migration because the user no longer has the associated membership level.' );
+			return pmpro_deprecated_gateway_subscription_result( 'complete', 'Cancelled ' . $subscription_description . ' without migration because the user no longer has the associated membership level.', 'cancelled_no_migration' );
 		}
-		return array( 'outcome' => 'needs_review', 'message' => 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. The user no longer has the associated membership level. Verify this subscription in the gateway; an error email was sent to the admin.' );
+		return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. The user no longer has the associated membership level. Verify this subscription in the gateway; an error email was sent to the admin.', 'cancelled_no_migration' );
 	}
 
 	// A subscription with Stripe placeholder meta is already mid-migration from an
 	// earlier run. A dry run reports that a real run would resume it instead of
 	// running the recovery logic below, which clears and rewrites meta.
 	if ( $dry_run && ( get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_subscription_id', true ) || get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_transaction_id', true ) ) ) {
-		return array( 'outcome' => 'complete', 'message' => ucfirst( $subscription_description ) . ' is already mid-migration from an earlier run. A real run would complete the handoff to Stripe and cancel the old gateway subscription.' );
+		return pmpro_deprecated_gateway_subscription_result( 'complete', ucfirst( $subscription_description ) . ' is already mid-migration from an earlier run. A real run would complete the handoff to Stripe and cancel the old gateway subscription.', 'migrated_to_stripe' );
 	}
 
 	// Load a Stripe placeholder created by an earlier run, if any. If one exists,
@@ -667,12 +707,12 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 			continue;
 		}
 		if ( $dry_run ) {
-			return array( 'outcome' => 'complete', 'message' => 'would cancel ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.' );
+			return pmpro_deprecated_gateway_subscription_result( 'complete', 'would cancel ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.', 'cancelled_no_migration' );
 		}
 		if ( $subscription->cancel_at_gateway() ) {
-			return array( 'outcome' => 'complete', 'message' => 'Cancelled ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.' );
+			return pmpro_deprecated_gateway_subscription_result( 'complete', 'Cancelled ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.', 'cancelled_no_migration' );
 		}
-		return array( 'outcome' => 'needs_review', 'message' => 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. The user already has active subscription #' . $other_subscription->get_id() . ' for this level. Verify this subscription in the gateway; an error email was sent to the admin.' );
+		return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. The user already has active subscription #' . $other_subscription->get_id() . ' for this level. Verify this subscription in the gateway; an error email was sent to the admin.', 'cancelled_no_migration' );
 	}
 
 	// The next payment date is the handoff point: when the new Stripe subscription
@@ -686,7 +726,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	$expire_this_subscription  = false;
 	if ( empty( $placeholder ) && ( empty( $handoff_timestamp ) || $handoff_timestamp <= time() ) ) {
 		if ( ! $expire_past_due ) {
-			return array( 'outcome' => 'skipped', 'message' => ucfirst( $subscription_description ) . ' has a next payment date in the past (or none at all). This is often caused by a missed IPN or webhook, so the gateway may still be billing it. Verify this subscription at the gateway and migrate it manually, or run the migration again set to cancel and expire subscriptions with a missed payment.' );
+			return pmpro_deprecated_gateway_subscription_result( 'skipped', ucfirst( $subscription_description ) . ' has a next payment date in the past (or none at all). This is often caused by a missed IPN or webhook, so the gateway may still be billing it. Verify this subscription at the gateway and migrate it manually, or run the migration again set to cancel and expire subscriptions with a missed payment.', 'skipped_missed_payment' );
 		}
 		// Admin chose to expire: set the expiration to the missed payment date and cancel below.
 		$expire_this_subscription  = true;
@@ -711,12 +751,12 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 					// The limit was already reached, so no replacement is needed and
 					// the membership is left unchanged, matching billing limit semantics.
 					if ( $dry_run ) {
-						return array( 'outcome' => 'complete', 'message' => 'would cancel ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership would be left unchanged and no email would be sent.' );
+						return pmpro_deprecated_gateway_subscription_result( 'complete', 'would cancel ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership would be left unchanged and no email would be sent.', 'cancelled_limit_reached' );
 					}
 					if ( $subscription->cancel_at_gateway() ) {
-						return array( 'outcome' => 'complete', 'message' => 'Cancelled ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership was left unchanged and no email was sent.' );
+						return pmpro_deprecated_gateway_subscription_result( 'complete', 'Cancelled ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership was left unchanged and no email was sent.', 'cancelled_limit_reached' );
 					}
-					return array( 'outcome' => 'needs_review', 'message' => 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. Its billing limit has already been reached. Verify this subscription in the gateway; an error email was sent to the admin.' );
+					return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. Its billing limit has already been reached. Verify this subscription in the gateway; an error email was sent to the admin.', 'cancelled_limit_reached' );
 				}
 			}
 
@@ -725,18 +765,18 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 			// of creating a duplicate at Stripe.
 			if ( '' === $transaction_id ) {
 				if ( ! class_exists( 'PMProGateway_stripe' ) || ! method_exists( 'PMProGateway_stripe', 'create_deprecated_gateway_migration_subscription' ) ) {
-					return array( 'outcome' => 'needs_review', 'message' => 'Could not create a Stripe placeholder for ' . $subscription_description . ' because the Stripe gateway is not available.' );
+					return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Could not create a Stripe placeholder for ' . $subscription_description . ' because the Stripe gateway is not available.', 'migrated_to_stripe' );
 				}
 				if ( $dry_run ) {
 					// No Stripe calls in a dry run. Replicate the create call's local
 					// validations so data problems a real run would hit still show up
 					// in the preview; Stripe-side failures only surface in a real run.
 					if ( empty( get_userdata( $subscription->get_user_id() ) ) ) {
-						return array( 'outcome' => 'needs_review', 'message' => 'could not create a Stripe placeholder for ' . $subscription_description . ' because the user no longer exists.' );
+						return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'could not create a Stripe placeholder for ' . $subscription_description . ' because the user no longer exists.', 'migrated_to_stripe' );
 					}
 					$dry_run_level = new PMPro_Membership_Level( $subscription->get_membership_level_id() );
 					if ( empty( $dry_run_level->ID ) ) {
-						return array( 'outcome' => 'needs_review', 'message' => 'could not create a Stripe placeholder for ' . $subscription_description . ' because the membership level no longer exists.' );
+						return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'could not create a Stripe placeholder for ' . $subscription_description . ' because the membership level no longer exists.', 'migrated_to_stripe' );
 					}
 				} else {
 					$stripe_gateway          = new PMProGateway_stripe( 'stripe' );
@@ -748,7 +788,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 						)
 					);
 					if ( is_wp_error( $stripe_api_subscription ) ) {
-						return array( 'outcome' => 'needs_review', 'message' => 'Could not create a Stripe placeholder for ' . $subscription_description . '. Error: ' . $stripe_api_subscription->get_error_message() );
+						return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Could not create a Stripe placeholder for ' . $subscription_description . '. Error: ' . $stripe_api_subscription->get_error_message(), 'migrated_to_stripe' );
 					}
 					$transaction_id = $stripe_api_subscription->id;
 					update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_transaction_id', $transaction_id );
@@ -790,7 +830,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 					);
 				}
 				if ( empty( $placeholder ) ) {
-					return array( 'outcome' => 'needs_review', 'message' => 'Created Stripe subscription ' . $transaction_id . ' for ' . $subscription_description . ', but the local PMPro subscription record could not be created. Verify this subscription in Stripe and PMPro.' );
+					return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Created Stripe subscription ' . $transaction_id . ' for ' . $subscription_description . ', but the local PMPro subscription record could not be created. Verify this subscription in Stripe and PMPro.', 'migrated_to_stripe', array( 'new_subscription_transaction_id' => $transaction_id ) );
 				}
 
 				update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_subscription_id', $placeholder->get_id() );
@@ -831,26 +871,37 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	// a member unnotified. A meta flag prevents duplicate emails across reruns.
 	$email_note         = '';
 	$email_needs_review = false;
-	if ( $send_email && ! get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_email_sent', true ) ) {
+	$already_emailed    = (bool) get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_email_sent', true );
+	// CSV field: 'yes' if the member has been emailed (now or on an earlier run),
+	// 'no' if not, 'failed' if a send was attempted and failed, 'would' on a dry run.
+	$email_sent_status  = $already_emailed ? 'yes' : 'no';
+	if ( $send_email && ! $already_emailed ) {
 		$user = get_userdata( $subscription->get_user_id() );
 		if ( empty( $user ) ) {
 			$email_note         = ' Could not email the member because the user no longer exists.';
 			$email_needs_review = true;
+			$email_sent_status  = 'failed';
 		} elseif ( $dry_run ) {
-			$email_note = ' Would email the member.';
+			$email_note        = ' Would email the member.';
+			$email_sent_status = 'would';
 		} else {
 			$email = $use_stripe
 				? new PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration( $placeholder )
 				: new PMPro_Email_Template_Deprecated_Gateway_Checkout_Required( $user, (int) $subscription->get_membership_level_id(), (int) $handoff_timestamp );
 			if ( $email->send() ) {
 				update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_email_sent', time() );
-				$email_note = ' Emailed the member.';
+				$email_note        = ' Emailed the member.';
+				$email_sent_status = 'yes';
 			} else {
 				$email_note         = ' The member email failed to send.';
 				$email_needs_review = true;
+				$email_sent_status  = 'failed';
 			}
 		}
 	}
+
+	// Shared CSV fields for the final outcomes below.
+	$handoff_date = empty( $handoff_timestamp ) ? '' : gmdate( 'Y-m-d', $handoff_timestamp );
 
 	// A dry run reaching this point is always a fresh migration: mid-migration
 	// subscriptions returned earlier, so $placeholder is null and
@@ -858,20 +909,20 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	if ( $dry_run ) {
 		$outcome = $email_needs_review ? 'needs_review' : 'complete';
 		if ( $use_stripe ) {
-			return array( 'outcome' => $outcome, 'message' => 'would migrate ' . $subscription_description . ' to a new Stripe placeholder subscription (no payment method, trial ending ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ( empty( $remaining_payments ) ? '' : ', remaining billing limit of ' . $remaining_payments ) . ') and cancel the old gateway subscription.' . $email_note );
+			return pmpro_deprecated_gateway_subscription_result( $outcome, 'would migrate ' . $subscription_description . ' to a new Stripe placeholder subscription (no payment method, trial ending ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ( empty( $remaining_payments ) ? '' : ', remaining billing limit of ' . $remaining_payments ) . ') and cancel the old gateway subscription.' . $email_note, 'migrated_to_stripe', array( 'handoff_date' => $handoff_date, 'email_sent' => $email_sent_status ) );
 		}
-		return array( 'outcome' => $outcome, 'message' => ( $expire_this_subscription ? 'missed payment: would set' : 'would set' ) . ' the membership expiration date for ' . $subscription_description . ' to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' and cancel the old gateway subscription.' . $email_note );
+		return pmpro_deprecated_gateway_subscription_result( $outcome, ( $expire_this_subscription ? 'missed payment: would set' : 'would set' ) . ' the membership expiration date for ' . $subscription_description . ' to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' and cancel the old gateway subscription.' . $email_note, 'membership_expired', array( 'handoff_date' => $handoff_date, 'email_sent' => $email_sent_status ) );
 	}
 
 	if ( ! $subscription->cancel_at_gateway() ) {
-		return array( 'outcome' => 'needs_review', 'message' => ( $expire_this_subscription ? 'Missed payment: set the membership expiration date for ' . $subscription_description . ', but could not confirm cancellation' : 'Could not confirm cancellation of ' . $subscription_description ) . ' at the gateway. Verify this subscription in the gateway; an error email was sent to the admin.' . $bridge_note . $email_note );
+		return pmpro_deprecated_gateway_subscription_result( 'needs_review', ( $expire_this_subscription ? 'Missed payment: set the membership expiration date for ' . $subscription_description . ', but could not confirm cancellation' : 'Could not confirm cancellation of ' . $subscription_description ) . ' at the gateway. Verify this subscription in the gateway; an error email was sent to the admin.' . $bridge_note . $email_note, $use_stripe ? 'migrated_to_stripe' : 'membership_expired', array( 'handoff_date' => $handoff_date, 'new_subscription_id' => ( $use_stripe && ! empty( $placeholder ) ) ? $placeholder->get_id() : '', 'new_subscription_transaction_id' => $use_stripe ? $transaction_id : '', 'email_sent' => $email_sent_status ) );
 	}
 
 	$outcome = ( $email_needs_review || $bridge_needs_review ) ? 'needs_review' : 'complete';
 	if ( $use_stripe ) {
-		return array( 'outcome' => $outcome, 'message' => 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note );
+		return pmpro_deprecated_gateway_subscription_result( $outcome, 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note, 'migrated_to_stripe', array( 'handoff_date' => $handoff_date, 'new_subscription_id' => $placeholder->get_id(), 'new_subscription_transaction_id' => $transaction_id, 'email_sent' => $email_sent_status ) );
 	}
-	return array( 'outcome' => $outcome, 'message' => ( $expire_this_subscription ? 'Missed payment: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note );
+	return pmpro_deprecated_gateway_subscription_result( $outcome, ( $expire_this_subscription ? 'Missed payment: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note, 'membership_expired', array( 'handoff_date' => $handoff_date, 'email_sent' => $email_sent_status ) );
 }
 
 /**
@@ -969,6 +1020,8 @@ function pmpro_deprecated_gateway_cleanup_gateway( $gateway ) {
 		delete_option( 'pmpro_' . $option_name );
 	}
 
+	// The per-run migration CSVs and the shared text log are intentionally kept as a
+	// record of the migration.
 	pmpro_deprecated_gateway_log( 'Deprecated gateway cleanup completed. Gateway=' . $gateway . '. Removed gateway from pmpro_undeprecated_gateways. Deleted options: ' . ( empty( $option_names ) ? 'none' : implode( ', ', $option_names ) ) . '.' );
 
 	return true;
@@ -1405,6 +1458,7 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 			'note'              => empty( $state['note'] ) ? '' : $state['note'],
 			'started_display'   => empty( $state['started_at'] ) ? '' : wp_date( $datetime_format, (int) $state['started_at'] ),
 			'completed_display' => empty( $state['completed_at'] ) ? '' : wp_date( $datetime_format, (int) $state['completed_at'] ),
+			'csv_url'           => empty( $state['run_id'] ) ? '' : pmpro_deprecated_gateway_get_csv_url( $state['run_id'] ),
 		);
 	}
 
@@ -1426,6 +1480,10 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 		'start_blockers'   => $start_blockers,
 		'can_cleanup'      => ! $is_running && empty( $cleanup_blockers ),
 		'cleanup_blockers' => $cleanup_blockers,
+		// The full list of this gateway's run CSVs, surfaced at the cleanup step so
+		// admins have one place to download them (cleanup keeps them as a record).
+		// Skipped while a run is active to avoid globbing the logs dir on every poll.
+		'csv_files'        => $is_running ? array() : pmpro_deprecated_gateway_get_csv_files( $gateway ),
 	);
 }
 
@@ -1518,7 +1576,11 @@ add_action( 'wp_ajax_pmpro_deprecated_gateway', 'pmpro_deprecated_gateway_ajax' 
  * @return bool
  */
 function pmpro_deprecated_gateway_allow_log_access( $can_access, $file_dir, $file ) {
-	if ( 'logs' === $file_dir && 'deprecated-gateways.txt' === $file && ( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_paymentsettings' ) ) ) {
+	// Allow the global text log and any per-run CSV. The strict pattern (no slashes
+	// or extra dots) keeps this from being widened into a path traversal.
+	if ( 'logs' === $file_dir
+		&& preg_match( '/^deprecated-gateways(-[A-Za-z0-9_\-]+)?\.(txt|csv)$/', (string) $file )
+		&& ( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_paymentsettings' ) ) ) {
 		return true;
 	}
 
@@ -1549,6 +1611,220 @@ function pmpro_deprecated_gateway_log( $logstr ) {
 		fwrite( $loghandle, '[' . date_i18n( 'Y-m-d H:i:s' ) . '] ' . $logstr . "\n" );
 		fclose( $loghandle );
 	}
+}
+
+/**
+ * Column headings for the per-run migration CSV.
+ *
+ * @since TBD
+ *
+ * @return string[]
+ */
+function pmpro_deprecated_gateway_get_csv_columns() {
+	return array(
+		'processed_date',
+		'user_id',
+		'user_email',
+		'display_name',
+		'membership_level',
+		'old_subscription_id',
+		'new_subscription_id',
+		'new_subscription_transaction_id',
+		'action',
+		'handoff_date',
+		'outcome',
+		'email_sent',
+		'notes',
+	);
+}
+
+/**
+ * Get the file name for a run's migration CSV.
+ *
+ * @since TBD
+ *
+ * @param string $run_id Run identifier stored in the workflow state.
+ * @return string Empty string if no run ID.
+ */
+function pmpro_deprecated_gateway_get_csv_filename( $run_id ) {
+	if ( empty( $run_id ) ) {
+		return '';
+	}
+	return 'deprecated-gateways-' . sanitize_file_name( $run_id ) . '.csv';
+}
+
+/**
+ * Get the file path for a run's migration CSV.
+ *
+ * @since TBD
+ *
+ * @param string $run_id Run identifier.
+ * @return string Empty string if no run ID.
+ */
+function pmpro_deprecated_gateway_get_csv_path( $run_id ) {
+	$filename = pmpro_deprecated_gateway_get_csv_filename( $run_id );
+	if ( empty( $filename ) ) {
+		return '';
+	}
+	return pmpro_get_restricted_file_path( 'logs', $filename );
+}
+
+/**
+ * Get the download URL for a run's migration CSV.
+ *
+ * @since TBD
+ *
+ * @param string $run_id Run identifier.
+ * @return string Empty string if no run ID.
+ */
+function pmpro_deprecated_gateway_get_csv_url( $run_id ) {
+	$filename = pmpro_deprecated_gateway_get_csv_filename( $run_id );
+	if ( empty( $filename ) ) {
+		return '';
+	}
+	return add_query_arg(
+		array(
+			'pmpro_restricted_file_dir' => 'logs',
+			'pmpro_restricted_file'     => $filename,
+		),
+		admin_url( 'admin.php' )
+	);
+}
+
+/**
+ * Create a run's migration CSV and write the header row.
+ *
+ * @since TBD
+ *
+ * @param string $run_id Run identifier.
+ */
+function pmpro_deprecated_gateway_csv_init( $run_id ) {
+	$path = pmpro_deprecated_gateway_get_csv_path( $run_id );
+	if ( empty( $path ) ) {
+		return;
+	}
+
+	$handle = fopen( $path, 'w' );
+	if ( $handle ) {
+		// Pass the separator/enclosure/escape explicitly; relying on the default
+		// $escape is deprecated in PHP 8.4.
+		fputcsv( $handle, pmpro_deprecated_gateway_get_csv_columns(), ',', '"', '\\' );
+		fclose( $handle );
+	}
+}
+
+/**
+ * Append one processed subscription to a run's migration CSV.
+ *
+ * Batches run sequentially (Action Scheduler concurrency is 1), so appending
+ * here needs no locking, just like the text log.
+ *
+ * @since TBD
+ *
+ * @param string $run_id Run identifier.
+ * @param int    $subscription_id The subscription that was processed.
+ * @param array  $result Result from pmpro_deprecated_gateway_process_subscription().
+ */
+function pmpro_deprecated_gateway_csv_append( $run_id, $subscription_id, $result ) {
+	$path = pmpro_deprecated_gateway_get_csv_path( $run_id );
+	if ( empty( $path ) ) {
+		return;
+	}
+
+	$user_id             = 0;
+	$user_email          = '';
+	$display_name        = '';
+	$membership_level    = '';
+	$old_subscription_id = (int) $subscription_id;
+
+	$subscription = PMPro_Subscription::get_subscription( $subscription_id );
+	if ( ! empty( $subscription ) ) {
+		$user_id = (int) $subscription->get_user_id();
+		$user    = get_userdata( $user_id );
+		if ( ! empty( $user ) ) {
+			$user_email   = $user->user_email;
+			$display_name = $user->display_name;
+		}
+		$level            = pmpro_getLevel( $subscription->get_membership_level_id() );
+		$membership_level = empty( $level ) ? '' : $level->name;
+	}
+
+	$row = array(
+		date_i18n( 'Y-m-d H:i:s' ),
+		$user_id,
+		$user_email,
+		$display_name,
+		$membership_level,
+		$old_subscription_id,
+		isset( $result['new_subscription_id'] ) ? $result['new_subscription_id'] : '',
+		isset( $result['new_subscription_transaction_id'] ) ? $result['new_subscription_transaction_id'] : '',
+		isset( $result['action'] ) ? $result['action'] : '',
+		isset( $result['handoff_date'] ) ? $result['handoff_date'] : '',
+		isset( $result['outcome'] ) ? $result['outcome'] : '',
+		isset( $result['email_sent'] ) ? $result['email_sent'] : '',
+		isset( $result['message'] ) ? trim( (string) $result['message'] ) : '',
+	);
+
+	$handle = fopen( $path, 'a' );
+	if ( $handle ) {
+		fputcsv( $handle, $row, ',', '"', '\\' );
+		fclose( $handle );
+	}
+}
+
+/**
+ * Get the migration CSV files that exist for a gateway, newest first.
+ *
+ * @since TBD
+ *
+ * @param string $gateway Gateway slug.
+ * @return array[] Each entry has 'filename', 'url', and 'date' keys.
+ */
+function pmpro_deprecated_gateway_get_csv_files( $gateway ) {
+	$gateway = sanitize_key( $gateway );
+
+	// Resolve the logs directory from a known restricted-file path.
+	$sample_path = pmpro_get_restricted_file_path( 'logs', 'deprecated-gateways.txt' );
+	if ( empty( $sample_path ) ) {
+		return array();
+	}
+
+	$matches = glob( dirname( $sample_path ) . '/deprecated-gateways-' . $gateway . '_*.csv' );
+	if ( empty( $matches ) ) {
+		return array();
+	}
+
+	// Filenames embed a sortable YYYYMMDD-HHMMSS stamp, so reverse-sorting the
+	// paths puts the newest run first.
+	rsort( $matches );
+
+	$files = array();
+	foreach ( $matches as $path ) {
+		$filename = basename( $path );
+		// Pull the YYYYMMDD-HHMMSS stamp (UTC, set at schedule time) out of the
+		// filename for a readable label.
+		$date = '';
+		if ( preg_match( '/_(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})(_dryrun)?\.csv$/', $filename, $m ) ) {
+			$timestamp = strtotime( $m[1] . '-' . $m[2] . '-' . $m[3] . ' ' . $m[4] . ':' . $m[5] . ':' . $m[6] . ' UTC' );
+			$date      = $timestamp ? wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $timestamp ) : '';
+			if ( ! empty( $m[7] ) ) {
+				$date .= ' (dry run)';
+			}
+		}
+		$files[] = array(
+			'filename' => $filename,
+			'url'      => add_query_arg(
+				array(
+					'pmpro_restricted_file_dir' => 'logs',
+					'pmpro_restricted_file'     => $filename,
+				),
+				admin_url( 'admin.php' )
+			),
+			'date'     => $date,
+		);
+	}
+
+	return $files;
 }
 
 /**
@@ -1625,8 +1901,10 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'confirm_start_expire_past_due' => __( 'Subscriptions with a missed payment (a next payment date in the past) will be cancelled and their memberships expired.', 'paid-memberships-pro' ),
 			'confirm_continue'        => __( 'Continue?', 'paid-memberships-pro' ),
 			'download_log'            => __( 'Download Migration Log', 'paid-memberships-pro' ),
+			'download_csv'            => __( 'Download Migration CSV', 'paid-memberships-pro' ),
+			'csv_none'                => __( 'No Migration CSV files were found for this gateway.', 'paid-memberships-pro' ),
 			'confirm_stop'            => __( 'Stop this workflow? Subscriptions that were already processed stay processed. You can start the workflow again later to continue.', 'paid-memberships-pro' ),
-			'confirm_cleanup'         => __( 'This will permanently delete the stored credentials for this gateway and stop loading it on this site.', 'paid-memberships-pro' ),
+			'confirm_cleanup'         => __( 'This will permanently delete the stored credentials for this gateway and stop loading it on this site. Your migration log and Migration CSVs are kept.', 'paid-memberships-pro' ),
 			'error_generic'           => __( 'Something went wrong. Please reload the page and try again.', 'paid-memberships-pro' ),
 			'start_dry'               => __( 'Preview Migration (Dry Run)', 'paid-memberships-pro' ),
 			'start_real'              => __( 'Start Real Migration', 'paid-memberships-pro' ),
@@ -1665,11 +1943,15 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			.pmpro-dgs a .dashicons-external { font-size: 14px; width: 14px; height: 14px; vertical-align: text-bottom; text-decoration: none; }
 			/* Real-run emphasis: the panel goes from a calm dry-run preview to a
 			   serious, permanent migration when Dry Run is unchecked. */
-			.pmpro-dgs-realbar { display: none; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--pmpro--color--error-text, #721c24); border-left-width: 4px; border-radius: var(--pmpro--border--radius, 6px); background: #FCEBEC; color: var(--pmpro--color--error-text, #721c24); font-weight: 600; }
-			.pmpro-dgs-realbar .dashicons { color: inherit; flex: 0 0 auto; }
-			.pmpro-dgs.is-real .pmpro-dgs-realbar { display: flex; }
+			.pmpro-dgs-warnbar { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--pmpro--color--error-text, #721c24); border-left-width: 4px; border-radius: var(--pmpro--border--radius, 6px); background: #FCEBEC; color: var(--pmpro--color--error-text, #721c24); font-weight: 600; }
+			.pmpro-dgs-warnbar .dashicons { color: inherit; flex: 0 0 auto; }
+			/* The real-run bar uses the warnbar look but only appears when Dry Run is off. */
+			#pmpro-dgs-realbar { display: none; }
+			.pmpro-dgs.is-real #pmpro-dgs-realbar { display: flex; }
 			.pmpro-dgs.is-real #pmpro-dgs-start { background: #b32d2e; border-color: #9b2226; color: #fff; box-shadow: none; }
 			.pmpro-dgs.is-real #pmpro-dgs-start:hover:not(:disabled) { background: #9b2226; border-color: #7d1c1f; }
+			.pmpro-dgs-csv-list { margin: 0 0 12px 20px; list-style: disc; }
+			.pmpro-dgs-csv-list li { margin: 0 0 4px; }
 			@keyframes pmpro-dgs-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
 			@keyframes pmpro-dgs-flash { 0% { background: #f3a7ab; } 100% { background: #FCEBEC; } }
 			.pmpro-dgs-shake { animation: pmpro-dgs-shake 0.45s ease; }
@@ -1749,7 +2031,9 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					</p>
 				</div>
 				<div id="pmpro-dgs-finish-clear" hidden>
-					<p><?php esc_html_e( 'All subscriptions have been migrated off this gateway. Before removing gateway data, download the migration log and review any "[needs_review]" entries. Removing gateway data deletes the stored API credentials and stops loading this gateway on your site.', 'paid-memberships-pro' ); ?></p>
+					<p><?php esc_html_e( 'All subscriptions have been migrated off this gateway. Removing gateway data permanently deletes this gateway\'s stored API credentials and stops loading the gateway. The migration log and Migration CSVs are kept as a record.', 'paid-memberships-pro' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Migration CSVs for this gateway:', 'paid-memberships-pro' ); ?></p>
+					<ul class="pmpro-dgs-csv-list" id="pmpro-dgs-csv-list"></ul>
 					<p>
 						<button type="button" class="button button-primary" id="pmpro-dgs-cleanup"><?php esc_html_e( 'Remove Gateway Data', 'paid-memberships-pro' ); ?></button>
 					</p>
@@ -1785,6 +2069,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<option value="yes"><?php esc_html_e( 'Email members about the change', 'paid-memberships-pro' ); ?></option>
 								<option value="no"><?php esc_html_e( 'Do not email members', 'paid-memberships-pro' ); ?></option>
 							</select>
+							<p class="description"><?php esc_html_e( 'On larger migrations, emailing each member individually can be slow and may run into your mail server\'s sending limits or spam filtering. To send through a dedicated email service instead, choose "Do not email members" and use the Migration CSV you can download after the migration to send in bulk.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -1813,7 +2098,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					</tr>
 				</tbody>
 			</table>
-			<div class="pmpro-dgs-realbar" id="pmpro-dgs-realbar" hidden>
+			<div class="pmpro-dgs-warnbar" id="pmpro-dgs-realbar" hidden>
 				<span class="dashicons dashicons-warning"></span>
 				<span><?php esc_html_e( 'Dry run is off, so this is a real migration. These changes are permanent and cannot be undone: subscriptions will be migrated and cancelled at the old gateway.', 'paid-memberships-pro' ); ?></span>
 			</div>
@@ -1938,6 +2223,15 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					download.href = cfg.log_url;
 					download.setAttribute( 'download', '' );
 					box.appendChild( download );
+
+					// The per-run Migration CSV is offered only after the run finishes.
+					if ( w.csv_url && w.processed > 0 ) {
+						var csv = el( 'a', 'button button-secondary', cfg.i18n.download_csv );
+						csv.href = w.csv_url;
+						csv.setAttribute( 'download', '' );
+						csv.style.marginLeft = '8px';
+						box.appendChild( csv );
+					}
 				}
 			}
 
@@ -1977,6 +2271,24 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				$( 'pmpro-dgs-finish-other' ).hidden = ! onStep3 || 0 === otherCount;
 				$( 'pmpro-dgs-finish-clear' ).hidden = ! onStep3 || otherCount > 0;
 				$( 'pmpro-dgs-finish-other-text' ).textContent = sprintf( isLive ? cfg.i18n.finish_other_sandbox : cfg.i18n.finish_other_live, otherCount );
+
+				// List this gateway's Migration CSVs at the cleanup step as a convenient
+				// place to download them (they are kept after removal, not deleted).
+				var csvList = $( 'pmpro-dgs-csv-list' );
+				csvList.textContent = '';
+				var csvFiles = d.csv_files || [];
+				if ( csvFiles.length ) {
+					csvFiles.forEach( function( file ) {
+						var li = el( 'li' );
+						var link = el( 'a', '', cfg.i18n.download_csv + ( file.date ? ' — ' + file.date : '' ) );
+						link.href = file.url;
+						link.setAttribute( 'download', '' );
+						li.appendChild( link );
+						csvList.appendChild( li );
+					} );
+				} else {
+					csvList.appendChild( el( 'li', '', cfg.i18n.csv_none ) );
+				}
 
 				$( 'pmpro-dgs-start' ).hidden = d.is_running || onStep3;
 				$( 'pmpro-dgs-start' ).disabled = ! d.can_start;
