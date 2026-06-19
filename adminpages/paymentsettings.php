@@ -95,6 +95,17 @@
 	$pmpro_gateways = pmpro_gateways();
 	$deprecated_gateways = pmpro_get_deprecated_gateways();
 
+	// Show a confirmation after deprecated gateway data is removed.
+	$deprecated_gateway_removed_message = '';
+	if ( ! empty( $_REQUEST['deprecated_gateway_removed'] ) ) {
+		$removed_gateway = sanitize_key( wp_unslash( $_REQUEST['deprecated_gateway_removed'] ) );
+		$deprecated_gateway_removed_message = sprintf(
+			// translators: %s is the gateway name.
+			__( 'The %s gateway and its stored data have been removed from this site.', 'paid-memberships-pro' ),
+			pmpro_get_gateway_nicename( $removed_gateway )
+		);
+	}
+
 	require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
 
@@ -106,6 +117,11 @@
 			// Show the table of gateways and global settings.
 			?>
 			<h1><?php esc_html_e( 'Payment Settings', 'paid-memberships-pro' );?></h1>
+			<?php if ( ! empty( $deprecated_gateway_removed_message ) ) { ?>
+				<div class="notice notice-success inline">
+					<p><?php echo esc_html( $deprecated_gateway_removed_message ); ?></p>
+				</div>
+			<?php } ?>
 			<div id="global-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 				<div class="pmpro_section_toggle">
 					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
@@ -340,29 +356,9 @@
 				?>
 			</h1>
 			<?php
-			// If this gateway is deprecated, show a warning.
+			// If this gateway is deprecated, show the deprecation notice and migration workflow.
 			if ( in_array( $edit_gateway, $deprecated_gateways, true ) ) {
-				?>
-				<div class="pmpro_message pmpro_error">
-					<p><strong><?php esc_html_e('Notice: You Are Using a Deprecated Gateway', 'paid-memberships-pro' ); ?></strong></p>
-					<p>
-						<?php
-						// translators: %s is the gateway name.
-						printf(
-							esc_html__('The %s gateway has been deprecated and will not receive updates or support. To ensure your payments continue running smoothly, switch to a supported payment gateway.', 'paid-memberships-pro'),
-							esc_html( $pmpro_gateways[ $edit_gateway ] )
-						);
-						?>
-					</p>
-					<p>
-						<?php if ( 'paypalexpress' === $edit_gateway ) { ?>
-							<a class="button button-secondary" href="https://www.paidmembershipspro.com/paypal-express-deprecation-hub/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=paypal-express-deprecation" target="_blank" rel="nofollow noopener"><?php esc_html_e('Learn More', 'paid-memberships-pro' ); ?></a>
-						<?php } ?>
-						<a class="button button-secondary" href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e('About Deprecated Gateways', 'paid-memberships-pro' ); ?></a>
-						<a class="button" href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e('How to Switch Payment Gateways', 'paid-memberships-pro' ); ?></a>
-					</p>
-				</div>
-				<?php
+				pmpro_deprecated_gateway_render_panel( $edit_gateway );
 			}
 
 			// Show the settings for the specific gateway.

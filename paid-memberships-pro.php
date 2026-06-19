@@ -37,6 +37,7 @@ require_once( PMPRO_DIR . '/includes/functions.php' );              		// misc fu
 require_once( PMPRO_DIR . '/includes/updates.php' );                		// database and other updates
 require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           		// database and other updates
 require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// deprecated hooks and functions
+require_once( PMPRO_DIR . '/includes/deprecated-gateways.php' );          // Deprecated gateway loading and migration workflow.
 require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
@@ -89,6 +90,8 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-b
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure-admin.php' ); // billing failure email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php' ); //cancel auto renewals email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php' ); //cancel auto renewals admin email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-deprecated-gateway-stripe-migration.php' ); // deprecated gateway Stripe migration email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-deprecated-gateway-checkout-required.php' ); // deprecated gateway checkout required email template
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
