@@ -214,6 +214,9 @@ function pmpro_report_email_log_page() {
 	// Get status filter
 	$status_filter = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
 
+	// Get the report period. Defaults to "all" (no date filtering).
+	$period = isset( $_REQUEST['period'] ) ? sanitize_text_field( $_REQUEST['period'] ) : 'all';
+
 	// Pagination
 	$pn = isset( $_REQUEST['pn'] ) ? intval( $_REQUEST['pn'] ) : 1;
 	$limit = isset( $_REQUEST['limit'] ) ? intval( $_REQUEST['limit'] ) : 15;
@@ -282,6 +285,27 @@ function pmpro_report_email_log_page() {
 		$where_values[] = $status_filter;
 	}
 
+	// Resolve the period to concrete start/end dates. These also drive the From/To input values.
+	if ( $period === 'custom' ) {
+		$startdate = ! empty( $_REQUEST['custom_start_date'] ) ? sanitize_text_field( $_REQUEST['custom_start_date'] ) : date( 'Y-m-01', strtotime( current_time( 'mysql' ) ) );
+		$enddate = ! empty( $_REQUEST['custom_end_date'] ) ? sanitize_text_field( $_REQUEST['custom_end_date'] ) : date( 'Y-m-t', strtotime( current_time( 'mysql' ) ) );
+	} elseif ( $period === '7days' || $period === '30days' ) {
+		$timeframe = ( $period === '7days' ) ? 7 : 30;
+		$startdate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) . ' -' . $timeframe . ' DAY' ) );
+		$enddate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) ) );
+	} elseif ( $period === '12months' ) {
+		$startdate = date( 'Y-m-01', strtotime( current_time( 'mysql' ) . ' -12 month' ) );
+		$enddate = date( 'Y-m-t', strtotime( current_time( 'mysql' ) . ' -1 month' ) );
+	} else {
+		// All Time.
+		$startdate = '1970-01-01';
+		$enddate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) ) );
+	}
+	$where_clauses[] = "timestamp >= %s";
+	$where_values[] = get_gmt_from_date( $startdate . ' 00:00:00' );
+	$where_clauses[] = "timestamp <= %s";
+	$where_values[] = get_gmt_from_date( $enddate . ' 23:59:59' );
+
 	$where_sql = implode( ' AND ', $where_clauses );
 
 	// Get total count
@@ -338,7 +362,7 @@ function pmpro_report_email_log_page() {
 				<label for="template" class="pmpro_report-filter-text">
 					<?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?>
 				</label>
-				<select id="template" name="template" onchange="jQuery('#email-log-form').trigger('submit');">
+				<select id="template" name="template">
 					<option value="all" <?php selected( $template_filter, 'all' ); ?>>
 						<?php esc_html_e( 'All Templates', 'paid-memberships-pro' ); ?>
 					</option>
@@ -351,7 +375,7 @@ function pmpro_report_email_log_page() {
 				<label for="status" class="pmpro_report-filter-text">
 					<?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?>
 				</label>
-				<select id="status" name="status" onchange="jQuery('#email-log-form').trigger('submit');">
+				<select id="status" name="status">
 					<option value="all" <?php selected( $status_filter, 'all' ); ?>>
 						<?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?>
 					</option>
@@ -362,7 +386,51 @@ function pmpro_report_email_log_page() {
 						<?php esc_html_e( 'Failed', 'paid-memberships-pro' ); ?>
 					</option>
 				</select>
+				<label for="period" class="pmpro_report-filter-text">
+					<?php esc_html_e( 'for', 'paid-memberships-pro' ); ?>
+				</label>
+				<select id="period" name="period">
+					<option value="all" <?php selected( $period, 'all' ); ?>>
+						<?php esc_html_e( 'All Time', 'paid-memberships-pro' ); ?>
+					</option>
+					<option value="7days" <?php selected( $period, '7days' ); ?>>
+						<?php esc_html_e( 'Last 7 Days', 'paid-memberships-pro' ); ?>
+					</option>
+					<option value="30days" <?php selected( $period, '30days' ); ?>>
+						<?php esc_html_e( 'Last 30 Days', 'paid-memberships-pro' ); ?>
+					</option>
+					<option value="12months" <?php selected( $period, '12months' ); ?>>
+						<?php esc_html_e( 'Last 12 Months', 'paid-memberships-pro' ); ?>
+					</option>
+					<option value="custom" <?php selected( $period, 'custom' ); ?>>
+						<?php esc_html_e( 'Custom Range', 'paid-memberships-pro' ); ?>
+					</option>
+				</select>
+				<span class="pmpro_report-filter-text pmpro-email-log-custom"><?php esc_html_e( 'from', 'paid-memberships-pro' ); ?></span>
+				<label for="custom_start_date" class="screen-reader-text pmpro-email-log-custom"><?php esc_html_e( 'Select report start date', 'paid-memberships-pro' ); ?></label>
+				<input type="date" id="custom_start_date" name="custom_start_date" class="pmpro-email-log-custom" value="<?php echo esc_attr( $startdate ); ?>" />
+				<span class="pmpro_report-filter-text pmpro-email-log-custom"><?php esc_html_e( 'to', 'paid-memberships-pro' ); ?></span>
+				<label for="custom_end_date" class="screen-reader-text pmpro-email-log-custom"><?php esc_html_e( 'Select report end date', 'paid-memberships-pro' ); ?></label>
+				<input type="date" id="custom_end_date" name="custom_end_date" class="pmpro-email-log-custom" value="<?php echo esc_attr( $enddate ); ?>" />
 			</div>
+			<input type="submit" class="button button-primary action" value="<?php esc_attr_e( 'Generate Report', 'paid-memberships-pro' ); ?>" />
+			<script>
+				jQuery(document).ready(function() {
+					jQuery('#period').on('change', function() {
+						pmpro_email_log_toggle_custom_range();
+					});
+				});
+
+				function pmpro_email_log_toggle_custom_range() {
+					if ( jQuery('#period').val() === 'custom' ) {
+						jQuery('.pmpro-email-log-custom').show();
+					} else {
+						jQuery('.pmpro-email-log-custom').hide();
+					}
+				}
+
+				pmpro_email_log_toggle_custom_range();
+			</script>
 		</div>
 
 		<?php if ( $entries ) { ?>
@@ -472,7 +540,7 @@ function pmpro_report_email_log_page() {
 							$limit, 
 							1, 
 							admin_url( "admin.php?page=pmpro-reports&report=email_log&s=" . urlencode( $s ) ), 
-							"&template=" . urlencode( $template_filter ) . "&status=" . urlencode( $status_filter ) . "&limit=" . $limit . "&pn=", 
+							"&template=" . urlencode( $template_filter ) . "&status=" . urlencode( $status_filter ) . "&period=" . urlencode( $period ) . "&custom_start_date=" . urlencode( $startdate ) . "&custom_end_date=" . urlencode( $enddate ) . "&limit=" . $limit . "&pn=",
 							__( 'Email Log Pagination', 'paid-memberships-pro' ) 
 						) 
 					);
