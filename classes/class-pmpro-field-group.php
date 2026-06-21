@@ -349,14 +349,12 @@ class PMPro_Field_Group {
 			// Get the "header" for the field group.
 			ob_start();
 			?>
-			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $this->name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $this->name ) ) ); ?>">
+			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $this->name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $this->name ) ) ); ?>"<?php if ( ! empty( $this->label ) ) { ?> aria-labelledby="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $this->name ) ); ?>-title"<?php } ?>>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+					<?php if ( ! empty( $this->label ) ) { ?>
+						<h2 id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $this->name ) ); ?>-title" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $this->label ); ?></h2>
+					<?php } ?>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-						<?php if ( ! empty( $this->label ) ) { ?>
-							<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
-								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $this->label ); ?></h2>
-							</legend>
-						<?php } ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 							<?php if ( ! empty( $this->description ) ) { ?>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-description' ) ); ?>"><?php echo wp_kses_post( $this->description ); ?></div>
@@ -473,17 +471,23 @@ class PMPro_Field_Group {
 				$field->divclass = pmpro_get_element_class( $field->divclass, $field->id );
 				$field->class = pmpro_get_element_class( $field->class, $field->id );
 
+				// radio/checkbox_grouped render multiple inputs, so the group is named with role/aria instead of a <label for>.
+				$field_is_group = in_array( $field->type, array( 'radio', 'checkbox_grouped' ), true );
 				?>
-				<div id="<?php echo esc_attr( $field->id );?>_div" <?php if ( ! empty( $field->divclass ) ) { echo 'class="' . esc_attr( $field->divclass ) . '"'; } ?>>
+				<div id="<?php echo esc_attr( $field->id );?>_div" <?php if ( ! empty( $field->divclass ) ) { echo 'class="' . esc_attr( $field->divclass ) . '"'; } ?><?php if ( $field_is_group && ! empty( $field->showmainlabel ) ) { echo ' role="group" aria-labelledby="' . esc_attr( $field->id ) . '_label"'; } ?>>
 					<?php if(!empty($field->showmainlabel)) { ?>
+						<?php if ( $field_is_group ) { ?>
+						<span id="<?php echo esc_attr( $field->id );?>_label" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
+						<?php } else { ?>
 						<label class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>" for="<?php echo esc_attr( $field->name );?>">
+						<?php } ?>
 							<?php echo wp_kses_post( $field->label );?>
-							<?php 
+							<?php
 								if ( ! empty( $field->required ) && ! empty( $field->showrequired ) && $field->showrequired === 'label' ) {
 								?><span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_attr_e( 'Required Field' ,'paid-memberships-pro' ); ?>">*</abbr></span><?php
 								}
 							?>
-						</label>
+						<?php echo $field_is_group ? '</span>' : '</label>'; ?>
 						<?php $field->display( $value ); ?>
 					<?php } else { ?>
 						<?php $field->display( $value ); ?>

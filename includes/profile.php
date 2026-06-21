@@ -1095,7 +1095,7 @@ function pmpro_member_profile_edit_form() {
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 		<section id="pmpro_member_profile_edit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_member_profile_edit' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
-				<form id="member-profile-edit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="" method="post"
+				<form id="member-profile-edit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" method="post"
 					<?php
 						/**
 						 * Fires inside the member-profile-edit form tag in the pmpro_member_profile_edit_form function.
@@ -1263,7 +1263,7 @@ function pmpro_change_password_form() {
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 		<section id="pmpro_change_password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_change_password' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
-				<form id="change-password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form', 'change-password' ) ); ?>" action="" method="post">
+				<form id="change-password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form', 'change-password' ) ); ?>" method="post">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 							<fieldset class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset' ) ); ?>">
