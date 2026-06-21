@@ -425,7 +425,7 @@
 
 						$renew_url = pmpro_url( 'checkout', 'level=' . $membership->id, 'https' );
 						if ( pmpro_isLevelExpiringSoon( $membership ) && ! empty( $renew_url ) ) {
-							$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
+							$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew-' . $membership->id . '" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
 
 						}
 
@@ -453,7 +453,7 @@
 
 						$cancel_url = pmpro_url( 'cancel', 'levelstocancel=' . $membership->id );
 						if ( ! empty( $cancel_url ) ) {
-							$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
+							$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel-' . $membership->id . '" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
 						}
 
 						?><div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>"><?php 
