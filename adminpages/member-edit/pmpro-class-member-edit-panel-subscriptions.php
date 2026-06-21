@@ -105,6 +105,14 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 					<th><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
 					<th><?php echo esc_html( $showing_active_subscriptions ? __( 'Next Payment', 'paid-memberships-pro' ) : __( 'Ended', 'paid-memberships-pro' ) ); ?></th>
 					<th><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
+					<?php
+						/**
+						 * Allow adding extra columns to the subscriptions table.
+						 *
+						 * @since 3.7.3
+						 */
+						do_action('pmpro_edit_member_subscriptions_extra_cols_header');
+					?>
 				</tr>
 			</thead>
 			<tbody>
@@ -247,6 +255,16 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 							?>
 							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>"><?php echo esc_html( number_format_i18n( $orders_count ) ); ?></a>
 						</td>
+						<?php
+							/**
+							 * Allow adding extra columns to the subscriptions table.
+							 *
+							 * @since 3.7.3
+							 *
+							 * @param PMPro_Subscription $subscription The subscription for the current row in the table.
+							 */
+							do_action('pmpro_edit_member_subscriptions_extra_cols_body', $subscription );
+						?>
 					</tr>
 					<?php
 				}

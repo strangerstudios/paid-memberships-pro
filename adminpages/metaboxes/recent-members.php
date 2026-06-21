@@ -47,7 +47,6 @@ function pmpro_dashboard_report_recent_members_callback() {
 		) mu2 ON mu.user_id = mu2.user_id AND mu.startdate = mu2.max_startdate
 		ORDER BY u.user_registered DESC
 		LIMIT 5";
-		$sqlQuery = apply_filters( 'pmpro_members_list_sql', $sqlQuery );
 		$theusers = $wpdb->get_results( $sqlQuery );
 		set_transient( 'pmpro_dashboard_report_recent_members', $theusers, 12 * HOUR_IN_SECONDS ); 
 	}

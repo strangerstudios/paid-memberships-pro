@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.6.5
+ * Version: 3.8
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,9 +16,9 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.6.5' );
+define( 'PMPRO_VERSION', '3.8' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
-define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
+define( 'PMPRO_MIN_PHP_VERSION', '7.4' );
 
 /*
 	Includes
@@ -44,11 +44,13 @@ if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 }
 
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       			// class to process and save orders
+require_once( PMPRO_DIR . '/classes/class-pmpro-liquid-renderer.php' );		// Liquid-style template rendering
 require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        			// setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
+require_once( PMPRO_DIR . '/classes/class-pmpro-exports.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );	// setup the admin activity email
 
 //  Add On Management
@@ -95,6 +97,7 @@ require_once( PMPRO_DIR . '/adminpages/reports/logins.php' );            // load
 require_once( PMPRO_DIR . '/adminpages/reports/memberships.php' );       // load the Memberships report
 require_once( PMPRO_DIR . '/adminpages/reports/members-per-level.php' ); // load the Members Per Level report
 require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );             // load the Sales report
+require_once( PMPRO_DIR . '/adminpages/reports/email_log.php' );        // load the Email Log report
 
 require_once( PMPRO_DIR . '/adminpages/member-edit.php' ); // load the Member Edit admin page.
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-abstract-class-member-edit-panel.php' );
@@ -104,6 +107,7 @@ require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-orders.php' );
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-tos.php' );
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-user-fields.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-email-log.php' );
 
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
@@ -126,6 +130,7 @@ require_once( PMPRO_DIR . '/includes/page-templates.php' );         // page temp
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for membership and protect content
 require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
+require_once( PMPRO_DIR . '/includes/email-logging.php' );           // email logging functionality
 require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fields
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cloudflare-turnstile.php' );   // load CloudFlare Turnstile files if needed
@@ -140,6 +145,7 @@ require_once( PMPRO_DIR . '/includes/spam.php' );					// code to combat spam of 
 require_once( PMPRO_DIR . '/includes/abandoned-signups.php' );		// track users who were created at checkout but did not complete checkout.
 require_once( PMPRO_DIR . '/includes/checkout.php' );		        // Common functions used at checkout.
 require_once( PMPRO_DIR . '/includes/level-groups.php' );		    // Common functions for level groups.
+require_once( PMPRO_DIR . '/includes/avatars.php' );				// Common functions for avatars.
 require_once( PMPRO_DIR . '/includes/restricted-files.php' );		// Restrict access to files.
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
@@ -155,6 +161,7 @@ require_once( PMPRO_DIR . '/shortcodes/pmpro_account.php' );        // [pmpro_ac
 require_once( PMPRO_DIR . '/shortcodes/pmpro_login.php' );          // [pmpro_login] shortcode to show a login form or logged in member info and menu.
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member.php' );         // [pmpro_member] shortcode to show user fields
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member_profile_edit.php' );         // [pmpro_member_profile_edit] shortcode to allow members to edit their profile
+require_once( PMPRO_DIR . '/shortcodes/pmpro_membership_level.php' );         // [pmpro_membership_level] shortcode to show single level fields
 require_once( PMPRO_DIR . '/includes/blocks.php' ); // Set up blocks.
 
 // load gateway
@@ -163,7 +170,6 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway.php' ); // loade
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-codes.php' ); // loaded by memberorder class when needed
 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
 
 pmpro_check_for_deprecated_gateways();
 
@@ -177,7 +183,7 @@ require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-integration.php';
 $wisdom_integration = PMPro_Wisdom_Integration::instance();
 $wisdom_integration->setup_wisdom();
 
-// Setup our PMPro Action Scheduler.
+// Setup PMPro Action Scheduler & Exports.
 add_action( 'plugins_loaded', function() {
 
 	// Load our Action Scheduler class.
@@ -185,6 +191,10 @@ add_action( 'plugins_loaded', function() {
 
 	// Add our recurring actions.
 	PMPro_Recurring_Actions::instance();
+
+	// Ensure Exports system is initialized so its filters are registered on all requests
+	// (needed for restricted files to validate access).
+	PMPro_Exports::instance();
 
 } );
 
@@ -245,7 +255,6 @@ function pmpro_gateways() {
 		''                  => esc_html__( 'Testing Only', 'paid-memberships-pro' ),
 		'check'             => esc_html__( 'Pay by Check', 'paid-memberships-pro' ),
 		'stripe'            => esc_html__( 'Stripe', 'paid-memberships-pro' ),
-		'paypalexpress'     => esc_html__( 'PayPal Express', 'paid-memberships-pro' ),
 	);
 
 	if ( pmpro_onlyFreeLevels() ) {
@@ -274,7 +283,25 @@ function pmpro_get_gateway_nicename( $gateway ) {
 	if ( array_key_exists( $gateway, $gateways ) ) {
 		$gateway_nicename =  $gateways[ $gateway ];
 	} else {
-		$gateway_nicename = ucwords( $gateway );
+		// Fallback nicenames for gateway slugs that may appear in
+		// historical orders/subscriptions even when the gateway
+		// class is not loaded.
+		$legacy_nicenames = array(
+			'paypalwpp'      => __( 'PayPal Website Payments Pro', 'paid-memberships-pro' ),
+			'paypalexpress'  => __( 'PayPal Express', 'paid-memberships-pro' ),
+			'paypalstandard' => __( 'PayPal Standard', 'paid-memberships-pro' ),
+			'authorizenet'   => __( 'Authorize.net', 'paid-memberships-pro' ),
+			'payflowpro'     => __( 'PayPal Payflow Pro', 'paid-memberships-pro' ),
+			'braintree'      => __( 'Braintree', 'paid-memberships-pro' ),
+			'twocheckout'    => __( '2Checkout', 'paid-memberships-pro' ),
+			'cybersource'    => __( 'CyberSource', 'paid-memberships-pro' ),
+		);
+
+		if ( array_key_exists( $gateway, $legacy_nicenames ) ) {
+			$gateway_nicename = $legacy_nicenames[ $gateway ];
+		} else {
+			$gateway_nicename = ucwords( $gateway );
+		}
 	}
 
 	return $gateway_nicename;

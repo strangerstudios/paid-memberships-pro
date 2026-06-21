@@ -51,8 +51,12 @@ function pmpro_add_pages() {
 	}
 
 	// Top level menu
-	add_menu_page( __( 'Memberships', 'paid-memberships-pro' ), __( 'Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, 'dashicons-groups', 30 );
-	
+	$svg_path = PMPRO_DIR . '/images/pmpro-icon.svg';
+	$icon_url = file_exists( $svg_path )
+		? 'data:image/svg+xml;base64,' . base64_encode( file_get_contents( $svg_path ) )
+		: 'dashicons-groups';
+	add_menu_page( __( 'Memberships', 'paid-memberships-pro' ), __( 'Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, $icon_url, 30 );
+
 	// Main submenus
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
 	$members_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
@@ -83,10 +87,17 @@ function pmpro_add_pages() {
 	add_submenu_page( 'admin.php', __( 'Advanced Settings', 'paid-memberships-pro' ), __( 'Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings' );
 
 	// Set up screen settings for list tables.
-	add_action( 'load-' . $members_list_table_hook, 'PMPro_Members_List_Table::hook_screen_options' );
-	add_action( 'load-' . $orders_list_table_hook, 'PMPro_Orders_List_Table::hook_screen_options' );
-	add_action( 'load-' . $subscriptions_list_table_hook, 'PMPro_Subscriptions_List_Table::hook_screen_options' );
-	add_action( 'load-' . $discount_codes_list_table_hook, 'PMPro_Discount_Code_List_Table::hook_screen_options' );
+	$pmpro_list_table_hooks = array(
+		$members_list_table_hook         => 'PMPro_Members_List_Table::hook_screen_options',
+		$orders_list_table_hook          => 'PMPro_Orders_List_Table::hook_screen_options',
+		$subscriptions_list_table_hook   => 'PMPro_Subscriptions_List_Table::hook_screen_options',
+		$discount_codes_list_table_hook  => 'PMPro_Discount_Code_List_Table::hook_screen_options',
+	);
+
+	foreach ( $pmpro_list_table_hooks as $list_table_hook => $hook_screen_options_callback ) {
+		add_action( 'load-' . $list_table_hook, 'pmpro_maybe_redirect_list_table_referer', 5 );
+		add_action( 'load-' . $list_table_hook, $hook_screen_options_callback );
+	}
 
 	//updates page only if needed
 	if ( pmpro_isUpdateRequired() ) {
@@ -106,6 +117,25 @@ function pmpro_add_pages() {
 	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), pmpro_get_edit_member_capability(), 'pmpro-member', 'pmpro_member_edit_display' );
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
+
+/**
+ * Remove stale list table referer parameters from PMPro admin URLs.
+ *
+ * WP_List_Table adds _wp_http_referer to GET forms. Leaving that value in the
+ * URL causes Screen Options submissions to redirect back to the previous URL
+ * because set_screen_options() prefers the request referer. Mirror WordPress
+ * core list screens by stripping the transient referer args once.
+ *
+ * @since 3.7
+ */
+function pmpro_maybe_redirect_list_table_referer() {
+	if ( 'GET' !== $_SERVER['REQUEST_METHOD'] || empty( $_REQUEST['_wp_http_referer'] ) || empty( $_SERVER['REQUEST_URI'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return;
+	}
+
+	wp_safe_redirect( remove_query_arg( array( '_wp_http_referer', '_wpnonce' ), esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) );
+	exit;
+}
 
 /**
  * Keep the Memberships menu selected on subpages.
@@ -182,9 +212,9 @@ function pmpro_admin_bar_menu() {
 	$wp_admin_bar->add_menu(
 		array(
 			'id' => 'paid-memberships-pro',
-			'title' => __( '<span class="ab-icon"></span>Memberships', 'paid-memberships-pro' ),
+			'title' => '<span id="pmpro-ab-icon"></span>' . __( 'Memberships', 'paid-memberships-pro' ),
 			'href' => admin_url( 'admin.php?page=' . $top_menu_page )
-		) 
+		)
 	);
 
 	// Add menu item for Dashboard.
@@ -458,11 +488,11 @@ function pmpro_admin_membership_access_menu_bar() {
 	// Set the title and the option value.
 	$title = '<span class="pmpro_admin-view pmpro_admin-view-' . esc_attr( $admin_membership_access ) . '">';
 	if ( 'no' === $admin_membership_access ) {
-		$title .= '<span class="ab-icon dashicons dashicons-lock non-member-icon"></span>' . esc_html__( 'View: No Access', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-lock non-member-icon" aria-hidden="true"></span>' . esc_html__( 'View', 'paid-memberships-pro' ) . '<span class="screen-reader-text">: ' . esc_html__( 'No Access', 'paid-memberships-pro' ) . '</span>';
 	} elseif ( 'yes' === $admin_membership_access ) {
-		$title .= '<span class="ab-icon dashicons dashicons-unlock has-access-icon"></span>' . esc_html__( 'View: With Access', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-unlock has-access-icon" aria-hidden="true"></span>' . esc_html__( 'View', 'paid-memberships-pro' ) . '<span class="screen-reader-text">: ' . esc_html__( 'With Access', 'paid-memberships-pro' ) . '</span>';
 	} else {
-		$title .= '<span class="ab-icon dashicons dashicons-admin-users current-access-icon"></span>' . esc_html__( 'View: My Access', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-admin-users current-access-icon" aria-hidden="true"></span>' . esc_html__( 'View', 'paid-memberships-pro' ) . '<span class="screen-reader-text">: ' . esc_html__( 'My Access', 'paid-memberships-pro' ) . '</span>';
 	}
 	$title .= '</span>';
 

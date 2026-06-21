@@ -20,7 +20,17 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 
 		// Show user updated or user created message if necessary.
 		if ( isset( $_REQUEST['user_id'] ) && ! empty( $_REQUEST['user_id'] && ! empty( $_REQUEST['user_info_action'] ) ) ) {
-			if ( 'updated' === $_REQUEST['user_info_action'] ) {
+			// Check if there was an avatar error.
+			if ( ! empty( $_REQUEST['avatar_error'] ) ) {
+				$avatar_error_messages = array(
+					'processing_failed' => __( 'Unable to process the uploaded image.', 'paid-memberships-pro' ),
+					'save_failed'       => __( 'Unable to save the processed image.', 'paid-memberships-pro' ),
+					'upload_failed'     => __( 'There was a problem uploading the avatar.', 'paid-memberships-pro' ),
+				);
+				$avatar_error_code = sanitize_key( $_REQUEST['avatar_error'] );
+				$avatar_error_msg = isset( $avatar_error_messages[ $avatar_error_code ] ) ? $avatar_error_messages[ $avatar_error_code ] : __( 'There was a problem with the avatar upload.', 'paid-memberships-pro' );
+				pmpro_setMessage( $avatar_error_msg, 'pmpro_error' );
+			} elseif ( 'updated' === $_REQUEST['user_info_action'] ) {
 				pmpro_setMessage( __( 'User updated.', 'paid-memberships-pro' ), 'pmpro_success' );
 			} elseif ( 'created' === $_REQUEST['user_info_action'] ) {
 				pmpro_setMessage( __( 'New user created.', 'paid-memberships-pro' ), 'pmpro_success' );
@@ -157,6 +167,18 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 						<p class="description"><?php esc_html_e( 'This will send the user an email with their username and a link to reset their password. For security reasons, this email does not include the unencrypted password.', 'paid-memberships-pro' ); ?></p>
 					</td>
 				</tr>
+				<?php
+			}
+			?>
+			<?php
+				// Show the profile picture field if this user has an avatar-enabled level.
+				if ( ! empty( $user->ID ) && function_exists( 'pmpro_user_has_avatar_level' ) && pmpro_user_has_avatar_level( $user->ID ) && function_exists( 'pmpro_display_avatar_field' ) ) { ?>
+					<tr class="form-field">
+						<th scope="row"><label><?php esc_html_e( 'Profile Picture', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php pmpro_display_avatar_field( $user->ID, true ); ?>
+						</td>
+					</tr>
 				<?php
 			}
 			?>
@@ -308,14 +330,23 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			$user_notes = ! empty( $_POST['user_notes'] ) ? sanitize_textarea_field( $_POST['user_notes'] ) : '';
 			update_user_meta( $user_id, 'user_notes', $user_notes );
 
-			// Set message and redirect if this is a new user.		
+			// Save the avatar field if applicable.
+			$avatar_error = '';
+			if ( function_exists( 'pmpro_save_avatar_field' ) ) {
+				$avatar_result = pmpro_save_avatar_field( $user_id );
+				if ( is_wp_error( $avatar_result ) ) {
+					$avatar_error = '&avatar_error=' . rawurlencode( $avatar_result->get_error_code() );
+				}
+			}
+
+			// Set message and redirect if this is a new user.
 			if ( $update ) {
 				// User updated.
-				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_info_action=updated&user_id=' . $user_id ) );
+				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_info_action=updated&user_id=' . $user_id . $avatar_error ) );
 				exit;
 			} else {
 				// User inserted.
-				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_info_action=created&pmpro_member_edit_panel=memberships&user_id=' . $user_id ) );
+				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_info_action=created&pmpro_member_edit_panel=memberships&user_id=' . $user_id . $avatar_error ) );
 			}
 		}
 	}

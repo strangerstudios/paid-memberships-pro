@@ -46,6 +46,8 @@ export default function Edit(props) {
 			<InspectorControls>
 				<PanelBody>
 					<SelectControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 						label={__("Select a level", "paid-memberships-pro")}
 						value={selected_membership_level}
 						options={all_levels}

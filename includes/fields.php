@@ -1054,7 +1054,7 @@ function pmpro_get_user_fields_settings() {
 /**
  * Clear cached user field settings in object cache when adding, updating or deleting option.
  * 
- * @since TBD
+ * @since 3.7
  * @param mixed $old_value The old value of the option.
  * @param mixed $value The new value of the option.
  * @param string $option The name of the option.

@@ -117,6 +117,8 @@ export default function Edit(props) {
 						initialOpen={true}
 					>
 						<SelectControl
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
 							label={__( 'Choose a Level', 'paid-memberships-pro' )}
 							value={ selected_membership_level }
 							options={ all_levels }

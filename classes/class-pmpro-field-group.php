@@ -295,7 +295,7 @@ class PMPro_Field_Group {
 				}
 
 				// Check if this field should only be shown to admins.
-				if ( ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_membership_manager' ) ) && in_array( $field->profile, array( 'admins', 'admin', 'only_admin' ), true ) ) {
+				if ( ! current_user_can( pmpro_get_edit_member_capability() ) && in_array( $field->profile, array( 'admins', 'admin', 'only_admin' ), true ) ) {
 					continue;
 				}
 
@@ -541,7 +541,7 @@ class PMPro_Field_Group {
 		$user_id = empty( $args['user_id'] ) ? get_current_user_id() : $args['user_id'];
 
 		// Make sure the current user can edit this user.
-		if ( 'scope' == 'profile' && ! current_user_can( 'edit_user', $user_id ) ) {
+		if ( 'profile' === $args['scope'] && ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
 		}
 

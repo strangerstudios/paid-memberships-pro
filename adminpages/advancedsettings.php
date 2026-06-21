@@ -54,6 +54,7 @@
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("uninstall");
+		pmpro_setOption( 'avatar_enabled_sitewide' );
 		pmpro_setOption("site_type");
 
         /**
@@ -107,6 +108,7 @@
 		$redirecttosubscription = get_option( "pmpro_redirecttosubscription");
 	}
 	$uninstall = get_option( 'pmpro_uninstall');
+	$avatar_enabled_sitewide = get_option( 'pmpro_avatar_enabled_sitewide' );
 	$site_type = get_option( 'pmpro_site_type' );
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
@@ -584,6 +586,17 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 							</p>
 						</td>
 					</tr>
+					<?php if ( get_option( 'show_avatars' ) ) { ?>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="avatar_enabled_sitewide"><?php esc_html_e( 'Profile Pictures', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<input id="avatar_enabled_sitewide" name="avatar_enabled_sitewide" type="checkbox" value="1" <?php checked( $avatar_enabled_sitewide, 1 ); ?> /> <label for="avatar_enabled_sitewide"><?php esc_html_e( 'Enable profile pictures for all users, regardless of membership level.', 'paid-memberships-pro' ); ?></label>
+							<p class="description"><?php esc_html_e( 'When enabled, all logged-in users can upload a custom profile picture. When disabled, profile pictures are only available for membership levels with the "Enable Profile Pictures" setting checked.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<?php } ?>
 					<tr>
 						<th scope="row" valign="top">
 							<label for="uninstall"><?php esc_html_e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>

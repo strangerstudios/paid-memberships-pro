@@ -37,6 +37,8 @@ export default function Edit({ attributes, setAttributes }) {
 		<InspectorControls>
 			<PanelBody>
 				<SelectControl
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
 					label={ __( 'Membership Level', 'paid-memberships-pro' ) }
 					help={ __( 'Choose a default level for Membership Checkout.', 'paid-memberships-pro' ) }
 					value={ pmpro_default_level_value }

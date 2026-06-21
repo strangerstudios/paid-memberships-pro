@@ -69,7 +69,9 @@ register( pmproCustomStore() );
 ( function ( wp ) {
 	const { __ } = wp.i18n;
 	const { registerPlugin } = wp.plugins;
-	const { PluginDocumentSettingPanel } = wp.editPost;
+	// Below is copied from WP 6.6 release notes for compatibility with pre-6.6 versions. This should be simplified when minimum WP version is 6.6.
+	// https://make.wordpress.org/core/2024/06/18/editor-unified-extensibility-apis-in-6-6/
+	const PluginDocumentSettingPanel = wp.editor?.PluginDocumentSettingPanel ?? ( wp.editPost?.PluginDocumentSettingPanel ?? wp.editSite?.PluginDocumentSettingPanel );
 	const { Component } = wp.element;
 	const { Spinner, CheckboxControl } = wp.components;
 
@@ -96,6 +98,7 @@ register( pmproCustomStore() );
 			( level ) => {
 				return (
 					<CheckboxControl
+						__nextHasNoMarginBottom
 						key={ level.id }
 						label={ level.name }
 						checked={ props.restrictedLevels.includes( level.id ) }
@@ -115,7 +118,7 @@ register( pmproCustomStore() );
 			}
 		);
 		return (
-			<fragment>
+			<>
 				{
 					// Add buttons to select all or none.
 					level_checkboxes.length > 1 &&
@@ -134,10 +137,12 @@ register( pmproCustomStore() );
 							{ level_checkboxes }
 						</div>
 					) : (
-						level_checkboxes
+						<div className="pmpro-block-inspector-membershiplevels">
+							{ level_checkboxes }
+						</div>
 					)
 				}
-			</fragment>
+			</>
 		);
 	} );
 

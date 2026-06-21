@@ -553,7 +553,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<option value="1"
 							<?php if ( ! empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 				</select>
-				<p class="description"><?php echo wp_kses_post( __( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ) ); ?></p>
+				<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe doesn\'t require billing address fields. Choose \'No\' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in your <a target="_blank" href="%s">Stripe Radar rules</a>.</strong>', 'paid-memberships-pro' ), array( 'br' => array(), 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array() ) ) ), 'https://dashboard.stripe.com/settings/radar/rules' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -970,7 +970,7 @@ class PMProGateway_stripe extends PMProGateway {
 									<option value="1"
 											<?php if ( ! empty( $billing_address ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 								</select>
-								<p class="description"><?php echo wp_kses_post( __( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ) ); ?></p>
+								<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe doesn\'t require billing address fields. Choose \'No\' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in your <a target="_blank" href="%s">Stripe Radar rules</a>.</strong>', 'paid-memberships-pro' ), array( 'br' => array(), 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array() ) ) ), 'https://dashboard.stripe.com/settings/radar/rules' ); ?></p>
 							</td>
 						</tr>
 						<tr class="gateway_stripe_checkout_fields">
@@ -1096,9 +1096,56 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Validate access to Stripe webhook AJAX handlers.
+	 *
+	 * @since 3.6.6
+	 *
+	 * @param bool $silent Whether to return errors instead of exiting.
+	 * @return true|array
+	 */
+	private static function authorize_stripe_webhook_request( $silent = false ) {
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
+			$r = array(
+				'success' => false,
+				'notice' => 'error',
+				'message' => esc_html__( 'You do not have permission to perform this action.', 'paid-memberships-pro' ),
+			);
+
+			if ( $silent ) {
+				return $r;
+			}
+
+			echo wp_json_encode( $r ); // Values escaped above.
+			exit;
+		}
+
+		if ( wp_doing_ajax() && false === check_ajax_referer( 'pmpro_stripe_webhook_nonce', 'nonce', false ) ) {
+			$r = array(
+				'success' => false,
+				'notice' => 'error',
+				'message' => esc_html__( 'Your session has expired. Please refresh and try again.', 'paid-memberships-pro' ),
+			);
+
+			if ( $silent ) {
+				return $r;
+			}
+
+			echo wp_json_encode( $r ); // Values escaped above.
+			exit;
+		}
+
+		return true;
+	}
+
+	/**
 	 * AJAX callback to create webhooks.
 	 */
 	public static function wp_ajax_pmpro_stripe_create_webhook( $silent = false ) {
+		$access_check = self::authorize_stripe_webhook_request( $silent );
+		if ( true !== $access_check ) {
+			return $access_check;
+		}
+
 		$stripe = new PMProGateway_stripe();
 		$update_webhook_response = $stripe->update_webhook_events();
 
@@ -1129,6 +1176,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * AJAX callback to disable webhooks.
 	 */
 	public static function wp_ajax_pmpro_stripe_delete_webhook( $silent = false ) {
+		$access_check = self::authorize_stripe_webhook_request( $silent );
+		if ( true !== $access_check ) {
+			return $access_check;
+		}
+
 		$stripe = new PMProGateway_stripe();
 		$webhook = $stripe->does_webhook_exist();
 
@@ -1162,6 +1214,9 @@ class PMProGateway_stripe extends PMProGateway {
 	 * AJAX callback to rebuild webhook.
 	 */
 	public static function wp_ajax_pmpro_stripe_rebuild_webhook() {
+		// This handler always sends its own response, so we do not need silent auth handling here.
+		self::authorize_stripe_webhook_request();
+
 		// First try to delete the webhook.
 		$r = self::wp_ajax_pmpro_stripe_delete_webhook( true ) ;
 		if ( $r['success'] ) {
@@ -2139,7 +2194,12 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! self::using_stripe_checkout() ) {
 			return;
 		}
-
+		
+		// Member doesn't have any subscription. Don't try to redirect, as we will show the default billing info form.
+		if ( empty( $pmpro_billing_subscription ) ) {
+			return;
+		}
+		
 		//Bail if the order's gateway isn't Stripe
 		if ( empty( $pmpro_billing_subscription->get_gateway() ) || 'stripe' !== $pmpro_billing_subscription->get_gateway()  ) {
 			return;

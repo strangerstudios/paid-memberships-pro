@@ -608,7 +608,8 @@ function pmpro_report_sales_page()
 		'year' => $year,
 		'month' => $month,
 		'level' => $l,
-		'discount_code' => $discount_code
+		'discount_code' => $discount_code,
+		'nonce' => wp_create_nonce( 'sales_report_csv' ),
 	);
 	$csv_export_link = add_query_arg( $args, admin_url( 'admin-ajax.php' ) );
 	?>
@@ -672,7 +673,7 @@ function pmpro_report_sales_page()
 				?>
 			</select>
 			<?php
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery = "SELECT * FROM $wpdb->pmpro_discount_codes ";
 			$sqlQuery .= "ORDER BY id DESC ";
 			$codes = $wpdb->get_results($sqlQuery, OBJECT);
 			if ( ! empty( $codes ) ) { ?>

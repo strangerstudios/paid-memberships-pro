@@ -37,11 +37,32 @@ add_action('wp_ajax_nopriv_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
 add_action('wp_ajax_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
 function pmpro_wp_ajax_stripe_webhook()
 {
-	require_once(dirname(__FILE__) . "/../services/stripe-webhook.php");	
-	exit;	
+	require_once dirname(__FILE__) . '/../services/stripe-webhook.php';
+	exit;
 }
 add_action('wp_ajax_nopriv_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
 add_action('wp_ajax_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
+
+/**
+ * Process a Stripe webhook event via Action Scheduler.
+ *
+ * @param string $event_id Stripe Event ID.
+ * @param bool   $livemode Whether the event was live mode.
+ */
+function pmpro_stripe_webhook_process_scheduled_event( $event_id, $livemode = false ) {
+	if ( ! class_exists( 'PMPro_Stripe_Webhook_Handler' ) ) {
+		require_once dirname(__FILE__) . '/../services/class-pmpro-stripe-webhook-handler.php';
+	}
+	PMPro_Stripe_Webhook_Handler::run(
+		array(
+			'event_id'          => $event_id,
+			'livemode'          => $livemode,
+			'scheduled_request' => true,
+		)
+	);
+}
+add_action( 'pmpro_stripe_webhook_process_scheduled_event', 'pmpro_stripe_webhook_process_scheduled_event', 10, 2 );
+
 function pmpro_wp_ajax_braintree_webhook()
 {
 	require_once(dirname(__FILE__) . "/../services/braintree-webhook.php");	
@@ -56,19 +77,6 @@ function pmpro_wp_ajax_twocheckout_ins()
 }
 add_action('wp_ajax_nopriv_twocheckout-ins', 'pmpro_wp_ajax_twocheckout_ins');
 add_action('wp_ajax_twocheckout-ins', 'pmpro_wp_ajax_twocheckout_ins');
-function pmpro_wp_ajax_memberlist_csv()
-{
-	require_once(dirname(__FILE__) . "/../adminpages/memberslist-csv.php");	
-	exit;	
-}
-add_action('wp_ajax_memberslist_csv', 'pmpro_wp_ajax_memberlist_csv');
-function pmpro_wp_ajax_orders_csv()
-{
-	require_once(dirname(__FILE__) . "/../adminpages/orders-csv.php");	
-	exit;	
-}
-add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
-
 
 /**
  * Handles the Visits, Views and Logins Export
@@ -119,7 +127,12 @@ function pmpro_get_order_json() {
 	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_orders' ) ) ) {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
-	
+
+	// Check the nonce.
+	if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_get_order_json' ) ) {
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
 	$order_id = intval( $_REQUEST['order_id'] );
 	$order = new MemberOrder($order_id);
 	$user = get_userdata($order->user_id);
@@ -194,21 +207,3 @@ function pmpro_update_level_group_order() {
 }
 add_action('wp_ajax_pmpro_update_level_group_order', 'pmpro_update_level_group_order');
 
-// User fields AJAX.
-/**
- * Callback to draw a field group.
- */
-function pmpro_userfields_get_group_ajax() {	
-	pmpro_get_field_group_html();
-    exit;
-}
-add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_ajax' );
- 
-/**
- * Callback to draw a field.
- */
-function pmpro_userfields_get_field_ajax() {
- 	pmpro_get_field_html();
-	exit;
-}
-add_action( 'wp_ajax_pmpro_userfields_get_field', 'pmpro_userfields_get_field_ajax' );

@@ -8,6 +8,12 @@
 function pmpro_set_up_restricted_files_directory() {
 	// Create restricted folder if it doesn't exist.
 	$restricted_file_directory = pmpro_get_restricted_file_path();
+
+	// Bail if we couldn't determine a valid path (e.g. misconfigured Windows servers).
+	if ( empty( $restricted_file_directory ) ) {
+		return;
+	}
+
 	if ( ! file_exists( $restricted_file_directory ) ) {
 		wp_mkdir_p( $restricted_file_directory );
 	}
@@ -23,6 +29,20 @@ function pmpro_set_up_restricted_files_directory() {
 		'  </IfModule>' . "\n" .
 		'</FilesMatch>';
 	file_put_contents( trailingslashit( $restricted_file_directory ) . '.htaccess', $htaccess );
+
+	// Write a non-dotfile marker so pmpro_is_restricted_directory_protected()
+	// has something to HEAD-test against. Without this, sites that have not
+	// yet stored any member-uploaded files report "Unable to determine"
+	// because pmpro_find_testable_file() deliberately skips dotfiles (and
+	// .htaccess is the only file present on a fresh install).
+	$marker_path = trailingslashit( $restricted_file_directory ) . 'pmpro-protection-test.txt';
+	if ( ! file_exists( $marker_path ) ) {
+		$marker_content  = "PMPro restricted-files protection test marker.\n";
+		$marker_content .= "This file is intentional. PMPro uses it to verify the directory is\n";
+		$marker_content .= "correctly protected from public access. It is safe to delete; PMPro\n";
+		$marker_content .= "will recreate it on the next daily run.\n";
+		file_put_contents( $marker_path, $marker_content );
+	}
 }
 
 /**
@@ -88,7 +108,22 @@ function pmpro_restricted_files_check_request() {
 		finfo_close( $finfo );
 		header( 'Content-Type: ' . $content_type );
 		header( 'Content-Disposition: ' . $content_disposition . '; filename="' . $file . '"' );
-		readfile( $file_path );
+		$bytes = readfile( $file_path );
+		if ( false !== $bytes ) {
+			// Buffer the action so a misbehaving hook can't append output to the response body and corrupt the download.
+			ob_start();
+			/**
+			 * Fires after a restricted file has been successfully streamed to the client.
+			 * Handlers MUST NOT produce output; any bytes written here are discarded.
+			 *
+			 * @since 3.7
+			 *
+			 * @param string $file_dir Directory of the file that was served.
+			 * @param string $file     File name of the file that was served.
+			 */
+			do_action( 'pmpro_restricted_file_served', $file_dir, $file );
+			ob_end_clean();
+		}
 		exit;
 	} else {
 		wp_die(	esc_html__( 'File not found.', 'paid-memberships-pro' ), 404 );
@@ -132,7 +167,14 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
 	}
 
 	// Get the directory path.
-	$uploads_dir = trailingslashit( wp_upload_dir()['basedir'] );
+	$upload_dir_info = wp_upload_dir();
+
+	// Bail if we can't get a valid uploads basedir (e.g. misconfigured Windows servers).
+	if ( empty( $upload_dir_info['basedir'] ) ) {
+		return '';
+	}
+
+	$uploads_dir = trailingslashit( $upload_dir_info['basedir'] );
 	$restricted_file_path = $uploads_dir . 'pmpro-' . $random_string . '/';
 	if ( ! empty( $file_dir ) ) {
 		$restricted_file_path .= $file_dir . '/';
@@ -148,4 +190,119 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
 		}
 	}
 	return $restricted_file_path;
+}
+
+/**
+ * Core implementation for checking if the PMPro restricted files directory
+ * is protected from direct access.
+ *
+ * @since 3.7
+ *
+ * @return bool|null True if protected, false if accessible, null if unable to determine.
+ */
+function pmpro_is_restricted_directory_protected() {
+	$restricted_dir = pmpro_get_restricted_file_path();
+
+	// Can't test if we couldn't determine the restricted directory path.
+	if ( empty( $restricted_dir ) ) {
+		return null;
+	}
+
+	// Can't test if directory doesn't exist.
+	if ( ! is_dir( $restricted_dir ) ) {
+		return null;
+	}
+
+	// Find a file to test with.
+	$test_file = pmpro_find_testable_file( $restricted_dir );
+	if ( ! $test_file ) {
+		return null;
+	}
+
+	// Convert file path to URL.
+	$wp_upload_dir = wp_upload_dir();
+
+	// Bail if we can't get a valid basedir (e.g. misconfigured Windows servers).
+	if ( empty( $wp_upload_dir['basedir'] ) ) {
+		return null;
+	}
+
+	// Normalize paths to ensure consistent separators.
+	$normalized_test_file = wp_normalize_path( $test_file );
+	$normalized_basedir   = wp_normalize_path( $wp_upload_dir['basedir'] );
+	$basedir_with_slash   = trailingslashit( $normalized_basedir );
+
+	// Ensure the test file is within the uploads base directory.
+	if ( 0 !== strpos( $normalized_test_file, $basedir_with_slash ) ) {
+		return null;
+	}
+
+	// Build a URL by appending the relative path to the base URL.
+	$relative_path = substr( $normalized_test_file, strlen( $basedir_with_slash ) );
+	$test_url      = trailingslashit( $wp_upload_dir['baseurl'] ) . ltrim( $relative_path, '/' );
+	
+	// Attempt direct access.
+	$response = wp_remote_head(
+		$test_url,
+		array(
+			'timeout'             => 3, // Short timeout for responsiveness.
+			'redirection'         => 1,	// allow one for a HTTP → HTTPS hop
+			'reject_unsafe_urls'  => true, // Security measure.
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		return null;
+	}
+
+	$status_code = wp_remote_retrieve_response_code( $response );
+
+	// 401/403/404 = protected, 200 = exposed, everything else = unable to determine.
+	if ( in_array( $status_code, array( 401, 403, 404 ), true ) ) {
+		return true;
+	}
+
+	if ( 200 === $status_code ) {
+		return false;
+	}
+
+	return null;
+}
+
+/**
+ * Grab a file in the restricted directory that can be used for access testing.
+ *
+ * @since 3.7
+ *
+ * @param string $directory The directory path to search.
+ * @return string|null File path if found, null otherwise.
+ */
+function pmpro_find_testable_file( $directory ) {
+	try {
+		$directory_iterator = new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS );
+		$filtered_iterator  = new RecursiveCallbackFilterIterator(
+			$directory_iterator,
+			static function( $current ) {
+				$filename = $current->getFilename();
+
+				// Skip dotfiles and dot directories (e.g. .DS_Store, .htaccess).
+				return ! empty( $filename ) && '.' !== $filename[0];
+			}
+		);
+		$iterator = new RecursiveIteratorIterator( $filtered_iterator, RecursiveIteratorIterator::SELF_FIRST );
+
+		foreach ( $iterator as $file ) {
+			if ( $file->isFile() ) {
+				return $file->getPathname();
+			}
+		}
+	} catch ( UnexpectedValueException $e ) {
+		// Directory exists but is not readable or has other access issues.
+		return null;
+	} catch ( Exception $e ) {
+		// Any other unexpected issue while iterating; fail gracefully.
+		return null;
+	}
+
+	return null;
 }

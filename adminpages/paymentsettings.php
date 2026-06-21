@@ -215,7 +215,8 @@
 											// Special Cases for Add Ons that add secondary gateways. These will be removed when core natively supports multiple gateways.
 											if (
 												( function_exists( 'pmproappe_pmpro_valid_gateways' ) && $gateway_slug === 'paypalexpress' ) || // Add PayPal Express Add On.
-												( defined( 'PMPROPBC_VER' ) && $gateway_slug === 'check' ) // Pay by Check Add On.
+												( defined( 'PMPROPBC_VER' ) && $gateway_slug === 'check' ) || // Pay by Check Add On.
+												( $gateway_slug === 'paypal' && function_exists( 'pmpro_paypal_is_secondary' ) && pmpro_paypal_is_secondary() ) // PayPal Gateway Add On (only when configured to act as a secondary).
 											) {
 												// The Add On is active for the gateway being shown.
 												if ( pmpro_getOption( 'gateway' ) === $gateway_slug ) {
@@ -228,8 +229,13 @@
 											}
 
 											// Special case for deprecated gateways.
-											if ( in_array( $gateway_slug, $deprecated_gateways, true ) && $gateway_slug === pmpro_getOption( 'gateway' ) ) {
-												$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Enabled (Not Supported)', 'paid-memberships-pro' ) . '</span>';
+											if ( in_array( $gateway_slug, $deprecated_gateways, true ) ) {
+												if ( pmpro_getOption( 'gateway' ) === $gateway_slug ) {
+													$gateway_status_html = '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Enabled (Not Supported)', 'paid-memberships-pro' ) . '</span>';
+												} elseif ( $gateway_status_html !== esc_html__( '&#8212;', 'paid-memberships-pro' ) ) {
+													// Gateway is enabled (e.g. via Add PayPal Express Add On) but deprecated.
+													$gateway_status_html .= ' <span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Not Supported', 'paid-memberships-pro' ) . '</span>';
+												}
 											}
 
 											echo wp_kses_post( $gateway_status_html );
@@ -349,6 +355,9 @@
 						?>
 					</p>
 					<p>
+						<?php if ( 'paypalexpress' === $edit_gateway ) { ?>
+							<a class="button button-secondary" href="https://www.paidmembershipspro.com/paypal-express-deprecation-hub/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=paypal-express-deprecation" target="_blank" rel="nofollow noopener"><?php esc_html_e('Learn More', 'paid-memberships-pro' ); ?></a>
+						<?php } ?>
 						<a class="button button-secondary" href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e('About Deprecated Gateways', 'paid-memberships-pro' ); ?></a>
 						<a class="button" href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e('How to Switch Payment Gateways', 'paid-memberships-pro' ); ?></a>
 					</p>

@@ -58,12 +58,14 @@ abstract class PMPro_Email_Template {
 	final protected function get_base_email_template_variables() {
 		$base_email_template_variables = array(
 			'sitename' => get_option( 'blogname' ),
-			'siteemail' => get_option( 'pmpro_from_email' ),
 			'site_url'  => home_url(),
 			'levels_url' => pmpro_url( 'levels' ),
 			'levels_link' => pmpro_url( 'levels' ),
-			'login_link' => pmpro_login_url(), 
+			'login_link' => pmpro_login_url(),
 			'login_url' => pmpro_login_url(),
+			'pmpro_from_email' => get_option( 'pmpro_from_email' ),
+			'siteemail' => get_option( 'pmpro_from_email' ),
+			'wordpress_admin_email' => get_bloginfo( 'admin_email' ),
 			'header_name' => $this->get_recipient_name(),
 		);
 
@@ -79,12 +81,14 @@ abstract class PMPro_Email_Template {
 	 */
 	final public static function get_base_email_template_variables_with_description() {
 		$base_email_template_variables_with_description = array(
-			'!!sitename!!' => esc_html__( 'The name of the site.', 'paid-memberships-pro' ),
-			'!!siteemail!!' => esc_html__( 'The email address of the site.', 'paid-memberships-pro' ),
-			'!!site_url!!'  => esc_html__( 'The URL of the site.', 'paid-memberships-pro' ),
-			'!!levels_url!!' => esc_html__( 'The URL of the page where users can view available membership levels.', 'paid-memberships-pro' ),
-			'!!login_url!!' => esc_html__( 'The URL of the login page.', 'paid-memberships-pro' ),
-			'!!header_name!!' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
+			'{{ sitename }}' => esc_html__( 'The name of the site.', 'paid-memberships-pro' ),
+			'{{ siteemail }}' => esc_html__( 'The email address of the site.', 'paid-memberships-pro' ),
+			'{{ site_url }}'  => esc_html__( 'The URL of the site.', 'paid-memberships-pro' ),
+			'{{ levels_url }}' => esc_html__( 'The URL of the page where users can view available membership levels.', 'paid-memberships-pro' ),
+			'{{ login_url }}' => esc_html__( 'The URL of the login page.', 'paid-memberships-pro' ),
+			'{{ pmpro_from_email }}' => esc_html__( 'The "From Email" set in Memberships > Settings > Email Settings.', 'paid-memberships-pro' ),
+			'{{ wordpress_admin_email }}' => esc_html__( 'The "Administration Email Address" set in Settings > General.', 'paid-memberships-pro' ),
+			'{{ header_name }}' => esc_html__( 'The name of the email recipient.', 'paid-memberships-pro' ),
 		);
 
 		return $base_email_template_variables_with_description;

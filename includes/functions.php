@@ -44,6 +44,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
+	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
 }
 pmpro_setDBTables();
 
@@ -727,6 +728,124 @@ function delete_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value =
 }
 
 /**
+ * Get PMPro tables that store non-historical relationships to a membership level.
+ *
+ * This intentionally excludes orders, subscriptions, and membership history.
+ *
+ * @since 3.8
+ *
+ * @return array[] {
+ *     An array of table/column pairs.
+ *
+ *     @type string $table  The table name.
+ *     @type string $column The column containing the membership level ID.
+ * }
+ */
+function pmpro_get_membership_level_relationship_tables() {
+	global $wpdb;
+
+	return array(
+		array(
+			'table'  => $wpdb->pmpro_memberships_categories,
+			'column' => 'membership_id',
+		),
+		array(
+			'table'  => $wpdb->pmpro_memberships_pages,
+			'column' => 'membership_id',
+		),
+		array(
+			'table'  => $wpdb->pmpro_discount_codes_levels,
+			'column' => 'level_id',
+		),
+		array(
+			'table'  => $wpdb->pmpro_membership_levels_groups,
+			'column' => 'level',
+		),
+		array(
+			'table'  => $wpdb->pmpro_membership_levelmeta,
+			'column' => 'pmpro_membership_level_id',
+		),
+	);
+}
+
+/**
+ * Delete non-historical records related to a membership level.
+ *
+ * @since 3.8
+ *
+ * @param int $level_id The membership level ID.
+ * @return bool True if all related records were deleted or no related records existed; false on database error.
+ */
+function pmpro_delete_membership_level_relationships( $level_id ) {
+	global $wpdb;
+
+	$level_id = intval( $level_id );
+	if ( empty( $level_id ) ) {
+		return false;
+	}
+
+	$success = true;
+	foreach ( pmpro_get_membership_level_relationship_tables() as $relationship_table ) {
+		$deleted = $wpdb->delete(
+			$relationship_table['table'],
+			array( $relationship_table['column'] => $level_id ),
+			array( '%d' )
+		);
+
+		if ( false === $deleted ) {
+			$success = false;
+		}
+	}
+
+	wp_cache_delete( $level_id, 'pmpro_membership_level_meta' );
+
+	return $success;
+}
+
+/**
+ * Delete orphaned non-historical membership level relationship records.
+ *
+ * @since 3.8
+ *
+ * @return bool True if all orphaned records were deleted or no orphaned records existed; false on database error.
+ */
+function pmpro_delete_orphaned_membership_level_relationships() {
+	global $wpdb;
+
+	$success = true;
+	foreach ( pmpro_get_membership_level_relationship_tables() as $relationship_table ) {
+		$orphaned_level_ids = array();
+		if ( $relationship_table['table'] === $wpdb->pmpro_membership_levelmeta ) {
+			$orphaned_level_ids = (array) $wpdb->get_col(
+				"SELECT DISTINCT pmpro_level_relationship.`{$relationship_table['column']}`
+				FROM {$relationship_table['table']} AS pmpro_level_relationship
+				LEFT JOIN {$wpdb->pmpro_membership_levels} AS pmpro_membership_level
+					ON pmpro_level_relationship.`{$relationship_table['column']}` = pmpro_membership_level.id
+				WHERE pmpro_membership_level.id IS NULL"
+			);
+		}
+
+		$deleted = $wpdb->query(
+			"DELETE pmpro_level_relationship
+			FROM {$relationship_table['table']} AS pmpro_level_relationship
+			LEFT JOIN {$wpdb->pmpro_membership_levels} AS pmpro_membership_level
+				ON pmpro_level_relationship.`{$relationship_table['column']}` = pmpro_membership_level.id
+			WHERE pmpro_membership_level.id IS NULL"
+		);
+
+		if ( false === $deleted ) {
+			$success = false;
+		}
+
+		foreach ( $orphaned_level_ids as $level_id ) {
+			wp_cache_delete( intval( $level_id ), 'pmpro_membership_level_meta' );
+		}
+	}
+
+	return $success;
+}
+
+/**
  * pmpro_membership_order Meta Functions
  */
 function add_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value, $unique = false ) {
@@ -836,6 +955,10 @@ if ( ! function_exists( 'cleanPhone' ) ) {
 	 * @param string $phone The phone number to clean.
 	 */
 	function cleanPhone( $phone ) {
+		// Return an empty string if no phone number is provided.
+		if ( empty( $phone ) ) {
+			return '';
+		}
 		// if a + is passed, just pass it along
 		if ( strpos( $phone, '+' ) !== false ) {
 			return $phone;
@@ -2455,6 +2578,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				l.confirmation,
 				l.expiration_number,
 				l.expiration_period,
+				l.allow_signups,
 				mu.initial_payment,
 				mu.billing_amount,
 				mu.cycle_number,
@@ -2462,6 +2586,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.billing_limit,
 				mu.trial_amount,
 				mu.trial_limit,
+				mu.status,
 				mu.code_id as code_id,
 				UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate,
 				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
@@ -3163,7 +3288,7 @@ function pmpro_is_ready() {
 			} else {
 				$pmpro_gateway_ready = false;
 			}
-		} elseif ( $gateway == 'paypal' || $gateway == 'paypalexpress' ) {
+		} elseif ( $gateway == 'paypalwpp' || $gateway == 'paypalexpress' ) {
 			if ( $gateway_environment && get_option( 'pmpro_gateway_email' ) && get_option( 'pmpro_apiusername' ) && get_option( 'pmpro_apipassword' ) && get_option( 'pmpro_apisignature' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
@@ -3612,11 +3737,15 @@ function pmpro_get_price_info( $amount, $currency = null ) {
 		)
 	);
 
-	// Get the zero-padded decimal amount.
-	$price_info['parts']['decimal_string'] = sprintf( '%02d', $price_info['parts']['decimal'] );
+	// Get the zero-padded decimal amount, sized to the currency's decimal count.
+	$price_info['parts']['decimal_string'] = $currency_info['decimals'] > 0
+		? sprintf( '%0' . $currency_info['decimals'] . 'd', $price_info['parts']['decimal'] )
+		: '';
 
-	// Get the amount as a string.
-	$price_info['amount_string'] = sprintf( '%s.%s', $price_info['parts']['number'], $price_info['parts']['decimal_string'] );
+	// Get the amount as a string. Zero-decimal currencies have no fractional part.
+	$price_info['amount_string'] = $currency_info['decimals'] > 0
+		? sprintf( '%s.%s', $price_info['parts']['number'], $price_info['parts']['decimal_string'] )
+		: (string) $price_info['parts']['number'];
 
 	return $price_info;
 }
@@ -4200,6 +4329,7 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 /**
  * Checks if a webhook is running
  * @since 2.5
+ * @since 3.7 Calling this function to read webhook status is deprecated.
  * @param string $gateway If passed in, requires that specific gateway.
  * @param bool $set Set to true to set the constant and fire the action hook.
  * @return bool True or false if a PMPro webhook set the constant or not.
@@ -4207,10 +4337,19 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 function pmpro_doing_webhook( $gateway = null, $set = false ){
 	// If second param is set, set things up.
 	if ( ! empty( $set ) ) {
-		define( 'PMPRO_DOING_WEBHOOK', $gateway );
+		if ( ! defined( 'PMPRO_DOING_WEBHOOK' ) ) {
+			define( 'PMPRO_DOING_WEBHOOK', $gateway );
+		}
 		do_action( 'pmpro_doing_webhook', $gateway );
 		return true;
 	}
+
+	// Reading webhook status through this function is deprecated.
+	_deprecated_argument(
+		__FUNCTION__,
+		'3.7',
+		esc_html__( 'Reading webhook status via pmpro_doing_webhook() is deprecated and will be removed in a future version of Paid Memberships Pro.', 'paid-memberships-pro' )
+	);
 
 	// Otherwise, check if we were already set up.
 	if( defined( 'PMPRO_DOING_WEBHOOK' ) && !empty ( PMPRO_DOING_WEBHOOK ) ){
@@ -4232,11 +4371,17 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 /**
  * Called once a webhook has been run but was not handled.
  *
+ * @param string|null $gateway Optional. The gateway the webhook was not handled for.
+ *
  * @return void
  *
  * @since 2.8
  */
-function pmpro_unhandled_webhook(){
+function pmpro_unhandled_webhook( $gateway = null ) {
+	if ( null === $gateway ) {
+		$gateway = defined( 'PMPRO_DOING_WEBHOOK' ) ? PMPRO_DOING_WEBHOOK : '';
+	}
+
 	/**
 	 * Allow hooking into after a webhook has been run but was not handled.
 	 *
@@ -4244,7 +4389,7 @@ function pmpro_unhandled_webhook(){
 	 *
 	 * @param string $gateway The gateway the webhook was not handled for.
 	 */
-	do_action( 'pmpro_unhandled_webhook', PMPRO_DOING_WEBHOOK );
+	do_action( 'pmpro_unhandled_webhook', $gateway );
 }
 
 /**
@@ -4267,7 +4412,33 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 		$sanitized_string = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $sanitized_string );
 	}
 
+	// Preserve Liquid-style control tags through wp_kses() sanitization.
+	// Only {% %} tags are preserved (conditions use < > operators that wp_kses encodes).
+	// Output tags {{ }} are NOT preserved so wp_kses can still sanitize their contents.
+	$liquid_placeholders = array();
+	if ( 'pmpro_email' === $context ) {
+		$placeholder_id = wp_rand();
+		$sanitized_string = preg_replace_callback(
+			'/(\{%.*?%\})/s',
+			function ( $matches ) use ( &$liquid_placeholders, $placeholder_id ) {
+				$placeholder = '%%PMPRO_LIQUID_' . $placeholder_id . '_' . count( $liquid_placeholders ) . '%%';
+				$liquid_placeholders[ $placeholder ] = $matches[0];
+				return $placeholder;
+			},
+			$sanitized_string
+		);
+	}
+
 	$sanitized_string = wp_kses( $sanitized_string, $context );
+
+	// Restore Liquid template tags.
+	if ( ! empty( $liquid_placeholders ) ) {
+		$sanitized_string = str_replace(
+			array_keys( $liquid_placeholders ),
+			array_values( $liquid_placeholders ),
+			$sanitized_string
+		);
+	}
 
 	/**
 	 * Allow overriding the normal pmpro_kses functionality for a context.
@@ -4279,6 +4450,142 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 	 * @since 2.6.2
 	 */
 	return apply_filters( 'pmpro_kses', $sanitized_string, $original_string, $context );
+}
+
+/**
+ * Get TinyMCE autocomplete settings for Liquid syntax.
+ *
+ * @since 3.8
+ *
+ * @param array $variables Variables to include in autocomplete. Supports a flat variable => description map or grouped maps.
+ * @return array Liquid autocomplete settings.
+ */
+function pmpro_get_liquid_autocomplete_settings( $variables = array() ) {
+	$settings = array(
+		'variables' => pmpro_get_liquid_autocomplete_variable_suggestions( $variables ),
+		'filters'   => pmpro_get_liquid_autocomplete_filter_suggestions(),
+		'tags'      => pmpro_get_liquid_autocomplete_tag_suggestions(),
+		'strings'   => array(
+			'autocompleteLabel' => __( 'Liquid autocomplete', 'paid-memberships-pro' ),
+			'liquidTagsHeader' => __( 'Liquid Tags', 'paid-memberships-pro' ),
+		),
+	);
+
+	return $settings;
+}
+
+/**
+ * Convert a list of Liquid variables into autocomplete suggestions.
+ *
+ * @since 3.8
+ *
+ * @param array $variables Variables to include in autocomplete. Supports a flat variable => description map or grouped maps.
+ * @return array Variable autocomplete suggestions.
+ */
+function pmpro_get_liquid_autocomplete_variable_suggestions( $variables ) {
+	$suggestions = array();
+
+	foreach ( (array) $variables as $key => $description ) {
+		if ( is_array( $description ) ) {
+			foreach ( $description as $group_key => $group_description ) {
+				$suggestions[] = pmpro_get_liquid_autocomplete_variable_suggestion( $group_key, $group_description );
+			}
+
+			continue;
+		}
+
+		$suggestions[] = pmpro_get_liquid_autocomplete_variable_suggestion( $key, $description );
+	}
+
+	return $suggestions;
+}
+
+/**
+ * Convert a single Liquid variable into an autocomplete suggestion.
+ *
+ * @since 3.8
+ *
+ * @param string $variable    The variable token.
+ * @param string $description The variable description.
+ * @return array Variable autocomplete suggestion.
+ */
+function pmpro_get_liquid_autocomplete_variable_suggestion( $variable, $description = '' ) {
+	$name = $variable;
+
+	if ( preg_match( '/^\{\{\s*([^}|\s]+)/', $variable, $match ) ) {
+		$name = $match[1];
+	}
+
+	return array(
+		'name'        => $name,
+		'label'       => $variable,
+		'description' => $description,
+		'insert'      => $variable,
+	);
+}
+
+/**
+ * Get Liquid filter autocomplete suggestions.
+ *
+ * @since 3.8
+ *
+ * @return array Liquid filter autocomplete suggestions.
+ */
+function pmpro_get_liquid_autocomplete_filter_suggestions() {
+	$suggestions = array();
+
+	if ( ! class_exists( 'PMPro_Liquid_Renderer' ) ) {
+		return $suggestions;
+	}
+
+	foreach ( PMPro_Liquid_Renderer::get_filters() as $filter_name => $filter ) {
+		$suggestions[] = array(
+			'name'        => $filter_name,
+			'label'       => $filter_name,
+			'description' => isset( $filter['description'] ) ? $filter['description'] : '',
+			'insert'      => ( 'default' === $filter_name ) ? ' | default: "__pmpro_cursor__"' : ' | ' . $filter_name,
+		);
+	}
+
+	return $suggestions;
+}
+
+/**
+ * Get Liquid tag autocomplete suggestions.
+ *
+ * @since 3.8
+ *
+ * @return array Liquid tag autocomplete suggestions.
+ */
+function pmpro_get_liquid_autocomplete_tag_suggestions() {
+	$suggestions = array(
+		array(
+			'name'        => 'if',
+			'label'       => '{% if ... %} ... {% endif %}',
+			'description' => __( 'Show content when a condition is true', 'paid-memberships-pro' ),
+			'insert'      => '{% if __pmpro_cursor__ %}{% endif %}',
+		),
+		array(
+			'name'        => 'elsif',
+			'label'       => '{% elsif ... %}',
+			'description' => __( 'Add another condition inside an if block', 'paid-memberships-pro' ),
+			'insert'      => '{% elsif __pmpro_cursor__ %}',
+		),
+		array(
+			'name'        => 'else',
+			'label'       => '{% else %}',
+			'description' => __( 'Add fallback content inside an if block', 'paid-memberships-pro' ),
+			'insert'      => '{% else %}',
+		),
+		array(
+			'name'        => 'endif',
+			'label'       => '{% endif %}',
+			'description' => __( 'Close an if block', 'paid-memberships-pro' ),
+			'insert'      => '{% endif %}',
+		),
+	);
+
+	return $suggestions;
 }
 
 /**
@@ -5136,7 +5443,7 @@ function pmpro_display_member_account_level_message( $level ) {
 	if ( $membership_account_message ) {
 		?>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-message' ) ); ?>">
-			<?php echo wp_kses_post( wpautop( $membership_account_message ) ); ?>
+			<?php echo wp_kses_post( do_shortcode( shortcode_unautop( wpautop( $membership_account_message ) ) ) ); ?>
 		</div>
 		<?php
 	}

@@ -32,6 +32,7 @@ export default function Edit({ attributes, setAttributes }) {
 		<InspectorControls>
 			<PanelBody>
 				<ToggleControl
+					__nextHasNoMarginBottom
 					label={ __( "Display 'Welcome' content when logged in.", "paid-memberships-pro" ) }
 					checked={display_if_logged_in}
 					onChange={(value) => {
@@ -41,6 +42,7 @@ export default function Edit({ attributes, setAttributes }) {
 					}}
 				/>
 				<ToggleControl
+					__nextHasNoMarginBottom
 					label={ __( "Display the 'Log In Widget' menu in the 'Welcome' content.", "paid-memberships-pro" ) }
 					help={ __( "Assign the menu under Appearance > Menus.", "paid-memberships-pro" ) }
 					checked={show_menu}
@@ -51,6 +53,7 @@ export default function Edit({ attributes, setAttributes }) {
 					}}
 				/>
 				<ToggleControl
+					__nextHasNoMarginBottom
 					label={ __( "Display a 'Log Out' link in the 'Welcome' content.", "paid-memberships-pro" ) }
 					checked={show_logout_link}
 					onChange={(value) => {

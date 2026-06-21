@@ -4,7 +4,6 @@
 */
 // Wizard pre-header
 include( PMPRO_DIR . '/adminpages/wizard/save-steps.php' );
-require_once( PMPRO_DIR . '/includes/lib/SendWP/sendwp.php' );
 
 /**
  * Redirect to Setup Wizard if the user hasn't been there yet.
@@ -285,6 +284,25 @@ function pmpro_admin_header() {
 					<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="300" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 				</h1>
 				<span class="pmpro_version">v<?php echo esc_html( PMPRO_VERSION ); ?></span>
+			</div>
+			<div class="pmpro_admin pmpro_quick_search">
+				<label class="screen-reader-text" for="pmpro_quick_search_input"><?php esc_html_e( 'Search PMPro data', 'paid-memberships-pro' ); ?></label>
+				<input id="pmpro_quick_search_input" type="text" placeholder="<?php esc_attr_e( 'Quick search...', 'paid-memberships-pro' ); ?>" autocomplete="off" />
+				<div class="pmpro_quick_search_select">
+					<label class="screen-reader-text" for="pmpro_quick_search_type"><?php esc_html_e( 'PMPro data to search', 'paid-memberships-pro' ); ?></label>
+					<select id="pmpro_quick_search_type">
+						<option value="all"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></option>
+						<option value="users"><?php esc_html_e( 'Users', 'paid-memberships-pro' ); ?></option>
+						<option value="subscriptions"><?php esc_html_e( 'Subscriptions', 'paid-memberships-pro' ); ?></option>
+						<option value="orders"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></option>
+						<option value="reports"><?php esc_html_e( 'Reports', 'paid-memberships-pro' ); ?></option>
+						<option value="levels"><?php esc_html_e( 'Levels', 'paid-memberships-pro' ); ?></option>
+						<option value="discounts"><?php esc_html_e( 'Discount Codes', 'paid-memberships-pro' ); ?></option>
+						<option value="settings"><?php esc_html_e( 'Settings', 'paid-memberships-pro' ); ?></option>
+						<option value="documentation"><?php esc_html_e( 'Documentation', 'paid-memberships-pro' ); ?></option>
+					</select>
+				</div>
+				<div class="pmpro_quick_search_results"></div>
 			</div>
 			<div class="pmpro_meta">
 				<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=documentation"><?php esc_html_e('Documentation', 'paid-memberships-pro' ); ?></a>
