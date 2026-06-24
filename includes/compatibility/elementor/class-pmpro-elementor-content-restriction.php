@@ -164,6 +164,12 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			return $schema;
 		}
 
+		// Elementor v4 dependency semantics: a control with an `effect => 'hide'` dependency is HIDDEN
+		// when its where-condition is NOT met, and shown when it IS met. In other words, each `where`
+		// below describes the condition under which the dependent field should be VISIBLE. (Verified
+		// against Elementor's editor logic; its own widgets use the same pattern, e.g. a video's
+		// "playsinline" is shown only when "autoplay" is true.) Do not invert these — reading them as
+		// "hide when the condition is true" is backwards.
 		$enabled_dependency = Atomic_Dependency_Manager::make()
 			->where(
 				array(
@@ -301,7 +307,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 					)
 				),
 			Chips_Control::bind_to( 'pmpro_levels' )
-				->set_label( __( 'Membership Levels', 'paid-memberships-pro' ) )
+				->set_label( esc_html__( 'Membership Levels', 'paid-memberships-pro' ) )
 				->set_options( $level_options ),
 		);
 
@@ -309,7 +315,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 			->set_label( esc_html__( 'Show no access message', 'paid-memberships-pro' ) );
 
 		$controls[] = Section::make()
-			->set_label( __( 'Paid Memberships Pro', 'paid-memberships-pro' ) )
+			->set_label( esc_html__( 'Paid Memberships Pro', 'paid-memberships-pro' ) )
 			->set_id( $this->section_name )
 			->set_items( $items );
 
@@ -405,7 +411,18 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	 * @param object $element The Elementor element being rendered.
 	 */
 	public function pmpro_elementor_before_render( $element ) {
-		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() || 'widget' === $element->get_type() ) {
+		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
+			return;
+		}
+
+		// Scope this no-access-message swap to the element types that can actually carry a PMPro
+		// restriction: classic sections/containers and the supported atomic container types. Everything
+		// else — widgets (handled via pmpro_elementor_render_content()), columns, atomic structural
+		// sub-elements, etc. — is skipped here so we don't resolve settings for every element on the page.
+		// Note classic sections/containers are included, which is what lets a classic container with a
+		// "no access message" enabled show that message via this buffer swap.
+		$element_type = method_exists( $element, 'get_type' ) ? $element->get_type() : '';
+		if ( ! in_array( $element_type, array_merge( array( 'section', 'container' ), $this->get_atomic_container_types() ), true ) ) {
 			return;
 		}
 
@@ -472,8 +489,13 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 		// If something else has already decided not to render this element — another should_render
 		// filter (e.g. a display-condition plugin) or Elementor's own empty-content check — respect that.
 		// Discard any no-access message we buffered in pmpro_elementor_before_render() so it is not echoed
-		// in place of an element that is supposed to be gone, and let the buffer close balanced. We run
-		// late (priority 9999) so other plugins' decisions are visible here; note this is a strong
+		// in place of an element that is supposed to be gone, and let the buffer close balanced.
+		//
+		// This is reachable, not dead code: Elementor fires the `elementor/frontend/before_render` action
+		// (where we buffer the message) BEFORE the `{type}/should_render` filter we are in now — see
+		// Element_Base::print_element() (before_render at line ~492, should_render at line ~531). So when
+		// this runs, $this->no_access_messages may already hold a message for this element. We register
+		// late (priority 9999) so other plugins' decisions are visible here; that makes this a strong
 		// mitigation rather than a guarantee, since a filter hooked even later could still win.
 		if ( false === $should_render ) {
 			$element_id = $element->get_id();
