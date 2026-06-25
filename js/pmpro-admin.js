@@ -1743,8 +1743,11 @@ jQuery(document).ready(function($) {
 
 		// Use WordPress REST API
 		$.ajax({
-			url: pmpro.rest_url + 'pmpro/v1/email_log_popup?log_id=' + logId,
+			url: pmpro.rest_url + 'pmpro/v1/email_log_popup',
 			type: 'GET',
+			data: {
+				log_id: logId
+			},
 			beforeSend: function(xhr) {
 				xhr.setRequestHeader('X-WP-Nonce', pmpro.nonce);
 			},
