@@ -80,17 +80,47 @@ function pmpro_elementor_is_dynamic_content( $is_dynamic_content, $element_raw_d
 	}
 
 	// If we detect that PMPro enabled option is set, let's make it dynamic content.
-	if ( isset( $element_raw_data['settings']['pmpro_enable'] ) && $element_raw_data['settings']['pmpro_enable'] ) {
-		return true;
+	if ( isset( $element_raw_data['settings']['pmpro_enable'] ) ) {
+		$pmpro_enable = $element_raw_data['settings']['pmpro_enable'];
+		if ( is_array( $pmpro_enable ) && isset( $pmpro_enable['$$type'] ) && array_key_exists( 'value', $pmpro_enable ) ) {
+			$pmpro_enable = $pmpro_enable['value'];
+		}
+
+		if ( ! empty( $pmpro_enable ) && 'no' !== $pmpro_enable ) {
+			return true;
+		}
+	}
+
+	if ( ! empty( $element_raw_data['settings'] ) ) {
+		$settings_to_check = array_values( $element_raw_data['settings'] );
+		while ( ! empty( $settings_to_check ) ) {
+			$setting = array_pop( $settings_to_check );
+			if ( is_array( $setting ) && isset( $setting['$$type'] ) && array_key_exists( 'value', $setting ) ) {
+				$setting = $setting['value'];
+			}
+
+			// Look for an embedded PMPro shortcode (e.g. [pmpro_member], [pmpro_account]) so the element
+			// isn't statically cached. We match the shortcode opener specifically rather than any "pmpro"
+			// substring, so that an unrelated CSS class or URL containing "pmpro" doesn't needlessly
+			// disable caching. Restriction settings themselves are already handled by the pmpro_enable
+			// check above.
+			if ( is_string( $setting ) && str_contains( $setting, '[pmpro' ) ) {
+				return true;
+			}
+
+			if ( is_array( $setting ) ) {
+				$settings_to_check = array_merge( $settings_to_check, array_values( $setting ) );
+			}
+		}
 	}
 
 	// Check Elementor text editor for 'pmpro' string.
-	if ( ! empty( $element_raw_data['settings']['editor'] ) && str_contains( $element_raw_data['settings']['editor'], 'pmpro' ) ) {
+	if ( ! empty( $element_raw_data['settings']['editor'] ) && is_string( $element_raw_data['settings']['editor'] ) && str_contains( $element_raw_data['settings']['editor'], 'pmpro' ) ) {
 		return true;
 	}
 
 	// Check if Elementor shortcode widget has a PMPro shortcode.
-	if ( ! empty( $element_raw_data['settings']['shortcode'] ) && str_contains( $element_raw_data['settings']['shortcode'], 'pmpro' ) ) {
+	if ( ! empty( $element_raw_data['settings']['shortcode'] ) && is_string( $element_raw_data['settings']['shortcode'] ) && str_contains( $element_raw_data['settings']['shortcode'], 'pmpro' ) ) {
 		return true;
 	}
 
