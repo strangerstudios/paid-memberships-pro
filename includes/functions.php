@@ -5442,6 +5442,11 @@ function pmpro_check_token_order_for_completion( $order_id ) {
  * Show a message on the account page for a specific membership level.
  */
 function pmpro_display_member_account_level_message( $level ) {
+	// Only show the message to users who have this level. Cards may also be shown for memberships that are waiting on payment.
+	if ( ! pmpro_hasMembershipLevel( $level->id ) ) {
+		return;
+	}
+
 	$membership_account_message = get_pmpro_membership_level_meta( $level->id, 'membership_account_message', true );
 	if ( $membership_account_message ) {
 		?>
@@ -5452,6 +5457,130 @@ function pmpro_display_member_account_level_message( $level ) {
 	}
 }
 add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );
+
+/**
+ * Get the live pending order for a user and level.
+ *
+ * Only returns the user's most recent order for the level, and only if it is still pending.
+ * A newer order in any other status (e.g. a 'success' order from paying again by a different
+ * method) means the pending order is stale and should not be surfaced.
+ *
+ * The order is also treated as stale if the user has since started a different level in the same
+ * single-selection group, since holding one level in that group means they chose another plan.
+ *
+ * @since TBD
+ *
+ * @param int $user_id  The ID of the user to check.
+ * @param int $level_id The ID of the level to check.
+ * @return MemberOrder|null The pending order or null if there is none.
+ */
+function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
+	static $cache = array();
+
+	$cache_key = $user_id . ':' . $level_id;
+	if ( ! array_key_exists( $cache_key, $cache ) ) {
+		$cache[ $cache_key ] = null;
+
+		$recent_orders = MemberOrder::get_orders(
+			array(
+				'user_id'             => $user_id,
+				'membership_level_id' => $level_id,
+				'limit'               => 1,
+			)
+		);
+		$recent_order = empty( $recent_orders ) ? null : current( $recent_orders );
+
+		// The pending order is only live if it is the user's most recent order for the level.
+		if ( ! empty( $recent_order ) && $recent_order->status === 'pending' ) {
+			$cache[ $cache_key ] = $recent_order;
+
+			// In a single-selection group, a level the user started after this order supersedes it.
+			$group = pmpro_get_level_group( pmpro_get_group_id_for_level( $level_id ) );
+			if ( ! empty( $group ) && empty( $group->allow_multiple_selections ) ) {
+				$group_level_ids = wp_list_pluck( pmpro_get_levels_for_group( $group->id ), 'id' );
+				$held_levels = pmpro_getMembershipLevelsForUser( $user_id );
+				if ( ! empty( $held_levels ) ) {
+					foreach ( $held_levels as $held_level ) {
+						// Skip the pending level itself and any level outside this group.
+						if ( $held_level->id == $level_id || ! in_array( $held_level->id, $group_level_ids ) ) {
+							continue;
+						}
+						// Only supersede if the held level was started after the pending order was created.
+						if ( $held_level->startdate >= $recent_order->timestamp ) {
+							$cache[ $cache_key ] = null;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return $cache[ $cache_key ];
+}
+
+/**
+ * Show a message on the level card on the Membership Account page when the user has a pending order for that level.
+ *
+ * @since TBD
+ *
+ * @param object $level The membership level object for the card being shown.
+ */
+function pmpro_account_pending_order_message( $level ) {
+	global $current_user;
+
+	// Check for a pending order for this user and level.
+	$pending_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $level->id );
+	if ( empty( $pending_order ) ) {
+		return;
+	}
+
+	// If the user has this level, a renewal payment is past due. Otherwise, the membership is waiting on its first payment.
+	if ( pmpro_hasMembershipLevel( $level->id, $current_user->ID ) ) {
+		$message = __( 'Your latest payment for this membership is past due. We are waiting for your payment to be completed.', 'paid-memberships-pro' );
+	} else {
+		$message = __( 'We are waiting for your payment to be completed. Your membership will be activated once the payment has been confirmed.', 'paid-memberships-pro' );
+	}
+	?>
+	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>"><?php echo esc_html( $message ); ?></div>
+	<?php
+}
+add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_account_pending_order_message' );
+
+/**
+ * Add a link to view the pending order to the level card actions on the Membership Account page.
+ *
+ * If the card is already showing an "Update Billing Information" link, members can complete
+ * their payment there instead, so the order link is not added.
+ *
+ * @since TBD
+ *
+ * @param array $pmpro_member_action_links Member action links.
+ * @param int   $level_id The ID of the membership level.
+ * @return array Member action links.
+ */
+function pmpro_account_pending_order_action_links( $pmpro_member_action_links, $level_id ) {
+	global $current_user;
+
+	// Check for a pending order for this user and level.
+	$pending_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $level_id );
+	if ( empty( $pending_order ) ) {
+		return $pmpro_member_action_links;
+	}
+
+	// If we are already showing an update billing link, the member can complete their payment there.
+	if ( isset( $pmpro_member_action_links['update-billing'] ) ) {
+		return $pmpro_member_action_links;
+	}
+
+	$invoice_url = pmpro_url( 'invoice', '?invoice=' . $pending_order->code );
+	if ( ! empty( $invoice_url ) ) {
+		$pmpro_member_action_links['view-order'] = '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_action' ) ) . '"><a id="pmpro_actionlink-view-order" href="' . esc_url( $invoice_url ) . '" aria-label="' . esc_attr( __( 'View Pending Order', 'paid-memberships-pro' ) ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a></span>';
+	}
+
+	return $pmpro_member_action_links;
+}
+add_filter( 'pmpro_member_action_links', 'pmpro_account_pending_order_action_links', 10, 2 );
 
 /**
  * Update the level restrictions for a post.
