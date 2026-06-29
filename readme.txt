@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8
+Stable tag: 3.8.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,14 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.8.1 - 2026-06-29 =
+* ENHANCEMENT: Added a new `style` attribute to the `[pmpro_checkout_button]` shortcode to render it as a link or a button, and improved its styling. #3708 (@kimcoleman)
+* ENHANCEMENT: Improved the HTML validity and accessibility of frontend forms and pages, including fixing duplicate `id` attributes and invalid fieldset/legend markup. #3707 (@kimcoleman)
+* BUG FIX: Fixed a fatal error on the Membership Billing page when a subscription's gateway object could not be loaded. #3706 (@kimcoleman)
+* BUG FIX: Fixed the Members List CSV export so the exporting admin is no longer incorrectly included when exporting filtered or searched results. #3711 (@andrewlimaza)
+* BUG FIX: Fixed a 404 error when viewing email log details in the modal on sites using Plain permalinks. #3712 (@dwanjuki)
+* BUG FIX: Fixed select fields overflowing the viewport on small screens. #3705 (@kimcoleman)
+
 = 3.8 - 2026-06-15 =
 * FEATURE: Upgraded the email template editor to the standard WordPress visual/text editor with built-in Liquid syntax autocomplete for variables, tags, and filters. #3695 (@dparker1005)
 * FEATURE: Added a new `[pmpro_membership_level]` shortcode for displaying membership level details. #3087 (@kimcoleman)
