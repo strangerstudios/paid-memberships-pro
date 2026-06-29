@@ -74,6 +74,29 @@
 			esc_html__( 'Global Variables', 'paid-memberships-pro' ) => PMPro_Email_Template::get_base_email_template_variables_with_description(),
 		);
 	}
+
+	// Enable Liquid autocomplete when the variable reference uses Liquid syntax.
+	$pmpro_liquid_autocomplete_enabled = (bool) $email_template_class || in_array( $edit, array( 'header', 'footer' ), true );
+
+	$pmpro_tinymce_settings = array(
+		'readonly' => filter_var( $template_data['disabled'], FILTER_VALIDATE_BOOLEAN ),
+	);
+
+	if ( $pmpro_liquid_autocomplete_enabled ) {
+		$pmpro_tinymce_settings['pmpro_liquid_autocomplete'] = wp_json_encode( pmpro_get_liquid_autocomplete_settings( $email_variables ) );
+	}
+
+	$pmpro_email_template_editor_settings = array(
+		'textarea_name'    => 'pmpro_email_template_body',
+		'textarea_rows'    => 15,
+		'editor_height'    => 500,
+		'media_buttons'    => true,
+		'default_editor'   => 'tinymce',
+		'drag_drop_upload' => true,
+		'wpautop'          => false,
+		'tinymce'          => $pmpro_tinymce_settings,
+		'quicktags'        => true,
+	);
 ?>
 <hr class="wp-header-end">
 <div id="message" class="status_message_wrapper">
@@ -188,7 +211,16 @@
 							<th scope="row" valign="top"><label for="pmpro_email_template_body"><?php esc_html_e( 'Body', 'paid-memberships-pro' ); ?></label></th>
 							<td>
 								<div id="template_editor_container">
-									<textarea rows="15" name="pmpro_email_template_body" id="pmpro_email_template_body" <?php echo filter_var( $template_data['disabled'], FILTER_VALIDATE_BOOLEAN ) ? 'disabled' : ''; ?>><?php echo esc_textarea( stripslashes( $template_data['body'] ) ); ?></textarea>
+									<?php
+										if ( $pmpro_liquid_autocomplete_enabled ) {
+											pmpro_register_liquid_autocomplete_editor( 'pmpro_email_template_body' );
+										}
+										wp_editor(
+											stripslashes( $template_data['body'] ),
+											'pmpro_email_template_body',
+											$pmpro_email_template_editor_settings
+										);
+									?>
 								</div>
 							</td>
 						</tr>

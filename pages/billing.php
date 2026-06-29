@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Billing
- * Version: TBD
+ * Version: 3.8.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version TBD
+ * @version 3.8.1
  *
  * @author Paid Memberships Pro
  */
@@ -14,16 +14,7 @@
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 <?php
 	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $pmpro_billing_subscription, $pmpro_billing_level;
-	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bemail, $bconfirmemail, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
-
-	/**
-	 * Filter to set if PMPro uses email or text as the type for email field inputs.
-	 *
-	 * @since 1.8.4.5
-	 *
-	 * @param bool $use_email_type, true to use email type, false to use text type
-	 */
-	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
+	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	// Get the default gateway for the site.
 	$default_gateway = get_option( 'pmpro_gateway' );
@@ -71,8 +62,11 @@
 						// Check if the gateway for this subscription updates a single subscription at once or all subscriptions at once.
 						$subscription_gateway_obj = $pmpro_billing_subscription->get_gateway_object();
 
+						// Gateway object is null when the subscription's gateway is unset or unavailable.
+						$payment_method_updates = is_object( $subscription_gateway_obj ) ? $subscription_gateway_obj->supports( 'payment_method_updates' ) : false;
+
 						// If it's not an 'all' update method, we can show specific level information.
-						if ( 'all' !== $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
+						if ( 'all' !== $payment_method_updates ) {
 							// Show the cost text for the subscription.
 							?>
 							<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain pmpro_list-with-labels pmpro_cols-2' ) ); ?>">
@@ -90,7 +84,7 @@
 								</li>
 							</ul> <!-- end pmpro_list -->
 							<?php
-						} elseif ( 'all' === $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
+						} elseif ( 'all' === $payment_method_updates ) {
 							// This is a bit trickier. We need to get all subscriptions that will be updated, which should be all subscriptions for this user
 							// that have the same gateway.
 							$user_subscriptions = PMPro_Subscription::get_subscriptions_for_user();
@@ -155,7 +149,7 @@
 					</div>
 				</div> <!-- end pmpro_card_content -->
 			</div> <!-- end pmpro_card -->
-		<?php } elseif ( ! $subscription_gateway_obj->supports( 'payment_method_updates' ) || $gateway != $default_gateway ) {
+		<?php } elseif ( ! $payment_method_updates || $gateway != $default_gateway ) {
 			// The gateway doesn't support on-site billing updates or is not the default site gateway.
 			?>
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
@@ -199,11 +193,11 @@
 								</div> <!-- end pmpro_form_field-blastname -->
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-baddress1', 'pmpro_form_field-baddress1' ) ); ?>">
 									<label for="baddress1" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Address 1', 'paid-memberships-pro' );?></label>
-									<input id="baddress1" name="baddress1" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'baddress1' ) ); ?>" value="<?php echo esc_attr($baddress1);?>" autocomplete="billing street-address" />
+									<input id="baddress1" name="baddress1" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'baddress1' ) ); ?>" value="<?php echo esc_attr($baddress1);?>" autocomplete="billing address-line1" />
 								</div> <!-- end pmpro_form_field-baddress1 -->
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-baddress2', 'pmpro_form_field-baddress2' ) ); ?>">
 									<label for="baddress2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Address 2', 'paid-memberships-pro' );?></label>
-									<input id="baddress2" name="baddress2" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'baddress2' ) ); ?>" value="<?php echo esc_attr($baddress2);?>" />
+									<input id="baddress2" name="baddress2" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'baddress2' ) ); ?>" value="<?php echo esc_attr($baddress2);?>" autocomplete="billing address-line2" />
 								</div> <!-- end pmpro_form_field-baddress2 -->
 
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bcity', 'pmpro_form_field-bcity' ) ); ?>">
@@ -250,14 +244,6 @@
 									<?php
 									}
 								?>
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bemail', 'pmpro_form_field-bemail' ) ); ?>">
-									<label for="bemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Email Address', 'paid-memberships-pro' );?></label>
-									<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', 'bemail' ) ); ?>" value="<?php echo esc_attr($bemail); ?>" />
-								</div> <!-- end pmpro_form_field-bemail -->
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bconfirmemail', 'pmpro_form_field-bconfirmemail' ) ); ?>">
-									<label for="bconfirmemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Email Address', 'paid-memberships-pro' );?></label>
-									<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', 'bconfirmemail' ) ); ?>" value="<?php echo esc_attr($bconfirmemail); ?>" />
-								</div> <!-- end pmpro_form_field-bconfirmemail -->
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bphone', 'pmpro_form_field-bphone' ) ); ?>">
 									<label for="bphone" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>
 									<input id="bphone" name="bphone" type="tel" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bphone' ) ); ?>" value="<?php echo esc_attr($bphone)?>" autocomplete="tel" />
@@ -442,7 +428,7 @@
 
 						$renew_url = pmpro_url( 'checkout', 'level=' . $membership->id, 'https' );
 						if ( pmpro_isLevelExpiringSoon( $membership ) && ! empty( $renew_url ) ) {
-							$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
+							$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew-' . $membership->id . '" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
 
 						}
 
@@ -470,7 +456,7 @@
 
 						$cancel_url = pmpro_url( 'cancel', 'levelstocancel=' . $membership->id );
 						if ( ! empty( $cancel_url ) ) {
-							$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
+							$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel-' . $membership->id . '" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
 						}
 
 						?><div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>"><?php 

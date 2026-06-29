@@ -185,7 +185,7 @@ class PMPro_Membership_Level{
         do_action( $after_action, $this );
     }
     /**
-     * Delete a membership level and categories.
+     * Delete a membership level and related non-historical records.
      * @since 2.3
      */
     function delete() {
@@ -196,14 +196,16 @@ class PMPro_Membership_Level{
 
         global $wpdb;
         $r1 = false; // Remove level.
-        $r2 = false; // Remove categories from level.
+        $r2 = false; // Remove related records from level.
         $r3 = false; // Remove users from level.
+
+        do_action( 'pmpro_delete_membership_level', $this->id );
 
         if ( $wpdb->delete( $wpdb->pmpro_membership_levels, array('id' => $this->id), array('%d') ) ) {
             $r1 = true;
         }
 
-        if ( $wpdb->delete( $wpdb->pmpro_memberships_categories, array('membership_id' => $this->id), array('%d') ) ) {
+        if ( pmpro_delete_membership_level_relationships( $this->id ) ) {
             $r2 = true;
         }
 
@@ -218,15 +220,12 @@ class PMPro_Membership_Level{
             $r3 = true;
         }
 
-        // Remove the level from the level group.
-        $wpdb->delete( $wpdb->pmpro_membership_levels_groups, array( 'level' => $this->id ) );
-            
         if ( $r1 == true && $r2 == true && $r3 == true ) {
             return true;
         } elseif ( $r1 == true && $r2 == false && $r3 == false ) {
-            return 'Only the level was deleted. Users may still be assigned to this level';
+            return 'Only the level was deleted. Users may still be assigned to this level and related records may remain.';
         } elseif ( $r1 == false && $r2 == true && $r3 == false ) {
-            return 'Only categories were deleted. Users may still be assigned to this level.';
+            return 'Only related records were deleted. Users may still be assigned to this level.';
         } elseif( $r1 == false && $r2 == false && $r3 == true ) {
             return 'Only users were removed from this level.';
         } else {

@@ -386,7 +386,7 @@ function pmpro_last_wp_mail_error( $set = null ) {
  * the standard actions did fire they already logged and cleared the stash, so
  * the empty check below makes this a no-op and prevents double logging.
  *
- * @since TBD
+ * @since 3.8
  *
  * @param PMProEmail $email  The email object that was sent.
  * @param bool       $result Whether wp_mail() returned true.

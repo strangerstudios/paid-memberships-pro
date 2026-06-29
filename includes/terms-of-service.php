@@ -64,7 +64,7 @@ function pmpro_show_tos_at_checkout() {
 
 	// Show the TOS checkbox.
 	?>
-	<fieldset id="pmpro_tos_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_tos_fields' ) ); ?>">
+	<div id="pmpro_tos_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_tos_fields' ) ); ?>">
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 			<?php
 				if ( isset( $_REQUEST['tos'] ) ) {
@@ -103,7 +103,7 @@ function pmpro_show_tos_at_checkout() {
 				do_action_deprecated( 'pmpro_checkout_after_tos', array(), '3.2' );
 			?>
 		</div> <!-- end pmpro_form_fields -->
-	</fieldset> <!-- end pmpro_tos_fields -->
+	</div> <!-- end pmpro_tos_fields -->
 	<?php
 	do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), '3.2' );
 
