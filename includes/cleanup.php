@@ -99,7 +99,8 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 }
 add_action( 'delete_user_form', 'pmpro_delete_user_form_notice', 10, 2 );
 
-// deleting a category? remove any level associations
+// deleting a term in a restrictable taxonomy? remove any level associations
+// Hooked to delete_{$taxonomy} for every restrictable taxonomy in pmpro_init_term_restrictions().
 function pmpro_delete_category( $cat_id = null ) {
 	global $wpdb;
 	$wpdb->delete(
@@ -108,7 +109,6 @@ function pmpro_delete_category( $cat_id = null ) {
 		'%d'
 	);
 }
-add_action( 'delete_category', 'pmpro_delete_category' );
 
 // deleting a post? remove any level associations
 function pmpro_delete_post( $post_id = null ) {

@@ -636,7 +636,23 @@ if (!empty($page_msg)) { ?>
 				),
 			);
 			?>
-			<p><?php echo wp_kses( sprintf( __('Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href="%s" rel="nofollow noopener" target="_blank">read our documentation on restricting content</a>.', 'paid-memberships-pro'), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings'), $allowed_html ); ?></p>
+			<p>
+				<?php echo wp_kses( sprintf( __('Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href="%s" rel="nofollow noopener" target="_blank">read our documentation on restricting content</a>.', 'paid-memberships-pro'), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings'), $allowed_html ); ?>
+				<?php
+					// Show a single message about how protected content displays to non-members, based on the Advanced Settings.
+					$filterqueries = get_option( 'pmpro_filterqueries' );
+					$showexcerpts = get_option( 'pmpro_showexcerpts' );
+					if ( $filterqueries == 1 ) {
+						esc_html_e( 'Based on your advanced settings, protected content is hidden from non-members in searches and archives.', 'paid-memberships-pro' );
+					} elseif ( $showexcerpts == 1 ) {
+						esc_html_e( 'Based on your advanced settings, non-members will see the title and excerpt of protected content.', 'paid-memberships-pro' );
+					} else {
+						esc_html_e( 'Based on your advanced settings, non-members will see the title only for protected content.', 'paid-memberships-pro' );
+					}
+					echo ' ';
+					echo sprintf( wp_kses( __( 'Display can vary by content type and theme. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro' ), $allowed_html ), esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) ) );
+				?>
+			</p>
 			<table class="form-table">
 				<tbody>
 					<tr class="membership_categories">
@@ -670,23 +686,6 @@ if (!empty($page_msg)) { ?>
 							</div>
 							<p class="description">
 								<?php esc_html_e('Select categories to bulk protect posts.', 'paid-memberships-pro'); ?>
-								<?php
-								// Get the Advanced Settings for filtering queries and showing excerpts.
-								$filterqueries = get_option('pmpro_filterqueries');
-								$showexcerpts = get_option("pmpro_showexcerpts");
-								if ($filterqueries == 1) {
-									// Show a message that posts in these categories are hidden.
-									echo sprintf(wp_kses(__('Non-members will not see posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), esc_url( admin_url('admin.php?page=pmpro-advancedsettings')));
-								} else {
-									if ($showexcerpts == 1) {
-										// Show a message that posts in these categories will show title and excerpt.
-										echo sprintf(wp_kses(__('Non-members will see the title and excerpt for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), esc_url( admin_url('admin.php?page=pmpro-advancedsettings')));
-									} else {
-										// Show a message that posts in these categories will show only the title.
-										echo sprintf(wp_kses(__('Non-members will see the title only for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), esc_url( admin_url('admin.php?page=pmpro-advancedsettings')));
-									}
-								}
-								?>
 							</p>
 						</td>
 					</tr>

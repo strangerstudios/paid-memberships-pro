@@ -1642,8 +1642,11 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 		}
 	}
 
-	// remove all existing links...
-	$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = '" . esc_sql( $level ) . "'";
+	// Remove existing category links (and links to deleted terms) only. Restrictions for other taxonomies (e.g. tags) are set on the term edit screen, so leave them in place.
+	$sqlQuery = "DELETE mc FROM $wpdb->pmpro_memberships_categories mc
+				 LEFT JOIN $wpdb->term_taxonomy tt ON tt.term_id = mc.category_id
+				 WHERE mc.membership_id = '" . esc_sql( $level ) . "'
+				 AND ( tt.term_taxonomy_id IS NULL OR tt.taxonomy = 'category' )";
 	$wpdb->query( $sqlQuery );
 	if ( $wpdb->last_error ) {
 		return $wpdb->last_error;
