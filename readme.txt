@@ -213,10 +213,13 @@ Not sure? You can find out by doing a bit a research.
 = 3.8.1 - 2026-06-29 =
 * ENHANCEMENT: Added a new `style` attribute to the `[pmpro_checkout_button]` shortcode to render it as a link or a button, and improved its styling. #3708 (@kimcoleman)
 * ENHANCEMENT: Improved the HTML validity and accessibility of frontend forms and pages, including fixing duplicate `id` attributes and invalid fieldset/legend markup. #3707 (@kimcoleman)
+* ENHANCEMENT: Added a new `pmpro_restrictable_taxonomies` filter, allowing Add Ons to register custom taxonomies whose terms can be restricted by membership level from the term edit screen. #3704 (@kimcoleman)
 * BUG FIX: Fixed a fatal error on the Membership Billing page when a subscription's gateway object could not be loaded. #3706 (@kimcoleman)
 * BUG FIX: Fixed the Members List CSV export so the exporting admin is no longer incorrectly included when exporting filtered or searched results. #3711 (@andrewlimaza)
 * BUG FIX: Fixed a 404 error when viewing email log details in the modal on sites using Plain permalinks. #3712 (@dwanjuki)
 * BUG FIX: Fixed select fields overflowing the viewport on small screens. #3705 (@kimcoleman)
+* BUG FIX: Saving a membership level no longer clears term restrictions, such as tag restrictions, that were set from the term edit screen. #3704 (@kimcoleman)
+* BUG FIX: Restricted posts are now correctly hidden from searches and archives when a term's ID and term taxonomy ID differ. #3704 (@kimcoleman)
 
 = 3.8 - 2026-06-15 =
 * FEATURE: Upgraded the email template editor to the standard WordPress visual/text editor with built-in Liquid syntax autocomplete for variables, tags, and filters. #3695 (@dparker1005)
