@@ -655,49 +655,40 @@ if (!empty($page_msg)) { ?>
 			</p>
 			<table class="form-table">
 				<tbody>
-					<?php
-					// Show a checklist of terms for every restrictable taxonomy.
-					foreach ( pmpro_get_restrictable_taxonomies() as $restrictable_taxonomy ) {
-						$taxonomy_object = get_taxonomy( $restrictable_taxonomy );
-						if ( empty( $taxonomy_object ) || ! $taxonomy_object->show_ui ) {
-							continue;
-						}
-					?>
-					<tr class="membership_categories membership_categories-<?php echo esc_attr( $restrictable_taxonomy ); ?>">
-						<th scope="row" valign="top"><label><?php echo esc_html( $taxonomy_object->labels->name ); ?></label></th>
+					<tr class="membership_categories">
+						<th scope="row" valign="top"><label><?php esc_html_e('Categories', 'paid-memberships-pro'); ?></label></th>
 						<td>
-							<p><?php esc_html_e('Select:', 'paid-memberships-pro'); ?> <a id="pmpro-membership-categories-checklist-select-all-<?php echo esc_attr( $restrictable_taxonomy ); ?>" href="javascript:void(0);"><?php esc_html_e('All', 'paid-memberships-pro'); ?></a> | <a id="pmpro-membership-categories-checklist-select-none-<?php echo esc_attr( $restrictable_taxonomy ); ?>" href="javascript:void(0);"><?php esc_html_e('None', 'paid-memberships-pro'); ?></a></p>
+							<p><?php esc_html_e('Select:', 'paid-memberships-pro'); ?> <a id="pmpro-membership-categories-checklist-select-all" href="javascript:void(0);"><?php esc_html_e('All', 'paid-memberships-pro'); ?></a> | <a id="pmpro-membership-categories-checklist-select-none" href="javascript:void(0);"><?php esc_html_e('None', 'paid-memberships-pro'); ?></a></p>
 							<script type="text/javascript">
-								jQuery('#pmpro-membership-categories-checklist-select-all-<?php echo esc_js( $restrictable_taxonomy ); ?>').on('click',function() {
-									jQuery('#pmpro-membership-categories-checklist-<?php echo esc_js( $restrictable_taxonomy ); ?> input').prop('checked', true);
+								jQuery('#pmpro-membership-categories-checklist-select-all').on('click',function() {
+									jQuery('#pmpro-membership-categories-checklist input').prop('checked', true);
 								});
-								jQuery('#pmpro-membership-categories-checklist-select-none-<?php echo esc_js( $restrictable_taxonomy ); ?>').on('click',function() {
-									jQuery('#pmpro-membership-categories-checklist-<?php echo esc_js( $restrictable_taxonomy ); ?> input').prop('checked', false);
+								jQuery('#pmpro-membership-categories-checklist-select-none').on('click',function() {
+									jQuery('#pmpro-membership-categories-checklist input').prop('checked', false);
 								});
 							</script>
 							<?php
-							$term_count = wp_count_terms( array( 'taxonomy' => $restrictable_taxonomy, 'hide_empty' => false ) );
-							// Build the selectors for the checkbox list based on number of terms.
+							$args = array(
+								'hide_empty' => false,
+							);
+							$cats = get_categories(apply_filters('pmpro_list_categories_args', $args));
+							// Build the selectors for the checkbox list based on number of levels.
 							$classes = array();
 							$classes[] = 'pmpro_checkbox_box';
 
-							if ( ! is_wp_error( $term_count ) && $term_count > 5 ) {
+							if (count($cats) > 5) {
 								$classes[] = 'pmpro_scrollable';
 							}
 							$class = implode(' ', array_unique($classes));
 							?>
-							<div id="pmpro-membership-categories-checklist-<?php echo esc_attr( $restrictable_taxonomy ); ?>" class="<?php echo esc_attr($class); ?>">
-								<?php pmpro_list_restrictable_terms( $restrictable_taxonomy, 0, $level->categories ); ?>
+							<div id="pmpro-membership-categories-checklist" class="<?php echo esc_attr($class); ?>">
+								<?php pmpro_listCategories(0, $level->categories); ?>
 							</div>
 							<p class="description">
-								<?php
-								// translators: %s is the lowercase plural taxonomy label.
-								echo esc_html( sprintf( __( 'Select %s to bulk protect content.', 'paid-memberships-pro' ), strtolower( $taxonomy_object->labels->name ) ) );
-								?>
+								<?php esc_html_e('Select categories to bulk protect posts.', 'paid-memberships-pro'); ?>
 							</p>
 						</td>
 					</tr>
-					<?php } // end foreach restrictable taxonomy. ?>
 					<tr class="membership_posts">
 						<th scope="row" valign="top"><label><?php esc_html_e('Single Posts', 'paid-memberships-pro'); ?></label></th>
 						<td>

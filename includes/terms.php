@@ -12,8 +12,8 @@ function pmpro_get_restrictable_taxonomies() {
 	 * Filter the taxonomies whose terms can be restricted by membership level.
 	 *
 	 * Add-ons can add their own taxonomies here to get the "Require Membership"
-	 * term checkboxes, term restriction enforcement in pmpro_has_membership_access(),
-	 * search/archive filtering, and the checklists on the edit level admin page.
+	 * term checkboxes on the term edit screen, term restriction enforcement in
+	 * pmpro_has_membership_access(), and search/archive filtering.
 	 *
 	 * @since TBD
 	 *
