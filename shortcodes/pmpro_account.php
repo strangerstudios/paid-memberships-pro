@@ -154,6 +154,10 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				if ( in_array( $pending_order->membership_id, $mylevel_ids ) || isset( $pending_order_levels[ $pending_order->membership_id ] ) ) {
 					continue;
 				}
+				// Skip if this is not the user's most recent order for the level. A newer order in another status means the pending order is stale.
+				if ( empty( pmpro_get_pending_order_for_user_level( $current_user->ID, $pending_order->membership_id ) ) ) {
+					continue;
+				}
 				$pending_order_level = pmpro_getLevel( $pending_order->membership_id );
 				if ( ! empty( $pending_order_level ) ) {
 					$pending_order_levels[ $pending_order->membership_id ] = $pending_order_level;

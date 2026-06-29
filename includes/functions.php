@@ -5456,28 +5456,61 @@ function pmpro_display_member_account_level_message( $level ) {
 add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_member_account_level_message' );
 
 /**
- * Get the most recent pending order for a user and level.
+ * Get the live pending order for a user and level.
+ *
+ * Only returns the user's most recent order for the level, and only if it is still pending.
+ * A newer order in any other status (e.g. a 'success' order from paying again by a different
+ * method) means the pending order is stale and should not be surfaced.
+ *
+ * The order is also treated as stale if the user has since started a different level in the same
+ * single-selection group, since holding one level in that group means they chose another plan.
  *
  * @since TBD
  *
  * @param int $user_id  The ID of the user to check.
  * @param int $level_id The ID of the level to check.
- * @return MemberOrder|null The most recent pending order or null if there is none.
+ * @return MemberOrder|null The pending order or null if there is none.
  */
 function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
 	static $cache = array();
 
 	$cache_key = $user_id . ':' . $level_id;
 	if ( ! array_key_exists( $cache_key, $cache ) ) {
-		$pending_orders = MemberOrder::get_orders(
+		$cache[ $cache_key ] = null;
+
+		$recent_orders = MemberOrder::get_orders(
 			array(
 				'user_id'             => $user_id,
 				'membership_level_id' => $level_id,
-				'status'              => 'pending',
 				'limit'               => 1,
 			)
 		);
-		$cache[ $cache_key ] = empty( $pending_orders ) ? null : current( $pending_orders );
+		$recent_order = empty( $recent_orders ) ? null : current( $recent_orders );
+
+		// The pending order is only live if it is the user's most recent order for the level.
+		if ( ! empty( $recent_order ) && $recent_order->status === 'pending' ) {
+			$cache[ $cache_key ] = $recent_order;
+
+			// In a single-selection group, a level the user started after this order supersedes it.
+			$group = pmpro_get_level_group( pmpro_get_group_id_for_level( $level_id ) );
+			if ( ! empty( $group ) && empty( $group->allow_multiple_selections ) ) {
+				$group_level_ids = wp_list_pluck( pmpro_get_levels_for_group( $group->id ), 'id' );
+				$held_levels = pmpro_getMembershipLevelsForUser( $user_id );
+				if ( ! empty( $held_levels ) ) {
+					foreach ( $held_levels as $held_level ) {
+						// Skip the pending level itself and any level outside this group.
+						if ( $held_level->id == $level_id || ! in_array( $held_level->id, $group_level_ids ) ) {
+							continue;
+						}
+						// Only supersede if the held level was started after the pending order was created.
+						if ( $held_level->startdate >= $recent_order->timestamp ) {
+							$cache[ $cache_key ] = null;
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	return $cache[ $cache_key ];
