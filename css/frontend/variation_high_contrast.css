@@ -233,6 +233,19 @@
 	}
 
 	/**
+	 * Text Links
+	 */
+	.pmpro_link {
+		color: var(--pmpro--color--accent);
+		text-decoration: underline;
+	}
+
+	.pmpro_link:hover,
+	.pmpro_link:focus {
+		color: var(--pmpro--color--accent--variation);
+	}
+
+	/**
 	 * Form Styles
 	 */
 	.pmpro_form {
