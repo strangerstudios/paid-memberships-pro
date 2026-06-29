@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-29T19:00:52+00:00\n"
+"POT-Creation-Date: 2026-06-29T19:51:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -124,12 +124,12 @@ msgid "Search Results"
 msgstr ""
 
 #: adminpages/addons.php:62
-#: adminpages/levels/edit-level.php:645
+#: adminpages/levels/edit-level.php:661
 #: adminpages/reports.php:25
 #: includes/admin.php:294
 #: includes/metaboxes.php:19
-#: includes/terms.php:29
-#: includes/terms.php:88
+#: includes/terms.php:69
+#: includes/terms.php:126
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/build/sidebar/index.js:1
@@ -830,7 +830,7 @@ msgid "Business Phone"
 msgstr ""
 
 #: adminpages/advancedsettings.php:389
-#: adminpages/levels/edit-level.php:740
+#: adminpages/levels/edit-level.php:739
 #: adminpages/metaboxes/welcome.php:67
 #: adminpages/paymentsettings.php:267
 msgid "Other Settings"
@@ -1420,7 +1420,7 @@ msgstr ""
 
 #: adminpages/discountcodes.php:750
 #: adminpages/groups/edit-group.php:92
-#: adminpages/levels/edit-level.php:767
+#: adminpages/levels/edit-level.php:766
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:117
 #: adminpages/orders/edit-order.php:388
 #: adminpages/orders/view-order.php:581
@@ -2383,31 +2383,48 @@ msgstr ""
 msgid "Optional: Allow more customizable expiration dates using the <a href=\"%s\" title=\"Paid Memberships Pro - Set Expiration Date Add On\" target=\"_blank\" rel=\"nofollow noopener\">Set Expiration Date Add On</a>."
 msgstr ""
 
-#: adminpages/levels/edit-level.php:639
+#: adminpages/levels/edit-level.php:640
 #, php-format
 msgid "Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">read our documentation on restricting content</a>."
 msgstr ""
 
-#: adminpages/levels/edit-level.php:643
+#: adminpages/levels/edit-level.php:646
+msgid "Based on your advanced settings, protected content is hidden from non-members in searches and archives."
+msgstr ""
+
+#: adminpages/levels/edit-level.php:648
+msgid "Based on your advanced settings, non-members will see the title and excerpt of protected content."
+msgstr ""
+
+#: adminpages/levels/edit-level.php:650
+msgid "Based on your advanced settings, non-members will see the title only for protected content."
+msgstr ""
+
+#: adminpages/levels/edit-level.php:653
+#, php-format
+msgid "Display can vary by content type and theme. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
+msgstr ""
+
+#: adminpages/levels/edit-level.php:659
 msgid "Categories"
 msgstr ""
 
-#: adminpages/levels/edit-level.php:645
+#: adminpages/levels/edit-level.php:661
 #: includes/metaboxes.php:19
-#: includes/terms.php:29
-#: includes/terms.php:88
+#: includes/terms.php:69
+#: includes/terms.php:126
 msgid "Select:"
 msgstr ""
 
-#: adminpages/levels/edit-level.php:645
+#: adminpages/levels/edit-level.php:661
 #: adminpages/orders/edit-order.php:72
 #: adminpages/orders/edit-order.php:194
 #: classes/class-pmpro-discount-code-list-table.php:560
 #: includes/init.php:250
 #: includes/metaboxes.php:19
 #: includes/profile.php:210
-#: includes/terms.php:29
-#: includes/terms.php:88
+#: includes/terms.php:69
+#: includes/terms.php:126
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/build/sidebar/index.js:1
@@ -2417,61 +2434,46 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: adminpages/levels/edit-level.php:672
+#: adminpages/levels/edit-level.php:688
 msgid "Select categories to bulk protect posts."
 msgstr ""
 
-#: adminpages/levels/edit-level.php:679
-#, php-format
-msgid "Non-members will not see posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
-msgstr ""
-
-#: adminpages/levels/edit-level.php:683
-#, php-format
-msgid "Non-members will see the title and excerpt for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
-msgstr ""
-
-#: adminpages/levels/edit-level.php:686
-#, php-format
-msgid "Non-members will see the title only for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
-msgstr ""
-
-#: adminpages/levels/edit-level.php:694
+#: adminpages/levels/edit-level.php:693
 msgid "Single Posts"
 msgstr ""
 
-#: adminpages/levels/edit-level.php:696
+#: adminpages/levels/edit-level.php:695
 #, php-format
 msgid "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single post to protect it."
 msgstr ""
 
-#: adminpages/levels/edit-level.php:700
+#: adminpages/levels/edit-level.php:699
 msgid "Single Pages"
 msgstr ""
 
-#: adminpages/levels/edit-level.php:702
+#: adminpages/levels/edit-level.php:701
 #, php-format
 msgid "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single page to protect it."
 msgstr ""
 
-#: adminpages/levels/edit-level.php:706
+#: adminpages/levels/edit-level.php:705
 msgid "Other Content Types"
 msgstr ""
 
-#: adminpages/levels/edit-level.php:708
+#: adminpages/levels/edit-level.php:707
 #, php-format
 msgid "Protect access to other content including custom post types (CPTs), courses, events, products, communities, podcasts, and more. <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">Read our documentation on restricting content</a>."
 msgstr ""
 
-#: adminpages/levels/edit-level.php:747
+#: adminpages/levels/edit-level.php:746
 msgid "Disable New Signups"
 msgstr ""
 
-#: adminpages/levels/edit-level.php:748
+#: adminpages/levels/edit-level.php:747
 msgid "Check to hide this level from the membership levels page and disable registration."
 msgstr ""
 
-#: adminpages/levels/edit-level.php:766
+#: adminpages/levels/edit-level.php:765
 msgid "Save Level"
 msgstr ""
 
@@ -3052,7 +3054,7 @@ msgstr ""
 #: adminpages/reports/sales.php:954
 #: classes/class-pmpro-orders-list-table.php:154
 #: classes/class-pmpro-orders-list-table.php:693
-#: includes/functions.php:3445
+#: includes/functions.php:3448
 #: includes/privacy.php:325
 #: includes/profile.php:719
 #: pages/invoice.php:269
@@ -3808,7 +3810,7 @@ msgid "Initial Setup"
 msgstr ""
 
 #: adminpages/metaboxes/welcome.php:36
-#: includes/functions.php:2331
+#: includes/functions.php:2334
 msgid "View Membership Levels"
 msgstr ""
 
@@ -4077,7 +4079,7 @@ msgid "Sub Total"
 msgstr ""
 
 #: adminpages/orders/edit-order.php:209
-#: includes/functions.php:3424
+#: includes/functions.php:3427
 #: includes/privacy.php:321
 msgid "Tax"
 msgstr ""
@@ -10789,7 +10791,7 @@ msgstr ""
 
 #: includes/avatars.php:314
 #: includes/avatars.php:325
-#: includes/functions.php:5184
+#: includes/functions.php:5187
 msgid "No file was uploaded."
 msgstr ""
 
@@ -10832,8 +10834,8 @@ msgid "File size is too large. Please upload a file smaller than %s."
 msgstr ""
 
 #: includes/avatars.php:356
-#: includes/functions.php:5197
-#: includes/functions.php:5212
+#: includes/functions.php:5200
+#: includes/functions.php:5215
 msgid "Invalid file type."
 msgstr ""
 
@@ -11124,8 +11126,8 @@ msgstr ""
 
 #: includes/compatibility/lifterlms.php:44
 #: includes/metaboxes.php:131
-#: includes/terms.php:27
-#: includes/terms.php:85
+#: includes/terms.php:67
+#: includes/terms.php:123
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/sidebar/index.js:243
 msgid "Require Membership"
@@ -12684,197 +12686,197 @@ msgstr ""
 msgid "Membership level not found."
 msgstr ""
 
-#: includes/functions.php:1795
+#: includes/functions.php:1798
 msgid "Pagination"
 msgstr ""
 
-#: includes/functions.php:1811
+#: includes/functions.php:1814
 msgid "Go to the previous page"
 msgstr ""
 
-#: includes/functions.php:1811
-#: includes/functions.php:1813
+#: includes/functions.php:1814
+#: includes/functions.php:1816
 msgid "Previous"
 msgstr ""
 
-#: includes/functions.php:1823
-#: includes/functions.php:1834
-#: includes/functions.php:1839
-#: includes/functions.php:1841
-#: includes/functions.php:1854
-#: includes/functions.php:1859
-#: includes/functions.php:1861
-#: includes/functions.php:1874
+#: includes/functions.php:1826
+#: includes/functions.php:1837
+#: includes/functions.php:1842
+#: includes/functions.php:1844
+#: includes/functions.php:1857
+#: includes/functions.php:1862
+#: includes/functions.php:1864
+#: includes/functions.php:1877
 #, php-format
 msgid "Page %s"
 msgstr ""
 
-#: includes/functions.php:1845
-#: includes/functions.php:1865
+#: includes/functions.php:1848
+#: includes/functions.php:1868
 msgid "Page 1"
 msgstr ""
 
-#: includes/functions.php:1847
-#: includes/functions.php:1867
+#: includes/functions.php:1850
+#: includes/functions.php:1870
 msgid "Page 2"
 msgstr ""
 
-#: includes/functions.php:1883
+#: includes/functions.php:1886
 msgid "Go to the next page"
 msgstr ""
 
-#: includes/functions.php:1883
-#: includes/functions.php:1885
+#: includes/functions.php:1886
+#: includes/functions.php:1888
 msgid "Next"
 msgstr ""
 
-#: includes/functions.php:2085
+#: includes/functions.php:2088
 msgid "No code was given to check."
 msgstr ""
 
-#: includes/functions.php:2094
+#: includes/functions.php:2097
 msgid "The discount code could not be found."
 msgstr ""
 
-#: includes/functions.php:2109
+#: includes/functions.php:2112
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr ""
 
-#: includes/functions.php:2116
+#: includes/functions.php:2119
 #, php-format
 msgid "This discount code expired on %s."
 msgstr ""
 
-#: includes/functions.php:2125
+#: includes/functions.php:2128
 msgid "This discount code is no longer valid."
 msgstr ""
 
-#: includes/functions.php:2135
+#: includes/functions.php:2138
 msgid "You have already used the discount code provided."
 msgstr ""
 
-#: includes/functions.php:2154
+#: includes/functions.php:2157
 msgid "This discount code does not apply to this membership level."
 msgstr ""
 
-#: includes/functions.php:2192
+#: includes/functions.php:2195
 msgid "This discount code is okay."
 msgstr ""
 
-#: includes/functions.php:2226
+#: includes/functions.php:2229
 msgid "and"
 msgstr ""
 
-#: includes/functions.php:2307
+#: includes/functions.php:2310
 msgid "This content is for members only. Visit the site and log in/register to read."
 msgstr ""
 
-#: includes/functions.php:2327
+#: includes/functions.php:2330
 msgid "Membership Required"
 msgstr ""
 
-#: includes/functions.php:2328
+#: includes/functions.php:2331
 msgid " You must be a member to access this content."
 msgstr ""
 
-#: includes/functions.php:2334
+#: includes/functions.php:2337
 msgid "!!levels!! Membership Required"
 msgstr ""
 
-#: includes/functions.php:2335
+#: includes/functions.php:2338
 msgid " You must be a !!levels!! member to access this content."
 msgstr ""
 
-#: includes/functions.php:2337
+#: includes/functions.php:2340
 #: includes/login.php:856
 msgid "Join Now"
 msgstr ""
 
-#: includes/functions.php:2383
+#: includes/functions.php:2386
 msgid "Already a member?"
 msgstr ""
 
-#: includes/functions.php:2383
+#: includes/functions.php:2386
 #: pages/checkout.php:360
 msgid "Log in here"
 msgstr ""
 
-#: includes/functions.php:2935
+#: includes/functions.php:2938
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
-#: includes/functions.php:2959
+#: includes/functions.php:2962
 msgid "Sign Up Now"
 msgstr ""
 
-#: includes/functions.php:3417
+#: includes/functions.php:3420
 msgid "Subtotal"
 msgstr ""
 
-#: includes/functions.php:4007
+#: includes/functions.php:4010
 msgid "The $field argument is deprecated. The sanitization logic is now built into the PMPro_Field class."
 msgstr ""
 
-#: includes/functions.php:4351
+#: includes/functions.php:4354
 msgid "Reading webhook status via pmpro_doing_webhook() is deprecated and will be removed in a future version of Paid Memberships Pro."
 msgstr ""
 
-#: includes/functions.php:4469
+#: includes/functions.php:4472
 msgid "Liquid autocomplete"
 msgstr ""
 
-#: includes/functions.php:4470
+#: includes/functions.php:4473
 msgid "Liquid Tags"
 msgstr ""
 
-#: includes/functions.php:4565
+#: includes/functions.php:4568
 msgid "Show content when a condition is true"
 msgstr ""
 
-#: includes/functions.php:4571
+#: includes/functions.php:4574
 msgid "Add another condition inside an if block"
 msgstr ""
 
-#: includes/functions.php:4577
+#: includes/functions.php:4580
 msgid "Add fallback content inside an if block"
 msgstr ""
 
-#: includes/functions.php:4583
+#: includes/functions.php:4586
 msgid "Close an if block"
 msgstr ""
 
-#: includes/functions.php:5190
+#: includes/functions.php:5193
 msgid "No file name found."
 msgstr ""
 
-#: includes/functions.php:5206
+#: includes/functions.php:5209
 msgid "Invalid field input."
 msgstr ""
 
-#: includes/functions.php:5225
+#: includes/functions.php:5228
 #, php-format
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr ""
 
-#: includes/functions.php:5232
+#: includes/functions.php:5235
 #, php-format
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr ""
 
-#: includes/functions.php:5246
+#: includes/functions.php:5249
 msgid "Invalid file submission."
 msgstr ""
 
-#: includes/functions.php:5421
+#: includes/functions.php:5424
 msgid "Order not found."
 msgstr ""
 
-#: includes/functions.php:5426
+#: includes/functions.php:5429
 msgid "Order is not a token order."
 msgstr ""
 
-#: includes/functions.php:5431
+#: includes/functions.php:5434
 msgid "Order gateway not found."
 msgstr ""
 
