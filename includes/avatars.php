@@ -1162,7 +1162,7 @@ function pmpro_change_avatar_form() {
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 		<section id="pmpro_change_avatar" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_change_avatar' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
-				<form id="change-avatar" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form', 'change-avatar' ) ); ?>" action="" method="post" enctype="multipart/form-data">
+				<form id="change-avatar" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form', 'change-avatar' ) ); ?>" method="post" enctype="multipart/form-data">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 							<fieldset class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset' ) ); ?>">
