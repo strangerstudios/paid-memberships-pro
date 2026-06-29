@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.7.4
+Stable tag: 3.8
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,26 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.8 - 2026-06-15 =
+* FEATURE: Upgraded the email template editor to the standard WordPress visual/text editor with built-in Liquid syntax autocomplete for variables, tags, and filters. #3695 (@dparker1005)
+* FEATURE: Added a new `[pmpro_membership_level]` shortcode for displaying membership level details. #3087 (@kimcoleman)
+* ENHANCEMENT: Added Divi 5 compatibility for PMPro module-level restrictions and no-access message handling. #3620 (@JarrydLong)
+* ENHANCEMENT: Added a new `level_group_id` email template variable to every email template class that exposes `membership_id`. #3684 (@kimcoleman)
+* ENHANCEMENT: Allowed shortcodes in the account page message. #3682 (@kimcoleman)
+* ENHANCEMENT: Removed the misleading "Advanced Settings" hint from the no-access message controls. #3699 (@dparker1005)
+* ENHANCEMENT: Clarified the user field meta key hint on the user field settings page. #3698 (@kimwhite)
+* ENHANCEMENT: Added an Add On icon for the MemberPress Migration Toolkit. (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Now hiding the recurring trial settings on membership level and discount code edit pages when the active gateway doesn't support recurring trials. #3628 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Added a fallback for email logging when SMTP plugins (e.g. Gravity SMTP) bypass the `wp_mail_succeeded` and `wp_mail_failed` actions. #3697 (@andrewlimaza)
+* BUG FIX: Cleaned up orphaned membership level relationships when a level is deleted. #3693 (@dparker1005)
+* BUG FIX: No longer shows the membership confirmation message when the order has not been confirmed. #3682 (@kimcoleman)
+* BUG FIX: Fixed a fatal error on the Membership Billing page for logged-out requests. #3694 (@flintfromthebasement)
+* BUG FIX: Fixed the Orders list table appearing blank on mobile by setting the order code as the default primary column. #3696 (@dparker1005)
+* BUG FIX: Cleared stale card information when a recovered Stripe payment uses a non-card payment method. #3703 (@dparker1005)
+* REFACTOR: Removed unused `pmpro_userfields_get_group` and `pmpro_userfields_get_field` AJAX handlers. #3672 (@dparker1005)
+* DEPRECATED: Deprecated the credit card expiring email template. #3688 (@dparker1005)
+* DEPRECATED: The Membership Billing page no longer writes `pmpro_b*` user meta on save, and the email field has been removed from that page. #3668 (@dparker1005)
+
 = 3.7.4 - 2026-05-28 =
 * BUG FIX/ENHANCEMENT: Skip the `pmpro_visit` cookie when `WP_CACHE` is active so page caches like Surge, Cloudflare, Varnish, and WP Super Cache aren't bypassed on anonymous front-end requests. Added a new `pmpro_set_visit_cookie` filter to override the default behavior. #3690 (@flintfromthebasement)
 * BUG FIX: Fixed Stripe recurring orders silently saving `tax = 0` after the Stripe API version bump by deriving tax from `invoice->total_excluding_tax` instead of the deprecated `invoice->tax`. #3685 (@dwanjuki)

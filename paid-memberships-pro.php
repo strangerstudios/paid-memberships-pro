@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.7.4
+ * Version: 3.8
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.7.4' );
+define( 'PMPRO_VERSION', '3.8' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '7.4' );
 
@@ -161,6 +161,7 @@ require_once( PMPRO_DIR . '/shortcodes/pmpro_account.php' );        // [pmpro_ac
 require_once( PMPRO_DIR . '/shortcodes/pmpro_login.php' );          // [pmpro_login] shortcode to show a login form or logged in member info and menu.
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member.php' );         // [pmpro_member] shortcode to show user fields
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member_profile_edit.php' );         // [pmpro_member_profile_edit] shortcode to allow members to edit their profile
+require_once( PMPRO_DIR . '/shortcodes/pmpro_membership_level.php' );         // [pmpro_membership_level] shortcode to show single level fields
 require_once( PMPRO_DIR . '/includes/blocks.php' ); // Set up blocks.
 
 // load gateway
