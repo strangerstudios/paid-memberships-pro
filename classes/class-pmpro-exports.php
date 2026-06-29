@@ -1045,10 +1045,10 @@ class PMPro_Exports {
 		$query               = "SELECT COUNT(DISTINCT u.ID) FROM {$wpdb->users} u ";
 		$needs_usermeta_join = false;
 		$search              = $this->build_members_search_sql_fragment( $filters, $needs_usermeta_join );
+		$query              .= " INNER JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		if ( $needs_usermeta_join ) {
 			$query .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
 		}
-		$query .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		$query .= ' WHERE mu.membership_id > 0 ';
 
 		$filter = $this->build_members_filter_sql_fragment( $filters );
@@ -1074,10 +1074,10 @@ class PMPro_Exports {
 		$query               = "SELECT DISTINCT u.ID FROM {$wpdb->users} u ";
 		$needs_usermeta_join = false;
 		$search              = $this->build_members_search_sql_fragment( $filters, $needs_usermeta_join );
+		$query              .= " INNER JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		if ( $needs_usermeta_join ) {
 			$query .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
 		}
-		$query .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		$query .= ' WHERE mu.membership_id > 0 ';
 
 		$filter = $this->build_members_filter_sql_fragment( $filters );
@@ -1342,7 +1342,10 @@ class PMPro_Exports {
 			return " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
 		} else {
 			$needs_usermeta_join = true;
-			return " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
+			// Exclude pmpro_export_* meta keys: the export record itself is stored in the
+			// exporting admin's usermeta (containing the search term in its JSON), which would
+			// otherwise cause the admin to appear as the first row of every export.
+			return " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR (um.meta_value LIKE '%" . esc_sql( $s ) . "%' AND um.meta_key NOT LIKE 'pmpro\\_export%') OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
 		}
 	}
 
