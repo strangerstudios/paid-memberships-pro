@@ -62,8 +62,11 @@
 						// Check if the gateway for this subscription updates a single subscription at once or all subscriptions at once.
 						$subscription_gateway_obj = $pmpro_billing_subscription->get_gateway_object();
 
+						// Gateway object is null when the subscription's gateway is unset or unavailable.
+						$payment_method_updates = is_object( $subscription_gateway_obj ) ? $subscription_gateway_obj->supports( 'payment_method_updates' ) : false;
+
 						// If it's not an 'all' update method, we can show specific level information.
-						if ( 'all' !== $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
+						if ( 'all' !== $payment_method_updates ) {
 							// Show the cost text for the subscription.
 							?>
 							<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain pmpro_list-with-labels pmpro_cols-2' ) ); ?>">
@@ -81,7 +84,7 @@
 								</li>
 							</ul> <!-- end pmpro_list -->
 							<?php
-						} elseif ( 'all' === $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
+						} elseif ( 'all' === $payment_method_updates ) {
 							// This is a bit trickier. We need to get all subscriptions that will be updated, which should be all subscriptions for this user
 							// that have the same gateway.
 							$user_subscriptions = PMPro_Subscription::get_subscriptions_for_user();
@@ -146,7 +149,7 @@
 					</div>
 				</div> <!-- end pmpro_card_content -->
 			</div> <!-- end pmpro_card -->
-		<?php } elseif ( ! $subscription_gateway_obj->supports( 'payment_method_updates' ) || $gateway != $default_gateway ) {
+		<?php } elseif ( ! $payment_method_updates || $gateway != $default_gateway ) {
 			// The gateway doesn't support on-site billing updates or is not the default site gateway.
 			?>
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
