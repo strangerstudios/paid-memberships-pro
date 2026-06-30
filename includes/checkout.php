@@ -318,6 +318,54 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 }
 
 /**
+ * Mark a member's older incomplete orders as error when a newer order supersedes them.
+ *
+ * Covers re-checking out for the same level, or switching to another level in a group that only
+ * allows one level at a time. Incomplete orders tied to a still-active subscription are left alone.
+ *
+ * @since TBD
+ *
+ * @param int         $user_id The ID of the user who completed checkout.
+ * @param MemberOrder $order   The newly completed order.
+ */
+function pmpro_error_orphaned_incomplete_orders( $user_id, $order ) {
+	if ( empty( $order->id ) || 'success' !== $order->status || empty( $order->membership_id ) ) {
+		return;
+	}
+
+	// Switching to a level in a one-at-a-time group deactivates sibling levels, so their orders are superseded too.
+	$superseded_level_ids = array( $order->membership_id );
+	$level_group_id       = pmpro_get_group_id_for_level( $order->membership_id );
+	$level_group          = empty( $level_group_id ) ? false : pmpro_get_level_group( $level_group_id );
+	if ( ! empty( $level_group ) && empty( $level_group->allow_multiple_selections ) ) {
+		$superseded_level_ids = pmpro_get_level_ids_for_group( $level_group->id );
+	}
+
+	$incomplete_orders = MemberOrder::get_orders( array(
+		'user_id'             => $user_id,
+		'membership_level_id' => $superseded_level_ids,
+		'status'              => array( 'token', 'pending', 'review' ),
+	) );
+
+	foreach ( $incomplete_orders as $incomplete_order ) {
+		// Only resolve orders older than the one we just completed.
+		if ( (int) $incomplete_order->id >= (int) $order->id ) {
+			continue;
+		}
+
+		$subscription = $incomplete_order->get_subscription();
+		if ( ! empty( $subscription ) && 'active' === $subscription->get_status() ) {
+			continue;
+		}
+
+		$incomplete_order->add_order_note( __( 'Order marked as error because it was superseded by a newer successful order.', 'paid-memberships-pro' ) );
+		$incomplete_order->status = 'error';
+		$incomplete_order->saveOrder();
+	}
+}
+add_action( 'pmpro_after_checkout', 'pmpro_error_orphaned_incomplete_orders', 10, 2 );
+
+/**
  * Legacy function.
  *
  * @since 2.12.3
