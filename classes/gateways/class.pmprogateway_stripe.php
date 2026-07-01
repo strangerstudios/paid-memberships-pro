@@ -3514,10 +3514,14 @@ class PMProGateway_stripe extends PMProGateway {
 			$tax_behavior = 'no';
 		}
 
+		// Only match active prices. Without this filter, Stripe's list endpoint also returns
+		// archived/inactive prices, which would then be reused and rejected at checkout with
+		// "The price specified is inactive." Excluding them here lets us create a new active Price instead.
 		$price_search_args = array(
 			'product'  => $product_id,
 			'type'     => $is_recurring ? 'recurring' : 'one_time',
 			'currency' => strtolower( $pmpro_currency ),
+			'active'   => true,
 			'limit' => 100,
 		);
 		if ( $is_recurring ) {
