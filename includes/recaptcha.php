@@ -247,58 +247,59 @@ function pmpro_recaptcha_settings() {
 	$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
 	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 
-	// If reCAPTCHA is not enabled, hide some settings by default.
-	$tr_style = empty( $recaptcha ) ? 'display: none;' : '';
+	$recaptcha_value   = $recaptcha > 0 ? 2 : 0;
+	$recaptcha_depends = array(
+		array(
+			'id'      => 'recaptcha',
+			'value'   => '2',
+			'current' => $recaptcha_value,
+		),
+	);
 
-	// Output settings fields.
-	?>
-	<tr>
-		<th scope="row" valign="top">
-			<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?></label>
-		</th>
-		<td>
-			<select id="recaptcha" name="recaptcha">
-				<option value="0" <?php if( !$recaptcha ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' );?></option>
-				<!-- For reference, removed the Yes - Free memberships only. option -->
-				<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes - All memberships.', 'paid-memberships-pro' );?></option>
-			</select>
-			<p class="description"><?php esc_html_e( 'A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
-		</td>
-	</tr>
-	<tr class="pmpro_recaptcha_settings" style="<?php echo esc_attr( $tr_style ); ?>">
-		<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?></label></th>
-		<td>					
-			<select id="recaptcha_version" name="recaptcha_version">
-				<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php esc_html_e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
-				<option value="3_invisible" <?php selected( '3_invisible', $recaptcha_version ); ?>><?php esc_html_e( 'v3 - Invisible', 'paid-memberships-pro' ); ?></option>
-			</select>
-			<p class="description"><?php esc_html_e( 'Changing your version will require new API keys.', 'paid-memberships-pro' ); ?></p>
-		</td>
-	</tr>
-	<tr class="pmpro_recaptcha_settings" style="<?php echo esc_attr( $tr_style ); ?>">
-		<th scope="row"><label for="recaptcha_publickey"><?php esc_html_e('reCAPTCHA Site Key', 'paid-memberships-pro' );?></label></th>
-		<td>
-			<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" value="<?php echo esc_attr($recaptcha_publickey);?>" class="regular-text code" />
-		</td>
-	</tr>
-	<tr class="pmpro_recaptcha_settings" style="<?php echo esc_attr( $tr_style ); ?>">
-		<th scope="row"><label for="recaptcha_privatekey"><?php esc_html_e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?></label></th>
-		<td>
-			<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" value="<?php echo esc_attr($recaptcha_privatekey);?>" class="regular-text code" />
-		</td>
-	</tr>
-	<script>
-		jQuery(document).ready(function() {
-			jQuery('#recaptcha').change(function() {
-				if(jQuery(this).val() == '2') {
-					jQuery('.pmpro_recaptcha_settings').show();
-				} else {
-					jQuery('.pmpro_recaptcha_settings').hide();
-				}
-			});
-		});
-	</script>
-	<?php
+	pmpro_build_settings_field( array(
+		'name'        => 'recaptcha',
+		'label'       => __( 'Use reCAPTCHA?', 'paid-memberships-pro' ),
+		'type'        => 'select',
+		'value'       => $recaptcha_value,
+		'options'     => array(
+			0 => __( 'No', 'paid-memberships-pro' ),
+			2 => __( 'Yes - All memberships.', 'paid-memberships-pro' ),
+		),
+		'description' => sprintf(
+			/* translators: %s: Link to create a Google reCAPTCHA key. */
+			__( 'A free reCAPTCHA key is required. <a href="%s" target="_blank" rel="nofollow noopener">Click here to signup for reCAPTCHA</a>.', 'paid-memberships-pro' ),
+			'https://www.google.com/recaptcha/admin/create'
+		),
+	) );
+	pmpro_build_settings_field( array(
+		'name'        => 'recaptcha_version',
+		'label'       => __( 'reCAPTCHA Version', 'paid-memberships-pro' ),
+		'type'        => 'select',
+		'value'       => $recaptcha_version,
+		'row_class'   => 'pmpro_recaptcha_settings',
+		'depends'     => $recaptcha_depends,
+		'options'     => array(
+			'2_checkbox'   => __( 'v2 - Checkbox', 'paid-memberships-pro' ),
+			'3_invisible' => __( 'v3 - Invisible', 'paid-memberships-pro' ),
+		),
+		'description' => __( 'Changing your version will require new API keys.', 'paid-memberships-pro' ),
+	) );
+	pmpro_build_settings_field( array(
+		'name'      => 'recaptcha_publickey',
+		'label'     => __( 'reCAPTCHA Site Key', 'paid-memberships-pro' ),
+		'type'      => 'text',
+		'value'     => $recaptcha_publickey,
+		'row_class' => 'pmpro_recaptcha_settings',
+		'depends'   => $recaptcha_depends,
+	) );
+	pmpro_build_settings_field( array(
+		'name'      => 'recaptcha_privatekey',
+		'label'     => __( 'reCAPTCHA Secret Key', 'paid-memberships-pro' ),
+		'type'      => 'text',
+		'value'     => $recaptcha_privatekey,
+		'row_class' => 'pmpro_recaptcha_settings',
+		'depends'   => $recaptcha_depends,
+	) );
 }
 add_action( 'pmpro_security_spam_fields', 'pmpro_recaptcha_settings' );
 

@@ -111,8 +111,6 @@
 	$avatar_enabled_sitewide = get_option( 'pmpro_avatar_enabled_sitewide' );
 	$site_type = get_option( 'pmpro_site_type' );
 
-	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
-
 	if ( empty( $activity_email_frequency ) ) {
 		$activity_email_frequency = 'week';
 	}
@@ -129,514 +127,318 @@
 			// translators: %s: Link to Advanced Settings doc.
 			printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $advanced_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		?></p>
-		<div id="restrict-dashboard-access-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Restrict Dashboard Access', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-				<tbody>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="block_dashboard"><?php esc_html_e('WordPress Dashboard', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<input id="block_dashboard" name="block_dashboard" type="checkbox" value="yes" <?php checked( $block_dashboard, 'yes' ); ?> /> <label for="block_dashboard"><?php esc_html_e('Block all users with the Subscriber role from accessing the Dashboard.', 'paid-memberships-pro' );?></label>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="hide_toolbar"><?php esc_html_e('WordPress Toolbar', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<input id="hide_toolbar" name="hide_toolbar" type="checkbox" value="yes" <?php checked( $hide_toolbar, 'yes' ); ?> /> <label for="hide_toolbar"><?php esc_html_e('Hide the Toolbar from all users with the Subscriber role.', 'paid-memberships-pro' );?></label>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="content-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Content Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-				<tbody>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="filterqueries"><?php esc_html_e("Filter searches and archives?", 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<select id="filterqueries" name="filterqueries">
-								<option value="0" <?php if(!$filterqueries) { ?>selected="selected"<?php } ?>><?php esc_html_e('No - Non-members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
-								<option value="1" <?php if($filterqueries == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="showexcerpts"><?php esc_html_e('Show Excerpts to Non-Members?', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<select id="showexcerpts" name="showexcerpts">
-								<option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php esc_html_e('No - Hide excerpts.', 'paid-memberships-pro' ); ?></option>
-								<option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Show excerpts.', 'paid-memberships-pro' ); ?></option>
-							</select>
-						</td>
-					</tr>
-					<?php
-					// Only show the custom message field if the option is set.
-					if ( ! empty( $nonmembertext ) ) {
-						?>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="nonmembertext_type"><?php esc_html_e( 'Membership Required Message', 'paid-memberships-pro' );?></label>
-							</th>
-							<td>
-								<select id="nonmembertext_type" name="nonmembertext_type">
-									<option value="custom"><?php esc_html_e( 'Use my custom membership required message. (Legacy)', 'paid-memberships-pro' ); ?></option>
-									<option value=""><?php esc_html_e( 'Let Paid Memberships Pro generate the message.', 'paid-memberships-pro' ); ?></option>
-								</select>
-								<p class="description"><?php esc_html_e( 'We recommend that you allow Paid Memberships Pro to generate the message for protected content.', 'paid-memberships-pro' ); ?></p>
+		<?php
+		pmpro_build_settings_section( array(
+			'id'     => 'restrict-dashboard-access-settings',
+			'title'  => __( 'Restrict Dashboard Access', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => array(
+				array(
+					'name'           => 'block_dashboard',
+					'label'          => __( 'WordPress Dashboard', 'paid-memberships-pro' ),
+					'type'           => 'checkbox',
+					'checkbox_value' => 'yes',
+					'value'          => $block_dashboard,
+					'checkbox_label' => __( 'Block all users with the Subscriber role from accessing the Dashboard.', 'paid-memberships-pro' ),
+				),
+				array(
+					'name'           => 'hide_toolbar',
+					'label'          => __( 'WordPress Toolbar', 'paid-memberships-pro' ),
+					'type'           => 'checkbox',
+					'checkbox_value' => 'yes',
+					'value'          => $hide_toolbar,
+					'checkbox_label' => __( 'Hide the Toolbar from all users with the Subscriber role.', 'paid-memberships-pro' ),
+				),
+			),
+		) );
 
-								<div id="pmpro_notice-nonmembertext_type" class="notice notice-warning pmpro-notice inline" style="display: none;">
-									<p><strong><?php esc_html_e( 'Warning: Saving these settings will permanently delete your custom message. This change is irreversible.', 'paid-memberships-pro' ); ?></strong></p>
-									<?php esc_html_e( 'We recommend updating to allow PMPro to generate a smart message for protected content. This message is fully compatible with all of your PMPro Add Ons and includes a link to the checkout or levels page, based on whether the content is protected for a single level or multiple levels.', 'paid-memberships-pro' ); ?></p>
-								</div>
-							</td>
-						</tr>
-						<tr class="toggle_nonmembertext">
-							<th scope="row" valign="top">
-								<label for="nonmembertext"><?php esc_html_e( 'Custom Membership Required Message (Legacy)', 'paid-memberships-pro' );?></label>
-							</th>
-							<td>
-								<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($nonmembertext) )?></textarea>
-								<p class="description"><?php esc_html_e('This is a legacy option that will be removed in a future version of PMPro. This message is shown in place of the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
-							</td>
-						</tr>
-						<script>
-							jQuery(document).ready(function() {
-								jQuery('#nonmembertext_type').change(function() {
-									if(jQuery(this).val() == 'custom') {
-										jQuery('.toggle_nonmembertext').show();
-										jQuery('#pmpro_notice-nonmembertext_type').hide();
-									} else {
-										jQuery('.toggle_nonmembertext').hide();
-										jQuery('#pmpro_notice-nonmembertext_type').show();
-									}
-								});
-							});
-						</script>
-						<?php
-					}
+		// Content Settings. filterqueries/showexcerpts are simple selects; the legacy custom-message
+		// block only appears when a custom message already exists and keeps its bespoke markup.
+		$content_fields = array(
+			array(
+				'name'    => 'filterqueries',
+				'label'   => __( 'Filter searches and archives?', 'paid-memberships-pro' ),
+				'type'    => 'select',
+				'value'   => $filterqueries,
+				'options' => array(
+					0 => __( 'No - Non-members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ),
+					1 => __( 'Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ),
+				),
+			),
+			array(
+				'name'    => 'showexcerpts',
+				'label'   => __( 'Show Excerpts to Non-Members?', 'paid-memberships-pro' ),
+				'type'    => 'select',
+				'value'   => $showexcerpts,
+				'options' => array(
+					0 => __( 'No - Hide excerpts.', 'paid-memberships-pro' ),
+					1 => __( 'Yes - Show excerpts.', 'paid-memberships-pro' ),
+				),
+			),
+		);
+		if ( ! empty( $nonmembertext ) ) {
+			$content_fields[] = array(
+				'label'    => __( 'Membership Required Message', 'paid-memberships-pro' ),
+				'type'     => 'callback',
+				'callback' => function() use ( $nonmembertext ) {
+					$custom_message_depends    = esc_attr( wp_json_encode( array( array( 'id' => 'nonmembertext_type', 'value' => 'custom' ) ) ) );
+					$generated_message_depends = esc_attr( wp_json_encode( array( array( 'id' => 'nonmembertext_type', 'value' => '' ) ) ) );
 					?>
-				</tbody>
-				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="communication-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Communication Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-					<tr>
-						<th><?php esc_html_e( 'Notifications', 'paid-memberships-pro' ); ?></th>
-						<td>
-							<select name="maxnotificationpriority">
-								<option value="5" <?php selected( $maxnotificationpriority, 5 ); ?>>
-									<?php esc_html_e( 'Show all notifications.', 'paid-memberships-pro' ); ?>
-								</option>
-								<option value="1" <?php selected( $maxnotificationpriority, 1 ); ?>>
-									<?php esc_html_e( 'Show only security notifications.', 'paid-memberships-pro' ); ?>
-								</option>
-							</select>
-							<br />
-							<p class="description"><?php esc_html_e('Notifications are occasionally shown on the Paid Memberships Pro settings pages.', 'paid-memberships-pro' );?></p>
-						</td>
-					</tr>
-					<tr>
-						<th>
-							<label for="activity_email_frequency"><?php esc_html_e('Activity Email Frequency', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select name="activity_email_frequency">
-								<option value="day" <?php selected( $activity_email_frequency, 'day' ); ?>>
-									<?php esc_html_e( 'Daily', 'paid-memberships-pro' ); ?>
-								</option>
-								<option value="week" <?php selected( $activity_email_frequency, 'week' ); ?>>
-									<?php esc_html_e( 'Weekly', 'paid-memberships-pro' ); ?>
-								</option>
-								<option value="month" <?php selected( $activity_email_frequency, 'month' ); ?>>
-									<?php esc_html_e( 'Monthly', 'paid-memberships-pro' ); ?>
-								</option>
-								<option value="never" <?php selected( $activity_email_frequency, 'never' ); ?>>
-									<?php esc_html_e( 'Never', 'paid-memberships-pro' ); ?>
-								</option>
-							</select>
-							<br />
-							<p class="description"><?php esc_html_e( 'Send periodic sales and revenue updates from this site to the administration email address.', 'paid-memberships-pro' );?></p>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="business-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Business Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<p class="description">
-					<?php esc_html_e( 'Enter your business name and address. This information will be shown to members on the Membership Orders page and Orders print view.', 'paid-memberships-pro' );?>
-				</p>
-				<table class="form-table">
-					<tbody>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="business_name"><?php esc_html_e( 'Business Name', 'paid-memberships-pro' );?></label>
-							</th>
-							<td>
-								<input type="text" id="business_name" name="business_name" value="<?php echo esc_attr( $business_address['name'] ); ?>" class="regular-text" />
-							</td>
-						</tr>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="business_street"><?php esc_html_e( 'Business Street', 'paid-memberships-pro' );?></label>
-							</th>
-							<td>
-								<input type="text" id="business_street" name="business_street" value="<?php echo esc_attr( $business_address['street'] ); ?>" class="regular-text" />
-							</td>
-						</tr>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="business_street2"><?php esc_html_e( 'Business Street 2', 'paid-memberships-pro' );?></label>
-							</th>
-							<td>
-								<input type="text" id="business_street2" name="business_street2" value="<?php echo esc_attr( $business_address['street2'] ); ?>" class="regular-text" />
-							</td>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="business_city"><?php esc_html_e( 'Business City', 'paid-memberships-pro' ); ?></label>
-							</th>
-							<td>
-							<input type="text" id="business_city" name="business_city" value="<?php echo esc_attr( $business_address['city'] ); ?>" class="regular-text" />
-							</td>
-						</tr>
-						<tr>
-							<th scope="row" valign="top">
-							<label for="business_state"><?php esc_html_e( 'Business State', 'paid-memberships-pro' ); ?></label>
-							</th>
-							<td>
-								<input type="text" id="business_state" name="business_state" value="<?php echo esc_attr( $business_address['state'] ); ?>" class="regular-text" />
-							</td>
-						</tr>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="business_zip"><?php esc_html_e( 'Business Postal Code', 'paid-memberships-pro' ); ?></label>
-							</th>
-							<td>
-								<input type="text" id="business_zip" name="business_zip" value="<?php echo esc_attr( $business_address['zip'] ); ?>" class="regular-text" />
-							</td>
-						</tr>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="business_country"><?php esc_html_e( 'Business Country', 'paid-memberships-pro' ); ?></label>
-							</th>
-							<td>
-								<select id="business_country" name="business_country">
-									<option value="0" <?php selected( $business_address['country'], '0' ); ?>><?php esc_html_e( '-- Select a Country --', 'paid-memberships-pro' ); ?></option>
-								<?php
-									global $pmpro_countries;
-									foreach( $pmpro_countries as $abbr => $country ) {
-										?>
-										<option value="<?php echo esc_attr( $abbr ) ?>" <?php selected( $business_address['country'], $abbr ); ?>><?php echo esc_html( $country ); ?></option>
-										<?php
-									}
-								?>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="business_phone"><?php esc_html_e( 'Business Phone', 'paid-memberships-pro' ); ?></label>
-							</th>
-							<td>
-								<input type="text" id="business_phone" name="business_phone" value="<?php echo esc_attr( $business_address['phone'] ); ?>" class="regular-text" />
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="other-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-				<tbody>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="site_type"><?php esc_html_e('What type of membership site are you creating?', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select id="site_type" name="site_type" class="pmpro-wizard__field-block">
-								<option value=""><?php esc_html_e( '-- Select --', 'paid-memberships-pro' ); ?></option>
-								<?php
-								$site_types = pmpro_get_site_types();
-								foreach ( $site_types as $site_type_key => $name ) {
-									?>
-									<option value="<?php echo esc_attr( $site_type_key ); ?>" <?php selected( $site_type_key, $site_type ); ?>><?php echo esc_html( $name ); ?></option>
-									<?php
-								}
-								?>
-							</select>
-							<p class="description"><?php esc_html_e( 'Choose the answer that best fits the primary value of your membership site.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="pmpro-hideads"><?php esc_html_e("Hide Ads From Members?", 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select id="pmpro-hideads" name="hideads" onchange="pmpro_updateHideAdsTRs();">
-								<option value="0" <?php if(!$hideads) { ?>selected="selected"<?php } ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
-								<option value="1" <?php if($hideads == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Hide Ads From All Members', 'paid-memberships-pro' );?></option>
-								<option value="2" <?php if($hideads == 2) { ?>selected="selected"<?php } ?>><?php esc_html_e('Hide Ads From Certain Members', 'paid-memberships-pro' );?></option>
-							</select>
-						</td>
-					</tr>
-					<tr id="hideads_explanation" <?php if($hideads < 2) { ?>style="display: none;"<?php } ?>>
-						<th scope="row" valign="top">&nbsp;</th>
-						<td>
-							<p><?php esc_html_e('To hide ads in your template code, use code like the following', 'paid-memberships-pro' );?>:</p>
-						<pre lang="PHP">
+					<select id="nonmembertext_type" name="nonmembertext_type">
+						<option value="custom"><?php esc_html_e( 'Use my custom membership required message. (Legacy)', 'paid-memberships-pro' ); ?></option>
+						<option value=""><?php esc_html_e( 'Let Paid Memberships Pro generate the message.', 'paid-memberships-pro' ); ?></option>
+					</select>
+					<p class="description"><?php esc_html_e( 'We recommend that you allow Paid Memberships Pro to generate the message for protected content.', 'paid-memberships-pro' ); ?></p>
+					<div id="pmpro_notice-nonmembertext_type" class="notice notice-warning pmpro-notice inline pmpro-hidden" data-pmpro-depends="<?php echo $generated_message_depends; ?>">
+						<p><strong><?php esc_html_e( 'Warning: Saving these settings will permanently delete your custom message. This change is irreversible.', 'paid-memberships-pro' ); ?></strong></p>
+						<p><?php esc_html_e( 'We recommend updating to allow PMPro to generate a smart message for protected content. This message is fully compatible with all of your PMPro Add Ons and includes a link to the checkout or levels page, based on whether the content is protected for a single level or multiple levels.', 'paid-memberships-pro' ); ?></p>
+					</div>
+					<div class="toggle_nonmembertext" data-pmpro-depends="<?php echo $custom_message_depends; ?>">
+						<p><label for="nonmembertext"><strong><?php esc_html_e( 'Custom Membership Required Message (Legacy)', 'paid-memberships-pro' ); ?></strong></label></p>
+						<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes( $nonmembertext ) ); ?></textarea>
+						<p class="description"><?php esc_html_e( 'This is a legacy option that will be removed in a future version of PMPro. This message is shown in place of the post content for non-members. Available variables', 'paid-memberships-pro' ); ?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
+					</div>
+					<?php
+				},
+			);
+		}
+		pmpro_build_settings_section( array(
+			'id'     => 'content-settings',
+			'title'  => __( 'Content Settings', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => $content_fields,
+		) );
+
+		pmpro_build_settings_section( array(
+			'id'     => 'communication-settings',
+			'title'  => __( 'Communication Settings', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => array(
+				array(
+					'name'        => 'maxnotificationpriority',
+					'label'       => __( 'Notifications', 'paid-memberships-pro' ),
+					'type'        => 'select',
+					'value'       => $maxnotificationpriority,
+					'options'     => array(
+						5 => __( 'Show all notifications.', 'paid-memberships-pro' ),
+						1 => __( 'Show only security notifications.', 'paid-memberships-pro' ),
+					),
+					'description' => __( 'Notifications are occasionally shown on the Paid Memberships Pro settings pages.', 'paid-memberships-pro' ),
+				),
+				array(
+					'name'        => 'activity_email_frequency',
+					'label'       => __( 'Activity Email Frequency', 'paid-memberships-pro' ),
+					'type'        => 'select',
+					'value'       => $activity_email_frequency,
+					'options'     => array(
+						'day'   => __( 'Daily', 'paid-memberships-pro' ),
+						'week'  => __( 'Weekly', 'paid-memberships-pro' ),
+						'month' => __( 'Monthly', 'paid-memberships-pro' ),
+						'never' => __( 'Never', 'paid-memberships-pro' ),
+					),
+					'description' => __( 'Send periodic sales and revenue updates from this site to the administration email address.', 'paid-memberships-pro' ),
+				),
+			),
+		) );
+
+		// Business Settings. Individual text fields (saved into the pmpro_business_address array) plus a
+		// country dropdown.
+		global $pmpro_countries;
+		$business_country_options = array( 0 => __( '-- Select a Country --', 'paid-memberships-pro' ) ) + (array) $pmpro_countries;
+		pmpro_build_settings_section( array(
+			'id'     => 'business-settings',
+			'title'  => __( 'Business Settings', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => array(
+				array(
+					'html' => '<p class="description">' . esc_html__( 'Enter your business name and address. This information will be shown to members on the Membership Orders page and Orders print view.', 'paid-memberships-pro' ) . '</p>',
+				),
+				array( 'name' => 'business_name', 'label' => __( 'Business Name', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['name'] ),
+				array( 'name' => 'business_street', 'label' => __( 'Business Street', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['street'] ),
+				array( 'name' => 'business_street2', 'label' => __( 'Business Street 2', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['street2'] ),
+				array( 'name' => 'business_city', 'label' => __( 'Business City', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['city'] ),
+				array( 'name' => 'business_state', 'label' => __( 'Business State', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['state'] ),
+				array( 'name' => 'business_zip', 'label' => __( 'Business Postal Code', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['zip'] ),
+				array( 'name' => 'business_country', 'label' => __( 'Business Country', 'paid-memberships-pro' ), 'type' => 'select', 'value' => $business_address['country'], 'options' => $business_country_options ),
+				array( 'name' => 'business_phone', 'label' => __( 'Business Phone', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['phone'] ),
+			),
+		) );
+
+		// Other Settings.
+		$site_type_options = array( '' => __( '-- Select --', 'paid-memberships-pro' ) );
+		foreach ( pmpro_get_site_types() as $site_type_key => $site_type_name ) {
+			$site_type_options[ $site_type_key ] = $site_type_name;
+		}
+
+		// Level options for the "hide ads from certain levels" checklist.
+		$hideadslevels_selected = get_option( 'pmpro_hideadslevels' );
+		if ( ! is_array( $hideadslevels_selected ) ) {
+			$hideadslevels_selected = explode( ',', (string) $hideadslevels_selected );
+		}
+		$hideads_level_options = array();
+		foreach ( pmpro_sort_levels_by_order( $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT ) ) as $hideads_level ) {
+			$hideads_level_options[ $hideads_level->id ] = $hideads_level->name;
+		}
+		$other_fields = array(
+			array(
+				'name'        => 'site_type',
+				'label'       => __( 'What type of membership site are you creating?', 'paid-memberships-pro' ),
+				'type'        => 'select',
+				'class'       => 'pmpro-wizard__field-block',
+				'value'       => $site_type,
+				'options'     => $site_type_options,
+				'description' => __( 'Choose the answer that best fits the primary value of your membership site.', 'paid-memberships-pro' ),
+			),
+			array(
+				'name'    => 'hideads',
+				'label'   => __( 'Hide Ads From Members?', 'paid-memberships-pro' ),
+				'type'    => 'select',
+				'value'   => $hideads,
+				'options' => array(
+					0 => __( 'No', 'paid-memberships-pro' ),
+					1 => __( 'Hide Ads From All Members', 'paid-memberships-pro' ),
+					2 => __( 'Hide Ads From Certain Members', 'paid-memberships-pro' ),
+				),
+			),
+			array(
+				'label'      => '',
+				'type'       => 'callback',
+				'depends'    => array(
+					array( 'id' => 'hideads', 'value' => '1', 'current' => $hideads ),
+					array( 'id' => 'hideads', 'value' => '2', 'current' => $hideads ),
+				),
+				'depends_or' => true,
+				'callback'   => function() {
+					?>
+					<p><?php esc_html_e( 'To hide ads in your template code, use code like the following', 'paid-memberships-pro' ); ?>:</p>
+					<pre lang="PHP">
 if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 	//insert ad code here
 }</pre>
-						</td>
-					</tr>
-					<tr id="hideadslevels_tr" <?php if($hideads != 2) { ?>style="display: none;"<?php } ?>>
-						<th scope="row" valign="top">
-							<label for="hideadslevels"><?php esc_html_e('Choose Levels to Hide Ads From', 'paid-memberships-pro' );?>:</label>
-						</th>
-						<td>
-							<?php
-								// Build the selectors for the checkbox list based on number of levels.
-								$classes = array();
-								$classes[] = "pmpro_checkbox_box";
-								if ( count( $levels ) > 5 ) {
-									$classes[] = "pmpro_scrollable";
-								}
-								$class = implode( ' ', array_unique( $classes ) );
-							?>
-							<div class="<?php echo esc_attr( $class ); ?>">
-								<?php
-									$hideadslevels = get_option( "pmpro_hideadslevels" );
-									if(!is_array($hideadslevels))
-										$hideadslevels = explode(",", $hideadslevels);
-
-									$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
-									$levels = $wpdb->get_results($sqlQuery, OBJECT);
-									$levels = pmpro_sort_levels_by_order( $levels );
-									foreach($levels as $level)
-									{
-								?>
-									<div class="pmpro_clickable">
-										<input type="checkbox" id="hideadslevels_<?php echo esc_attr( $level->id ); ?>" name="hideadslevels[]" value="<?php echo esc_attr( $level->id); ?>" <?php checked( in_array( $level->id, $hideadslevels ), true ); ?>>
-										<label for="hideadslevels_<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name ); ?></label>
-									</div>
-								<?php
-									}
-								?>
-							</div>
-						</td>
-					</tr>
-					<?php if(is_multisite()) { ?>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="redirecttosubscription"><?php esc_html_e('Redirect all traffic from registration page to /subscription/?', 'paid-memberships-pro' );?>: <em>(<?php esc_html_e('multisite only', 'paid-memberships-pro' );?>)</em></label>
-						</th>
-						<td>
-							<select id="redirecttosubscription" name="redirecttosubscription">
-								<option value="0" <?php if(!$redirecttosubscription) { ?>selected="selected"<?php } ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
-								<option value="1" <?php if($redirecttosubscription == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes', 'paid-memberships-pro' );?></option>
-							</select>
-						</td>
-					</tr>
-					<?php } ?>
 					<?php
-					// Filter to Add More Advanced Settings for Misc Plugin Options, etc.
-					if (has_action('pmpro_custom_advanced_settings')) {
-						$custom_fields = apply_filters('pmpro_custom_advanced_settings', array());
-						foreach ($custom_fields as $field) {
-						?>
-						<tr>
-							<th valign="top" scope="row">
-								<label
-									for="<?php echo esc_attr( $field['field_name'] ); ?>"><?php echo esc_textarea( $field['label'] ); ?></label>
-							</th>
-							<td>
-								<?php
-								switch ($field['field_type']) {
-									case 'select':
-										?>
-										<select id="<?php echo esc_attr( $field['field_name'] ); ?>"
-												name="<?php echo esc_attr( $field['field_name'] ); ?>">
-											<?php
-												//For associative arrays, we use the array keys as values. For numerically indexed arrays, we use the array values.
-												$is_associative = !empty($field['is_associative']) || (bool)count(array_filter(array_keys($field['options']), 'is_string'));
-												foreach ($field['options'] as $key => $option) {
-													if(!$is_associative) $key = $option;
-													?>
-													<option value="<?php echo esc_attr($key); ?>" <?php selected($key, get_option( 'pmpro_' . $field['field_name'] ));?>>
-														<?php echo esc_textarea($option); ?>
-													</option>
-													<?php
-												}
-											?>
-										</select>
-										<?php
-										break;
-									case 'text':
-										?>
-										<input id="<?php echo esc_attr( $field['field_name'] ); ?>"
-											name="<?php echo esc_attr( $field['field_name'] ); ?>"
-											type="<?php echo esc_attr( $field['field_type'] ); ?>"
-											value="<?php echo esc_attr(get_option( 'pmpro_' . $field['field_name'] )); ?> "
-											class="regular-text">
-										<?php
-										break;
-									case 'textarea':
-										?>
-										<textarea id="<?php echo esc_attr( $field['field_name'] ); ?>"
-												name="<?php echo esc_attr( $field['field_name'] ); ?>"
-												class="large-text">
-											<?php echo esc_textarea(get_option( 'pmpro_' . $field['field_name'] )); ?>
-										</textarea>
-										<?php
-										break;
-									case 'callback':
-										call_user_func($field['callback']);
-										break;
-									default:
-										break;
-								}
-								if ( ! empty( $field['description'] ) ) {
-									$allowed_pmpro_custom_advanced_settings_html = array (
-										'strong' => array(),
-										'code' => array(),
-										'em' => array(),
-										'br' => array(),
-										'p' => array(),
-										'a' => array (
-											'href' => array(),
-											'target' => array(),
-											'title' => array(),
-										)
-									);
-									?>
-									<p class="description"><?php echo wp_kses( $field['description'], $allowed_pmpro_custom_advanced_settings_html ); ?></p>
-									<?php } ?>
-							</td>
-						</tr>
-						<?php
-						}
-					}
-					?>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="wisdom_opt_out">
-								<?php esc_html_e( 'Enable Plugin Usage Data Sharing', 'paid-memberships-pro' ); ?>
-							</label>
-						</th>
-						<td>
-							<p>
-								<label>								
-									<input name="wisdom_opt_out" type="radio" value="0"<?php checked( 0, $wisdom_opt_out ); ?> />
-									<?php esc_html_e( 'Allow usage of Paid Memberships Pro to be shared with us.', 'paid-memberships-pro' );?>
-								</label>
-							</p>
-							<p>
-								<label>
-									<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $wisdom_opt_out ); ?> />
-									<?php esc_html_e( 'Do not share usage of Paid Memberships Pro on my site.', 'paid-memberships-pro' );?>
-								</label>
-							</p>
-							<p class="description">
-								<?php esc_html_e( 'Sharing non-sensitive membership site data helps us analyze how our plugin is meeting your needs and identify opportunities to improve. Read about what usage data is tracked:', 'paid-memberships-pro' ); ?>
-								<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="<?php esc_attr_e( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ); ?></a>.
-							</p>
-						</td>
-					</tr>
-					<?php if ( get_option( 'show_avatars' ) ) { ?>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="avatar_enabled_sitewide"><?php esc_html_e( 'Profile Pictures', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<input id="avatar_enabled_sitewide" name="avatar_enabled_sitewide" type="checkbox" value="1" <?php checked( $avatar_enabled_sitewide, 1 ); ?> /> <label for="avatar_enabled_sitewide"><?php esc_html_e( 'Enable profile pictures for all users, regardless of membership level.', 'paid-memberships-pro' ); ?></label>
-							<p class="description"><?php esc_html_e( 'When enabled, all logged-in users can upload a custom profile picture. When disabled, profile pictures are only available for membership levels with the "Enable Profile Pictures" setting checked.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-					<?php } ?>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="uninstall"><?php esc_html_e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select id="uninstall" name="uninstall">
-								<option value="0" <?php if ( ! $uninstall ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' );?></option>
-								<option value="1" <?php if ( $uninstall == 1 ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' );?></option>
-							</select>
-							<p class="description"><?php esc_html_e( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-				<script>
-					function pmpro_updateHideAdsTRs()
-					{
-						var hideads = jQuery('#pmpro-hideads').val();
-						if(hideads == 2)
-						{
-							jQuery('#hideadslevels_tr').show();
-						}
-						else
-						{
-							jQuery('#hideadslevels_tr').hide();
-						}
+				},
+			),
+			array(
+				'name'       => 'hideadslevels',
+				'label'      => __( 'Choose Levels to Hide Ads From', 'paid-memberships-pro' ),
+				'type'       => 'checklist',
+				'options'    => $hideads_level_options,
+				'value'      => $hideadslevels_selected,
+				'depends'    => array( array( 'id' => 'hideads', 'value' => '2', 'current' => $hideads ) ),
+			),
+		);
 
-						if(hideads > 0)
-						{
-							jQuery('#hideads_explanation').show();
-						}
-						else
-						{
-							jQuery('#hideads_explanation').hide();
-						}
+		if ( is_multisite() ) {
+			$other_fields[] = array(
+				'name'    => 'redirecttosubscription',
+				'label'   => __( 'Redirect all traffic from registration page to /subscription/? (multisite only)', 'paid-memberships-pro' ),
+				'type'    => 'select',
+				'value'   => $redirecttosubscription,
+				'options' => array(
+					0 => __( 'No', 'paid-memberships-pro' ),
+					1 => __( 'Yes', 'paid-memberships-pro' ),
+				),
+			);
+		}
+
+		// Add-on custom fields (pmpro_custom_advanced_settings) rendered through the same field engine.
+		if ( has_action( 'pmpro_custom_advanced_settings' ) ) {
+			foreach ( apply_filters( 'pmpro_custom_advanced_settings', array() ) as $custom_field ) {
+				if ( empty( $custom_field['field_name'] ) ) {
+					continue;
+				}
+				$custom_entry = array(
+					'name'        => $custom_field['field_name'],
+					'label'       => isset( $custom_field['label'] ) ? $custom_field['label'] : '',
+					'description' => isset( $custom_field['description'] ) ? $custom_field['description'] : '',
+					'value'       => get_option( 'pmpro_' . $custom_field['field_name'] ),
+				);
+				$custom_type = isset( $custom_field['field_type'] ) ? $custom_field['field_type'] : 'text';
+				if ( 'select' === $custom_type ) {
+					$custom_entry['type'] = 'select';
+					$custom_options = isset( $custom_field['options'] ) ? $custom_field['options'] : array();
+					$is_associative = ! empty( $custom_field['is_associative'] ) || (bool) count( array_filter( array_keys( $custom_options ), 'is_string' ) );
+					$normalized_options = array();
+					foreach ( $custom_options as $opt_key => $opt_label ) {
+						$normalized_options[ $is_associative ? $opt_key : $opt_label ] = $opt_label;
 					}
-					pmpro_updateHideAdsTRs();
-				</script>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
+					$custom_entry['options'] = $normalized_options;
+				} elseif ( 'textarea' === $custom_type ) {
+					$custom_entry['type'] = 'textarea';
+					$custom_entry['class'] = 'large-text';
+				} elseif ( 'callback' === $custom_type ) {
+					$custom_entry['type'] = 'callback';
+					$custom_callback = isset( $custom_field['callback'] ) ? $custom_field['callback'] : '__return_false';
+					$custom_description = isset( $custom_field['description'] ) ? $custom_field['description'] : '';
+					$custom_entry['callback'] = function() use ( $custom_callback, $custom_description ) {
+						if ( is_callable( $custom_callback ) ) {
+							call_user_func( $custom_callback );
+						}
+						if ( ! empty( $custom_description ) ) {
+							$allowed_pmpro_custom_advanced_settings_html = array(
+								'strong' => array(),
+								'code'   => array(),
+								'em'     => array(),
+								'br'     => array(),
+								'p'      => array(),
+								'a'      => array(
+									'href'   => array(),
+									'target' => array(),
+									'title'  => array(),
+								),
+							);
+							echo '<p class="description">' . wp_kses( $custom_description, $allowed_pmpro_custom_advanced_settings_html ) . '</p>';
+						}
+					};
+				} else {
+					$custom_entry['type'] = 'text';
+				}
+				$other_fields[] = $custom_entry;
+			}
+		}
+
+		$other_fields[] = array(
+			'name'        => 'wisdom_opt_out',
+			'label'       => __( 'Enable Plugin Usage Data Sharing', 'paid-memberships-pro' ),
+			'type'        => 'radio',
+			'value'       => $wisdom_opt_out,
+			'options'     => array(
+				0 => __( 'Allow usage of Paid Memberships Pro to be shared with us.', 'paid-memberships-pro' ),
+				1 => __( 'Do not share usage of Paid Memberships Pro on my site.', 'paid-memberships-pro' ),
+			),
+			'description' => esc_html__( 'Sharing non-sensitive membership site data helps us analyze how our plugin is meeting your needs and identify opportunities to improve. Read about what usage data is tracked:', 'paid-memberships-pro' ) . ' <a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="' . esc_attr__( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener">' . esc_html__( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ) . '</a>.',
+		);
+
+		if ( get_option( 'show_avatars' ) ) {
+			$other_fields[] = array(
+				'name'           => 'avatar_enabled_sitewide',
+				'label'          => __( 'Profile Pictures', 'paid-memberships-pro' ),
+				'type'           => 'checkbox',
+				'value'          => $avatar_enabled_sitewide,
+				'checkbox_label' => __( 'Enable profile pictures for all users, regardless of membership level.', 'paid-memberships-pro' ),
+				'description'    => __( 'When enabled, all logged-in users can upload a custom profile picture. When disabled, profile pictures are only available for membership levels with the "Enable Profile Pictures" setting checked.', 'paid-memberships-pro' ),
+			);
+		}
+
+		$other_fields[] = array(
+			'name'        => 'uninstall',
+			'label'       => __( 'Uninstall PMPro on deletion?', 'paid-memberships-pro' ),
+			'type'        => 'select',
+			'value'       => $uninstall,
+			'options'     => array(
+				0 => __( 'No', 'paid-memberships-pro' ),
+				1 => __( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' ),
+			),
+			'description' => __( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.', 'paid-memberships-pro' ),
+		);
+
+		pmpro_build_settings_section( array(
+			'id'     => 'other-settings',
+			'title'  => __( 'Other Settings', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => $other_fields,
+		) );
+		?>
 		<p class="submit">
 			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>

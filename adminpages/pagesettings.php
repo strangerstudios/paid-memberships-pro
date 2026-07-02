@@ -217,335 +217,152 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
             </div> <!-- end pmpro-new-install -->
         <?php } ?>
 
-		<?php if ( ! empty( $pmpro_some_pages_ready ) || ! empty( $_REQUEST['manualpages'] ) ) { ?>
-		<div id="pmpro-page-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Primary Membership Page Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<p><?php
-					$frontend_template_customization_link_escaped = '<a title="' . esc_html__( 'Paid Memberships Pro - Frontend Page Templates', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/templates/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=documentation&utm_content=frontend-page-templates">' . esc_html__( 'how to customize the content of frontend pages', 'paid-memberships-pro' ) . '</a>';
-					// translators: %s: Link to Frontend Page Templates docs.
-					printf( esc_html__('Click here for documentation on %s beyond the block or shortcode settings.', 'paid-memberships-pro' ), $frontend_template_customization_link_escaped ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				?></p>
-				<table class="form-table">
-				<tbody>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="account_page_id"><?php esc_html_e('Account Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<?php
-							wp_dropdown_pages(
-								array(
-									'name'             => 'account_page_id',
-									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => esc_html( $pmpro_pages['account'] ),
-									'post_type'        => esc_html( $post_type ),
-								)
-							);
+		<?php if ( ! empty( $pmpro_some_pages_ready ) || ! empty( $_REQUEST['manualpages'] ) ) {
+			/**
+			 * Build one "page assignment" field: label + page dropdown + edit/view (or generate)
+			 * buttons + hint. Shared by the primary and additional page settings sections.
+			 *
+			 * @param string $key              The page key in $pmpro_pages (input name is "{$key}_page_id").
+			 * @param string $label            The row label.
+			 * @param string $description_html Optional. Hint markup shown below the dropdown (already escaped).
+			 * @param array  $args             Optional. 'none_label' for the empty option, 'generate' to show
+			 *                                 a Generate Page link when no page is assigned.
+			 */
+			$pmpro_page_setting_field = function( $key, $label, $description_html = '', $args = array() ) use ( $pmpro_pages, $post_type ) {
+				return array(
+					'name'    => $key . '_page_id',
+					'label'   => $label,
+					'type'    => 'html',
+					'content' => function() use ( $key, $description_html, $args, $pmpro_pages, $post_type ) {
+						wp_dropdown_pages(
+							array(
+								'name'             => $key . '_page_id',
+								'show_option_none' => '-- ' . ( ! empty( $args['none_label'] ) ? $args['none_label'] : __( 'Choose One', 'paid-memberships-pro' ) ) . ' --',
+								'selected'         => $pmpro_pages[ $key ],
+								'post_type'        => $post_type,
+							)
+						);
+						if ( ! empty( $pmpro_pages[ $key ] ) ) {
 							?>
-							<?php if (!empty($pmpro_pages['account'])) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['account'] ); ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['account']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_account] <?php esc_html_e('or the Membership Account block', 'paid-memberships-pro' ); ?>.</p>
-						</td>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="billing_page_id"><?php esc_html_e('Billing Information Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
+							<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages[ $key ] ); ?>&action=edit"
+							class="button button-secondary pmpro_page_edit"><?php esc_html_e( 'edit page', 'paid-memberships-pro' ); ?></a>
+							&nbsp;
+							<a target="_blank" href="<?php echo esc_url( get_permalink( $pmpro_pages[ $key ] ) ); ?>"
+							class="button button-secondary pmpro_page_view"><?php esc_html_e( 'view page', 'paid-memberships-pro' ); ?></a>
 							<?php
-							wp_dropdown_pages(
-								array(
-									'name'             => 'billing_page_id',
-									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => esc_html( $pmpro_pages['billing'] ),
-									'post_type'        => esc_html( $post_type ),
-								)
-							);
+						} elseif ( ! empty( $args['generate'] ) ) {
 							?>
-							<?php if (!empty($pmpro_pages['billing'])) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['billing'] ); ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['billing']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_billing] <?php esc_html_e('or the Membership Billing block', 'paid-memberships-pro' ); ?>.</p>
-						</td>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="cancel_page_id"><?php esc_html_e('Cancel Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
+							&nbsp;
+							<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => $key ), admin_url( 'admin.php' ) ), 'createpages', 'pmpro_pagesettings_nonce' ) ); ?>"><?php esc_html_e( 'Generate Page', 'paid-memberships-pro' ); ?></a>
 							<?php
-							wp_dropdown_pages(
-								array(
-									'name'             => 'cancel_page_id',
-									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => esc_html( $pmpro_pages['cancel'] ),
-									'post_type'        => esc_html( $post_type ),
-								)
-							);
-							?>
-							<?php if (!empty($pmpro_pages['cancel'])) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['cancel'] ); ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['cancel']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_cancel] <?php esc_html_e('or the Membership Cancel block', 'paid-memberships-pro' ); ?>.</p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="checkout_page_id"><?php esc_html_e('Checkout Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<?php
-							wp_dropdown_pages(
-								array(
-									'name'             => 'checkout_page_id',
-									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => esc_html( $pmpro_pages['checkout'] ),
-									'post_type'        => esc_html( $post_type ),
-								)
-							);
-							?>
-							<?php if (!empty($pmpro_pages['checkout'])) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['checkout'] ); ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['checkout']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_checkout] <?php esc_html_e('or the Membership Checkout block', 'paid-memberships-pro' ); ?>.</p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="confirmation_page_id"><?php esc_html_e('Confirmation Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<?php
-							wp_dropdown_pages(
-								array(
-									'name'             => 'confirmation_page_id',
-									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => esc_html( $pmpro_pages['confirmation'] ),
-									'post_type'        => esc_html( $post_type ),
-								)
-							);
-							?>
-							<?php if (!empty($pmpro_pages['confirmation'])) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['confirmation'] ); ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['confirmation']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_confirmation] <?php esc_html_e('or the Membership Confirmation block', 'paid-memberships-pro' ); ?>.</p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="levels_page_id"><?php esc_html_e('Levels Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<?php
-							wp_dropdown_pages(
-								array(
-									'name'             => 'levels_page_id',
-									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => esc_html( $pmpro_pages['levels'] ),
-									'post_type'        => esc_html( $post_type ),
-								)
-							);
-							?>
-							<?php if (!empty($pmpro_pages['levels'])) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['levels'] ) ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['levels']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_levels] <?php esc_html_e('or the Membership Levels block', 'paid-memberships-pro' ); ?>.</p>
+						}
+						echo wp_kses_post( $description_html );
+					},
+				);
+			};
 
-							<?php if ( ! function_exists( 'pmpro_advanced_levels_shortcode' ) ) {
-								$allowed_advanced_levels_html = array (
-									'a' => array (
-									'href' => array(),
-									'target' => array(),
-									'title' => array(),
-								),
-							);
-							echo '<p class="description">' . sprintf( wp_kses( __( 'Optional: Customize your Membership Levels page using the <a href="%s" title="Paid Memberships Pro - Advanced Levels Page Add On" target="_blank">Advanced Levels Page Add On</a>.', 'paid-memberships-pro' ), $allowed_advanced_levels_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-advanced-levels-shortcode/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=add-ons&utm_content=pmpro-advanced-levels-shortcode' ) . '</p>';
-							} ?>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="login_page_id"><?php esc_html_e( 'Log In Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<?php
-								wp_dropdown_pages(
-									array(
-										'name' => 'login_page_id',
-										'show_option_none' => '-- ' . esc_html__('Use WordPress Default', 'paid-memberships-pro') . ' --',
-										'selected' => esc_html( $pmpro_pages['login'] ),
-										'post_type' => esc_html( $post_type ),
-									)
-								);
-							?>
+			// Hint markup for the standard "shortcode or block" rows.
+			$pmpro_page_shortcode_hint = function( $shortcode, $block_text ) {
+				return '<p class="description">' . esc_html__( 'Include the shortcode', 'paid-memberships-pro' ) . ' ' . $shortcode . ' ' . $block_text . '.</p>';
+			};
 
-							<?php if ( ! empty( $pmpro_pages['login'] ) ) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['login'] ); ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['login']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } elseif ( empty( get_option( 'pmpro_login_page_generated' ) ) ) { ?>
-								&nbsp;
-								<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'login' ) ), admin_url('admin.php') ) ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php esc_html_e('Generate Page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Log In Form block.', 'paid-memberships-pro' ), '[pmpro_login]' ); ?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="member_profile_edit_page_id"><?php esc_html_e( 'Member Profile Edit Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<?php
-								wp_dropdown_pages(
-									array(
-										'name' => 'member_profile_edit_page_id',
-										'show_option_none' => '-- ' . esc_html__('Use WordPress Default', 'paid-memberships-pro') . ' --',
-										'selected' => esc_html( $pmpro_pages['member_profile_edit'] ),
-										'post_type' => esc_html( $post_type ),
-									)
-								);
-							?>
+			$levels_page_hint = $pmpro_page_shortcode_hint( '[pmpro_levels]', esc_html__( 'or the Membership Levels block', 'paid-memberships-pro' ) );
+			if ( ! function_exists( 'pmpro_advanced_levels_shortcode' ) ) {
+				$allowed_advanced_levels_html = array (
+					'a' => array (
+						'href' => array(),
+						'target' => array(),
+						'title' => array(),
+					),
+				);
+				$levels_page_hint .= '<p class="description">' . sprintf( wp_kses( __( 'Optional: Customize your Membership Levels page using the <a href="%s" title="Paid Memberships Pro - Advanced Levels Page Add On" target="_blank">Advanced Levels Page Add On</a>.', 'paid-memberships-pro' ), $allowed_advanced_levels_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-advanced-levels-shortcode/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=add-ons&utm_content=pmpro-advanced-levels-shortcode' ) . '</p>';
+			}
 
-							<?php if ( ! empty( $pmpro_pages['member_profile_edit'] ) ) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['member_profile_edit'] );?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['member_profile_edit']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } elseif ( empty( get_option( 'pmpro_member_profile_edit_page_generated' ) ) ) { ?>
-								&nbsp;
-								<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'member_profile_edit' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ) ); ?>"><?php esc_html_e('Generate Page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Member Profile Edit block.', 'paid-memberships-pro' ), '[pmpro_member_profile_edit]' ); ?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="invoice_page_id"><?php esc_html_e('Orders Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<?php
-							wp_dropdown_pages(
-								array(
-									'name'             => 'invoice_page_id',
-									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => esc_html( $pmpro_pages['invoice'] ),
-									'post_type'        => esc_html( $post_type ),
-								)
-							);
+			$frontend_template_customization_link_escaped = '<a title="' . esc_html__( 'Paid Memberships Pro - Frontend Page Templates', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/templates/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=documentation&utm_content=frontend-page-templates">' . esc_html__( 'how to customize the content of frontend pages', 'paid-memberships-pro' ) . '</a>';
+
+			pmpro_build_settings_section( array(
+				'id'     => 'pmpro-page-settings',
+				'title'  => __( 'Primary Membership Page Settings', 'paid-memberships-pro' ),
+				'fields' => array(
+					array(
+						// translators: %s: Link to Frontend Page Templates docs.
+						'html' => '<p>' . sprintf( esc_html__( 'Click here for documentation on %s beyond the block or shortcode settings.', 'paid-memberships-pro' ), $frontend_template_customization_link_escaped ) . '</p>',
+					),
+					$pmpro_page_setting_field( 'account', __( 'Account Page', 'paid-memberships-pro' ), $pmpro_page_shortcode_hint( '[pmpro_account]', esc_html__( 'or the Membership Account block', 'paid-memberships-pro' ) ) ),
+					$pmpro_page_setting_field( 'billing', __( 'Billing Information Page', 'paid-memberships-pro' ), $pmpro_page_shortcode_hint( '[pmpro_billing]', esc_html__( 'or the Membership Billing block', 'paid-memberships-pro' ) ) ),
+					$pmpro_page_setting_field( 'cancel', __( 'Cancel Page', 'paid-memberships-pro' ), $pmpro_page_shortcode_hint( '[pmpro_cancel]', esc_html__( 'or the Membership Cancel block', 'paid-memberships-pro' ) ) ),
+					$pmpro_page_setting_field( 'checkout', __( 'Checkout Page', 'paid-memberships-pro' ), $pmpro_page_shortcode_hint( '[pmpro_checkout]', esc_html__( 'or the Membership Checkout block', 'paid-memberships-pro' ) ) ),
+					$pmpro_page_setting_field( 'confirmation', __( 'Confirmation Page', 'paid-memberships-pro' ), $pmpro_page_shortcode_hint( '[pmpro_confirmation]', esc_html__( 'or the Membership Confirmation block', 'paid-memberships-pro' ) ) ),
+					$pmpro_page_setting_field( 'levels', __( 'Levels Page', 'paid-memberships-pro' ), $levels_page_hint ),
+					$pmpro_page_setting_field(
+						'login',
+						__( 'Log In Page', 'paid-memberships-pro' ),
+						'<p class="description">' . sprintf( esc_html__( 'Include the shortcode %s or the Log In Form block.', 'paid-memberships-pro' ), '[pmpro_login]' ) . '</p>',
+						array(
+							'none_label' => __( 'Use WordPress Default', 'paid-memberships-pro' ),
+							'generate'   => empty( get_option( 'pmpro_login_page_generated' ) ),
+						)
+					),
+					$pmpro_page_setting_field(
+						'member_profile_edit',
+						__( 'Member Profile Edit Page', 'paid-memberships-pro' ),
+						'<p class="description">' . sprintf( esc_html__( 'Include the shortcode %s or the Member Profile Edit block.', 'paid-memberships-pro' ), '[pmpro_member_profile_edit]' ) . '</p>',
+						array(
+							'none_label' => __( 'Use WordPress Default', 'paid-memberships-pro' ),
+							'generate'   => empty( get_option( 'pmpro_member_profile_edit_page_generated' ) ),
+						)
+					),
+					$pmpro_page_setting_field( 'invoice', __( 'Orders Page', 'paid-memberships-pro' ), $pmpro_page_shortcode_hint( '[pmpro_invoice]', esc_html__( 'or the Membership Orders block', 'paid-memberships-pro' ) ) ),
+					array(
+						'html' => function() {
 							?>
-							<?php if (!empty($pmpro_pages['invoice'])) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['invoice'] ); ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['invoice']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_invoice] <?php esc_html_e('or the Membership Orders block', 'paid-memberships-pro' ); ?>.</p>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-				<p class="submit">
-					<input name="savesettings" type="submit" class="button button-primary"
-						value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
-				</p>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<?php if ( ! empty( $extra_pages )) { ?>
-			<div id="pmpro-additional-page-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-				<div class="pmpro_section_toggle">
-					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-						<span class="dashicons dashicons-arrow-up-alt2"></span>
-						<?php esc_html_e( 'Additional Page Settings', 'paid-memberships-pro' ); ?>
-					</button>
-				</div>
-				<div class="pmpro_section_inside">
-					<table class="form-table">
-						<tbody>
-						<?php foreach ($extra_pages as $name => $page) { ?>
+							<p class="submit">
+								<input name="savesettings" type="submit" class="button button-primary"
+									value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
+							</p>
 							<?php
-								if(is_array($page)) {
-									$label = $page['title'];
-									if(!empty($page['hint']))
-										$hint = $page['hint'];
-									else
-										$hint = '';
-								} else {
-									$label = $page;
-									$hint = '';
-								}
-							?>
-							<tr>
-								<th scope="row" valign="top">
-									<label for="<?php echo esc_attr( $name ); ?>_page_id"><?php echo wp_kses_post( $label ); ?></label>
-								</th>
-								<td>
-									<?php wp_dropdown_pages(
-										array(
-											'name'             => esc_html( $name . '_page_id' ),
-											'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-											'selected'         => esc_html( $pmpro_pages[ $name ] ),
-											'post_type'        => esc_html( $post_type ),
-										)
-									);
-									if(!empty($pmpro_pages[$name])) {
-										?>
-										<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages[$name] );?>&action=edit"
-										class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-										&nbsp;
-										<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages[$name]) ); ?>"
-										class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-									<?php } else { ?>
-										&nbsp;
-										<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( $name ) ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ) ); ?>"><?php esc_html_e('Generate Page', 'paid-memberships-pro' ); ?></a>
-									<?php } ?>
-									<?php if(!empty($hint)) { ?>
-										<p class="description"><?php echo wp_kses_post( $hint );?></p>
-									<?php } ?>
-								</td>
-							</tr>
-						<?php } ?>
-						</tbody>
-					</table>
+						},
+					),
+				),
+			) );
+		?>
+		<?php
+		// Additional pages registered by add-ons via pmpro_extra_page_settings.
+		if ( ! empty( $extra_pages ) ) {
+			$extra_page_fields = array();
+			foreach ( $extra_pages as $name => $page ) {
+				if ( is_array( $page ) ) {
+					$label = $page['title'];
+					$hint  = ! empty( $page['hint'] ) ? $page['hint'] : '';
+				} else {
+					$label = $page;
+					$hint  = '';
+				}
+				$extra_page_fields[] = $pmpro_page_setting_field(
+					$name,
+					$label,
+					! empty( $hint ) ? '<p class="description">' . wp_kses_post( $hint ) . '</p>' : '',
+					array( 'generate' => true )
+				);
+			}
+			$extra_page_fields[] = array(
+				'html' => function() {
+					?>
 					<p class="submit">
 						<input name="savesettings" type="submit" class="button button-primary"
 							value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
 					</p>
-				</div> <!-- end pmpro_section_inside -->
-			</div> <!-- end pmpro_section -->
-        <?php } ?>
+					<?php
+				},
+			);
+
+			pmpro_build_settings_section( array(
+				'id'     => 'pmpro-additional-page-settings',
+				'title'  => __( 'Additional Page Settings', 'paid-memberships-pro' ),
+				'fields' => $extra_page_fields,
+			) );
+		}
+		?>
 
 		<?php
 			// Create a $template => $path array of all default page templates.
@@ -587,15 +404,13 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 
 			// If there are custom templates, display them.
 			if ( ! empty( $custom_templates ) ) {
+				// The template comparison list table is bespoke, so only the section wrapper and the
+				// trailing warning setting use the shared helpers.
+				pmpro_build_settings_section_open( array(
+					'id'    => 'pmpro-custom-page-template-settings',
+					'title' => __( 'Custom Page Templates', 'paid-memberships-pro' ),
+				) );
 				?>
-				<div id="pmpro-custom-page-template-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-					<div class="pmpro_section_toggle">
-						<button class="pmpro_section-toggle-button" type="button" aria-expanded="false">
-							<span class="dashicons dashicons-arrow-down-alt2"></span>
-							<?php esc_html_e( 'Custom Page Templates', 'paid-memberships-pro' ); ?>
-						</button>
-					</div>
-					<div class="pmpro_section_inside">
 						<p>
 							<?php esc_html_e( 'Your site is loading custom page templates. These settings allow you to change which custom template is being loaded for your frontend pages. If your custom template is causing fatal errors or blocking the checkout process, you should load the core PMPro version while you or your developer works on template compatibility.', 'paid-memberships-pro' ); ?>
 						</p>
@@ -702,31 +517,26 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 						</table>
 						<?php
 						// Add a dropdown setting to disable the "outdated template" warning.
-						$disable_outdated_template_warning = ! empty( get_option( 'pmpro_disable_outdated_template_warning' ) );
+						pmpro_build_settings_fields( array(
+							array(
+								'name'        => 'pmpro_disable_outdated_template_warning',
+								'label'       => __( 'Disable Outdated Template Warning', 'paid-memberships-pro' ),
+								'type'        => 'select',
+								'value'       => ! empty( get_option( 'pmpro_disable_outdated_template_warning' ) ) ? 1 : 0,
+								'options'     => array(
+									0 => __( 'Show warning for outdated custom page templates.', 'paid-memberships-pro' ),
+									1 => __( 'Do not show warning for outdated custom page templates.', 'paid-memberships-pro' ),
+								),
+								'description' => __( 'If you are aware of the outdated custom page templates and do not want to see the warning, you can disable it here.', 'paid-memberships-pro' ),
+							),
+						) );
 						?>
-						<table class="form-table">
-							<tbody>
-								<tr>
-									<th scope="row" valign="top">
-										<label for="pmpro_disable_outdated_template_warning"><?php esc_html_e( 'Disable Outdated Template Warning', 'paid-memberships-pro' ); ?></label>
-									</th>
-									<td>
-										<select name="pmpro_disable_outdated_template_warning">
-											<option value="0" <?php selected( $disable_outdated_template_warning, false ); ?>><?php esc_html_e( 'Show warning for outdated custom page templates.', 'paid-memberships-pro' ); ?></option>
-											<option value="1" <?php selected( $disable_outdated_template_warning, true ); ?>><?php esc_html_e( 'Do not show warning for outdated custom page templates.', 'paid-memberships-pro' ); ?></option>
-										</select>
-										<p class="description"><?php esc_html_e( 'If you are aware of the outdated custom page templates and do not want to see the warning, you can disable it here.', 'paid-memberships-pro' ); ?></p>
-									</td>
-								</tr>
-							</tbody>
-						</table>
 						<p class="submit">
 							<input name="savesettings" type="submit" class="button button-primary"
 								value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
 						</p>
-					</div>
-				</div>
 				<?php
+				pmpro_build_settings_section_close();
 			}
 		}
 		?>

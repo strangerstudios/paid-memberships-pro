@@ -56,14 +56,15 @@
 			// translators: %s: Link to Design Settings doc.
 			printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $design_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		?></p>
-		<div id="global-styles-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Global Styles', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
+		<?php
+		// The Global Styles picker is a visual radio-card widget (live previews + a dynamic <style>
+		// block), so it keeps its bespoke body inline via the open/close pair rather than a field list.
+		pmpro_build_settings_section_open( array(
+			'id'    => 'global-styles-settings',
+			'title' => __( 'Global Styles', 'paid-memberships-pro' ),
+			'open'  => true,
+		) );
+		?>
 				<p><?php esc_html_e( 'Choose a style variation for your frontend membership pages.', 'paid-memberships-pro' ); ?></p>
 				<style id="pmpro_global_style_colors">
 					:root {
@@ -101,46 +102,38 @@
 						</div>
 					</div>
 				</fieldset>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="color-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Color Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-				<tbody>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="pmpro_base_color"><?php esc_html_e( 'Base Color', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<input name="pmpro_base_color" type="color" id="pmpro_base_color" value="<?php echo esc_attr( $pmpro_colors['base'] ); ?>" class="pmpro_color_picker" />
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="pmpro_contrast_color"><?php esc_html_e( 'Contrast Color', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<input name="pmpro_contrast_color" type="color" id="pmpro_contrast_color" value="<?php echo esc_attr( $pmpro_colors['contrast'] ); ?>" class="pmpro_color_picker" />
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="pmpro_accent_color"><?php esc_html_e( 'Accent Color', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<input name="pmpro_accent_color" type="color" id="pmpro_accent_color" value="<?php echo esc_attr( $pmpro_colors['accent'] ); ?>" class="pmpro_color_picker" />
-						</td>
-					</tr>
-				</tbody>
-				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
+		<?php
+		pmpro_build_settings_section_close();
+
+		pmpro_build_settings_section( array(
+			'id'     => 'color-settings',
+			'title'  => __( 'Color Settings', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => array(
+				array(
+					'name'  => 'pmpro_base_color',
+					'label' => __( 'Base Color', 'paid-memberships-pro' ),
+					'type'  => 'color',
+					'class' => 'pmpro_color_picker',
+					'value' => $pmpro_colors['base'],
+				),
+				array(
+					'name'  => 'pmpro_contrast_color',
+					'label' => __( 'Contrast Color', 'paid-memberships-pro' ),
+					'type'  => 'color',
+					'class' => 'pmpro_color_picker',
+					'value' => $pmpro_colors['contrast'],
+				),
+				array(
+					'name'  => 'pmpro_accent_color',
+					'label' => __( 'Accent Color', 'paid-memberships-pro' ),
+					'type'  => 'color',
+					'class' => 'pmpro_color_picker',
+					'value' => $pmpro_colors['accent'],
+				),
+			),
+		) );
+		?>
 		<p class="submit">
 			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>" />
 		</p>

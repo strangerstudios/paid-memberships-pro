@@ -236,6 +236,9 @@
 		/**
 		 * Display fields for PayPal options.
 		 *
+		 * Field values default to get_option( 'pmpro_' . $name ) inside the helper, so only the
+		 * field definitions are needed here.
+		 *
 		 * @since 3.5
 		 */
 		public static function show_settings_fields() {
@@ -249,76 +252,56 @@
 					);
 				?>
 			</p>
-			<div id="pmpro_paypalexpress" class="pmpro_section" data-visibility="shown" data-activated="true">
-				<div class="pmpro_section_toggle">
-					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-						<span class="dashicons dashicons-arrow-up-alt2"></span>
-						<?php esc_html_e( 'Settings', 'paid-memberships-pro' ); ?>
-					</button>
-				</div>
-				<div class="pmpro_section_inside">
-					<table class="form-table">
-						<tbody>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
-								<th scope="row" valign="top">
-									<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr( get_option( 'pmpro_gateway_email' ) ); ?>" class="regular-text code" />
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
-								<th scope="row" valign="top">
-									<label for="apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="apiusername" name="apiusername" value="<?php echo esc_attr( get_option( 'pmpro_apiusername' ) ); ?>" class="regular-text code" />
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
-								<th scope="row" valign="top">
-									<label for="apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="apipassword" name="apipassword" value="<?php echo esc_attr( get_option( 'pmpro_apipassword' ) ); ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
-								<th scope="row" valign="top">
-									<label for="apisignature"><?php esc_html_e('API Signature', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="apisignature" name="apisignature" value="<?php echo esc_attr( get_option( 'pmpro_apisignature' ) ); ?>" class="regular-text code" />
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
-								<th scope="row" valign="top">
-									<label for="paypalexpress_skip_confirmation"><?php esc_html_e('Confirmation Step', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
-										<option value="0" <?php selected( get_option('pmpro_paypalexpress_skip_confirmation'), 0 );?>><?php esc_html_e( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
-										<option value="1" <?php selected( get_option('pmpro_paypalexpress_skip_confirmation'), 1 );?>><?php esc_html_e( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
-									</select>
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
-								<th scope="row" valign="top">
-									<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<p><code><?php echo esc_html( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );?></code></p>
-									<p class="description">
-										<?php esc_html_e( 'You must set up this IPN (Instant Payment Notification) URL in your PayPal account to fully integrate with PayPal Express.', 'paid-memberships-pro' ); ?>
-										<a href="https://www.paidmembershipspro.com/setting-ipn-urls-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=set-up-paypal-ipn" target="_blank"><?php esc_html_e( 'Read the documentation on setting up your PayPal IPN', 'paid-memberships-pro' ); ?></a>
-									</p>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
 			<?php
+			pmpro_build_settings_section( array(
+				'id'     => 'pmpro_paypalexpress',
+				'title'  => __( 'Settings', 'paid-memberships-pro' ),
+				'fields' => array(
+					array(
+						'name'  => 'gateway_email',
+						'label' => __( 'Gateway Account Email', 'paid-memberships-pro' ),
+						'type'  => 'text',
+					),
+					array(
+						'name'  => 'apiusername',
+						'label' => __( 'API Username', 'paid-memberships-pro' ),
+						'type'  => 'text',
+					),
+					array(
+						'name'   => 'apipassword',
+						'label'  => __( 'API Password', 'paid-memberships-pro' ),
+						'type'   => 'text',
+						'secret' => true,
+					),
+					array(
+						'name'  => 'apisignature',
+						'label' => __( 'API Signature', 'paid-memberships-pro' ),
+						'type'  => 'text',
+					),
+					array(
+						'name'    => 'paypalexpress_skip_confirmation',
+						'label'   => __( 'Confirmation Step', 'paid-memberships-pro' ),
+						'type'    => 'select',
+						'options' => array(
+							0 => __( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ),
+							1 => __( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ),
+						),
+					),
+					array(
+						'label'   => __( 'IPN Handler URL', 'paid-memberships-pro' ),
+						'type'    => 'html',
+						'content' => function() {
+							?>
+							<p><code><?php echo esc_html( add_query_arg( 'action', 'ipnhandler', admin_url( 'admin-ajax.php' ) ) ); ?></code></p>
+							<p class="description">
+								<?php esc_html_e( 'You must set up this IPN (Instant Payment Notification) URL in your PayPal account to fully integrate with PayPal Express.', 'paid-memberships-pro' ); ?>
+								<a href="https://www.paidmembershipspro.com/setting-ipn-urls-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=set-up-paypal-ipn" target="_blank"><?php esc_html_e( 'Read the documentation on setting up your PayPal IPN', 'paid-memberships-pro' ); ?></a>
+							</p>
+							<?php
+						},
+					),
+				),
+			) );
 		}
 
 		/**

@@ -4930,3 +4930,8 @@ button.pmpro_report_th_closed:before {
 	height: 30px;
 	width: 26px;
 }
+
+/* Declarative field visibility for pmpro_build_settings_field() depends rules (toggled by pmpro-admin.js). */
+.pmpro-hidden {
+	display: none;
+}

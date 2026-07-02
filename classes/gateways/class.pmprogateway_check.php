@@ -147,7 +147,6 @@
 		 */
 		public static function show_settings_fields() {
 			$check_gateway_label = get_option( 'pmpro_check_gateway_label', __( 'Check', 'paid-memberships-pro' ) );
-			$instructions = get_option( 'pmpro_instructions' );
 			?>
 			<p>
 				<?php
@@ -158,54 +157,48 @@
 					);
 				?>
 			</p>
-			<div id="pmpro_check" class="pmpro_section" data-visibility="shown" data-activated="true">
-				<div class="pmpro_section_toggle">
-					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-						<span class="dashicons dashicons-arrow-up-alt2"></span>
-						<?php esc_html_e( 'Settings', 'paid-memberships-pro' ); ?>
-					</button>
-				</div>
-				<div class="pmpro_section_inside">
-					<table class="form-table">
-						<tbody>
-							<tr class="gateway gateway_check">
-								<th scope="row" valign="top">
-									<label for="check_gateway_label"><?php esc_html_e( 'Gateway Label', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="check_gateway_label" name="check_gateway_label" class="regular-text code" value="<?php echo esc_attr( $check_gateway_label ); ?>"/>
-									<p class="description"><?php esc_html_e('The name of the custom payment method that will show on the frontend of your site. Useful for manual payment methods name like Wire Transfer, Direct Deposit, or Cash. Defaults to "Pay By Check".', 'paid-memberships-pro' );?></p>
-								</td>
-							</tr>
-							<tr class="gateway gateway_check">
-								<th scope="row" valign="top">
-									<label for="instructions"><?php esc_html_e('Instructions', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( wpautop(  $instructions ) ); ?></textarea>
-									<p class="description"><?php echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and order pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<?php
-						if ( ! defined( 'PMPROPBC_VER' ) ) {
-							?>
-							<p>
-								<?php
-									printf(
-										/* translators: %s: URL to the Pay by Check Add On documentation. */
-										esc_html__( 'Optional: Offer manual payments in addition to your primary payment gateway using the %s.', 'paid-memberships-pro' ),
-										'<a href="https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=offer-manual-payments" target="_blank">' . esc_html__( 'Pay by Check: Manual and Offline Payments Add On', 'paid-memberships-pro' ) . '</a>'
-									);
-								?>
-							</p>
-							<?php
-						}
-					?>
-				</div>
-			</div>
 			<?php
+			$fields = array(
+				array(
+					'name'        => 'check_gateway_label',
+					'label'       => __( 'Gateway Label', 'paid-memberships-pro' ),
+					'type'        => 'text',
+					'value'       => $check_gateway_label,
+					'description' => __( 'The name of the custom payment method that will show on the frontend of your site. Useful for manual payment methods name like Wire Transfer, Direct Deposit, or Cash. Defaults to "Pay By Check".', 'paid-memberships-pro' ),
+				),
+				array(
+					'name'        => 'instructions',
+					'label'       => __( 'Instructions', 'paid-memberships-pro' ),
+					'type'        => 'textarea',
+					'class'       => 'large-text',
+					'attrs'       => array(
+						'rows' => 3,
+						'cols' => 50,
+					),
+					'value'       => wpautop( get_option( 'pmpro_instructions' ) ),
+					'description' => sprintf(
+						/* translators: %s: the gateway label. */
+						__( 'Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and order pages.', 'paid-memberships-pro' ),
+						esc_html( $check_gateway_label )
+					),
+				),
+			);
+
+			if ( ! defined( 'PMPROPBC_VER' ) ) {
+				$fields[] = array(
+					'html' => '<p>' . sprintf(
+						/* translators: %s: URL to the Pay by Check Add On documentation. */
+						esc_html__( 'Optional: Offer manual payments in addition to your primary payment gateway using the %s.', 'paid-memberships-pro' ),
+						'<a href="https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=offer-manual-payments" target="_blank">' . esc_html__( 'Pay by Check: Manual and Offline Payments Add On', 'paid-memberships-pro' ) . '</a>'
+					) . '</p>',
+				);
+			}
+
+			pmpro_build_settings_section( array(
+				'id'     => 'pmpro_check',
+				'title'  => __( 'Settings', 'paid-memberships-pro' ),
+				'fields' => $fields,
+			) );
 		}
 
 		/**

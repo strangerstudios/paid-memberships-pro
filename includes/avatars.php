@@ -26,19 +26,16 @@ function pmpro_membership_level_after_other_settings_avatar( $level ) {
 	}
 
 	$enabled = ! empty( get_pmpro_membership_level_meta( $level->id, 'enable_avatars', true ) );
-	?>
-	<table class="form-table">
-		<tbody>
-			<tr>
-				<th scope="row" valign="top"><label><?php esc_html_e( 'Enable Profile Pictures', 'paid-memberships-pro' ); ?></label></th>
-				<td>
-					<input id="enable_avatars" name="enable_avatars" type="checkbox" value="1" <?php checked( $enabled ); ?> />
-					<label for="enable_avatars"><?php esc_html_e( 'Check to enable custom profile picture support for users with this membership level.', 'paid-memberships-pro' ); ?></label>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<?php
+
+	pmpro_build_settings_fields( array(
+		array(
+			'name'           => 'enable_avatars',
+			'label'          => __( 'Enable Profile Pictures', 'paid-memberships-pro' ),
+			'type'           => 'checkbox',
+			'value'          => $enabled,
+			'checkbox_label' => __( 'Check to enable custom profile picture support for users with this membership level.', 'paid-memberships-pro' ),
+		),
+	) );
 }
 add_action( 'pmpro_membership_level_after_other_settings', 'pmpro_membership_level_after_other_settings_avatar', 10, 1 );
 
