@@ -210,6 +210,9 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= Upcoming Version =
+* BUG FIX: Fixed an issue where Stripe Checkout could overwrite an existing Stripe Customer's billing address with empty data when the "Collect Billing Address in Stripe Checkout" setting was not set to "Always". #3722 (@fadlyknight)
+
 = 3.8.1 - 2026-06-29 =
 * ENHANCEMENT: Added a new `style` attribute to the `[pmpro_checkout_button]` shortcode to render it as a link or a button, and improved its styling. #3708 (@kimcoleman)
 * ENHANCEMENT: Improved the HTML validity and accessibility of frontend forms and pages, including fixing duplicate `id` attributes and invalid fieldset/legend markup. #3707 (@kimcoleman)

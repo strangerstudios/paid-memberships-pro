@@ -2131,6 +2131,16 @@ class PMProGateway_stripe extends PMProGateway {
 			'enabled' => false,
 		);
 		$billing_address_collection = get_option( 'pmpro_stripe_checkout_billing_address' ) ?: 'auto';
+		
+		/*
+		 * Only let Stripe Checkout overwrite the Customer's address if we are
+		 * actually requiring address collection in this session ('required').
+		 * Otherwise, if billing_address_collection is 'auto', Stripe may sync
+		 * an empty or incomplete address back onto the Customer object,
+		 * wiping out an address that was already set (e.g. via the API,
+		 * update_customer_at_checkout(), or a previous order).
+		 */
+		$customer_update_address = ( 'required' === $billing_address_collection ) ? 'auto' : 'never';
 
 		// And let's send 'em to Stripe!
 		$checkout_session_params = array(
@@ -2142,7 +2152,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'tax_id_collection' => $tax_id_collection,
 			'billing_address_collection' => $billing_address_collection,
 			'customer_update' => array(
-				'address' => 'auto',
+				'address' => $customer_update_address,
 				'name' => 'auto'
 			),
 			'success_url' => apply_filters( 'pmpro_confirmation_url', add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("confirmation" ) ), $user_id, $pmpro_level ),
