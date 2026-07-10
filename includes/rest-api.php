@@ -905,6 +905,18 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$discount_code->starts = $starts;
 			$discount_code->expires = $expires;
 			$discount_code->uses = $uses;
+			if ( isset( $params['discount_type'] ) ) {
+				$discount_code->discount_type = sanitize_text_field( $params['discount_type'] );
+			}
+			if ( isset( $params['discount_value'] ) ) {
+				$discount_code->discount_value = floatval( $params['discount_value'] );
+			}
+			if ( isset( $params['apply_to_initial'] ) ) {
+				$discount_code->apply_to_initial = ! empty( $params['apply_to_initial'] ) ? 1 : 0;
+			}
+			if ( isset( $params['apply_to_recurring'] ) ) {
+				$discount_code->apply_to_recurring = ! empty( $params['apply_to_recurring'] ) ? 1 : 0;
+			}
 			$discount_code->levels = !empty( $levels_array ) ? $levels_array : $levels;
 			$discount_code->save();
 
