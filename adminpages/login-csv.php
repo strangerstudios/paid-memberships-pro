@@ -317,7 +317,7 @@ if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
  * @return string
  */
 function pmpro_enclose( $s ) {
-	return '"' . str_replace( '"', '\\"', $s ) . '"';
+	return '"' . str_replace( '"', '""', $s ) . '"';
 }
 
 /**

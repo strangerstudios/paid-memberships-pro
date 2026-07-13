@@ -985,7 +985,7 @@ class PMPro_Exports {
 	 */
 	protected function csv_enclose( $s ) {
 		$s = (string) $s;
-		return '"' . str_replace( '"', '\\"', $s ) . '"';
+		return '"' . str_replace( '"', '""', $s ) . '"';
 	}
 
 	/**
