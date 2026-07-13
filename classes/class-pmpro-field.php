@@ -638,7 +638,7 @@ class PMPro_Field {
 		}
 
 		// Sanitize the value if needed.
-		if ( ! empty( $field->sanitize ) ) {
+		if ( ! empty( $this->sanitize ) ) {
 			if ( $this->type == 'textarea' ) {
 				$value = sanitize_textarea_field( $value );
 			} elseif ( is_array( $value ) ) {
@@ -664,6 +664,13 @@ class PMPro_Field {
 
 		// If field was not submitted, bail.
 		if ( null === $value ) {
+			return;
+		}
+
+		// Read-only fields are display-only; their value is managed server-side
+		// (via update_user_meta by add-ons/admin tooling), never from the request.
+		// Skipping the save here prevents users from tampering with fields they cannot edit.
+		if ( 'readonly' === $this->type || ! empty( $this->readonly ) ) {
 			return;
 		}
 
@@ -1094,7 +1101,7 @@ class PMPro_Field {
 					esc_attr( "{$this->id}_{$counter}" ),
 					esc_attr( $this->class ),
 					( in_array($ovalue, $value) ? 'checked="checked"' : null ),
-					( !empty( $this->readonly ) ? 'readonly="readonly"' : null ),
+					( !empty( $this->readonly ) ? 'disabled="disabled"' : null ),
 					$this->getHTMLAttributes()
 				);
 
@@ -1277,9 +1284,10 @@ class PMPro_Field {
 		elseif($this->type == "readonly")
 		{
 			if ( empty( $value ) ) {
-				$value = '&#8212;';
+				$r = '&#8212;';
+			} else {
+				$r = esc_html( $value );
 			}
-			$r = $value;
 		}
 		else
 		{
