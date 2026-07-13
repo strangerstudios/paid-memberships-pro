@@ -3519,6 +3519,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'type'     => $is_recurring ? 'recurring' : 'one_time',
 			'currency' => strtolower( $pmpro_currency ),
 			'limit' => 100,
+			'active'   => true,
 		);
 		if ( $is_recurring ) {
 			$price_search_args['recurring'] = array( 'interval' => $cycle_period );
@@ -3534,6 +3535,10 @@ class PMProGateway_stripe extends PMProGateway {
 			return $e->getMessage();
 		}
 		foreach ( $prices as $price ) {
+			// Skip archived/inactive prices. Create a new one instead.
+			if ( empty( $price->active ) ) {
+				continue;
+			}
 			// Check whether price is the same. If not, continue.
 			if ( intval( $price->unit_amount ) !== intval( $unit_amount ) ) {
 				continue;
