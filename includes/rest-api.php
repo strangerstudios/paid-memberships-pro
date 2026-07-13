@@ -1821,7 +1821,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'capability' => 'edit_post',
 					'request_param' => 'post_id',
 				),
-				'/pmpro/v1/email_log_popup' => 'manage_options',
+				'/pmpro/v1/email_log_popup' => 'pmpro_reports',
 				'/pmpro/v1/quick_search' => true, // Permissions will be checked per result type.
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );

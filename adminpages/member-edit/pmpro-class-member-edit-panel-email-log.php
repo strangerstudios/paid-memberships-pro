@@ -20,10 +20,10 @@ class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 	
 	/**
 	 * Check if panel should show
-	 * Only show if user has manage_options capability
+	 * Only show if user has the pmpro_reports capability, matching the Email Log report.
 	 */
 	public function should_show() {
-		return current_user_can( 'manage_options' );
+		return current_user_can( 'pmpro_reports' );
 	}
 	
 	/**
