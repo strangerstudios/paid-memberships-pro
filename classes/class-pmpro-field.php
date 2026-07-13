@@ -1101,7 +1101,7 @@ class PMPro_Field {
 					esc_attr( "{$this->id}_{$counter}" ),
 					esc_attr( $this->class ),
 					( in_array($ovalue, $value) ? 'checked="checked"' : null ),
-					( !empty( $this->readonly ) ? 'readonly="readonly"' : null ),
+					( !empty( $this->readonly ) ? 'disabled="disabled"' : null ),
 					$this->getHTMLAttributes()
 				);
 
