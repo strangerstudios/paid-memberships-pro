@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.8.1\n"
+"Project-Id-Version: Paid Memberships Pro 3.8.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-29T19:51:31+00:00\n"
+"POT-Creation-Date: 2026-07-14T14:51:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -961,6 +961,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:1669
 #: includes/compatibility/divi.php:356
 #: classes/class-pmpro-field.php:1675
+#: classes/class-pmpro-field.php:1683
 msgid "No"
 msgstr ""
 
@@ -1009,6 +1010,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:1669
 #: includes/compatibility/divi.php:357
 #: classes/class-pmpro-field.php:1675
+#: classes/class-pmpro-field.php:1683
 msgid "Yes"
 msgstr ""
 
@@ -1591,6 +1593,7 @@ msgstr ""
 #: pages/billing.php:356
 #: pages/billing.php:459
 #: adminpages/levels/edit-level.php:766
+#: classes/class-pmpro-field.php:1187
 msgid "Cancel"
 msgstr ""
 
@@ -3986,6 +3989,7 @@ msgstr ""
 #: includes/avatars.php:919
 #: includes/avatars.php:1213
 #: classes/class-pmpro-orders-list-table.php:937
+#: classes/class-pmpro-field.php:1181
 msgid "Delete"
 msgstr ""
 
@@ -7559,6 +7563,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:1534
 #: classes/class-pmpro-field-group.php:487
 #: classes/class-pmpro-field.php:1540
+#: classes/class-pmpro-field.php:1548
 msgid "Required Field"
 msgstr ""
 
@@ -7601,15 +7606,18 @@ msgid "- choose one -"
 msgstr ""
 
 #: classes/class-pmpro-field.php:803
+#: classes/class-pmpro-field.php:810
 msgid "Error uploading file. Too many files with the same name."
 msgstr ""
 
 #: classes/class-pmpro-field.php:819
+#: classes/class-pmpro-field.php:826
 #, php-format
 msgid "Sorry, the file %s was not uploaded."
 msgstr ""
 
 #: classes/class-pmpro-field.php:1012
+#: classes/class-pmpro-field.php:1019
 msgid "Choose one or more."
 msgstr ""
 
@@ -7632,6 +7640,8 @@ msgstr ""
 #: includes/avatars.php:906
 #: includes/avatars.php:1189
 #: includes/avatars.php:1203
+#: classes/class-pmpro-field.php:1169
+#: classes/class-pmpro-field.php:1171
 #, php-format
 msgid "Current File: %s"
 msgstr ""
@@ -7644,18 +7654,21 @@ msgstr ""
 #: classes/class-pmpro-field.php:1179
 #: includes/avatars.php:920
 #: includes/avatars.php:1214
+#: classes/class-pmpro-field.php:1186
 msgid "Replace"
 msgstr ""
 
 #: classes/class-pmpro-field.php:1704
 #: classes/class-pmpro-field.php:1700
 #: classes/class-pmpro-field.php:1706
+#: classes/class-pmpro-field.php:1714
 msgid "No file uploaded."
 msgstr ""
 
 #: classes/class-pmpro-field.php:1706
 #: classes/class-pmpro-field.php:1702
 #: classes/class-pmpro-field.php:1708
+#: classes/class-pmpro-field.php:1716
 msgid "Invalid file data."
 msgstr ""
 
@@ -11034,6 +11047,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4581
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1399
 #: classes/gateways/class.pmprogateway_stripe.php:4579
+#: classes/gateways/class.pmprogateway_stripe.php:4584
 #, php-format
 msgid "Admin: Order successfully refunded for transaction ID %1$s by %2$s."
 msgstr ""
@@ -11874,42 +11888,49 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3527
 #: classes/gateways/class.pmprogateway_stripe.php:3582
 #: classes/gateways/class.pmprogateway_stripe.php:3580
+#: classes/gateways/class.pmprogateway_stripe.php:3585
 msgid "Could not create price."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3584
 #: classes/gateways/class.pmprogateway_stripe.php:3639
 #: classes/gateways/class.pmprogateway_stripe.php:3637
+#: classes/gateways/class.pmprogateway_stripe.php:3642
 msgid "Cannot find product for membership level."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3590
 #: classes/gateways/class.pmprogateway_stripe.php:3645
 #: classes/gateways/class.pmprogateway_stripe.php:3643
+#: classes/gateways/class.pmprogateway_stripe.php:3648
 msgid "Cannot get price."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3596
 #: classes/gateways/class.pmprogateway_stripe.php:3651
 #: classes/gateways/class.pmprogateway_stripe.php:3649
+#: classes/gateways/class.pmprogateway_stripe.php:3654
 msgid "Cannot find payment method."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3685
 #: classes/gateways/class.pmprogateway_stripe.php:3740
 #: classes/gateways/class.pmprogateway_stripe.php:3738
+#: classes/gateways/class.pmprogateway_stripe.php:3743
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:4143
 #: classes/gateways/class.pmprogateway_stripe.php:4198
 #: classes/gateways/class.pmprogateway_stripe.php:4196
+#: classes/gateways/class.pmprogateway_stripe.php:4201
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:4538
 #: classes/gateways/class.pmprogateway_stripe.php:4593
 #: classes/gateways/class.pmprogateway_stripe.php:4591
+#: classes/gateways/class.pmprogateway_stripe.php:4596
 msgid "Admin: An error occurred while attempting to process this refund."
 msgstr ""
 
@@ -11918,18 +11939,22 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4597
 #: classes/gateways/class.pmprogateway_stripe.php:4599
 #: classes/gateways/class.pmprogateway_stripe.php:4595
+#: classes/gateways/class.pmprogateway_stripe.php:4600
+#: classes/gateways/class.pmprogateway_stripe.php:4602
 msgid "Admin: There was a problem processing the refund"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:4561
 #: classes/gateways/class.pmprogateway_stripe.php:4616
 #: classes/gateways/class.pmprogateway_stripe.php:4614
+#: classes/gateways/class.pmprogateway_stripe.php:4619
 msgid "This is not a token order."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:4567
 #: classes/gateways/class.pmprogateway_stripe.php:4622
 #: classes/gateways/class.pmprogateway_stripe.php:4620
+#: classes/gateways/class.pmprogateway_stripe.php:4625
 msgid "No checkout session ID found."
 msgstr ""
 
@@ -11940,18 +11965,23 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4631
 #: classes/gateways/class.pmprogateway_stripe.php:4633
 #: classes/gateways/class.pmprogateway_stripe.php:4627
+#: classes/gateways/class.pmprogateway_stripe.php:4632
+#: classes/gateways/class.pmprogateway_stripe.php:4634
+#: classes/gateways/class.pmprogateway_stripe.php:4636
 msgid "Could not retrieve checkout session: "
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:4583
 #: classes/gateways/class.pmprogateway_stripe.php:4638
 #: classes/gateways/class.pmprogateway_stripe.php:4636
+#: classes/gateways/class.pmprogateway_stripe.php:4641
 msgid "Payment is still pending."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:4588
 #: classes/gateways/class.pmprogateway_stripe.php:4643
 #: classes/gateways/class.pmprogateway_stripe.php:4641
+#: classes/gateways/class.pmprogateway_stripe.php:4646
 msgid "Checkout session has not yet been completed."
 msgstr ""
 
@@ -16030,6 +16060,7 @@ msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr ""
 
 #: services/authnet-silent-post.php:191
+#: services/authnet-silent-post.php:198
 msgid "<p>A payment is being held for review within Authorize.net.</p><p>Payment Information From Authorize.net"
 msgstr ""
 
