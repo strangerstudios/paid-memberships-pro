@@ -3,7 +3,7 @@
 /**
  * Get the taxonomies whose terms can be restricted by membership level.
  *
- * @since TBD
+ * @since 3.8.1
  *
  * @return string[] Taxonomy names.
  */
@@ -15,7 +15,7 @@ function pmpro_get_restrictable_taxonomies() {
 	 * term checkboxes on the term edit screen, term restriction enforcement in
 	 * pmpro_has_membership_access(), and search/archive filtering.
 	 *
-	 * @since TBD
+	 * @since 3.8.1
 	 *
 	 * @param string[] $taxonomies Taxonomy names. Defaults to category and post_tag.
 	 */
@@ -28,7 +28,7 @@ function pmpro_get_restrictable_taxonomies() {
  *
  * Runs late on init so taxonomies registered by add-ons are included.
  *
- * @since TBD
+ * @since 3.8.1
  */
 function pmpro_init_term_restrictions() {
 	foreach ( pmpro_get_restrictable_taxonomies() as $taxonomy ) {

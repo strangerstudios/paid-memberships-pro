@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8.1
+Stable tag: 3.8.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,14 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.8.2 - 2026-07-13 =
+* SECURITY: Restored sanitization of user field values on save, which had been inactive since v3.4. #3726 (@dparker1005)
+* SECURITY: The Authorize.net Silent Post handler now requires Authorize.net API credentials to be configured on the site. #3724 (@dparker1005)
+* BUG FIX: Read-only user fields are no longer saved on form submission and are now escaped when displayed. This also fixes read-only checkbox and select field values being erased on profile update. #3726 (@dparker1005)
+* BUG FIX: Fixed broken CSV exports when an exported value contained a quotation mark. #3716 (@dwanjuki)
+* BUG FIX: Fixed checkout failures that could occur when the matching Stripe price had been archived in the Stripe dashboard. #3717 (@flintfromthebasement)
+* BUG FIX: Fixed an issue where users with the `pmpro_reports` capability could not view email content in the Email Log popup. #3718 (@dwanjuki)
+
 = 3.8.1 - 2026-06-29 =
 * ENHANCEMENT: Added a new `style` attribute to the `[pmpro_checkout_button]` shortcode to render it as a link or a button, and improved its styling. #3708 (@kimcoleman)
 * ENHANCEMENT: Improved the HTML validity and accessibility of frontend forms and pages, including fixing duplicate `id` attributes and invalid fieldset/legend markup. #3707 (@kimcoleman)
