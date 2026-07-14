@@ -5520,3 +5520,146 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
 		do_action( 'pmpro_after_updating_post_level_restrictions', $post_id );
 	}
 }
+
+/**
+ * Get the membership statuses that represent an "ended" membership.
+ *
+ * These are the statuses that a row in the memberships users table can
+ * end up in once a user's membership at that level is over. Statuses used
+ * for incomplete checkouts (e.g. 'token', 'pending', 'review', 'error')
+ * are intentionally not included.
+ *
+ * @since TBD
+ *
+ * @return string[] Membership statuses considered "ended".
+ */
+function pmpro_get_ended_membership_statuses() {
+	$statuses = array( 'expired', 'cancelled', 'admin_cancelled', 'changed', 'admin_changed', 'inactive' );
+
+	/**
+	 * Filter the membership statuses that are considered "ended" when
+	 * filtering the Memberships list and the members CSV export.
+	 *
+	 * @since TBD
+	 *
+	 * @param string[] $statuses Membership statuses considered "ended".
+	 */
+	return apply_filters( 'pmpro_ended_membership_statuses', $statuses );
+}
+
+/**
+ * Sanitize and normalize the filters used by the Memberships list and the members CSV export.
+ *
+ * Legacy values of the `l` parameter ('cancelled', 'expired', 'oldmembers') are
+ * mapped to the equivalent `status` and `excludeactive` filters so that older
+ * links to the Memberships list continue to work with their original meaning.
+ *
+ * @since TBD
+ *
+ * @param array $args Raw query args, e.g. $_REQUEST or REST request params.
+ * @return array {
+ *     Normalized filters.
+ *
+ *     @type string $l             Level ID to filter by, or '' for all levels.
+ *     @type string $status        One of 'active', 'cancelled', 'expired', or 'ended'.
+ *     @type string $excludeactive Which ended memberships to hide: 'samelevel' to hide rows where
+ *                                 the user has since re-activated the same level, or 'anylevel' to
+ *                                 hide rows for users with any active membership.
+ * }
+ */
+function pmpro_sanitize_memberships_list_filters( $args ) {
+	$l             = isset( $args['l'] ) ? sanitize_text_field( $args['l'] ) : '';
+	$status        = isset( $args['status'] ) ? sanitize_text_field( $args['status'] ) : '';
+	$excludeactive = isset( $args['excludeactive'] ) ? sanitize_text_field( $args['excludeactive'] ) : '';
+
+	// Map legacy values of the l parameter to the status and excludeactive filters.
+	// These older views only showed users with no active membership at any level.
+	if ( in_array( $l, array( 'cancelled', 'expired', 'oldmembers' ), true ) ) {
+		$status        = 'oldmembers' === $l ? 'ended' : $l;
+		$excludeactive = 'anylevel';
+		$l             = '';
+	}
+
+	if ( ! in_array( $status, array( 'active', 'cancelled', 'expired', 'ended' ), true ) ) {
+		$status = 'active';
+	}
+
+	if ( ! in_array( $excludeactive, array( 'samelevel', 'anylevel' ), true ) ) {
+		$excludeactive = 'samelevel';
+	}
+
+	if ( ! is_numeric( $l ) || (int) $l <= 0 ) {
+		$l = '';
+	}
+
+	return array(
+		'l'             => $l,
+		'status'        => $status,
+		'excludeactive' => $excludeactive,
+	);
+}
+
+/**
+ * Build the level and status WHERE fragment for Memberships list queries.
+ *
+ * Used by both the Memberships list table and the members CSV export so that
+ * the exported rows always match the rows shown on screen. The query being
+ * built must alias the users table as `u` and the memberships users table as `mu`.
+ *
+ * When viewing ended memberships, rows where the user has since re-activated
+ * the same level are always hidden: the list shows the current state of each
+ * user's relationship with a level, and that relationship is active again.
+ * Setting `excludeactive` to 'anylevel' additionally hides rows for users who
+ * have an active membership at any level.
+ *
+ * @since TBD
+ *
+ * @param array $filters Filters as returned by pmpro_sanitize_memberships_list_filters().
+ * @return string SQL fragment beginning with ' AND '.
+ */
+function pmpro_memberships_list_filter_sql( $filters ) {
+	global $wpdb;
+
+	$filters = wp_parse_args(
+		$filters,
+		array(
+			'l'             => '',
+			'status'        => 'active',
+			'excludeactive' => 'samelevel',
+		)
+	);
+
+	$sql = '';
+
+	// Filter by level.
+	if ( is_numeric( $filters['l'] ) && (int) $filters['l'] > 0 ) {
+		$sql .= ' AND mu.membership_id = ' . (int) $filters['l'] . ' ';
+	}
+
+	// Filter by status.
+	switch ( $filters['status'] ) {
+		case 'cancelled':
+			$statuses = array( 'cancelled', 'admin_cancelled' );
+			break;
+		case 'expired':
+			$statuses = array( 'expired' );
+			break;
+		case 'ended':
+			$statuses = pmpro_get_ended_membership_statuses();
+			break;
+		default:
+			$statuses = array( 'active' );
+	}
+	$sql .= " AND mu.status IN('" . implode( "','", array_map( 'esc_sql', $statuses ) ) . "') ";
+
+	// When viewing ended memberships, hide rows for users who are active again.
+	if ( 'active' !== $filters['status'] ) {
+		if ( 'anylevel' === $filters['excludeactive'] ) {
+			$sql .= " AND NOT EXISTS ( SELECT 1 FROM $wpdb->pmpro_memberships_users mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active' ) ";
+		} else {
+			$sql .= " AND NOT EXISTS ( SELECT 1 FROM $wpdb->pmpro_memberships_users mu2 WHERE mu2.user_id = u.ID AND mu2.membership_id = mu.membership_id AND mu2.status = 'active' ) ";
+		}
+	}
+
+	return $sql;
+}

@@ -233,7 +233,7 @@
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_memberslist')) { ?>
-				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) );?>"<?php if($view == 'pmpro-memberslist') { ?> class="current"<?php } ?>"><?php esc_html_e('Members', 'paid-memberships-pro' );?></a></li>
+				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) );?>"<?php if($view == 'pmpro-memberslist') { ?> class="current"<?php } ?>"><?php esc_html_e('Memberships', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_orders')) { ?>
