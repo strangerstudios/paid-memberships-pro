@@ -9,11 +9,13 @@
 	if(!empty($_REQUEST['code']))
 	{
 		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['code'] ) );
-		$discount_code_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = %s LIMIT 1", $discount_code ) );
+		$discount_code_row = pmpro_get_discount_code( $discount_code );
+		$discount_code_id = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
 	}
 	else
 	{
 		$discount_code = "";
+		$discount_code_row = null;
 		$discount_code_id = "";
 	}
 
@@ -55,24 +57,21 @@
 	}
 
 	// Okay, send back new price info.
-	// Find levels whose price this code changed...
-	$sqlQuery = "
-		SELECT l.id, cl.*, l.name, l.description, l.allow_signups 
-		FROM $wpdb->pmpro_discount_codes_levels cl 
-			LEFT JOIN $wpdb->pmpro_membership_levels l
-				ON cl.level_id = l.id 
-			LEFT JOIN $wpdb->pmpro_discount_codes dc
-				ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "'
-				AND cl.level_id IN (" . implode( ',', array_map( 'intval', $level_ids ) ) . ")";
-	$code_levels = $wpdb->get_results($sqlQuery);
+	// Resolve the effective price for each level the code applies to...
+	$code_levels = array();
+	$levels_not_discounted = array();
+	foreach ( $level_ids as $level_id ) {
+		$code_level = pmpro_get_discounted_level_for_code( $level_id, $discount_code_row );
+		if ( ! empty( $code_level ) ) {
+			$code_levels[] = $code_level;
+		} else {
+			$levels_not_discounted[] = $level_id;
+		}
+	}
 
 	// ... and then get prices for the remaining levels.
-	$levels_found = array();
-	foreach( $code_levels as $code_level ) {
-		$levels_found[] = intval( $code_level->level_id );
-	}
-	if ( ! empty( array_diff( $level_ids, $levels_found ) ) ) {
-		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_map( 'intval', array_diff( $level_ids, $levels_found ) ) ) . ")";
+	if ( ! empty( $levels_not_discounted ) ) {
+		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_map( 'intval', $levels_not_discounted ) ) . ")";
 		$code_levels = array_merge( $code_levels, $wpdb->get_results($sqlQuery) );
 	}
 

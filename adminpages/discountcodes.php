@@ -70,6 +70,22 @@
 		$uses = intval($_POST['uses']);
 		$one_use_per_user = ! empty( $_POST['one_use_per_user'] ) ? 1 : 0;
 
+		//discount type, value, and which payments the discount applies to
+		$posted_discount_type = isset( $_POST['discount_type'] ) ? sanitize_text_field( $_POST['discount_type'] ) : 'set_price';
+		$discount_type = array_key_exists( $posted_discount_type, pmpro_get_discount_code_types() ) ? $posted_discount_type : 'set_price';
+		if ( 'set_price' === $discount_type ) {
+			$discount_value = 0;
+			$apply_to_initial = 1;
+			$apply_to_recurring = 1;
+		} else {
+			$discount_value = isset( $_POST['discount_value'] ) ? max( 0, (float) sanitize_text_field( $_POST['discount_value'] ) ) : 0;
+			if ( 'percentage' === $discount_type ) {
+				$discount_value = min( 100, $discount_value );
+			}
+			$apply_to_initial = ! empty( $_POST['apply_to_initial'] ) ? 1 : 0;
+			$apply_to_recurring = ! empty( $_POST['apply_to_recurring'] ) ? 1 : 0;
+		}
+
 		//fix up dates
 		$starts = date("Y-m-d", strtotime($starts_month . "/" . $starts_day . "/" . $starts_year, $now ));
 		$expires = date("Y-m-d", strtotime($expires_month . "/" . $expires_day . "/" . $expires_year, $now ));
@@ -83,13 +99,21 @@
 				'starts' => $starts,
 				'expires' => $expires,
 				'uses' => $uses,
-				'one_use_per_user' => $one_use_per_user
+				'one_use_per_user' => $one_use_per_user,
+				'discount_type' => $discount_type,
+				'discount_value' => $discount_value,
+				'apply_to_initial' => $apply_to_initial,
+				'apply_to_recurring' => $apply_to_recurring
 			),
 			array(
 				'%d',
 				'%s',
 				'%s',
 				'%s',
+				'%d',
+				'%d',
+				'%s',
+				'%f',
 				'%d',
 				'%d'
 			)
@@ -238,6 +262,33 @@
 
 					if ( ! empty( $expiration ) && ! empty( $recurring ) ) {
 						$expiration_warning_flag = true;
+					}
+
+					// For percentage/fixed codes, ignore the submitted pricing fields and store a
+					// snapshot of the calculated prices instead. The snapshot is only for backwards
+					// compatibility with code reading this table directly; checkout always
+					// recalculates from the level's current pricing.
+					if ( 'set_price' !== $discount_type ) {
+						$snapshot = pmpro_get_discount_code_level_snapshot(
+							(object) array(
+								'discount_type'      => $discount_type,
+								'discount_value'     => $discount_value,
+								'apply_to_initial'   => $apply_to_initial,
+								'apply_to_recurring' => $apply_to_recurring,
+							),
+							$level_id
+						);
+						if ( ! empty( $snapshot ) ) {
+							$initial_payment = $snapshot['initial_payment'];
+							$billing_amount = $snapshot['billing_amount'];
+							$cycle_number = $snapshot['cycle_number'];
+							$cycle_period = $snapshot['cycle_period'];
+							$billing_limit = $snapshot['billing_limit'];
+							$trial_amount = $snapshot['trial_amount'];
+							$trial_limit = $snapshot['trial_limit'];
+							$expiration_number = $snapshot['expiration_number'];
+							$expiration_period = $snapshot['expiration_period'];
+						}
 					}
 
 					//okay, do the insert
@@ -432,8 +483,18 @@
 					$code->starts = $temp_code->starts;
 					$code->expires = $temp_code->expires;
 					$code->uses = $temp_code->uses;
+					$code->discount_type = ! empty( $temp_code->discount_type ) ? $temp_code->discount_type : 'set_price';
+					$code->discount_value = ! empty( $temp_code->discount_value ) ? $temp_code->discount_value : 0;
+					$code->apply_to_initial = isset( $temp_code->apply_to_initial ) ? $temp_code->apply_to_initial : 1;
+					$code->apply_to_recurring = isset( $temp_code->apply_to_recurring ) ? $temp_code->apply_to_recurring : 1;
 				}
 			}
+
+			// Discount rule settings for the form.
+			$code_discount_type = ! empty( $code->discount_type ) ? $code->discount_type : 'set_price';
+			$code_discount_value = ! empty( $code->discount_value ) ? $code->discount_value : '';
+			$code_apply_to_initial = isset( $code->apply_to_initial ) ? (int) $code->apply_to_initial : 1;
+			$code_apply_to_recurring = isset( $code->apply_to_recurring ) ? (int) $code->apply_to_recurring : 1;
 		?>
 		<form action="" method="post">
 			<input name="saveid" type="hidden" value="<?php echo esc_attr( $edit ); ?>" />
@@ -546,6 +607,45 @@
 							</td>
 						</tr>
 
+						<tr>
+							<th scope="row" valign="top"><label for="discount_type"><?php esc_html_e( 'Discount Type', 'paid-memberships-pro' );?></label></th>
+							<td>
+								<select name="discount_type" id="discount_type">
+									<?php foreach ( pmpro_get_discount_code_types() as $discount_type_slug => $discount_type_label ) { ?>
+										<option value="<?php echo esc_attr( $discount_type_slug ); ?>" <?php selected( $code_discount_type, $discount_type_slug ); ?>><?php echo esc_html( $discount_type_label ); ?></option>
+									<?php } ?>
+								</select>
+								<p class="description"><?php esc_html_e( 'Set custom pricing to define the exact prices for each level below, or apply a percentage or fixed amount discount to each level\'s regular pricing.', 'paid-memberships-pro' ); ?></p>
+							</td>
+						</tr>
+
+						<tr class="pmpro_discount_rule_row" <?php if ( 'set_price' === $code_discount_type ) { ?>style="display: none;"<?php } ?>>
+							<th scope="row" valign="top"><label for="discount_value"><?php esc_html_e( 'Discount Amount', 'paid-memberships-pro' );?></label></th>
+							<td>
+								<span id="discount_value_unit_fixed" <?php if ( 'fixed' !== $code_discount_type ) { ?>style="display: none;"<?php } ?>><?php echo wp_kses_post( $pmpro_currency_symbol ); ?></span>
+								<input name="discount_value" id="discount_value" type="text" size="10" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $code_discount_value ) ); ?>" />
+								<span id="discount_value_unit_percentage" <?php if ( 'percentage' !== $code_discount_type ) { ?>style="display: none;"<?php } ?>>%</span>
+								<p class="description"><?php esc_html_e( 'The percentage or amount to subtract from the level\'s regular pricing at checkout.', 'paid-memberships-pro' ); ?></p>
+							</td>
+						</tr>
+
+						<tr class="pmpro_discount_rule_row" <?php if ( 'set_price' === $code_discount_type ) { ?>style="display: none;"<?php } ?>>
+							<th scope="row" valign="top"><label><?php esc_html_e( 'Applies To', 'paid-memberships-pro' );?></label></th>
+							<td>
+								<fieldset>
+									<label for="apply_to_initial">
+										<input name="apply_to_initial" id="apply_to_initial" type="checkbox" value="1" <?php checked( $code_apply_to_initial, 1 ); ?> />
+										<?php esc_html_e( 'Initial payment', 'paid-memberships-pro' ); ?>
+									</label>
+									<br />
+									<label for="apply_to_recurring">
+										<input name="apply_to_recurring" id="apply_to_recurring" type="checkbox" value="1" <?php checked( $code_apply_to_recurring, 1 ); ?> />
+										<?php esc_html_e( 'Recurring payments', 'paid-memberships-pro' ); ?>
+									</label>
+								</fieldset>
+							</td>
+						</tr>
+
 					</tbody>
 				</table>
 
@@ -560,7 +660,11 @@
 				</button>
 			</div>
 			<div class="pmpro_section_inside">
-				<p><?php esc_html_e('Which levels will this code apply to?', 'paid-memberships-pro' ); ?></p>
+				<p>
+					<?php esc_html_e('Which levels will this code apply to?', 'paid-memberships-pro' ); ?>
+					<button type="button" class="button button-secondary button-small" onclick="pmpro_toggleAllDiscountLevels(true);"><?php esc_html_e( 'Select All', 'paid-memberships-pro' ); ?></button>
+					<button type="button" class="button button-secondary button-small" onclick="pmpro_toggleAllDiscountLevels(false);"><?php esc_html_e( 'Deselect All', 'paid-memberships-pro' ); ?></button>
+				</p>
 
 				<div class="pmpro_discount_levels">
 				<?php
@@ -598,7 +702,10 @@
 							<label for="levels_<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name );?></label>
 						</div>
 						<div class="pmpro_discount_levels_pricing level_<?php echo esc_attr( $level->id ); ?>" <?php if(empty($level->checked)) { ?>style="display: none;"<?php } ?>>
-							<table class="form-table">
+							<div class="pmpro_discount_level_formula_note" <?php if ( 'set_price' === $code_discount_type ) { ?>style="display: none;"<?php } ?>>
+								<p class="description"><?php esc_html_e( 'The discount will be applied to this level\'s regular pricing at checkout. Edit the membership level to change its regular pricing.', 'paid-memberships-pro' ); ?></p>
+							</div>
+							<table class="form-table pmpro_discount_level_pricing_fields" <?php if ( 'set_price' !== $code_discount_type ) { ?>style="display: none;"<?php } ?>>
 							<tbody>
 								<tr>
 									<th scope="row" valign="top"><label for="initial_payment"><?php esc_html_e('Initial Payment', 'paid-memberships-pro' );?></label></th>
@@ -744,6 +851,28 @@
 				</div> <!-- end pmpro_levels_div -->
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
+
+		<script>
+			function pmpro_toggleAllDiscountLevels( checked ) {
+				jQuery('.pmpro_discount_levels input[name="levels[]"]').each(function() {
+					jQuery(this).prop('checked', checked);
+					jQuery(this).parent().next().toggle( checked );
+				});
+			}
+			function pmpro_updateDiscountTypeFields() {
+				var discount_type = jQuery('#discount_type').val();
+				var is_formula = discount_type !== 'set_price';
+				jQuery('.pmpro_discount_rule_row').toggle( is_formula );
+				jQuery('.pmpro_discount_level_pricing_fields').toggle( ! is_formula );
+				jQuery('.pmpro_discount_level_formula_note').toggle( is_formula );
+				jQuery('#discount_value_unit_percentage').toggle( discount_type === 'percentage' );
+				jQuery('#discount_value_unit_fixed').toggle( discount_type === 'fixed' );
+			}
+			jQuery(document).ready(function() {
+				jQuery('#discount_type').on('change', pmpro_updateDiscountTypeFields);
+				pmpro_updateDiscountTypeFields();
+			});
+		</script>
 
 		<p class="submit">
 			<input name="save" type="submit" class="button button-primary" value="<?php esc_attr_e( 'Save Code', 'paid-memberships-pro' ) ?>" />
