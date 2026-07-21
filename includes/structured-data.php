@@ -167,7 +167,8 @@ function pmpro_structured_data_get_context() {
 		);
 	}
 
-	if ( empty( $post ) || empty( $post->post_content ) ) {
+	// Content-based detection only on the singular queried object (avoid loop leftovers).
+	if ( ! is_singular() || empty( $post ) || empty( $post->post_content ) ) {
 		return false;
 	}
 
@@ -185,6 +186,10 @@ function pmpro_structured_data_get_context() {
 	}
 
 	// Single Membership Level block(s) — complete product UI, not field shortcodes.
+	if ( ! has_block( 'pmpro/single-level', $post ) ) {
+		return false;
+	}
+
 	$block_level_ids = pmpro_structured_data_get_single_level_block_ids( $post->post_content );
 	if ( ! empty( $block_level_ids ) ) {
 		$levels = array();
@@ -350,7 +355,7 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
 	}
 
 	// Stable public checkout URL (no discount codes — those must not leak into crawlable schema).
-	$checkout_url = pmpro_structured_data_get_level_checkout_url( $level, false );
+	$checkout_url = pmpro_structured_data_get_level_checkout_url( $level );
 	// Stable @id independent of discount / request query args.
 	$product_id   = home_url( '/#pmpro-membership-level-' . (int) $level->id );
 
@@ -429,14 +434,23 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 	}
 
 	$currency = ! empty( $pmpro_currency ) ? $pmpro_currency : get_option( 'pmpro_currency', 'USD' );
-	$url      = pmpro_structured_data_get_level_checkout_url( $level, false );
+	$url      = pmpro_structured_data_get_level_checkout_url( $level );
 
 	$has_recur = ( isset( $level->billing_amount ) && (float) $level->billing_amount > 0 && ! empty( $level->cycle_period ) );
+	$has_trial = ( ! empty( $level->trial_limit ) && (int) $level->trial_limit > 0 );
 	$initial   = isset( $level->initial_payment ) ? (float) $level->initial_payment : 0.0;
 
-	// Prefer a non-zero primary price so free-to-start subscriptions are not advertised as free products.
+	/*
+	 * Primary Offer.price (what Google treats as active):
+	 * 1. initial_payment when charged now
+	 * 2. trial_amount when a trial is configured (amount for trial periods)
+	 * 3. billing_amount for free-to-start recurring (avoid advertising $0 paid subs)
+	 * 4. else 0 (truly free)
+	 */
 	if ( $initial > 0 ) {
 		$price_amount = $initial;
+	} elseif ( $has_trial ) {
+		$price_amount = isset( $level->trial_amount ) ? (float) $level->trial_amount : 0.0;
 	} elseif ( $has_recur ) {
 		$price_amount = (float) $level->billing_amount;
 	} else {
@@ -477,8 +491,12 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 		'seller'        => $seller,
 	);
 
-	// Recurring component for agents (and so free-to-start levels still expose the real rate).
-	if ( $has_recur ) {
+	/*
+	 * Recurring UnitPriceSpecification for non-trial levels so agents see the
+	 * ongoing rate. Skip when a trial is configured — a partial schedule that
+	 * ignores trial_amount/trial_limit would misstate what the customer pays.
+	 */
+	if ( $has_recur && ! $has_trial ) {
 		$unit_code = pmpro_structured_data_cycle_unit_code( $level->cycle_period );
 		if ( ! empty( $unit_code ) ) {
 			$spec = array(
@@ -547,36 +565,20 @@ function pmpro_structured_data_build_item_list_schema( $products ) {
 }
 
 /**
- * Checkout URL for a level.
+ * Public checkout URL for a level.
  *
- * Discount codes are omitted from crawlable structured data by default so
- * private/targeted codes are not indexed. Checkout pages still use the
- * discount-adjusted level object for Offer.price when a code is active.
+ * Discount codes are never included — private/targeted codes must not appear
+ * in crawlable JSON-LD. Checkout pages still use the discount-adjusted level
+ * object for Offer.price when a code is active in the request.
  *
  * @since TBD
  *
- * @param object $level           Level object.
- * @param bool   $include_discount Whether to append pmpro_discount_code (default false).
+ * @param object $level Level object.
  * @return string
  */
-function pmpro_structured_data_get_level_checkout_url( $level, $include_discount = false ) {
+function pmpro_structured_data_get_level_checkout_url( $level ) {
 	$query = '?pmpro_level=' . (int) $level->id;
-	if ( $include_discount && ! empty( $level->discount_code ) ) {
-		/**
-		 * Allow including a discount code on structured-data offer URLs.
-		 * Default false — private codes must not be published in JSON-LD.
-		 *
-		 * @since TBD
-		 *
-		 * @param bool   $include Whether to include the code.
-		 * @param object $level   Level object.
-		 */
-		if ( apply_filters( 'pmpro_structured_data_include_discount_code_in_url', false, $level ) ) {
-			$query .= '&pmpro_discount_code=' . rawurlencode( (string) $level->discount_code );
-		}
-	}
-
-	$url = pmpro_url( 'checkout', $query, 'https' );
+	$url   = pmpro_url( 'checkout', $query, 'https' );
 	if ( empty( $url ) ) {
 		$url = add_query_arg( 'pmpro_level', (int) $level->id, home_url( '/' ) );
 	}
@@ -599,7 +601,7 @@ function pmpro_structured_data_cycle_unit_code( $period ) {
 		'Month' => 'MON',
 		'Year'  => 'ANN',
 	);
-	$period = is_string( $period ) ? $period : '';
+	$period = is_string( $period ) ? ucfirst( strtolower( $period ) ) : '';
 	return isset( $map[ $period ] ) ? $map[ $period ] : '';
 }
 
