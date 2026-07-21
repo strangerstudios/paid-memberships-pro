@@ -37,12 +37,13 @@ function pmpro_structured_data_is_enabled() {
  * @since TBD
  */
 function pmpro_structured_data_output() {
-	if ( is_admin() || ! pmpro_structured_data_is_enabled() ) {
+	static $printed = false;
+	if ( $printed || is_admin() || ! pmpro_structured_data_is_enabled() ) {
 		return;
 	}
 
 	$context = pmpro_structured_data_get_context();
-	if ( empty( $context ) || empty( $context['type'] ) ) {
+	if ( empty( $context ) || ! is_array( $context ) || empty( $context['type'] ) ) {
 		return;
 	}
 
@@ -54,13 +55,14 @@ function pmpro_structured_data_output() {
 	 * @since TBD
 	 *
 	 * @param array|false $context {
-	 *     @type string $type    Context type: levels_list|checkout|single_levels.
-	 *     @type array  $levels  Level objects keyed for output.
-	 *     @type string $source  Detection source identifier.
+	 *     @type string $type                 Context type: levels_list|checkout|single_levels.
+	 *     @type array  $levels               Level objects for output.
+	 *     @type string $source               Detection source identifier.
+	 *     @type bool   $include_description  Whether level descriptions are included.
 	 * }
 	 */
 	$context = apply_filters( 'pmpro_structured_data_context', $context );
-	if ( empty( $context ) || empty( $context['type'] ) || empty( $context['levels'] ) ) {
+	if ( empty( $context ) || ! is_array( $context ) || empty( $context['type'] ) || empty( $context['levels'] ) ) {
 		return;
 	}
 
@@ -95,13 +97,15 @@ function pmpro_structured_data_output() {
 		 * @param array $levels  Level objects.
 		 */
 		$schema = apply_filters( 'pmpro_structured_data_item_list_schema', $schema, $context, $levels );
-		if ( ! empty( $schema ) ) {
+		if ( ! empty( $schema ) && is_array( $schema ) ) {
 			pmpro_structured_data_print( $schema );
+			$printed = true;
 		}
 		return;
 	}
 
 	pmpro_structured_data_print( $products[0] );
+	$printed = true;
 }
 add_action( 'wp_head', 'pmpro_structured_data_output', 20 );
 
@@ -345,8 +349,10 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
 		return array();
 	}
 
-	$checkout_url = pmpro_structured_data_get_level_checkout_url( $level );
-	$product_id   = $checkout_url . '#pmpro-membership-level-' . (int) $level->id;
+	// Stable public checkout URL (no discount codes — those must not leak into crawlable schema).
+	$checkout_url = pmpro_structured_data_get_level_checkout_url( $level, false );
+	// Stable @id independent of discount / request query args.
+	$product_id   = home_url( '/#pmpro-membership-level-' . (int) $level->id );
 
 	$schema = array(
 		'@context' => 'https://schema.org',
@@ -400,13 +406,14 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
 /**
  * Build Offer schema for a level.
  *
- * Offer.price is the amount payable now (initial_payment). Google treats this
- * as the active price. Recurring terms are additional UnitPriceSpecification
- * data for agents/parsers; they may not change Google rich-result display.
+ * Offer.price is the primary advertised price Google treats as active:
+ * - initial_payment when > 0
+ * - otherwise recurring billing_amount when the level is free-to-start
+ *   (avoids advertising $0 for a paid subscription)
  *
- * Trial levels omit detailed recurring priceSpecification so we do not publish
- * an incomplete billing schedule. Finite billing_limit is modeled via
- * billingDuration when there is no trial.
+ * Recurring terms are always added as UnitPriceSpecification when present
+ * (including after a trial) so agents can see the ongoing rate. Finite
+ * billing_limit is modeled via billingDuration.
  *
  * @since TBD
  *
@@ -422,8 +429,20 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 	}
 
 	$currency = ! empty( $pmpro_currency ) ? $pmpro_currency : get_option( 'pmpro_currency', 'USD' );
-	$price    = pmpro_structured_data_format_price_value( $level->initial_payment );
-	$url      = pmpro_structured_data_get_level_checkout_url( $level );
+	$url      = pmpro_structured_data_get_level_checkout_url( $level, false );
+
+	$has_recur = ( isset( $level->billing_amount ) && (float) $level->billing_amount > 0 && ! empty( $level->cycle_period ) );
+	$initial   = isset( $level->initial_payment ) ? (float) $level->initial_payment : 0.0;
+
+	// Prefer a non-zero primary price so free-to-start subscriptions are not advertised as free products.
+	if ( $initial > 0 ) {
+		$price_amount = $initial;
+	} elseif ( $has_recur ) {
+		$price_amount = (float) $level->billing_amount;
+	} else {
+		$price_amount = $initial;
+	}
+	$price = pmpro_structured_data_format_price_value( $price_amount );
 
 	$seller = array(
 		'@type' => 'Organization',
@@ -440,6 +459,13 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 	 * @param object $level  Level object.
 	 */
 	$seller = apply_filters( 'pmpro_structured_data_seller', $seller, $level );
+	if ( empty( $seller ) || ! is_array( $seller ) ) {
+		$seller = array(
+			'@type' => 'Organization',
+			'name'  => wp_strip_all_tags( get_bloginfo( 'name' ) ),
+			'url'   => home_url( '/' ),
+		);
+	}
 
 	$offer = array(
 		'@type'         => 'Offer',
@@ -451,11 +477,8 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 		'seller'        => $seller,
 	);
 
-	// Recurring component — skip detailed schedule when a trial would make it incomplete.
-	$has_trial = ( ! empty( $level->trial_limit ) && (int) $level->trial_limit > 0 );
-	$has_recur = ( isset( $level->billing_amount ) && (float) $level->billing_amount > 0 && ! empty( $level->cycle_period ) );
-
-	if ( $has_recur && ! $has_trial ) {
+	// Recurring component for agents (and so free-to-start levels still expose the real rate).
+	if ( $has_recur ) {
 		$unit_code = pmpro_structured_data_cycle_unit_code( $level->cycle_period );
 		if ( ! empty( $unit_code ) ) {
 			$spec = array(
@@ -524,30 +547,38 @@ function pmpro_structured_data_build_item_list_schema( $products ) {
 }
 
 /**
- * Checkout URL for a level, preserving discount code when present on the level.
+ * Checkout URL for a level.
+ *
+ * Discount codes are omitted from crawlable structured data by default so
+ * private/targeted codes are not indexed. Checkout pages still use the
+ * discount-adjusted level object for Offer.price when a code is active.
  *
  * @since TBD
  *
- * @param object $level Level object.
+ * @param object $level           Level object.
+ * @param bool   $include_discount Whether to append pmpro_discount_code (default false).
  * @return string
  */
-function pmpro_structured_data_get_level_checkout_url( $level ) {
+function pmpro_structured_data_get_level_checkout_url( $level, $include_discount = false ) {
 	$query = '?pmpro_level=' . (int) $level->id;
-	if ( ! empty( $level->discount_code ) ) {
-		$query .= '&pmpro_discount_code=' . rawurlencode( (string) $level->discount_code );
+	if ( $include_discount && ! empty( $level->discount_code ) ) {
+		/**
+		 * Allow including a discount code on structured-data offer URLs.
+		 * Default false — private codes must not be published in JSON-LD.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool   $include Whether to include the code.
+		 * @param object $level   Level object.
+		 */
+		if ( apply_filters( 'pmpro_structured_data_include_discount_code_in_url', false, $level ) ) {
+			$query .= '&pmpro_discount_code=' . rawurlencode( (string) $level->discount_code );
+		}
 	}
 
-	$url = pmpro_url( 'checkout', $query );
+	$url = pmpro_url( 'checkout', $query, 'https' );
 	if ( empty( $url ) ) {
-		$url = add_query_arg(
-			array_filter(
-				array(
-					'pmpro_level'         => (int) $level->id,
-					'pmpro_discount_code' => ! empty( $level->discount_code ) ? (string) $level->discount_code : null,
-				)
-			),
-			home_url( '/' )
-		);
+		$url = add_query_arg( 'pmpro_level', (int) $level->id, home_url( '/' ) );
 	}
 
 	return $url;
@@ -581,12 +612,22 @@ function pmpro_structured_data_cycle_unit_code( $period ) {
  * @return string
  */
 function pmpro_structured_data_format_price_value( $amount ) {
-	$amount = (float) $amount;
-	// Keep integer prices clean ("19") and preserve cents when needed ("19.5" -> "19.50" not required; "19.99" stays).
-	if ( floor( $amount ) == $amount ) {
-		return (string) (int) $amount;
+	if ( ! is_numeric( $amount ) ) {
+		return '0';
 	}
-	return rtrim( rtrim( number_format( $amount, 2, '.', '' ), '0' ), '.' );
+	$amount = (float) $amount;
+	if ( ! is_finite( $amount ) || $amount < 0 ) {
+		return '0';
+	}
+	$decimals = function_exists( 'pmpro_get_decimal_place' ) ? (int) pmpro_get_decimal_place() : 2;
+	if ( $decimals < 0 ) {
+		$decimals = 2;
+	}
+	// Keep integer prices clean when currency allows whole units.
+	if ( $decimals === 0 || floor( $amount ) == $amount ) {
+		return (string) (int) round( $amount );
+	}
+	return number_format( $amount, $decimals, '.', '' );
 }
 
 /**
