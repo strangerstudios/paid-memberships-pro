@@ -366,29 +366,47 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
 		'name'     => wp_strip_all_tags( (string) $level->name ),
 		'sku'      => 'pmpro-level-' . (int) $level->id,
 		'category' => 'Membership',
+		'brand'    => array(
+			'@type' => 'Brand',
+			'name'  => wp_strip_all_tags( get_bloginfo( 'name' ) ),
+		),
 		'url'      => $checkout_url,
 		'offers'   => $offer,
 	);
 
+	// Description when available (optional for Google; include on checkout / single-level pages).
 	if ( $include_description && ! empty( $level->description ) ) {
 		$description = wp_strip_all_tags( (string) $level->description );
 		$description = trim( preg_replace( '/\s+/', ' ', $description ) );
 		if ( $description !== '' ) {
 			$schema['description'] = $description;
 		}
+	} elseif ( ! empty( $level->name ) ) {
+		// Fallback so Product snippets always have a short description when level body is empty.
+		$schema['description'] = sprintf(
+			/* translators: %s: membership level name */
+			__( '%s membership', 'paid-memberships-pro' ),
+			wp_strip_all_tags( (string) $level->name )
+		);
 	}
 
 	/**
-	 * Filter product image URL for a level. Default empty (omit).
-	 * Do not use the site logo/icon — only a true level/product image.
+	 * Filter product image URL for a level.
+	 * Default: site icon → custom logo → PMPro plugin banner (Google requires image).
+	 * Return empty string to omit (will fail Google rich-result eligibility).
 	 *
 	 * @since TBD
 	 *
-	 * @param string $image Image URL or empty.
-	 * @param object $level Level object.
+	 * @param string $image        Image URL.
+	 * @param object $level        Level object.
 	 * @param string $context_type Context type.
 	 */
-	$image = apply_filters( 'pmpro_structured_data_product_image', '', $level, $context_type );
+	$image = apply_filters(
+		'pmpro_structured_data_product_image',
+		pmpro_structured_data_get_fallback_image(),
+		$level,
+		$context_type
+	);
 	if ( ! empty( $image ) ) {
 		$schema['image'] = esc_url_raw( $image );
 	}
@@ -562,6 +580,28 @@ function pmpro_structured_data_build_item_list_schema( $products ) {
 		'itemListOrder'   => 'https://schema.org/ItemListOrderAscending',
 		'itemListElement' => $elements,
 	);
+}
+
+/**
+ * Default product image for structured data.
+ * Prefer site branding; fall back to the bundled plugin banner so Google always gets an image.
+ *
+ * @since TBD
+ *
+ * @return string Image URL or empty.
+ */
+function pmpro_structured_data_get_fallback_image() {
+	$url = get_site_icon_url( 512 );
+	if ( empty( $url ) ) {
+		$logo_id = get_theme_mod( 'custom_logo' );
+		if ( ! empty( $logo_id ) ) {
+			$url = wp_get_attachment_image_url( (int) $logo_id, 'full' );
+		}
+	}
+	if ( empty( $url ) && defined( 'PMPRO_BASE_FILE' ) ) {
+		$url = plugins_url( 'paid-memberships-pro-banner.png', PMPRO_BASE_FILE );
+	}
+	return ! empty( $url ) ? $url : '';
 }
 
 /**
