@@ -55,6 +55,7 @@
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("uninstall");
 		pmpro_setOption( 'avatar_enabled_sitewide' );
+		pmpro_setOption( 'hide_structured_data' );
 		pmpro_setOption("site_type");
 
         /**
@@ -109,6 +110,7 @@
 	}
 	$uninstall = get_option( 'pmpro_uninstall');
 	$avatar_enabled_sitewide = get_option( 'pmpro_avatar_enabled_sitewide' );
+	$hide_structured_data = get_option( 'pmpro_hide_structured_data' );
 	$site_type = get_option( 'pmpro_site_type' );
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
@@ -597,6 +599,15 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						</td>
 					</tr>
 					<?php } ?>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="hide_structured_data"><?php esc_html_e( 'Structured Data', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<input id="hide_structured_data" name="hide_structured_data" type="checkbox" value="yes" <?php checked( $hide_structured_data, 'yes' ); ?> /> <label for="hide_structured_data"><?php esc_html_e( 'Hide membership level structured data (JSON-LD).', 'paid-memberships-pro' ); ?></label>
+							<p class="description"><?php esc_html_e( 'By default, Paid Memberships Pro adds Product and Offer structured data on levels and checkout pages. Enable this if another SEO plugin already outputs membership pricing schema and you want to avoid duplicate markup.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
 					<tr>
 						<th scope="row" valign="top">
 							<label for="uninstall"><?php esc_html_e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
