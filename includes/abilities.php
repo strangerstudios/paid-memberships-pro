@@ -3,7 +3,7 @@
  * Register Paid Memberships Pro abilities for the WordPress Abilities API.
  *
  * @package PaidMembershipsPro
- * @since TBD
+ * @since 3.8.3
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ add_action( 'wp_abilities_api_init', 'pmpro_abilities_register_abilities' );
 /**
  * Check whether the WordPress Abilities API is available.
  *
- * @since TBD
+ * @since 3.8.3
  *
  * @return bool
  */
@@ -29,7 +29,7 @@ function pmpro_abilities_is_abilities_api_available() {
 /**
  * Check whether PMPro can register abilities.
  *
- * @since TBD
+ * @since 3.8.3
  *
  * @return bool
  */
@@ -37,7 +37,7 @@ function pmpro_abilities_can_boot() {
 	/**
 	 * Filter whether PMPro should register Abilities API categories and abilities.
 	 *
-	 * @since TBD
+	 * @since 3.8.3
 	 *
 	 * @param bool $enabled Whether ability registration is enabled.
 	 */
@@ -79,7 +79,7 @@ function pmpro_abilities_register_abilities() {
 	}
 
 	$abilities = array(
-		'pmpro/memberships-query'         => pmpro_abilities_get_memberships_query_definition(),
+		'pmpro/levels-query'              => pmpro_abilities_get_levels_query_definition(),
 		'pmpro/member-memberships-get'    => pmpro_abilities_get_member_memberships_definition(),
 		'pmpro/member-membership-change'  => pmpro_abilities_get_member_membership_change_definition(),
 		'pmpro/member-membership-cancel'  => pmpro_abilities_get_member_membership_cancel_definition(),
@@ -185,7 +185,6 @@ function pmpro_abilities_get_member_level_schema() {
 			'name'              => array( 'type' => 'string' ),
 			'description'       => array( 'type' => 'string' ),
 			'status'            => array( 'type' => 'string' ),
-			'subscription_id'   => array( 'type' => array( 'integer', 'null' ) ),
 			'startdate'         => array( 'type' => array( 'string', 'null' ) ),
 			'enddate'           => array( 'type' => array( 'string', 'null' ) ),
 			'initial_payment'   => array( 'type' => 'number' ),
@@ -257,13 +256,13 @@ function pmpro_abilities_get_subscription_schema() {
  *
  * @return array
  */
-function pmpro_abilities_get_memberships_query_definition() {
+function pmpro_abilities_get_levels_query_definition() {
 	return array(
 		'label'               => __( 'Query Membership Levels', 'paid-memberships-pro' ),
 		'description'         => __( 'Query Paid Memberships Pro membership levels with pagination and optional text filtering.', 'paid-memberships-pro' ),
 		'category'            => 'pmpro',
-		'execute_callback'    => 'pmpro_abilities_execute_memberships_query',
-		'permission_callback' => 'pmpro_abilities_can_query_memberships',
+		'execute_callback'    => 'pmpro_abilities_execute_levels_query',
+		'permission_callback' => 'pmpro_abilities_can_query_levels',
 		'input_schema'        => array(
 			'type'       => 'object',
 			'default'    => array(
@@ -360,7 +359,6 @@ function pmpro_abilities_get_member_membership_change_definition() {
 			'properties' => array(
 				'user_id'          => array( 'type' => 'integer' ),
 				'level_id'         => array( 'type' => 'integer' ),
-				'reason'           => array( 'type' => 'string' ),
 				'old_level_status' => array( 'type' => 'string' ),
 			),
 			'required'   => array( 'user_id', 'level_id' ),
@@ -410,8 +408,6 @@ function pmpro_abilities_get_member_membership_cancel_definition() {
 			'properties' => array(
 				'user_id' => array( 'type' => 'integer' ),
 				'level_id' => array( 'type' => 'integer' ),
-				'status'  => array( 'type' => 'string' ),
-				'reason'  => array( 'type' => 'string' ),
 			),
 			'required'   => array( 'user_id', 'level_id' ),
 		),
@@ -683,7 +679,7 @@ function pmpro_abilities_can_manage_members() {
  *
  * @return bool
  */
-function pmpro_abilities_can_query_memberships() {
+function pmpro_abilities_can_query_levels() {
 	if ( ! defined( 'PMPRO_VERSION' ) ) {
 		return false;
 	}
@@ -811,7 +807,6 @@ function pmpro_abilities_normalize_member_level( $membership ) {
 		'name'              => isset( $membership->name ) ? (string) $membership->name : '',
 		'description'       => isset( $membership->description ) ? wp_strip_all_tags( $membership->description ) : '',
 		'status'            => isset( $membership->status ) ? (string) $membership->status : 'active',
-		'subscription_id'   => isset( $membership->subscription_id ) ? (int) $membership->subscription_id : null,
 		'startdate'         => isset( $membership->startdate ) ? pmpro_abilities_normalize_unix_timestamp( $membership->startdate ) : null,
 		'enddate'           => isset( $membership->enddate ) ? pmpro_abilities_normalize_unix_timestamp( $membership->enddate ) : null,
 		'initial_payment'   => isset( $membership->initial_payment ) ? (float) $membership->initial_payment : 0.0,
@@ -899,7 +894,7 @@ function pmpro_abilities_get_user_or_error( $user_id ) {
  * @param array $input Ability input.
  * @return array
  */
-function pmpro_abilities_execute_memberships_query( $input ) {
+function pmpro_abilities_execute_levels_query( $input ) {
 	if ( ! defined( 'PMPRO_VERSION' ) ) {
 		return new WP_Error( 'pmpro_abilities_missing_pmpro', __( 'Paid Memberships Pro is not active.', 'paid-memberships-pro' ), array( 'status' => 503 ) );
 	}
@@ -1058,8 +1053,7 @@ function pmpro_abilities_execute_member_membership_cancel( $input ) {
 		$previous_memberships = array();
 	}
 
-	$status = ! empty( $input['status'] ) ? (string) $input['status'] : 'admin_cancelled';
-	$result = pmpro_cancelMembershipLevel( (int) $level->id, (int) $user->ID, $status );
+	$result = pmpro_cancelMembershipLevel( (int) $level->id, (int) $user->ID, 'admin_cancelled' );
 
 	$current_memberships = pmpro_getMembershipLevelsForUser( $user->ID, true );
 	if ( ! is_array( $current_memberships ) ) {
@@ -1103,8 +1097,9 @@ function pmpro_abilities_execute_orders_query( $input ) {
 			'page'  => 1,
 		)
 	);
-	$page  = max( 1, (int) $input['page'] );
-	$limit = max( 1, min( 50, (int) $input['limit'] ) );
+	$page   = max( 1, (int) $input['page'] );
+	$limit  = max( 1, min( 50, (int) $input['limit'] ) );
+	$offset = ( $page - 1 ) * $limit;
 
 	$query_args = array();
 	foreach ( array( 'user_id', 'membership_level_id', 'status', 'gateway' ) as $key ) {
@@ -1126,13 +1121,14 @@ function pmpro_abilities_execute_orders_query( $input ) {
 		array_merge(
 			$query_args,
 			array(
-				'limit' => $page * $limit,
+				'limit'  => $limit,
+				'offset' => $offset,
 			)
 		)
 	);
 
 	return array(
-		'items' => array_map( 'pmpro_abilities_normalize_order', pmpro_abilities_slice_items( $orders, $page, $limit ) ),
+		'items' => array_map( 'pmpro_abilities_normalize_order', $orders ),
 		'total' => $total,
 		'page'  => $page,
 		'limit' => $limit,
@@ -1182,8 +1178,9 @@ function pmpro_abilities_execute_subscriptions_query( $input ) {
 			'page'  => 1,
 		)
 	);
-	$page  = max( 1, (int) $input['page'] );
-	$limit = max( 1, min( 50, (int) $input['limit'] ) );
+	$page   = max( 1, (int) $input['page'] );
+	$limit  = max( 1, min( 50, (int) $input['limit'] ) );
+	$offset = ( $page - 1 ) * $limit;
 
 	$query_args = array();
 	foreach ( array( 'user_id', 'membership_level_id', 'status', 'gateway' ) as $key ) {
@@ -1192,11 +1189,11 @@ function pmpro_abilities_execute_subscriptions_query( $input ) {
 		}
 	}
 
-	$total_subscriptions = PMPro_Subscription::get_subscriptions(
+	$total = (int) PMPro_Subscription::get_subscriptions(
 		array_merge(
 			$query_args,
 			array(
-				'limit' => 0,
+				'return_count' => true,
 			)
 		)
 	);
@@ -1205,14 +1202,15 @@ function pmpro_abilities_execute_subscriptions_query( $input ) {
 		array_merge(
 			$query_args,
 			array(
-				'limit' => $page * $limit,
+				'limit'  => $limit,
+				'offset' => $offset,
 			)
 		)
 	);
 
 	return array(
-		'items' => array_map( 'pmpro_abilities_normalize_subscription', pmpro_abilities_slice_items( $subscriptions, $page, $limit ) ),
-		'total' => count( $total_subscriptions ),
+		'items' => array_map( 'pmpro_abilities_normalize_subscription', $subscriptions ),
+		'total' => $total,
 		'page'  => $page,
 		'limit' => $limit,
 	);

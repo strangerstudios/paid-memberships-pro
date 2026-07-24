@@ -555,7 +555,8 @@
 		 * Get orders based on various parameters
 		 *
 		 * @since 2.9
-		 * 
+		 * @since 3.8.3 Added support for the `offset` argument.
+		 *
 		 * @param array $args Specify what you'd like to filter the query by
 		 *
 		 */
@@ -573,6 +574,7 @@
 
 			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`o`.`timestamp` DESC';
 			$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
+			$offset   = isset( $args['offset'] ) ? max( 0, (int) $args['offset'] ) : 0;
 
 			// Detect unsupported orderby usage (in the future we may support better syntax).
 			if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,.`]/', ' ', $orderby ) ) {
@@ -725,6 +727,12 @@
 				if ( $limit ) {
 					$sql_query .= ' LIMIT %d';
 					$prepared[] = $limit;
+
+					// Maybe offset the data for pagination.
+					if ( $offset > 0 ) {
+						$sql_query .= ' OFFSET %d';
+						$prepared[] = $offset;
+					}
 				}
 			}
 
