@@ -5520,3 +5520,135 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
 		do_action( 'pmpro_after_updating_post_level_restrictions', $post_id );
 	}
 }
+
+/**
+ * Query PMPro members (WordPress users who hold a membership) with filtering and pagination.
+ *
+ * Provides a single reusable member query for the REST API collection endpoint
+ * ( /pmpro/v1/members ) and the `wp pmpro member list` CLI command, so both share
+ * the same filtering, pagination, and output shape.
+ *
+ * @since TBD
+ *
+ * @param array $args {
+ *     Optional. Query arguments.
+ *
+ *     @type int|int[]       $membership_id Only return members holding these level IDs. Default null (any level).
+ *     @type string|string[] $status        Membership status(es) to match, or 'all' for any status. Default 'active'.
+ *     @type string          $search        Match users by login, email, or display name. Default ''.
+ *     @type int             $limit         Maximum rows to return. 0 for no limit. Default 100.
+ *     @type int             $offset        Rows to skip, for pagination. Default 0.
+ *     @type string          $orderby       One of id, user_login, user_email, display_name, membership_id, startdate, enddate, joindate. Default 'id'.
+ *     @type string          $order         'ASC' or 'DESC'. Default 'DESC'.
+ *     @type bool            $return_count  Return the total matching count instead of rows. Default false.
+ * }
+ * @return array|int Array of member row arrays, or an integer count when $return_count is true.
+ */
+function pmpro_get_members( $args = array() ) {
+	global $wpdb;
+
+	$defaults = array(
+		'membership_id' => null,
+		'status'        => 'active',
+		'search'        => '',
+		'limit'         => 100,
+		'offset'        => 0,
+		'orderby'       => 'id',
+		'order'         => 'DESC',
+		'return_count'  => false,
+	);
+	$args = wp_parse_args( $args, $defaults );
+
+	$return_count = ! empty( $args['return_count'] );
+	$where        = array();
+	$prepared     = array();
+
+	if ( $return_count ) {
+		$sql = "SELECT COUNT( DISTINCT u.ID, mu.membership_id )";
+	} else {
+		$sql = "SELECT u.ID AS user_id, u.user_login, u.user_email, u.display_name, mu.membership_id, mu.status,
+			u.user_registered AS joindate, mu.startdate, mu.enddate, m.name AS membership_name";
+	}
+
+	$sql .= " FROM {$wpdb->users} u
+		INNER JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id
+		LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id";
+
+	// Only include rows tied to a real membership level.
+	$where[] = 'mu.membership_id > 0';
+
+	// Filter by membership level ID(s).
+	if ( ! empty( $args['membership_id'] ) ) {
+		$ids      = array_map( 'intval', (array) $args['membership_id'] );
+		$where[]  = 'mu.membership_id IN ( ' . implode( ', ', array_fill( 0, count( $ids ), '%d' ) ) . ' )';
+		$prepared = array_merge( $prepared, $ids );
+	}
+
+	// Filter by membership status(es). Pass 'all' to include every status.
+	if ( ! empty( $args['status'] ) && 'all' !== $args['status'] ) {
+		$statuses = array_map( 'strval', (array) $args['status'] );
+		$where[]  = 'mu.status IN ( ' . implode( ', ', array_fill( 0, count( $statuses ), '%s' ) ) . ' )';
+		$prepared = array_merge( $prepared, $statuses );
+	}
+
+	// Search by login, email, or display name.
+	if ( ! empty( $args['search'] ) ) {
+		$like       = '%' . $wpdb->esc_like( $args['search'] ) . '%';
+		$where[]    = '( u.user_login LIKE %s OR u.user_email LIKE %s OR u.display_name LIKE %s )';
+		$prepared[] = $like;
+		$prepared[] = $like;
+		$prepared[] = $like;
+	}
+
+	$sql .= ' WHERE ' . implode( ' AND ', $where );
+
+	if ( $return_count ) {
+		if ( $prepared ) {
+			$sql = $wpdb->prepare( $sql, $prepared );
+		}
+		return (int) $wpdb->get_var( $sql );
+	}
+
+	// One row per user/level pair.
+	$sql .= ' GROUP BY u.ID, mu.membership_id';
+
+	// Sanitize orderby against an allowlist of safe columns.
+	$orderby_map = array(
+		'id'            => 'u.ID',
+		'user_login'    => 'u.user_login',
+		'user_email'    => 'u.user_email',
+		'display_name'  => 'u.display_name',
+		'membership_id' => 'mu.membership_id',
+		'startdate'     => 'mu.startdate',
+		'enddate'       => 'mu.enddate',
+		'joindate'      => 'u.user_registered',
+	);
+	$orderby_col = isset( $orderby_map[ $args['orderby'] ] ) ? $orderby_map[ $args['orderby'] ] : 'u.ID';
+	$order       = ( 'ASC' === strtoupper( (string) $args['order'] ) ) ? 'ASC' : 'DESC';
+	$sql        .= " ORDER BY {$orderby_col} {$order}";
+
+	// Pagination.
+	$limit  = max( 0, (int) $args['limit'] );
+	$offset = max( 0, (int) $args['offset'] );
+	if ( $limit ) {
+		$sql       .= ' LIMIT %d OFFSET %d';
+		$prepared[] = $limit;
+		$prepared[] = $offset;
+	}
+
+	if ( $prepared ) {
+		$sql = $wpdb->prepare( $sql, $prepared );
+	}
+
+	/**
+	 * Filter the SQL used by pmpro_get_members().
+	 *
+	 * @since TBD
+	 *
+	 * @param string $sql  The prepared SQL query.
+	 * @param array  $args The parsed query arguments.
+	 */
+	$sql = apply_filters( 'pmpro_get_members_sql', $sql, $args );
+
+	return $wpdb->get_results( $sql, ARRAY_A );
+}

@@ -257,6 +257,83 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		);
 
 		/**
+		 * Get a paginated, filterable collection of members.
+		 * @since TBD
+		 * Example: https://example.com/wp-json/pmpro/v1/members?level=1&status=active&page=1&per_page=20
+		 */
+		register_rest_route( $pmpro_namespace, '/members',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_get_members' ),
+					'args'     => array(
+						'page'     => array( 'sanitize_callback' => 'absint' ),
+						'per_page' => array( 'sanitize_callback' => 'absint' ),
+						'level'    => array(),
+						'status'   => array(),
+						'search'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'orderby'  => array( 'sanitize_callback' => 'sanitize_key' ),
+						'order'    => array( 'sanitize_callback' => 'sanitize_key' ),
+						'fields'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
+					),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)
+			)
+		);
+
+		/**
+		 * Get a paginated, filterable collection of orders.
+		 * @since TBD
+		 * Example: https://example.com/wp-json/pmpro/v1/orders?status=success&per_page=20
+		 */
+		register_rest_route( $pmpro_namespace, '/orders',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_get_orders' ),
+					'args'     => array(
+						'page'       => array( 'sanitize_callback' => 'absint' ),
+						'per_page'   => array( 'sanitize_callback' => 'absint' ),
+						'user_id'    => array( 'sanitize_callback' => 'absint' ),
+						'level'      => array(),
+						'status'     => array(),
+						'gateway'    => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'start_date' => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'end_date'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'orderby'    => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'fields'     => array( 'sanitize_callback' => 'sanitize_text_field' ),
+					),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)
+			)
+		);
+
+		/**
+		 * Get a paginated, filterable collection of subscriptions.
+		 * @since TBD
+		 * Example: https://example.com/wp-json/pmpro/v1/subscriptions?status=active&per_page=20
+		 */
+		register_rest_route( $pmpro_namespace, '/subscriptions',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_get_subscriptions' ),
+					'args'     => array(
+						'page'     => array( 'sanitize_callback' => 'absint' ),
+						'per_page' => array( 'sanitize_callback' => 'absint' ),
+						'user_id'  => array( 'sanitize_callback' => 'absint' ),
+						'level'    => array(),
+						'status'   => array(),
+						'gateway'  => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'orderby'  => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'fields'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
+					),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)
+			)
+		);
+
+		/**
 		 * Get the IDs that a post has been restricted to.
 		 * @since 3.0
 		 * Example: https://example.com/wp-json/pmpro/v1/post_restrictions
@@ -1254,6 +1331,289 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
+		 * Get a paginated, filterable collection of members.
+		 *
+		 * @since TBD
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_get_members( $request ) {
+			$params   = $request->get_params();
+			$per_page = $this->pmpro_rest_api_get_per_page( $params );
+			$page     = $this->pmpro_rest_api_get_page( $params );
+
+			$query_args = array(
+				'limit'  => $per_page,
+				'offset' => ( $page - 1 ) * $per_page,
+			);
+			if ( isset( $params['level'] ) && '' !== $params['level'] ) {
+				$query_args['membership_id'] = array_map( 'intval', explode( ',', (string) $params['level'] ) );
+			}
+			if ( isset( $params['status'] ) && '' !== $params['status'] ) {
+				$query_args['status'] = array_map( 'sanitize_text_field', explode( ',', (string) $params['status'] ) );
+			}
+			if ( ! empty( $params['search'] ) ) {
+				$query_args['search'] = sanitize_text_field( $params['search'] );
+			}
+			if ( ! empty( $params['orderby'] ) ) {
+				$query_args['orderby'] = sanitize_key( $params['orderby'] );
+			}
+			if ( ! empty( $params['order'] ) ) {
+				$query_args['order'] = ( 'asc' === strtolower( (string) $params['order'] ) ) ? 'ASC' : 'DESC';
+			}
+
+			$total   = (int) pmpro_get_members( array_merge( $query_args, array( 'return_count' => true ) ) );
+			$members = pmpro_get_members( $query_args );
+
+			$fields = $this->pmpro_rest_api_get_fields( $params );
+			$items  = array();
+			foreach ( (array) $members as $member ) {
+				$item = array(
+					'user_id'         => (int) $member['user_id'],
+					'user_login'      => $member['user_login'],
+					'user_email'      => $member['user_email'],
+					'display_name'    => $member['display_name'],
+					'membership_id'   => (int) $member['membership_id'],
+					'membership_name' => $member['membership_name'],
+					'status'          => $member['status'],
+					'joindate'        => $this->pmpro_rest_api_maybe_iso8601( $member['joindate'] ),
+					'startdate'       => $this->pmpro_rest_api_maybe_iso8601( $member['startdate'] ),
+					'enddate'         => $this->pmpro_rest_api_maybe_iso8601( $member['enddate'] ),
+				);
+				$items[] = $this->pmpro_rest_api_apply_fields( $item, $fields );
+			}
+
+			return $this->pmpro_rest_api_collection_response( $items, $total, $page, $per_page );
+		}
+
+		/**
+		 * Get a paginated, filterable collection of orders.
+		 *
+		 * @since TBD
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_get_orders( $request ) {
+			$params   = $request->get_params();
+			$per_page = $this->pmpro_rest_api_get_per_page( $params );
+			$page     = $this->pmpro_rest_api_get_page( $params );
+
+			$query_args = array(
+				'limit'  => $per_page,
+				'offset' => ( $page - 1 ) * $per_page,
+			);
+			if ( ! empty( $params['user_id'] ) ) {
+				$query_args['user_id'] = (int) $params['user_id'];
+			}
+			if ( isset( $params['level'] ) && '' !== $params['level'] ) {
+				$query_args['membership_level_id'] = array_map( 'intval', explode( ',', (string) $params['level'] ) );
+			}
+			if ( isset( $params['status'] ) && '' !== $params['status'] ) {
+				$query_args['status'] = array_map( 'sanitize_text_field', explode( ',', (string) $params['status'] ) );
+			}
+			if ( ! empty( $params['gateway'] ) ) {
+				$query_args['gateway'] = sanitize_text_field( $params['gateway'] );
+			}
+			if ( ! empty( $params['start_date'] ) ) {
+				$query_args['start_date'] = sanitize_text_field( $params['start_date'] );
+			}
+			if ( ! empty( $params['end_date'] ) ) {
+				$query_args['end_date'] = sanitize_text_field( $params['end_date'] );
+			}
+
+			$total  = (int) MemberOrder::get_orders( array_merge( $query_args, array( 'return_count' => true ) ) );
+			$orders = MemberOrder::get_orders( $query_args );
+
+			$fields = $this->pmpro_rest_api_get_fields( $params );
+			$items  = array();
+			foreach ( (array) $orders as $order ) {
+				$item = array(
+					'id'                           => (int) $order->id,
+					'code'                         => $order->code,
+					'user_id'                      => (int) $order->user_id,
+					'membership_id'                => (int) $order->membership_id,
+					'status'                       => $order->status,
+					'gateway'                      => $order->gateway,
+					'gateway_environment'          => $order->gateway_environment,
+					'subtotal'                     => $order->subtotal,
+					'tax'                          => $order->tax,
+					'total'                        => $order->total,
+					'payment_transaction_id'       => $order->payment_transaction_id,
+					'subscription_transaction_id'  => $order->subscription_transaction_id,
+					'timestamp'                    => ! empty( $order->timestamp ) ? gmdate( DateTime::ATOM, (int) $order->timestamp ) : null,
+				);
+				$items[] = $this->pmpro_rest_api_apply_fields( $item, $fields );
+			}
+
+			return $this->pmpro_rest_api_collection_response( $items, $total, $page, $per_page );
+		}
+
+		/**
+		 * Get a paginated, filterable collection of subscriptions.
+		 *
+		 * @since TBD
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_get_subscriptions( $request ) {
+			$params   = $request->get_params();
+			$per_page = $this->pmpro_rest_api_get_per_page( $params );
+			$page     = $this->pmpro_rest_api_get_page( $params );
+
+			$query_args = array(
+				'limit'  => $per_page,
+				'offset' => ( $page - 1 ) * $per_page,
+			);
+			if ( ! empty( $params['user_id'] ) ) {
+				$query_args['user_id'] = (int) $params['user_id'];
+			}
+			if ( isset( $params['level'] ) && '' !== $params['level'] ) {
+				$query_args['membership_level_id'] = array_map( 'intval', explode( ',', (string) $params['level'] ) );
+			}
+			if ( isset( $params['status'] ) && '' !== $params['status'] ) {
+				$query_args['status'] = array_map( 'sanitize_text_field', explode( ',', (string) $params['status'] ) );
+			}
+			if ( ! empty( $params['gateway'] ) ) {
+				$query_args['gateway'] = sanitize_text_field( $params['gateway'] );
+			}
+
+			$total         = (int) PMPro_Subscription::get_subscriptions( array_merge( $query_args, array( 'return_count' => true ) ) );
+			$subscriptions = PMPro_Subscription::get_subscriptions( $query_args );
+
+			$fields = $this->pmpro_rest_api_get_fields( $params );
+			$items  = array();
+			foreach ( (array) $subscriptions as $subscription ) {
+				$item = array(
+					'id'                          => (int) $subscription->get_id(),
+					'user_id'                     => (int) $subscription->get_user_id(),
+					'membership_level_id'         => (int) $subscription->get_membership_level_id(),
+					'status'                      => (string) $subscription->get_status(),
+					'gateway'                     => (string) $subscription->get_gateway(),
+					'gateway_environment'         => (string) $subscription->get_gateway_environment(),
+					'subscription_transaction_id' => (string) $subscription->get_subscription_transaction_id(),
+					'billing_amount'              => (float) $subscription->get_billing_amount(),
+					'cycle_number'                => (int) $subscription->get_cycle_number(),
+					'cycle_period'                => (string) $subscription->get_cycle_period(),
+					'startdate'                   => $subscription->get_startdate( 'c' ),
+					'enddate'                     => $subscription->get_enddate( 'c' ),
+					'next_payment_date'           => $subscription->get_next_payment_date( 'c' ),
+				);
+				$items[] = $this->pmpro_rest_api_apply_fields( $item, $fields );
+			}
+
+			return $this->pmpro_rest_api_collection_response( $items, $total, $page, $per_page );
+		}
+
+		/**
+		 * Get the requested page number for a collection request. Minimum 1.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $params The request parameters.
+		 * @return int
+		 */
+		private function pmpro_rest_api_get_page( $params ) {
+			return isset( $params['page'] ) ? max( 1, (int) $params['page'] ) : 1;
+		}
+
+		/**
+		 * Get the requested per_page value for a collection request, clamped to a hard maximum.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $params The request parameters.
+		 * @return int
+		 */
+		private function pmpro_rest_api_get_per_page( $params ) {
+			$per_page = isset( $params['per_page'] ) ? (int) $params['per_page'] : 20;
+
+			/**
+			 * Filter the maximum number of items a PMPro REST collection endpoint will return per page.
+			 *
+			 * @since TBD
+			 *
+			 * @param int $max The maximum per_page value. Default 100.
+			 */
+			$max = (int) apply_filters( 'pmpro_rest_api_max_per_page', 100 );
+
+			if ( $per_page < 1 ) {
+				$per_page = 20;
+			}
+
+			return min( $per_page, $max );
+		}
+
+		/**
+		 * Parse the requested field list for a collection request.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $params The request parameters.
+		 * @return array Array of requested field names, or empty array for all fields.
+		 */
+		private function pmpro_rest_api_get_fields( $params ) {
+			if ( empty( $params['fields'] ) ) {
+				return array();
+			}
+			return array_filter( array_map( 'trim', explode( ',', (string) $params['fields'] ) ) );
+		}
+
+		/**
+		 * Reduce an item array to only the requested fields.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $item   The full item array.
+		 * @param array $fields The requested field names. Empty means all fields.
+		 * @return array
+		 */
+		private function pmpro_rest_api_apply_fields( $item, $fields ) {
+			if ( empty( $fields ) ) {
+				return $item;
+			}
+			return array_intersect_key( $item, array_flip( $fields ) );
+		}
+
+		/**
+		 * Format a stored datetime string as ISO 8601, returning null for empty or zero dates.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $date The datetime string.
+		 * @return string|null
+		 */
+		private function pmpro_rest_api_maybe_iso8601( $date ) {
+			if ( empty( $date ) || 0 === strpos( (string) $date, '0000-00-00' ) ) {
+				return null;
+			}
+			return pmpro_format_date_iso8601( $date );
+		}
+
+		/**
+		 * Build a collection response with pagination headers.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $items    The response items.
+		 * @param int   $total    The total number of matching records.
+		 * @param int   $page     The current page.
+		 * @param int   $per_page The page size.
+		 * @return WP_REST_Response
+		 */
+		private function pmpro_rest_api_collection_response( $items, $total, $page, $per_page ) {
+			$response    = new WP_REST_Response( $items, 200 );
+			$total_pages = $per_page > 0 ? (int) ceil( $total / $per_page ) : 0;
+
+			$response->header( 'X-WP-Total', (string) $total );
+			$response->header( 'X-WP-TotalPages', (string) $total_pages );
+
+			return $response;
+		}
+
+		/**
 		 * Get the membership level IDs restricting a given post.
 		 *
 		 * @since 3.0
@@ -1817,6 +2177,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/me' => true,
 				'/pmpro/v1/recent_memberships' => 'pmpro_edit_members',
 				'/pmpro/v1/recent_orders' => 'pmpro_orders',
+				'/pmpro/v1/members' => 'pmpro_edit_members',
+				'/pmpro/v1/orders' => 'pmpro_orders',
+				'/pmpro/v1/subscriptions' => 'pmpro_edit_members',
 				'/pmpro/v1/post_restrictions' => array(
 					'capability' => 'edit_post',
 					'request_param' => 'post_id',

@@ -725,6 +725,13 @@
 				if ( $limit ) {
 					$sql_query .= ' LIMIT %d';
 					$prepared[] = $limit;
+
+					// Maybe offset the data for pagination.
+					$offset = isset( $args['offset'] ) ? (int) $args['offset'] : 0;
+					if ( $offset > 0 ) {
+						$sql_query .= ' OFFSET %d';
+						$prepared[] = $offset;
+					}
 				}
 			}
 
