@@ -52,10 +52,10 @@ defined( 'ABSPATH' ) || exit;
  *                                            array of selected values.
  *     @type string          $description     Help text shown below standard inputs, run through wp_kses_post().
  *                                            html and callback fields are responsible for their own descriptions.
- *     @type string          $class           Input CSS class override. Text-like inputs and textareas default to
- *                                            "regular-text code"; currency defaults to "regular-text"; selects and
- *                                            color inputs have no default class.
- *     @type bool            $secret          Text-like fields only. Adds pmpro-admin-secure-key and autocomplete=off.
+ *     @type string          $class           Input CSS class override. Text-like inputs default to "regular-text",
+ *                                            number inputs to "small-text", textareas to "large-text", currency
+ *                                            inputs to "regular-text", and color inputs to "pmpro_color_picker".
+ *                                            Selects have no default class.
  *     @type bool            $required        Text-like fields only. Adds the HTML required attribute.
  *     @type array           $attrs           Text-like and textarea fields only. Extra HTML attributes as
  *                                            attribute => value. Keys are sanitized, values escaped.
@@ -261,7 +261,7 @@ function pmpro_build_settings_input( $field ) {
 			break;
 
 		case 'textarea':
-			$input_class = isset( $field['class'] ) ? $field['class'] : 'regular-text code';
+			$input_class = isset( $field['class'] ) ? $field['class'] : 'large-text';
 			echo '<textarea id="' . esc_attr( $name ) . '" name="' . esc_attr( $name ) . '" class="' . esc_attr( $input_class ) . '"' . pmpro_build_settings_input_attrs( $field ) . '>' . esc_textarea( $value ) . '</textarea>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attrs escaped in the helper.
 			break;
 
@@ -324,32 +324,22 @@ function pmpro_build_settings_input( $field ) {
 			pmpro_build_settings_currency_input( $name, $value, isset( $field['class'] ) ? $field['class'] : 'regular-text' );
 			break;
 
-		case 'color':
-			printf(
-				'<input type="color" id="%1$s" name="%1$s" value="%2$s"%3$s />',
-				esc_attr( $name ),
-				esc_attr( $value ),
-				isset( $field['class'] ) ? ' class="' . esc_attr( $field['class'] ) . '"' : ''
-			);
-			break;
-
 		default:
-			// Text-like inputs. Common HTML5 input types are allowed via the type passthrough.
-			$allowed_types = array( 'text', 'number', 'email', 'url', 'tel', 'password' );
-			$input_type    = in_array( $type, $allowed_types, true ) ? $type : 'text';
-			$secret        = ! empty( $field['secret'] );
-			$required      = ! empty( $field['required'] ) ? ' required' : '';
-			$input_class   = isset( $field['class'] ) ? $field['class'] : 'regular-text code';
-			if ( $secret ) {
-				$input_class = trim( $input_class . ' pmpro-admin-secure-key' );
-			}
+			// Standard single inputs. Common HTML5 input types are allowed via the type passthrough.
+			$allowed_types   = array( 'text', 'number', 'email', 'url', 'tel', 'password', 'color' );
+			$default_classes = array(
+				'color'  => 'pmpro_color_picker',
+				'number' => 'small-text',
+			);
+			$input_type      = in_array( $type, $allowed_types, true ) ? $type : 'text';
+			$required        = ! empty( $field['required'] ) ? ' required' : '';
+			$input_class     = isset( $field['class'] ) ? $field['class'] : ( $default_classes[ $type ] ?? 'regular-text' );
 			printf(
-				'<input type="%1$s" id="%2$s" name="%2$s" value="%3$s"%4$s%5$s%6$s%7$s />',
+				'<input type="%1$s" id="%2$s" name="%2$s" value="%3$s"%4$s%5$s%6$s />',
 				esc_attr( $input_type ),
 				esc_attr( $name ),
 				esc_attr( $value ),
 				'' !== $input_class ? ' class="' . esc_attr( $input_class ) . '"' : '', // An empty class ('' passed to suppress the default) omits the attribute.
-				$secret ? ' autocomplete="off"' : '',
 				$required,
 				pmpro_build_settings_input_attrs( $field ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- keys sanitized and values escaped in the helper.
 			);

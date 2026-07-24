@@ -114,21 +114,18 @@
 					'name'  => 'pmpro_base_color',
 					'label' => __( 'Base Color', 'paid-memberships-pro' ),
 					'type'  => 'color',
-					'class' => 'pmpro_color_picker',
 					'value' => $pmpro_colors['base'],
 				),
 				array(
 					'name'  => 'pmpro_contrast_color',
 					'label' => __( 'Contrast Color', 'paid-memberships-pro' ),
 					'type'  => 'color',
-					'class' => 'pmpro_color_picker',
 					'value' => $pmpro_colors['contrast'],
 				),
 				array(
 					'name'  => 'pmpro_accent_color',
 					'label' => __( 'Accent Color', 'paid-memberships-pro' ),
 					'type'  => 'color',
-					'class' => 'pmpro_color_picker',
 					'value' => $pmpro_colors['accent'],
 				),
 			),
@@ -164,4 +161,3 @@ function pmpro_style_variation_item_preview_html() { ?>
 	</div>
 	<?php
 }
-

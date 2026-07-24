@@ -261,22 +261,26 @@
 						'name'  => 'gateway_email',
 						'label' => __( 'Gateway Account Email', 'paid-memberships-pro' ),
 						'type'  => 'text',
+						'class' => 'regular-text code',
 					),
 					array(
 						'name'  => 'apiusername',
 						'label' => __( 'API Username', 'paid-memberships-pro' ),
 						'type'  => 'text',
+						'class' => 'regular-text code',
 					),
 					array(
 						'name'   => 'apipassword',
 						'label'  => __( 'API Password', 'paid-memberships-pro' ),
-						'type'   => 'text',
-						'secret' => true,
+						'type'   => 'password',
+						'class'  => 'regular-text code',
+						'attrs'  => array( 'autocomplete' => 'off' ),
 					),
 					array(
 						'name'  => 'apisignature',
 						'label' => __( 'API Signature', 'paid-memberships-pro' ),
 						'type'  => 'text',
+						'class' => 'regular-text code',
 					),
 					array(
 						'name'    => 'paypalexpress_skip_confirmation',

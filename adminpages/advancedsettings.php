@@ -253,14 +253,14 @@
 				array(
 					'html' => '<p class="description">' . esc_html__( 'Enter your business name and address. This information will be shown to members on the Membership Orders page and Orders print view.', 'paid-memberships-pro' ) . '</p>',
 				),
-				array( 'name' => 'business_name', 'label' => __( 'Business Name', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['name'] ),
-				array( 'name' => 'business_street', 'label' => __( 'Business Street', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['street'] ),
-				array( 'name' => 'business_street2', 'label' => __( 'Business Street 2', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['street2'] ),
-				array( 'name' => 'business_city', 'label' => __( 'Business City', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['city'] ),
-				array( 'name' => 'business_state', 'label' => __( 'Business State', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['state'] ),
-				array( 'name' => 'business_zip', 'label' => __( 'Business Postal Code', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['zip'] ),
+				array( 'name' => 'business_name', 'label' => __( 'Business Name', 'paid-memberships-pro' ), 'type' => 'text', 'value' => $business_address['name'] ),
+				array( 'name' => 'business_street', 'label' => __( 'Business Street', 'paid-memberships-pro' ), 'type' => 'text', 'value' => $business_address['street'] ),
+				array( 'name' => 'business_street2', 'label' => __( 'Business Street 2', 'paid-memberships-pro' ), 'type' => 'text', 'value' => $business_address['street2'] ),
+				array( 'name' => 'business_city', 'label' => __( 'Business City', 'paid-memberships-pro' ), 'type' => 'text', 'value' => $business_address['city'] ),
+				array( 'name' => 'business_state', 'label' => __( 'Business State', 'paid-memberships-pro' ), 'type' => 'text', 'value' => $business_address['state'] ),
+				array( 'name' => 'business_zip', 'label' => __( 'Business Postal Code', 'paid-memberships-pro' ), 'type' => 'text', 'value' => $business_address['zip'] ),
 				array( 'name' => 'business_country', 'label' => __( 'Business Country', 'paid-memberships-pro' ), 'type' => 'select', 'value' => $business_address['country'], 'options' => $business_country_options ),
-				array( 'name' => 'business_phone', 'label' => __( 'Business Phone', 'paid-memberships-pro' ), 'type' => 'text', 'class' => 'regular-text', 'value' => $business_address['phone'] ),
+				array( 'name' => 'business_phone', 'label' => __( 'Business Phone', 'paid-memberships-pro' ), 'type' => 'text', 'value' => $business_address['phone'] ),
 			),
 		) );
 

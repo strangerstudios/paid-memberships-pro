@@ -3005,6 +3005,7 @@ class PMProGateway_stripe extends PMProGateway {
 									'callback' => function() use ( $publishable_key ) {
 										pmpro_build_settings_input( array(
 											'name'  => 'stripe_publishablekey',
+											'class' => 'regular-text code',
 											'value' => $publishable_key,
 										) );
 										$public_key_prefix = substr( $publishable_key, 0, 3 );
@@ -3016,10 +3017,12 @@ class PMProGateway_stripe extends PMProGateway {
 									},
 								) );
 								pmpro_build_settings_field( array(
-									'name'   => 'stripe_secretkey',
-									'label'  => __( 'Restricted Key', 'paid-memberships-pro' ),
-									'secret' => true,
-									'value'  => $secret_key,
+									'name'  => 'stripe_secretkey',
+									'label' => __( 'Restricted Key', 'paid-memberships-pro' ),
+									'type'  => 'password',
+									'class' => 'regular-text code',
+									'attrs' => array( 'autocomplete' => 'off' ),
+									'value' => $secret_key,
 								) );
 								?>
 							</tbody>

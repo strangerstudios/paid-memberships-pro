@@ -243,7 +243,6 @@ if (!empty($page_msg)) { ?>
 				'name'     => 'name',
 				'label'    => __( 'Name', 'paid-memberships-pro' ),
 				'type'     => 'text',
-				'class'    => 'regular-text',
 				'required' => true,
 				'value'    => $level->name,
 			),

@@ -163,6 +163,7 @@
 					'name'        => 'check_gateway_label',
 					'label'       => __( 'Gateway Label', 'paid-memberships-pro' ),
 					'type'        => 'text',
+					'class'       => 'regular-text code',
 					'value'       => $check_gateway_label,
 					'description' => __( 'The name of the custom payment method that will show on the frontend of your site. Useful for manual payment methods name like Wire Transfer, Direct Deposit, or Cash. Defaults to "Pay By Check".', 'paid-memberships-pro' ),
 				),
@@ -170,7 +171,6 @@
 					'name'        => 'instructions',
 					'label'       => __( 'Instructions', 'paid-memberships-pro' ),
 					'type'        => 'textarea',
-					'class'       => 'large-text',
 					'attrs'       => array(
 						'rows' => 3,
 						'cols' => 50,

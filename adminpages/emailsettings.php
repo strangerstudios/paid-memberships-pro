@@ -121,14 +121,12 @@
 					'name'  => 'from_email',
 					'label' => __( 'From Email', 'paid-memberships-pro' ),
 					'type'  => 'text',
-					'class' => 'regular-text',
 					'value' => $from_email,
 				),
 				array(
 					'name'  => 'from_name',
 					'label' => __( 'From Name', 'paid-memberships-pro' ),
 					'type'  => 'text',
-					'class' => 'regular-text',
 					'value' => wp_unslash( $from_name ),
 				),
 				array(
@@ -279,7 +277,6 @@
 						array(
 							'name'  => 'email_log_purge_days',
 							'type'  => 'number',
-							'class' => 'small-text',
 							'value' => $email_log_purge_days,
 							'attrs' => array(
 								'min'  => 0,
