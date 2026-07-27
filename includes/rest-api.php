@@ -274,7 +274,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'search'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
 						'orderby'  => array( 'sanitize_callback' => 'sanitize_key' ),
 						'order'    => array( 'sanitize_callback' => 'sanitize_key' ),
-						'fields'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'fields'   => array(
+							'sanitize_callback' => 'sanitize_text_field',
+							'validate_callback' => function( $value ) {
+								return $this->pmpro_rest_api_validate_fields( $value, 'members' );
+							},
+						),
 					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)
@@ -301,7 +306,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'start_date' => array( 'sanitize_callback' => 'sanitize_text_field' ),
 						'end_date'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
 						'orderby'    => array( 'sanitize_callback' => 'sanitize_text_field' ),
-						'fields'     => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'fields'     => array(
+							'sanitize_callback' => 'sanitize_text_field',
+							'validate_callback' => function( $value ) {
+								return $this->pmpro_rest_api_validate_fields( $value, 'orders' );
+							},
+						),
 					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)
@@ -326,7 +336,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'status'   => array(),
 						'gateway'  => array( 'sanitize_callback' => 'sanitize_text_field' ),
 						'orderby'  => array( 'sanitize_callback' => 'sanitize_text_field' ),
-						'fields'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'fields'   => array(
+							'sanitize_callback' => 'sanitize_text_field',
+							'validate_callback' => function( $value ) {
+								return $this->pmpro_rest_api_validate_fields( $value, 'subscriptions' );
+							},
+						),
 					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)
@@ -1431,17 +1446,17 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			foreach ( (array) $orders as $order ) {
 				$item = array(
 					'id'                           => (int) $order->id,
-					'code'                         => $order->code,
+					'code'                         => (string) $order->code,
 					'user_id'                      => (int) $order->user_id,
 					'membership_id'                => (int) $order->membership_id,
-					'status'                       => $order->status,
-					'gateway'                      => $order->gateway,
-					'gateway_environment'          => $order->gateway_environment,
-					'subtotal'                     => $order->subtotal,
-					'tax'                          => $order->tax,
-					'total'                        => $order->total,
-					'payment_transaction_id'       => $order->payment_transaction_id,
-					'subscription_transaction_id'  => $order->subscription_transaction_id,
+					'status'                       => (string) $order->status,
+					'gateway'                      => (string) $order->gateway,
+					'gateway_environment'          => (string) $order->gateway_environment,
+					'subtotal'                     => (float) $order->subtotal,
+					'tax'                          => (float) $order->tax,
+					'total'                        => (float) $order->total,
+					'payment_transaction_id'       => (string) $order->payment_transaction_id,
+					'subscription_transaction_id'  => (string) $order->subscription_transaction_id,
 					'timestamp'                    => ! empty( $order->timestamp ) ? gmdate( DateTime::ATOM, (int) $order->timestamp ) : null,
 				);
 				$items[] = $this->pmpro_rest_api_apply_fields( $item, $fields );
@@ -1559,6 +1574,99 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				return array();
 			}
 			return array_filter( array_map( 'trim', explode( ',', (string) $params['fields'] ) ) );
+		}
+
+		/**
+		 * Get the field names a collection endpoint can return.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $collection One of 'members', 'orders' or 'subscriptions'.
+		 * @return array Array of valid field names.
+		 */
+		private function pmpro_rest_api_get_collection_fields( $collection ) {
+			$fields = array(
+				'members'       => array(
+					'user_id',
+					'user_login',
+					'user_email',
+					'display_name',
+					'membership_id',
+					'membership_name',
+					'status',
+					'joindate',
+					'startdate',
+					'enddate',
+				),
+				'orders'        => array(
+					'id',
+					'code',
+					'user_id',
+					'membership_id',
+					'status',
+					'gateway',
+					'gateway_environment',
+					'subtotal',
+					'tax',
+					'total',
+					'payment_transaction_id',
+					'subscription_transaction_id',
+					'timestamp',
+				),
+				'subscriptions' => array(
+					'id',
+					'user_id',
+					'membership_level_id',
+					'status',
+					'gateway',
+					'gateway_environment',
+					'subscription_transaction_id',
+					'billing_amount',
+					'cycle_number',
+					'cycle_period',
+					'startdate',
+					'enddate',
+					'next_payment_date',
+				),
+			);
+
+			return isset( $fields[ $collection ] ) ? $fields[ $collection ] : array();
+		}
+
+		/**
+		 * Validate a requested `fields` list against a collection's known fields.
+		 *
+		 * Unknown names are rejected rather than silently dropped so that callers
+		 * get told which fields actually exist.
+		 *
+		 * @since TBD
+		 *
+		 * @param mixed  $value      The `fields` parameter value.
+		 * @param string $collection One of 'members', 'orders' or 'subscriptions'.
+		 * @return true|WP_Error True when valid, WP_Error otherwise.
+		 */
+		private function pmpro_rest_api_validate_fields( $value, $collection ) {
+			if ( empty( $value ) ) {
+				return true;
+			}
+
+			$known   = $this->pmpro_rest_api_get_collection_fields( $collection );
+			$unknown = array_diff( array_filter( array_map( 'trim', explode( ',', (string) $value ) ) ), $known );
+
+			if ( ! empty( $unknown ) ) {
+				return new WP_Error(
+					'rest_invalid_param',
+					sprintf(
+						/* translators: 1: comma-separated list of unrecognized field names. 2: comma-separated list of valid field names. */
+						__( 'Unknown field(s): %1$s. Valid fields are: %2$s.', 'paid-memberships-pro' ),
+						implode( ', ', $unknown ),
+						implode( ', ', $known )
+					),
+					array( 'status' => 400 )
+				);
+			}
+
+			return true;
 		}
 
 		/**
