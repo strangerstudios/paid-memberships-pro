@@ -652,6 +652,60 @@ class PMPro_Field {
 	}
 
 	/**
+	 * Whether this field stores multiple selected values as an array.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool
+	 */
+	public function stores_array_values() {
+		if ( in_array( $this->type, array( 'checkbox_grouped', 'multiselect', 'select2' ), true ) ) {
+			return true;
+		}
+
+		return ( 'select' === $this->type && ! empty( $this->multiple ) );
+	}
+
+	/**
+	 * Normalize a multi-value field's stored value to an array of option keys.
+	 *
+	 * Profile/checkout saves store arrays. Members List CSV export joins those
+	 * arrays with commas, and Import Users from CSV writes the cell back as a
+	 * string. Display and comparison code need a real array either way.
+	 *
+	 * @since TBD
+	 *
+	 * @param mixed $value Raw stored value.
+	 * @return array List of selected option keys.
+	 */
+	public function get_values_as_array( $value ) {
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+
+		if ( null === $value || false === $value || '' === $value ) {
+			return array();
+		}
+
+		if ( is_string( $value ) ) {
+			$maybe = maybe_unserialize( $value );
+			if ( is_array( $maybe ) ) {
+				return $maybe;
+			}
+
+			// Comma-separated option keys from CSV import/export.
+			if ( false !== strpos( $value, ',' ) ) {
+				$parts = array_map( 'trim', explode( ',', $value ) );
+				return array_values( array_filter( $parts, 'strlen' ) );
+			}
+
+			return array( $value );
+		}
+
+		return array( $value );
+	}
+
+	/**
 	 * Save the field for a user.
 	 *
 	 * @since 3.4
@@ -949,9 +1003,10 @@ class PMPro_Field {
 		}
 		elseif($this->type == "select")
 		{
-			//if multiple is set, value must be an array
-			if(!empty($this->multiple) && !is_array($value))
-				$value = array($value);
+			// Multi-select values may be arrays (UI save) or CSV strings (import).
+			if ( ! empty( $this->multiple ) ) {
+				$value = $this->get_values_as_array( $value );
+			}
 
 			if(!empty($this->multiple))
 				$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" ';	//multiselect
@@ -980,9 +1035,8 @@ class PMPro_Field {
 		}
 		elseif($this->type == "multiselect")
 		{
-			//value must be an array
-			if(!is_array($value))
-				$value = array($value);
+			// Arrays from UI saves; CSV strings from import/export round-trips.
+			$value = $this->get_values_as_array( $value );
 
 			$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" multiple="multiple" ';
 			if(!empty($this->class))
@@ -1004,9 +1058,8 @@ class PMPro_Field {
 		}
 		elseif($this->type == "select2")
 		{
-			//value must be an array
-			if(!is_array($value))
-				$value = array($value);
+			// Arrays from UI saves; CSV strings from import/export round-trips.
+			$value = $this->get_values_as_array( $value );
 
 			//build multi select
 			$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" multiple="multiple" style="width: 100%" ';
@@ -1083,9 +1136,8 @@ class PMPro_Field {
 
 		elseif($this->type == "checkbox_grouped")
 		{
-			//value must be an array
-			if(!is_array($value))
-				$value = array($value);
+			// Arrays from UI saves; CSV strings from import/export round-trips.
+			$value = $this->get_values_as_array( $value );
 
 			$r = '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped' ) ) . '">';
 			$r .= '<ul class="' . esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ) . '">';
@@ -1695,8 +1747,10 @@ class PMPro_Field {
 			case 'select2':
 			case 'radio':
 			case 'checkbox_grouped':
-				// For simplicity, make sure that $value and $this->options are arrays.
-				if ( ! is_array( $value ) ) {
+				// Multi-value fields may be arrays (UI) or CSV strings (import).
+				if ( $this->stores_array_values() ) {
+					$value = $this->get_values_as_array( $value );
+				} elseif ( ! is_array( $value ) ) {
 					$value = array( $value );
 				}
 				if ( ! is_array( $this->options ) ) {
