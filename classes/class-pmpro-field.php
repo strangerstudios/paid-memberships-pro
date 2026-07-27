@@ -654,7 +654,7 @@ class PMPro_Field {
 	/**
 	 * Whether this field stores multiple selected values as an array.
 	 *
-	 * @since TBD
+	 * @since 3.8.3
 	 *
 	 * @return bool
 	 */
@@ -670,12 +670,16 @@ class PMPro_Field {
 	 * Normalize a multi-value field's stored value to an array of option keys.
 	 *
 	 * Profile/checkout saves store arrays. Members List CSV export joins those
-	 * arrays with commas, and Import Users from CSV writes the cell back as a
+	 * arrays with commas, and Import Users from CSV may write the cell back as a
 	 * string. Display and comparison code need a real array either way.
 	 *
-	 * @since TBD
+	 * Does not unserialize. get_user_meta() already unserializes stored arrays,
+	 * and this helper is also used on request-sourced values during checkout
+	 * re-display.
 	 *
-	 * @param mixed $value Raw stored value.
+	 * @since 3.8.3
+	 *
+	 * @param mixed $value Raw value (array from UI save, or CSV string).
 	 * @return array List of selected option keys.
 	 */
 	public function get_values_as_array( $value ) {
@@ -687,19 +691,15 @@ class PMPro_Field {
 			return array();
 		}
 
-		if ( is_string( $value ) ) {
-			$maybe = maybe_unserialize( $value );
-			if ( is_array( $maybe ) ) {
-				return $maybe;
-			}
-
-			// Comma-separated option keys from CSV import/export.
-			if ( false !== strpos( $value, ',' ) ) {
-				$parts = array_map( 'trim', explode( ',', $value ) );
-				return array_values( array_filter( $parts, 'strlen' ) );
-			}
-
+		if ( ! is_string( $value ) ) {
 			return array( $value );
+		}
+
+		// Comma-separated option keys from CSV import/export.
+		// Option keys are expected not to contain commas (same as export).
+		if ( false !== strpos( $value, ',' ) ) {
+			$parts = array_map( 'trim', explode( ',', $value ) );
+			return array_values( array_filter( $parts, 'strlen' ) );
 		}
 
 		return array( $value );
