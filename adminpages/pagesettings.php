@@ -313,16 +313,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 						)
 					),
 					$pmpro_page_setting_field( 'invoice', __( 'Orders Page', 'paid-memberships-pro' ), $pmpro_page_shortcode_hint( '[pmpro_invoice]', esc_html__( 'or the Membership Orders block', 'paid-memberships-pro' ) ) ),
-					array(
-						'html' => function() {
-							?>
-							<p class="submit">
-								<input name="savesettings" type="submit" class="button button-primary"
-									value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
-							</p>
-							<?php
-						},
-					),
+					array( 'type' => 'submit' ),
 				),
 			) );
 		?>
@@ -345,16 +336,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 					array( 'generate' => true )
 				);
 			}
-			$extra_page_fields[] = array(
-				'html' => function() {
-					?>
-					<p class="submit">
-						<input name="savesettings" type="submit" class="button button-primary"
-							value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
-					</p>
-					<?php
-				},
-			);
+			$extra_page_fields[] = array( 'type' => 'submit' );
 
 			pmpro_build_settings_section( array(
 				'id'     => 'pmpro-additional-page-settings',
@@ -529,12 +511,9 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								),
 								'description' => __( 'If you are aware of the outdated custom page templates and do not want to see the warning, you can disable it here.', 'paid-memberships-pro' ),
 							),
+							array( 'type' => 'submit' ),
 						) );
 						?>
-						<p class="submit">
-							<input name="savesettings" type="submit" class="button button-primary"
-								value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
-						</p>
 				<?php
 				pmpro_build_settings_section_close();
 			}

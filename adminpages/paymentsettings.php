@@ -137,13 +137,8 @@
 						),
 					),
 					array(
-						'html' => function() {
-							?>
-							<p class="submit">
-								<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save All Settings', 'paid-memberships-pro' );?>" />
-							</p>
-							<?php
-						},
+						'type'  => 'submit',
+						'label' => __( 'Save All Settings', 'paid-memberships-pro' ),
 					),
 				),
 			) );
@@ -294,15 +289,12 @@
 						 * @since 3.5
 						 */
 						'hook' => 'pmpro_after_payment_settings',
+						// Matches the legacy do_action() call, which passed one empty string argument.
+						'args' => array( '' ),
 					),
 					array(
-						'html' => function() {
-							?>
-							<p class="submit">
-								<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" />
-							</p>
-							<?php
-						},
+						'type'  => 'submit',
+						'label' => __( 'Save All Settings', 'paid-memberships-pro' ),
 					),
 				),
 			) );

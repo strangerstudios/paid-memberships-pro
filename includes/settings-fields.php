@@ -67,7 +67,11 @@ defined( 'ABSPATH' ) || exit;
  *                                            JS runs; `current` is removed from the emitted JSON. When a `value`
  *                                            condition references a checkbox or radio, the JS compares against the
  *                                            input's value attribute while checked and '' while unchecked, so pass
- *                                            `current` with those same semantics. The emitted data-pmpro-depends
+ *                                            `current` with those same semantics. Conditions may reference text,
+ *                                            textarea, and select controls as well; those update as the user types.
+ *                                            Note that `radio` fields rendered by this helper are not given ids, so a
+ *                                            condition cannot target one — give the radio group a hand-rolled input
+ *                                            with an id if a row needs to depend on it. The emitted data-pmpro-depends
  *                                            attribute can also be hand-placed on any element (not just rows built
  *                                            here) and pmpro-admin.js will toggle it the same way.
  *     @type bool            $depends_or      Optional. OR the depends conditions instead of AND. Default false.
@@ -401,8 +405,15 @@ function pmpro_build_settings_currency_input( $name, $value, $class = 'regular-t
 /**
  * Render an ordered list of settings fields, auto-managing the form-table boundaries.
  *
- * Most entries are field definitions (see pmpro_build_settings_field() for the keys). Two special
+ * Most entries are field definitions (see pmpro_build_settings_field() for the keys). Three special
  * entry shapes may be mixed into the list:
+ *   - array( 'type' => 'submit' )           The section's submit button, rendered outside any table
+ *                                           (a <p class="submit">, not a form-table row). Optional keys:
+ *                                           `label` (default 'Save Settings'), `name` (default
+ *                                           'savesettings'), and `class` (default 'button button-primary').
+ *                                           This is a list-level entry rather than a real field type
+ *                                           because the button does not belong in a <tr>; passing it to
+ *                                           pmpro_build_settings_field() directly renders nothing.
  *   - array( 'html' => ... )                Content rendered outside any table. String content is
  *                                           run through wp_kses_post(); callable content must escape
  *                                           its own output and is invoked with no arguments (unlike a
@@ -420,27 +431,34 @@ function pmpro_build_settings_currency_input( $name, $value, $class = 'regular-t
  *                                           <tr> rows need a hand-rolled table via an html entry
  *                                           instead.
  *
- * Consecutive fields are grouped into a single <table class="form-table">. An html or hook entry
- * closes the current table first, renders outside the table, and lets the next field start a new
- * table. That keeps the list flat while still supporting copy, notices, scripts, hooks, and custom
- * table blocks between normal field rows.
+ * Consecutive fields are grouped into a single <table class="form-table">. A submit, html, or hook
+ * entry closes the current table first, renders outside the table, and lets the next field start a
+ * new table. That keeps the list flat while still supporting copy, notices, scripts, hooks, and
+ * custom table blocks between normal field rows.
  *
  * @since TBD
  *
- * @param array $fields Ordered array of field definitions and html/hook entries.
+ * @param array $fields Ordered array of field definitions and submit/html/hook entries.
  */
 function pmpro_build_settings_fields( $fields ) {
 	$table_open = false;
 
 	foreach ( (array) $fields as $entry ) {
-		// An html or hook entry sits outside the table, so close any table that is open first.
-		if ( ! empty( $entry['hook'] ) || array_key_exists( 'html', (array) $entry ) ) {
+		$is_submit = isset( $entry['type'] ) && 'submit' === $entry['type'];
+
+		// A submit, html, or hook entry sits outside the table, so close any open table first.
+		if ( $is_submit || ! empty( $entry['hook'] ) || array_key_exists( 'html', (array) $entry ) ) {
 			if ( $table_open ) {
 				echo '</tbody></table>';
 				$table_open = false;
 			}
 
-			if ( ! empty( $entry['hook'] ) ) {
+			if ( $is_submit ) {
+				$submit_name  = isset( $entry['name'] ) ? $entry['name'] : 'savesettings';
+				$submit_class = isset( $entry['class'] ) ? $entry['class'] : 'button button-primary';
+				$submit_label = isset( $entry['label'] ) ? $entry['label'] : __( 'Save Settings', 'paid-memberships-pro' );
+				echo '<p class="submit"><input name="' . esc_attr( $submit_name ) . '" type="submit" class="' . esc_attr( $submit_class ) . '" value="' . esc_attr( $submit_label ) . '" /></p>';
+			} elseif ( ! empty( $entry['hook'] ) ) {
 				do_action_ref_array( $entry['hook'], isset( $entry['args'] ) ? (array) $entry['args'] : array() );
 			} elseif ( ! is_string( $entry['html'] ) && is_callable( $entry['html'] ) ) {
 				// Callable HTML owns its own escaping. Strings are markup, not callable names.
@@ -539,3 +557,4 @@ function pmpro_build_settings_section( $args ) {
 	pmpro_build_settings_fields( isset( $args['fields'] ) ? $args['fields'] : array() );
 	pmpro_build_settings_section_close();
 }
+

@@ -2021,7 +2021,10 @@ jQuery( function ( $ ) {
 		} );
 	}
 
-	// Re-evaluate when any input changes, and once on load to correct the initial state.
-	$( document ).on( 'change', 'input, select', pmproApplyDepends );
+	// Re-evaluate when any control changes, and once on load to correct the initial state. The
+	// 'input' event keeps text and textarea conditions responsive as the user types, since those
+	// controls only fire 'change' on blur. Code that sets a value programmatically should
+	// .trigger( 'change' ) so dependent elements update.
+	$( document ).on( 'change input', 'input, select, textarea', pmproApplyDepends );
 	pmproApplyDepends();
 } );

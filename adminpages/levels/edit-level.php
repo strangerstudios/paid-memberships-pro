@@ -323,6 +323,9 @@ if (!empty($page_msg)) { ?>
 	$level_is_recurring = pmpro_isLevelRecurring( $level );
 	$level_has_trial    = pmpro_isLevelTrial( $level );
 
+	// Several billing rows are shown only while "Recurring Subscription" is checked.
+	$depends_on_recurring = array( 'id' => 'recurring', 'checked' => true, 'current' => $level_is_recurring );
+
 	// The Billing Amount description carries a gateway-specific warning for Stripe.
 	$billing_amount_description = esc_html__( 'The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro' );
 	if ( 'stripe' === $gateway ) {
@@ -366,7 +369,7 @@ if (!empty($page_msg)) { ?>
 				'label'       => __( 'Billing Amount', 'paid-memberships-pro' ),
 				'type'        => 'composite',
 				'row_class'   => 'recurring_info',
-				'depends'     => array( array( 'id' => 'recurring', 'checked' => true, 'current' => $level_is_recurring ) ),
+				'depends'     => array( $depends_on_recurring ),
 				'description' => $billing_amount_description,
 				'fields'      => array(
 				array(
@@ -401,7 +404,7 @@ if (!empty($page_msg)) { ?>
 				'class'       => 'small-text',
 				'value'       => $level->billing_limit,
 				'row_class'   => 'recurring_info',
-				'depends'     => array( array( 'id' => 'recurring', 'checked' => true, 'current' => $level_is_recurring ) ),
+				'depends'     => array( $depends_on_recurring ),
 				'description' => __( 'The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' ),
 			),
 		array(
@@ -419,7 +422,7 @@ if (!empty($page_msg)) { ?>
 				'value'          => $level_has_trial,
 				'checkbox_label' => __( 'Check to add a custom trial period.', 'paid-memberships-pro' ),
 				'row_class'      => 'recurring_info',
-				'depends'        => array( array( 'id' => 'recurring', 'checked' => true, 'current' => $level_is_recurring ) ),
+				'depends'        => array( $depends_on_recurring ),
 				'description'    => $gateway_supports_recurring_trials ? '' : '<strong class="pmpro_red">' . esc_html__( 'The current payment gateway does not support recurring trials.', 'paid-memberships-pro' ) . '</strong>',
 			);
 		$billing_fields[] = array(
@@ -427,7 +430,7 @@ if (!empty($page_msg)) { ?>
 				'type'    => 'composite',
 				'row_class' => 'trial_info recurring_info',
 				'depends' => array(
-					array( 'id' => 'recurring', 'checked' => true, 'current' => $level_is_recurring ),
+					$depends_on_recurring,
 					array( 'id' => 'custom_trial', 'checked' => true, 'current' => $level_has_trial ),
 			),
 			'fields'  => array(

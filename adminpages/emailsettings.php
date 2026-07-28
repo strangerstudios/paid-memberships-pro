@@ -141,11 +141,9 @@
 					),
 				),
 				array(
-					'html' => function() {
-						?>
-						<p class="submit"><input name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" /></p>
-						<?php
-					},
+					'type'  => 'submit',
+					'label' => __( 'Save All Settings', 'paid-memberships-pro' ),
+					'class' => 'button-primary',
 				),
 			),
 		) );
