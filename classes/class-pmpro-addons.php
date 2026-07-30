@@ -44,7 +44,28 @@ class PMPro_AddOns {
 		$this->addons           = get_option( 'pmpro_addons', array() );
 		$this->addons_timestamp = get_option( 'pmpro_addons_timestamp', false );
 
+		// Register update hooks in all contexts, including WP-Cron, so PMPro plugins can auto-update in the background.
+		$this->update_hooks();
+
 		add_action( 'admin_init', array( $this, 'admin_hooks' ), 0 ); // Priority 0 to run before other admin_init hooks.
+	}
+
+	/**
+	 * Hooks that must run in all contexts, including WP-Cron.
+	 *
+	 * The plugin update injection and Add On download filters previously only
+	 * registered on admin_init. WordPress runs background auto-updates under
+	 * WP-Cron, where admin_init never fires, so these filters were absent and
+	 * PMPro core and Add Ons never auto-updated even with auto-updates enabled
+	 * and a valid license. Registering them unconditionally lets the automatic
+	 * updater see and install PMPro plugin updates.
+	 *
+	 * @since TBD
+	 */
+	public function update_hooks() {
+		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'update_plugins_filter' ) );
+		add_filter( 'http_request_args', array( $this, 'http_request_args_for_addons' ), 10, 2 );
+		add_action( 'update_option_pmpro_license_key', array( $this, 'reset_update_plugins_cache' ), 10, 2 );
 	}
 
 	/**
@@ -91,9 +112,6 @@ class PMPro_AddOns {
 	public function admin_hooks() {
 		$this->check_when_updating_plugins();
 		add_filter( 'plugins_api', array( $this, 'plugins_api' ), 10, 3 );
-		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'update_plugins_filter' ) );
-		add_filter( 'http_request_args', array( $this, 'http_request_args_for_addons' ), 10, 2 );
-		add_action( 'update_option_pmpro_license_key', array( $this, 'reset_update_plugins_cache' ), 10, 2 );
 		// Register AJAX endpoints for add-on actions.
 		$this->register_ajax_endpoints();
 	}
@@ -333,6 +351,12 @@ class PMPro_AddOns {
 			return $value;
 		}
 
+		// Ensure the get_plugin_data() function is available. This filter runs in all contexts,
+		// including WP-Cron and the front end, where wp-admin/includes/plugin.php is not always loaded.
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		// Check Add Ons
 		foreach ( $addons as $addon ) {
 			// Skip for wordpress.org plugins
@@ -362,7 +386,8 @@ class PMPro_AddOns {
 					$value->response[ $plugin_file ]->icons = array( 'default' => esc_url( $icon ) );
 				}
 			} else {
-				$value->no_update[ $plugin_file ] = $this->get_plugin_API_object_from_addon( $addon );
+				$value->no_update[ $plugin_file ]              = $this->get_plugin_API_object_from_addon( $addon );
+				$value->no_update[ $plugin_file ]->new_version = $addon['Version'];
 			}
 		}
 
