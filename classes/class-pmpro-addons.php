@@ -351,6 +351,12 @@ class PMPro_AddOns {
 			return $value;
 		}
 
+		// Ensure the get_plugin_data() function is available. This filter runs in all contexts,
+		// including WP-Cron and the front end, where wp-admin/includes/plugin.php is not always loaded.
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		// Check Add Ons
 		foreach ( $addons as $addon ) {
 			// Skip for wordpress.org plugins
