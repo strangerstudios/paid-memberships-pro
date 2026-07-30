@@ -60,7 +60,7 @@ class PMPro_AddOns {
 	 * and a valid license. Registering them unconditionally lets the automatic
 	 * updater see and install PMPro plugin updates.
 	 *
-	 * @since TBD
+	 * @since 3.8.3
 	 */
 	public function update_hooks() {
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'update_plugins_filter' ) );

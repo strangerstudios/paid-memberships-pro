@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8.2
+Stable tag: 3.8.3
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,9 +210,16 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
-= TBD =
-* BUG FIX: Fixed PMPro core and Add Ons never auto-updating in the background because the update hooks only registered on `admin_init`, which does not fire during WP-Cron where automatic updates run. (@dalemugford)
-* BUG FIX: Set `new_version` on `no_update` entries so up-to-date Add Ons no longer trigger an undefined-property warning in WP-CLI and other consumers of the update transient. (@dalemugford)
+= 3.8.3 - 2026-07-30 =
+* ENHANCEMENT: Site Health now detects the PMPro SMTP Add On as the site's email sending service when a connector is configured. #3729 (@dparker1005)
+* ENHANCEMENT: Added translator comments to localized strings containing placeholders so translators have context for each variable. #3730 (@jahidhasan018)
+* ENHANCEMENT: The discount code lookup in `PMPro_Discount_Code::save()` now uses `$wpdb->prepare()`. #3734 (@andrewlimaza)
+* BUG FIX: Multi-value user fields (multiselect, select2, and grouped checkboxes) now display correctly when their values were imported from a CSV file as a comma-separated string. #3742 (@flintfromthebasement)
+* BUG FIX: Fixed a fatal error that could occur when returning from an offsite gateway if the checkout data was missing from the order meta. #3741 (@dparker1005)
+* BUG FIX: Fixed PMPro core and Add Ons never auto-updating in the background because the update hooks were only registered on `admin_init`, which does not fire during WP-Cron where automatic updates run. #3738 (@dalemugford)
+* BUG FIX: Set `new_version` on `no_update` entries so up-to-date Add Ons no longer trigger an undefined property warning in WP-CLI and other consumers of the plugin update transient. #3738 (@dalemugford)
+* BUG FIX: The bulk user delete confirmation screen now counts membership history for every selected user instead of only the first. #3733 (@jahidhasan018)
+* BUG FIX: The level group selection message is no longer shown on the Membership Levels page for groups that contain only one level. #3731 (@jahidhasan018)
 
 = 3.8.2 - 2026-07-13 =
 * SECURITY: Restored sanitization of user field values on save, which had been inactive since v3.4. #3726 (@dparker1005)
