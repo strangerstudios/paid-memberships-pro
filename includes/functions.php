@@ -344,11 +344,13 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 
 	// initial payment
 	if ( ! $short ) {
+		/* translators: %s: initial price */
 		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
 	} else {
 		if ( pmpro_isLevelFree( $level ) ) {
 			$r = '<strong>' . __('Free', 'paid-memberships-pro' ) . '</strong>';
 		} else {
+			/* translators: %s: initial price */
 			$r = sprintf( __( '<strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
 		}
 	}
@@ -357,31 +359,40 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	if ( (float)$level->billing_amount > 0 ) {
 		if ( $level->billing_limit > 1 ) {
 			if ( $level->cycle_number == '1' ) {
+				/* translators: 1: billing amount, 2: billing period, 3: number of billing periods, 4: plural billing period */
 				$r .= sprintf( __( ' and then <strong>%1$s per %2$s for %3$d more %4$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period ), $level->billing_limit, pmpro_translate_billing_period( $level->cycle_period, $level->billing_limit ) );
 			} else {
+				/* translators: 1: billing amount, 2: cycle number, 3: billing period, 4: total payments */
 				$r .= sprintf( __( ' and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ), $level->billing_limit );
 			}
 		} elseif ( $level->billing_limit == 1 ) {
+			/* translators: 1: billing amount, 2: cycle number, 3: billing period */
 			$r .= sprintf( __( ' and then <strong>%1$s after %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
 		} else {
 			if ( $level->billing_amount === $level->initial_payment ) {
 				if ( $level->cycle_number == '1' ) {
 					if ( ! $short ) {
+						/* translators: 1: price, 2: billing period */
 						$r = sprintf( __( 'The price for membership is <strong>%1$s per %2$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), pmpro_translate_billing_period( $level->cycle_period ) );
 					} else {
+						/* translators: 1: price, 2: billing period */
 						$r = sprintf( __( '<strong>%1$s per %2$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), pmpro_translate_billing_period( $level->cycle_period ) );
 					}
 				} else {
 					if ( ! $short ) {
+						/* translators: 1: price, 2: cycle number, 3: billing period */
 						$r = sprintf( __( 'The price for membership is <strong>%1$s every %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
 					} else {
+						/* translators: 1: price, 2: cycle number, 3: billing period */
 						$r = sprintf( __( '<strong>%1$s every %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
 					}
 				}
 			} else {
 				if ( $level->cycle_number == '1' ) {
+					/* translators: 1: billing amount, 2: billing period */
 					$r .= sprintf( __( ' and then <strong>%1$s per %2$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period ) );
 				} else {
+					/* translators: 1: billing amount, 2: cycle number, 3: billing period */
 					$r .= sprintf( __( ' and then <strong>%1$s every %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
 				}
 			}
@@ -399,12 +410,15 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 			if ( $level->trial_limit == '1' ) {
 				$r .= ' ' . __( 'After your initial payment, your first payment is Free.', 'paid-memberships-pro' );
 			} else {
+				/* translators: %d: number of trial payments */
 				$r .= ' ' . sprintf( __( 'After your initial payment, your first %d payments are Free.', 'paid-memberships-pro' ), $level->trial_limit );
 			}
 		} else {
 			if ( $level->trial_limit == '1' ) {
+				/* translators: %s: the trial payment price */
 				$r .= ' ' . sprintf( __( 'After your initial payment, your first payment will cost %s.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->trial_amount ) );
 			} else {
+				/* translators: 1: number of trial payments, 2: trial payment price */
 				$r .= ' ' . sprintf( __( 'After your initial payment, your first %1$d payments will cost %2$s.', 'paid-memberships-pro' ), $level->trial_limit, pmpro_formatPrice( $level->trial_amount ) );
 			}
 		}
@@ -415,6 +429,7 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	$tax_rate = get_option( 'pmpro_tax_rate' );
 
 	if ( $tax_state && $tax_rate && ! pmpro_isLevelFree( $level ) ) {
+		/* translators: 1: tax state, 2: tax rate percentage */
 		$r .= sprintf( __( 'Customers in %1$s will be charged %2$s%% tax.', 'paid-memberships-pro' ), $tax_state, round( $tax_rate * 100, 2 ) );
 	}
 
@@ -462,8 +477,10 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 
 	// initial payment
 	if ( ! $short ) {
+		/* translators: %s: initial price */
 		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $initpmt ) );
 	} else {
+		/* translators: %s: initial price */
 		$r = sprintf( __( '<strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $initpmt ) );
 	}
 
@@ -475,16 +492,21 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 				foreach ( $curcycledata as $curbilllimit => $curtotal ) {
 					if ( $curbilllimit > 1 ) {
 						if ( $curcyclenum == '1' ) {
+							/* translators: 1: billing amount, 2: billing period, 3: number of billing periods, 4: plural billing period */
 							$billtextparts[] = sprintf( __( '<strong>%1$s per %2$s for %3$d more %4$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), pmpro_translate_billing_period( $curperiod ), $curbilllimit, pmpro_translate_billing_period( $curperiod, $curbilllimit ) );
 						} else {
+							/* translators: 1: billing amount, 2: cycle number, 3: billing period, 4: total payments */
 							$billtextparts[] = sprintf( __( '<strong>%1$s every %2$d %3$s for %4$d more payments</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum ), $curbilllimit );
 						}
 					} elseif ( $curbilllimit == 1 ) {
+						/* translators: 1: billing amount, 2: cycle number, 3: billing period */
 						$billtextparts[] = sprintf( __( '<strong>%1$s after %2$d %3$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum ) );
 					} else {
 						if ( $curcyclenum == '1' ) {
+							/* translators: 1: billing amount, 2: billing period */
 							$billtextparts[] = sprintf( __( '<strong>%1$s every %2$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), pmpro_translate_billing_period( $curperiod ) );
 						} else {
+							/* translators: 1: billing amount, 2: cycle number, 3: billing period */
 							$billtextparts[] = sprintf( __( '<strong>%1$s every %2$d %3$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum ) );
 						}
 					}
@@ -509,6 +531,7 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 		if ( $trialperiods == 1 ) {
 			$r .= __( 'Trial pricing has been applied to the first payment.', 'paid-memberships-pro' );
 		} else {
+			/* translators: %d: number of trial payments */
 			$r .= sprintf( __( 'Trial pricing has been applied to the first %d payments.', 'paid-memberships-pro' ), $trialperiods );
 		}
 	}
@@ -518,6 +541,7 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 	$tax_rate = get_option( 'pmpro_tax_rate' );
 
 	if ( $tax_state && $tax_rate && ! pmpro_areLevelsFree( $levels ) ) {
+		/* translators: 1: tax state, 2: tax rate percentage */
 		$r .= sprintf( __( 'Customers in %1$s will be charged %2$s%% tax.', 'paid-memberships-pro' ), $tax_state, round( $tax_rate * 100, 2 ) );
 	}
 
@@ -539,7 +563,12 @@ function pmpro_getLevelExpiration( &$level ) {
 	}
 
 	if ( $level->expiration_number ) {
-		$expiration_text = sprintf( __( 'Membership expires after %1$d %2$s.', 'paid-memberships-pro' ), $level->expiration_number, pmpro_translate_billing_period( $level->expiration_period, $level->expiration_number ) );
+		$expiration_text = sprintf(
+			/* translators: 1: expiration number, 2: expiration period */
+			__( 'Membership expires after %1$d %2$s.', 'paid-memberships-pro' ),
+			$level->expiration_number,
+			pmpro_translate_billing_period( $level->expiration_period, $level->expiration_number )
+		);
 	} else {
 		$expiration_text = '';
 	}
@@ -558,7 +587,13 @@ function pmpro_getLevelsExpiration( &$levels ) {
 		$levels = array(); }
 	foreach ( $levels as $curlevel ) {
 		if ( $curlevel->expiration_number ) {
-			$expirystrings[] = sprintf( __( '%1$s membership expires after %2$d %3$s', 'paid-memberships-pro' ), $curlevel->name, $curlevel->expiration_number, pmpro_translate_billing_period( $curlevel->expiration_period, $curlevel->expiration_number ) );
+			$expirystrings[] = sprintf(
+				/* translators: 1: level name, 2: expiration number, 3: expiration period */
+				__( '%1$s membership expires after %2$d %3$s', 'paid-memberships-pro' ),
+				$curlevel->name,
+				$curlevel->expiration_number,
+				pmpro_translate_billing_period( $curlevel->expiration_period, $curlevel->expiration_number )
+			);
 		} else {
 			$ongoinglevelnum++;
 		}
@@ -647,7 +682,7 @@ function pmpro_get_membership_expiration_text( $level, $user, $default = null ) 
 	} elseif ( $show_time ) {
 		// Show the enddate with the time.
 		$text = sprintf(
-			// translators: %1$s is the date and %2$s is the time.
+			/* translators: %1$s is the date and %2$s is the time. */
 			esc_html__( '%1$s at %2$s', 'paid-memberships-pro' ),
 			date_i18n( get_option( 'date_format'), $level->enddate ),
 			date_i18n( get_option( 'time_format'), $level->enddate )
@@ -1423,6 +1458,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		}
 
 		if ( false === $wpdb->query( $sql ) ) {
+			/* translators: %s: the database error message */
 			$pmpro_error = sprintf( __( 'Error interacting with database: %s', 'paid-memberships-pro' ), ( ! empty( $wpdb->last_error ) ? $wpdb->last_error : 'unavailable' ) );
 			return false;
 		}
@@ -1823,6 +1859,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 					$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 				} else {
 					$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+					/* translators: %s: page number */
 					$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 				}
 			}
@@ -1834,13 +1871,16 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 						$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 					} else {
 						$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+						/* translators: %s: page number */
 						$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 					}
 				}
 				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
 				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lpm1 ) . '" ';
+				/* translators: %s: page number */
 				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lpm1 ) ) . '">' . esc_html( $lpm1 ) . '</a>';
 				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lastpage ) . '" ';
+				/* translators: %s: page number */
 				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lastpage ) ) . '">' . esc_html( $lastpage ) . '</a>';
 			} // in middle; hide some front and some back
 			elseif ( $lastpage - ( $adjacents * 2 ) > $page && $page > ( $adjacents * 2 ) ) {
@@ -1854,13 +1894,16 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 						$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 					} else {
 						$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+						/* translators: %s: page number */
 						$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 					}
 				}
 				$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-dots' ) ) . '" aria-hidden="true">&hellip;</span>';
 				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lpm1 ) . '" ';
+				/* translators: %s: page number */
 				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lpm1 ) ) . '">' . esc_html( $lpm1 ) . '</a>';
 				$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $lastpage ) . '" ';
+				/* translators: %s: page number */
 				$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $lastpage ) ) . '">' . esc_html( $lastpage ) . '</a>';
 			} // close to end; only hide early pages
 			else {
@@ -1874,6 +1917,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 						$pagination .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page pmpro_pagination-current' ) ) . '" aria-current="page">' . esc_html( $counter ) . '</span>';
 					} else {
 						$pagination .= '<a class="' . esc_attr( pmpro_get_element_class( 'pmpro_pagination-page' ) ) . '" href="' . esc_url( $targetpage . $pagestring . $counter ) . '" ';
+						/* translators: %s: page number */
 						$pagination .= 'aria-label="' . esc_attr( sprintf( __( 'Page %s', 'paid-memberships-pro' ), $counter ) ) . '">' . esc_html( $counter ) . '</a>';
 					}
 				}
@@ -2109,6 +2153,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 
 		// has this code started yet?
 		if ( ! empty( $dbcode->starts ) && $dbcode->starts > $today ) {
+			/* translators: %s: start date */
 			$error = sprintf( __( 'This discount code goes into effect on %s.', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $dbcode->starts ) );
 		}
 	}
@@ -2116,6 +2161,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 	// check if the code is expired
 	if ( ! $error ) {
 		if ( ! empty( $dbcode->expires ) && $dbcode->expires < $today ) {
+			/* translators: %s: end date */
 			$error = sprintf( __( 'This discount code expired on %s.', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $dbcode->expires ) );
 		}
 	}
@@ -5225,6 +5271,7 @@ function pmpro_check_upload( $file_index ) {
 
 		// Check the file type against the allowed types. If empty allowed mimes, assume any file upload is okay.
 		if ( ! empty( $allowed_mime_types ) && ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
+			/* translators: %s: list of allowed file types */
 			return new WP_Error( 'pmpro_upload_file_type_error', sprintf( esc_html__( 'Invalid file type. Please try uploading the file type(s): %s', 'paid-memberships-pro' ), implode( ',' ,$allowed_mime_types ) ) );
 		}
 		
@@ -5232,6 +5279,7 @@ function pmpro_check_upload( $file_index ) {
 		if ( $field->max_file_size > 0 ) {
 			$upload_max_file_size_in_bytes = $field->max_file_size * 1024 * 1024;
 			if ( $file['size'] > $upload_max_file_size_in_bytes ) {
+				/* translators: 1: field label, 2: maximum file size in MB */
 				return new WP_Error( 'pmpro_upload_file_size_error', sprintf( esc_html__( 'File size is too large for %s. Please upload files smaller than %dMB.', 'paid-memberships-pro' ), $field->label, $field->max_file_size ) );
 			}
 		}
