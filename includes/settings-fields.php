@@ -75,9 +75,6 @@ defined( 'ABSPATH' ) || exit;
  *                                            attribute can also be hand-placed on any element (not just rows built
  *                                            here) and pmpro-admin.js will toggle it the same way.
  *     @type bool            $depends_or      Optional. OR the depends conditions instead of AND. Default false.
- *     @type bool            $hidden          Optional initial visibility override. When this key is present, PHP does
- *                                            not derive the initial state from `depends`; true starts hidden, false
- *                                            starts visible.
  *     @type array           $options         value => label map for select, radio, and checklist fields.
  *     @type string          $checkbox_label  Checkbox fields only. Plain-text inline label shown after the checkbox.
  *     @type string          $checkbox_value  Checkbox fields only. Submitted value for legacy options that store
@@ -124,7 +121,7 @@ function pmpro_build_settings_field( $field ) {
 	// A row can declare visibility that depends on other inputs. If every condition includes the
 	// referenced input's render-time value in `current`, PHP derives the initial row state to avoid
 	// a flash before JS runs. The `current` key is stripped before the conditions are emitted.
-	$hidden     = ! empty( $field['hidden'] );
+	$hidden     = false;
 	$conditions = array();
 	if ( ! empty( $field['depends'] ) ) {
 		$condition_results = array();
@@ -147,7 +144,7 @@ function pmpro_build_settings_field( $field ) {
 			}
 			$conditions[] = $condition;
 		}
-		if ( $all_have_current && ! isset( $field['hidden'] ) && $condition_results ) {
+		if ( $all_have_current && $condition_results ) {
 			$met    = ! empty( $field['depends_or'] ) ? in_array( true, $condition_results, true ) : ! in_array( false, $condition_results, true );
 			$hidden = ! $met;
 		}
