@@ -2,6 +2,19 @@
 /*
 	These functions below handle DB upgrades, etc
 */
+
+/**
+ * Hook the Action Scheduler task callback for the v3.9 upgrade that recovers
+ * missing Stripe Checkout transaction IDs. Registered here, outside of
+ * pmpro_checkForUpgrades(), because Action Scheduler also processes its queue
+ * during WP Cron requests where pmpro_checkForUpgrades() does not run; without
+ * this, queued recovery tasks would fail with no callbacks registered.
+ */
+add_action( 'pmpro_stripe_recover_checkout_transaction_ids', function() {
+	require_once( PMPRO_DIR . '/includes/updates/upgrade_3_9.php' );
+	pmpro_stripe_recover_checkout_transaction_ids();
+} );
+
 function pmpro_checkForUpgrades() {
 	global $wpdb;
 	$pmpro_db_version = get_option("pmpro_db_version");
@@ -446,6 +459,18 @@ function pmpro_checkForUpgrades() {
 		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_8.php" );
 		pmpro_upgrade_3_8();
 		update_option( 'pmpro_db_version', '3.8' );
+	}
+
+	/**
+	 * Version 3.9
+	 * Recover transaction IDs for Stripe Checkout orders that were completed
+	 * without them by concurrent or out-of-order webhooks (delayed
+	 * notification payment methods like SEPA or bank transfers).
+	 */
+	require_once( PMPRO_DIR . '/includes/updates/upgrade_3_9.php' );
+	if ( $pmpro_db_version < 3.9 ) {
+		pmpro_upgrade_3_9();
+		update_option( 'pmpro_db_version', '3.9' );
 	}
 
 }
