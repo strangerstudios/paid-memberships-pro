@@ -806,3 +806,17 @@ function pmpro_db_delta() {
 	";
 	dbDelta($sqlQuery);
 }
+
+/**
+ * Recover missing Stripe Checkout transaction IDs via Action Scheduler.
+ *
+ * Scheduled by the v3.9 upgrade. The recovery logic lives in the upgrade file;
+ * this shim is registered here, outside of pmpro_checkForUpgrades(), so the
+ * callback is available on every request (including WP Cron, where
+ * pmpro_checkForUpgrades() does not run) while recovery tasks may still be queued.
+ */
+function pmpro_stripe_recover_checkout_transaction_ids_task() {
+	require_once PMPRO_DIR . '/includes/updates/upgrade_3_9.php';
+	pmpro_stripe_recover_checkout_transaction_ids();
+}
+add_action( 'pmpro_stripe_recover_checkout_transaction_ids', 'pmpro_stripe_recover_checkout_transaction_ids_task' );
