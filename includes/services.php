@@ -63,6 +63,20 @@ function pmpro_stripe_webhook_process_scheduled_event( $event_id, $livemode = fa
 }
 add_action( 'pmpro_stripe_webhook_process_scheduled_event', 'pmpro_stripe_webhook_process_scheduled_event', 10, 2 );
 
+/**
+ * Recover missing Stripe Checkout transaction IDs via Action Scheduler.
+ *
+ * Scheduled by the v3.9 upgrade. The recovery logic lives in the upgrade file;
+ * this shim is registered here so the callback is available on every request
+ * (including WP Cron, where pmpro_checkForUpgrades() does not run) while
+ * recovery tasks may still be queued.
+ */
+function pmpro_stripe_recover_checkout_transaction_ids_task() {
+	require_once PMPRO_DIR . '/includes/updates/upgrade_3_9.php';
+	pmpro_stripe_recover_checkout_transaction_ids();
+}
+add_action( 'pmpro_stripe_recover_checkout_transaction_ids', 'pmpro_stripe_recover_checkout_transaction_ids_task' );
+
 function pmpro_wp_ajax_braintree_webhook()
 {
 	require_once(dirname(__FILE__) . "/../services/braintree-webhook.php");	
