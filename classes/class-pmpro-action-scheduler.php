@@ -313,19 +313,25 @@ class PMPro_Action_Scheduler {
 		// The $unique flag below only guards new scheduling. Duplicate chains that already
 		// exist (e.g. inherited from a cloned or migrated database) self-perpetuate because
 		// Action Scheduler reschedules each chain's next occurrence without a uniqueness check.
-		$pending_action_ids = as_get_scheduled_actions(
+		$pending_action_ids = (array) as_get_scheduled_actions(
 			array(
 				'hook'     => $hook,
+				'args'     => array(),
 				'group'    => $group,
 				'status'   => ActionScheduler_Store::STATUS_PENDING,
-				'per_page' => -1,
+				'claimed'  => false,
+				'per_page' => 20,
 				'orderby'  => 'date',
 				'order'    => 'ASC',
 			),
 			'ids'
 		);
 		foreach ( array_slice( $pending_action_ids, 1 ) as $duplicate_action_id ) {
-			ActionScheduler::store()->cancel_action( $duplicate_action_id );
+			try {
+				ActionScheduler::store()->cancel_action( $duplicate_action_id );
+			} catch ( Exception $e ) {
+				// The action may have been deleted or claimed by another process.
+			}
 		}
 
 		if ( ! as_next_scheduled_action( $hook, array(), $group ) ) {
