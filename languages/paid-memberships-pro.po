@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.8.3\n"
+"Project-Id-Version: Paid Memberships Pro 3.8.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-30T18:00:13+00:00\n"
+"POT-Creation-Date: 2026-08-06T18:33:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -7180,27 +7180,33 @@ msgid "Action Scheduler instance cannot be unserialized"
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:317
+#: classes/class-pmpro-action-scheduler.php:344
 msgid "An interval is required to queue an Action Scheduler recurring task."
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:371
+#: classes/class-pmpro-action-scheduler.php:398
 msgid "You must provide either a group or a hook to list tasks."
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:675
+#: classes/class-pmpro-action-scheduler.php:702
 msgid "Paid Memberships Pro services are currently paused. Scheduled actions will not be run automatically until services are resumed."
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:677
+#: classes/class-pmpro-action-scheduler.php:704
 msgid "Paid Memberships Pro has temporarily halted scheduled actions while additional tasks are added. Actions will resume automatically once this process is complete."
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:847
+#: classes/class-pmpro-action-scheduler.php:874
 #, php-format
 msgid "Missing table: %s"
 msgstr ""
 
 #: classes/class-pmpro-action-scheduler.php:871
+#: classes/class-pmpro-action-scheduler.php:898
 msgid "Missing priority column in actionscheduler_actions table (required for Action Scheduler 3.6+)"
 msgstr ""
 
@@ -17609,4 +17615,12 @@ msgstr ""
 #: includes/email.php:578
 #, php-format
 msgid "PMPro SMTP (%s)"
+msgstr ""
+
+#: includes/updates/upgrade_3_8_4.php:141
+msgid "Could not retrieve the Stripe Checkout Session for this order while trying to recover its missing transaction IDs."
+msgstr ""
+
+#: includes/updates/upgrade_3_8_4.php:197
+msgid "Missing transaction IDs for this order were recovered from its Stripe Checkout Session."
 msgstr ""
