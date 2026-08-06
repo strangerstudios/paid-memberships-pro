@@ -1,6 +1,6 @@
 <?php
 /**
- * Upgrade to version 3.8.3
+ * Upgrade to version 3.8.4
  *
  * Recover transaction IDs for Stripe Checkout orders that were completed
  * without them.
@@ -18,7 +18,7 @@
  *
  * @since TBD
  */
-function pmpro_upgrade_3_8_3() {
+function pmpro_upgrade_3_8_4() {
 	global $wpdb;
 
 	// Cheap check for a single candidate order so that sites without affected
@@ -54,7 +54,7 @@ function pmpro_upgrade_3_8_3() {
  *
  * Pulls the IDs from each order's Stripe Checkout Session and, for
  * subscriptions, makes sure a PMPro_Subscription record exists so that
- * cancellations reach the gateway. Scheduled by pmpro_upgrade_3_8_3() and
+ * cancellations reach the gateway. Scheduled by pmpro_upgrade_3_8_4() and
  * re-queued until all candidate orders have been processed.
  *
  * @since TBD
