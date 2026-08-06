@@ -483,7 +483,7 @@ class PMPro_Stripe_Webhook_Handler {
 	 * session is not yet paid (delayed notification payment methods), the order
 	 * is held at pending until a later event completes it.
 	 *
-	 * @since TBD Also handles checkout.session.async_payment_succeeded.
+	 * @since 3.8.4 Also handles checkout.session.async_payment_succeeded.
 	 *
 	 * @param object $pmpro_stripe_event Stripe event object.
 	 * @param string $logstr             Log output.

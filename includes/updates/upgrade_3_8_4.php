@@ -16,7 +16,7 @@
  * candidate orders in batches, pulling the missing IDs from each order's
  * Stripe Checkout Session.
  *
- * @since TBD
+ * @since 3.8.4
  */
 function pmpro_upgrade_3_8_4() {
 	global $wpdb;
@@ -57,7 +57,7 @@ function pmpro_upgrade_3_8_4() {
  * cancellations reach the gateway. Scheduled by pmpro_upgrade_3_8_4() and
  * re-queued until all candidate orders have been processed.
  *
- * @since TBD
+ * @since 3.8.4
  */
 function pmpro_stripe_recover_checkout_transaction_ids() {
 	global $wpdb;

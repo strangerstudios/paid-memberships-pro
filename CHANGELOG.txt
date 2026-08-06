@@ -1,4 +1,10 @@
 == Changelog ==
+= 3.8.4 - 2026-08-06 =
+* ENHANCEMENT: Added new `--pmpro--btn--border-radius`, `--pmpro--btn--top-bottom-padding`, and `--pmpro--btn--left-right-padding` CSS variables so that button styles can be customized separately from other elements that share the base variables. #3747 (@RachelRVasquez)
+* BUG FIX: Fixed an issue where Stripe Checkout orders paid with delayed notification payment methods such as SEPA Direct Debit could be completed without their subscription and payment transaction IDs, which prevented membership cancellations from being sent to Stripe. An upgrade script now recovers the missing IDs for previously affected orders. #3745 (@dparker1005)
+* BUG FIX: Fixed an issue where a user field could be shown at checkout even though its field group was hidden from checkout if the field overrode the group's profile visibility setting. #3744 (@dparker1005)
+* BUG FIX: Fixed an issue where duplicate recurring scheduled tasks, such as those inherited from a cloned or migrated database, would run simultaneously indefinitely. Duplicate chains are now cancelled automatically, keeping the earliest scheduled task. #3746 (@dalemugford)
+
 = 3.8.3 - 2026-07-30 =
 * ENHANCEMENT: Site Health now detects the PMPro SMTP Add On as the site's email sending service when a connector is configured. #3729 (@dparker1005)
 * ENHANCEMENT: Added translator comments to localized strings containing placeholders so translators have context for each variable. #3730 (@jahidhasan018)
