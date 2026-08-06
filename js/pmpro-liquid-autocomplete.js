@@ -77,6 +77,35 @@
 				return menu;
 			}
 
+			function ensureAnnouncer( politeness ) {
+				const id = 'polite' === politeness
+					? 'pmpro-liquid-autocomplete-announcer-polite'
+					: 'pmpro-liquid-autocomplete-announcer';
+				let announcer = document.getElementById( id );
+
+				if ( ! announcer ) {
+					announcer = document.createElement( 'div' );
+					announcer.id = id;
+					announcer.setAttribute(
+						'aria-live',
+						'polite' === politeness ? 'polite' : 'assertive'
+					);
+					announcer.setAttribute( 'aria-atomic', 'true' );
+					announcer.className = 'screen-reader-text';
+					document.body.appendChild( announcer );
+				}
+
+				return announcer;
+			}
+
+			function announce( text, politeness ) {
+				const announcer = ensureAnnouncer( politeness );
+				announcer.textContent = '';
+				requestAnimationFrame( function () {
+					announcer.textContent = text;
+				} );
+			}
+
 			function closest( node, selector ) {
 				while ( node && node !== document ) {
 					if ( node.matches && node.matches( selector ) ) {
@@ -95,6 +124,16 @@
 					menu.innerHTML = '';
 					menu.removeAttribute( 'aria-activedescendant' );
 				}
+
+				[
+					'pmpro-liquid-autocomplete-announcer',
+					'pmpro-liquid-autocomplete-announcer-polite',
+				].forEach( function ( id ) {
+					const announcer = document.getElementById( id );
+					if ( announcer ) {
+						announcer.textContent = '';
+					}
+				} );
 
 				items = [];
 				activeIndex = -1;
@@ -157,12 +196,13 @@
 					container.appendChild( itemNode );
 				} );
 
+				const isOpening = container.hidden;
 				container.hidden = false;
 				positionMenu( context );
-				setActive( firstSelectable );
+				setActive( firstSelectable, isOpening );
 			}
 
-			function setActive( index ) {
+			function setActive( index, isOpening ) {
 				if ( ! items[ index ] || items[ index ].type === 'separator' ) {
 					return;
 				}
@@ -195,6 +235,25 @@
 				ensureMenu().setAttribute(
 					'aria-activedescendant',
 					'pmpro-liquid-autocomplete-option-' + activeIndex
+				);
+
+				const item = items[ activeIndex ];
+				const selectableItems = items.filter( function ( i ) {
+					return i.type !== 'separator';
+				} );
+				const position = selectableItems.indexOf( item ) + 1;
+				const total = selectableItems.length;
+				const itemText =
+					item.label +
+					( item.description ? ', ' + item.description : '' ) +
+					', ' + position + ' of ' + total;
+				announce(
+					isOpening
+						? ( strings.autocompleteOpened ||
+						  'Autocomplete list opened' ) +
+						  ', ' + itemText
+						: itemText,
+					isOpening ? 'polite' : 'assertive'
 				);
 			}
 
@@ -526,11 +585,18 @@
 
 			function shouldIgnoreKeyup( event ) {
 				return (
-					event.keyCode === 13 ||
-					event.keyCode === 27 ||
-					event.keyCode === 38 ||
-					event.keyCode === 40 ||
-					event.keyCode === 9
+					event.keyCode === 9  ||  // Tab
+					event.keyCode === 13 ||  // Enter
+					event.keyCode === 16 ||  // Shift
+					event.keyCode === 17 ||  // Ctrl
+					event.keyCode === 18 ||  // Alt
+					event.keyCode === 20 ||  // Caps Lock
+					event.keyCode === 27 ||  // Escape
+					event.keyCode === 38 ||  // Up arrow
+					event.keyCode === 40 ||  // Down arrow
+					event.keyCode === 91 ||  // Meta left
+					event.keyCode === 92 ||  // Meta right
+					event.keyCode === 93     // Context menu / Meta
 				);
 			}
 
@@ -553,6 +619,10 @@
 						event.preventDefault();
 						event.stopPropagation();
 						closeMenu();
+						announce(
+							strings.autocompleteClosed ||
+							'Autocomplete list closed'
+						);
 					} else if ( event.keyCode === 38 ) {
 						event.preventDefault();
 						event.stopPropagation();
