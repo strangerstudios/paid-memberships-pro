@@ -1,6 +1,6 @@
 <?php
 /**
- * Upgrade to version 3.9
+ * Upgrade to version 3.8.3
  *
  * Recover transaction IDs for Stripe Checkout orders that were completed
  * without them.
@@ -18,7 +18,7 @@
  *
  * @since TBD
  */
-function pmpro_upgrade_3_9() {
+function pmpro_upgrade_3_8_3() {
 	global $wpdb;
 
 	// Cheap check for a single candidate order so that sites without affected
@@ -54,7 +54,7 @@ function pmpro_upgrade_3_9() {
  *
  * Pulls the IDs from each order's Stripe Checkout Session and, for
  * subscriptions, makes sure a PMPro_Subscription record exists so that
- * cancellations reach the gateway. Scheduled by pmpro_upgrade_3_9() and
+ * cancellations reach the gateway. Scheduled by pmpro_upgrade_3_8_3() and
  * re-queued until all candidate orders have been processed.
  *
  * @since TBD
@@ -161,6 +161,10 @@ function pmpro_stripe_recover_checkout_transaction_ids() {
 				}
 			} catch ( \Stripe\Error\Base $e ) {
 				// Could not get payment intent. We just won't set a payment transaction ID.
+			} catch ( \Throwable $e ) {
+				// Could not get payment intent. We just won't set a payment transaction ID.
+			} catch ( \Exception $e ) {
+				// Could not get payment intent. We just won't set a payment transaction ID.
 			}
 		} elseif ( 'subscription' === $checkout_session->mode && ! empty( $checkout_session->subscription ) ) {
 			// Subscription order. Assign the subscription ID and invoice ID to the order.
@@ -176,6 +180,10 @@ function pmpro_stripe_recover_checkout_transaction_ids() {
 					$order->payment_transaction_id = $subscription->latest_invoice->id;
 				}
 			} catch ( \Stripe\Error\Base $e ) {
+				// Could not get the subscription. We just won't set a payment transaction ID.
+			} catch ( \Throwable $e ) {
+				// Could not get the subscription. We just won't set a payment transaction ID.
+			} catch ( \Exception $e ) {
 				// Could not get the subscription. We just won't set a payment transaction ID.
 			}
 		}
