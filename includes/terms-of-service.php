@@ -328,21 +328,12 @@ function pmpro_show_tos_log_on_view_order_page( $order ) {
 
 	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
 	if ( ! empty( $consent_entry ) ) {
-		?>
-		<div id="pmpro_order-tos-consent" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<?php
-					echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-				?>
-			</div>
-		</div>
-		<?php
+		pmpro_build_settings_section_open( array(
+			'id'    => 'pmpro_order-tos-consent',
+			'title' => __( 'TOS Consent', 'paid-memberships-pro' ),
+		) );
+		echo esc_html( pmpro_consent_to_text( $consent_entry ) );
+		pmpro_build_settings_section_close();
 	}
 }
 add_action( 'pmpro_after_order_view_main', 'pmpro_show_tos_log_on_view_order_page' );
@@ -362,16 +353,13 @@ function pmpro_show_tos_log_on_edit_order_page( $order ) {
 
 	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
 	if ( ! empty( $consent_entry ) ) {
-		?>
-		<tr>
-			<th scope="row" valign="top"><label for="tos_consent"><?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?></label></th>
-			<td id="tos_consent">
-				<?php
-					echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-				?>
-			</td>
-		</tr>
-		<?php
+		pmpro_build_settings_field( array(
+			'label'    => __( 'TOS Consent', 'paid-memberships-pro' ),
+			'type'     => 'callback',
+			'callback' => function() use ( $consent_entry ) {
+				echo '<span id="tos_consent">' . esc_html( pmpro_consent_to_text( $consent_entry ) ) . '</span>';
+			},
+		) );
 	}
 }
 add_action( 'pmpro_after_order_settings', 'pmpro_show_tos_log_on_edit_order_page' );
