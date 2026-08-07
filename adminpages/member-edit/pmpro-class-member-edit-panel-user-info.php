@@ -53,8 +53,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$user_login = ! empty( $_POST['user_login'] ) ? sanitize_user( $_POST['user_login'] ) : '';
 		$user_email = ! empty( $_POST['email'] ) ? stripslashes( sanitize_email( $_POST['email'] ) ) : '';
 		$first_name = ! empty( $_POST['first_name'] ) ? stripslashes( sanitize_text_field( $_POST['first_name'] ) ): '';
-		$last_name = ! empty( $_POST['last_name'] ) ? stripslashes( sanitize_text_field( $_POST['last_name'] ) ) : '';	
-		$user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_textarea_field( $_POST['user_notes'] ) ) : '';
+		$last_name = ! empty( $_POST['last_name'] ) ? stripslashes( sanitize_text_field( $_POST['last_name'] ) ) : '';
 
 		// If we are edting a user, get the user information.
 		$user = self::get_user();
@@ -64,7 +63,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			$first_name = $user->first_name;
 			$last_name = $user->last_name;
 			$role = current( $user->roles );
-			$user_notes = $user->user_notes;
 		} else {
 			// We are creating a new user.
 			// Enqueue core WordPress script for passwords: generate, visibility, and strength check.
@@ -182,13 +180,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				<?php
 			}
 			?>
-			<tr class="form-field">
-				<th scope="row" valign="top"><label for="user_notes"><?php esc_html_e( 'Member Notes', 'paid-memberships-pro' ); ?></label></th>
-				<td>
-					<textarea name="user_notes" id="user_notes" rows="5" <?php echo esc_attr( $disable_fields ); ?>><?php echo esc_textarea( $user_notes ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'Member notes are private and only visible to other users with membership management capabilities.', 'paid-memberships-pro' ); ?></p>
-				</td>
-			</tr>
 			<?php
 			if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) && ! empty( $user->ID ) ) {
 				?>
@@ -325,10 +316,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 					wp_new_user_notification( $user_id, null, 'user' );
 				}
 			}
-
-			// Add other user meta
-			$user_notes = ! empty( $_POST['user_notes'] ) ? sanitize_textarea_field( $_POST['user_notes'] ) : '';
-			update_user_meta( $user_id, 'user_notes', $user_notes );
 
 			// Save the avatar field if applicable.
 			$avatar_error = '';
