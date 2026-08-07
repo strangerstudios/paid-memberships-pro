@@ -237,7 +237,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 						wp_dropdown_pages(
 							array(
 								'name'             => $key . '_page_id',
-								'show_option_none' => '-- ' . ( ! empty( $args['none_label'] ) ? $args['none_label'] : __( 'Choose One', 'paid-memberships-pro' ) ) . ' --',
+								// wp_dropdown_pages() does not escape show_option_none, and none_label may come from add-ons.
+								'show_option_none' => esc_html( '-- ' . ( ! empty( $args['none_label'] ) ? $args['none_label'] : __( 'Choose One', 'paid-memberships-pro' ) ) . ' --' ),
 								'selected'         => $pmpro_pages[ $key ],
 								'post_type'        => $post_type,
 							)
