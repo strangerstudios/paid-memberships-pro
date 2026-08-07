@@ -304,8 +304,8 @@
 				'label'      => '',
 				'type'       => 'callback',
 				'depends'    => array(
-					array( 'id' => 'hideads', 'value' => '1', 'current' => $hideads ),
-					array( 'id' => 'hideads', 'value' => '2', 'current' => $hideads ),
+					array( 'id' => 'hideads', 'value' => '1' ),
+					array( 'id' => 'hideads', 'value' => '2' ),
 				),
 				'depends_or' => true,
 				'callback'   => function() {
@@ -324,7 +324,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 				'type'       => 'checklist',
 				'options'    => $hideads_level_options,
 				'value'      => $hideadslevels_selected,
-				'depends'    => array( array( 'id' => 'hideads', 'value' => '2', 'current' => $hideads ) ),
+				'depends'    => array( array( 'id' => 'hideads', 'value' => '2' ) ),
 			),
 		);
 
@@ -391,6 +391,10 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						}
 					};
 				} else {
+					// text and unrecognized field_type values intentionally render as a bound text
+					// input. The legacy markup rendered nothing for unrecognized types, but the save
+					// handler still ran pmpro_setOption() with no posted value, blanking the stored
+					// option on every save; a text input preserves the value instead.
 					$custom_entry['type'] = 'text';
 				}
 				$other_fields[] = $custom_entry;

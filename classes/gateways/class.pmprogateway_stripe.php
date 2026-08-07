@@ -927,7 +927,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'label'       => __( 'Show Payment Request Button for On-Site Payments', 'paid-memberships-pro' ),
 				'type'        => 'select',
 				'row_class'   => 'gateway_stripe_onsite_fields',
-				'depends'     => array( array( 'id' => 'stripe_payment_flow', 'value' => 'onsite', 'current' => $payment_flow ) ),
+				'depends'     => array( array( 'id' => 'stripe_payment_flow', 'value' => 'onsite' ) ),
 				'value'       => ! empty( $payment_request_button ) ? 1 : 0,
 				'options'     => array(
 					0 => __( 'No', 'paid-memberships-pro' ),
@@ -940,7 +940,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'label'     => __( 'Collect Billing Address in Stripe Checkout', 'paid-memberships-pro' ),
 				'type'      => 'select',
 				'row_class' => 'gateway_stripe_checkout_fields',
-				'depends'   => array( array( 'id' => 'stripe_payment_flow', 'value' => 'checkout', 'current' => $payment_flow ) ),
+				'depends'   => array( array( 'id' => 'stripe_payment_flow', 'value' => 'checkout' ) ),
 				'value'     => 'required' === $stripe_checkout_billing_address ? 'required' : 'auto',
 				'options'   => array(
 					'auto'     => __( 'Only when necessary', 'paid-memberships-pro' ),
@@ -952,7 +952,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'label'       => __( 'Calculate Tax in Stripe Checkout', 'paid-memberships-pro' ),
 				'type'        => 'select',
 				'row_class'   => 'gateway_stripe_checkout_fields',
-				'depends'     => array( array( 'id' => 'stripe_payment_flow', 'value' => 'checkout', 'current' => $payment_flow ) ),
+				'depends'     => array( array( 'id' => 'stripe_payment_flow', 'value' => 'checkout' ) ),
 				'value'       => $stripe_tax,
 				'options'     => array(
 					'no'        => __( 'Do not calculate tax', 'paid-memberships-pro' ),
@@ -967,8 +967,8 @@ class PMProGateway_stripe extends PMProGateway {
 				'type'        => 'select',
 				'row_class'   => 'gateway_stripe_checkout_fields',
 				'depends'     => array(
-					array( 'id' => 'stripe_payment_flow', 'value' => 'checkout', 'current' => $payment_flow ),
-					array( 'id' => 'stripe_tax', 'value' => array( 'inclusive', 'exclusive' ), 'current' => $stripe_tax ),
+					array( 'id' => 'stripe_payment_flow', 'value' => 'checkout' ),
+					array( 'id' => 'stripe_tax', 'value' => array( 'inclusive', 'exclusive' ) ),
 				),
 				'value'       => ! empty( $stripe_tax_id_collection_enabled ) ? 1 : 0,
 				'options'     => array(
@@ -3041,9 +3041,7 @@ class PMProGateway_stripe extends PMProGateway {
 								pmpro_build_settings_field( array(
 									'name'  => 'stripe_secretkey',
 									'label' => __( 'Restricted Key', 'paid-memberships-pro' ),
-									'type'  => 'password',
-									'class' => 'regular-text code',
-									'attrs' => array( 'autocomplete' => 'off' ),
+									'type'  => 'secure_key',
 									'value' => $secret_key,
 								) );
 								?>

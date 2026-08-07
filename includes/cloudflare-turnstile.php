@@ -98,9 +98,8 @@ function pmpro_cloudflare_turnstile_settings() {
 
 	$cloudflare_turnstile_depends = array(
 		array(
-			'id'      => 'cloudflare_turnstile',
-			'value'   => '1',
-			'current' => $cloudflare_turnstile,
+			'id'    => 'cloudflare_turnstile',
+			'value' => '1',
 		),
 	);
 

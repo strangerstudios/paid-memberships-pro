@@ -317,14 +317,14 @@ if (!empty($page_msg)) { ?>
 	$gateway_class = 'PMProGateway_' . $gateway;
 	$gateway_supports_recurring_trials = method_exists( $gateway_class, 'supports' ) && $gateway_class::supports( 'recurring_trials' );
 
-	// Render-time state for the `depends` rules below: each condition carries the referenced
-	// checkbox's current state via `current`, so the rows render with the correct initial
-	// visibility and toggle live from there.
+	// Render-time state for the checkboxes that the `depends` rules below reference. The rules
+	// derive each row's initial visibility from the referenced checkbox's rendered state
+	// automatically, then toggle live from there.
 	$level_is_recurring = pmpro_isLevelRecurring( $level );
 	$level_has_trial    = pmpro_isLevelTrial( $level );
 
 	// Several billing rows are shown only while "Recurring Subscription" is checked.
-	$depends_on_recurring = array( 'id' => 'recurring', 'checked' => true, 'current' => $level_is_recurring );
+	$depends_on_recurring = array( 'id' => 'recurring', 'checked' => true );
 
 	// The Billing Amount description carries a gateway-specific warning for Stripe.
 	$billing_amount_description = esc_html__( 'The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro' );
@@ -431,7 +431,7 @@ if (!empty($page_msg)) { ?>
 				'row_class' => 'trial_info recurring_info',
 				'depends' => array(
 					$depends_on_recurring,
-					array( 'id' => 'custom_trial', 'checked' => true, 'current' => $level_has_trial ),
+					array( 'id' => 'custom_trial', 'checked' => true ),
 			),
 			'fields'  => array(
 				array(
@@ -515,7 +515,7 @@ if (!empty($page_msg)) { ?>
 		'label'       => __( 'Expires In', 'paid-memberships-pro' ),
 		'type'        => 'composite',
 		'row_class'   => 'expiration_info',
-		'depends'     => array( array( 'id' => 'expiration', 'checked' => true, 'current' => pmpro_isLevelExpiring( $level ) ) ),
+		'depends'     => array( array( 'id' => 'expiration', 'checked' => true ) ),
 		'description' => __( 'Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' ),
 		'fields'      => array(
 			array(

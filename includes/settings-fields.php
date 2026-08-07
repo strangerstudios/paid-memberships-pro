@@ -45,8 +45,11 @@ defined( 'ABSPATH' ) || exit;
  *                                            that id (e.g. wp_dropdown_pages() does).
  *     @type string          $label           Row label text.
  *     @type string          $type            Field type. Supported values: text, number, email, url, tel, password,
- *                                            currency, color, select, radio, textarea, checkbox, checklist, editor,
- *                                            composite, html, and callback. Default text.
+ *                                            secure_key, currency, color, select, radio, textarea, checkbox, checklist,
+ *                                            editor, composite, html, and callback. Default text. Use secure_key for
+ *                                            secret credentials such as gateway API keys: it renders a CSS-masked text
+ *                                            input with autocomplete off instead of type="password", so browser
+ *                                            password managers never offer to save or autofill the value.
  *     @type mixed           $value           Current value. Most named controls default to
  *                                            get_option( 'pmpro_' . $name ); checklist fields need an explicit
  *                                            array of selected values.
@@ -54,26 +57,33 @@ defined( 'ABSPATH' ) || exit;
  *                                            html and callback fields are responsible for their own descriptions.
  *     @type string          $class           Input CSS class override. Text-like inputs default to "regular-text",
  *                                            number inputs to "small-text", textareas to "large-text", currency
- *                                            inputs to "regular-text", and color inputs to "pmpro_color_picker".
- *                                            Selects have no default class.
+ *                                            inputs to "regular-text", color inputs to "pmpro_color_picker", and
+ *                                            secure_key inputs to "regular-text code pmpro-admin-secure-key" (an
+ *                                            override without pmpro-admin-secure-key loses the masking). Selects
+ *                                            have no default class.
  *     @type bool            $required        Text-like fields only. Adds the HTML required attribute.
- *     @type array           $attrs           Text-like and textarea fields only. Extra HTML attributes as
+ *     @type array           $attrs           Text-like, secure_key, and textarea fields only. Extra HTML attributes as
  *                                            attribute => value. Keys are sanitized, values escaped.
  *     @type string          $row_class       Optional class attribute for the row's <tr>.
  *     @type array           $depends         Optional visibility conditions toggled by pmpro-admin.js. Each condition
  *                                            needs an `id` for the referenced input and either `checked` or `value`.
- *                                            `value` may be a scalar or an array of accepted values. Add `current`
- *                                            to every condition to let PHP derive the initial row visibility before
- *                                            JS runs; `current` is removed from the emitted JSON. When a `value`
- *                                            condition references a checkbox or radio, the JS compares against the
- *                                            input's value attribute while checked and '' while unchecked, so pass
- *                                            `current` with those same semantics. Conditions may reference text,
- *                                            textarea, and select controls as well; those update as the user types.
- *                                            Note that `radio` fields rendered by this helper are not given ids, so a
- *                                            condition cannot target one — give the radio group a hand-rolled input
- *                                            with an id if a row needs to depend on it. The emitted data-pmpro-depends
- *                                            attribute can also be hand-placed on any element (not just rows built
- *                                            here) and pmpro-admin.js will toggle it the same way.
+ *                                            `value` may be a scalar or an array of accepted values. PHP derives the
+ *                                            initial row visibility before JS runs whenever every condition's current
+ *                                            state is known: a condition whose `id` refers to a control already
+ *                                            rendered by these helpers looks that state up automatically (see
+ *                                            pmpro_settings_rendered_state()), so `current` is usually unnecessary.
+ *                                            Pass `current` (it always wins, and is removed from the emitted JSON)
+ *                                            only for targets the helpers did not render — hand-rolled inputs, or
+ *                                            controls rendered later in the page. When a `value` condition references
+ *                                            a checkbox or radio, the JS compares against the input's value attribute
+ *                                            while checked and '' while unchecked, so an explicit `current` must use
+ *                                            those same semantics. Conditions may reference text, textarea, and select
+ *                                            controls as well; those update as the user types. Note that `radio`
+ *                                            fields rendered by this helper are not given ids, so a condition cannot
+ *                                            target one — give the radio group a hand-rolled input with an id if a row
+ *                                            needs to depend on it. The emitted data-pmpro-depends attribute can also
+ *                                            be hand-placed on any element (not just rows built here) and
+ *                                            pmpro-admin.js will toggle it the same way.
  *     @type bool            $depends_or      Optional. OR the depends conditions instead of AND. Default false.
  *     @type array           $options         value => label map for select, radio, and checklist fields.
  *     @type string          $checkbox_label  Checkbox fields only. Plain-text inline label shown after the checkbox.
@@ -118,15 +128,24 @@ function pmpro_build_settings_field( $field ) {
 		}
 	}
 
-	// A row can declare visibility that depends on other inputs. If every condition includes the
-	// referenced input's render-time value in `current`, PHP derives the initial row state to avoid
-	// a flash before JS runs. The `current` key is stripped before the conditions are emitted.
+	// A row can declare visibility that depends on other inputs. When every condition's referenced
+	// state is known — looked up from the rendered-state registry, or passed via `current` — PHP
+	// derives the initial row state to avoid a flash before JS runs. The `current` key is stripped
+	// before the conditions are emitted.
 	$hidden     = false;
 	$conditions = array();
 	if ( ! empty( $field['depends'] ) ) {
 		$condition_results = array();
 		$all_have_current  = true;
 		foreach ( (array) $field['depends'] as $condition ) {
+			// Derive `current` from the registry when the referenced control was rendered earlier
+			// by these helpers. An explicit `current` always wins.
+			if ( ! array_key_exists( 'current', $condition ) && ! empty( $condition['id'] ) ) {
+				$rendered_state = pmpro_settings_rendered_state( $condition['id'] );
+				if ( is_array( $rendered_state ) ) {
+					$condition['current'] = isset( $condition['checked'] ) ? ! empty( $rendered_state['checked'] ) : $rendered_state['value'];
+				}
+			}
 			if ( array_key_exists( 'current', $condition ) ) {
 				if ( isset( $condition['checked'] ) ) {
 					$condition_results[] = (bool) $condition['current'] === (bool) $condition['checked'];
@@ -242,6 +261,19 @@ function pmpro_build_settings_input( $field ) {
 		case 'select':
 			$options      = isset( $field['options'] ) ? $field['options'] : array();
 			$select_class = isset( $field['class'] ) ? ' class="' . esc_attr( $field['class'] ) . '"' : '';
+
+			// Record the value the browser will actually show: when the current value matches no
+			// option, the select falls back to its first option, and that is what the JS reads.
+			if ( $name ) {
+				$option_keys = array_map( 'strval', array_keys( $options ) );
+				if ( in_array( (string) $value, $option_keys, true ) ) {
+					$rendered_value = (string) $value;
+				} else {
+					$rendered_value = $option_keys ? $option_keys[0] : '';
+				}
+				pmpro_settings_rendered_state( $name, array( 'value' => $rendered_value ) );
+			}
+
 			echo '<select id="' . esc_attr( $name ) . '" name="' . esc_attr( $name ) . '"' . $select_class . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $select_class escaped above.
 			foreach ( $options as $opt_value => $opt_label ) {
 				echo '<option value="' . esc_attr( $opt_value ) . '" ' . selected( $value, $opt_value, false ) . '>' . esc_html( $opt_label ) . '</option>';
@@ -251,7 +283,8 @@ function pmpro_build_settings_input( $field ) {
 
 		case 'radio':
 			// One radio per option, each on its own line. No ids: the th label (if any) has no
-			// single input to point at.
+			// single input to point at. Deliberately not recorded in the rendered-state registry —
+			// without ids, JS depends conditions cannot target a radio group either.
 			$options = isset( $field['options'] ) ? $field['options'] : array();
 			foreach ( $options as $opt_value => $opt_label ) {
 				echo '<p><label>';
@@ -263,6 +296,9 @@ function pmpro_build_settings_input( $field ) {
 
 		case 'textarea':
 			$input_class = isset( $field['class'] ) ? $field['class'] : 'large-text';
+			if ( $name ) {
+				pmpro_settings_rendered_state( $name, array( 'value' => (string) $value ) );
+			}
 			echo '<textarea id="' . esc_attr( $name ) . '" name="' . esc_attr( $name ) . '" class="' . esc_attr( $input_class ) . '"' . pmpro_build_settings_input_attrs( $field ) . '>' . esc_textarea( $value ) . '</textarea>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attrs escaped in the helper.
 			break;
 
@@ -277,6 +313,20 @@ function pmpro_build_settings_input( $field ) {
 				$checkbox_value = '1';
 				$is_checked     = ! empty( $value );
 			}
+
+			// Record with the semantics the JS uses for checkboxes: the value attribute while
+			// checked, '' while unchecked. Encoding this here once is what lets depends conditions
+			// reference checkboxes without callers hand-mirroring those semantics via `current`.
+			if ( $name ) {
+				pmpro_settings_rendered_state(
+					$name,
+					array(
+						'checked' => $is_checked,
+						'value'   => $is_checked ? $checkbox_value : '',
+					)
+				);
+			}
+
 			echo '<input type="checkbox" id="' . esc_attr( $name ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $checkbox_value ) . '" ' . checked( $is_checked, true, false ) . ' />';
 			if ( ! empty( $field['checkbox_label'] ) ) {
 				echo ' <label for="' . esc_attr( $name ) . '">' . esc_html( $field['checkbox_label'] ) . '</label>';
@@ -325,6 +375,29 @@ function pmpro_build_settings_input( $field ) {
 			pmpro_build_settings_currency_input( $name, $value, isset( $field['class'] ) ? $field['class'] : 'regular-text' );
 			break;
 
+		case 'secure_key':
+			// A secret credential (gateway API keys etc.). Deliberately a text input masked via CSS
+			// (.pmpro-admin-secure-key; best-effort — -webkit-text-security has no Firefox support)
+			// rather than type="password", so browser password managers never offer to save the
+			// value or autofill stored credentials over it on save. autocomplete="off" is always
+			// emitted; callers may override it via `attrs`.
+			$field['attrs'] = array_merge(
+				array( 'autocomplete' => 'off' ),
+				isset( $field['attrs'] ) && is_array( $field['attrs'] ) ? $field['attrs'] : array()
+			);
+			$input_class    = isset( $field['class'] ) ? $field['class'] : 'regular-text code pmpro-admin-secure-key';
+			if ( $name ) {
+				pmpro_settings_rendered_state( $name, array( 'value' => (string) $value ) );
+			}
+			printf(
+				'<input type="text" id="%1$s" name="%1$s" value="%2$s" class="%3$s"%4$s />',
+				esc_attr( $name ),
+				esc_attr( $value ),
+				esc_attr( $input_class ),
+				pmpro_build_settings_input_attrs( $field ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- keys sanitized and values escaped in the helper.
+			);
+			break;
+
 		default:
 			// Standard single inputs. Common HTML5 input types are allowed via the type passthrough.
 			$allowed_types   = array( 'text', 'number', 'email', 'url', 'tel', 'password', 'color' );
@@ -335,6 +408,9 @@ function pmpro_build_settings_input( $field ) {
 			$input_type      = in_array( $type, $allowed_types, true ) ? $type : 'text';
 			$required        = ! empty( $field['required'] ) ? ' required' : '';
 			$input_class     = isset( $field['class'] ) ? $field['class'] : ( $default_classes[ $type ] ?? 'regular-text' );
+			if ( $name ) {
+				pmpro_settings_rendered_state( $name, array( 'value' => (string) $value ) );
+			}
 			printf(
 				'<input type="%1$s" id="%2$s" name="%2$s" value="%3$s"%4$s%5$s%6$s />',
 				esc_attr( $input_type ),
@@ -369,6 +445,33 @@ function pmpro_build_settings_input_attrs( $field ) {
 }
 
 /**
+ * Record or look up the rendered state of a named settings control.
+ *
+ * pmpro_build_settings_input() records each named control as it renders, so a later `depends`
+ * condition can derive its initial PHP-side state without the caller passing `current` by hand.
+ * The recorded state mirrors what pmpro-admin.js will read from the live DOM: for checkboxes,
+ * `checked` plus the value attribute while checked ('' while unchecked); for selects, the option
+ * the browser will actually show; for text-like controls, the rendered value. Radio groups are
+ * never recorded (they render without ids, so JS conditions cannot target them either).
+ *
+ * @since TBD
+ *
+ * @param string     $id    The control id (the same as its name for helper-rendered controls).
+ * @param array|null $state Optional. State to record: `value`, plus `checked` for checkboxes.
+ *                          Omit to look up a previously recorded state instead.
+ * @return array|null The recorded state on lookup, or null if the id has not been rendered
+ *                    (always null when recording).
+ */
+function pmpro_settings_rendered_state( $id, $state = null ) {
+	static $rendered = array();
+	if ( null !== $state ) {
+		$rendered[ $id ] = $state;
+		return null;
+	}
+	return isset( $rendered[ $id ] ) ? $rendered[ $id ] : null;
+}
+
+/**
  * Echo a currency amount input with the store's currency symbol positioned around it.
  *
  * Used by the `currency` field type and by composite rows that need a price control.
@@ -384,6 +487,11 @@ function pmpro_build_settings_currency_input( $name, $value, $class = 'regular-t
 
 	$position = function_exists( 'pmpro_getCurrencyPosition' ) ? pmpro_getCurrencyPosition() : 'left';
 	$amount   = function_exists( 'pmpro_filter_price_for_text_field' ) ? pmpro_filter_price_for_text_field( $value ) : $value;
+
+	if ( $name ) {
+		// Record the display-formatted amount — that is the input value JS would compare against.
+		pmpro_settings_rendered_state( $name, array( 'value' => (string) $amount ) );
+	}
 
 	if ( 'left' === $position ) {
 		echo wp_kses_post( $pmpro_currency_symbol ) . ' ';

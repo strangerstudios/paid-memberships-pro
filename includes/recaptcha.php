@@ -250,9 +250,8 @@ function pmpro_recaptcha_settings() {
 	$recaptcha_value   = $recaptcha > 0 ? 2 : 0;
 	$recaptcha_depends = array(
 		array(
-			'id'      => 'recaptcha',
-			'value'   => '2',
-			'current' => $recaptcha_value,
+			'id'    => 'recaptcha',
+			'value' => '2',
 		),
 	);
 

@@ -270,11 +270,9 @@
 						'class' => 'regular-text code',
 					),
 					array(
-						'name'   => 'apipassword',
-						'label'  => __( 'API Password', 'paid-memberships-pro' ),
-						'type'   => 'password',
-						'class'  => 'regular-text code',
-						'attrs'  => array( 'autocomplete' => 'off' ),
+						'name'  => 'apipassword',
+						'label' => __( 'API Password', 'paid-memberships-pro' ),
+						'type'  => 'secure_key',
 					),
 					array(
 						'name'  => 'apisignature',
