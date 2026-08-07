@@ -150,6 +150,7 @@ require_once( PMPRO_DIR . '/includes/restricted-files.php' );		// Restrict acces
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
+require_once( PMPRO_DIR . '/includes/abilities.php' );              // WordPress Abilities API integrations
 require_once( PMPRO_DIR . '/includes/widgets.php' );                // widgets for PMPro
 require_once( PMPRO_DIR . '/includes/gateway-request-handlers.php' ); // gateway request handlers
 
