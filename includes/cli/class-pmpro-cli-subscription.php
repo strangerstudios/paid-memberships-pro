@@ -144,6 +144,75 @@ class PMPro_CLI_Subscription extends PMPro_CLI_Command {
 	}
 
 	/**
+	 * Sync one or more subscriptions with their gateway.
+	 *
+	 * Pulls the latest subscription info from the gateway and saves it locally.
+	 * Sync errors are stored in subscription meta ( sync_error ).
+	 *
+	 * ## OPTIONS
+	 *
+	 * <id>...
+	 * : One or more subscription IDs or gateway transaction IDs ( e.g. sub_XXXX ).
+	 *
+	 * [--dry-run]
+	 * : Preview which subscriptions would be synced without making changes.
+	 *
+	 * [--yes]
+	 * : Skip the confirmation prompt.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp pmpro subscription sync 55
+	 *     wp pmpro subscription sync sub_1RXa2b3C4d
+	 *     wp pmpro subscription sync 55 56 57 --yes
+	 *
+	 * @subcommand sync
+	 */
+	public function sync( $args, $assoc_args ) {
+		$subscriptions = array();
+		foreach ( $args as $arg ) {
+			if ( is_numeric( $arg ) ) {
+				$subscription = PMPro_Subscription::get_subscription( (int) $arg );
+			} else {
+				// Assume a gateway transaction ID, e.g. "sub_XXXX".
+				$subscription = PMPro_Subscription::get_subscription( array( 'subscription_transaction_id' => (string) $arg ) );
+			}
+			if ( empty( $subscription ) ) {
+				WP_CLI::error( sprintf( 'Subscription %s not found.', $arg ) );
+			}
+			$subscriptions[ $subscription->get_id() ] = $subscription;
+		}
+
+		if ( ! empty( $assoc_args['dry-run'] ) ) {
+			WP_CLI::log( sprintf( '[dry-run] Would sync %d subscription(s) with their gateway: %s', count( $subscriptions ), implode( ', ', array_keys( $subscriptions ) ) ) );
+			return;
+		}
+
+		WP_CLI::confirm( sprintf( 'Sync %d subscription(s) with their gateway?', count( $subscriptions ) ), $assoc_args );
+
+		$failed = 0;
+		foreach ( $subscriptions as $id => $subscription ) {
+			if ( $subscription->update() ) {
+				$sync_error = get_pmpro_subscription_meta( $id, 'sync_error', true );
+				if ( empty( $sync_error ) ) {
+					WP_CLI::log( sprintf( 'Synced subscription %d ( status: %s, next payment: %s ).', $id, $subscription->get_status(), $subscription->get_next_payment_date( 'Y-m-d H:i:s' ) ) );
+				} else {
+					$failed++;
+					WP_CLI::warning( sprintf( 'Subscription %d saved, but the gateway sync reported an error: %s', $id, $sync_error ) );
+				}
+			} else {
+				$failed++;
+				WP_CLI::warning( sprintf( 'Failed to sync subscription %d.', $id ) );
+			}
+		}
+
+		if ( $failed ) {
+			WP_CLI::error( sprintf( '%d of %d subscription(s) failed to sync.', $failed, count( $subscriptions ) ) );
+		}
+		WP_CLI::success( sprintf( 'Synced %d subscription(s).', count( $subscriptions ) ) );
+	}
+
+	/**
 	 * Normalize a PMPro_Subscription object to an associative array.
 	 *
 	 * @param PMPro_Subscription $subscription The subscription object.
