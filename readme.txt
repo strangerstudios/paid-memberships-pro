@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8.1
+Stable tag: 3.8.4
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,31 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.8.4 - 2026-08-06 =
+* ENHANCEMENT: Added new `--pmpro--btn--border-radius`, `--pmpro--btn--top-bottom-padding`, and `--pmpro--btn--left-right-padding` CSS variables so that button styles can be customized separately from other elements that share the base variables. #3747 (@RachelRVasquez)
+* BUG FIX: Fixed an issue where Stripe Checkout orders paid with delayed notification payment methods such as SEPA Direct Debit could be completed without their subscription and payment transaction IDs, which prevented membership cancellations from being sent to Stripe. An upgrade script now recovers the missing IDs for previously affected orders. #3745 (@dparker1005)
+* BUG FIX: Fixed an issue where a user field could be shown at checkout even though its field group was hidden from checkout if the field overrode the group's profile visibility setting. #3744 (@dparker1005)
+* BUG FIX: Fixed an issue where duplicate recurring scheduled tasks, such as those inherited from a cloned or migrated database, would run simultaneously indefinitely. Duplicate chains are now cancelled automatically, keeping the earliest scheduled task. #3746 (@dalemugford)
+
+= 3.8.3 - 2026-07-30 =
+* ENHANCEMENT: Site Health now detects the PMPro SMTP Add On as the site's email sending service when a connector is configured. #3729 (@dparker1005)
+* ENHANCEMENT: Added translator comments to localized strings containing placeholders so translators have context for each variable. #3730 (@jahidhasan018)
+* ENHANCEMENT: The discount code lookup in `PMPro_Discount_Code::save()` now uses `$wpdb->prepare()`. #3734 (@andrewlimaza)
+* BUG FIX: Multi-value user fields (multiselect, select2, and grouped checkboxes) now display correctly when their values were imported from a CSV file as a comma-separated string. #3742 (@flintfromthebasement)
+* BUG FIX: Fixed a fatal error that could occur when returning from an offsite gateway if the checkout data was missing from the order meta. #3741 (@dparker1005)
+* BUG FIX: Fixed PMPro core and Add Ons never auto-updating in the background because the update hooks were only registered on `admin_init`, which does not fire during WP-Cron where automatic updates run. #3738 (@dalemugford)
+* BUG FIX: Set `new_version` on `no_update` entries so up-to-date Add Ons no longer trigger an undefined property warning in WP-CLI and other consumers of the plugin update transient. #3738 (@dalemugford)
+* BUG FIX: The bulk user delete confirmation screen now counts membership history for every selected user instead of only the first. #3733 (@jahidhasan018)
+* BUG FIX: The level group selection message is no longer shown on the Membership Levels page for groups that contain only one level. #3731 (@jahidhasan018)
+
+= 3.8.2 - 2026-07-13 =
+* SECURITY: Restored sanitization of user field values on save, which had been inactive since v3.4. #3726 (@dparker1005)
+* SECURITY: The Authorize.net Silent Post handler now requires Authorize.net API credentials to be configured on the site. #3724 (@dparker1005)
+* BUG FIX: Read-only user fields are no longer saved on form submission and are now escaped when displayed. This also fixes read-only checkbox and select field values being erased on profile update. #3726 (@dparker1005)
+* BUG FIX: Fixed broken CSV exports when an exported value contained a quotation mark. #3716 (@dwanjuki)
+* BUG FIX: Fixed checkout failures that could occur when the matching Stripe price had been archived in the Stripe dashboard. #3717 (@flintfromthebasement)
+* BUG FIX: Fixed an issue where users with the `pmpro_reports` capability could not view email content in the Email Log popup. #3718 (@dwanjuki)
+
 = 3.8.1 - 2026-06-29 =
 * ENHANCEMENT: Added a new `style` attribute to the `[pmpro_checkout_button]` shortcode to render it as a link or a button, and improved its styling. #3708 (@kimcoleman)
 * ENHANCEMENT: Improved the HTML validity and accessibility of frontend forms and pages, including fixing duplicate `id` attributes and invalid fieldset/legend markup. #3707 (@kimcoleman)
