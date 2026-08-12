@@ -2314,6 +2314,12 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	padding: 0 calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 );
 }
 
+/* The pricing panel has no top padding (the form-table provides its own spacing), so the
+   formula note supplies matching top spacing when it is the only visible child. */
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_level_formula_note p {
+	margin: calc( var(--pmpro--spacing--medium) / 2 ) 0 0;
+}
+
 .pmpro_discount_code-tag {
 	border: 2px dashed var(--pmpro--color--blue-darkest);
 	display: block;
