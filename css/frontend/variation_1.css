@@ -683,6 +683,27 @@
 		justify-self: end;
 	}
 
+	/* Container context for narrow login forms (e.g. sidebar widget) */
+	.pmpro_login_wrap {
+		container: pmpro-login-wrap / inline-size;
+	}
+
+	/* In narrow containers, visually hide toggle text to prevent label crush.
+	 * The eye icon stays interactive; screen readers still hear the text. */
+	@container pmpro-login-wrap (max-width: 280px) {
+		.pmpro_form_field-password-toggle-state {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border: 0;
+		}
+	}
+
 	#resetpassform .pmpro_cols-2 {
 		container: resetpassform / inline-size;
 	}
