@@ -64,7 +64,6 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 *   - csv
 	 *   - json
 	 *   - yaml
-	 *   - ids
 	 *   - count
 	 * ---
 	 *
@@ -76,7 +75,11 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 * @when after_wp_load
 	 */
 	public function member_list( $args, $assoc_args ) {
-		$number = isset( $assoc_args['number'] ) ? (int) $assoc_args['number'] : 100;
+		if ( isset( $assoc_args['format'] ) && 'ids' === $assoc_args['format'] ) {
+			WP_CLI::error( 'The ids format is not supported for member list (a user can have multiple memberships). Use --fields=user_id --format=csv.' );
+		}
+
+		$number = $this->list_limit( $assoc_args );
 		$page   = isset( $assoc_args['page'] ) ? max( 1, (int) $assoc_args['page'] ) : 1;
 
 		$query = array(
@@ -180,7 +183,7 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 *
 	 * ## OPTIONS
 	 *
-	 * --user=<id>
+	 * <user_id>
 	 * : The user ID.
 	 *
 	 * --level=<id>
@@ -194,18 +197,18 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp pmpro member change-level --user=42 --level=2
-	 *     wp pmpro member change-level --user=42 --level=0 --yes
+	 *     wp pmpro member change-level 42 --level=2
+	 *     wp pmpro member change-level 42 --level=0 --yes
 	 *
 	 * @when after_wp_load
 	 */
 	public function member_change_level( $args, $assoc_args ) {
-		$user_id = isset( $assoc_args['user'] ) ? (int) $assoc_args['user'] : 0;
-		if ( empty( $user_id ) ) {
-			WP_CLI::error( 'The --user=<id> argument is required.' );
-		}
+		$user_id = $this->require_user_id( isset( $args[0] ) ? $args[0] : '' );
 		if ( ! isset( $assoc_args['level'] ) ) {
 			WP_CLI::error( 'The --level=<id> argument is required.' );
+		}
+		if ( ! preg_match( '/^\d+$/', (string) $assoc_args['level'] ) ) {
+			WP_CLI::error( 'The --level argument must be 0 or a positive membership level ID.' );
 		}
 
 		$user = get_userdata( $user_id );
@@ -237,8 +240,17 @@ class PMPro_CLI extends \WP_CLI_Command {
 			if ( false === $result ) {
 				WP_CLI::error( sprintf( 'Failed to change membership level for user %d.', $user_id ) );
 			}
+			if ( null === $result ) {
+				WP_CLI::success( sprintf( 'User %d is already on level %d.', $user_id, $level_id ) );
+				return;
+			}
 		} else {
-			foreach ( (array) pmpro_getMembershipLevelsForUser( $user_id ) as $level ) {
+			$levels = (array) pmpro_getMembershipLevelsForUser( $user_id );
+			if ( empty( $levels ) ) {
+				WP_CLI::success( sprintf( 'User %d has no active memberships.', $user_id ) );
+				return;
+			}
+			foreach ( $levels as $level ) {
 				if ( ! pmpro_cancelMembershipLevel( $level->id, $user_id ) ) {
 					WP_CLI::error( sprintf( 'Failed to cancel membership for user %d.', $user_id ) );
 				}
@@ -253,7 +265,7 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 *
 	 * ## OPTIONS
 	 *
-	 * --user=<id>
+	 * <user_id>
 	 * : The user ID.
 	 *
 	 * [--level=<id>]
@@ -267,23 +279,26 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp pmpro member cancel --user=42
-	 *     wp pmpro member cancel --user=42 --level=2
+	 *     wp pmpro member cancel 42
+	 *     wp pmpro member cancel 42 --level=2
 	 *
 	 * @when after_wp_load
 	 */
 	public function member_cancel( $args, $assoc_args ) {
-		$user_id = isset( $assoc_args['user'] ) ? (int) $assoc_args['user'] : 0;
-		if ( empty( $user_id ) ) {
-			WP_CLI::error( 'The --user=<id> argument is required.' );
-		}
+		$user_id = $this->require_user_id( isset( $args[0] ) ? $args[0] : '' );
 
 		$user = get_userdata( $user_id );
 		if ( ! $user ) {
 			WP_CLI::error( sprintf( 'User %d not found.', $user_id ) );
 		}
 
-		$level_id = isset( $assoc_args['level'] ) ? (int) $assoc_args['level'] : 0;
+		$level_id = 0;
+		if ( isset( $assoc_args['level'] ) ) {
+			if ( ! preg_match( '/^\d+$/', (string) $assoc_args['level'] ) || (int) $assoc_args['level'] < 1 ) {
+				WP_CLI::error( 'The --level argument must be a positive membership level ID.' );
+			}
+			$level_id = (int) $assoc_args['level'];
+		}
 		if ( $level_id > 0 ) {
 			$description = sprintf( 'Cancel level #%d for %s (#%d)?', $level_id, $user->user_login, $user_id );
 		} else {
@@ -302,7 +317,12 @@ class PMPro_CLI extends \WP_CLI_Command {
 				WP_CLI::error( sprintf( 'Failed to cancel membership for user %d.', $user_id ) );
 			}
 		} else {
-			foreach ( (array) pmpro_getMembershipLevelsForUser( $user_id ) as $level ) {
+			$levels = (array) pmpro_getMembershipLevelsForUser( $user_id );
+			if ( empty( $levels ) ) {
+				WP_CLI::success( sprintf( 'User %d has no active memberships.', $user_id ) );
+				return;
+			}
+			foreach ( $levels as $level ) {
 				if ( ! pmpro_cancelMembershipLevel( $level->id, $user_id ) ) {
 					WP_CLI::error( sprintf( 'Failed to cancel membership for user %d.', $user_id ) );
 				}
@@ -395,7 +415,7 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 *
 	 * ## OPTIONS
 	 *
-	 * [--user=<id>]
+	 * [--user_id=<id>]
 	 * : Only list orders for this user ID.
 	 *
 	 * [--level=<ids>]
@@ -432,12 +452,12 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     wp pmpro order list --status=success --number=20
-	 *     wp pmpro order list --user=42
+	 *     wp pmpro order list --user_id=42
 	 *
 	 * @when after_wp_load
 	 */
 	public function order_list( $args, $assoc_args ) {
-		$number = isset( $assoc_args['number'] ) ? (int) $assoc_args['number'] : 100;
+		$number = $this->list_limit( $assoc_args );
 		$page   = isset( $assoc_args['page'] ) ? max( 1, (int) $assoc_args['page'] ) : 1;
 
 		$query = array(
@@ -445,8 +465,8 @@ class PMPro_CLI extends \WP_CLI_Command {
 			'offset' => ( $page - 1 ) * $number,
 		);
 
-		if ( ! empty( $assoc_args['user'] ) ) {
-			$query['user_id'] = (int) $assoc_args['user'];
+		if ( ! empty( $assoc_args['user_id'] ) ) {
+			$query['user_id'] = (int) $assoc_args['user_id'];
 		}
 		if ( ! empty( $assoc_args['level'] ) ) {
 			$query['membership_level_id'] = array_map( 'intval', explode( ',', $assoc_args['level'] ) );
@@ -497,9 +517,9 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 */
 	public function order_get( $args, $assoc_args ) {
 		$identifier = $args[0];
-		$order      = is_numeric( $identifier ) ? MemberOrder::get_order( (int) $identifier ) : MemberOrder::get_order( (string) $identifier );
+		$order      = new MemberOrder( $identifier );
 
-		if ( empty( $order ) || empty( $order->id ) ) {
+		if ( empty( $order->id ) ) {
 			WP_CLI::error( sprintf( 'Order "%s" not found.', $identifier ) );
 		}
 
@@ -513,7 +533,7 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 *
 	 * ## OPTIONS
 	 *
-	 * [--user=<id>]
+	 * [--user_id=<id>]
 	 * : Only list subscriptions for this user ID.
 	 *
 	 * [--level=<ids>]
@@ -550,12 +570,12 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     wp pmpro subscription list --status=active
-	 *     wp pmpro subscription list --user=42
+	 *     wp pmpro subscription list --user_id=42
 	 *
 	 * @when after_wp_load
 	 */
 	public function subscription_list( $args, $assoc_args ) {
-		$number = isset( $assoc_args['number'] ) ? (int) $assoc_args['number'] : 100;
+		$number = $this->list_limit( $assoc_args );
 		$page   = isset( $assoc_args['page'] ) ? max( 1, (int) $assoc_args['page'] ) : 1;
 
 		$query = array(
@@ -563,8 +583,8 @@ class PMPro_CLI extends \WP_CLI_Command {
 			'offset' => ( $page - 1 ) * $number,
 		);
 
-		if ( ! empty( $assoc_args['user'] ) ) {
-			$query['user_id'] = (int) $assoc_args['user'];
+		if ( ! empty( $assoc_args['user_id'] ) ) {
+			$query['user_id'] = (int) $assoc_args['user_id'];
 		}
 		if ( ! empty( $assoc_args['level'] ) ) {
 			$query['membership_level_id'] = array_map( 'intval', explode( ',', $assoc_args['level'] ) );
@@ -651,10 +671,19 @@ class PMPro_CLI extends \WP_CLI_Command {
 	public function subscription_sync( $args, $assoc_args ) {
 		$subscriptions = array();
 		foreach ( $args as $arg ) {
-			if ( is_numeric( $arg ) ) {
+			if ( preg_match( '/^\d+$/', (string) $arg ) ) {
 				$subscription = PMPro_Subscription::get_subscription( (int) $arg );
 			} else {
-				$subscription = PMPro_Subscription::get_subscription( array( 'subscription_transaction_id' => (string) $arg ) );
+				$matches = PMPro_Subscription::get_subscriptions(
+					array(
+						'subscription_transaction_id' => (string) $arg,
+						'limit'                       => 2,
+					)
+				);
+				if ( count( $matches ) > 1 ) {
+					WP_CLI::error( sprintf( 'Multiple subscriptions found for transaction ID %s. Use the local subscription ID.', $arg ) );
+				}
+				$subscription = $matches ? reset( $matches ) : null;
 			}
 			if ( empty( $subscription ) ) {
 				WP_CLI::error( sprintf( 'Subscription %s not found.', $arg ) );
@@ -706,6 +735,35 @@ class PMPro_CLI extends \WP_CLI_Command {
 
 		$formatter = new \WP_CLI\Formatter( $assoc_args, $fields );
 		$formatter->display_items( $items );
+	}
+
+	/**
+	 * Require a positive integer user ID.
+	 *
+	 * @param mixed $value Raw positional argument.
+	 * @return int
+	 */
+	private function require_user_id( $value ) {
+		if ( ! preg_match( '/^\d+$/', (string) $value ) || (int) $value < 1 ) {
+			WP_CLI::error( 'A valid user ID is required.' );
+		}
+		return (int) $value;
+	}
+
+	/**
+	 * Positive --number for list commands. Default 100.
+	 *
+	 * @param array $assoc_args Command flags.
+	 * @return int
+	 */
+	private function list_limit( $assoc_args ) {
+		if ( ! isset( $assoc_args['number'] ) ) {
+			return 100;
+		}
+		if ( ! preg_match( '/^\d+$/', (string) $assoc_args['number'] ) || (int) $assoc_args['number'] < 1 ) {
+			WP_CLI::error( 'The --number argument must be a positive integer.' );
+		}
+		return (int) $assoc_args['number'];
 	}
 
 	/**
