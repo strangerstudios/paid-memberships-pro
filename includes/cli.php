@@ -4,7 +4,7 @@
  *
  * Thin wrappers around existing PMPro functions. One method per command.
  *
- *   wp pmpro member list|get|change-level|cancel
+ *   wp pmpro member list|get|add-level|remove-level|change-level|cancel
  *   wp pmpro level list|get
  *   wp pmpro order list|get
  *   wp pmpro subscription list|get|sync
@@ -179,7 +179,10 @@ class PMPro_CLI extends \WP_CLI_Command {
 	}
 
 	/**
-	 * Change (or grant) a member's membership level.
+	 * Add a membership level to a user.
+	 *
+	 * Other levels in the same exclusive group may be cancelled.
+	 * Levels in other groups are kept.
 	 *
 	 * ## OPTIONS
 	 *
@@ -187,7 +190,85 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 * : The user ID.
 	 *
 	 * --level=<id>
-	 * : The membership level ID to set. Use 0 to cancel all of the member's levels.
+	 * : The membership level ID to add.
+	 *
+	 * [--dry-run]
+	 * : Preview the change without applying it.
+	 *
+	 * [--yes]
+	 * : Skip the confirmation prompt.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp pmpro member add-level 42 --level=2
+	 *
+	 * @when after_wp_load
+	 */
+	public function member_add_level( $args, $assoc_args ) {
+		$user_id  = $this->require_user_id( isset( $args[0] ) ? $args[0] : '' );
+		$user     = $this->require_existing_user( $user_id );
+		$level_id = $this->require_level_id( $assoc_args, true );
+		$level    = pmpro_getLevel( $level_id );
+		if ( empty( $level ) ) {
+			WP_CLI::error( sprintf( 'Membership level %d not found.', $level_id ) );
+		}
+
+		$description = sprintf( 'Add level "%s" (#%d) to %s (#%d)?', $level->name, $level_id, $user->user_login, $user_id );
+		if ( ! $this->confirm_or_dry_run( $description, $assoc_args ) ) {
+			return;
+		}
+
+		$this->add_membership_level( $user_id, $level_id );
+	}
+
+	/**
+	 * Remove a membership level from a user.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <user_id>
+	 * : The user ID.
+	 *
+	 * --level=<id>
+	 * : The membership level ID to remove.
+	 *
+	 * [--dry-run]
+	 * : Preview the change without applying it.
+	 *
+	 * [--yes]
+	 * : Skip the confirmation prompt.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp pmpro member remove-level 42 --level=2
+	 *
+	 * @when after_wp_load
+	 */
+	public function member_remove_level( $args, $assoc_args ) {
+		$user_id  = $this->require_user_id( isset( $args[0] ) ? $args[0] : '' );
+		$user     = $this->require_existing_user( $user_id );
+		$level_id = $this->require_level_id( $assoc_args, true );
+
+		$description = sprintf( 'Remove level #%d from %s (#%d)?', $level_id, $user->user_login, $user_id );
+		if ( ! $this->confirm_or_dry_run( $description, $assoc_args ) ) {
+			return;
+		}
+
+		$this->remove_membership_level( $user_id, $level_id );
+	}
+
+	/**
+	 * Add a membership level (legacy name for add-level).
+	 *
+	 * Prefer `wp pmpro member add-level`. `--level=0` still cancels all levels.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <user_id>
+	 * : The user ID.
+	 *
+	 * --level=<id>
+	 * : The membership level ID to add. Use 0 to cancel all of the member's levels.
 	 *
 	 * [--dry-run]
 	 * : Preview the change without applying it.
@@ -204,16 +285,12 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 */
 	public function member_change_level( $args, $assoc_args ) {
 		$user_id = $this->require_user_id( isset( $args[0] ) ? $args[0] : '' );
+		$user    = $this->require_existing_user( $user_id );
 		if ( ! isset( $assoc_args['level'] ) ) {
 			WP_CLI::error( 'The --level=<id> argument is required.' );
 		}
 		if ( ! preg_match( '/^\d+$/', (string) $assoc_args['level'] ) ) {
 			WP_CLI::error( 'The --level argument must be 0 or a positive membership level ID.' );
-		}
-
-		$user = get_userdata( $user_id );
-		if ( ! $user ) {
-			WP_CLI::error( sprintf( 'User %d not found.', $user_id ) );
 		}
 
 		$level_id = (int) $assoc_args['level'];
@@ -222,46 +299,26 @@ class PMPro_CLI extends \WP_CLI_Command {
 			if ( empty( $level ) ) {
 				WP_CLI::error( sprintf( 'Membership level %d not found.', $level_id ) );
 			}
-			$description = sprintf( 'Change %s (#%d) to level "%s" (#%d)?', $user->user_login, $user_id, $level->name, $level_id );
+			$description = sprintf( 'Add level "%s" (#%d) to %s (#%d)?', $level->name, $level_id, $user->user_login, $user_id );
 		} else {
-			$description = sprintf( 'Cancel ALL memberships for %s (#%d)?', $user->user_login, $user_id );
+			$description = sprintf( 'Remove ALL memberships for %s (#%d)?', $user->user_login, $user_id );
 		}
 
-		if ( ! empty( $assoc_args['dry-run'] ) ) {
-			WP_CLI::log( '[dry-run] Would ' . lcfirst( $description ) );
+		if ( ! $this->confirm_or_dry_run( $description, $assoc_args ) ) {
 			return;
 		}
 
-		WP_CLI::confirm( $description, $assoc_args );
-
 		if ( $level_id > 0 ) {
-			$result = pmpro_changeMembershipLevel( $level_id, $user_id );
-			// false is a hard failure; null means the user is already on this level.
-			if ( false === $result ) {
-				WP_CLI::error( sprintf( 'Failed to change membership level for user %d.', $user_id ) );
-			}
-			if ( null === $result ) {
-				WP_CLI::success( sprintf( 'User %d is already on level %d.', $user_id, $level_id ) );
-				return;
-			}
+			$this->add_membership_level( $user_id, $level_id );
 		} else {
-			$levels = (array) pmpro_getMembershipLevelsForUser( $user_id );
-			if ( empty( $levels ) ) {
-				WP_CLI::success( sprintf( 'User %d has no active memberships.', $user_id ) );
-				return;
-			}
-			foreach ( $levels as $level ) {
-				if ( ! pmpro_cancelMembershipLevel( $level->id, $user_id ) ) {
-					WP_CLI::error( sprintf( 'Failed to cancel membership for user %d.', $user_id ) );
-				}
-			}
+			$this->remove_all_membership_levels( $user_id );
 		}
-
-		WP_CLI::success( sprintf( 'Updated membership for user %d.', $user_id ) );
 	}
 
 	/**
-	 * Cancel a member's membership.
+	 * Cancel a member's membership (legacy name for remove-level).
+	 *
+	 * Prefer `wp pmpro member remove-level` when removing one level.
 	 *
 	 * ## OPTIONS
 	 *
@@ -269,7 +326,7 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 * : The user ID.
 	 *
 	 * [--level=<id>]
-	 * : A specific membership level ID to cancel. Omit to cancel all of the member's levels.
+	 * : A specific membership level ID to remove. Omit to remove all of the member's levels.
 	 *
 	 * [--dry-run]
 	 * : Preview the cancellation without applying it.
@@ -286,50 +343,27 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 */
 	public function member_cancel( $args, $assoc_args ) {
 		$user_id = $this->require_user_id( isset( $args[0] ) ? $args[0] : '' );
-
-		$user = get_userdata( $user_id );
-		if ( ! $user ) {
-			WP_CLI::error( sprintf( 'User %d not found.', $user_id ) );
-		}
+		$user    = $this->require_existing_user( $user_id );
 
 		$level_id = 0;
 		if ( isset( $assoc_args['level'] ) ) {
-			if ( ! preg_match( '/^\d+$/', (string) $assoc_args['level'] ) || (int) $assoc_args['level'] < 1 ) {
-				WP_CLI::error( 'The --level argument must be a positive membership level ID.' );
-			}
-			$level_id = (int) $assoc_args['level'];
+			$level_id = $this->require_level_id( $assoc_args, true );
 		}
 		if ( $level_id > 0 ) {
-			$description = sprintf( 'Cancel level #%d for %s (#%d)?', $level_id, $user->user_login, $user_id );
+			$description = sprintf( 'Remove level #%d from %s (#%d)?', $level_id, $user->user_login, $user_id );
 		} else {
-			$description = sprintf( 'Cancel ALL memberships for %s (#%d)?', $user->user_login, $user_id );
+			$description = sprintf( 'Remove ALL memberships for %s (#%d)?', $user->user_login, $user_id );
 		}
 
-		if ( ! empty( $assoc_args['dry-run'] ) ) {
-			WP_CLI::log( '[dry-run] Would ' . lcfirst( $description ) );
+		if ( ! $this->confirm_or_dry_run( $description, $assoc_args ) ) {
 			return;
 		}
 
-		WP_CLI::confirm( $description, $assoc_args );
-
 		if ( $level_id > 0 ) {
-			if ( ! pmpro_cancelMembershipLevel( $level_id, $user_id ) ) {
-				WP_CLI::error( sprintf( 'Failed to cancel membership for user %d.', $user_id ) );
-			}
+			$this->remove_membership_level( $user_id, $level_id );
 		} else {
-			$levels = (array) pmpro_getMembershipLevelsForUser( $user_id );
-			if ( empty( $levels ) ) {
-				WP_CLI::success( sprintf( 'User %d has no active memberships.', $user_id ) );
-				return;
-			}
-			foreach ( $levels as $level ) {
-				if ( ! pmpro_cancelMembershipLevel( $level->id, $user_id ) ) {
-					WP_CLI::error( sprintf( 'Failed to cancel membership for user %d.', $user_id ) );
-				}
-			}
+			$this->remove_all_membership_levels( $user_id );
 		}
-
-		WP_CLI::success( sprintf( 'Cancelled membership(s) for user %d.', $user_id ) );
 	}
 
 	/**
@@ -751,6 +785,106 @@ class PMPro_CLI extends \WP_CLI_Command {
 	}
 
 	/**
+	 * Require an existing WP user.
+	 *
+	 * @param int $user_id User ID.
+	 * @return WP_User
+	 */
+	private function require_existing_user( $user_id ) {
+		$user = get_userdata( $user_id );
+		if ( ! $user ) {
+			WP_CLI::error( sprintf( 'User %d not found.', $user_id ) );
+		}
+		return $user;
+	}
+
+	/**
+	 * Require --level as a positive integer.
+	 *
+	 * @param array $assoc_args Command flags.
+	 * @param bool  $required   Whether the flag must be present.
+	 * @return int
+	 */
+	private function require_level_id( $assoc_args, $required = true ) {
+		if ( ! isset( $assoc_args['level'] ) ) {
+			if ( $required ) {
+				WP_CLI::error( 'The --level=<id> argument is required.' );
+			}
+			return 0;
+		}
+		if ( ! preg_match( '/^\d+$/', (string) $assoc_args['level'] ) || (int) $assoc_args['level'] < 1 ) {
+			WP_CLI::error( 'The --level argument must be a positive membership level ID.' );
+		}
+		return (int) $assoc_args['level'];
+	}
+
+	/**
+	 * Confirm unless --dry-run or --yes.
+	 *
+	 * @param string $description Confirmation text.
+	 * @param array  $assoc_args  Command flags.
+	 * @return bool False when this is a dry run (caller should return).
+	 */
+	private function confirm_or_dry_run( $description, $assoc_args ) {
+		if ( ! empty( $assoc_args['dry-run'] ) ) {
+			WP_CLI::log( '[dry-run] Would ' . lcfirst( $description ) );
+			return false;
+		}
+		WP_CLI::confirm( $description, $assoc_args );
+		return true;
+	}
+
+	/**
+	 * Add a level via pmpro_changeMembershipLevel().
+	 *
+	 * @param int $user_id  User ID.
+	 * @param int $level_id Level ID.
+	 */
+	private function add_membership_level( $user_id, $level_id ) {
+		$result = pmpro_changeMembershipLevel( $level_id, $user_id, 'admin_changed' );
+		if ( false === $result ) {
+			WP_CLI::error( sprintf( 'Failed to add level %d for user %d.', $level_id, $user_id ) );
+		}
+		if ( null === $result ) {
+			WP_CLI::success( sprintf( 'User %d already has level %d.', $user_id, $level_id ) );
+			return;
+		}
+		WP_CLI::success( sprintf( 'Added level %d for user %d.', $level_id, $user_id ) );
+	}
+
+	/**
+	 * Remove one level via pmpro_cancelMembershipLevel().
+	 *
+	 * @param int $user_id  User ID.
+	 * @param int $level_id Level ID.
+	 */
+	private function remove_membership_level( $user_id, $level_id ) {
+		if ( ! pmpro_cancelMembershipLevel( $level_id, $user_id, 'admin_cancelled' ) ) {
+			WP_CLI::error( sprintf( 'Failed to remove level %d for user %d.', $level_id, $user_id ) );
+		}
+		WP_CLI::success( sprintf( 'Removed level %d for user %d.', $level_id, $user_id ) );
+	}
+
+	/**
+	 * Remove every active level for a user.
+	 *
+	 * @param int $user_id User ID.
+	 */
+	private function remove_all_membership_levels( $user_id ) {
+		$levels = (array) pmpro_getMembershipLevelsForUser( $user_id );
+		if ( empty( $levels ) ) {
+			WP_CLI::success( sprintf( 'User %d has no active memberships.', $user_id ) );
+			return;
+		}
+		foreach ( $levels as $level ) {
+			if ( ! pmpro_cancelMembershipLevel( $level->id, $user_id, 'admin_cancelled' ) ) {
+				WP_CLI::error( sprintf( 'Failed to remove level %d for user %d.', $level->id, $user_id ) );
+			}
+		}
+		WP_CLI::success( sprintf( 'Removed all memberships for user %d.', $user_id ) );
+	}
+
+	/**
 	 * Positive --number for list commands. Default 100.
 	 *
 	 * @param array $assoc_args Command flags.
@@ -841,6 +975,8 @@ class PMPro_CLI extends \WP_CLI_Command {
 $pmpro_cli = new PMPro_CLI();
 WP_CLI::add_command( 'pmpro member list', array( $pmpro_cli, 'member_list' ) );
 WP_CLI::add_command( 'pmpro member get', array( $pmpro_cli, 'member_get' ) );
+WP_CLI::add_command( 'pmpro member add-level', array( $pmpro_cli, 'member_add_level' ) );
+WP_CLI::add_command( 'pmpro member remove-level', array( $pmpro_cli, 'member_remove_level' ) );
 WP_CLI::add_command( 'pmpro member change-level', array( $pmpro_cli, 'member_change_level' ) );
 WP_CLI::add_command( 'pmpro member cancel', array( $pmpro_cli, 'member_cancel' ) );
 WP_CLI::add_command( 'pmpro level list', array( $pmpro_cli, 'level_list' ) );
