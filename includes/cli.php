@@ -24,7 +24,7 @@ if ( ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
  *
  * @since TBD
  */
-class PMPro_CLI {
+class PMPro_CLI extends \WP_CLI_Command {
 
 	/**
 	 * List members (users who hold a membership).
