@@ -649,20 +649,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<p class="description"><?php esc_html_e( 'Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
-		<?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
-				$allowed_appe_html = array (
-					'a' => array (
-						'href' => array(),
-						'target' => array(),
-						'title' => array(),
-					),
-				);
-				echo '<tr class="gateway gateway_stripe"';
-				if ( $gateway != "stripe" ) {
-					echo ' style="display: none;"';
-				}
-				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
-		}
+		<?php
 	}
 
 	/**
@@ -1051,21 +1038,6 @@ class PMProGateway_stripe extends PMProGateway {
 						jQuery('#stripe_tax').change();
 					});
 				</script>
-				<?php
-					if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
-						?>
-						<p>
-							<?php
-								printf(
-									/* translators: %s: URL to the Add PayPal Express Add On documentation. */
-									esc_html__( 'Optional: Offer PayPal Express as an option at checkout using the %s.', 'paid-memberships-pro' ),
-									'<a href="https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout" target="_blank">' . esc_html__( 'Add PayPal Express Add On', 'paid-memberships-pro' ) . '</a>'
-								);
-							?>
-						</p>
-						<?php
-					}
-				?>
 			</div>
 		</div>
 		<?php

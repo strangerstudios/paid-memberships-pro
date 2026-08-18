@@ -210,6 +210,9 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= TBD =
+* ENHANCEMENT: Removed the notices on the Stripe payment settings recommending the deprecated Add PayPal Express Add On. #3751 (@flintfromthebasement)
+
 = 3.8.4 - 2026-08-06 =
 * ENHANCEMENT: Added new `--pmpro--btn--border-radius`, `--pmpro--btn--top-bottom-padding`, and `--pmpro--btn--left-right-padding` CSS variables so that button styles can be customized separately from other elements that share the base variables. #3747 (@RachelRVasquez)
 * BUG FIX: Fixed an issue where Stripe Checkout orders paid with delayed notification payment methods such as SEPA Direct Debit could be completed without their subscription and payment transaction IDs, which prevented membership cancellations from being sent to Stripe. An upgrade script now recovers the missing IDs for previously affected orders. #3745 (@dparker1005)
