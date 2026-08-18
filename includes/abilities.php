@@ -3,7 +3,7 @@
  * Register Paid Memberships Pro abilities for the WordPress Abilities API.
  *
  * @package PaidMembershipsPro
- * @since 3.8.3
+ * @since TBD
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ add_action( 'wp_abilities_api_init', 'pmpro_abilities_register_abilities' );
 /**
  * Check whether the WordPress Abilities API is available.
  *
- * @since 3.8.3
+ * @since TBD
  *
  * @return bool
  */
@@ -29,7 +29,7 @@ function pmpro_abilities_is_abilities_api_available() {
 /**
  * Check whether PMPro can register abilities.
  *
- * @since 3.8.3
+ * @since TBD
  *
  * @return bool
  */
@@ -37,7 +37,7 @@ function pmpro_abilities_can_boot() {
 	/**
 	 * Filter whether PMPro should register Abilities API categories and abilities.
 	 *
-	 * @since 3.8.3
+	 * @since TBD
 	 *
 	 * @param bool $enabled Whether ability registration is enabled.
 	 */
@@ -308,15 +308,21 @@ function pmpro_abilities_get_levels_query_definition() {
 function pmpro_abilities_get_member_memberships_definition() {
 	return array(
 		'label'               => __( 'Get Member Memberships', 'paid-memberships-pro' ),
-		'description'         => __( 'Retrieve the current membership assignments for a specific user.', 'paid-memberships-pro' ),
+		'description'         => __( 'Retrieve the active membership assignments for a specific user. Set include_inactive to also return the user\'s past membership history.', 'paid-memberships-pro' ),
 		'category'            => 'pmpro',
 		'execute_callback'    => 'pmpro_abilities_execute_member_memberships_get',
 		'permission_callback' => 'pmpro_abilities_can_manage_members',
 		'input_schema'        => array(
 			'type'       => 'object',
+			'default'    => array(
+				'include_inactive' => false,
+			),
 			'properties' => array(
-				'user_id' => array(
+				'user_id'          => array(
 					'type' => 'integer',
+				),
+				'include_inactive' => array(
+					'type' => 'boolean',
 				),
 			),
 			'required'   => array( 'user_id' ),
@@ -912,7 +918,7 @@ function pmpro_abilities_execute_levels_query( $input ) {
 	$query          = strtolower( trim( (string) $input['query'] ) );
 	$limit          = max( 1, min( 50, (int) $input['limit'] ) );
 	$page           = max( 1, (int) $input['page'] );
-	$levels         = array_values( pmpro_getAllLevels( $include_hidden, true ) );
+	$levels         = array_values( pmpro_getAllLevels( $include_hidden ) );
 
 	if ( '' !== $query ) {
 		$levels = array_values(
@@ -953,7 +959,9 @@ function pmpro_abilities_execute_member_memberships_get( $input ) {
 		return $user;
 	}
 
-	$memberships = pmpro_getMembershipLevelsForUser( $user->ID, true );
+	$include_inactive = ! empty( $input['include_inactive'] );
+
+	$memberships = pmpro_getMembershipLevelsForUser( $user->ID, $include_inactive );
 	if ( ! is_array( $memberships ) ) {
 		$memberships = array();
 	}
@@ -988,15 +996,18 @@ function pmpro_abilities_execute_member_membership_change( $input ) {
 		return new WP_Error( 'pmpro_abilities_level_not_found', __( 'Membership level not found.', 'paid-memberships-pro' ), array( 'status' => 404 ) );
 	}
 
-	$previous_memberships = pmpro_getMembershipLevelsForUser( $user->ID, true );
+	$previous_memberships = pmpro_getMembershipLevelsForUser( $user->ID );
 	if ( ! is_array( $previous_memberships ) ) {
 		$previous_memberships = array();
 	}
 
-	$old_level_status = ! empty( $input['old_level_status'] ) ? (string) $input['old_level_status'] : 'admin_changed';
-	$result           = pmpro_changeMembershipLevel( (int) $level->id, (int) $user->ID, $old_level_status );
+	$old_level_status = ! empty( $input['old_level_status'] ) ? pmpro_sanitize_with_safelist( (string) $input['old_level_status'], array( 'inactive', 'changed', 'admin_changed', 'cancelled', 'admin_cancelled', 'expired' ) ) : 'admin_changed';
+	if ( empty( $old_level_status ) ) {
+		return new WP_Error( 'pmpro_abilities_invalid_old_level_status', __( 'Invalid old level status.', 'paid-memberships-pro' ), array( 'status' => 400 ) );
+	}
+	$result = pmpro_changeMembershipLevel( (int) $level->id, (int) $user->ID, $old_level_status );
 
-	$current_memberships = pmpro_getMembershipLevelsForUser( $user->ID, true );
+	$current_memberships = pmpro_getMembershipLevelsForUser( $user->ID );
 	if ( ! is_array( $current_memberships ) ) {
 		$current_memberships = array();
 	}
@@ -1048,14 +1059,14 @@ function pmpro_abilities_execute_member_membership_cancel( $input ) {
 		return new WP_Error( 'pmpro_abilities_level_not_found', __( 'Membership level not found.', 'paid-memberships-pro' ), array( 'status' => 404 ) );
 	}
 
-	$previous_memberships = pmpro_getMembershipLevelsForUser( $user->ID, true );
+	$previous_memberships = pmpro_getMembershipLevelsForUser( $user->ID );
 	if ( ! is_array( $previous_memberships ) ) {
 		$previous_memberships = array();
 	}
 
 	$result = pmpro_cancelMembershipLevel( (int) $level->id, (int) $user->ID, 'admin_cancelled' );
 
-	$current_memberships = pmpro_getMembershipLevelsForUser( $user->ID, true );
+	$current_memberships = pmpro_getMembershipLevelsForUser( $user->ID );
 	if ( ! is_array( $current_memberships ) ) {
 		$current_memberships = array();
 	}

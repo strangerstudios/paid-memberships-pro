@@ -419,7 +419,7 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 */
 	public function level_list( $args, $assoc_args ) {
 		$items = array();
-		foreach ( (array) pmpro_getAllLevels( ! empty( $assoc_args['include-hidden'] ), true ) as $level ) {
+		foreach ( (array) pmpro_getAllLevels( ! empty( $assoc_args['include-hidden'] ) ) as $level ) {
 			$items[] = $this->format_level( $level );
 		}
 
@@ -786,6 +786,11 @@ class PMPro_CLI extends \WP_CLI_Command {
 		if ( isset( $assoc_args['format'] ) && 'count' === $assoc_args['format'] ) {
 			WP_CLI::line( (string) count( $items ) );
 			return;
+		}
+
+		// The ids format expects a flat list, not row arrays.
+		if ( isset( $assoc_args['format'] ) && 'ids' === $assoc_args['format'] ) {
+			$items = wp_list_pluck( $items, $fields[0] );
 		}
 
 		$formatter = new \WP_CLI\Formatter( $assoc_args, $fields );

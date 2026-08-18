@@ -315,7 +315,7 @@ class PMPro_Subscription {
 	 *
 	 * Defaults to returning the latest 100 subscriptions.
 	 *
-	 * @since 3.8.3 Added support for the `offset` and `return_count` arguments.
+	 * @since TBD Added support for the `offset` and `return_count` arguments.
 	 *
 	 * @param array $args The query arguments to use.
 	 *

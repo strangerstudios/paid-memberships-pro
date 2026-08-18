@@ -305,7 +305,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'gateway'    => array( 'sanitize_callback' => 'sanitize_text_field' ),
 						'start_date' => array( 'sanitize_callback' => 'sanitize_text_field' ),
 						'end_date'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
-						'orderby'    => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'orderby'    => array( 'sanitize_callback' => 'sanitize_key' ),
+						'order'      => array( 'sanitize_callback' => 'sanitize_key' ),
 						'fields'     => array(
 							'sanitize_callback' => 'sanitize_text_field',
 							'validate_callback' => function( $value ) {
@@ -335,7 +336,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'level'    => array(),
 						'status'   => array(),
 						'gateway'  => array( 'sanitize_callback' => 'sanitize_text_field' ),
-						'orderby'  => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'orderby'  => array( 'sanitize_callback' => 'sanitize_key' ),
+						'order'    => array( 'sanitize_callback' => 'sanitize_key' ),
 						'fields'   => array(
 							'sanitize_callback' => 'sanitize_text_field',
 							'validate_callback' => function( $value ) {
@@ -1439,6 +1441,21 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$query_args['end_date'] = sanitize_text_field( $params['end_date'] );
 			}
 
+			// Sort by an allowlisted column. Unknown values fall back to the default (timestamp DESC).
+			$orderby_map = array(
+				'id'            => '`o`.`id`',
+				'user_id'       => '`o`.`user_id`',
+				'membership_id' => '`o`.`membership_id`',
+				'status'        => '`o`.`status`',
+				'gateway'       => '`o`.`gateway`',
+				'total'         => '`o`.`total`',
+				'timestamp'     => '`o`.`timestamp`',
+			);
+			if ( ! empty( $params['orderby'] ) && isset( $orderby_map[ $params['orderby'] ] ) ) {
+				$order                 = ( ! empty( $params['order'] ) && 'asc' === strtolower( (string) $params['order'] ) ) ? 'ASC' : 'DESC';
+				$query_args['orderby'] = $orderby_map[ $params['orderby'] ] . ' ' . $order;
+			}
+
 			$total  = (int) MemberOrder::get_orders( array_merge( $query_args, array( 'return_count' => true ) ) );
 			$orders = MemberOrder::get_orders( $query_args );
 
@@ -1494,6 +1511,23 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 			if ( ! empty( $params['gateway'] ) ) {
 				$query_args['gateway'] = sanitize_text_field( $params['gateway'] );
+			}
+
+			// Sort by an allowlisted column. Unknown values fall back to the default (startdate DESC).
+			$orderby_map = array(
+				'id'                  => '`id`',
+				'user_id'             => '`user_id`',
+				'membership_level_id' => '`membership_level_id`',
+				'status'              => '`status`',
+				'gateway'             => '`gateway`',
+				'billing_amount'      => '`billing_amount`',
+				'startdate'           => '`startdate`',
+				'enddate'             => '`enddate`',
+				'next_payment_date'   => '`next_payment_date`',
+			);
+			if ( ! empty( $params['orderby'] ) && isset( $orderby_map[ $params['orderby'] ] ) ) {
+				$order                 = ( ! empty( $params['order'] ) && 'asc' === strtolower( (string) $params['order'] ) ) ? 'ASC' : 'DESC';
+				$query_args['orderby'] = $orderby_map[ $params['orderby'] ] . ' ' . $order;
 			}
 
 			$total         = (int) PMPro_Subscription::get_subscriptions( array_merge( $query_args, array( 'return_count' => true ) ) );
