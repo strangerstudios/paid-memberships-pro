@@ -26,20 +26,6 @@ class PMProGateway_authorizenet extends PMProGateway
 		//add fields to payment settings
 		add_filter('pmpro_payment_options', array('PMProGateway_authorizenet', 'pmpro_payment_options'));
 		add_filter('pmpro_payment_option_fields', array('PMProGateway_authorizenet', 'pmpro_payment_option_fields'), 10, 2);
-
-		//make sure sites using Authorize.net have a Silent Post token set
-		add_action('pmpro_after_saved_payment_options', array('PMProGateway_authorizenet', 'maybe_generate_silent_post_token'));
-	}
-
-	/**
-	 * Generate a Silent Post token if Authorize.net is set up but none is saved yet.
-	 *
-	 * @since TBD
-	 */
-	static function maybe_generate_silent_post_token() {
-		if ( ! empty( get_option( 'pmpro_loginname' ) ) && empty( get_option( 'pmpro_authnet_silent_post_token' ) ) ) {
-			update_option( 'pmpro_authnet_silent_post_token', wp_generate_password( 32, false ) );
-		}
 	}
 
 	/**

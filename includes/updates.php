@@ -57,7 +57,7 @@ add_action('admin_enqueue_scripts', 'pmpro_enqueue_update_js');
 */
 function pmpro_wp_ajax_pmpro_updates() {
 	// Only admins can run updates.
-	if ( ! current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_updates' ) ) {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
