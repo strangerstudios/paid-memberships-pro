@@ -651,33 +651,6 @@
 		border-radius: 0;
 	}
 
-	/* Move password toggle before field visually but structurally after */
-	#pmpro_user_fields .pmpro_form_field-password:has(.pmpro_form_field-password-toggle),
-	.pmpro_section #loginform .login-password {
-		align-items: center;
-		display: grid;
-		grid-template-areas:
-			"label toggle"
-			"input input";
-		grid-template-columns: 1fr auto;
-	}
-
-	#pmpro_user_fields .pmpro_form_field-password:has(.pmpro_form_field-password-toggle) label,
-	.pmpro_section #loginform .login-password label {
-		grid-area: label;
-	}
-
-	#pmpro_user_fields .pmpro_form_field-password:has(.pmpro_form_field-password-toggle) input,
-	.pmpro_section #loginform .login-password input {
-		grid-area: input;
-	}
-
-	#pmpro_user_fields .pmpro_form_field-password .pmpro_form_field-password-toggle,
-	.pmpro_section #loginform .login-password .pmpro_form_field-password-toggle {
-		grid-area: toggle;
-		justify-self: end;
-	}
-
 	#resetpassform .pmpro_cols-2 {
 		container: resetpassform / inline-size;
 	}
