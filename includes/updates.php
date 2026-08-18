@@ -47,6 +47,7 @@ function pmpro_removeUpdate($update) {
 function pmpro_enqueue_update_js() {
 	if(!empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-updates') {
 		wp_enqueue_script( 'pmpro-updates', plugin_dir_url( dirname(__FILE__) ) . 'js/updates.js', array('jquery'), PMPRO_VERSION );
+		wp_localize_script( 'pmpro-updates', 'pmpro_updates_l10n', array( 'nonce' => wp_create_nonce( 'pmpro_updates' ) ) );
 	}
 }
 add_action('admin_enqueue_scripts', 'pmpro_enqueue_update_js');
@@ -55,6 +56,14 @@ add_action('admin_enqueue_scripts', 'pmpro_enqueue_update_js');
 	Load an update via AJAX
 */
 function pmpro_wp_ajax_pmpro_updates() {
+	// Only admins can run updates.
+	if ( ! current_user_can( 'manage_options' ) ) {
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	// Check the nonce.
+	check_ajax_referer( 'pmpro_updates', 'nonce' );
+
 	//get updates
 	$updates = array_values(get_option('pmpro_updates', array()));
 
