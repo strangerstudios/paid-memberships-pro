@@ -4,7 +4,8 @@
  *
  * Thin wrappers around existing PMPro functions. One method per command.
  *
- *   wp pmpro member list|get|add-level|remove-level|change-level|cancel
+ *   wp pmpro membership list
+ *   wp pmpro member get|add-level|remove-level|change-level|cancel
  *   wp pmpro level list|get
  *   wp pmpro order list|get
  *   wp pmpro subscription list|get|sync
@@ -27,12 +28,13 @@ if ( ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 class PMPro_CLI extends \WP_CLI_Command {
 
 	/**
-	 * List members (users who hold a membership).
+	 * List memberships. Returns one row per user/level pair, so a member
+	 * holding multiple levels appears once per level held.
 	 *
 	 * ## OPTIONS
 	 *
 	 * [--level=<ids>]
-	 * : Only list members with these membership level IDs. Comma-separated.
+	 * : Only list memberships for these membership level IDs. Comma-separated.
 	 *
 	 * [--status=<statuses>]
 	 * : Membership status(es) to match, or 'all' for any status. Comma-separated. Default: active.
@@ -41,7 +43,7 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 * : Match users by login, email, or display name.
 	 *
 	 * [--number=<n>]
-	 * : Maximum number of members to return. Default: 100.
+	 * : Maximum number of memberships to return. Default: 100.
 	 *
 	 * [--page=<n>]
 	 * : Page of results to return. Default: 1.
@@ -69,14 +71,14 @@ class PMPro_CLI extends \WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp pmpro member list --level=2 --status=active
-	 *     wp pmpro member list --search=jane --format=json
+	 *     wp pmpro membership list --level=2 --status=active
+	 *     wp pmpro membership list --search=jane --format=json
 	 *
 	 * @when after_wp_load
 	 */
-	public function member_list( $args, $assoc_args ) {
+	public function membership_list( $args, $assoc_args ) {
 		if ( isset( $assoc_args['format'] ) && 'ids' === $assoc_args['format'] ) {
-			WP_CLI::error( 'The ids format is not supported for member list (a user can have multiple memberships). Use --fields=user_id --format=csv.' );
+			WP_CLI::error( 'The ids format is not supported for membership list (rows are user/level pairs). Use --fields=user_id --format=csv.' );
 		}
 
 		$number = $this->list_limit( $assoc_args );
@@ -1022,7 +1024,7 @@ class PMPro_CLI extends \WP_CLI_Command {
 }
 
 $pmpro_cli = new PMPro_CLI();
-WP_CLI::add_command( 'pmpro member list', array( $pmpro_cli, 'member_list' ) );
+WP_CLI::add_command( 'pmpro membership list', array( $pmpro_cli, 'membership_list' ) );
 WP_CLI::add_command( 'pmpro member get', array( $pmpro_cli, 'member_get' ) );
 WP_CLI::add_command( 'pmpro member add-level', array( $pmpro_cli, 'member_add_level' ) );
 WP_CLI::add_command( 'pmpro member remove-level', array( $pmpro_cli, 'member_remove_level' ) );

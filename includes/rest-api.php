@@ -11,7 +11,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				array(
 					'methods'         => WP_REST_Server::READABLE,
-					'callback'        => array( $this, 'pmpro_rest_api_get_membership_level_for_user' ),
+					'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_level_for_user' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),));
 			
@@ -48,7 +48,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			 array(
 				 array(
 					 'methods'         => WP_REST_Server::READABLE,
-					 'callback'        => array( $this, 'pmpro_rest_api_get_membership_level_for_user' ),
+					 'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_level_for_user' ),
 					 'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			 ),));
 
@@ -61,7 +61,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			 array(
 				 array(
 					 'methods'         => WP_REST_Server::READABLE,
-					 'callback'        => array( $this, 'pmpro_rest_api_get_membership_levels_for_user' ),
+					 'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_levels_for_user' ),
 					 'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			 ),));
 
@@ -120,7 +120,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		array(
 			array(
 				'methods'         => WP_REST_Server::READABLE,
-				'callback'        => array( $this, 'pmpro_rest_api_get_membership_level' ),
+				'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_level' ),
 				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),
 			array(
@@ -144,7 +144,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				array(
 					'methods'         => WP_REST_Server::READABLE,
-					'callback'        => array( $this, 'pmpro_rest_api_get_membership_levels' ),
+					'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_levels' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				),
 			)
@@ -257,15 +257,15 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		);
 
 		/**
-		 * Get a paginated, filterable collection of members.
+		 * Get a paginated, filterable collection of memberships (one row per user/level pair).
 		 * @since TBD
-		 * Example: https://example.com/wp-json/pmpro/v1/members?level=1&status=active&page=1&per_page=20
+		 * Example: https://example.com/wp-json/pmpro/v1/memberships?level=1&status=active&page=1&per_page=20
 		 */
-		register_rest_route( $pmpro_namespace, '/members',
+		register_rest_route( $pmpro_namespace, '/memberships',
 			array(
 				array(
 					'methods'  => WP_REST_Server::READABLE,
-					'callback' => array( $this, 'pmpro_rest_api_get_members' ),
+					'callback' => array( $this, 'pmpro_rest_api_get_memberships' ),
 					'args'     => array(
 						'page'     => array( 'sanitize_callback' => 'absint' ),
 						'per_page' => array( 'sanitize_callback' => 'absint' ),
@@ -277,7 +277,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'fields'   => array(
 							'sanitize_callback' => 'sanitize_text_field',
 							'validate_callback' => function( $value ) {
-								return $this->pmpro_rest_api_validate_fields( $value, 'members' );
+								return $this->pmpro_rest_api_validate_fields( $value, 'memberships' );
 							},
 						),
 					),
@@ -520,7 +520,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/pmpro/v1/get_membership_level_for_user?user_id=1
 		 */
-		function pmpro_rest_api_get_membership_level_for_user($request) {
+		function pmpro_rest_api_get_membershipship_level_for_user($request) {
 			$params = $request->get_params();
 			
 			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
@@ -550,7 +550,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/pmpro/v1/get_membership_levels_for_user?user_id=1
 		 */
-		 function pmpro_rest_api_get_membership_levels_for_user($request) {
+		 function pmpro_rest_api_get_membershipship_levels_for_user($request) {
 			$params = $request->get_params();
 			
 			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
@@ -769,7 +769,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/pmpro/v1/membership_level/
 		 */
-		function pmpro_rest_api_get_membership_level( $request ) {
+		function pmpro_rest_api_get_membershipship_level( $request ) {
 
 			if ( ! class_exists( 'PMPro_Membership_Level' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro level class not found.', 404 );
@@ -891,7 +891,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since 3.0
 		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
 		 */
-		function pmpro_rest_api_get_membership_levels( $request ) {
+		function pmpro_rest_api_get_membershipship_levels( $request ) {
 			
 			if ( ! class_exists( 'PMPro_Membership_Level' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro level class not found.', 404 );
@@ -1349,14 +1349,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
-		 * Get a paginated, filterable collection of members.
+		 * Get a paginated, filterable collection of memberships (one row per user/level pair).
 		 *
 		 * @since TBD
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response The REST response.
 		 */
-		public function pmpro_rest_api_get_members( $request ) {
+		public function pmpro_rest_api_get_memberships( $request ) {
 			$params   = $request->get_params();
 			$per_page = $this->pmpro_rest_api_get_per_page( $params );
 			$page     = $this->pmpro_rest_api_get_page( $params );
@@ -1382,11 +1382,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$total   = (int) pmpro_get_memberships( array_merge( $query_args, array( 'return_count' => true ) ) );
-			$members = pmpro_get_memberships( $query_args );
+			$memberships = pmpro_get_memberships( $query_args );
 
 			$fields = $this->pmpro_rest_api_get_fields( $params );
 			$items  = array();
-			foreach ( (array) $members as $member ) {
+			foreach ( (array) $memberships as $member ) {
 				$item = array(
 					'user_id'         => (int) $member['user_id'],
 					'user_login'      => $member['user_login'],
@@ -1616,12 +1616,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 *
 		 * @since TBD
 		 *
-		 * @param string $collection One of 'members', 'orders' or 'subscriptions'.
+		 * @param string $collection One of 'memberships', 'orders' or 'subscriptions'.
 		 * @return array Array of valid field names.
 		 */
 		private function pmpro_rest_api_get_collection_fields( $collection ) {
 			$fields = array(
-				'members'       => array(
+				'memberships'   => array(
 					'user_id',
 					'user_login',
 					'user_email',
@@ -1677,7 +1677,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since TBD
 		 *
 		 * @param mixed  $value      The `fields` parameter value.
-		 * @param string $collection One of 'members', 'orders' or 'subscriptions'.
+		 * @param string $collection One of 'memberships', 'orders' or 'subscriptions'.
 		 * @return true|WP_Error True when valid, WP_Error otherwise.
 		 */
 		private function pmpro_rest_api_validate_fields( $value, $collection ) {
@@ -2328,7 +2328,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/me' => true,
 				'/pmpro/v1/recent_memberships' => 'pmpro_edit_members',
 				'/pmpro/v1/recent_orders' => 'pmpro_orders',
-				'/pmpro/v1/members' => 'pmpro_edit_members',
+				'/pmpro/v1/memberships' => 'pmpro_edit_members',
 				'/pmpro/v1/orders' => 'pmpro_orders',
 				'/pmpro/v1/subscriptions' => 'pmpro_edit_members',
 				'/pmpro/v1/post_restrictions' => array(
