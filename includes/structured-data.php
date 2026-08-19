@@ -392,8 +392,8 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
 
 	/**
 	 * Filter product image URL for a level.
-	 * Default: site icon → custom logo → PMPro plugin banner (Google requires image).
-	 * Return empty string to omit (will fail Google rich-result eligibility).
+	 * Default: site icon → custom logo → omitted. Image is recommended for
+	 * product snippets and required only for merchant listing experiences.
 	 *
 	 * @since TBD
 	 *
@@ -584,7 +584,8 @@ function pmpro_structured_data_build_item_list_schema( $products ) {
 
 /**
  * Default product image for structured data.
- * Prefer site branding; fall back to the bundled plugin banner so Google always gets an image.
+ * Site icon, then custom logo. Empty when neither is set so we never publish
+ * an image that doesn't represent the site's own branding.
  *
  * @since TBD
  *
@@ -597,9 +598,6 @@ function pmpro_structured_data_get_fallback_image() {
 		if ( ! empty( $logo_id ) ) {
 			$url = wp_get_attachment_image_url( (int) $logo_id, 'full' );
 		}
-	}
-	if ( empty( $url ) && defined( 'PMPRO_BASE_FILE' ) ) {
-		$url = plugins_url( 'paid-memberships-pro-banner.png', PMPRO_BASE_FILE );
 	}
 	return ! empty( $url ) ? $url : '';
 }
