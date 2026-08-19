@@ -105,7 +105,7 @@ class PMPro_CLI extends \WP_CLI_Command {
 		}
 
 		$items = array();
-		foreach ( (array) pmpro_get_members( $query ) as $member ) {
+		foreach ( (array) pmpro_get_memberships( $query ) as $member ) {
 			$items[] = array(
 				'user_id'         => (int) $member['user_id'],
 				'user_login'      => $member['user_login'],

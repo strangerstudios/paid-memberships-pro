@@ -1381,8 +1381,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$query_args['order'] = ( 'asc' === strtolower( (string) $params['order'] ) ) ? 'ASC' : 'DESC';
 			}
 
-			$total   = (int) pmpro_get_members( array_merge( $query_args, array( 'return_count' => true ) ) );
-			$members = pmpro_get_members( $query_args );
+			$total   = (int) pmpro_get_memberships( array_merge( $query_args, array( 'return_count' => true ) ) );
+			$members = pmpro_get_memberships( $query_args );
 
 			$fields = $this->pmpro_rest_api_get_fields( $params );
 			$items  = array();

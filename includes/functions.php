@@ -5570,11 +5570,12 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
 }
 
 /**
- * Query PMPro members (WordPress users who hold a membership) with filtering and pagination.
+ * Query PMPro memberships (one row per user and membership level pair) with filtering and pagination.
  *
- * Provides a single reusable member query for the REST API collection endpoint
- * ( /pmpro/v1/members ) and the `wp pmpro member list` CLI command, so both share
- * the same filtering, pagination, and output shape.
+ * A user holding multiple levels returns one row per level held. Provides a single
+ * reusable membership query for the REST API collection endpoint ( /pmpro/v1/members )
+ * and the `wp pmpro member list` CLI command, so both share the same filtering,
+ * pagination, and output shape.
  *
  * @since TBD
  *
@@ -5596,7 +5597,7 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
  * }
  * @return array|int Array of member row arrays, or an integer count when $return_count is true.
  */
-function pmpro_get_members( $args = array() ) {
+function pmpro_get_memberships( $args = array() ) {
 	global $wpdb;
 
 	$defaults = array(
