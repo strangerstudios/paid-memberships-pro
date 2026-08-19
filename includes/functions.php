@@ -5583,7 +5583,10 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
  *
  *     @type int|int[]       $membership_id Only return members holding these level IDs. Default null (any level).
  *     @type string|string[] $status        Membership status(es) to match, or 'all' for any status. Default 'active'.
- *                                          Only the latest matching row for each user/level pair is returned.
+ *                                          Only the latest row matching the status filter is returned for each
+ *                                          user/level pair. Like the underlying table, historical statuses such
+ *                                          as 'cancelled' can match members who since re-subscribed to the level;
+ *                                          'active' matches anyone PMPro considers to hold the level.
  *     @type string          $search        Match users by login, email, or display name. Default ''.
  *     @type int             $limit         Maximum rows to return. 0 for no limit. Default 100.
  *     @type int             $offset        Rows to skip, for pagination. Default 0.
