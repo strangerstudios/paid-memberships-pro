@@ -431,8 +431,9 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
  *
  * Offer.price is the primary advertised price Google treats as active:
  * - initial_payment when > 0
+ * - otherwise trial_amount when a paid trial is configured
  * - otherwise recurring billing_amount when the level is free-to-start
- *   (avoids advertising $0 for a paid subscription)
+ *   (avoids advertising $0 for a paid subscription, including free trials)
  *
  * Recurring terms are always added as UnitPriceSpecification when present
  * (including after a trial) so agents can see the ongoing rate. Finite
@@ -461,14 +462,15 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 	/*
 	 * Primary Offer.price (what Google treats as active):
 	 * 1. initial_payment when charged now
-	 * 2. trial_amount when a trial is configured (amount for trial periods)
-	 * 3. billing_amount for free-to-start recurring (avoid advertising $0 paid subs)
+	 * 2. trial_amount when a paid trial is configured
+	 * 3. billing_amount for free-to-start recurring, including free trials
+	 *    (avoid advertising $0 paid subs)
 	 * 4. else 0 (truly free)
 	 */
 	if ( $initial > 0 ) {
 		$price_amount = $initial;
-	} elseif ( $has_trial ) {
-		$price_amount = isset( $level->trial_amount ) ? (float) $level->trial_amount : 0.0;
+	} elseif ( $has_trial && isset( $level->trial_amount ) && (float) $level->trial_amount > 0 ) {
+		$price_amount = (float) $level->trial_amount;
 	} elseif ( $has_recur ) {
 		$price_amount = (float) $level->billing_amount;
 	} else {
@@ -510,11 +512,11 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 	);
 
 	/*
-	 * Recurring UnitPriceSpecification for non-trial levels so agents see the
-	 * ongoing rate. Skip when a trial is configured — a partial schedule that
-	 * ignores trial_amount/trial_limit would misstate what the customer pays.
+	 * Recurring UnitPriceSpecification so agents always see the ongoing rate.
+	 * When a trial is configured, billingStart notes how many periods pass
+	 * before the regular rate begins.
 	 */
-	if ( $has_recur && ! $has_trial ) {
+	if ( $has_recur ) {
 		$unit_code = pmpro_structured_data_cycle_unit_code( $level->cycle_period );
 		if ( ! empty( $unit_code ) ) {
 			$spec = array(
@@ -525,6 +527,11 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 				'billingIncrement'   => max( 1, (int) $level->cycle_number ),
 				'unitCode'           => $unit_code,
 			);
+
+			// Regular rate starts after the trial periods.
+			if ( $has_trial ) {
+				$spec['billingStart'] = max( 1, (int) $level->cycle_number ) * (int) $level->trial_limit;
+			}
 
 			// billingDuration = total billing periods when finite (increment * limit).
 			if ( ! empty( $level->billing_limit ) && (int) $level->billing_limit > 0 ) {
