@@ -11,7 +11,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				array(
 					'methods'         => WP_REST_Server::READABLE,
-					'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_level_for_user' ),
+					'callback'        => array( $this, 'pmpro_rest_api_get_membership_level_for_user' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),));
 			
@@ -48,7 +48,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			 array(
 				 array(
 					 'methods'         => WP_REST_Server::READABLE,
-					 'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_level_for_user' ),
+					 'callback'        => array( $this, 'pmpro_rest_api_get_membership_level_for_user' ),
 					 'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			 ),));
 
@@ -61,7 +61,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			 array(
 				 array(
 					 'methods'         => WP_REST_Server::READABLE,
-					 'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_levels_for_user' ),
+					 'callback'        => array( $this, 'pmpro_rest_api_get_membership_levels_for_user' ),
 					 'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			 ),));
 
@@ -120,7 +120,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		array(
 			array(
 				'methods'         => WP_REST_Server::READABLE,
-				'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_level' ),
+				'callback'        => array( $this, 'pmpro_rest_api_get_membership_level' ),
 				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),
 			array(
@@ -144,7 +144,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				array(
 					'methods'         => WP_REST_Server::READABLE,
-					'callback'        => array( $this, 'pmpro_rest_api_get_membershipship_levels' ),
+					'callback'        => array( $this, 'pmpro_rest_api_get_membership_levels' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				),
 			)
@@ -520,7 +520,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/pmpro/v1/get_membership_level_for_user?user_id=1
 		 */
-		function pmpro_rest_api_get_membershipship_level_for_user($request) {
+		function pmpro_rest_api_get_membership_level_for_user($request) {
 			$params = $request->get_params();
 			
 			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
@@ -550,7 +550,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/pmpro/v1/get_membership_levels_for_user?user_id=1
 		 */
-		 function pmpro_rest_api_get_membershipship_levels_for_user($request) {
+		 function pmpro_rest_api_get_membership_levels_for_user($request) {
 			$params = $request->get_params();
 			
 			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
@@ -769,7 +769,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/pmpro/v1/membership_level/
 		 */
-		function pmpro_rest_api_get_membershipship_level( $request ) {
+		function pmpro_rest_api_get_membership_level( $request ) {
 
 			if ( ! class_exists( 'PMPro_Membership_Level' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro level class not found.', 404 );
@@ -891,7 +891,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since 3.0
 		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
 		 */
-		function pmpro_rest_api_get_membershipship_levels( $request ) {
+		function pmpro_rest_api_get_membership_levels( $request ) {
 			
 			if ( ! class_exists( 'PMPro_Membership_Level' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro level class not found.', 404 );

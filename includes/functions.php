@@ -5573,8 +5573,8 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
  * Query PMPro memberships (one row per user and membership level pair) with filtering and pagination.
  *
  * A user holding multiple levels returns one row per level held. Provides a single
- * reusable membership query for the REST API collection endpoint ( /pmpro/v1/members )
- * and the `wp pmpro member list` CLI command, so both share the same filtering,
+ * reusable membership query for the REST API collection endpoint ( /pmpro/v1/memberships )
+ * and the `wp pmpro membership list` CLI command, so both share the same filtering,
  * pagination, and output shape.
  *
  * @since TBD
@@ -5582,7 +5582,7 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
  * @param array $args {
  *     Optional. Query arguments.
  *
- *     @type int|int[]       $membership_id Only return members holding these level IDs. Default null (any level).
+ *     @type int|int[]       $membership_id Only return memberships for these level IDs. Default null (any level).
  *     @type string|string[] $status        Membership status(es) to match, or 'all' for any status. Default 'active'.
  *                                          Only the latest row matching the status filter is returned for each
  *                                          user/level pair. Like the underlying table, historical statuses such
@@ -5595,7 +5595,7 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
  *     @type string          $order         'ASC' or 'DESC'. Default 'DESC'.
  *     @type bool            $return_count  Return the total matching count instead of rows. Default false.
  * }
- * @return array|int Array of member row arrays, or an integer count when $return_count is true.
+ * @return array|int Array of membership row arrays, or an integer count when $return_count is true.
  */
 function pmpro_get_memberships( $args = array() ) {
 	global $wpdb;
@@ -5616,10 +5616,11 @@ function pmpro_get_memberships( $args = array() ) {
 	$where        = array();
 	$prepared     = array();
 
-	// Status condition, applied inside the latest-row subquery below. Pass 'all' to include every status.
+	// Status condition, applied inside the latest-row subquery below.
+	// Pass 'all' (as a string or within an array) to include every status.
 	$status_condition = '';
-	if ( ! empty( $args['status'] ) && 'all' !== $args['status'] ) {
-		$statuses         = array_map( 'strval', (array) $args['status'] );
+	$statuses         = array_map( 'strval', array_filter( (array) $args['status'] ) );
+	if ( ! empty( $statuses ) && ! in_array( 'all', $statuses, true ) ) {
 		$status_condition = ' AND mu2.status IN ( ' . implode( ', ', array_fill( 0, count( $statuses ), '%s' ) ) . ' )';
 		$prepared         = array_merge( $prepared, $statuses );
 	}
