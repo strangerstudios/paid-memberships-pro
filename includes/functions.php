@@ -5645,7 +5645,9 @@ function pmpro_get_memberships( $args = array() ) {
 		) latest ON latest.id = mu.id
 		LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id";
 
-	// Only include rows tied to a real membership level.
+	// Only include rows tied to a real membership level. The latest-row subquery
+	// also enforces this, but this condition guarantees the WHERE clause below is
+	// never empty when no other filters are passed.
 	$where[] = 'mu.membership_id > 0';
 
 	// Filter by membership level ID(s).
