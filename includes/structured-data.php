@@ -390,10 +390,20 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
 		);
 	}
 
+	// Level image from level meta, falling back to site branding.
+	$image          = '';
+	$level_image_id = (int) get_pmpro_membership_level_meta( $level->id, 'level_image', true );
+	if ( ! empty( $level_image_id ) ) {
+		$image = wp_get_attachment_image_url( $level_image_id, 'full' );
+	}
+	if ( empty( $image ) ) {
+		$image = pmpro_structured_data_get_fallback_image();
+	}
+
 	/**
 	 * Filter product image URL for a level.
-	 * Default: site icon → custom logo → omitted. Image is recommended for
-	 * product snippets and required only for merchant listing experiences.
+	 * Default: level image meta → site icon → custom logo → omitted. Image is
+	 * recommended for product snippets and required only for merchant listings.
 	 *
 	 * @since TBD
 	 *
@@ -401,12 +411,7 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
 	 * @param object $level        Level object.
 	 * @param string $context_type Context type.
 	 */
-	$image = apply_filters(
-		'pmpro_structured_data_product_image',
-		pmpro_structured_data_get_fallback_image(),
-		$level,
-		$context_type
-	);
+	$image = apply_filters( 'pmpro_structured_data_product_image', $image, $level, $context_type );
 	if ( ! empty( $image ) ) {
 		$schema['image'] = esc_url_raw( $image );
 	}
