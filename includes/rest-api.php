@@ -257,15 +257,15 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		);
 
 		/**
-		 * Get a paginated, filterable collection of members.
+		 * Get a paginated, filterable collection of memberships (one row per user/level pair).
 		 * @since TBD
-		 * Example: https://example.com/wp-json/pmpro/v1/members?level=1&status=active&page=1&per_page=20
+		 * Example: https://example.com/wp-json/pmpro/v1/memberships?level=1&status=active&page=1&per_page=20
 		 */
-		register_rest_route( $pmpro_namespace, '/members',
+		register_rest_route( $pmpro_namespace, '/memberships',
 			array(
 				array(
 					'methods'  => WP_REST_Server::READABLE,
-					'callback' => array( $this, 'pmpro_rest_api_get_members' ),
+					'callback' => array( $this, 'pmpro_rest_api_get_memberships' ),
 					'args'     => array(
 						'page'     => array( 'sanitize_callback' => 'absint' ),
 						'per_page' => array( 'sanitize_callback' => 'absint' ),
@@ -277,7 +277,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'fields'   => array(
 							'sanitize_callback' => 'sanitize_text_field',
 							'validate_callback' => function( $value ) {
-								return $this->pmpro_rest_api_validate_fields( $value, 'members' );
+								return $this->pmpro_rest_api_validate_fields( $value, 'memberships' );
 							},
 						),
 					),
@@ -305,7 +305,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'gateway'    => array( 'sanitize_callback' => 'sanitize_text_field' ),
 						'start_date' => array( 'sanitize_callback' => 'sanitize_text_field' ),
 						'end_date'   => array( 'sanitize_callback' => 'sanitize_text_field' ),
-						'orderby'    => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'orderby'    => array( 'sanitize_callback' => 'sanitize_key' ),
+						'order'      => array( 'sanitize_callback' => 'sanitize_key' ),
 						'fields'     => array(
 							'sanitize_callback' => 'sanitize_text_field',
 							'validate_callback' => function( $value ) {
@@ -335,7 +336,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'level'    => array(),
 						'status'   => array(),
 						'gateway'  => array( 'sanitize_callback' => 'sanitize_text_field' ),
-						'orderby'  => array( 'sanitize_callback' => 'sanitize_text_field' ),
+						'orderby'  => array( 'sanitize_callback' => 'sanitize_key' ),
+						'order'    => array( 'sanitize_callback' => 'sanitize_key' ),
 						'fields'   => array(
 							'sanitize_callback' => 'sanitize_text_field',
 							'validate_callback' => function( $value ) {
@@ -1347,14 +1349,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
-		 * Get a paginated, filterable collection of members.
+		 * Get a paginated, filterable collection of memberships (one row per user/level pair).
 		 *
 		 * @since TBD
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response The REST response.
 		 */
-		public function pmpro_rest_api_get_members( $request ) {
+		public function pmpro_rest_api_get_memberships( $request ) {
 			$params   = $request->get_params();
 			$per_page = $this->pmpro_rest_api_get_per_page( $params );
 			$page     = $this->pmpro_rest_api_get_page( $params );
@@ -1379,12 +1381,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$query_args['order'] = ( 'asc' === strtolower( (string) $params['order'] ) ) ? 'ASC' : 'DESC';
 			}
 
-			$total   = (int) pmpro_get_members( array_merge( $query_args, array( 'return_count' => true ) ) );
-			$members = pmpro_get_members( $query_args );
+			$total   = (int) pmpro_get_memberships( array_merge( $query_args, array( 'return_count' => true ) ) );
+			$memberships = pmpro_get_memberships( $query_args );
 
 			$fields = $this->pmpro_rest_api_get_fields( $params );
 			$items  = array();
-			foreach ( (array) $members as $member ) {
+			foreach ( (array) $memberships as $member ) {
 				$item = array(
 					'user_id'         => (int) $member['user_id'],
 					'user_login'      => $member['user_login'],
@@ -1437,6 +1439,21 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 			if ( ! empty( $params['end_date'] ) ) {
 				$query_args['end_date'] = sanitize_text_field( $params['end_date'] );
+			}
+
+			// Sort by an allowlisted column. Unknown values fall back to the default (timestamp DESC).
+			$orderby_map = array(
+				'id'            => '`o`.`id`',
+				'user_id'       => '`o`.`user_id`',
+				'membership_id' => '`o`.`membership_id`',
+				'status'        => '`o`.`status`',
+				'gateway'       => '`o`.`gateway`',
+				'total'         => '`o`.`total`',
+				'timestamp'     => '`o`.`timestamp`',
+			);
+			if ( ! empty( $params['orderby'] ) && isset( $orderby_map[ $params['orderby'] ] ) ) {
+				$order                 = ( ! empty( $params['order'] ) && 'asc' === strtolower( (string) $params['order'] ) ) ? 'ASC' : 'DESC';
+				$query_args['orderby'] = $orderby_map[ $params['orderby'] ] . ' ' . $order;
 			}
 
 			$total  = (int) MemberOrder::get_orders( array_merge( $query_args, array( 'return_count' => true ) ) );
@@ -1494,6 +1511,23 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 			if ( ! empty( $params['gateway'] ) ) {
 				$query_args['gateway'] = sanitize_text_field( $params['gateway'] );
+			}
+
+			// Sort by an allowlisted column. Unknown values fall back to the default (startdate DESC).
+			$orderby_map = array(
+				'id'                  => '`id`',
+				'user_id'             => '`user_id`',
+				'membership_level_id' => '`membership_level_id`',
+				'status'              => '`status`',
+				'gateway'             => '`gateway`',
+				'billing_amount'      => '`billing_amount`',
+				'startdate'           => '`startdate`',
+				'enddate'             => '`enddate`',
+				'next_payment_date'   => '`next_payment_date`',
+			);
+			if ( ! empty( $params['orderby'] ) && isset( $orderby_map[ $params['orderby'] ] ) ) {
+				$order                 = ( ! empty( $params['order'] ) && 'asc' === strtolower( (string) $params['order'] ) ) ? 'ASC' : 'DESC';
+				$query_args['orderby'] = $orderby_map[ $params['orderby'] ] . ' ' . $order;
 			}
 
 			$total         = (int) PMPro_Subscription::get_subscriptions( array_merge( $query_args, array( 'return_count' => true ) ) );
@@ -1582,12 +1616,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 *
 		 * @since TBD
 		 *
-		 * @param string $collection One of 'members', 'orders' or 'subscriptions'.
+		 * @param string $collection One of 'memberships', 'orders' or 'subscriptions'.
 		 * @return array Array of valid field names.
 		 */
 		private function pmpro_rest_api_get_collection_fields( $collection ) {
 			$fields = array(
-				'members'       => array(
+				'memberships'   => array(
 					'user_id',
 					'user_login',
 					'user_email',
@@ -1643,7 +1677,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since TBD
 		 *
 		 * @param mixed  $value      The `fields` parameter value.
-		 * @param string $collection One of 'members', 'orders' or 'subscriptions'.
+		 * @param string $collection One of 'memberships', 'orders' or 'subscriptions'.
 		 * @return true|WP_Error True when valid, WP_Error otherwise.
 		 */
 		private function pmpro_rest_api_validate_fields( $value, $collection ) {
@@ -2294,7 +2328,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/me' => true,
 				'/pmpro/v1/recent_memberships' => 'pmpro_edit_members',
 				'/pmpro/v1/recent_orders' => 'pmpro_orders',
-				'/pmpro/v1/members' => 'pmpro_edit_members',
+				'/pmpro/v1/memberships' => 'pmpro_edit_members',
 				'/pmpro/v1/orders' => 'pmpro_orders',
 				'/pmpro/v1/subscriptions' => 'pmpro_edit_members',
 				'/pmpro/v1/post_restrictions' => array(
