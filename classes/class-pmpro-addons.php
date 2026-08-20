@@ -1124,7 +1124,10 @@ class PMPro_AddOns {
 
 		// Check for errors and if we're okay, save the addons formatted
 		if ( is_wp_error( $remote_addons ) ) {
-			pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
+			// pmpro_setMessage() is only available when PMPro core is active.
+			if ( function_exists( 'pmpro_setMessage' ) ) {
+				pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
+			}
 			// Return cached addons if available
 			return $this->addons ? : array();
 		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
@@ -1136,7 +1139,10 @@ class PMPro_AddOns {
 
 			// If for some reason the addons are not formatted correctly
 			if ( empty( $addons ) ) {
-				pmpro_setMessage( 'No addons found.', 'error' );
+				// pmpro_setMessage() is only available when PMPro core is active.
+				if ( function_exists( 'pmpro_setMessage' ) ) {
+					pmpro_setMessage( 'No addons found.', 'error' );
+				}
 				return $addons;
 			}
 
