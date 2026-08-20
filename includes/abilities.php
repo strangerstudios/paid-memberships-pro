@@ -1001,9 +1001,18 @@ function pmpro_abilities_execute_member_membership_change( $input ) {
 		$previous_memberships = array();
 	}
 
-	$old_level_status = ! empty( $input['old_level_status'] ) ? pmpro_sanitize_with_safelist( (string) $input['old_level_status'], array( 'inactive', 'changed', 'admin_changed', 'cancelled', 'admin_cancelled', 'expired' ) ) : 'admin_changed';
+	$valid_old_level_statuses = array( 'inactive', 'changed', 'admin_changed', 'cancelled', 'admin_cancelled', 'expired' );
+	$old_level_status         = ! empty( $input['old_level_status'] ) ? pmpro_sanitize_with_safelist( (string) $input['old_level_status'], $valid_old_level_statuses ) : 'admin_changed';
 	if ( empty( $old_level_status ) ) {
-		return new WP_Error( 'pmpro_abilities_invalid_old_level_status', __( 'Invalid old level status.', 'paid-memberships-pro' ), array( 'status' => 400 ) );
+		return new WP_Error(
+			'pmpro_abilities_invalid_old_level_status',
+			sprintf(
+				/* translators: %s: comma-separated list of valid statuses */
+				__( 'Invalid old level status. Valid values are: %s.', 'paid-memberships-pro' ),
+				implode( ', ', $valid_old_level_statuses )
+			),
+			array( 'status' => 400 )
+		);
 	}
 	$result = pmpro_changeMembershipLevel( (int) $level->id, (int) $user->ID, $old_level_status );
 
