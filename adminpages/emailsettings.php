@@ -283,6 +283,8 @@
 							<td>
 								<input type="checkbox" id="email_logging_enabled" name="email_logging_enabled" value="1" <?php checked( $email_logging_enabled ); ?> />
 								<label for="email_logging_enabled"><?php esc_html_e( 'Enable email logging', 'paid-memberships-pro' ); ?></label>
+								&nbsp;
+								<a class="button button-secondary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=email_log' ) ); ?>"><?php esc_html_e( 'View Email Log', 'paid-memberships-pro' ); ?></a>
 								<p class="description">
 									<?php esc_html_e( 'Check this to log emails to the database.', 'paid-memberships-pro' ); ?>
 								</p>
