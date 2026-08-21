@@ -133,6 +133,7 @@ require_once( PMPRO_DIR . '/includes/email.php' );                  // code rela
 require_once( PMPRO_DIR . '/includes/email-logging.php' );           // email logging functionality
 require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fields
 require_once( PMPRO_DIR . '/includes/settings-fields.php' );         // render-only helpers for admin settings sections
+require_once( PMPRO_DIR . '/includes/captcha.php' );                // shared code for captcha services
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cloudflare-turnstile.php' );   // load CloudFlare Turnstile files if needed
 require_once( PMPRO_DIR . '/includes/terms-of-service.php' );       // code to add a terms of service checkbox to checkout

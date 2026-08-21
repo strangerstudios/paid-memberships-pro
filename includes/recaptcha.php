@@ -1,5 +1,19 @@
 <?php
 /**
+ * Register reCAPTCHA as an available captcha service.
+ *
+ * @since TBD
+ *
+ * @param array $services Captcha services as slug => label.
+ * @return array $services Captcha services as slug => label.
+ */
+function pmpro_recaptcha_register_captcha_service( $services ) {
+	$services['recaptcha'] = __( 'Google reCAPTCHA', 'paid-memberships-pro' );
+	return $services;
+}
+add_filter( 'pmpro_captcha_services', 'pmpro_recaptcha_register_captcha_service' );
+
+/**
  * Sets up our JS code to validate ReCAPTCHA on form submission if needed.
  */
 function pmpro_init_recaptcha() {
@@ -7,7 +21,7 @@ function pmpro_init_recaptcha() {
 	// global $recaptcha for backwards compatibility.
 	// TODO: Remove this in a future version.
 	global $recaptcha;
-	$recaptcha = get_option( 'pmpro_recaptcha' );
+	$recaptcha = ( 'recaptcha' === pmpro_captcha() ) ? 2 : false;
 	if ( empty( $recaptcha ) ) {
 		return;
 	}
@@ -68,7 +82,7 @@ function pmpro_recaptcha_get_html() {
 	}
 
 	// If ReCAPTCHA is not enabled, bail.
-	if ( empty( get_option( 'pmpro_recaptcha' ) ) ) {
+	if ( 'recaptcha' !== pmpro_captcha() ) {
 		return;
 	}
 
@@ -218,7 +232,7 @@ function pmpro_recaptcha_validation_check( $continue = true ) {
 	}
 
 	// If ReCAPTCHA is not enabled, return.
-	if ( empty( get_option( 'pmpro_recaptcha' ) ) ) {
+	if ( 'recaptcha' !== pmpro_captcha() ) {
 		return true;
 	}
 
@@ -242,34 +256,17 @@ add_filter( 'pmpro_billing_update_checks', 'pmpro_recaptcha_validation_check', 1
  */
 function pmpro_recaptcha_settings() {
 	// Get the current options.
-	$recaptcha = get_option( 'pmpro_recaptcha' );
 	$recaptcha_version = get_option( 'pmpro_recaptcha_version' );
 	$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
 	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 
-	$recaptcha_value   = $recaptcha > 0 ? 2 : 0;
 	$recaptcha_depends = array(
 		array(
-			'id'    => 'recaptcha',
-			'value' => '2',
+			'id'    => 'captcha',
+			'value' => 'recaptcha',
 		),
 	);
 
-	pmpro_build_settings_field( array(
-		'name'        => 'recaptcha',
-		'label'       => __( 'Use reCAPTCHA?', 'paid-memberships-pro' ),
-		'type'        => 'select',
-		'value'       => $recaptcha_value,
-		'options'     => array(
-			0 => __( 'No', 'paid-memberships-pro' ),
-			2 => __( 'Yes - All memberships.', 'paid-memberships-pro' ),
-		),
-		'description' => sprintf(
-			/* translators: %s: Link to create a Google reCAPTCHA key. */
-			__( 'A free reCAPTCHA key is required. <a href="%s" target="_blank" rel="nofollow noopener">Click here to signup for reCAPTCHA</a>.', 'paid-memberships-pro' ),
-			'https://www.google.com/recaptcha/admin/create'
-		),
-	) );
 	pmpro_build_settings_field( array(
 		'name'        => 'recaptcha_version',
 		'label'       => __( 'reCAPTCHA Version', 'paid-memberships-pro' ),
@@ -281,7 +278,11 @@ function pmpro_recaptcha_settings() {
 			'2_checkbox'   => __( 'v2 - Checkbox', 'paid-memberships-pro' ),
 			'3_invisible' => __( 'v3 - Invisible', 'paid-memberships-pro' ),
 		),
-		'description' => __( 'Changing your version will require new API keys.', 'paid-memberships-pro' ),
+		'description' => sprintf(
+			/* translators: %s: Link to create a Google reCAPTCHA key. */
+			__( 'Changing your version will require new API keys. A free reCAPTCHA key is required. <a href="%s" target="_blank" rel="nofollow noopener">Click here to signup for reCAPTCHA</a>.', 'paid-memberships-pro' ),
+			'https://www.google.com/recaptcha/admin/create'
+		),
 	) );
 	pmpro_build_settings_field( array(
 		'name'      => 'recaptcha_publickey',
@@ -310,9 +311,197 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_recaptcha_settings' );
  * @since 3.2
  */
 function pmpro_recaptcha_settings_save() {
-	pmpro_setOption( "recaptcha", intval( $_POST['recaptcha'] ) );
+	// Keep the legacy on/off option in sync with the captcha setting for backwards compatibility.
+	pmpro_setOption( "recaptcha", 'recaptcha' === pmpro_captcha() ? 2 : 0 );
 	pmpro_setOption( "recaptcha_version", sanitize_text_field( $_POST['recaptcha_version'] ) );
 	pmpro_setOption( "recaptcha_publickey", sanitize_text_field( $_POST['recaptcha_publickey'] ) );
 	pmpro_setOption( "recaptcha_privatekey", sanitize_text_field( $_POST['recaptcha_privatekey'] ) );
 }
 add_action( 'pmpro_save_security_settings', 'pmpro_recaptcha_settings_save' );
+
+/**
+ * Check whether login and password reset forms should be challenged with reCAPTCHA.
+ *
+ * @since TBD
+ *
+ * @return bool True if forms should be challenged.
+ */
+function pmpro_recaptcha_should_challenge_login() {
+	// Only challenge if reCAPTCHA is the active captcha service.
+	if ( 'recaptcha' !== pmpro_captcha() ) {
+		return false;
+	}
+
+	// Don't challenge without keys. We couldn't render or verify the captcha,
+	// and requiring a check that can't be completed would lock users out.
+	if ( ! get_option( 'pmpro_recaptcha_publickey' ) || ! get_option( 'pmpro_recaptcha_privatekey' ) ) {
+		return false;
+	}
+
+	// Only challenge IPs that have recently failed to log in.
+	return pmpro_captcha_has_recent_failed_login();
+}
+
+/**
+ * Verify a reCAPTCHA response token with Google.
+ *
+ * @since TBD
+ *
+ * @param string $token The g-recaptcha-response token to verify.
+ * @return bool True if the token is valid.
+ */
+function pmpro_recaptcha_verify_token( $token ) {
+	// An empty token means the user did not complete the challenge.
+	if ( empty( $token ) ) {
+		return false;
+	}
+
+	require_once( PMPRO_DIR . '/includes/lib/recaptchalib.php' );
+	$reCaptcha = new pmpro_ReCaptcha( get_option( 'pmpro_recaptcha_privatekey' ) );
+	$resp = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $token ) );
+
+	return ! empty( $resp->success );
+}
+
+/**
+ * Outputs the HTML needed to display reCAPTCHA in login and password reset forms.
+ *
+ * Unlike pmpro_recaptcha_get_html(), this does not use the checkout JS or the
+ * AJAX/session validation flow. The token is submitted with the form and
+ * verified server-side when the submission is processed.
+ *
+ * @since TBD
+ */
+function pmpro_recaptcha_get_login_html() {
+	static $already_shown = false;
+
+	// Make sure that we only show the captcha once per page.
+	if ( $already_shown ) {
+		return;
+	}
+
+	$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
+
+	// Figure out language.
+	$locale = get_locale();
+	if ( ! empty( $locale ) ) {
+		$parts = explode( '_', $locale );
+		$lang = $parts[0];
+	} else {
+		$lang = 'en';
+	}
+	/** This filter is documented in includes/recaptcha.php */
+	$lang = apply_filters( 'pmpro_recaptcha_lang', $lang );
+
+	// Check which version of reCAPTCHA we are using.
+	$recaptcha_version = get_option( 'pmpro_recaptcha_version' );
+	?>
+	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
+		<?php if ( $recaptcha_version == '3_invisible' ) { ?>
+			<div id="pmpro_recaptcha_login" class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey ); ?>" data-size="invisible" data-callback="pmpro_recaptcha_login_token_callback"></div>
+			<script>
+				// Once reCAPTCHA has generated a token, submit the form. The token is verified server-side.
+				var pmpro_recaptcha_login_has_token = false;
+				function pmpro_recaptcha_login_token_callback( token ) {
+					pmpro_recaptcha_login_has_token = true;
+					var widget = document.getElementById( 'pmpro_recaptcha_login' );
+					var form = widget ? widget.closest( 'form' ) : null;
+					if ( form ) {
+						// Call the prototype method directly in case the form has an input named "submit".
+						HTMLFormElement.prototype.submit.call( form );
+					}
+				}
+				document.addEventListener( 'DOMContentLoaded', function() {
+					var widget = document.getElementById( 'pmpro_recaptcha_login' );
+					var form = widget ? widget.closest( 'form' ) : null;
+					if ( ! form ) {
+						return;
+					}
+					form.addEventListener( 'submit', function( event ) {
+						// If we already have a token or reCAPTCHA hasn't loaded, let the
+						// form submit. The server will reject submissions without a valid token.
+						if ( pmpro_recaptcha_login_has_token || typeof grecaptcha === 'undefined' || typeof grecaptcha.execute !== 'function' ) {
+							return;
+						}
+						event.preventDefault();
+						grecaptcha.execute();
+					} );
+				} );
+			</script>
+		<?php } else { ?>
+			<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey ); ?>"></div>
+		<?php } ?>
+		<script src="https://www.google.com/recaptcha/api.js?hl=<?php echo esc_attr( $lang ); ?>" async defer></script>
+	</div>
+	<?php
+
+	$already_shown = true;
+}
+
+/**
+ * Show reCAPTCHA on PMPro and WP core login and lost password forms
+ * once a failed login attempt has been tracked for the current IP.
+ *
+ * @since TBD
+ */
+function pmpro_recaptcha_login_forms_html() {
+	if ( ! pmpro_recaptcha_should_challenge_login() ) {
+		return;
+	}
+
+	pmpro_recaptcha_get_login_html();
+}
+add_action( 'pmpro_login_form_before_submit_button', 'pmpro_recaptcha_login_forms_html' );
+add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_recaptcha_login_forms_html' );
+add_action( 'login_form', 'pmpro_recaptcha_login_forms_html' );
+add_action( 'lostpassword_form', 'pmpro_recaptcha_login_forms_html' );
+
+/**
+ * Require a valid reCAPTCHA on login attempts once the current IP has failed a login.
+ *
+ * @since TBD
+ *
+ * @param WP_User|WP_Error|null $user     WP_User if the login is valid so far, otherwise WP_Error or null.
+ * @param string                $username The username being used to log in.
+ * @return WP_User|WP_Error|null $user
+ */
+function pmpro_recaptcha_login_check( $user, $username ) {
+	if ( ! pmpro_recaptcha_should_challenge_login() ) {
+		return $user;
+	}
+
+	$token = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( $_POST['g-recaptcha-response'] ) : '';
+	if ( ! pmpro_recaptcha_verify_token( $token ) ) {
+		return new WP_Error( 'pmpro_captcha_failed', pmpro_captcha_failed_error_message() );
+	}
+
+	return $user;
+}
+add_filter( 'pmpro_authenticate_login_checks', 'pmpro_recaptcha_login_check', 10, 2 );
+
+/**
+ * Require a valid reCAPTCHA on lost password submissions once the current IP has failed a login.
+ *
+ * @since TBD
+ *
+ * @param WP_Error      $errors    Error object to add a captcha error to.
+ * @param WP_User|false $user_data WP_User object if found, false if the user does not exist.
+ */
+function pmpro_recaptcha_lostpassword_check( $errors, $user_data ) {
+	// Only check submissions from the PMPro or wp-login.php lost password forms. This hook
+	// also fires for other plugins that call retrieve_password() from their own forms,
+	// which never displayed our captcha.
+	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_lostpassword' ) && ! did_action( 'login_form_retrievepassword' ) ) {
+		return;
+	}
+
+	if ( ! pmpro_recaptcha_should_challenge_login() ) {
+		return;
+	}
+
+	$token = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( $_POST['g-recaptcha-response'] ) : '';
+	if ( ! pmpro_recaptcha_verify_token( $token ) ) {
+		$errors->add( 'pmpro_captcha_failed', pmpro_captcha_failed_error_message() );
+	}
+}
+add_action( 'lostpassword_post', 'pmpro_recaptcha_lostpassword_check', 10, 2 );
