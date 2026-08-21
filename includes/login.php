@@ -245,6 +245,33 @@ function pmpro_login_form_hidden_field( $html ) {
 }
 
 /**
+ * Add content before the submit button on our login form.
+ * Hooks into the WP core filter login_form_middle. This filter is
+ * added right before wp_login_form() is called in pmpro_login_form()
+ * and removed right after so that it only runs on PMPro login forms.
+ *
+ * @since TBD
+ *
+ * @param string $content Content to display. Default empty.
+ * @param array  $args    Array of login form arguments.
+ * @return string $content Content to display.
+ */
+function pmpro_login_form_middle( $content, $args ) {
+	ob_start();
+
+	/**
+	 * Fires before the submit button on the PMPro login form.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $args Array of login form arguments.
+	 */
+	do_action( 'pmpro_login_form_before_submit_button', $args );
+
+	return $content . ob_get_clean();
+}
+
+/**
  * Filter the_title based on the form action of the Log In Page assigned to $pmpro_pages['login'].
  *
  * @since 2.3
@@ -457,6 +484,28 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 		}
 	}
 
+	/**
+	 * Filter the message shown above the frontend login form.
+	 * Allows custom messages to be shown for custom error codes
+	 * passed back to the login page in the URL.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $message The message to show. Empty string if no message.
+	 * @param string $msgt    The message type, e.g. pmpro_error, pmpro_success, pmpro_alert.
+	 */
+	$message = apply_filters( 'pmpro_login_forms_handler_message', $message, $msgt );
+
+	/**
+	 * Filter the type of the message shown above the frontend login form.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $msgt    The message type, e.g. pmpro_error, pmpro_success, pmpro_alert.
+	 * @param string $message The message to show. Empty string if no message.
+	 */
+	$msgt = apply_filters( 'pmpro_login_forms_handler_msgt', $msgt, $message );
+
 	ob_start();
 	?>
 
@@ -598,6 +647,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 function pmpro_login_form( $args = array() ) {
 	static $pmpro_login_form_counter = 1;
 	add_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
+	add_filter( 'login_form_middle', 'pmpro_login_form_middle', 10, 2 );
 	wp_login_form( $args );
 	?>
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
@@ -649,6 +699,7 @@ function pmpro_login_form( $args = array() ) {
 	</script>
 	<?php
 	remove_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
+	remove_filter( 'login_form_middle', 'pmpro_login_form_middle' );
 	$pmpro_login_form_counter++;
 }
 
@@ -793,7 +844,7 @@ function pmpro_reset_password_form() {
 
 			$msgt = 'pmpro_error';
 			echo '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) ) . '">'. esc_html( $message ) .'</div>';
-			echo wp_kses_post( pmpro_lost_password_form() );
+			pmpro_lost_password_form(); // This function echoes the form directly.
 			return;
 		}
 
@@ -1022,24 +1073,62 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 	// check what page the login attempt is coming from
 	$referrer = wp_get_referer();
 
-	if ( !empty( $referrer ) && is_wp_error( $user ) ) {
+	if ( ! empty( $referrer ) && is_wp_error( $user ) ) {
 
 		$error = $user->get_error_code();
 
-		if ( $error ) {
-				$error_args = array(
-					'action' => urlencode( $error ),
-					'username' => urlencode( sanitize_text_field( $username ) )
-				);
-				wp_redirect( add_query_arg( $error_args, pmpro_login_url() ) );
-			} else {
-				wp_redirect( pmpro_login_url() );
-			}
+		// Only redirect here for error codes that WP core "ignores" and won't fire wp_login_failed for.
+		// All other failed logins are redirected by pmpro_login_failed() hooked to wp_login_failed.
+		if ( in_array( $error, array( 'empty_username', 'empty_password' ), true ) ) {
+			$error_args = array(
+				'action' => urlencode( $error ),
+				'username' => urlencode( sanitize_text_field( $username ) )
+			);
+			wp_redirect( add_query_arg( $error_args, pmpro_login_url() ) );
+			exit;
+		}
 	}
 
 	return $user;
 }
 add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
+
+/**
+ * Allow custom checks (e.g. captchas) for login attempts made from the
+ * PMPro login form or the WP default login form on wp-login.php.
+ *
+ * @since TBD
+ *
+ * @param WP_User|WP_Error|null $user     WP_User if the login is valid so far, otherwise WP_Error or null.
+ * @param string                $username The username being used to log in.
+ * @param string                $password The password being used to log in.
+ * @return WP_User|WP_Error|null $user
+ */
+function pmpro_apply_custom_login_checks( $user, $username, $password ) {
+	// Bail if no login was attempted. wp-login.php runs the authenticate filter on every page load.
+	if ( empty( $username ) && empty( $password ) ) {
+		return $user;
+	}
+
+	// Only run checks for login attempts from the PMPro login form or the form on wp-login.php.
+	// Other login flows (XML-RPC, other plugins' login forms, direct wp_signon() calls, etc.) are intentionally not affected.
+	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_login' ) ) {
+		return $user;
+	}
+
+	/**
+	 * Allow custom checks for login attempts from the PMPro login form or wp-login.php.
+	 * Runs after WP core has checked the user's credentials.
+	 * Return a WP_Error to block the login and show that error's message.
+	 *
+	 * @since TBD
+	 *
+	 * @param WP_User|WP_Error|null $user     WP_User if the login is valid so far, otherwise WP_Error or null.
+	 * @param string                $username The username being used to log in.
+	 */
+	return apply_filters( 'pmpro_authenticate_login_checks', $user, $username );
+}
+add_filter( 'authenticate', 'pmpro_apply_custom_login_checks', 40, 3 );
 
 /**
  * Redirect failed login to referrer for frontend user login.
