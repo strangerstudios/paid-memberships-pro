@@ -2231,7 +2231,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! empty( $order->payment_intent_id ) ) {
 			// User has just tried to confirm their payment intent. We need to make sure that it was
 			// confirmed successfully, and then try to create their subscription if needed.
-			$payment_intent = $this->process_payment_intent( $order->payment_intent_id );
+			$payment_intent = $this->process_payment_intent( $order->payment_intent_id, $order );
 			if ( is_string( $payment_intent ) ) {
 				$order->error      = __( 'Error processing payment intent.', 'paid-memberships-pro' ) . ' ' . $payment_intent;
 				$order->shorterror = $order->error;
@@ -3682,15 +3682,28 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 2.7.0.
 	 *
-	 * @param string $payment_intent_id to confirm.
+	 * @param string      $payment_intent_id to confirm.
+	 * @param MemberOrder $order that the payment intent is being confirmed for.
 	 * @return Stripe_PaymentIntent|string error.
 	 */
-	private function process_payment_intent( $payment_intent_id ) {
+	private function process_payment_intent( $payment_intent_id, $order ) {
+		global $pmpro_currency;
+
 		// Get the payment intent.
 		$payment_intent = $this->retrieve_payment_intent( $payment_intent_id );
 		if ( is_string( $payment_intent ) ) {
 			// There was an issue retrieving the payment intent.
 			return $payment_intent;
+		}
+
+		// Make sure that the payment intent's amount and currency match the amount due for this
+		// checkout before confirming it. The payment intent ID is submitted by the browser after
+		// authentication, so without this check a user could authenticate a cheap payment intent
+		// and then change the membership level (and thus the order total) on the resubmission,
+		// activating an expensive level while only paying the cheap amount.
+		$expected_amount = $this->convert_price_to_unit_amount( pmpro_round_price( (float) $order->subtotal + (float) $order->getTax( true ) ) );
+		if ( intval( $payment_intent->amount ) !== intval( $expected_amount ) || strtolower( $payment_intent->currency ) !== strtolower( $pmpro_currency ) ) {
+			return __( 'This payment does not match the amount due for this checkout.', 'paid-memberships-pro' );
 		}
 
 		// Confirm the payment.
