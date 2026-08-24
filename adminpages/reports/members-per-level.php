@@ -89,7 +89,7 @@ function pmpro_report_get_active_members_per_level() {
 	}
 
 	// Query to get active members per level.
-	$sqlQuery = "SELECT membership_id, count(*) as total_active_members
+	$sqlQuery = "SELECT membership_id, COUNT(DISTINCT mu.user_id) as total_active_members
 	FROM $wpdb->pmpro_memberships_users as mu
 	INNER JOIN $wpdb->users as u on u.ID = mu.user_id
 	WHERE mu.status = 'active'
