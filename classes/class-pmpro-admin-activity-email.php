@@ -131,16 +131,32 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					<tr>
 						<td valign="top" style="background:#F5F8FA;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px;text-align:left;border-top:1px solid #E7EEF6;border-bottom:1px solid #E7EEF6;">
 							<?php
-							$total_members = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('active')" );
+							$active_membership_counts = $wpdb->get_row(
+								"
+								SELECT COUNT(DISTINCT mu.user_id) AS active_members,
+									COUNT(mu.id) AS active_memberships
+								FROM $wpdb->pmpro_memberships_users mu
+								INNER JOIN $wpdb->users u
+									ON u.ID = mu.user_id
+								WHERE mu.status = 'active'
+								"
+							);
 							?>
-							<h3 style="color:#0C3D54;font-size:20px;line-height:30px;margin:0px 0px 5px 0px;padding:0px;"><span style="background:#0C3D54;color:#FFFFFF;padding:5px 10px 5px 10px;"><?php echo esc_html( number_format_i18n( $total_members )  ); ?></span><?php esc_html_e( ' Total Members', 'paid-memberships-pro' ); ?></h3>
+							<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:0;background-color:#F5F8FA;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
+								<tr>
+									<td width="50%"><div style="background:#FFFFFF;margin:5px;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo esc_html( number_format_i18n( $active_membership_counts->active_members ) ); ?></div><?php esc_html_e( 'Active Members', 'paid-memberships-pro' ); ?></div></td>
+									<td width="50%"><div style="background:#FFFFFF;margin:5px;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo esc_html( number_format_i18n( $active_membership_counts->active_memberships ) ); ?></div><?php esc_html_e( 'Active Memberships', 'paid-memberships-pro' ); ?></div></td>
+								</tr>
+							</table>
 							<?php
 							$members_per_level = $wpdb->get_results(
 								"
 								SELECT ml.name, COUNT(mu.id) as num_members
 								FROM $wpdb->pmpro_membership_levels ml
-								LEFT JOIN $wpdb->pmpro_memberships_users mu
-								ON ml.id = mu.membership_id
+								INNER JOIN $wpdb->pmpro_memberships_users mu
+									ON ml.id = mu.membership_id
+								INNER JOIN $wpdb->users u
+									ON u.ID = mu.user_id
 								WHERE mu.status = 'active'
 								GROUP BY ml.name
 								ORDER BY num_members DESC
