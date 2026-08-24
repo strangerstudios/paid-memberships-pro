@@ -511,7 +511,7 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 		'url'           => $url,
 		'price'         => $price,
 		'priceCurrency' => $currency,
-		'availability'  => 'https://schema.org/OnlineOnly',
+		'availability'  => 'https://schema.org/InStock',
 		'category'      => 'Membership',
 		'seller'        => $seller,
 	);
