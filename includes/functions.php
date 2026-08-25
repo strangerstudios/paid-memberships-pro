@@ -5568,3 +5568,140 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
 		do_action( 'pmpro_after_updating_post_level_restrictions', $post_id );
 	}
 }
+
+/**
+ * Query PMPro memberships (one row per user and membership level pair) with filtering and pagination.
+ *
+ * A user holding multiple levels returns one row per level held. Provides a single
+ * reusable membership query for the REST API collection endpoint ( /pmpro/v1/memberships )
+ * and the `wp pmpro membership list` CLI command, so both share the same filtering,
+ * pagination, and output shape.
+ *
+ * @since TBD
+ *
+ * @param array $args {
+ *     Optional. Query arguments.
+ *
+ *     @type int|int[]       $membership_id Only return memberships for these level IDs. Default null (any level).
+ *     @type string|string[] $status        Membership status(es) to match, or 'all' for any status. Default 'active'.
+ *                                          Only the latest row matching the status filter is returned for each
+ *                                          user/level pair. Like the underlying table, historical statuses such
+ *                                          as 'cancelled' can match members who since re-subscribed to the level;
+ *                                          'active' matches anyone PMPro considers to hold the level.
+ *     @type string          $search        Match users by login, email, or display name. Default ''.
+ *     @type int             $limit         Maximum rows to return. 0 for no limit. Default 100.
+ *     @type int             $offset        Rows to skip, for pagination. Default 0.
+ *     @type string          $orderby       One of id, user_login, user_email, display_name, membership_id, startdate, enddate, joindate. Default 'id'.
+ *     @type string          $order         'ASC' or 'DESC'. Default 'DESC'.
+ *     @type bool            $return_count  Return the total matching count instead of rows. Default false.
+ * }
+ * @return array|int Array of membership row arrays, or an integer count when $return_count is true.
+ */
+function pmpro_get_memberships( $args = array() ) {
+	global $wpdb;
+
+	$defaults = array(
+		'membership_id' => null,
+		'status'        => 'active',
+		'search'        => '',
+		'limit'         => 100,
+		'offset'        => 0,
+		'orderby'       => 'id',
+		'order'         => 'DESC',
+		'return_count'  => false,
+	);
+	$args = wp_parse_args( $args, $defaults );
+
+	$return_count = ! empty( $args['return_count'] );
+	$where        = array();
+	$prepared     = array();
+
+	// Status condition, applied inside the latest-row subquery below.
+	// Pass 'all' (as a string or within an array) to include every status.
+	$status_condition = '';
+	$statuses         = array_map( 'strval', array_filter( (array) $args['status'] ) );
+	if ( ! empty( $statuses ) && ! in_array( 'all', $statuses, true ) ) {
+		$status_condition = ' AND mu2.status IN ( ' . implode( ', ', array_fill( 0, count( $statuses ), '%s' ) ) . ' )';
+		$prepared         = array_merge( $prepared, $statuses );
+	}
+
+	if ( $return_count ) {
+		$sql = "SELECT COUNT(*)";
+	} else {
+		$sql = "SELECT u.ID AS user_id, u.user_login, u.user_email, u.display_name, mu.membership_id, mu.status,
+			u.user_registered AS joindate, mu.startdate, mu.enddate, m.name AS membership_name";
+	}
+
+	// Join only the latest membership row for each user/level pair that matches the
+	// status filter, so historical rows for the same pair never produce duplicate
+	// results or nondeterministic status/date values.
+	$sql .= " FROM {$wpdb->users} u
+		INNER JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id
+		INNER JOIN (
+			SELECT MAX( mu2.id ) AS id
+			FROM {$wpdb->pmpro_memberships_users} mu2
+			WHERE mu2.membership_id > 0{$status_condition}
+			GROUP BY mu2.user_id, mu2.membership_id
+		) latest ON latest.id = mu.id
+		LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id";
+
+	// Only include rows tied to a real membership level. The latest-row subquery
+	// also enforces this, but this condition guarantees the WHERE clause below is
+	// never empty when no other filters are passed.
+	$where[] = 'mu.membership_id > 0';
+
+	// Filter by membership level ID(s).
+	if ( ! empty( $args['membership_id'] ) ) {
+		$ids      = array_map( 'intval', (array) $args['membership_id'] );
+		$where[]  = 'mu.membership_id IN ( ' . implode( ', ', array_fill( 0, count( $ids ), '%d' ) ) . ' )';
+		$prepared = array_merge( $prepared, $ids );
+	}
+
+	// Search by login, email, or display name.
+	if ( ! empty( $args['search'] ) ) {
+		$like       = '%' . $wpdb->esc_like( $args['search'] ) . '%';
+		$where[]    = '( u.user_login LIKE %s OR u.user_email LIKE %s OR u.display_name LIKE %s )';
+		$prepared[] = $like;
+		$prepared[] = $like;
+		$prepared[] = $like;
+	}
+
+	$sql .= ' WHERE ' . implode( ' AND ', $where );
+
+	if ( $return_count ) {
+		if ( $prepared ) {
+			$sql = $wpdb->prepare( $sql, $prepared );
+		}
+		return (int) $wpdb->get_var( $sql );
+	}
+
+	// Sanitize orderby against an allowlist of safe columns.
+	$orderby_map = array(
+		'id'            => 'u.ID',
+		'user_login'    => 'u.user_login',
+		'user_email'    => 'u.user_email',
+		'display_name'  => 'u.display_name',
+		'membership_id' => 'mu.membership_id',
+		'startdate'     => 'mu.startdate',
+		'enddate'       => 'mu.enddate',
+		'joindate'      => 'u.user_registered',
+	);
+	$orderby_col = isset( $orderby_map[ $args['orderby'] ] ) ? $orderby_map[ $args['orderby'] ] : 'u.ID';
+	$order       = ( 'ASC' === strtoupper( (string) $args['order'] ) ) ? 'ASC' : 'DESC';
+	$sql        .= " ORDER BY {$orderby_col} {$order}";
+
+	// Pagination.
+	$limit  = max( 0, (int) $args['limit'] );
+	$offset = max( 0, (int) $args['offset'] );
+	if ( $limit ) {
+		$sql       .= ' LIMIT %d OFFSET %d';
+		$prepared[] = $limit;
+		$prepared[] = $offset;
+	}
+
+	if ( $prepared ) {
+		$sql = $wpdb->prepare( $sql, $prepared );
+	}
+
+	return $wpdb->get_results( $sql, ARRAY_A );
+}

@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.8.4
+ * Version: 3.8.5
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.8.4' );
+define( 'PMPRO_VERSION', '3.8.5' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '7.4' );
 
@@ -132,6 +132,7 @@ require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to s
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
 require_once( PMPRO_DIR . '/includes/email-logging.php' );           // email logging functionality
 require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fields
+require_once( PMPRO_DIR . '/includes/settings-fields.php' );         // render-only helpers for admin settings sections
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cloudflare-turnstile.php' );   // load CloudFlare Turnstile files if needed
 require_once( PMPRO_DIR . '/includes/terms-of-service.php' );       // code to add a terms of service checkbox to checkout
@@ -150,6 +151,8 @@ require_once( PMPRO_DIR . '/includes/restricted-files.php' );		// Restrict acces
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
+require_once( PMPRO_DIR . '/includes/abilities.php' );              // WordPress Abilities API integrations
+require_once( PMPRO_DIR . '/includes/cli.php' );                    // WP-CLI commands (loaded only under WP-CLI)
 require_once( PMPRO_DIR . '/includes/widgets.php' );                // widgets for PMPro
 require_once( PMPRO_DIR . '/includes/gateway-request-handlers.php' ); // gateway request handlers
 
