@@ -174,7 +174,7 @@
 					'type'        => 'select',
 					'value'       => pmpro_captcha(),
 					'options'     => array( '' => __( 'No', 'paid-memberships-pro' ) ) + pmpro_get_captcha_services(),
-					'description' => __( 'Protect your checkout, login, and password reset forms with a captcha challenge. On login and password reset forms, the captcha is only shown after a failed login attempt from the visitor\'s IP address.', 'paid-memberships-pro' ),
+					'description' => __( 'Protect your checkout, login, and password reset forms with a captcha challenge. On login and password reset forms, the captcha is only shown after a failed login attempt or other suspicious activity from the visitor\'s IP address.', 'paid-memberships-pro' ),
 				),
 				array(
 					// The callbacks hooked here echo their own <tr> rows, so give them a table.

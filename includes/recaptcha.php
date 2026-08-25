@@ -338,8 +338,8 @@ function pmpro_recaptcha_should_challenge_login() {
 		return false;
 	}
 
-	// Only challenge IPs that have recently failed to log in.
-	return pmpro_captcha_has_recent_failed_login();
+	// Only challenge IPs with recent suspicious activity, e.g. failed logins.
+	return pmpro_captcha_has_recent_spam_activity();
 }
 
 /**

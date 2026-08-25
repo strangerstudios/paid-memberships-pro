@@ -68,16 +68,21 @@ function pmpro_captcha() {
 }
 
 /**
- * Check whether the current IP has recent failed login activity and should be
+ * Check whether the current IP has recent suspicious activity and should be
  * shown a captcha challenge on login and password reset forms.
  *
- * Uses the spam activity tracking in includes/spam.php.
+ * Uses the spam activity tracking in includes/spam.php. Failed logins always
+ * feed this signal while a captcha is enabled. If Spam Protection is also
+ * enabled, failed checkouts and invalid discount codes feed it too — that is
+ * intentional: an IP abusing checkout is also worth challenging at login.
+ * Activity is deliberately not cleared on a successful login, since on shared
+ * IPs that would let an attacker reset the signal; it expires on its own.
  *
  * @since TBD
  *
- * @return bool True if the current IP has recent failed login activity.
+ * @return bool True if the current IP has recent suspicious activity.
  */
-function pmpro_captcha_has_recent_failed_login() {
+function pmpro_captcha_has_recent_spam_activity() {
 	$activity = pmpro_get_spam_activity();
 	return ! empty( $activity );
 }

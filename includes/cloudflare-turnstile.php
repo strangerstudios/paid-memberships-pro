@@ -220,8 +220,8 @@ function pmpro_cloudflare_turnstile_should_challenge_login() {
 		return false;
 	}
 
-	// Only challenge IPs that have recently failed to log in.
-	return pmpro_captcha_has_recent_failed_login();
+	// Only challenge IPs with recent suspicious activity, e.g. failed logins.
+	return pmpro_captcha_has_recent_spam_activity();
 }
 
 /**
@@ -231,11 +231,19 @@ function pmpro_cloudflare_turnstile_should_challenge_login() {
  * @since TBD
  */
 function pmpro_cloudflare_turnstile_login_forms_html() {
+	static $already_shown = false;
+
+	// Make sure that we only show the captcha once per page.
+	if ( $already_shown ) {
+		return;
+	}
+
 	if ( ! pmpro_cloudflare_turnstile_should_challenge_login() ) {
 		return;
 	}
 
 	pmpro_cloudflare_turnstile_get_html();
+	$already_shown = true;
 }
 add_action( 'pmpro_login_form_before_submit_button', 'pmpro_cloudflare_turnstile_login_forms_html' );
 add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_cloudflare_turnstile_login_forms_html' );
