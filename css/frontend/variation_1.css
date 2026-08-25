@@ -133,7 +133,7 @@
 	.pmpro_btn {
 		background-color: var(--pmpro--color--accent);
 		border: 1px solid var(--pmpro--color--accent);
-		border-radius: var(--pmpro--base--border-radius);
+		border-radius: var(--pmpro--btn--border-radius);
 		box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
 		box-sizing: border-box;
 		color: var(--pmpro--color--base);
@@ -145,7 +145,7 @@
 		line-height: 1.5;
 		min-height: 40px;
 		outline: 0;
-		padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
+		padding: var(--pmpro--btn--top-bottom-padding) var(--pmpro--btn--left-right-padding);
 		text-align: center;
 		text-decoration: none;
 		text-rendering: geometricprecision;
@@ -620,7 +620,7 @@
 	.pmpro_section #loginform .login-submit .button {
 		background-color: var(--pmpro--color--accent);
 		border: 1px solid var(--pmpro--color--accent);
-		border-radius: var(--pmpro--base--border-radius);
+		border-radius: var(--pmpro--btn--border-radius);
 		box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
 		box-sizing: border-box;
 		color: var(--pmpro--color--base);
@@ -632,7 +632,7 @@
 		line-height: 1.5;
 		min-height: 40px;
 		outline: 0;
-		padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
+		padding: var(--pmpro--btn--top-bottom-padding) var(--pmpro--btn--left-right-padding);
 		text-align: center;
 		text-decoration: none;
 		text-rendering: geometricprecision;
