@@ -8,6 +8,9 @@ global $wpdb, $page_msg, $page_msgt, $pmpro_stripe_error;
 // Get level templates.
 $level_templates = pmpro_edit_level_templates();
 
+// Load the media library for the level image selector.
+wp_enqueue_media();
+
 // Get level groups in order.
 $level_groups = pmpro_get_level_groups_in_order();
 
@@ -183,6 +186,13 @@ if ( ! empty( $temp_id ) ) {
 } else {
 	$membership_account_message = '';
 }
+
+// Get the level image via meta.
+if ( ! empty( $temp_id ) ) {
+	$level_image = (int) get_pmpro_membership_level_meta( $temp_id, 'level_image', true );
+} else {
+	$level_image = 0;
+}
 ?>
 <hr class="wp-header-end">
 <?php if (!empty($level->id)) { ?>
@@ -252,6 +262,52 @@ if (!empty($page_msg)) { ?>
 				'type'    => 'select',
 				'value'   => $current_group,
 				'options' => $group_options,
+			),
+			array(
+				'name'     => 'level_image',
+				'label'    => __( 'Level Image', 'paid-memberships-pro' ),
+				'type'     => 'callback',
+				'callback' => function() use ( $level_image ) {
+					?>
+					<div id="level_image_preview"><?php if ( ! empty( $level_image ) ) { echo wp_get_attachment_image( $level_image, 'medium' ); } ?></div>
+					<input type="hidden" name="level_image" id="level_image" value="<?php echo esc_attr( ! empty( $level_image ) ? $level_image : '' ); ?>" />
+					<button type="button" class="button" id="level_image_select"><?php esc_html_e( 'Select Image', 'paid-memberships-pro' ); ?></button>
+					<button type="button" class="button" id="level_image_remove" <?php if ( empty( $level_image ) ) { echo 'style="display: none;"'; } ?>><?php esc_html_e( 'Remove Image', 'paid-memberships-pro' ); ?></button>
+					<p class="description"><?php esc_html_e( 'Optional. This image is not shown at checkout. It is included in this level\'s structured data (JSON-LD) so that search engines and shopping tools can display an image for this membership.', 'paid-memberships-pro' ); ?></p>
+					<script>
+						jQuery( document ).ready( function( $ ) {
+							var level_image_frame;
+							$( '#level_image_select' ).on( 'click', function( e ) {
+								e.preventDefault();
+								if ( level_image_frame ) {
+									level_image_frame.open();
+									return;
+								}
+								level_image_frame = wp.media( {
+									title: <?php echo wp_json_encode( __( 'Select Level Image', 'paid-memberships-pro' ) ); ?>,
+									button: { text: <?php echo wp_json_encode( __( 'Use This Image', 'paid-memberships-pro' ) ); ?> },
+									multiple: false,
+									library: { type: 'image' }
+								} );
+								level_image_frame.on( 'select', function() {
+									var attachment = level_image_frame.state().get( 'selection' ).first().toJSON();
+									var url = ( attachment.sizes && attachment.sizes.medium ) ? attachment.sizes.medium.url : attachment.url;
+									$( '#level_image' ).val( attachment.id );
+									$( '#level_image_preview' ).html( $( '<img />', { src: url, style: 'max-width: 200px; height: auto;' } ) );
+									$( '#level_image_remove' ).show();
+								} );
+								level_image_frame.open();
+							} );
+							$( '#level_image_remove' ).on( 'click', function( e ) {
+								e.preventDefault();
+								$( '#level_image' ).val( '' );
+								$( '#level_image_preview' ).empty();
+								$( this ).hide();
+							} );
+						} );
+					</script>
+					<?php
+				},
 			),
 			array(
 				'name'            => 'description',
