@@ -110,6 +110,9 @@ function pmpro_report_members_per_level_delete_transients() {
 }
 add_action( 'pmpro_after_change_membership_level', 'pmpro_report_members_per_level_delete_transients' );
 
+// Deleting a user doesn't change a membership level, but it can leave behind membership rows that this report ignores.
+add_action( 'deleted_user', 'pmpro_report_members_per_level_delete_transients' );
+
 // Draw a pie chart of active members per level.
 function pmpro_report_draw_active_members_per_level_chart() {
 	$pmpro_levels = pmpro_getAllLevels( true );
