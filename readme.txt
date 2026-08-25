@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.8.4
+Stable tag: 3.8.5
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,13 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.8.5 - 2026-08-24 =
+* SECURITY: Fixed an issue where the payment amount was not re-verified after Strong Customer Authentication (3D Secure) in the Stripe on-site checkout. #3767 (@dparker1005)
+* SECURITY: Fixed an access check bypass in the `getfile` service that could allow protected files to be served through `admin-ajax.php` without a membership access check. #3762 (@dparker1005)
+* SECURITY: Added missing capability and nonce checks to several admin AJAX and service handlers. #3758 (@flintfromthebasement)
+* ENHANCEMENT: Removed the notices on the Stripe payment settings recommending the deprecated Add PayPal Express Add On. #3751 (@flintfromthebasement)
+* BUG FIX: Guarded the `pmpro_setMessage()` calls in `PMPro_AddOns` so that activating Paid Memberships Pro while the Update Manager Add On is active no longer causes a fatal error. #3763 (@dparker1005)
+
 = 3.8.4 - 2026-08-06 =
 * ENHANCEMENT: Added new `--pmpro--btn--border-radius`, `--pmpro--btn--top-bottom-padding`, and `--pmpro--btn--left-right-padding` CSS variables so that button styles can be customized separately from other elements that share the base variables. #3747 (@RachelRVasquez)
 * BUG FIX: Fixed an issue where Stripe Checkout orders paid with delayed notification payment methods such as SEPA Direct Debit could be completed without their subscription and payment transaction IDs, which prevented membership cancellations from being sent to Stripe. An upgrade script now recovers the missing IDs for previously affected orders. #3745 (@dparker1005)
