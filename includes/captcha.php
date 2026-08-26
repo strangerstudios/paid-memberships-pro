@@ -99,6 +99,35 @@ function pmpro_captcha_failed_error_message() {
 }
 
 /**
+ * Don't allow the frontend login page to be full-page cached while a captcha
+ * service is enabled.
+ *
+ * The captcha only renders for IPs with recent suspicious activity, so a
+ * cached copy of the page could serve a captcha-less form to a visitor whose
+ * submission would then be rejected.
+ *
+ * @since TBD
+ */
+function pmpro_captcha_nocache_login_page() {
+	// Bail if no captcha is enabled.
+	if ( empty( pmpro_captcha() ) ) {
+		return;
+	}
+
+	// Bail if we're not on the frontend login page.
+	$login_page_id = get_option( 'pmpro_login_page_id' );
+	if ( empty( $login_page_id ) || ! is_page( (int) $login_page_id ) ) {
+		return;
+	}
+
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+	nocache_headers();
+}
+add_action( 'template_redirect', 'pmpro_captcha_nocache_login_page' );
+
+/**
  * Check whether the current request includes a pmpro_captcha_failed error code
  * passed back to the login page in the URL.
  *

@@ -364,21 +364,19 @@ function pmpro_recaptcha_verify_token( $token ) {
 }
 
 /**
- * Outputs the HTML needed to display reCAPTCHA in login and password reset forms.
+ * Outputs the HTML needed to display reCAPTCHA in a login or password reset form.
  *
  * Unlike pmpro_recaptcha_get_html(), this does not use the checkout JS or the
  * AJAX/session validation flow. The token is submitted with the form and
  * verified server-side when the submission is processed.
  *
+ * A widget is output for every form on the page since every form's submission
+ * is validated server-side. Shared assets (scripts) are only output once.
+ *
  * @since TBD
  */
 function pmpro_recaptcha_get_login_html() {
-	static $already_shown = false;
-
-	// Make sure that we only show the captcha once per page.
-	if ( $already_shown ) {
-		return;
-	}
+	static $assets_shown = false;
 
 	$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
 
@@ -395,52 +393,123 @@ function pmpro_recaptcha_get_login_html() {
 
 	// Check which version of reCAPTCHA we are using.
 	$recaptcha_version = get_option( 'pmpro_recaptcha_version' );
-	?>
-	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
-		<?php if ( $recaptcha_version == '3_invisible' ) { ?>
-			<div id="pmpro_recaptcha_login" class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey ); ?>" data-size="invisible" data-callback="pmpro_recaptcha_login_token_callback"></div>
+
+	if ( $recaptcha_version == '3_invisible' ) {
+		// One invisible widget container per form. The shared script below renders
+		// each container explicitly with its own widget ID so that multiple forms
+		// per page and other plugins' reCAPTCHA usage can coexist.
+		?>
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
+			<div class="pmpro_recaptcha_login" data-sitekey="<?php echo esc_attr( $recaptcha_publickey ); ?>"></div>
+		</div>
+		<?php
+		if ( ! $assets_shown ) {
+			?>
 			<script>
-				// Once reCAPTCHA has generated a token, submit the form. The token is verified server-side.
-				var pmpro_recaptcha_login_has_token = false;
-				function pmpro_recaptcha_login_token_callback( token ) {
-					pmpro_recaptcha_login_has_token = true;
-					var widget = document.getElementById( 'pmpro_recaptcha_login' );
-					var form = widget ? widget.closest( 'form' ) : null;
-					if ( form ) {
-						// Call the prototype method directly in case the form has an input named "submit".
-						HTMLFormElement.prototype.submit.call( form );
-					}
-				}
-				document.addEventListener( 'DOMContentLoaded', function() {
-					var widget = document.getElementById( 'pmpro_recaptcha_login' );
-					var form = widget ? widget.closest( 'form' ) : null;
-					if ( ! form ) {
+			(function() {
+				var pmpro_recaptcha_login_setup_done = false;
+
+				// Explicitly render an invisible widget in each form and intercept that
+				// form's submission until reCAPTCHA has generated a token. If anything
+				// fails, the form submits normally and the server rejects the tokenless
+				// submission with an error the user can retry.
+				function pmpro_recaptcha_login_setup() {
+					if ( pmpro_recaptcha_login_setup_done || typeof grecaptcha === 'undefined' || typeof grecaptcha.render !== 'function' ) {
 						return;
 					}
-					form.addEventListener( 'submit', function( event ) {
-						// If we already have a token or reCAPTCHA hasn't loaded, let the
-						// form submit. The server will reject submissions without a valid token.
-						if ( pmpro_recaptcha_login_has_token || typeof grecaptcha === 'undefined' || typeof grecaptcha.execute !== 'function' ) {
+					pmpro_recaptcha_login_setup_done = true;
+					document.querySelectorAll( '.pmpro_recaptcha_login' ).forEach( function( el ) {
+						var form = el.closest( 'form' );
+						if ( ! form ) {
 							return;
 						}
-						event.preventDefault();
-						grecaptcha.execute();
+						var hasToken = false;
+						var widgetId = null;
+						try {
+							widgetId = grecaptcha.render( el, {
+								'sitekey': el.getAttribute( 'data-sitekey' ),
+								'size': 'invisible',
+								'callback': function( token ) {
+									hasToken = true;
+									// Call the prototype method directly in case the form has an input named "submit".
+									HTMLFormElement.prototype.submit.call( form );
+								}
+							} );
+						} catch ( e ) {
+							return;
+						}
+						form.addEventListener( 'submit', function( event ) {
+							if ( hasToken || null === widgetId ) {
+								return;
+							}
+							event.preventDefault();
+							try {
+								grecaptcha.execute( widgetId );
+							} catch ( e ) {
+								HTMLFormElement.prototype.submit.call( form );
+							}
+						} );
 					} );
-				} );
-			</script>
-		<?php } else { ?>
-			<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey ); ?>"></div>
-		<?php } ?>
-		<script src="https://www.google.com/recaptcha/api.js?hl=<?php echo esc_attr( $lang ); ?>" async defer></script>
-	</div>
-	<?php
+				}
 
-	$already_shown = true;
+				window.pmpro_recaptcha_login_onload = function() {
+					pmpro_recaptcha_login_setup();
+				};
+
+				document.addEventListener( 'DOMContentLoaded', function() {
+					// If another script on the page (e.g. PMPro checkout) already loaded the
+					// reCAPTCHA API, reuse it rather than loading it twice.
+					if ( window.grecaptcha && typeof window.grecaptcha.render === 'function' ) {
+						pmpro_recaptcha_login_setup();
+						return;
+					}
+
+					// Load the reCAPTCHA API if nothing else on the page is loading it.
+					if ( ! document.querySelector( 'script[src*="google.com/recaptcha/api.js"]' ) ) {
+						var script = document.createElement( 'script' );
+						script.src = 'https://www.google.com/recaptcha/api.js?onload=pmpro_recaptcha_login_onload&render=explicit&hl=<?php echo esc_js( $lang ); ?>';
+						script.async = true;
+						document.head.appendChild( script );
+						return;
+					}
+
+					// Another script tag is loading the API; wait for it to become available.
+					var tries = 0;
+					var timer = setInterval( function() {
+						if ( window.grecaptcha && typeof window.grecaptcha.render === 'function' ) {
+							clearInterval( timer );
+							pmpro_recaptcha_login_setup();
+						} else if ( ++tries > 100 ) {
+							clearInterval( timer );
+						}
+					}, 100 );
+				} );
+			})();
+			</script>
+			<?php
+			$assets_shown = true;
+		}
+	} else {
+		// v2 checkbox: one widget container per form, auto-rendered by the API script.
+		?>
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
+			<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey ); ?>"></div>
+		</div>
+		<?php
+		if ( ! $assets_shown ) {
+			// defer (not async) so that every widget container on the page exists
+			// before the API's auto-render pass runs.
+			?>
+			<script src="https://www.google.com/recaptcha/api.js?hl=<?php echo esc_attr( $lang ); ?>" defer></script>
+			<?php
+			$assets_shown = true;
+		}
+	}
 }
 
 /**
- * Show reCAPTCHA on PMPro and WP core login and lost password forms
- * once a failed login attempt has been tracked for the current IP.
+ * Show reCAPTCHA on login and lost password forms once a challenge is
+ * active for the current IP.
  *
  * @since TBD
  */
@@ -451,10 +520,30 @@ function pmpro_recaptcha_login_forms_html() {
 
 	pmpro_recaptcha_get_login_html();
 }
-add_action( 'pmpro_login_form_before_submit_button', 'pmpro_recaptcha_login_forms_html' );
-add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_recaptcha_login_forms_html' );
 add_action( 'login_form', 'pmpro_recaptcha_login_forms_html' );
 add_action( 'lostpassword_form', 'pmpro_recaptcha_login_forms_html' );
+add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_recaptcha_login_forms_html' );
+
+/**
+ * Show reCAPTCHA inside forms built with wp_login_form() — including PMPro's
+ * own login forms — once a challenge is active. These are exactly the forms
+ * that post to wp-login.php and are validated by pmpro_authenticate_login_checks,
+ * so every form that is validated also displays the challenge.
+ *
+ * @since TBD
+ *
+ * @param string $content Content to display. Default empty.
+ * @param array  $args    Array of login form arguments.
+ * @return string $content Content to display.
+ */
+function pmpro_recaptcha_login_form_middle( $content, $args ) {
+	ob_start();
+	pmpro_recaptcha_login_forms_html();
+	// Late priority and a (string) cast so that earlier callbacks that echo
+	// and return null (instead of returning their content) can't wipe the widget.
+	return (string) $content . ob_get_clean();
+}
+add_filter( 'login_form_middle', 'pmpro_recaptcha_login_form_middle', 100, 2 );
 
 /**
  * Require a valid reCAPTCHA on login attempts once the current IP has failed a login.

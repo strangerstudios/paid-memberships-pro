@@ -21,6 +21,7 @@ add_filter( 'pmpro_captcha_services', 'pmpro_cloudflare_turnstile_register_captc
  * Show CloudFlare Turnstile on the checkout page.
  */
 function pmpro_cloudflare_turnstile_get_html() {
+	static $script_shown = false;
 
 	// If CloudFlare Turnstile is not enabled, bail.
 	if ( 'turnstile' !== pmpro_captcha() ) {
@@ -36,8 +37,16 @@ function pmpro_cloudflare_turnstile_get_html() {
 	if ( $cf_theme !== 'light' ) {
 		$cf_theme = 'dark';
 	}
+
+	// Only load the Turnstile API script once per page. A widget is output on
+	// every call since Turnstile renders every .cf-turnstile element on the page.
+	if ( ! $script_shown ) {
+		?>
+		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+		<?php
+		$script_shown = true;
+	}
 	?>
-	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 	<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( get_option( 'pmpro_cloudflare_turnstile_site_key' ) ); ?>" data-theme="<?php echo esc_attr( $cf_theme ); ?>"></div>
 	<?php
 
@@ -225,30 +234,46 @@ function pmpro_cloudflare_turnstile_should_challenge_login() {
 }
 
 /**
- * Show Turnstile on PMPro and WP core login and lost password forms
- * once a failed login attempt has been tracked for the current IP.
+ * Show Turnstile on login and lost password forms once a challenge is
+ * active for the current IP.
+ *
+ * A widget is output for every form on the page since every form's submission
+ * is validated server-side; pmpro_cloudflare_turnstile_get_html() only loads
+ * the API script once.
  *
  * @since TBD
  */
 function pmpro_cloudflare_turnstile_login_forms_html() {
-	static $already_shown = false;
-
-	// Make sure that we only show the captcha once per page.
-	if ( $already_shown ) {
-		return;
-	}
-
 	if ( ! pmpro_cloudflare_turnstile_should_challenge_login() ) {
 		return;
 	}
 
 	pmpro_cloudflare_turnstile_get_html();
-	$already_shown = true;
 }
-add_action( 'pmpro_login_form_before_submit_button', 'pmpro_cloudflare_turnstile_login_forms_html' );
-add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_cloudflare_turnstile_login_forms_html' );
 add_action( 'login_form', 'pmpro_cloudflare_turnstile_login_forms_html' );
 add_action( 'lostpassword_form', 'pmpro_cloudflare_turnstile_login_forms_html' );
+add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_cloudflare_turnstile_login_forms_html' );
+
+/**
+ * Show Turnstile inside forms built with wp_login_form() — including PMPro's
+ * own login forms — once a challenge is active. These are exactly the forms
+ * that post to wp-login.php and are validated by pmpro_authenticate_login_checks,
+ * so every form that is validated also displays the challenge.
+ *
+ * @since TBD
+ *
+ * @param string $content Content to display. Default empty.
+ * @param array  $args    Array of login form arguments.
+ * @return string $content Content to display.
+ */
+function pmpro_cloudflare_turnstile_login_form_middle( $content, $args ) {
+	ob_start();
+	pmpro_cloudflare_turnstile_login_forms_html();
+	// Late priority and a (string) cast so that earlier callbacks that echo
+	// and return null (instead of returning their content) can't wipe the widget.
+	return (string) $content . ob_get_clean();
+}
+add_filter( 'login_form_middle', 'pmpro_cloudflare_turnstile_login_form_middle', 100, 2 );
 
 /**
  * Require a valid Turnstile token on login attempts once the current IP has failed a login.

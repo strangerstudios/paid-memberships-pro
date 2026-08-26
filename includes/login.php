@@ -1110,8 +1110,12 @@ function pmpro_apply_custom_login_checks( $user, $username, $password ) {
 		return $user;
 	}
 
-	// Only run checks for login attempts from the PMPro login form or the form on wp-login.php.
-	// Other login flows (XML-RPC, other plugins' login forms, direct wp_signon() calls, etc.) are intentionally not affected.
+	// Only run checks for login attempts that post through wp-login.php. That covers
+	// PMPro's login forms, wp-login.php's own form, and any form built with
+	// wp_login_form() — captcha services render into all of those via the login_form
+	// action and login_form_middle filter. Other login flows (XML-RPC, plugins that
+	// call wp_signon() directly or authenticate with their own handlers, e.g.
+	// WooCommerce) are intentionally not affected.
 	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_login' ) ) {
 		return $user;
 	}
