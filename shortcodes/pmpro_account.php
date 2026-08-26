@@ -160,6 +160,17 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				}
 				$pending_order_level = pmpro_getLevel( $pending_order->membership_id );
 				if ( ! empty( $pending_order_level ) ) {
+					// Normalize to the same shape as levels from pmpro_getMembershipLevelsForUser() so that code
+					// hooked to the level card can rely on the same properties existing. The user does not have a
+					// membership row for this level yet, so those fields are empty. Clone so that we don't modify
+					// the level object cached in the $pmpro_levels global.
+					$pending_order_level = clone $pending_order_level;
+					$pending_order_level->ID = $pending_order_level->id;
+					$pending_order_level->subscription_id = null;
+					$pending_order_level->status = null;
+					$pending_order_level->code_id = null;
+					$pending_order_level->startdate = null;
+					$pending_order_level->enddate = null;
 					$pending_order_levels[ $pending_order->membership_id ] = $pending_order_level;
 				}
 			}
