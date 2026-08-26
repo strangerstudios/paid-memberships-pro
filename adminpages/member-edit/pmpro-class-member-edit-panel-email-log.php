@@ -60,6 +60,7 @@ class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 						<th><?php esc_html_e( 'To', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Attachments', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
 					</tr>
 				</thead>
@@ -95,6 +96,22 @@ class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 									}
 
 									echo $description ? esc_html( $description ) : esc_html__( '&#8212;', 'paid-memberships-pro' );
+								?>
+							</td>
+							<td data-colname="<?php esc_attr_e( 'Attachments', 'paid-memberships-pro' ); ?>">
+								<?php
+									$entry_attachments = ! empty( $entry->attachments ) ? maybe_unserialize( $entry->attachments ) : array();
+									if ( is_string( $entry_attachments ) ) {
+										$entry_attachments = preg_split( '/[,;]/', $entry_attachments );
+									}
+									$entry_attachments = array_filter( array_map( 'trim', (array) $entry_attachments ), 'strlen' );
+
+									if ( ! empty( $entry_attachments ) ) {
+										echo '<span class="dashicons dashicons-paperclip" title="' . esc_attr( implode( ', ', $entry_attachments ) ) . '"></span> ';
+										echo esc_html( number_format_i18n( count( $entry_attachments ) ) );
+									} else {
+										echo '—';
+									}
 								?>
 							</td>
 							<td data-colname="<?php esc_attr_e( 'Status', 'paid-memberships-pro' ); ?>">

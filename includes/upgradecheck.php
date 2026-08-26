@@ -460,6 +460,15 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.84' );
 	}
 
+	/**
+	 * Version 3.8.6
+	 * Run dbDelta to add the attachments column to the email log table.
+	 */
+	if ( $pmpro_db_version < 3.86 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.86' );
+	}
+
 }
 
 function pmpro_db_delta() {
@@ -792,6 +801,7 @@ function pmpro_db_delta() {
 		  `reply_to` varchar(255) NOT NULL DEFAULT '',
 		  `cc` text NOT NULL,
 		  `bcc` text NOT NULL,
+		  `attachments` text NOT NULL,
 		  `status` varchar(20) NOT NULL DEFAULT 'sent',
 		  `error_message` text NOT NULL,
 		  `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',

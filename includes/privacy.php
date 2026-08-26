@@ -401,6 +401,19 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 				),
 			);
 
+			$log_attachments = ! empty( $log->attachments ) ? maybe_unserialize( $log->attachments ) : array();
+			if ( is_string( $log_attachments ) ) {
+				$log_attachments = preg_split( '/[,;]/', $log_attachments );
+			}
+			$log_attachments = array_filter( array_map( 'trim', (array) $log_attachments ), 'strlen' );
+
+			if ( ! empty( $log_attachments ) ) {
+				$email_data_to_export[] = array(
+					'name'  => __( 'Attachments', 'paid-memberships-pro' ),
+					'value' => implode( ', ', $log_attachments ),
+				);
+			}
+
 			$data_to_export[] = array(
 				'group_id'    => 'pmpro_email_log',
 				'group_label' => __( 'Paid Memberships Pro Email Log', 'paid-memberships-pro' ),
