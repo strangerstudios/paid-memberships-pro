@@ -1295,6 +1295,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function pmpro_checkout_order( $morder ) {
 
+		// Bail if a callback earlier on the filter did not return an order object.
+		if ( ! is_a( $morder, 'MemberOrder' ) ) {
+			return $morder;
+		}
+
 		// Create a code for the order.
 		if ( empty( $morder->code ) ) {
 			$morder->code = $morder->getRandomCode();

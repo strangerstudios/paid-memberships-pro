@@ -388,6 +388,11 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		 */
 		static function pmpro_checkout_order($morder)
 		{
+			// Bail if a callback earlier on the filter did not return an order object.
+			if ( ! is_a( $morder, 'MemberOrder' ) ) {
+				return $morder;
+			}
+
 			//load up values
 			if(isset($_REQUEST['number']))
 				$braintree_number = sanitize_text_field($_REQUEST['number']);
