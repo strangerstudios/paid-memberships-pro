@@ -5489,8 +5489,9 @@ function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
 		);
 		$recent_order = empty( $recent_orders ) ? null : current( $recent_orders );
 
-		// The pending order is only live if no payment for this level was completed after it.
-		if ( ! empty( $recent_order ) && $recent_order->status === 'pending' ) {
+		// The pending order is only live if no payment for this level was completed after it and the
+		// order is not dated in the future (e.g. a Pay by Check renewal invoice created before its due date).
+		if ( ! empty( $recent_order ) && $recent_order->status === 'pending' && $recent_order->getTimestamp( true ) <= time() ) {
 			$cache[ $cache_key ] = $recent_order;
 
 			// In a single-selection group, a level the user started after this order supersedes it.
