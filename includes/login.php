@@ -457,11 +457,17 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 		}
 	}
 
+	// Flag widget instances so narrow-column styles can be applied.
+	$pmpro_login_section_class = 'pmpro_section';
+	if ( $location === 'widget' ) {
+		$pmpro_login_section_class .= ' pmpro_login-widget';
+	}
+
 	ob_start();
 	?>
 
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
-		<section id="pmpro_login" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_login' ) ); ?>">
+		<section id="pmpro_login" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_login_section_class, 'pmpro_login' ) ); ?>">
 			<?php
 				// Note we don't show messages on the widget form.
 				if ( $message && $location !== 'widget' ) {
