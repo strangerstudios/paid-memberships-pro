@@ -46,7 +46,14 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 
 	// Check if we have already cancelled the subscription in PMPro.
 	if ( 'cancelled' === $subscription->get_status() ) {
-		return 'We have already processed this cancellation. Probably originated from WP/PMPro. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
+		// Check if the user still has an active membership for this level with no end date.
+		$user_level = pmpro_getSpecificMembershipLevelForUser( $subscription->get_user_id(), $subscription->get_membership_level_id() );
+		$membership_still_open = ! empty( $user_level ) && empty( $user_level->enddate );
+		if ( ! $membership_still_open ) {
+			return 'We have already processed this cancellation. Probably originated from WP/PMPro. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
+		}
+		// The subscription is marked cancelled at the gateway but the membership
+		// was never ended. Continue to end it below.
 	}
 
 	// Store the old next payment date for the subscription for later.
