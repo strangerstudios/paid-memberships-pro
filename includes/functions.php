@@ -5458,9 +5458,10 @@ add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_
 /**
  * Get the live pending order for a user and level.
  *
- * Only returns the user's most recent order for the level, and only if it is still pending.
- * A newer order in any other status (e.g. a 'success' order from paying again by a different
- * method) means the pending order is stale and should not be surfaced.
+ * Only returns the user's most recent pending or completed order for the level, and only if it
+ * is still pending. A newer completed order (e.g. a 'success' order from paying again by a
+ * different method) means the pending order is stale and should not be surfaced. Orders from
+ * attempts that never resolved ('token', 'review', 'error') do not supersede a pending order.
  *
  * The order is also treated as stale if the user has since started a different level in the same
  * single-selection group, since holding one level in that group means they chose another plan.
@@ -5482,12 +5483,13 @@ function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
 			array(
 				'user_id'             => $user_id,
 				'membership_level_id' => $level_id,
+				'status'              => array( 'pending', 'success', 'refunded' ),
 				'limit'               => 1,
 			)
 		);
 		$recent_order = empty( $recent_orders ) ? null : current( $recent_orders );
 
-		// The pending order is only live if it is the user's most recent order for the level.
+		// The pending order is only live if no payment for this level was completed after it.
 		if ( ! empty( $recent_order ) && $recent_order->status === 'pending' ) {
 			$cache[ $cache_key ] = $recent_order;
 
