@@ -2487,6 +2487,12 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	gap: 5px;
 }
 
+.pmpro_admin-pmpro-paymentsettings .pmpro_stripe_reconnect {
+	align-items: center;
+	display: inline-flex;
+	gap: 5px;
+}
+
 .wp-core-ui .pmpro_admin-pmpro-paymentsettings #pmpro_stripe_create_webhook .dashicons,
 .wp-core-ui .pmpro_admin-pmpro-paymentsettings .pmpro_stripe_reconnect .dashicons {
 	line-height: 1;
