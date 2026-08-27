@@ -385,8 +385,9 @@ jQuery(document).ready(function () {
 });
 
 /*
- * Test saved Stripe Connect keys after the payment settings page loads.
- * Secrets are never sent to the browser; failures get an inline reconnect link.
+ * Test saved Stripe keys after the payment settings page loads.
+ * Secrets are never sent to the browser. Connect failures get a reconnect link;
+ * API-key failures ask the admin to check the Restricted Key.
  */
 jQuery(document).ready(function () {
 	if (!jQuery('.pmpro_stripe_connect_key_health').length || typeof pmpro === 'undefined' || !pmpro.stripe_connect_key_health_nonce) {
@@ -416,9 +417,15 @@ jQuery(document).ready(function () {
 					return;
 				}
 
-				var notice = jQuery('#pmpro_stripe_connect_key_health_' + environment);
+				var notice = (environment === 'api')
+					? jQuery('#pmpro_stripe_api_key_health')
+					: jQuery('#pmpro_stripe_connect_key_health_' + environment);
 				if (!notice.length) {
 					return;
+				}
+
+				if (environment === 'api') {
+					jQuery('.pmpro_stripe_legacy_keys').show();
 				}
 
 				notice.children('p').html(result.message);

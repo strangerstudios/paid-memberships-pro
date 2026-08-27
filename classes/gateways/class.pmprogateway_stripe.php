@@ -1205,10 +1205,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * AJAX callback to test saved Stripe Connect keys against the Stripe API.
+	 * AJAX callback to test saved Stripe keys against the Stripe API.
 	 *
-	 * Secrets stay on the server. Success is silent; auth failures return
-	 * a reconnect URL for the payment settings page.
+	 * Secrets stay on the server. Success is silent. Connect auth failures
+	 * get a reconnect URL; API-key failures ask the admin to check the Restricted Key.
 	 */
 	public static function wp_ajax_pmpro_stripe_check_connect_keys() {
 		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
@@ -1232,25 +1232,36 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$results = array();
-		foreach ( array( 'live', 'sandbox' ) as $environment ) {
-			if ( ! self::has_connect_credentials( $environment ) ) {
-				continue;
-			}
 
-			if ( self::connect_secretkey_is_valid( get_option( 'pmpro_' . $environment . '_stripe_connect_secretkey' ) ) ) {
-				continue;
+		// API keys take precedence over Connect for Stripe calls — only test the keys actually used.
+		if ( self::using_api_keys() ) {
+			if ( ! self::connect_secretkey_is_valid( get_option( 'pmpro_stripe_secretkey' ) ) ) {
+				$results['api'] = array(
+					'success' => false,
+					'message' => esc_html__( 'We could not reach Stripe with the saved API keys. Check your Restricted Key.', 'paid-memberships-pro' ),
+				);
 			}
+		} else {
+			foreach ( array( 'live', 'sandbox' ) as $environment ) {
+				if ( ! self::has_connect_credentials( $environment ) ) {
+					continue;
+				}
 
-			$reconnect_url = self::get_connect_authorize_url( $environment );
-			$reconnect_link = '<a href="' . esc_url( $reconnect_url ) . '">' . esc_html__( 'Reconnect with Stripe', 'paid-memberships-pro' ) . '</a>';
-			$results[ $environment ] = array(
-				'success' => false,
-				'message' => sprintf(
-					/* translators: %s: Reconnect with Stripe link */
-					esc_html__( 'We could not reach Stripe with the saved keys. %s', 'paid-memberships-pro' ),
-					$reconnect_link
-				),
-			);
+				if ( self::connect_secretkey_is_valid( get_option( 'pmpro_' . $environment . '_stripe_connect_secretkey' ) ) ) {
+					continue;
+				}
+
+				$reconnect_url = self::get_connect_authorize_url( $environment );
+				$reconnect_link = '<a href="' . esc_url( $reconnect_url ) . '">' . esc_html__( 'Reconnect with Stripe', 'paid-memberships-pro' ) . '</a>';
+				$results[ $environment ] = array(
+					'success' => false,
+					'message' => sprintf(
+						/* translators: %s: Reconnect with Stripe link */
+						esc_html__( 'We could not reach Stripe with the saved keys. %s', 'paid-memberships-pro' ),
+						$reconnect_link
+					),
+				);
+			}
 		}
 
 		echo wp_json_encode(
@@ -1292,9 +1303,9 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Test a Stripe Connect secret with a cheap authenticated GET.
+	 * Test a Stripe secret (Connect or Restricted Key) with a cheap authenticated GET.
 	 *
-	 * @param string $secretkey Connect secret stored in options.
+	 * @param string $secretkey Secret stored in options.
 	 * @return bool True if the key authenticates. Transient/network errors return true so we do not nag.
 	 */
 	private static function connect_secretkey_is_valid( $secretkey ) {
@@ -3198,6 +3209,9 @@ class PMProGateway_stripe extends PMProGateway {
 									</th>
 									<td>
 										<input type="text" id="stripe_secretkey" name="stripe_secretkey" value="<?php echo esc_attr( $secret_key ) ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
+										<div id="pmpro_stripe_api_key_health" class="notice notice-error inline pmpro_stripe_connect_key_health" style="display: none; margin-top: 8px;">
+											<p></p>
+										</div>
 									</td>
 								</tr>
 							</tbody>
