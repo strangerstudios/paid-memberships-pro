@@ -1619,7 +1619,10 @@ class PMProGateway_stripe extends PMProGateway {
 		global $pmpro_stripe_error;
 		if ( ! empty( $pmpro_stripe_error ) ) {
 			$class   = 'notice notice-error pmpro-stripe-connect-message';
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $pmpro_stripe_error ) );
+			$allowed_html = array(
+				'strong' => array(),
+			);
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), wp_kses( $pmpro_stripe_error, $allowed_html ) );
 		}
 	}
 
