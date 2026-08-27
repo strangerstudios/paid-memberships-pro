@@ -1574,16 +1574,23 @@ class PMProGateway_stripe extends PMProGateway {
 			$error = __( 'Invalid response from the Stripe Connect server.', 'paid-memberships-pro' );
 		} else {
 			// Update keys.
+			$hashed = isset( $_REQUEST['pmpro_stripe_connect_hashed'] ) && 'true' === $_REQUEST['pmpro_stripe_connect_hashed'];
 			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
 				// Update live keys.
 				update_option( 'pmpro_live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( 'pmpro_live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( 'pmpro_live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( $hashed ) {
+					update_option( 'pmpro_live_stripe_connect_hashed', true );
+				}
 			} else {
 				// Update sandbox keys.
 				update_option( 'pmpro_sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( 'pmpro_sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( 'pmpro_sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( $hashed ) {
+					update_option( 'pmpro_sandbox_stripe_connect_hashed', true );
+				}
 			}
 
 
@@ -1596,6 +1603,7 @@ class PMProGateway_stripe extends PMProGateway {
 			unset( $_GET['pmpro_stripe_user_id'] );
 			unset( $_GET['pmpro_stripe_access_token'] );
 			unset( $_GET['pmpro_stripe_publishable_key'] );
+			unset( $_GET['pmpro_stripe_connect_hashed'] );
 
 			// Set up a webhook if needed.
 			$stripe = new PMProGateway_stripe();
@@ -1665,16 +1673,23 @@ class PMProGateway_stripe extends PMProGateway {
 
 		}
 
+		// Only wipe local Connect credentials after a confirmed disconnect.
+		if ( 'true' !== $_REQUEST['pmpro_stripe_disconnected'] ) {
+			return;
+		}
+
 		if ( $_REQUEST['pmpro_stripe_disconnected_environment'] === 'live' ) {
 			// Delete live keys.
 			delete_option( 'pmpro_live_stripe_connect_user_id' );
 			delete_option( 'pmpro_live_stripe_connect_secretkey' );
 			delete_option( 'pmpro_live_stripe_connect_publishablekey' );
+			delete_option( 'pmpro_live_stripe_connect_hashed' );
 		} else {
 			// Delete sandbox keys.
 			delete_option( 'pmpro_sandbox_stripe_connect_user_id' );
 			delete_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 			delete_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
+			delete_option( 'pmpro_sandbox_stripe_connect_hashed' );
 		}
 	}
 
@@ -2829,6 +2844,7 @@ class PMProGateway_stripe extends PMProGateway {
 							'action' => 'disconnect',
 							'gateway_environment' => $environment2,
 							'stripe_user_id' => $values[ $environment . '_stripe_connect_user_id'],
+							'key_hash' => hash( 'sha256', get_option( 'pmpro_' . $environment . '_stripe_connect_secretkey' ) ),
 							'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
 						),
 						$connect_url_base
@@ -2850,6 +2866,7 @@ class PMProGateway_stripe extends PMProGateway {
 						array(
 							'action' => 'authorize',
 							'gateway_environment' => $environment2,
+							'supports_hash' => '1',
 							'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
 						),
 						$connect_url_base
@@ -2976,6 +2993,7 @@ class PMProGateway_stripe extends PMProGateway {
 											'action' => 'disconnect',
 											'gateway_environment' => $environment2,
 											'stripe_user_id' => get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' ),
+											'key_hash' => hash( 'sha256', get_option( 'pmpro_' . $environment . '_stripe_connect_secretkey' ) ),
 											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
 										),
 										$connect_url_base
@@ -2997,6 +3015,7 @@ class PMProGateway_stripe extends PMProGateway {
 										array(
 											'action' => 'authorize',
 											'gateway_environment' => $environment2,
+											'supports_hash' => '1',
 											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
 										),
 										$connect_url_base
