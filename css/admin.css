@@ -2487,6 +2487,13 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	gap: 5px;
 }
 
+.pmpro_admin-pmpro-paymentsettings .pmpro_stripe_reconnect_actions {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
 .pmpro_admin-pmpro-paymentsettings .pmpro_stripe_reconnect {
 	align-items: center;
 	display: inline-flex;

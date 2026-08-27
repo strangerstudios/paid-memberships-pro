@@ -1705,7 +1705,7 @@ class PMProGateway_stripe extends PMProGateway {
 		?>
 		<div class="notice notice-error inline">
 			<p><strong><?php esc_html_e( 'Important:', 'paid-memberships-pro' ); ?></strong> <?php esc_html_e( 'We recommend that you reconnect your Stripe connection.', 'paid-memberships-pro' ); ?></p>
-			<p>
+			<p class="pmpro_stripe_reconnect_actions">
 				<a href="<?php echo esc_url( $reconnect_url ); ?>" class="button button-primary pmpro_stripe_reconnect"><span class="dashicons dashicons-update-alt"></span> <?php esc_html_e( 'Reconnect', 'paid-memberships-pro' ); ?></a>
 				<a href="https://www.paidmembershipspro.com/blog/" class="button button-secondary" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Learn More', 'paid-memberships-pro' ); ?></a>
 			</p>
