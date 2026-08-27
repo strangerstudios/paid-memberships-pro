@@ -131,6 +131,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_rebuild_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_rebuild_webhook' ) );
+		add_action( 'wp_ajax_pmpro_stripe_check_connect_keys', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_check_connect_keys' ) );
 
 		//code to add at checkout if Stripe is the current gateway
 		$default_gateway = get_option( 'pmpro_gateway' );
@@ -1201,6 +1202,125 @@ class PMProGateway_stripe extends PMProGateway {
 
 		echo json_encode( $r ); // Values escaped above.
 		exit;
+	}
+
+	/**
+	 * AJAX callback to test saved Stripe Connect keys against the Stripe API.
+	 *
+	 * Secrets stay on the server. Success is silent; auth failures return
+	 * a reconnect URL for the payment settings page.
+	 */
+	public static function wp_ajax_pmpro_stripe_check_connect_keys() {
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
+			echo wp_json_encode(
+				array(
+					'success' => false,
+					'results' => array(),
+				)
+			);
+			exit;
+		}
+
+		if ( false === check_ajax_referer( 'pmpro_stripe_connect_key_health', 'nonce', false ) ) {
+			echo wp_json_encode(
+				array(
+					'success' => false,
+					'results' => array(),
+				)
+			);
+			exit;
+		}
+
+		$results = array();
+		foreach ( array( 'live', 'sandbox' ) as $environment ) {
+			if ( ! self::has_connect_credentials( $environment ) ) {
+				continue;
+			}
+
+			if ( self::connect_secretkey_is_valid( get_option( 'pmpro_' . $environment . '_stripe_connect_secretkey' ) ) ) {
+				continue;
+			}
+
+			$reconnect_url = self::get_connect_authorize_url( $environment );
+			$reconnect_link = '<a href="' . esc_url( $reconnect_url ) . '">' . esc_html__( 'Reconnect with Stripe', 'paid-memberships-pro' ) . '</a>';
+			$results[ $environment ] = array(
+				'success' => false,
+				'message' => sprintf(
+					/* translators: %s: Reconnect with Stripe link */
+					esc_html__( 'We could not reach Stripe with the saved keys. %s', 'paid-memberships-pro' ),
+					$reconnect_link
+				),
+			);
+		}
+
+		echo wp_json_encode(
+			array(
+				'success' => true,
+				'results' => $results,
+			)
+		); // Message HTML escaped above.
+		exit;
+	}
+
+	/**
+	 * Build the Stripe Connect authorization URL.
+	 *
+	 * @param string $gateway_environment 'live' or 'sandbox'.
+	 * @return string
+	 */
+	private static function get_connect_authorize_url( $gateway_environment ) {
+		$environment2 = ( 'live' === $gateway_environment ) ? 'live' : 'test';
+		$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
+
+		return add_query_arg(
+			array(
+				'action' => 'authorize',
+				'gateway_environment' => $environment2,
+				'return_url' => rawurlencode(
+					add_query_arg(
+						array(
+							'page' => 'pmpro-paymentsettings',
+							'edit_gateway' => 'stripe',
+							'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ),
+						),
+						admin_url( 'admin.php' )
+					)
+				),
+			),
+			$connect_url_base
+		);
+	}
+
+	/**
+	 * Test a Stripe Connect secret with a cheap authenticated GET.
+	 *
+	 * @param string $secretkey Connect secret stored in options.
+	 * @return bool True if the key authenticates. Transient/network errors return true so we do not nag.
+	 */
+	private static function connect_secretkey_is_valid( $secretkey ) {
+		if ( empty( $secretkey ) ) {
+			return false;
+		}
+
+		self::loadStripeLibrary();
+
+		try {
+			$stripe  = new Stripe_Client( $secretkey );
+			$account = $stripe->accounts->retrieve();
+			return ( ! empty( $account ) && ! empty( $account->id ) );
+		} catch ( \Stripe\Exception\AuthenticationException $e ) {
+			return false;
+		} catch ( \Stripe\Exception\PermissionException $e ) {
+			return false;
+		} catch ( \Stripe\Exception\ApiErrorException $e ) {
+			$status = (int) $e->getHttpStatus();
+			if ( in_array( $status, array( 401, 403 ), true ) ) {
+				return false;
+			}
+			return true;
+		} catch ( \Throwable $e ) {
+			return true;
+		}
 	}
 
 	/**
@@ -2982,6 +3102,9 @@ class PMProGateway_stripe extends PMProGateway {
 									);
 									?>
 									<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
+									<div id="pmpro_stripe_connect_key_health_<?php echo esc_attr( $environment ); ?>" class="notice notice-error inline pmpro_stripe_connect_key_health" style="display: none;">
+										<p></p>
+									</div>
 									<p class="description">
 										<?php
 										if ( $livemode ) {
@@ -2993,14 +3116,7 @@ class PMProGateway_stripe extends PMProGateway {
 									</p>
 									<?php
 								} else {
-									$connect_url = add_query_arg(
-										array(
-											'action' => 'authorize',
-											'gateway_environment' => $environment2,
-											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
-										),
-										$connect_url_base
-									);
+									$connect_url = self::get_connect_authorize_url( $environment );
 									?>
 									<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 									<?php
