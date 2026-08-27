@@ -1304,7 +1304,8 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Test a Stripe secret (Connect or Restricted Key) with a cheap authenticated GET.
+	 * Test a Stripe secret (Connect or Restricted Key) with a cheap customers list.
+	 * Empty accounts still return a list; we only care that the key authenticates.
 	 *
 	 * @param string $secretkey Secret stored in options.
 	 * @return bool True if the key authenticates. Transient/network errors return true so we do not nag.
@@ -1317,9 +1318,9 @@ class PMProGateway_stripe extends PMProGateway {
 		self::loadStripeLibrary();
 
 		try {
-			$stripe  = new Stripe_Client( $secretkey );
-			$account = $stripe->accounts->retrieve();
-			return ( ! empty( $account ) && ! empty( $account->id ) );
+			$stripe    = new Stripe_Client( $secretkey );
+			$customers = $stripe->customers->all( array( 'limit' => 1 ) );
+			return ( is_object( $customers ) && isset( $customers->data ) );
 		} catch ( \Stripe\Exception\AuthenticationException $e ) {
 			return false;
 		} catch ( \Stripe\Exception\PermissionException $e ) {
