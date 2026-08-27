@@ -5458,13 +5458,16 @@ add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_
 /**
  * Get the live pending order for a user and level.
  *
- * Only returns the user's most recent pending or completed order for the level, and only if it
- * is still pending. A newer completed order (e.g. a 'success' order from paying again by a
- * different method) means the pending order is stale and should not be surfaced. Orders from
- * attempts that never resolved ('token', 'review', 'error') do not supersede a pending order.
+ * If the user has the level, this is the latest order for one of their active subscriptions for
+ * the level, but only if that order is pending and past due.
  *
- * The order is also treated as stale if the user has since started a different level in the same
- * single-selection group, since holding one level in that group means they chose another plan.
+ * If the user does not have the level, this is their most recent pending or completed order for
+ * the level, but only if it is a pending delayed checkout that is still waiting on payment to be
+ * completed. A newer completed order (e.g. a 'success' order from paying again by a different
+ * method) means the pending order is stale, as does a level in the same single-selection group
+ * that the user started after the order was created.
+ *
+ * Orders dated in the future (e.g. renewal invoices created before their due date) are never live.
  *
  * @since TBD
  *
@@ -5479,36 +5482,59 @@ function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
 	if ( ! array_key_exists( $cache_key, $cache ) ) {
 		$cache[ $cache_key ] = null;
 
-		$recent_orders = MemberOrder::get_orders(
-			array(
-				'user_id'             => $user_id,
-				'membership_level_id' => $level_id,
-				'status'              => array( 'pending', 'success', 'refunded' ),
-				'limit'               => 1,
-			)
-		);
-		$recent_order = empty( $recent_orders ) ? null : current( $recent_orders );
+		if ( pmpro_hasMembershipLevel( $level_id, $user_id ) ) {
+			// The user has this level. Check whether the latest payment for one of their active
+			// subscriptions for this level is pending and past due.
+			$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
+			foreach ( $subscriptions as $subscription ) {
+				$subscription_orders = $subscription->get_orders( array( 'limit' => 1 ) );
+				$latest_order = empty( $subscription_orders ) ? null : current( $subscription_orders );
+				if ( ! empty( $latest_order ) && 'pending' === $latest_order->status && $latest_order->getTimestamp( true ) <= time() ) {
+					$cache[ $cache_key ] = $latest_order;
+					break;
+				}
+			}
+		} else {
+			// The user does not have this level. Check for a delayed checkout for this level that
+			// is still waiting on payment to be completed.
+			$recent_orders = MemberOrder::get_orders(
+				array(
+					'user_id'             => $user_id,
+					'membership_level_id' => $level_id,
+					'status'              => array( 'pending', 'success', 'refunded' ),
+					'limit'               => 1,
+				)
+			);
+			$recent_order = empty( $recent_orders ) ? null : current( $recent_orders );
 
-		// The pending order is only live if no payment for this level was completed after it and the
-		// order is not dated in the future (e.g. a Pay by Check renewal invoice created before its due date).
-		if ( ! empty( $recent_order ) && $recent_order->status === 'pending' && $recent_order->getTimestamp( true ) <= time() ) {
-			$cache[ $cache_key ] = $recent_order;
+			// The pending order is only live if no payment for this level was completed after it, the order
+			// is not dated in the future, and it is a delayed checkout that can still complete (delayed
+			// checkouts save their checkout data in order meta; other pending orders, such as failed renewal
+			// payments for a membership that has since ended, will not activate a membership when paid).
+			if ( ! empty( $recent_order )
+				&& 'pending' === $recent_order->status
+				&& $recent_order->getTimestamp( true ) <= time()
+				&& get_pmpro_membership_order_meta( $recent_order->id, 'checkout_request_vars', true )
+			) {
+				$cache[ $cache_key ] = $recent_order;
 
-			// In a single-selection group, a level the user started after this order supersedes it.
-			$group = pmpro_get_level_group( pmpro_get_group_id_for_level( $level_id ) );
-			if ( ! empty( $group ) && empty( $group->allow_multiple_selections ) ) {
-				$group_level_ids = wp_list_pluck( pmpro_get_levels_for_group( $group->id ), 'id' );
-				$held_levels = pmpro_getMembershipLevelsForUser( $user_id );
-				if ( ! empty( $held_levels ) ) {
-					foreach ( $held_levels as $held_level ) {
-						// Skip the pending level itself and any level outside this group.
-						if ( $held_level->id == $level_id || ! in_array( $held_level->id, $group_level_ids ) ) {
-							continue;
-						}
-						// Only supersede if the held level was started after the pending order was created.
-						if ( $held_level->startdate >= $recent_order->timestamp ) {
-							$cache[ $cache_key ] = null;
-							break;
+				// In a single-selection group, a level the user started after this order supersedes it.
+				$group = pmpro_get_level_group( pmpro_get_group_id_for_level( $level_id ) );
+				if ( ! empty( $group ) && empty( $group->allow_multiple_selections ) ) {
+					$group_level_ids = wp_list_pluck( pmpro_get_levels_for_group( $group->id ), 'id' );
+					$held_levels = pmpro_getMembershipLevelsForUser( $user_id );
+					if ( ! empty( $held_levels ) ) {
+						foreach ( $held_levels as $held_level ) {
+							// Skip any level outside this group.
+							if ( ! in_array( $held_level->id, $group_level_ids ) ) {
+								continue;
+							}
+							// Only supersede if the held level was started after the pending order was created.
+							// Note: startdate can be null on hosts without MySQL timezone tables. Fail open.
+							if ( ! empty( $held_level->startdate ) && $held_level->startdate >= $recent_order->getTimestamp() ) {
+								$cache[ $cache_key ] = null;
+								break;
+							}
 						}
 					}
 				}
