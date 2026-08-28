@@ -5473,6 +5473,11 @@ add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_display_
 function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
 	static $cache = array();
 
+	// Bail if we don't have a valid user and level.
+	if ( empty( $user_id ) || empty( $level_id ) ) {
+		return null;
+	}
+
 	$cache_key = $user_id . ':' . $level_id;
 	if ( ! array_key_exists( $cache_key, $cache ) ) {
 		$cache[ $cache_key ] = null;
@@ -5484,6 +5489,12 @@ function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
 			foreach ( $subscriptions as $subscription ) {
 				$subscription_orders = $subscription->get_orders( array( 'limit' => 1 ) );
 				$latest_order = empty( $subscription_orders ) ? null : current( $subscription_orders );
+
+				// Subscription orders are matched by transaction ID, so make sure the order belongs to this user.
+				if ( ! empty( $latest_order ) && (int) $latest_order->user_id !== (int) $user_id ) {
+					continue;
+				}
+
 				if ( ! empty( $latest_order ) && 'pending' === $latest_order->status && $latest_order->getTimestamp( true ) <= time() ) {
 					$cache[ $cache_key ] = $latest_order;
 					break;
@@ -5497,6 +5508,7 @@ function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
 					'user_id'             => $user_id,
 					'membership_level_id' => $level_id,
 					'status'              => array( 'pending', 'success', 'refunded' ),
+					'orderby'             => '`o`.`timestamp` DESC, `o`.`id` DESC',
 					'limit'               => 1,
 				)
 			);
@@ -5539,41 +5551,6 @@ function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
 
 	return $cache[ $cache_key ];
 }
-
-/**
- * Add a link to view the pending order to the level card actions on the Membership Account page.
- *
- * If the card is already showing an "Update Billing Information" link, members can complete
- * their payment there instead, so the order link is not added.
- *
- * @since TBD
- *
- * @param array $pmpro_member_action_links Member action links.
- * @param int   $level_id The ID of the membership level.
- * @return array Member action links.
- */
-function pmpro_account_pending_order_action_links( $pmpro_member_action_links, $level_id ) {
-	global $current_user;
-
-	// Check for a pending order for this user and level.
-	$pending_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $level_id );
-	if ( empty( $pending_order ) ) {
-		return $pmpro_member_action_links;
-	}
-
-	// If we are already showing an update billing link, the member can complete their payment there.
-	if ( isset( $pmpro_member_action_links['update-billing'] ) ) {
-		return $pmpro_member_action_links;
-	}
-
-	$invoice_url = pmpro_url( 'invoice', '?invoice=' . $pending_order->code );
-	if ( ! empty( $invoice_url ) ) {
-		$pmpro_member_action_links['view-order'] = '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_action' ) ) . '"><a id="pmpro_actionlink-view-order" href="' . esc_url( $invoice_url ) . '" aria-label="' . esc_attr( __( 'View Pending Order', 'paid-memberships-pro' ) ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a></span>';
-	}
-
-	return $pmpro_member_action_links;
-}
-add_filter( 'pmpro_member_action_links', 'pmpro_account_pending_order_action_links', 10, 2 );
 
 /**
  * Update the level restrictions for a post.

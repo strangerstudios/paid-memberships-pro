@@ -239,6 +239,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										?>
 									</ul> <!-- end pmpro_list -->
 									<?php
+										// Show a message if the user's latest payment for this membership is past due.
+										if ( ! empty( pmpro_get_pending_order_for_user_level( $current_user->ID, $level->id ) ) ) { ?>
+											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>"><?php esc_html_e( 'Your latest payment for this membership is past due. We are waiting for your payment to be completed.', 'paid-memberships-pro' ); ?></div>
+										<?php }
+
 										/**
 										 * Hook to add content after the default level card content.
 										 *
@@ -246,11 +251,6 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										 * @param object $level The current level object.
 										 */
 										do_action( 'pmpro_membership_account_after_level_card_content', $level );
-
-										// Show a message if the user's latest payment for this membership is past due.
-										if ( ! empty( pmpro_get_pending_order_for_user_level( $current_user->ID, $level->id ) ) ) { ?>
-											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>"><?php esc_html_e( 'Your latest payment for this membership is past due. We are waiting for your payment to be completed.', 'paid-memberships-pro' ); ?></div>
-										<?php }
 									?>
 								</div> <!-- end pmpro_card_content -->
 
@@ -317,6 +317,16 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
 										}
 
+										// If the user's latest payment for this level is past due, add a link to view that order.
+										// If we are already showing an update billing link, the member can complete their payment there instead.
+										$past_due_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $level->id );
+										if ( ! empty( $past_due_order ) && ! isset( $pmpro_member_action_links['update-billing'] ) ) {
+											$view_order_url = pmpro_url( 'invoice', '?invoice=' . $past_due_order->code );
+											if ( ! empty( $view_order_url ) ) {
+												$pmpro_member_action_links['view-order'] = '<a id="pmpro_actionlink-view-order-' . esc_attr( $level->id ) . '" href="' . esc_url( $view_order_url ) . '" aria-label="' . esc_attr__( 'View Pending Order', 'paid-memberships-pro' ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a>';
+											}
+										}
+
 										// Wrap each action link item in a <span>
 										$pmpro_member_action_links = array_map( function( $link ) {
 											return '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_action' ) ) . '">' . $link . '</span>';
@@ -362,12 +372,17 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					<?php
 					// Show a card for each level that the user has a pending order for but does not have yet.
 					foreach ( $pending_order_levels as $pending_order_level ) {
+						$pending_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $pending_order_level->id );
+						if ( empty( $pending_order ) ) {
+							continue;
+						}
+
+						// Build the order link before firing the card action so that hooked code can't change it.
+						$pending_order_url = pmpro_url( 'invoice', '?invoice=' . $pending_order->code );
 						?>
-						<div id="pmpro_account-membership-pending-<?php echo esc_attr( $pending_order_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+						<div id="pmpro_account-membership-pending-<?php echo esc_attr( $pending_order_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card pmpro_card-pending' ) ); ?>">
 
 							<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php echo esc_html( $pending_order_level->name ); ?></h3>
-
-							<?php $pending_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $pending_order_level->id ); ?>
 
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>"><?php esc_html_e( 'We are waiting for your payment to be completed. Your membership will be activated once the payment has been confirmed.', 'paid-memberships-pro' ); ?></div>
@@ -388,13 +403,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								?>
 							</div> <!-- end pmpro_card_content -->
 
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-								<?php
-								$pending_order_url = pmpro_url( 'invoice', '?invoice=' . $pending_order->code );
-								if ( ! empty( $pending_order_url ) ) { ?>
-									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_action' ) ); ?>"><a id="pmpro_actionlink-view-order" href="<?php echo esc_url( $pending_order_url ); ?>" aria-label="<?php esc_attr_e( 'View Pending Order', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'View Order', 'paid-memberships-pro' ); ?></a></span>
-								<?php } ?>
-							</div> <!-- end pmpro_card_actions -->
+							<?php if ( ! empty( $pending_order_url ) ) { ?>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
+									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_action' ) ); ?>"><a id="pmpro_actionlink-view-order-<?php echo esc_attr( $pending_order_level->id ); ?>" href="<?php echo esc_url( $pending_order_url ); ?>" aria-label="<?php esc_attr_e( 'View Pending Order', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'View Order', 'paid-memberships-pro' ); ?></a></span>
+								</div> <!-- end pmpro_card_actions -->
+							<?php } ?>
 						</div> <!-- end pmpro_card -->
 					<?php } ?>
 				</div> <!-- end pmpro_section_content -->
