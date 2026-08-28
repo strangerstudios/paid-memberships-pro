@@ -5439,11 +5439,6 @@ function pmpro_check_token_order_for_completion( $order_id ) {
  * Show a message on the account page for a specific membership level.
  */
 function pmpro_display_member_account_level_message( $level ) {
-	// Only show the message to users who have this level. Cards may also be shown for memberships that are waiting on payment.
-	if ( ! pmpro_hasMembershipLevel( $level->id ) ) {
-		return;
-	}
-
 	$membership_account_message = get_pmpro_membership_level_meta( $level->id, 'membership_account_message', true );
 	if ( $membership_account_message ) {
 		?>
@@ -5544,34 +5539,6 @@ function pmpro_get_pending_order_for_user_level( $user_id, $level_id ) {
 
 	return $cache[ $cache_key ];
 }
-
-/**
- * Show a message on the level card on the Membership Account page when the user has a pending order for that level.
- *
- * @since TBD
- *
- * @param object $level The membership level object for the card being shown.
- */
-function pmpro_account_pending_order_message( $level ) {
-	global $current_user;
-
-	// Check for a pending order for this user and level.
-	$pending_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $level->id );
-	if ( empty( $pending_order ) ) {
-		return;
-	}
-
-	// If the user has this level, a renewal payment is past due. Otherwise, the membership is waiting on its first payment.
-	if ( pmpro_hasMembershipLevel( $level->id, $current_user->ID ) ) {
-		$message = __( 'Your latest payment for this membership is past due. We are waiting for your payment to be completed.', 'paid-memberships-pro' );
-	} else {
-		$message = __( 'We are waiting for your payment to be completed. Your membership will be activated once the payment has been confirmed.', 'paid-memberships-pro' );
-	}
-	?>
-	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>"><?php echo esc_html( $message ); ?></div>
-	<?php
-}
-add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_account_pending_order_message' );
 
 /**
  * Add a link to view the pending order to the level card actions on the Membership Account page.

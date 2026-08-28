@@ -160,18 +160,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				}
 				$pending_order_level = pmpro_getLevel( $pending_order->membership_id );
 				if ( ! empty( $pending_order_level ) ) {
-					// Normalize to the same shape as levels from pmpro_getMembershipLevelsForUser() so that code
-					// hooked to the level card can rely on the same properties existing. The user does not have a
-					// membership row for this level yet, so those fields are empty. Clone so that we don't modify
-					// the level object cached in the $pmpro_levels global.
-					$pending_order_level = clone $pending_order_level;
-					$pending_order_level->ID = $pending_order_level->id;
-					$pending_order_level->subscription_id = null;
-					$pending_order_level->status = null;
-					$pending_order_level->code_id = null;
-					$pending_order_level->startdate = null;
-					$pending_order_level->enddate = null;
-					$pending_order_levels[ $pending_order->membership_id ] = $pending_order_level;
+					// Clone so that code hooked to the pending level card can't modify the level object
+					// cached in the $pmpro_levels global.
+					$pending_order_levels[ $pending_order->membership_id ] = clone $pending_order_level;
 				}
 			}
 			?>
@@ -255,6 +246,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										 * @param object $level The current level object.
 										 */
 										do_action( 'pmpro_membership_account_after_level_card_content', $level );
+
+										// Show a message if the user's latest payment for this membership is past due.
+										if ( ! empty( pmpro_get_pending_order_for_user_level( $current_user->ID, $level->id ) ) ) { ?>
+											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>"><?php esc_html_e( 'Your latest payment for this membership is past due. We are waiting for your payment to be completed.', 'paid-memberships-pro' ); ?></div>
+										<?php }
 									?>
 								</div> <!-- end pmpro_card_content -->
 
@@ -371,49 +367,33 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 
 							<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php echo esc_html( $pending_order_level->name ); ?></h3>
 
+							<?php $pending_order = pmpro_get_pending_order_for_user_level( $current_user->ID, $pending_order_level->id ); ?>
+
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>"><?php esc_html_e( 'We are waiting for your payment to be completed. Your membership will be activated once the payment has been confirmed.', 'paid-memberships-pro' ); ?></div>
 								<?php
-									/** This action is documented in shortcodes/pmpro_account.php */
-									do_action( 'pmpro_membership_account_after_level_card_content', $pending_order_level );
+									/**
+									 * Fires in the card content for a level that the user has a pending order for but does not have yet.
+									 *
+									 * Unlike pmpro_membership_account_after_level_card_content, the user does not have this
+									 * level and the level object comes from pmpro_getLevel(), so it does not have membership
+									 * properties like startdate and enddate.
+									 *
+									 * @since TBD
+									 *
+									 * @param object      $pending_order_level The membership level that is waiting on payment.
+									 * @param MemberOrder $pending_order       The pending order that the membership is waiting on.
+									 */
+									do_action( 'pmpro_membership_account_after_pending_level_card_content', $pending_order_level, $pending_order );
 								?>
 							</div> <!-- end pmpro_card_content -->
 
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-
 								<?php
-									/**
-									 * Fires before the member action links.
-									 */
-									do_action( 'pmpro_member_action_links_before' );
-								?>
-
-								<?php
-									/** This filter is documented in shortcodes/pmpro_account.php */
-									$pmpro_member_action_links = apply_filters( 'pmpro_member_action_links', array(), $pending_order_level->id );
-
-									$allowed_html = array(
-										'a' => array (
-											'class' => array(),
-											'href' => array(),
-											'id' => array(),
-											'target' => array(),
-											'title' => array(),
-											'aria-label' => array(),
-										),
-										'span' => array(
-											'class' => array(),
-										),
-									);
-									echo wp_kses( implode( '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_action_separator' ) ) . '">' . pmpro_actions_nav_separator() . '</span>', $pmpro_member_action_links ), $allowed_html );
-								?>
-
-								<?php
-									/**
-									 * Fires after the member action links.
-									 */
-									do_action( 'pmpro_member_action_links_after' );
-								?>
-
+								$pending_order_url = pmpro_url( 'invoice', '?invoice=' . $pending_order->code );
+								if ( ! empty( $pending_order_url ) ) { ?>
+									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_action' ) ); ?>"><a id="pmpro_actionlink-view-order" href="<?php echo esc_url( $pending_order_url ); ?>" aria-label="<?php esc_attr_e( 'View Pending Order', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'View Order', 'paid-memberships-pro' ); ?></a></span>
+								<?php } ?>
 							</div> <!-- end pmpro_card_actions -->
 						</div> <!-- end pmpro_card -->
 					<?php } ?>
