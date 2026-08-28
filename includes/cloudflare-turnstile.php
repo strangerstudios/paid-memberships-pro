@@ -175,7 +175,7 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_cloudflare_turnstile_settings' 
  */
 function pmpro_cloudflare_turnstile_settings_save() {
 	// Keep the legacy on/off option in sync with the captcha setting for backwards compatibility.
-	pmpro_setOption( 'cloudflare_turnstile', 'turnstile' === pmpro_captcha() ? 1 : 0 );
+	update_option( 'pmpro_cloudflare_turnstile', 'turnstile' === pmpro_captcha() ? 1 : 0, false );
 	pmpro_setOption( 'cloudflare_turnstile_site_key', sanitize_text_field( $_POST['cloudflare_turnstile_site_key'] ) );
 	pmpro_setOption( 'cloudflare_turnstile_secret_key', sanitize_text_field( $_POST['cloudflare_turnstile_secret_key'] ) );
 }

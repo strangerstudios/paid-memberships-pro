@@ -312,7 +312,7 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_recaptcha_settings' );
  */
 function pmpro_recaptcha_settings_save() {
 	// Keep the legacy on/off option in sync with the captcha setting for backwards compatibility.
-	pmpro_setOption( "recaptcha", 'recaptcha' === pmpro_captcha() ? 2 : 0 );
+	update_option( 'pmpro_recaptcha', 'recaptcha' === pmpro_captcha() ? 2 : 0, false );
 	pmpro_setOption( "recaptcha_version", sanitize_text_field( $_POST['recaptcha_version'] ) );
 	pmpro_setOption( "recaptcha_publickey", sanitize_text_field( $_POST['recaptcha_publickey'] ) );
 	pmpro_setOption( "recaptcha_privatekey", sanitize_text_field( $_POST['recaptcha_privatekey'] ) );

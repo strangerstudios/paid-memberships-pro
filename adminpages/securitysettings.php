@@ -26,7 +26,7 @@
 		if ( ! array_key_exists( $captcha, pmpro_get_captcha_services() ) ) {
 			$captcha = '';
 		}
-		pmpro_setOption( 'captcha', $captcha );
+		update_option( 'pmpro_captcha', $captcha, false );
 
 		if ( isset( $_POST['use_ssl'] ) ) {
 			// REQUEST['use_ssl'] will not be set if the entire site is already over HTTPS.
