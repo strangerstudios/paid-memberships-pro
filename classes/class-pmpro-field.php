@@ -638,7 +638,7 @@ class PMPro_Field {
 		}
 
 		// Sanitize the value if needed.
-		if ( ! empty( $field->sanitize ) ) {
+		if ( ! empty( $this->sanitize ) ) {
 			if ( $this->type == 'textarea' ) {
 				$value = sanitize_textarea_field( $value );
 			} elseif ( is_array( $value ) ) {
@@ -649,6 +649,60 @@ class PMPro_Field {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Whether this field stores multiple selected values as an array.
+	 *
+	 * @since 3.8.3
+	 *
+	 * @return bool
+	 */
+	public function stores_array_values() {
+		if ( in_array( $this->type, array( 'checkbox_grouped', 'multiselect', 'select2' ), true ) ) {
+			return true;
+		}
+
+		return ( 'select' === $this->type && ! empty( $this->multiple ) );
+	}
+
+	/**
+	 * Normalize a multi-value field's stored value to an array of option keys.
+	 *
+	 * Profile/checkout saves store arrays. Members List CSV export joins those
+	 * arrays with commas, and Import Users from CSV may write the cell back as a
+	 * string. Display and comparison code need a real array either way.
+	 *
+	 * Does not unserialize. get_user_meta() already unserializes stored arrays,
+	 * and this helper is also used on request-sourced values during checkout
+	 * re-display.
+	 *
+	 * @since 3.8.3
+	 *
+	 * @param mixed $value Raw value (array from UI save, or CSV string).
+	 * @return array List of selected option keys.
+	 */
+	public function get_values_as_array( $value ) {
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+
+		if ( null === $value || false === $value || '' === $value ) {
+			return array();
+		}
+
+		if ( ! is_string( $value ) ) {
+			return array( $value );
+		}
+
+		// Comma-separated option keys from CSV import/export.
+		// Option keys are expected not to contain commas (same as export).
+		if ( false !== strpos( $value, ',' ) ) {
+			$parts = array_map( 'trim', explode( ',', $value ) );
+			return array_values( array_filter( $parts, 'strlen' ) );
+		}
+
+		return array( $value );
 	}
 
 	/**
@@ -664,6 +718,13 @@ class PMPro_Field {
 
 		// If field was not submitted, bail.
 		if ( null === $value ) {
+			return;
+		}
+
+		// Read-only fields are display-only; their value is managed server-side
+		// (via update_user_meta by add-ons/admin tooling), never from the request.
+		// Skipping the save here prevents users from tampering with fields they cannot edit.
+		if ( 'readonly' === $this->type || ! empty( $this->readonly ) ) {
 			return;
 		}
 
@@ -942,9 +1003,10 @@ class PMPro_Field {
 		}
 		elseif($this->type == "select")
 		{
-			//if multiple is set, value must be an array
-			if(!empty($this->multiple) && !is_array($value))
-				$value = array($value);
+			// Multi-select values may be arrays (UI save) or CSV strings (import).
+			if ( ! empty( $this->multiple ) ) {
+				$value = $this->get_values_as_array( $value );
+			}
 
 			if(!empty($this->multiple))
 				$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" ';	//multiselect
@@ -973,9 +1035,8 @@ class PMPro_Field {
 		}
 		elseif($this->type == "multiselect")
 		{
-			//value must be an array
-			if(!is_array($value))
-				$value = array($value);
+			// Arrays from UI saves; CSV strings from import/export round-trips.
+			$value = $this->get_values_as_array( $value );
 
 			$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" multiple="multiple" ';
 			if(!empty($this->class))
@@ -997,19 +1058,18 @@ class PMPro_Field {
 		}
 		elseif($this->type == "select2")
 		{
-			//value must be an array
-			if(!is_array($value))
-				$value = array($value);
+			// Arrays from UI saves; CSV strings from import/export round-trips.
+			$value = $this->get_values_as_array( $value );
 
 			//build multi select
 			$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" multiple="multiple" style="width: 100%" ';
 			if(isset($this->placeholder)) {
-				$r .= 'placeholder="' . esc_attr($this->placeholder) . '" ';
+				$r .= 'data-placeholder="' . esc_attr($this->placeholder) . '" ';
 				if(empty($this->select2options)) {
 					$this->select2options = 'placeholder: "' . esc_attr($this->placeholder) . '"';
 				}
 			} else {
-				$r .= 'placeholder="' . esc_html__('Choose one or more.', 'paid-memberships-pro') . '" ';
+				$r .= 'data-placeholder="' . esc_html__('Choose one or more.', 'paid-memberships-pro') . '" ';
 			}
 			if(!empty($this->class))
 				$r .= 'class="' . esc_attr( $this->class ) . '" ';
@@ -1076,9 +1136,8 @@ class PMPro_Field {
 
 		elseif($this->type == "checkbox_grouped")
 		{
-			//value must be an array
-			if(!is_array($value))
-				$value = array($value);
+			// Arrays from UI saves; CSV strings from import/export round-trips.
+			$value = $this->get_values_as_array( $value );
 
 			$r = '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped' ) ) . '">';
 			$r .= '<ul class="' . esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ) . '">';
@@ -1094,7 +1153,7 @@ class PMPro_Field {
 					esc_attr( "{$this->id}_{$counter}" ),
 					esc_attr( $this->class ),
 					( in_array($ovalue, $value) ? 'checked="checked"' : null ),
-					( !empty( $this->readonly ) ? 'readonly="readonly"' : null ),
+					( !empty( $this->readonly ) ? 'disabled="disabled"' : null ),
 					$this->getHTMLAttributes()
 				);
 
@@ -1277,9 +1336,10 @@ class PMPro_Field {
 		elseif($this->type == "readonly")
 		{
 			if ( empty( $value ) ) {
-				$value = '&#8212;';
+				$r = '&#8212;';
+			} else {
+				$r = esc_html( $value );
 			}
-			$r = $value;
 		}
 		else
 		{
@@ -1523,18 +1583,24 @@ class PMPro_Field {
 		$this->divclass = pmpro_get_element_class( $this->divclass );
 		$this->class = pmpro_get_element_class( $this->class );
 
+		// radio/checkbox_grouped render multiple inputs, so the group is named with role/aria instead of a <label for>.
+		$pmpro_field_is_group = in_array( $this->type, array( 'radio', 'checkbox_grouped' ), true );
 		?>
-		<div id="<?php echo esc_attr( $this->id );?>_div" <?php if ( ! empty( $this->divclass ) ) { echo 'class="' . esc_attr( $this->divclass ) . '"'; } ?>>
+		<div id="<?php echo esc_attr( $this->id );?>_div" <?php if ( ! empty( $this->divclass ) ) { echo 'class="' . esc_attr( $this->divclass ) . '"'; } ?><?php if ( $pmpro_field_is_group && ! empty( $this->showmainlabel ) ) { echo ' role="group" aria-labelledby="' . esc_attr( $this->id ) . '_label"'; } ?>>
 			<?php if(!empty($this->showmainlabel)) { ?>
+				<?php if ( $pmpro_field_is_group ) { ?>
+				<span id="<?php echo esc_attr( $this->id );?>_label" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
+				<?php } else { ?>
 				<label class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>" for="<?php echo esc_attr($this->name);?>">
+				<?php } ?>
 					<?php echo wp_kses_post( $this->label );?>
-					<?php 
+					<?php
 						if(!empty($this->required) && !empty($this->showrequired) && $this->showrequired === 'label')
 						{
 						?><span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_attr_e( 'Required Field' ,'paid-memberships-pro' ); ?>">*</abbr></span><?php
 						}
 					?>
-				</label>
+				<?php echo $pmpro_field_is_group ? '</span>' : '</label>'; ?>
 				<?php $this->display($value); ?>
 			<?php } else { ?>
 				<?php $this->display($value); ?>
@@ -1681,8 +1747,10 @@ class PMPro_Field {
 			case 'select2':
 			case 'radio':
 			case 'checkbox_grouped':
-				// For simplicity, make sure that $value and $this->options are arrays.
-				if ( ! is_array( $value ) ) {
+				// Multi-value fields may be arrays (UI) or CSV strings (import).
+				if ( $this->stores_array_values() ) {
+					$value = $this->get_values_as_array( $value );
+				} elseif ( ! is_array( $value ) ) {
 					$value = array( $value );
 				}
 				if ( ! is_array( $this->options ) ) {

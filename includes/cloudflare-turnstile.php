@@ -96,47 +96,47 @@ function pmpro_cloudflare_turnstile_settings() {
 	$cloudflare_site_key = get_option( 'pmpro_cloudflare_turnstile_site_key', '' );
 	$cloudflare_secret_key = get_option( 'pmpro_cloudflare_turnstile_secret_key', '' );
 
-	// If CloudFlare Turnstile is not enabled, hide some settings by default.
-	$tr_style = empty( $cloudflare_turnstile ) ? 'display: none;' : '';
+	$cloudflare_turnstile_depends = array(
+		array(
+			'id'    => 'cloudflare_turnstile',
+			'value' => '1',
+		),
+	);
 
 	// Output settings
-	?>
-	<tr>
-		<th scope="row" valign="top">
-			<label for="cloudflare_turnstile"><?php esc_html_e( 'Use CloudFlare Turnstile?', 'paid-memberships-pro' ); ?></label>
-		</th>
-		<td>
-			<select id="cloudflare_turnstile" name="cloudflare_turnstile">
-				<option value="0" <?php selected( $cloudflare_turnstile, 0 ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-				<option value="1" <?php selected( $cloudflare_turnstile, 1 ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
-			</select>
-			<p class="description"><?php esc_html_e( 'A free CloudFlare Turnstile key is required.', 'paid-memberships-pro' ); ?> <a href="https://www.cloudflare.com/products/turnstile/" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Click here to signup for CloudFlare Turnstile', 'paid-memberships-pro' ); ?></a>.</p>
-		</td>
-	</tr>
-   <tr class="pmpro_cloudflare_turnstile_settings" style="<?php echo esc_attr( $tr_style ); ?>">
-		<th scope="row"><label for="cloudflare_turnstile_site_key"><?php esc_html_e( 'Turnstile Site Key', 'paid-memberships-pro' ); ?>:</label></th>
-		<td>
-			<input type="text" id="cloudflare_turnstile_site_key" name="cloudflare_turnstile_site_key" value="<?php echo esc_attr( $cloudflare_site_key ); ?>" class="regular-text code" />
-		</td>
-	</tr>
-	<tr class="pmpro_cloudflare_turnstile_settings" style="<?php echo esc_attr( $tr_style ); ?>">
-		<th scope="row"><label for="cloudflare_turnstile_secret_key"><?php esc_html_e( 'Turnstile Secret Key', 'paid-memberships-pro' ); ?>:</label></th>
-		<td>
-			<input type="text" id="cloudflare_turnstile_secret_key" name="cloudflare_turnstile_secret_key" value="<?php echo esc_attr( $cloudflare_secret_key ); ?>" class="regular-text code" />
-		</td>
-	</tr>
-	<script>
-		jQuery(document).ready(function() {
-			jQuery('#cloudflare_turnstile').change(function() {
-				if(jQuery(this).val() == '1') {
-					jQuery('.pmpro_cloudflare_turnstile_settings').show();
-				} else {
-					jQuery('.pmpro_cloudflare_turnstile_settings').hide();
-				}
-			});
-		});
-	</script>
-	<?php
+	pmpro_build_settings_field( array(
+		'name'        => 'cloudflare_turnstile',
+		'label'       => __( 'Use CloudFlare Turnstile?', 'paid-memberships-pro' ),
+		'type'        => 'select',
+		'value'       => $cloudflare_turnstile,
+		'options'     => array(
+			'0' => __( 'No', 'paid-memberships-pro' ),
+			'1' => __( 'Yes', 'paid-memberships-pro' ),
+		),
+		'description' => sprintf(
+			/* translators: %s: Link to CloudFlare Turnstile. */
+			__( 'A free CloudFlare Turnstile key is required. <a href="%s" target="_blank" rel="nofollow noopener">Click here to signup for CloudFlare Turnstile</a>.', 'paid-memberships-pro' ),
+			'https://www.cloudflare.com/products/turnstile/'
+		),
+	) );
+	pmpro_build_settings_field( array(
+		'name'      => 'cloudflare_turnstile_site_key',
+		'label'     => __( 'Turnstile Site Key', 'paid-memberships-pro' ),
+		'type'      => 'text',
+		'class'     => 'regular-text code',
+		'value'     => $cloudflare_site_key,
+		'row_class' => 'pmpro_cloudflare_turnstile_settings',
+		'depends'   => $cloudflare_turnstile_depends,
+	) );
+	pmpro_build_settings_field( array(
+		'name'      => 'cloudflare_turnstile_secret_key',
+		'label'     => __( 'Turnstile Secret Key', 'paid-memberships-pro' ),
+		'type'      => 'text',
+		'class'     => 'regular-text code',
+		'value'     => $cloudflare_secret_key,
+		'row_class' => 'pmpro_cloudflare_turnstile_settings',
+		'depends'   => $cloudflare_turnstile_depends,
+	) );
 }
 add_action( 'pmpro_security_spam_fields', 'pmpro_cloudflare_turnstile_settings' );
 
