@@ -396,6 +396,7 @@ jQuery(document).ready(function () {
 
 	jQuery.ajax({
 		type: 'POST',
+		timeout: 15000,
 		data: {
 			action: 'pmpro_stripe_check_connect_keys',
 			nonce: pmpro.stripe_connect_key_health_nonce
