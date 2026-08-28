@@ -1648,6 +1648,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if (
 			'false' === $_REQUEST['pmpro_stripe_disconnected']
 			&& isset( $_REQUEST['error_code'] )
+			&& isset( $_REQUEST['error_message'] )
 		) {
 
 			$class   = 'notice notice-warning pmpro-stripe-disconnect-message';
@@ -1872,7 +1873,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function has_connect_credentials( $gateway_environment = null ) {
 		if ( empty( $gateway_environment ) ) {
-			$gateway_environment = get_option( 'pmpro_pmpro_gateway_environment' );
+			$gateway_environment = get_option( 'pmpro_gateway_environment' );
 		}
 
 		if ( $gateway_environment === 'live' ) {
