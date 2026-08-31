@@ -523,7 +523,7 @@ if (!empty($page_msg)) { ?>
 							<?php esc_html_e( 'Preview checkout date:', 'paid-memberships-pro' ); ?>
 							<input type="date" id="pmpro_preview_checkout_date" value="<?php echo esc_attr( wp_date( 'Y-m-d' ) ); ?>" />
 						</label>
-						<div id="pmpro_schedule_timeline" class="pmpro_schedule_timeline">
+						<div id="pmpro_schedule_timeline" class="pmpro_schedule_timeline" role="status" aria-live="polite">
 							<div class="pmpro_schedule_timeline_loading"><?php esc_html_e( 'Configure billing settings to see a preview.', 'paid-memberships-pro' ); ?></div>
 						</div>
 					</div>
@@ -787,6 +787,8 @@ if (!empty($page_msg)) { ?>
 	'use strict';
 
 	var previewDebounceTimer = null;
+	var previewRequestCount = 0;
+	var previewNonce = <?php echo wp_json_encode( wp_create_nonce( 'pmpro_payment_schedule_preview' ) ); ?>;
 
 	/**
 	 * Get the effective date value for a builder (always from the hidden field).
@@ -811,313 +813,85 @@ if (!empty($page_msg)) { ?>
 		pmpro_update_schedule_preview();
 	};
 
-	/* ── Schedule Preview (client-side) ── */
-
-	var currencySymbol = <?php echo wp_json_encode( wp_strip_all_tags( $pmpro_currency_symbol ) ); ?>;
-	var currencyLeft = <?php echo pmpro_getCurrencyPosition() === 'left' ? 'true' : 'false'; ?>;
-
-	function formatPrice(amount) {
-		var n = parseFloat(amount) || 0;
-		var formatted = n.toFixed(2);
-		return currencyLeft ? currencySymbol + formatted : formatted + currencySymbol;
-	}
-
-	/**
-	 * Add an interval to a Date. Returns a new Date.
-	 */
-	function addInterval(date, number, period) {
-		var d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-		switch (period) {
-			case 'Day':   d.setDate(d.getDate() + number); break;
-			case 'Week':  d.setDate(d.getDate() + number * 7); break;
-			case 'Month': d.setMonth(d.getMonth() + number); break;
-			case 'Year':  d.setFullYear(d.getFullYear() + number); break;
-			case 'Hour':  d.setDate(d.getDate() + Math.ceil(number / 24)); break;
-		}
-		return d;
-	}
-
-	/**
-	 * Whether a date pattern string is valid (mirrors pmpro_is_valid_date_pattern()).
-	 */
-	function isValidDatePattern(pattern) {
-		var match = String(pattern).toUpperCase().match(/^(Y\d*|\d{4})-(M\d*|\d{1,2})-(\d{1,2})$/);
-		if (!match) {
-			return false;
-		}
-		// Literal month must be 1-12, day must be 1-31.
-		if (match[2].charAt(0) !== 'M') {
-			var m = parseInt(match[2], 10);
-			if (m < 1 || m > 12) {
-				return false;
-			}
-		}
-		var d = parseInt(match[3], 10);
-		return d >= 1 && d <= 31;
-	}
-
-	/**
-	 * Resolve a date pattern string (like Y-M-15 or Y-06-30) relative to a base date.
-	 * Client-side equivalent of pmpro_convert_date_pattern(). Returns null on invalid input.
-	 */
-	function resolveDatePattern(pattern, baseDate) {
-		if (!pattern || !isValidDatePattern(pattern)) return null;
-		try {
-			var s = String(pattern).toUpperCase().replace(/Y-/,'Y1-').replace(/M-/,'M1-');
-			var addYears = 0, addMonths = 0;
-			var ym = s.match(/Y(\d+)/);
-			if (ym) addYears = Math.min(parseInt(ym[1]) || 1, 100);
-			var mm = s.match(/M(\d+)/);
-			if (mm) addMonths = Math.min(parseInt(mm[1]) || 1, 120);
-
-			var parts = s.split('-');
-			if (parts.length < 3) return null;
-			var setY = parseInt(parts[0]) || 0;
-			var setM = parseInt(parts[1]) || 0;
-			var setD = parseInt(parts[2]) || 1;
-			var curY = baseDate.getFullYear(), curM = baseDate.getMonth() + 1, curD = baseDate.getDate();
-			var tmpY = setY > 0 ? setY : curY;
-			var tmpM = setM > 0 ? setM : curM;
-			var tmpD = Math.max(1, Math.min(setD, 31));
-
-			// Add months. On the first iteration, only advance if the day of month
-			// has already passed (or is today) — matches pmpro_convert_date_pattern().
-			var monthIter = addMonths;
-			for (var i = 0; i < monthIter && i < 120; i++) {
-				if (i === 0) {
-					if (tmpD <= curD) { tmpM++; monthIter--; }
-				} else { tmpM++; }
-				if (tmpM === 13) { tmpM = 1; tmpY++; addYears--; }
-			}
-			// Add years. Same "already passed (or today)" rule, compared at date granularity.
-			var yearIter = addYears;
-			for (var j = 0; j < yearIter && j < 100; j++) {
-				if (j === 0) {
-					var tmpDate = new Date(tmpY, tmpM - 1, tmpD);
-					if (tmpDate <= baseDate) { tmpY++; yearIter--; }
-				} else { tmpY++; }
-			}
-			// Clamp day to valid range for the month.
-			var maxDay = new Date(tmpY, tmpM, 0).getDate();
-			if (tmpD > maxDay) tmpD = maxDay;
-			var result = new Date(tmpY, tmpM - 1, tmpD);
-			return isNaN(result.getTime()) ? null : result;
-		} catch(e) {
-			return null;
-		}
-	}
-
-	function dateToStr(d) {
-		return d.getFullYear() + '-' +
-			String(d.getMonth() + 1).padStart(2, '0') + '-' +
-			String(d.getDate()).padStart(2, '0');
-	}
+	/* ── Schedule Preview (server-rendered via AJAX) ──
+	 * The schedule itself is computed by wp_ajax_pmpro_payment_schedule_preview
+	 * using the same date engine as checkout; this script only collects the
+	 * form values and draws the returned events. */
 
 	window.pmpro_update_schedule_preview = function() {
 		clearTimeout(previewDebounceTimer);
-		previewDebounceTimer = setTimeout(pmpro_do_schedule_preview, 150);
+		previewDebounceTimer = setTimeout(pmpro_do_schedule_preview, 300);
 	};
 
-	function pmpro_do_schedule_preview() {
-		var $timeline = $('#pmpro_schedule_timeline');
-		try {
-			var isRecurring = $('#recurring').is(':checked');
-			var hasExpiration = $('#expiration').is(':checked');
-
-			if (!isRecurring) {
-				$timeline.html('<div class="pmpro_schedule_timeline_empty"><?php echo esc_js( __( 'Enable recurring billing to see a payment schedule.', 'paid-memberships-pro' ) ); ?></div>');
-				return;
-			}
-
-			// Read form values.
-			var checkoutStr = $('#pmpro_preview_checkout_date').val() || dateToStr(new Date());
-			var parts = checkoutStr.split('-');
-			var checkout = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-			if (isNaN(checkout.getTime())) { checkout = new Date(); }
-
-			var initialPayment = parseFloat($('input[name="initial_payment"]').val()) || 0;
-			var billingAmount = parseFloat($('input[name="billing_amount"]').val()) || 0;
-			var cycleNumber = parseInt($('input[name="cycle_number"]').val()) || 1;
-			if (cycleNumber < 1) cycleNumber = 1;
-			var cyclePeriod = $('select[name="cycle_period"]').val() || 'Month';
-			var billingLimit = parseInt($('input[name="billing_limit"]').val()) || 0;
-
-			var delayType = $('input[name="delay_type"]:checked').val() || 'none';
-			var subscriptionDelay = '';
-			if (delayType === 'days') {
-				subscriptionDelay = $('#subscription_delay_days').val();
-			} else if (delayType === 'date') {
-				subscriptionDelay = getBuilderValue($('#pmpro_delay_date_builder'));
-			}
-
-			var expirationDateType = $('input[name="expiration_date_type"]:checked').val() || 'none';
-			var expirationNumber = parseInt($('input[name="expiration_number"]').val()) || 0;
-			var expirationPeriod = $('select[name="expiration_period"]').val() || 'Month';
-			var setExpirationDate = '';
-			if (expirationDateType === 'date') {
-				setExpirationDate = getBuilderValue($('#pmpro_expiration_date_builder'));
-			}
-
-			var events = [];
-			var invalidPatternNotes = [];
-
-			// 1. Determine the expiration date (if any).
-			var expirationDate = null;
-			if (hasExpiration) {
-				if (expirationDateType === 'date' && setExpirationDate) {
-					expirationDate = resolveDatePattern(setExpirationDate, checkout);
-					if (expirationDate && (isNaN(expirationDate.getTime()) || expirationDate <= checkout)) {
-						// A fixed date in the past blocks checkout entirely; mirror that in the preview.
-						$timeline.html('<div class="pmpro_schedule_timeline_empty"><?php echo esc_js( __( 'The expiration date is in the past. This level cannot be purchased until the expiration date is updated.', 'paid-memberships-pro' ) ); ?></div>');
-						return;
-					}
-					if (!expirationDate) {
-						invalidPatternNotes.push('<?php echo esc_js( __( 'The expiration date pattern is invalid and will be ignored.', 'paid-memberships-pro' ) ); ?>');
-					}
-				} else if (expirationNumber > 0) {
-					expirationDate = addInterval(checkout, expirationNumber, expirationPeriod);
-					if (isNaN(expirationDate.getTime())) expirationDate = null;
-				}
-			}
-
-			// 2. Determine the first recurring payment date.
-			var firstRecurring = null;
-			if (billingAmount > 0) {
-				if (delayType === 'days' && subscriptionDelay && !isNaN(subscriptionDelay) && parseInt(subscriptionDelay) > 0) {
-					firstRecurring = addInterval(checkout, parseInt(subscriptionDelay), 'Day');
-				} else if (delayType === 'date' && subscriptionDelay) {
-					firstRecurring = resolveDatePattern(subscriptionDelay, checkout);
-					if (!firstRecurring || isNaN(firstRecurring.getTime())) {
-						invalidPatternNotes.push('<?php echo esc_js( __( 'The first recurring payment date pattern is invalid and will be ignored.', 'paid-memberships-pro' ) ); ?>');
-						firstRecurring = addInterval(checkout, cycleNumber, cyclePeriod);
-					} else if (firstRecurring < checkout) {
-						// The backend clamps a past start date up to the checkout date.
-						firstRecurring = checkout;
-					}
-				} else {
-					firstRecurring = addInterval(checkout, cycleNumber, cyclePeriod);
-				}
-			}
-
-			// 3. Generate all payment dates (up to a safe max).
-			var allPayments = [];
-			if (firstRecurring) {
-				var safeMax = billingLimit > 0 ? billingLimit : 100;
-				for (var i = 0; i < safeMax; i++) {
-					var payDate = (i === 0) ? firstRecurring : addInterval(firstRecurring, cycleNumber * i, cyclePeriod);
-					if (isNaN(payDate.getTime())) break;
-					if (expirationDate && payDate >= expirationDate) break;
-					allPayments.push(payDate);
-				}
-			}
-			var totalPayments = allPayments.length;
-			var hitBillingLimit = (billingLimit > 0 && totalPayments === billingLimit);
-			// With no billing limit and no expiration, the schedule is open-ended: the
-			// generated list is truncated at safeMax, so there is no real "last payment".
-			var isOpenEnded = (billingLimit < 1 && !expirationDate);
-
-			// 4. Build the event list.
-			// Initial payment.
-			events.push({
-				date: dateToStr(checkout),
-				type: 'initial',
-				amount: formatPrice(initialPayment)
-			});
-
-			// Show up to 5 payments inline, then "..." if more, then the last payment.
-			var maxInline = 5;
-			if (totalPayments > 0) {
-				var inlineCount = Math.min(totalPayments, maxInline);
-				if (!isOpenEnded && totalPayments === maxInline + 1) inlineCount = totalPayments;
-
-				for (var i = 0; i < inlineCount; i++) {
-					var isLast = (i === totalPayments - 1);
-					events.push({
-						date: dateToStr(allPayments[i]),
-						type: (isLast && hitBillingLimit) ? 'last_payment' : 'recurring',
-						amount: formatPrice(billingAmount),
-						number: i + 1
-					});
-				}
-
-				if (isOpenEnded) {
-					// Open-ended subscription: no meaningful final payment to display.
-					events.push({ date: '', type: 'continuation' });
-				} else if (totalPayments > inlineCount) {
-					events.push({ date: '', type: 'continuation' });
-					events.push({
-						date: dateToStr(allPayments[totalPayments - 1]),
-						type: hitBillingLimit ? 'last_payment' : 'recurring',
-						amount: formatPrice(billingAmount),
-						number: totalPayments
-					});
-				}
-			}
-
-			// 5. Expiration marker (always at the end of the timeline).
-			if (expirationDate) {
-				events.push({
-					date: dateToStr(expirationDate),
-					type: 'expiration'
-				});
-			}
-
-			renderTimeline(events, invalidPatternNotes);
-		} catch (e) {
-			$timeline.html('<div class="pmpro_schedule_timeline_empty"><?php echo esc_js( __( 'Unable to generate preview.', 'paid-memberships-pro' ) ); ?></div>');
-		}
+	function showTimelineMessage(message) {
+		$('#pmpro_schedule_timeline').empty().append(
+			$('<div class="pmpro_schedule_timeline_empty"></div>').text(message)
+		);
 	}
 
-	function renderTimeline(events, notes) {
-		var $timeline = $('#pmpro_schedule_timeline');
-		var html = '<div class="pmpro_htimeline">';
+	function pmpro_do_schedule_preview() {
+		var data = {
+			action: 'pmpro_payment_schedule_preview',
+			nonce: previewNonce,
+			checkout_date: $('#pmpro_preview_checkout_date').val(),
+			recurring: $('#recurring').is(':checked') ? 1 : 0,
+			expiration: $('#expiration').is(':checked') ? 1 : 0,
+			custom_trial: $('#custom_trial').is(':checked') ? 1 : 0,
+			initial_payment: $('input[name="initial_payment"]').val(),
+			billing_amount: $('input[name="billing_amount"]').val(),
+			cycle_number: $('input[name="cycle_number"]').val(),
+			cycle_period: $('select[name="cycle_period"]').val(),
+			billing_limit: $('input[name="billing_limit"]').val(),
+			delay_type: $('input[name="delay_type"]:checked').val() || 'none',
+			delay_days: $('#subscription_delay_days').val(),
+			delay_date: getBuilderValue($('#pmpro_delay_date_builder')),
+			expiration_type: $('input[name="expiration_date_type"]:checked').val() || 'none',
+			expiration_number: $('input[name="expiration_number"]').val(),
+			expiration_period: $('select[name="expiration_period"]').val(),
+			set_expiration_date: getBuilderValue($('#pmpro_expiration_date_builder'))
+		};
+		var requestNumber = ++previewRequestCount;
+		$.post(ajaxurl, data, function(response) {
+			// Ignore stale responses from superseded requests.
+			if (requestNumber !== previewRequestCount) {
+				return;
+			}
+			if (!response || !response.success || !response.data) {
+				showTimelineMessage(<?php echo wp_json_encode( __( 'Unable to generate preview.', 'paid-memberships-pro' ) ); ?>);
+				return;
+			}
+			renderTimeline(response.data);
+		}).fail(function() {
+			if (requestNumber === previewRequestCount) {
+				showTimelineMessage(<?php echo wp_json_encode( __( 'Unable to generate preview.', 'paid-memberships-pro' ) ); ?>);
+			}
+		});
+	}
 
+	function renderTimeline(data) {
+		if (data.empty) {
+			showTimelineMessage(data.empty);
+			return;
+		}
+		var events = data.events || [];
+		var html = '<div class="pmpro_htimeline">';
 		for (var i = 0; i < events.length; i++) {
 			var event = events[i];
-			var typeClass = 'pmpro_htimeline_item--' + event.type;
-			var formattedDate = event.date ? formatPreviewDate(event.date) : '';
-			var shortLabel = '';
-			var amountLabel = '';
-
-			var subtitle = '';
-			switch (event.type) {
-				case 'initial':
-					shortLabel = '<?php echo esc_js( __( 'Checkout', 'paid-memberships-pro' ) ); ?>';
-					amountLabel = event.amount || '';
-					break;
-				case 'recurring':
-					shortLabel = '#' + (event.number || '?');
-					amountLabel = event.amount || '';
-					break;
-				case 'last_payment':
-					shortLabel = '<?php echo esc_js( __( 'Last Payment', 'paid-memberships-pro' ) ); ?>';
-					amountLabel = event.amount || '';
-					subtitle = '<?php echo esc_js( __( 'Billing stops, membership continues', 'paid-memberships-pro' ) ); ?>';
-					break;
-				case 'expiration':
-					shortLabel = '<?php echo esc_js( __( 'Membership Ends', 'paid-memberships-pro' ) ); ?>';
-					subtitle = '<?php echo esc_js( __( 'Access revoked, billing cancelled', 'paid-memberships-pro' ) ); ?>';
-					break;
-				case 'continuation':
-					shortLabel = '&hellip;';
-					break;
-			}
-
-			html += '<div class="pmpro_htimeline_item ' + typeClass + '">';
+			html += '<div class="pmpro_htimeline_item pmpro_htimeline_item--' + escapeHtml(event.type || '') + '">';
 			if (event.type === 'initial') {
 				html += '<div class="pmpro_htimeline_dot pmpro_htimeline_dot--calendar"><span class="dashicons dashicons-calendar-alt"></span></div>';
 			} else {
 				html += '<div class="pmpro_htimeline_dot"></div>';
 			}
-			html += '<div class="pmpro_htimeline_label">' + shortLabel + '</div>';
-			if (amountLabel) {
-				html += '<div class="pmpro_htimeline_amount">' + escapeHtml(amountLabel) + '</div>';
+			html += '<div class="pmpro_htimeline_label">' + (event.type === 'continuation' ? '&hellip;' : escapeHtml(event.label || '')) + '</div>';
+			if (event.amount) {
+				html += '<div class="pmpro_htimeline_amount">' + escapeHtml(event.amount) + '</div>';
 			}
-			if (formattedDate) {
-				html += '<div class="pmpro_htimeline_date">' + escapeHtml(formattedDate) + '</div>';
+			if (event.date) {
+				html += '<div class="pmpro_htimeline_date">' + escapeHtml(event.date) + '</div>';
 			}
-			if (subtitle) {
-				html += '<div class="pmpro_htimeline_subtitle">' + subtitle + '</div>';
+			if (event.subtitle) {
+				html += '<div class="pmpro_htimeline_subtitle">' + escapeHtml(event.subtitle) + '</div>';
 			}
 			html += '</div>';
 			if (i < events.length - 1) {
@@ -1125,21 +899,15 @@ if (!empty($page_msg)) { ?>
 			}
 		}
 		html += '</div>';
-		if ($('#custom_trial').is(':checked')) {
-			html += '<div class="pmpro_htimeline_footnote"><?php echo esc_js( __( 'Note: Custom trial pricing is active. The first payment amounts shown above may differ at checkout.', 'paid-memberships-pro' ) ); ?></div>';
+		var footnotes = data.footnotes || [];
+		for (var f = 0; f < footnotes.length; f++) {
+			html += '<div class="pmpro_htimeline_footnote">' + escapeHtml(footnotes[f]) + '</div>';
 		}
-		if (notes && notes.length) {
-			for (var n = 0; n < notes.length; n++) {
-				html += '<div class="pmpro_htimeline_footnote pmpro_htimeline_footnote--error">' + notes[n] + '</div>';
-			}
+		var notes = data.notes || [];
+		for (var n = 0; n < notes.length; n++) {
+			html += '<div class="pmpro_htimeline_footnote pmpro_htimeline_footnote--error">' + escapeHtml(notes[n]) + '</div>';
 		}
-		$timeline.html(html);
-	}
-
-	function formatPreviewDate(dateStr) {
-		var parts = dateStr.split('-');
-		var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-		return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+		$('#pmpro_schedule_timeline').html(html);
 	}
 
 	function escapeHtml(text) {
