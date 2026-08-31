@@ -202,6 +202,10 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 /**
  * Get the subscription delay value for a level, optionally with a discount code.
  *
+ * When a discount code is passed, only the code's own setting is used - a code
+ * with no delay configured means no delay, even if the level has one. This
+ * matches the behavior of the retired Subscription Delays Add On.
+ *
  * @since TBD
  *
  * @param int      $level_id The membership level ID.
@@ -215,6 +219,7 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 		if ( is_array( $all_delays ) && ! empty( $all_delays[ $code_id ][ $level_id ] ) ) {
 			return $all_delays[ $code_id ][ $level_id ];
 		}
+		return '';
 	}
 
 	return get_option( 'pmpro_subscription_delay_' . intval( $level_id ), '' );
@@ -222,6 +227,11 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 
 /**
  * Get the set expiration date pattern for a level, optionally with a discount code.
+ *
+ * When a discount code is passed, only the code's own setting is used - a code
+ * with no expiration date configured means no set expiration date, even if the
+ * level has one. This matches the behavior of the retired Set Expiration Dates
+ * Add On.
  *
  * @since TBD
  *
@@ -232,10 +242,7 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 function pmpro_get_set_expiration_date( $level_id, $code_id = null ) {
 	if ( ! empty( $code_id ) ) {
 		// Discount code expiration dates: pmprosed_{level_id}_{code_id}
-		$code_date = get_option( 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id ), '' );
-		if ( ! empty( $code_date ) ) {
-			return $code_date;
-		}
+		return get_option( 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id ), '' );
 	}
 
 	return get_option( 'pmprosed_' . intval( $level_id ), '' );
@@ -290,6 +297,36 @@ function pmpro_apply_subscription_delay_at_checkout( $level ) {
 add_filter( 'pmpro_checkout_level', 'pmpro_apply_subscription_delay_at_checkout', 5 );
 
 /**
+ * Get the discount code ID in play for the current checkout request, if any.
+ *
+ * Accepts both the modern pmpro_discount_code and the legacy discount_code
+ * request params, matching how pmpro_getLevelAtCheckout() resolves the code.
+ *
+ * @since TBD
+ *
+ * @return int|null The discount code ID, or null if no code is in the request.
+ */
+function pmpro_payment_schedule_get_checkout_code_id() {
+	global $wpdb;
+
+	if ( ! empty( $_REQUEST['pmpro_discount_code'] ) && is_scalar( $_REQUEST['pmpro_discount_code'] ) ) {
+		$discount_code = sanitize_text_field( $_REQUEST['pmpro_discount_code'] );
+	} elseif ( ! empty( $_REQUEST['discount_code'] ) && is_scalar( $_REQUEST['discount_code'] ) ) {
+		$discount_code = sanitize_text_field( $_REQUEST['discount_code'] );
+	} else {
+		return null;
+	}
+
+	$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', $discount_code );
+	if ( empty( $discount_code ) ) {
+		return null;
+	}
+
+	$code_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = %s LIMIT 1", $discount_code ) );
+	return ! empty( $code_id ) ? intval( $code_id ) : null;
+}
+
+/**
  * Apply set expiration date to the checkout level.
  *
  * @since TBD
@@ -299,18 +336,13 @@ add_filter( 'pmpro_checkout_level', 'pmpro_apply_subscription_delay_at_checkout'
  * @return object|null The modified level object, or null if expired.
  */
 function pmpro_apply_set_expiration_date_at_checkout( $level, $discount_code_id = null ) {
-	global $wpdb;
-
 	if ( empty( $level ) || empty( $level->id ) ) {
 		return $level;
 	}
 
-	// Check for discount code.
-	if ( empty( $discount_code_id ) && ! empty( $_REQUEST['discount_code'] ) ) {
-		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', $_REQUEST['discount_code'] );
-		if ( ! empty( $discount_code ) ) {
-			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
-		}
+	// Check for a discount code in the request if one wasn't passed in.
+	if ( empty( $discount_code_id ) ) {
+		$discount_code_id = pmpro_payment_schedule_get_checkout_code_id();
 	}
 
 	$set_expiration_date = pmpro_get_set_expiration_date( $level->id, $discount_code_id );
@@ -352,7 +384,10 @@ function pmpro_apply_set_expiration_date_at_checkout( $level, $discount_code_id 
 		return null;
 	}
 }
-add_filter( 'pmpro_checkout_level', 'pmpro_apply_set_expiration_date_at_checkout', 6 );
+// Priority 10 and registered after includes/filters.php so that this runs after
+// pmpro_checkout_level_extend_memberships() and replaces (rather than adds to) the
+// extended expiration on renewals, matching the retired Set Expiration Dates Add On.
+add_filter( 'pmpro_checkout_level', 'pmpro_apply_set_expiration_date_at_checkout', 10 );
 add_filter( 'pmpro_discount_code_level', 'pmpro_apply_set_expiration_date_at_checkout', 10, 2 );
 
 /**
@@ -365,11 +400,16 @@ function pmpro_force_set_expiration_enddate( $enddate, $user_id, $level, $startd
 		return $enddate;
 	}
 
-	$set_expiration_date = pmpro_get_set_expiration_date( $level->id );
+	// Respect a discount-code-specific expiration date if a code was used at checkout.
+	$code_id = ! empty( $level->code_id ) ? intval( $level->code_id ) : null;
+
+	$set_expiration_date = pmpro_get_set_expiration_date( $level->id, $code_id );
 	if ( ! empty( $set_expiration_date ) ) {
 		$resolved_date = pmpro_convert_date_pattern( $set_expiration_date );
 		if ( ! empty( $resolved_date ) ) {
-			$enddate = $resolved_date;
+			// End of day, matching the enddate format core computes at checkout, so
+			// that the member keeps access through the expiration date itself.
+			$enddate = $resolved_date . ' 23:59:59';
 		}
 	}
 
@@ -394,7 +434,14 @@ add_filter( 'pmpro_paystack_webhook_level', 'pmpro_set_expiration_ipnhandler_lev
  *
  * @since TBD
  */
-function pmpro_subscription_delay_cost_text( $cost, $level ) {
+function pmpro_subscription_delay_cost_text( $cost, $level = null ) {
+	// Bail if we don't have a level object with an ID to inspect. Third-party
+	// code occasionally fires the pmpro_level_cost_text filter without a level,
+	// which would otherwise warn on $level->code_id / $level->id access.
+	if ( ! is_object( $level ) || empty( $level->id ) ) {
+		return $cost;
+	}
+
 	// Check for custom cost text first.
 	if ( function_exists( 'pmpro_getCustomLevelCostText' ) ) {
 		$custom_text = pmpro_getCustomLevelCostText( $level->id );
@@ -411,7 +458,17 @@ function pmpro_subscription_delay_cost_text( $cost, $level ) {
 	}
 
 	// Strip trailing periods from billing frequency labels for grammar.
-	$labels   = array( 'Year', 'Years', 'Month', 'Months', 'Week', 'Weeks', 'Day', 'Days', 'payments' );
+	$labels   = array(
+		__( 'Year', 'paid-memberships-pro' ),
+		__( 'Years', 'paid-memberships-pro' ),
+		__( 'Month', 'paid-memberships-pro' ),
+		__( 'Months', 'paid-memberships-pro' ),
+		__( 'Week', 'paid-memberships-pro' ),
+		__( 'Weeks', 'paid-memberships-pro' ),
+		__( 'Day', 'paid-memberships-pro' ),
+		__( 'Days', 'paid-memberships-pro' ),
+		__( 'payments', 'paid-memberships-pro' ),
+	);
 	$patterns = array(
 		'%s.'          => '%s',
 		'%s</strong>.' => '%s</strong>',
@@ -420,16 +477,16 @@ function pmpro_subscription_delay_cost_text( $cost, $level ) {
 	$find = $replace = array();
 	foreach ( $labels as $label ) {
 		foreach ( $patterns as $pattern_find => $pattern_replace ) {
-			$find[]    = sprintf( $pattern_find, __( $label, 'paid-memberships-pro' ) );
-			$replace[] = sprintf( $pattern_replace, __( $label, 'paid-memberships-pro' ) );
+			$find[]    = sprintf( $pattern_find, $label );
+			$replace[] = sprintf( $pattern_replace, $label );
 		}
 	}
 
 	if ( is_numeric( $subscription_delay ) ) {
 		$cost  = str_replace( $find, $replace, $cost );
-		$cost .= sprintf(
+		$cost .= ' ' . sprintf(
 			/* translators: %d: number of days */
-			__( ' after your <strong>%d</strong> day trial.', 'paid-memberships-pro' ),
+			__( 'after your <strong>%d</strong> day trial.', 'paid-memberships-pro' ),
 			intval( $subscription_delay )
 		);
 	} else {
@@ -454,19 +511,16 @@ add_filter( 'pmpro_level_cost_text', 'pmpro_subscription_delay_cost_text', 10, 2
  *
  * @since TBD
  */
-function pmpro_set_expiration_date_text( $expiration_text, $level ) {
-	if ( empty( $level ) || empty( $level->id ) ) {
+function pmpro_set_expiration_date_text( $expiration_text, $level = null ) {
+	if ( ! is_object( $level ) || empty( $level->id ) ) {
 		return $expiration_text;
 	}
 
-	// Check for discount code.
-	$discount_code_id = null;
-	if ( ! empty( $_REQUEST['pmpro_discount_code'] ) ) {
-		$discount_code = new PMPro_Discount_Code( $_REQUEST['pmpro_discount_code'] );
-		$discount_code_id = ! empty( $discount_code->id ) ? $discount_code->id : null;
-	} elseif ( ! empty( $_REQUEST['code'] ) ) {
-		$discount_code = new PMPro_Discount_Code( $_REQUEST['code'] );
-		$discount_code_id = ! empty( $discount_code->id ) ? $discount_code->id : null;
+	// Check for a discount code, preferring one already resolved on the level.
+	if ( ! empty( $level->code_id ) ) {
+		$discount_code_id = intval( $level->code_id );
+	} else {
+		$discount_code_id = pmpro_payment_schedule_get_checkout_code_id();
 	}
 
 	$set_expiration_date = pmpro_get_set_expiration_date( $level->id, $discount_code_id );
@@ -484,32 +538,6 @@ function pmpro_set_expiration_date_text( $expiration_text, $level ) {
 	return $expiration_text;
 }
 add_filter( 'pmpro_level_expiration_text', 'pmpro_set_expiration_date_text', 10, 2 );
-
-/**
- * Handle Authorize.net subscription delay compatibility.
- *
- * @since TBD
- */
-function pmpro_subscription_delay_subscribe_order( $order, $gateway ) {
-	if ( $order->gateway !== 'authorizenet' ) {
-		return $order;
-	}
-
-	$code_id = null;
-	if ( ! empty( $order->discount_code ) ) {
-		global $wpdb;
-		$code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $order->discount_code ) . "' LIMIT 1" );
-	}
-
-	$subscription_delay = pmpro_get_subscription_delay( $order->membership_id, $code_id );
-
-	if ( ! empty( $subscription_delay ) && $order->TrialBillingCycles == 1 ) {
-		$order->TrialBillingCycles = 0;
-	}
-
-	return $order;
-}
-add_filter( 'pmpro_subscribe_order', 'pmpro_subscription_delay_subscribe_order', 10, 2 );
 
 /**
  * Show admin warning if any levels have a past set expiration date.
