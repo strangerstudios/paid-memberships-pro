@@ -284,6 +284,12 @@
 				}
 			}
 
+			//merge in any payment schedule (delay/expiration pattern) errors recorded during the level saves
+			global $pmpro_payment_schedule_dc_errors;
+			if ( ! empty( $pmpro_payment_schedule_dc_errors ) && is_array( $pmpro_payment_schedule_dc_errors ) ) {
+				$level_errors = array_merge( ! empty( $level_errors ) ? $level_errors : array(), $pmpro_payment_schedule_dc_errors );
+			}
+
 			//errors?
 			if(!empty($level_errors))
 			{

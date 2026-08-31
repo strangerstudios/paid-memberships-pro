@@ -700,9 +700,16 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	} elseif ( $delay_type === 'date' && ! empty( $delay_date_a[ $key ] ) ) {
 		$delay_value = strtoupper( trim( sanitize_text_field( $delay_date_a[ $key ] ) ) );
 		if ( ! pmpro_is_valid_date_pattern( $delay_value ) ) {
-			// Invalid pattern: keep the previous setting.
+			// Invalid pattern: keep the previous setting and report the error.
 			$delay_value   = '';
 			$delay_invalid = true;
+			pmpro_payment_schedule_add_discount_code_error(
+				sprintf(
+					/* translators: %s: the membership level name. */
+					__( 'The First Recurring Payment date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
+					pmpro_payment_schedule_get_level_name( $level_id )
+				)
+			);
 		}
 	}
 
@@ -727,9 +734,16 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	if ( $exp_type === 'date' && ! empty( $exp_date_a[ $key ] ) ) {
 		$expiration_value = strtoupper( trim( sanitize_text_field( $exp_date_a[ $key ] ) ) );
 		if ( ! pmpro_is_valid_date_pattern( $expiration_value ) ) {
-			// Invalid pattern: keep the previous setting.
+			// Invalid pattern: keep the previous setting and report the error.
 			$expiration_value   = '';
 			$expiration_invalid = true;
+			pmpro_payment_schedule_add_discount_code_error(
+				sprintf(
+					/* translators: %s: the membership level name. */
+					__( 'The expiration date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
+					pmpro_payment_schedule_get_level_name( $level_id )
+				)
+			);
 		}
 	}
 
@@ -741,6 +755,75 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	}
 }
 add_action( 'pmpro_save_discount_code_level', 'pmpro_payment_schedule_save_discount_code_level', 10, 2 );
+
+/**
+ * Record a payment schedule error during a discount code save.
+ *
+ * adminpages/discountcodes.php merges these into its $level_errors list so the
+ * admin stays on the edit form and sees the error.
+ *
+ * @since TBD
+ *
+ * @param string $error The error message to record.
+ */
+function pmpro_payment_schedule_add_discount_code_error( $error ) {
+	global $pmpro_payment_schedule_dc_errors;
+	if ( ! is_array( $pmpro_payment_schedule_dc_errors ) ) {
+		$pmpro_payment_schedule_dc_errors = array();
+	}
+	$pmpro_payment_schedule_dc_errors[] = $error;
+}
+
+/**
+ * Get a level name for error messages.
+ *
+ * @since TBD
+ *
+ * @param int $level_id The membership level ID.
+ * @return string The level name, or the ID if the level can't be loaded.
+ */
+function pmpro_payment_schedule_get_level_name( $level_id ) {
+	$level = pmpro_getLevel( $level_id );
+	return ! empty( $level->name ) ? $level->name : (string) $level_id;
+}
+
+/**
+ * Remove payment schedule options for levels that were unchecked from a discount code.
+ *
+ * The per-level save hook only fires for checked levels, so without this an
+ * unchecked level's schedule options would silently come back if the level is
+ * ever re-checked.
+ *
+ * @since TBD
+ *
+ * @param int $code_id The discount code ID that was just saved.
+ */
+function pmpro_payment_schedule_cleanup_unchecked_levels( $code_id ) {
+	$all_levels     = isset( $_REQUEST['all_levels'] ) ? array_map( 'intval', (array) $_REQUEST['all_levels'] ) : array();
+	$checked_levels = isset( $_REQUEST['levels'] ) ? array_map( 'intval', (array) $_REQUEST['levels'] ) : array();
+	$unchecked      = array_diff( $all_levels, $checked_levels );
+	if ( empty( $unchecked ) ) {
+		return;
+	}
+
+	$code_id    = intval( $code_id );
+	$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+	if ( ! is_array( $all_delays ) ) {
+		$all_delays = array();
+	}
+	$delays_changed = false;
+	foreach ( $unchecked as $level_id ) {
+		delete_option( 'pmprosed_' . $level_id . '_' . $code_id );
+		if ( isset( $all_delays[ $code_id ][ $level_id ] ) ) {
+			unset( $all_delays[ $code_id ][ $level_id ] );
+			$delays_changed = true;
+		}
+	}
+	if ( $delays_changed ) {
+		update_option( 'pmpro_discount_code_subscription_delays', $all_delays );
+	}
+}
+add_action( 'pmpro_save_discount_code', 'pmpro_payment_schedule_cleanup_unchecked_levels' );
 
 /**
  * Delete payment schedule options when a membership level is deleted.
