@@ -352,7 +352,6 @@ function pmpro_apply_subscription_delay_at_checkout( $level ) {
 
 	return $level;
 }
-add_filter( 'pmpro_checkout_level', 'pmpro_apply_subscription_delay_at_checkout', 5 );
 
 /**
  * Get the discount code ID in play for the current checkout request, if any.
@@ -385,11 +384,16 @@ function pmpro_payment_schedule_get_checkout_code_id() {
 }
 
 /**
- * Apply set expiration date to the checkout level.
+ * Apply a set expiration date to a level object as a duration in days.
+ *
+ * Only used for the IPN/webhook level filters below: those gateway handlers
+ * compute renewal end dates from the level's expiration_number/expiration_period,
+ * so the resolved date is converted to "days from now". Checkout itself computes
+ * the exact end date natively in pmpro_complete_checkout().
  *
  * @since TBD
  *
- * @param object   $level            The PMPro Level object at checkout.
+ * @param object   $level            The PMPro Level object.
  * @param int|null $discount_code_id Optional discount code ID.
  * @return object|null The modified level object, or null if expired.
  */
@@ -442,38 +446,47 @@ function pmpro_apply_set_expiration_date_at_checkout( $level, $discount_code_id 
 		return null;
 	}
 }
-// Priority 10 and registered after includes/filters.php so that this runs after
-// pmpro_checkout_level_extend_memberships() and replaces (rather than adds to) the
-// extended expiration on renewals, matching the retired Set Expiration Dates Add On.
-add_filter( 'pmpro_checkout_level', 'pmpro_apply_set_expiration_date_at_checkout', 10 );
-add_filter( 'pmpro_discount_code_level', 'pmpro_apply_set_expiration_date_at_checkout', 10, 2 );
-
 /**
- * Force the set expiration date on the checkout end date (for IPN/webhook handlers).
+ * Block checkout when a level's set expiration date has already passed.
+ *
+ * Only fixed-date patterns can resolve to the past (Y/M patterns always advance
+ * to the next occurrence), so this stops signups for levels or discount codes
+ * whose configured end date is behind us.
  *
  * @since TBD
+ *
+ * @param bool $okay Whether the checkout is okay so far.
+ * @return bool Whether the checkout is still okay.
  */
-function pmpro_force_set_expiration_enddate( $enddate, $user_id, $level, $startdate ) {
-	if ( $enddate === 'NULL' || empty( $enddate ) || empty( $level ) || empty( $level->id ) ) {
-		return $enddate;
+function pmpro_payment_schedule_registration_check( $okay ) {
+	global $pmpro_level;
+
+	// Bail if the checkout already failed or we don't have a level.
+	if ( ! $okay || empty( $pmpro_level ) || empty( $pmpro_level->id ) ) {
+		return $okay;
 	}
 
-	// Respect a discount-code-specific expiration date if a code was used at checkout.
-	$code_id = ! empty( $level->code_id ) ? intval( $level->code_id ) : null;
-
-	$set_expiration_date = pmpro_get_set_expiration_date( $level->id, $code_id );
-	if ( ! empty( $set_expiration_date ) ) {
-		$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
-		if ( ! empty( $resolved_date ) ) {
-			// End of day, matching the enddate format core computes at checkout, so
-			// that the member keeps access through the expiration date itself.
-			$enddate = $resolved_date . ' 23:59:59';
-		}
+	$set_expiration_date = pmpro_get_set_expiration_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null );
+	if ( empty( $set_expiration_date ) ) {
+		return $okay;
 	}
 
-	return $enddate;
+	$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
+	if ( ! empty( $resolved_date ) && strtotime( $resolved_date ) <= current_time( 'timestamp' ) ) {
+		pmpro_setMessage(
+			sprintf(
+				/* translators: %s: the date that membership access for this level ends. */
+				__( 'Membership access for this level ends on %s. New signups are no longer accepted.', 'paid-memberships-pro' ),
+				date_i18n( get_option( 'date_format' ), strtotime( $resolved_date, current_time( 'timestamp' ) ) )
+			),
+			'pmpro_error'
+		);
+		return false;
+	}
+
+	return $okay;
 }
-add_filter( 'pmpro_checkout_end_date', 'pmpro_force_set_expiration_enddate', 10, 4 );
+add_filter( 'pmpro_registration_checks', 'pmpro_payment_schedule_registration_check' );
 
 /**
  * Wrapper for IPN/webhook level handlers.

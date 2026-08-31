@@ -2967,6 +2967,10 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
 	}
 
+	// If the level or discount code has a subscription delay, set the profile start
+	// date on the level so that gateways delay the first recurring payment.
+	$pmpro_level = pmpro_apply_subscription_delay_at_checkout( $pmpro_level );
+
 	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
 
