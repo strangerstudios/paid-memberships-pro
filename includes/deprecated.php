@@ -897,6 +897,14 @@ function pmpro_get_deprecated_add_ons() {
 			'file' => 'pmpro-subscription-check.php',
 			'label' => 'Subscription Check'
 		),
+		'pmpro-subscription-delays' => array(
+			'file' => 'pmpro-subscription-delays.php',
+			'label' => 'Subscription Delays'
+		),
+		'pmpro-set-expiration-dates' => array(
+			'file' => 'pmpro-set-expiration-dates.php',
+			'label' => 'Set Expiration Dates'
+		),
 	);
 	
 	$deprecated = apply_filters( 'pmpro_deprecated_add_ons_list', $deprecated );

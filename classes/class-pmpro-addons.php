@@ -137,9 +137,7 @@ class PMPro_AddOns {
 				'pmpro-member-directory',
 				'pmpro-nav-menus',
 				'pmpro-roles',
-				'pmpro-set-expiration-dates',
 				'pmpro-signup-shortcode',
-				'pmpro-subscription-delays',
 			),
 			'association'     => array(
 				'basic-user-avatars',
@@ -153,9 +151,7 @@ class PMPro_AddOns {
 				'pmpro-membership-card',
 				'pmpro-membership-manager-role',
 				'pmpro-pay-by-check',
-				'pmpro-set-expiration-dates',
 				'pmpro-shipping',
-				'pmpro-subscription-delays',
 			),
 			'premium_content' => array(
 				'pmpro-abandoned-cart-recovery',
