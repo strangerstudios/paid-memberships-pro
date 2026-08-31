@@ -20,13 +20,22 @@
 function pmpro_format_day_ordinal( $day ) {
 	$day = intval( $day );
 	if ( $day >= 11 && $day <= 13 ) {
-		return $day . 'th';
+		/* translators: %d: day of the month, as an ordinal ("4th"). */
+		return sprintf( __( '%dth', 'paid-memberships-pro' ), $day );
 	}
 	switch ( $day % 10 ) {
-		case 1: return $day . 'st';
-		case 2: return $day . 'nd';
-		case 3: return $day . 'rd';
-		default: return $day . 'th';
+		case 1:
+			/* translators: %d: day of the month, as an ordinal ("1st"). */
+			return sprintf( __( '%dst', 'paid-memberships-pro' ), $day );
+		case 2:
+			/* translators: %d: day of the month, as an ordinal ("2nd"). */
+			return sprintf( __( '%dnd', 'paid-memberships-pro' ), $day );
+		case 3:
+			/* translators: %d: day of the month, as an ordinal ("3rd"). */
+			return sprintf( __( '%drd', 'paid-memberships-pro' ), $day );
+		default:
+			/* translators: %d: day of the month, as an ordinal ("4th"). */
+			return sprintf( __( '%dth', 'paid-memberships-pro' ), $day );
 	}
 }
 
@@ -731,3 +740,67 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	}
 }
 add_action( 'pmpro_save_discount_code_level', 'pmpro_payment_schedule_save_discount_code_level', 10, 2 );
+
+/**
+ * Delete payment schedule options when a membership level is deleted.
+ *
+ * @since TBD
+ *
+ * @param int $level_id The ID of the level being deleted.
+ */
+function pmpro_payment_schedule_delete_level( $level_id ) {
+	global $wpdb;
+
+	$level_id = intval( $level_id );
+	delete_option( 'pmpro_subscription_delay_' . $level_id );
+	delete_option( 'pmprosed_' . $level_id );
+
+	// Remove per-discount-code expiration dates for this level.
+	$code_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_discount_codes" );
+	foreach ( $code_ids as $code_id ) {
+		delete_option( 'pmprosed_' . $level_id . '_' . intval( $code_id ) );
+	}
+
+	// Remove this level from all per-discount-code delays.
+	$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+	if ( is_array( $all_delays ) ) {
+		$changed = false;
+		foreach ( $all_delays as $code_id => $levels ) {
+			if ( is_array( $levels ) && isset( $levels[ $level_id ] ) ) {
+				unset( $all_delays[ $code_id ][ $level_id ] );
+				$changed = true;
+			}
+		}
+		if ( $changed ) {
+			update_option( 'pmpro_discount_code_subscription_delays', $all_delays );
+		}
+	}
+}
+add_action( 'pmpro_delete_membership_level', 'pmpro_payment_schedule_delete_level' );
+
+/**
+ * Delete payment schedule options when a discount code is deleted.
+ *
+ * @since TBD
+ *
+ * @param int $code_id The ID of the discount code being deleted.
+ */
+function pmpro_payment_schedule_delete_discount_code( $code_id ) {
+	global $wpdb;
+
+	$code_id = intval( $code_id );
+
+	// Remove per-discount-code expiration dates for this code.
+	$level_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_levels" );
+	foreach ( $level_ids as $level_id ) {
+		delete_option( 'pmprosed_' . intval( $level_id ) . '_' . $code_id );
+	}
+
+	// Remove this code from the per-discount-code delays.
+	$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+	if ( is_array( $all_delays ) && isset( $all_delays[ $code_id ] ) ) {
+		unset( $all_delays[ $code_id ] );
+		update_option( 'pmpro_discount_code_subscription_delays', $all_delays );
+	}
+}
+add_action( 'pmpro_delete_discount_code', 'pmpro_payment_schedule_delete_discount_code' );

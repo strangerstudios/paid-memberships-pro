@@ -1984,10 +1984,13 @@ function pmpro_date_mode_changed(selectEl) {
 	$builder.find('.pmpro_date_builder_yearly').toggle(mode === 'yearly');
 	$builder.find('.pmpro_date_builder_custom').toggle(mode === 'custom');
 	if (mode === 'custom') {
-		$builder.find('.pmpro_date_pattern_input').focus();
+		$builder.find('.pmpro_date_pattern_input').trigger('focus');
 	}
 	if (mode === 'monthly' || mode === 'yearly') {
 		pmpro_assemble_date_pattern(selectEl);
+	} else if (!mode) {
+		// "Choose..." selected: clear the stored pattern so a stale value isn't submitted.
+		$builder.find('.pmpro_date_pattern_value').val('');
 	}
 	if (typeof pmpro_update_schedule_preview === 'function') {
 		pmpro_update_schedule_preview();
@@ -2019,6 +2022,8 @@ function pmpro_assemble_date_pattern(el) {
 function pmpro_initDateBuilder($builder, existingValue) {
 	var $ = jQuery;
 	if (!existingValue) return;
+	// Coerce to a string: a purely numeric pattern would otherwise arrive as a Number.
+	existingValue = String(existingValue);
 	var val = existingValue.toUpperCase().trim();
 	// Normalize single digits: Y-M-5 -> Y-M-05, Y-1-5 -> Y-01-05.
 	val = val.replace(/-(\d)$/, '-0$1');
