@@ -172,6 +172,9 @@ if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) )
 		// Invalid pattern: keep the previous setting and warn the admin.
 		$page_msg  = -3;
 		$page_msgt = __( 'The First Recurring Payment date pattern was invalid, so that setting was not updated.', 'paid-memberships-pro' );
+		// Return to the edit form so the warning is actually shown (a successful
+		// save unsets $_REQUEST['edit'], which would render the levels list instead).
+		$_REQUEST['edit'] = $saveid;
 	}
 } else {
 	delete_option( 'pmpro_subscription_delay_' . $saveid );
@@ -189,7 +192,7 @@ if ( ! empty( $ml_expiration ) && $expiration_date_type === 'date' ) {
 		if ( ! empty( $ml_expiration_number ) ) {
 			$wpdb->update(
 				$wpdb->pmpro_membership_levels,
-				array( 'expiration_number' => 0, 'expiration_period' => '' ),
+				array( 'expiration_number' => 0, 'expiration_period' => 0 ),
 				array( 'id' => $saveid ),
 				array( '%d', '%s' ),
 				array( '%d' )
@@ -199,6 +202,9 @@ if ( ! empty( $ml_expiration ) && $expiration_date_type === 'date' ) {
 		// Invalid or missing pattern: keep the previous setting and warn the admin.
 		$page_msg  = -3;
 		$page_msgt = __( 'The expiration date pattern was invalid, so that setting was not updated.', 'paid-memberships-pro' );
+		// Return to the edit form so the warning is actually shown (a successful
+		// save unsets $_REQUEST['edit'], which would render the levels list instead).
+		$_REQUEST['edit'] = $saveid;
 	}
 } else {
 	// Expiration unchecked or duration-based: remove any date-based expiration.

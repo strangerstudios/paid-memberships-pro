@@ -959,6 +959,7 @@ if (!empty($page_msg)) { ?>
 			}
 
 			var events = [];
+			var invalidPatternNotes = [];
 
 			// 1. Determine the expiration date (if any).
 			var expirationDate = null;
@@ -969,6 +970,9 @@ if (!empty($page_msg)) { ?>
 						// A fixed date in the past blocks checkout entirely; mirror that in the preview.
 						$timeline.html('<div class="pmpro_schedule_timeline_empty"><?php echo esc_js( __( 'The expiration date is in the past. This level cannot be purchased until the expiration date is updated.', 'paid-memberships-pro' ) ); ?></div>');
 						return;
+					}
+					if (!expirationDate) {
+						invalidPatternNotes.push('<?php echo esc_js( __( 'The expiration date pattern is invalid and will be ignored.', 'paid-memberships-pro' ) ); ?>');
 					}
 				} else if (expirationNumber > 0) {
 					expirationDate = addInterval(checkout, expirationNumber, expirationPeriod);
@@ -984,6 +988,7 @@ if (!empty($page_msg)) { ?>
 				} else if (delayType === 'date' && subscriptionDelay) {
 					firstRecurring = resolveDatePattern(subscriptionDelay, checkout);
 					if (!firstRecurring || isNaN(firstRecurring.getTime())) {
+						invalidPatternNotes.push('<?php echo esc_js( __( 'The first recurring payment date pattern is invalid and will be ignored.', 'paid-memberships-pro' ) ); ?>');
 						firstRecurring = addInterval(checkout, cycleNumber, cyclePeriod);
 					} else if (firstRecurring < checkout) {
 						// The backend clamps a past start date up to the checkout date.
@@ -1057,13 +1062,13 @@ if (!empty($page_msg)) { ?>
 				});
 			}
 
-			renderTimeline(events);
+			renderTimeline(events, invalidPatternNotes);
 		} catch (e) {
 			$timeline.html('<div class="pmpro_schedule_timeline_empty"><?php echo esc_js( __( 'Unable to generate preview.', 'paid-memberships-pro' ) ); ?></div>');
 		}
 	}
 
-	function renderTimeline(events) {
+	function renderTimeline(events, notes) {
 		var $timeline = $('#pmpro_schedule_timeline');
 		var html = '<div class="pmpro_htimeline">';
 
@@ -1122,6 +1127,11 @@ if (!empty($page_msg)) { ?>
 		html += '</div>';
 		if ($('#custom_trial').is(':checked')) {
 			html += '<div class="pmpro_htimeline_footnote"><?php echo esc_js( __( 'Note: Custom trial pricing is active. The first payment amounts shown above may differ at checkout.', 'paid-memberships-pro' ) ); ?></div>';
+		}
+		if (notes && notes.length) {
+			for (var n = 0; n < notes.length; n++) {
+				html += '<div class="pmpro_htimeline_footnote pmpro_htimeline_footnote--error">' + notes[n] + '</div>';
+			}
 		}
 		$timeline.html(html);
 	}
