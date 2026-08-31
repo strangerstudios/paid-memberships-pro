@@ -701,7 +701,7 @@
 											<label>
 												<input type="radio" name="delay_type_<?php echo esc_attr( $level->id ); ?>" value="days" <?php checked( $dc_delay_type, 'days' ); ?>
 													onclick="pmpro_dcToggleDelay(<?php echo intval( $level->id ); ?>, 'days');" />
-												<?php esc_html_e( 'After a number of days (trial)', 'paid-memberships-pro' ); ?>
+												<?php esc_html_e( 'After a number of days', 'paid-memberships-pro' ); ?>
 											</label>
 											<span class="pmpro_dc_delay_days_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_delay_type !== 'days' ) echo 'style="display:none;"'; ?>>
 												&mdash;

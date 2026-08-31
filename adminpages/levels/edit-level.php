@@ -494,7 +494,7 @@ if (!empty($page_msg)) { ?>
 					<br />
 					<label>
 						<input type="radio" name="delay_type" value="days" <?php checked( $delay_type, 'days' ); ?> onchange="pmpro_toggle_delay_fields();" />
-						<?php esc_html_e( 'After a number of days (trial)', 'paid-memberships-pro' ); ?>
+						<?php esc_html_e( 'After a number of days', 'paid-memberships-pro' ); ?>
 					</label>
 					<span class="pmpro_delay_field pmpro_delay_field_days" <?php if ( $delay_type !== 'days' ) echo 'style="display:none;"'; ?>>
 						&mdash;

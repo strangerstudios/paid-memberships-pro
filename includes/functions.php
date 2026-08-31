@@ -404,6 +404,29 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	// add a space
 	$r .= ' ';
 
+	// subscription delay part: say when recurring billing starts if the first recurring payment is delayed.
+	if ( (float)$level->billing_amount > 0 && ! empty( $level->id ) ) {
+		$subscription_delay = pmpro_get_subscription_delay( $level->id, ! empty( $level->code_id ) ? $level->code_id : null );
+		if ( ! empty( $subscription_delay ) ) {
+			if ( is_numeric( $subscription_delay ) ) {
+				$delay_days = intval( $subscription_delay );
+				if ( (float)$level->initial_payment == 0 ) {
+					/* translators: %d: the number of days in the free trial. */
+					$r .= sprintf( __( 'Recurring payments will begin after your <strong>%d</strong> day free trial.', 'paid-memberships-pro' ), $delay_days ) . ' ';
+				} else {
+					/* translators: %d: the number of days until the first recurring payment. */
+					$r .= sprintf( _n( 'Recurring payments will begin <strong>%d</strong> day after checkout.', 'Recurring payments will begin <strong>%d</strong> days after checkout.', $delay_days, 'paid-memberships-pro' ), $delay_days ) . ' ';
+				}
+			} else {
+				$delay_date = pmpro_convert_date_pattern( $subscription_delay );
+				if ( ! empty( $delay_date ) ) {
+					/* translators: %s: the date of the first recurring payment. */
+					$r .= sprintf( __( 'Recurring payments will begin on <strong>%s</strong>.', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), strtotime( $delay_date, current_time( 'timestamp' ) ) ) ) . ' ';
+				}
+			}
+		}
+	}
+
 	// trial part
 	if ( $level->trial_limit ) {
 		if ( (float)$level->trial_amount == 0 ) {
@@ -562,7 +585,21 @@ function pmpro_getLevelExpiration( &$level ) {
 		return '';
 	}
 
-	if ( $level->expiration_number ) {
+	// A set expiration date replaces any duration-based expiration.
+	$set_expiration_date = ! empty( $level->id ) ? pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null ) : '';
+	if ( ! empty( $set_expiration_date ) ) {
+		$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
+	} else {
+		$resolved_date = false;
+	}
+
+	if ( ! empty( $resolved_date ) ) {
+		$expiration_text = sprintf(
+			/* translators: %s: the date that the membership expires. */
+			__( 'Membership expires on %s.', 'paid-memberships-pro' ),
+			date_i18n( get_option( 'date_format' ), strtotime( $resolved_date, current_time( 'timestamp' ) ) )
+		);
+	} elseif ( $level->expiration_number ) {
 		$expiration_text = sprintf(
 			/* translators: 1: expiration number, 2: expiration period */
 			__( 'Membership expires after %1$d %2$s.', 'paid-memberships-pro' ),
