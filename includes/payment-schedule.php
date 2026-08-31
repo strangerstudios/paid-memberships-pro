@@ -43,8 +43,9 @@ function pmpro_format_day_ordinal( $day ) {
  * Check whether a string is a valid date pattern.
  *
  * A valid pattern is "{year}-{month}-{day}" where {year} is a 4-digit year or
- * a Y token (Y, Y2, Y3...), {month} is a 1-12 month number or an M token
- * (M, M2, M3...), and {day} is 1-31.
+ * a Y token (Y, Y2-Y99), {month} is a 1-12 month number or an M token
+ * (M, M2-M99), and {day} is 1-31. Zero tokens (Y0, M0) and offsets over 99
+ * are rejected rather than resolving to surprising dates.
  *
  * @since TBD
  *
@@ -56,7 +57,7 @@ function pmpro_is_valid_date_pattern( $pattern ) {
 		return false;
 	}
 
-	if ( ! preg_match( '/^(Y\d*|\d{4})-(M\d*|\d{1,2})-(\d{1,2})$/', strtoupper( trim( (string) $pattern ) ), $matches ) ) {
+	if ( ! preg_match( '/^(Y[1-9][0-9]?|Y|\d{4})-(M[1-9][0-9]?|M|\d{1,2})-(\d{1,2})$/', strtoupper( trim( (string) $pattern ) ), $matches ) ) {
 		return false;
 	}
 
