@@ -31,25 +31,68 @@ function pmpro_format_day_ordinal( $day ) {
 }
 
 /**
+ * Check whether a string is a valid date pattern.
+ *
+ * A valid pattern is "{year}-{month}-{day}" where {year} is a 4-digit year or
+ * a Y token (Y, Y2, Y3...), {month} is a 1-12 month number or an M token
+ * (M, M2, M3...), and {day} is 1-31.
+ *
+ * @since TBD
+ *
+ * @param string $pattern The date pattern string to check.
+ * @return bool True if the pattern is valid.
+ */
+function pmpro_is_valid_date_pattern( $pattern ) {
+	if ( ! is_string( $pattern ) && ! is_numeric( $pattern ) ) {
+		return false;
+	}
+
+	if ( ! preg_match( '/^(Y\d*|\d{4})-(M\d*|\d{1,2})-(\d{1,2})$/', strtoupper( trim( (string) $pattern ) ), $matches ) ) {
+		return false;
+	}
+
+	// A literal month must be 1-12.
+	if ( strpos( $matches[2], 'M' ) !== 0 ) {
+		$month = intval( $matches[2] );
+		if ( $month < 1 || $month > 12 ) {
+			return false;
+		}
+	}
+
+	// The day must be 1-31.
+	$day = intval( $matches[3] );
+	return $day >= 1 && $day <= 31;
+}
+
+/**
  * Convert a date pattern string to an actual date.
  *
  * Supports patterns like:
  * - "Y-01-01"  => January 1st of current/next year (whichever is next)
- * - "Y2-06-15" => June 15th, 2 years from now
+ * - "Y2-06-15" => June 15th of next year (Y2 skips the current year's occurrence)
  * - "Y-M-01"   => 1st of current/next month
  * - "2025-12-31" => Fixed date
  * - "Y" alone in year means "Y1" (next occurrence)
  * - "M" alone in month means "M1" (next occurrence)
  *
+ * A pattern that resolves to today advances to the next occurrence: the next
+ * month for M patterns and the next year for Y patterns.
+ *
  * @since TBD
  *
  * @param string $date       The date pattern string.
  * @param int    $current_date Optional. Unix timestamp to use as "today". Defaults to current_time('timestamp').
- * @return string Date in Y-m-d format, or with T0:0:0 appended.
+ * @return string|false Date in Y-m-d format, or false if the pattern is invalid.
  */
 function pmpro_convert_date_pattern( $date, $current_date = null ) {
+	// Bail on anything that isn't a well-formed pattern so that malformed input
+	// can never produce an invalid date string.
+	if ( ! pmpro_is_valid_date_pattern( $date ) ) {
+		return false;
+	}
+
 	// Handle lower-cased y/m values.
-	$set_date = strtoupper( $date );
+	$set_date = strtoupper( trim( $date ) );
 
 	// Change "Y-" and "M-" to "Y1-" and "M1-".
 	$set_date = preg_replace( '/Y-/', 'Y1-', $set_date );
@@ -61,10 +104,10 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	$m_pos      = stripos( $set_date, 'M' );
 	$y_pos      = stripos( $set_date, 'Y' );
 	if ( $m_pos !== false ) {
-		$add_months = min( intval( pmpro_getMatches( '/M([0-9]*)/', $set_date, true ) ), 24 );
+		$add_months = min( intval( pmpro_getMatches( '/M([0-9]*)/', $set_date, true ) ), 120 );
 	}
 	if ( $y_pos !== false ) {
-		$add_years = min( intval( pmpro_getMatches( '/Y([0-9]*)/', $set_date, true ) ), 10 );
+		$add_years = min( intval( pmpro_getMatches( '/Y([0-9]*)/', $set_date, true ) ), 100 );
 	}
 
 	// Allow custom "today" date for previews and testing.
@@ -95,14 +138,16 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	// Get temporary date parts.
 	$temp_y = $set_y > 0 ? $set_y : $current_y;
 	$temp_m = $set_m > 0 ? $set_m : $current_m;
-	$temp_d = $set_d;
+	$temp_d = max( 1, min( $set_d, 31 ) );
 
 	// Add months.
 	if ( ! empty( $add_months ) ) {
 		for ( $i = 0; $i < $add_months; $i++ ) {
-			// If "M1", only add months if current date of month has already passed.
+			// If "M1", only add months if the day of the month has already passed.
+			// A pattern that lands on today counts as passed so that the resolved
+			// date is always in the future.
 			if ( 0 == $i ) {
-				if ( $temp_d < $current_d ) {
+				if ( $temp_d <= $current_d ) {
 					$temp_m++;
 					$add_months--;
 				}
@@ -122,10 +167,13 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	// Add years.
 	if ( ! empty( $add_years ) ) {
 		for ( $i = 0; $i < $add_years; $i++ ) {
-			// If "Y1", only add years if current date has already passed.
+			// If "Y1", only add years if the date has already passed. The comparison is
+			// date-granular (midnight vs. midnight) so that a date landing on today does
+			// not read as passed twice — once here and once in the month loop above —
+			// which previously jumped monthly patterns a full year ahead.
 			if ( 0 == $i ) {
 				$temp_date = strtotime( date( "{$temp_y}-{$temp_m}-{$temp_d}" ) );
-				if ( $temp_date < $current_date ) {
+				if ( $temp_date <= strtotime( date( 'Y-m-d', $current_date ) ) ) {
 					$temp_y++;
 					$add_years--;
 				}
@@ -164,7 +212,7 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 	if ( ! empty( $code_id ) ) {
 		// Discount code delays are stored as a nested array in a single option.
 		$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
-		if ( ! empty( $all_delays[ $code_id ][ $level_id ] ) ) {
+		if ( is_array( $all_delays ) && ! empty( $all_delays[ $code_id ][ $level_id ] ) ) {
 			return $all_delays[ $code_id ][ $level_id ];
 		}
 	}
@@ -223,7 +271,12 @@ function pmpro_apply_subscription_delay_at_checkout( $level ) {
 	if ( is_numeric( $subscription_delay ) ) {
 		$level->profile_start_date = date( 'Y-m-d', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', current_time( 'timestamp' ) ) ) . 'T0:0:0';
 	} else {
-		$level->profile_start_date = pmpro_convert_date_pattern( $subscription_delay ) . 'T0:0:0';
+		$resolved_date = pmpro_convert_date_pattern( $subscription_delay );
+		if ( empty( $resolved_date ) ) {
+			// Malformed stored pattern - ignore the delay rather than sending a bad date to the gateway.
+			return $level;
+		}
+		$level->profile_start_date = $resolved_date . 'T0:0:0';
 	}
 
 	// Make sure the profile start date is not before the current date.
@@ -270,6 +323,10 @@ function pmpro_apply_set_expiration_date_at_checkout( $level, $discount_code_id 
 
 	// Convert the date pattern.
 	$resolved_date = pmpro_convert_date_pattern( $set_expiration_date );
+	if ( empty( $resolved_date ) ) {
+		// Malformed stored pattern - ignore it rather than blocking checkout.
+		return $level;
+	}
 
 	// Calculate days until expiration.
 	$todays_date = current_time( 'timestamp' );
@@ -310,7 +367,10 @@ function pmpro_force_set_expiration_enddate( $enddate, $user_id, $level, $startd
 
 	$set_expiration_date = pmpro_get_set_expiration_date( $level->id );
 	if ( ! empty( $set_expiration_date ) ) {
-		$enddate = pmpro_convert_date_pattern( $set_expiration_date );
+		$resolved_date = pmpro_convert_date_pattern( $set_expiration_date );
+		if ( ! empty( $resolved_date ) ) {
+			$enddate = $resolved_date;
+		}
 	}
 
 	return $enddate;
@@ -374,8 +434,15 @@ function pmpro_subscription_delay_cost_text( $cost, $level ) {
 		);
 	} else {
 		$resolved_date = pmpro_convert_date_pattern( $subscription_delay );
+		if ( empty( $resolved_date ) ) {
+			return $cost;
+		}
 		$cost  = str_replace( $find, $replace, $cost );
-		$cost .= ' ' . __( 'starting', 'paid-memberships-pro' ) . ' ' . date_i18n( get_option( 'date_format' ), strtotime( $resolved_date, current_time( 'timestamp' ) ) ) . '.';
+		$cost .= ' ' . sprintf(
+			/* translators: %s: the date of the first recurring payment. */
+			__( 'starting %s.', 'paid-memberships-pro' ),
+			date_i18n( get_option( 'date_format' ), strtotime( $resolved_date, current_time( 'timestamp' ) ) )
+		);
 	}
 
 	return $cost;
@@ -404,8 +471,14 @@ function pmpro_set_expiration_date_text( $expiration_text, $level ) {
 
 	$set_expiration_date = pmpro_get_set_expiration_date( $level->id, $discount_code_id );
 	if ( ! empty( $set_expiration_date ) ) {
-		$resolved_date   = pmpro_convert_date_pattern( $set_expiration_date );
-		$expiration_text = esc_html__( 'Membership expires on', 'paid-memberships-pro' ) . ' ' . date_i18n( get_option( 'date_format' ), strtotime( $resolved_date, current_time( 'timestamp' ) ) ) . '.';
+		$resolved_date = pmpro_convert_date_pattern( $set_expiration_date );
+		if ( ! empty( $resolved_date ) ) {
+			$expiration_text = sprintf(
+				/* translators: %s: the date that the membership expires. */
+				esc_html__( 'Membership expires on %s.', 'paid-memberships-pro' ),
+				date_i18n( get_option( 'date_format' ), strtotime( $resolved_date, current_time( 'timestamp' ) ) )
+			);
+		}
 	}
 
 	return $expiration_text;
@@ -458,7 +531,7 @@ function pmpro_set_expiration_date_admin_notice() {
 		}
 
 		$resolved_date = pmpro_convert_date_pattern( $set_expiration_date );
-		if ( $resolved_date < date( 'Y-m-d' ) ) {
+		if ( ! empty( $resolved_date ) && $resolved_date < wp_date( 'Y-m-d' ) ) {
 			$problem_levels[ $level->id ] = '<a href="' . esc_url( add_query_arg(
 				array(
 					'page' => 'pmpro-membershiplevels',
@@ -582,17 +655,26 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	$delay_date_a         = isset( $_REQUEST['subscription_delay_date'] ) ? $_REQUEST['subscription_delay_date'] : array();
 	$delay_type           = isset( $delay_type_a[ $key ] ) ? sanitize_text_field( $delay_type_a[ $key ] ) : 'none';
 
-	$delay_value = '';
+	$delay_value   = '';
+	$delay_invalid = false;
 	if ( $delay_type === 'days' && isset( $delay_days_a[ $key ] ) && intval( $delay_days_a[ $key ] ) > 0 ) {
 		$delay_value = intval( $delay_days_a[ $key ] );
 	} elseif ( $delay_type === 'date' && ! empty( $delay_date_a[ $key ] ) ) {
-		$delay_value = sanitize_text_field( $delay_date_a[ $key ] );
+		$delay_value = strtoupper( trim( sanitize_text_field( $delay_date_a[ $key ] ) ) );
+		if ( ! pmpro_is_valid_date_pattern( $delay_value ) ) {
+			// Invalid pattern: keep the previous setting.
+			$delay_value   = '';
+			$delay_invalid = true;
+		}
 	}
 
 	$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+	if ( ! is_array( $all_delays ) ) {
+		$all_delays = array();
+	}
 	if ( ! empty( $delay_value ) ) {
 		$all_delays[ $code_id ][ $level_id ] = $delay_value;
-	} else {
+	} elseif ( ! $delay_invalid ) {
 		unset( $all_delays[ $code_id ][ $level_id ] );
 	}
 	update_option( 'pmpro_discount_code_subscription_delays', $all_delays );
@@ -602,15 +684,21 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	$exp_date_a            = isset( $_REQUEST['set_expiration_date'] ) ? $_REQUEST['set_expiration_date'] : array();
 	$exp_type              = isset( $exp_type_a[ $key ] ) ? sanitize_text_field( $exp_type_a[ $key ] ) : 'none';
 
-	$expiration_value = '';
+	$expiration_value   = '';
+	$expiration_invalid = false;
 	if ( $exp_type === 'date' && ! empty( $exp_date_a[ $key ] ) ) {
-		$expiration_value = sanitize_text_field( $exp_date_a[ $key ] );
+		$expiration_value = strtoupper( trim( sanitize_text_field( $exp_date_a[ $key ] ) ) );
+		if ( ! pmpro_is_valid_date_pattern( $expiration_value ) ) {
+			// Invalid pattern: keep the previous setting.
+			$expiration_value   = '';
+			$expiration_invalid = true;
+		}
 	}
 
 	$option_key = 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id );
 	if ( ! empty( $expiration_value ) ) {
 		update_option( $option_key, $expiration_value, false );
-	} else {
+	} elseif ( ! $expiration_invalid ) {
 		delete_option( $option_key );
 	}
 }
