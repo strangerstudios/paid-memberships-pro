@@ -1171,3 +1171,106 @@ function pmpro_was_loading_frontend_css_notice() {
 	}
 }
 add_action( 'admin_notices', 'pmpro_was_loading_frontend_css_notice' );
+
+/**
+ * Define deprecated wrappers for the public helper functions from the retired
+ * Subscription Delays and Set Expiration Dates Add Ons.
+ *
+ * Defined on plugins_loaded with function_exists() guards because core loads
+ * before those add-ons: if a still-active copy of an add-on declares the same
+ * (unguarded) function later in the request, an eager definition here would
+ * fatal with "cannot redeclare".
+ *
+ * @since TBD
+ */
+function pmpro_define_deprecated_payment_schedule_functions() {
+	// Activated plugins run after plugins_loaded. Bail to be safe.
+	if ( pmpro_activating_plugin( 'pmpro-subscription-delays/pmpro-subscription-delays.php' ) || pmpro_activating_plugin( 'pmpro-set-expiration-dates/pmpro-set-expiration-dates.php' ) ) {
+		return;
+	}
+
+	if ( ! function_exists( 'pmprosd_convert_date' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_convert_date_pattern().
+		 */
+		function pmprosd_convert_date( $date ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_convert_date_pattern()' );
+			return pmpro_convert_date_pattern( $date );
+		}
+	}
+
+	if ( ! function_exists( 'pmprosd_getDelay' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_get_subscription_delay().
+		 */
+		function pmprosd_getDelay( $level_id, $code_id = null ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_get_subscription_delay()' );
+			return pmpro_get_subscription_delay( $level_id, $code_id );
+		}
+	}
+
+	if ( ! function_exists( 'pmpro_getDCSDs' ) ) {
+		/**
+		 * @deprecated TBD Use get_option( 'pmpro_discount_code_subscription_delays' ) directly.
+		 */
+		function pmpro_getDCSDs( $code_id ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+			if ( is_array( $all_delays ) && ! empty( $all_delays[ $code_id ] ) ) {
+				return $all_delays[ $code_id ];
+			}
+			return array();
+		}
+	}
+
+	if ( ! function_exists( 'pmpro_saveDCSDs' ) ) {
+		/**
+		 * @deprecated TBD Use update_option( 'pmpro_discount_code_subscription_delays' ) directly.
+		 */
+		function pmpro_saveDCSDs( $code_id, $delays ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+			if ( ! is_array( $all_delays ) ) {
+				$all_delays = array();
+			}
+			$all_delays[ $code_id ] = $delays;
+			update_option( 'pmpro_discount_code_subscription_delays', $all_delays );
+		}
+	}
+
+	if ( ! function_exists( 'pmprosed_fixDate' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_payment_schedule_resolve_expiration_date().
+		 */
+		function pmprosed_fixDate( $set_date, $current_date = null ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_payment_schedule_resolve_expiration_date()' );
+			return pmpro_payment_schedule_resolve_expiration_date( $set_date, $current_date );
+		}
+	}
+
+	if ( ! function_exists( 'pmpro_getSetExpirationDate' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_get_set_expiration_date().
+		 */
+		function pmpro_getSetExpirationDate( $level_id, $code_id = null ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_get_set_expiration_date()' );
+			return pmpro_get_set_expiration_date( $level_id, $code_id );
+		}
+	}
+
+	if ( ! function_exists( 'pmpro_saveSetExpirationDate' ) ) {
+		/**
+		 * @deprecated TBD Use update_option( 'pmprosed_{level_id}' ) directly.
+		 */
+		function pmpro_saveSetExpirationDate( $level_id, $set_expiration_date, $code_id = null ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			if ( $code_id ) {
+				$key = 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id );
+			} else {
+				$key = 'pmprosed_' . intval( $level_id );
+			}
+			update_option( $key, $set_expiration_date, false );
+		}
+	}
+}
+add_action( 'plugins_loaded', 'pmpro_define_deprecated_payment_schedule_functions' );

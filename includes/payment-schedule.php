@@ -134,6 +134,9 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	 */
 	$current_date = apply_filters( 'pmpro_payment_schedule_current_date', $current_date );
 
+	// Back compat with the retired Subscription Delays Add On's filter (same timestamp value).
+	$current_date = apply_filters_deprecated( 'pmprosd_current_date', array( $current_date ), 'TBD', 'pmpro_payment_schedule_current_date' );
+
 	// Get current date parts.
 	$current_y = intval( date( 'Y', $current_date ) );
 	$current_m = intval( date( 'm', $current_date ) );
@@ -207,6 +210,51 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	}
 
 	return $set_date;
+}
+
+/**
+ * Resolve a set expiration date pattern to an actual date, running the
+ * expiration-specific filters.
+ *
+ * This is the expiration counterpart to calling pmpro_convert_date_pattern()
+ * directly and preserves the filters that the retired Set Expiration Dates
+ * Add On ran inside pmprosed_fixDate().
+ *
+ * @since TBD
+ *
+ * @param string $set_expiration_date The expiration date pattern.
+ * @param int    $current_date        Optional. Unix timestamp to use as "today".
+ * @return string|false Date in Y-m-d format, or false if the pattern is invalid.
+ */
+function pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date, $current_date = null ) {
+	$set_expiration_date = strtoupper( trim( (string) $set_expiration_date ) );
+
+	/**
+	 * Filter the raw expiration date pattern before it is resolved.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $set_expiration_date The uppercased expiration date pattern.
+	 */
+	$set_expiration_date = apply_filters( 'pmpro_payment_schedule_expiration_date_raw', $set_expiration_date );
+	$set_expiration_date = apply_filters_deprecated( 'pmprosed_expiration_date_raw', array( $set_expiration_date ), 'TBD', 'pmpro_payment_schedule_expiration_date_raw' );
+
+	$resolved_date = pmpro_convert_date_pattern( $set_expiration_date, $current_date );
+	if ( empty( $resolved_date ) ) {
+		return false;
+	}
+
+	/**
+	 * Filter the resolved expiration date.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $resolved_date The resolved date in Y-m-d format.
+	 */
+	$resolved_date = apply_filters( 'pmpro_payment_schedule_expiration_date', $resolved_date );
+	$resolved_date = apply_filters_deprecated( 'pmprosed_expiration_date', array( $resolved_date ), 'TBD', 'pmpro_payment_schedule_expiration_date' );
+
+	return $resolved_date;
 }
 
 /**
@@ -364,7 +412,7 @@ function pmpro_apply_set_expiration_date_at_checkout( $level, $discount_code_id 
 	$used_y = ( strpos( strtoupper( $set_expiration_date ), 'Y' ) !== false );
 
 	// Convert the date pattern.
-	$resolved_date = pmpro_convert_date_pattern( $set_expiration_date );
+	$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
 	if ( empty( $resolved_date ) ) {
 		// Malformed stored pattern - ignore it rather than blocking checkout.
 		return $level;
@@ -415,7 +463,7 @@ function pmpro_force_set_expiration_enddate( $enddate, $user_id, $level, $startd
 
 	$set_expiration_date = pmpro_get_set_expiration_date( $level->id, $code_id );
 	if ( ! empty( $set_expiration_date ) ) {
-		$resolved_date = pmpro_convert_date_pattern( $set_expiration_date );
+		$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
 		if ( ! empty( $resolved_date ) ) {
 			// End of day, matching the enddate format core computes at checkout, so
 			// that the member keeps access through the expiration date itself.
@@ -535,7 +583,7 @@ function pmpro_set_expiration_date_text( $expiration_text, $level = null ) {
 
 	$set_expiration_date = pmpro_get_set_expiration_date( $level->id, $discount_code_id );
 	if ( ! empty( $set_expiration_date ) ) {
-		$resolved_date = pmpro_convert_date_pattern( $set_expiration_date );
+		$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
 		if ( ! empty( $resolved_date ) ) {
 			$expiration_text = sprintf(
 				/* translators: %s: the date that the membership expires. */
@@ -568,7 +616,7 @@ function pmpro_set_expiration_date_admin_notice() {
 			continue;
 		}
 
-		$resolved_date = pmpro_convert_date_pattern( $set_expiration_date );
+		$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
 		if ( ! empty( $resolved_date ) && $resolved_date < wp_date( 'Y-m-d' ) ) {
 			$problem_levels[ $level->id ] = '<a href="' . esc_url( add_query_arg(
 				array(
