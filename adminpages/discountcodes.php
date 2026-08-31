@@ -6,7 +6,7 @@
 	}
 
 	//vars
-	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages, $gateway;
+	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_pages, $gateway;
 
 	$now = current_time( 'timestamp' );
 
@@ -142,8 +142,8 @@
 
 			if(!empty($_REQUEST['custom_trial']))
 				$custom_trial_a = array_map( 'intval', $_REQUEST['custom_trial'] );
-			$trial_amount_a = array_map( 'sanitize_text_field', $_REQUEST['trial_amount'] );
-			$trial_limit_a = array_map( 'intval', $_REQUEST['trial_limit'] );
+			$trial_amount_a = ! empty( $_REQUEST['trial_amount'] ) ? array_map( 'sanitize_text_field', $_REQUEST['trial_amount'] ) : array();
+			$trial_limit_a = ! empty( $_REQUEST['trial_limit'] ) ? array_map( 'intval', $_REQUEST['trial_limit'] ) : array();
 
 			if(!empty($_REQUEST['expiration']))
 				$expiration_a = array_map( 'intval', $_REQUEST['expiration'] );
@@ -195,8 +195,8 @@
 
 						if(!empty($custom_trial))
 						{
-							$trial_amount = sanitize_text_field($trial_amount_a[$n]);
-							$trial_limit = intval($trial_limit_a[$n]);
+							$trial_amount = isset( $trial_amount_a[$n] ) ? sanitize_text_field( $trial_amount_a[$n] ) : '';
+							$trial_limit = isset( $trial_limit_a[$n] ) ? intval( $trial_limit_a[$n] ) : '';
 						}
 						else
 						{
@@ -379,9 +379,7 @@
 
 		<?php if(!empty($pmpro_msg)) { ?>
 			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo wp_kses_post( $pmpro_msg );?></p></div>
-		<?php } ?>
-
-		<?php
+		<?php }
 			// get the code...
 			if($edit > 0)
 			{
@@ -437,129 +435,119 @@
 		?>
 		<form action="" method="post">
 			<input name="saveid" type="hidden" value="<?php echo esc_attr( $edit ); ?>" />
-			<?php wp_nonce_field('save', 'pmpro_discountcodes_nonce');?>
-			<div id="general-discount-code-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-				<div class="pmpro_section_toggle">
-					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-						<span class="dashicons dashicons-arrow-up-alt2"></span>
-						<?php esc_html_e( 'General Discount Code Settings', 'paid-memberships-pro' ); ?>
-					</button>
-				</div>
-				<div class="pmpro_section_inside">
-					<table class="form-table">
-					<tbody>
-						<tr>
-							<th scope="row" valign="top"><label><?php esc_html_e('ID', 'paid-memberships-pro' );?></label></th>
-							<td><p class="description"><?php if(!empty($code->id)) echo esc_html( $code->id ); else echo esc_html__("This will be generated when you save.", 'paid-memberships-pro' );?></p></td>
-						</tr>
+			<?php wp_nonce_field('save', 'pmpro_discountcodes_nonce');
+			//some vars for the dates
+			$current_day = date("j");
+			if(!empty($code->starts))
+				$selected_starts_day = date("j", $code->starts);
+			else
+				$selected_starts_day = $current_day;
+			if(!empty($code->expires))
+				$selected_expires_day = date("j", $code->expires);
+			else
+				$selected_expires_day = $current_day;
 
-						<tr>
-							<th scope="row" valign="top"><label for="code"><?php esc_html_e('Code', 'paid-memberships-pro' );?></label></th>
-							<td><input name="code" id="code" type="text" size="20" value="<?php echo esc_attr( $code->code ); ?>" /></td>
-						</tr>
+			$current_month = date("M");
+			if(!empty($code->starts))
+				$selected_starts_month = date("m", $code->starts);
+			else
+				$selected_starts_month = date("m");
+			if(!empty($code->expires))
+				$selected_expires_month = date("m", $code->expires);
+			else
+				$selected_expires_month = date("m");
 
-						<?php
-							//some vars for the dates
-							$current_day = date("j");
-							if(!empty($code->starts))
-								$selected_starts_day = date("j", $code->starts);
-							else
-								$selected_starts_day = $current_day;
-							if(!empty($code->expires))
-								$selected_expires_day = date("j", $code->expires);
-							else
-								$selected_expires_day = $current_day;
+			$current_year = date("Y");
+			if(!empty($code->starts))
+				$selected_starts_year = date("Y", $code->starts);
+			else
+				$selected_starts_year = $current_year;
+			if(!empty($code->expires))
+				$selected_expires_year = date("Y", $code->expires);
+			else
+				$selected_expires_year = (int)$current_year + 1;
 
-							$current_month = date("M");
-							if(!empty($code->starts))
-								$selected_starts_month = date("m", $code->starts);
-							else
-								$selected_starts_month = date("m");
-							if(!empty($code->expires))
-								$selected_expires_month = date("m", $code->expires);
-							else
-								$selected_expires_month = date("m");
+			// Month options shared by the start and expiration date composites.
+			$month_options = array();
+			for ( $i = 1; $i < 13; $i++ ) {
+				$month_options[ $i ] = date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) );
+			}
 
-							$current_year = date("Y");
-							if(!empty($code->starts))
-								$selected_starts_year = date("Y", $code->starts);
-							else
-								$selected_starts_year = $current_year;
-							if(!empty($code->expires))
-								$selected_expires_year = date("Y", $code->expires);
-							else
-								$selected_expires_year = (int)$current_year + 1;
-						?>
+			pmpro_build_settings_section( array(
+				'id'     => 'general-discount-code-settings',
+				'title'  => __( 'General Discount Code Settings', 'paid-memberships-pro' ),
+				'fields' => array(
+					array(
+						'label'   => __( 'ID', 'paid-memberships-pro' ),
+						'type'    => 'html',
+						'content' => '<p class="description">' . ( ! empty( $code->id ) ? esc_html( $code->id ) : esc_html__( 'This will be generated when you save.', 'paid-memberships-pro' ) ) . '</p>',
+					),
+					array(
+						'name'  => 'code',
+						'label' => __( 'Code', 'paid-memberships-pro' ),
+						'type'  => 'text',
+						'class' => '',
+						'attrs' => array( 'size' => 20 ),
+						'value' => $code->code,
+					),
+					array(
+						'label'  => __( 'Start Date', 'paid-memberships-pro' ),
+						'type'   => 'composite',
+						'fields' => array(
+							array(
+								'name'    => 'starts_month',
+								'type'    => 'select',
+								'value'   => (int) $selected_starts_month,
+								'options' => $month_options,
+							),
+							array( 'name' => 'starts_day', 'type' => 'text', 'class' => '', 'attrs' => array( 'size' => 2 ), 'value' => $selected_starts_day ),
+							array( 'name' => 'starts_year', 'type' => 'text', 'class' => '', 'attrs' => array( 'size' => 4 ), 'value' => $selected_starts_year ),
+						),
+					),
+					array(
+						'label'  => __( 'Expiration Date', 'paid-memberships-pro' ),
+						'type'   => 'composite',
+						'fields' => array(
+							array(
+								'name'    => 'expires_month',
+								'type'    => 'select',
+								'value'   => (int) $selected_expires_month,
+								'options' => $month_options,
+							),
+							array( 'name' => 'expires_day', 'type' => 'text', 'class' => '', 'attrs' => array( 'size' => 2 ), 'value' => $selected_expires_day ),
+							array( 'name' => 'expires_year', 'type' => 'text', 'class' => '', 'attrs' => array( 'size' => 4 ), 'value' => $selected_expires_year ),
+						),
+					),
+					array(
+						'name'        => 'uses',
+						'label'       => __( 'Limit Total Uses', 'paid-memberships-pro' ),
+						'type'        => 'text',
+						'class'       => '',
+						'attrs'       => array( 'size' => 10 ),
+						'value'       => ! empty( $code->uses ) ? $code->uses : '',
+						'description' => esc_html__( 'Define the maximum number of times this discount code can be used across all users.', 'paid-memberships-pro' ) . ' ' . esc_html__( 'Leave blank for unlimited uses.', 'paid-memberships-pro' ),
+					),
+					array(
+						'name'           => 'one_use_per_user',
+						'label'          => __( 'Limit Per User', 'paid-memberships-pro' ),
+						'type'           => 'checkbox',
+						'value'          => ! empty( $code->one_use_per_user ) ? 1 : 0,
+						'checkbox_label' => __( 'Restrict this discount code to a single use per unique user.', 'paid-memberships-pro' ),
+					),
+					array(
+						'hook' => 'pmpro_discount_code_after_settings',
+						'args' => array( $edit ),
+					),
+				),
+			) );
 
-						<tr>
-							<th scope="row" valign="top"><label for="starts"><?php esc_html_e('Start Date', 'paid-memberships-pro' );?></label></th>
-							<td>
-								<select name="starts_month" id="starts">
-									<?php
-										for($i = 1; $i < 13; $i++)
-										{
-										?>
-										<option value="<?php echo esc_attr( $i )?>" <?php if($i == $selected_starts_month) { ?>selected="selected"<?php } ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
-										<?php
-										}
-									?>
-								</select>
-								<input name="starts_day" type="text" size="2" value="<?php echo esc_attr( $selected_starts_day ); ?>" />
-								<input name="starts_year" type="text" size="4" value="<?php echo esc_attr( $selected_starts_year ); ?>" />
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row" valign="top"><label for="expires"><?php esc_html_e('Expiration Date', 'paid-memberships-pro' );?></label></th>
-							<td>
-								<select name="expires_month" id="expires">
-									<?php
-										for($i = 1; $i < 13; $i++)
-										{
-										?>
-										<option value="<?php echo esc_attr( $i );?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
-										<?php
-										}
-									?>
-								</select>
-								<input name="expires_day" type="text" size="2" value="<?php echo esc_attr( $selected_expires_day ); ?>" />
-								<input name="expires_year" type="text" size="4" value="<?php echo esc_attr( $selected_expires_year ); ?>" />
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row" valign="top"><label for="uses"><?php esc_html_e( 'Limit Total Uses', 'paid-memberships-pro' );?></label></th>
-							<td>
-								<input name="uses" id="uses" type="text" size="10" value="<?php if ( ! empty( $code->uses ) ) echo esc_attr( $code->uses ); ?>" />
-								<p class="description">
-									<?php esc_html_e( 'Define the maximum number of times this discount code can be used across all users.', 'paid-memberships-pro' ); ?>
-									<?php esc_html_e('Leave blank for unlimited uses.', 'paid-memberships-pro' ); ?>
-								</p>
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row" valign="top"><label for="one_use_per_user"><?php esc_html_e( 'Limit Per User', 'paid-memberships-pro' );?></label></th>
-							<td>
-								<input name="one_use_per_user" id="one_use_per_user" type="checkbox" value="1" <?php if ( ! empty( $code->one_use_per_user ) ) checked( $code->one_use_per_user, 1 ); ?> />
-								<label for="one_use_per_user"><?php esc_html_e('Restrict this discount code to a single use per unique user.', 'paid-memberships-pro' );?></label>
-							</td>
-						</tr>
-
-					</tbody>
-				</table>
-
-				<?php do_action("pmpro_discount_code_after_settings", $edit); ?>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="discount-code-level-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Membership Level Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
+		// The per-level pricing grid below is bespoke (checkbox-toggled pricing panels with array
+		// inputs), so only the collapsible section wrapper uses the shared helpers.
+		pmpro_build_settings_section_open( array(
+			'id'    => 'discount-code-level-settings',
+			'title' => __( 'Membership Level Settings', 'paid-memberships-pro' ),
+		) );
+		?>
 				<p><?php esc_html_e('Which levels will this code apply to?', 'paid-memberships-pro' ); ?></p>
 
 				<div class="pmpro_discount_levels">
@@ -601,14 +589,33 @@
 						$dc_delay_type = ! empty( $dc_delay ) ? ( is_numeric( $dc_delay ) ? 'days' : 'date' ) : 'none';
 						$dc_exp_type = ! empty( $dc_set_expiration_date ) ? 'date' : 'none';
 						$dc_month_names = pmpro_get_month_names();
+
+						$level_checkbox_id          = 'levels_' . $level->id;
+						$level_recurring_checkbox_id = 'recurring_' . $level->id;
+						$level_trial_checkbox_id     = 'custom_trial_' . $level->id;
+						$level_expiration_checkbox_id = 'expiration_' . $level->id;
+
+						$level_is_selected  = ! empty( $level->checked );
+						$level_is_recurring = pmpro_isLevelRecurring( $level );
+						$level_is_trial     = pmpro_isLevelTrial( $level );
+						$level_is_expiring  = pmpro_isLevelExpiring( $level ) || $dc_exp_type === 'date';
+
+						$level_pricing_class     = 'pmpro_discount_levels_pricing level_' . $level->id . ( $level_is_selected ? '' : ' pmpro-hidden' );
+						$recurring_info_class    = 'recurring_info' . ( $level_is_recurring ? '' : ' pmpro-hidden' );
+						$trial_info_class        = 'trial_info recurring_info' . ( $level_is_recurring && $level_is_trial ? '' : ' pmpro-hidden' );
+						$expiration_info_class   = 'expiration_info' . ( $level_is_expiring ? '' : ' pmpro-hidden' );
+						$level_pricing_depends   = esc_attr( wp_json_encode( array( array( 'id' => $level_checkbox_id, 'checked' => true ) ) ) );
+						$recurring_info_depends  = esc_attr( wp_json_encode( array( array( 'id' => $level_recurring_checkbox_id, 'checked' => true ) ) ) );
+						$trial_info_depends      = esc_attr( wp_json_encode( array( array( 'id' => $level_recurring_checkbox_id, 'checked' => true ), array( 'id' => $level_trial_checkbox_id, 'checked' => true ) ) ) );
+						$expiration_info_depends = esc_attr( wp_json_encode( array( array( 'id' => $level_expiration_checkbox_id, 'checked' => true ) ) ) );
 					?>
 					<div class="pmpro_discount_level <?php if ( ! pmpro_check_discount_code_level_for_gateway_compatibility( $level ) ) { ?>pmpro_error<?php } ?>">
 						<div class="pmpro_discount_level_select">
 							<input type="hidden" name="all_levels[]" value="<?php echo esc_attr( $level->id ); ?>" />
-							<input type="checkbox" id="levels_<?php echo esc_attr( $level->id ); ?>" name="levels[]" value="<?php echo esc_attr( $level->id ); ?>" <?php if(!empty($level->checked)) { ?>checked="checked"<?php } ?> onclick="if(jQuery(this).is(':checked')) jQuery(this).parent().next().show();	else jQuery(this).parent().next().hide();" />
-							<label for="levels_<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name );?></label>
+							<input type="checkbox" id="<?php echo esc_attr( $level_checkbox_id ); ?>" name="levels[]" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_selected ); ?> />
+							<label for="<?php echo esc_attr( $level_checkbox_id ); ?>"><?php echo esc_html( $level->name );?></label>
 						</div>
-						<div class="pmpro_discount_levels_pricing level_<?php echo esc_attr( $level->id ); ?>" <?php if(empty($level->checked)) { ?>style="display: none;"<?php } ?>>
+						<div class="<?php echo esc_attr( $level_pricing_class ); ?>" data-pmpro-depends="<?php echo $level_pricing_depends; ?>">
 							<table class="form-table">
 							<tbody>
 								<tr>
@@ -629,10 +636,10 @@
 
 								<tr>
 									<th scope="row" valign="top"><label><?php esc_html_e('Recurring Subscription', 'paid-memberships-pro' );?></label></th>
-									<td><input class="recurring_checkbox" id="recurring_<?php echo esc_attr( $level->id );?>" name="recurring[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php if(pmpro_isLevelRecurring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).prop('checked')) {					jQuery(this).parent().parent().siblings('.recurring_info').show(); if(!jQuery('#custom_trial_<?php echo esc_attr( $level->id ); ?>').is(':checked')) jQuery(this).parent().parent().siblings('.trial_info').hide();} else					jQuery(this).parent().parent().siblings('.recurring_info').hide();" /> <label for="recurring_<?php echo esc_attr( $level->id ); ?>"><?php esc_html_e('Check if this level has a recurring subscription payment.', 'paid-memberships-pro' );?></label></td>
+									<td><input class="recurring_checkbox" id="<?php echo esc_attr( $level_recurring_checkbox_id ); ?>" name="recurring[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_recurring ); ?> /> <label for="<?php echo esc_attr( $level_recurring_checkbox_id ); ?>"><?php esc_html_e('Check if this level has a recurring subscription payment.', 'paid-memberships-pro' );?></label></td>
 								</tr>
 
-								<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
+								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; ?>">
 									<th scope="row" valign="top"><label for="billing_amount"><?php esc_html_e('Billing Amount', 'paid-memberships-pro' );?></label></th>
 									<td>
 										<?php
@@ -665,7 +672,7 @@
 									</td>
 								</tr>
 
-								<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
+								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; ?>">
 									<th scope="row" valign="top"><label for="billing_limit"><?php esc_html_e('Billing Cycle Limit', 'paid-memberships-pro' );?></label></th>
 									<td>
 										<input name="billing_limit[]" type="text" size="20" value="<?php echo esc_attr( $level->billing_limit ); ?>" />
@@ -675,7 +682,7 @@
 									</td>
 								</tr>
 
-								<tr class="recurring_info" <?php if ( ! pmpro_isLevelRecurring( $level ) ) echo 'style="display: none;"'; ?>>
+								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; ?>">
 									<th scope="row" valign="top"><label><?php esc_html_e( 'First Recurring Payment', 'paid-memberships-pro' ); ?></label></th>
 									<td>
 										<fieldset>
@@ -710,47 +717,54 @@
 									</td>
 								</tr>
 
-								<tr class="recurring_info" <?php if (!pmpro_isLevelRecurring($level)) echo "style='display:none;'";?>>
-									<th scope="row" valign="top"><label><?php esc_html_e('Custom Trial', 'paid-memberships-pro' );?></label></th>
-									<td>
-										<input id="custom_trial_<?php echo esc_attr( $level->id ); ?>" id="custom_trial_<?php echo esc_attr( $level->id ); ?>" name="custom_trial[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).prop('checked')) jQuery(this).parent().parent().siblings('.trial_info').show();	else jQuery(this).parent().parent().siblings('.trial_info').hide();" /> <label for="custom_trial_<?php echo esc_attr( $level->id );?>"><?php esc_html_e('Check to add a custom trial period.', 'paid-memberships-pro' );?></label>
-										<?php if($gateway == "twocheckout") { ?>
-											<p class="description"><strong <?php if(!empty($pmpro_twocheckout_error)) { ?>class="pmpro_red"<?php } ?>><?php esc_html_e('2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount.', 'paid-memberships-pro' );?></strong></p>
-										<?php } ?>
-									</td>
-								</tr>
+								<?php
+								// Only show trial settings if the active gateway supports recurring trials or if the level already has a trial set.
+								$discount_gateway_class = 'PMProGateway_' . $gateway;
+								$discount_gateway_supports_recurring_trials = method_exists( $discount_gateway_class, 'supports' ) && $discount_gateway_class::supports( 'recurring_trials' );
+								if ( $discount_gateway_supports_recurring_trials || pmpro_isLevelTrial( $level ) ) {
+								?>
+									<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; ?>">
+										<th scope="row" valign="top"><label><?php esc_html_e('Custom Trial', 'paid-memberships-pro' );?></label></th>
+										<td>
+											<input id="<?php echo esc_attr( $level_trial_checkbox_id ); ?>" name="custom_trial[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_trial ); ?> /> <label for="<?php echo esc_attr( $level_trial_checkbox_id ); ?>"><?php esc_html_e('Check to add a custom trial period.', 'paid-memberships-pro' );?></label>
+											<?php if ( ! $discount_gateway_supports_recurring_trials ) { ?>
+												<p class="description"><strong class="pmpro_red"><?php esc_html_e( 'The current payment gateway does not support recurring trials.', 'paid-memberships-pro' ); ?></strong></p>
+											<?php } ?>
+										</td>
+									</tr>
 
-								<tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
-									<th scope="row" valign="top"><label for="trial_amount"><?php esc_html_e('Trial Billing Amount', 'paid-memberships-pro' );?></label></th>
-									<td>
-										<?php
-										if(pmpro_getCurrencyPosition() == "left")
-											echo wp_kses_post( $pmpro_currency_symbol );
-										?>
-										<input name="trial_amount[]" type="text" size="20" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->trial_amount ) );?>" />
-										<?php
-										if(pmpro_getCurrencyPosition() == "right")
-											echo wp_kses_post( $pmpro_currency_symbol );
-										?>
-										<?php esc_html_e('for the first', 'paid-memberships-pro' );?>
-										<input name="trial_limit[]" type="text" size="10" value="<?php echo esc_attr( $level->trial_limit ); ?>" />
-										<?php esc_html_e('subscription payments', 'paid-memberships-pro' );?>.
-										<?php if($gateway == "stripe") { ?>
-											<p class="description"><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php esc_html_e('Stripe integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong></p>
-										<?php } elseif($gateway == "braintree") { ?>
-											<p class="description"><strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>><?php esc_html_e('Braintree integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong></p>
-										<?php } elseif($gateway == "payflowpro") { ?>
-											<p class="description"><strong <?php if(!empty($pmpro_payflow_error)) { ?>class="pmpro_red"<?php } ?>><?php esc_html_e('Payflow integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong></p>
-										<?php } ?>
-									</td>
-								</tr>
+									<tr class="<?php echo esc_attr( $trial_info_class ); ?>" data-pmpro-depends="<?php echo $trial_info_depends; ?>">
+										<th scope="row" valign="top"><label for="trial_amount"><?php esc_html_e('Trial Billing Amount', 'paid-memberships-pro' );?></label></th>
+										<td>
+											<?php
+											if(pmpro_getCurrencyPosition() == "left")
+												echo wp_kses_post( $pmpro_currency_symbol );
+											?>
+											<input name="trial_amount[]" type="text" size="20" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->trial_amount ) );?>" />
+											<?php
+											if(pmpro_getCurrencyPosition() == "right")
+												echo wp_kses_post( $pmpro_currency_symbol );
+											?>
+											<?php esc_html_e('for the first', 'paid-memberships-pro' );?>
+											<input name="trial_limit[]" type="text" size="10" value="<?php echo esc_attr( $level->trial_limit ); ?>" />
+											<?php esc_html_e('subscription payments', 'paid-memberships-pro' );?>.
+										</td>
+									</tr>
+								<?php } else { ?>
+									<tr style="display:none;">
+										<td>
+											<input type="hidden" name="trial_amount[]" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->trial_amount ) ); ?>" />
+											<input type="hidden" name="trial_limit[]" value="<?php echo esc_attr( $level->trial_limit ); ?>" />
+										</td>
+									</tr>
+								<?php } ?>
 
 								<tr>
 									<th scope="row" valign="top"><label><?php esc_html_e('Membership Expiration', 'paid-memberships-pro' );?></label></th>
-									<td><input id="expiration_<?php echo esc_attr( $level->id ); ?>" name="expiration[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php if(pmpro_isLevelExpiring($level) || ! empty( $dc_set_expiration_date )) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); jQuery('.pmpro_dc_exp_wrap_<?php echo esc_attr( $level->id ); ?>').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide(); jQuery('.pmpro_dc_exp_wrap_<?php echo esc_attr( $level->id ); ?>').hide(); }" /> <label for="expiration_<?php echo esc_attr( $level->id ); ?>"><?php esc_html_e('Check this to set when membership access expires.', 'paid-memberships-pro' );?></label></td>
+									<td><input id="<?php echo esc_attr( $level_expiration_checkbox_id ); ?>" name="expiration[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_expiring ); ?> /> <label for="<?php echo esc_attr( $level_expiration_checkbox_id ); ?>"><?php esc_html_e('Check this to set when membership access expires.', 'paid-memberships-pro' );?></label></td>
 								</tr>
 
-								<tr class="expiration_info" <?php if( ! pmpro_isLevelExpiring($level) && empty( $dc_set_expiration_date ) ) {?>style="display: none;"<?php } ?>>
+								<tr class="<?php echo esc_attr( $expiration_info_class ); ?>" data-pmpro-depends="<?php echo $expiration_info_depends; ?>">
 									<th scope="row" valign="top"><label><?php esc_html_e( 'Expiration Type', 'paid-memberships-pro' ); ?></label></th>
 									<td>
 										<fieldset>
@@ -797,8 +811,7 @@
 					}
 				?>
 				</div> <!-- end pmpro_levels_div -->
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
+		<?php pmpro_build_settings_section_close(); ?>
 
 		<script>
 		function pmpro_dcToggleDelay(levelId, val) {
@@ -814,7 +827,7 @@
 		jQuery(document).ready(function($) {
 			// Initialize all date pattern builders on the page.
 			$('.pmpro_date_pattern_builder').each(function() {
-				var val = $(this).data('existing-value');
+				var val = $(this).attr('data-existing-value');
 				if (val) {
 					pmpro_initDateBuilder($(this), val);
 				}

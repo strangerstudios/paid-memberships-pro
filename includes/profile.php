@@ -752,7 +752,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 									<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
 								</span> |
 								<span class="print">
-									<a target="_blank" title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $invoice->id ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
+									<a target="_blank" title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $invoice->id, 'nonce' => wp_create_nonce( 'pmpro_orders_print_view' ) ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
 								</span>
 								<?php if ( function_exists( 'pmpro_add_email_order_modal' ) ) { ?>
 									 |
@@ -1095,7 +1095,7 @@ function pmpro_member_profile_edit_form() {
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 		<section id="pmpro_member_profile_edit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_member_profile_edit' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
-				<form id="member-profile-edit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="" method="post"
+				<form id="member-profile-edit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" method="post"
 					<?php
 						/**
 						 * Fires inside the member-profile-edit form tag in the pmpro_member_profile_edit_form function.
@@ -1263,7 +1263,7 @@ function pmpro_change_password_form() {
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 		<section id="pmpro_change_password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_change_password' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
-				<form id="change-password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form', 'change-password' ) ); ?>" action="" method="post">
+				<form id="change-password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form', 'change-password' ) ); ?>" method="post">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 							<fieldset class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset' ) ); ?>">

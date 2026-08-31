@@ -14,6 +14,13 @@
 	// Flag if this is an ARB transaction. Set to false by default.
 	$arb = false;
 
+	// Bail if Authorize.net credentials are not configured. If this site isn't set up to use
+	// Authorize.net, we should not be accepting or processing Silent Post requests at all.
+	if ( empty( get_option( 'pmpro_loginname' ) ) || empty( get_option( 'pmpro_transactionkey' ) ) ) {
+		status_header( 403 );
+		exit;
+	}
+
 	// Validate the shared-secret token if one is configured.
 	// Authorize.net sends exactly the Silent Post URL you provide, so a token appended to that URL
 	// will be present on every legitimate request and absent on forgeries.

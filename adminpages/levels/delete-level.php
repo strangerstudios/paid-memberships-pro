@@ -10,15 +10,6 @@ $ml_id = intval($_REQUEST['deleteid']);
 if($ml_id > 0) {
     do_action("pmpro_delete_membership_level", $ml_id);
 
-    //remove any categories from the ml
-    $sqlQuery = $wpdb->prepare("
-        DELETE FROM $wpdb->pmpro_memberships_categories
-        WHERE membership_id = %d",
-        $ml_id
-    );
-
-    $r1 = $wpdb->query($sqlQuery);
-
     //cancel any subscriptions to the ml
     $r2 = true;
     $user_ids = $wpdb->get_col( $wpdb->prepare( "
@@ -49,8 +40,8 @@ if($ml_id > 0) {
         }
     }
 
-    // delete the level group entry.
-    $wpdb->delete( $wpdb->pmpro_membership_levels_groups, array( 'level' => $ml_id ) );
+    // Delete non-historical relationships to the membership level.
+    $r1 = pmpro_delete_membership_level_relationships( $ml_id );
 
     //delete the ml
     $sqlQuery = $wpdb->prepare( "

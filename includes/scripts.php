@@ -196,3 +196,54 @@ function pmpro_admin_enqueue_scripts() {
 	}
 }
 add_action( 'admin_enqueue_scripts', 'pmpro_admin_enqueue_scripts' );
+
+/**
+ * Register a wp_editor() instance for PMPro Liquid autocomplete support.
+ *
+ * @since 3.8
+ *
+ * @param string $editor_id TinyMCE editor ID.
+ */
+function pmpro_register_liquid_autocomplete_editor( $editor_id ) {
+	if ( empty( $editor_id ) ) {
+		return;
+	}
+
+	if ( empty( $GLOBALS['pmpro_liquid_autocomplete_editor_ids'] ) || ! is_array( $GLOBALS['pmpro_liquid_autocomplete_editor_ids'] ) ) {
+		$GLOBALS['pmpro_liquid_autocomplete_editor_ids'] = array();
+	}
+
+	$GLOBALS['pmpro_liquid_autocomplete_editor_ids'][ $editor_id ] = true;
+}
+
+/**
+ * Load PMPro's TinyMCE plugin for registered Liquid autocomplete editors.
+ *
+ * @since 3.8
+ *
+ * @param array  $external_plugins External TinyMCE plugins.
+ * @param string $editor_id        TinyMCE editor ID. Empty on WordPress versions before 5.3.
+ * @return array External TinyMCE plugins.
+ */
+function pmpro_liquid_autocomplete_tinymce_external_plugins( $external_plugins, $editor_id = '' ) {
+	$registered_editor_ids = empty( $GLOBALS['pmpro_liquid_autocomplete_editor_ids'] ) || ! is_array( $GLOBALS['pmpro_liquid_autocomplete_editor_ids'] )
+		? array()
+		: $GLOBALS['pmpro_liquid_autocomplete_editor_ids'];
+
+	if ( ! empty( $editor_id ) && empty( $registered_editor_ids[ $editor_id ] ) ) {
+		return $external_plugins;
+	}
+
+	if ( empty( $editor_id ) && empty( $registered_editor_ids ) ) {
+		return $external_plugins;
+	}
+
+	$external_plugins['pmpro_liquid_autocomplete'] = add_query_arg(
+		'ver',
+		PMPRO_VERSION,
+		plugins_url( 'js/pmpro-liquid-autocomplete.js', __DIR__ )
+	);
+
+	return $external_plugins;
+}
+add_filter( 'mce_external_plugins', 'pmpro_liquid_autocomplete_tinymce_external_plugins', 10, 2 );

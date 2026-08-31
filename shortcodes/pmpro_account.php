@@ -237,7 +237,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 
 										$renew_url = pmpro_url( 'checkout', 'level=' . $level->id, 'https' );
 										if ( array_key_exists($level->id, $pmpro_levels) && pmpro_isLevelExpiringSoon( $level ) && ! empty( $renew_url ) ) {
-											$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
+											$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew-' . $level->id . '" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
 
 										}
 
@@ -252,7 +252,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 													$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
 													$update_billing_url = pmpro_url( 'billing', 'pmpro_subscription_id=' . $subscription->get_id(), 'https' );
 													if ( ! empty( $newest_orders ) && ! empty( $update_billing_url ) ) {
-														$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', $update_billing_url, esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
+														$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing-%s" href="%s">%s</a>', $level->id, $update_billing_url, esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
 													}
 												}
 											}
@@ -277,12 +277,12 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 
 										$levels_url = pmpro_url( 'levels' );
 										if ( ! empty( $show_change_link ) && ! empty( $levels_url ) ) {
-											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change" href="' . esc_url( $levels_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
+											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change-' . $level->id . '" href="' . esc_url( $levels_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
 										}
 
 										$cancel_url = pmpro_url( 'cancel', 'levelstocancel=' . $level->id );
 										if ( ! empty( $cancel_url ) ) {
-											$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
+											$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel-' . $level->id . '" href="' . esc_url( $cancel_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
 										}
 
 										// Wrap each action link item in a <span>

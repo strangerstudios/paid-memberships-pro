@@ -26,8 +26,8 @@ if(!empty($_REQUEST['custom_trial']))
 	$ml_custom_trial = 1;
 else
 	$ml_custom_trial = 0;
-$ml_trial_amount = sanitize_text_field($_REQUEST['trial_amount']);
-$ml_trial_limit = intval($_REQUEST['trial_limit']);
+$ml_trial_amount = isset( $_REQUEST['trial_amount'] ) ? sanitize_text_field( $_REQUEST['trial_amount'] ) : '';
+$ml_trial_limit = isset( $_REQUEST['trial_limit'] ) ? intval( $_REQUEST['trial_limit'] ) : 0;
 if(!empty($_REQUEST['expiration']))
 	$ml_expiration = 1;
 else
@@ -150,6 +150,14 @@ if ( ! empty( $_REQUEST['level_group'] ) ) {
 
 // Update the Membership Account Message.
 update_pmpro_membership_level_meta( $saveid, 'membership_account_message', $ml_membership_account_message );
+
+// Update the level image.
+$ml_level_image = isset( $_REQUEST['level_image'] ) ? intval( $_REQUEST['level_image'] ) : 0;
+if ( ! empty( $ml_level_image ) && wp_attachment_is_image( $ml_level_image ) ) {
+	update_pmpro_membership_level_meta( $saveid, 'level_image', $ml_level_image );
+} else {
+	delete_pmpro_membership_level_meta( $saveid, 'level_image' );
+}
 
 // Save subscription delay settings.
 // Uses same wp_options keys as the Subscription Delays Add On: pmpro_subscription_delay_{level_id}

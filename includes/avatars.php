@@ -26,19 +26,16 @@ function pmpro_membership_level_after_other_settings_avatar( $level ) {
 	}
 
 	$enabled = ! empty( get_pmpro_membership_level_meta( $level->id, 'enable_avatars', true ) );
-	?>
-	<table class="form-table">
-		<tbody>
-			<tr>
-				<th scope="row" valign="top"><label><?php esc_html_e( 'Enable Profile Pictures', 'paid-memberships-pro' ); ?></label></th>
-				<td>
-					<input id="enable_avatars" name="enable_avatars" type="checkbox" value="1" <?php checked( $enabled ); ?> />
-					<label for="enable_avatars"><?php esc_html_e( 'Check to enable custom profile picture support for users with this membership level.', 'paid-memberships-pro' ); ?></label>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<?php
+
+	pmpro_build_settings_fields( array(
+		array(
+			'name'           => 'enable_avatars',
+			'label'          => __( 'Enable Profile Pictures', 'paid-memberships-pro' ),
+			'type'           => 'checkbox',
+			'value'          => $enabled,
+			'checkbox_label' => __( 'Check to enable custom profile picture support for users with this membership level.', 'paid-memberships-pro' ),
+		),
+	) );
 }
 add_action( 'pmpro_membership_level_after_other_settings', 'pmpro_membership_level_after_other_settings_avatar', 10, 1 );
 
@@ -218,7 +215,17 @@ function pmpro_avatar_get_bucketed_size( $size ) {
  */
 function pmpro_avatar_get_upload_dir( $user_id = 0, $file = '' ) {
 	$upload_dir = wp_upload_dir();
-	$avatar_dir = trailingslashit( $upload_dir['basedir'] ) . 'pmpro-avatars/';
+
+	/**
+	 * Filter the base directory used for PMPro avatar storage.
+	 *
+	 * @since 3.7.2
+	 *
+	 * @param string $basedir The base upload directory path.
+	 * @param int    $user_id The user ID (0 if not user-specific).
+	 */
+	$basedir    = apply_filters( 'pmpro_avatar_basedir', $upload_dir['basedir'], $user_id );
+	$avatar_dir = trailingslashit( $basedir ) . 'pmpro-avatars/';
 
 	if ( $user_id ) {
 		$avatar_dir .= $user_id . '/';
@@ -242,7 +249,17 @@ function pmpro_avatar_get_upload_dir( $user_id = 0, $file = '' ) {
  */
 function pmpro_avatar_get_upload_url( $user_id = 0, $file = '' ) {
 	$upload_dir = wp_upload_dir();
-	$avatar_url = trailingslashit( $upload_dir['baseurl'] ) . 'pmpro-avatars/';
+
+	/**
+	 * Filter the base URL used for PMPro avatar storage.
+	 *
+	 * @since 3.7.2
+	 *
+	 * @param string $baseurl The base upload URL.
+	 * @param int    $user_id The user ID (0 if not user-specific).
+	 */
+	$baseurl    = apply_filters( 'pmpro_avatar_baseurl', $upload_dir['baseurl'], $user_id );
+	$avatar_url = trailingslashit( $baseurl ) . 'pmpro-avatars/';
 
 	if ( $user_id ) {
 		$avatar_url .= $user_id . '/';
@@ -1142,7 +1159,7 @@ function pmpro_change_avatar_form() {
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 		<section id="pmpro_change_avatar" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_change_avatar' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
-				<form id="change-avatar" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form', 'change-avatar' ) ); ?>" action="" method="post" enctype="multipart/form-data">
+				<form id="change-avatar" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form', 'change-avatar' ) ); ?>" method="post" enctype="multipart/form-data">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 							<fieldset class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset' ) ); ?>">

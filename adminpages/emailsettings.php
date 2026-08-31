@@ -95,8 +95,8 @@
 		$sitename = substr( $sitename, 4 );
 	}
 	$default_from_email = 'wordpress@' . $sitename;
-				
-	require_once(dirname(__FILE__) . "/admin_header.php");		
+
+	require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
 
 	<form action="" method="post" enctype="multipart/form-data"> 
@@ -108,172 +108,193 @@
 			// translators: %s: Link to Email Settings doc.
 			printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $email_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		?></p>
-		<div id="send-emails-from-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Send Emails From', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<p><?php echo wp_kses_post( __( 'By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' ) );?></p>
-				<table class="form-table">
-				<tbody>                
-					<tr>
-						<th scope="row" valign="top">
-							<label for="from_email"><?php esc_html_e('From Email', 'paid-memberships-pro' );?>:</label>
-						</th>
-						<td>
-							<input type="text" name="from_email" value="<?php echo esc_attr($from_email);?>" class="regular-text" />
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="from_name"><?php esc_html_e('From Name', 'paid-memberships-pro' );?>:</label>
-						</th>
-						<td>
-							<input type="text" name="from_name" value="<?php echo esc_attr( wp_unslash($from_name) );?>" class="regular-text" />
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="only_filter_pmpro_emails"><?php esc_html_e('Only Filter PMPro Emails?', 'paid-memberships-pro' );?>:</label>
-						</th>
-						<td>
-							<input type="checkbox" id="only_filter_pmpro_emails" name="only_filter_pmpro_emails" value="1" <?php if(!empty($only_filter_pmpro_emails)) { ?>checked="checked"<?php } ?> />
-							<label for="only_filter_pmpro_emails"><?php printf( esc_html__('If unchecked, all emails from "WordPress &lt;%s&gt;" will be filtered to use the above settings.', 'paid-memberships-pro' ),  esc_html( $default_from_email ) );?></label>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-				<p class="submit"><input name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" /></p>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="email-deliverability-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Email Deliverability', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<p><?php
-					$allowed_email_troubleshooting_html = array (
-						'a' => array (
-							'href' => array(),
-							'target' => array(),
-							'title' => array(),
-							'rel' => array(),
-						),
-						'em' => array(),
-					);
-					echo sprintf( wp_kses( __( 'If you are having issues with email delivery from your server, <a href="%s" title="Paid Memberships Pro - Subscription Delays Add On" target="_blank" rel="nofollow noopener">please read our email troubleshooting guide</a>. As an alternative, Paid Memberships Pro offers built-in integration for SendWP. <em>Optional: SendWP is a third-party service for transactional email in WordPress. <a href="%s" title="Documentation on SendWP and Paid Memberships Pro" target="_blank" rel="nofollow noopener">Click here to learn more about SendWP and Paid Memberships Pro</a></em>.', 'paid-memberships-pro' ), $allowed_email_troubleshooting_html ), 'https://www.paidmembershipspro.com/troubleshooting-email-issues-sending-sent-spam-delivery-delays/?utm_source=plugin&utm_medium=pmpro-emailsettings&utm_campaign=blog&utm_content=email-troubleshooting', 'https://www.paidmembershipspro.com/documentation/member-communications/email-delivery-sendwp/?utm_source=plugin&utm_medium=pmpro-emailsettings&utm_campaign=documentation&utm_content=sendwp' );
-				?></p>
+		<?php
+		pmpro_build_settings_section( array(
+			'id'     => 'send-emails-from-settings',
+			'title'  => __( 'Send Emails From', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => array(
+				array(
+					'html' => '<p>' . wp_kses_post( __( 'By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' ) ) . '</p>',
+				),
+				array(
+					'name'  => 'from_email',
+					'label' => __( 'From Email', 'paid-memberships-pro' ),
+					'type'  => 'text',
+					'value' => $from_email,
+				),
+				array(
+					'name'  => 'from_name',
+					'label' => __( 'From Name', 'paid-memberships-pro' ),
+					'type'  => 'text',
+					'value' => wp_unslash( $from_name ),
+				),
+				array(
+					'name'           => 'only_filter_pmpro_emails',
+					'label'          => __( 'Only Filter PMPro Emails?', 'paid-memberships-pro' ),
+					'type'           => 'checkbox',
+					'value'          => $only_filter_pmpro_emails,
+					'checkbox_label' => sprintf(
+						// translators: %s is the default "from" email address.
+						__( 'If unchecked, all emails from "WordPress <%s>" will be filtered to use the above settings.', 'paid-memberships-pro' ),
+						$default_from_email
+					),
+				),
+				array(
+					'type'  => 'submit',
+					'label' => __( 'Save All Settings', 'paid-memberships-pro' ),
+					'class' => 'button-primary',
+				),
+			),
+		) );
 
-				<?php
-					// Check to see if connected or not.
-					$sendwp_connected = function_exists( 'sendwp_client_connected' ) && sendwp_client_connected() ? true : false;
+		$email_method                  = pmpro_detect_email_method();
+		$email_method_tag_class        = $email_method['source'] === 'default' ? 'inactive' : 'active';
+		$transactional_email_docs_url  = 'https://www.paidmembershipspro.com/documentation/hosting-docs/transactional-email/?utm_source=plugin&utm_medium=pmpro-emailsettings&utm_campaign=documentation';
+		$email_troubleshooting_doc_url = 'https://www.paidmembershipspro.com/troubleshooting-email-issues-sending-sent-spam-delivery-delays/?utm_source=plugin&utm_medium=pmpro-emailsettings&utm_campaign=blog&utm_content=email-troubleshooting';
 
-					if ( ! $sendwp_connected ) { ?>
-						<p><button id="pmpro-sendwp-connect" class="button"><?php esc_html_e( 'Connect to SendWP', 'paid-memberships-pro' ); ?></button></p>
-					<?php } else { ?>
-						<p><button id="pmpro-sendwp-disconnect" class="button-primary"><?php esc_html_e( 'Disconnect from SendWP', 'paid-memberships-pro' ); ?></button></p>
-						<?php
-						// Update SendWP status to see if email forwarding is enabled or not.
-						$sendwp_email_forwarding = function_exists( 'sendwp_forwarding_enabled' ) && sendwp_forwarding_enabled() ? true : false;
-						
-						// Messages for connected or not.
-						$connected = esc_html__( 'Your site is connected to SendWP.', 'paid-memberships-pro' ) . " <a href='https://app.sendwp.com/dashboard/' target='_blank' rel='nofollow noopener'>" . __( 'View Your SendWP Account', 'paid-memberships-pro' ) . "</a>";
-						$disconnected = ' ' . sprintf( esc_html__( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . esc_url( admin_url('tools.php?page=sendwp') ) . '">SendWP Settings</a>' );
+		pmpro_build_settings_section( array(
+			'id'     => 'email-deliverability-settings',
+			'title'  => __( 'Email Deliverability', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => array(
+				array(
+					'html' => function() use ( $email_method, $transactional_email_docs_url, $email_troubleshooting_doc_url ) {
 						?>
-						<p class="description" id="pmpro-sendwp-description"><?php echo wp_kses_post( $sendwp_email_forwarding ? $connected : $disconnected ); ?></p>
-					<?php }
-				?>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="other-email-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Other Email Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-				<tbody>            
-					<tr>
-						<th scope="row" valign="top">
-							<label for="email_member_notification"><?php esc_html_e('Send members emails', 'paid-memberships-pro' );?>:</label>
-						</th>
-						<td>
-							<input type="checkbox" id="email_member_notification" name="email_member_notification" value="1" <?php if(!empty($email_member_notification)) { ?>checked="checked"<?php } ?> />
-							<label for="email_member_notification"><?php esc_html_e('Default WP notification email.', 'paid-memberships-pro' );?></label>
-							<p class="description"><?php esc_html_e( 'Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
+						<p>
+							<?php
+							if ( $email_method['source'] === 'hosting' ) {
+								// translators: %s: Link to Transactional Email doc.
+								printf(
+									esc_html__( 'Your PMPro Max plan includes transactional email delivery. This covers your password resets, payment receipts, and other system-generated membership notifications. Learn more about %s.', 'paid-memberships-pro' ),
+									'<a title="' . esc_attr__( 'Paid Memberships Pro - Transactional Email', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="' . esc_url( $transactional_email_docs_url ) . '">' . esc_html__( 'transactional email', 'paid-memberships-pro' ) . '</a>'
+								); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							} else {
+								// translators: %s: Link to Transactional Email doc.
+								printf(
+									esc_html__( 'Transactional email sending is included with a PMPro Max plan or higher. Learn more about %s.', 'paid-memberships-pro' ),
+									'<a title="' . esc_attr__( 'Paid Memberships Pro - Transactional Email', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="' . esc_url( $transactional_email_docs_url ) . '">' . esc_html__( 'transactional email with Paid Memberships Pro', 'paid-memberships-pro' ) . '</a>'
+								); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		<div id="email-logging-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Email Logging', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<p>
-					<?php
-					printf(
+								echo ' ';
+
+								// translators: %s: Link to the email troubleshooting guide.
+								printf(
+									esc_html__( 'Having trouble with email delivery? Read our %s.', 'paid-memberships-pro' ),
+									'<a title="' . esc_attr__( 'Paid Memberships Pro - Email Troubleshooting', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="' . esc_url( $email_troubleshooting_doc_url ) . '">' . esc_html__( 'email troubleshooting guide', 'paid-memberships-pro' ) . '</a>'
+								); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							}
+							?>
+						</p>
+						<?php
+					},
+				),
+				array(
+					'label'    => __( 'Sending Method', 'paid-memberships-pro' ),
+					'type'     => 'callback',
+					'callback' => function() use ( $email_method, $email_method_tag_class ) {
+						?>
+						<div class="pmpro_tag pmpro_tag-has_icon pmpro_tag-<?php echo esc_attr( $email_method_tag_class ); ?>"><?php echo esc_html( $email_method['label'] ); ?></div>
+						<?php if ( ! empty( $email_method['relay'] ) ) { ?>
+							<code><?php echo esc_html( $email_method['relay'] ); ?></code>
+						<?php } ?>
+						<p class="description">
+							<?php
+							switch ( $email_method['source'] ) {
+								case 'plugin':
+									printf(
+										esc_html__( 'We detected %s active on this site. This confirms a sending plugin is in place, but does not verify that emails are being delivered successfully.', 'paid-memberships-pro' ),
+										'<strong>' . esc_html( $email_method['label'] ) . '</strong>'
+									); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									break;
+
+								case 'constant':
+									esc_html_e( 'SMTP credentials are configured in your wp-config.php file. This indicates a sending service is in place, but does not verify that emails are being delivered successfully.', 'paid-memberships-pro' );
+									break;
+
+								case 'hosting':
+									esc_html_e( 'Emails are being sent through the PMPro Max built-in transactional email service.', 'paid-memberships-pro' );
+									break;
+
+								case 'default':
+									printf(
+										esc_html__( 'Outbound email is using the default WordPress %s function, which relies on the server-level PHP mail configuration. Consider connecting a transactional email service for reliable delivery.', 'paid-memberships-pro' ),
+										'<code>wp_mail()</code>'
+									); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									break;
+							}
+							?>
+						</p>
+						<?php
+					},
+				),
+			),
+		) );
+
+		pmpro_build_settings_section( array(
+			'id'     => 'other-email-settings',
+			'title'  => __( 'Other Email Settings', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => array(
+				array(
+					'name'           => 'email_member_notification',
+					'label'          => __( 'Send members emails', 'paid-memberships-pro' ),
+					'type'           => 'checkbox',
+					'value'          => $email_member_notification,
+					'checkbox_label' => __( 'Default WP notification email.', 'paid-memberships-pro' ),
+					'description'    => __( 'Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.', 'paid-memberships-pro' ),
+				),
+			),
+		) );
+
+		pmpro_build_settings_section( array(
+			'id'     => 'email-logging-settings',
+			'title'  => __( 'Email Logging', 'paid-memberships-pro' ),
+			'open'   => true,
+			'fields' => array(
+				array(
+					'html' => '<p>' . sprintf(
+						// translators: %s is a link to the Email Log Report.
 						esc_html__( 'Troubleshoot email delivery issues and track what emails have been sent. View entries in the %s.', 'paid-memberships-pro' ),
-						'<a href="' . admin_url( 'admin.php?page=pmpro-reports&report=email_log' ) . '">' . esc_html__( 'Email Log Report', 'paid-memberships-pro' ) . '</a>'
-					);
-					?>
-				</p>
-				<table class="form-table">
-					<tbody>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="email_logging_enabled"><?php esc_html_e( 'Email Logging', 'paid-memberships-pro' ); ?>:</label>
-							</th>
-							<td>
-								<input type="checkbox" id="email_logging_enabled" name="email_logging_enabled" value="1" <?php checked( $email_logging_enabled ); ?> />
-								<label for="email_logging_enabled"><?php esc_html_e( 'Enable email logging', 'paid-memberships-pro' ); ?></label>
-								<p class="description">
-									<?php esc_html_e( 'Check this to log emails to the database.', 'paid-memberships-pro' ); ?>
-								</p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="email_log_purge_days"><?php esc_html_e( 'Auto-Purge', 'paid-memberships-pro' ); ?>:</label>
-							</th>
-							<td>
-								<input type="number" id="email_log_purge_days" name="email_log_purge_days" value="<?php echo esc_attr( $email_log_purge_days ); ?>" min="0" step="1" style="width: 100px;" />
-								<label for="email_log_purge_days"><?php esc_html_e( 'days', 'paid-memberships-pro' ); ?></label>
-								<p class="description">
-									<?php esc_html_e( 'Automatically delete email log entries older than this many days. Set to 0 to disable auto-purge.', 'paid-memberships-pro' ); ?>
-								</p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row" valign="top">
-								<label><?php esc_html_e( 'Purge All Entries', 'paid-memberships-pro' ); ?>:</label>
-							</th>
-							<td>
-								<input type="checkbox" id="email_log_purge_all" name="email_log_purge_all" value="1" />
-						<label for="email_log_purge_all"><?php esc_html_e( 'Purge all email log entries', 'paid-memberships-pro' ); ?></label>
-								<p class="description">
-									<?php esc_html_e( 'Check this and save to permanently delete all email log entries from the database. This action cannot be undone.', 'paid-memberships-pro' ); ?>
-								</p>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
+						'<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-reports&report=email_log' ) ) . '">' . esc_html__( 'Email Log Report', 'paid-memberships-pro' ) . '</a>'
+					) . '</p>',
+				),
+				array(
+					'name'           => 'email_logging_enabled',
+					'label'          => __( 'Email Logging', 'paid-memberships-pro' ),
+					'type'           => 'checkbox',
+					'value'          => $email_logging_enabled,
+					'checkbox_label' => __( 'Enable email logging', 'paid-memberships-pro' ),
+					'description'    => __( 'Check this to log emails to the database.', 'paid-memberships-pro' ),
+				),
+				array(
+					'label'       => __( 'Auto-Purge', 'paid-memberships-pro' ),
+					'type'        => 'composite',
+					'description' => __( 'Automatically delete email log entries older than this many days. Set to 0 to disable auto-purge.', 'paid-memberships-pro' ),
+					'fields'      => array(
+						array(
+							'name'  => 'email_log_purge_days',
+							'type'  => 'number',
+							'value' => $email_log_purge_days,
+							'attrs' => array(
+								'min'  => 0,
+								'step' => 1,
+							),
+						),
+						__( 'days', 'paid-memberships-pro' ),
+					),
+				),
+				array(
+					'name'           => 'email_log_purge_all',
+					'label'          => __( 'Purge All Entries', 'paid-memberships-pro' ),
+					'type'           => 'checkbox',
+					'value'          => 0,
+					'checkbox_label' => __( 'Purge all email log entries', 'paid-memberships-pro' ),
+					'description'    => __( 'Check this and save to permanently delete all email log entries from the database. This action cannot be undone.', 'paid-memberships-pro' ),
+				),
+			),
+		) );
+		?>
 
 		<p class="submit">
 			<input name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" />

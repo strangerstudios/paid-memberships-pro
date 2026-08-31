@@ -221,10 +221,8 @@ class PMPro_Stripe_Webhook_Handler {
 				self::handle_charge_refunded( $pmpro_stripe_event, $logstr );
 				return true;
 			case 'checkout.session.completed':
+			case 'checkout.session.async_payment_succeeded': // Shares a handler: order data is derived from the Checkout Session, so completion is safe regardless of event order.
 				self::handle_checkout_session_completed( $pmpro_stripe_event, $logstr );
-				return true;
-			case 'checkout.session.async_payment_succeeded':
-				self::handle_checkout_session_async_payment_succeeded( $pmpro_stripe_event, $logstr );
 				return true;
 			case 'checkout.session.async_payment_failed':
 				self::handle_checkout_session_async_payment_failed( $pmpro_stripe_event, $logstr );
@@ -476,7 +474,16 @@ class PMPro_Stripe_Webhook_Handler {
 	}
 
 	/**
-	 * Handle checkout.session.completed events.
+	 * Handle checkout.session.completed and checkout.session.async_payment_succeeded events.
+	 *
+	 * Both events run the same logic: the Checkout Session is re-retrieved from
+	 * Stripe and all order data (transaction IDs, payment method, amounts) is
+	 * derived from it, so completion does not depend on which event is being
+	 * processed or on the order in which the events were delivered. If the
+	 * session is not yet paid (delayed notification payment methods), the order
+	 * is held at pending until a later event completes it.
+	 *
+	 * @since 3.8.4 Also handles checkout.session.async_payment_succeeded.
 	 *
 	 * @param object $pmpro_stripe_event Stripe event object.
 	 * @param string $logstr             Log output.
@@ -514,7 +521,11 @@ class PMPro_Stripe_Webhook_Handler {
 					),
 				);
 				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-				$order->payment_transaction_id = empty( $checkout_session->invoice ) ? $payment_intent->latest_charge->id : $checkout_session->invoice;
+				if ( ! empty( $checkout_session->invoice ) ) {
+					$order->payment_transaction_id = $checkout_session->invoice;
+				} elseif ( ! empty( $payment_intent->latest_charge ) ) {
+					$order->payment_transaction_id = $payment_intent->latest_charge->id;
+				}
 				if ( ! empty( $payment_intent->payment_method ) ) {
 					$payment_method = $payment_intent->payment_method;
 				}
@@ -576,66 +587,22 @@ class PMPro_Stripe_Webhook_Handler {
 
 		// Was the checkout session successful?
 		if ( 'paid' === $checkout_session->payment_status || 'no_payment_required' === $checkout_session->payment_status ) {
-			// Yes. But did we already process this order?
-			if ( ! in_array( $order->status, array( 'token', 'pending' ), true ) ) {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
-				return;
-			}
-			// No we have not processed this order. Let's process it now.
-			if ( self::change_membership_level( $order ) ) {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
-			} else {
-				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
-				$order->status = 'error';
-				$order->saveOrder();
-			}
+			self::process_checkout_session_completion( $order, $checkout_session, $logstr );
 		} else {
 			// No. The user is probably using a delayed notification payment method.
 			// Set to pending in the meantime and wait for the next webhook.
-			$order->status = 'pending';
-			$order->saveOrder();
-			$logstr .= 'Checkout Session ' . $checkout_session->id . ' has not yet been processed for PMPro order ID ' . $order->id . '.';
-		}
-	}
-
-	/**
-	 * Handle checkout.session.async_payment_succeeded events.
-	 *
-	 * @param object $pmpro_stripe_event Stripe event object.
-	 * @param string $logstr             Log output.
-	 * @return void
-	 */
-	private static function handle_checkout_session_async_payment_succeeded( $pmpro_stripe_event, &$logstr ) {
-		global $wpdb;
-
-		// Make sure we have the checkout session in the desired API version.
-		$checkout_session = Stripe_Checkout_Session::retrieve( $pmpro_stripe_event->data->object->id );
-
-		// Find the PMPro order for the checkout session.
-		$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT pmpro_membership_order_id FROM $wpdb->pmpro_membership_ordermeta WHERE meta_key = 'stripe_checkout_session_id' AND meta_value = %s LIMIT 1", $checkout_session->id ) );
-		if ( empty( $order_id ) ) {
-			$logstr .= 'Could not find an order for Checkout Session ' . $checkout_session->id;
-			return;
-		}
-		$order = new MemberOrder( $order_id );
-		if ( empty( $order ) ) {
-			$logstr .= 'Order ID ' . $order_id . ' for Checkout Session ' . $checkout_session->id . ' could not be found.';
-			return;
-		}
-
-		// Have we already processed this order?
-		if ( ! in_array( $order->status, array( 'token', 'pending' ), true ) ) {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
-			return;
-		}
-
-		// No we have not processed this order. Let's process it now.
-		if ( self::change_membership_level( $order ) ) {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
-		} else {
-			$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
-			$order->status = 'error';
-			$order->saveOrder();
+			// Re-check the current status in the database first: a concurrent
+			// checkout.session.async_payment_succeeded webhook may have completed
+			// this order while we were making Stripe API calls above, and saving
+			// our stale in-memory copy would clobber the completed order.
+			$current_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM $wpdb->pmpro_membership_orders WHERE id = %d", $order->id ) );
+			if ( in_array( $current_status, array( 'token', 'pending' ), true ) ) {
+				$order->status = 'pending';
+				$order->saveOrder();
+				$logstr .= 'Checkout Session ' . $checkout_session->id . ' has not yet been processed for PMPro order ID ' . $order->id . '.';
+			} else {
+				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was completed by a concurrent webhook. Not marking as pending.';
+			}
 		}
 	}
 
@@ -805,26 +772,138 @@ class PMPro_Stripe_Webhook_Handler {
 	}
 
 	/**
-	 * Assign a membership level when a checkout is completed via Stripe webhook.
+	 * Process a successful Stripe Checkout Session for a PMPro order.
+	 *
+	 * Dedupes against orders that have already reached a terminal status,
+	 * guards against concurrent webhook deliveries via a MySQL advisory lock,
+	 * then completes the checkout and assigns the membership level.
 	 *
 	 * Steps:
-	 * 1. Pull checkout data from order meta.
-	 * 2. Build checkout level.
-	 * 3. Change membership level.
-	 * 4. Mark order as successful.
-	 * 5. Record discount code use.
-	 * 6. Save some user meta.
-	 * 7. Run pmpro_after_checkout.
-	 * 8. Send checkout emails.
+	 * 1. Skip if the order has already been processed.
+	 * 2. Acquire an advisory lock on the order; skip if another webhook holds it.
+	 * 3. Pull checkout data from order meta.
+	 * 4. Complete the checkout (change membership level, mark order successful,
+	 *    record discount code use, save user meta, run pmpro_after_checkout,
+	 *    send checkout emails).
+	 * 5. Mark the order as errored if the checkout could not be completed.
+	 * 6. Release the advisory lock.
 	 *
 	 * @since 2.8
+	 * @since 3.7.3 Renamed from change_membership_level. Added concurrent-webhook
+	 *            advisory lock and moved status/log handling inside.
 	 *
-	 * @param MemberOrder $morder The order for the checkout being completed.
-	 * @return bool
+	 * @param MemberOrder $morder           The order for the checkout being completed.
+	 * @param object      $checkout_session The Stripe Checkout Session object.
+	 * @param string      $logstr           Log output.
+	 * @return void
 	 */
-	private static function change_membership_level( $morder ) {
-		pmpro_pull_checkout_data_from_order( $morder );
-		return pmpro_complete_async_checkout( $morder );
+	private static function process_checkout_session_completion( $morder, $checkout_session, &$logstr ) {
+		global $wpdb;
+
+		// Have we already processed this order?
+		if ( ! in_array( $morder->status, array( 'token', 'pending' ), true ) ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' has already been processed. Ignoring.';
+			return;
+		}
+
+		// Acquire a MySQL advisory lock scoped to this order. 0-second timeout:
+		// try immediately, don't wait. Returns '1' if acquired, '0' if another
+		// worker holds it, NULL on error (including hosts that disable GET_LOCK).
+		// Lock names are scoped to the MySQL server (not the database), so the
+		// lock name is namespaced with a hash of the database name + table prefix
+		// to avoid cross-site collisions on shared MySQL instances where two
+		// PMPro sites could otherwise share a lock when their order IDs happen
+		// to match. Uses $wpdb->dbname rather than DB_NAME so hosts where the
+		// constant isn't defined (per core's wp_set_wpdb_vars defensive default)
+		// don't fatal here.
+		$lock_name = 'pmpro_stripe_order_' . substr( md5( $wpdb->dbname . $wpdb->prefix ), 0, 12 ) . '_' . $morder->id;
+
+		/**
+		 * Filter whether to acquire MySQL advisory locks around critical
+		 * sections that need protection from concurrent execution. Defaults
+		 * to true. Site owners can return false as a system-wide escape
+		 * hatch on hosts where persistent MySQL sessions or other
+		 * environment quirks cause stuck advisory locks.
+		 *
+		 * @since 3.7.3
+		 *
+		 * @param bool $use_lock Whether to acquire the lock.
+		 */
+		if ( apply_filters( 'pmpro_use_advisory_locks', true ) ) {
+			$got_lock = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, 0)", $lock_name ) );
+		} else {
+			// Advisory locks disabled site-wide via filter. Take the same
+			// no-protection path as hosts where GET_LOCK is unavailable.
+			$got_lock = null;
+		}
+
+		// $wpdb->get_var() returns numeric results as strings, hence the '0'/'1'
+		// comparisons. Any other value (typically null) means GET_LOCK errored,
+		// is not supported on this host, or was disabled via filter.
+		if ( '0' === $got_lock ) {
+			$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' is already being processed by a concurrent webhook. Ignoring.';
+			return;
+		}
+
+		if ( '1' !== $got_lock ) {
+			// GET_LOCK errored, is unavailable on this host, or was disabled
+			// via the pmpro_use_advisory_locks filter. Proceed without
+			// concurrency protection so webhooks still work, but log a warning
+			// so the admin can correlate if race-related anomalies appear.
+			$logstr .= 'WARNING: MySQL advisory lock unavailable. Processing order #' . $morder->id . ' without concurrency protection. ';
+		}
+
+		try {
+			// Re-read order status now that we hold the lock. The $morder in memory
+			// may have been loaded before a prior concurrent worker persisted a
+			// terminal status, so the pre-lock fast-path check above can't be
+			// trusted as the correctness guard. This post-lock check is.
+			$current_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM $wpdb->pmpro_membership_orders WHERE id = %d", $morder->id ) );
+			if ( ! in_array( $current_status, array( 'token', 'pending' ), true ) ) {
+				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed by a concurrent webhook while we waited for the lock. Ignoring.';
+				return;
+			}
+
+			// For one-time payments, the Charge may not have existed yet at the original
+			// checkout.session.completed event (e.g. async-cleared methods like bank transfers).
+			// Fill in the transaction ID now while we hold the lock so it gets saved with the
+			// rest of the order in pmpro_complete_async_checkout().
+			if ( 'payment' === $checkout_session->mode
+				&& empty( $morder->payment_transaction_id )
+				&& ! empty( $checkout_session->payment_intent )
+			) {
+				try {
+					$payment_intent = \Stripe\PaymentIntent::retrieve(
+						array(
+							'id'     => $checkout_session->payment_intent,
+							'expand' => array( 'latest_charge' ),
+						)
+					);
+					if ( ! empty( $payment_intent->latest_charge ) ) {
+						$morder->payment_transaction_id = $payment_intent->latest_charge->id;
+					}
+				} catch ( \Stripe\Error\Base $e ) {
+					// Could not get payment intent. We just won't set a payment transaction ID.
+				}
+			}
+
+			pmpro_pull_checkout_data_from_order( $morder );
+			if ( pmpro_complete_async_checkout( $morder ) ) {
+				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' was processed successfully.';
+			} else {
+				$logstr .= 'Order #' . $morder->id . ' for Checkout Session ' . $checkout_session->id . ' could not be processed.';
+				$morder->status = 'error';
+				$morder->saveOrder();
+			}
+		} finally {
+			// Release the advisory lock on every exit path: normal completion,
+			// early return after the post-lock status re-check, or an exception
+			// thrown by the checkout pipeline. Belt-and-suspenders alongside the
+			// connection-close auto-release MySQL provides for advisory locks.
+			if ( '1' === $got_lock ) {
+				$wpdb->get_var( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) );
+			}
+		}
 	}
 
 	/**
@@ -929,9 +1008,14 @@ class PMPro_Stripe_Webhook_Handler {
 		if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ) {
 			$currency_unit_multiplier = pow( 10, intval( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) );
 		}
+		$order_data['total']    = ( ! empty( $invoice->total ) ? $invoice->total / $currency_unit_multiplier : 0 );
 		$order_data['subtotal'] = ( ! empty( $invoice->subtotal ) ? $invoice->subtotal / $currency_unit_multiplier : 0 );
-		$order_data['tax'] = ( ! empty( $invoice->tax ) ? $invoice->tax / $currency_unit_multiplier : 0 );
-		$order_data['total'] = ( ! empty( $invoice->total ) ? $invoice->total / $currency_unit_multiplier : 0 );
+		// invoice->tax was removed in Stripe API 2025-03-31.basil. Derive tax from total_excluding_tax instead.
+		if ( null !== $invoice->total_excluding_tax ) {
+			$order_data['tax'] = pmpro_round_price( $order_data['total'] - ( $invoice->total_excluding_tax / $currency_unit_multiplier ) );
+		} else {
+			$order_data['tax'] = 0;
+		}
 
 		// Set payment information data.
 		// Find the payment method.
@@ -970,9 +1054,19 @@ class PMPro_Stripe_Webhook_Handler {
 				$order_data['accountnumber'] = hideCardNumber( $payment_method->card->last4 );
 				$order_data['expirationmonth'] = $payment_method->card->exp_month;
 				$order_data['expirationyear'] = $payment_method->card->exp_year;
+			} else {
+				// Not a card. Clear card fields in case the order being updated has card info from a previous payment attempt.
+				$order_data['cardtype'] = '';
+				$order_data['accountnumber'] = '';
+				$order_data['expirationmonth'] = '';
+				$order_data['expirationyear'] = '';
 			}
 		} else {
 			$order_data['payment_type'] = 'Stripe';
+			$order_data['cardtype'] = '';
+			$order_data['accountnumber'] = '';
+			$order_data['expirationmonth'] = '';
+			$order_data['expirationyear'] = '';
 		}
 
 		// Set the billing address.

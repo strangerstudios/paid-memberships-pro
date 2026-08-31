@@ -174,23 +174,18 @@ class PMPro_Membership_Level{
            $this->id = $wpdb->insert_id;
         }
 
-        // Drop all categories if there are categories set from $this.
+        // Update term restrictions if there are categories set from $this.
         if ( isset( $this->categories ) && is_array( $this->categories ) ) {
-            
-            // Delete categories for membership ID so we can add them back again.
-            $wpdb->delete( $wpdb->pmpro_memberships_categories, array('membership_id' => $this->id), array('%d') );
+            // Only keep term IDs that still exist before linking them to this level.
+            $categories = array_filter( array_map( 'intval', $this->categories ), 'term_exists' );
 
-            foreach( $this->categories as $key => $category ) {
-                if ( term_exists( get_cat_name( $category ), 'category' ) ) {
-                    $wpdb->insert( $wpdb->pmpro_memberships_categories, array( 'membership_id' => $this->id, 'category_id' => $category ), array( '%d', '%d' ) );
-                }
-            }
+            pmpro_updateMembershipCategories( $this->id, $categories );
         }
         
         do_action( $after_action, $this );
     }
     /**
-     * Delete a membership level and categories.
+     * Delete a membership level and related non-historical records.
      * @since 2.3
      */
     function delete() {
@@ -201,14 +196,16 @@ class PMPro_Membership_Level{
 
         global $wpdb;
         $r1 = false; // Remove level.
-        $r2 = false; // Remove categories from level.
+        $r2 = false; // Remove related records from level.
         $r3 = false; // Remove users from level.
+
+        do_action( 'pmpro_delete_membership_level', $this->id );
 
         if ( $wpdb->delete( $wpdb->pmpro_membership_levels, array('id' => $this->id), array('%d') ) ) {
             $r1 = true;
         }
 
-        if ( $wpdb->delete( $wpdb->pmpro_memberships_categories, array('membership_id' => $this->id), array('%d') ) ) {
+        if ( pmpro_delete_membership_level_relationships( $this->id ) ) {
             $r2 = true;
         }
 
@@ -223,15 +220,12 @@ class PMPro_Membership_Level{
             $r3 = true;
         }
 
-        // Remove the level from the level group.
-        $wpdb->delete( $wpdb->pmpro_membership_levels_groups, array( 'level' => $this->id ) );
-            
         if ( $r1 == true && $r2 == true && $r3 == true ) {
             return true;
         } elseif ( $r1 == true && $r2 == false && $r3 == false ) {
-            return 'Only the level was deleted. Users may still be assigned to this level';
+            return 'Only the level was deleted. Users may still be assigned to this level and related records may remain.';
         } elseif ( $r1 == false && $r2 == true && $r3 == false ) {
-            return 'Only categories were deleted. Users may still be assigned to this level.';
+            return 'Only related records were deleted. Users may still be assigned to this level.';
         } elseif( $r1 == false && $r2 == false && $r3 == true ) {
             return 'Only users were removed from this level.';
         } else {

@@ -104,6 +104,7 @@ function pmpro_report_login_page()
 	if ( ! empty( $l ) ) {
 		$csv_export_link = add_query_arg( 'l', $l, $csv_export_link );
 	}
+	$csv_export_link = add_query_arg( 'nonce', wp_create_nonce( 'login_report_csv' ), $csv_export_link );
 ?>
 	<form id="visits-views-logins-form" method="get" action="">
 	<h1 class="wp-heading-inline">
@@ -453,9 +454,28 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 
 	//set cookie for visits
 	if( $type === 'visits' && empty( $_COOKIE['pmpro_visit'] ) ) {
-		// The secure parameter is set to is_ssl(), true if HTTPS.
-        setcookie( 'pmpro_visit', '1', 0, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
-    }
+		/**
+		 * Filter whether to set the pmpro_visit dedup cookie on the response.
+		 *
+		 * The cookie is a server-side dedup marker so we don't double-count a
+		 * single visitor's visits within a session. Setting it on the response
+		 * adds a Set-Cookie header, which causes most page caches (Surge,
+		 * Cloudflare, Varnish, WP Super Cache, etc.) to bypass the cache for
+		 * that response — defeating page caching entirely on the front end.
+		 *
+		 * Default: skip setting the cookie when WP_CACHE is true (a page cache
+		 * is installed). Set to true to force the cookie regardless.
+		 *
+		 * @since 3.7.4
+		 *
+		 * @param bool $should_set Default !( WP_CACHE === true ).
+		 */
+		$should_set = apply_filters( 'pmpro_set_visit_cookie', ! ( defined( 'WP_CACHE' ) && WP_CACHE ) );
+		if ( $should_set ) {
+			// The secure parameter is set to is_ssl(), true if HTTPS.
+			setcookie( 'pmpro_visit', '1', 0, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		}
+	}
 
 	//some vars for below
 	$now = current_time('timestamp');

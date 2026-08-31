@@ -507,11 +507,12 @@ if ( isset( $_REQUEST['page'] ) && 'pmpro-membershiplevels' === $_REQUEST['page'
  * @param array  $month_names    Associative array of month number => translated name.
  * @param string $hidden_name    The name attribute for the hidden input storing the pattern.
  * @param string $existing_value The existing date pattern value.
+ * @param string $id             Optional. An id attribute for the builder wrapper element.
  */
-function pmpro_payment_schedule_render_date_builder( $month_names, $hidden_name, $existing_value ) {
+function pmpro_payment_schedule_render_date_builder( $month_names, $hidden_name, $existing_value, $id = '' ) {
 	?>
-	<div class="pmpro_date_pattern_builder" data-existing-value="<?php echo esc_attr( $existing_value ); ?>">
-		<select class="pmpro_date_pattern_mode" onchange="pmpro_date_mode_changed(this);">
+	<div class="pmpro_date_pattern_builder"<?php if ( ! empty( $id ) ) { echo ' id="' . esc_attr( $id ) . '"'; } ?> data-existing-value="<?php echo esc_attr( $existing_value ); ?>">
+		<select class="pmpro_date_pattern_mode" onchange="pmpro_date_mode_changed(this);" aria-label="<?php esc_attr_e( 'Date pattern type', 'paid-memberships-pro' ); ?>">
 			<option value=""><?php esc_html_e( 'Choose...', 'paid-memberships-pro' ); ?></option>
 			<option value="monthly"><?php esc_html_e( 'The same day each month', 'paid-memberships-pro' ); ?></option>
 			<option value="yearly"><?php esc_html_e( 'The same date each year', 'paid-memberships-pro' ); ?></option>
@@ -519,7 +520,7 @@ function pmpro_payment_schedule_render_date_builder( $month_names, $hidden_name,
 		</select>
 		<span class="pmpro_date_builder_monthly" style="display:none;">
 			<?php esc_html_e( 'on the', 'paid-memberships-pro' ); ?>
-			<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);">
+			<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);" aria-label="<?php esc_attr_e( 'Day of the month', 'paid-memberships-pro' ); ?>">
 				<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
 					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>"><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
 				<?php endfor; ?>
@@ -527,22 +528,23 @@ function pmpro_payment_schedule_render_date_builder( $month_names, $hidden_name,
 		</span>
 		<span class="pmpro_date_builder_yearly" style="display:none;">
 			<?php esc_html_e( 'on', 'paid-memberships-pro' ); ?>
-			<select class="pmpro_date_builder_month" onchange="pmpro_assemble_date_pattern(this);">
+			<select class="pmpro_date_builder_month" onchange="pmpro_assemble_date_pattern(this);" aria-label="<?php esc_attr_e( 'Month', 'paid-memberships-pro' ); ?>">
 				<?php foreach ( $month_names as $val => $name ) : ?>
 					<option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $name ); ?></option>
 				<?php endforeach; ?>
 			</select>
-			<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);">
+			<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);" aria-label="<?php esc_attr_e( 'Day of the month', 'paid-memberships-pro' ); ?>">
 				<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
 					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>"><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
 				<?php endfor; ?>
 			</select>
 		</span>
 		<span class="pmpro_date_builder_custom" style="display:none;">
-			<input type="text" class="pmpro_date_pattern_input" placeholder="<?php esc_attr_e( 'e.g. Y-01-01', 'paid-memberships-pro' ); ?>"
+			<input type="text" class="pmpro_date_pattern_input" placeholder="<?php echo esc_attr( sprintf( /* translators: %s: an example date pattern. */ __( 'e.g. %s', 'paid-memberships-pro' ), 'Y-01-01' ) ); ?>"
 				value="<?php echo esc_attr( $existing_value ); ?>"
+				aria-label="<?php esc_attr_e( 'Custom date pattern', 'paid-memberships-pro' ); ?>"
 				oninput="jQuery(this).closest('.pmpro_date_pattern_builder').find('.pmpro_date_pattern_value').val(this.value);" />
-			<p class="description"><?php esc_html_e( 'Y = current/next year, M = current/next month.', 'paid-memberships-pro' ); ?></p>
+			<p class="description"><?php echo esc_html( sprintf( /* translators: 1: the literal Y token, 2: the literal M token. Do not translate the tokens themselves. */ __( '%1$s = current/next year, %2$s = current/next month.', 'paid-memberships-pro' ), 'Y', 'M' ) ); ?></p>
 		</span>
 		<input type="hidden" class="pmpro_date_pattern_value" name="<?php echo esc_attr( $hidden_name ); ?>" value="<?php echo esc_attr( $existing_value ); ?>" />
 	</div>

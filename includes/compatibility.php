@@ -164,7 +164,12 @@ add_action( 'after_setup_theme', 'pmpro_compatibility_checker_themes' );
  *
  * @since 2.8
  */
-function pmpro_track_library_conflict( $name, $path, $version ) {	
+function pmpro_track_library_conflict( $name, $path, $version ) {
+	// Normalize the path so the conflict check and stored array key are stable across operating systems.
+	// On Windows, dirname() returns backslashes, which would otherwise break the substring check below
+	// and cause duplicate entries to be stored under separator-variant keys.
+	$path = wp_normalize_path( $path );
+
 	// Ignore when PMPro is trying to load.
 	if ( strpos( $path, '/plugins/paid-memberships-pro/' ) !== false ) {
 		return;

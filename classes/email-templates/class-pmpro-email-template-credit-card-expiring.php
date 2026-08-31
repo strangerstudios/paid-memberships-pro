@@ -19,11 +19,13 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	 * Constructor.
 	 *
 	 * @since 3.4
+	 * @deprecated TBD
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
 	 * @param MemberOrder $order The order object that is associated to the member.
 	 */
 	public function __construct( WP_User $user,  MemberOrder $order ) {
+		_deprecated_function( __CLASS__, 'TBD' );
 		$this->user = $user;
 		$this->order = $order;
 	}
@@ -137,6 +139,7 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
 			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
 			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ level_group_id }}' => esc_html__( 'The ID of the level group that the membership level belongs to.', 'paid-memberships-pro' ),
 			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
 			'{{ billing_address }}' => esc_html__( 'The complete billing address of the order.', 'paid-memberships-pro' ),
 			'{{ billing_name }}' => esc_html__( 'The billing name of the order.', 'paid-memberships-pro' ),
@@ -173,6 +176,7 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
 			'membership_id' => $membership_level->id,
+			'level_group_id' => pmpro_get_group_id_for_level( $membership_level->id ) ?: 0,
 			'membership_level_name' => $membership_level->name,
 			'billing_name' => $order->billing->name,
 			'billing_street' => $order->billing->street,
@@ -217,12 +221,13 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
  * Register the email template.
  *
  * @since 3.4
+ * @deprecated TBD
  *
  * @param array $email_templates The email templates (template slug => email template class name)
  * @return array The modified email templates array.
  */
 function pmpro_email_templates_credit_card_expiring( $email_templates ) {
+	_deprecated_function( __FUNCTION__, 'TBD' );
 	$email_templates['credit_card_expiring'] = 'PMPro_Email_Template_Credit_Card_Expiring';
 	return $email_templates;
 }
-add_filter( 'pmpro_email_templates', 'pmpro_email_templates_credit_card_expiring' );

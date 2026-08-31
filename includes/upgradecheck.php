@@ -438,6 +438,28 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.71' );
 	}
 
+	/**
+	 * Version 3.8
+	 * Clean up membership level relationship rows orphaned by deleted levels.
+	 */
+	if ( $pmpro_db_version < 3.8 ) {
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_8.php" );
+		pmpro_upgrade_3_8();
+		update_option( 'pmpro_db_version', '3.8' );
+	}
+
+	/**
+	 * Version 3.8.4
+	 * Recover transaction IDs for Stripe Checkout orders that were completed
+	 * without them by concurrent or out-of-order webhooks (delayed
+	 * notification payment methods like SEPA or bank transfers).
+	 */
+	require_once( PMPRO_DIR . '/includes/updates/upgrade_3_8_4.php' );
+	if ( $pmpro_db_version < 3.84 ) {
+		pmpro_upgrade_3_8_4();
+		update_option( 'pmpro_db_version', '3.84' );
+	}
+
 }
 
 function pmpro_db_delta() {
@@ -784,3 +806,17 @@ function pmpro_db_delta() {
 	";
 	dbDelta($sqlQuery);
 }
+
+/**
+ * Recover missing Stripe Checkout transaction IDs via Action Scheduler.
+ *
+ * Scheduled by the v3.8.4 upgrade. The recovery logic lives in the upgrade file;
+ * this shim is registered here, outside of pmpro_checkForUpgrades(), so the
+ * callback is available on every request (including WP Cron, where
+ * pmpro_checkForUpgrades() does not run) while recovery tasks may still be queued.
+ */
+function pmpro_stripe_recover_checkout_transaction_ids_task() {
+	require_once PMPRO_DIR . '/includes/updates/upgrade_3_8_4.php';
+	pmpro_stripe_recover_checkout_transaction_ids();
+}
+add_action( 'pmpro_stripe_recover_checkout_transaction_ids', 'pmpro_stripe_recover_checkout_transaction_ids_task' );

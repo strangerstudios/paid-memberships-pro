@@ -48,29 +48,29 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	// Allow plugins and themes to find the protected post        
     $mypost = apply_filters( 'pmpro_membership_access_post', $mypost, $myuser );
 	
-	if(isset($mypost->post_type) && $mypost->post_type == "post")
+	// Get this post's terms in restrictable taxonomies (e.g. categories and tags for posts).
+	$post_terms = array();
+	if ( ! empty( $mypost->post_type ) ) {
+		$restrictable_taxonomies = array_intersect( pmpro_get_restrictable_taxonomies(), get_object_taxonomies( $mypost->post_type ) );
+
+		if ( ! empty( $restrictable_taxonomies ) ) {
+			$terms = wp_get_object_terms( $mypost->ID, array_values( $restrictable_taxonomies ), array( 'fields' => 'ids' ) );
+
+			if ( ! is_wp_error( $terms ) ) {
+				$post_terms = $terms;
+			}
+		}
+	}
+
+	if( ! $post_terms )
 	{
-		// Get the categories for this post.
-		$post_terms = wp_get_post_categories( $mypost->ID );
-
-		// Get the tags for this post.
-		$post_terms = array_merge( $post_terms, wp_get_post_tags( $mypost->ID, array('fields' => 'ids' ) ) );
-
-		if( ! $post_terms )
-		{
-			//just check for entries in the memberships_pages table
-			$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "'";
-		}
-		else
-		{
-			//are any of the post categories associated with membership levels? also check the memberships_pages table
-			$sqlQuery = "(SELECT m.id, m.name FROM $wpdb->pmpro_memberships_categories mc LEFT JOIN $wpdb->pmpro_membership_levels m ON mc.membership_id = m.id WHERE mc.category_id IN(" . implode(",", array_map( 'intval', $post_terms ) ) . ") AND m.id IS NOT NULL) UNION (SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "')";
-		}
+		//just check for entries in the memberships_pages table
+		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "'";
 	}
 	else
 	{
-		//are any membership levels associated with this page?
-		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "'";
+		//are any of the post's terms associated with membership levels? also check the memberships_pages table
+		$sqlQuery = "(SELECT m.id, m.name FROM $wpdb->pmpro_memberships_categories mc LEFT JOIN $wpdb->pmpro_membership_levels m ON mc.membership_id = m.id WHERE mc.category_id IN(" . implode(",", array_map( 'intval', $post_terms ) ) . ") AND m.id IS NOT NULL) UNION (SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "')";
 	}
 
 
@@ -271,12 +271,18 @@ function pmpro_search_filter( $query ) {
 	$posts_hidden_by_level = $wpdb->get_col( $sql_A );
 
 	// Query B: All posts hidden by category
+	// Note: pmpro_memberships_categories stores term IDs, so we join through
+	// term_taxonomy to get term_taxonomy IDs for the term_relationships lookup.
 	$sql_B = "SELECT DISTINCT(tr.object_id)
 	FROM {$wpdb->term_relationships} tr
 	LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
 	WHERE tr.term_taxonomy_id IN(
-		SELECT category_id
-		FROM {$wpdb->pmpro_memberships_categories}
+		SELECT tt.term_taxonomy_id
+		FROM {$wpdb->term_taxonomy} tt
+		WHERE tt.term_id IN(
+			SELECT category_id
+			FROM {$wpdb->pmpro_memberships_categories}
+		)
 	)
 	AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
 	$posts_hidden_by_category = $wpdb->get_col( $sql_B );
@@ -299,9 +305,13 @@ function pmpro_search_filter( $query ) {
 		FROM {$wpdb->term_relationships} tr
 		LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
 		WHERE tr.term_taxonomy_id IN(
-			SELECT category_id
-			FROM {$wpdb->pmpro_memberships_categories}
-			WHERE membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+			SELECT tt.term_taxonomy_id
+			FROM {$wpdb->term_taxonomy} tt
+			WHERE tt.term_id IN(
+				SELECT category_id
+				FROM {$wpdb->pmpro_memberships_categories}
+				WHERE membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+			)
 		) AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
 		$accessible_posts_by_category = $wpdb->get_col ($sql_D );
 	} else {

@@ -319,10 +319,20 @@ $pmpro_confirmed = false;
 if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 	// Check the nonce.
 	if ( empty( $_REQUEST['pmpro_checkout_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_checkout_nonce'] ), 'pmpro_checkout_nonce' ) ) {
-		// Nonce is not valid, but a nonce was only added in the 3.0 checkout template. We only want to show an error if the checkout template is 3.0 or later.
-		$loaded_path = pmpro_get_template_path_to_load( 'checkout' );
-		$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
-		if ( ! empty( $loaded_version ) && version_compare( $loaded_version, '3.0', '>=' ) ) {
+		// The nonce field was added in the 3.0 checkout template. Skip enforcement only when
+		// the site has explicitly opted in to a pre-3.0 custom template via the Page Settings
+		// "Use Custom Page Template" option. In every other case (default template, or custom
+		// template at 3.0+, or custom template that pmpro_loadTemplate silently falls back to
+		// the default for) the rendered form includes the nonce field, so we can enforce.
+		$skip_nonce_check = false;
+		if ( 'yes' === get_option( 'pmpro_use_custom_page_template_checkout' ) ) {
+			$loaded_path = pmpro_get_template_path_to_load( 'checkout' );
+			$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+			if ( empty( $loaded_version ) || version_compare( $loaded_version, '3.0', '<' ) ) {
+				$skip_nonce_check = true;
+			}
+		}
+		if ( ! $skip_nonce_check ) {
 			// Nonce is not valid. Show an error.
 			pmpro_setMessage( __( "Nonce security check failed.", 'paid-memberships-pro' ), 'pmpro_error' );
 		}

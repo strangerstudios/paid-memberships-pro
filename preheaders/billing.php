@@ -1,6 +1,6 @@
 <?php
 
-global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling, $pmpro_billing_subscription, $pmpro_billing_level;
+global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling, $pmpro_billing_subscription, $pmpro_billing_level;
 
 // Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
 if ( ! is_user_logged_in() ) {
@@ -30,7 +30,7 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 		exit;
 	}
 
-	// Get the order for this subscription.
+	// Get the most recent successful order for this subscription, if any.
 	$newest_orders = $pmpro_billing_subscription->get_orders(
 		array(
 			'status'  => 'success',
@@ -38,12 +38,19 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			'orderby' => '`timestamp` DESC, `id` DESC',
 		)
 	);
-
-	// Get the newest successful order for this subscription, if any. The order may be null and the billing page will handle that scenario gracefully.
 	$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
+
+	// If there is no successful order yet (e.g. the subscription was linked manually in the admin),
+	// build a transient MemberOrder from the subscription so the billing page can still render and
+	// the gateway can update the payment method on the underlying subscription. This order is not
+	// saved to the database; it only carries the fields the gateway's update() method needs.
 	if ( ! is_a( $pmpro_billing_order, 'MemberOrder' ) ) {
-		wp_redirect( pmpro_url( 'account' ) );
-		exit;
+		$pmpro_billing_order                              = new MemberOrder();
+		$pmpro_billing_order->user_id                     = $pmpro_billing_subscription->get_user_id();
+		$pmpro_billing_order->membership_id               = $pmpro_billing_subscription->get_membership_level_id();
+		$pmpro_billing_order->gateway                     = $pmpro_billing_subscription->get_gateway();
+		$pmpro_billing_order->gateway_environment         = $pmpro_billing_subscription->get_gateway_environment();
+		$pmpro_billing_order->subscription_transaction_id = $pmpro_billing_subscription->get_subscription_transaction_id();
 	}
 
 	// Get the user's current membership level.
@@ -90,6 +97,30 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 	if ($submit === "0")
 		$submit = true;
 
+	// If there was a billing submission, verify the nonce before processing.
+	if ( $submit ) {
+		if ( empty( $_REQUEST['pmpro_billing_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_billing_nonce'] ), 'pmpro_billing_nonce' ) ) {
+			// The nonce field was added in the 3.7.3 billing template. Skip enforcement only when
+			// the site has explicitly opted in to a pre-3.7.3 custom template via the Page Settings
+			// "Use Custom Page Template" option. In every other case (default template, or custom
+			// template at 3.7.3+, or custom template that pmpro_loadTemplate silently falls back to
+			// the default for) the rendered form includes the nonce field, so we can enforce.
+			$skip_nonce_check = false;
+			if ( 'yes' === get_option( 'pmpro_use_custom_page_template_billing' ) ) {
+				$loaded_path = pmpro_get_template_path_to_load( 'billing' );
+				$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+				if ( empty( $loaded_version ) || version_compare( $loaded_version, '3.7.3', '<' ) ) {
+					$skip_nonce_check = true;
+				}
+			}
+			if ( ! $skip_nonce_check ) {
+				$pmpro_msg = __( 'Nonce security check failed.', 'paid-memberships-pro' );
+				$pmpro_msgt = 'pmpro_error';
+				$submit = false;
+			}
+		}
+	}
+
 	//check their fields if they clicked continue
 	if ($submit) {
 		//load em up (other fields)
@@ -113,10 +144,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			$bcountry = trim(sanitize_text_field($_REQUEST['bcountry']));
 		if (isset($_REQUEST['bphone']))
 			$bphone = trim(sanitize_text_field($_REQUEST['bphone']));
-		if (isset($_REQUEST['bemail']))
-			$bemail = trim(sanitize_email($_REQUEST['bemail']));
-		if (isset($_REQUEST['bconfirmemail']))
-			$bconfirmemail = trim(sanitize_email($_REQUEST['bconfirmemail']));
 		if (isset($_REQUEST['CardType']))
 			$CardType = sanitize_text_field($_REQUEST['CardType']);
 		if (isset($_REQUEST['AccountNumber']))
@@ -143,8 +170,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			$bzipcode = "";
 		if (!isset($bphone))
 			$bphone = "";
-		if (!isset($bemail))
-			$bemail = "";
 		if (!isset($bcountry))
 			$bcountry = "";
 		if (!isset($CardType))
@@ -166,7 +191,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			"bstate" => $bstate,
 			"bzipcode" => $bzipcode,
 			"bphone" => $bphone,
-			"bemail" => $bemail,
 			"bcountry" => $bcountry,
 			"CardType" => $CardType,
 			"AccountNumber" => $AccountNumber,
@@ -196,12 +220,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 		
 		if (!empty($missing_billing_field)) {
 			$pmpro_msg = __("Please complete all required fields.", 'paid-memberships-pro' );
-			$pmpro_msgt = "pmpro_error";
-		} elseif ($bemail != $bconfirmemail) {
-			$pmpro_msg = __("Your email addresses do not match. Please try again.", 'paid-memberships-pro' );
-			$pmpro_msgt = "pmpro_error";
-		} elseif (!is_email($bemail)) {
-			$pmpro_msg = __("The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' );
 			$pmpro_msgt = "pmpro_error";
 		} elseif ( empty( $continue_billing_update ) || $pmpro_msgt == 'pmpro_error' ) {
 			// Something else threw an error, maybe reCAPTCHA.		
@@ -246,50 +264,6 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendBillingAdminEmail($current_user, $pmpro_billing_order);
 
-				// Save billing info etc, as user meta.
-				$meta_keys   = array();
-				$meta_values = array();
-
-				// Check if firstname and last name fields are set.
-				if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
-					$meta_keys = array_merge( $meta_keys, array(
-						"pmpro_bfirstname",
-						"pmpro_blastname",
-					) );
-
-					$meta_values = array_merge( $meta_values, array(
-						$bfirstname,
-						$blastname,
-					) );
-				}
-
-				// Check if billing details are available, if not adjust the arrays.
-				if ( ! empty( $baddress1 ) ) {
-					$meta_keys = array_merge( $meta_keys, array(
-						"pmpro_baddress1",
-						"pmpro_baddress2",
-						"pmpro_bcity",
-						"pmpro_bstate",
-						"pmpro_bzipcode",
-						"pmpro_bcountry",
-						"pmpro_bphone",
-						"pmpro_bemail",
-					) );
-
-					$meta_values = array_merge( $meta_values, array(
-						$baddress1,
-						$baddress2,
-						$bcity,
-						$bstate,
-						$bzipcode,
-						$bcountry,
-						$bphone,
-						$bemail,
-					) );
-				}
-
-				pmpro_replaceUserMeta( $current_user->ID, $meta_keys, $meta_values );
-
 				//message
 				$pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'paid-memberships-pro' ), pmpro_url("account"));
 				$pmpro_msgt = "pmpro_success";
@@ -313,24 +287,16 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			}
 		}
 	} else {
-		//default values from DB
-		$bfirstname = get_user_meta($current_user->ID, "pmpro_bfirstname", true);
-		$blastname = get_user_meta($current_user->ID, "pmpro_blastname", true);
-		$baddress1 = get_user_meta($current_user->ID, "pmpro_baddress1", true);
-		$baddress2 = get_user_meta($current_user->ID, "pmpro_baddress2", true);
-		$bcity = get_user_meta($current_user->ID, "pmpro_bcity", true);
-		$bstate = get_user_meta($current_user->ID, "pmpro_bstate", true);
-		$bzipcode = get_user_meta($current_user->ID, "pmpro_bzipcode", true);
-		$bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
-		$bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
-		$bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-		$bconfirmemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-
-		// Fallback for email fields.
-		if ( empty( $bemail ) && ! empty( $current_user->user_email ) ) {
-			$bemail = empty( $current_user->user_email ) ? '' : $current_user->user_email;
-			$bconfirmemail = empty( $current_user->user_email ) ? '' : $current_user->user_email;
-		}
+		// Avoid defaulting billing address fields from user meta. Preserve any values set earlier in this request.
+		$bfirstname = isset( $bfirstname ) ? $bfirstname : '';
+		$blastname  = isset( $blastname ) ? $blastname : '';
+		$baddress1  = isset( $baddress1 ) ? $baddress1 : '';
+		$baddress2  = isset( $baddress2 ) ? $baddress2 : '';
+		$bcity      = isset( $bcity ) ? $bcity : '';
+		$bstate     = isset( $bstate ) ? $bstate : '';
+		$bzipcode   = isset( $bzipcode ) ? $bzipcode : '';
+		$bcountry   = isset( $bcountry ) ? $bcountry : '';
+		$bphone     = isset( $bphone ) ? $bphone : '';
 	}
 } // End of object check.
 

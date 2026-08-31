@@ -298,6 +298,8 @@ class PMPro_Action_Scheduler {
 	/**
 	 * Maybe add a recurring task (if not exists)
 	 *
+	 * Also cancels duplicate pending actions for the hook, keeping the earliest scheduled one.
+	 *
 	 * @access public
 	 * @since 3.5
 	 * @param string   $hook The hook for the task.
@@ -307,6 +309,31 @@ class PMPro_Action_Scheduler {
 	 * @return void
 	 */
 	public function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = 'pmpro_recurring_tasks' ) {
+		// Cancel duplicate pending actions for this hook, keeping the earliest scheduled one.
+		// The $unique flag below only guards new scheduling. Duplicate chains that already
+		// exist (e.g. inherited from a cloned or migrated database) self-perpetuate because
+		// Action Scheduler reschedules each chain's next occurrence without a uniqueness check.
+		$pending_action_ids = (array) as_get_scheduled_actions(
+			array(
+				'hook'     => $hook,
+				'args'     => array(),
+				'group'    => $group,
+				'status'   => ActionScheduler_Store::STATUS_PENDING,
+				'claimed'  => false,
+				'per_page' => 20,
+				'orderby'  => 'date',
+				'order'    => 'ASC',
+			),
+			'ids'
+		);
+		foreach ( array_slice( $pending_action_ids, 1 ) as $duplicate_action_id ) {
+			try {
+				ActionScheduler::store()->cancel_action( $duplicate_action_id );
+			} catch ( Exception $e ) {
+				// The action may have been deleted or claimed by another process.
+			}
+		}
+
 		if ( ! as_next_scheduled_action( $hook, array(), $group ) ) {
 			// Make sure first run datetime has been set.
 			$first_run_datetime = $first_run_datetime ?: self::as_strtotime( 'now +5 minutes' );
