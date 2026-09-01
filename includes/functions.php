@@ -1033,17 +1033,19 @@ function pmpro_payment_schedule_render_date_builder( $field_prefix, $existing_va
 		'11' => __( 'November', 'paid-memberships-pro' ), '12' => __( 'December', 'paid-memberships-pro' ),
 	);
 
-	// Parse the stored pattern into the builder's initial state.
+	// Parse the stored pattern into the builder's initial state. Anything that
+	// isn't a valid monthly or yearly pattern - including unparseable values -
+	// belongs in the custom box exactly as stored, so a resave can't change it.
 	$mode           = '';
 	$monthly_day    = '01';
 	$yearly_month   = '01';
 	$yearly_day     = '01';
 	$custom_pattern = '';
 	$existing_value = strtoupper( trim( (string) $existing_value ) );
-	if ( preg_match( '/^Y-M-(\d{1,2})$/', $existing_value, $matches ) ) {
+	if ( pmpro_is_valid_date_pattern( $existing_value ) && preg_match( '/^Y-M-(\d{1,2})$/', $existing_value, $matches ) ) {
 		$mode        = 'monthly';
 		$monthly_day = str_pad( intval( $matches[1] ), 2, '0', STR_PAD_LEFT );
-	} elseif ( preg_match( '/^Y-(\d{1,2})-(\d{1,2})$/', $existing_value, $matches ) ) {
+	} elseif ( pmpro_is_valid_date_pattern( $existing_value ) && preg_match( '/^Y-(\d{1,2})-(\d{1,2})$/', $existing_value, $matches ) ) {
 		$mode         = 'yearly';
 		$yearly_month = str_pad( intval( $matches[1] ), 2, '0', STR_PAD_LEFT );
 		$yearly_day   = str_pad( intval( $matches[2] ), 2, '0', STR_PAD_LEFT );

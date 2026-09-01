@@ -274,25 +274,15 @@
 					if(empty($wpdb->last_error))
 					{
 						//save the subscription delay for this code level; a delay only
-						//applies while the level's Recurring Subscription box is checked
-						$dc_delay_value   = '';
-						$dc_delay_invalid = false;
-						$dc_delay_type    = ! empty( $recurring ) && isset( $_REQUEST[ 'delay_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'delay_type_' . $level_id ] ) : 'none';
+						//applies while the level's Recurring Subscription box is checked.
+						//Unparseable patterns are saved as entered: checkout ignores them
+						//and the membership levels list warns about them.
+						$dc_delay_value = '';
+						$dc_delay_type  = ! empty( $recurring ) && isset( $_REQUEST[ 'delay_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'delay_type_' . $level_id ] ) : 'none';
 						if ( 'days' === $dc_delay_type && ! empty( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) ) {
 							$dc_delay_value = intval( $_REQUEST[ 'subscription_delay_days_' . $level_id ] );
 						} elseif ( 'date' === $dc_delay_type ) {
 							$dc_delay_value = pmpro_get_date_pattern_from_request( 'subscription_delay_date_' . $level_id );
-							if ( '' !== $dc_delay_value && ! pmpro_is_valid_date_pattern( $dc_delay_value ) ) {
-								//invalid pattern: keep the previous setting and report the error
-								$dc_delay_value   = '';
-								$dc_delay_invalid = true;
-								$dc_error_level   = pmpro_getLevel( $level_id );
-								$level_errors[]   = sprintf(
-									/* translators: %s: the membership level name. */
-									__( 'The First Recurring Payment date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
-									! empty( $dc_error_level->name ) ? $dc_error_level->name : $level_id
-								);
-							}
 						}
 						$all_code_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
 						if ( ! is_array( $all_code_delays ) ) {
@@ -300,33 +290,17 @@
 						}
 						if ( '' !== $dc_delay_value ) {
 							$all_code_delays[ $edit ][ $level_id ] = $dc_delay_value;
-						} elseif ( ! $dc_delay_invalid ) {
+						} else {
 							unset( $all_code_delays[ $edit ][ $level_id ] );
 						}
 						update_option( 'pmpro_discount_code_subscription_delays', $all_code_delays );
 
 						//save the set expiration date for this code level; it only applies
 						//while the level's Membership Expiration box is checked
-						$dc_expiration_value   = '';
-						$dc_expiration_invalid = false;
-						$dc_exp_type           = ! empty( $expiration ) && isset( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) : 'none';
-						if ( 'date' === $dc_exp_type ) {
-							$dc_expiration_value = pmpro_get_date_pattern_from_request( 'set_expiration_date_' . $level_id );
-							if ( '' !== $dc_expiration_value && ! pmpro_is_valid_date_pattern( $dc_expiration_value ) ) {
-								//invalid pattern: keep the previous setting and report the error
-								$dc_expiration_value   = '';
-								$dc_expiration_invalid = true;
-								$dc_error_level        = pmpro_getLevel( $level_id );
-								$level_errors[]        = sprintf(
-									/* translators: %s: the membership level name. */
-									__( 'The expiration date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
-									! empty( $dc_error_level->name ) ? $dc_error_level->name : $level_id
-								);
-							}
-						}
+						$dc_expiration_value = ! empty( $expiration ) && isset( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) && 'date' === sanitize_text_field( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) ? pmpro_get_date_pattern_from_request( 'set_expiration_date_' . $level_id ) : '';
 						if ( '' !== $dc_expiration_value ) {
 							update_option( 'pmprosed_' . $level_id . '_' . $edit, $dc_expiration_value, false );
-						} elseif ( ! $dc_expiration_invalid ) {
+						} else {
 							delete_option( 'pmprosed_' . $level_id . '_' . $edit );
 						}
 

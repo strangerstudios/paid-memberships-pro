@@ -162,22 +162,15 @@ if ( ! empty( $ml_level_image ) && wp_attachment_is_image( $ml_level_image ) ) {
 }
 
 // Save subscription delay settings. Only recurring levels can have a delay.
+// Unparseable patterns are saved as entered: checkout ignores them and the
+// membership levels list warns about them.
 // Uses same wp_options keys as the Subscription Delays Add On: pmpro_subscription_delay_{level_id}
 $delay_type = ! empty( $ml_recurring ) && isset( $_REQUEST['delay_type'] ) ? sanitize_text_field( $_REQUEST['delay_type'] ) : 'none';
+$delay_date_pattern = $delay_type === 'date' ? pmpro_get_date_pattern_from_request( 'subscription_delay_date' ) : '';
 if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) ) {
 	update_option( 'pmpro_subscription_delay_' . $saveid, intval( $_REQUEST['subscription_delay_days'] ), false );
-} elseif ( $delay_type === 'date' && '' !== pmpro_get_date_pattern_from_request( 'subscription_delay_date' ) ) {
-	$delay_date_pattern = pmpro_get_date_pattern_from_request( 'subscription_delay_date' );
-	if ( pmpro_is_valid_date_pattern( $delay_date_pattern ) ) {
-		update_option( 'pmpro_subscription_delay_' . $saveid, $delay_date_pattern, false );
-	} else {
-		// Invalid pattern: keep the previous setting and warn the admin.
-		// Return to the edit form so the warning is actually shown (a successful
-		// save unsets $_REQUEST['edit'], which would render the levels list instead).
-		$page_msg  = -3;
-		$page_msgt = trim( $page_msgt . ' ' . __( 'The First Recurring Payment date pattern was invalid, so that setting was not updated.', 'paid-memberships-pro' ) );
-		$_REQUEST['edit'] = $saveid;
-	}
+} elseif ( '' !== $delay_date_pattern ) {
+	update_option( 'pmpro_subscription_delay_' . $saveid, $delay_date_pattern, false );
 } else {
 	delete_option( 'pmpro_subscription_delay_' . $saveid );
 }
@@ -185,18 +178,11 @@ if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) )
 // Save set expiration date settings.
 // Uses same wp_options keys as the Set Expiration Dates Add On: pmprosed_{level_id}
 $expiration_date_type = isset( $_REQUEST['expiration_date_type'] ) ? sanitize_text_field( $_REQUEST['expiration_date_type'] ) : 'none';
-if ( ! empty( $ml_expiration ) && $expiration_date_type === 'date' ) {
-	$expiration_date_pattern = pmpro_get_date_pattern_from_request( 'set_expiration_date' );
-	if ( pmpro_is_valid_date_pattern( $expiration_date_pattern ) ) {
-		update_option( 'pmprosed_' . $saveid, $expiration_date_pattern, false );
-	} else {
-		// Invalid or missing pattern: keep the previous setting and warn the admin.
-		$page_msg  = -3;
-		$page_msgt = trim( $page_msgt . ' ' . __( 'The expiration date pattern was invalid, so that setting was not updated.', 'paid-memberships-pro' ) );
-		$_REQUEST['edit'] = $saveid;
-	}
+$expiration_date_pattern = ! empty( $ml_expiration ) && $expiration_date_type === 'date' ? pmpro_get_date_pattern_from_request( 'set_expiration_date' ) : '';
+if ( '' !== $expiration_date_pattern ) {
+	update_option( 'pmprosed_' . $saveid, $expiration_date_pattern, false );
 } else {
-	// Expiration unchecked or duration-based: remove any date-based expiration.
+	// Expiration unchecked, duration-based, or no pattern chosen: remove any date-based expiration.
 	delete_option( 'pmprosed_' . $saveid );
 }
 
