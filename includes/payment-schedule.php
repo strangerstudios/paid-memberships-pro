@@ -108,16 +108,15 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	$set_date = preg_replace( '/Y-/', 'Y1-', $set_date );
 	$set_date = preg_replace( '/M-/', 'M1-', $set_date );
 
-	// Get number of months and years to add.
+	// Get number of months and years to add. Token values are capped at 99 by
+	// pmpro_is_valid_date_pattern().
 	$add_months = 0;
 	$add_years  = 0;
-	$m_pos      = stripos( $set_date, 'M' );
-	$y_pos      = stripos( $set_date, 'Y' );
-	if ( $m_pos !== false ) {
-		$add_months = min( intval( pmpro_getMatches( '/M([0-9]*)/', $set_date, true ) ), 120 );
+	if ( stripos( $set_date, 'M' ) !== false ) {
+		$add_months = intval( pmpro_getMatches( '/M([0-9]*)/', $set_date, true ) );
 	}
-	if ( $y_pos !== false ) {
-		$add_years = min( intval( pmpro_getMatches( '/Y([0-9]*)/', $set_date, true ) ), 100 );
+	if ( stripos( $set_date, 'Y' ) !== false ) {
+		$add_years = intval( pmpro_getMatches( '/Y([0-9]*)/', $set_date, true ) );
 	}
 
 	// Allow custom "today" date for previews and testing.
@@ -142,25 +141,28 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	$current_m = intval( date( 'm', $current_date ) );
 	$current_d = intval( date( 'd', $current_date ) );
 
-	// Get set date parts.
+	// Get set date parts. The validator guarantees three parts with a day of 1-31.
 	$date_parts = explode( '-', $set_date );
 	$set_y      = intval( $date_parts[0] );
-	$set_m      = isset( $date_parts[1] ) ? intval( $date_parts[1] ) : 1;
-	$set_d      = isset( $date_parts[2] ) ? intval( $date_parts[2] ) : 1;
+	$set_m      = intval( $date_parts[1] );
+	$set_d      = intval( $date_parts[2] );
 
 	// Get temporary date parts.
 	$temp_y = $set_y > 0 ? $set_y : $current_y;
 	$temp_m = $set_m > 0 ? $set_m : $current_m;
-	$temp_d = max( 1, min( $set_d, 31 ) );
+	$temp_d = $set_d;
 
 	// Add months.
 	if ( ! empty( $add_months ) ) {
 		for ( $i = 0; $i < $add_months; $i++ ) {
 			// If "M1", only add months if the day of the month has already passed.
 			// A pattern that lands on today counts as passed so that the resolved
-			// date is always in the future.
+			// date is always in the future. The day is clamped to the month's
+			// length first so that e.g. the "31st" of a 30-day month compares as
+			// its last day instead of resolving to today or the past.
 			if ( 0 == $i ) {
-				if ( $temp_d <= $current_d ) {
+				$clamped_d = min( $temp_d, intval( date( 't', mktime( 0, 0, 0, $temp_m, 1, $temp_y ) ) ) );
+				if ( $clamped_d <= $current_d ) {
 					$temp_m++;
 					$add_months--;
 				}
@@ -180,13 +182,13 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	// Add years.
 	if ( ! empty( $add_years ) ) {
 		for ( $i = 0; $i < $add_years; $i++ ) {
-			// If "Y1", only add years if the date has already passed. The comparison is
-			// date-granular (midnight vs. midnight) so that a date landing on today does
-			// not read as passed twice — once here and once in the month loop above —
-			// which previously jumped monthly patterns a full year ahead.
+			// If "Y1", only add years if the date has already passed. The day is
+			// clamped to the month's length (e.g. Y-02-31 is the end of February)
+			// and the comparison is date-granular so that a date landing on today
+			// counts as passed exactly once.
 			if ( 0 == $i ) {
-				$temp_date = strtotime( date( "{$temp_y}-{$temp_m}-{$temp_d}" ) );
-				if ( $temp_date <= strtotime( date( 'Y-m-d', $current_date ) ) ) {
+				$clamped_d = min( $temp_d, intval( date( 't', mktime( 0, 0, 0, $temp_m, 1, $temp_y ) ) ) );
+				if ( mktime( 0, 0, 0, $temp_m, $clamped_d, $temp_y ) <= strtotime( date( 'Y-m-d', $current_date ) ) ) {
 					$temp_y++;
 					$add_years--;
 				}
@@ -196,20 +198,11 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 		}
 	}
 
-	// Pad dates if necessary.
-	$temp_m = str_pad( $temp_m, 2, '0', STR_PAD_LEFT );
-	$temp_d = str_pad( $temp_d, 2, '0', STR_PAD_LEFT );
+	// Clamp the day to the resolved month's length (the "31st" of a 30-day month
+	// is its last day) and put it all together.
+	$temp_d = min( $temp_d, intval( date( 't', mktime( 0, 0, 0, $temp_m, 1, $temp_y ) ) ) );
 
-	// Put it all together.
-	$set_date = date( "{$temp_y}-{$temp_m}-{$temp_d}" );
-
-	// Make sure we use the right day of the month for dates > 28.
-	$dotm = pmpro_getMatches( '/\-([0-3][0-9]$)/', $set_date, true );
-	if ( $temp_m == '02' && intval( $dotm ) > 28 || intval( $dotm ) > 30 ) {
-		$set_date = date( 'Y-m-t', strtotime( substr( $set_date, 0, 8 ) . '01' ) );
-	}
-
-	return $set_date;
+	return sprintf( '%04d-%02d-%02d', $temp_y, $temp_m, $temp_d );
 }
 
 /**
