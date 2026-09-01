@@ -165,7 +165,7 @@ if ( ! empty( $ml_level_image ) && wp_attachment_is_image( $ml_level_image ) ) {
 $delay_type = ! empty( $ml_recurring ) && isset( $_REQUEST['delay_type'] ) ? sanitize_text_field( $_REQUEST['delay_type'] ) : 'none';
 $delay_date_pattern = $delay_type === 'date' ? pmpro_get_date_pattern_from_request( 'subscription_delay_date' ) : '';
 if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) ) {
-	update_option( 'pmpro_subscription_delay_' . $saveid, intval( $_REQUEST['subscription_delay_days'] ), false );
+	update_option( 'pmpro_subscription_delay_' . $saveid, max( 1, intval( $_REQUEST['subscription_delay_days'] ) ), false );
 } elseif ( '' !== $delay_date_pattern ) {
 	update_option( 'pmpro_subscription_delay_' . $saveid, $delay_date_pattern, false );
 } else {

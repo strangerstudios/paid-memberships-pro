@@ -2970,7 +2970,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	if ( ! empty( $pmpro_level->id ) && pmpro_isLevelRecurring( $pmpro_level ) ) {
 		$subscription_delay = pmpro_get_subscription_delay( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null );
 		if ( is_numeric( $subscription_delay ) && ! empty( $subscription_delay ) ) {
-			$pmpro_level->profile_start_date = date( 'Y-m-d', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', current_time( 'timestamp' ) ) ) . 'T0:0:0';
+			$delay_date = date( 'Y-m-d', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', current_time( 'timestamp' ) ) );
+			// Don't let a stored negative day count move the start date backwards.
+			$pmpro_level->profile_start_date = max( $delay_date, date( 'Y-m-d', current_time( 'timestamp' ) ) ) . 'T0:0:0';
 		} elseif ( ! empty( $subscription_delay ) ) {
 			// Ignore malformed stored patterns rather than sending a bad date to the gateway.
 			$delay_date = pmpro_resolve_date_pattern( $subscription_delay );

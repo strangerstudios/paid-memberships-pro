@@ -279,7 +279,7 @@
 						$dc_delay_value = '';
 						$dc_delay_type  = ! empty( $recurring ) && isset( $_REQUEST[ 'delay_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'delay_type_' . $level_id ] ) : 'none';
 						if ( 'days' === $dc_delay_type && ! empty( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) ) {
-							$dc_delay_value = intval( $_REQUEST[ 'subscription_delay_days_' . $level_id ] );
+							$dc_delay_value = max( 1, intval( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) );
 						} elseif ( 'date' === $dc_delay_type ) {
 							$dc_delay_value = pmpro_get_date_pattern_from_request( 'subscription_delay_date_' . $level_id );
 						}
