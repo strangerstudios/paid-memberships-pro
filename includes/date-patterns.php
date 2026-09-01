@@ -22,15 +22,15 @@
  *
  * @since TBD
  *
- * @param string $pattern The date pattern string to check.
+ * @param string $date_pattern The date pattern string to check.
  * @return bool True if the pattern is valid.
  */
-function pmpro_is_valid_date_pattern( $pattern ) {
-	if ( ! is_string( $pattern ) && ! is_numeric( $pattern ) ) {
+function pmpro_is_valid_date_pattern( $date_pattern ) {
+	if ( ! is_string( $date_pattern ) && ! is_numeric( $date_pattern ) ) {
 		return false;
 	}
 
-	if ( ! preg_match( '/^(Y[1-9][0-9]?|Y|\d{4})-(M[1-9][0-9]?|M|\d{1,2})-(\d{1,2})$/', strtoupper( trim( (string) $pattern ) ), $matches ) ) {
+	if ( ! preg_match( '/^(Y[1-9][0-9]?|Y|\d{4})-(M[1-9][0-9]?|M|\d{1,2})-(\d{1,2})$/', strtoupper( trim( (string) $date_pattern ) ), $matches ) ) {
 		return false;
 	}
 
@@ -63,19 +63,19 @@ function pmpro_is_valid_date_pattern( $pattern ) {
  *
  * @since TBD
  *
- * @param string $date       The date pattern string.
- * @param int    $current_date Optional. Unix timestamp to use as "today". Defaults to current_time('timestamp').
+ * @param string $date_pattern      The date pattern string.
+ * @param int    $current_timestamp Optional. Unix timestamp to use as "today". Defaults to current_time( "timestamp" ).
  * @return string|false Date in Y-m-d format, or false if the pattern is invalid.
  */
-function pmpro_convert_date_pattern( $date, $current_date = null ) {
+function pmpro_resolve_date_pattern( $date_pattern, $current_timestamp = null ) {
 	// Bail on anything that isn't a well-formed pattern so that malformed input
 	// can never produce an invalid date string.
-	if ( ! pmpro_is_valid_date_pattern( $date ) ) {
+	if ( ! pmpro_is_valid_date_pattern( $date_pattern ) ) {
 		return false;
 	}
 
 	// Handle lower-cased y/m values.
-	$set_date = strtoupper( trim( $date ) );
+	$set_date = strtoupper( trim( $date_pattern ) );
 
 	// Change "Y-" and "M-" to "Y1-" and "M1-".
 	$set_date = str_replace( array( 'Y-', 'M-' ), array( 'Y1-', 'M1-' ), $set_date );
@@ -92,8 +92,8 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	}
 
 	// Callers may pass a custom "today" timestamp (e.g. the pmprosed_fixDate() shim).
-	if ( empty( $current_date ) ) {
-		$current_date = current_time( 'timestamp' );
+	if ( empty( $current_timestamp ) ) {
+		$current_timestamp = current_time( 'timestamp' );
 	}
 
 	/**
@@ -101,14 +101,14 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	 *
 	 * Carried over from the retired Subscription Delays Add On.
 	 *
-	 * @param int $current_date Unix timestamp of the current date.
+	 * @param int $current_timestamp Unix timestamp of the current date.
 	 */
-	$current_date = apply_filters( 'pmprosd_current_date', $current_date );
+	$current_timestamp = apply_filters( 'pmprosd_current_date', $current_timestamp );
 
 	// Get current date parts.
-	$current_y = intval( date( 'Y', $current_date ) );
-	$current_m = intval( date( 'm', $current_date ) );
-	$current_d = intval( date( 'd', $current_date ) );
+	$current_y = intval( date( 'Y', $current_timestamp ) );
+	$current_m = intval( date( 'm', $current_timestamp ) );
+	$current_d = intval( date( 'd', $current_timestamp ) );
 
 	// Get set date parts. The validator guarantees three parts with a day of 1-31.
 	$date_parts = explode( '-', $set_date );
@@ -157,7 +157,7 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 			// counts as passed exactly once.
 			if ( 0 == $i ) {
 				$clamped_d = min( $temp_d, intval( date( 't', mktime( 0, 0, 0, $temp_m, 1, $temp_y ) ) ) );
-				if ( mktime( 0, 0, 0, $temp_m, $clamped_d, $temp_y ) <= strtotime( date( 'Y-m-d', $current_date ) ) ) {
+				if ( mktime( 0, 0, 0, $temp_m, $clamped_d, $temp_y ) <= strtotime( date( 'Y-m-d', $current_timestamp ) ) ) {
 					$temp_y++;
 					$add_years--;
 				}
@@ -178,17 +178,17 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
  * Resolve a set expiration date pattern to an actual date, running the
  * expiration-specific filters.
  *
- * This is the expiration counterpart to calling pmpro_convert_date_pattern()
+ * This is the expiration counterpart to calling pmpro_resolve_date_pattern()
  * directly and runs the filters that the retired Set Expiration Dates Add On
  * ran inside pmprosed_fixDate().
  *
  * @since TBD
  *
  * @param string $set_expiration_date The expiration date pattern.
- * @param int    $current_date        Optional. Unix timestamp to use as "today".
+ * @param int    $current_timestamp        Optional. Unix timestamp to use as "today".
  * @return string|false Date in Y-m-d format, or false if the pattern is invalid.
  */
-function pmpro_resolve_expiration_date_pattern( $set_expiration_date, $current_date = null ) {
+function pmpro_resolve_expiration_date_pattern( $set_expiration_date, $current_timestamp = null ) {
 	$set_expiration_date = strtoupper( trim( (string) $set_expiration_date ) );
 
 	/**
@@ -200,7 +200,7 @@ function pmpro_resolve_expiration_date_pattern( $set_expiration_date, $current_d
 	 */
 	$set_expiration_date = apply_filters( 'pmprosed_expiration_date_raw', $set_expiration_date );
 
-	$resolved_date = pmpro_convert_date_pattern( $set_expiration_date, $current_date );
+	$resolved_date = pmpro_resolve_date_pattern( $set_expiration_date, $current_timestamp );
 	if ( empty( $resolved_date ) ) {
 		return false;
 	}

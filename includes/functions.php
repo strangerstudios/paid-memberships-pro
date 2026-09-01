@@ -416,7 +416,7 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 					$r .= sprintf( _n( 'Recurring payments will begin <strong>%d</strong> day after checkout.', 'Recurring payments will begin <strong>%d</strong> days after checkout.', $delay_days, 'paid-memberships-pro' ), $delay_days ) . ' ';
 				}
 			} else {
-				$delay_date = pmpro_convert_date_pattern( $subscription_delay );
+				$delay_date = pmpro_resolve_date_pattern( $subscription_delay );
 				if ( ! empty( $delay_date ) ) {
 					/* translators: %s: the date of the first recurring payment. */
 					$r .= sprintf( __( 'Recurring payments will begin on <strong>%s</strong>.', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), strtotime( $delay_date, current_time( 'timestamp' ) ) ) ) . ' ';
@@ -2973,7 +2973,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			$pmpro_level->profile_start_date = date( 'Y-m-d', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', current_time( 'timestamp' ) ) ) . 'T0:0:0';
 		} elseif ( ! empty( $subscription_delay ) ) {
 			// Ignore malformed stored patterns rather than sending a bad date to the gateway.
-			$delay_date = pmpro_convert_date_pattern( $subscription_delay );
+			$delay_date = pmpro_resolve_date_pattern( $subscription_delay );
 			if ( ! empty( $delay_date ) ) {
 				// Don't let a resolved date in the past move the start date backwards.
 				$pmpro_level->profile_start_date = max( $delay_date, date( 'Y-m-d', current_time( 'timestamp' ) ) ) . 'T0:0:0';

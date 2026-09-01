@@ -1204,11 +1204,11 @@ function pmpro_define_deprecated_date_pattern_functions() {
 
 	if ( ! function_exists( 'pmprosd_convert_date' ) ) {
 		/**
-		 * @deprecated TBD Use pmpro_convert_date_pattern().
+		 * @deprecated TBD Use pmpro_resolve_date_pattern().
 		 */
 		function pmprosd_convert_date( $date ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_convert_date_pattern()' );
-			$converted_date = pmpro_convert_date_pattern( $date );
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_date_pattern()' );
+			$converted_date = pmpro_resolve_date_pattern( $date );
 			// The retired add-on always appended a time component.
 			return empty( $converted_date ) ? $converted_date : $converted_date . 'T0:0:0';
 		}
