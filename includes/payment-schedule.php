@@ -347,36 +347,6 @@ function pmpro_apply_subscription_delay_at_checkout( $level ) {
 }
 
 /**
- * Get the discount code ID in play for the current checkout request, if any.
- *
- * Accepts both the modern pmpro_discount_code and the legacy discount_code
- * request params, matching how pmpro_getLevelAtCheckout() resolves the code.
- *
- * @since TBD
- *
- * @return int|null The discount code ID, or null if no code is in the request.
- */
-function pmpro_payment_schedule_get_checkout_code_id() {
-	global $wpdb;
-
-	if ( ! empty( $_REQUEST['pmpro_discount_code'] ) && is_scalar( $_REQUEST['pmpro_discount_code'] ) ) {
-		$discount_code = sanitize_text_field( $_REQUEST['pmpro_discount_code'] );
-	} elseif ( ! empty( $_REQUEST['discount_code'] ) && is_scalar( $_REQUEST['discount_code'] ) ) {
-		$discount_code = sanitize_text_field( $_REQUEST['discount_code'] );
-	} else {
-		return null;
-	}
-
-	$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', $discount_code );
-	if ( empty( $discount_code ) ) {
-		return null;
-	}
-
-	$code_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = %s LIMIT 1", $discount_code ) );
-	return ! empty( $code_id ) ? intval( $code_id ) : null;
-}
-
-/**
  * Apply a set expiration date to a level object as a duration in days.
  *
  * Only used for the IPN/webhook level filters below: those gateway handlers
@@ -393,11 +363,6 @@ function pmpro_payment_schedule_get_checkout_code_id() {
 function pmpro_apply_set_expiration_date_at_checkout( $level, $discount_code_id = null ) {
 	if ( empty( $level ) || empty( $level->id ) ) {
 		return $level;
-	}
-
-	// Check for a discount code in the request if one wasn't passed in.
-	if ( empty( $discount_code_id ) ) {
-		$discount_code_id = pmpro_payment_schedule_get_checkout_code_id();
 	}
 
 	$set_expiration_date = pmpro_get_set_expiration_date( $level->id, $discount_code_id );
@@ -448,18 +413,17 @@ function pmpro_apply_set_expiration_date_at_checkout( $level, $discount_code_id 
  *
  * @since TBD
  *
- * @param bool $okay Whether the checkout is okay so far.
+ * @param bool   $okay  Whether the checkout is okay so far.
+ * @param object $level The level being checked out for.
  * @return bool Whether the checkout is still okay.
  */
-function pmpro_payment_schedule_registration_check( $okay ) {
-	global $pmpro_level;
-
+function pmpro_payment_schedule_registration_check( $okay, $level = null ) {
 	// Bail if the checkout already failed or we don't have a level.
-	if ( ! $okay || empty( $pmpro_level ) || empty( $pmpro_level->id ) ) {
+	if ( ! $okay || empty( $level ) || empty( $level->id ) ) {
 		return $okay;
 	}
 
-	$set_expiration_date = pmpro_get_set_expiration_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null );
+	$set_expiration_date = pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null );
 	if ( empty( $set_expiration_date ) ) {
 		return $okay;
 	}
@@ -479,7 +443,7 @@ function pmpro_payment_schedule_registration_check( $okay ) {
 
 	return $okay;
 }
-add_filter( 'pmpro_registration_checks', 'pmpro_payment_schedule_registration_check' );
+add_filter( 'pmpro_registration_checks', 'pmpro_payment_schedule_registration_check', 10, 2 );
 
 /**
  * Wrapper for IPN/webhook level handlers.
@@ -487,62 +451,102 @@ add_filter( 'pmpro_registration_checks', 'pmpro_payment_schedule_registration_ch
  * @since TBD
  */
 function pmpro_set_expiration_ipnhandler_level( $level, $user_id = null ) {
-	return pmpro_apply_set_expiration_date_at_checkout( $level, null );
+	if ( empty( $level ) || empty( $level->id ) ) {
+		return $level;
+	}
+
+	// Respect a discount-code-specific expiration date if a code was used at checkout.
+	$code_id  = ! empty( $level->code_id ) ? intval( $level->code_id ) : null;
+	$adjusted = pmpro_apply_set_expiration_date_at_checkout( $level, $code_id );
+
+	// A null return means a fixed expiration date has passed. The IPN handlers
+	// can't survive a null level and the payment has already been taken, so keep
+	// the level and let the end date land per its remaining settings.
+	return empty( $adjusted ) ? $level : $adjusted;
 }
 add_filter( 'pmpro_ipnhandler_level', 'pmpro_set_expiration_ipnhandler_level', 10, 2 );
 add_filter( 'pmpro_payfast_itnhandler_level', 'pmpro_set_expiration_ipnhandler_level', 10, 2 );
 add_filter( 'pmpro_paystack_webhook_level', 'pmpro_set_expiration_ipnhandler_level', 10, 2 );
 
 /**
- * Show admin warning if any levels have a past set expiration date.
+ * Show an admin warning for levels or discount code overrides whose set
+ * expiration date is in the past (which blocks new signups) or whose stored
+ * pattern can no longer be parsed (which is ignored at checkout).
  *
  * @since TBD
  */
 function pmpro_set_expiration_date_admin_notice() {
-	$levels = pmpro_getAllLevels( true, false );
-	$problem_levels = array();
+	global $wpdb;
 
+	$past_items    = array();
+	$invalid_items = array();
+
+	// Level-wide patterns. pmpro_getAllLevels() returns only allow_signups levels.
+	$levels = pmpro_getAllLevels();
 	foreach ( $levels as $level ) {
-		if ( ! $level->allow_signups ) {
-			continue;
-		}
-
 		$set_expiration_date = pmpro_get_set_expiration_date( $level->id );
 		if ( empty( $set_expiration_date ) ) {
 			continue;
 		}
 
+		$link          = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $level->name ) . '</a>';
 		$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
-		if ( ! empty( $resolved_date ) && $resolved_date < wp_date( 'Y-m-d' ) ) {
-			$problem_levels[ $level->id ] = '<a href="' . esc_url( add_query_arg(
-				array(
-					'page' => 'pmpro-membershiplevels',
-					'edit' => $level->id,
-				),
-				admin_url( 'admin.php' )
-			) ) . '">' . esc_html( $level->name ) . '</a>';
+		if ( empty( $resolved_date ) ) {
+			$invalid_items[] = $link;
+		} elseif ( $resolved_date <= wp_date( 'Y-m-d' ) ) {
+			$past_items[] = $link;
 		}
 	}
 
-	if ( ! empty( $problem_levels ) ) {
-		$levels_list = implode( ', ', $problem_levels );
-		?>
-		<div class="notice notice-warning">
+	// Discount code overrides, stored as pmprosed_{level_id}_{code_id}.
+	$code_options = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options WHERE option_name LIKE 'pmprosed\\_%\\_%' AND option_value <> ''" );
+	foreach ( $code_options as $code_option ) {
+		if ( ! preg_match( '/^pmprosed_(\d+)_(\d+)$/', $code_option->option_name, $matches ) ) {
+			continue;
+		}
+		$link          = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => intval( $matches[2] ) ), admin_url( 'admin.php' ) ) ) . '">' . sprintf( /* translators: 1: a membership level ID, 2: a discount code ID. */ esc_html__( 'level %1$d via discount code %2$d', 'paid-memberships-pro' ), intval( $matches[1] ), intval( $matches[2] ) ) . '</a>';
+		$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $code_option->option_value );
+		if ( empty( $resolved_date ) ) {
+			$invalid_items[] = $link;
+		} elseif ( $resolved_date <= wp_date( 'Y-m-d' ) ) {
+			$past_items[] = $link;
+		}
+	}
+
+	if ( empty( $past_items ) && empty( $invalid_items ) ) {
+		return;
+	}
+
+	$allowed_html = array(
+		'strong' => array(),
+		'a'      => array( 'href' => array() ),
+	);
+	?>
+	<div class="notice notice-warning">
+		<?php if ( ! empty( $past_items ) ) { ?>
 			<p>
 			<?php
 				printf(
 					/* translators: %s: comma-separated list of level names with links */
-					wp_kses(
-						__( '<strong>Warning:</strong> The following membership levels have an expiration date that is in the past: %s.', 'paid-memberships-pro' ),
-						array( 'strong' => array(), 'a' => array( 'href' => array() ) )
-					),
-					$levels_list
+					wp_kses( __( '<strong>Warning:</strong> The following membership levels have an expiration date that is in the past, so new signups are blocked: %s.', 'paid-memberships-pro' ), $allowed_html ),
+					implode( ', ', $past_items ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				);
 			?>
 			</p>
-		</div>
-		<?php
-	}
+		<?php } ?>
+		<?php if ( ! empty( $invalid_items ) ) { ?>
+			<p>
+			<?php
+				printf(
+					/* translators: %s: comma-separated list of level names with links */
+					wp_kses( __( '<strong>Warning:</strong> The following membership levels have an expiration date pattern that could not be understood and will be ignored: %s.', 'paid-memberships-pro' ), $allowed_html ),
+					implode( ', ', $invalid_items ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
+			?>
+			</p>
+		<?php } ?>
+	</div>
+	<?php
 }
 if ( isset( $_REQUEST['page'] ) && 'pmpro-membershiplevels' === $_REQUEST['page'] && ! isset( $_REQUEST['edit'] ) ) {
 	add_action( 'admin_notices', 'pmpro_set_expiration_date_admin_notice' );
