@@ -195,9 +195,11 @@ if ( ! empty( $temp_id ) ) {
 }
 
 // Get the subscription delay and set expiration date settings for the given level
-// and determine the type each should render as in the UI.
-$subscription_delay   = ! empty( $temp_id ) ? pmpro_get_subscription_delay( $temp_id ) : '';
-$set_expiration_date  = ! empty( $temp_id ) ? pmpro_get_set_expiration_date( $temp_id ) : '';
+// and determine the type each should render as in the UI. Read the raw options
+// rather than the pmpro_get_* getters: their runtime filters must not leak into
+// the edit form, where the value shown is the value that gets re-saved.
+$subscription_delay   = ! empty( $temp_id ) ? get_option( 'pmpro_subscription_delay_' . $temp_id, '' ) : '';
+$set_expiration_date  = ! empty( $temp_id ) ? get_option( 'pmprosed_' . $temp_id, '' ) : '';
 $delay_type           = empty( $subscription_delay ) ? 'none' : ( is_numeric( $subscription_delay ) ? 'days' : 'date' );
 $expiration_date_type = ! empty( $set_expiration_date ) ? 'date' : 'none';
 ?>
