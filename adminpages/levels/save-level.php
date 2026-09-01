@@ -161,9 +161,9 @@ if ( ! empty( $ml_level_image ) && wp_attachment_is_image( $ml_level_image ) ) {
 	delete_pmpro_membership_level_meta( $saveid, 'level_image' );
 }
 
-// Save subscription delay settings.
+// Save subscription delay settings. Only recurring levels can have a delay.
 // Uses same wp_options keys as the Subscription Delays Add On: pmpro_subscription_delay_{level_id}
-$delay_type = isset( $_REQUEST['delay_type'] ) ? sanitize_text_field( $_REQUEST['delay_type'] ) : 'none';
+$delay_type = ! empty( $ml_recurring ) && isset( $_REQUEST['delay_type'] ) ? sanitize_text_field( $_REQUEST['delay_type'] ) : 'none';
 if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) ) {
 	update_option( 'pmpro_subscription_delay_' . $saveid, intval( $_REQUEST['subscription_delay_days'] ), false );
 } elseif ( $delay_type === 'date' && ! empty( $_REQUEST['subscription_delay_date'] ) ) {
@@ -172,10 +172,10 @@ if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) )
 		update_option( 'pmpro_subscription_delay_' . $saveid, $delay_date_pattern, false );
 	} else {
 		// Invalid pattern: keep the previous setting and warn the admin.
-		$page_msg  = -3;
-		$page_msgt = __( 'The First Recurring Payment date pattern was invalid, so that setting was not updated.', 'paid-memberships-pro' );
 		// Return to the edit form so the warning is actually shown (a successful
 		// save unsets $_REQUEST['edit'], which would render the levels list instead).
+		$page_msg  = -3;
+		$page_msgt = trim( $page_msgt . ' ' . __( 'The First Recurring Payment date pattern was invalid, so that setting was not updated.', 'paid-memberships-pro' ) );
 		$_REQUEST['edit'] = $saveid;
 	}
 } else {
@@ -189,23 +189,10 @@ if ( ! empty( $ml_expiration ) && $expiration_date_type === 'date' ) {
 	$expiration_date_pattern = isset( $_REQUEST['set_expiration_date'] ) ? strtoupper( trim( sanitize_text_field( $_REQUEST['set_expiration_date'] ) ) ) : '';
 	if ( pmpro_is_valid_date_pattern( $expiration_date_pattern ) ) {
 		update_option( 'pmprosed_' . $saveid, $expiration_date_pattern, false );
-		// A date-based expiration replaces the duration, so clear any duration values
-		// that were submitted from the hidden duration fields.
-		if ( ! empty( $ml_expiration_number ) ) {
-			$wpdb->update(
-				$wpdb->pmpro_membership_levels,
-				array( 'expiration_number' => 0, 'expiration_period' => 0 ),
-				array( 'id' => $saveid ),
-				array( '%d', '%s' ),
-				array( '%d' )
-			);
-		}
 	} else {
 		// Invalid or missing pattern: keep the previous setting and warn the admin.
 		$page_msg  = -3;
-		$page_msgt = __( 'The expiration date pattern was invalid, so that setting was not updated.', 'paid-memberships-pro' );
-		// Return to the edit form so the warning is actually shown (a successful
-		// save unsets $_REQUEST['edit'], which would render the levels list instead).
+		$page_msgt = trim( $page_msgt . ' ' . __( 'The expiration date pattern was invalid, so that setting was not updated.', 'paid-memberships-pro' ) );
 		$_REQUEST['edit'] = $saveid;
 	}
 } else {

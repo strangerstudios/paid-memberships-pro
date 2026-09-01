@@ -625,17 +625,24 @@ function pmpro_get_month_names() {
 }
 
 function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) {
-	$all_levels_a = isset( $_REQUEST['all_levels'] ) ? $_REQUEST['all_levels'] : array();
-	$key          = array_search( $level_id, $all_levels_a );
+	$all_levels_a = isset( $_REQUEST['all_levels'] ) ? array_map( 'intval', (array) $_REQUEST['all_levels'] ) : array();
+	$key          = array_search( intval( $level_id ), $all_levels_a );
 	if ( $key === false ) {
 		return;
 	}
+
+	// Match the level save page: a delay only applies while the level's Recurring
+	// Subscription box is checked, and an expiration date only while its Membership
+	// Expiration box is checked. The rows are hidden when unchecked, but hidden
+	// inputs still submit.
+	$recurring_levels  = isset( $_REQUEST['recurring'] ) ? array_map( 'intval', (array) $_REQUEST['recurring'] ) : array();
+	$expiration_levels = isset( $_REQUEST['expiration'] ) ? array_map( 'intval', (array) $_REQUEST['expiration'] ) : array();
 
 	// Determine the subscription delay value based on the type.
 	$delay_type_a         = isset( $_REQUEST['delay_type'] ) ? $_REQUEST['delay_type'] : array();
 	$delay_days_a         = isset( $_REQUEST['subscription_delay_days'] ) ? $_REQUEST['subscription_delay_days'] : array();
 	$delay_date_a         = isset( $_REQUEST['subscription_delay_date'] ) ? $_REQUEST['subscription_delay_date'] : array();
-	$delay_type           = isset( $delay_type_a[ $key ] ) ? sanitize_text_field( $delay_type_a[ $key ] ) : 'none';
+	$delay_type           = in_array( intval( $level_id ), $recurring_levels, true ) && isset( $delay_type_a[ $key ] ) ? sanitize_text_field( $delay_type_a[ $key ] ) : 'none';
 
 	$delay_value   = '';
 	$delay_invalid = false;
@@ -671,7 +678,7 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	// Determine the set expiration date value based on the type.
 	$exp_type_a            = isset( $_REQUEST['expiration_date_type'] ) ? $_REQUEST['expiration_date_type'] : array();
 	$exp_date_a            = isset( $_REQUEST['set_expiration_date'] ) ? $_REQUEST['set_expiration_date'] : array();
-	$exp_type              = isset( $exp_type_a[ $key ] ) ? sanitize_text_field( $exp_type_a[ $key ] ) : 'none';
+	$exp_type              = in_array( intval( $level_id ), $expiration_levels, true ) && isset( $exp_type_a[ $key ] ) ? sanitize_text_field( $exp_type_a[ $key ] ) : 'none';
 
 	$expiration_value   = '';
 	$expiration_invalid = false;
@@ -734,6 +741,7 @@ function pmpro_payment_schedule_get_level_name( $level_id ) {
 /**
  * Remove payment schedule options for levels that were unchecked from a discount code.
  *
+ * Called directly from the discount code save flow in adminpages/discountcodes.php.
  * The per-level save hook only fires for checked levels, so without this an
  * unchecked level's schedule options would silently come back if the level is
  * ever re-checked.
@@ -767,7 +775,6 @@ function pmpro_payment_schedule_cleanup_unchecked_levels( $code_id ) {
 		update_option( 'pmpro_discount_code_subscription_delays', $all_delays );
 	}
 }
-add_action( 'pmpro_save_discount_code', 'pmpro_payment_schedule_cleanup_unchecked_levels' );
 
 /**
  * Delete payment schedule options when a membership level is deleted.

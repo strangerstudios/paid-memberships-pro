@@ -284,6 +284,9 @@
 				}
 			}
 
+			//remove payment schedule options for levels that were unchecked from this code
+			pmpro_payment_schedule_cleanup_unchecked_levels( $edit );
+
 			//merge in any payment schedule (delay/expiration pattern) errors recorded during the level saves
 			global $pmpro_payment_schedule_dc_errors;
 			if ( ! empty( $pmpro_payment_schedule_dc_errors ) && is_array( $pmpro_payment_schedule_dc_errors ) ) {
@@ -588,7 +591,7 @@
 						// Load subscription delay and set expiration date for this discount code level.
 						$dc_delay = '';
 						$dc_set_expiration_date = '';
-						if ( $edit > 0 || ! empty( $copy ) ) {
+						if ( ( $edit > 0 || ! empty( $copy ) ) && ! empty( $temp_code->id ) ) {
 							$dc_delay = pmpro_get_subscription_delay( $level->id, $temp_code->id );
 							$dc_set_expiration_date = pmpro_get_set_expiration_date( $level->id, $temp_code->id );
 						}
@@ -694,13 +697,13 @@
 										<fieldset>
 											<label>
 												<input type="radio" name="delay_type_<?php echo esc_attr( $level->id ); ?>" value="none" <?php checked( $dc_delay_type, 'none' ); ?>
-													onclick="pmpro_dcToggleDelay(<?php echo intval( $level->id ); ?>, 'none');" />
+													onchange="pmpro_dcToggleDelay(<?php echo intval( $level->id ); ?>, 'none');" />
 												<?php esc_html_e( 'Default (one billing cycle after checkout)', 'paid-memberships-pro' ); ?>
 											</label>
 											<br />
 											<label>
 												<input type="radio" name="delay_type_<?php echo esc_attr( $level->id ); ?>" value="days" <?php checked( $dc_delay_type, 'days' ); ?>
-													onclick="pmpro_dcToggleDelay(<?php echo intval( $level->id ); ?>, 'days');" />
+													onchange="pmpro_dcToggleDelay(<?php echo intval( $level->id ); ?>, 'days');" />
 												<?php esc_html_e( 'After a number of days', 'paid-memberships-pro' ); ?>
 											</label>
 											<span class="pmpro_dc_delay_days_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_delay_type !== 'days' ) echo 'style="display:none;"'; ?>>
@@ -712,7 +715,7 @@
 											<br />
 											<label>
 												<input type="radio" name="delay_type_<?php echo esc_attr( $level->id ); ?>" value="date" <?php checked( $dc_delay_type, 'date' ); ?>
-													onclick="pmpro_dcToggleDelay(<?php echo intval( $level->id ); ?>, 'date');" />
+													onchange="pmpro_dcToggleDelay(<?php echo intval( $level->id ); ?>, 'date');" />
 												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 											</label>
 											<div class="pmpro_dc_delay_date_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_delay_type !== 'date' ) echo 'style="display:none;"'; ?>>
@@ -776,7 +779,7 @@
 										<fieldset>
 											<label>
 												<input type="radio" name="expiration_date_type_<?php echo esc_attr( $level->id ); ?>" value="none" <?php checked( $dc_exp_type, 'none' ); ?>
-													onclick="pmpro_dcToggleExpiration(<?php echo intval( $level->id ); ?>, 'none');" />
+													onchange="pmpro_dcToggleExpiration(<?php echo intval( $level->id ); ?>, 'none');" />
 												<?php esc_html_e( 'After a set duration', 'paid-memberships-pro' ); ?>
 											</label>
 											<div class="pmpro_dc_exp_duration_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_exp_type === 'date' ) echo 'style="display:none;"'; ?>>
@@ -796,7 +799,7 @@
 											<br />
 											<label>
 												<input type="radio" name="expiration_date_type_<?php echo esc_attr( $level->id ); ?>" value="date" <?php checked( $dc_exp_type, 'date' ); ?>
-													onclick="pmpro_dcToggleExpiration(<?php echo intval( $level->id ); ?>, 'date');" />
+													onchange="pmpro_dcToggleExpiration(<?php echo intval( $level->id ); ?>, 'date');" />
 												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 											</label>
 											<div class="pmpro_dc_exp_date_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_exp_type !== 'date' ) echo 'style="display:none;"'; ?>>
