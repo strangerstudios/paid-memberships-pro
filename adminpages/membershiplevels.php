@@ -94,7 +94,7 @@
 					<?php
 						printf(
 							/* translators: %s: comma-separated list of level names with links */
-							wp_kses( __( '<strong>Warning:</strong> The following membership levels have an expiration date that is in the past, so new signups are blocked: %s.', 'paid-memberships-pro' ), $expiration_warning_allowed_html ),
+							wp_kses( __( '<strong>Warning:</strong> The following membership levels have an expiration date that is in the past: %s.', 'paid-memberships-pro' ), $expiration_warning_allowed_html ),
 							implode( ', ', $past_expiration_items ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						);
 					?>
