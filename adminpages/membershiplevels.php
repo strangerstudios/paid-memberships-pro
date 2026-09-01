@@ -493,7 +493,13 @@
 											<?php } ?>
 										</td>
 										<td>
-											<?php if(!pmpro_isLevelExpiring($level)) {
+											<?php
+											// A set expiration date replaces any duration-based expiration.
+											$set_expiration_date = pmpro_get_set_expiration_date( $level->id );
+											$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
+											if ( ! empty( $resolved_expiration_date ) ) {
+												printf( esc_html__( 'On %s', 'paid-memberships-pro' ), esc_html( date_i18n( get_option( 'date_format' ), strtotime( $resolved_expiration_date, current_time( 'timestamp' ) ) ) ) );
+											} elseif(!pmpro_isLevelExpiring($level)) {
 												esc_html_e( '&#8212;', 'paid-memberships-pro' );
 											} else { ?>
 												<?php esc_html_e('After', 'paid-memberships-pro' );?> <?php echo esc_html( $level->expiration_number );?> <?php echo esc_html( sornot($level->expiration_period,$level->expiration_number) );?>
