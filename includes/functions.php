@@ -962,53 +962,6 @@ function pmpro_get_set_expiration_date( $level_id, $code_id = null ) {
 }
 
 /**
- * Apply subscription delay to the checkout level by setting profile_start_date.
- *
- * @since TBD
- *
- * @param object $level The PMPro Level object at checkout.
- * @return object The modified level object.
- */
-function pmpro_apply_subscription_delay_at_checkout( $level ) {
-	if ( empty( $level ) || empty( $level->id ) ) {
-		return $level;
-	}
-
-	// Only applies to recurring levels.
-	if ( ! pmpro_isLevelRecurring( $level ) ) {
-		return $level;
-	}
-
-	// Get the subscription delay. Check discount code first.
-	$code_id = ! empty( $level->code_id ) ? $level->code_id : null;
-	$subscription_delay = pmpro_get_subscription_delay( $level->id, $code_id );
-
-	if ( empty( $subscription_delay ) ) {
-		return $level;
-	}
-
-	// Convert the subscription delay to a profile_start_date.
-	if ( is_numeric( $subscription_delay ) ) {
-		$level->profile_start_date = date( 'Y-m-d', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', current_time( 'timestamp' ) ) ) . 'T0:0:0';
-	} else {
-		$resolved_date = pmpro_convert_date_pattern( $subscription_delay );
-		if ( empty( $resolved_date ) ) {
-			// Malformed stored pattern - ignore the delay rather than sending a bad date to the gateway.
-			return $level;
-		}
-		$level->profile_start_date = $resolved_date . 'T0:0:0';
-	}
-
-	// Make sure the profile start date is not before the current date.
-	$today = date( 'Y-m-d\T0:0:0', current_time( 'timestamp' ) );
-	if ( $level->profile_start_date < $today ) {
-		$level->profile_start_date = $today;
-	}
-
-	return $level;
-}
-
-/**
  * Render a date pattern builder.
  *
  * Used on the Edit Level and Edit Discount Code pages. Outputs a mode select
@@ -3422,7 +3375,19 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// If the level or discount code has a subscription delay, set the profile start
 	// date on the level so that gateways delay the first recurring payment.
-	$pmpro_level = pmpro_apply_subscription_delay_at_checkout( $pmpro_level );
+	if ( ! empty( $pmpro_level->id ) && pmpro_isLevelRecurring( $pmpro_level ) ) {
+		$subscription_delay = pmpro_get_subscription_delay( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null );
+		if ( is_numeric( $subscription_delay ) && ! empty( $subscription_delay ) ) {
+			$pmpro_level->profile_start_date = date( 'Y-m-d', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', current_time( 'timestamp' ) ) ) . 'T0:0:0';
+		} elseif ( ! empty( $subscription_delay ) ) {
+			// Ignore malformed stored patterns rather than sending a bad date to the gateway.
+			$delay_date = pmpro_convert_date_pattern( $subscription_delay );
+			if ( ! empty( $delay_date ) ) {
+				// Don't let a resolved date in the past move the start date backwards.
+				$pmpro_level->profile_start_date = max( $delay_date, date( 'Y-m-d', current_time( 'timestamp' ) ) ) . 'T0:0:0';
+			}
+		}
+	}
 
 	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );

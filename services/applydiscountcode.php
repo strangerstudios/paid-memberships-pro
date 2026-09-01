@@ -85,30 +85,6 @@
 		$code_levels = apply_filters("pmpro_discount_code_level", $code_levels, $discount_code_id);
 	}
 
-	// A filter may return null to block signup for a level (e.g. a set expiration
-	// date in the past). Drop the empty entries; if nothing is left, show an error
-	// instead of fataling on `clone null` below.
-	$code_levels = array_values( array_filter( (array) $code_levels ) );
-	if ( empty( $code_levels ) ) {
-		?>
-		<script>
-			jQuery('#<?php echo esc_attr( $msgfield ); ?>').show();
-			jQuery('#<?php echo esc_attr( $msgfield ); ?>').text(<?php echo wp_json_encode( __( 'This discount code cannot be applied to this level at this time.', 'paid-memberships-pro' ) ); ?>);
-			jQuery('#<?php echo esc_attr( $msgfield ); ?>').removeClass('pmpro_success');
-			jQuery('#<?php echo esc_attr( $msgfield ); ?>').addClass('pmpro_error');
-			jQuery('#<?php echo esc_attr( $msgfield ); ?>').addClass('pmpro_discount_code_msg');
-			jQuery('#<?php echo esc_attr( $msgfield ); ?>').attr('role', 'alert');
-
-			var code_level;
-			code_level = false;
-
-			//filter to insert your own code. Not MMPU compatible.
-			<?php do_action('pmpro_applydiscountcode_return_js', $discount_code, $discount_code_id, empty( $level_ids ) ? null : $level_ids[0], false); ?>
-		</script>
-		<?php
-		exit(0);
-	}
-
 	printf( esc_html__( 'The %s code has been applied to your order.', 'paid-memberships-pro' ), '<span class="' . esc_attr( pmpro_get_element_class( "pmpro_tag pmpro_tag-discount-code", "pmpro_tag-discount-code" ) ) . '">' . esc_html( $discount_code ) . '</span>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	$combined_level = null;

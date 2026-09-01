@@ -403,14 +403,7 @@ if (!empty($page_msg)) { ?>
 	$billing_fields = array(
 		array(
 			'html' => function() {
-				$allowed_sd_html = array(
-					'a' => array(
-						'href'   => array(),
-						'target' => array(),
-						'title'  => array(),
-					),
-				);
-				echo '<p>' . wp_kses( __( 'Set the member pricing for this level. The initial payment is collected immediately at checkout. Recurring payments, if applicable, begin one cycle after the initial payment. Changing the level price only applies to new members and does not affect existing members of this level.', 'paid-memberships-pro' ), $allowed_sd_html ) . '</p>';
+				echo '<p>' . esc_html__( 'Set the member pricing for this level. The initial payment is collected immediately at checkout. Recurring payments, if applicable, begin one cycle after the initial payment. Changing the level price only applies to new members and does not affect existing members of this level.', 'paid-memberships-pro' ) . '</p>';
 			},
 		),
 		array(

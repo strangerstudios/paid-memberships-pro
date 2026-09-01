@@ -10,27 +10,6 @@ $ml_id = intval($_REQUEST['deleteid']);
 if($ml_id > 0) {
     do_action("pmpro_delete_membership_level", $ml_id);
 
-    //delete the subscription delay and set expiration date settings for this level
-    delete_option( 'pmpro_subscription_delay_' . $ml_id );
-    delete_option( 'pmprosed_' . $ml_id );
-    $delete_code_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_discount_codes" );
-    foreach ( $delete_code_ids as $delete_code_id ) {
-        delete_option( 'pmprosed_' . $ml_id . '_' . intval( $delete_code_id ) );
-    }
-    $all_code_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
-    if ( is_array( $all_code_delays ) ) {
-        $code_delays_changed = false;
-        foreach ( $all_code_delays as $delay_code_id => $delay_levels ) {
-            if ( is_array( $delay_levels ) && isset( $delay_levels[ $ml_id ] ) ) {
-                unset( $all_code_delays[ $delay_code_id ][ $ml_id ] );
-                $code_delays_changed = true;
-            }
-        }
-        if ( $code_delays_changed ) {
-            update_option( 'pmpro_discount_code_subscription_delays', $all_code_delays );
-        }
-    }
-
     //cancel any subscriptions to the ml
     $r2 = true;
     $user_ids = $wpdb->get_col( $wpdb->prepare( "

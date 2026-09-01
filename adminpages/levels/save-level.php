@@ -1,8 +1,6 @@
 <?php
 
-// $page_msg / $page_msgt must be globals: this file runs inside the admin page
-// function, and edit-level.php re-declares them as globals before displaying.
-global $wpdb, $allowedposttags, $page_msg, $page_msgt;
+global $wpdb, $allowedposttags;
 
 if(isset($_REQUEST['saveid']))
 $saveid = intval($_REQUEST['saveid']);

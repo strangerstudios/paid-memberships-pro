@@ -1214,21 +1214,6 @@ function pmpro_define_deprecated_payment_schedule_functions() {
 		}
 	}
 
-	if ( ! function_exists( 'pmprosd_daysUntilDate' ) ) {
-		/**
-		 * @deprecated TBD
-		 */
-		function pmprosd_daysUntilDate( $date ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
-			$converted_date = pmpro_convert_date_pattern( $date );
-			if ( empty( $converted_date ) ) {
-				return 0;
-			}
-			$diff = strtotime( $converted_date, current_time( 'timestamp' ) ) - current_time( 'timestamp' );
-			return $diff < 0 ? 0 : ceil( $diff / 60 / 60 / 24 );
-		}
-	}
-
 	if ( ! function_exists( 'pmprosd_getDelay' ) ) {
 		/**
 		 * @deprecated TBD Use pmpro_get_subscription_delay().
@@ -1303,20 +1288,6 @@ function pmpro_define_deprecated_payment_schedule_functions() {
 		}
 	}
 
-	if ( ! function_exists( 'pmprosed_is_past_date' ) ) {
-		/**
-		 * @deprecated TBD
-		 */
-		function pmprosed_is_past_date( $level_id ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
-			$set_expiration_date = pmpro_get_set_expiration_date( $level_id );
-			if ( empty( $set_expiration_date ) ) {
-				return false;
-			}
-			$resolved_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
-			return ! empty( $resolved_date ) && $resolved_date < date( 'Y-m-d' );
-		}
-	}
 }
 add_action( 'plugins_loaded', 'pmpro_define_deprecated_payment_schedule_functions' );
 

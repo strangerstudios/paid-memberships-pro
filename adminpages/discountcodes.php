@@ -368,17 +368,6 @@
 			//action
 			do_action("pmpro_delete_discount_code", $delete);
 
-			//delete the subscription delay and set expiration date settings for this code
-			$code_level_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_levels" );
-			foreach ( $code_level_ids as $code_level_id ) {
-				delete_option( 'pmprosed_' . intval( $code_level_id ) . '_' . $delete );
-			}
-			$all_code_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
-			if ( is_array( $all_code_delays ) && isset( $all_code_delays[ $delete ] ) ) {
-				unset( $all_code_delays[ $delete ] );
-				update_option( 'pmpro_discount_code_subscription_delays', $all_code_delays );
-			}
-
 			//delete the code levels
 			$r1 = $wpdb->delete($wpdb->pmpro_discount_codes_levels, array('code_id'=>$delete), array('%d'));
 
