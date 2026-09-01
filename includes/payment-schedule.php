@@ -105,8 +105,7 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	$set_date = strtoupper( trim( $date ) );
 
 	// Change "Y-" and "M-" to "Y1-" and "M1-".
-	$set_date = preg_replace( '/Y-/', 'Y1-', $set_date );
-	$set_date = preg_replace( '/M-/', 'M1-', $set_date );
+	$set_date = str_replace( array( 'Y-', 'M-' ), array( 'Y1-', 'M1-' ), $set_date );
 
 	// Get number of months and years to add. Token values are capped at 99 by
 	// pmpro_is_valid_date_pattern().
@@ -554,8 +553,6 @@ if ( isset( $_REQUEST['page'] ) && 'pmpro-membershiplevels' === $_REQUEST['page'
 	add_action( 'admin_notices', 'pmpro_set_expiration_date_admin_notice' );
 }
 
-// Payment schedule preview is calculated client-side in the admin JS.
-
 /**
  * Render a date pattern builder UI block.
  *
@@ -565,12 +562,19 @@ if ( isset( $_REQUEST['page'] ) && 'pmpro-membershiplevels' === $_REQUEST['page'
  *
  * @since TBD
  *
- * @param array  $month_names    Associative array of month number => translated name.
  * @param string $hidden_name    The name attribute for the hidden input storing the pattern.
  * @param string $existing_value The existing date pattern value.
  * @param string $id             Optional. An id attribute for the builder wrapper element.
  */
-function pmpro_payment_schedule_render_date_builder( $month_names, $hidden_name, $existing_value, $id = '' ) {
+function pmpro_payment_schedule_render_date_builder( $hidden_name, $existing_value, $id = '' ) {
+	$month_names = array(
+		'01' => __( 'January', 'paid-memberships-pro' ), '02' => __( 'February', 'paid-memberships-pro' ),
+		'03' => __( 'March', 'paid-memberships-pro' ), '04' => __( 'April', 'paid-memberships-pro' ),
+		'05' => __( 'May', 'paid-memberships-pro' ), '06' => __( 'June', 'paid-memberships-pro' ),
+		'07' => __( 'July', 'paid-memberships-pro' ), '08' => __( 'August', 'paid-memberships-pro' ),
+		'09' => __( 'September', 'paid-memberships-pro' ), '10' => __( 'October', 'paid-memberships-pro' ),
+		'11' => __( 'November', 'paid-memberships-pro' ), '12' => __( 'December', 'paid-memberships-pro' ),
+	);
 	?>
 	<div class="pmpro_date_pattern_builder"<?php if ( ! empty( $id ) ) { echo ' id="' . esc_attr( $id ) . '"'; } ?> data-existing-value="<?php echo esc_attr( $existing_value ); ?>">
 		<select class="pmpro_date_pattern_mode" onchange="pmpro_date_mode_changed(this);" aria-label="<?php esc_attr_e( 'Date pattern type', 'paid-memberships-pro' ); ?>">
@@ -613,24 +617,18 @@ function pmpro_payment_schedule_render_date_builder( $month_names, $hidden_name,
 }
 
 /**
- * Get the standard month names array for date builders.
+ * Save the subscription delay and set expiration date for a discount code level.
+ *
+ * Runs on pmpro_save_discount_code_level for each checked level.
  *
  * @since TBD
  *
- * @return array Associative array of two-digit month number => translated month name.
+ * @param int $code_id  The discount code ID being saved.
+ * @param int $level_id The membership level ID being saved for the code.
  */
-function pmpro_get_month_names() {
-	return array(
-		'01' => __( 'January', 'paid-memberships-pro' ), '02' => __( 'February', 'paid-memberships-pro' ),
-		'03' => __( 'March', 'paid-memberships-pro' ), '04' => __( 'April', 'paid-memberships-pro' ),
-		'05' => __( 'May', 'paid-memberships-pro' ), '06' => __( 'June', 'paid-memberships-pro' ),
-		'07' => __( 'July', 'paid-memberships-pro' ), '08' => __( 'August', 'paid-memberships-pro' ),
-		'09' => __( 'September', 'paid-memberships-pro' ), '10' => __( 'October', 'paid-memberships-pro' ),
-		'11' => __( 'November', 'paid-memberships-pro' ), '12' => __( 'December', 'paid-memberships-pro' ),
-	);
-}
-
 function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) {
+	global $pmpro_payment_schedule_dc_errors;
+
 	$all_levels_a = isset( $_REQUEST['all_levels'] ) ? array_map( 'intval', (array) $_REQUEST['all_levels'] ) : array();
 	$key          = array_search( intval( $level_id ), $all_levels_a );
 	if ( $key === false ) {
@@ -660,12 +658,11 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 			// Invalid pattern: keep the previous setting and report the error.
 			$delay_value   = '';
 			$delay_invalid = true;
-			pmpro_payment_schedule_add_discount_code_error(
-				sprintf(
-					/* translators: %s: the membership level name. */
-					__( 'The First Recurring Payment date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
-					pmpro_payment_schedule_get_level_name( $level_id )
-				)
+			$level = pmpro_getLevel( $level_id );
+			$pmpro_payment_schedule_dc_errors[] = sprintf(
+				/* translators: %s: the membership level name. */
+				__( 'The First Recurring Payment date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
+				! empty( $level->name ) ? $level->name : $level_id
 			);
 		}
 	}
@@ -694,12 +691,11 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 			// Invalid pattern: keep the previous setting and report the error.
 			$expiration_value   = '';
 			$expiration_invalid = true;
-			pmpro_payment_schedule_add_discount_code_error(
-				sprintf(
-					/* translators: %s: the membership level name. */
-					__( 'The expiration date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
-					pmpro_payment_schedule_get_level_name( $level_id )
-				)
+			$level = pmpro_getLevel( $level_id );
+			$pmpro_payment_schedule_dc_errors[] = sprintf(
+				/* translators: %s: the membership level name. */
+				__( 'The expiration date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
+				! empty( $level->name ) ? $level->name : $level_id
 			);
 		}
 	}
@@ -712,37 +708,6 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	}
 }
 add_action( 'pmpro_save_discount_code_level', 'pmpro_payment_schedule_save_discount_code_level', 10, 2 );
-
-/**
- * Record a payment schedule error during a discount code save.
- *
- * adminpages/discountcodes.php merges these into its $level_errors list so the
- * admin stays on the edit form and sees the error.
- *
- * @since TBD
- *
- * @param string $error The error message to record.
- */
-function pmpro_payment_schedule_add_discount_code_error( $error ) {
-	global $pmpro_payment_schedule_dc_errors;
-	if ( ! is_array( $pmpro_payment_schedule_dc_errors ) ) {
-		$pmpro_payment_schedule_dc_errors = array();
-	}
-	$pmpro_payment_schedule_dc_errors[] = $error;
-}
-
-/**
- * Get a level name for error messages.
- *
- * @since TBD
- *
- * @param int $level_id The membership level ID.
- * @return string The level name, or the ID if the level can't be loaded.
- */
-function pmpro_payment_schedule_get_level_name( $level_id ) {
-	$level = pmpro_getLevel( $level_id );
-	return ! empty( $level->name ) ? $level->name : (string) $level_id;
-}
 
 /**
  * Remove payment schedule options for levels that were unchecked from a discount code.

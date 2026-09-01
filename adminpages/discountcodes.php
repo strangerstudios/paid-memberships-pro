@@ -597,7 +597,6 @@
 						}
 						$dc_delay_type = ! empty( $dc_delay ) ? ( is_numeric( $dc_delay ) ? 'days' : 'date' ) : 'none';
 						$dc_exp_type = ! empty( $dc_set_expiration_date ) ? 'date' : 'none';
-						$dc_month_names = pmpro_get_month_names();
 
 						$level_checkbox_id          = 'levels_' . $level->id;
 						$level_recurring_checkbox_id = 'recurring_' . $level->id;
@@ -719,7 +718,7 @@
 												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 											</label>
 											<div class="pmpro_dc_delay_date_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_delay_type !== 'date' ) echo 'style="display:none;"'; ?>>
-												<?php pmpro_payment_schedule_render_date_builder( $dc_month_names, 'subscription_delay_date[]', $dc_delay_type === 'date' ? $dc_delay : '' ); ?>
+												<?php pmpro_payment_schedule_render_date_builder( 'subscription_delay_date[]', $dc_delay_type === 'date' ? $dc_delay : '' ); ?>
 											</div>
 											<input type="hidden" name="delay_type[]" value="<?php echo esc_attr( $dc_delay_type ); ?>" class="pmpro_dc_delay_type_<?php echo esc_attr( $level->id ); ?>" />
 										</fieldset>
@@ -803,7 +802,7 @@
 												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 											</label>
 											<div class="pmpro_dc_exp_date_<?php echo esc_attr( $level->id ); ?>" <?php if ( $dc_exp_type !== 'date' ) echo 'style="display:none;"'; ?>>
-												<?php pmpro_payment_schedule_render_date_builder( $dc_month_names, 'set_expiration_date[]', $dc_set_expiration_date ); ?>
+												<?php pmpro_payment_schedule_render_date_builder( 'set_expiration_date[]', $dc_set_expiration_date ); ?>
 											</div>
 											<input type="hidden" name="expiration_date_type[]" value="<?php echo esc_attr( $dc_exp_type ); ?>" class="pmpro_dc_exp_type_<?php echo esc_attr( $level->id ); ?>" />
 										</fieldset>
@@ -833,15 +832,6 @@
 			jQuery('.pmpro_dc_exp_date_' + levelId).toggle(val === 'date');
 			jQuery('.pmpro_dc_exp_type_' + levelId).val(val);
 		}
-		jQuery(document).ready(function($) {
-			// Initialize all date pattern builders on the page.
-			$('.pmpro_date_pattern_builder').each(function() {
-				var val = $(this).attr('data-existing-value');
-				if (val) {
-					pmpro_initDateBuilder($(this), val);
-				}
-			});
-		});
 		</script>
 
 		<p class="submit">

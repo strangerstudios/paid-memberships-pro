@@ -2051,6 +2051,18 @@ function pmpro_initDateBuilder($builder, existingValue) {
 }
 
 /**
+ * Initialize every date pattern builder on the page from its stored value.
+ */
+jQuery( function ( $ ) {
+	$( '.pmpro_date_pattern_builder' ).each( function () {
+		var val = $( this ).attr( 'data-existing-value' );
+		if ( val ) {
+			pmpro_initDateBuilder( $( this ), val );
+		}
+	} );
+} );
+
+/**
  * Checklist "Select: All | None" controls for pmpro_build_settings_field() checklist fields.
  *
  * Delegated so it works for any checklist on the page. Each control toggles every checkbox within

@@ -194,22 +194,11 @@ if ( ! empty( $temp_id ) ) {
 	$level_image = 0;
 }
 
-// Get the subscription delay and set expiration date settings for the given level.
-// Uses the same wp_options keys as the retired Subscription Delays and Set Expiration Dates Add Ons.
-if ( ! empty( $temp_id ) ) {
-	$subscription_delay  = get_option( 'pmpro_subscription_delay_' . $temp_id, '' );
-	$set_expiration_date = get_option( 'pmprosed_' . $temp_id, '' );
-} else {
-	$subscription_delay  = '';
-	$set_expiration_date = '';
-}
-
-// Determine the delay type and expiration type for the UI.
-if ( ! empty( $subscription_delay ) ) {
-	$delay_type = is_numeric( $subscription_delay ) ? 'days' : 'date';
-} else {
-	$delay_type = 'none';
-}
+// Get the subscription delay and set expiration date settings for the given level
+// and determine the type each should render as in the UI.
+$subscription_delay   = ! empty( $temp_id ) ? pmpro_get_subscription_delay( $temp_id ) : '';
+$set_expiration_date  = ! empty( $temp_id ) ? pmpro_get_set_expiration_date( $temp_id ) : '';
+$delay_type           = empty( $subscription_delay ) ? 'none' : ( is_numeric( $subscription_delay ) ? 'days' : 'date' );
 $expiration_date_type = ! empty( $set_expiration_date ) ? 'date' : 'none';
 ?>
 <hr class="wp-header-end">
@@ -507,7 +496,7 @@ if (!empty($page_msg)) { ?>
 						<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 					</label>
 					<div class="pmpro_delay_field pmpro_delay_field_date" <?php if ( $delay_type !== 'date' ) echo 'style="display:none;"'; ?>>
-						<?php pmpro_payment_schedule_render_date_builder( pmpro_get_month_names(), 'subscription_delay_date', $delay_type === 'date' ? $subscription_delay : '', 'pmpro_delay_date_builder' ); ?>
+						<?php pmpro_payment_schedule_render_date_builder( 'subscription_delay_date', $delay_type === 'date' ? $subscription_delay : '', 'pmpro_delay_date_builder' ); ?>
 					</div>
 				</fieldset>
 				<?php
@@ -654,7 +643,7 @@ if (!empty($page_msg)) { ?>
 					<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 				</label>
 				<div class="pmpro_expiration_date_field" <?php if ( $expiration_date_type !== 'date' ) echo 'style="display:none;"'; ?>>
-					<?php pmpro_payment_schedule_render_date_builder( pmpro_get_month_names(), 'set_expiration_date', $set_expiration_date, 'pmpro_expiration_date_builder' ); ?>
+					<?php pmpro_payment_schedule_render_date_builder( 'set_expiration_date', $set_expiration_date, 'pmpro_expiration_date_builder' ); ?>
 				</div>
 			</fieldset>
 			<?php
@@ -914,14 +903,6 @@ if (!empty($page_msg)) { ?>
 	/* ── Init ── */
 
 	$(document).ready(function() {
-		// Initialize all date pattern builders from their data attributes.
-		$('.pmpro_date_pattern_builder').each(function() {
-			var val = $(this).attr('data-existing-value');
-			if (val) {
-				pmpro_initDateBuilder($(this), val);
-			}
-		});
-
 		// Trigger preview on page load.
 		pmpro_update_schedule_preview();
 
