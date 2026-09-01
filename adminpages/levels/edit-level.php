@@ -505,24 +505,6 @@ if (!empty($page_msg)) { ?>
 			},
 		),
 		array(
-			'html' => function() use ( $level_is_recurring ) {
-				?>
-				<div class="pmpro_schedule_preview_inline<?php echo $level_is_recurring ? '' : ' pmpro-hidden'; ?>" data-pmpro-depends='[{"id":"recurring","checked":true}]'>
-					<div class="pmpro_schedule_preview_bar">
-						<span class="pmpro_schedule_preview_title"><?php esc_html_e( 'Payment Schedule Preview', 'paid-memberships-pro' ); ?></span>
-						<label class="pmpro_schedule_preview_checkout_date">
-							<?php esc_html_e( 'Preview checkout date:', 'paid-memberships-pro' ); ?>
-							<input type="date" id="pmpro_preview_checkout_date" value="<?php echo esc_attr( wp_date( 'Y-m-d' ) ); ?>" />
-						</label>
-						<div id="pmpro_schedule_timeline" class="pmpro_schedule_timeline" role="status" aria-live="polite">
-							<div class="pmpro_schedule_timeline_loading"><?php esc_html_e( 'Configure billing settings to see a preview.', 'paid-memberships-pro' ); ?></div>
-						</div>
-					</div>
-				</div>
-				<?php
-			},
-		),
-		array(
 			'hook' => 'pmpro_membership_level_after_billing_details_settings',
 			'args' => array( $level ),
 		),
@@ -777,14 +759,6 @@ if (!empty($page_msg)) { ?>
 (function($) {
 	'use strict';
 
-	var previewDebounceTimer = null;
-	var previewRequestCount = 0;
-	var previewNonce = <?php echo wp_json_encode( wp_create_nonce( 'pmpro_payment_schedule_preview' ) ); ?>;
-
-	/* ── Toggle functions ── */
-	// The radios these are bound to bubble to the delegated preview listener
-	// below, so the preview refreshes without an explicit call here.
-
 	window.pmpro_toggle_delay_fields = function() {
 		var delayType = $('input[name="delay_type"]:checked').val();
 		$('.pmpro_delay_field_days').toggle(delayType === 'days');
@@ -796,126 +770,5 @@ if (!empty($page_msg)) { ?>
 		$('.pmpro_expiration_duration_fields').toggle(expType === 'none');
 		$('.pmpro_expiration_date_field').toggle(expType === 'date');
 	};
-
-	/* ── Schedule Preview (server-rendered via AJAX) ──
-	 * The schedule itself is computed by wp_ajax_pmpro_payment_schedule_preview
-	 * using the same date engine as checkout; this script only collects the
-	 * form values and draws the returned events. */
-
-	window.pmpro_update_schedule_preview = function() {
-		clearTimeout(previewDebounceTimer);
-		previewDebounceTimer = setTimeout(pmpro_do_schedule_preview, 300);
-	};
-
-	function showTimelineMessage(message) {
-		$('#pmpro_schedule_timeline').empty().append(
-			$('<div class="pmpro_schedule_timeline_empty"></div>').text(message)
-		);
-	}
-
-	function pmpro_do_schedule_preview() {
-		var data = {
-			action: 'pmpro_payment_schedule_preview',
-			nonce: previewNonce,
-			checkout_date: $('#pmpro_preview_checkout_date').val(),
-			recurring: $('#recurring').is(':checked') ? 1 : 0,
-			expiration: $('#expiration').is(':checked') ? 1 : 0,
-			custom_trial: $('#custom_trial').is(':checked') ? 1 : 0,
-			initial_payment: $('input[name="initial_payment"]').val(),
-			billing_amount: $('input[name="billing_amount"]').val(),
-			cycle_number: $('input[name="cycle_number"]').val(),
-			cycle_period: $('select[name="cycle_period"]').val(),
-			billing_limit: $('input[name="billing_limit"]').val(),
-			delay_type: $('input[name="delay_type"]:checked').val() || 'none',
-			delay_days: $('#subscription_delay_days').val(),
-			delay_date: $('#pmpro_delay_date_builder .pmpro_date_pattern_value').val(),
-			expiration_type: $('input[name="expiration_date_type"]:checked').val() || 'none',
-			expiration_number: $('input[name="expiration_number"]').val(),
-			expiration_period: $('select[name="expiration_period"]').val(),
-			set_expiration_date: $('#pmpro_expiration_date_builder .pmpro_date_pattern_value').val()
-		};
-		var requestNumber = ++previewRequestCount;
-		$.post(ajaxurl, data, function(response) {
-			// Ignore stale responses from superseded requests.
-			if (requestNumber !== previewRequestCount) {
-				return;
-			}
-			if (!response || !response.success || !response.data) {
-				showTimelineMessage(<?php echo wp_json_encode( __( 'Unable to generate preview.', 'paid-memberships-pro' ) ); ?>);
-				return;
-			}
-			renderTimeline(response.data);
-		}).fail(function() {
-			if (requestNumber === previewRequestCount) {
-				showTimelineMessage(<?php echo wp_json_encode( __( 'Unable to generate preview.', 'paid-memberships-pro' ) ); ?>);
-			}
-		});
-	}
-
-	function renderTimeline(data) {
-		if (data.empty) {
-			showTimelineMessage(data.empty);
-			return;
-		}
-		var events = data.events || [];
-		var html = '<div class="pmpro_htimeline">';
-		for (var i = 0; i < events.length; i++) {
-			var event = events[i];
-			// The type doubles as a class name suffix; only known types qualify.
-			var typeClass = /^[a-z_]+$/.test(String(event.type || '')) ? event.type : '';
-			html += '<div class="pmpro_htimeline_item pmpro_htimeline_item--' + typeClass + '">';
-			if (event.type === 'initial') {
-				html += '<div class="pmpro_htimeline_dot pmpro_htimeline_dot--calendar"><span class="dashicons dashicons-calendar-alt"></span></div>';
-			} else {
-				html += '<div class="pmpro_htimeline_dot"></div>';
-			}
-			html += '<div class="pmpro_htimeline_label">' + (event.type === 'continuation' ? '&hellip;' : escapeHtml(event.label || '')) + '</div>';
-			if (event.amount) {
-				html += '<div class="pmpro_htimeline_amount">' + escapeHtml(event.amount) + '</div>';
-			}
-			if (event.date) {
-				html += '<div class="pmpro_htimeline_date">' + escapeHtml(event.date) + '</div>';
-			}
-			if (event.subtitle) {
-				html += '<div class="pmpro_htimeline_subtitle">' + escapeHtml(event.subtitle) + '</div>';
-			}
-			html += '</div>';
-			if (i < events.length - 1) {
-				html += '<div class="pmpro_htimeline_connector"></div>';
-			}
-		}
-		html += '</div>';
-		var footnotes = data.footnotes || [];
-		for (var f = 0; f < footnotes.length; f++) {
-			html += '<div class="pmpro_htimeline_footnote">' + escapeHtml(footnotes[f]) + '</div>';
-		}
-		var notes = data.notes || [];
-		for (var n = 0; n < notes.length; n++) {
-			html += '<div class="pmpro_htimeline_footnote pmpro_htimeline_footnote--error">' + escapeHtml(notes[n]) + '</div>';
-		}
-		$('#pmpro_schedule_timeline').html(html);
-	}
-
-	function escapeHtml(text) {
-		var div = document.createElement('div');
-		div.appendChild(document.createTextNode(text));
-		return div.innerHTML;
-	}
-
-	/* ── Init ── */
-
-	$(document).ready(function() {
-		// Trigger preview on page load.
-		pmpro_update_schedule_preview();
-
-		$('#pmpro_preview_checkout_date').on('change', pmpro_update_schedule_preview);
-
-		// Watch all billing/expiration/delay form fields. Delegated so it also covers the
-		// date pattern builder controls rendered by pmpro_payment_schedule_render_date_builder().
-		$(document).on('input change', '#pmpro_subscription_delay_fieldset input, #pmpro_subscription_delay_fieldset select, #pmpro_expiration_type_fieldset input, #pmpro_expiration_type_fieldset select', pmpro_update_schedule_preview);
-		$('input[name="initial_payment"], input[name="billing_amount"], input[name="cycle_number"], input[name="billing_limit"]').on('input change', pmpro_update_schedule_preview);
-		$('select[name="cycle_period"]').on('change', pmpro_update_schedule_preview);
-		$('#recurring, #expiration, #custom_trial').on('change', pmpro_update_schedule_preview);
-	});
 })(jQuery);
 </script>
