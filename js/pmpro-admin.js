@@ -1984,16 +1984,16 @@ function pmpro_date_mode_changed(selectEl) {
 	$builder.find('.pmpro_date_builder_yearly').toggle(mode === 'yearly');
 	$builder.find('.pmpro_date_builder_custom').toggle(mode === 'custom');
 	if (mode === 'custom') {
-		$builder.find('.pmpro_date_pattern_input').trigger('focus');
-	}
-	if (mode === 'monthly' || mode === 'yearly') {
+		// Sync the hidden field with the visible input so switching modes can't
+		// silently submit the previous mode's assembled pattern.
+		var $input = $builder.find('.pmpro_date_pattern_input');
+		$builder.find('.pmpro_date_pattern_value').val($input.val());
+		$input.trigger('focus').trigger('select');
+	} else if (mode === 'monthly' || mode === 'yearly') {
 		pmpro_assemble_date_pattern(selectEl);
-	} else if (!mode) {
+	} else {
 		// "Choose..." selected: clear the stored pattern so a stale value isn't submitted.
 		$builder.find('.pmpro_date_pattern_value').val('');
-	}
-	if (typeof pmpro_update_schedule_preview === 'function') {
-		pmpro_update_schedule_preview();
 	}
 }
 
@@ -2011,9 +2011,6 @@ function pmpro_assemble_date_pattern(el) {
 		pattern = 'Y-' + $builder.find('.pmpro_date_builder_yearly .pmpro_date_builder_month').val() + '-' + $builder.find('.pmpro_date_builder_yearly .pmpro_date_builder_day').val();
 	}
 	$builder.find('.pmpro_date_pattern_value').val(pattern);
-	if (typeof pmpro_update_schedule_preview === 'function') {
-		pmpro_update_schedule_preview();
-	}
 }
 
 /**

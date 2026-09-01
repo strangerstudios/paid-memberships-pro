@@ -790,27 +790,20 @@ if (!empty($page_msg)) { ?>
 	var previewRequestCount = 0;
 	var previewNonce = <?php echo wp_json_encode( wp_create_nonce( 'pmpro_payment_schedule_preview' ) ); ?>;
 
-	/**
-	 * Get the effective date value for a builder (always from the hidden field).
-	 */
-	function getBuilderValue($builder) {
-		return $builder.find('.pmpro_date_pattern_value').val();
-	}
-
 	/* ── Toggle functions ── */
+	// The radios these are bound to bubble to the delegated preview listener
+	// below, so the preview refreshes without an explicit call here.
 
 	window.pmpro_toggle_delay_fields = function() {
 		var delayType = $('input[name="delay_type"]:checked').val();
 		$('.pmpro_delay_field_days').toggle(delayType === 'days');
 		$('.pmpro_delay_field_date').toggle(delayType === 'date');
-		pmpro_update_schedule_preview();
 	};
 
 	window.pmpro_toggle_expiration_type = function() {
 		var expType = $('input[name="expiration_date_type"]:checked').val();
 		$('.pmpro_expiration_duration_fields').toggle(expType === 'none');
 		$('.pmpro_expiration_date_field').toggle(expType === 'date');
-		pmpro_update_schedule_preview();
 	};
 
 	/* ── Schedule Preview (server-rendered via AJAX) ──
@@ -844,11 +837,11 @@ if (!empty($page_msg)) { ?>
 			billing_limit: $('input[name="billing_limit"]').val(),
 			delay_type: $('input[name="delay_type"]:checked').val() || 'none',
 			delay_days: $('#subscription_delay_days').val(),
-			delay_date: getBuilderValue($('#pmpro_delay_date_builder')),
+			delay_date: $('#pmpro_delay_date_builder .pmpro_date_pattern_value').val(),
 			expiration_type: $('input[name="expiration_date_type"]:checked').val() || 'none',
 			expiration_number: $('input[name="expiration_number"]').val(),
 			expiration_period: $('select[name="expiration_period"]').val(),
-			set_expiration_date: getBuilderValue($('#pmpro_expiration_date_builder'))
+			set_expiration_date: $('#pmpro_expiration_date_builder .pmpro_date_pattern_value').val()
 		};
 		var requestNumber = ++previewRequestCount;
 		$.post(ajaxurl, data, function(response) {
@@ -877,7 +870,9 @@ if (!empty($page_msg)) { ?>
 		var html = '<div class="pmpro_htimeline">';
 		for (var i = 0; i < events.length; i++) {
 			var event = events[i];
-			html += '<div class="pmpro_htimeline_item pmpro_htimeline_item--' + escapeHtml(event.type || '') + '">';
+			// The type doubles as a class name suffix; only known types qualify.
+			var typeClass = /^[a-z_]+$/.test(String(event.type || '')) ? event.type : '';
+			html += '<div class="pmpro_htimeline_item pmpro_htimeline_item--' + typeClass + '">';
 			if (event.type === 'initial') {
 				html += '<div class="pmpro_htimeline_dot pmpro_htimeline_dot--calendar"><span class="dashicons dashicons-calendar-alt"></span></div>';
 			} else {

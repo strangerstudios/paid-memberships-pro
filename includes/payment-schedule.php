@@ -868,8 +868,9 @@ function pmpro_payment_schedule_preview_ajax() {
 	$recurring       = ! empty( $_POST['recurring'] );
 	$has_expiration  = ! empty( $_POST['expiration'] );
 	$custom_trial    = ! empty( $_POST['custom_trial'] );
-	$initial_payment = isset( $_POST['initial_payment'] ) ? floatval( $_POST['initial_payment'] ) : 0;
-	$billing_amount  = isset( $_POST['billing_amount'] ) ? floatval( $_POST['billing_amount'] ) : 0;
+	// Strip thousands separators so formatted prices like "1,234.00" parse fully.
+	$initial_payment = isset( $_POST['initial_payment'] ) ? floatval( str_replace( ',', '', (string) $_POST['initial_payment'] ) ) : 0;
+	$billing_amount  = isset( $_POST['billing_amount'] ) ? floatval( str_replace( ',', '', (string) $_POST['billing_amount'] ) ) : 0;
 	$cycle_number    = isset( $_POST['cycle_number'] ) ? max( 1, intval( $_POST['cycle_number'] ) ) : 1;
 	$cycle_period    = isset( $_POST['cycle_period'] ) && in_array( $_POST['cycle_period'], array( 'Day', 'Week', 'Month', 'Year' ), true ) ? $_POST['cycle_period'] : 'Month';
 	$billing_limit   = isset( $_POST['billing_limit'] ) ? intval( $_POST['billing_limit'] ) : 0;
@@ -926,23 +927,48 @@ function pmpro_payment_schedule_preview_ajax() {
 		}
 	}
 
-	// 3. Generate the payment dates (bounded).
-	$payments = array();
+	// 3. Generate the payment dates. Bounded: a walk toward an expiration date is
+	// capped (an admin-typed billing limit could otherwise exhaust memory), and
+	// with no expiration only the displayed payments are computed - the final
+	// payment for a billing limit is derived directly instead of walking to it.
+	$max_inline        = 5;
+	$payments          = array();
+	$total_payments    = 0;
+	$hit_billing_limit = false;
+	$truncated         = false;
+	// With no billing limit and no expiration the schedule is open-ended; there
+	// is no real "last payment" to show.
+	$open_ended = $billing_limit < 1 && empty( $expiration_ts );
 	if ( ! empty( $first_ts ) ) {
-		$safe_max = $billing_limit > 0 ? $billing_limit : 100;
-		for ( $i = 0; $i < $safe_max; $i++ ) {
-			$pay_ts = 0 === $i ? $first_ts : strtotime( '+ ' . ( $cycle_number * $i ) . ' ' . $cycle_period, $first_ts );
-			if ( empty( $pay_ts ) || ( $expiration_ts && $pay_ts >= $expiration_ts ) ) {
-				break;
+		if ( ! empty( $expiration_ts ) ) {
+			// Walk payments until the expiration date or the billing limit.
+			$walk_cap = $billing_limit > 0 ? min( $billing_limit, 1200 ) : 1200;
+			for ( $i = 0; $i < $walk_cap; $i++ ) {
+				$pay_ts = 0 === $i ? $first_ts : strtotime( '+ ' . ( $cycle_number * $i ) . ' ' . $cycle_period, $first_ts );
+				if ( empty( $pay_ts ) || $pay_ts >= $expiration_ts ) {
+					break;
+				}
+				$payments[] = $pay_ts;
 			}
-			$payments[] = $pay_ts;
+			$total_payments    = count( $payments );
+			$hit_billing_limit = $billing_limit > 0 && $total_payments === $billing_limit;
+			// If the walk hit the cap without reaching the expiration date, don't
+			// present the capped count as a real final payment.
+			$truncated = ! $hit_billing_limit && $total_payments >= 1200;
+		} else {
+			// No expiration: compute only the payments that will be displayed.
+			$display_count = $billing_limit > 0 ? min( $billing_limit, $max_inline ) : $max_inline;
+			for ( $i = 0; $i < $display_count; $i++ ) {
+				$pay_ts = 0 === $i ? $first_ts : strtotime( '+ ' . ( $cycle_number * $i ) . ' ' . $cycle_period, $first_ts );
+				if ( empty( $pay_ts ) ) {
+					break;
+				}
+				$payments[] = $pay_ts;
+			}
+			$total_payments    = $billing_limit > 0 ? $billing_limit : count( $payments );
+			$hit_billing_limit = $billing_limit > 0;
 		}
 	}
-	$total_payments    = count( $payments );
-	$hit_billing_limit = $billing_limit > 0 && $total_payments === $billing_limit;
-	// With no billing limit and no expiration the schedule is open-ended; the
-	// generated list is truncated, so there is no real "last payment" to show.
-	$open_ended = $billing_limit < 1 && empty( $expiration_ts );
 
 	// 4. Build the display events. All strings are plain text; JS escapes them.
 	$date_format    = get_option( 'date_format' );
@@ -960,36 +986,40 @@ function pmpro_payment_schedule_preview_ajax() {
 		'date'   => date_i18n( $date_format, $checkout_ts ),
 	);
 
-	if ( $total_payments > 0 ) {
-		$max_inline   = 5;
-		$inline_count = min( $total_payments, $max_inline );
-		if ( ! $open_ended && $total_payments === $max_inline + 1 ) {
-			$inline_count = $total_payments;
-		}
-
+	if ( count( $payments ) > 0 ) {
+		$inline_count = min( count( $payments ), $max_inline );
 		for ( $i = 0; $i < $inline_count; $i++ ) {
-			$is_last  = ( $i === $total_payments - 1 );
+			$is_final = ( $i === $total_payments - 1 ) && ! $truncated;
 			$events[] = array(
-				'type'     => ( $is_last && $hit_billing_limit ) ? 'last_payment' : 'recurring',
-				'label'    => ( $is_last && $hit_billing_limit ) ? $last_label : '#' . ( $i + 1 ),
+				'type'     => ( $is_final && $hit_billing_limit ) ? 'last_payment' : 'recurring',
+				'label'    => ( $is_final && $hit_billing_limit ) ? $last_label : '#' . ( $i + 1 ),
 				'amount'   => $format_price( $billing_amount ),
 				'date'     => date_i18n( $date_format, $payments[ $i ] ),
-				'subtitle' => ( $is_last && $hit_billing_limit ) ? $last_subtitle : '',
+				'subtitle' => ( $is_final && $hit_billing_limit ) ? $last_subtitle : '',
 			);
 		}
 
-		if ( $open_ended ) {
-			// Open-ended subscription: no meaningful final payment to display.
+		if ( $open_ended || $truncated ) {
+			// No meaningful final payment to display.
 			$events[] = array( 'type' => 'continuation' );
 		} elseif ( $total_payments > $inline_count ) {
 			$events[] = array( 'type' => 'continuation' );
-			$events[] = array(
-				'type'     => $hit_billing_limit ? 'last_payment' : 'recurring',
-				'label'    => $hit_billing_limit ? $last_label : '#' . $total_payments,
-				'amount'   => $format_price( $billing_amount ),
-				'date'     => date_i18n( $date_format, $payments[ $total_payments - 1 ] ),
-				'subtitle' => $hit_billing_limit ? $last_subtitle : '',
-			);
+			// The final payment: taken from the walk when an expiration date bounded
+			// it, otherwise derived directly from the billing limit.
+			if ( ! empty( $expiration_ts ) ) {
+				$final_ts = $payments[ $total_payments - 1 ];
+			} else {
+				$final_ts = strtotime( '+ ' . ( $cycle_number * ( $total_payments - 1 ) ) . ' ' . $cycle_period, $first_ts );
+			}
+			if ( ! empty( $final_ts ) ) {
+				$events[] = array(
+					'type'     => $hit_billing_limit ? 'last_payment' : 'recurring',
+					'label'    => $hit_billing_limit ? $last_label : '#' . $total_payments,
+					'amount'   => $format_price( $billing_amount ),
+					'date'     => date_i18n( $date_format, $final_ts ),
+					'subtitle' => $hit_billing_limit ? $last_subtitle : '',
+				);
+			}
 		}
 	}
 
