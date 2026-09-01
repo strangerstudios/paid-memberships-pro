@@ -1,6 +1,6 @@
 == Changelog ==
 = 3.8.5 - 2026-08-24 =
-* SECURITY: Fixed an issue where the payment amount was not re-verified after Strong Customer Authentication (3D Secure) in the Stripe on-site checkout. #3767 (@dparker1005)
+* SECURITY: Fixed an issue where the payment amount was not re-verified after Strong Customer Authentication (3D Secure) in the Stripe on-site checkout. #3767 (@proxydom)
 * SECURITY: Fixed an access check bypass in the `getfile` service that could allow protected files to be served through `admin-ajax.php` without a membership access check. #3762 (@dparker1005)
 * SECURITY: Added missing capability and nonce checks to several admin AJAX and service handlers. #3758 (@flintfromthebasement)
 * ENHANCEMENT: Removed the notices on the Stripe payment settings recommending the deprecated Add PayPal Express Add On. #3751 (@flintfromthebasement)
