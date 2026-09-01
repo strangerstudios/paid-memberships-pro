@@ -554,18 +554,21 @@ if ( isset( $_REQUEST['page'] ) && 'pmpro-membershiplevels' === $_REQUEST['page'
 }
 
 /**
- * Render a date pattern builder UI block.
+ * Render a date pattern builder.
  *
- * Used on the Edit Level and Edit Discount Code pages. Outputs a self-contained
- * builder with mode select (monthly/yearly/custom), day/month dropdowns, and a
- * hidden input that stores the assembled pattern.
+ * Used on the Edit Level and Edit Discount Code pages. Outputs a mode select
+ * plus per-mode inputs named "{$field_prefix}_mode", "{$field_prefix}_monthly_day",
+ * "{$field_prefix}_yearly_month", "{$field_prefix}_yearly_day", and
+ * "{$field_prefix}_custom". Visibility is handled by the declarative depends
+ * engine in pmpro-admin.js; the parts are assembled into a date pattern at save
+ * time by pmpro_get_date_pattern_from_request().
  *
  * @since TBD
  *
- * @param string $hidden_name    The name attribute for the hidden input storing the pattern.
- * @param string $existing_value The existing date pattern value.
+ * @param string $field_prefix   Prefix for the input names and ids. Must be unique on the page.
+ * @param string $existing_value The stored date pattern to preselect.
  */
-function pmpro_payment_schedule_render_date_builder( $hidden_name, $existing_value ) {
+function pmpro_payment_schedule_render_date_builder( $field_prefix, $existing_value ) {
 	$month_names = array(
 		'01' => __( 'January', 'paid-memberships-pro' ), '02' => __( 'February', 'paid-memberships-pro' ),
 		'03' => __( 'March', 'paid-memberships-pro' ), '04' => __( 'April', 'paid-memberships-pro' ),
@@ -574,45 +577,93 @@ function pmpro_payment_schedule_render_date_builder( $hidden_name, $existing_val
 		'09' => __( 'September', 'paid-memberships-pro' ), '10' => __( 'October', 'paid-memberships-pro' ),
 		'11' => __( 'November', 'paid-memberships-pro' ), '12' => __( 'December', 'paid-memberships-pro' ),
 	);
+
+	// Parse the stored pattern into the builder's initial state.
+	$mode           = '';
+	$monthly_day    = '01';
+	$yearly_month   = '01';
+	$yearly_day     = '01';
+	$custom_pattern = '';
+	$existing_value = strtoupper( trim( (string) $existing_value ) );
+	if ( preg_match( '/^Y-M-(\d{1,2})$/', $existing_value, $matches ) ) {
+		$mode        = 'monthly';
+		$monthly_day = str_pad( intval( $matches[1] ), 2, '0', STR_PAD_LEFT );
+	} elseif ( preg_match( '/^Y-(\d{1,2})-(\d{1,2})$/', $existing_value, $matches ) ) {
+		$mode         = 'yearly';
+		$yearly_month = str_pad( intval( $matches[1] ), 2, '0', STR_PAD_LEFT );
+		$yearly_day   = str_pad( intval( $matches[2] ), 2, '0', STR_PAD_LEFT );
+	} elseif ( '' !== $existing_value ) {
+		$mode           = 'custom';
+		$custom_pattern = $existing_value;
+	}
+
+	$mode_id = $field_prefix . '_mode';
 	?>
-	<div class="pmpro_date_pattern_builder" data-existing-value="<?php echo esc_attr( $existing_value ); ?>">
-		<select class="pmpro_date_pattern_mode" onchange="pmpro_date_mode_changed(this);" aria-label="<?php esc_attr_e( 'Date pattern type', 'paid-memberships-pro' ); ?>">
+	<div class="pmpro_date_pattern_builder">
+		<select name="<?php echo esc_attr( $mode_id ); ?>" id="<?php echo esc_attr( $mode_id ); ?>" aria-label="<?php esc_attr_e( 'Date pattern type', 'paid-memberships-pro' ); ?>">
 			<option value=""><?php esc_html_e( 'Choose...', 'paid-memberships-pro' ); ?></option>
-			<option value="monthly"><?php esc_html_e( 'The same day each month', 'paid-memberships-pro' ); ?></option>
-			<option value="yearly"><?php esc_html_e( 'The same date each year', 'paid-memberships-pro' ); ?></option>
-			<option value="custom"><?php esc_html_e( 'Custom pattern', 'paid-memberships-pro' ); ?></option>
+			<option value="monthly" <?php selected( $mode, 'monthly' ); ?>><?php esc_html_e( 'The same day each month', 'paid-memberships-pro' ); ?></option>
+			<option value="yearly" <?php selected( $mode, 'yearly' ); ?>><?php esc_html_e( 'The same date each year', 'paid-memberships-pro' ); ?></option>
+			<option value="custom" <?php selected( $mode, 'custom' ); ?>><?php esc_html_e( 'Custom pattern', 'paid-memberships-pro' ); ?></option>
 		</select>
-		<span class="pmpro_date_builder_monthly" style="display:none;">
+		<span class="<?php echo 'monthly' === $mode ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => $mode_id, 'value' => 'monthly' ) ) ) ); ?>">
 			<?php esc_html_e( 'on the', 'paid-memberships-pro' ); ?>
-			<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);" aria-label="<?php esc_attr_e( 'Day of the month', 'paid-memberships-pro' ); ?>">
+			<select name="<?php echo esc_attr( $field_prefix ); ?>_monthly_day" aria-label="<?php esc_attr_e( 'Day of the month', 'paid-memberships-pro' ); ?>">
 				<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
-					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>"><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
+					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>" <?php selected( $monthly_day, str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
 				<?php endfor; ?>
 			</select>
 		</span>
-		<span class="pmpro_date_builder_yearly" style="display:none;">
+		<span class="<?php echo 'yearly' === $mode ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => $mode_id, 'value' => 'yearly' ) ) ) ); ?>">
 			<?php esc_html_e( 'on', 'paid-memberships-pro' ); ?>
-			<select class="pmpro_date_builder_month" onchange="pmpro_assemble_date_pattern(this);" aria-label="<?php esc_attr_e( 'Month', 'paid-memberships-pro' ); ?>">
+			<select name="<?php echo esc_attr( $field_prefix ); ?>_yearly_month" aria-label="<?php esc_attr_e( 'Month', 'paid-memberships-pro' ); ?>">
 				<?php foreach ( $month_names as $val => $name ) : ?>
-					<option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $name ); ?></option>
+					<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $yearly_month, $val ); ?>><?php echo esc_html( $name ); ?></option>
 				<?php endforeach; ?>
 			</select>
-			<select class="pmpro_date_builder_day" onchange="pmpro_assemble_date_pattern(this);" aria-label="<?php esc_attr_e( 'Day of the month', 'paid-memberships-pro' ); ?>">
+			<select name="<?php echo esc_attr( $field_prefix ); ?>_yearly_day" aria-label="<?php esc_attr_e( 'Day of the month', 'paid-memberships-pro' ); ?>">
 				<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
-					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>"><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
+					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>" <?php selected( $yearly_day, str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
 				<?php endfor; ?>
 			</select>
 		</span>
-		<span class="pmpro_date_builder_custom" style="display:none;">
-			<input type="text" class="pmpro_date_pattern_input" placeholder="<?php echo esc_attr( sprintf( /* translators: %s: an example date pattern. */ __( 'e.g. %s', 'paid-memberships-pro' ), 'Y-01-01' ) ); ?>"
-				value="<?php echo esc_attr( $existing_value ); ?>"
-				aria-label="<?php esc_attr_e( 'Custom date pattern', 'paid-memberships-pro' ); ?>"
-				oninput="jQuery(this).closest('.pmpro_date_pattern_builder').find('.pmpro_date_pattern_value').val(this.value);" />
+		<span class="<?php echo 'custom' === $mode ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => $mode_id, 'value' => 'custom' ) ) ) ); ?>">
+			<input type="text" name="<?php echo esc_attr( $field_prefix ); ?>_custom" placeholder="<?php echo esc_attr( sprintf( /* translators: %s: an example date pattern. */ __( 'e.g. %s', 'paid-memberships-pro' ), 'Y-01-01' ) ); ?>"
+				value="<?php echo esc_attr( $custom_pattern ); ?>"
+				aria-label="<?php esc_attr_e( 'Custom date pattern', 'paid-memberships-pro' ); ?>" />
 			<p class="description"><?php echo esc_html( sprintf( /* translators: 1: the literal Y token, 2: the literal M token. Do not translate the tokens themselves. */ __( '%1$s = current/next year, %2$s = current/next month.', 'paid-memberships-pro' ), 'Y', 'M' ) ); ?></p>
 		</span>
-		<input type="hidden" class="pmpro_date_pattern_value" name="<?php echo esc_attr( $hidden_name ); ?>" value="<?php echo esc_attr( $existing_value ); ?>" />
 	</div>
 	<?php
+}
+
+/**
+ * Assemble a date pattern from a date pattern builder's submitted fields.
+ *
+ * @since TBD
+ *
+ * @param string $field_prefix The prefix used when rendering the builder.
+ * @return string The assembled date pattern, or empty string if no mode was chosen.
+ */
+function pmpro_get_date_pattern_from_request( $field_prefix ) {
+	$mode = isset( $_REQUEST[ $field_prefix . '_mode' ] ) ? sanitize_text_field( $_REQUEST[ $field_prefix . '_mode' ] ) : '';
+
+	if ( 'monthly' === $mode ) {
+		$day = isset( $_REQUEST[ $field_prefix . '_monthly_day' ] ) ? max( 1, min( 31, intval( $_REQUEST[ $field_prefix . '_monthly_day' ] ) ) ) : 1;
+		return 'Y-M-' . str_pad( $day, 2, '0', STR_PAD_LEFT );
+	}
+
+	if ( 'yearly' === $mode ) {
+		$month = isset( $_REQUEST[ $field_prefix . '_yearly_month' ] ) ? max( 1, min( 12, intval( $_REQUEST[ $field_prefix . '_yearly_month' ] ) ) ) : 1;
+		$day   = isset( $_REQUEST[ $field_prefix . '_yearly_day' ] ) ? max( 1, min( 31, intval( $_REQUEST[ $field_prefix . '_yearly_day' ] ) ) ) : 1;
+		return 'Y-' . str_pad( $month, 2, '0', STR_PAD_LEFT ) . '-' . str_pad( $day, 2, '0', STR_PAD_LEFT );
+	}
+
+	if ( 'custom' === $mode && isset( $_REQUEST[ $field_prefix . '_custom' ] ) ) {
+		return strtoupper( trim( sanitize_text_field( $_REQUEST[ $field_prefix . '_custom' ] ) ) );
+	}
+
+	return '';
 }
 
 /**
@@ -628,11 +679,7 @@ function pmpro_payment_schedule_render_date_builder( $hidden_name, $existing_val
 function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) {
 	global $pmpro_payment_schedule_dc_errors;
 
-	$all_levels_a = isset( $_REQUEST['all_levels'] ) ? array_map( 'intval', (array) $_REQUEST['all_levels'] ) : array();
-	$key          = array_search( intval( $level_id ), $all_levels_a );
-	if ( $key === false ) {
-		return;
-	}
+	$level_id = intval( $level_id );
 
 	// Match the level save page: a delay only applies while the level's Recurring
 	// Subscription box is checked, and an expiration date only while its Membership
@@ -642,18 +689,15 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	$expiration_levels = isset( $_REQUEST['expiration'] ) ? array_map( 'intval', (array) $_REQUEST['expiration'] ) : array();
 
 	// Determine the subscription delay value based on the type.
-	$delay_type_a         = isset( $_REQUEST['delay_type'] ) ? $_REQUEST['delay_type'] : array();
-	$delay_days_a         = isset( $_REQUEST['subscription_delay_days'] ) ? $_REQUEST['subscription_delay_days'] : array();
-	$delay_date_a         = isset( $_REQUEST['subscription_delay_date'] ) ? $_REQUEST['subscription_delay_date'] : array();
-	$delay_type           = in_array( intval( $level_id ), $recurring_levels, true ) && isset( $delay_type_a[ $key ] ) ? sanitize_text_field( $delay_type_a[ $key ] ) : 'none';
+	$delay_type = in_array( $level_id, $recurring_levels, true ) && isset( $_REQUEST[ 'delay_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'delay_type_' . $level_id ] ) : 'none';
 
 	$delay_value   = '';
 	$delay_invalid = false;
-	if ( $delay_type === 'days' && isset( $delay_days_a[ $key ] ) && intval( $delay_days_a[ $key ] ) > 0 ) {
-		$delay_value = intval( $delay_days_a[ $key ] );
-	} elseif ( $delay_type === 'date' && ! empty( $delay_date_a[ $key ] ) ) {
-		$delay_value = strtoupper( trim( sanitize_text_field( $delay_date_a[ $key ] ) ) );
-		if ( ! pmpro_is_valid_date_pattern( $delay_value ) ) {
+	if ( $delay_type === 'days' && ! empty( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) ) {
+		$delay_value = intval( $_REQUEST[ 'subscription_delay_days_' . $level_id ] );
+	} elseif ( $delay_type === 'date' ) {
+		$delay_value = pmpro_get_date_pattern_from_request( 'subscription_delay_date_' . $level_id );
+		if ( '' !== $delay_value && ! pmpro_is_valid_date_pattern( $delay_value ) ) {
 			// Invalid pattern: keep the previous setting and report the error.
 			$delay_value   = '';
 			$delay_invalid = true;
@@ -670,7 +714,7 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	if ( ! is_array( $all_delays ) ) {
 		$all_delays = array();
 	}
-	if ( ! empty( $delay_value ) ) {
+	if ( '' !== $delay_value ) {
 		$all_delays[ $code_id ][ $level_id ] = $delay_value;
 	} elseif ( ! $delay_invalid ) {
 		unset( $all_delays[ $code_id ][ $level_id ] );
@@ -678,15 +722,13 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 	update_option( 'pmpro_discount_code_subscription_delays', $all_delays );
 
 	// Determine the set expiration date value based on the type.
-	$exp_type_a            = isset( $_REQUEST['expiration_date_type'] ) ? $_REQUEST['expiration_date_type'] : array();
-	$exp_date_a            = isset( $_REQUEST['set_expiration_date'] ) ? $_REQUEST['set_expiration_date'] : array();
-	$exp_type              = in_array( intval( $level_id ), $expiration_levels, true ) && isset( $exp_type_a[ $key ] ) ? sanitize_text_field( $exp_type_a[ $key ] ) : 'none';
+	$exp_type = in_array( $level_id, $expiration_levels, true ) && isset( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) : 'none';
 
 	$expiration_value   = '';
 	$expiration_invalid = false;
-	if ( $exp_type === 'date' && ! empty( $exp_date_a[ $key ] ) ) {
-		$expiration_value = strtoupper( trim( sanitize_text_field( $exp_date_a[ $key ] ) ) );
-		if ( ! pmpro_is_valid_date_pattern( $expiration_value ) ) {
+	if ( $exp_type === 'date' ) {
+		$expiration_value = pmpro_get_date_pattern_from_request( 'set_expiration_date_' . $level_id );
+		if ( '' !== $expiration_value && ! pmpro_is_valid_date_pattern( $expiration_value ) ) {
 			// Invalid pattern: keep the previous setting and report the error.
 			$expiration_value   = '';
 			$expiration_invalid = true;
@@ -699,8 +741,8 @@ function pmpro_payment_schedule_save_discount_code_level( $code_id, $level_id ) 
 		}
 	}
 
-	$option_key = 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id );
-	if ( ! empty( $expiration_value ) ) {
+	$option_key = 'pmprosed_' . $level_id . '_' . intval( $code_id );
+	if ( '' !== $expiration_value ) {
 		update_option( $option_key, $expiration_value, false );
 	} elseif ( ! $expiration_invalid ) {
 		delete_option( $option_key );

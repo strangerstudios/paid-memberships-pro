@@ -166,8 +166,8 @@ if ( ! empty( $ml_level_image ) && wp_attachment_is_image( $ml_level_image ) ) {
 $delay_type = ! empty( $ml_recurring ) && isset( $_REQUEST['delay_type'] ) ? sanitize_text_field( $_REQUEST['delay_type'] ) : 'none';
 if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) ) {
 	update_option( 'pmpro_subscription_delay_' . $saveid, intval( $_REQUEST['subscription_delay_days'] ), false );
-} elseif ( $delay_type === 'date' && ! empty( $_REQUEST['subscription_delay_date'] ) ) {
-	$delay_date_pattern = strtoupper( trim( sanitize_text_field( $_REQUEST['subscription_delay_date'] ) ) );
+} elseif ( $delay_type === 'date' && '' !== pmpro_get_date_pattern_from_request( 'subscription_delay_date' ) ) {
+	$delay_date_pattern = pmpro_get_date_pattern_from_request( 'subscription_delay_date' );
 	if ( pmpro_is_valid_date_pattern( $delay_date_pattern ) ) {
 		update_option( 'pmpro_subscription_delay_' . $saveid, $delay_date_pattern, false );
 	} else {
@@ -186,7 +186,7 @@ if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) )
 // Uses same wp_options keys as the Set Expiration Dates Add On: pmprosed_{level_id}
 $expiration_date_type = isset( $_REQUEST['expiration_date_type'] ) ? sanitize_text_field( $_REQUEST['expiration_date_type'] ) : 'none';
 if ( ! empty( $ml_expiration ) && $expiration_date_type === 'date' ) {
-	$expiration_date_pattern = isset( $_REQUEST['set_expiration_date'] ) ? strtoupper( trim( sanitize_text_field( $_REQUEST['set_expiration_date'] ) ) ) : '';
+	$expiration_date_pattern = pmpro_get_date_pattern_from_request( 'set_expiration_date' );
 	if ( pmpro_is_valid_date_pattern( $expiration_date_pattern ) ) {
 		update_option( 'pmprosed_' . $saveid, $expiration_date_pattern, false );
 	} else {
