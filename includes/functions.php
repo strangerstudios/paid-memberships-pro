@@ -671,36 +671,6 @@ function pmpro_getLevelsExpiration( &$levels ) {
 }
 
 /**
- * Format a day number as an ordinal (1st, 2nd, 3rd, etc.).
- *
- * @since TBD
- *
- * @param int $day Day number 1-31.
- * @return string Formatted ordinal string.
- */
-function pmpro_format_day_ordinal( $day ) {
-	$day = intval( $day );
-	if ( $day >= 11 && $day <= 13 ) {
-		/* translators: %d: day of the month, as an ordinal ("4th"). */
-		return sprintf( __( '%dth', 'paid-memberships-pro' ), $day );
-	}
-	switch ( $day % 10 ) {
-		case 1:
-			/* translators: %d: day of the month, as an ordinal ("1st"). */
-			return sprintf( __( '%dst', 'paid-memberships-pro' ), $day );
-		case 2:
-			/* translators: %d: day of the month, as an ordinal ("2nd"). */
-			return sprintf( __( '%dnd', 'paid-memberships-pro' ), $day );
-		case 3:
-			/* translators: %d: day of the month, as an ordinal ("3rd"). */
-			return sprintf( __( '%drd', 'paid-memberships-pro' ), $day );
-		default:
-			/* translators: %d: day of the month, as an ordinal ("4th"). */
-			return sprintf( __( '%dth', 'paid-memberships-pro' ), $day );
-	}
-}
-
-/**
  * Check whether a string is a valid date pattern.
  *
  * A valid pattern is "{year}-{month}-{day}" where {year} is a 4-digit year or
@@ -787,14 +757,11 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 	/**
 	 * Filter the current date used for date pattern calculations.
 	 *
-	 * @since TBD
+	 * Carried over from the retired Subscription Delays Add On.
 	 *
 	 * @param int $current_date Unix timestamp of the current date.
 	 */
-	$current_date = apply_filters( 'pmpro_payment_schedule_current_date', $current_date );
-
-	// Back compat with the retired Subscription Delays Add On's filter (same timestamp value).
-	$current_date = apply_filters_deprecated( 'pmprosd_current_date', array( $current_date ), 'TBD', 'pmpro_payment_schedule_current_date' );
+	$current_date = apply_filters( 'pmprosd_current_date', $current_date );
 
 	// Get current date parts.
 	$current_y = intval( date( 'Y', $current_date ) );
@@ -870,8 +837,8 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
  * expiration-specific filters.
  *
  * This is the expiration counterpart to calling pmpro_convert_date_pattern()
- * directly and preserves the filters that the retired Set Expiration Dates
- * Add On ran inside pmprosed_fixDate().
+ * directly and runs the filters that the retired Set Expiration Dates Add On
+ * ran inside pmprosed_fixDate().
  *
  * @since TBD
  *
@@ -881,16 +848,29 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
  */
 function pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date, $current_date = null ) {
 	$set_expiration_date = strtoupper( trim( (string) $set_expiration_date ) );
-	$set_expiration_date = apply_filters_deprecated( 'pmprosed_expiration_date_raw', array( $set_expiration_date ), 'TBD', 'pmpro_get_set_expiration_date' );
+
+	/**
+	 * Filter the raw expiration date pattern before it is resolved.
+	 *
+	 * Carried over from the retired Set Expiration Dates Add On.
+	 *
+	 * @param string $set_expiration_date The uppercased expiration date pattern.
+	 */
+	$set_expiration_date = apply_filters( 'pmprosed_expiration_date_raw', $set_expiration_date );
 
 	$resolved_date = pmpro_convert_date_pattern( $set_expiration_date, $current_date );
 	if ( empty( $resolved_date ) ) {
 		return false;
 	}
 
-	$resolved_date = apply_filters_deprecated( 'pmprosed_expiration_date', array( $resolved_date ), 'TBD', 'pmpro_get_set_expiration_date' );
-
-	return $resolved_date;
+	/**
+	 * Filter the resolved expiration date.
+	 *
+	 * Carried over from the retired Set Expiration Dates Add On.
+	 *
+	 * @param string $resolved_date The resolved date in Y-m-d format.
+	 */
+	return apply_filters( 'pmprosed_expiration_date', $resolved_date );
 }
 
 /**
@@ -915,16 +895,7 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 		$subscription_delay = get_option( 'pmpro_subscription_delay_' . intval( $level_id ), '' );
 	}
 
-	/**
-	 * Filter the subscription delay for a level or level/discount code combo.
-	 *
-	 * @since TBD
-	 *
-	 * @param string|int $subscription_delay The delay (a number of days or a date pattern), or empty string.
-	 * @param int        $level_id           The membership level ID.
-	 * @param int|null   $code_id            The discount code ID, if one is in play.
-	 */
-	return apply_filters( 'pmpro_get_subscription_delay', $subscription_delay, $level_id, $code_id );
+	return $subscription_delay;
 }
 
 /**
@@ -949,16 +920,7 @@ function pmpro_get_set_expiration_date( $level_id, $code_id = null ) {
 		$set_expiration_date = get_option( 'pmprosed_' . intval( $level_id ), '' );
 	}
 
-	/**
-	 * Filter the set expiration date pattern for a level or level/discount code combo.
-	 *
-	 * @since TBD
-	 *
-	 * @param string   $set_expiration_date The expiration date pattern, or empty string.
-	 * @param int      $level_id            The membership level ID.
-	 * @param int|null $code_id             The discount code ID, if one is in play.
-	 */
-	return apply_filters( 'pmpro_get_set_expiration_date', $set_expiration_date, $level_id, $code_id );
+	return $set_expiration_date;
 }
 
 /**
@@ -1020,7 +982,7 @@ function pmpro_payment_schedule_render_date_builder( $field_prefix, $existing_va
 			<?php esc_html_e( 'on the', 'paid-memberships-pro' ); ?>
 			<select name="<?php echo esc_attr( $field_prefix ); ?>_monthly_day" aria-label="<?php esc_attr_e( 'Day of the month', 'paid-memberships-pro' ); ?>">
 				<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
-					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>" <?php selected( $monthly_day, str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
+					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>" <?php selected( $monthly_day, str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>><?php echo esc_html( $d ); ?></option>
 				<?php endfor; ?>
 			</select>
 		</span>
@@ -1033,7 +995,7 @@ function pmpro_payment_schedule_render_date_builder( $field_prefix, $existing_va
 			</select>
 			<select name="<?php echo esc_attr( $field_prefix ); ?>_yearly_day" aria-label="<?php esc_attr_e( 'Day of the month', 'paid-memberships-pro' ); ?>">
 				<?php for ( $d = 1; $d <= 31; $d++ ) : ?>
-					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>" <?php selected( $yearly_day, str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>><?php echo esc_html( pmpro_format_day_ordinal( $d ) ); ?></option>
+					<option value="<?php echo esc_attr( str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>" <?php selected( $yearly_day, str_pad( $d, 2, '0', STR_PAD_LEFT ) ); ?>><?php echo esc_html( $d ); ?></option>
 				<?php endfor; ?>
 			</select>
 		</span>

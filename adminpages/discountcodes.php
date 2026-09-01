@@ -631,17 +631,11 @@
 							$level_checked = false;
 
 						// Load subscription delay and set expiration date for this discount code level.
-						// Read the raw options rather than the pmpro_get_* getters: their runtime
-						// filters must not leak into the edit form, where the value shown is the
-						// value that gets re-saved.
 						$dc_delay = '';
 						$dc_set_expiration_date = '';
 						if ( ( $edit > 0 || ! empty( $copy ) ) && ! empty( $temp_code->id ) ) {
-							$all_code_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
-							if ( is_array( $all_code_delays ) && ! empty( $all_code_delays[ $temp_code->id ][ $level->id ] ) ) {
-								$dc_delay = $all_code_delays[ $temp_code->id ][ $level->id ];
-							}
-							$dc_set_expiration_date = get_option( 'pmprosed_' . intval( $level->id ) . '_' . intval( $temp_code->id ), '' );
+							$dc_delay = pmpro_get_subscription_delay( $level->id, $temp_code->id );
+							$dc_set_expiration_date = pmpro_get_set_expiration_date( $level->id, $temp_code->id );
 						}
 						$dc_delay_type = ! empty( $dc_delay ) ? ( is_numeric( $dc_delay ) ? 'days' : 'date' ) : 'none';
 						$dc_exp_type = ! empty( $dc_set_expiration_date ) ? 'date' : 'none';
