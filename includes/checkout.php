@@ -236,7 +236,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 
 	//fix expiration date
 	$set_expiration_date      = ! empty( $pmpro_level->id ) ? pmpro_get_set_expiration_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null ) : '';
-	$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date ) : false;
+	$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
 	if ( ! empty( $resolved_expiration_date ) ) {
 		// A set expiration date replaces any duration-based expiration. End of day so
 		// that the member keeps access through the expiration date itself.

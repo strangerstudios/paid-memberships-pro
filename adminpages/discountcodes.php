@@ -758,7 +758,7 @@
 												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 											</label>
 											<div class="<?php echo $dc_delay_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'delay_type_' . intval( $level->id ) . '_date', 'checked' => true ) ) ) ); ?>">
-												<?php pmpro_payment_schedule_render_date_builder( 'subscription_delay_date_' . intval( $level->id ), $dc_delay_type === 'date' ? $dc_delay : '' ); ?>
+												<?php pmpro_render_date_pattern_builder( 'subscription_delay_date_' . intval( $level->id ), $dc_delay_type === 'date' ? $dc_delay : '' ); ?>
 											</div>
 										</fieldset>
 									</td>
@@ -840,7 +840,7 @@
 												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 											</label>
 											<div class="<?php echo $dc_exp_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'expiration_date_type_' . intval( $level->id ) . '_date', 'checked' => true ) ) ) ); ?>">
-												<?php pmpro_payment_schedule_render_date_builder( 'set_expiration_date_' . intval( $level->id ), $dc_set_expiration_date ); ?>
+												<?php pmpro_render_date_pattern_builder( 'set_expiration_date_' . intval( $level->id ), $dc_set_expiration_date ); ?>
 											</div>
 										</fieldset>
 									</td>

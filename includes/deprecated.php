@@ -1183,7 +1183,7 @@ add_action( 'admin_notices', 'pmpro_was_loading_frontend_css_notice' );
  *
  * @since TBD
  */
-function pmpro_define_deprecated_payment_schedule_functions() {
+function pmpro_define_deprecated_date_pattern_functions() {
 	// Bail if either add-on may be activated later in this request: plugins.php
 	// activations, the update.php activate link, PMPro's own Add Ons page AJAX
 	// activation, or WP-CLI (where we can't tell which plugin is activating).
@@ -1255,11 +1255,11 @@ function pmpro_define_deprecated_payment_schedule_functions() {
 
 	if ( ! function_exists( 'pmprosed_fixDate' ) ) {
 		/**
-		 * @deprecated TBD Use pmpro_payment_schedule_resolve_expiration_date().
+		 * @deprecated TBD Use pmpro_resolve_expiration_date_pattern().
 		 */
 		function pmprosed_fixDate( $set_date, $current_date = null ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_payment_schedule_resolve_expiration_date()' );
-			return pmpro_payment_schedule_resolve_expiration_date( $set_date, $current_date );
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_expiration_date_pattern()' );
+			return pmpro_resolve_expiration_date_pattern( $set_date, $current_date );
 		}
 	}
 
@@ -1289,7 +1289,7 @@ function pmpro_define_deprecated_payment_schedule_functions() {
 	}
 
 }
-add_action( 'plugins_loaded', 'pmpro_define_deprecated_payment_schedule_functions' );
+add_action( 'plugins_loaded', 'pmpro_define_deprecated_date_pattern_functions' );
 
 /**
  * Unhook a retired add-on's handlers when it is still active.
@@ -1303,7 +1303,7 @@ add_action( 'plugins_loaded', 'pmpro_define_deprecated_payment_schedule_function
  *
  * @since TBD
  */
-function pmpro_neutralize_retired_payment_schedule_add_ons() {
+function pmpro_neutralize_retired_date_pattern_add_ons() {
 	if ( function_exists( 'pmprosd_pmpro_save_membership_level' ) ) {
 		// Subscription Delays add-on is loaded.
 		remove_action( 'pmpro_membership_level_after_other_settings', 'pmprosd_pmpro_membership_level_after_other_settings' );
@@ -1331,7 +1331,7 @@ function pmpro_neutralize_retired_payment_schedule_add_ons() {
 		remove_filter( 'pmpro_level_expiration_text', 'pmprosed_pmpro_level_expiration_text' );
 	}
 }
-add_action( 'plugins_loaded', 'pmpro_neutralize_retired_payment_schedule_add_ons' );
+add_action( 'plugins_loaded', 'pmpro_neutralize_retired_date_pattern_add_ons' );
 
 /**
  * The Subscription Delays add-on registers its checkout filter on init, after
