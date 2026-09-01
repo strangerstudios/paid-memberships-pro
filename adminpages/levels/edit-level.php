@@ -498,7 +498,7 @@ if (!empty($page_msg)) { ?>
 						<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 					</label>
 					<div class="pmpro_delay_field pmpro_delay_field_date" <?php if ( $delay_type !== 'date' ) echo 'style="display:none;"'; ?>>
-						<?php pmpro_payment_schedule_render_date_builder( 'subscription_delay_date', $delay_type === 'date' ? $subscription_delay : '', 'pmpro_delay_date_builder' ); ?>
+						<?php pmpro_payment_schedule_render_date_builder( 'subscription_delay_date', $delay_type === 'date' ? $subscription_delay : '' ); ?>
 					</div>
 				</fieldset>
 				<?php
@@ -627,7 +627,7 @@ if (!empty($page_msg)) { ?>
 					<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 				</label>
 				<div class="pmpro_expiration_date_field" <?php if ( $expiration_date_type !== 'date' ) echo 'style="display:none;"'; ?>>
-					<?php pmpro_payment_schedule_render_date_builder( 'set_expiration_date', $set_expiration_date, 'pmpro_expiration_date_builder' ); ?>
+					<?php pmpro_payment_schedule_render_date_builder( 'set_expiration_date', $set_expiration_date ); ?>
 				</div>
 			</fieldset>
 			<?php

@@ -118,7 +118,7 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
 		$add_years = intval( pmpro_getMatches( '/Y([0-9]*)/', $set_date, true ) );
 	}
 
-	// Allow custom "today" date for previews and testing.
+	// Callers may pass a custom "today" timestamp (e.g. the pmprosed_fixDate() shim).
 	if ( empty( $current_date ) ) {
 		$current_date = current_time( 'timestamp' );
 	}
@@ -564,9 +564,8 @@ if ( isset( $_REQUEST['page'] ) && 'pmpro-membershiplevels' === $_REQUEST['page'
  *
  * @param string $hidden_name    The name attribute for the hidden input storing the pattern.
  * @param string $existing_value The existing date pattern value.
- * @param string $id             Optional. An id attribute for the builder wrapper element.
  */
-function pmpro_payment_schedule_render_date_builder( $hidden_name, $existing_value, $id = '' ) {
+function pmpro_payment_schedule_render_date_builder( $hidden_name, $existing_value ) {
 	$month_names = array(
 		'01' => __( 'January', 'paid-memberships-pro' ), '02' => __( 'February', 'paid-memberships-pro' ),
 		'03' => __( 'March', 'paid-memberships-pro' ), '04' => __( 'April', 'paid-memberships-pro' ),
@@ -576,7 +575,7 @@ function pmpro_payment_schedule_render_date_builder( $hidden_name, $existing_val
 		'11' => __( 'November', 'paid-memberships-pro' ), '12' => __( 'December', 'paid-memberships-pro' ),
 	);
 	?>
-	<div class="pmpro_date_pattern_builder"<?php if ( ! empty( $id ) ) { echo ' id="' . esc_attr( $id ) . '"'; } ?> data-existing-value="<?php echo esc_attr( $existing_value ); ?>">
+	<div class="pmpro_date_pattern_builder" data-existing-value="<?php echo esc_attr( $existing_value ); ?>">
 		<select class="pmpro_date_pattern_mode" onchange="pmpro_date_mode_changed(this);" aria-label="<?php esc_attr_e( 'Date pattern type', 'paid-memberships-pro' ); ?>">
 			<option value=""><?php esc_html_e( 'Choose...', 'paid-memberships-pro' ); ?></option>
 			<option value="monthly"><?php esc_html_e( 'The same day each month', 'paid-memberships-pro' ); ?></option>
