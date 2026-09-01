@@ -433,6 +433,25 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		}
 	}
 
+	// If there is still a valid checkout submission, make sure the level's set expiration
+	// date has not already passed. Only fixed-date patterns can resolve to the past.
+	if ( $pmpro_msgt != "pmpro_error" && ! empty( $pmpro_level->id ) ) {
+		$set_expiration_date = pmpro_get_set_expiration_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null );
+		if ( ! empty( $set_expiration_date ) ) {
+			$resolved_expiration_date = pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date );
+			if ( ! empty( $resolved_expiration_date ) && strtotime( $resolved_expiration_date ) <= current_time( 'timestamp' ) ) {
+				pmpro_setMessage(
+					sprintf(
+						/* translators: %s: the date that membership access for this level ends. */
+						__( 'Membership access for this level ends on %s. New signups are no longer accepted.', 'paid-memberships-pro' ),
+						date_i18n( get_option( 'date_format' ), strtotime( $resolved_expiration_date, current_time( 'timestamp' ) ) )
+					),
+					'pmpro_error'
+				);
+			}
+		}
+	}
+
 	// If there is still a vaild checkout submission, give custom code the chance to halt all checkouts (to be deprecated).
 	if ( $pmpro_msgt != "pmpro_error" ) {
 		/**

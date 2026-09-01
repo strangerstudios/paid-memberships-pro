@@ -552,7 +552,13 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 	$startdate = apply_filters( "pmpro_checkout_start_date", "'" . current_time( 'mysql' ) . "'", $morder->user_id, $morder->membership_level );
 
 	//fix expiration date
-	if ( ! empty( $morder->membership_level->expiration_number ) ) {
+	$set_expiration_date      = ! empty( $morder->membership_level->id ) ? pmpro_get_set_expiration_date( $morder->membership_level->id, ! empty( $morder->membership_level->code_id ) ? $morder->membership_level->code_id : null ) : '';
+	$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date ) : false;
+	if ( ! empty( $resolved_expiration_date ) ) {
+		// A set expiration date replaces any duration-based expiration. End of day so
+		// that the member keeps access through the expiration date itself.
+		$enddate = "'" . $resolved_expiration_date . " 23:59:59'";
+	} elseif ( ! empty( $morder->membership_level->expiration_number ) ) {
 		$enddate = "'" . date_i18n( "Y-m-d", strtotime( "+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
 	} else {
 		$enddate = "NULL";

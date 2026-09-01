@@ -273,7 +273,63 @@
 
 					if(empty($wpdb->last_error))
 					{
-						//okay
+						//save the subscription delay for this code level; a delay only
+						//applies while the level's Recurring Subscription box is checked
+						$dc_delay_value   = '';
+						$dc_delay_invalid = false;
+						$dc_delay_type    = ! empty( $recurring ) && isset( $_REQUEST[ 'delay_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'delay_type_' . $level_id ] ) : 'none';
+						if ( 'days' === $dc_delay_type && ! empty( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) ) {
+							$dc_delay_value = intval( $_REQUEST[ 'subscription_delay_days_' . $level_id ] );
+						} elseif ( 'date' === $dc_delay_type ) {
+							$dc_delay_value = pmpro_get_date_pattern_from_request( 'subscription_delay_date_' . $level_id );
+							if ( '' !== $dc_delay_value && ! pmpro_is_valid_date_pattern( $dc_delay_value ) ) {
+								//invalid pattern: keep the previous setting and report the error
+								$dc_delay_value   = '';
+								$dc_delay_invalid = true;
+								$dc_error_level   = pmpro_getLevel( $level_id );
+								$level_errors[]   = sprintf(
+									/* translators: %s: the membership level name. */
+									__( 'The First Recurring Payment date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
+									! empty( $dc_error_level->name ) ? $dc_error_level->name : $level_id
+								);
+							}
+						}
+						$all_code_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+						if ( ! is_array( $all_code_delays ) ) {
+							$all_code_delays = array();
+						}
+						if ( '' !== $dc_delay_value ) {
+							$all_code_delays[ $edit ][ $level_id ] = $dc_delay_value;
+						} elseif ( ! $dc_delay_invalid ) {
+							unset( $all_code_delays[ $edit ][ $level_id ] );
+						}
+						update_option( 'pmpro_discount_code_subscription_delays', $all_code_delays );
+
+						//save the set expiration date for this code level; it only applies
+						//while the level's Membership Expiration box is checked
+						$dc_expiration_value   = '';
+						$dc_expiration_invalid = false;
+						$dc_exp_type           = ! empty( $expiration ) && isset( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) : 'none';
+						if ( 'date' === $dc_exp_type ) {
+							$dc_expiration_value = pmpro_get_date_pattern_from_request( 'set_expiration_date_' . $level_id );
+							if ( '' !== $dc_expiration_value && ! pmpro_is_valid_date_pattern( $dc_expiration_value ) ) {
+								//invalid pattern: keep the previous setting and report the error
+								$dc_expiration_value   = '';
+								$dc_expiration_invalid = true;
+								$dc_error_level        = pmpro_getLevel( $level_id );
+								$level_errors[]        = sprintf(
+									/* translators: %s: the membership level name. */
+									__( 'The expiration date pattern for the %s level was invalid, so that setting was not updated.', 'paid-memberships-pro' ),
+									! empty( $dc_error_level->name ) ? $dc_error_level->name : $level_id
+								);
+							}
+						}
+						if ( '' !== $dc_expiration_value ) {
+							update_option( 'pmprosed_' . $level_id . '_' . $edit, $dc_expiration_value, false );
+						} elseif ( ! $dc_expiration_invalid ) {
+							delete_option( 'pmprosed_' . $level_id . '_' . $edit );
+						}
+
 						do_action("pmpro_save_discount_code_level", $edit, $level_id);
 					}
 					else
@@ -284,13 +340,25 @@
 				}
 			}
 
-			//remove payment schedule options for levels that were unchecked from this code
-			pmpro_payment_schedule_cleanup_unchecked_levels( $edit );
-
-			//merge in any payment schedule (delay/expiration pattern) errors recorded during the level saves
-			global $pmpro_payment_schedule_dc_errors;
-			if ( ! empty( $pmpro_payment_schedule_dc_errors ) && is_array( $pmpro_payment_schedule_dc_errors ) ) {
-				$level_errors = array_merge( ! empty( $level_errors ) ? $level_errors : array(), $pmpro_payment_schedule_dc_errors );
+			//remove the subscription delay and set expiration date for levels that were
+			//unchecked from this code so they don't silently return if re-checked later
+			$unchecked_level_ids = array_diff( $all_levels_a, $levels_a );
+			if ( ! empty( $unchecked_level_ids ) ) {
+				$all_code_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+				if ( ! is_array( $all_code_delays ) ) {
+					$all_code_delays = array();
+				}
+				$code_delays_changed = false;
+				foreach ( $unchecked_level_ids as $unchecked_level_id ) {
+					delete_option( 'pmprosed_' . $unchecked_level_id . '_' . $edit );
+					if ( isset( $all_code_delays[ $edit ][ $unchecked_level_id ] ) ) {
+						unset( $all_code_delays[ $edit ][ $unchecked_level_id ] );
+						$code_delays_changed = true;
+					}
+				}
+				if ( $code_delays_changed ) {
+					update_option( 'pmpro_discount_code_subscription_delays', $all_code_delays );
+				}
 			}
 
 			//errors?
@@ -325,6 +393,17 @@
 		{
 			//action
 			do_action("pmpro_delete_discount_code", $delete);
+
+			//delete the subscription delay and set expiration date settings for this code
+			$code_level_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_levels" );
+			foreach ( $code_level_ids as $code_level_id ) {
+				delete_option( 'pmprosed_' . intval( $code_level_id ) . '_' . $delete );
+			}
+			$all_code_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+			if ( is_array( $all_code_delays ) && isset( $all_code_delays[ $delete ] ) ) {
+				unset( $all_code_delays[ $delete ] );
+				update_option( 'pmpro_discount_code_subscription_delays', $all_code_delays );
+			}
 
 			//delete the code levels
 			$r1 = $wpdb->delete($wpdb->pmpro_discount_codes_levels, array('code_id'=>$delete), array('%d'));
