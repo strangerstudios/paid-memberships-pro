@@ -275,8 +275,7 @@
 					{
 						//save the subscription delay for this code level; a delay only
 						//applies while the level's Recurring Subscription box is checked.
-						//Unparseable patterns are saved as entered: checkout ignores them
-						//and the membership levels list warns about them.
+						//Unparseable patterns are saved as entered: checkout ignores them.
 						$dc_delay_value = '';
 						$dc_delay_type  = ! empty( $recurring ) && isset( $_REQUEST[ 'delay_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'delay_type_' . $level_id ] ) : 'none';
 						if ( 'days' === $dc_delay_type && ! empty( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) ) {

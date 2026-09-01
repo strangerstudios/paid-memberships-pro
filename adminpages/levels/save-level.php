@@ -160,8 +160,7 @@ if ( ! empty( $ml_level_image ) && wp_attachment_is_image( $ml_level_image ) ) {
 }
 
 // Save subscription delay settings. Only recurring levels can have a delay.
-// Unparseable patterns are saved as entered: checkout ignores them and the
-// membership levels list warns about them.
+// Unparseable patterns are saved as entered: checkout ignores them.
 // Uses same wp_options keys as the Subscription Delays Add On: pmpro_subscription_delay_{level_id}
 $delay_type = ! empty( $ml_recurring ) && isset( $_REQUEST['delay_type'] ) ? sanitize_text_field( $_REQUEST['delay_type'] ) : 'none';
 $delay_date_pattern = $delay_type === 'date' ? pmpro_get_date_pattern_from_request( 'subscription_delay_date' ) : '';
