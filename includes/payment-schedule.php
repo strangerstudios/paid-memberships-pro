@@ -221,31 +221,14 @@ function pmpro_convert_date_pattern( $date, $current_date = null ) {
  */
 function pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date, $current_date = null ) {
 	$set_expiration_date = strtoupper( trim( (string) $set_expiration_date ) );
-
-	/**
-	 * Filter the raw expiration date pattern before it is resolved.
-	 *
-	 * @since TBD
-	 *
-	 * @param string $set_expiration_date The uppercased expiration date pattern.
-	 */
-	$set_expiration_date = apply_filters( 'pmpro_payment_schedule_expiration_date_raw', $set_expiration_date );
-	$set_expiration_date = apply_filters_deprecated( 'pmprosed_expiration_date_raw', array( $set_expiration_date ), 'TBD', 'pmpro_payment_schedule_expiration_date_raw' );
+	$set_expiration_date = apply_filters_deprecated( 'pmprosed_expiration_date_raw', array( $set_expiration_date ), 'TBD', 'pmpro_get_set_expiration_date' );
 
 	$resolved_date = pmpro_convert_date_pattern( $set_expiration_date, $current_date );
 	if ( empty( $resolved_date ) ) {
 		return false;
 	}
 
-	/**
-	 * Filter the resolved expiration date.
-	 *
-	 * @since TBD
-	 *
-	 * @param string $resolved_date The resolved date in Y-m-d format.
-	 */
-	$resolved_date = apply_filters( 'pmpro_payment_schedule_expiration_date', $resolved_date );
-	$resolved_date = apply_filters_deprecated( 'pmprosed_expiration_date', array( $resolved_date ), 'TBD', 'pmpro_payment_schedule_expiration_date' );
+	$resolved_date = apply_filters_deprecated( 'pmprosed_expiration_date', array( $resolved_date ), 'TBD', 'pmpro_get_set_expiration_date' );
 
 	return $resolved_date;
 }
@@ -266,14 +249,22 @@ function pmpro_payment_schedule_resolve_expiration_date( $set_expiration_date, $
 function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 	if ( ! empty( $code_id ) ) {
 		// Discount code delays are stored as a nested array in a single option.
-		$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
-		if ( is_array( $all_delays ) && ! empty( $all_delays[ $code_id ][ $level_id ] ) ) {
-			return $all_delays[ $code_id ][ $level_id ];
-		}
-		return '';
+		$all_delays         = get_option( 'pmpro_discount_code_subscription_delays', array() );
+		$subscription_delay = is_array( $all_delays ) && ! empty( $all_delays[ $code_id ][ $level_id ] ) ? $all_delays[ $code_id ][ $level_id ] : '';
+	} else {
+		$subscription_delay = get_option( 'pmpro_subscription_delay_' . intval( $level_id ), '' );
 	}
 
-	return get_option( 'pmpro_subscription_delay_' . intval( $level_id ), '' );
+	/**
+	 * Filter the subscription delay for a level or level/discount code combo.
+	 *
+	 * @since TBD
+	 *
+	 * @param string|int $subscription_delay The delay (a number of days or a date pattern), or empty string.
+	 * @param int        $level_id           The membership level ID.
+	 * @param int|null   $code_id            The discount code ID, if one is in play.
+	 */
+	return apply_filters( 'pmpro_get_subscription_delay', $subscription_delay, $level_id, $code_id );
 }
 
 /**
@@ -293,10 +284,21 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 function pmpro_get_set_expiration_date( $level_id, $code_id = null ) {
 	if ( ! empty( $code_id ) ) {
 		// Discount code expiration dates: pmprosed_{level_id}_{code_id}
-		return get_option( 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id ), '' );
+		$set_expiration_date = get_option( 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id ), '' );
+	} else {
+		$set_expiration_date = get_option( 'pmprosed_' . intval( $level_id ), '' );
 	}
 
-	return get_option( 'pmprosed_' . intval( $level_id ), '' );
+	/**
+	 * Filter the set expiration date pattern for a level or level/discount code combo.
+	 *
+	 * @since TBD
+	 *
+	 * @param string   $set_expiration_date The expiration date pattern, or empty string.
+	 * @param int      $level_id            The membership level ID.
+	 * @param int|null $code_id             The discount code ID, if one is in play.
+	 */
+	return apply_filters( 'pmpro_get_set_expiration_date', $set_expiration_date, $level_id, $code_id );
 }
 
 /**

@@ -499,6 +499,13 @@ class PMPro_AddOns {
 			return $plugin_file;
 		}
 
+		// Don't reactivate add ons whose functionality has been merged into core.
+		// They are auto-deactivated, and core may define their legacy function
+		// names, so loading one mid-request could fatal with "cannot redeclare".
+		if ( function_exists( 'pmpro_get_deprecated_add_ons' ) && array_key_exists( dirname( $plugin_file ), pmpro_get_deprecated_add_ons() ) ) {
+			return new WP_Error( 'pmpro_addon_deprecated', __( 'This Add On has been merged into Paid Memberships Pro and can no longer be activated. You should delete it.', 'paid-memberships-pro' ) );
+		}
+
 		if ( is_plugin_active( $plugin_file ) ) {
 			return array(
 				'success'     => true,
