@@ -7,6 +7,9 @@
 
 	const CURSOR_MARKER = '__pmpro_cursor__';
 	const MENU_CLASS = 'pmpro-liquid-autocomplete';
+	// Long enough to swallow the burst of renders a single typed character can
+	// cause, short enough to feel immediate when the user stops.
+	const ANNOUNCE_DELAY = 150;
 	const ANNOUNCER_IDS = [
 		'pmpro-liquid-autocomplete-announcer',
 		'pmpro-liquid-autocomplete-announcer-polite',
@@ -28,7 +31,7 @@
 			let activeIndex = -1;
 			let activeContext = null;
 			let markerIndex = 0;
-			let announceFrame = null;
+			let announceTimer = null;
 			let lastAnnounced = '';
 			let openPrefixPending = false;
 			const strings = settings.strings || {};
@@ -108,9 +111,9 @@
 			}
 
 			function clearAnnouncers() {
-				if ( announceFrame ) {
-					window.cancelAnimationFrame( announceFrame );
-					announceFrame = null;
+				if ( announceTimer ) {
+					window.clearTimeout( announceTimer );
+					announceTimer = null;
 				}
 
 				ANNOUNCER_IDS.forEach( function ( id ) {
@@ -125,20 +128,21 @@
 			function announce( text, politeness ) {
 				const announcer = ensureAnnouncer( politeness );
 
-				// Cancel any queued announcement so a menu that closes before
-				// the next frame cannot emit a stale message.
-				if ( announceFrame ) {
-					window.cancelAnimationFrame( announceFrame );
+				// Supersede anything still queued. Typing one character can
+				// re-render the menu more than once, and only the settled
+				// result is worth speaking.
+				if ( announceTimer ) {
+					window.clearTimeout( announceTimer );
 				}
 
 				// Clearing first forces assistive tech to re-read text that is
 				// identical to what the region already held.
 				announcer.textContent = '';
-				announceFrame = window.requestAnimationFrame( function () {
-					announceFrame = null;
+				announceTimer = window.setTimeout( function () {
+					announceTimer = null;
 					openPrefixPending = false;
 					announcer.textContent = text;
-				} );
+				}, ANNOUNCE_DELAY );
 			}
 
 			function closest( node, selector ) {
