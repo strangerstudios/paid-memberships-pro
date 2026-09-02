@@ -131,6 +131,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_rebuild_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_rebuild_webhook' ) );
+		add_action( 'wp_ajax_pmpro_stripe_check_connect_keys', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_check_connect_keys' ) );
 
 		//code to add at checkout if Stripe is the current gateway
 		$default_gateway = get_option( 'pmpro_gateway' );
@@ -171,6 +172,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Stripe Connect functions.
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
+		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_clear_local' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 
@@ -1204,6 +1206,146 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * AJAX callback to test saved Stripe keys against the Stripe API.
+	 *
+	 * Secrets stay on the server. Success is silent. Connect auth failures
+	 * get a reconnect URL; API-key failures ask the admin to check the Restricted Key.
+	 */
+	public static function wp_ajax_pmpro_stripe_check_connect_keys() {
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
+			echo wp_json_encode(
+				array(
+					'success' => false,
+					'results' => array(),
+				)
+			);
+			exit;
+		}
+
+		if ( false === check_ajax_referer( 'pmpro_stripe_connect_key_health', 'nonce', false ) ) {
+			echo wp_json_encode(
+				array(
+					'success' => false,
+					'results' => array(),
+				)
+			);
+			exit;
+		}
+
+		$results = array();
+
+		// API keys take precedence over Connect for Stripe calls — only test the keys actually used.
+		if ( self::using_api_keys() ) {
+			if ( ! self::connect_secretkey_is_valid( get_option( 'pmpro_stripe_secretkey' ) ) ) {
+				$docs_link = '<a href="' . esc_url( 'https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Check your Restricted Key', 'paid-memberships-pro' ) . '</a>';
+				$results['api'] = array(
+					'success' => false,
+					'message' => sprintf(
+						/* translators: %s: Check your Restricted Key link */
+						esc_html__( 'We could not reach Stripe with the saved API keys. %s', 'paid-memberships-pro' ),
+						$docs_link
+					),
+				);
+			}
+		} else {
+			foreach ( array( 'live', 'sandbox' ) as $environment ) {
+				if ( ! self::has_connect_credentials( $environment ) ) {
+					continue;
+				}
+
+				if ( self::connect_secretkey_is_valid( get_option( 'pmpro_' . $environment . '_stripe_connect_secretkey' ) ) ) {
+					continue;
+				}
+
+				$reconnect_url = self::get_connect_authorize_url( $environment );
+				$reconnect_link = '<a href="' . esc_url( $reconnect_url ) . '">' . esc_html__( 'Reconnect with Stripe', 'paid-memberships-pro' ) . '</a>';
+				$results[ $environment ] = array(
+					'success' => false,
+					'message' => sprintf(
+						/* translators: %s: Reconnect with Stripe link */
+						esc_html__( 'We could not reach Stripe with the saved keys. %s', 'paid-memberships-pro' ),
+						$reconnect_link
+					),
+				);
+			}
+		}
+
+		echo wp_json_encode(
+			array(
+				'success' => true,
+				'results' => $results,
+			)
+		); // Message HTML escaped above.
+		exit;
+	}
+
+	/**
+	 * Build the Stripe Connect authorization URL.
+	 *
+	 * @param string $gateway_environment 'live' or 'sandbox'.
+	 * @return string
+	 */
+	private static function get_connect_authorize_url( $gateway_environment ) {
+		$environment2 = ( 'live' === $gateway_environment ) ? 'live' : 'test';
+		$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
+
+		return add_query_arg(
+			array(
+				'action' => 'authorize',
+				'gateway_environment' => $environment2,
+				'supports_hash' => '1',
+				'return_url' => rawurlencode(
+					add_query_arg(
+						array(
+							'page' => 'pmpro-paymentsettings',
+							'edit_gateway' => 'stripe',
+							'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ),
+						),
+						admin_url( 'admin.php' )
+					)
+				),
+			),
+			$connect_url_base
+		);
+	}
+
+	/**
+	 * Test a Stripe secret (Connect or Restricted Key) with a cheap customers list.
+	 * Empty accounts still return a list; we only care that the key authenticates.
+	 *
+	 * @param string $secretkey Secret stored in options.
+	 * @return bool True if the key authenticates. Transient/network errors return true so we do not nag.
+	 */
+	private static function connect_secretkey_is_valid( $secretkey ) {
+		$secretkey = trim( (string) $secretkey );
+		if ( '' === $secretkey ) {
+			return false;
+		}
+
+		self::loadStripeLibrary();
+
+		try {
+			$stripe    = new Stripe_Client( $secretkey );
+			$customers = $stripe->customers->all( array( 'limit' => 1 ) );
+			return ( is_object( $customers ) && isset( $customers->data ) );
+		} catch ( \Stripe\Exception\AuthenticationException $e ) {
+			return false;
+		} catch ( \Stripe\Exception\PermissionException $e ) {
+			return false;
+		} catch ( \InvalidArgumentException $e ) {
+			return false;
+		} catch ( \Stripe\Exception\ApiErrorException $e ) {
+			$status = (int) $e->getHttpStatus();
+			if ( in_array( $status, array( 401, 403 ), true ) ) {
+				return false;
+			}
+			return true;
+		} catch ( \Throwable $e ) {
+			return true;
+		}
+	}
+
+	/**
 	 * Code added to checkout preheader.
 	 *
 	 * @since 1.8
@@ -1574,16 +1716,23 @@ class PMProGateway_stripe extends PMProGateway {
 			$error = __( 'Invalid response from the Stripe Connect server.', 'paid-memberships-pro' );
 		} else {
 			// Update keys.
+			$hashed = isset( $_REQUEST['pmpro_stripe_connect_hashed'] ) && 'true' === $_REQUEST['pmpro_stripe_connect_hashed'];
 			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
 				// Update live keys.
 				update_option( 'pmpro_live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( 'pmpro_live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( 'pmpro_live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( $hashed ) {
+					update_option( 'pmpro_live_stripe_connect_hashed', true );
+				}
 			} else {
 				// Update sandbox keys.
 				update_option( 'pmpro_sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( 'pmpro_sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( 'pmpro_sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( $hashed ) {
+					update_option( 'pmpro_sandbox_stripe_connect_hashed', true );
+				}
 			}
 
 
@@ -1596,6 +1745,7 @@ class PMProGateway_stripe extends PMProGateway {
 			unset( $_GET['pmpro_stripe_user_id'] );
 			unset( $_GET['pmpro_stripe_access_token'] );
 			unset( $_GET['pmpro_stripe_publishable_key'] );
+			unset( $_GET['pmpro_stripe_connect_hashed'] );
 
 			// Set up a webhook if needed.
 			$stripe = new PMProGateway_stripe();
@@ -1667,19 +1817,117 @@ class PMProGateway_stripe extends PMProGateway {
 			);
 			echo wp_kses( sprintf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ), $allowed_html );
 
+			$environment = ( isset( $_REQUEST['pmpro_stripe_disconnected_environment'] ) && 'live' === $_REQUEST['pmpro_stripe_disconnected_environment'] ) ? 'live' : 'sandbox';
+			$reconnect_url = self::get_connect_authorize_url( $environment );
+			?>
+			<div class="notice notice-warning pmpro-stripe-disconnect-message">
+				<p class="pmpro_stripe_reconnect_actions">
+					<a href="<?php echo esc_url( $reconnect_url ); ?>" class="button button-primary pmpro_stripe_reconnect"><span class="dashicons dashicons-update-alt"></span> <?php esc_html_e( 'Reconnect with Stripe', 'paid-memberships-pro' ); ?></a>
+					<button type="submit" form="pmpro_stripe_clear_connect_<?php echo esc_attr( $environment ); ?>" class="button button-secondary"><?php esc_html_e( 'Remove connection from this site', 'paid-memberships-pro' ); ?></button>
+				</p>
+			</div>
+			<form id="pmpro_stripe_clear_connect_<?php echo esc_attr( $environment ); ?>" method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings&edit_gateway=stripe' ) ); ?>">
+				<?php wp_nonce_field( 'pmpro_stripe_clear_connect', 'pmpro_stripe_clear_connect_nonce' ); ?>
+				<input type="hidden" name="pmpro_stripe_clear_connect" value="1" />
+				<input type="hidden" name="environment" value="<?php echo esc_attr( $environment ); ?>" />
+			</form>
+			<?php
+
 		}
+
+		// Only wipe local Connect credentials after a confirmed disconnect.
+		if ( 'true' !== $_REQUEST['pmpro_stripe_disconnected'] ) {
+			return;
+		}
+
 
 		if ( $_REQUEST['pmpro_stripe_disconnected_environment'] === 'live' ) {
 			// Delete live keys.
 			delete_option( 'pmpro_live_stripe_connect_user_id' );
 			delete_option( 'pmpro_live_stripe_connect_secretkey' );
 			delete_option( 'pmpro_live_stripe_connect_publishablekey' );
+			delete_option( 'pmpro_live_stripe_connect_hashed' );
 		} else {
 			// Delete sandbox keys.
 			delete_option( 'pmpro_sandbox_stripe_connect_user_id' );
 			delete_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 			delete_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
+			delete_option( 'pmpro_sandbox_stripe_connect_hashed' );
 		}
+	}
+
+	/**
+	 * Drop local Connect options without calling Stripe.
+	 * Used when disconnect is refused but this site still needs to clear keys.
+	 */
+	public static function stripe_connect_clear_local() {
+		if ( empty( $_POST['pmpro_stripe_clear_connect'] ) ) {
+			return;
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		if ( empty( $_POST['pmpro_stripe_clear_connect_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['pmpro_stripe_clear_connect_nonce'] ), 'pmpro_stripe_clear_connect' ) ) {
+			return;
+		}
+
+		$environment = ( isset( $_POST['environment'] ) && 'live' === $_POST['environment'] ) ? 'live' : 'sandbox';
+		delete_option( 'pmpro_' . $environment . '_stripe_connect_user_id' );
+		delete_option( 'pmpro_' . $environment . '_stripe_connect_secretkey' );
+		delete_option( 'pmpro_' . $environment . '_stripe_connect_publishablekey' );
+		delete_option( 'pmpro_' . $environment . '_stripe_connect_hashed' );
+
+		wp_safe_redirect( admin_url( 'admin.php?page=pmpro-paymentsettings&edit_gateway=stripe' ) );
+		exit;
+	}
+
+	/**
+	 * Prompt reconnect when this connection predates hashed disconnect protection.
+	 * Reconnect (authorize again) issues new keys without deauthorizing other sites.
+	 */
+	private function maybe_show_stripe_reconnect_notice( $environment, $reconnect_url ) {
+		if ( get_option( 'pmpro_' . $environment . '_stripe_connect_hashed' ) ) {
+			return;
+		}
+		?>
+		<div class="notice notice-error inline">
+			<p><strong><?php esc_html_e( 'Important:', 'paid-memberships-pro' ); ?></strong> <?php esc_html_e( 'We recommend that you reconnect your Stripe connection.', 'paid-memberships-pro' ); ?></p>
+			<p class="pmpro_stripe_reconnect_actions">
+				<a href="<?php echo esc_url( $reconnect_url ); ?>" class="button button-primary pmpro_stripe_reconnect"><span class="dashicons dashicons-update-alt"></span> <?php esc_html_e( 'Reconnect', 'paid-memberships-pro' ); ?></a>
+				<a href="https://www.paidmembershipspro.com/blog/" class="button button-secondary" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Learn More', 'paid-memberships-pro' ); ?></a>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Disconnect posts key_hash so it does not land in access logs or copied URLs.
+	 *
+	 * @param string $environment 'live' or 'sandbox'.
+	 */
+	private function show_stripe_disconnect_button( $environment ) {
+		$environment2 = ( 'live' === $environment ) ? 'live' : 'test';
+		$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
+		$action_url = add_query_arg( 'action', 'disconnect', $connect_url_base );
+		$return_url = add_query_arg(
+			array(
+				'page' => 'pmpro-paymentsettings',
+				'edit_gateway' => 'stripe',
+				'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ),
+			),
+			admin_url( 'admin.php' )
+		);
+		?>
+		<form method="post" action="<?php echo esc_url( $action_url ); ?>" class="pmpro_stripe_disconnect_form">
+			<input type="hidden" name="gateway_environment" value="<?php echo esc_attr( $environment2 ); ?>" />
+			<input type="hidden" name="stripe_user_id" value="<?php echo esc_attr( get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' ) ); ?>" />
+			<input type="hidden" name="return_url" value="<?php echo esc_attr( $return_url ); ?>" />
+			<?php if ( get_option( 'pmpro_' . $environment . '_stripe_connect_hashed' ) ) { ?>
+				<input type="hidden" name="key_hash" value="<?php echo esc_attr( hash( 'sha256', (string) get_option( 'pmpro_' . $environment . '_stripe_connect_secretkey' ) ) ); ?>" />
+			<?php } ?>
+			<button type="submit" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></button>
+		</form>
+		<?php
 	}
 
 	/**
@@ -2828,17 +3076,20 @@ class PMProGateway_stripe extends PMProGateway {
 				<?php
 				$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
 				if ( self::has_connect_credentials( $environment ) ) {
-					$connect_url = add_query_arg(
+					$this->show_stripe_disconnect_button( $environment );
+					?>
+					<?php
+					$reconnect_url = add_query_arg(
 						array(
-							'action' => 'disconnect',
+							'action' => 'authorize',
 							'gateway_environment' => $environment2,
-							'stripe_user_id' => $values[ $environment . '_stripe_connect_user_id'],
-							'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
+							'supports_hash' => '1',
+							'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
 						),
 						$connect_url_base
 					);
+					$this->maybe_show_stripe_reconnect_notice( $environment, $reconnect_url );
 					?>
-					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
 					<p class="description">
 						<?php
 						if ( $livemode ) {
@@ -2854,6 +3105,7 @@ class PMProGateway_stripe extends PMProGateway {
 						array(
 							'action' => 'authorize',
 							'gateway_environment' => $environment2,
+							'supports_hash' => '1',
 							'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
 						),
 						$connect_url_base
@@ -2975,17 +3227,12 @@ class PMProGateway_stripe extends PMProGateway {
 								<?php
 								$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
 								if ( self::has_connect_credentials( $environment ) ) {
-									$connect_url = add_query_arg(
-										array(
-											'action' => 'disconnect',
-											'gateway_environment' => $environment2,
-											'stripe_user_id' => get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' ),
-											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
-										),
-										$connect_url_base
-									);
+									$this->show_stripe_disconnect_button( $environment );
 									?>
-									<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
+									<div id="pmpro_stripe_connect_key_health_<?php echo esc_attr( $environment ); ?>" class="notice notice-error inline pmpro_stripe_connect_key_health" style="display: none;">
+										<p></p>
+									</div>
+									<?php $this->maybe_show_stripe_reconnect_notice( $environment, self::get_connect_authorize_url( $environment ) ); ?>
 									<p class="description">
 										<?php
 										if ( $livemode ) {
@@ -2997,14 +3244,7 @@ class PMProGateway_stripe extends PMProGateway {
 									</p>
 									<?php
 								} else {
-									$connect_url = add_query_arg(
-										array(
-											'action' => 'authorize',
-											'gateway_environment' => $environment2,
-											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
-										),
-										$connect_url_base
-									);
+									$connect_url = self::get_connect_authorize_url( $environment );
 									?>
 									<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 									<?php
@@ -3086,6 +3326,9 @@ class PMProGateway_stripe extends PMProGateway {
 									</th>
 									<td>
 										<input type="text" id="stripe_secretkey" name="stripe_secretkey" value="<?php echo esc_attr( $secret_key ) ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
+										<div id="pmpro_stripe_api_key_health" class="notice notice-error inline pmpro_stripe_connect_key_health" style="display: none; margin-top: 8px;">
+											<p></p>
+										</div>
 									</td>
 								</tr>
 							</tbody>

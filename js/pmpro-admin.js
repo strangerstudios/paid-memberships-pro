@@ -384,6 +384,69 @@ jQuery(document).ready(function () {
 	});
 });
 
+/*
+ * Test saved Stripe keys after the payment settings page loads.
+ * Secrets are never sent to the browser. Connect failures get a reconnect link;
+ * API-key failures ask the admin to check the Restricted Key.
+ */
+jQuery(document).ready(function () {
+	if (!jQuery('.pmpro_stripe_connect_key_health').length || typeof pmpro === 'undefined' || !pmpro.stripe_connect_key_health_nonce) {
+		return;
+	}
+
+	jQuery.ajax({
+		type: 'POST',
+		timeout: 15000,
+		data: {
+			action: 'pmpro_stripe_check_connect_keys',
+			nonce: pmpro.stripe_connect_key_health_nonce
+		},
+		url: ajaxurl,
+		success: function (response) {
+			try {
+				response = (typeof response === 'string') ? jQuery.parseJSON(response) : response;
+			} catch (e) {
+				return;
+			}
+
+			if (!response || !response.results) {
+				return;
+			}
+
+			jQuery.each(response.results, function (environment, result) {
+				if (!result || result.success !== false || !result.message) {
+					return;
+				}
+
+				var notice = (environment === 'api')
+					? jQuery('#pmpro_stripe_api_key_health')
+					: jQuery('#pmpro_stripe_connect_key_health_' + environment);
+				if (!notice.length) {
+					return;
+				}
+
+				if (environment === 'api') {
+					jQuery('.pmpro_stripe_legacy_keys').show();
+				}
+
+				notice.children('p').html(result.message);
+				notice.show();
+
+				var section = notice.closest('.pmpro_section');
+				var thebutton = section.find('button.pmpro_section-toggle-button');
+				var buttonicon = thebutton.children('.dashicons');
+				var sectioninside = section.children('.pmpro_section_inside');
+				if (buttonicon.hasClass('dashicons-arrow-down-alt2')) {
+					sectioninside.show();
+					buttonicon.removeClass('dashicons-arrow-down-alt2').addClass('dashicons-arrow-up-alt2');
+					section.attr('data-visibility', 'shown');
+					thebutton.attr('aria-expanded', 'true');
+				}
+			});
+		}
+	});
+});
+
 // Disable the webhook buttons if the API keys aren't complete yet.
 function pmpro_stripe_check_api_keys() {
 	if ((jQuery('#stripe_publishablekey').val().length > 0 && jQuery('#stripe_secretkey').val().length > 0) || jQuery('#live_stripe_connect_secretkey').val().length > 0) {

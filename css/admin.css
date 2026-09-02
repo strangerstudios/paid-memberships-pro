@@ -2387,6 +2387,18 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	color: var(--pmpro--color--alert-text);
 }
 
+.pmpro_admin-pmpro-paymentsettings .pmpro_stripe_disconnect_form {
+	display: inline-block;
+	margin: 0;
+}
+
+.pmpro_admin-pmpro-paymentsettings button.pmpro-stripe-connect {
+	appearance: none;
+	-webkit-appearance: none;
+	color: inherit;
+	font: inherit;
+}
+
 .pmpro_admin-pmpro-paymentsettings .pmpro-stripe-connect {
 	background-image: -webkit-linear-gradient(#28A0E5, #015E94);
 	background-image: -moz-linear-gradient(#28A0E5, #015E94);
@@ -2487,7 +2499,21 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	gap: 5px;
 }
 
-.wp-core-ui .pmpro_admin-pmpro-paymentsettings #pmpro_stripe_create_webhook .dashicons {
+.pmpro_admin-pmpro-paymentsettings .pmpro_stripe_reconnect_actions {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.pmpro_admin-pmpro-paymentsettings .pmpro_stripe_reconnect {
+	align-items: center;
+	display: inline-flex;
+	gap: 5px;
+}
+
+.wp-core-ui .pmpro_admin-pmpro-paymentsettings #pmpro_stripe_create_webhook .dashicons,
+.wp-core-ui .pmpro_admin-pmpro-paymentsettings .pmpro_stripe_reconnect .dashicons {
 	line-height: 1;
 }
 
