@@ -137,9 +137,7 @@ class PMPro_AddOns {
 				'pmpro-member-directory',
 				'pmpro-nav-menus',
 				'pmpro-roles',
-				'pmpro-set-expiration-dates',
 				'pmpro-signup-shortcode',
-				'pmpro-subscription-delays',
 			),
 			'association'     => array(
 				'basic-user-avatars',
@@ -153,9 +151,7 @@ class PMPro_AddOns {
 				'pmpro-membership-card',
 				'pmpro-membership-manager-role',
 				'pmpro-pay-by-check',
-				'pmpro-set-expiration-dates',
 				'pmpro-shipping',
-				'pmpro-subscription-delays',
 			),
 			'premium_content' => array(
 				'pmpro-abandoned-cart-recovery',
@@ -501,6 +497,13 @@ class PMPro_AddOns {
 		$plugin_file = $this->resolve_plugin_file( $slug_or_plugin );
 		if ( is_wp_error( $plugin_file ) ) {
 			return $plugin_file;
+		}
+
+		// Don't reactivate add ons whose functionality has been merged into core.
+		// They are auto-deactivated, and core may define their legacy function
+		// names, so loading one mid-request could fatal with "cannot redeclare".
+		if ( function_exists( 'pmpro_get_deprecated_add_ons' ) && array_key_exists( dirname( $plugin_file ), pmpro_get_deprecated_add_ons() ) ) {
+			return new WP_Error( 'pmpro_addon_deprecated', __( 'This Add On has been merged into Paid Memberships Pro and can no longer be activated. You should delete it.', 'paid-memberships-pro' ) );
 		}
 
 		if ( is_plugin_active( $plugin_file ) ) {

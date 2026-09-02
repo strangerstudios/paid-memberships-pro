@@ -10,6 +10,11 @@
 function pmpro_checkout_level_extend_memberships( $level ) {
 	global $pmpro_msg, $pmpro_msgt;
 
+	// A set expiration date replaces duration-based expiration, so there is nothing to extend.
+	if ( ! empty( $level ) && ! empty( $level->id ) && pmpro_resolve_expiration_date_pattern( pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null ) ) ) {
+		return $level;
+	}
+
 	// does this level expire? are they an existing user of this level?
 	if ( ! empty( $level ) && ! empty( $level->expiration_number ) && pmpro_hasMembershipLevel( $level->id ) ) {
 		// get the current enddate of their membership
