@@ -18,6 +18,16 @@
 	// Save settings.
 	if( !empty( $_REQUEST['savesettings'] ) ) {
 		pmpro_setOption( "spamprotection", intval( $_POST['spamprotection'] ) );
+
+		// Save the captcha setting. Note: This must be saved before the
+		// pmpro_save_security_settings hook fires so that the captcha services
+		// saving their settings on that hook can see the updated value.
+		$captcha = isset( $_POST['captcha'] ) ? sanitize_text_field( $_POST['captcha'] ) : '';
+		if ( ! array_key_exists( $captcha, pmpro_get_captcha_services() ) ) {
+			$captcha = '';
+		}
+		update_option( 'pmpro_captcha', $captcha, false );
+
 		if ( isset( $_POST['use_ssl'] ) ) {
 			// REQUEST['use_ssl'] will not be set if the entire site is already over HTTPS.
 			pmpro_setOption( "use_ssl", intval( $_POST['use_ssl'] ) );
@@ -157,6 +167,14 @@
 						2 => __( 'Yes - Enable Spam Protection', 'paid-memberships-pro' ),
 					),
 					'description' => sprintf( esc_html__( 'Block IPs from checkout and login if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), (int) PMPRO_SPAM_ACTION_NUM_LIMIT, (int) round( PMPRO_SPAM_ACTION_TIME_LIMIT / 60, 2 ) ),
+				),
+				array(
+					'name'        => 'captcha',
+					'label'       => __( 'Captcha', 'paid-memberships-pro' ),
+					'type'        => 'select',
+					'value'       => pmpro_captcha(),
+					'options'     => array( '' => __( 'No', 'paid-memberships-pro' ) ) + pmpro_get_captcha_services(),
+					'description' => __( 'Protect your checkout, login, and password reset forms with a captcha challenge. On login and password reset forms, the captcha is only shown after a failed login attempt or other suspicious activity from the visitor\'s IP address.', 'paid-memberships-pro' ),
 				),
 				array(
 					// The callbacks hooked here echo their own <tr> rows, so give them a table.
