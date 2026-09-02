@@ -2491,14 +2491,10 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	line-height: 1;
 }
 
-.pmpro_admin-pmpro-paymentsettings .pmpro-admin-secure-key {
+/* Secret-credential inputs (the secure_key settings field type and hand-rolled gateway key fields).
+   Unscoped so masking applies on any admin screen, not just payment settings. */
+.pmpro-admin-secure-key {
 	-webkit-text-security: disc;
-}
-
-@media only screen and (min-width: 1200px) {
-	.pmpro_admin-pmpro-paymentsettings .pmpro-admin-secure-key {
-		-webkit-text-security: disc;
-	}
 }
 
 /**
@@ -4929,4 +4925,9 @@ button.pmpro_report_th_closed:before {
 	float: left;
 	height: 30px;
 	width: 26px;
+}
+
+/* Declarative field visibility for pmpro_build_settings_field() depends rules (toggled by pmpro-admin.js). */
+.pmpro-hidden {
+	display: none;
 }

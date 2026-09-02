@@ -231,9 +231,10 @@ add_filter( 'pmpro_check_discount_code', 'pmpro_check_discount_code_spam_check',
  * @param string $username The username that failed to login.
  */
 function pmpro_track_login_spam( $username ) {
-	// Bail if Spam Protection is disabled.
+	// Bail if Spam Protection is disabled, unless a captcha is enabled.
+	// Captchas use this failed login activity to decide when to show a challenge.
 	$spamprotection = get_option( 'pmpro_spamprotection' );
-	if ( empty( $spamprotection ) ) {
+	if ( empty( $spamprotection ) && empty( pmpro_captcha() ) ) {
 		return;
 	}
 

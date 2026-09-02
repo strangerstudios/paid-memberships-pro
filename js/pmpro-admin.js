@@ -1743,8 +1743,11 @@ jQuery(document).ready(function($) {
 
 		// Use WordPress REST API
 		$.ajax({
-			url: pmpro.rest_url + 'pmpro/v1/email_log_popup?log_id=' + logId,
+			url: pmpro.rest_url + 'pmpro/v1/email_log_popup',
 			type: 'GET',
+			data: {
+				log_id: logId
+			},
 			beforeSend: function(xhr) {
 				xhr.setRequestHeader('X-WP-Nonce', pmpro.nonce);
 			},
@@ -1957,3 +1960,71 @@ jQuery(document).ready(function($) {
 	// Optionally improve first render robustness: recalc after layout is stable
 	setTimeout(pmproqsUpdateSelectWidth, 0);
 });
+
+/**
+ * Checklist "Select: All | None" controls for pmpro_build_settings_field() checklist fields.
+ *
+ * Delegated so it works for any checklist on the page. Each control toggles every checkbox within
+ * its own .pmpro_checkbox_list wrapper. Replaces the old per-checklist inline <script> blocks.
+ */
+jQuery( function ( $ ) {
+	$( document ).on( 'click', '[data-pmpro-check-all]', function ( e ) {
+		e.preventDefault();
+		$( this ).closest( '.pmpro_checkbox_list' ).find( 'input[type="checkbox"]' ).prop( 'checked', true );
+	} );
+	$( document ).on( 'click', '[data-pmpro-check-none]', function ( e ) {
+		e.preventDefault();
+		$( this ).closest( '.pmpro_checkbox_list' ).find( 'input[type="checkbox"]' ).prop( 'checked', false );
+	} );
+} );
+
+/**
+ * Declarative field visibility for pmpro_build_settings_field() `depends`.
+ *
+ * Any element with data-pmpro-depends (a JSON array of conditions) is shown/hidden based on the
+ * live state of the inputs it references. Conditions are ANDed by default; add
+ * data-pmpro-depends-or="1" for OR. Condition shapes:
+ *   { "id": "some_input_id", "checked": true }               // checkbox/radio checked state
+ *   { "id": "some_input_id", "value": "stripe" }             // input/select value equals
+ *   { "id": "some_input_id", "value": ["stripe", "check"] }  // input/select value is one of these
+ */
+jQuery( function ( $ ) {
+	function pmproDependsConditionMet( cond ) {
+		var el = document.getElementById( cond.id );
+		if ( ! el ) {
+			return false;
+		}
+		if ( typeof cond.checked !== 'undefined' ) {
+			return !! el.checked === !! cond.checked;
+		}
+		var val = ( el.type === 'checkbox' || el.type === 'radio' ) ? ( el.checked ? el.value : '' ) : el.value;
+		if ( Array.isArray( cond.value ) ) {
+			return cond.value.map( String ).indexOf( String( val ) ) !== -1;
+		}
+		return String( val ) === String( cond.value );
+	}
+
+	function pmproApplyDepends() {
+		$( '[data-pmpro-depends]' ).each( function () {
+			var conditions;
+			try {
+				conditions = JSON.parse( this.getAttribute( 'data-pmpro-depends' ) );
+			} catch ( e ) {
+				return;
+			}
+			if ( ! Array.isArray( conditions ) || ! conditions.length ) {
+				return;
+			}
+			var useOr   = this.getAttribute( 'data-pmpro-depends-or' ) === '1';
+			var visible = useOr ? conditions.some( pmproDependsConditionMet ) : conditions.every( pmproDependsConditionMet );
+			$( this ).toggleClass( 'pmpro-hidden', ! visible );
+		} );
+	}
+
+	// Re-evaluate when any control changes, and once on load to correct the initial state. The
+	// 'input' event keeps text and textarea conditions responsive as the user types, since those
+	// controls only fire 'change' on blur. Code that sets a value programmatically should
+	// .trigger( 'change' ) so dependent elements update.
+	$( document ).on( 'change input', 'input, select, textarea', pmproApplyDepends );
+	pmproApplyDepends();
+} );

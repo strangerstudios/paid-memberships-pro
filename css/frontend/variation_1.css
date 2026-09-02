@@ -133,7 +133,7 @@
 	.pmpro_btn {
 		background-color: var(--pmpro--color--accent);
 		border: 1px solid var(--pmpro--color--accent);
-		border-radius: var(--pmpro--base--border-radius);
+		border-radius: var(--pmpro--btn--border-radius);
 		box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
 		box-sizing: border-box;
 		color: var(--pmpro--color--base);
@@ -145,7 +145,7 @@
 		line-height: 1.5;
 		min-height: 40px;
 		outline: 0;
-		padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
+		padding: var(--pmpro--btn--top-bottom-padding) var(--pmpro--btn--left-right-padding);
 		text-align: center;
 		text-decoration: none;
 		text-rendering: geometricprecision;
@@ -233,6 +233,19 @@
 	}
 
 	/**
+	 * Text Links
+	 */
+	.pmpro_link {
+		color: var(--pmpro--color--accent);
+		text-decoration: underline;
+	}
+
+	.pmpro_link:hover,
+	.pmpro_link:focus {
+		color: var(--pmpro--color--accent--variation);
+	}
+
+	/**
 	 * Form Styles
 	 */
 	.pmpro_form {
@@ -273,6 +286,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--pmpro--base--spacing--medium);
+		min-width: 0;
 	}
 
 	.pmpro_form_fields-inline {
@@ -286,6 +300,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: calc( var(--pmpro--base--spacing--small) / 2 );
+		min-width: 0;
 	}
 
 	.pmpro_form_label {
@@ -328,6 +343,12 @@
 		background-repeat: no-repeat;
 		background-size: 16px 16px;
 		padding-right: calc(var(--pmpro--base--spacing--small) + 20px);
+	}
+
+	.pmpro_form_input-select,
+	.pmpro_form_input-multiselect {
+		max-width: 100%;
+		width: 100%;
 	}
 
 	.pmpro_form_input-text:focus,
@@ -599,7 +620,7 @@
 	.pmpro_section #loginform .login-submit .button {
 		background-color: var(--pmpro--color--accent);
 		border: 1px solid var(--pmpro--color--accent);
-		border-radius: var(--pmpro--base--border-radius);
+		border-radius: var(--pmpro--btn--border-radius);
 		box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
 		box-sizing: border-box;
 		color: var(--pmpro--color--base);
@@ -611,7 +632,7 @@
 		line-height: 1.5;
 		min-height: 40px;
 		outline: 0;
-		padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
+		padding: var(--pmpro--btn--top-bottom-padding) var(--pmpro--btn--left-right-padding);
 		text-align: center;
 		text-decoration: none;
 		text-rendering: geometricprecision;

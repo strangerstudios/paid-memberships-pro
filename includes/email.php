@@ -546,10 +546,11 @@ add_filter( 'pmpro_email_data', 'pmpro_sanitize_email_data' );
  * Detect how outbound email is being sent from this site.
  *
  * Runs these checks in order and returns on the first hit:
- *   1. An active SMTP/transactional-email plugin we recognize.
- *   2. wp-config.php SMTP constants (manual SMTP setup).
- *   3. PMPro Max hosting (handles transactional email at the server level).
- *   4. Fallback: unknown / WordPress default (PHP `mail()`).
+ *   1. The PMPro SMTP Add On with a connector configured.
+ *   2. An active SMTP/transactional-email plugin we recognize.
+ *   3. wp-config.php SMTP constants (manual SMTP setup).
+ *   4. PMPro Max hosting (handles transactional email at the server level).
+ *   5. Fallback: unknown / WordPress default (PHP `mail()`).
  *
  * Plugin checks run first so that a plugin overriding the default on Max is
  * reported accurately.
@@ -564,6 +565,23 @@ add_filter( 'pmpro_email_data', 'pmpro_sanitize_email_data' );
  * }
  */
 function pmpro_detect_email_method() {
+	// The PMPro SMTP Add On only handles mail when a connector is configured,
+	// so check its actual state instead of treating activation as a signal.
+	// If it is active without a connector, mail passes through untouched and
+	// the checks below describe the site more accurately.
+	if ( function_exists( 'pmpro_smtp_get_active_connector' ) ) {
+		$connector = pmpro_smtp_get_active_connector();
+		if ( null !== $connector ) {
+			return apply_filters( 'pmpro_detect_email_method', array(
+				'method' => 'pmpro-smtp',
+				// translators: %s: The name of the connector configured in the PMPro SMTP Add On.
+				'label'  => sprintf( __( 'PMPro SMTP (%s)', 'paid-memberships-pro' ), $connector->get_title() ),
+				'relay'  => 'generic' === $connector->get_name() ? $connector->get_setting( 'host' ) : null,
+				'source' => 'plugin',
+			) );
+		}
+	}
+
 	// Known SMTP/transactional-email plugins, roughly by popularity.
 	// `class`, `function`, and `constant` may each be a string or array of strings.
 	$plugin_signatures = array(

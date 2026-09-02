@@ -221,10 +221,8 @@ class PMPro_Stripe_Webhook_Handler {
 				self::handle_charge_refunded( $pmpro_stripe_event, $logstr );
 				return true;
 			case 'checkout.session.completed':
+			case 'checkout.session.async_payment_succeeded': // Shares a handler: order data is derived from the Checkout Session, so completion is safe regardless of event order.
 				self::handle_checkout_session_completed( $pmpro_stripe_event, $logstr );
-				return true;
-			case 'checkout.session.async_payment_succeeded':
-				self::handle_checkout_session_async_payment_succeeded( $pmpro_stripe_event, $logstr );
 				return true;
 			case 'checkout.session.async_payment_failed':
 				self::handle_checkout_session_async_payment_failed( $pmpro_stripe_event, $logstr );
@@ -476,7 +474,16 @@ class PMPro_Stripe_Webhook_Handler {
 	}
 
 	/**
-	 * Handle checkout.session.completed events.
+	 * Handle checkout.session.completed and checkout.session.async_payment_succeeded events.
+	 *
+	 * Both events run the same logic: the Checkout Session is re-retrieved from
+	 * Stripe and all order data (transaction IDs, payment method, amounts) is
+	 * derived from it, so completion does not depend on which event is being
+	 * processed or on the order in which the events were delivered. If the
+	 * session is not yet paid (delayed notification payment methods), the order
+	 * is held at pending until a later event completes it.
+	 *
+	 * @since 3.8.4 Also handles checkout.session.async_payment_succeeded.
 	 *
 	 * @param object $pmpro_stripe_event Stripe event object.
 	 * @param string $logstr             Log output.
@@ -584,38 +591,19 @@ class PMPro_Stripe_Webhook_Handler {
 		} else {
 			// No. The user is probably using a delayed notification payment method.
 			// Set to pending in the meantime and wait for the next webhook.
-			$order->status = 'pending';
-			$order->saveOrder();
-			$logstr .= 'Checkout Session ' . $checkout_session->id . ' has not yet been processed for PMPro order ID ' . $order->id . '.';
+			// Re-check the current status in the database first: a concurrent
+			// checkout.session.async_payment_succeeded webhook may have completed
+			// this order while we were making Stripe API calls above, and saving
+			// our stale in-memory copy would clobber the completed order.
+			$current_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM $wpdb->pmpro_membership_orders WHERE id = %d", $order->id ) );
+			if ( in_array( $current_status, array( 'token', 'pending' ), true ) ) {
+				$order->status = 'pending';
+				$order->saveOrder();
+				$logstr .= 'Checkout Session ' . $checkout_session->id . ' has not yet been processed for PMPro order ID ' . $order->id . '.';
+			} else {
+				$logstr .= 'Order #' . $order->id . ' for Checkout Session ' . $checkout_session->id . ' was completed by a concurrent webhook. Not marking as pending.';
+			}
 		}
-	}
-
-	/**
-	 * Handle checkout.session.async_payment_succeeded events.
-	 *
-	 * @param object $pmpro_stripe_event Stripe event object.
-	 * @param string $logstr             Log output.
-	 * @return void
-	 */
-	private static function handle_checkout_session_async_payment_succeeded( $pmpro_stripe_event, &$logstr ) {
-		global $wpdb;
-
-		// Make sure we have the checkout session in the desired API version.
-		$checkout_session = Stripe_Checkout_Session::retrieve( $pmpro_stripe_event->data->object->id );
-
-		// Find the PMPro order for the checkout session.
-		$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT pmpro_membership_order_id FROM $wpdb->pmpro_membership_ordermeta WHERE meta_key = 'stripe_checkout_session_id' AND meta_value = %s LIMIT 1", $checkout_session->id ) );
-		if ( empty( $order_id ) ) {
-			$logstr .= 'Could not find an order for Checkout Session ' . $checkout_session->id;
-			return;
-		}
-		$order = new MemberOrder( $order_id );
-		if ( empty( $order ) ) {
-			$logstr .= 'Order ID ' . $order_id . ' for Checkout Session ' . $checkout_session->id . ' could not be found.';
-			return;
-		}
-
-		self::process_checkout_session_completion( $order, $checkout_session, $logstr );
 	}
 
 	/**
@@ -1066,9 +1054,19 @@ class PMPro_Stripe_Webhook_Handler {
 				$order_data['accountnumber'] = hideCardNumber( $payment_method->card->last4 );
 				$order_data['expirationmonth'] = $payment_method->card->exp_month;
 				$order_data['expirationyear'] = $payment_method->card->exp_year;
+			} else {
+				// Not a card. Clear card fields in case the order being updated has card info from a previous payment attempt.
+				$order_data['cardtype'] = '';
+				$order_data['accountnumber'] = '';
+				$order_data['expirationmonth'] = '';
+				$order_data['expirationyear'] = '';
 			}
 		} else {
 			$order_data['payment_type'] = 'Stripe';
+			$order_data['cardtype'] = '';
+			$order_data['accountnumber'] = '';
+			$order_data['expirationmonth'] = '';
+			$order_data['expirationyear'] = '';
 		}
 
 		// Set the billing address.

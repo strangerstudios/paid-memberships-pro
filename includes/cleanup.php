@@ -55,9 +55,19 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		}
 	}
 
-	$sqlQuery = $wpdb->prepare( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (%s)", implode( "," , $userids ) );
+	// Build one %d placeholder per user ID so each is checked, not just the first.
+	$member_history = 0;
+	if ( ! empty( $userids ) ) {
+		$userids      = array_map( 'intval', $userids );
+		$placeholders = implode( ',', array_fill( 0, count( $userids ), '%d' ) );
 
-	$member_history = $wpdb->get_var( $sqlQuery );
+		$sqlQuery = $wpdb->prepare(
+			"SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN ($placeholders)",
+			$userids
+		);
+
+		$member_history = $wpdb->get_var( $sqlQuery );
+	}
 
 	// Make sure that there is actually PMPro content to delete for these users.
 	if ( empty( $userids_have_levels ) && empty( $member_history ) ) {
@@ -99,7 +109,8 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 }
 add_action( 'delete_user_form', 'pmpro_delete_user_form_notice', 10, 2 );
 
-// deleting a category? remove any level associations
+// deleting a term in a restrictable taxonomy? remove any level associations
+// Hooked to delete_{$taxonomy} for every restrictable taxonomy in pmpro_init_term_restrictions().
 function pmpro_delete_category( $cat_id = null ) {
 	global $wpdb;
 	$wpdb->delete(
@@ -108,7 +119,6 @@ function pmpro_delete_category( $cat_id = null ) {
 		'%d'
 	);
 }
-add_action( 'delete_category', 'pmpro_delete_category' );
 
 // deleting a post? remove any level associations
 function pmpro_delete_post( $post_id = null ) {
