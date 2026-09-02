@@ -85,9 +85,10 @@
 			}
 
 			function ensureAnnouncer( politeness ) {
-				const id = 'polite' === politeness
-					? 'pmpro-liquid-autocomplete-announcer-polite'
-					: 'pmpro-liquid-autocomplete-announcer';
+				const id =
+					'polite' === politeness
+						? 'pmpro-liquid-autocomplete-announcer-polite'
+						: 'pmpro-liquid-autocomplete-announcer';
 				let announcer = document.getElementById( id );
 
 				if ( ! announcer ) {
@@ -216,7 +217,10 @@
 					itemNode.className = 'pmpro-liquid-autocomplete__item';
 					itemNode.setAttribute( 'role', 'option' );
 					itemNode.setAttribute( 'data-index', index );
-					itemNode.setAttribute( 'id', 'pmpro-liquid-autocomplete-option-' + index );
+					itemNode.setAttribute(
+						'id',
+						'pmpro-liquid-autocomplete-option-' + index
+					);
 
 					const labelNode = document.createElement( 'span' );
 					labelNode.className = 'pmpro-liquid-autocomplete__label';
@@ -297,14 +301,16 @@
 				} );
 				const position = selectableItems.indexOf( item ) + 1;
 				const total = selectableItems.length;
-				const positionText = ( strings.autocompletePosition ||
-					'%1$d of %2$d' )
+				const positionText = (
+					strings.autocompletePosition || '%1$d of %2$d'
+				)
 					.replace( '%1$d', position )
 					.replace( '%2$d', total );
 				const itemText =
 					item.label +
 					( item.description ? ', ' + item.description : '' ) +
-					', ' + positionText;
+					', ' +
+					positionText;
 
 				// Typing to filter re-renders the menu on every keystroke.
 				// Skip identical repeats so we never talk over the screen
@@ -321,7 +327,8 @@
 					'open' === reason
 						? ( strings.autocompleteOpened ||
 								'Autocomplete list opened' ) +
-								', ' + itemText
+								', ' +
+								itemText
 						: itemText,
 					'navigate' === reason ? 'assertive' : 'polite'
 				);
@@ -655,18 +662,18 @@
 
 			function shouldIgnoreKeyup( event ) {
 				return (
-					event.keyCode === 9  ||  // Tab
-					event.keyCode === 13 ||  // Enter
-					event.keyCode === 16 ||  // Shift
-					event.keyCode === 17 ||  // Ctrl
-					event.keyCode === 18 ||  // Alt
-					event.keyCode === 20 ||  // Caps Lock
-					event.keyCode === 27 ||  // Escape
-					event.keyCode === 38 ||  // Up arrow
-					event.keyCode === 40 ||  // Down arrow
-					event.keyCode === 91 ||  // Meta left
-					event.keyCode === 92 ||  // Meta right
-					event.keyCode === 93     // Context menu / Meta
+					event.keyCode === 9 || // Tab
+					event.keyCode === 13 || // Enter
+					event.keyCode === 16 || // Shift
+					event.keyCode === 17 || // Ctrl
+					event.keyCode === 18 || // Alt
+					event.keyCode === 20 || // Caps Lock
+					event.keyCode === 27 || // Escape
+					event.keyCode === 38 || // Up arrow
+					event.keyCode === 40 || // Down arrow
+					event.keyCode === 91 || // Meta left
+					event.keyCode === 92 || // Meta right
+					event.keyCode === 93 // Context menu / Meta
 				);
 			}
 
