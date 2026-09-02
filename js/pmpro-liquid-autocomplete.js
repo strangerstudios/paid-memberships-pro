@@ -30,6 +30,7 @@
 			let markerIndex = 0;
 			let announceFrame = null;
 			let lastAnnounced = '';
+			let openPrefixPending = false;
 			const strings = settings.strings || {};
 
 			function handleResize() {
@@ -135,6 +136,7 @@
 				announcer.textContent = '';
 				announceFrame = window.requestAnimationFrame( function () {
 					announceFrame = null;
+					openPrefixPending = false;
 					announcer.textContent = text;
 				} );
 			}
@@ -166,6 +168,7 @@
 				activeIndex = -1;
 				activeContext = null;
 				lastAnnounced = '';
+				openPrefixPending = false;
 
 				// Only announce a dismissal the user did not already get
 				// feedback for. Choosing an option inserts text, and editor
@@ -295,6 +298,10 @@
 					return;
 				}
 
+				if ( 'open' === reason ) {
+					openPrefixPending = true;
+				}
+
 				const item = items[ activeIndex ];
 				const selectableItems = items.filter( function ( i ) {
 					return i.type !== 'separator';
@@ -321,10 +328,20 @@
 
 				lastAnnounced = itemText;
 
+				// Typing `{{` fires twice: `{` opens the menu with variables
+				// and tags, then the second `{` re-renders with variables only.
+				// The totals differ, so the re-render is not deduplicated and
+				// used to overwrite the queued "opened" message before it ever
+				// reached the DOM. Keep the prefix until a flush confirms it
+				// was rendered.
+				const includeOpened =
+					'open' === reason ||
+					( 'filter' === reason && openPrefixPending );
+
 				// Arrow-key navigation is deliberate, so interrupt. Opening and
 				// filtering happen while the user is typing, so stay polite.
 				announce(
-					'open' === reason
+					includeOpened
 						? ( strings.autocompleteOpened ||
 								'Autocomplete list opened' ) +
 								', ' +
