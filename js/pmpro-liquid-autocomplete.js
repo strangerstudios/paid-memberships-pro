@@ -166,11 +166,19 @@
 					menu.removeAttribute( 'aria-activedescendant' );
 				}
 
-				clearAnnouncers();
-
 				items = [];
 				activeIndex = -1;
 				activeContext = null;
+
+				// A fast keystroke burst calls this repeatedly once the query
+				// stops matching. Only the first call is a real state change,
+				// so later ones must leave the queued announcement alone
+				// instead of cancelling a message they never scheduled.
+				if ( ! wasOpen && ! silent ) {
+					return;
+				}
+
+				clearAnnouncers();
 				lastAnnounced = '';
 				openPrefixPending = false;
 
