@@ -7,6 +7,10 @@
 
 	const CURSOR_MARKER = '__pmpro_cursor__';
 	const MENU_CLASS = 'pmpro-liquid-autocomplete';
+	const ANNOUNCER_IDS = [
+		'pmpro-liquid-autocomplete-announcer',
+		'pmpro-liquid-autocomplete-announcer-polite',
+	];
 
 	tinymce.PluginManager.add(
 		'pmpro_liquid_autocomplete',
@@ -24,6 +28,8 @@
 			let activeIndex = -1;
 			let activeContext = null;
 			let markerIndex = 0;
+			let announceFrame = null;
+			let lastAnnounced = '';
 			const strings = settings.strings || {};
 
 			function handleResize() {
@@ -69,7 +75,8 @@
 
 					event.preventDefault();
 					setActive(
-						parseInt( itemNode.getAttribute( 'data-index' ), 10 )
+						parseInt( itemNode.getAttribute( 'data-index' ), 10 ),
+						'pointer'
 					);
 					chooseActive();
 				} );
@@ -98,10 +105,35 @@
 				return announcer;
 			}
 
+			function clearAnnouncers() {
+				if ( announceFrame ) {
+					window.cancelAnimationFrame( announceFrame );
+					announceFrame = null;
+				}
+
+				ANNOUNCER_IDS.forEach( function ( id ) {
+					const announcer = document.getElementById( id );
+
+					if ( announcer ) {
+						announcer.textContent = '';
+					}
+				} );
+			}
+
 			function announce( text, politeness ) {
 				const announcer = ensureAnnouncer( politeness );
+
+				// Cancel any queued announcement so a menu that closes before
+				// the next frame cannot emit a stale message.
+				if ( announceFrame ) {
+					window.cancelAnimationFrame( announceFrame );
+				}
+
+				// Clearing first forces assistive tech to re-read text that is
+				// identical to what the region already held.
 				announcer.textContent = '';
-				requestAnimationFrame( function () {
+				announceFrame = window.requestAnimationFrame( function () {
+					announceFrame = null;
 					announcer.textContent = text;
 				} );
 			}
@@ -118,26 +150,32 @@
 				return null;
 			}
 
-			function closeMenu() {
+			function closeMenu( silent ) {
+				const wasOpen = isMenuOpen();
+
 				if ( menu ) {
 					menu.hidden = true;
 					menu.innerHTML = '';
 					menu.removeAttribute( 'aria-activedescendant' );
 				}
 
-				[
-					'pmpro-liquid-autocomplete-announcer',
-					'pmpro-liquid-autocomplete-announcer-polite',
-				].forEach( function ( id ) {
-					const announcer = document.getElementById( id );
-					if ( announcer ) {
-						announcer.textContent = '';
-					}
-				} );
+				clearAnnouncers();
 
 				items = [];
 				activeIndex = -1;
 				activeContext = null;
+				lastAnnounced = '';
+
+				// Only announce a dismissal the user did not already get
+				// feedback for. Choosing an option inserts text, and editor
+				// teardown moves focus elsewhere, so both stay silent.
+				if ( wasOpen && ! silent ) {
+					announce(
+						strings.autocompleteClosed ||
+							'Autocomplete list closed',
+						'polite'
+					);
+				}
 			}
 
 			function isMenuOpen() {
@@ -199,10 +237,10 @@
 				const isOpening = container.hidden;
 				container.hidden = false;
 				positionMenu( context );
-				setActive( firstSelectable, isOpening );
+				setActive( firstSelectable, isOpening ? 'open' : 'filter' );
 			}
 
-			function setActive( index, isOpening ) {
+			function setActive( index, reason ) {
 				if ( ! items[ index ] || items[ index ].type === 'separator' ) {
 					return;
 				}
@@ -237,23 +275,55 @@
 					'pmpro-liquid-autocomplete-option-' + activeIndex
 				);
 
+				announceActive( reason );
+			}
+
+			/**
+			 * Announce the active option.
+			 *
+			 * @param {string} reason One of 'open', 'filter', 'navigate' or
+			 *                        'pointer'.
+			 */
+			function announceActive( reason ) {
+				// Pointer users get no live-region message; choosing an option
+				// immediately follows and inserts the tag.
+				if ( 'pointer' === reason ) {
+					return;
+				}
+
 				const item = items[ activeIndex ];
 				const selectableItems = items.filter( function ( i ) {
 					return i.type !== 'separator';
 				} );
 				const position = selectableItems.indexOf( item ) + 1;
 				const total = selectableItems.length;
+				const positionText = ( strings.autocompletePosition ||
+					'%1$d of %2$d' )
+					.replace( '%1$d', position )
+					.replace( '%2$d', total );
 				const itemText =
 					item.label +
 					( item.description ? ', ' + item.description : '' ) +
-					', ' + position + ' of ' + total;
+					', ' + positionText;
+
+				// Typing to filter re-renders the menu on every keystroke.
+				// Skip identical repeats so we never talk over the screen
+				// reader's own character echo.
+				if ( 'filter' === reason && itemText === lastAnnounced ) {
+					return;
+				}
+
+				lastAnnounced = itemText;
+
+				// Arrow-key navigation is deliberate, so interrupt. Opening and
+				// filtering happen while the user is typing, so stay polite.
 				announce(
-					isOpening
+					'open' === reason
 						? ( strings.autocompleteOpened ||
-						  'Autocomplete list opened' ) +
-						  ', ' + itemText
+								'Autocomplete list opened' ) +
+								', ' + itemText
 						: itemText,
-					isOpening ? 'polite' : 'assertive'
+					'navigate' === reason ? 'assertive' : 'polite'
 				);
 			}
 
@@ -280,7 +350,7 @@
 					checked <= items.length
 				);
 
-				setActive( nextIndex );
+				setActive( nextIndex, 'navigate' );
 			}
 
 			function positionMenu() {
@@ -550,7 +620,7 @@
 				editor.undoManager.transact( function () {
 					replaceContextWith( activeContext, item.insert );
 				} );
-				closeMenu();
+				closeMenu( true );
 			}
 
 			function replaceContextWith( context, insert ) {
@@ -619,10 +689,6 @@
 						event.preventDefault();
 						event.stopPropagation();
 						closeMenu();
-						announce(
-							strings.autocompleteClosed ||
-							'Autocomplete list closed'
-						);
 					} else if ( event.keyCode === 38 ) {
 						event.preventDefault();
 						event.stopPropagation();
@@ -647,7 +713,7 @@
 				}
 			} );
 			editor.on( 'remove', function () {
-				closeMenu();
+				closeMenu( true );
 				window.removeEventListener( 'resize', handleResize );
 
 				if ( menu && menu.parentNode ) {
