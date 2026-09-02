@@ -110,7 +110,10 @@
 				return announcer;
 			}
 
-			function clearAnnouncers() {
+			function resetAnnouncements() {
+				lastAnnounced = '';
+				openPrefixPending = false;
+
 				if ( announceTimer ) {
 					window.clearTimeout( announceTimer );
 					announceTimer = null;
@@ -170,22 +173,22 @@
 				activeIndex = -1;
 				activeContext = null;
 
-				// A fast keystroke burst calls this repeatedly once the query
-				// stops matching. Only the first call is a real state change,
-				// so later ones must leave the queued announcement alone
-				// instead of cancelling a message they never scheduled.
+				// Closing an already-closed menu is not a state change. A fast
+				// keystroke burst calls this repeatedly once the query stops
+				// matching, and those later calls must leave the queued
+				// announcement alone rather than cancelling a message they
+				// never scheduled. Silent callers still reset, since they are
+				// tearing down rather than repeating.
 				if ( ! wasOpen && ! silent ) {
 					return;
 				}
 
-				clearAnnouncers();
-				lastAnnounced = '';
-				openPrefixPending = false;
+				resetAnnouncements();
 
-				// Only announce a dismissal the user did not already get
-				// feedback for. Choosing an option inserts text, and editor
-				// teardown moves focus elsewhere, so both stay silent.
-				if ( wasOpen && ! silent ) {
+				// Silent callers already gave the user feedback: choosing an
+				// option inserts the tag, and blur, hide and teardown move
+				// focus somewhere a screen reader describes.
+				if ( ! silent ) {
 					announce(
 						strings.autocompleteClosed ||
 							'Autocomplete list closed',
@@ -742,7 +745,17 @@
 				true
 			);
 
-			editor.on( 'click blur hide', closeMenu );
+			// Passing closeMenu directly would feed TinyMCE's event object into
+			// its silent parameter. Split the paths instead: a click leaves
+			// focus in the editor, so the user needs to hear that the list
+			// went away, while blur and hide move focus somewhere a screen
+			// reader already describes.
+			editor.on( 'click', function () {
+				closeMenu();
+			} );
+			editor.on( 'blur hide', function () {
+				closeMenu( true );
+			} );
 			editor.on( 'ScrollContent ResizeEditor', function () {
 				if ( isMenuOpen() && activeContext ) {
 					positionMenu( activeContext );
