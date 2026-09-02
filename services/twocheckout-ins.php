@@ -307,16 +307,17 @@
 		//set the start date to current_time('mysql') but allow filters (documented in preheaders/checkout.php)
 		$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time('mysql') . "'", $morder->user_id, $morder->membership_level);
 		
-		//fix expiration date
+		//apply any set expiration date (in days, like the retired Set Expiration Dates Add On)
 		$set_expiration_date      = ! empty( $morder->membership_level->id ) ? pmpro_get_set_expiration_date( $morder->membership_level->id, ! empty( $morder->membership_level->code_id ) ? $morder->membership_level->code_id : null ) : '';
 		$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
 		if ( ! empty( $resolved_expiration_date ) )
 		{
-			// A set expiration date replaces any duration-based expiration. End of day so
-			// that the member keeps access through the expiration date itself.
-			$enddate = "'" . $resolved_expiration_date . " 23:59:59'";
+			$morder->membership_level->expiration_number = max( 1, intval( round( ( strtotime( $resolved_expiration_date ) - strtotime( date( 'Y-m-d', current_time( 'timestamp' ) ) ) ) / DAY_IN_SECONDS ) ) );
+			$morder->membership_level->expiration_period = 'Day';
 		}
-		elseif(!empty($morder->membership_level->expiration_number))
+
+		//fix expiration date
+		if(!empty($morder->membership_level->expiration_number))
 		{
 			$enddate = "'" . date_i18n("Y-m-d", strtotime("+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time("timestamp"))) . "'";
 		}

@@ -583,12 +583,13 @@ function pmpro_getLevelExpiration( &$level ) {
 		return '';
 	}
 
-	// A set expiration date replaces any duration-based expiration.
-	$set_expiration_date = ! empty( $level->id ) ? pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null ) : '';
-	if ( ! empty( $set_expiration_date ) ) {
-		$resolved_date = pmpro_resolve_expiration_date_pattern( $set_expiration_date );
-	} else {
-		$resolved_date = false;
+	// Levels being checked out already have any set expiration date applied as a number of
+	// days, so the level object is the source of truth. Level objects loaded directly from
+	// the database (e.g. the levels page) fall back to the configured set expiration date.
+	$resolved_date = false;
+	if ( empty( $level->expiration_number ) && ! empty( $level->id ) ) {
+		$set_expiration_date = pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null );
+		$resolved_date       = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
 	}
 
 	if ( ! empty( $resolved_date ) ) {
@@ -596,6 +597,13 @@ function pmpro_getLevelExpiration( &$level ) {
 			/* translators: %s: the date that the membership expires. */
 			__( 'Membership expires on %s.', 'paid-memberships-pro' ),
 			date_i18n( get_option( 'date_format' ), strtotime( $resolved_date, current_time( 'timestamp' ) ) )
+		);
+	} elseif ( $level->expiration_number > 31 && $level->expiration_period === 'Day' ) {
+		// Long day counts read better as a date.
+		$expiration_text = sprintf(
+			/* translators: %s: the date that the membership expires. */
+			__( 'Membership expires on %s.', 'paid-memberships-pro' ),
+			date_i18n( get_option( 'date_format' ), strtotime( '+ ' . intval( $level->expiration_number ) . ' Days', current_time( 'timestamp' ) ) )
 		);
 	} elseif ( $level->expiration_number ) {
 		$expiration_text = sprintf(
@@ -2980,6 +2988,21 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 				// Don't let a resolved date in the past move the start date backwards.
 				$pmpro_level->profile_start_date = max( $delay_date, date( 'Y-m-d', current_time( 'timestamp' ) ) ) . 'T0:0:0';
 			}
+		}
+	}
+
+	// If the level or discount code has a set expiration date, it replaces any duration-based
+	// expiration. Like the retired Set Expiration Dates Add On, express it in days so that the
+	// level object stays the source of truth for the end date everywhere downstream.
+	if ( ! empty( $pmpro_level->id ) ) {
+		$set_expiration_date      = pmpro_get_set_expiration_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null );
+		$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
+		if ( ! empty( $resolved_expiration_date ) ) {
+			// Calendar days from today; the membership expires at the end of that day. A fixed
+			// date that has already passed expires after one day rather than never.
+			$days_until_expiration          = intval( round( ( strtotime( $resolved_expiration_date ) - strtotime( date( 'Y-m-d', current_time( 'timestamp' ) ) ) ) / DAY_IN_SECONDS ) );
+			$pmpro_level->expiration_number = max( 1, $days_until_expiration );
+			$pmpro_level->expiration_period = 'Day';
 		}
 	}
 

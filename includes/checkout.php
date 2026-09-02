@@ -235,13 +235,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	$startdate = apply_filters( "pmpro_checkout_start_date", "'" . current_time( 'mysql' ) . "'", $order->user_id, $pmpro_level );
 
 	//fix expiration date
-	$set_expiration_date      = ! empty( $pmpro_level->id ) ? pmpro_get_set_expiration_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null ) : '';
-	$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
-	if ( ! empty( $resolved_expiration_date ) ) {
-		// A set expiration date replaces any duration-based expiration. End of day so
-		// that the member keeps access through the expiration date itself.
-		$enddate = date( "Y-m-d 23:59:59", strtotime( $resolved_expiration_date, current_time( "timestamp" ) ) );
-	} elseif ( ! empty( $pmpro_level->expiration_number ) ) {
+	if ( ! empty( $pmpro_level->expiration_number ) ) {
 		if( $pmpro_level->expiration_period == 'Hour' ){
 			$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
 		} else {
