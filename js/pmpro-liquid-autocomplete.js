@@ -79,8 +79,7 @@
 
 					event.preventDefault();
 					setActive(
-						parseInt( itemNode.getAttribute( 'data-index' ), 10 ),
-						'pointer'
+						parseInt( itemNode.getAttribute( 'data-index' ), 10 )
 					);
 					chooseActive();
 				} );
@@ -303,16 +302,9 @@
 			/**
 			 * Announce the active option.
 			 *
-			 * @param {string} reason One of 'open', 'filter', 'navigate' or
-			 *                        'pointer'.
+			 * @param {string} reason One of 'open', 'filter' or 'navigate'.
 			 */
 			function announceActive( reason ) {
-				// Pointer users get no live-region message; choosing an option
-				// immediately follows and inserts the tag.
-				if ( 'pointer' === reason ) {
-					return;
-				}
-
 				if ( 'open' === reason ) {
 					openPrefixPending = true;
 				}
