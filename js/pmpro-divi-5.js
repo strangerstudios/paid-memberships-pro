@@ -313,20 +313,11 @@
 			// No access message only applies to positive access requirements.
 			currentRule === 'hasMembership' ? wrapField(
 				__( 'No Access Message', 'paid-memberships-pro' ),
-				createElement(
-					Fragment,
-					null,
-					renderSelect(
-						'pmpro-show-no-access',
-						settings.showNoAccessMessage || 'off',
-						yesNoOptions,
-						function ( val ) { update( { showNoAccessMessage: val } ); }
-					),
-					createElement(
-						'p',
-						{ className: 'et-vb-field-description', style: { marginTop: '4px' } },
-						__( "Modify the 'no access' message on the Memberships > Advanced Settings page.", 'paid-memberships-pro' )
-					)
+				renderSelect(
+					'pmpro-show-no-access',
+					settings.showNoAccessMessage || 'off',
+					yesNoOptions,
+					function ( val ) { update( { showNoAccessMessage: val } ); }
 				)
 			) : null
 		);

@@ -174,17 +174,12 @@ class PMPro_Membership_Level{
            $this->id = $wpdb->insert_id;
         }
 
-        // Drop all categories if there are categories set from $this.
+        // Update term restrictions if there are categories set from $this.
         if ( isset( $this->categories ) && is_array( $this->categories ) ) {
-            
-            // Delete categories for membership ID so we can add them back again.
-            $wpdb->delete( $wpdb->pmpro_memberships_categories, array('membership_id' => $this->id), array('%d') );
+            // Only keep term IDs that still exist before linking them to this level.
+            $categories = array_filter( array_map( 'intval', $this->categories ), 'term_exists' );
 
-            foreach( $this->categories as $key => $category ) {
-                if ( term_exists( get_cat_name( $category ), 'category' ) ) {
-                    $wpdb->insert( $wpdb->pmpro_memberships_categories, array( 'membership_id' => $this->id, 'category_id' => $category ), array( '%d', '%d' ) );
-                }
-            }
+            pmpro_updateMembershipCategories( $this->id, $categories );
         }
         
         do_action( $after_action, $this );

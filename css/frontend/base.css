@@ -12,6 +12,9 @@
 	--pmpro--base--spacing--small: 12px;
 	--pmpro--base--spacing--medium: 18px;
 	--pmpro--base--spacing--large: 36px;
+	--pmpro--btn--border-radius: 8px;
+	--pmpro--btn--top-bottom-padding: 12px;
+	--pmpro--btn--left-right-padding: 18px;
 	--pmpro--color--accent: #0c3d54;
 	--pmpro--color--base: #ffffff;
 	--pmpro--color--base-2: #ededed;
@@ -223,6 +226,7 @@ button[type="button"]#other_discount_code_toggle:focus {
     margin: 0;
     padding: 0;
     text-decoration: underline;
+	vertical-align: baseline;
 }
 
 #pmpro_tos_fields input[type="checkbox"]#tos {

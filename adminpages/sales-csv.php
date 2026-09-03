@@ -183,7 +183,7 @@ if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
 }
 
 function pmpro_enclose( $s ) {
-	return "\"" . str_replace( "\"", "\\\"", $s ) . "\"";
+	return "\"" . str_replace( "\"", "\"\"", $s ) . "\"";
 }
 
 function pmpro_transmit_report_data( $csv_fh, $filename, $headers = array() ) {
