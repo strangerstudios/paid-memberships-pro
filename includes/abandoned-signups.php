@@ -134,6 +134,10 @@ function pmpro_add_abandoned_signup_advanced_setting( $settings ) {
 		),
 	);
 
+	if ( is_multisite() ) {
+		$settings['auto_delete_abandoned_signups']['description'] .= ' ' . __( 'On multisite, users are removed from this site only.', 'paid-memberships-pro' );
+	}
+
 	return $settings;
 }
 add_filter( 'pmpro_custom_advanced_settings', 'pmpro_add_abandoned_signup_advanced_setting' );
@@ -191,11 +195,8 @@ function pmpro_delete_abandoned_signups() {
 		return;
 	}
 
-	// wp_delete_user() and wpmu_delete_user() are not loaded automatically during scheduled actions.
+	// wp_delete_user() is not loaded automatically during scheduled actions.
 	require_once ABSPATH . 'wp-admin/includes/user.php';
-	if ( is_multisite() ) {
-		require_once ABSPATH . 'wp-admin/includes/ms.php';
-	}
 
 	foreach ( $user_ids as $user_id ) {
 		$user_id = (int) $user_id;
@@ -205,13 +206,9 @@ function pmpro_delete_abandoned_signups() {
 			continue;
 		}
 
-		// On multisite, wp_delete_user() only removes the user from the current site. Delete the account
-		// from the network instead, unless the user also belongs to another site.
-		if ( is_multisite() && count( get_blogs_of_user( $user_id, true ) ) <= 1 ) {
-			wpmu_delete_user( $user_id );
-		} else {
-			wp_delete_user( $user_id, null );
-		}
+		// On multisite, this only removes the user from the current site. The user may be active on
+		// another site in the network, so network-wide deletion is left to the network admin.
+		wp_delete_user( $user_id, null );
 	}
 }
 add_action( 'pmpro_schedule_daily', 'pmpro_delete_abandoned_signups' );
