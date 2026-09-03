@@ -335,20 +335,17 @@
 
 				lastAnnounced = itemText;
 
-				// Typing `{{` fires twice: `{` opens the menu with variables
-				// and tags, then the second `{` re-renders with variables only.
-				// The totals differ, so the re-render is not deduplicated and
-				// used to overwrite the queued "opened" message before it ever
-				// reached the DOM. Keep the prefix until a flush confirms it
-				// was rendered.
-				const includeOpened =
-					'open' === reason ||
-					( 'filter' === reason && openPrefixPending );
-
+				// openPrefixPending stays set from the opening render until a
+				// message actually reaches the DOM. Typing `{{` renders twice
+				// (`{` lists variables and tags, the second `{` variables only)
+				// and the second render used to replace the queued "opened"
+				// message before it was ever spoken. Whatever is announced
+				// first for this session carries the prefix.
+				//
 				// Arrow-key navigation is deliberate, so interrupt. Opening and
 				// filtering happen while the user is typing, so stay polite.
 				announce(
-					includeOpened
+					openPrefixPending
 						? ( strings.autocompleteOpened ||
 								'Autocomplete list opened' ) +
 								', ' +
