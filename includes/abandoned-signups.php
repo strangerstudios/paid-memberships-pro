@@ -92,7 +92,7 @@ add_action( 'wp', 'pmpro_remove_abandoned_signup_taxonomy_on_page_load' );
 /**
  * Get the number of days that an abandoned signup should be kept before deletion.
  *
- * @since 3.9
+ * @since TBD
  *
  * @return int The number of days to keep abandoned signups.
  */
@@ -100,7 +100,7 @@ function pmpro_get_abandoned_signup_deletion_days() {
 	/**
 	 * Filter the number of days that an abandoned signup should be kept before deletion.
 	 *
-	 * @since 3.9
+	 * @since TBD
 	 *
 	 * @param int $days The number of days to keep abandoned signups. Default 30.
 	 */
@@ -112,7 +112,7 @@ function pmpro_get_abandoned_signup_deletion_days() {
 /**
  * Add the automatic abandoned signup deletion setting to the Advanced Settings page.
  *
- * @since 3.9
+ * @since TBD
  *
  * @param array $settings The custom Advanced Settings fields.
  * @return array The custom Advanced Settings fields.
@@ -141,7 +141,7 @@ add_filter( 'pmpro_custom_advanced_settings', 'pmpro_add_abandoned_signup_advanc
 /**
  * Delete a batch of old abandoned signup users.
  *
- * @since 3.9
+ * @since TBD
  *
  * @return void
  */
@@ -167,6 +167,7 @@ function pmpro_delete_abandoned_signups() {
 	}
 
 	// Query only one batch so a large bot-driven spike cannot exhaust the scheduled action.
+	// Users with any membership history are skipped as a safeguard, since this deletion cannot be undone.
 	$user_ids = $wpdb->get_col(
 		$wpdb->prepare(
 			"SELECT DISTINCT users.ID
@@ -176,6 +177,7 @@ function pmpro_delete_abandoned_signups() {
 			WHERE taxonomy.taxonomy = %s
 				AND taxonomy.term_id = %d
 				AND users.user_registered < %s
+				AND NOT EXISTS ( SELECT 1 FROM {$wpdb->pmpro_memberships_users} AS memberships WHERE memberships.user_id = users.ID )
 			ORDER BY users.ID ASC
 			LIMIT %d",
 			'pmpro_abandoned_signup',
@@ -189,11 +191,27 @@ function pmpro_delete_abandoned_signups() {
 		return;
 	}
 
-	// wp_delete_user() is not loaded automatically during scheduled actions.
+	// wp_delete_user() and wpmu_delete_user() are not loaded automatically during scheduled actions.
 	require_once ABSPATH . 'wp-admin/includes/user.php';
+	if ( is_multisite() ) {
+		require_once ABSPATH . 'wp-admin/includes/ms.php';
+	}
 
 	foreach ( $user_ids as $user_id ) {
-		wp_delete_user( (int) $user_id, null );
+		$user_id = (int) $user_id;
+
+		// Re-check right before deleting in case the user completed checkout after the query ran.
+		if ( ! is_object_in_term( $user_id, 'pmpro_abandoned_signup', 'abandoned-signup' ) ) {
+			continue;
+		}
+
+		// On multisite, wp_delete_user() only removes the user from the current site. Delete the account
+		// from the network instead, unless the user also belongs to another site.
+		if ( is_multisite() && count( get_blogs_of_user( $user_id, true ) ) <= 1 ) {
+			wpmu_delete_user( $user_id );
+		} else {
+			wp_delete_user( $user_id, null );
+		}
 	}
 }
 add_action( 'pmpro_schedule_daily', 'pmpro_delete_abandoned_signups' );
