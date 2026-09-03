@@ -195,7 +195,7 @@ class PMPro_Discount_Code {
         // See if code exists;
         if ( isset( $this->code ) && ! empty( $this->code ) ) {
             // see if row exists.
-            $results = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_discount_codes WHERE code = '" . $this->code . "' LIMIT 1" );
+            $results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_discount_codes WHERE code = %s LIMIT 1", $this->code ) );
 
             if ( $results ) {
 

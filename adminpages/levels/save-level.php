@@ -151,4 +151,12 @@ if ( ! empty( $_REQUEST['level_group'] ) ) {
 // Update the Membership Account Message.
 update_pmpro_membership_level_meta( $saveid, 'membership_account_message', $ml_membership_account_message );
 
+// Update the level image.
+$ml_level_image = isset( $_REQUEST['level_image'] ) ? intval( $_REQUEST['level_image'] ) : 0;
+if ( ! empty( $ml_level_image ) && wp_attachment_is_image( $ml_level_image ) ) {
+	update_pmpro_membership_level_meta( $saveid, 'level_image', $ml_level_image );
+} else {
+	delete_pmpro_membership_level_meta( $saveid, 'level_image' );
+}
+
 do_action("pmpro_save_membership_level", $saveid);
