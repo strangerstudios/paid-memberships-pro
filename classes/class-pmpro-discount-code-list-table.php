@@ -369,6 +369,12 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 		?>
 		<strong><a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $item->id ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->id ), admin_url('admin.php' ) ) ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
+		<?php
+			$rule_text = pmpro_get_discount_code_rule_text( $item );
+			if ( ! empty( $rule_text ) ) {
+				echo '<br /><span class="description">' . esc_html( $rule_text ) . '</span>';
+			}
+		?>
 		<div class="row-actions">
 		<?php
 			$delete_text = esc_html(

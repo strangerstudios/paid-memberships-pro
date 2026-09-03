@@ -292,8 +292,7 @@
 		if ( empty( pmpro_getParam( 'message_type', 'REQUEST' ) ) || pmpro_getParam( 'message_type', 'REQUEST' ) === 'ORDER_CREATED' ) {
 			// Apply discount code level changes.
 			if ( ! empty( $discount_code_id ) ) {
-				$sqlQuery                 = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.id = '" . esc_sql( $discount_code_id ) . "' AND cl.level_id = '" . esc_sql( $morder->membership_level->level_id ) . "' LIMIT 1";
-				$morder->membership_level = $wpdb->get_row( $sqlQuery );
+				$morder->membership_level = pmpro_get_discounted_level_for_code( $morder->membership_level->level_id, $discount_code_id );
 			}
 	
 			// Extend membership if renewal.
