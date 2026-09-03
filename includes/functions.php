@@ -3129,6 +3129,22 @@ function pmpro_setMessage( $message, $type, $force = false ) {
 }
 
 /**
+ * Log a notice when a callback on an order filter failed to return the order object.
+ *
+ * Some plugins hook order filters like pmpro_checkout_order but forget to return
+ * the order they received. That leaves null for later callbacks and used to cause
+ * a fatal in gateway callbacks. Checkout now recovers, so this just helps find the culprit.
+ *
+ * @since TBD
+ * @param string $filter_name Name of the filter whose callback did not return an order.
+ */
+function pmpro_log_filter_missing_order( $filter_name ) {
+	if ( WP_DEBUG ) {
+		error_log( '[PMPro] A callback on the ' . $filter_name . ' filter did not return a valid order object at checkout.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	}
+}
+
+/**
  * Show a PMPro message set via pmpro_setMessage
  *
  * @since 1.8.5

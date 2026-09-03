@@ -613,10 +613,18 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		$pmpro_review->getMembershipLevelAtCheckout();	
 
 		// Filter for order, since v1.8
+		$order_before_filters = $pmpro_review;
 		if ( $pmpro_requirebilling ) {
 			$pmpro_review = apply_filters( 'pmpro_checkout_order', $pmpro_review );
 		} else {
 			$pmpro_review = apply_filters( 'pmpro_checkout_order_free', $pmpro_review );
+		}
+
+		// A callback on the filter that did not return the order object would break checkout,
+		// so restore the order we built and log which filter lost it.
+		if ( ! is_a( $pmpro_review, 'MemberOrder' ) ) {
+			pmpro_log_filter_missing_order( $pmpro_requirebilling ? 'pmpro_checkout_order' : 'pmpro_checkout_order_free' );
+			$pmpro_review = $order_before_filters;
 		}
 	}
 } // End if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) )

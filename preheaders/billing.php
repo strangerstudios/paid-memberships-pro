@@ -251,9 +251,16 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 			 *
 			 * @since 1.8.13.2
 			 *
-			 * @param object $order the order object used to update billing			 
+			 * @param object $order the order object used to update billing
 			 */
-			$pmpro_billing_order = apply_filters( "pmpro_billing_order", $pmpro_billing_order );
+			$order_before_filters = $pmpro_billing_order;
+			$pmpro_billing_order  = apply_filters( "pmpro_billing_order", $pmpro_billing_order );
+
+			// A callback that did not return the order object should not break billing updates.
+			if ( ! is_a( $pmpro_billing_order, 'MemberOrder' ) ) {
+				pmpro_log_filter_missing_order( 'pmpro_billing_order' );
+				$pmpro_billing_order = $order_before_filters;
+			}
 
 			if ( $pmpro_billing_order->updateBilling() ) {
 				//send email to member
