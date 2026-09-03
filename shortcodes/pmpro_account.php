@@ -148,12 +148,14 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					'status'  => 'pending',
 				)
 			);
-			$mylevel_ids = empty( $mylevels ) ? array() : wp_list_pluck( $mylevels, 'id' );
+			$mylevel_ids       = empty( $mylevels ) ? array() : wp_list_pluck( $mylevels, 'id' );
+			$checked_level_ids = array();
 			foreach ( $pending_orders as $pending_order ) {
-				// Skip if the user has this level or if we already found a pending order for it.
-				if ( in_array( $pending_order->membership_id, $mylevel_ids ) || isset( $pending_order_levels[ $pending_order->membership_id ] ) ) {
+				// Skip if the user has this level or if we already evaluated it for an earlier pending order.
+				if ( in_array( $pending_order->membership_id, $mylevel_ids ) || in_array( $pending_order->membership_id, $checked_level_ids ) ) {
 					continue;
 				}
+				$checked_level_ids[] = $pending_order->membership_id;
 
 				$pending_order_level = pmpro_getLevel( $pending_order->membership_id );
 				if ( empty( $pending_order_level ) ) {
