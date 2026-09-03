@@ -7,6 +7,13 @@
 
 	const CURSOR_MARKER = '__pmpro_cursor__';
 	const MENU_CLASS = 'pmpro-liquid-autocomplete';
+	// Long enough to swallow the burst of renders a single typed character can
+	// cause, short enough to feel immediate when the user stops.
+	const ANNOUNCE_DELAY = 150;
+	const ANNOUNCER_IDS = [
+		'pmpro-liquid-autocomplete-announcer',
+		'pmpro-liquid-autocomplete-announcer-polite',
+	];
 
 	tinymce.PluginManager.add(
 		'pmpro_liquid_autocomplete',
@@ -24,6 +31,9 @@
 			let activeIndex = -1;
 			let activeContext = null;
 			let markerIndex = 0;
+			let announceTimer = null;
+			let lastAnnounced = '';
+			let openPrefixPending = false;
 			const strings = settings.strings || {};
 
 			function handleResize() {
@@ -77,6 +87,66 @@
 				return menu;
 			}
 
+			function ensureAnnouncer( politeness ) {
+				const id =
+					'polite' === politeness
+						? 'pmpro-liquid-autocomplete-announcer-polite'
+						: 'pmpro-liquid-autocomplete-announcer';
+				let announcer = document.getElementById( id );
+
+				if ( ! announcer ) {
+					announcer = document.createElement( 'div' );
+					announcer.id = id;
+					announcer.setAttribute(
+						'aria-live',
+						'polite' === politeness ? 'polite' : 'assertive'
+					);
+					announcer.setAttribute( 'aria-atomic', 'true' );
+					announcer.className = 'screen-reader-text';
+					document.body.appendChild( announcer );
+				}
+
+				return announcer;
+			}
+
+			function resetAnnouncements() {
+				lastAnnounced = '';
+				openPrefixPending = false;
+
+				if ( announceTimer ) {
+					window.clearTimeout( announceTimer );
+					announceTimer = null;
+				}
+
+				ANNOUNCER_IDS.forEach( function ( id ) {
+					const announcer = document.getElementById( id );
+
+					if ( announcer ) {
+						announcer.textContent = '';
+					}
+				} );
+			}
+
+			function announce( text, politeness ) {
+				const announcer = ensureAnnouncer( politeness );
+
+				// Supersede anything still queued. Typing one character can
+				// re-render the menu more than once, and only the settled
+				// result is worth speaking.
+				if ( announceTimer ) {
+					window.clearTimeout( announceTimer );
+				}
+
+				// Clearing first forces assistive tech to re-read text that is
+				// identical to what the region already held.
+				announcer.textContent = '';
+				announceTimer = window.setTimeout( function () {
+					announceTimer = null;
+					openPrefixPending = false;
+					announcer.textContent = text;
+				}, ANNOUNCE_DELAY );
+			}
+
 			function closest( node, selector ) {
 				while ( node && node !== document ) {
 					if ( node.matches && node.matches( selector ) ) {
@@ -89,7 +159,9 @@
 				return null;
 			}
 
-			function closeMenu() {
+			function closeMenu( silent ) {
+				const wasOpen = isMenuOpen();
+
 				if ( menu ) {
 					menu.hidden = true;
 					menu.innerHTML = '';
@@ -99,6 +171,29 @@
 				items = [];
 				activeIndex = -1;
 				activeContext = null;
+
+				// Closing an already-closed menu is not a state change. A fast
+				// keystroke burst calls this repeatedly once the query stops
+				// matching, and those later calls must leave the queued
+				// announcement alone rather than cancelling a message they
+				// never scheduled. Silent callers still reset, since they are
+				// tearing down rather than repeating.
+				if ( ! wasOpen && ! silent ) {
+					return;
+				}
+
+				resetAnnouncements();
+
+				// Silent callers already gave the user feedback: choosing an
+				// option inserts the tag, and blur, hide and teardown move
+				// focus somewhere a screen reader describes.
+				if ( ! silent ) {
+					announce(
+						strings.autocompleteClosed ||
+							'Autocomplete list closed',
+						'polite'
+					);
+				}
 			}
 
 			function isMenuOpen() {
@@ -139,7 +234,10 @@
 					itemNode.className = 'pmpro-liquid-autocomplete__item';
 					itemNode.setAttribute( 'role', 'option' );
 					itemNode.setAttribute( 'data-index', index );
-					itemNode.setAttribute( 'id', 'pmpro-liquid-autocomplete-option-' + index );
+					itemNode.setAttribute(
+						'id',
+						'pmpro-liquid-autocomplete-option-' + index
+					);
 
 					const labelNode = document.createElement( 'span' );
 					labelNode.className = 'pmpro-liquid-autocomplete__label';
@@ -157,12 +255,13 @@
 					container.appendChild( itemNode );
 				} );
 
+				const isOpening = container.hidden;
 				container.hidden = false;
 				positionMenu( context );
-				setActive( firstSelectable );
+				setActive( firstSelectable, isOpening ? 'open' : 'filter' );
 			}
 
-			function setActive( index ) {
+			function setActive( index, reason ) {
 				if ( ! items[ index ] || items[ index ].type === 'separator' ) {
 					return;
 				}
@@ -196,6 +295,64 @@
 					'aria-activedescendant',
 					'pmpro-liquid-autocomplete-option-' + activeIndex
 				);
+
+				announceActive( reason );
+			}
+
+			/**
+			 * Announce the active option.
+			 *
+			 * @param {string} reason One of 'open', 'filter' or 'navigate'.
+			 */
+			function announceActive( reason ) {
+				if ( 'open' === reason ) {
+					openPrefixPending = true;
+				}
+
+				const item = items[ activeIndex ];
+				const selectableItems = items.filter( function ( i ) {
+					return i.type !== 'separator';
+				} );
+				const position = selectableItems.indexOf( item ) + 1;
+				const total = selectableItems.length;
+				const positionText = (
+					strings.autocompletePosition || '%1$d of %2$d'
+				)
+					.replace( '%1$d', position )
+					.replace( '%2$d', total );
+				const itemText =
+					item.label +
+					( item.description ? ', ' + item.description : '' ) +
+					', ' +
+					positionText;
+
+				// Typing to filter re-renders the menu on every keystroke.
+				// Skip identical repeats so we never talk over the screen
+				// reader's own character echo.
+				if ( 'filter' === reason && itemText === lastAnnounced ) {
+					return;
+				}
+
+				lastAnnounced = itemText;
+
+				// openPrefixPending stays set from the opening render until a
+				// message actually reaches the DOM. Typing `{{` renders twice
+				// (`{` lists variables and tags, the second `{` variables only)
+				// and the second render used to replace the queued "opened"
+				// message before it was ever spoken. Whatever is announced
+				// first for this session carries the prefix.
+				//
+				// Arrow-key navigation is deliberate, so interrupt. Opening and
+				// filtering happen while the user is typing, so stay polite.
+				announce(
+					openPrefixPending
+						? ( strings.autocompleteOpened ||
+								'Autocomplete list opened' ) +
+								', ' +
+								itemText
+						: itemText,
+					'navigate' === reason ? 'assertive' : 'polite'
+				);
 			}
 
 			function moveActive( direction ) {
@@ -221,7 +378,7 @@
 					checked <= items.length
 				);
 
-				setActive( nextIndex );
+				setActive( nextIndex, 'navigate' );
 			}
 
 			function positionMenu() {
@@ -491,7 +648,7 @@
 				editor.undoManager.transact( function () {
 					replaceContextWith( activeContext, item.insert );
 				} );
-				closeMenu();
+				closeMenu( true );
 			}
 
 			function replaceContextWith( context, insert ) {
@@ -526,11 +683,18 @@
 
 			function shouldIgnoreKeyup( event ) {
 				return (
-					event.keyCode === 13 ||
-					event.keyCode === 27 ||
-					event.keyCode === 38 ||
-					event.keyCode === 40 ||
-					event.keyCode === 9
+					event.keyCode === 9 || // Tab
+					event.keyCode === 13 || // Enter
+					event.keyCode === 16 || // Shift
+					event.keyCode === 17 || // Ctrl
+					event.keyCode === 18 || // Alt
+					event.keyCode === 20 || // Caps Lock
+					event.keyCode === 27 || // Escape
+					event.keyCode === 38 || // Up arrow
+					event.keyCode === 40 || // Down arrow
+					event.keyCode === 91 || // Meta left
+					event.keyCode === 92 || // Meta right
+					event.keyCode === 93 // Context menu / Meta
 				);
 			}
 
@@ -570,14 +734,24 @@
 				true
 			);
 
-			editor.on( 'click blur hide', closeMenu );
+			// Passing closeMenu directly would feed TinyMCE's event object into
+			// its silent parameter. Split the paths instead: a click leaves
+			// focus in the editor, so the user needs to hear that the list
+			// went away, while blur and hide move focus somewhere a screen
+			// reader already describes.
+			editor.on( 'click', function () {
+				closeMenu();
+			} );
+			editor.on( 'blur hide', function () {
+				closeMenu( true );
+			} );
 			editor.on( 'ScrollContent ResizeEditor', function () {
 				if ( isMenuOpen() && activeContext ) {
 					positionMenu( activeContext );
 				}
 			} );
 			editor.on( 'remove', function () {
-				closeMenu();
+				closeMenu( true );
 				window.removeEventListener( 'resize', handleResize );
 
 				if ( menu && menu.parentNode ) {
