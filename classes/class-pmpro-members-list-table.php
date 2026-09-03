@@ -28,9 +28,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		parent::__construct(
 			array(
-				'plural'   => 'members',
+				'plural'   => 'memberships',
 				// Plural value used for labels and the objects being listed.
-				'singular' => 'member',
+				'singular' => 'membership',
 				// Singular label for an object being listed, e.g. 'post'.
 				'ajax'     => false,
 				// If true, the parent class will call the _js_vars() method in the footer
@@ -49,7 +49,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'per_page',
 			array(
 				'default' => 20,
-				'label'   => __( 'Members per page', 'paid-memberships-pro' ),
+				'label'   => __( 'Memberships per page', 'paid-memberships-pro' ),
 				'option'  => 'pmpro_members_per_page',
 			)
 		);
@@ -144,17 +144,13 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'enddate'       => __( 'End Date', 'paid-memberships-pro' ),
 		);
 
-		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
-		} else {
-			$l = false;
-		}
+		$filters = pmpro_sanitize_memberships_list_filters( $_REQUEST );
 
-		if ( 'oldmembers' === $l ) {
+		if ( 'ended' === $filters['status'] ) {
 			$columns['enddate'] = __( 'Ended', 'paid-memberships-pro' );
-		} elseif ( 'expired' === $l ) {
+		} elseif ( 'expired' === $filters['status'] ) {
 			$columns['enddate'] = __( 'Expired', 'paid-memberships-pro' );
-		} elseif ( 'cancelled' === $l ) {
+		} elseif ( 'cancelled' === $filters['status'] ) {
 			$columns['enddate'] = __( 'Cancelled', 'paid-memberships-pro' );
 		}
 
@@ -279,29 +275,25 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function no_items() {
-		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
-		} else {
-			$l = false;
-		}
+		$filters = pmpro_sanitize_memberships_list_filters( $_REQUEST );
 		if(isset($_REQUEST['s']))
 			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
 		else
 			$s = "";
 		?>
 		<p>
-			<?php esc_html_e( 'No members found.', 'paid-memberships-pro' ); ?>
-			<?php if ( $l ) { ?>
-				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Search all levels', 'paid-memberships-pro' );?></a>
+			<?php esc_html_e( 'No memberships found.', 'paid-memberships-pro' ); ?>
+			<?php if ( $filters['l'] ) { ?>
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'status' => $filters['status'], 'excludeactive' => $filters['excludeactive'], 's' => $s ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Search all levels', 'paid-memberships-pro' );?></a>
 			<?php } ?>
 		</p>
 		<hr />
 		<p><?php esc_html_e( 'You can also try searching:', 'paid-memberships-pro' ); ?>
 		<ul class="ul-disc">
 			<li><a href="<?php echo esc_url( add_query_arg( array( 's' => $s ), admin_url( 'users.php' ) ) ); ?>"><?php esc_html_e( 'All Users', 'paid-memberships-pro' ); ?></a></li>
-			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'cancelled', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Cancelled Members', 'paid-memberships-pro' ); ?></a></li>
-			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'expired', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Expired Members', 'paid-memberships-pro' ); ?></a></li>
-			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'oldmembers', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Old Members', 'paid-memberships-pro' ); ?></a></li>
+			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'status' => 'cancelled', 's' => $s ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Cancelled Memberships', 'paid-memberships-pro' ); ?></a></li>
+			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'status' => 'expired', 's' => $s ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Expired Memberships', 'paid-memberships-pro' ); ?></a></li>
+			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'status' => 'ended', 's' => $s ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'All Ended Memberships', 'paid-memberships-pro' ); ?></a></li>
 		</ul>
 		<?php
 	}
@@ -314,12 +306,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	private function sql_table_data( $count = false ) {
 		global $wpdb;
 
-		// some vars for the search
-		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
-		} else {
-			$l = false;
-		}
+		// Level, status, and excludeactive filters.
+		$filters = pmpro_sanitize_memberships_list_filters( $_REQUEST );
 
 		$search_key = false;
 		if( isset( $_REQUEST['s'] ) ) {
@@ -347,7 +335,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				$order = 'DESC';
 			}
 		} else {
-			if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
+			if ( 'active' !== $filters['status'] ) {
 				$orderby = 'enddate';
 				$order = 'DESC';
 			} else {
@@ -437,22 +425,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sqlQuery .= $search_query;
 		}
 
-		// If looking for oldmembers, expired, or cancelled, make sure they don't have an active membership.
-		if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
-			$sqlQuery .= " AND NOT EXISTS (SELECT 1 FROM $wpdb->pmpro_memberships_users mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active') ";
-		}
-
-		if ( 'oldmembers' === $l ) {
-			$sqlQuery .= " AND mu.status <> 'active' ";
-		} elseif ( 'expired' === $l ) {
-			$sqlQuery .= " AND mu.status = 'expired' ";
-		} elseif ( 'cancelled' === $l ) {
-			$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') ";
-		} elseif ( $l ) {
-			$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . (int) $l . "' ";
-		} else {
-			$sqlQuery .= " AND mu.status = 'active' ";
-		}
+		// Filter by level, status, and whether to hide memberships for users who are active again.
+		$sqlQuery .= pmpro_memberships_list_filter_sql( $filters );
 
 		if ( ! $count ) {
 			$sqlQuery .= ' GROUP BY u.ID, mu.membership_id ';
@@ -765,8 +739,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_enddate( $item ) {
-		if ( isset( $_REQUEST['l'] ) && ! empty( pmpro_sanitize_with_safelist( $_REQUEST['l'] , array( 'oldmembers', 'expired', 'cancelled' ) ) ) ) {
-			// If viewing removed levels, show the end date for the membership that was removed.
+		$filters = pmpro_sanitize_memberships_list_filters( $_REQUEST );
+		if ( 'active' !== $filters['status'] ) {
+			// If viewing ended memberships, show the end date for the membership that was removed.
 			return date_i18n( get_option( 'date_format' ), $item['enddate'] );
 		}
 
@@ -779,30 +754,109 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @param string $which, helps you decide if you add the markup after (bottom) or before (top) the list array( '' => 'Select a Level' )
 	 */
 	function extra_tablenav( $which ) {
-		global $membership_levels, $wpdb;
 		if ( $which == 'top' ) {
 			// The code that goes before the table is here
-			if(isset($_REQUEST['l'])) {
-				$l = sanitize_text_field($_REQUEST['l']);
-			} else {
-				$l = false;
+			$filters = pmpro_sanitize_memberships_list_filters( $_REQUEST );
+
+			// Count active filters for the toggle button badge.
+			$active_filter_count = 0;
+			if ( '' !== $filters['l'] ) {
+				$active_filter_count++;
 			}
-			esc_html_e('Show', 'paid-memberships-pro' );?>
-			<select name="l" onchange="jQuery('#current-page-selector').val('1'); jQuery('#member-list-form').trigger('submit');">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
-				<?php
-					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
-					foreach($levels as $level)
-					{
-				?>
-					<option value="<?php echo esc_attr( $level->id ) ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name )?></option>
-				<?php
-					}
-				?>
-				<option value="cancelled" <?php if($l == "cancelled") { ?>selected="selected"<?php } ?>><?php esc_html_e('Cancelled Members', 'paid-memberships-pro' );?></option>
-				<option value="expired" <?php if($l == "expired") { ?>selected="selected"<?php } ?>><?php esc_html_e('Expired Members', 'paid-memberships-pro' );?></option>
-				<option value="oldmembers" <?php if($l == "oldmembers") { ?>selected="selected"<?php } ?>><?php esc_html_e('Old Members', 'paid-memberships-pro' );?></option>
-			</select>
+			if ( 'active' !== $filters['status'] ) {
+				$active_filter_count++;
+			}
+			if ( 'active' !== $filters['status'] && 'anylevel' === $filters['excludeactive'] ) {
+				$active_filter_count++;
+			}
+
+			// Prepare data for filter value selectors.
+			$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
+			?>
+
+			<button type="button" id="pmpro-memberships-toggle-filters" class="button button-primary pmpro-has-icon pmpro-has-icon-filter pmpro-filter-toggle">
+				<?php esc_html_e( 'Filter Results', 'paid-memberships-pro' ); ?>
+				<?php if ( $active_filter_count > 0 ) { ?>
+					<span class="pmpro-filter-badge"><?php echo esc_html( $active_filter_count ); ?></span>
+				<?php } ?>
+			</button>
+			<?php if ( $active_filter_count > 0 ) { ?>
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'Clear Filters', 'paid-memberships-pro' ); ?></a>
+			<?php } ?>
+
+			<div id="pmpro-memberships-filter-panel" class="pmpro-filter-panel">
+				<div class="pmpro_section">
+					<div class="pmpro-filter-header">
+						<h2><?php esc_html_e( 'Filters', 'paid-memberships-pro' ); ?></h2>
+						<button type="button" id="pmpro-memberships-close-filters" class="pmpro-filter-close" aria-label="<?php esc_attr_e( 'Close filters', 'paid-memberships-pro' ); ?>">
+							<span class="dashicons dashicons-no-alt"></span>
+						</button>
+					</div>
+
+					<div class="pmpro-filter-body">
+						<?php // Level filter. ?>
+						<div class="pmpro-filter-section">
+							<label for="pmpro-filter-level"><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></label>
+							<select id="pmpro-filter-level" name="l">
+								<option value=""><?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?></option>
+								<?php foreach ( $levels as $level_obj ) { ?>
+									<option value="<?php echo esc_attr( $level_obj->id ); ?>" <?php selected( $filters['l'], $level_obj->id ); ?>><?php echo esc_html( $level_obj->name ); ?></option>
+								<?php } ?>
+							</select>
+						</div>
+
+						<?php // Status filter. The default view shows active memberships. ?>
+						<div class="pmpro-filter-section">
+							<label for="pmpro-filter-status"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></label>
+							<select id="pmpro-filter-status" name="status">
+								<option value="" <?php selected( $filters['status'], 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
+								<option value="cancelled" <?php selected( $filters['status'], 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
+								<option value="expired" <?php selected( $filters['status'], 'expired' ); ?>><?php esc_html_e( 'Expired', 'paid-memberships-pro' ); ?></option>
+								<option value="ended" <?php selected( $filters['status'], 'ended' ); ?>><?php esc_html_e( 'All Ended', 'paid-memberships-pro' ); ?></option>
+							</select>
+						</div>
+
+						<?php // Ended memberships filter. Only shown when viewing an ended status. ?>
+						<div class="pmpro-filter-section pmpro-filter-excludeactive" <?php echo 'active' === $filters['status'] ? 'style="display:none;"' : ''; ?>>
+							<label for="pmpro-filter-excludeactive"><?php esc_html_e( 'Ended Memberships', 'paid-memberships-pro' ); ?></label>
+							<select id="pmpro-filter-excludeactive" name="excludeactive" <?php echo 'active' === $filters['status'] ? 'disabled' : ''; ?>>
+								<option value="" <?php selected( $filters['excludeactive'], 'samelevel' ); ?>><?php esc_html_e( 'Hide if the same level is now active', 'paid-memberships-pro' ); ?></option>
+								<option value="anylevel" <?php selected( $filters['excludeactive'], 'anylevel' ); ?>><?php esc_html_e( 'Hide if any level is now active', 'paid-memberships-pro' ); ?></option>
+							</select>
+						</div>
+
+					</div>
+
+					<div class="pmpro-filter-actions">
+						<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Apply Filters', 'paid-memberships-pro' ); ?>" />
+						<?php if ( $active_filter_count > 0 ) { ?>
+							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist' ), admin_url( 'admin.php' ) ) ); ?>" class="pmpro-filter-clear"><?php esc_html_e( 'Clear All', 'paid-memberships-pro' ); ?></a>
+						<?php } ?>
+					</div>
+				</div>
+			</div>
+
+			<script>
+			jQuery(document).ready(function($) {
+				if ( typeof window.pmproInitFilterSidebar !== 'function' ) {
+					return;
+				}
+
+				window.pmproInitFilterSidebar({
+					panelSelector: '#pmpro-memberships-filter-panel',
+					layoutSelector: '#pmpro-memberships-layout',
+					toggleButtonSelector: '#pmpro-memberships-toggle-filters',
+					closeButtonSelector: '#pmpro-memberships-close-filters'
+				});
+
+				// Show the ended memberships filter only when viewing an ended status.
+				$('#pmpro-filter-status').on('change', function() {
+					var viewingActive = '' === $(this).val();
+					$('.pmpro-filter-excludeactive').toggle( ! viewingActive );
+					$('#pmpro-filter-excludeactive').prop( 'disabled', viewingActive );
+				});
+			});
+			</script>
 			<?php
 			}
 		if ( $which == 'bottom' ) {
