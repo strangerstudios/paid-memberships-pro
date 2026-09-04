@@ -273,6 +273,8 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		if ( ! empty( $status ) ) {
 			if ( $status === 'sync_error' ) {
 				$condition .= ' AND sm.meta_value IS NOT NULL';
+			} elseif ( $status === 'needs_payment_method' ) {
+				$condition .= ' AND s.status = "active" AND smnpm.meta_value IS NOT NULL';
 			} else {
 				$condition .= ' AND s.status = "' . esc_sql( $status ) . '"';
 			}
@@ -302,6 +304,9 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		}
 
 		$sqlQuery .= "FROM $wpdb->pmpro_subscriptions s LEFT JOIN $wpdb->pmpro_membership_levels ml ON s.membership_level_id = ml.id LEFT JOIN $wpdb->users u ON s.user_id = u.ID LEFT JOIN $wpdb->pmpro_subscriptionmeta sm ON s.id = sm.pmpro_subscription_id AND sm.meta_key = 'sync_error' ";
+		if ( 'needs_payment_method' === $status ) {
+			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_subscriptionmeta smnpm ON s.id = smnpm.pmpro_subscription_id AND smnpm.meta_key = 'deprecated_gateway_needs_payment_method' ";
+		}
 
 		if ( $s ) {
 			$sqlQuery .= 'WHERE (1=2 ';
@@ -432,6 +437,9 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 							<option value="active" <?php selected( $status, 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
 							<option value="cancelled" <?php selected( $status, 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
 							<option value="sync_error" <?php selected( $status, 'sync_error' ); ?>><?php esc_html_e( 'Sync Error', 'paid-memberships-pro' ); ?></option>
+							<?php if ( 'needs_payment_method' === $status || pmpro_deprecated_gateway_get_needs_payment_method_count() > 0 ) { ?>
+								<option value="needs_payment_method" <?php selected( $status, 'needs_payment_method' ); ?>><?php esc_html_e( 'Awaiting Payment Method', 'paid-memberships-pro' ); ?></option>
+							<?php } ?>
 						</select>
 					</div>
 
@@ -666,6 +674,14 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
 				<?php esc_html_e( 'Sync Error:', 'paid-memberships-pro' ); ?>
 				<?php echo esc_html( $sync_error ); ?>
+			</span>
+			<?php
+		}
+		if ( 'active' === $item->get_status() && get_pmpro_subscription_meta( $item->get_id(), 'deprecated_gateway_needs_payment_method', true ) ) {
+			// This subscription was migrated from a deprecated gateway and the member has not added a payment method yet.
+			?>
+			<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-alert">
+				<?php esc_html_e( 'Awaiting Payment Method', 'paid-memberships-pro' ); ?>
 			</span>
 			<?php
 		}

@@ -432,23 +432,13 @@
 
 						}
 
-						// Get the Update billing information link if we have a subscription.
-						if ( $subscription ) {
+						// Get the Update billing information link if we have a subscription on the active
+						// gateway and that gateway supports updating payment methods (same rule as the
+						// Membership Account page).
+						if ( $subscription && $subscription->get_gateway() == get_option( 'pmpro_gateway' ) ) {
 							$subscription_id = $subscription->get_id();
-							
-							// Get the order for this subscription.
-							$newest_orders = $subscription->get_orders(
-								array(
-									'status'  => 'success',
-									'limit'   => 1,
-									'orderby' => '`timestamp` DESC, `id` DESC',
-								)
-							);
-
-							// We need this for the billing page link.
-							$current_subscription_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
-
-							if (  $current_subscription_order && ! empty( $subscription_id ) ) {
+							$gateway_obj     = $subscription->get_gateway_object();
+							if ( ! empty( $subscription_id ) && ! empty( $gateway_obj ) && method_exists( $gateway_obj, 'supports' ) && $gateway_obj->supports( 'payment_method_updates' ) ) {
 								$billing_url = add_query_arg( 'pmpro_subscription_id', $subscription_id, pmpro_url( 'billing' ) );
 								$pmpro_member_action_links['update-billing'] = '<a href="' . esc_url( $billing_url ) . '">' . esc_html__( 'Update Billing Information', 'paid-memberships-pro' ) . '</a>';
 							}

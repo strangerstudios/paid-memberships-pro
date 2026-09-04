@@ -3224,6 +3224,207 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Create a Stripe subscription used to migrate a deprecated gateway subscription.
+	 *
+	 * This intentionally creates a trialing subscription without a payment method. The
+	 * member is then sent through the billing update flow to attach a payment method
+	 * before the trial ends.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Subscription $old_subscription The subscription being migrated.
+	 * @param array              $args {
+	 *     Migration arguments.
+	 *
+	 *     @type int $trial_end Unix timestamp when the Stripe subscription should start billing.
+	 *     @type int $attempt   Creation attempt number. The workflow increments this after a
+	 *                          previously created placeholder dies so the idempotency key
+	 *                          changes; reusing the old key within Stripe's 24-hour replay
+	 *                          window would return the original (now-cancelled) subscription.
+	 * }
+	 * @return Stripe_Subscription|WP_Error
+	 */
+	public function create_deprecated_gateway_migration_subscription( $old_subscription, $args = array() ) {
+		if ( ! is_a( $old_subscription, 'PMPro_Subscription' ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_invalid_subscription', __( 'Invalid subscription.', 'paid-memberships-pro' ) );
+		}
+
+		$args = wp_parse_args(
+			$args,
+			array(
+				'trial_end' => 0,
+				'attempt'   => 0,
+			)
+		);
+
+		$trial_end = (int) $args['trial_end'];
+		if ( $trial_end <= time() ) {
+			return new WP_Error( 'pmpro_stripe_migration_invalid_trial_end', __( 'The next billing date must be in the future to create a Stripe migration subscription.', 'paid-memberships-pro' ) );
+		}
+
+		$user = get_userdata( $old_subscription->get_user_id() );
+		if ( empty( $user ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_user', __( 'Could not find the subscription user.', 'paid-memberships-pro' ) );
+		}
+
+		$level = new PMPro_Membership_Level( $old_subscription->get_membership_level_id() );
+		if ( empty( $level->ID ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_level', __( 'Could not find the subscription membership level.', 'paid-memberships-pro' ) );
+		}
+
+		$customer = $this->get_customer_for_user( $old_subscription->get_user_id() );
+		if ( empty( $customer ) ) {
+			$order = new MemberOrder();
+			$order->user_id = $old_subscription->get_user_id();
+			$order->membership_id = $old_subscription->get_membership_level_id();
+			$customer = $this->update_customer_at_checkout( $order );
+		}
+		if ( empty( $customer ) || empty( $customer->id ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_customer', __( 'Could not create or retrieve the Stripe customer.', 'paid-memberships-pro' ) );
+		}
+
+		$product_id = $this->get_product_id_for_level( $level );
+		if ( empty( $product_id ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_product', __( 'Cannot find product for membership level.', 'paid-memberships-pro' ) );
+		}
+
+		// Old subscription rows can be missing billing terms (e.g. from the 3.0 subscriptions
+		// table migration); fall back to the level like the rest of PMPro does.
+		// get_billing_amount() returns a float, so 0.00 is the "missing" value.
+		$billing_amount = $old_subscription->get_billing_amount();
+		if ( empty( $billing_amount ) ) {
+			$billing_amount = $level->billing_amount;
+		}
+		if ( empty( $billing_amount ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_no_billing_amount', __( 'Neither the subscription nor its membership level has a recurring billing amount to migrate.', 'paid-memberships-pro' ) );
+		}
+		$cycle_period = $old_subscription->get_cycle_period();
+		$cycle_number = $old_subscription->get_cycle_number();
+		if ( empty( $cycle_period ) || empty( $cycle_number ) ) {
+			$cycle_period = $level->cycle_period;
+			$cycle_number = $level->cycle_number;
+		}
+		if ( empty( $cycle_period ) || empty( $cycle_number ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_not_recurring', __( 'Neither the subscription nor its membership level has a recurring billing cycle to migrate.', 'paid-memberships-pro' ) );
+		}
+
+		$price = $this->get_price_for_product( $product_id, $billing_amount, $cycle_period, $cycle_number );
+		if ( is_string( $price ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_missing_price', $price );
+		}
+
+		$subscription_params = array(
+			'customer'       => $customer->id,
+			'items'          => array(
+				array(
+					'price' => $price->id,
+				),
+			),
+			'trial_end'      => $trial_end,
+			'trial_settings' => array(
+				'end_behavior' => array(
+					'missing_payment_method' => 'cancel',
+				),
+			),
+			'metadata'       => array(
+				'pmpro_user_id'             => (string) $old_subscription->get_user_id(),
+				'pmpro_membership_level_id' => (string) $old_subscription->get_membership_level_id(),
+				'pmpro_old_subscription_id' => (string) $old_subscription->get_id(),
+				'pmpro_old_gateway'         => (string) $old_subscription->get_gateway(),
+				'pmpro_migration_type'      => 'deprecated_gateway',
+			),
+		);
+
+		// Same filter checkout applies, so site customizations (tax rates, coupons, metadata)
+		// carry over to migrated subscriptions. The application fee is not set here: like
+		// checkout, the invoice.created webhook adds it per invoice.
+		$subscription_params = apply_filters( 'pmpro_stripe_create_subscription_array', $subscription_params );
+		// Checkout sets trial_period_days, so callbacks written for it may add that key; Stripe
+		// rejects a request carrying both it and the trial_end this migration depends on.
+		unset( $subscription_params['trial_period_days'], $subscription_params['trial_from_plan'] );
+
+		try {
+			return Stripe_Subscription::create(
+				$subscription_params,
+				array(
+					// Site-scoped so two sites sharing one Stripe account cannot replay each other's
+					// requests; environment normalized to match the rest of the workflow.
+					'idempotency_key' => 'pmpro-deprecated-gateway-' . substr( md5( get_site_url() ), 0, 8 ) . '-' . ( 'live' === $old_subscription->get_gateway_environment() ? 'live' : 'sandbox' ) . '-' . $old_subscription->get_id() . '-' . (int) $args['attempt'],
+				)
+			);
+		} catch ( Stripe\Error\Base $e ) {
+			return new WP_Error( 'pmpro_stripe_migration_subscription_error', $e->getMessage() );
+		} catch ( \Throwable $e ) {
+			return new WP_Error( 'pmpro_stripe_migration_subscription_error', $e->getMessage() );
+		} catch ( \Exception $e ) {
+			return new WP_Error( 'pmpro_stripe_migration_subscription_error', $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Check whether Stripe credentials are set for the current gateway environment.
+	 *
+	 * Unlike has_connect_credentials(), this also covers sites using legacy
+	 * API keys.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool
+	 */
+	public function has_credentials() {
+		return ! empty( $this->get_secretkey() );
+	}
+
+	/**
+	 * Check whether a Stripe subscription has a payment method to charge.
+	 *
+	 * Checks the subscription's default payment method and source, then falls
+	 * back to the customer's defaults, which is also what Stripe falls back to
+	 * when invoicing. Used to verify migrated subscriptions that were created
+	 * without a payment method.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Subscription $subscription The subscription to check.
+	 * @return bool|WP_Error Whether a payment method is attached, or WP_Error on API failure.
+	 */
+	public function subscription_has_payment_method( $subscription ) {
+		if ( ! is_a( $subscription, 'PMPro_Subscription' ) ) {
+			return new WP_Error( 'pmpro_stripe_invalid_subscription', __( 'Invalid subscription.', 'paid-memberships-pro' ) );
+		}
+
+		if ( empty( $this->get_secretkey() ) ) {
+			return new WP_Error( 'pmpro_stripe_no_credentials', __( 'Stripe login credentials are not set.', 'paid-memberships-pro' ) );
+		}
+
+		try {
+			$stripe_subscription = Stripe_Subscription::retrieve(
+				array(
+					'id'     => $subscription->get_subscription_transaction_id(),
+					'expand' => array( 'customer' ),
+				)
+			);
+		} catch ( Stripe\Error\Base $e ) {
+			return new WP_Error( 'pmpro_stripe_subscription_error', $e->getMessage() );
+		} catch ( \Throwable $e ) {
+			return new WP_Error( 'pmpro_stripe_subscription_error', $e->getMessage() );
+		} catch ( \Exception $e ) {
+			return new WP_Error( 'pmpro_stripe_subscription_error', $e->getMessage() );
+		}
+
+		if ( ! empty( $stripe_subscription->default_payment_method ) || ! empty( $stripe_subscription->default_source ) ) {
+			return true;
+		}
+
+		$customer = $stripe_subscription->customer;
+		if ( ! empty( $customer ) && empty( $customer->deleted ) && ( ! empty( $customer->invoice_settings->default_payment_method ) || ! empty( $customer->default_source ) ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Convert a price to a positive integer in cents (or 0 for a free price)
 	 * representing how much to charge. This is how Stripe wants us to send price amounts.
 	 *

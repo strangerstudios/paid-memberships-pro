@@ -1012,60 +1012,6 @@ add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
 add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 2 );
 
 /**
- * Get the list of deprecated gateways.
- *
- * The 2Checkout gateway was deprecated in v2.6.
- * Cybersource was deprecated in 2.10.
- * PayPal Website Payments Pro was deprecated in 2.10.
- * Authorize.net was deprecated in 3.2.
- * PayFlow, PayPal Standard, and Braintree were deprecated in 3.4.
- * PayPal Express was deprecated in 3.7.1.
- * PayPal Website Payments Pro was renamed from 'paypal' to 'paypalwpp' in 3.7.1.
- *
- * @since 3.5
- */
-function pmpro_get_deprecated_gateways() {
-	return apply_filters( 'pmpro_deprecated_gateways', array(
-		'twocheckout',
-		'cybersource',
-		'paypalwpp',
-		'authorizenet',
-		'payflowpro',
-		'paypalstandard',
-		'braintree',
-		'paypalexpress',
-	) );
-}
-
-/**
- * Adds back deprecated gateways if they have ever been the selected gateway.
- * In future versions, we will remove gateway code entirely.
- * And you will have to use a stand alone add on for those gateways
- * or choose a new gateway.
- */
-function pmpro_check_for_deprecated_gateways() {
-	$undeprecated_gateways = get_option( 'pmpro_undeprecated_gateways' );
-	if ( empty( $undeprecated_gateways ) ) {
-		$undeprecated_gateways = array();
-	} elseif ( is_string( $undeprecated_gateways ) ) {
-		// pmpro_setOption turns this into a comma separated string
-		$undeprecated_gateways = explode( ',', $undeprecated_gateways );
-	}
-	$default_gateway = get_option( 'pmpro_gateway' );
-
-	$deprecated_gateways = pmpro_get_deprecated_gateways();
-	foreach ( $deprecated_gateways as $deprecated_gateway ) {
-		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
-			require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_' . $deprecated_gateway . '.php' );
-			if ( ! in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
-				$undeprecated_gateways[] = $deprecated_gateway;
-				update_option( 'pmpro_undeprecated_gateways', $undeprecated_gateways );
-			}
-		}
-	}
-}
-
-/**
  * Disable uninstall script for duplicates
  */
 function pmpro_disable_uninstall_script_for_duplicates( $file ) {
