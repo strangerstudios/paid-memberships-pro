@@ -272,6 +272,11 @@ class PMPro_Site_Health {
 				$gateway_text .= ' (' . __( 'API Version', 'paid-memberships-pro' ) . ': ' . PMPRO_STRIPE_API_VERSION . ')';
 			}
 
+			$connection_error = $stripe->get_connection_error();
+			if ( ! empty( $connection_error ) ) {
+				$gateway_text .= ' (' . __( 'Connection Error', 'paid-memberships-pro' ) . ': ' . wp_strip_all_tags( $connection_error ) . ')';
+			}
+
 			if ( $legacy ) {
 				$gateway_text .= ' (' . __( 'Legacy Keys', 'paid-memberships-pro' ) . ')';
 				return $gateway_text . ' [' . $gateway . ':legacy-keys]';

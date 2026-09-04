@@ -174,7 +174,8 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 
-		// Show warning if webhooks are not set up.
+		// Show warnings if Stripe rejects the saved credentials or webhooks are not set up.
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_connection_error_notice' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_webhook_setup_notice' ) );
 
 		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'process_refund' ), 10, 2 );
@@ -842,6 +843,8 @@ class PMProGateway_stripe extends PMProGateway {
 		// Show a message that Stripe must be connected before webhook information is displayed.
 		if ( ! $stripe->get_secretkey() ) {
 			echo '<p>' . esc_html__( 'You must connect to Stripe before you can set up a webhook.', 'paid-memberships-pro' ) . '</p>';
+		} elseif ( $stripe->get_connection_error() ) {
+			echo '<p>' . esc_html__( 'Stripe is not accepting the credentials saved for this site. Restore the connection above before setting up a webhook.', 'paid-memberships-pro' ) . '</p>';
 		} else {
 			// If we have a webhook, make sure it has all the necessary events.
 			$webhook = $stripe->does_webhook_exist();
@@ -995,6 +998,9 @@ class PMProGateway_stripe extends PMProGateway {
 				update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
 			}
 		}
+
+		// The saved keys may have changed, so check the connection again on the next load.
+		self::clear_connection_error_cache();
 	}
 
 	/**
@@ -1502,6 +1508,9 @@ class PMProGateway_stripe extends PMProGateway {
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
 		) {
 			$error = __( 'Invalid response from the Stripe Connect server.', 'paid-memberships-pro' );
+		} elseif ( self::is_different_connected_account( $_REQUEST['pmpro_stripe_connected_environment'], $_REQUEST['pmpro_stripe_user_id'] ) ) {
+			// Reconnecting with a different account would orphan every existing customer and subscription.
+			$error = __( 'The Stripe account you just connected is not the account this site was already connected to, so the connection was left unchanged. Existing memberships are tied to the original account. To switch Stripe accounts, disconnect from Stripe first.', 'paid-memberships-pro' );
 		} else {
 			// Update keys.
 			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
@@ -1520,6 +1529,9 @@ class PMProGateway_stripe extends PMProGateway {
 			// Delete option for user API key.
 			delete_option( 'pmpro_stripe_secretkey' );
 			delete_option( 'pmpro_stripe_publishablekey' );
+
+			// The credentials changed, so check the connection again on the next load.
+			self::clear_connection_error_cache();
 
 			unset( $_GET['pmpro_stripe_connected'] );
 			unset( $_GET['pmpro_stripe_connected_environment'] );
@@ -1606,6 +1618,9 @@ class PMProGateway_stripe extends PMProGateway {
 			delete_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 			delete_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
 		}
+
+		// The credentials changed, so check the connection again on the next load.
+		self::clear_connection_error_cache();
 	}
 
 	/**
@@ -1620,6 +1635,63 @@ class PMProGateway_stripe extends PMProGateway {
 		_deprecated_function( __FUNCTION__, '3.0.4' );
 		global $pmpro_stripe_old_payment_flow;
 		$pmpro_stripe_old_payment_flow = empty( $old_value ) ? 'onsite' : $old_value;
+	}
+
+	/**
+	 * If Stripe is the current gateway but it is rejecting the saved credentials, show an admin notice.
+	 *
+	 * @since TBD
+	 */
+	public static function show_stripe_connection_error_notice() {
+		// Only show to users who can fix the connection.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// If Stripe isn't the current gateway, we don't need to show the notice.
+		if ( 'stripe' !== get_option( 'pmpro_gateway' ) ) {
+			return;
+		}
+
+		// Only show on PMPro admin pages, except for the Stripe settings screen, which shows the status inline.
+		$page         = isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) ? $_REQUEST['page'] : '';
+		$edit_gateway = isset( $_REQUEST['edit_gateway'] ) && is_string( $_REQUEST['edit_gateway'] ) ? $_REQUEST['edit_gateway'] : '';
+		if ( false === strpos( $page, 'pmpro' ) || ( 'pmpro-paymentsettings' === $page && 'stripe' === $edit_gateway ) ) {
+			return;
+		}
+
+		$stripe           = new PMProGateway_stripe();
+		$connection_error = $stripe->get_connection_error();
+		if ( empty( $connection_error ) ) {
+			return;
+		}
+		?>
+		<div class="notice notice-error" id="pmpro-stripe_connection_error-notice">
+			<p><strong><?php esc_html_e( 'Important Notice: Your Stripe Connection Is No Longer Valid', 'paid-memberships-pro' ); ?></strong></p>
+			<p>
+				<?php
+				printf(
+					/* translators: %s: The error message returned by Stripe. */
+					esc_html__( 'Stripe rejected the credentials saved for this site with the error "%s". Members will not be able to check out or update their billing information until the connection is restored.', 'paid-memberships-pro' ),
+					esc_html( $connection_error )
+				);
+				?>
+			</p>
+			<p>
+				<?php
+				if ( self::using_api_keys() ) {
+					echo '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe' ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Update your Stripe API keys', 'paid-memberships-pro' ) . '</a>';
+				} else {
+					printf(
+						/* translators: %s: Link with the text "Reconnect with Stripe". */
+						esc_html__( '%s using the same Stripe account that this site was previously connected to.', 'paid-memberships-pro' ),
+						'<a href="' . esc_url( self::get_connect_url( get_option( 'pmpro_gateway_environment' ), 'authorize' ) ) . '">' . esc_html__( 'Reconnect with Stripe', 'paid-memberships-pro' ) . '</a>'
+					);
+				}
+				?>
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
@@ -1638,8 +1710,14 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		// Get webhook data from Stripe.
+		// If Stripe is rejecting the saved credentials, the connection error notice covers it
+		// and any webhook check would fail for the wrong reason.
 		$stripe = new PMProGateway_stripe();
+		if ( $stripe->get_connection_error() ) {
+			return;
+		}
+
+		// Get webhook data from Stripe.
 		$webhook = $stripe->does_webhook_exist();
 
 		if ( empty( $webhook ) || ! is_array( $webhook ) ) {
@@ -1817,6 +1895,20 @@ class PMProGateway_stripe extends PMProGateway {
 				get_option( 'pmpro_sandbox_stripe_connect_publishablekey' )
 			);
 		}
+	}
+
+	/**
+	 * Check whether a Stripe account returned by the Connect server differs from the one already saved for an environment.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $gateway_environment The environment being connected, 'live' or 'sandbox'.
+	 * @param string $stripe_user_id      The Stripe account ID returned by the Connect server.
+	 * @return bool True if a different account is already saved for this environment.
+	 */
+	private static function is_different_connected_account( $gateway_environment, $stripe_user_id ) {
+		$saved_user_id = get_option( 'pmpro_' . ( 'live' === $gateway_environment ? 'live' : 'sandbox' ) . '_stripe_connect_user_id' );
+		return ! empty( $saved_user_id ) && $saved_user_id !== $stripe_user_id;
 	}
 
 	/**
@@ -2823,17 +2915,21 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function show_connection_settings_section( $livemode ) {
 		$environment = $livemode ? 'live' : 'sandbox';
-		$environment2 = $livemode ? 'live' : 'test'; // For when 'test' is used instead of 'sandbox'.
+
+		// Determine if this is the active environment. Anything other than 'live' uses the sandbox keys.
+		$active_environment = $environment === ( 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox' );
+
+		// Check whether Stripe is accepting the saved credentials. Only the active environment's credentials are in use.
+		$connection_error = $active_environment ? $this->get_connection_error() : false;
 
 		// Determine if the gateway is connected in live mode and set var.
-		if ( self::has_connect_credentials( $environment ) || self::using_api_keys() ) {
+		if ( ! empty( $connection_error ) ) {
+			$connection_selector = 'error';
+		} elseif ( self::has_connect_credentials( $environment ) || self::using_api_keys() ) {
 			$connection_selector = $livemode ? 'success' : 'alert';
 		} else {
 			$connection_selector = $livemode ? 'error' : 'alert';
 		}
-
-		// Determine if this is the active environment.
-		$active_environment = $environment === get_option( 'pmpro_gateway_environment' );
 
 		// The connection section mixes helper-built rows with bespoke full-width notice rows and
 		// the legacy keys sub-table, so the table wrapper itself stays hand-rolled.
@@ -2850,12 +2946,14 @@ class PMProGateway_stripe extends PMProGateway {
 							pmpro_build_settings_field( array(
 								'label'   => __( 'Status', 'paid-memberships-pro' ),
 								'type'    => 'html',
-								'content' => function() use ( $connection_selector, $livemode, $environment ) {
+								'content' => function() use ( $connection_selector, $connection_error, $livemode, $environment ) {
 									?>
 									<span class="pmpro_tag pmpro_tag-<?php echo esc_attr( $connection_selector ); ?>">
 									<?php
 										echo ( $livemode ? esc_html__( 'Live Mode:', 'paid-memberships-pro' ) : esc_html__( 'Test Mode:', 'paid-memberships-pro' ) ) . ' ';
-										if ( self::using_legacy_keys() ) {
+										if ( ! empty( $connection_error ) ) {
+											esc_html_e( 'Connection Error', 'paid-memberships-pro' );
+										} elseif ( self::using_legacy_keys() ) {
 											esc_html_e( 'Connected with Legacy Keys', 'paid-memberships-pro' );
 										} elseif ( self::using_api_keys() ) {
 											esc_html_e( 'Connected with API Keys', 'paid-memberships-pro' );
@@ -2871,6 +2969,36 @@ class PMProGateway_stripe extends PMProGateway {
 							) );
 						}
 						?>
+						<?php if ( ! empty( $connection_error ) ) { ?>
+							<tr class="gateway gateway_stripe_<?php echo esc_attr( $environment ); ?>">
+								<td colspan="2">
+									<div class="notice notice-large notice-error inline">
+										<p>
+											<strong><?php esc_html_e( 'Stripe is no longer accepting the credentials saved for this site.', 'paid-memberships-pro' ); ?></strong><br />
+											<?php
+											printf(
+												/* translators: %s: The error message returned by Stripe. */
+												esc_html__( 'Stripe returned the error "%s". Members will not be able to check out or update their billing information until the connection is restored.', 'paid-memberships-pro' ),
+												esc_html( $connection_error )
+											);
+											?>
+											<br />
+											<?php
+											if ( self::using_api_keys() ) {
+												esc_html_e( 'Enter a new Restricted Key below to restore the connection.', 'paid-memberships-pro' );
+											} else {
+												printf(
+													/* translators: %s: Link with the text "Reconnect with Stripe". */
+													esc_html__( '%s using the same Stripe account that this site was previously connected to.', 'paid-memberships-pro' ),
+													'<a href="' . esc_url( self::get_connect_url( $environment, 'authorize' ) ) . '">' . esc_html__( 'Reconnect with Stripe', 'paid-memberships-pro' ) . '</a>'
+												);
+											}
+											?>
+										</p>
+									</div>
+								</td>
+							</tr>
+						<?php } ?>
 						<?php if ( self::using_legacy_keys() && ! self::has_connect_credentials( $environment ) && $active_environment ) { ?>
 							<tr class="gateway gateway_stripe_<?php echo esc_attr( $environment ); ?>">
 								<td colspan="2">
@@ -2900,18 +3028,9 @@ class PMProGateway_stripe extends PMProGateway {
 							'label'     => __( 'Stripe Connection', 'paid-memberships-pro' ),
 							'type'      => 'html',
 							'row_class' => 'gateway gateway_stripe_' . $environment,
-							'content'   => function() use ( $environment, $environment2, $livemode ) {
-								$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
+							'content'   => function() use ( $environment, $livemode ) {
 								if ( self::has_connect_credentials( $environment ) ) {
-									$connect_url = add_query_arg(
-										array(
-											'action' => 'disconnect',
-											'gateway_environment' => $environment2,
-											'stripe_user_id' => get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' ),
-											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
-										),
-										$connect_url_base
-									);
+									$connect_url = self::get_connect_url( $environment, 'disconnect' );
 									?>
 									<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
 									<p class="description">
@@ -2925,14 +3044,7 @@ class PMProGateway_stripe extends PMProGateway {
 									</p>
 									<?php
 								} else {
-									$connect_url = add_query_arg(
-										array(
-											'action' => 'authorize',
-											'gateway_environment' => $environment2,
-											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
-										),
-										$connect_url_base
-									);
+									$connect_url = self::get_connect_url( $environment, 'authorize' );
 									?>
 									<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 									<?php
@@ -3028,6 +3140,116 @@ class PMProGateway_stripe extends PMProGateway {
 					}
 
 				pmpro_build_settings_section_close();
+	}
+
+	/**
+	 * Build the URL used to start or end a Stripe Connect session for an environment.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $environment The gateway environment, 'live' or 'sandbox'.
+	 * @param string $action      The Connect action, 'authorize' or 'disconnect'.
+	 * @return string The URL on the Connect server to send the admin to.
+	 */
+	private static function get_connect_url( $environment, $action ) {
+		$environment = 'live' === $environment ? 'live' : 'sandbox';
+
+		$return_url_args = array(
+			'page'         => 'pmpro-paymentsettings',
+			'edit_gateway' => 'stripe',
+		);
+		$connect_args = array(
+			'action'              => $action,
+			'gateway_environment' => 'live' === $environment ? 'live' : 'test', // The Connect server uses 'test' instead of 'sandbox'.
+		);
+		if ( 'disconnect' === $action ) {
+			$connect_args['stripe_user_id'] = get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' );
+			$return_url_args['pmpro_stripe_connect_deauthorize_nonce'] = wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' );
+		} else {
+			$return_url_args['pmpro_stripe_connect_nonce'] = wp_create_nonce( 'pmpro_stripe_connect_nonce' );
+		}
+		$connect_args['return_url'] = rawurlencode( add_query_arg( $return_url_args, admin_url( 'admin.php' ) ) );
+
+		return add_query_arg( $connect_args, apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' ) );
+	}
+
+	/**
+	 * Check whether Stripe is accepting the credentials saved for the active gateway environment.
+	 *
+	 * Makes one small read-only request to Stripe and caches the result. Only an authentication
+	 * failure (a 401 response) counts as a rejected credential. Permission errors from a restricted
+	 * key and network problems do not, since the credentials themselves may be fine.
+	 *
+	 * @since TBD
+	 *
+	 * @return string|false The error message returned by Stripe if the credentials were rejected, false otherwise.
+	 */
+	public function get_connection_error() {
+		// Nothing to check if the library didn't load or there is no key to test.
+		if ( ! self::$is_loaded || empty( $this->get_secretkey() ) ) {
+			return false;
+		}
+
+		$cache_key = 'pmpro_stripe_connection_error_' . ( 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox' );
+		$cached    = get_transient( $cache_key );
+		if ( is_array( $cached ) && array_key_exists( 'error', $cached ) ) {
+			return $cached['error'];
+		}
+
+		// Pass the key explicitly so the probe never depends on whatever key was last set globally.
+		$exception = null;
+		try {
+			Stripe_Customer::all( array( 'limit' => 1 ), array( 'api_key' => $this->get_secretkey() ) );
+		} catch ( \Throwable $e ) {
+			$exception = $e;
+		} catch ( \Exception $e ) {
+			$exception = $e;
+		}
+
+		// Classify by HTTP status rather than exception class so this still works when another
+		// plugin loaded an older Stripe library before we could load ours.
+		$error      = false;
+		$cache_time = HOUR_IN_SECONDS;
+		if ( ! empty( $exception ) ) {
+			$status = method_exists( $exception, 'getHttpStatus' ) ? (int) $exception->getHttpStatus() : 0;
+			if ( 401 === $status ) {
+				// Stripe rejected the key. Check again soon so the notice clears quickly once it is fixed.
+				$error      = $exception->getMessage() ? $exception->getMessage() : __( 'Invalid API key.', 'paid-memberships-pro' );
+				$cache_time = 5 * MINUTE_IN_SECONDS;
+			} elseif ( empty( $status ) || $status >= 500 || 429 === $status ) {
+				// Network trouble or a Stripe outage. Don't trust the result for long.
+				$cache_time = 5 * MINUTE_IN_SECONDS;
+			}
+			// Anything else, such as a restricted key without permission for this endpoint, is not a rejected key.
+		}
+
+		set_transient( $cache_key, array( 'error' => $error ), $cache_time );
+
+		return $error;
+	}
+
+	/**
+	 * Get the result of the last connection check without contacting Stripe.
+	 *
+	 * Safe to call on any request, including the frontend, since it only reads the cache.
+	 *
+	 * @since TBD
+	 *
+	 * @return string|false The cached error message from Stripe, or false if none is cached.
+	 */
+	public static function get_cached_connection_error() {
+		$cached = get_transient( 'pmpro_stripe_connection_error_' . ( 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox' ) );
+		return ( is_array( $cached ) && ! empty( $cached['error'] ) ) ? $cached['error'] : false;
+	}
+
+	/**
+	 * Forget the cached connection check so that the next admin page load checks again.
+	 *
+	 * @since TBD
+	 */
+	public static function clear_connection_error_cache() {
+		delete_transient( 'pmpro_stripe_connection_error_live' );
+		delete_transient( 'pmpro_stripe_connection_error_sandbox' );
 	}
 
 	/**
