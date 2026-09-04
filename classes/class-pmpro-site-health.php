@@ -274,7 +274,7 @@ class PMPro_Site_Health {
 
 			$connection_error = $stripe->get_connection_error();
 			if ( ! empty( $connection_error ) ) {
-				$gateway_text .= ' (' . __( 'Connection Error', 'paid-memberships-pro' ) . ': ' . $connection_error . ')';
+				$gateway_text .= ' (' . __( 'Connection Error', 'paid-memberships-pro' ) . ': ' . wp_strip_all_tags( $connection_error ) . ')';
 			}
 
 			if ( $legacy ) {

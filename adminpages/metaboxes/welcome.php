@@ -56,9 +56,13 @@ function pmpro_dashboard_welcome_callback() {
 				<?php } ?>
 
 				<?php if ( current_user_can( 'pmpro_paymentsettings' ) ) { ?>
+					<?php
+					// Stripe credentials that Stripe has rejected don't count as configured. This only reads the last cached check.
+					$stripe_rejected = 'stripe' === get_option( 'pmpro_gateway' ) && class_exists( 'PMProGateway_stripe' ) && PMProGateway_stripe::get_cached_connection_error();
+					?>
 					<li>
 						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ); ?>">
-							<i class="dashicons <?php echo ( empty( $pmpro_gateway_ready ) || empty( $pmpro_level_ready ) ) ? 'dashicons-marker' : 'dashicons-yes-alt'; ?>"></i>
+							<i class="dashicons <?php echo ( empty( $pmpro_gateway_ready ) || empty( $pmpro_level_ready ) || $stripe_rejected ) ? 'dashicons-marker' : 'dashicons-yes-alt'; ?>"></i>
 							<span><?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></span>
 						</a>
 					</li>

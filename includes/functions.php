@@ -3365,11 +3365,6 @@ function pmpro_is_ready() {
 			} else {
 				$pmpro_gateway_ready = false;
 			}
-
-			// Keys that Stripe has rejected don't count. This only reads the last cached check result.
-			if ( $pmpro_gateway_ready && class_exists( 'PMProGateway_stripe' ) && PMProGateway_stripe::get_cached_connection_error() ) {
-				$pmpro_gateway_ready = false;
-			}
 		} elseif ( $gateway == 'braintree' ) {
 			if ( $gateway_environment && get_option( 'pmpro_braintree_merchantid' ) && get_option( 'pmpro_braintree_publickey' ) && get_option( 'pmpro_braintree_privatekey' ) ) {
 				$pmpro_gateway_ready = true;
