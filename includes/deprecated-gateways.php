@@ -270,9 +270,11 @@ function pmpro_deprecated_gateway_record_result( $gateway, $environment, $outcom
  *               whose next payment date is missing or in the past (instead of skipping them).
  * @param bool   $dry_run Preview the workflow without making changes. Outcomes are
  *               logged, but nothing is created, cancelled, emailed, or saved.
+ * @param bool   $manual_cancel_acknowledged Whether the admin acknowledged that this gateway
+ *               cannot cancel subscriptions automatically. Required for a real run on such gateways.
  * @return true|WP_Error
  */
-function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = true, $expire_past_due = false, $dry_run = false ) {
+function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = true, $expire_past_due = false, $dry_run = false, $manual_cancel_acknowledged = false ) {
 	// Normalize the environment so the state option key always matches what the panel reads.
 	$environment = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
 	$gateway         = sanitize_key( $gateway );
@@ -308,6 +310,12 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 		if ( ! empty( $stripe_blockers ) ) {
 			return new WP_Error( 'pmpro_deprecated_gateway_stripe_not_ready', $stripe_blockers[0] );
 		}
+	}
+
+	// A real run on a gateway that cannot cancel automatically leaves every member billed by both
+	// gateways until the admin cancels each subscription by hand, so make them say so first.
+	if ( ! $dry_run && '' !== pmpro_deprecated_gateway_get_manual_cancel_reason( $gateway ) && ! $manual_cancel_acknowledged ) {
+		return new WP_Error( 'pmpro_deprecated_gateway_manual_cancel_not_acknowledged', __( 'This gateway cannot cancel subscriptions automatically. Confirm that you will cancel each subscription in the gateway dashboard before starting a real migration.', 'paid-memberships-pro' ) );
 	}
 
 	if ( ! function_exists( 'as_enqueue_async_action' ) ) {
@@ -611,6 +619,146 @@ function pmpro_deprecated_gateway_subscription_result( $outcome, $message, $acti
 }
 
 /**
+ * Get the reason a gateway's subscriptions must be cancelled manually, if any.
+ *
+ * Some deprecated gateways cannot cancel a subscription through their API from
+ * this workflow. Their subscriptions are marked cancelled in PMPro and recorded
+ * as needs_review so the admin cancels them in the gateway dashboard.
+ *
+ * @since TBD
+ *
+ * @param string $gateway Gateway slug.
+ * @return string Empty when the gateway can cancel subscriptions automatically.
+ */
+function pmpro_deprecated_gateway_get_manual_cancel_reason( $gateway ) {
+	switch ( $gateway ) {
+		case 'paypalstandard':
+		case 'paypalexpress':
+		case 'paypalwpp':
+			// Every PayPal gateway cancels through the same NVP API credentials. PayPal Standard
+			// sites usually never entered them; the others cannot work at all without them.
+			if ( empty( get_option( 'pmpro_apiusername' ) ) || empty( get_option( 'pmpro_apipassword' ) ) || empty( get_option( 'pmpro_apisignature' ) ) ) {
+				return 'paypalstandard' === $gateway
+					? __( 'PayPal Standard cannot cancel subscriptions automatically unless PayPal API credentials (API username, password, and signature) are saved in the gateway settings.', 'paid-memberships-pro' )
+					: __( 'The PayPal API credentials (API username, password, and signature) are missing from the gateway settings, so subscriptions cannot be cancelled automatically.', 'paid-memberships-pro' );
+			}
+			return '';
+		case 'twocheckout':
+			// The 2Checkout cancel call needs the original sale ID, which subscriptions do not store.
+			return __( '2Checkout subscriptions cannot be cancelled automatically from this workflow.', 'paid-memberships-pro' );
+	}
+
+	return '';
+}
+
+/**
+ * Cancel the old gateway subscription as the last step of processing it.
+ *
+ * @since TBD
+ *
+ * @param PMPro_Subscription $subscription The deprecated gateway subscription.
+ * @param string             $gateway Gateway slug.
+ * @return bool|string True if cancelled at the gateway, false if the gateway call failed, or
+ *                     'manual' if the gateway cannot cancel automatically and the subscription
+ *                     was only marked cancelled in PMPro.
+ */
+function pmpro_deprecated_gateway_cancel_old_subscription( $subscription, $gateway ) {
+	if ( '' !== pmpro_deprecated_gateway_get_manual_cancel_reason( $gateway ) ) {
+		// Mark it cancelled in PMPro, as cancel_at_gateway() does before its gateway call, but skip
+		// the API call that cannot succeed and the admin error email it would send for every subscription.
+		$subscription->set( 'status', 'cancelled' );
+		$subscription->save();
+		update_pmpro_subscription_meta( $subscription->get_id(), 'deprecated_gateway_cancel_pending', time() );
+		return 'manual';
+	}
+
+	$cancelled = $subscription->cancel_at_gateway();
+	if ( $cancelled ) {
+		delete_pmpro_subscription_meta( $subscription->get_id(), 'deprecated_gateway_cancel_pending' );
+	} else {
+		// cancel_at_gateway() already marked the row cancelled, so nothing else will notice that the
+		// gateway may still be billing it. Record it so cleanup is held until the admin confirms.
+		update_pmpro_subscription_meta( $subscription->get_id(), 'deprecated_gateway_cancel_pending', time() );
+	}
+
+	return $cancelled;
+}
+
+/**
+ * Count this gateway's subscriptions that were marked cancelled in PMPro but may
+ * still be active at the gateway (manual cancellation, a failed gateway call, or a
+ * payment received after migration).
+ *
+ * Deliberately not scoped to an environment: this gates cleanup, which deletes the
+ * credentials for both environments at once, so the confirmation covers both.
+ *
+ * @since TBD
+ *
+ * @param string $gateway Gateway slug.
+ * @return int
+ */
+function pmpro_deprecated_gateway_get_cancel_pending_count( $gateway ) {
+	global $wpdb;
+
+	return (int) $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT COUNT(*)
+				FROM {$wpdb->pmpro_subscriptions} s
+				INNER JOIN {$wpdb->pmpro_subscriptionmeta} sm
+					ON s.id = sm.pmpro_subscription_id
+					AND sm.meta_key = 'deprecated_gateway_cancel_pending'
+				WHERE s.gateway = %s",
+			$gateway
+		)
+	);
+}
+
+/**
+ * Clear the pending-cancellation markers for a gateway once the admin confirms the
+ * subscriptions were cancelled in the gateway dashboard.
+ *
+ * @since TBD
+ *
+ * @param string $gateway Gateway slug.
+ */
+function pmpro_deprecated_gateway_clear_cancel_pending( $gateway ) {
+	global $wpdb;
+
+	$wpdb->query(
+		$wpdb->prepare(
+			"DELETE sm
+				FROM {$wpdb->pmpro_subscriptionmeta} sm
+				INNER JOIN {$wpdb->pmpro_subscriptions} s
+					ON s.id = sm.pmpro_subscription_id
+				WHERE sm.meta_key = 'deprecated_gateway_cancel_pending'
+					AND s.gateway = %s",
+			$gateway
+		)
+	);
+}
+
+/**
+ * Get the log note for a subscription that must be cancelled manually at the gateway.
+ *
+ * @since TBD
+ *
+ * @param string $gateway Gateway slug.
+ * @param bool   $dry_run Whether to phrase the note for a dry run.
+ * @return string
+ */
+function pmpro_deprecated_gateway_get_manual_cancel_note( $gateway, $dry_run = false ) {
+	if ( '' === pmpro_deprecated_gateway_get_manual_cancel_reason( $gateway ) ) {
+		return '';
+	}
+
+	if ( $dry_run ) {
+		return ' The old gateway subscription would only be marked cancelled in PMPro; it would still need to be cancelled manually in the ' . pmpro_get_gateway_nicename( $gateway ) . ' dashboard.';
+	}
+
+	return ' The old gateway subscription was marked cancelled in PMPro but is still active at the gateway. Cancel it manually in the ' . pmpro_get_gateway_nicename( $gateway ) . ' dashboard so the member is not billed twice.';
+}
+
+/**
  * Process one deprecated gateway subscription.
  *
  * Order of operations is deliberate: create the replacement (Stripe placeholder
@@ -642,17 +790,25 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	// the subscription at the gateway without cross-referencing IDs.
 	$subscription_description = pmpro_deprecated_gateway_get_subscription_log_description( $subscription );
 
+	// Non-empty when this gateway cannot cancel subscriptions automatically; appended to dry run outcomes.
+	$manual_cancel_note_dry = pmpro_deprecated_gateway_get_manual_cancel_note( $gateway, true );
+
 	if ( 'active' !== $subscription->get_status() || $gateway !== $subscription->get_gateway() || $environment !== pmpro_deprecated_gateway_normalize_environment( $subscription->get_gateway_environment() ) ) {
 		return pmpro_deprecated_gateway_subscription_result( 'skipped', ucfirst( $subscription_description ) . ' is no longer an active subscription for this gateway and environment.', 'skipped_not_applicable' );
 	}
 
 	// If the user no longer has the level, just cancel the old gateway subscription.
-	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $subscription->get_user_id() ) ) {
+	// (A level ID of 0 would make pmpro_hasMembershipLevel() report true for users with no level.)
+	if ( empty( $subscription->get_membership_level_id() ) || ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $subscription->get_user_id() ) ) {
 		if ( $dry_run ) {
-			return pmpro_deprecated_gateway_subscription_result( 'complete', 'would cancel ' . $subscription_description . ' without migration because the user no longer has the associated membership level.', 'cancelled_no_migration' );
+			return pmpro_deprecated_gateway_subscription_result( '' === $manual_cancel_note_dry ? 'complete' : 'needs_review', 'would cancel ' . $subscription_description . ' without migration because the user no longer has the associated membership level.' . $manual_cancel_note_dry, 'cancelled_no_migration' );
 		}
-		if ( $subscription->cancel_at_gateway() ) {
+		$cancelled = pmpro_deprecated_gateway_cancel_old_subscription( $subscription, $gateway );
+		if ( true === $cancelled ) {
 			return pmpro_deprecated_gateway_subscription_result( 'complete', 'Cancelled ' . $subscription_description . ' without migration because the user no longer has the associated membership level.', 'cancelled_no_migration' );
+		}
+		if ( 'manual' === $cancelled ) {
+			return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Processed ' . $subscription_description . ' without migration because the user no longer has the associated membership level.' . pmpro_deprecated_gateway_get_manual_cancel_note( $gateway ), 'cancelled_no_migration' );
 		}
 		return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. The user no longer has the associated membership level. Verify this subscription in the gateway; an error email was sent to the admin.', 'cancelled_no_migration' );
 	}
@@ -707,10 +863,14 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 			continue;
 		}
 		if ( $dry_run ) {
-			return pmpro_deprecated_gateway_subscription_result( 'complete', 'would cancel ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.', 'cancelled_no_migration' );
+			return pmpro_deprecated_gateway_subscription_result( '' === $manual_cancel_note_dry ? 'complete' : 'needs_review', 'would cancel ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.' . $manual_cancel_note_dry, 'cancelled_no_migration' );
 		}
-		if ( $subscription->cancel_at_gateway() ) {
+		$cancelled = pmpro_deprecated_gateway_cancel_old_subscription( $subscription, $gateway );
+		if ( true === $cancelled ) {
 			return pmpro_deprecated_gateway_subscription_result( 'complete', 'Cancelled ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.', 'cancelled_no_migration' );
+		}
+		if ( 'manual' === $cancelled ) {
+			return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Processed ' . $subscription_description . ' without migration because the user already has active subscription #' . $other_subscription->get_id() . ' for this level.' . pmpro_deprecated_gateway_get_manual_cancel_note( $gateway ), 'cancelled_no_migration' );
 		}
 		return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. The user already has active subscription #' . $other_subscription->get_id() . ' for this level. Verify this subscription in the gateway; an error email was sent to the admin.', 'cancelled_no_migration' );
 	}
@@ -733,6 +893,16 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 		$handoff_timestamp = empty( $handoff_timestamp ) ? time() : $handoff_timestamp;
 	}
 
+	// Give members time to act on the email. A handoff within the next few days would have Stripe
+	// cancel the placeholder, or the membership expire, almost as soon as the email arrives. Push it
+	// out to a minimum of three days. The old gateway subscription is cancelled below, so (where the
+	// gateway supports cancellation) the member is not charged there in between.
+	$handoff_note = '';
+	if ( empty( $placeholder ) && ! $expire_this_subscription && $handoff_timestamp < time() + 3 * DAY_IN_SECONDS ) {
+		$handoff_timestamp = time() + 3 * DAY_IN_SECONDS;
+		$handoff_note      = ' The next payment date was less than three days away, so the handoff was moved to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' to give the member time to act.';
+	}
+
 	$use_stripe = ( 'stripe' === $strategy && ! $expire_this_subscription ) || ! empty( $placeholder );
 
 	// Set below if the $0 billing limit bridge order cannot be saved.
@@ -751,10 +921,14 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 					// The limit was already reached, so no replacement is needed and
 					// the membership is left unchanged, matching billing limit semantics.
 					if ( $dry_run ) {
-						return pmpro_deprecated_gateway_subscription_result( 'complete', 'would cancel ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership would be left unchanged and no email would be sent.', 'cancelled_limit_reached' );
+						return pmpro_deprecated_gateway_subscription_result( '' === $manual_cancel_note_dry ? 'complete' : 'needs_review', 'would cancel ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership would be left unchanged and no email would be sent.' . $manual_cancel_note_dry, 'cancelled_limit_reached' );
 					}
-					if ( $subscription->cancel_at_gateway() ) {
+					$cancelled = pmpro_deprecated_gateway_cancel_old_subscription( $subscription, $gateway );
+					if ( true === $cancelled ) {
 						return pmpro_deprecated_gateway_subscription_result( 'complete', 'Cancelled ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership was left unchanged and no email was sent.', 'cancelled_limit_reached' );
+					}
+					if ( 'manual' === $cancelled ) {
+						return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Processed ' . $subscription_description . ' without migration because its billing limit has already been reached. The membership was left unchanged and no email was sent.' . pmpro_deprecated_gateway_get_manual_cancel_note( $gateway ), 'cancelled_limit_reached' );
 					}
 					return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Could not confirm cancellation of ' . $subscription_description . ' at the gateway. Its billing limit has already been reached. Verify this subscription in the gateway; an error email was sent to the admin.', 'cancelled_limit_reached' );
 				}
@@ -829,34 +1003,51 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 						)
 					);
 				}
-				if ( empty( $placeholder ) ) {
-					return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Created Stripe subscription ' . $transaction_id . ' for ' . $subscription_description . ', but the local PMPro subscription record could not be created. Verify this subscription in Stripe and PMPro.', 'migrated_to_stripe', array( 'new_subscription_transaction_id' => $transaction_id ) );
+				// create() syncs the new record with Stripe, so a subscription that already died
+				// there (e.g. its trial ended before a rerun got this far) comes back cancelled, and
+				// a cancelled record left by the webhook makes create() return null. Either way,
+				// clear the reference and bump the attempt counter so the next run creates a fresh
+				// placeholder with a new idempotency key instead of migrating the member onto a
+				// dead subscription.
+				if ( empty( $placeholder ) || 'active' !== $placeholder->get_status() ) {
+					update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_attempt', (int) get_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_attempt', true ) + 1 );
+					delete_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_transaction_id' );
+					return pmpro_deprecated_gateway_subscription_result( 'needs_review', 'Stripe subscription ' . $transaction_id . ' for ' . $subscription_description . ( empty( $placeholder ) ? ' could not be saved as a PMPro subscription' : ' is no longer active at Stripe' ) . ', so the member was not migrated onto it. Run the migration again to create a fresh Stripe placeholder, and verify ' . $transaction_id . ' in Stripe.', 'migrated_to_stripe', array( 'new_subscription_transaction_id' => $transaction_id ) );
 				}
 
 				update_pmpro_subscription_meta( $subscription_id, 'deprecated_gateway_stripe_subscription_id', $placeholder->get_id() );
-				update_pmpro_subscription_meta( $placeholder->get_id(), 'deprecated_gateway_old_subscription_id', $subscription_id );
-				pmpro_deprecated_gateway_flag_needs_payment_method( $placeholder->get_id() );
+			}
+		}
 
-				// Billing limits do not count a subscription's initial order, but a
-				// migrated subscription never has one. Record a $0 migration order so
-				// the remaining-payment count is enforced exactly. The lookup mirrors
-				// billing limit enforcement, which only counts successful orders.
-				if ( ! empty( $placeholder->get_billing_limit() ) && empty( $placeholder->get_orders( array( 'status' => 'success', 'limit' => 1 ) ) ) ) {
-					$bridge_order                              = new MemberOrder();
-					$bridge_order->user_id                     = $subscription->get_user_id();
-					$bridge_order->membership_id               = $subscription->get_membership_level_id();
-					$bridge_order->gateway                     = 'stripe';
-					$bridge_order->gateway_environment         = $environment;
-					$bridge_order->subscription_transaction_id = $transaction_id;
-					$bridge_order->total                       = 0;
-					$bridge_order->status                      = 'success';
-					$bridge_order->notes                       = 'Deprecated gateway migration: stands in for the original checkout order of ' . $gateway . ' ' . $subscription_description . ' so the remaining billing limit of ' . (int) $placeholder->get_billing_limit() . ' is enforced.';
-					if ( ! $bridge_order->saveOrder() ) {
-						// Reruns never reach this branch again once the placeholder exists,
-						// so a silent failure here would permanently under-enforce the limit.
-						$bridge_note         = ' Could not save the $0 billing limit order, so the billing limit may allow one extra payment; review this subscription\'s billing limit in PMPro.';
-						$bridge_needs_review = true;
-					}
+		if ( ! $dry_run && ! empty( $placeholder ) ) {
+			// Per-placeholder bookkeeping, kept outside the creation block so a rerun after a crash
+			// between saving the placeholder reference and this point still completes it. The
+			// back-reference doubles as the "already flagged" marker so a member who has since
+			// added a payment method is not flagged again.
+			if ( empty( get_pmpro_subscription_meta( $placeholder->get_id(), 'deprecated_gateway_old_subscription_id', true ) ) ) {
+				pmpro_deprecated_gateway_flag_needs_payment_method( $placeholder->get_id() );
+				update_pmpro_subscription_meta( $placeholder->get_id(), 'deprecated_gateway_old_subscription_id', $subscription_id );
+			}
+
+			// Billing limits do not count a subscription's initial order, but a
+			// migrated subscription never has one. Record a $0 migration order so
+			// the remaining-payment count is enforced exactly. The lookup mirrors
+			// billing limit enforcement, which only counts successful orders.
+			if ( ! empty( $placeholder->get_billing_limit() ) && empty( $placeholder->get_orders( array( 'status' => 'success', 'limit' => 1 ) ) ) ) {
+				$bridge_order                              = new MemberOrder();
+				$bridge_order->user_id                     = $subscription->get_user_id();
+				$bridge_order->membership_id               = $subscription->get_membership_level_id();
+				$bridge_order->gateway                     = 'stripe';
+				$bridge_order->gateway_environment         = $environment;
+				$bridge_order->subscription_transaction_id = $placeholder->get_subscription_transaction_id();
+				$bridge_order->total                       = 0;
+				$bridge_order->status                      = 'success';
+				$bridge_order->notes                       = 'Deprecated gateway migration: stands in for the original checkout order of ' . $gateway . ' ' . $subscription_description . ' so the remaining billing limit of ' . (int) $placeholder->get_billing_limit() . ' is enforced.';
+				if ( ! $bridge_order->saveOrder() ) {
+					// Reruns only retry this while the old subscription is still active, so a
+					// silent failure here could permanently under-enforce the limit.
+					$bridge_note         = ' Could not save the $0 billing limit order, so the billing limit may allow one extra payment; review this subscription\'s billing limit in PMPro.';
+					$bridge_needs_review = true;
 				}
 			}
 		}
@@ -903,26 +1094,48 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	// Shared CSV fields for the final outcomes below.
 	$handoff_date = empty( $handoff_timestamp ) ? '' : gmdate( 'Y-m-d', $handoff_timestamp );
 
+	// Surface the billing terms copied to Stripe in the log so admins can sanity check them
+	// (e.g. sites that add tax at checkout). A real run reports the placeholder, which reflects
+	// the Stripe price after sync; a dry run only has the old subscription's stored terms.
+	$stored_amount = $subscription->get_billing_amount();
+	$billing_terms = '';
+	if ( $use_stripe ) {
+		if ( ! $dry_run && ! empty( $placeholder ) ) {
+			$billing_terms = ' at ' . $placeholder->get_cost_text();
+		} elseif ( empty( $stored_amount ) ) {
+			// get_billing_amount() returns a float, so 0.00 is the "missing" value; the Stripe
+			// method falls back to the level's billing amount in that case.
+			$billing_terms = ' at the level\'s current billing price';
+		} else {
+			$billing_terms = ' at ' . $subscription->get_cost_text();
+		}
+	}
+
 	// A dry run reaching this point is always a fresh migration: mid-migration
 	// subscriptions returned earlier, so $placeholder is null and
 	// $handoff_timestamp is set.
 	if ( $dry_run ) {
-		$outcome = $email_needs_review ? 'needs_review' : 'complete';
+		$outcome = ( $email_needs_review || '' !== $manual_cancel_note_dry ) ? 'needs_review' : 'complete';
 		if ( $use_stripe ) {
-			return pmpro_deprecated_gateway_subscription_result( $outcome, 'would migrate ' . $subscription_description . ' to a new Stripe placeholder subscription (no payment method, trial ending ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ( empty( $remaining_payments ) ? '' : ', remaining billing limit of ' . $remaining_payments ) . ') and cancel the old gateway subscription.' . $email_note, 'migrated_to_stripe', array( 'handoff_date' => $handoff_date, 'email_sent' => $email_sent_status ) );
+			return pmpro_deprecated_gateway_subscription_result( $outcome, 'would migrate ' . $subscription_description . ' to a new Stripe placeholder subscription' . $billing_terms . ' (no payment method, trial ending ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ( empty( $remaining_payments ) ? '' : ', remaining billing limit of ' . $remaining_payments ) . ') and cancel the old gateway subscription.' . $handoff_note . $manual_cancel_note_dry . $email_note, 'migrated_to_stripe', array( 'handoff_date' => $handoff_date, 'email_sent' => $email_sent_status ) );
 		}
-		return pmpro_deprecated_gateway_subscription_result( $outcome, ( $expire_this_subscription ? 'missed payment: would set' : 'would set' ) . ' the membership expiration date for ' . $subscription_description . ' to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' and cancel the old gateway subscription.' . $email_note, 'membership_expired', array( 'handoff_date' => $handoff_date, 'email_sent' => $email_sent_status ) );
+		return pmpro_deprecated_gateway_subscription_result( $outcome, ( $expire_this_subscription ? 'missed payment: would set' : 'would set' ) . ' the membership expiration date for ' . $subscription_description . ' to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' and cancel the old gateway subscription.' . $handoff_note . $manual_cancel_note_dry . $email_note, 'membership_expired', array( 'handoff_date' => $handoff_date, 'email_sent' => $email_sent_status ) );
 	}
 
-	if ( ! $subscription->cancel_at_gateway() ) {
+	$cancelled = pmpro_deprecated_gateway_cancel_old_subscription( $subscription, $gateway );
+	if ( false === $cancelled ) {
 		return pmpro_deprecated_gateway_subscription_result( 'needs_review', ( $expire_this_subscription ? 'Missed payment: set the membership expiration date for ' . $subscription_description . ', but could not confirm cancellation' : 'Could not confirm cancellation of ' . $subscription_description ) . ' at the gateway. Verify this subscription in the gateway; an error email was sent to the admin.' . $bridge_note . $email_note, $use_stripe ? 'migrated_to_stripe' : 'membership_expired', array( 'handoff_date' => $handoff_date, 'new_subscription_id' => ( $use_stripe && ! empty( $placeholder ) ) ? $placeholder->get_id() : '', 'new_subscription_transaction_id' => $use_stripe ? $transaction_id : '', 'email_sent' => $email_sent_status ) );
 	}
 
-	$outcome = ( $email_needs_review || $bridge_needs_review ) ? 'needs_review' : 'complete';
+	// Gateways that cannot cancel automatically leave the old subscription active at the gateway.
+	$manual_cancel_note = ( 'manual' === $cancelled ) ? pmpro_deprecated_gateway_get_manual_cancel_note( $gateway ) : '';
+	$cancel_phrase      = ( 'manual' === $cancelled ) ? ' and marked the old gateway subscription cancelled.' : ' and cancelled the old gateway subscription.';
+
+	$outcome = ( $email_needs_review || $bridge_needs_review || '' !== $manual_cancel_note ) ? 'needs_review' : 'complete';
 	if ( $use_stripe ) {
-		return pmpro_deprecated_gateway_subscription_result( $outcome, 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note, 'migrated_to_stripe', array( 'handoff_date' => $handoff_date, 'new_subscription_id' => $placeholder->get_id(), 'new_subscription_transaction_id' => $transaction_id, 'email_sent' => $email_sent_status ) );
+		return pmpro_deprecated_gateway_subscription_result( $outcome, 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . $billing_terms . $cancel_phrase . $handoff_note . $manual_cancel_note . $bridge_note . $email_note, 'migrated_to_stripe', array( 'handoff_date' => $handoff_date, 'new_subscription_id' => $placeholder->get_id(), 'new_subscription_transaction_id' => $transaction_id, 'email_sent' => $email_sent_status ) );
 	}
-	return pmpro_deprecated_gateway_subscription_result( $outcome, ( $expire_this_subscription ? 'Missed payment: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' and cancelled the old gateway subscription.' . $bridge_note . $email_note, 'membership_expired', array( 'handoff_date' => $handoff_date, 'email_sent' => $email_sent_status ) );
+	return pmpro_deprecated_gateway_subscription_result( $outcome, ( $expire_this_subscription ? 'Missed payment: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . $cancel_phrase . $handoff_note . $manual_cancel_note . $bridge_note . $email_note, 'membership_expired', array( 'handoff_date' => $handoff_date, 'email_sent' => $email_sent_status ) );
 }
 
 /**
@@ -935,9 +1148,11 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
  * @since TBD
  *
  * @param string $gateway Gateway slug.
+ * @param bool   $cancel_pending_confirmed Whether the admin confirmed that subscriptions this
+ *               workflow could only mark cancelled in PMPro were cancelled at the gateway.
  * @return true|WP_Error
  */
-function pmpro_deprecated_gateway_cleanup_gateway( $gateway ) {
+function pmpro_deprecated_gateway_cleanup_gateway( $gateway, $cancel_pending_confirmed = false ) {
 	$gateway = sanitize_key( $gateway );
 
 	if ( ! in_array( $gateway, pmpro_get_deprecated_gateways(), true ) ) {
@@ -950,6 +1165,12 @@ function pmpro_deprecated_gateway_cleanup_gateway( $gateway ) {
 
 	if ( $gateway === get_option( 'pmpro_gateway' ) ) {
 		return new WP_Error( 'pmpro_deprecated_gateway_cleanup_no_replacement', __( 'A different gateway must be active before this gateway can be removed.', 'paid-memberships-pro' ) );
+	}
+
+	// The Add PayPal Express Add On offers this gateway at checkout without it being the active
+	// gateway, so it has no subscriptions of its own to count. Same detection as the gateway table.
+	if ( 'paypalexpress' === $gateway && function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
+		return new WP_Error( 'pmpro_deprecated_gateway_cleanup_add_on_active', __( 'The Add PayPal Express Add On is active and still offers this gateway at checkout. Deactivate it before removing gateway data.', 'paid-memberships-pro' ) );
 	}
 
 	$counts = pmpro_deprecated_gateway_get_subscription_counts( $gateway );
@@ -982,6 +1203,25 @@ function pmpro_deprecated_gateway_cleanup_gateway( $gateway ) {
 		return new WP_Error( 'pmpro_deprecated_gateway_cleanup_blocked', __( 'A workflow is queued or running for this gateway. Wait for it to finish or stop it before removing gateway data.', 'paid-memberships-pro' ) );
 	}
 
+	// Subscriptions this workflow could only mark cancelled in PMPro may still be billing at the
+	// gateway, and the credentials deleted below are what the gateway's IPN/webhook handler
+	// needs to process the cancellations the admin was told to make. Hold cleanup until confirmed.
+	$cancel_pending = pmpro_deprecated_gateway_get_cancel_pending_count( $gateway );
+	if ( $cancel_pending > 0 ) {
+		if ( ! $cancel_pending_confirmed ) {
+			return new WP_Error(
+				'pmpro_deprecated_gateway_cleanup_cancel_pending',
+				sprintf(
+					// translators: %d: Number of subscriptions.
+					_n( '%d subscription was marked cancelled in Paid Memberships Pro but may still be active at the gateway. Cancel it in the gateway dashboard and confirm before removing gateway data.', '%d subscriptions were marked cancelled in Paid Memberships Pro but may still be active at the gateway. Cancel them in the gateway dashboard and confirm before removing gateway data.', $cancel_pending, 'paid-memberships-pro' ),
+					$cancel_pending
+				)
+			);
+		}
+		pmpro_deprecated_gateway_clear_cancel_pending( $gateway );
+		pmpro_deprecated_gateway_log( 'Administrator confirmed that ' . $cancel_pending . ' ' . $gateway . ' subscription(s) marked cancelled in PMPro were cancelled at the gateway.' );
+	}
+
 	delete_option( 'pmpro_deprecated_gateway_state_' . $gateway . '_live' );
 	delete_option( 'pmpro_deprecated_gateway_state_' . $gateway . '_sandbox' );
 
@@ -995,6 +1235,10 @@ function pmpro_deprecated_gateway_cleanup_gateway( $gateway ) {
 	if ( in_array( $gateway, $shared_paypal_gateways, true ) ) {
 		if ( empty( array_intersect( $shared_paypal_gateways, $undeprecated_gateways ) ) && ! in_array( get_option( 'pmpro_gateway' ), $shared_paypal_gateways, true ) ) {
 			$option_names = array( 'gateway_email', 'apiusername', 'apipassword', 'apisignature', 'paypalexpress_skip_confirmation' );
+		}
+		// Website Payments Pro also stored 3-D Secure (Cardinal) credentials that only it reads.
+		if ( 'paypalwpp' === $gateway ) {
+			$option_names = array_merge( $option_names, array( 'paypal_enable_3dsecure', 'paypal_cardinal_apikey', 'paypal_cardinal_apiidentifier', 'paypal_cardinal_orgunitid', 'paypal_cardinal_merchantid', 'paypal_cardinal_processorid' ) );
 		}
 	} else {
 		switch ( $gateway ) {
@@ -1039,7 +1283,19 @@ function pmpro_deprecated_gateway_cleanup_gateway( $gateway ) {
  */
 function pmpro_deprecated_gateway_flag_needs_payment_method( $subscription_id ) {
 	update_pmpro_subscription_meta( (int) $subscription_id, 'deprecated_gateway_needs_payment_method', time() );
-	delete_transient( 'pmpro_deprecated_gateway_needs_pm_count' );
+	// Cheap marker so sites that never migrated a subscription skip the count query entirely.
+	update_option( 'pmpro_deprecated_gateway_migrated_subscriptions', 1 );
+	pmpro_deprecated_gateway_delete_needs_payment_method_count_cache();
+}
+
+/**
+ * Invalidate the cached "awaiting payment method" counts for both environments.
+ *
+ * @since TBD
+ */
+function pmpro_deprecated_gateway_delete_needs_payment_method_count_cache() {
+	delete_transient( 'pmpro_deprecated_gateway_needs_pm_count_live' );
+	delete_transient( 'pmpro_deprecated_gateway_needs_pm_count_sandbox' );
 }
 
 /**
@@ -1052,7 +1308,7 @@ function pmpro_deprecated_gateway_flag_needs_payment_method( $subscription_id ) 
 function pmpro_deprecated_gateway_clear_needs_payment_method( $subscription_id ) {
 	delete_pmpro_subscription_meta( (int) $subscription_id, 'deprecated_gateway_needs_payment_method' );
 	delete_pmpro_subscription_meta( (int) $subscription_id, 'deprecated_gateway_needs_payment_method_checked' );
-	delete_transient( 'pmpro_deprecated_gateway_needs_pm_count' );
+	pmpro_deprecated_gateway_delete_needs_payment_method_count_cache();
 }
 
 /**
@@ -1070,9 +1326,13 @@ function pmpro_deprecated_gateway_clear_needs_payment_method( $subscription_id )
  * @param bool               $skip_throttle Whether to verify even if recently checked.
  *                           Use before acting on the flag in ways that are hard
  *                           to take back, like emailing the member.
+ * @param bool               $require_verification Return false unless Stripe positively
+ *                           confirmed there is no payment method. When the flag cannot be
+ *                           verified (environment mismatch, API error) callers that would
+ *                           email the member should not act on it.
  * @return bool
  */
-function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscription, $verify = true, $skip_throttle = false ) {
+function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscription, $verify = true, $skip_throttle = false, $require_verification = false ) {
 	if ( empty( $subscription ) || ! is_a( $subscription, 'PMPro_Subscription' ) ) {
 		return false;
 	}
@@ -1091,7 +1351,7 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
 
 	// Only call Stripe when the active API keys match this subscription's environment.
 	if ( $subscription->get_gateway_environment() !== pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) ) ) {
-		return true;
+		return ! $require_verification;
 	}
 
 	if ( ! $skip_throttle ) {
@@ -1102,11 +1362,12 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
 	}
 
 	if ( ! class_exists( 'PMProGateway_stripe' ) || ! method_exists( 'PMProGateway_stripe', 'subscription_has_payment_method' ) ) {
-		return true;
+		return ! $require_verification;
 	}
 
-	$stripe_gateway = new PMProGateway_stripe( 'stripe' );
-	if ( true === $stripe_gateway->subscription_has_payment_method( $subscription ) ) {
+	$stripe_gateway     = new PMProGateway_stripe( 'stripe' );
+	$has_payment_method = $stripe_gateway->subscription_has_payment_method( $subscription );
+	if ( true === $has_payment_method ) {
 		pmpro_deprecated_gateway_clear_needs_payment_method( $subscription->get_id() );
 		return false;
 	}
@@ -1114,6 +1375,9 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
 	// No payment method, or the API call failed. Keep the flag and let the
 	// throttle prevent hammering Stripe.
 	update_pmpro_subscription_meta( $subscription->get_id(), 'deprecated_gateway_needs_payment_method_checked', time() );
+	if ( is_wp_error( $has_payment_method ) ) {
+		return ! $require_verification;
+	}
 	return true;
 }
 
@@ -1129,17 +1393,28 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
 function pmpro_deprecated_gateway_get_needs_payment_method_count() {
 	global $wpdb;
 
-	$count = get_transient( 'pmpro_deprecated_gateway_needs_pm_count' );
+	// This runs on every request through email template registration, so sites that never
+	// migrated a subscription must not pay for the query.
+	if ( empty( get_option( 'pmpro_deprecated_gateway_migrated_subscriptions' ) ) ) {
+		return 0;
+	}
+
+	// Scoped to the current environment so a sandbox test run does not leave a permanent notice
+	// once the site is back in live mode.
+	$environment = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
+	$count       = get_transient( 'pmpro_deprecated_gateway_needs_pm_count_' . $environment );
 	if ( false === $count ) {
+		$environment_condition = 'live' === $environment ? "s.gateway_environment = 'live'" : "s.gateway_environment != 'live'";
 		$count = (int) $wpdb->get_var(
 			"SELECT COUNT(*)
 				FROM {$wpdb->pmpro_subscriptions} s
 				INNER JOIN {$wpdb->pmpro_subscriptionmeta} sm
 					ON s.id = sm.pmpro_subscription_id
 					AND sm.meta_key = 'deprecated_gateway_needs_payment_method'
-				WHERE s.status = 'active'"
+				WHERE s.status = 'active'
+					AND {$environment_condition}"
 		);
-		set_transient( 'pmpro_deprecated_gateway_needs_pm_count', $count, 15 * MINUTE_IN_SECONDS );
+		set_transient( 'pmpro_deprecated_gateway_needs_pm_count_' . $environment, $count, 15 * MINUTE_IN_SECONDS );
 	}
 
 	return (int) $count;
@@ -1159,6 +1434,14 @@ function pmpro_deprecated_gateway_payment_method_updated( $order ) {
 
 	$subscription = $order->get_subscription();
 	if ( empty( $subscription ) ) {
+		return;
+	}
+
+	// A payment on an old gateway subscription this workflow already cancelled means the gateway is
+	// still billing the member. Record it so cleanup is held and the admin can find it in the log.
+	if ( 'cancelled' === $subscription->get_status() && 'stripe' !== $subscription->get_gateway() && get_pmpro_subscription_meta( $subscription->get_id(), 'deprecated_gateway_handoff_date', true ) ) {
+		update_pmpro_subscription_meta( $subscription->get_id(), 'deprecated_gateway_cancel_pending', time() );
+		pmpro_deprecated_gateway_log( 'Received a payment at the old gateway for cancelled ' . pmpro_deprecated_gateway_get_subscription_log_description( $subscription ) . ' after it was migrated. The gateway is still billing this member; cancel the subscription in the gateway dashboard.' );
 		return;
 	}
 
@@ -1227,7 +1510,9 @@ function pmpro_deprecated_gateway_swap_recurring_payment_reminder( $send_email, 
 		return $send_email;
 	}
 
-	if ( ! pmpro_deprecated_gateway_subscription_needs_payment_method( $subscription, true, true ) ) {
+	// Only swap in the urgent email when Stripe positively confirms there is no payment method;
+	// on an environment mismatch or API error the member gets the normal reminder instead.
+	if ( ! pmpro_deprecated_gateway_subscription_needs_payment_method( $subscription, true, true, true ) ) {
 		return $send_email;
 	}
 
@@ -1418,9 +1703,18 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 		}
 	}
 
+	if ( $has_actions && ! $is_running ) {
+		// A batch that was mid-run when the workflow was stopped still queues one more action;
+		// schedule() refuses until it drains, so do not offer Start yet.
+		$start_blockers[] = __( 'The last batch of the previous workflow is still finishing.', 'paid-memberships-pro' );
+	}
+
 	$cleanup_blockers = array();
 	if ( $paused ) {
 		$cleanup_blockers[] = __( 'Gateway data cannot be removed while Paid Memberships Pro services are paused.', 'paid-memberships-pro' );
+	}
+	if ( 'paypalexpress' === $gateway && function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
+		$cleanup_blockers[] = __( 'The Add PayPal Express Add On is active and still offers this gateway at checkout. Deactivate it before removing gateway data.', 'paid-memberships-pro' );
 	}
 	if ( $gateway === $active ) {
 		$cleanup_blockers[] = __( 'Gateway data cannot be removed while this is the active payment gateway.', 'paid-memberships-pro' );
@@ -1476,10 +1770,17 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 		'stripe_blockers'  => $stripe_blockers,
 		'workflow'         => $workflow,
 		'is_running'       => $is_running,
-		'can_start'        => ! $is_running && empty( $start_blockers ),
+		// The panel keeps polling while this is true so the start blocker above clears itself.
+		'has_actions'      => $has_actions,
+		'can_start'        => ! $is_running && ! $has_actions && empty( $start_blockers ),
 		'start_blockers'   => $start_blockers,
 		'can_cleanup'      => ! $is_running && empty( $cleanup_blockers ),
 		'cleanup_blockers' => $cleanup_blockers,
+		// Non-empty when this gateway cannot cancel subscriptions automatically.
+		'manual_cancel_reason' => pmpro_deprecated_gateway_get_manual_cancel_reason( $gateway ),
+		// Subscriptions marked cancelled in PMPro that may still bill at the gateway; cleanup
+		// requires the admin to confirm they were cancelled there.
+		'cancel_pending'   => pmpro_deprecated_gateway_get_cancel_pending_count( $gateway ),
 		// The full list of this gateway's run CSVs, surfaced at the cleanup step so
 		// admins have one place to download them (cleanup keeps them as a record).
 		// Skipped while a run is active to avoid globbing the logs dir on every poll.
@@ -1513,7 +1814,7 @@ function pmpro_deprecated_gateway_ajax() {
 			$send_email      = empty( $_POST['skip_email'] );
 			$expire_past_due = ! empty( $_POST['expire_past_due'] );
 			$dry_run         = ! empty( $_POST['dry_run'] );
-			$result          = pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email, $expire_past_due, $dry_run );
+			$result          = pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email, $expire_past_due, $dry_run, ! empty( $_POST['manual_cancel_acknowledged'] ) );
 			$message         = $dry_run ? __( 'Dry run started. No changes will be made.', 'paid-memberships-pro' ) : __( 'Migration workflow started.', 'paid-memberships-pro' );
 			break;
 		case 'stop':
@@ -1521,13 +1822,13 @@ function pmpro_deprecated_gateway_ajax() {
 			$message = __( 'Workflow stopped.', 'paid-memberships-pro' );
 			break;
 		case 'cleanup':
-			$result   = pmpro_deprecated_gateway_cleanup_gateway( $gateway );
+			$result   = pmpro_deprecated_gateway_cleanup_gateway( $gateway, ! empty( $_POST['cancel_pending_confirmed'] ) );
 			$message  = __( 'Deprecated gateway data has been removed from this site.', 'paid-memberships-pro' );
 			$redirect = add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'deprecated_gateway_removed' => $gateway ), admin_url( 'admin.php' ) );
 			break;
 		case 'activate_stripe':
 			$environment = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
-			if ( ! class_exists( 'PMProGateway_stripe' ) || ! PMProGateway_stripe::has_connect_credentials( $environment ) ) {
+			if ( ! class_exists( 'PMProGateway_stripe' ) || ! ( PMProGateway_stripe::has_connect_credentials( $environment ) || ( method_exists( 'PMProGateway_stripe', 'has_credentials' ) && ( new PMProGateway_stripe( 'stripe' ) )->has_credentials() ) ) ) {
 				$result = new WP_Error( 'pmpro_deprecated_gateway_stripe_not_connected', __( 'Connect to Stripe before making it the active gateway.', 'paid-memberships-pro' ) );
 			} else {
 				update_option( 'pmpro_gateway', 'stripe' );
@@ -1714,6 +2015,25 @@ function pmpro_deprecated_gateway_csv_init( $run_id ) {
 }
 
 /**
+ * Neutralize spreadsheet formula triggers in a CSV cell.
+ *
+ * Display names and emails are member-controlled, so a value starting with a
+ * formula character could execute when the CSV is opened in a spreadsheet.
+ *
+ * @since TBD
+ *
+ * @param mixed $value Cell value.
+ * @return string
+ */
+function pmpro_deprecated_gateway_csv_cell( $value ) {
+	$value = (string) $value;
+	if ( '' !== $value && preg_match( '/^[=+\-@\t\r]/', $value ) ) {
+		$value = "'" . $value;
+	}
+	return $value;
+}
+
+/**
  * Append one processed subscription to a run's migration CSV.
  *
  * Batches run sequentially (Action Scheduler concurrency is 1), so appending
@@ -1767,7 +2087,7 @@ function pmpro_deprecated_gateway_csv_append( $run_id, $subscription_id, $result
 
 	$handle = fopen( $path, 'a' );
 	if ( $handle ) {
-		fputcsv( $handle, $row, ',', '"', '\\' );
+		fputcsv( $handle, array_map( 'pmpro_deprecated_gateway_csv_cell', $row ), ',', '"', '\\' );
 		fclose( $handle );
 	}
 }
@@ -1836,10 +2156,71 @@ function pmpro_deprecated_gateway_get_csv_files( $gateway ) {
  */
 function pmpro_deprecated_gateway_render_panel( $gateway ) {
 	$gateway = sanitize_key( $gateway );
-	$data    = pmpro_deprecated_gateway_get_status_data( $gateway );
 
 	$gateway_names = pmpro_gateways();
 	$gateway_name  = empty( $gateway_names[ $gateway ] ) ? $gateway : $gateway_names[ $gateway ];
+
+	// The migration tool is opt-in. By default this page shows only the deprecation notice and a
+	// button that adds the query flag; the status queries, polling, and inline script below do not
+	// load until an admin asks for the tool.
+	$tool_url = add_query_arg(
+		array(
+			'page'                                => 'pmpro-paymentsettings',
+			'edit_gateway'                        => $gateway,
+			'pmpro_deprecated_gateway_migration' => 1,
+		),
+		admin_url( 'admin.php' )
+	);
+	if ( empty( $_REQUEST['pmpro_deprecated_gateway_migration'] ) ) {
+		// Surface unfinished work so an admin returning to this page can find it.
+		$environment    = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
+		$state          = pmpro_deprecated_gateway_get_state( $gateway, $environment );
+		$cancel_pending = pmpro_deprecated_gateway_get_cancel_pending_count( $gateway );
+		$status_line    = '';
+		if ( ! empty( $state['status'] ) && in_array( $state['status'], array( 'running', 'stopped' ), true ) ) {
+			$status_line = sprintf(
+				'running' === $state['status']
+					// translators: %1$d: number processed, %2$d: total number.
+					? __( 'A migration is in progress: %1$d of %2$d subscriptions processed.', 'paid-memberships-pro' )
+					// translators: %1$d: number processed, %2$d: total number.
+					: __( 'A migration was stopped after processing %1$d of %2$d subscriptions.', 'paid-memberships-pro' ),
+				empty( $state['processed'] ) ? 0 : (int) $state['processed'],
+				empty( $state['total'] ) ? 0 : (int) $state['total']
+			);
+		}
+		if ( $cancel_pending > 0 ) {
+			$status_line .= ' ' . sprintf(
+				// translators: %d: number of subscriptions.
+				_n( '%d subscription still needs to be cancelled in the gateway dashboard.', '%d subscriptions still need to be cancelled in the gateway dashboard.', $cancel_pending, 'paid-memberships-pro' ),
+				$cancel_pending
+			);
+		}
+		?>
+		<div class="pmpro_message pmpro_error">
+			<p><strong><?php esc_html_e( 'Notice: You Are Using a Deprecated Gateway', 'paid-memberships-pro' ); ?></strong></p>
+			<p>
+				<?php
+				// translators: %s is the gateway name.
+				printf( esc_html__( 'The %s gateway has been deprecated and will not receive updates or support. To ensure your payments continue running smoothly, switch to a supported payment gateway.', 'paid-memberships-pro' ), esc_html( $gateway_name ) );
+				?>
+			</p>
+			<?php if ( '' !== trim( $status_line ) ) { ?>
+				<p><strong><?php echo esc_html( trim( $status_line ) ); ?></strong></p>
+			<?php } ?>
+			<p>
+				<a class="button button-primary" href="<?php echo esc_url( $tool_url ); ?>"><?php esc_html_e( 'Migrate Subscriptions Off This Gateway', 'paid-memberships-pro' ); ?></a>
+				<?php if ( 'paypalexpress' === $gateway ) { ?>
+					<a class="button button-secondary" href="https://www.paidmembershipspro.com/paypal-express-deprecation-hub/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=paypal-express-deprecation" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn More', 'paid-memberships-pro' ); ?></a>
+				<?php } ?>
+				<a class="button button-secondary" href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'About Deprecated Gateways', 'paid-memberships-pro' ); ?></a>
+				<a class="button button-secondary" href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'How to Switch Payment Gateways', 'paid-memberships-pro' ); ?></a>
+			</p>
+		</div>
+		<?php
+		return;
+	}
+
+	$data = pmpro_deprecated_gateway_get_status_data( $gateway );
 
 	$log_url = add_query_arg(
 		array(
@@ -1852,12 +2233,13 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 	$checkout_template_url = add_query_arg( array( 'page' => 'pmpro-emailtemplates', 'edit' => 'deprecated_gateway_checkout_required' ), admin_url( 'admin.php' ) );
 
 	// For the "activate a new gateway" step, offer the same Stripe Connect flow used in the setup wizard.
-	$stripe_connected   = class_exists( 'PMProGateway_stripe' ) && PMProGateway_stripe::has_connect_credentials( $data['environment'] );
+	// Stripe Connect or legacy API keys both work for migrations; has_credentials() checks the current environment.
+	$stripe_connected   = class_exists( 'PMProGateway_stripe' ) && ( PMProGateway_stripe::has_connect_credentials( $data['environment'] ) || ( method_exists( 'PMProGateway_stripe', 'has_credentials' ) && ( new PMProGateway_stripe( 'stripe' ) )->has_credentials() ) );
 	$stripe_connect_url = add_query_arg(
 		array(
 			'action'              => 'authorize',
 			'gateway_environment' => 'live' === $data['environment'] ? 'live' : 'test',
-			'return_url'          => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => $gateway, 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
+			'return_url'          => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => $gateway, 'pmpro_deprecated_gateway_migration' => 1, 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
 		),
 		apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' )
 	);
@@ -1899,6 +2281,10 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'confirm_start_noemail'   => __( 'Members will NOT be emailed.', 'paid-memberships-pro' ),
 			'confirm_start_stripe'    => __( 'Members who do not add a payment method before their next payment date will have their membership cancelled.', 'paid-memberships-pro' ),
 			'confirm_start_expire_past_due' => __( 'Subscriptions with a missed payment (a next payment date in the past) will be cancelled and their memberships expired.', 'paid-memberships-pro' ),
+			'confirm_start_manual'    => __( 'This gateway cannot cancel subscriptions automatically: each old subscription will only be marked cancelled in Paid Memberships Pro, and you must cancel it in the gateway dashboard yourself.', 'paid-memberships-pro' ),
+			// translators: %s: number of subscriptions.
+			'cancel_pending_ack'      => __( '%s subscriptions were marked cancelled in Paid Memberships Pro but may still be active at the gateway. I have cancelled all of them in the gateway dashboard.', 'paid-memberships-pro' ),
+			'cancel_pending_ack_one'  => __( '1 subscription was marked cancelled in Paid Memberships Pro but may still be active at the gateway. I have cancelled it in the gateway dashboard.', 'paid-memberships-pro' ),
 			'confirm_continue'        => __( 'Continue?', 'paid-memberships-pro' ),
 			'download_log'            => __( 'Download Migration Log', 'paid-memberships-pro' ),
 			'download_csv'            => __( 'Download Migration CSV', 'paid-memberships-pro' ),
@@ -2002,6 +2388,9 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					<?php if ( $stripe_connected ) { ?>
 						<button type="button" class="button button-primary" id="pmpro-dgs-activate-stripe"><?php esc_html_e( 'Make Stripe the Active Gateway', 'paid-memberships-pro' ); ?></button>
 						<span class="description"><?php esc_html_e( 'Your Stripe account is already connected in this environment.', 'paid-memberships-pro' ); ?></span>
+					<?php } elseif ( ! current_user_can( 'manage_options' ) ) { ?>
+						<?php // The Stripe Connect return handler requires manage_options, so a lesser payment settings user would come back with the credentials silently discarded. ?>
+						<span class="description"><?php esc_html_e( 'Connecting to Stripe requires an administrator. Ask an administrator to connect Stripe from the Stripe gateway settings, then return here.', 'paid-memberships-pro' ); ?></span>
 					<?php } else { ?>
 						<a href="<?php echo esc_url( $stripe_connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 					<?php } ?>
@@ -2023,6 +2412,21 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				</div>
 			</div>
 			<div class="pmpro-dgs-workflow" id="pmpro-dgs-workflow"></div>
+			<?php if ( '' !== $data['manual_cancel_reason'] ) { ?>
+				<div class="pmpro_message pmpro_alert" id="pmpro-dgs-manual-cancel">
+					<p>
+						<strong><?php esc_html_e( 'Manual cancellation required.', 'paid-memberships-pro' ); ?></strong>
+						<?php echo esc_html( $data['manual_cancel_reason'] ); ?>
+						<?php esc_html_e( 'Each processed subscription is marked cancelled in Paid Memberships Pro and recorded as "needs review", but it stays active at the gateway until you cancel it in the gateway dashboard. Use the Migration CSV to work through the list; members are billed twice until each one is cancelled.', 'paid-memberships-pro' ); ?>
+					</p>
+					<p id="pmpro-dgs-manual-ack-row">
+						<label for="pmpro-dgs-manual-ack">
+							<input type="checkbox" id="pmpro-dgs-manual-ack" />
+							<?php esc_html_e( 'I understand that I must cancel each subscription in the gateway dashboard myself. A real migration cannot start until this is checked.', 'paid-memberships-pro' ); ?>
+						</label>
+					</p>
+				</div>
+			<?php } ?>
 			<div id="pmpro-dgs-finish" hidden>
 				<div id="pmpro-dgs-finish-other" hidden>
 					<p id="pmpro-dgs-finish-other-text"></p>
@@ -2034,6 +2438,12 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					<p><?php esc_html_e( 'All subscriptions have been migrated off this gateway. Removing gateway data permanently deletes this gateway\'s stored API credentials and stops loading the gateway. The migration log and Migration CSVs are kept as a record.', 'paid-memberships-pro' ); ?></p>
 					<p class="description"><?php esc_html_e( 'Migration CSVs for this gateway:', 'paid-memberships-pro' ); ?></p>
 					<ul class="pmpro-dgs-csv-list" id="pmpro-dgs-csv-list"></ul>
+					<p id="pmpro-dgs-cancel-pending" hidden>
+						<label for="pmpro-dgs-cancel-pending-ack">
+							<input type="checkbox" id="pmpro-dgs-cancel-pending-ack" />
+							<strong id="pmpro-dgs-cancel-pending-text"></strong>
+						</label>
+					</p>
 					<p>
 						<button type="button" class="button button-primary" id="pmpro-dgs-cleanup"><?php esc_html_e( 'Remove Gateway Data', 'paid-memberships-pro' ); ?></button>
 					</p>
@@ -2159,7 +2569,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 						notice( cfg.i18n.error_generic, true );
 						// Keep polling through transient request failures so one bad
 						// response doesn't freeze the progress display mid-migration.
-						if ( cfg.latest && cfg.latest.is_running ) {
+						if ( cfg.latest && ( cfg.latest.is_running || cfg.latest.has_actions ) ) {
 							clearTimeout( pollTimer );
 							pollTimer = setTimeout( function() { api( 'status' ); }, 4000 );
 						}
@@ -2291,9 +2701,23 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				}
 
 				$( 'pmpro-dgs-start' ).hidden = d.is_running || onStep3;
-				$( 'pmpro-dgs-start' ).disabled = ! d.can_start;
 				$( 'pmpro-dgs-stop' ).hidden = ! d.is_running;
-				$( 'pmpro-dgs-cleanup' ).disabled = ! d.can_cleanup;
+
+				// The manual-cancel acknowledgement only matters while Start is on screen, and a
+				// new real run must be acknowledged again.
+				if ( $( 'pmpro-dgs-manual-ack-row' ) ) {
+					$( 'pmpro-dgs-manual-ack-row' ).hidden = $( 'pmpro-dgs-start' ).hidden;
+					$( 'pmpro-dgs-manual-ack' ).disabled = d.is_running;
+					if ( d.is_running ) { $( 'pmpro-dgs-manual-ack' ).checked = false; }
+				}
+
+				// Cleanup needs an explicit confirmation while subscriptions this workflow could
+				// only mark cancelled in PMPro may still be active at the gateway.
+				var pending = d.cancel_pending || 0;
+				$( 'pmpro-dgs-cancel-pending' ).hidden = ! pending;
+				$( 'pmpro-dgs-cancel-pending-text' ).textContent = pending ? ( 1 === pending ? cfg.i18n.cancel_pending_ack_one : sprintf( cfg.i18n.cancel_pending_ack, pending ) ) : '';
+				if ( ! pending ) { $( 'pmpro-dgs-cancel-pending-ack' ).checked = false; }
+				updateCleanupButton();
 				$( 'pmpro-dgs-strategy' ).disabled = d.is_running;
 				$( 'pmpro-dgs-strategy' ).options[0].disabled = ! d.stripe_available;
 				if ( ! d.stripe_available && 'stripe' === $( 'pmpro-dgs-strategy' ).value ) {
@@ -2308,6 +2732,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				// (running or on the cleanup step) and keep the button label/styling in sync.
 				$( 'pmpro-dgs-realbar' ).hidden = $( 'pmpro-dgs-start' ).hidden;
 				updateDryRunMode( false );
+				updateStartButton();
 
 				var blockers = $( 'pmpro-dgs-blockers' );
 				blockers.textContent = '';
@@ -2323,10 +2748,30 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				}
 
 				clearTimeout( pollTimer );
-				if ( d.is_running ) {
+				// Keep polling while the last action of a finished or stopped run drains, so the
+				// "still finishing" start blocker clears without a reload.
+				if ( d.is_running || d.has_actions ) {
 					pollTimer = setTimeout( function() { api( 'status' ); }, 4000 );
 				}
 			}
+
+			// A real run on a gateway that cannot cancel automatically also needs the acknowledgement box.
+			function updateStartButton() {
+				var d = cfg.latest, ack = $( 'pmpro-dgs-manual-ack' );
+				var blocked = ! d || ! d.can_start;
+				if ( ! blocked && d.manual_cancel_reason && ! $( 'pmpro-dgs-dry-run' ).checked && ack && ! ack.checked ) { blocked = true; }
+				$( 'pmpro-dgs-start' ).disabled = blocked;
+			}
+			if ( $( 'pmpro-dgs-manual-ack' ) ) {
+				$( 'pmpro-dgs-manual-ack' ).addEventListener( 'change', updateStartButton );
+			}
+
+			function updateCleanupButton() {
+				var d = cfg.latest;
+				var pending = d ? ( d.cancel_pending || 0 ) : 0;
+				$( 'pmpro-dgs-cleanup' ).disabled = ! d || ! d.can_cleanup || ( pending && ! $( 'pmpro-dgs-cancel-pending-ack' ).checked );
+			}
+			$( 'pmpro-dgs-cancel-pending-ack' ).addEventListener( 'change', updateCleanupButton );
 
 			function updateDescription() {
 				var isStripe = 'stripe' === $( 'pmpro-dgs-strategy' ).value;
@@ -2351,7 +2796,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					} );
 				}
 			}
-			$( 'pmpro-dgs-dry-run' ).addEventListener( 'change', function() { updateDryRunMode( true ); } );
+			$( 'pmpro-dgs-dry-run' ).addEventListener( 'change', function() { updateDryRunMode( true ); updateStartButton(); } );
 
 			if ( $( 'pmpro-dgs-activate-stripe' ) ) {
 				$( 'pmpro-dgs-activate-stripe' ).addEventListener( 'click', function() {
@@ -2374,9 +2819,11 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					: sprintf( cfg.i18n.confirm_start, count, envLabel ) + ' ' +
 						( sendEmail ? cfg.i18n.confirm_start_email : cfg.i18n.confirm_start_noemail ) +
 						( isStripe ? ' ' + cfg.i18n.confirm_start_stripe : '' ) +
-						( expirePastDue ? ' ' + cfg.i18n.confirm_start_expire_past_due : '' ) + ' ' + cfg.i18n.confirm_continue;
+						( expirePastDue ? ' ' + cfg.i18n.confirm_start_expire_past_due : '' ) +
+						( d.manual_cancel_reason ? ' ' + cfg.i18n.confirm_start_manual : '' ) + ' ' + cfg.i18n.confirm_continue;
 				if ( window.confirm( text ) ) {
-					api( 'start', { strategy: $( 'pmpro-dgs-strategy' ).value, skip_email: sendEmail ? '' : '1', expire_past_due: expirePastDue ? '1' : '', dry_run: dryRun ? '1' : '' } );
+					var ack = $( 'pmpro-dgs-manual-ack' );
+					api( 'start', { strategy: $( 'pmpro-dgs-strategy' ).value, skip_email: sendEmail ? '' : '1', expire_past_due: expirePastDue ? '1' : '', dry_run: dryRun ? '1' : '', manual_cancel_acknowledged: ( ack && ack.checked ) ? '1' : '' } );
 				}
 			} );
 
@@ -2385,7 +2832,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			} );
 
 			$( 'pmpro-dgs-cleanup' ).addEventListener( 'click', function() {
-				if ( window.confirm( cfg.i18n.confirm_cleanup + ' ' + cfg.i18n.confirm_continue ) ) { api( 'cleanup' ); }
+				if ( window.confirm( cfg.i18n.confirm_cleanup + ' ' + cfg.i18n.confirm_continue ) ) { api( 'cleanup', { cancel_pending_confirmed: $( 'pmpro-dgs-cancel-pending-ack' ).checked ? '1' : '' } ); }
 			} );
 
 			render( cfg.initial );

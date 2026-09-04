@@ -3288,12 +3288,27 @@ class PMProGateway_stripe extends PMProGateway {
 			return new WP_Error( 'pmpro_stripe_migration_missing_product', __( 'Cannot find product for membership level.', 'paid-memberships-pro' ) );
 		}
 
+		// Old subscription rows can be missing billing terms (e.g. from the 3.0 subscriptions
+		// table migration); fall back to the level like the rest of PMPro does.
+		// get_billing_amount() returns a float, so 0.00 is the "missing" value.
 		$billing_amount = $old_subscription->get_billing_amount();
-		if ( '' === $billing_amount || null === $billing_amount ) {
+		if ( empty( $billing_amount ) ) {
 			$billing_amount = $level->billing_amount;
 		}
+		if ( empty( $billing_amount ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_no_billing_amount', __( 'Neither the subscription nor its membership level has a recurring billing amount to migrate.', 'paid-memberships-pro' ) );
+		}
+		$cycle_period = $old_subscription->get_cycle_period();
+		$cycle_number = $old_subscription->get_cycle_number();
+		if ( empty( $cycle_period ) || empty( $cycle_number ) ) {
+			$cycle_period = $level->cycle_period;
+			$cycle_number = $level->cycle_number;
+		}
+		if ( empty( $cycle_period ) || empty( $cycle_number ) ) {
+			return new WP_Error( 'pmpro_stripe_migration_not_recurring', __( 'Neither the subscription nor its membership level has a recurring billing cycle to migrate.', 'paid-memberships-pro' ) );
+		}
 
-		$price = $this->get_price_for_product( $product_id, $billing_amount, $old_subscription->get_cycle_period(), $old_subscription->get_cycle_number() );
+		$price = $this->get_price_for_product( $product_id, $billing_amount, $cycle_period, $cycle_number );
 		if ( is_string( $price ) ) {
 			return new WP_Error( 'pmpro_stripe_migration_missing_price', $price );
 		}
@@ -3311,11 +3326,6 @@ class PMProGateway_stripe extends PMProGateway {
 					'missing_payment_method' => 'cancel',
 				),
 			),
-			'description'    => sprintf(
-				// translators: %d: PMPro subscription ID.
-				__( 'PMPro deprecated gateway migration for subscription #%d', 'paid-memberships-pro' ),
-				$old_subscription->get_id()
-			),
 			'metadata'       => array(
 				'pmpro_user_id'             => (string) $old_subscription->get_user_id(),
 				'pmpro_membership_level_id' => (string) $old_subscription->get_membership_level_id(),
@@ -3325,16 +3335,21 @@ class PMProGateway_stripe extends PMProGateway {
 			),
 		);
 
-		$application_fee_percentage = $this->get_application_fee_percentage();
-		if ( ! empty( $application_fee_percentage ) ) {
-			$subscription_params['application_fee_percent'] = $application_fee_percentage;
-		}
+		// Same filter checkout applies, so site customizations (tax rates, coupons, metadata)
+		// carry over to migrated subscriptions. The application fee is not set here: like
+		// checkout, the invoice.created webhook adds it per invoice.
+		$subscription_params = apply_filters( 'pmpro_stripe_create_subscription_array', $subscription_params );
+		// Checkout sets trial_period_days, so callbacks written for it may add that key; Stripe
+		// rejects a request carrying both it and the trial_end this migration depends on.
+		unset( $subscription_params['trial_period_days'], $subscription_params['trial_from_plan'] );
 
 		try {
 			return Stripe_Subscription::create(
 				$subscription_params,
 				array(
-					'idempotency_key' => 'pmpro-deprecated-gateway-' . $old_subscription->get_gateway_environment() . '-' . $old_subscription->get_id() . '-' . (int) $args['attempt'],
+					// Site-scoped so two sites sharing one Stripe account cannot replay each other's
+					// requests; environment normalized to match the rest of the workflow.
+					'idempotency_key' => 'pmpro-deprecated-gateway-' . substr( md5( get_site_url() ), 0, 8 ) . '-' . ( 'live' === $old_subscription->get_gateway_environment() ? 'live' : 'sandbox' ) . '-' . $old_subscription->get_id() . '-' . (int) $args['attempt'],
 				)
 			);
 		} catch ( Stripe\Error\Base $e ) {
