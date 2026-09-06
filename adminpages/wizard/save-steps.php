@@ -11,6 +11,11 @@ function pmpro_init_save_wizard_data() {
 		return;
 	}
 
+	// Check that the current user can access the wizard.
+	if ( ! current_user_can( 'pmpro_wizard' ) ) {
+		wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'paid-memberships-pro' ) );
+	}
+
 	// Clear things up on the completed page.
 	if ( ! empty( $_REQUEST['step'] ) && $_REQUEST['step'] === 'done' ) {
 		delete_option( 'pmpro_wizard_collect_payment' );
