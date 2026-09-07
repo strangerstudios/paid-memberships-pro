@@ -143,6 +143,8 @@ class PMPro_Recurring_Actions {
 		$interval_end   = date( 'Y-m-d H:i:s', strtotime( "+{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
 
 		// look for memberships that are going to expire within one week (but we haven't emailed them within a week)
+		// User options are stored in usermeta with the blog prefix, so the
+		// expiration notice key has to match what update_user_option() writes.
 		$sqlQuery = $wpdb->prepare(
 			"SELECT DISTINCT
 						mu.user_id,
@@ -152,7 +154,7 @@ class PMPro_Recurring_Actions {
 						um.meta_value AS notice
 					FROM {$wpdb->pmpro_memberships_users} AS mu
 					LEFT JOIN {$wpdb->usermeta} AS um ON um.user_id = mu.user_id
-					AND um.meta_key = CONCAT( 'pmpro_expiration_notice_', mu.membership_id )
+					AND um.meta_key = CONCAT( %s, 'pmpro_expiration_notice_', mu.membership_id )
 				WHERE ( um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) < %s )
 					AND mu.status = 'active'
 					AND mu.enddate IS NOT NULL
@@ -162,6 +164,7 @@ class PMPro_Recurring_Actions {
 					AND mu.membership_id <> 0
 				ORDER BY mu.enddate
 				",
+			$wpdb->get_blog_prefix(),
 			$pmpro_email_days_before_expiration,
 			$today,
 			self::PMPRO_MAGIC_MIN_DATE,
@@ -247,8 +250,8 @@ class PMPro_Recurring_Actions {
 			}
 		}
 
-		// Update user meta so we don't email them again
-		update_user_meta( $user_id, 'pmpro_expiration_notice_' . $membership_id, current_time( 'Y-m-d H:i:s' ) );
+		// Update the user option so we don't email them again on this site.
+		update_user_option( $user_id, 'pmpro_expiration_notice_' . $membership_id, current_time( 'Y-m-d H:i:s' ) );
 	}
 
 	/**
@@ -371,8 +374,8 @@ class PMPro_Recurring_Actions {
 			$euser      = get_userdata( $user_id );
 			if ( ! empty( $euser ) ) {
 				$pmproemail->sendMembershipExpiredEmail( $euser, $membership_id );
-				// Delete the expiration notice for this membership
-				delete_user_meta( $user_id, 'pmpro_expiration_notice_' . $membership_id );
+				// Delete the expiration notice for this membership on this site
+				delete_user_option( $user_id, 'pmpro_expiration_notice_' . $membership_id );
 				if ( WP_DEBUG ) {
 					error_log( sprintf( __( 'Membership expired email sent to %s. ', 'paid-memberships-pro' ), $euser->user_email ) );
 				}

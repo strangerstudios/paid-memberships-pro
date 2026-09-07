@@ -460,6 +460,16 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.84' );
 	}
 
+	/**
+	 * Version 3.8.5
+	 * Migrate expiration notice user meta to per-site user options.
+	 */
+	require_once( PMPRO_DIR . '/includes/updates/upgrade_3_8_5.php' );
+	if ( $pmpro_db_version < 3.85 ) {
+		pmpro_upgrade_3_8_5();
+		update_option( 'pmpro_db_version', '3.85' );
+	}
+
 }
 
 function pmpro_db_delta() {
