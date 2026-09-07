@@ -4812,6 +4812,17 @@ button.pmpro_report_th_closed:before {
 		word-wrap: break-word;
 	}
 
+	/* Orders list expanded rows: each cell (including the primary cell) takes the full row width. Fixes #3713. */
+	.pmpro_admin-pmpro-orders .wp-list-table tr:not(.inline-edit-row):not(.no-items) td,
+	.pmpro_admin-pmpro-orders .wp-list-table tr:not(.inline-edit-row):not(.no-items) th {
+		flex: 0 1 100%;
+	}
+
+	.pmpro_admin-pmpro-orders .wp-list-table tr:not(.inline-edit-row):not(.no-items) td.column-primary,
+	.pmpro_admin-pmpro-orders .wp-list-table tr:not(.inline-edit-row):not(.no-items) th.column-primary {
+		flex: 1 1 100%;
+	}
+
 	.wrap.pmpro_admin .row-actions {
 		align-items: center;
 		color: #a7aaad;
