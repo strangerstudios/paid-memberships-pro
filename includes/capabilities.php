@@ -75,7 +75,8 @@ function pmpro_get_capability_defs($role)
 		'pmpro_discountcodes',
 		'pmpro_userfields',
 		'pmpro_updates',
-		'pmpro_manage_pause_mode'
+		'pmpro_manage_pause_mode',
+		'pmpro_view_as'
 	);
 
     return apply_filters( "pmpro_assigned_{$role}_capabilities", $cap_array);

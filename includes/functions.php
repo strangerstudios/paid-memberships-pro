@@ -2564,8 +2564,8 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	// make sure user id is int for security
 	$user_id = intval( $user_id );
 
-	// Admins have special rules for membership levels. Check them here.
-	if ( $user_id == $current_user->ID && current_user_can( 'manage_options' ) ) {
+	// Admins and users with the View As capability have special rules for membership levels. Check them here.
+	if ( $user_id == $current_user->ID && ( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_view_as' ) ) ) {
 		// Make sure that we are not on a page where we want to always show the user's true levels.
 		if (
 			! is_admin() &&
