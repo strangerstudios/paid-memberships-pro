@@ -326,7 +326,7 @@ jQuery( document ).ready( function( $ ) {
 		var expiredKeyCodes = [ 'api_key_expired', 'platform_api_key_expired' ];
 		var attemptedKey = '';
 
-		if ( ! error || expiredKeyCodes.indexOf( error.code ) === -1 || ! pmproStripe.user_id || publishableKeyRefreshAttempted ) {
+		if ( ! error || expiredKeyCodes.indexOf( error.code ) === -1 || ! pmproStripe.usingConnect || publishableKeyRefreshAttempted ) {
 			return false;
 		}
 
@@ -337,6 +337,16 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 		if ( attemptedKey === pmproStripe.publishableKey ) {
+			$.post(
+				pmproStripe.ajaxUrl,
+				{
+					action: 'pmpro_stripe_refresh_publishable_key',
+					nonce: pmproStripe.publishableKeyRefreshNonce,
+					errorCode: error.code,
+					publishableKey: pmproStripe.publishableKey,
+					reportOnly: true,
+				}
+			);
 			return false;
 		}
 
@@ -359,6 +369,8 @@ jQuery( document ).ready( function( $ ) {
 			{
 				action: 'pmpro_stripe_refresh_publishable_key',
 				nonce: pmproStripe.publishableKeyRefreshNonce,
+				errorCode: error.code,
+				publishableKey: pmproStripe.publishableKey,
 			}
 		).done( function( response ) {
 			if (
