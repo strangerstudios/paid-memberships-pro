@@ -3843,20 +3843,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Get the result of the last connection check without contacting Stripe.
-	 *
-	 * Safe to call on any request, including the frontend, since it only reads the cache.
-	 *
-	 * @since TBD
-	 *
-	 * @return string|false The cached error message from Stripe, or false if none is cached.
-	 */
-	public static function get_cached_connection_error() {
-		$cached = get_transient( 'pmpro_stripe_connection_error_' . ( 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox' ) );
-		return ( is_array( $cached ) && ! empty( $cached['error'] ) ) ? $cached['error'] : false;
-	}
-
-	/**
 	 * Forget the cached connection check so that the next admin page load checks again.
 	 *
 	 * @since TBD
