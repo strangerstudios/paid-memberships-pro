@@ -1208,7 +1208,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Refresh the Stripe Connect publishable key after a browser failure.
 	 *
-	 * @since TBD
+	 * @since 3.8.6
 	 */
 	public static function wp_ajax_pmpro_stripe_refresh_publishable_key() {
 		check_ajax_referer( 'pmpro_stripe_refresh_publishable_key', 'nonce' );
@@ -1916,7 +1916,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Refresh the cached Stripe Connect platform publishable keys.
 	 *
-	 * @since TBD
+	 * @since 3.8.6
 	 *
 	 * @return bool Whether the keys were refreshed.
 	 */
@@ -1965,7 +1965,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Refresh stale Stripe Connect platform publishable keys.
 	 *
-	 * @since TBD
+	 * @since 3.8.6
 	 */
 	public static function maybe_refresh_connect_publishable_keys() {
 		if ( self::using_api_keys() || ! self::has_connect_credentials() ) {
@@ -4502,7 +4502,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get a cached Stripe Connect platform publishable key.
 	 *
-	 * @since TBD
+	 * @since 3.8.6
 	 *
 	 * @param string $gateway_environment The gateway environment.
 	 * @return string The cached publishable key.

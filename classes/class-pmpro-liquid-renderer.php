@@ -46,7 +46,7 @@ class PMPro_Liquid_Renderer {
 	 * unbalanced tags. This mirrors shortcode_unautop(). Paragraphs that contain
 	 * only output tags, like <p>{{ display_name }}</p>, are left alone.
 	 *
-	 * @since TBD
+	 * @since 3.8.6
 	 *
 	 * @param string $content The content to process.
 	 * @return string The content with paragraph tags around Liquid tags removed.
