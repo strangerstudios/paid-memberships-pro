@@ -131,6 +131,8 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_rebuild_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_rebuild_webhook' ) );
+		add_action( 'wp_ajax_pmpro_stripe_refresh_publishable_key', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_refresh_publishable_key' ) );
+		add_action( 'wp_ajax_nopriv_pmpro_stripe_refresh_publishable_key', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_refresh_publishable_key' ) );
 
 		//code to add at checkout if Stripe is the current gateway
 		$default_gateway = get_option( 'pmpro_gateway' );
@@ -1214,6 +1216,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$default_gateway = get_option( "pmpro_gateway" );
 
 		if ( $gateway == "stripe" || $default_gateway == "stripe" ) {
+			self::maybe_refresh_connect_publishable_keys();
+
 			//stripe js library
 			wp_enqueue_script( "stripe", "https://js.stripe.com/v3/", array(), null );
 
@@ -1222,6 +1226,9 @@ class PMProGateway_stripe extends PMProGateway {
 				$localize_vars = array(
 					'publishableKey' => $stripe->get_publishablekey(),
 					'user_id'        => $stripe->get_connect_user_id(),
+					'publishableKeyRefreshNonce' => wp_create_nonce( 'pmpro_stripe_refresh_publishable_key' ),
+					'msgRefreshingPublishableKey' => __( 'Refreshing the connection to Stripe. Please wait.', 'paid-memberships-pro' ),
+					'msgPublishableKeyRefreshed' => __( 'The connection to Stripe was refreshed. Please re-enter your payment details.', 'paid-memberships-pro' ),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', get_option( 'pmpro_stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
@@ -1585,6 +1592,7 @@ class PMProGateway_stripe extends PMProGateway {
 				update_option( 'pmpro_sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( 'pmpro_sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			}
+			delete_option( 'pmpro_stripe_connect_platform_keys' );
 
 
 			// Delete option for user API key.
@@ -1891,6 +1899,211 @@ class PMProGateway_stripe extends PMProGateway {
 				get_option( 'pmpro_sandbox_stripe_connect_publishablekey' )
 			);
 		}
+	}
+
+	/**
+	 * Refresh cached Stripe Connect platform publishable keys when they are stale.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @return true|WP_Error True when no refresh is needed or the refresh succeeds. WP_Error on failure.
+	 */
+	public static function maybe_refresh_connect_publishable_keys() {
+		if ( self::using_api_keys() || ! self::has_connect_account_credentials() ) {
+			return true;
+		}
+
+		$cache = get_option( 'pmpro_stripe_connect_platform_keys', array() );
+		if ( ! is_array( $cache ) ) {
+			$cache = array();
+		}
+		$cache_lifetime = (int) apply_filters( 'pmpro_stripe_connect_publishable_key_cache_lifetime', 6 * HOUR_IN_SECONDS );
+		if ( ! empty( $cache['checked_at'] ) && ( time() - (int) $cache['checked_at'] ) < max( 0, $cache_lifetime ) ) {
+			return true;
+		}
+
+		return self::refresh_connect_publishable_keys();
+	}
+
+	/**
+	 * Retrieve and cache the Stripe Connect platform publishable-key manifest.
+	 *
+	 * The existing cache is only replaced after the complete response passes validation.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @return array|WP_Error The validated cache or a WP_Error on failure.
+	 */
+	public static function refresh_connect_publishable_keys() {
+		if ( get_transient( 'pmpro_stripe_connect_platform_keys_refreshing' ) ) {
+			return new WP_Error( 'pmpro_stripe_connect_platform_keys_refreshing', __( 'The Stripe publishable keys are already being refreshed.', 'paid-memberships-pro' ) );
+		}
+
+		set_transient( 'pmpro_stripe_connect_platform_keys_refreshing', 1, MINUTE_IN_SECONDS );
+
+		$manifest_url = apply_filters(
+			'pmpro_stripe_connect_publishable_key_manifest_url',
+			'https://connect.paidmembershipspro.com/stripe/v1/platform-keys.json'
+		);
+		$response = wp_safe_remote_get(
+			$manifest_url,
+			array(
+				'timeout'             => 5,
+				'redirection'         => 2,
+				'limit_response_size' => 8192,
+				'headers'             => array( 'Accept' => 'application/json' ),
+			)
+		);
+
+		delete_transient( 'pmpro_stripe_connect_platform_keys_refreshing' );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return new WP_Error( 'pmpro_stripe_connect_manifest_http_error', __( 'The Stripe publishable-key manifest could not be retrieved.', 'paid-memberships-pro' ) );
+		}
+
+		$manifest = json_decode( wp_remote_retrieve_body( $response ), true );
+		$manifest = self::validate_connect_publishable_key_manifest( $manifest );
+		if ( is_wp_error( $manifest ) ) {
+			return $manifest;
+		}
+
+		$manifest['checked_at'] = time();
+		update_option( 'pmpro_stripe_connect_platform_keys', $manifest, false );
+		$stored_manifest = get_option( 'pmpro_stripe_connect_platform_keys', array() );
+		if ( $stored_manifest !== $manifest ) {
+			return new WP_Error( 'pmpro_stripe_connect_manifest_cache_error', __( 'The Stripe publishable-key manifest could not be cached.', 'paid-memberships-pro' ) );
+		}
+
+		return $stored_manifest;
+	}
+
+	/**
+	 * Validate and normalize a Stripe Connect platform publishable-key manifest.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @param mixed $manifest Decoded manifest response.
+	 * @return array|WP_Error The normalized manifest or a WP_Error on failure.
+	 */
+	private static function validate_connect_publishable_key_manifest( $manifest ) {
+		if (
+			! is_array( $manifest ) ||
+			1 !== ( $manifest['schema_version'] ?? null ) ||
+			empty( $manifest['generated_at'] ) ||
+			! is_string( $manifest['generated_at'] ) ||
+			strlen( $manifest['generated_at'] ) > 50 ||
+			false === strtotime( $manifest['generated_at'] )
+		) {
+			return new WP_Error( 'pmpro_stripe_connect_manifest_invalid', __( 'The Stripe publishable-key manifest is invalid.', 'paid-memberships-pro' ) );
+		}
+
+		$normalized = array(
+			'schema_version' => 1,
+			'generated_at'   => (string) $manifest['generated_at'],
+		);
+
+		foreach ( array( 'live', 'test' ) as $mode ) {
+			$prefix = 'live' === $mode ? 'pk_live_' : 'pk_test_';
+			if ( empty( $manifest[ $mode ] ) || ! is_array( $manifest[ $mode ] ) ) {
+				return new WP_Error( 'pmpro_stripe_connect_manifest_invalid', __( 'The Stripe publishable-key manifest is invalid.', 'paid-memberships-pro' ) );
+			}
+			$key     = $manifest[ $mode ]['publishable_key'] ?? '';
+			$version = $manifest[ $mode ]['version'] ?? '';
+			if (
+				! is_string( $key ) ||
+				0 !== strpos( $key, $prefix ) ||
+				strlen( $key ) <= strlen( $prefix ) ||
+				strlen( $key ) > 255 ||
+				! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ||
+				! is_string( $version ) ||
+				'' === $version ||
+				strlen( $version ) > 100 ||
+				! preg_match( '/^[A-Za-z0-9._-]+$/', $version )
+			) {
+				return new WP_Error( 'pmpro_stripe_connect_manifest_invalid', __( 'The Stripe publishable-key manifest is invalid.', 'paid-memberships-pro' ) );
+			}
+
+			$normalized[ $mode ] = array(
+				'publishable_key' => $key,
+				'version'         => $version,
+			);
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Get the cached platform publishable key for an environment.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @param string $gateway_environment The PMPro gateway environment.
+	 * @return string The cached publishable key, or an empty string when unavailable.
+	 */
+	private static function get_cached_connect_publishable_key( $gateway_environment ) {
+		$cache = get_option( 'pmpro_stripe_connect_platform_keys', array() );
+		if ( ! is_array( $cache ) ) {
+			return '';
+		}
+		$mode  = 'live' === $gateway_environment ? 'live' : 'test';
+		$key    = $cache[ $mode ]['publishable_key'] ?? '';
+		$prefix = 'live' === $mode ? 'pk_live_' : 'pk_test_';
+
+		if (
+			! is_string( $key ) ||
+			0 !== strpos( $key, $prefix ) ||
+			strlen( $key ) <= strlen( $prefix ) ||
+			strlen( $key ) > 255 ||
+			! preg_match( '/^[A-Za-z0-9_]+$/', $key )
+		) {
+			return '';
+		}
+
+		return $key;
+	}
+
+	/**
+	 * Determine whether the account credentials needed to refresh a Connect key exist.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @return bool Whether the current environment has a Connect account and access token.
+	 */
+	private static function has_connect_account_credentials() {
+		$gateway_environment = get_option( 'pmpro_gateway_environment' );
+		$prefix = 'live' === $gateway_environment ? 'pmpro_live_' : 'pmpro_sandbox_';
+
+		return ! empty( get_option( $prefix . 'stripe_connect_user_id' ) ) && ! empty( get_option( $prefix . 'stripe_connect_secretkey' ) );
+	}
+
+	/**
+	 * Force a publishable-key refresh after Stripe reports an expired platform key.
+	 *
+	 * @since 3.8.6
+	 */
+	public static function wp_ajax_pmpro_stripe_refresh_publishable_key() {
+		check_ajax_referer( 'pmpro_stripe_refresh_publishable_key', 'nonce' );
+
+		if ( self::using_api_keys() || ! self::has_connect_account_credentials() ) {
+			wp_send_json_error( array( 'message' => __( 'Stripe Connect is not configured.', 'paid-memberships-pro' ) ), 400 );
+		}
+
+		$cache = self::refresh_connect_publishable_keys();
+		if ( is_wp_error( $cache ) ) {
+			wp_send_json_error( array( 'message' => $cache->get_error_message() ), 503 );
+		}
+
+		$gateway_environment = get_option( 'pmpro_gateway_environment' );
+		$mode                = 'live' === $gateway_environment ? 'live' : 'test';
+		wp_send_json_success(
+			array(
+				'publishableKey' => $cache[ $mode ]['publishable_key'],
+			)
+		);
 	}
 
 	/**
@@ -4401,9 +4614,13 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( self::using_api_keys() ) {
 			$publishablekey = get_option( 'pmpro_stripe_publishablekey' );
 		} else {
-			$publishablekey = get_option( 'pmpro_gateway_environment' ) === 'live'
-				? get_option( 'pmpro_live_stripe_connect_publishablekey' )
-				: get_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
+			$gateway_environment = get_option( 'pmpro_gateway_environment' );
+			$publishablekey      = self::get_cached_connect_publishable_key( $gateway_environment );
+			if ( empty( $publishablekey ) ) {
+				$publishablekey = 'live' === $gateway_environment
+					? get_option( 'pmpro_live_stripe_connect_publishablekey' )
+					: get_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
+			}
 		}
 		return $publishablekey;
 	}

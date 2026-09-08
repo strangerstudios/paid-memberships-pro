@@ -3,7 +3,23 @@ var pmpro_require_billing;
 // Wire up the form for Stripe.
 jQuery( document ).ready( function( $ ) {
 
-	var stripe, elements, cardNumber, cardExpiry, cardCvc;
+	var stripe, elements, cardNumber, cardExpiry, cardCvc, publishableKeyRefreshAttempted = false;
+	var publishableKeyRefreshStorageKey = 'pmpro_stripe_publishable_key_refresh_attempted';
+	var publishableKeyRefreshNoticeKey = 'pmpro_stripe_publishable_key_refresh_notice';
+
+	try {
+		if ( window.sessionStorage.getItem( publishableKeyRefreshNoticeKey ) === pmproStripe.publishableKey ) {
+			window.sessionStorage.removeItem( publishableKeyRefreshNoticeKey );
+			$( '#pmpro_message, #pmpro_message_bottom' )
+				.text( pmproStripe.msgPublishableKeyRefreshed )
+				.addClass( 'pmpro_alert' )
+				.removeClass( 'pmpro_error pmpro_success' )
+				.attr( 'role', 'status' )
+				.show();
+		}
+	} catch ( storageError ) {
+		// Session storage may be unavailable in privacy-restricted browsers.
+	}
 
 	/**
 	 * Identify with Stripe.
@@ -222,18 +238,18 @@ jQuery( document ).ready( function( $ ) {
 		form = $('#pmpro_form, .pmpro_form');
 
 		if (response.error) {
-			// There was an issue with the payment method supplied or card authentication failed.
-			// Re-enable the submit button.
-			$('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr('disabled');
+			if ( pmpro_maybe_refresh_stripe_publishable_key( response.error ) ) {
+				return;
+			}
+			if ( [ 'api_key_expired', 'platform_api_key_expired' ].indexOf( response.error.code ) === -1 ) {
+				pmpro_clear_publishable_key_refresh_attempt();
+			}
 
-			// Hide processing message.
-			$('#pmpro_processing_message').css('visibility', 'hidden');
-
-			// error message
-			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).attr('role', 'alert').show();
-			$( '#pmpro_message_bottom' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).attr('role', 'alert').show();
+			pmpro_show_stripe_error( response.error.message );
 			
-		} else if ( response.paymentMethod ) {			
+		} else if ( response.paymentMethod ) {
+			pmpro_clear_publishable_key_refresh_attempt();
+
 			// A payment method was created successfully. Submit the checkout form and finish the checkout in PHP.
 			paymentMethodId = response.paymentMethod.id;
 			card = response.paymentMethod.card;			
@@ -257,6 +273,8 @@ jQuery( document ).ready( function( $ ) {
 			form.submit();			
 			
 		} else if ( response.paymentIntent || response.setupIntent ) {
+			pmpro_clear_publishable_key_refresh_attempt();
+
 			// Card authentication was successful. Finish the checkout in PHP.
 			// success message
 			$( '#pmpro_message' ).text( pmproStripe.msgAuthenticationValidated ).addClass( 'pmpro_success' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_error' ).show();
@@ -292,6 +310,103 @@ jQuery( document ).ready( function( $ ) {
 			form.append( '<input type="hidden" name="ExpirationYear" value="' + card.exp_year + '"/>' );
 			form.submit();
 			return true;
+		}
+	}
+
+	/**
+	 * Refresh an expired Stripe Connect platform key and reload Elements once.
+	 *
+	 * Stripe Elements cannot move an existing card Element to a new Stripe instance, so a reload
+	 * is required after the key changes. Session storage prevents a reload loop.
+	 *
+	 * @param {Object} error Stripe.js error response.
+	 * @return {boolean} Whether key recovery was started.
+	 */
+	function pmpro_maybe_refresh_stripe_publishable_key( error ) {
+		var expiredKeyCodes = [ 'api_key_expired', 'platform_api_key_expired' ];
+		var attemptedKey = '';
+
+		if ( ! error || expiredKeyCodes.indexOf( error.code ) === -1 || ! pmproStripe.user_id || publishableKeyRefreshAttempted ) {
+			return false;
+		}
+
+		try {
+			attemptedKey = window.sessionStorage.getItem( publishableKeyRefreshStorageKey );
+		} catch ( storageError ) {
+			attemptedKey = '';
+		}
+
+		if ( attemptedKey === pmproStripe.publishableKey ) {
+			return false;
+		}
+
+		publishableKeyRefreshAttempted = true;
+		try {
+			window.sessionStorage.setItem( publishableKeyRefreshStorageKey, pmproStripe.publishableKey );
+		} catch ( storageError ) {
+			// The in-memory guard still prevents another attempt on this page.
+		}
+
+		$( '#pmpro_message, #pmpro_message_bottom' )
+			.text( pmproStripe.msgRefreshingPublishableKey )
+			.addClass( 'pmpro_alert' )
+			.removeClass( 'pmpro_error pmpro_success' )
+			.attr( 'role', 'status' )
+			.show();
+
+		$.post(
+			pmproStripe.ajaxUrl,
+			{
+				action: 'pmpro_stripe_refresh_publishable_key',
+				nonce: pmproStripe.publishableKeyRefreshNonce,
+			}
+		).done( function( response ) {
+			if (
+				response.success && response.data && response.data.publishableKey &&
+				response.data.publishableKey !== pmproStripe.publishableKey
+			) {
+				try {
+					window.sessionStorage.setItem( publishableKeyRefreshStorageKey, response.data.publishableKey );
+					window.sessionStorage.setItem( publishableKeyRefreshNoticeKey, response.data.publishableKey );
+				} catch ( storageError ) {
+					// The in-memory guard still prevents another attempt on this page.
+				}
+				window.location.reload();
+				return;
+			}
+
+			pmpro_show_stripe_error( error.message );
+		} ).fail( function() {
+			pmpro_show_stripe_error( error.message );
+		} );
+
+		return true;
+	}
+
+	/**
+	 * Show a Stripe.js error and restore the checkout controls.
+	 *
+	 * @param {string} message Error message to show.
+	 */
+	function pmpro_show_stripe_error( message ) {
+		$( '.pmpro_btn-submit-checkout,.pmpro_btn-submit' ).removeAttr( 'disabled' );
+		$( '#pmpro_processing_message' ).css( 'visibility', 'hidden' );
+		$( '#pmpro_message, #pmpro_message_bottom' )
+			.text( message )
+			.addClass( 'pmpro_error' )
+			.removeClass( 'pmpro_alert pmpro_success' )
+			.attr( 'role', 'alert' )
+			.show();
+	}
+
+	/**
+	 * Allow recovery from a future key rotation after Stripe accepts the current key.
+	 */
+	function pmpro_clear_publishable_key_refresh_attempt() {
+		try {
+			window.sessionStorage.removeItem( publishableKeyRefreshStorageKey );
+		} catch ( storageError ) {
+			// Session storage may be unavailable in privacy-restricted browsers.
 		}
 	}
 });
