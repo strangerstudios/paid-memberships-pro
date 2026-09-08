@@ -210,6 +210,16 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.8.6 - 2026-09-08 =
+* ENHANCEMENT: Changed the "Edit Membership" button on the Edit Member memberships panel to "Update Membership" to make it clear that it saves the level change. #3781 (@flintfromthebasement)
+* ENHANCEMENT: The password visibility toggle now shows only the eye icon in the log in widget and on narrow screens so the field label and the toggle no longer wrap into each other. #3769 (@kimcoleman)
+* ENHANCEMENT: Wisdom tracking data now reports whether the site is running on PMPro Hosting. #3770 (@dparker1005)
+* BUG FIX: Stripe Connect sites now refresh the platform publishable key from Paid Memberships Pro instead of using the key saved during the initial connection forever, so onsite checkout keeps working after the platform key is rotated. #3791 (@flintfromthebasement)
+* BUG FIX: Liquid tags that the visual email template editor wrapped in paragraph tags no longer produce empty or unbalanced paragraphs in sent emails. #3782 (@dparker1005)
+* BUG FIX: The 3.8.4 upgrade script no longer fires order update hooks (e.g. Zapier) for every order whose Stripe transaction IDs were recovered. #3790 (@dparker1005)
+* BUG FIX: Fixed the Stripe Connect environment lookup in `has_connect_credentials()` so that Site Health checks the credentials for the active gateway environment, and avoided a PHP notice after a failed Stripe Connect disconnect response. #3777 (@flintfromthebasement)
+* BUG FIX: The "Error:" prefix in Stripe Connect failure notices now renders in bold instead of as literal HTML. #3774 (@flintfromthebasement)
+
 = 3.8.5 - 2026-08-24 =
 * SECURITY: Fixed an issue where the payment amount was not re-verified after Strong Customer Authentication (3D Secure) in the Stripe on-site checkout. #3767 (@proxydom)
 * SECURITY: Fixed an access check bypass in the `getfile` service that could allow protected files to be served through `admin-ajax.php` without a membership access check. #3762 (@dparker1005)
