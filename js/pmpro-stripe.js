@@ -403,6 +403,7 @@ jQuery( document ).ready( function( $ ) {
 	 * Allow recovery from a future key rotation after Stripe accepts the current key.
 	 */
 	function pmpro_clear_publishable_key_refresh_attempt() {
+		publishableKeyRefreshAttempted = false;
 		try {
 			window.sessionStorage.removeItem( publishableKeyRefreshStorageKey );
 		} catch ( storageError ) {
