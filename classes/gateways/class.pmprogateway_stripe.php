@@ -1689,9 +1689,6 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php esc_html_e( 'This may be a temporary connection problem. Wait a few minutes, then try again. Onsite checkout and billing updates may remain unavailable in the meantime.', 'paid-memberships-pro' ); ?>
 				<?php } ?>
 			</p>
-			<p>
-				<a class="button button-secondary" href="<?php echo esc_url( self::get_publishable_key_refresh_url() ); ?>"><?php esc_html_e( 'Try checking again', 'paid-memberships-pro' ); ?></a>
-			</p>
 		</div>
 		<?php
 	}
