@@ -175,6 +175,7 @@ class PMProGateway_stripe extends PMProGateway {
 		// Stripe Connect functions.
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_publishable_key_refresh_notice' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 
 		// Show warning if webhooks are not set up.
@@ -1639,6 +1640,63 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Show the result of a manual Stripe Connect publishable-key check.
+	 *
+	 * @since 3.8.6
+	 */
+	public static function show_publishable_key_refresh_notice() {
+		if (
+			( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) ||
+			! isset( $_GET['page'] ) ||
+			'pmpro-paymentsettings' !== sanitize_key( wp_unslash( $_GET['page'] ) ) || // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			self::using_api_keys()
+		) {
+			return;
+		}
+
+		$gateway_environment = get_option( 'pmpro_gateway_environment' );
+		if ( ! self::has_connect_credentials( $gateway_environment, false ) ) {
+			return;
+		}
+
+		$refresh_status = self::get_publishable_key_refresh_status();
+		if ( ! in_array( $refresh_status, array( 'error', 'unchanged', 'success' ), true ) ) {
+			return;
+		}
+
+		$publishable_key_issue = self::get_connect_publishable_key_issue( $gateway_environment );
+		if ( ( 'success' === $refresh_status && $publishable_key_issue ) || ( 'success' !== $refresh_status && ! $publishable_key_issue ) ) {
+			return;
+		}
+
+		if ( 'success' === $refresh_status ) {
+			?>
+			<div class="notice notice-success pmpro-stripe-connect-message">
+				<p><?php esc_html_e( 'The Stripe publishable key was updated.', 'paid-memberships-pro' ); ?></p>
+			</div>
+			<?php
+			return;
+		}
+
+		?>
+		<div class="notice notice-error pmpro-stripe-connect-message">
+			<p>
+				<?php if ( 'unchanged' === $refresh_status ) { ?>
+					<strong><?php esc_html_e( 'No updated Stripe key is available yet.', 'paid-memberships-pro' ); ?></strong><br />
+					<?php esc_html_e( 'The check completed, but the available key has not changed. Wait a few minutes and try again. If the problem continues, contact Paid Memberships Pro support.', 'paid-memberships-pro' ); ?>
+				<?php } else { ?>
+					<strong><?php esc_html_e( 'We couldn\'t check for an updated Stripe key.', 'paid-memberships-pro' ); ?></strong><br />
+					<?php esc_html_e( 'This may be a temporary connection problem. Wait a few minutes, then try again. Onsite checkout and billing updates may remain unavailable in the meantime.', 'paid-memberships-pro' ); ?>
+				<?php } ?>
+			</p>
+			<p>
+				<a class="button button-secondary" href="<?php echo esc_url( self::get_publishable_key_refresh_url() ); ?>"><?php esc_html_e( 'Try checking again', 'paid-memberships-pro' ); ?></a>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Disconnects user from the Stripe Connected App.
 	 */
 	public static function stripe_connect_deauthorize() {
@@ -2164,6 +2222,33 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return $issues[ $mode ];
+	}
+
+	/**
+	 * Get the publishable-key refresh result from the current request.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @return string The sanitized refresh status, or an empty string.
+	 */
+	private static function get_publishable_key_refresh_status() {
+		return isset( $_GET['pmpro_stripe_publishable_key_refresh'] )
+			? sanitize_key( wp_unslash( $_GET['pmpro_stripe_publishable_key_refresh'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			: '';
+	}
+
+	/**
+	 * Get the URL used to manually refresh Stripe Connect publishable keys.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @return string The nonce-protected refresh URL.
+	 */
+	private static function get_publishable_key_refresh_url() {
+		return wp_nonce_url(
+			admin_url( 'admin-post.php?action=pmpro_stripe_refresh_publishable_key' ),
+			'pmpro_stripe_refresh_publishable_key'
+		);
 	}
 
 	/**
@@ -3286,14 +3371,12 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Determine if this is the active environment.
-		$active_environment              = $environment === get_option( 'pmpro_gateway_environment' );
-		$publishable_key_issue            = false;
+		$active_environment = $environment === get_option( 'pmpro_gateway_environment' );
+		$publishable_key_issue = false;
 		$publishable_key_refresh_status = '';
 		if ( $active_environment && ! self::using_api_keys() && self::has_connect_credentials( $environment, false ) ) {
-			$publishable_key_issue = self::get_connect_publishable_key_issue( $environment );
-			$publishable_key_refresh_status = isset( $_GET['pmpro_stripe_publishable_key_refresh'] )
-				? sanitize_key( wp_unslash( $_GET['pmpro_stripe_publishable_key_refresh'] ) )
-				: '';
+			$publishable_key_issue          = self::get_connect_publishable_key_issue( $environment );
+			$publishable_key_refresh_status = self::get_publishable_key_refresh_status();
 		}
 
 		?>
@@ -3335,22 +3418,15 @@ class PMProGateway_stripe extends PMProGateway {
 								<td colspan="2">
 									<div class="notice notice-large notice-error inline">
 										<p>
-											<strong><?php esc_html_e( 'Stripe could not refresh its publishable key.', 'paid-memberships-pro' ); ?></strong><br />
-											<?php esc_html_e( 'Onsite checkout or billing updates may be unavailable until an updated key can be retrieved.', 'paid-memberships-pro' ); ?>
-											<?php if ( 'unchanged' === $publishable_key_refresh_status ) { ?>
-												<br /><?php esc_html_e( 'No updated Stripe publishable key is available yet. The existing key was left unchanged.', 'paid-memberships-pro' ); ?>
-											<?php } elseif ( 'error' === $publishable_key_refresh_status ) { ?>
-												<br /><?php esc_html_e( 'Paid Memberships Pro could not check for an updated key. The existing key was left unchanged.', 'paid-memberships-pro' ); ?>
-											<?php } ?>
-											<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=pmpro_stripe_refresh_publishable_key' ), 'pmpro_stripe_refresh_publishable_key' ) ); ?>"><?php esc_html_e( 'Check for an updated Stripe key', 'paid-memberships-pro' ); ?></a>
+											<strong><?php esc_html_e( 'Stripe checkout may be unavailable.', 'paid-memberships-pro' ); ?></strong><br />
+											<?php esc_html_e( 'Paid Memberships Pro could not automatically retrieve an updated Stripe publishable key. Onsite checkout and billing updates may be unavailable.', 'paid-memberships-pro' ); ?>
+										</p>
+										<p>
+											<a class="button button-secondary" href="<?php echo esc_url( self::get_publishable_key_refresh_url() ); ?>">
+												<?php echo esc_html( in_array( $publishable_key_refresh_status, array( 'error', 'unchanged' ), true ) ? __( 'Try checking again', 'paid-memberships-pro' ) : __( 'Check for an updated Stripe key', 'paid-memberships-pro' ) ); ?>
+											</a>
 										</p>
 									</div>
-								</td>
-							</tr>
-						<?php } elseif ( 'success' === $publishable_key_refresh_status ) { ?>
-							<tr class="gateway gateway_stripe_<?php echo esc_attr( $environment ); ?>">
-								<td colspan="2">
-									<div class="notice notice-large notice-success inline"><p><?php esc_html_e( 'The Stripe publishable key was updated.', 'paid-memberships-pro' ); ?></p></div>
 								</td>
 							</tr>
 						<?php } ?>
