@@ -2167,7 +2167,7 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Force a publishable-key refresh after Stripe reports an expired platform key.
+	 * Force a publishable-key refresh after Stripe rejects the platform key.
 	 *
 	 * @since 3.8.6
 	 */
@@ -2179,8 +2179,8 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$error_code = isset( $_POST['errorCode'] ) ? sanitize_key( wp_unslash( $_POST['errorCode'] ) ) : '';
-		if ( ! in_array( $error_code, array( 'api_key_expired', 'platform_api_key_expired' ), true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Stripe did not report an expired publishable key.', 'paid-memberships-pro' ) ), 400 );
+		if ( ! in_array( $error_code, array( 'api_key_expired', 'platform_api_key_expired', 'invalid_api_key' ), true ) ) {
+			wp_send_json_error( array( 'message' => __( 'Stripe did not report a rejected publishable key.', 'paid-memberships-pro' ) ), 400 );
 		}
 
 		$gateway_environment      = get_option( 'pmpro_gateway_environment' );

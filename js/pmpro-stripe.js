@@ -241,7 +241,7 @@ jQuery( document ).ready( function( $ ) {
 			if ( pmpro_maybe_refresh_stripe_publishable_key( response.error ) ) {
 				return;
 			}
-			if ( [ 'api_key_expired', 'platform_api_key_expired' ].indexOf( response.error.code ) === -1 ) {
+			if ( [ 'api_key_expired', 'platform_api_key_expired', 'invalid_api_key' ].indexOf( response.error.code ) === -1 ) {
 				pmpro_clear_publishable_key_refresh_attempt();
 			}
 
@@ -314,7 +314,7 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 	/**
-	 * Refresh an expired Stripe Connect platform key and reload Elements once.
+	 * Refresh a rejected Stripe Connect platform key and reload Elements once.
 	 *
 	 * Stripe Elements cannot move an existing card Element to a new Stripe instance, so a reload
 	 * is required after the key changes. Session storage prevents a reload loop.
@@ -323,10 +323,17 @@ jQuery( document ).ready( function( $ ) {
 	 * @return {boolean} Whether key recovery was started.
 	 */
 	function pmpro_maybe_refresh_stripe_publishable_key( error ) {
-		var expiredKeyCodes = [ 'api_key_expired', 'platform_api_key_expired' ];
+		var publishableKeyErrorCodes = [ 'api_key_expired', 'platform_api_key_expired', 'invalid_api_key' ];
 		var attemptedKey = '';
 
-		if ( ! error || expiredKeyCodes.indexOf( error.code ) === -1 || ! pmproStripe.usingConnect || publishableKeyRefreshAttempted ) {
+		if (
+			error && ! error.code && 'invalid_request_error' === error.type &&
+			error.message && 0 === error.message.indexOf( 'Invalid API Key provided' )
+		) {
+			error.code = 'invalid_api_key';
+		}
+
+		if ( ! error || publishableKeyErrorCodes.indexOf( error.code ) === -1 || ! pmproStripe.usingConnect || publishableKeyRefreshAttempted ) {
 			return false;
 		}
 
