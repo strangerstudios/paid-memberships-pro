@@ -24,6 +24,9 @@ class PMPro_Liquid_Renderer {
 			return $content;
 		}
 
+		// Unwrap Liquid tags that a visual editor wrapped in paragraph tags.
+		$content = self::unautop( $content );
+
 		// Process conditionals first so we only render the winning branches.
 		$content = self::process_conditionals( $content, $data, $args );
 
@@ -31,6 +34,34 @@ class PMPro_Liquid_Renderer {
 		$content = self::process_output_tags( $content, $data, $args );
 
 		return $content;
+	}
+
+	/**
+	 * Remove paragraph tags that wrap nothing but Liquid tags.
+	 *
+	 * TinyMCE wraps bare text in <p> tags, so a template line that only contains
+	 * Liquid tags such as {% if %}, {{ variable }}, or {% endif %} is saved as
+	 * <p>{% endif %}</p>. Control tags render to nothing, so the paragraph would be
+	 * sent as an empty <p></p> or would split around the conditional and leave
+	 * unbalanced tags. This mirrors shortcode_unautop(). Paragraphs that contain
+	 * only output tags, like <p>{{ display_name }}</p>, are left alone.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $content The content to process.
+	 * @return string The content with paragraph tags around Liquid tags removed.
+	 */
+	private static function unautop( $content ) {
+		$tag_pattern = '(?:\{\{(?:(?!\}\}).)*\}\}|\{%(?:(?!%\}).)*%\})';
+
+		return preg_replace_callback(
+			'#<p>\s*((?:' . $tag_pattern . '\s*)+)</p>#s',
+			function ( $matches ) {
+				// Only unwrap when at least one control tag is present.
+				return ( strpos( $matches[1], '{%' ) !== false ) ? $matches[1] : $matches[0];
+			},
+			$content
+		);
 	}
 
 	/**
