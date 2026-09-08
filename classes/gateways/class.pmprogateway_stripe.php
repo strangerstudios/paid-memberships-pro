@@ -131,6 +131,8 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_rebuild_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_rebuild_webhook' ) );
+		add_action( 'wp_ajax_pmpro_stripe_refresh_publishable_key', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_refresh_publishable_key' ) );
+		add_action( 'wp_ajax_nopriv_pmpro_stripe_refresh_publishable_key', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_refresh_publishable_key' ) );
 
 		//code to add at checkout if Stripe is the current gateway
 		$default_gateway = get_option( 'pmpro_gateway' );
@@ -1204,6 +1206,21 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Refresh the Stripe Connect publishable key after a browser failure.
+	 *
+	 * @since TBD
+	 */
+	public static function wp_ajax_pmpro_stripe_refresh_publishable_key() {
+		check_ajax_referer( 'pmpro_stripe_refresh_publishable_key', 'nonce' );
+
+		if ( self::using_api_keys() ) {
+			wp_send_json_error();
+		}
+
+		wp_send_json_success( array( 'refreshed' => (bool) self::refresh_connect_publishable_keys() ) );
+	}
+
+	/**
 	 * Code added to checkout preheader.
 	 *
 	 * @since 1.8
@@ -1218,9 +1235,12 @@ class PMProGateway_stripe extends PMProGateway {
 			wp_enqueue_script( "stripe", "https://js.stripe.com/v3/", array(), null );
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
+				self::maybe_refresh_connect_publishable_keys();
 				$stripe = new PMProGateway_stripe();
 				$localize_vars = array(
 					'publishableKey' => $stripe->get_publishablekey(),
+					'publishableKeyRefreshNonce' => self::using_api_keys() ? '' : wp_create_nonce( 'pmpro_stripe_refresh_publishable_key' ),
+					'msgPublishableKeyRefreshed' => __( 'There was a problem connecting to the payment gateway. Please reload this page and try again.', 'paid-memberships-pro' ),
 					'user_id'        => $stripe->get_connect_user_id(),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', get_option( 'pmpro_stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
@@ -1890,6 +1910,72 @@ class PMProGateway_stripe extends PMProGateway {
 				get_option( 'pmpro_sandbox_stripe_connect_secretkey' ) &&
 				get_option( 'pmpro_sandbox_stripe_connect_publishablekey' )
 			);
+		}
+	}
+
+	/**
+	 * Refresh the cached Stripe Connect platform publishable keys.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool Whether the keys were refreshed.
+	 */
+	public static function refresh_connect_publishable_keys() {
+		if ( get_transient( 'pmpro_stripe_connect_platform_keys_checked' ) ) {
+			return false;
+		}
+
+		set_transient( 'pmpro_stripe_connect_platform_keys_checked', true, 5 * MINUTE_IN_SECONDS );
+
+		$response = wp_safe_remote_get(
+			apply_filters( 'pmpro_stripe_connect_publishable_key_manifest_url', 'https://connect.paidmembershipspro.com/stripe/v1/platform-keys.json' ),
+			array( 'timeout' => 5 )
+		);
+
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return false;
+		}
+
+		$keys = json_decode( wp_remote_retrieve_body( $response ), true );
+		if (
+			! is_array( $keys ) ||
+			! isset( $keys['live']['publishable_key'] ) ||
+			! is_string( $keys['live']['publishable_key'] ) ||
+			strpos( $keys['live']['publishable_key'], 'pk_live_' ) !== 0 ||
+			! isset( $keys['test']['publishable_key'] ) ||
+			! is_string( $keys['test']['publishable_key'] ) ||
+			strpos( $keys['test']['publishable_key'], 'pk_test_' ) !== 0
+		) {
+			return false;
+		}
+
+		update_option(
+			'pmpro_stripe_connect_platform_keys',
+			array(
+				'live'       => $keys['live']['publishable_key'],
+				'test'       => $keys['test']['publishable_key'],
+				'checked_at' => time(),
+			),
+			false
+		);
+
+		return true;
+	}
+
+	/**
+	 * Refresh stale Stripe Connect platform publishable keys.
+	 *
+	 * @since TBD
+	 */
+	public static function maybe_refresh_connect_publishable_keys() {
+		if ( self::using_api_keys() || ! self::has_connect_credentials() ) {
+			return;
+		}
+
+		$keys           = get_option( 'pmpro_stripe_connect_platform_keys' );
+		$cache_lifetime = apply_filters( 'pmpro_stripe_connect_publishable_key_cache_lifetime', WEEK_IN_SECONDS );
+		if ( ! is_array( $keys ) || empty( $keys['checked_at'] ) || $keys['checked_at'] < time() - $cache_lifetime ) {
+			self::refresh_connect_publishable_keys();
 		}
 	}
 
@@ -4401,11 +4487,36 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( self::using_api_keys() ) {
 			$publishablekey = get_option( 'pmpro_stripe_publishablekey' );
 		} else {
-			$publishablekey = get_option( 'pmpro_gateway_environment' ) === 'live'
-				? get_option( 'pmpro_live_stripe_connect_publishablekey' )
-				: get_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
+			// Prefer the current platform key from the manifest cache and fall back to the key saved during OAuth.
+			$gateway_environment = get_option( 'pmpro_gateway_environment' );
+			$publishablekey      = self::get_cached_connect_publishable_key( $gateway_environment );
+			if ( empty( $publishablekey ) ) {
+				$publishablekey = $gateway_environment === 'live'
+					? get_option( 'pmpro_live_stripe_connect_publishablekey' )
+					: get_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
+			}
 		}
 		return $publishablekey;
+	}
+
+	/**
+	 * Get a cached Stripe Connect platform publishable key.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $gateway_environment The gateway environment.
+	 * @return string The cached publishable key.
+	 */
+	private static function get_cached_connect_publishable_key( $gateway_environment ) {
+		$keys        = get_option( 'pmpro_stripe_connect_platform_keys' );
+		$environment = $gateway_environment === 'live' ? 'live' : 'test';
+		$prefix      = $environment === 'live' ? 'pk_live_' : 'pk_test_';
+
+		if ( ! is_array( $keys ) || ! isset( $keys[ $environment ] ) || ! is_string( $keys[ $environment ] ) || strpos( $keys[ $environment ], $prefix ) !== 0 ) {
+			return '';
+		}
+
+		return $keys[ $environment ];
 	}
 
 	/**
