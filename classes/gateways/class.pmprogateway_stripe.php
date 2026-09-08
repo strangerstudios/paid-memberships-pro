@@ -1213,7 +1213,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function wp_ajax_pmpro_stripe_refresh_publishable_key() {
 		check_ajax_referer( 'pmpro_stripe_refresh_publishable_key', 'nonce' );
 
-		if ( self::using_api_keys() ) {
+		if ( self::using_api_keys() || ! self::has_connect_credentials() ) {
 			wp_send_json_error();
 		}
 
@@ -1239,7 +1239,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$stripe = new PMProGateway_stripe();
 				$localize_vars = array(
 					'publishableKey' => $stripe->get_publishablekey(),
-					'publishableKeyRefreshNonce' => self::using_api_keys() ? '' : wp_create_nonce( 'pmpro_stripe_refresh_publishable_key' ),
+					'publishableKeyRefreshNonce' => ( self::using_api_keys() || ! self::has_connect_credentials() ) ? '' : wp_create_nonce( 'pmpro_stripe_refresh_publishable_key' ),
 					'msgPublishableKeyRefreshed' => __( 'There was a problem connecting to the payment gateway. Please reload this page and try again.', 'paid-memberships-pro' ),
 					'user_id'        => $stripe->get_connect_user_id(),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', get_option( 'pmpro_stripe_billingaddress' ) ),
@@ -1941,10 +1941,10 @@ class PMProGateway_stripe extends PMProGateway {
 			! is_array( $keys ) ||
 			! isset( $keys['live']['publishable_key'] ) ||
 			! is_string( $keys['live']['publishable_key'] ) ||
-			strpos( $keys['live']['publishable_key'], 'pk_live_' ) !== 0 ||
+			! preg_match( '/^pk_live_[A-Za-z0-9]+$/', $keys['live']['publishable_key'] ) ||
 			! isset( $keys['test']['publishable_key'] ) ||
 			! is_string( $keys['test']['publishable_key'] ) ||
-			strpos( $keys['test']['publishable_key'], 'pk_test_' ) !== 0
+			! preg_match( '/^pk_test_[A-Za-z0-9]+$/', $keys['test']['publishable_key'] )
 		) {
 			return false;
 		}
@@ -4510,9 +4510,9 @@ class PMProGateway_stripe extends PMProGateway {
 	private static function get_cached_connect_publishable_key( $gateway_environment ) {
 		$keys        = get_option( 'pmpro_stripe_connect_platform_keys' );
 		$environment = $gateway_environment === 'live' ? 'live' : 'test';
-		$prefix      = $environment === 'live' ? 'pk_live_' : 'pk_test_';
+		$pattern     = $environment === 'live' ? '/^pk_live_[A-Za-z0-9]+$/' : '/^pk_test_[A-Za-z0-9]+$/';
 
-		if ( ! is_array( $keys ) || ! isset( $keys[ $environment ] ) || ! is_string( $keys[ $environment ] ) || strpos( $keys[ $environment ], $prefix ) !== 0 ) {
+		if ( ! is_array( $keys ) || ! isset( $keys[ $environment ] ) || ! is_string( $keys[ $environment ] ) || ! preg_match( $pattern, $keys[ $environment ] ) ) {
 			return '';
 		}
 
