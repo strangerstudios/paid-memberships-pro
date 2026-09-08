@@ -179,8 +179,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 
 		// Show warnings if Stripe rejects the saved credentials or webhooks are not set up.
-		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_connection_error_notice' ) );
-		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_publishable_key_issue_notice' ) );
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_connection_notices' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_webhook_setup_notice' ) );
 
 		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'process_refund' ), 10, 2 );
@@ -1786,13 +1785,13 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * If Stripe is the current gateway but it is rejecting the saved credentials, show an admin notice.
+	 * If Stripe is the current gateway and the saved credentials or publishable key are not working, show an admin notice.
 	 *
 	 * @since TBD
 	 */
-	public static function show_stripe_connection_error_notice() {
+	public static function show_stripe_connection_notices() {
 		// Only show to users who can fix the connection.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
 			return;
 		}
 
@@ -1810,9 +1809,29 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$stripe           = new PMProGateway_stripe();
 		$connection_error = $stripe->get_connection_error();
-		if ( empty( $connection_error ) ) {
+		if ( ! empty( $connection_error ) ) {
+			self::show_stripe_connection_error_notice( $connection_error );
 			return;
 		}
+
+		if ( self::using_api_keys() ) {
+			return;
+		}
+
+		$environment = 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox';
+		if ( self::has_connect_credentials( $environment, false ) && self::get_connect_publishable_key_issue( $environment ) ) {
+			self::show_stripe_publishable_key_issue_notice( $environment );
+		}
+	}
+
+	/**
+	 * If Stripe is rejecting the saved credentials, show an admin notice.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $connection_error The error message returned by Stripe.
+	 */
+	private static function show_stripe_connection_error_notice( $connection_error ) {
 		?>
 		<div class="notice notice-error" id="pmpro-stripe_connection_error-notice">
 			<p><strong><?php esc_html_e( 'Important Notice: Your Stripe Connection Is No Longer Valid', 'paid-memberships-pro' ); ?></strong></p>
@@ -1846,38 +1865,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * If the Stripe Connect publishable key could not be refreshed, show an admin notice.
 	 *
 	 * @since TBD
+	 *
+	 * @param string $environment The Stripe environment with the publishable key issue.
 	 */
-	public static function show_stripe_publishable_key_issue_notice() {
-		// Only show to users who can fix the connection.
-		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
-			return;
-		}
-
-		// If Stripe isn't the current gateway, we don't need to show the notice.
-		if ( 'stripe' !== get_option( 'pmpro_gateway' ) ) {
-			return;
-		}
-
-		// Only show on PMPro admin pages, except for the Stripe settings screen, which shows the status inline.
-		$page         = isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) ? $_REQUEST['page'] : '';
-		$edit_gateway = isset( $_REQUEST['edit_gateway'] ) && is_string( $_REQUEST['edit_gateway'] ) ? $_REQUEST['edit_gateway'] : '';
-		if ( false === strpos( $page, 'pmpro' ) || ( 'pmpro-paymentsettings' === $page && 'stripe' === $edit_gateway ) ) {
-			return;
-		}
-
-		if ( self::using_api_keys() ) {
-			return;
-		}
-
-		$environment = 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox';
-		if ( ! self::has_connect_credentials( $environment, false ) || ! self::get_connect_publishable_key_issue( $environment ) ) {
-			return;
-		}
-
-		$stripe = new PMProGateway_stripe();
-		if ( $stripe->get_connection_error() ) {
-			return;
-		}
+	private static function show_stripe_publishable_key_issue_notice( $environment ) {
 		?>
 		<div class="notice notice-error" id="pmpro-stripe_publishable_key_issue-notice">
 			<p><strong><?php esc_html_e( 'Important Notice: Your Stripe Connection Needs Attention', 'paid-memberships-pro' ); ?></strong></p>
