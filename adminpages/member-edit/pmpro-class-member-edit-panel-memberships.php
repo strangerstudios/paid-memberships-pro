@@ -282,7 +282,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									</div>
 
 									<div class="pmpro-level_change-action-footer">
-										<button type="submit" name="pmpro-member-edit-memberships-panel-edit_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ) ?></button>
+										<button type="submit" name="pmpro-member-edit-memberships-panel-edit_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Update Membership', 'paid-memberships-pro' ) ?></button>
 										<input type="button" name="cancel-edit-level" value="<?php esc_attr_e( 'Close', 'paid-memberships-pro' ); ?>" class="button button-secondary">
 									</div>
 								</div> <!-- end pmpro-level_change-actions -->
