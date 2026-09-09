@@ -3140,7 +3140,7 @@ function pmpro_setMessage( $message, $type, $force = false ) {
  */
 function pmpro_log_filter_missing_order( $filter_name ) {
 	if ( WP_DEBUG ) {
-		error_log( '[PMPro] A callback on the ' . $filter_name . ' filter did not return a valid order object at checkout.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( '[PMPro] A callback on the ' . $filter_name . ' filter did not return a valid order object.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 }
 
