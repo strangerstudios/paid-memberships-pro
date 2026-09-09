@@ -14,6 +14,7 @@ use Stripe\ApplePayDomain as Stripe_ApplePayDomain;
 use Stripe\WebhookEndpoint as Stripe_Webhook;
 use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 use Stripe\Account as Stripe_Account;
+use Stripe\Token as Stripe_Token;
 use Stripe\Checkout\Session as Stripe_Checkout_Session;
 
 define( "PMPRO_STRIPE_API_VERSION", "2025-09-30.clover" );
@@ -175,6 +176,12 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
+
+		// Connection test: run daily, run on demand from the payment settings page, and warn admins about failures.
+		add_action( 'pmpro_schedule_daily', array( 'PMProGateway_stripe', 'run_scheduled_connection_test' ) );
+		add_action( 'admin_init', array( 'PMProGateway_stripe', 'maybe_run_connection_test_on_demand' ) );
+		add_action( 'wp_ajax_pmpro_stripe_run_connection_test', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_run_connection_test' ) );
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_connection_notice' ) );
 
 		// Show warning if webhooks are not set up.
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_webhook_setup_notice' ) );
@@ -1067,6 +1074,9 @@ class PMProGateway_stripe extends PMProGateway {
 				update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
 			}
 		}
+
+		// The saved keys may have changed, so the last connection test no longer applies.
+		self::clear_connection_test_results();
 	}
 
 	/**
@@ -1592,6 +1602,9 @@ class PMProGateway_stripe extends PMProGateway {
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
 		) {
 			$error = __( 'Invalid response from the Stripe Connect server.', 'paid-memberships-pro' );
+		} elseif ( self::is_different_connected_account( $_REQUEST['pmpro_stripe_connected_environment'], $_REQUEST['pmpro_stripe_user_id'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			// Reconnecting with a different account would orphan every existing customer and subscription.
+			$error = __( 'The Stripe account you just connected is not the account this site was already connected to, so the connection was left unchanged. Existing memberships are tied to the original account. To switch Stripe accounts, disconnect from Stripe first. Note that disconnecting will disconnect all sites using the original Stripe account.', 'paid-memberships-pro' );
 		} else {
 			// Update keys.
 			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
@@ -1610,6 +1623,9 @@ class PMProGateway_stripe extends PMProGateway {
 			// Delete option for user API key.
 			delete_option( 'pmpro_stripe_secretkey' );
 			delete_option( 'pmpro_stripe_publishablekey' );
+
+			// The credentials changed, so the last connection test no longer applies.
+			self::clear_connection_test_results();
 
 			unset( $_GET['pmpro_stripe_connected'] );
 			unset( $_GET['pmpro_stripe_connected_environment'] );
@@ -1700,6 +1716,9 @@ class PMProGateway_stripe extends PMProGateway {
 			delete_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 			delete_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
 		}
+
+		// The credentials changed, so the last connection test no longer applies.
+		self::clear_connection_test_results();
 	}
 
 	/**
@@ -1717,6 +1736,54 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * If Stripe is the current gateway and the last connection test found that Stripe is rejecting the saved keys, show an admin notice.
+	 *
+	 * @since TBD
+	 */
+	public static function show_stripe_connection_notice() {
+		// Only show to users who can fix the connection.
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
+			return;
+		}
+
+		// If Stripe isn't the current gateway, we don't need to show the notice.
+		if ( 'stripe' !== get_option( 'pmpro_gateway' ) ) {
+			return;
+		}
+
+		// Only show on PMPro admin pages except for the payment settings page, which shows the results inline.
+		$page = isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) ? $_REQUEST['page'] : '';
+		if ( false === strpos( $page, 'pmpro' ) || 'pmpro-paymentsettings' === $page ) {
+			return;
+		}
+
+		// Nothing to test if Stripe isn't connected.
+		$stripe = new PMProGateway_stripe();
+		if ( empty( $stripe->get_secretkey() ) ) {
+			return;
+		}
+
+		// Only warn about failures the admin can fix. Reachability problems are usually temporary.
+		$results = self::get_connection_test_results();
+		$failed  = array_intersect( self::get_failed_connection_tests( $results ), array( 'secret_key', 'publishable_key' ) );
+		if ( empty( $failed ) ) {
+			return;
+		}
+		?>
+		<div class="notice notice-error" id="pmpro-stripe_connection-notice">
+			<p><strong><?php esc_html_e( 'Important Notice: Your Stripe Connection Needs Attention', 'paid-memberships-pro' ); ?></strong></p>
+			<p><?php esc_html_e( 'The most recent Stripe connection test found problems that may prevent members from checking out or updating their billing information:', 'paid-memberships-pro' ); ?></p>
+			<ul>
+				<?php foreach ( $failed as $test ) { ?>
+					<li><strong><?php echo esc_html( self::get_connection_test_label( $test ) ); ?>:</strong> <?php echo esc_html( $results['results'][ $test ]['message'] ); ?></li>
+				<?php } ?>
+			</ul>
+			<p><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe' ), admin_url( 'admin.php' ) ) . '#pmpro_stripe_connection_test' ); ?>"><?php esc_html_e( 'Review the Stripe connection test', 'paid-memberships-pro' ); ?></a></p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * If Stripe is the current gateway but webhooks are not set up, show an admin notice.
 	 *
 	 * @since 3.1.2
@@ -1729,6 +1796,12 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Only show on PMPro admin pages except for the payment settings page.
 		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false || 'pmpro-paymentsettings' === $_REQUEST['page'] ) {
+			return;
+		}
+
+		// If Stripe is rejecting the saved secret key, the connection notice covers it and any webhook check would fail for the wrong reason.
+		$connection_test = self::get_connection_test_results();
+		if ( ! empty( $connection_test ) && in_array( 'secret_key', self::get_failed_connection_tests( $connection_test ), true ) ) {
 			return;
 		}
 
@@ -1977,6 +2050,387 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! is_array( $keys ) || empty( $keys['checked_at'] ) || $keys['checked_at'] < time() - $cache_lifetime ) {
 			self::refresh_connect_publishable_keys();
 		}
+	}
+
+	/**
+	 * Test the Stripe connection and save the results.
+	 *
+	 * Checks whether Stripe and the Paid Memberships Pro Connect server can be reached, and whether Stripe
+	 * accepts the saved secret key and the publishable key that checkout uses. Each check has a status of
+	 * 'pass', 'fail', or 'unknown' and a message. Only an authentication failure (a 401 response) counts as
+	 * a rejected key. Permission errors from a restricted key do not, since the key itself is fine.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The saved results. See get_connection_test_results().
+	 */
+	public function run_connection_test() {
+		$results             = array();
+		$gateway_environment = 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox';
+		$secret_key          = $this->get_secretkey();
+
+		// Use short timeouts so a host that silently drops Stripe traffic can't stall the request for the library's 30 second default.
+		$http_client      = self::$is_loaded && class_exists( '\Stripe\HttpClient\CurlClient' ) ? \Stripe\HttpClient\CurlClient::instance() : null;
+		$default_timeouts = null;
+		if ( $http_client && method_exists( $http_client, 'getTimeout' ) && method_exists( $http_client, 'setTimeout' ) && method_exists( $http_client, 'getConnectTimeout' ) && method_exists( $http_client, 'setConnectTimeout' ) ) {
+			$default_timeouts = array( $http_client->getTimeout(), $http_client->getConnectTimeout() );
+			$http_client->setTimeout( 10 );
+			$http_client->setConnectTimeout( 5 );
+		}
+
+		// Stripe API reachability and secret key. One small read-only request answers both.
+		if ( ! self::$is_loaded || empty( $secret_key ) ) {
+			$results['stripe_api'] = array( 'status' => 'unknown', 'message' => __( 'Skipped because no Stripe credentials are saved for this environment.', 'paid-memberships-pro' ) );
+			$results['secret_key'] = array( 'status' => 'fail', 'message' => __( 'No Stripe credentials are saved for this environment.', 'paid-memberships-pro' ) );
+		} else {
+			$exception = null;
+			try {
+				// Pass the key explicitly so the check never depends on whatever key was last set globally.
+				Stripe_Customer::all( array( 'limit' => 1 ), array( 'api_key' => $secret_key ) );
+			} catch ( \Throwable $e ) {
+				$exception = $e;
+			} catch ( \Exception $e ) {
+				$exception = $e;
+			}
+
+			if ( empty( $exception ) ) {
+				$results['stripe_api'] = array( 'status' => 'pass', 'message' => __( 'Stripe responded normally.', 'paid-memberships-pro' ) );
+				$results['secret_key'] = array( 'status' => 'pass', 'message' => __( 'Stripe accepted the saved secret key.', 'paid-memberships-pro' ) );
+			} else {
+				// Classify by HTTP status rather than exception class so this still works when another plugin loaded an older Stripe library.
+				$status  = method_exists( $exception, 'getHttpStatus' ) ? (int) $exception->getHttpStatus() : 0;
+				$message = $exception->getMessage() ? $exception->getMessage() : __( 'Unknown error.', 'paid-memberships-pro' );
+				if ( empty( $status ) || $status >= 500 ) {
+					// No response or a Stripe outage. The key itself is not the problem.
+					if ( empty( $status ) ) {
+						// The library's connection error is several sentences long. Keep only the network reason.
+						$message = preg_match( '/\(Network error[^:]*:\s*(.+?)\)\s*$/s', $message, $matches )
+							/* translators: %s: The network error reported when trying to reach Stripe. */
+							? sprintf( __( 'Stripe could not be reached. %s.', 'paid-memberships-pro' ), rtrim( $matches[1], '.' ) )
+							: __( 'Stripe could not be reached.', 'paid-memberships-pro' );
+					}
+					$results['stripe_api'] = array( 'status' => 'fail', 'message' => $message );
+					$results['secret_key'] = array( 'status' => 'unknown', 'message' => __( 'Skipped because Stripe could not be reached.', 'paid-memberships-pro' ) );
+				} elseif ( 401 === $status ) {
+					$results['stripe_api'] = array( 'status' => 'pass', 'message' => __( 'Stripe responded normally.', 'paid-memberships-pro' ) );
+					$results['secret_key'] = array( 'status' => 'fail', 'message' => $message );
+				} else {
+					// Anything else, such as a restricted key without permission for this endpoint, means the key was accepted.
+					$results['stripe_api'] = array( 'status' => 'pass', 'message' => __( 'Stripe responded normally.', 'paid-memberships-pro' ) );
+					$results['secret_key'] = array( 'status' => 'pass', 'message' => __( 'Stripe accepted the saved secret key.', 'paid-memberships-pro' ) );
+				}
+			}
+		}
+
+		// Connect server. Retrieve the current platform publishable key now, ignoring the usual throttle.
+		if ( ! self::using_api_keys() && ! empty( $secret_key ) ) {
+			delete_transient( 'pmpro_stripe_connect_platform_keys_checked' );
+			if ( self::refresh_connect_publishable_keys() ) {
+				$results['connect_server'] = array( 'status' => 'pass', 'message' => __( 'The current platform publishable key was retrieved from Paid Memberships Pro.', 'paid-memberships-pro' ) );
+			} else {
+				$results['connect_server'] = array( 'status' => 'fail', 'message' => __( 'The Paid Memberships Pro Connect server could not be reached or returned an invalid response. Checkout is using the last known publishable key.', 'paid-memberships-pro' ) );
+			}
+		}
+
+		// Publishable key. Check the format for API key sites, then ask Stripe to accept the key that checkout will actually use.
+		$publishable_key = $this->get_publishablekey();
+		$expected_prefix = 'live' === $gateway_environment ? 'pk_live_' : 'pk_test_';
+		if ( empty( $secret_key ) ) {
+			$results['publishable_key'] = array( 'status' => 'unknown', 'message' => __( 'Skipped because no Stripe credentials are saved for this environment.', 'paid-memberships-pro' ) );
+		} elseif ( self::using_api_keys() && 0 !== strpos( $publishable_key, $expected_prefix ) ) {
+			if ( 0 === strpos( $publishable_key, 'pk_' ) ) {
+				$results['publishable_key'] = array(
+					'status'  => 'fail',
+					'message' => 'live' === $gateway_environment
+						? __( 'The saved publishable key is a test mode key, but the gateway environment is set to live.', 'paid-memberships-pro' )
+						: __( 'The saved publishable key is a live mode key, but the gateway environment is set to sandbox/testing.', 'paid-memberships-pro' ),
+				);
+			} else {
+				$results['publishable_key'] = array( 'status' => 'fail', 'message' => __( 'The saved publishable key does not look like a Stripe publishable key.', 'paid-memberships-pro' ) );
+			}
+		} elseif ( 'fail' === $results['stripe_api']['status'] ) {
+			$results['publishable_key'] = array( 'status' => 'unknown', 'message' => __( 'Skipped because Stripe could not be reached.', 'paid-memberships-pro' ) );
+		} else {
+			// Publishable keys may create tokens, so a throwaway PII token is a real check that Stripe accepts the key (and, for Connect, the connected account).
+			$exception = null;
+			$options   = array( 'api_key' => $publishable_key );
+			if ( ! self::using_api_keys() ) {
+				$options['stripe_account'] = $this->get_connect_user_id();
+			}
+			try {
+				Stripe_Token::create( array( 'pii' => array( 'id_number' => '000000000' ) ), $options );
+			} catch ( \Throwable $e ) {
+				$exception = $e;
+			} catch ( \Exception $e ) {
+				$exception = $e;
+			}
+
+			$status = ! empty( $exception ) && method_exists( $exception, 'getHttpStatus' ) ? (int) $exception->getHttpStatus() : 0;
+			if ( empty( $exception ) || ( ! empty( $status ) && 401 !== $status ) ) {
+				// Only a 401 means the key was rejected. Anything else means Stripe recognized the key.
+				$results['publishable_key'] = array(
+					'status'  => 'pass',
+					'message' => self::using_api_keys()
+						? __( 'Stripe accepted the saved publishable key.', 'paid-memberships-pro' )
+						: __( 'Stripe accepted the platform publishable key for the connected account.', 'paid-memberships-pro' ),
+				);
+			} elseif ( 401 === $status ) {
+				$results['publishable_key'] = array( 'status' => 'fail', 'message' => $exception->getMessage() ? $exception->getMessage() : __( 'Invalid API key.', 'paid-memberships-pro' ) );
+			} else {
+				/* translators: %s: The error message. */
+				$results['publishable_key'] = array( 'status' => 'unknown', 'message' => sprintf( __( 'The publishable key could not be checked: %s', 'paid-memberships-pro' ), $exception->getMessage() ) );
+			}
+		}
+
+		// Put the library's timeouts back.
+		if ( ! empty( $default_timeouts ) ) {
+			$http_client->setTimeout( $default_timeouts[0] );
+			$http_client->setConnectTimeout( $default_timeouts[1] );
+		}
+
+		// Show the two server checks first, then the two key checks.
+		$order   = array( 'stripe_api', 'connect_server', 'secret_key', 'publishable_key' );
+		$results = array_merge( array_flip( array_intersect( $order, array_keys( $results ) ) ), $results );
+
+		$test_results = array(
+			'timestamp'   => time(),
+			'environment' => $gateway_environment,
+			'results'     => $results,
+		);
+		update_option( 'pmpro_stripe_connection_test', $test_results, false );
+
+		return $test_results;
+	}
+
+	/**
+	 * Get the results of the last connection test.
+	 *
+	 * @since TBD
+	 *
+	 * Results are only returned if they were for the current gateway environment. Switching environments
+	 * changes every key being tested, so results from the other environment are treated as if the test never ran.
+	 *
+	 * @return array|false Array with 'timestamp', 'environment', and 'results' (test key => array with 'status' and 'message'), or false if the test has not run for the current environment.
+	 */
+	public static function get_connection_test_results() {
+		$results = get_option( 'pmpro_stripe_connection_test' );
+		if ( ! is_array( $results ) || empty( $results['timestamp'] ) || empty( $results['environment'] ) || empty( $results['results'] ) || ! is_array( $results['results'] ) ) {
+			return false;
+		}
+		if ( $results['environment'] !== ( 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox' ) ) {
+			return false;
+		}
+		return $results;
+	}
+
+	/**
+	 * Forget the results of the last connection test so that the next check starts fresh.
+	 *
+	 * @since TBD
+	 */
+	public static function clear_connection_test_results() {
+		delete_option( 'pmpro_stripe_connection_test' );
+	}
+
+	/**
+	 * Get the keys of the checks that failed in a set of connection test results.
+	 *
+	 * @since TBD
+	 *
+	 * @param array|false $results Results from get_connection_test_results() or run_connection_test().
+	 * @return string[] The failed test keys.
+	 */
+	public static function get_failed_connection_tests( $results ) {
+		$failed = array();
+		if ( empty( $results['results'] ) || ! is_array( $results['results'] ) ) {
+			return $failed;
+		}
+		foreach ( $results['results'] as $test => $result ) {
+			if ( isset( $result['status'] ) && 'fail' === $result['status'] ) {
+				$failed[] = $test;
+			}
+		}
+		return $failed;
+	}
+
+	/**
+	 * Run the connection test from the daily scheduled task.
+	 *
+	 * @since TBD
+	 */
+	public static function run_scheduled_connection_test() {
+		if ( 'stripe' !== get_option( 'pmpro_gateway' ) ) {
+			return;
+		}
+
+		$stripe = new PMProGateway_stripe();
+		if ( empty( $stripe->get_secretkey() ) ) {
+			return;
+		}
+
+		$stripe->run_connection_test();
+	}
+
+	/**
+	 * Run the connection test from the payment settings page and return the refreshed Status cell.
+	 *
+	 * @since TBD
+	 */
+	public static function wp_ajax_pmpro_stripe_run_connection_test() {
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'paid-memberships-pro' ) ), 403 );
+		}
+		check_ajax_referer( 'pmpro_stripe_connection_test', 'nonce' );
+
+		$stripe = new PMProGateway_stripe();
+		$stripe->run_connection_test();
+
+		ob_start();
+		$stripe->show_connection_status_cell( 'live' === get_option( 'pmpro_gateway_environment' ) );
+		wp_send_json_success( array( 'html' => ob_get_clean() ) );
+	}
+
+	/**
+	 * Run the connection test when an admin follows the button link without JavaScript.
+	 *
+	 * @since TBD
+	 */
+	public static function maybe_run_connection_test_on_demand() {
+		if ( ! isset( $_REQUEST['pmpro_stripe_connection_test'] ) || 'run' !== $_REQUEST['pmpro_stripe_connection_test'] ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
+			return;
+		}
+
+		check_admin_referer( 'pmpro_stripe_connection_test' );
+
+		$stripe = new PMProGateway_stripe();
+		$stripe->run_connection_test();
+
+		wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe' ), admin_url( 'admin.php' ) ) . '#pmpro_stripe_connection_test' );
+		exit;
+	}
+
+	/**
+	 * Get the human-readable name of a connection test check.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $test The test key.
+	 * @return string The label.
+	 */
+	private static function get_connection_test_label( $test ) {
+		$labels = array(
+			'stripe_api'      => __( 'Stripe API', 'paid-memberships-pro' ),
+			'secret_key'      => __( 'Secret Key', 'paid-memberships-pro' ),
+			'connect_server'  => __( 'Paid Memberships Pro Connect Server', 'paid-memberships-pro' ),
+			'publishable_key' => __( 'Publishable Key', 'paid-memberships-pro' ),
+		);
+		return isset( $labels[ $test ] ) ? $labels[ $test ] : $test;
+	}
+
+	/**
+	 * Get escaped HTML explaining how to fix a failed connection test check.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $test                The test key.
+	 * @param string $gateway_environment The gateway environment the test ran in, 'live' or 'sandbox'.
+	 * @return string Escaped HTML, or an empty string if there is no suggested fix.
+	 */
+	private static function get_connection_test_fix( $test, $gateway_environment ) {
+		if ( self::has_connect_credentials( $gateway_environment ) ) {
+			$credentials_fix = sprintf(
+				/* translators: %s: Link with the text "Reconnect with Stripe". */
+				esc_html__( '%s using the same Stripe account that this site was previously connected to.', 'paid-memberships-pro' ),
+				'<a href="' . esc_url( self::get_connect_url( $gateway_environment, 'authorize' ) ) . '">' . esc_html__( 'Reconnect with Stripe', 'paid-memberships-pro' ) . '</a>'
+			);
+		} elseif ( self::using_api_keys() ) {
+			$credentials_fix = esc_html__( 'Enter a new Publishable Key and Restricted Key below, then save your settings.', 'paid-memberships-pro' );
+		} else {
+			$credentials_fix = esc_html__( 'Connect with Stripe above.', 'paid-memberships-pro' );
+		}
+
+		switch ( $test ) {
+			case 'stripe_api':
+				return sprintf(
+					/* translators: %s: Link to the Stripe status page. */
+					esc_html__( 'Your web host may be blocking connections to api.stripe.com, or Stripe may be having an outage. Check %s and contact your host if this continues.', 'paid-memberships-pro' ),
+					'<a href="https://status.stripe.com/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'the Stripe status page', 'paid-memberships-pro' ) . '</a>'
+				);
+			case 'secret_key':
+			case 'publishable_key':
+				return $credentials_fix;
+			case 'connect_server':
+				return sprintf(
+					/* translators: %s: Link to Paid Memberships Pro support. */
+					esc_html__( 'Checkout continues to work with the last known publishable key. If this continues for more than a day, %s.', 'paid-memberships-pro' ),
+					'<a href="https://www.paidmembershipspro.com/support/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'contact Paid Memberships Pro support', 'paid-memberships-pro' ) . '</a>'
+				);
+		}
+
+		return '';
+	}
+
+	/**
+	 * Get the nonce-protected URL that runs the connection test on demand.
+	 *
+	 * @since TBD
+	 *
+	 * @return string The URL.
+	 */
+	private static function get_connection_test_url() {
+		return wp_nonce_url(
+			add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connection_test' => 'run' ), admin_url( 'admin.php' ) ),
+			'pmpro_stripe_connection_test'
+		);
+	}
+
+	/**
+	 * Check whether a Stripe account returned by the Connect server differs from the one already saved for an environment.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $gateway_environment The environment being connected, 'live' or 'sandbox'.
+	 * @param string $stripe_user_id      The Stripe account ID returned by the Connect server.
+	 * @return bool True if a different account is already saved for this environment.
+	 */
+	private static function is_different_connected_account( $gateway_environment, $stripe_user_id ) {
+		$saved_user_id = get_option( 'pmpro_' . ( 'live' === $gateway_environment ? 'live' : 'sandbox' ) . '_stripe_connect_user_id' );
+		return ! empty( $saved_user_id ) && $saved_user_id !== $stripe_user_id;
+	}
+
+	/**
+	 * Build the URL used to start or end a Stripe Connect session for an environment.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $environment The gateway environment, 'live' or 'sandbox'.
+	 * @param string $action      The Connect action, 'authorize' or 'disconnect'.
+	 * @return string The URL on the Connect server to send the admin to.
+	 */
+	private static function get_connect_url( $environment, $action ) {
+		$environment = 'live' === $environment ? 'live' : 'sandbox';
+
+		$return_url_args = array(
+			'page'         => 'pmpro-paymentsettings',
+			'edit_gateway' => 'stripe',
+		);
+		$connect_args = array(
+			'action'              => $action,
+			'gateway_environment' => 'live' === $environment ? 'live' : 'test', // The Connect server uses 'test' instead of 'sandbox'.
+		);
+		if ( 'disconnect' === $action ) {
+			$connect_args['stripe_user_id'] = get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' );
+			$return_url_args['pmpro_stripe_connect_deauthorize_nonce'] = wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' );
+		} else {
+			$return_url_args['pmpro_stripe_connect_nonce'] = wp_create_nonce( 'pmpro_stripe_connect_nonce' );
+		}
+		$connect_args['return_url'] = rawurlencode( add_query_arg( $return_url_args, admin_url( 'admin.php' ) ) );
+
+		return add_query_arg( $connect_args, apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' ) );
 	}
 
 	/**
@@ -2983,7 +3437,9 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function show_connection_settings_section( $livemode ) {
 		$environment = $livemode ? 'live' : 'sandbox';
-		$environment2 = $livemode ? 'live' : 'test'; // For when 'test' is used instead of 'sandbox'.
+
+		// Determine if this is the active environment.
+		$active_environment = $environment === get_option( 'pmpro_gateway_environment' );
 
 		// Determine if the gateway is connected in live mode and set var.
 		if ( self::has_connect_credentials( $environment ) || self::using_api_keys() ) {
@@ -2991,9 +3447,6 @@ class PMProGateway_stripe extends PMProGateway {
 		} else {
 			$connection_selector = $livemode ? 'error' : 'alert';
 		}
-
-		// Determine if this is the active environment.
-		$active_environment = $environment === get_option( 'pmpro_gateway_environment' );
 
 		?>
 		<div id="pmpro_stripe_<?php echo esc_attr( $environment); ?>" class="pmpro_section" data-visibility="<?php echo esc_attr( $active_environment ? 'shown' : 'hidden' ); ?>" data-activated="<?php echo esc_attr( $active_environment ? 'true' : 'false' ); ?>">
@@ -3011,23 +3464,55 @@ class PMProGateway_stripe extends PMProGateway {
 								<th scope="row" valign="top">
 									<label><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></label>
 								</th>
-								<td>
-									<span class="pmpro_tag pmpro_tag-<?php echo esc_attr( $connection_selector ); ?>">
-									<?php
-										echo ( $livemode ? esc_html__( 'Live Mode:', 'paid-memberships-pro' ) : esc_html__( 'Test Mode:', 'paid-memberships-pro' ) ) . ' ';
-										if ( self::using_legacy_keys() ) {
-											esc_html_e( 'Connected with Legacy Keys', 'paid-memberships-pro' );
-										} elseif ( self::using_api_keys() ) {
-											esc_html_e( 'Connected with API Keys', 'paid-memberships-pro' );
-										} elseif( self::has_connect_credentials( $environment ) ) {
-											esc_html_e( 'Connected', 'paid-memberships-pro' );
-										} else {
-											esc_html_e( 'Not Connected', 'paid-memberships-pro' );
-										}
-									?>
-									</span>
+								<td id="pmpro_stripe_connection_status" data-nonce="<?php echo esc_attr( wp_create_nonce( 'pmpro_stripe_connection_test' ) ); ?>" data-autorun="<?php echo esc_attr( self::has_connect_credentials( $environment ) || self::using_api_keys() ? '1' : '0' ); ?>">
+									<?php $this->show_connection_status_cell( $livemode ); ?>
 								</td>
 							</tr>
+							<script>
+								// Connection test: run on load and on demand, and toggle the details.
+								jQuery( document ).ready( function( $ ) {
+									var cell = $( '#pmpro_stripe_connection_status' );
+									var checking = <?php echo wp_json_encode( __( 'Checking the Stripe connection...', 'paid-memberships-pro' ) ); ?>;
+									var failed = <?php echo wp_json_encode( __( 'The connection test could not be run. Please reload the page and try again.', 'paid-memberships-pro' ) ); ?>;
+									var hide = <?php echo wp_json_encode( __( 'Hide details', 'paid-memberships-pro' ) ); ?>;
+									var show = <?php echo wp_json_encode( __( 'Show details', 'paid-memberships-pro' ) ); ?>;
+
+									function run() {
+										cell.find( '.pmpro_stripe_run_connection_test' ).addClass( 'disabled' ).attr( 'aria-disabled', 'true' );
+										cell.find( '.pmpro_stripe_connection_test_checking' ).remove();
+										cell.find( '.pmpro_tag' ).first().after( '<span class="pmpro_stripe_connection_test_checking"><span class="spinner is-active" style="float: none; margin: 0 4px 0 8px; vertical-align: middle;"></span>' + checking + '</span>' );
+										$.post( ajaxurl, { action: 'pmpro_stripe_run_connection_test', nonce: cell.data( 'nonce' ) } )
+											.done( function( response ) {
+												if ( response && response.success && response.data && response.data.html ) {
+													cell.html( response.data.html );
+												} else {
+													cell.find( '.pmpro_stripe_connection_test_checking' ).text( failed );
+												}
+											} )
+											.fail( function() {
+												cell.find( '.pmpro_stripe_connection_test_checking' ).text( failed );
+											} );
+									}
+
+									cell.on( 'click', '.pmpro_stripe_run_connection_test', function( e ) {
+										e.preventDefault();
+										if ( ! $( this ).hasClass( 'disabled' ) ) {
+											run();
+										}
+									} );
+
+									cell.on( 'click', '#pmpro_stripe_connection_test_toggle', function( e ) {
+										e.preventDefault();
+										var details = $( '#pmpro_stripe_connection_test' );
+										details.toggle();
+										$( this ).attr( 'aria-expanded', details.is( ':visible' ) ? 'true' : 'false' ).text( details.is( ':visible' ) ? hide : show );
+									} );
+
+									if ( '1' === String( cell.data( 'autorun' ) ) ) {
+										run();
+									}
+								} );
+							</script>
 						<?php } ?>
 						<?php if ( self::using_legacy_keys() && ! self::has_connect_credentials( $environment ) && $active_environment ) { ?>
 							<tr class="gateway gateway_stripe_<?php echo esc_attr( $environment ); ?>">
@@ -3059,17 +3544,8 @@ class PMProGateway_stripe extends PMProGateway {
 							</th>
 							<td>
 								<?php
-								$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
 								if ( self::has_connect_credentials( $environment ) ) {
-									$connect_url = add_query_arg(
-										array(
-											'action' => 'disconnect',
-											'gateway_environment' => $environment2,
-											'stripe_user_id' => get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' ),
-											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
-										),
-										$connect_url_base
-									);
+									$connect_url = self::get_connect_url( $environment, 'disconnect' );
 									?>
 									<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
 									<p class="description">
@@ -3083,14 +3559,7 @@ class PMProGateway_stripe extends PMProGateway {
 									</p>
 									<?php
 								} else {
-									$connect_url = add_query_arg(
-										array(
-											'action' => 'authorize',
-											'gateway_environment' => $environment2,
-											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_nonce' => wp_create_nonce( 'pmpro_stripe_connect_nonce' ) ), admin_url( 'admin.php' ) ) ),
-										),
-										$connect_url_base
-									);
+									$connect_url = self::get_connect_url( $environment, 'authorize' );
 									?>
 									<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 									<?php
@@ -3180,6 +3649,100 @@ class PMProGateway_stripe extends PMProGateway {
 					}
 				?>
 			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Show the contents of the Status cell for the active Stripe Connection section: the status tag and the connection test.
+	 *
+	 * Also used as the AJAX response after running the connection test.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $livemode True if showing the live environment, false for sandbox.
+	 */
+	private function show_connection_status_cell( $livemode ) {
+		$environment = $livemode ? 'live' : 'sandbox';
+		$connected   = self::has_connect_credentials( $environment ) || self::using_api_keys();
+		$results     = $connected ? self::get_connection_test_results() : false;
+		$failed      = self::get_failed_connection_tests( $results );
+		$key_failed  = array_intersect( $failed, array( 'secret_key', 'publishable_key' ) );
+
+		if ( ! empty( $key_failed ) ) {
+			$connection_selector = 'error';
+		} elseif ( $connected ) {
+			$connection_selector = $livemode ? 'success' : 'alert';
+		} else {
+			$connection_selector = $livemode ? 'error' : 'alert';
+		}
+		?>
+		<span class="pmpro_tag pmpro_tag-<?php echo esc_attr( $connection_selector ); ?>">
+		<?php
+			echo ( $livemode ? esc_html__( 'Live Mode:', 'paid-memberships-pro' ) : esc_html__( 'Test Mode:', 'paid-memberships-pro' ) ) . ' ';
+			if ( ! empty( $key_failed ) ) {
+				esc_html_e( 'Connection Error', 'paid-memberships-pro' );
+			} elseif ( ! empty( $failed ) ) {
+				esc_html_e( 'Connected, Issues Detected', 'paid-memberships-pro' );
+			} elseif ( self::using_legacy_keys() ) {
+				esc_html_e( 'Connected with Legacy Keys', 'paid-memberships-pro' );
+			} elseif ( self::using_api_keys() ) {
+				esc_html_e( 'Connected with API Keys', 'paid-memberships-pro' );
+			} elseif ( self::has_connect_credentials( $environment ) ) {
+				esc_html_e( 'Connected', 'paid-memberships-pro' );
+			} else {
+				esc_html_e( 'Not Connected', 'paid-memberships-pro' );
+			}
+		?>
+		</span>
+		<?php
+		if ( ! $connected ) {
+			return;
+		}
+
+		if ( empty( $results ) ) {
+			?>
+			<p class="description">
+				<?php esc_html_e( 'The connection has not been tested yet.', 'paid-memberships-pro' ); ?>
+				<a href="<?php echo esc_url( self::get_connection_test_url() ); ?>" class="pmpro_stripe_run_connection_test"><?php esc_html_e( 'Run connection test', 'paid-memberships-pro' ); ?></a>
+			</p>
+			<?php
+			return;
+		}
+
+		// Open the details automatically only when something failed.
+		$expanded = ! empty( $failed );
+		?>
+		<p class="description">
+			<?php
+			/* translators: %1$s: The date of the last test. %2$s: The time of the last test. */
+			echo esc_html( sprintf( __( 'Last checked on %1$s at %2$s.', 'paid-memberships-pro' ), wp_date( get_option( 'date_format' ), (int) $results['timestamp'] ), wp_date( get_option( 'time_format' ), (int) $results['timestamp'] ) ) );
+			?>
+			<a href="#pmpro_stripe_connection_test" id="pmpro_stripe_connection_test_toggle" aria-expanded="<?php echo esc_attr( $expanded ? 'true' : 'false' ); ?>" aria-controls="pmpro_stripe_connection_test"><?php echo esc_html( $expanded ? __( 'Hide details', 'paid-memberships-pro' ) : __( 'Show details', 'paid-memberships-pro' ) ); ?></a>
+		</p>
+		<div id="pmpro_stripe_connection_test" <?php if ( ! $expanded ) { ?>style="display: none;"<?php } ?>>
+			<?php foreach ( $results['results'] as $test => $result ) { ?>
+				<p>
+					<?php
+					if ( 'pass' === $result['status'] ) {
+						echo '<span class="pmpro_tag pmpro_tag-success">' . esc_html__( 'Passed', 'paid-memberships-pro' ) . '</span>';
+					} elseif ( 'fail' === $result['status'] ) {
+						echo '<span class="pmpro_tag pmpro_tag-error">' . esc_html__( 'Failed', 'paid-memberships-pro' ) . '</span>';
+					} else {
+						echo '<span class="pmpro_tag pmpro_tag-alert">' . esc_html__( 'Skipped', 'paid-memberships-pro' ) . '</span>';
+					}
+					?>
+					<strong><?php echo esc_html( self::get_connection_test_label( $test ) ); ?></strong>
+					<br /><span class="description"><?php echo esc_html( $result['message'] ); ?>
+					<?php if ( 'fail' === $result['status'] ) { ?>
+						<?php echo wp_kses( self::get_connection_test_fix( $test, $results['environment'] ), array( 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ); ?>
+					<?php } ?>
+					</span>
+				</p>
+			<?php } ?>
+			<p>
+				<a class="button button-secondary pmpro_stripe_run_connection_test" href="<?php echo esc_url( self::get_connection_test_url() ); ?>"><?php esc_html_e( 'Run Connection Test', 'paid-memberships-pro' ); ?></a>
+			</p>
 		</div>
 		<?php
 	}
