@@ -138,8 +138,17 @@ function pmpro_stripe_recover_checkout_transaction_ids() {
 			$checkout_session = null;
 		}
 		if ( empty( $checkout_session ) ) {
+			// Write the note directly rather than calling saveOrder(), which would
+			// fire the pmpro_update_order/pmpro_updated_order hooks (Zapier, etc.)
+			// for a change that no integration needs to be notified about.
 			$order->add_order_note( __( 'Could not retrieve the Stripe Checkout Session for this order while trying to recover its missing transaction IDs.', 'paid-memberships-pro' ) );
-			$order->saveOrder();
+			$wpdb->update(
+				$wpdb->pmpro_membership_orders,
+				array( 'notes' => $order->notes ),
+				array( 'id' => $order->id ),
+				array( '%s' ),
+				array( '%d' )
+			);
 			update_pmpro_membership_order_meta( $order->id, 'stripe_checkout_transaction_id_recovery', 'failed' );
 			continue;
 		}
@@ -194,8 +203,21 @@ function pmpro_stripe_recover_checkout_transaction_ids() {
 			continue;
 		}
 
+		// Write the recovered IDs and note directly rather than calling saveOrder(),
+		// which would rewrite the whole row and fire the pmpro_update_order/
+		// pmpro_updated_order hooks (Zapier, etc.) for every affected order.
 		$order->add_order_note( __( 'Missing transaction IDs for this order were recovered from its Stripe Checkout Session.', 'paid-memberships-pro' ) );
-		$order->saveOrder();
+		$wpdb->update(
+			$wpdb->pmpro_membership_orders,
+			array(
+				'payment_transaction_id'      => $order->payment_transaction_id,
+				'subscription_transaction_id' => $order->subscription_transaction_id,
+				'notes'                       => $order->notes,
+			),
+			array( 'id' => $order->id ),
+			array( '%s', '%s', '%s' ),
+			array( '%d' )
+		);
 		update_pmpro_membership_order_meta( $order->id, 'stripe_checkout_transaction_id_recovery', 'recovered' );
 
 		// Make sure a subscription record exists for recovered subscription orders.
