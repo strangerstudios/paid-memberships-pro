@@ -181,6 +181,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'maybe_run_connection_test_on_demand' ) );
 		add_action( 'wp_ajax_pmpro_stripe_run_connection_test', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_run_connection_test' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_connection_notice' ) );
+		add_filter( 'pmpro_payment_settings_gateway_status_html', array( 'PMProGateway_stripe', 'filter_payment_settings_gateway_status_html' ), 10, 2 );
 
 		// Show warning if webhooks are not set up.
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_webhook_setup_notice' ) );
@@ -1782,6 +1783,34 @@ class PMProGateway_stripe extends PMProGateway {
 			<p><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe' ), admin_url( 'admin.php' ) ) . '#pmpro_stripe_connection_test' ); ?>"><?php esc_html_e( 'Review the Stripe connection test', 'paid-memberships-pro' ); ?></a></p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Add a connection test tag to Stripe's status in the payment gateways list when the last test found problems.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $gateway_status_html The status HTML for the gateway.
+	 * @param string $gateway_slug        The gateway being shown.
+	 * @return string The status HTML.
+	 */
+	public static function filter_payment_settings_gateway_status_html( $gateway_status_html, $gateway_slug ) {
+		if ( 'stripe' !== $gateway_slug || 'stripe' !== get_option( 'pmpro_gateway' ) ) {
+			return $gateway_status_html;
+		}
+
+		$failed = self::get_failed_connection_tests( self::get_connection_test_results() );
+		if ( empty( $failed ) ) {
+			return $gateway_status_html;
+		}
+
+		if ( array_intersect( $failed, array( 'secret_key', 'publishable_key' ) ) ) {
+			$gateway_status_html .= ' <span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Connection Error', 'paid-memberships-pro' ) . '</span>';
+		} else {
+			$gateway_status_html .= ' <span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-alert">' . esc_html__( 'Issues Detected', 'paid-memberships-pro' ) . '</span>';
+		}
+
+		return $gateway_status_html;
 	}
 
 	/**
