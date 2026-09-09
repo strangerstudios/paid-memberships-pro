@@ -1598,9 +1598,11 @@ class PMProGateway_stripe extends PMProGateway {
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
 		) {
 			$error = __( 'Invalid response from the Stripe Connect server.', 'paid-memberships-pro' );
-		} elseif ( self::is_different_connected_account( $_REQUEST['pmpro_stripe_connected_environment'], $_REQUEST['pmpro_stripe_user_id'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			// Reconnecting with a different account would orphan every existing customer and subscription.
-			$error = __( 'The Stripe account you just connected is not the account this site was already connected to, so the connection was left unchanged. Existing memberships are tied to the original account. To switch Stripe accounts, disconnect from Stripe first. Note that disconnecting will disconnect all sites using the original Stripe account.', 'paid-memberships-pro' );
+		} elseif ( 'live' === $_REQUEST['pmpro_stripe_connected_environment'] && self::is_different_connected_account( 'live', $_REQUEST['pmpro_stripe_user_id'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			// Reconnecting live mode with a different account would orphan every existing customer and subscription.
+			// Redirect right away so the access token in the return URL doesn't linger in the address bar or server logs.
+			wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_error' => 'different_account' ), admin_url( 'admin.php' ) ) );
+			exit;
 		} else {
 			// Change current gateway to Stripe. Only once the connection succeeded, so a failed or refused connection leaves the settings alone.
 			update_option( 'pmpro_gateway', 'stripe' );
@@ -1653,6 +1655,12 @@ class PMProGateway_stripe extends PMProGateway {
 
 	public static function stripe_connect_show_errors() {
 		global $pmpro_stripe_error;
+
+		// A live reconnect with a different Stripe account was refused by stripe_connect_save_options().
+		if ( empty( $pmpro_stripe_error ) && isset( $_GET['pmpro_stripe_connect_error'] ) && 'different_account' === $_GET['pmpro_stripe_connect_error'] && current_user_can( 'manage_options' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$pmpro_stripe_error = __( '<strong>Error:</strong> The Stripe account you just connected is not the account this site was already connected to, so the connection was left unchanged. Existing memberships are tied to the original account. To switch Stripe accounts, disconnect from Stripe first. Note that disconnecting will disconnect all sites using the original Stripe account.', 'paid-memberships-pro' );
+		}
+
 		if ( ! empty( $pmpro_stripe_error ) ) {
 			$class   = 'notice notice-error pmpro-stripe-connect-message';
 			$allowed_html = array(
@@ -1757,12 +1765,6 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		// Nothing to test if Stripe isn't connected.
-		$stripe = new PMProGateway_stripe();
-		if ( empty( $stripe->get_secretkey() ) ) {
-			return;
-		}
-
 		// Only warn about failures the admin can fix. Reachability problems are usually temporary.
 		$results = self::get_connection_test_results();
 		$failed  = array_intersect( self::get_failed_connection_tests( $results ), array( 'secret_key', 'publishable_key' ) );
@@ -1775,7 +1777,7 @@ class PMProGateway_stripe extends PMProGateway {
 			<p><?php esc_html_e( 'The most recent Stripe connection test found problems that may prevent members from checking out or updating their billing information:', 'paid-memberships-pro' ); ?></p>
 			<ul>
 				<?php foreach ( $failed as $test ) { ?>
-					<li><strong><?php echo esc_html( self::get_connection_test_label( $test ) ); ?>:</strong> <?php echo esc_html( $results['results'][ $test ]['message'] ); ?></li>
+					<li><strong><?php echo esc_html( self::get_connection_test_label( $test ) ); ?>:</strong> <?php echo esc_html( isset( $results['results'][ $test ]['message'] ) ? $results['results'][ $test ]['message'] : '' ); ?></li>
 				<?php } ?>
 			</ul>
 			<p><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe' ), admin_url( 'admin.php' ) ) . '#pmpro_stripe_connection_test' ); ?>"><?php esc_html_e( 'Review the Stripe connection test', 'paid-memberships-pro' ); ?></a></p>
@@ -2227,6 +2229,11 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( $results['environment'] !== ( 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox' ) ) {
 			return false;
 		}
+		foreach ( $results['results'] as $result ) {
+			if ( ! is_array( $result ) || ! isset( $result['status'], $result['message'] ) ) {
+				return false;
+			}
+		}
 		return $results;
 	}
 
@@ -2292,8 +2299,11 @@ class PMProGateway_stripe extends PMProGateway {
 		$stripe = new PMProGateway_stripe();
 		$stripe->run_connection_test();
 
+		// Keep the details open if the admin had them open or clicked the button, so the result doesn't collapse under them.
+		$expanded = ! empty( $_POST['expanded'] ) && '1' === $_POST['expanded'];
+
 		ob_start();
-		$stripe->show_connection_status_cell( 'live' === get_option( 'pmpro_gateway_environment' ) );
+		$stripe->show_connection_status_cell( 'live' === get_option( 'pmpro_gateway_environment' ), $expanded );
 		wp_send_json_success( array( 'html' => ob_get_clean() ) );
 	}
 
@@ -2316,7 +2326,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$stripe = new PMProGateway_stripe();
 		$stripe->run_connection_test();
 
-		wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe' ), admin_url( 'admin.php' ) ) . '#pmpro_stripe_connection_test' );
+		wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connection_test' => 'complete' ), admin_url( 'admin.php' ) ) . '#pmpro_stripe_connection_test' );
 		exit;
 	}
 
@@ -2398,6 +2408,8 @@ class PMProGateway_stripe extends PMProGateway {
 
 	/**
 	 * Check whether a Stripe account returned by the Connect server differs from the one already saved for an environment.
+	 *
+	 * Only enforced for live mode. Sandboxes get a new account ID whenever one is created, so switching them is routine.
 	 *
 	 * @since TBD
 	 *
@@ -3465,7 +3477,12 @@ class PMProGateway_stripe extends PMProGateway {
 								<th scope="row" valign="top">
 									<label><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></label>
 								</th>
-								<td id="pmpro_stripe_connection_status" data-nonce="<?php echo esc_attr( wp_create_nonce( 'pmpro_stripe_connection_test' ) ); ?>" data-autorun="<?php echo esc_attr( self::has_connect_credentials( $environment ) || self::using_api_keys() ? '1' : '0' ); ?>">
+								<?php
+								// Run the test on load only when Stripe is connected and there is no result from the last hour. The daily task and the button cover the rest.
+								$last_test = self::get_connection_test_results();
+								$autorun   = ( self::has_connect_credentials( $environment ) || self::using_api_keys() ) && ( empty( $last_test ) || $last_test['timestamp'] < time() - HOUR_IN_SECONDS );
+								?>
+								<td id="pmpro_stripe_connection_status" aria-live="polite" data-nonce="<?php echo esc_attr( wp_create_nonce( 'pmpro_stripe_connection_test' ) ); ?>" data-autorun="<?php echo esc_attr( $autorun ? '1' : '0' ); ?>">
 									<?php $this->show_connection_status_cell( $livemode ); ?>
 								</td>
 							</tr>
@@ -3478,27 +3495,32 @@ class PMProGateway_stripe extends PMProGateway {
 									var hide = <?php echo wp_json_encode( __( 'Hide details', 'paid-memberships-pro' ) ); ?>;
 									var show = <?php echo wp_json_encode( __( 'Show details', 'paid-memberships-pro' ) ); ?>;
 
-									function run() {
+									function showFailure( message ) {
+										cell.find( '.pmpro_stripe_connection_test_checking' ).text( message || failed );
+										cell.find( '.pmpro_stripe_run_connection_test' ).removeClass( 'disabled' ).removeAttr( 'aria-disabled' );
+									}
+
+									function run( expanded ) {
 										cell.find( '.pmpro_stripe_run_connection_test' ).addClass( 'disabled' ).attr( 'aria-disabled', 'true' );
 										cell.find( '.pmpro_stripe_connection_test_checking' ).remove();
 										cell.find( '.pmpro_tag' ).first().after( '<span class="pmpro_stripe_connection_test_checking"><span class="spinner is-active" style="float: none; margin: 0 4px 0 8px; vertical-align: middle;"></span>' + checking + '</span>' );
-										$.post( ajaxurl, { action: 'pmpro_stripe_run_connection_test', nonce: cell.data( 'nonce' ) } )
+										$.post( ajaxurl, { action: 'pmpro_stripe_run_connection_test', nonce: cell.data( 'nonce' ), expanded: expanded ? '1' : '0' } )
 											.done( function( response ) {
 												if ( response && response.success && response.data && response.data.html ) {
 													cell.html( response.data.html );
 												} else {
-													cell.find( '.pmpro_stripe_connection_test_checking' ).text( failed );
+													showFailure( response && response.data && response.data.message );
 												}
 											} )
-											.fail( function() {
-												cell.find( '.pmpro_stripe_connection_test_checking' ).text( failed );
+											.fail( function( jqXHR ) {
+												showFailure( jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message );
 											} );
 									}
 
 									cell.on( 'click', '.pmpro_stripe_run_connection_test', function( e ) {
 										e.preventDefault();
 										if ( ! $( this ).hasClass( 'disabled' ) ) {
-											run();
+											run( true );
 										}
 									} );
 
@@ -3510,7 +3532,7 @@ class PMProGateway_stripe extends PMProGateway {
 									} );
 
 									if ( '1' === String( cell.data( 'autorun' ) ) ) {
-										run();
+										run( $( '#pmpro_stripe_connection_test' ).is( ':visible' ) );
 									}
 								} );
 							</script>
@@ -3661,9 +3683,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since TBD
 	 *
-	 * @param bool $livemode True if showing the live environment, false for sandbox.
+	 * @param bool $livemode       True if showing the live environment, false for sandbox.
+	 * @param bool $force_expanded Whether to show the details even when every check passed.
 	 */
-	private function show_connection_status_cell( $livemode ) {
+	private function show_connection_status_cell( $livemode, $force_expanded = false ) {
 		$environment = $livemode ? 'live' : 'sandbox';
 		$connected   = self::has_connect_credentials( $environment ) || self::using_api_keys();
 		$results     = $connected ? self::get_connection_test_results() : false;
@@ -3711,8 +3734,9 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		// Open the details automatically only when something failed.
-		$expanded = ! empty( $failed );
+		// Open the details automatically when something failed, or when the admin just ran the test without JavaScript.
+		$just_ran = isset( $_REQUEST['pmpro_stripe_connection_test'] ) && 'complete' === $_REQUEST['pmpro_stripe_connection_test']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$expanded = $force_expanded || $just_ran || ! empty( $failed );
 		?>
 		<p class="description">
 			<?php

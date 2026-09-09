@@ -274,9 +274,14 @@ class PMPro_Site_Health {
 
 			$connection_test = PMProGateway_stripe::get_connection_test_results();
 			if ( ! empty( $connection_test ) ) {
-				$failed = PMProGateway_stripe::get_failed_connection_tests( $connection_test );
-				// translators: %1$s: "passed" or a comma-separated list of failed checks. %2$s: The date of the last test.
-				$gateway_text .= ' (' . sprintf( __( 'Connection Test: %1$s on %2$s', 'paid-memberships-pro' ), empty( $failed ) ? __( 'passed', 'paid-memberships-pro' ) : __( 'failed', 'paid-memberships-pro' ) . ' ' . implode( ', ', $failed ), gmdate( 'Y-m-d', (int) $connection_test['timestamp'] ) ) . ')';
+				$not_passed = array();
+				foreach ( $connection_test['results'] as $check => $result ) {
+					if ( 'pass' !== $result['status'] ) {
+						$not_passed[] = $check . ':' . $result['status'];
+					}
+				}
+				// translators: %1$s: "passed" or a comma-separated list of checks that did not pass. %2$s: The date of the last test.
+				$gateway_text .= ' (' . sprintf( __( 'Connection Test: %1$s on %2$s', 'paid-memberships-pro' ), empty( $not_passed ) ? __( 'passed', 'paid-memberships-pro' ) : implode( ', ', $not_passed ), gmdate( 'Y-m-d', (int) $connection_test['timestamp'] ) ) . ')';
 			}
 
 			if ( $legacy ) {
