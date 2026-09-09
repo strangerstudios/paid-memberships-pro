@@ -2341,14 +2341,15 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string Escaped HTML, or an empty string if there is no suggested fix.
 	 */
 	private static function get_connection_test_fix( $test, $gateway_environment ) {
-		if ( self::has_connect_credentials( $gateway_environment ) ) {
+		// API keys take precedence over Connect credentials when both are saved, so check them first.
+		if ( self::using_api_keys() ) {
+			$credentials_fix = esc_html__( 'Enter a new Publishable Key and Restricted Key below, then save your settings.', 'paid-memberships-pro' );
+		} elseif ( self::has_connect_credentials( $gateway_environment ) ) {
 			$credentials_fix = sprintf(
 				/* translators: %s: Link with the text "Reconnect with Stripe". */
 				esc_html__( '%s using the same Stripe account that this site was previously connected to.', 'paid-memberships-pro' ),
 				'<a href="' . esc_url( self::get_connect_url( $gateway_environment, 'authorize' ) ) . '">' . esc_html__( 'Reconnect with Stripe', 'paid-memberships-pro' ) . '</a>'
 			);
-		} elseif ( self::using_api_keys() ) {
-			$credentials_fix = esc_html__( 'Enter a new Publishable Key and Restricted Key below, then save your settings.', 'paid-memberships-pro' );
 		} else {
 			$credentials_fix = esc_html__( 'Connect with Stripe above.', 'paid-memberships-pro' );
 		}
