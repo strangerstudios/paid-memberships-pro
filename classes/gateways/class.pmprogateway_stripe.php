@@ -1585,10 +1585,6 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		// Change current gateway to Stripe
-		update_option( 'pmpro_gateway', 'stripe' );
-		update_option( 'pmpro_gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
 		$error = '';
 		if (
 			'false' === $_REQUEST['pmpro_stripe_connected']
@@ -1606,6 +1602,10 @@ class PMProGateway_stripe extends PMProGateway {
 			// Reconnecting with a different account would orphan every existing customer and subscription.
 			$error = __( 'The Stripe account you just connected is not the account this site was already connected to, so the connection was left unchanged. Existing memberships are tied to the original account. To switch Stripe accounts, disconnect from Stripe first. Note that disconnecting will disconnect all sites using the original Stripe account.', 'paid-memberships-pro' );
 		} else {
+			// Change current gateway to Stripe. Only once the connection succeeded, so a failed or refused connection leaves the settings alone.
+			update_option( 'pmpro_gateway', 'stripe' );
+			update_option( 'pmpro_gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
 			// Update keys.
 			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
 				// Update live keys.
@@ -1991,10 +1991,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 3.8.6
 	 *
+	 * @param bool $force Whether to ignore the 5 minute throttle between attempts.
 	 * @return bool Whether the keys were refreshed.
 	 */
-	public static function refresh_connect_publishable_keys() {
-		if ( get_transient( 'pmpro_stripe_connect_platform_keys_checked' ) ) {
+	public static function refresh_connect_publishable_keys( $force = false ) {
+		if ( ! $force && get_transient( 'pmpro_stripe_connect_platform_keys_checked' ) ) {
 			return false;
 		}
 
@@ -2069,8 +2070,15 @@ class PMProGateway_stripe extends PMProGateway {
 		$gateway_environment = 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox';
 		$secret_key          = $this->get_secretkey();
 
+		// If the Stripe library could not be loaded (missing curl or json extension), nothing below can run. Don't report that as a rejected key.
+		if ( ! self::$is_loaded ) {
+			$skipped = array( 'status' => 'unknown', 'message' => __( 'Skipped because the Stripe library could not be loaded. Check the PHP extension warnings on this page.', 'paid-memberships-pro' ) );
+			update_option( 'pmpro_stripe_connection_test', array( 'timestamp' => time(), 'environment' => $gateway_environment, 'results' => array( 'stripe_api' => $skipped, 'secret_key' => $skipped, 'publishable_key' => $skipped ) ), false );
+			return self::get_connection_test_results();
+		}
+
 		// Use short timeouts so a host that silently drops Stripe traffic can't stall the request for the library's 30 second default.
-		$http_client      = self::$is_loaded && class_exists( '\Stripe\HttpClient\CurlClient' ) ? \Stripe\HttpClient\CurlClient::instance() : null;
+		$http_client      = class_exists( '\Stripe\HttpClient\CurlClient' ) ? \Stripe\HttpClient\CurlClient::instance() : null;
 		$default_timeouts = null;
 		if ( $http_client && method_exists( $http_client, 'getTimeout' ) && method_exists( $http_client, 'setTimeout' ) && method_exists( $http_client, 'getConnectTimeout' ) && method_exists( $http_client, 'setConnectTimeout' ) ) {
 			$default_timeouts = array( $http_client->getTimeout(), $http_client->getConnectTimeout() );
@@ -2079,7 +2087,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Stripe API reachability and secret key. One small read-only request answers both.
-		if ( ! self::$is_loaded || empty( $secret_key ) ) {
+		if ( empty( $secret_key ) ) {
 			$results['stripe_api'] = array( 'status' => 'unknown', 'message' => __( 'Skipped because no Stripe credentials are saved for this environment.', 'paid-memberships-pro' ) );
 			$results['secret_key'] = array( 'status' => 'fail', 'message' => __( 'No Stripe credentials are saved for this environment.', 'paid-memberships-pro' ) );
 		} else {
@@ -2124,8 +2132,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Connect server. Retrieve the current platform publishable key now, ignoring the usual throttle.
 		if ( ! self::using_api_keys() && ! empty( $secret_key ) ) {
-			delete_transient( 'pmpro_stripe_connect_platform_keys_checked' );
-			if ( self::refresh_connect_publishable_keys() ) {
+			if ( self::refresh_connect_publishable_keys( true ) ) {
 				$results['connect_server'] = array( 'status' => 'pass', 'message' => __( 'The current platform publishable key was retrieved from Paid Memberships Pro.', 'paid-memberships-pro' ) );
 			} else {
 				$results['connect_server'] = array( 'status' => 'fail', 'message' => __( 'The Paid Memberships Pro Connect server could not be reached or returned an invalid response. Checkout is using the last known publishable key.', 'paid-memberships-pro' ) );
@@ -3441,13 +3448,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Determine if this is the active environment.
 		$active_environment = $environment === get_option( 'pmpro_gateway_environment' );
-
-		// Determine if the gateway is connected in live mode and set var.
-		if ( self::has_connect_credentials( $environment ) || self::using_api_keys() ) {
-			$connection_selector = $livemode ? 'success' : 'alert';
-		} else {
-			$connection_selector = $livemode ? 'error' : 'alert';
-		}
 
 		?>
 		<div id="pmpro_stripe_<?php echo esc_attr( $environment); ?>" class="pmpro_section" data-visibility="<?php echo esc_attr( $active_environment ? 'shown' : 'hidden' ); ?>" data-activated="<?php echo esc_attr( $active_environment ? 'true' : 'false' ); ?>">
