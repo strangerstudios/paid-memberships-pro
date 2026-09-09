@@ -334,6 +334,19 @@
 		}
 
 		/**
+		 * Get extra status tags to show after this gateway's status in the payment gateways list.
+		 *
+		 * Gateways can override this to surface problems such as a failed connection test.
+		 *
+		 * @since TBD
+		 *
+		 * @return string HTML for zero or more pmpro_tag spans, or an empty string.
+		 */
+		public static function get_status_tags_for_gateway_settings() {
+			return '';
+		}
+
+		/**
 		 * Get a description for this gateway.
 		 *
 		 * @since 3.5
