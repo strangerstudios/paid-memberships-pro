@@ -238,13 +238,15 @@
 												}
 											}
 
-											// Let the gateway add its own status tags, such as a connection error.
-											if ( ! empty( $gateway_class_name ) && class_exists( $gateway_class_name ) && method_exists( $gateway_class_name, 'get_status_tags_for_gateway_settings' ) ) {
-												$gateway_status_tags = call_user_func( array( $gateway_class_name, 'get_status_tags_for_gateway_settings' ) );
-												if ( ! empty( $gateway_status_tags ) ) {
-													$gateway_status_html .= ' ' . $gateway_status_tags;
-												}
-											}
+											/**
+											 * Filter the status HTML shown for a gateway in the payment gateways list.
+											 *
+											 * @since TBD
+											 *
+											 * @param string $gateway_status_html The status HTML, typically one or more pmpro_tag spans.
+											 * @param string $gateway_slug        The gateway being shown.
+											 */
+											$gateway_status_html = apply_filters( 'pmpro_payment_settings_gateway_status_html', $gateway_status_html, $gateway_slug );
 
 											echo wp_kses_post( $gateway_status_html );
 										?>
