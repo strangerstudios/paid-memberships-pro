@@ -14,7 +14,6 @@ use Stripe\ApplePayDomain as Stripe_ApplePayDomain;
 use Stripe\WebhookEndpoint as Stripe_Webhook;
 use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 use Stripe\Account as Stripe_Account;
-use Stripe\Token as Stripe_Token;
 use Stripe\Checkout\Session as Stripe_Checkout_Session;
 
 define( "PMPRO_STRIPE_API_VERSION", "2025-09-30.clover" );
@@ -2059,9 +2058,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Test the Stripe connection and save the results.
 	 *
 	 * Checks whether Stripe and the Paid Memberships Pro Connect server can be reached, and whether Stripe
-	 * accepts the saved secret key and the publishable key that checkout uses. Each check has a status of
-	 * 'pass', 'fail', or 'unknown' and a message. Only an authentication failure (a 401 response) counts as
-	 * a rejected key. Permission errors from a restricted key do not, since the key itself is fine.
+	 * accepts the saved secret key and the publishable key that checkout uses. Every request is read-only.
+	 * Each check has a status of 'pass', 'fail', or 'unknown' and a message. Only an authentication failure
+	 * (a 401 response) counts as a rejected key. Permission errors from a restricted key do not, since the
+	 * key itself is fine.
 	 *
 	 * @since TBD
 	 *
@@ -2160,14 +2160,15 @@ class PMProGateway_stripe extends PMProGateway {
 		} elseif ( 'fail' === $results['stripe_api']['status'] ) {
 			$results['publishable_key'] = array( 'status' => 'unknown', 'message' => __( 'Skipped because Stripe could not be reached.', 'paid-memberships-pro' ) );
 		} else {
-			// Publishable keys may create tokens, so a throwaway PII token is a real check that Stripe accepts the key (and, for Connect, the connected account).
+			// Stripe authenticates the key before it looks up the resource, so retrieving a PaymentIntent that doesn't exist with the
+			// publishable key is a read-only check: a valid key gets a 404, a rejected key gets a 401, and for Connect a revoked account gets a 403.
 			$exception = null;
 			$options   = array( 'api_key' => $publishable_key );
 			if ( ! self::using_api_keys() ) {
 				$options['stripe_account'] = $this->get_connect_user_id();
 			}
 			try {
-				Stripe_Token::create( array( 'pii' => array( 'id_number' => '000000000' ) ), $options );
+				Stripe_PaymentIntent::retrieve( array( 'id' => 'pi_pmpro_connection_test', 'client_secret' => 'pi_pmpro_connection_test_secret' ), $options );
 			} catch ( \Throwable $e ) {
 				$exception = $e;
 			} catch ( \Exception $e ) {
