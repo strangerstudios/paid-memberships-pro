@@ -401,6 +401,15 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 				),
 			);
 
+			$log_attachments = pmpro_get_email_log_attachments( $log );
+
+			if ( ! empty( $log_attachments ) ) {
+				$email_data_to_export[] = array(
+					'name'  => __( 'Attachments', 'paid-memberships-pro' ),
+					'value' => implode( ', ', $log_attachments ),
+				);
+			}
+
 			$data_to_export[] = array(
 				'group_id'    => 'pmpro_email_log',
 				'group_label' => __( 'Paid Memberships Pro Email Log', 'paid-memberships-pro' ),
