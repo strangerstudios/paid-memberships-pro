@@ -1094,20 +1094,21 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 	// Shared CSV fields for the final outcomes below.
 	$handoff_date = empty( $handoff_timestamp ) ? '' : gmdate( 'Y-m-d', $handoff_timestamp );
 
-	// Surface the billing terms copied to Stripe in the log so admins can sanity check them
+	// Surface the billing terms copied to Stripe in the log so admins can sanity check them.
+	// pmpro_formatPrice() entity-encodes the currency symbol for HTML; decode it for the plain-text log and CSV.
 	// (e.g. sites that add tax at checkout). A real run reports the placeholder, which reflects
 	// the Stripe price after sync; a dry run only has the old subscription's stored terms.
 	$stored_amount = $subscription->get_billing_amount();
 	$billing_terms = '';
 	if ( $use_stripe ) {
 		if ( ! $dry_run && ! empty( $placeholder ) ) {
-			$billing_terms = ' at ' . $placeholder->get_cost_text();
+			$billing_terms = ' at ' . html_entity_decode( $placeholder->get_cost_text(), ENT_QUOTES, 'UTF-8' );
 		} elseif ( empty( $stored_amount ) ) {
 			// get_billing_amount() returns a float, so 0.00 is the "missing" value; the Stripe
 			// method falls back to the level's billing amount in that case.
 			$billing_terms = ' at the level\'s current billing price';
 		} else {
-			$billing_terms = ' at ' . $subscription->get_cost_text();
+			$billing_terms = ' at ' . html_entity_decode( $subscription->get_cost_text(), ENT_QUOTES, 'UTF-8' );
 		}
 	}
 

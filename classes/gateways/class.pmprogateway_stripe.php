@@ -3272,6 +3272,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return new WP_Error( 'pmpro_stripe_migration_missing_level', __( 'Could not find the subscription membership level.', 'paid-memberships-pro' ) );
 		}
 
+		$order    = null;
 		$customer = $this->get_customer_for_user( $old_subscription->get_user_id() );
 		if ( empty( $customer ) ) {
 			$order = new MemberOrder();
@@ -3280,7 +3281,12 @@ class PMProGateway_stripe extends PMProGateway {
 			$customer = $this->update_customer_at_checkout( $order );
 		}
 		if ( empty( $customer ) || empty( $customer->id ) ) {
-			return new WP_Error( 'pmpro_stripe_migration_missing_customer', __( 'Could not create or retrieve the Stripe customer.', 'paid-memberships-pro' ) );
+			// Include the gateway's reason (e.g. an expired API key) so the migration log is actionable.
+			$message = __( 'Could not create or retrieve the Stripe customer.', 'paid-memberships-pro' );
+			if ( ! empty( $order->error ) ) {
+				$message .= ' ' . $order->error;
+			}
+			return new WP_Error( 'pmpro_stripe_migration_missing_customer', $message );
 		}
 
 		$product_id = $this->get_product_id_for_level( $level );

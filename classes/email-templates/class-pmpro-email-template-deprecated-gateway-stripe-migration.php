@@ -79,9 +79,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	 * @return string The default body content.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Hi {{ display_name }},</p>
-
-<p>We\'ve updated the way {{ sitename }} processes payments, so we can no longer use the payment method we had on file for your {{ membership_level_name }} membership.</p>
+		return wp_kses_post( __( '<p>We\'ve updated the way {{ sitename }} processes payments, so we can no longer use the payment method we had on file for your {{ membership_level_name }} membership.</p>
 
 <p>Your membership is still active, and your next payment is scheduled for {{ next_payment_date }}.</p>
 

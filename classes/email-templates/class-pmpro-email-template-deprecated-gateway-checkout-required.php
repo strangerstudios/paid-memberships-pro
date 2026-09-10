@@ -89,9 +89,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	 * @return string The default body content.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Hi {{ display_name }},</p>
-
-<p>We\'ve updated the way {{ sitename }} processes payments, so we can no longer renew your {{ membership_level_name }} membership automatically.</p>
+		return wp_kses_post( __( '<p>We\'ve updated the way {{ sitename }} processes payments, so we can no longer renew your {{ membership_level_name }} membership automatically.</p>
 
 <p>Your membership stays active until {{ expiration_date }}.</p>
 
