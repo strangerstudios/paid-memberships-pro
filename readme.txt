@@ -210,9 +210,6 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
-= TBD =
-* ENHANCEMENT: Added a new `pmpro_view_as` capability so the "View As" toolbar in the admin bar can be granted to roles that should not have `manage_options`. #3634 (@faisalahammad)
-
 = 3.8.5 - 2026-08-24 =
 * SECURITY: Fixed an issue where the payment amount was not re-verified after Strong Customer Authentication (3D Secure) in the Stripe on-site checkout. #3767 (@proxydom)
 * SECURITY: Fixed an access check bypass in the `getfile` service that could allow protected files to be served through `admin-ajax.php` without a membership access check. #3762 (@dparker1005)
