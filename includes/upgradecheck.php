@@ -461,12 +461,12 @@ function pmpro_checkForUpgrades() {
 	}
 
 	/**
-	 * Version 3.8.6
+	 * Version 3.9
 	 * Run dbDelta to add the attachments column to the email log table.
 	 */
-	if ( $pmpro_db_version < 3.86 ) {
+	if ( $pmpro_db_version < 3.9 ) {
 		pmpro_db_delta();
-		update_option( 'pmpro_db_version', '3.86' );
+		update_option( 'pmpro_db_version', '3.9' );
 	}
 
 }

@@ -174,7 +174,7 @@ add_action( 'phpmailer_init', 'pmpro_capture_phpmailer_from', 9999 );
  *     @type string       $subject Subject line.
  *     @type string       $message Email body.
  *     @type string|array $headers     Email headers.
- *     @type string|array $attachments Attachment file path(s) or comma/semicolon-separated string.
+ *     @type string|array $attachments Attachment file path(s), or a newline-separated string as accepted by wp_mail().
  * }
  * @param string $status        'sent' or 'failed'.
  * @param string $error_message Error message for failed emails.
@@ -256,7 +256,8 @@ function pmpro_log_email( $mail_data, $status = 'sent', $error_message = '' ) {
 	// Store attachment filenames instead of full paths since temp files do not survive the request.
 	$attachments = array();
 	if ( ! empty( $mail_data['attachments'] ) ) {
-		$raw_attachments = is_array( $mail_data['attachments'] ) ? $mail_data['attachments'] : preg_split( '/[,;]/', (string) $mail_data['attachments'] );
+		// Normalize string attachment lists the same way wp_mail() does.
+		$raw_attachments = is_array( $mail_data['attachments'] ) ? $mail_data['attachments'] : explode( "\n", str_replace( "\r\n", "\n", $mail_data['attachments'] ) );
 		foreach ( $raw_attachments as $attachment ) {
 			if ( ! is_string( $attachment ) || '' === trim( $attachment ) ) {
 				continue;
@@ -518,6 +519,33 @@ function pmpro_auto_purge_email_log_entries() {
 add_action( 'pmpro_schedule_daily', 'pmpro_auto_purge_email_log_entries' );
 
 /**
+ * Get the attachment filenames stored for an email log entry.
+ *
+ * Attachment paths are reduced to filenames at log time since the
+ * original temp files do not survive the request, so the stored value
+ * is a serialized array of filenames.
+ *
+ * @since 3.9
+ *
+ * @param object $log Email log object from the database.
+ * @return array Array of attachment filenames.
+ */
+function pmpro_get_email_log_attachments( $log ) {
+	if ( empty( $log->attachments ) ) {
+		return array();
+	}
+
+	$attachments = maybe_unserialize( $log->attachments );
+
+	// Fallback for a raw string value, normalized the same way wp_mail() does.
+	if ( is_string( $attachments ) ) {
+		$attachments = explode( "\n", str_replace( "\r\n", "\n", $attachments ) );
+	}
+
+	return array_values( array_filter( array_map( 'trim', (array) $attachments ), 'strlen' ) );
+}
+
+/**
  * Render email log details HTML for modal display
  *
  * @since 3.7
@@ -566,11 +594,7 @@ function pmpro_render_email_log_details( $log ) {
 				</tr>
 				<?php } ?>
 				<?php
-					$log_attachments = ! empty( $log->attachments ) ? maybe_unserialize( $log->attachments ) : array();
-					if ( is_string( $log_attachments ) ) {
-						$log_attachments = preg_split( '/[,;]/', $log_attachments );
-					}
-					$log_attachments = array_filter( array_map( 'trim', (array) $log_attachments ), 'strlen' );
+					$log_attachments = pmpro_get_email_log_attachments( $log );
 				?>
 				<?php if ( ! empty( $log_attachments ) ) { ?>
 				<tr>
