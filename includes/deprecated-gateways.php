@@ -1836,9 +1836,12 @@ function pmpro_deprecated_gateway_ajax() {
 				// Make sure a webhook is set up, like the Stripe Connect return flow does.
 				// Placeholder subscriptions rely on webhooks for renewal orders, billing
 				// limit enforcement, and syncing cancellations when a trial lapses.
+				// update_webhook_events() returns null when the webhook already exists with every
+				// event (the usual case for a previously connected site), so only a WP_Error means
+				// the webhook is actually missing.
 				$stripe_gateway          = new PMProGateway_stripe();
 				$update_webhook_response = $stripe_gateway->update_webhook_events();
-				if ( empty( $update_webhook_response ) || is_wp_error( $update_webhook_response ) ) {
+				if ( is_wp_error( $update_webhook_response ) ) {
 					$result = new WP_Error( 'pmpro_deprecated_gateway_stripe_webhook', __( 'Stripe is now the active payment gateway, but a webhook could not be created automatically. Set up the webhook from the Stripe gateway settings before migrating subscriptions.', 'paid-memberships-pro' ) );
 				} else {
 					$message = __( 'Stripe is now the active payment gateway.', 'paid-memberships-pro' );
