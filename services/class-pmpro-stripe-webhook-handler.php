@@ -335,21 +335,37 @@ class PMPro_Stripe_Webhook_Handler {
 		$invoice = null;
 
 		// Make sure we have the charge in the desired API version.
-		$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->id );
+		try {
+			$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->id );
+		} catch ( Exception $e ) {
+			$logstr .= 'Error retrieving charge ' . $pmpro_stripe_event->data->object->id . ' from Stripe: ' . $e->getMessage() . '. No action taken for failed payment.';
+			return;
+		}
 
 		// Get the invoice for this charge if it exists.
 		if ( ! empty( $charge->payment_intent ) ) {
-			$invoice_payment = \Stripe\InvoicePayment::all(
-				array(
-					'payment' => array(
-						'type'           => 'payment_intent',
-						'payment_intent' => $charge->payment_intent,
-					),
-					'expand'  => array(
-						'data.invoice',
-					),
-				)
-			);
+			// Another plugin may have loaded a version of the Stripe library that predates the InvoicePayment class.
+			if ( ! class_exists( '\Stripe\InvoicePayment' ) ) {
+				$logstr .= 'The loaded Stripe library does not provide the \Stripe\InvoicePayment class, so we could not get the invoice for failed charge ' . $charge->id . '. No action taken for failed payment.';
+				return;
+			}
+
+			try {
+				$invoice_payment = \Stripe\InvoicePayment::all(
+					array(
+						'payment' => array(
+							'type'           => 'payment_intent',
+							'payment_intent' => $charge->payment_intent,
+						),
+						'expand'  => array(
+							'data.invoice',
+						),
+					)
+				);
+			} catch ( Exception $e ) {
+				$logstr .= 'Error retrieving invoice payments for failed charge ' . $charge->id . ': ' . $e->getMessage() . '. No action taken for failed payment.';
+				return;
+			}
 			// Using data[0] as only one invoice payment should match a search passing a specific payment intent ID.
 			$invoice = empty( $invoice_payment->data[0]->invoice ) ? null : $invoice_payment->data[0]->invoice;
 		}
@@ -403,7 +419,12 @@ class PMPro_Stripe_Webhook_Handler {
 	 */
 	private static function handle_charge_refunded( $pmpro_stripe_event, &$logstr ) {
 		// Make sure we have the charge in the desired API version.
-		$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->id );
+		try {
+			$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->id );
+		} catch ( Exception $e ) {
+			$logstr .= 'Error retrieving charge ' . $pmpro_stripe_event->data->object->id . ' from Stripe: ' . $e->getMessage() . '. No action taken for refunded charge.';
+			return;
+		}
 
 		$payment_transaction_id = $charge->id;
 		$morder = new MemberOrder();
@@ -411,18 +432,31 @@ class PMPro_Stripe_Webhook_Handler {
 
 		// Initial payment orders are stored using the invoice ID, so check that value too.
 		if ( empty( $morder->id ) && ! empty( $charge->payment_intent ) ) {
-			// Get the invoice for this charge if it exists.
-			$invoice_payment = \Stripe\InvoicePayment::all(
-				array(
-					'payment' => array(
-						'type'           => 'payment_intent',
-						'payment_intent' => $charge->payment_intent,
-					),
-				)
-			);
-			// Using data[0] as only one invoice payment should match a search passing a specific payment intent ID.
-			$payment_transaction_id = empty( $invoice_payment->data[0]->invoice ) ? null : $invoice_payment->data[0]->invoice;
-			$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+			// Older copies of the Stripe library loaded by another plugin may not include the InvoicePayment class.
+			if ( ! class_exists( '\Stripe\InvoicePayment' ) ) {
+				$logstr .= 'The loaded Stripe library does not provide the \Stripe\InvoicePayment class, so we could not look up the invoice for refunded charge ' . $charge->id . '. ';
+			} else {
+				// Get the invoice for this charge if it exists.
+				try {
+					$invoice_payment = \Stripe\InvoicePayment::all(
+						array(
+							'payment' => array(
+								'type'           => 'payment_intent',
+								'payment_intent' => $charge->payment_intent,
+							),
+						)
+					);
+				} catch ( Exception $e ) {
+					$logstr .= 'Error retrieving invoice payments for refunded charge ' . $charge->id . ': ' . $e->getMessage() . '. ';
+					$invoice_payment = null;
+				}
+
+				if ( ! empty( $invoice_payment ) ) {
+					// Using data[0] as only one invoice payment should match a search passing a specific payment intent ID.
+					$payment_transaction_id = empty( $invoice_payment->data[0]->invoice ) ? null : $invoice_payment->data[0]->invoice;
+					$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+				}
+			}
 		}
 
 		// We've got the right order.
