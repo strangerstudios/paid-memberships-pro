@@ -4899,6 +4899,12 @@ button.pmpro_report_th_closed:before {
 		content: attr(data-colname) ": ";
 	}
 
+	/* Expanded Orders rows: every cell takes the full width. Fixes #3713. */
+	.pmpro_admin-pmpro-orders .wp-list-table .is-expanded td,
+	.pmpro_admin-pmpro-orders .wp-list-table .is-expanded th {
+		flex: 0 1 100%;
+	}
+
 }
 
 /* plugin update notice */
