@@ -273,7 +273,36 @@
 
 					if(empty($wpdb->last_error))
 					{
-						//okay
+						//save the subscription delay for this code level; a delay only
+						//applies while the level's Recurring Subscription box is checked.
+						//Unparseable patterns are saved as entered: checkout ignores them.
+						$dc_delay_value = '';
+						$dc_delay_type  = ! empty( $recurring ) && isset( $_REQUEST[ 'delay_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'delay_type_' . $level_id ] ) : 'none';
+						if ( 'days' === $dc_delay_type && ! empty( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) ) {
+							$dc_delay_value = max( 1, intval( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) );
+						} elseif ( 'date' === $dc_delay_type ) {
+							$dc_delay_value = pmpro_get_date_pattern_from_request( 'subscription_delay_date_' . $level_id );
+						}
+						$all_code_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+						if ( ! is_array( $all_code_delays ) ) {
+							$all_code_delays = array();
+						}
+						if ( '' !== $dc_delay_value ) {
+							$all_code_delays[ $edit ][ $level_id ] = $dc_delay_value;
+						} else {
+							unset( $all_code_delays[ $edit ][ $level_id ] );
+						}
+						update_option( 'pmpro_discount_code_subscription_delays', $all_code_delays );
+
+						//save the set expiration date for this code level; it only applies
+						//while the level's Membership Expiration box is checked
+						$dc_expiration_value = ! empty( $expiration ) && isset( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) && 'date' === sanitize_text_field( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) ? pmpro_get_date_pattern_from_request( 'set_expiration_date_' . $level_id ) : '';
+						if ( '' !== $dc_expiration_value ) {
+							update_option( 'pmprosed_' . $level_id . '_' . $edit, $dc_expiration_value, false );
+						} else {
+							delete_option( 'pmprosed_' . $level_id . '_' . $edit );
+						}
+
 						do_action("pmpro_save_discount_code_level", $edit, $level_id);
 					}
 					else
@@ -281,6 +310,27 @@
 						$level = pmpro_getLevel($level_id);
 						$level_errors[] = sprintf(__("Error saving values for the %s level.", 'paid-memberships-pro' ), $level->name);
 					}
+				}
+			}
+
+			//remove the subscription delay and set expiration date for levels that were
+			//unchecked from this code so they don't silently return if re-checked later
+			$unchecked_level_ids = array_diff( $all_levels_a, $levels_a );
+			if ( ! empty( $unchecked_level_ids ) ) {
+				$all_code_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+				if ( ! is_array( $all_code_delays ) ) {
+					$all_code_delays = array();
+				}
+				$code_delays_changed = false;
+				foreach ( $unchecked_level_ids as $unchecked_level_id ) {
+					delete_option( 'pmprosed_' . $unchecked_level_id . '_' . $edit );
+					if ( isset( $all_code_delays[ $edit ][ $unchecked_level_id ] ) ) {
+						unset( $all_code_delays[ $edit ][ $unchecked_level_id ] );
+						$code_delays_changed = true;
+					}
+				}
+				if ( $code_delays_changed ) {
+					update_option( 'pmpro_discount_code_subscription_delays', $all_code_delays );
 				}
 			}
 
@@ -579,6 +629,16 @@
 						else
 							$level_checked = false;
 
+						// Load subscription delay and set expiration date for this discount code level.
+						$dc_delay = '';
+						$dc_set_expiration_date = '';
+						if ( ( $edit > 0 || ! empty( $copy ) ) && ! empty( $temp_code->id ) ) {
+							$dc_delay = pmpro_get_subscription_delay( $level->id, $temp_code->id );
+							$dc_set_expiration_date = pmpro_get_set_expiration_date( $level->id, $temp_code->id );
+						}
+						$dc_delay_type = ! empty( $dc_delay ) ? ( is_numeric( $dc_delay ) ? 'days' : 'date' ) : 'none';
+						$dc_exp_type = ! empty( $dc_set_expiration_date ) ? 'date' : 'none';
+
 						$level_checkbox_id          = 'levels_' . $level->id;
 						$level_recurring_checkbox_id = 'recurring_' . $level->id;
 						$level_trial_checkbox_id     = 'custom_trial_' . $level->id;
@@ -587,7 +647,7 @@
 						$level_is_selected  = ! empty( $level->checked );
 						$level_is_recurring = pmpro_isLevelRecurring( $level );
 						$level_is_trial     = pmpro_isLevelTrial( $level );
-						$level_is_expiring  = pmpro_isLevelExpiring( $level );
+						$level_is_expiring  = pmpro_isLevelExpiring( $level ) || $dc_exp_type === 'date';
 
 						$level_pricing_class     = 'pmpro_discount_levels_pricing level_' . $level->id . ( $level_is_selected ? '' : ' pmpro-hidden' );
 						$recurring_info_class    = 'recurring_info' . ( $level_is_recurring ? '' : ' pmpro-hidden' );
@@ -671,6 +731,38 @@
 									</td>
 								</tr>
 
+								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; ?>">
+									<th scope="row" valign="top"><label><?php esc_html_e( 'First Recurring Payment', 'paid-memberships-pro' ); ?></label></th>
+									<td>
+										<fieldset>
+											<legend class="screen-reader-text"><?php esc_html_e( 'First Recurring Payment', 'paid-memberships-pro' ); ?></legend>
+											<label>
+												<input type="radio" id="delay_type_<?php echo intval( $level->id ); ?>_none" name="delay_type_<?php echo intval( $level->id ); ?>" value="none" <?php checked( $dc_delay_type, 'none' ); ?> />
+												<?php esc_html_e( 'Default (one billing cycle after checkout)', 'paid-memberships-pro' ); ?>
+											</label>
+											<br />
+											<label>
+												<input type="radio" id="delay_type_<?php echo intval( $level->id ); ?>_days" name="delay_type_<?php echo intval( $level->id ); ?>" value="days" <?php checked( $dc_delay_type, 'days' ); ?> />
+												<?php esc_html_e( 'After a number of days', 'paid-memberships-pro' ); ?>
+											</label>
+											<span class="<?php echo $dc_delay_type === 'days' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'delay_type_' . intval( $level->id ) . '_days', 'checked' => true ) ) ) ); ?>">
+												&mdash;
+												<input name="subscription_delay_days_<?php echo intval( $level->id ); ?>" type="number" min="1" class="small-text"
+													value="<?php echo esc_attr( $dc_delay_type === 'days' ? $dc_delay : '' ); ?>" aria-label="<?php esc_attr_e( 'Number of days after checkout', 'paid-memberships-pro' ); ?>" />
+												<?php esc_html_e( 'days after checkout', 'paid-memberships-pro' ); ?>
+											</span>
+											<br />
+											<label>
+												<input type="radio" id="delay_type_<?php echo intval( $level->id ); ?>_date" name="delay_type_<?php echo intval( $level->id ); ?>" value="date" <?php checked( $dc_delay_type, 'date' ); ?> />
+												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
+											</label>
+											<div class="<?php echo $dc_delay_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'delay_type_' . intval( $level->id ) . '_date', 'checked' => true ) ) ) ); ?>">
+												<?php pmpro_render_date_pattern_builder( 'subscription_delay_date_' . intval( $level->id ), $dc_delay_type === 'date' ? $dc_delay : '' ); ?>
+											</div>
+										</fieldset>
+									</td>
+								</tr>
+
 								<?php
 								// Only show trial settings if the active gateway supports recurring trials or if the level already has a trial set.
 								$discount_gateway_class = 'PMProGateway_' . $gateway;
@@ -719,23 +811,37 @@
 								</tr>
 
 								<tr class="<?php echo esc_attr( $expiration_info_class ); ?>" data-pmpro-depends="<?php echo $expiration_info_depends; ?>">
-									<th scope="row" valign="top"><label for="billing_amount"><?php esc_html_e('Expires In', 'paid-memberships-pro' );?></label></th>
+									<th scope="row" valign="top"><label><?php esc_html_e( 'Expiration Type', 'paid-memberships-pro' ); ?></label></th>
 									<td>
-										<input id="expiration_number" name="expiration_number[]" type="text" size="10" value="<?php echo esc_attr( $level->expiration_number ); ?>" />
-										<select id="expiration_period" name="expiration_period[]">
-										<?php
-
-											$cycles = array( __('Hour(s)', 'paid-memberships-pro' ) => 'Hour', __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
-											foreach ( $cycles as $name => $value ) {
-
-											echo "<option value='" . esc_attr( $value ) . "'";
-											if ( $level->expiration_period == $value ) echo " selected='selected'";
-											echo ">" . esc_html( $name ) . "</option>";
-											}
-										?>
-
-										</select>
-										<p class="description"><?php esc_html_e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></p>
+										<fieldset>
+											<legend class="screen-reader-text"><?php esc_html_e( 'Expiration Type', 'paid-memberships-pro' ); ?></legend>
+											<label>
+												<input type="radio" id="expiration_date_type_<?php echo intval( $level->id ); ?>_none" name="expiration_date_type_<?php echo intval( $level->id ); ?>" value="none" <?php checked( $dc_exp_type, 'none' ); ?> />
+												<?php esc_html_e( 'After a set duration', 'paid-memberships-pro' ); ?>
+											</label>
+											<div class="<?php echo $dc_exp_type === 'date' ? 'pmpro-hidden' : ''; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'expiration_date_type_' . intval( $level->id ) . '_none', 'checked' => true ) ) ) ); ?>">
+												<input name="expiration_number[]" type="text" size="10" value="<?php echo esc_attr( $level->expiration_number ); ?>" />
+												<select name="expiration_period[]">
+												<?php
+													$cycles = array( __('Hour(s)', 'paid-memberships-pro' ) => 'Hour', __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
+													foreach ( $cycles as $name => $value ) {
+														echo "<option value='" . esc_attr( $value ) . "'";
+														if ( $level->expiration_period == $value ) echo " selected='selected'";
+														echo ">" . esc_html( $name ) . "</option>";
+													}
+												?>
+												</select>
+												<p class="description"><?php esc_html_e('Membership access will end this long after checkout. Any recurring subscription will be cancelled at that time.', 'paid-memberships-pro' );?></p>
+											</div>
+											<br />
+											<label>
+												<input type="radio" id="expiration_date_type_<?php echo intval( $level->id ); ?>_date" name="expiration_date_type_<?php echo intval( $level->id ); ?>" value="date" <?php checked( $dc_exp_type, 'date' ); ?> />
+												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
+											</label>
+											<div class="<?php echo $dc_exp_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'expiration_date_type_' . intval( $level->id ) . '_date', 'checked' => true ) ) ) ); ?>">
+												<?php pmpro_render_date_pattern_builder( 'set_expiration_date_' . intval( $level->id ), $dc_set_expiration_date ); ?>
+											</div>
+										</fieldset>
 									</td>
 								</tr>
 							</tbody>

@@ -193,6 +193,13 @@ if ( ! empty( $temp_id ) ) {
 } else {
 	$level_image = 0;
 }
+
+// Get the subscription delay and set expiration date settings for the given level
+// and determine the type each should render as in the UI.
+$subscription_delay   = ! empty( $temp_id ) ? pmpro_get_subscription_delay( $temp_id ) : '';
+$set_expiration_date  = ! empty( $temp_id ) ? pmpro_get_set_expiration_date( $temp_id ) : '';
+$delay_type           = empty( $subscription_delay ) ? 'none' : ( is_numeric( $subscription_delay ) ? 'days' : 'date' );
+$expiration_date_type = ! empty( $set_expiration_date ) ? 'date' : 'none';
 ?>
 <hr class="wp-header-end">
 <?php if (!empty($level->id)) { ?>
@@ -394,17 +401,7 @@ if (!empty($page_msg)) { ?>
 	$billing_fields = array(
 		array(
 			'html' => function() {
-				$allowed_sd_html = array(
-					'a' => array(
-						'href'   => array(),
-						'target' => array(),
-						'title'  => array(),
-					),
-				);
-				echo '<p>' . wp_kses( __( 'Set the member pricing for this level. The initial payment is collected immediately at checkout. Recurring payments, if applicable, begin one cycle after the initial payment. Changing the level price only applies to new members and does not affect existing members of this level.', 'paid-memberships-pro' ), $allowed_sd_html ) . '</p>';
-				if ( ! function_exists( 'pmprosd_pmpro_membership_level_after_other_settings' ) ) {
-					echo '<p>' . sprintf( wp_kses( __( 'Optional: Allow more customizable trial periods and renewal dates using the <a href="%s" title="Paid Memberships Pro - Subscription Delays Add On" target="_blank" rel="nofollow noopener">Subscription Delays Add On</a>.', 'paid-memberships-pro' ), $allowed_sd_html ), 'https://www.paidmembershipspro.com/add-ons/subscription-delays/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=subscription-delays' ) . '</p>';
-				}
+				echo '<p>' . esc_html__( 'Set the member pricing for this level. The initial payment is collected immediately at checkout. Recurring payments, if applicable, begin one cycle after the initial payment. Changing the level price only applies to new members and does not affect existing members of this level.', 'paid-memberships-pro' ) . '</p>';
 			},
 		),
 		array(
@@ -463,6 +460,41 @@ if (!empty($page_msg)) { ?>
 				'depends'     => array( $depends_on_recurring ),
 				'description' => __( 'The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' ),
 			),
+		array(
+			'label'     => __( 'First Recurring Payment', 'paid-memberships-pro' ),
+			'type'      => 'callback',
+			'row_class' => 'recurring_info',
+			'depends'   => array( $depends_on_recurring ),
+			'callback'  => function() use ( $delay_type, $subscription_delay ) {
+				?>
+				<fieldset>
+					<legend class="screen-reader-text"><?php esc_html_e( 'First Recurring Payment', 'paid-memberships-pro' ); ?></legend>
+					<label>
+						<input type="radio" id="delay_type_none" name="delay_type" value="none" <?php checked( $delay_type, 'none' ); ?> />
+						<?php esc_html_e( 'Default (one billing cycle after checkout)', 'paid-memberships-pro' ); ?>
+					</label>
+					<br />
+					<label>
+						<input type="radio" id="delay_type_days" name="delay_type" value="days" <?php checked( $delay_type, 'days' ); ?> />
+						<?php esc_html_e( 'After a number of days', 'paid-memberships-pro' ); ?>
+					</label>
+					<span class="<?php echo $delay_type === 'days' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends='[{"id":"delay_type_days","checked":true}]'>
+						&mdash;
+						<input id="subscription_delay_days" name="subscription_delay_days" type="number" min="1" value="<?php echo esc_attr( $delay_type === 'days' ? $subscription_delay : '' ); ?>" class="small-text" aria-label="<?php esc_attr_e( 'Number of days after checkout', 'paid-memberships-pro' ); ?>" />
+						<?php esc_html_e( 'days after checkout', 'paid-memberships-pro' ); ?>
+					</span>
+					<br />
+					<label>
+						<input type="radio" id="delay_type_date" name="delay_type" value="date" <?php checked( $delay_type, 'date' ); ?> />
+						<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
+					</label>
+					<div class="<?php echo $delay_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends='[{"id":"delay_type_date","checked":true}]'>
+						<?php pmpro_render_date_pattern_builder( 'subscription_delay_date', $delay_type === 'date' ? $subscription_delay : '' ); ?>
+					</div>
+				</fieldset>
+				<?php
+			},
+		),
 		array(
 			'hook' => 'pmpro_membership_level_after_billing_details_settings',
 			'args' => array( $level ),
@@ -543,56 +575,54 @@ if (!empty($page_msg)) { ?>
 			'name'           => 'expiration',
 			'label'          => __( 'Membership Expiration', 'paid-memberships-pro' ),
 			'type'           => 'checkbox',
-			'value'          => pmpro_isLevelExpiring( $level ),
+			'value'          => pmpro_isLevelExpiring( $level ) || $expiration_date_type === 'date',
 			'checkbox_label' => __( 'Check this to set when membership access expires.', 'paid-memberships-pro' ),
 		),
 	);
 
-	// Point to the Set Expiration Date Add On when it is not active.
-	if ( ! function_exists( 'pmprosed_pmpro_membership_level_after_other_settings' ) ) {
-		$expiration_fields[] = array(
-			'label'    => '',
-			'type'     => 'callback',
-			'callback' => function() {
-				$allowed_sed_html = array(
-					'a' => array(
-						'href'   => array(),
-						'title'  => array(),
-						'target' => array(),
-						'rel'    => array(),
-					),
-				);
-				echo '<p class="description">' . sprintf( wp_kses( __( 'Optional: Allow more customizable expiration dates using the <a href="%s" title="Paid Memberships Pro - Set Expiration Date Add On" target="_blank" rel="nofollow noopener">Set Expiration Date Add On</a>.', 'paid-memberships-pro' ), $allowed_sed_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-expiration-date/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=pmpro-expiration-date' ) . '</p>';
-			},
-		);
-	}
-
 	$expiration_fields[] = array(
-		'label'       => __( 'Expires In', 'paid-memberships-pro' ),
-		'type'        => 'composite',
-		'row_class'   => 'expiration_info',
-		'depends'     => array( array( 'id' => 'expiration', 'checked' => true ) ),
-		'description' => __( 'Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' ),
-		'fields'      => array(
-			array(
-				'name'  => 'expiration_number',
-				'type'  => 'text',
-				'class' => 'small-text',
-				'value' => $level->expiration_number,
-			),
-			array(
-				'name'    => 'expiration_period',
-				'type'    => 'select',
-				'value'   => ! empty( $level->expiration_period ) ? $level->expiration_period : 'Month',
-				'options' => array(
-					'Hour'  => __( 'Hour(s)', 'paid-memberships-pro' ),
-					'Day'   => __( 'Day(s)', 'paid-memberships-pro' ),
-					'Week'  => __( 'Week(s)', 'paid-memberships-pro' ),
-					'Month' => __( 'Month(s)', 'paid-memberships-pro' ),
-					'Year'  => __( 'Year(s)', 'paid-memberships-pro' ),
-				),
-			),
-		),
+		'label'     => __( 'Expiration Type', 'paid-memberships-pro' ),
+		'type'      => 'callback',
+		'row_class' => 'expiration_info',
+		'depends'   => array( array( 'id' => 'expiration', 'checked' => true ) ),
+		'callback'  => function() use ( $level, $expiration_date_type, $set_expiration_date ) {
+			?>
+			<fieldset>
+				<legend class="screen-reader-text"><?php esc_html_e( 'Expiration Type', 'paid-memberships-pro' ); ?></legend>
+				<label>
+					<input type="radio" id="expiration_date_type_none" name="expiration_date_type" value="none" <?php checked( $expiration_date_type, 'none' ); ?> />
+					<?php esc_html_e( 'After a set duration', 'paid-memberships-pro' ); ?>
+				</label>
+				<div class="<?php echo $expiration_date_type === 'date' ? 'pmpro-hidden' : ''; ?>" data-pmpro-depends='[{"id":"expiration_date_type_none","checked":true}]'>
+					<input id="expiration_number" name="expiration_number" type="text" value="<?php echo esc_attr( $level->expiration_number ); ?>" class="small-text" aria-label="<?php esc_attr_e( 'Expiration number', 'paid-memberships-pro' ); ?>" />
+					<select id="expiration_period" name="expiration_period" aria-label="<?php esc_attr_e( 'Expiration period', 'paid-memberships-pro' ); ?>">
+						<?php
+						$expiration_cycles = array(
+							'Hour'  => __( 'Hour(s)', 'paid-memberships-pro' ),
+							'Day'   => __( 'Day(s)', 'paid-memberships-pro' ),
+							'Week'  => __( 'Week(s)', 'paid-memberships-pro' ),
+							'Month' => __( 'Month(s)', 'paid-memberships-pro' ),
+							'Year'  => __( 'Year(s)', 'paid-memberships-pro' ),
+						);
+						$current_expiration_period = ! empty( $level->expiration_period ) ? $level->expiration_period : 'Month';
+						foreach ( $expiration_cycles as $value => $name ) {
+							echo '<option value="' . esc_attr( $value ) . '"' . selected( $current_expiration_period, $value, false ) . '>' . esc_html( $name ) . '</option>';
+						}
+						?>
+					</select>
+					<p class="description"><?php esc_html_e( 'Set the duration of membership access. Note that any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' ); ?></p>
+				</div>
+				<br />
+				<label>
+					<input type="radio" id="expiration_date_type_date" name="expiration_date_type" value="date" <?php checked( $expiration_date_type, 'date' ); ?> />
+					<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
+				</label>
+				<div class="<?php echo $expiration_date_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends='[{"id":"expiration_date_type_date","checked":true}]'>
+					<?php pmpro_render_date_pattern_builder( 'set_expiration_date', $set_expiration_date ); ?>
+				</div>
+			</fieldset>
+			<?php
+		},
 	);
 
 	$expiration_fields[] = array(
@@ -603,7 +633,7 @@ if (!empty($page_msg)) { ?>
 	pmpro_build_settings_section( array(
 		'id'     => 'expiration-details',
 		'title'  => __( 'Expiration Settings', 'paid-memberships-pro' ),
-		'open'   => ( pmpro_isLevelExpiring( $level ) || $template === 'none' ),
+		'open'   => ( pmpro_isLevelExpiring( $level ) || $expiration_date_type === 'date' || $template === 'none' ),
 		'fields' => $expiration_fields,
 	) );
 
