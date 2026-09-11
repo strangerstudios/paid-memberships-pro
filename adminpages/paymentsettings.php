@@ -238,6 +238,16 @@
 												}
 											}
 
+											/**
+											 * Filter the status HTML shown for a gateway in the payment gateways list.
+											 *
+											 * @since TBD
+											 *
+											 * @param string $gateway_status_html The status HTML, typically one or more pmpro_tag spans.
+											 * @param string $gateway_slug        The gateway being shown.
+											 */
+											$gateway_status_html = apply_filters( 'pmpro_payment_settings_gateway_status_html', $gateway_status_html, $gateway_slug );
+
 											echo wp_kses_post( $gateway_status_html );
 										?>
 										</td>
