@@ -37,6 +37,33 @@ class PMPro_Discount_Code {
 	 */
 	public $uses = 0;
 
+	/**
+	 * Discount type: set_price, percentage, or fixed.
+	 *
+	 * @var string $discount_type
+	 */
+	public $discount_type = 'set_price';
+
+	/**
+	 * Discount value for percentage/fixed codes, e.g. 20 for 20% off or 10 for 10 off.
+	 *
+	 * @var float $discount_value
+	 */
+	public $discount_value = 0;
+
+	/**
+	 * Whether a percentage/fixed discount applies to the initial payment.
+	 *
+	 * @var int $apply_to_initial
+	 */
+	public $apply_to_initial = 1;
+
+	/**
+	 * Whether a percentage/fixed discount applies to recurring payments.
+	 *
+	 * @var int $apply_to_recurring
+	 */
+	public $apply_to_recurring = 1;
 
 	/**
 	 * Levels and billing settings tied to the discount code.
@@ -151,7 +178,11 @@ class PMPro_Discount_Code {
             $this->starts = $dcobj->starts;
             $this->expires = $dcobj->expires;
             $this->uses = $dcobj->uses;
-            
+            $this->discount_type = ! empty( $dcobj->discount_type ) ? $dcobj->discount_type : 'set_price';
+            $this->discount_value = isset( $dcobj->discount_value ) ? $dcobj->discount_value : 0;
+            $this->apply_to_initial = isset( $dcobj->apply_to_initial ) ? $dcobj->apply_to_initial : 1;
+            $this->apply_to_recurring = isset( $dcobj->apply_to_recurring ) ? $dcobj->apply_to_recurring : 1;
+
             foreach( $levels as $level ) {
                 $this->levels[$level->level_id] = array(
                     'initial_payment' => $level->initial_payment,
@@ -234,20 +265,33 @@ class PMPro_Discount_Code {
             }
         }      
 
+        // Make sure the discount type and value are valid.
+        if ( empty( $this->discount_type ) || ! array_key_exists( $this->discount_type, pmpro_get_discount_code_types() ) ) {
+            $this->discount_type = 'set_price';
+        }
+        $this->discount_value = max( 0, floatval( $this->discount_value ) );
+        if ( 'percentage' === $this->discount_type ) {
+            $this->discount_value = min( 100, $this->discount_value );
+        }
+
         // If the code doesn't exist, create it otherwise update it.
         if ( empty( $this->id ) ) {
 
             $before_action = 'pmpro_add_discount_code';
             $after_action = 'pmpro_added_discount_code';
 
-            $this->sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes ( `code`, `starts`, `expires`, `uses` ) 
+            $this->sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes ( `code`, `starts`, `expires`, `uses`, `discount_type`, `discount_value`, `apply_to_initial`, `apply_to_recurring` )
                                VALUES ('" . esc_sql( $this->code ) . "',
                                        '" . esc_sql( $this->starts ) ."',
                                        '" . esc_sql( $this->expires ) ."',
-                                       " . intval( $this->uses ) ."
-                               )";                      
+                                       " . intval( $this->uses ) .",
+                                       '" . esc_sql( $this->discount_type ) . "',
+                                       " . floatval( $this->discount_value ) . ",
+                                       " . ( ! empty( $this->apply_to_initial ) ? 1 : 0 ) . ",
+                                       " . ( ! empty( $this->apply_to_recurring ) ? 1 : 0 ) . "
+                               )";
         } else {
-            
+
             $before_action = 'pmpro_update_discount_code';
             $after_action = 'pmpro_updated_discount_code';
 
@@ -255,7 +299,11 @@ class PMPro_Discount_Code {
                                 SET  `code` = '" . esc_sql( $this->code ) ."',
                                     `starts` = '" . esc_sql( $this->starts ) . "',
                                     `expires` = '" . esc_sql( $this->expires ) . "',
-                                    `uses` = " . intval( $this->uses ) . "
+                                    `uses` = " . intval( $this->uses ) . ",
+                                    `discount_type` = '" . esc_sql( $this->discount_type ) . "',
+                                    `discount_value` = " . floatval( $this->discount_value ) . ",
+                                    `apply_to_initial` = " . ( ! empty( $this->apply_to_initial ) ? 1 : 0 ) . ",
+                                    `apply_to_recurring` = " . ( ! empty( $this->apply_to_recurring ) ? 1 : 0 ) . "
                                 WHERE code = '" . esc_sql( $this->code ) . "'
                                 LIMIT 1";
         }
@@ -310,9 +358,25 @@ class PMPro_Discount_Code {
                 if ( $wpdb->query( $this->sqlQuery ) !== false ) {
                     $sql_okay = true;
                 }
+
+                // For percentage/fixed codes, overwrite the pricing columns with a snapshot of
+                // the calculated prices. Checkout always recalculates from the level's pricing.
+                if ( 'set_price' !== $this->discount_type ) {
+                    $snapshot = pmpro_get_discount_code_level_snapshot( $this, $level_id );
+                    if ( ! empty( $snapshot ) ) {
+                        $wpdb->update(
+                            $wpdb->pmpro_discount_codes_levels,
+                            $snapshot,
+                            array(
+                                'code_id'  => $this->id,
+                                'level_id' => $level_id,
+                            )
+                        );
+                    }
+                }
             }
-        }  
-        
+        }
+
         do_action( $after_action, $this ); 
         
         unset( $this->sqlQuery ); //remove SQL query.

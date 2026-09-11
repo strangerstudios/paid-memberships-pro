@@ -260,12 +260,18 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	// If we have a discount code but not the ID, get the ID.
 	if ( ! empty( $pmpro_level->discount_code ) ) {
 		$discount_code = $pmpro_level->discount_code;
-		$discount_code_id = empty( $pmpro_level->code_id ) ? $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" ) : $pmpro_level->code_id;
+		if ( ! empty( $pmpro_level->code_id ) ) {
+			$discount_code_id = $pmpro_level->code_id;
+		} else {
+			$discount_code_row = pmpro_get_discount_code( $discount_code );
+			$discount_code_id  = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
+		}
 	} elseif ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
 		// Throw a doing it wrong warning. If a discount code is being used, it should be set on the level.
 		// @TODO: Remove this in v4.0 along with references to the discount code globals. Discount codes should be set on the level object.
 		_doing_it_wrong( __FUNCTION__, esc_html__( 'Discount codes should be set on the $pmpro_level object.', 'paid-memberships-pro' ), '3.4' );
-		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+		$discount_code_row = pmpro_get_discount_code( $discount_code );
+		$discount_code_id  = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
 	}
 
 	//custom level to change user to
