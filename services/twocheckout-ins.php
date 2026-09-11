@@ -292,7 +292,7 @@
 		if ( empty( pmpro_getParam( 'message_type', 'REQUEST' ) ) || pmpro_getParam( 'message_type', 'REQUEST' ) === 'ORDER_CREATED' ) {
 			// Apply discount code level changes.
 			if ( ! empty( $discount_code_id ) ) {
-				$morder->membership_level = pmpro_get_discounted_level_for_code( $morder->membership_level->level_id, $discount_code_id );
+				$morder->membership_level = pmpro_get_discounted_level_for_code( $morder->membership_level->level_id, $morder->discount_code );
 			}
 	
 			// Extend membership if renewal.
