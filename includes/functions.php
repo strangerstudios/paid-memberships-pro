@@ -4515,8 +4515,12 @@ function pmpro_get_liquid_autocomplete_settings( $variables = array() ) {
 		'filters'   => pmpro_get_liquid_autocomplete_filter_suggestions(),
 		'tags'      => pmpro_get_liquid_autocomplete_tag_suggestions(),
 		'strings'   => array(
-			'autocompleteLabel' => __( 'Liquid autocomplete', 'paid-memberships-pro' ),
-			'liquidTagsHeader' => __( 'Liquid Tags', 'paid-memberships-pro' ),
+			'autocompleteLabel'    => __( 'Liquid autocomplete', 'paid-memberships-pro' ),
+			'liquidTagsHeader'     => __( 'Liquid Tags', 'paid-memberships-pro' ),
+			'autocompleteOpened'   => __( 'Autocomplete list opened', 'paid-memberships-pro' ),
+			'autocompleteClosed'   => __( 'Autocomplete list closed', 'paid-memberships-pro' ),
+			/* translators: 1: the position of the highlighted autocomplete option. 2: the total number of options. */
+			'autocompletePosition' => __( '%1$d of %2$d', 'paid-memberships-pro' ),
 		),
 	);
 
