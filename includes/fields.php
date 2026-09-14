@@ -358,6 +358,73 @@ function pmpro_checkout_before_user_auth_save_fields( $user_id ) {
 add_action( 'pmpro_checkout_before_user_auth', 'pmpro_checkout_before_user_auth_save_fields' );
 
 /**
+ * Check the submitted value for a URL field.
+ *
+ * Returns true when nothing was submitted, so that required field checks
+ * can report the missing value instead. Only reads $_REQUEST so that a
+ * value stored in the session is not consumed before it is saved.
+ *
+ * @since 3.9
+ *
+ * @param PMPro_Field $field The field to check.
+ * @return true|WP_Error True if the value is empty or a valid URL, WP_Error otherwise.
+ */
+function pmpro_check_url_field( $field ) {
+	if ( ! isset( $_REQUEST[ $field->name ] ) ) {
+		return true;
+	}
+
+	// validate_url_value() runs the value through esc_url_raw().
+	$value = wp_unslash( $_REQUEST[ $field->name ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+	// Nothing was submitted. Let the required field check report the missing value.
+	if ( is_string( $value ) && '' === trim( $value ) ) {
+		return true;
+	}
+
+	return $field->validate_url_value( $value );
+}
+
+/**
+ * Report invalid URL fields when the frontend profile is updated.
+ *
+ * The user fields are saved before the profile errors are collected, so
+ * the invalid value is skipped there. This adds the message the member sees.
+ *
+ * @since 3.9
+ *
+ * @param array $errors The profile update errors.
+ * @param bool  $update Whether this is a user update.
+ * @param object $user  The user object.
+ */
+function pmpro_check_url_fields_on_profile_update( &$errors, $update, $user ) {
+	if ( empty( $update ) ) {
+		return;
+	}
+
+	foreach ( PMPro_Field_Group::get_all() as $group ) {
+		$fields = $group->get_fields_to_display(
+			array(
+				'scope' => 'profile',
+				'user_id' => $user->ID,
+			)
+		);
+
+		foreach ( $fields as $field ) {
+			if ( 'url' !== $field->type ) {
+				continue;
+			}
+
+			$url_check = pmpro_check_url_field( $field );
+			if ( is_wp_error( $url_check ) ) {
+				$errors[] = $url_check->get_error_message();
+			}
+		}
+	}
+}
+add_action( 'pmpro_user_profile_update_errors', 'pmpro_check_url_fields_on_profile_update', 10, 3 );
+
+/**
  * Require required fields before creating a user at checkout.
  *
  * Only runs for the after_username, after_email, and after_password field groups.
@@ -387,6 +454,15 @@ function pmpro_checkout_user_creation_checks_user_fields( $okay ) {
 				$upload_check = pmpro_check_upload( $field->name );
 				if ( is_wp_error( $upload_check ) ) {
 					pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
+					return false;
+				}
+			}
+
+			// URL fields must be a valid link.
+			if ( 'url' === $field->type ) {
+				$url_check = pmpro_check_url_field( $field );
+				if ( is_wp_error( $url_check ) ) {
+					pmpro_setMessage( $url_check->get_error_message(), 'pmpro_error' );
 					return false;
 				}
 			}
@@ -491,6 +567,15 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 				$upload_check = pmpro_check_upload( $field->name );
 				if ( is_wp_error( $upload_check ) ) {
 					pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
+					return false;
+				}
+			}
+
+			// URL fields must be a valid link.
+			if ( 'url' === $field->type ) {
+				$url_check = pmpro_check_url_field( $field );
+				if ( is_wp_error( $url_check ) ) {
+					pmpro_setMessage( $url_check->get_error_message(), 'pmpro_error' );
 					return false;
 				}
 			}
@@ -923,7 +1008,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 					);
 					foreach( $fields as $field ) {
 						$fields_content .= "- " . esc_html( $field->label ) . ": ";
-						$fields_content .= $field->displayValue( get_user_meta( $user_id, $field->name, true), false );
+						$fields_content .= $field->displayValue( get_user_meta( $user_id, $field->name, true), false, 'email' );
 						$fields_content .= "<br />";
 						$added_field = true;
 					}
@@ -1045,6 +1130,7 @@ function pmpro_get_user_fields_settings() {
 			$field->default = ! empty( $field->default ) ? $field->default : '';
 			$field->allowed_file_types = ! empty( $field->allowed_file_types ) ? $field->allowed_file_types : '';
 			$field->max_file_size = ! empty( $field->max_file_size ) ? $field->max_file_size : '';
+			$field->link_display_type = ! empty( $field->link_display_type ) ? $field->link_display_type : '';
 		}
 	}
     
@@ -1160,6 +1246,7 @@ function pmpro_load_user_fields_from_settings() {
                     'allowed_file_types' => $settings_field->allowed_file_types,
                     'max_file_size' => $settings_field->max_file_size,
                     'default' => $settings_field->default,
+                    'link_display_type' => $settings_field->link_display_type,
                 )
             );
             $group_obj->add_field( $field );

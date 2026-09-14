@@ -283,6 +283,17 @@ class PMPro_Field {
 	 */
 	private $max_file_size = '';
 
+	/**
+	 * How a URL value should be shown.
+	 *
+	 * Accepts 'embedded', 'clickable_link', 'clickable_label', or 'text'.
+	 *
+	 * @since 3.9
+	 *
+	 * @var string
+	 */
+	private $link_display_type = '';
+
 	function __construct($name = NULL, $type = NULL, $attr = NULL) {
 		if ( ! empty( $name ) )
 			return $this->set( $name, $type, $attr );
@@ -393,7 +404,7 @@ class PMPro_Field {
 				return true;
 				break;
 			case 'size':
-				return in_array( $this->type, array( 'text', 'number' ) );
+				return in_array( $this->type, array( 'text', 'number', 'url' ) );
 				break;
 			case 'rows':
 			case 'cols':
@@ -414,6 +425,9 @@ class PMPro_Field {
 			case 'allowed_file_types':
 			case 'max_file_size':
 				return 'file' === $this->type;
+				break;
+			case 'link_display_type':
+				return in_array( $this->type, array( 'text', 'textarea', 'url' ) );
 				break;
 			default:
 				return false;
@@ -525,6 +539,15 @@ class PMPro_Field {
 		{
 			if(empty($this->size))
 				$this->size = 30;
+		}
+		elseif($this->type == "url")
+		{
+			if(empty($this->size))
+				$this->size = 30;
+
+			// Default to embedding the URL when its provider supports oEmbed.
+			if(empty($this->link_display_type))
+				$this->link_display_type = 'embedded';
 		}
 		elseif($this->type == "number")
 		{
@@ -641,6 +664,9 @@ class PMPro_Field {
 		if ( ! empty( $this->sanitize ) ) {
 			if ( $this->type == 'textarea' ) {
 				$value = sanitize_textarea_field( $value );
+			} elseif ( $this->type == 'url' && ! is_array( $value ) ) {
+				// URLs keep their query string and other link characters.
+				$value = esc_url_raw( $value );
 			} elseif ( is_array( $value ) ) {
 				$value = array_map( 'sanitize_text_field', $value );
 			} else {
@@ -649,6 +675,55 @@ class PMPro_Field {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Check that a submitted value is a usable link.
+	 *
+	 * Only absolute http and https URLs are allowed. The value is run through
+	 * esc_url_raw() first so that anything the sanitizer would strip is caught
+	 * here instead of being saved in a different form.
+	 *
+	 * @since 3.9
+	 *
+	 * @param mixed $value The submitted value.
+	 * @return true|WP_Error True if the value is a valid URL, WP_Error otherwise.
+	 */
+	public function validate_url_value( $value ) {
+		if ( empty( $value ) || ! is_string( $value ) ) {
+			return $this->get_invalid_url_error();
+		}
+
+		$url = esc_url_raw( $value );
+		if ( empty( $url ) || ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
+			return $this->get_invalid_url_error();
+		}
+
+		// Only http and https links are allowed.
+		$scheme = wp_parse_url( $url, PHP_URL_SCHEME );
+		if ( ! in_array( strtolower( $scheme ), array( 'http', 'https' ), true ) ) {
+			return $this->get_invalid_url_error();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Build the error returned for an invalid URL field value.
+	 *
+	 * @since 3.9
+	 *
+	 * @return WP_Error The error object.
+	 */
+	private function get_invalid_url_error() {
+		return new WP_Error(
+			'pmpro_invalid_url',
+			sprintf(
+				// translators: %s is the field label.
+				esc_html__( 'The %s field must be a valid URL.', 'paid-memberships-pro' ),
+				$this->label
+			)
+		);
 	}
 
 	/**
@@ -726,6 +801,15 @@ class PMPro_Field {
 		// Skipping the save here prevents users from tampering with fields they cannot edit.
 		if ( 'readonly' === $this->type || ! empty( $this->readonly ) ) {
 			return;
+		}
+
+		// URL fields only accept links. Skip the save so the stored value stays intact.
+		if ( 'url' === $this->type && ! empty( $value ) ) {
+			$url_check = $this->validate_url_value( $value );
+			if ( is_wp_error( $url_check ) ) {
+				pmpro_setMessage( $url_check->get_error_message(), 'pmpro_error' );
+				return;
+			}
 		}
 
 		// Check if we have a save function.
@@ -956,6 +1040,19 @@ class PMPro_Field {
 		if($this->type == "text")
 		{
 			$r = '<input type="text" id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '" value="' . ( is_string( $value ) ? esc_attr(wp_unslash($value) ) : '' ) . '" ';
+			if(!empty($this->size))
+				$r .= 'size="' . esc_attr( $this->size ) . '" ';
+			if(!empty($this->class))
+				$r .= 'class="' . esc_attr( $this->class ) . '" ';
+			if(!empty($this->readonly))
+				$r .= 'readonly="readonly" ';
+			if(!empty($this->html_attributes))
+				$r .= $this->getHTMLAttributes();
+			$r .= ' />';
+		}
+		elseif($this->type == "url")
+		{
+			$r = '<input type="url" id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '" value="' . ( is_string( $value ) ? esc_attr( wp_unslash( $value ) ) : '' ) . '" ';
 			if(!empty($this->size))
 				$r .= 'size="' . esc_attr( $this->size ) . '" ';
 			if(!empty($this->class))
@@ -1655,9 +1752,11 @@ class PMPro_Field {
 	 * and taking into account fields with options.
 	 * @param mixed $value The value to be shown.
 	 * @param bool $echo Whether to echo the value or return it.
+	 * @param string $context Where the value is being shown. Pass 'email' to force a plain link.
 	 * @since 3.0 Shows files as links and added echo parameter.
+	 * @since 3.9 Added the $context parameter.
 	 */
-	function displayValue( $value, $echo = true ) {
+	function displayValue( $value, $echo = true, $context = '' ) {
 		// Build the output.
 		$output = '';
 		$allowed_html = array();
@@ -1667,69 +1766,32 @@ class PMPro_Field {
 			case 'text':
 			case 'textarea':
 				// Make sure that the value is a string.
-				$output = is_string( $value ) ? $value : '';
+				if ( ! is_string( $value ) ) {
+					$output = '';
+					break;
+				}
 
-				// If the field is a URL, check if we should try to embed it or show it as a link.
+				// If the field is a URL, show it as an embed, a link, or plain text.
 				if ( wp_http_validate_url( $value ) ) {
-					/**
-					 * Filter whether links should be clickable, embedded, or shown as plain text.
-					 *
-					 * @since 3.4
-					 *
-					 * @param string $link_display_type The type of link display. Accepts 'embedded', 'clickable_link', 'clickable_label', or 'text'.
-					 * @param string $value             The value to be shown.
-					 * @param PMPro_Field $field	    Field object that the value is for.
-					 */
-					$link_display_type = apply_filters( 'pmpro_field_value_link_display_type', 'embedded', $value, $this );
-					switch ( $link_display_type ) {
-						case 'embedded':
-							$url_embed = wp_oembed_get( $value );
-							if ( ! empty( $url_embed ) ) {
-								// Oembed returned a value.
-								$output = $url_embed;
-								$allowed_html = array(
-									'iframe' => array(
-										'src'             => true,
-										'height'          => true,
-										'width'           => true,
-										'frameborder'     => true,
-										'allowfullscreen' => true,
-										'allow'           => true,
-									),
-									'script' => array(
-										'type' => true,
-										'src'  => true,
-									),
-								);
-								break;
-							}
-							// If we got here, we can't embed. Fall through to clickable link.
-						case 'clickable_link':
-							$output = '<a href="' . esc_url( $value ) . '" target="_blank">' . esc_html( $value ) . '</a>';
-							$allowed_html = array(
-								'a' => array(
-									'href'   => true,
-									'target' => true,
-								),
-							);
-							break;
-						case 'clickable_label':
-							$output = '<a href="' . esc_url( $value ) . '" target="_blank">' . esc_html( $this->label ) . '</a>';
-							$allowed_html = array(
-								'a' => array(
-									'href'   => true,
-									'target' => true,
-								),
-							);
-							break;
-						default:
-							// Do nothing. The value is already set.
-							$output = $value;
-							break;
-					}
+					list( $output, $allowed_html ) = $this->get_url_display_value( $value, $context );
 				} else {
 					$output = $value;
 				}
+				break;
+			case 'url':
+				// Make sure that the value is a string.
+				if ( ! is_string( $value ) || empty( $value ) ) {
+					$output = '';
+					break;
+				}
+
+				// Imported or older values may not be links. Show those as plain text.
+				if ( ! filter_var( esc_url_raw( $value ), FILTER_VALIDATE_URL ) ) {
+					$output = $value;
+					break;
+				}
+
+				list( $output, $allowed_html ) = $this->get_url_display_value( $value, $context );
 				break;
 			case 'checkbox':
 				$output = $value ? esc_html__( 'Yes', 'paid-memberships-pro' ) : esc_html__( 'No', 'paid-memberships-pro' );
@@ -1868,6 +1930,92 @@ class PMPro_Field {
 		} else {
 			return wp_kses( $output, $allowed_html );
 		}
+	}
+
+	/**
+	 * Build the output and allowed HTML for a URL value.
+	 *
+	 * Used by the text, textarea, and url field types. The field's
+	 * link_display_type property sets the default, but the
+	 * pmpro_field_value_link_display_type filter can still override it.
+	 *
+	 * @since 3.9
+	 *
+	 * @param string $value   The URL to show.
+	 * @param string $context Where the value is being shown. Pass 'email' to force a plain link.
+	 * @return array The output HTML and the allowed HTML for wp_kses().
+	 */
+	private function get_url_display_value( $value, $context = '' ) {
+		$output = $value;
+		$allowed_html = array();
+
+		$default_display_type = ! empty( $this->link_display_type ) ? $this->link_display_type : 'embedded';
+
+		/**
+		 * Filter whether links should be clickable, embedded, or shown as plain text.
+		 *
+		 * @since 3.4
+		 *
+		 * @param string $link_display_type The type of link display. Accepts 'embedded', 'clickable_link', 'clickable_label', or 'text'.
+		 * @param string $value             The value to be shown.
+		 * @param PMPro_Field $field	    Field object that the value is for.
+		 */
+		$link_display_type = apply_filters( 'pmpro_field_value_link_display_type', $default_display_type, $value, $this );
+
+		// Email clients cannot render an embed, so always show a plain link there.
+		if ( 'email' === $context ) {
+			$link_display_type = 'clickable_link';
+		}
+
+		switch ( $link_display_type ) {
+			case 'embedded':
+				$url_embed = wp_oembed_get( $value );
+				if ( ! empty( $url_embed ) ) {
+					// Oembed returned a value.
+					$output = $url_embed;
+					$allowed_html = array(
+						'iframe' => array(
+							'src'             => true,
+							'title'           => true,
+							'height'          => true,
+							'width'           => true,
+							'frameborder'     => true,
+							'allowfullscreen' => true,
+							'allow'           => true,
+						),
+						'script' => array(
+							'type' => true,
+							'src'  => true,
+						),
+					);
+					break;
+				}
+				// If we got here, we can't embed. Fall through to clickable link.
+			case 'clickable_link':
+				$output = '<a href="' . esc_url( $value ) . '" target="_blank">' . esc_html( $value ) . '</a>';
+				$allowed_html = array(
+					'a' => array(
+						'href'   => true,
+						'target' => true,
+					),
+				);
+				break;
+			case 'clickable_label':
+				$output = '<a href="' . esc_url( $value ) . '" target="_blank">' . esc_html( $this->label ) . '</a>';
+				$allowed_html = array(
+					'a' => array(
+						'href'   => true,
+						'target' => true,
+					),
+				);
+				break;
+			default:
+				// Show the URL as plain text.
+				$output = $value;
+				break;
+		}
+
+		return array( $output, $allowed_html );
 	}
 
 	/**
@@ -2010,6 +2158,7 @@ class PMPro_Field {
 			case 'text':
 			case 'textarea':
 			case 'number':
+			case 'url':
 				$filled = ( null !== $value && '' !== trim( $value ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				break;
 			case 'file':

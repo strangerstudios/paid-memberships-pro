@@ -15,6 +15,7 @@ if ( ! empty( $field ) ) {
 	$field_allowed_file_types = $field->allowed_file_types;
 	$field_max_file_size = $field->max_file_size;
 	$field_default = $field->default;
+	$field_link_display_type = ! empty( $field->link_display_type ) ? $field->link_display_type : 'embedded';
 } else {
 	// Default field values
 	$field_label = '';
@@ -30,6 +31,7 @@ if ( ! empty( $field ) ) {
 	$field_allowed_file_types = '';
 	$field_max_file_size = '';
 	$field_default = '';
+	$field_link_display_type = 'embedded';
 }
 
 // Other vars
@@ -80,6 +82,7 @@ $levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 			<label for="pmpro_userfields_field_type"><?php esc_html_e( 'Type', 'paid-memberships-pro' ); ?></label>
 			<select name="pmpro_userfields_field_type" id="pmpro_userfields_field_type">
 				<option value="text" <?php selected( $field_type, 'text' ); ?>><?php esc_html_e( 'Text', 'paid-memberships-pro' ); ?></option>
+				<option value="url" <?php selected( $field_type, 'url' ); ?>><?php esc_html_e( 'URL / Embed', 'paid-memberships-pro' ); ?></option>
 				<option value="textarea" <?php selected( $field_type, 'textarea' ); ?>><?php esc_html_e( 'Text Area', 'paid-memberships-pro' ); ?></option>
 				<option value="checkbox" <?php selected( $field_type, 'checkbox' ); ?>><?php esc_html_e( 'Checkbox', 'paid-memberships-pro' ); ?></option>
 				<option value="checkbox_grouped" <?php selected( $field_type, 'checkbox_grouped' ); ?>><?php esc_html_e( 'Checkbox Group', 'paid-memberships-pro' ); ?></option>
@@ -149,6 +152,21 @@ $levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 			<label for="pmpro_userfields_field_default"><?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?></label>
 			<input type="text" name="pmpro_userfields_field_default" id="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
 		</div> <!-- end pmpro_userfield-field-setting -->
+
+		<div id="pmpro_userfield-row-settings_link" class="pmpro_userfield-row-settings">
+
+			<div id="pmpro_userfield-field-setting_link_display_type" class="pmpro_userfield-field-setting pmpro_userfield-field-setting_1-2">
+				<label for="pmpro_userfields_field_link_display_type"><?php esc_html_e( 'Display As', 'paid-memberships-pro' ); ?></label>
+				<select name="pmpro_userfields_field_link_display_type" id="pmpro_userfields_field_link_display_type">
+					<option value="embedded" <?php selected( $field_link_display_type, 'embedded' ); ?>><?php esc_html_e( 'Embed (if supported)', 'paid-memberships-pro' ); ?></option>
+					<option value="clickable_link" <?php selected( $field_link_display_type, 'clickable_link' ); ?>><?php esc_html_e( 'Link (show the URL)', 'paid-memberships-pro' ); ?></option>
+					<option value="clickable_label" <?php selected( $field_link_display_type, 'clickable_label' ); ?>><?php esc_html_e( 'Link (show the field label)', 'paid-memberships-pro' ); ?></option>
+					<option value="text" <?php selected( $field_link_display_type, 'text' ); ?>><?php esc_html_e( 'Plain text', 'paid-memberships-pro' ); ?></option>
+				</select>
+				<span class="description"><?php esc_html_e( 'How to show this value when it is a URL. URLs that cannot be embedded always fall back to a link.', 'paid-memberships-pro' ); ?></span>
+			</div> <!-- end pmpro_userfield-field-setting -->
+
+		</div> <!-- end #pmpro_userfield-row-settings_link -->
 
 		<div id="pmpro_userfield-row-settings_files" class="pmpro_userfield-row-settings">
 

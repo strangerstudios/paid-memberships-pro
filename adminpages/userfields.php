@@ -38,6 +38,7 @@
 				$field->element_class = sanitize_text_field( $field->element_class );
 				$field->hint          = wp_kses_post( $field->hint );
 				$field->options       = sanitize_textarea_field( $field->options );
+				$field->link_display_type = sanitize_text_field( $field->link_display_type );
 			}
 		}
 

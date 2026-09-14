@@ -585,11 +585,13 @@ function pmpro_userfields_prep_click_events() {
 
 		var fieldoptions = fieldsettings.find('#pmpro_userfield-field-setting_options');
 		var fieldfiles = fieldsettings.find('#pmpro_userfield-row-settings_files');
+		var fieldlinks = fieldsettings.find('#pmpro_userfield-row-settings_link');
 		var fielddefault = fieldsettings.find('#pmpro_userfield-field-setting_default');
 
 		// Hide all the field settings.
 		fieldoptions.hide();
 		fieldfiles.hide();
+		fieldlinks.hide();
 		fielddefault.hide();
 
 		// Show the option field if needed.
@@ -603,8 +605,14 @@ function pmpro_userfields_prep_click_events() {
 			fieldfiles.show();
 		}
 
+		// Show the link display options if needed.
+		var linktypes = ['text', 'url', 'textarea'];
+		if (jQuery.inArray(fieldtype, linktypes) > -1) {
+			fieldlinks.show();
+		}
+
 		// Show the default field if needed.
-		var defaulttypes = ['text', 'textarea', 'checkbox', 'radio', 'select', 'date', 'readonly', 'hidden', 'number'];
+		var defaulttypes = ['text', 'url', 'textarea', 'checkbox', 'radio', 'select', 'date', 'readonly', 'hidden', 'number'];
 		if (jQuery.inArray(fieldtype, defaulttypes) > -1) {
 			fielddefault.show();
 		}
@@ -677,6 +685,7 @@ function pmpro_userfields_prep_click_events() {
 				let field_allowed_file_types = jQuery(this).find('input[name=pmpro_userfields_field_allowed_file_types]').val();
 				let field_max_file_size = jQuery(this).find('input[name=pmpro_userfields_field_max_file_size]').val();
 				let field_default = jQuery(this).find('input[name=pmpro_userfields_field_default]').val();
+				let field_link_display_type = jQuery(this).find('select[name=pmpro_userfields_field_link_display_type]').val();
 
 				// Get level ids.
 				let field_levels = [];
@@ -698,7 +707,8 @@ function pmpro_userfields_prep_click_events() {
 					'options': field_options,
 					'allowed_file_types': field_allowed_file_types,
 					'max_file_size': field_max_file_size,
-					'default': field_default
+					'default': field_default,
+					'link_display_type': field_link_display_type
 				};
 
 				// Add to array. (Only if it has a label or name.)
