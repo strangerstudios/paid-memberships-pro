@@ -100,14 +100,12 @@
 					) ); ?>
 					<?php
 						if ( ! empty( $pmpro_invoice->status ) ) {
+							$display_status = pmpro_get_order_status_label( $pmpro_invoice->status );
 							if ( in_array( $pmpro_invoice->status, array( '', 'success', 'cancelled' ) ) ) {
-								$display_status = __( 'Paid', 'paid-memberships-pro' );
 								$tag_style = 'success';
 							} elseif ( $pmpro_invoice->status == 'refunded' ) {
-								$display_status = __( 'Refunded', 'paid-memberships-pro' );
 								$tag_style = 'error';
 							} else {
-								$display_status = ucwords( $pmpro_invoice->status );
 								$tag_style = 'alert';
 							}
 							?>
@@ -419,16 +417,16 @@
 									$order->getMembershipLevel();
 
 									// Set the display status and tag style.
+									$display_status = pmpro_get_order_status_label( $order->status );
 									if ( in_array( $order->status, array( '', 'success', 'cancelled' ) ) ) {
-										$display_status = esc_html__( 'Paid', 'paid-memberships-pro' );
 										$tag_style = 'success';
 									} elseif ( $order->status == 'pending' ) {
 										// Some Add Ons set status to pending.
-										$display_status = esc_html__( 'Pending', 'paid-memberships-pro' );
 										$tag_style = 'alert';
 									} elseif ( $order->status == 'refunded' ) {
-										$display_status = esc_html__( 'Refunded', 'paid-memberships-pro' );
 										$tag_style = 'error';
+									} else {
+										$tag_style = 'alert';
 									}
 									?>
 									<tr id="pmpro_table_order-<?php echo esc_attr( $order->code ); ?>">

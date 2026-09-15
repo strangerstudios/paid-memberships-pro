@@ -4108,6 +4108,115 @@ function pmpro_getOrderStatuses( $force = false ) {
 }
 
 /**
+ * Get the translatable label for an order status.
+ *
+ * Order statuses are stored as internal identifiers, so they need to be
+ * mapped to a label before they are shown to anyone. Add Ons can register
+ * their own statuses through the pmpro_order_status_labels filter.
+ *
+ * @since 3.9
+ *
+ * @param string $status The order status value, e.g. 'success' or 'pending'.
+ * @return string The label to display for the status.
+ */
+function pmpro_get_order_status_label( $status ) {
+	$status_labels = array(
+		''          => __( 'Paid', 'paid-memberships-pro' ),
+		'success'   => __( 'Paid', 'paid-memberships-pro' ),
+		'cancelled' => __( 'Paid', 'paid-memberships-pro' ),
+		'refunded'  => __( 'Refunded', 'paid-memberships-pro' ),
+		'pending'   => __( 'Pending', 'paid-memberships-pro' ),
+		'token'     => __( 'Token', 'paid-memberships-pro' ),
+		'review'    => __( 'Review', 'paid-memberships-pro' ),
+		'error'     => __( 'Error', 'paid-memberships-pro' ),
+	);
+
+	/**
+	 * Filter the labels used for order statuses.
+	 *
+	 * @since 3.9
+	 *
+	 * @param array $status_labels Array of status values and their labels.
+	 */
+	$status_labels = apply_filters( 'pmpro_order_status_labels', $status_labels );
+
+	if ( isset( $status_labels[ $status ] ) ) {
+		return $status_labels[ $status ];
+	}
+
+	// Fall back to the status itself so unknown Add On statuses still read well.
+	return ucwords( str_replace( '_', ' ', $status ) );
+}
+
+/**
+ * Get the translatable label for a membership status.
+ *
+ * @since 3.9
+ *
+ * @param string $status The membership status value, e.g. 'active' or 'expired'.
+ * @return string The label to display for the status.
+ */
+function pmpro_get_membership_status_label( $status ) {
+	$status_labels = array(
+		'active'          => __( 'Active', 'paid-memberships-pro' ),
+		'inactive'        => __( 'Inactive', 'paid-memberships-pro' ),
+		'expired'         => __( 'Expired', 'paid-memberships-pro' ),
+		'cancelled'       => __( 'Cancelled', 'paid-memberships-pro' ),
+		'admin_cancelled' => __( 'Cancelled by Admin', 'paid-memberships-pro' ),
+		'changed'         => __( 'Changed', 'paid-memberships-pro' ),
+		'admin_changed'   => __( 'Changed by Admin', 'paid-memberships-pro' ),
+	);
+
+	/**
+	 * Filter the labels used for membership statuses.
+	 *
+	 * @since 3.9
+	 *
+	 * @param array $status_labels Array of status values and their labels.
+	 */
+	$status_labels = apply_filters( 'pmpro_membership_status_labels', $status_labels );
+
+	if ( isset( $status_labels[ $status ] ) ) {
+		return $status_labels[ $status ];
+	}
+
+	// Fall back to the status itself so unknown statuses still read well.
+	return ucwords( str_replace( '_', ' ', $status ) );
+}
+
+/**
+ * Get the translatable label for a subscription status.
+ *
+ * @since 3.9
+ *
+ * @param string $status The subscription status value, e.g. 'active' or 'sync_error'.
+ * @return string The label to display for the status.
+ */
+function pmpro_get_subscription_status_label( $status ) {
+	$status_labels = array(
+		'active'     => __( 'Active', 'paid-memberships-pro' ),
+		'cancelled'  => __( 'Cancelled', 'paid-memberships-pro' ),
+		'sync_error' => __( 'Sync Error', 'paid-memberships-pro' ),
+	);
+
+	/**
+	 * Filter the labels used for subscription statuses.
+	 *
+	 * @since 3.9
+	 *
+	 * @param array $status_labels Array of status values and their labels.
+	 */
+	$status_labels = apply_filters( 'pmpro_subscription_status_labels', $status_labels );
+
+	if ( isset( $status_labels[ $status ] ) ) {
+		return $status_labels[ $status ];
+	}
+
+	// Fall back to the status itself so unknown statuses still read well.
+	return ucwords( str_replace( '_', ' ', $status ) );
+}
+
+/**
  * Cleanup the wp_pmpro_memberships_users_table
  * (a) If a user has more than one active row for the same level,
  * the older ones are marked inactive.

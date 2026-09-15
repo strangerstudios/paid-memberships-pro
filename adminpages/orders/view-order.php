@@ -23,11 +23,10 @@ $subscription = $order->get_subscription();
 					<?php printf( esc_html__( 'Order # %s', 'paid-memberships-pro' ), esc_html( $order->code ) ); ?>
 					<?php
 						if ( ! empty( $order->status ) ) {
+							$display_status = pmpro_get_order_status_label( $order->status );
 							if ( in_array( $order->status, array( '', 'success', 'cancelled' ) ) ) {
-								$display_status = __( 'Paid', 'paid-memberships-pro' );
 								$tag_style = 'success';
 							} else {
-								$display_status = ucwords( $order->status );
 								if ( in_array( $order->status, array( 'error', 'refunded' ) ) ) {
 									$tag_style = 'error';
 								} else {

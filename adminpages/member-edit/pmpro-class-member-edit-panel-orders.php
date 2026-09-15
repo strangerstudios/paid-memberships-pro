@@ -151,11 +151,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 										esc_html_e( '&#8212;', 'paid-memberships-pro' );
 									} else { ?>
 										<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $order->status ); ?>">
-											<?php if ( in_array( $order->status, array( 'success', 'cancelled' ) ) ) {
-												esc_html_e( 'Paid', 'paid-memberships-pro' );
-											} else {
-												echo esc_html( ucwords( $order->status ) );
-											} ?>
+											<?php echo esc_html( pmpro_get_order_status_label( $order->status ) ); ?>
 										</span>
 										<?php
 									}

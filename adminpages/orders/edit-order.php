@@ -259,7 +259,7 @@ if ( ! empty( $order->id ) ) { ?>
 						<select id="status" name="status">
 							<?php foreach ( $statuses as $status ) { ?>
 								<option
-									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo esc_html( $status ); ?></option>
+									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo esc_html( pmpro_get_order_status_label( $status ) ); ?></option>
 							<?php } ?>
 						</select>
 					</td>

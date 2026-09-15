@@ -84,7 +84,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
 								echo '(test)';
 							} ?>
 							<?php if ( ! empty( $order->status ) ) {
-								echo '(' . esc_html( $order->status ) . ')'; 
+								echo '(' . esc_html( pmpro_get_order_status_label( $order->status ) ) . ')';
 							} ?>
 						</td>
 						<td><?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?></td>

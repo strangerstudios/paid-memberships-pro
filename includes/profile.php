@@ -789,11 +789,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 									esc_html_e( '&#8212;', 'paid-memberships-pro' );
 								} else { ?>
 									<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $invoice->status ); ?>">
-										<?php if ( in_array( $invoice->status, array( 'success', 'cancelled' ) ) ) {
-											esc_html_e( 'Paid', 'paid-memberships-pro' );
-										} else {
-											echo esc_html( ucwords( $invoice->status ) );
-										} ?>
+										<?php echo esc_html( pmpro_get_order_status_label( $invoice->status ) ); ?>
 									</span>
 									<?php
 								}
@@ -853,7 +849,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 						<td><?php echo esc_html( $subscription->gateway_environment ); ?>
 						<td><?php echo esc_html( $subscription->next_payment_date ); ?>
 						<td><?php echo esc_html( $subscription->enddate ); ?>
-						<td><?php echo esc_html( $subscription->status ); ?>
+						<td><?php echo esc_html( pmpro_get_subscription_status_label( $subscription->status ) ); ?>
 					</tr>
 					<?php
 				}
@@ -910,7 +906,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 								if ( empty( $levelhistory->status ) ) {
 									echo '-';
 								} else {
-									echo esc_html( $levelhistory->status ); 
+									echo esc_html( pmpro_get_membership_status_label( $levelhistory->status ) );
 								}
 							?>
 						</td>

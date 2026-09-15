@@ -72,7 +72,7 @@
 		<h2><?php echo esc_html( sprintf( __( 'Order #%s', 'paid-memberships-pro' ), $order->code ) ); ?></h2>
 		<p>
 			<strong><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></strong><br />
-			<?php echo esc_html( ucwords( $order->status ) ); ?>
+			<?php echo esc_html( pmpro_get_order_status_label( $order->status ) ); ?>
 		</p>
 	</header>
 	<main class="main">

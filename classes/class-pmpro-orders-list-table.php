@@ -416,7 +416,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		if( $count ) {
 			$sqlQuery = 'SELECT COUNT(DISTINCT o.id) ';
 		} else {
-			$sqlQuery = "SELECT o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' WHEN o.status = 'error' THEN '$error_string' ELSE '$cancelled_string' END as `status_label` ";
+			$sqlQuery = "SELECT o.id, CASE WHEN o.status = 'success' THEN '$paid_string' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' WHEN o.status = 'error' THEN '$error_string' ELSE '$cancelled_string' END as `status_label` ";
 		}
 
 		$sqlQuery .= "FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID ";
@@ -634,7 +634,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 						<select id="pmpro-filter-status" name="status">
 							<option value=""><?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?></option>
 							<?php foreach ( $statuses as $the_status ) { ?>
-								<option value="<?php echo esc_attr( $the_status ); ?>" <?php selected( $status, $the_status ); ?>><?php echo esc_html( $the_status ); ?></option>
+								<option value="<?php echo esc_attr( $the_status ); ?>" <?php selected( $status, $the_status ); ?>><?php echo esc_html( pmpro_get_order_status_label( $the_status ) ); ?></option>
 							<?php } ?>
 						</select>
 					</div>
@@ -1249,11 +1249,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		
 		?>
 		<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $item->status ); ?>">
-			<?php if ( in_array( $item->status, array( 'success', 'cancelled' ) ) ) {
-				esc_html_e( 'Paid', 'paid-memberships-pro' );
-			} else {
-				echo esc_html( ucwords( $item->status ) );
-			} ?>
+			<?php echo esc_html( pmpro_get_order_status_label( $item->status ) ); ?>
 		</span>
 		<?php if ( $item->is_renewal() ) { ?>
 			<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $item->subscription_transaction_id ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>" class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></a>

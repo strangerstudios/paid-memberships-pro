@@ -21,7 +21,7 @@ $sub_membership_level_id = $subscription->get_membership_level_id();
 					<span class="dashicons dashicons-arrow-up-alt2"></span>
 					<?php printf( esc_html__( 'Subscription # %s', 'paid-memberships-pro' ), esc_html( $subscription->get_id() ) ); ?>
 					<span class="pmpro_tag pmpro_tag-<?php echo esc_attr( $subscription->get_status() ); ?>">
-						<?php echo esc_html( ucwords( $subscription->get_status() ) ); ?>
+						<?php echo esc_html( pmpro_get_subscription_status_label( $subscription->get_status() ) ); ?>
 					</span>
 				</button>
 			</div>

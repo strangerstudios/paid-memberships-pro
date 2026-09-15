@@ -379,16 +379,16 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										$order->getMembershipLevel();
 
 										// Set the display status and tag style.
+										$display_status = pmpro_get_order_status_label( $order->status );
 										if ( in_array( $order->status, array( '', 'success', 'cancelled' ) ) ) {
-											$display_status = esc_html__( 'Paid', 'paid-memberships-pro' );
 											$tag_style = 'success';
 										} elseif ( $order->status == 'pending' ) {
 											// Some Add Ons set status to pending.
-											$display_status = esc_html__( 'Pending', 'paid-memberships-pro' );
 											$tag_style = 'alert';
 										} elseif ( $order->status == 'refunded' ) {
-											$display_status = esc_html__( 'Refunded', 'paid-memberships-pro' );
 											$tag_style = 'error';
+										} else {
+											$tag_style = 'alert';
 										}
 										$invoice_url = pmpro_url( "invoice", "?invoice=" . $order->code );
 										$date_content = empty( $invoice_url ) ? date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) : '<a href="' . esc_url( $invoice_url ) . '">' . esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ) . '</a>';

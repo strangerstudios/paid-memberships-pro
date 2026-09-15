@@ -653,7 +653,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_status( $item ) {     
-		$status = ( 'active' === $item->get_status() ) ? __( 'Active', 'paid-memberships-pro' ) : __( 'Cancelled', 'paid-memberships-pro' );
+		$status = pmpro_get_subscription_status_label( $item->get_status() );
 		?>
 		<span class="pmpro_subscription-status pmpro_subscription-status-<?php echo esc_attr( $item->get_status() ); ?>">
 			<?php echo esc_html( $status ); ?>
