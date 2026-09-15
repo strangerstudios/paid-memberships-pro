@@ -460,6 +460,17 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.84' );
 	}
 
+	/**
+	 * Version 3.8.5
+	 * Remove the "Default WP notification email" setting. The WordPress new
+	 * user notification stays disabled by default, as it was before.
+	 */
+	require_once( PMPRO_DIR . '/includes/updates/upgrade_3_8_5.php' );
+	if ( $pmpro_db_version < 3.85 ) {
+		pmpro_upgrade_3_8_5();
+		update_option( 'pmpro_db_version', '3.85' );
+	}
+
 }
 
 function pmpro_db_delta() {

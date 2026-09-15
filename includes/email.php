@@ -66,11 +66,8 @@ if( $only_filter_pmpro_emails ) {
 	add_filter( 'wp_mail_from', 'pmpro_wp_mail_from' );
 }
 
-//If the $email_member_notification option is empty, disable the wp_new_user_notification email at checkout.
-$email_member_notification = get_option( "pmpro_email_member_notification" );
-if( empty( $email_member_notification ) ) {
-	add_filter( "pmpro_wp_new_user_notification", "__return_false", 0 );
-}
+//PMPro sends its own confirmation email after checkout, so the WordPress new user notification is disabled by default.
+add_filter( "pmpro_wp_new_user_notification", "__return_false", 0 );
 
 /**
  * Add template files and change content type to HTML if using PHPMailer directly.

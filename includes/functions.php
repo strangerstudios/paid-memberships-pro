@@ -5001,8 +5001,9 @@ function pmpro_disallowed_refund_statuses() {
 }
 
 /* Send the WP new user notification email, but also check our filter.
- * NOTE: includes/email.php has code to check for the related setting and
- *       filters on the pmpro_wp_new_user_notification hook.
+ * NOTE: includes/email.php disables this by default via the same
+ *       pmpro_wp_new_user_notification hook.
+ *
  * @since 2.7.4
  * @param int $user_id ID of the user to send the email for.
  * @param int $level_id Level ID the user just got. (Need to send to filter.)

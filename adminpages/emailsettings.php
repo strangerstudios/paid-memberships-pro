@@ -30,8 +30,6 @@
 		pmpro_setOption("email_admin_changes");
 		pmpro_setOption("email_admin_cancels");
 		pmpro_setOption("email_admin_billing");
-		
-		pmpro_setOption("email_member_notification");
 
 		// Email logging settings
 		pmpro_setOption( 'email_logging_enabled' );
@@ -59,8 +57,6 @@
 	$email_admin_cancels = get_option( "pmpro_email_admin_cancels");
 	$email_admin_billing = get_option( "pmpro_email_admin_billing");	
 	
-	$email_member_notification = get_option( "pmpro_email_member_notification");
-
 	$email_logging_enabled = pmpro_is_email_logging_enabled();
 	$email_log_purge_days = get_option( 'pmpro_email_log_purge_days', 90 );
 
@@ -230,30 +226,6 @@
 							</td>
 						</tr>
 					</tbody>
-				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="other-email-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Other Email Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-				<tbody>            
-					<tr>
-						<th scope="row" valign="top">
-							<label for="email_member_notification"><?php esc_html_e('Send members emails', 'paid-memberships-pro' );?>:</label>
-						</th>
-						<td>
-							<input type="checkbox" id="email_member_notification" name="email_member_notification" value="1" <?php if(!empty($email_member_notification)) { ?>checked="checked"<?php } ?> />
-							<label for="email_member_notification"><?php esc_html_e('Default WP notification email.', 'paid-memberships-pro' );?></label>
-							<p class="description"><?php esc_html_e( 'Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-				</tbody>
 				</table>
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->

@@ -356,7 +356,6 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields']['pmpro_hideads'] = get_option( 'pmpro_hideads', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_redirecttosubscription'] = get_option( 'pmpro_redirecttosubscription', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_only_filter_pmpro_emails'] = get_option( 'pmpro_only_filter_pmpro_emails', 'No Value' );
-		$stats['plugin_options_fields']['pmpro_email_member_notification'] = get_option( 'pmpro_email_member_notification', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_use_ssl'] = get_option( 'pmpro_pmpro_use_ssl', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_nuclear_HTTPS'] = get_option( 'pmpro_nuclear_HTTPS', 'No Value' );
 
