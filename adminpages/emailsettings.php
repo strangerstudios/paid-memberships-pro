@@ -163,7 +163,53 @@
 
 				// Build some links for use in this section.
 				$pmpro_transactional_email_docs_url = 'https://www.paidmembershipspro.com/documentation/hosting-docs/transactional-email/?utm_source=plugin&utm_medium=pmpro-emailsettings&utm_campaign=documentation';
-				?>
+
+				// Surface a warning when recent email failures suggest delivery is broken.
+				if ( pmpro_is_email_failure_alert_active() && ! pmpro_is_email_failure_alert_dismissed() ) {
+					$failure_alert_args = pmpro_get_email_failure_alert_args();
+					$failure_stats      = pmpro_get_email_failure_stats( $failure_alert_args['days'] );
+
+					$failure_log_url = add_query_arg(
+						array(
+							'page'   => 'pmpro-reports',
+							'report' => 'email_log',
+							'status' => 'failed',
+						),
+						admin_url( 'admin.php' )
+					);
+
+					$failure_dismiss_url = add_query_arg(
+						array(
+							'pmpro_dismiss_email_failure_alert' => 1,
+							'pmpro_email_failure_alert_nonce'   => wp_create_nonce( 'pmpro_dismiss_email_failure_alert' ),
+						),
+						admin_url( 'admin.php?page=pmpro-emailsettings' )
+					);
+					?>
+					<div class="notice notice-warning inline">
+						<p>
+							<strong><?php esc_html_e( 'Some of your emails are failing to send.', 'paid-memberships-pro' ); ?></strong>
+						</p>
+						<p>
+							<?php
+							printf(
+								// translators: %1$s is the number of failed emails, %2$s is the number of days in the window, %3$s is the percentage of emails that failed.
+								esc_html__( '%1$s emails have failed in the last %2$s days, about %3$s%% of all emails sent.', 'paid-memberships-pro' ),
+								'<strong>' . esc_html( number_format_i18n( $failure_stats['failed'] ) ) . '</strong>',
+								'<strong>' . esc_html( number_format_i18n( $failure_alert_args['days'] ) ) . '</strong>',
+								'<strong>' . esc_html( number_format_i18n( $failure_stats['rate'], 1 ) ) . '</strong>'
+							); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							?>
+						</p>
+						<p>
+							<?php if ( current_user_can( 'pmpro_reports' ) ) { ?>
+								<a class="button" href="<?php echo esc_url( $failure_log_url ); ?>"><?php esc_html_e( 'View Failed Emails', 'paid-memberships-pro' ); ?></a>
+							<?php } ?>
+							<a class="button button-link" href="https://www.paidmembershipspro.com/troubleshooting-email-issues-sending-sent-spam-delivery-delays/?utm_source=plugin&utm_medium=pmpro-emailsettings&utm_campaign=blog&utm_content=email-failure-alert" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Email Troubleshooting Guide', 'paid-memberships-pro' ); ?></a>
+							<a class="button button-link" href="<?php echo esc_url( $failure_dismiss_url ); ?>"><?php esc_html_e( 'Dismiss', 'paid-memberships-pro' ); ?></a>
+						</p>
+					</div>
+				<?php } ?>
 				<p>
 				<?php
 					if ( $email_method['source'] === 'hosting' ) {

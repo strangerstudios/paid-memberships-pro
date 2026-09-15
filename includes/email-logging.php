@@ -501,6 +501,180 @@ function pmpro_auto_purge_email_log_entries() {
 add_action( 'pmpro_schedule_daily', 'pmpro_auto_purge_email_log_entries' );
 
 /**
+ * Get email failure statistics for a recent window.
+ *
+ * Counts sent and failed emails in the log so admin notices can
+ * judge whether delivery is healthy.
+ *
+ * @since TBD
+ *
+ * @param int $days Number of days to look back. Default 7.
+ * @return array {
+ *     @type int   $total  Total emails logged in the window.
+ *     @type int   $failed Failed emails in the window.
+ *     @type float $rate   Failure rate as a percentage (0-100).
+ * }
+ */
+function pmpro_get_email_failure_stats( $days = 7 ) {
+	global $wpdb;
+
+	static $cache = array();
+
+	$stats = array(
+		'total'  => 0,
+		'failed' => 0,
+		'rate'   => 0.0,
+	);
+
+	if ( ! pmpro_is_email_logging_enabled() || empty( $wpdb->pmpro_email_log ) ) {
+		return $stats;
+	}
+
+	$days = absint( $days );
+	if ( empty( $days ) ) {
+		return $stats;
+	}
+
+	if ( isset( $cache[ $days ] ) ) {
+		return $cache[ $days ];
+	}
+
+	// Log timestamps are stored in GMT, so compare against a GMT cutoff.
+	$cutoff = gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );
+
+	$counts = $wpdb->get_row(
+		$wpdb->prepare(
+			"SELECT COUNT(*) AS total, SUM( CASE WHEN status = 'failed' THEN 1 ELSE 0 END ) AS failed
+			 FROM {$wpdb->pmpro_email_log}
+			 WHERE timestamp >= %s",
+			$cutoff
+		)
+	);
+
+	if ( empty( $counts ) || empty( $counts->total ) ) {
+		$cache[ $days ] = $stats;
+		return $stats;
+	}
+
+	$stats['total']  = (int) $counts->total;
+	$stats['failed'] = (int) $counts->failed;
+	$stats['rate']   = round( ( $stats['failed'] / $stats['total'] ) * 100, 1 );
+
+	$cache[ $days ] = $stats;
+
+	return $stats;
+}
+
+/**
+ * Get the thresholds used for the email failure alert.
+ *
+ * @since TBD
+ *
+ * @return array {
+ *     @type int   $days         Days to look back. Default 7.
+ *     @type int   $min_failures Minimum failed emails. Default 3.
+ *     @type float $min_rate     Minimum failure rate percentage. Default 20.
+ * }
+ */
+function pmpro_get_email_failure_alert_args() {
+	/**
+	 * Filter the thresholds used to trigger the email failure alert.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $args {
+	 *     @type int   $days         Days to look back. Default 7.
+	 *     @type int   $min_failures Minimum failed emails. Default 3.
+	 *     @type float $min_rate     Minimum failure rate percentage. Default 20.
+	 * }
+	 */
+	return apply_filters( 'pmpro_email_failure_alert_args', array(
+		'days'         => 7,
+		'min_failures' => 3,
+		'min_rate'     => 20,
+	) );
+}
+
+/**
+ * Whether the email failure alert should be shown.
+ *
+ * Requires a minimum number of failures and a minimum failure rate
+ * in the recent window, so a single transient bounce does not
+ * trigger the alert.
+ *
+ * @since TBD
+ *
+ * @return bool Whether the failure alert is active.
+ */
+function pmpro_is_email_failure_alert_active() {
+	$args = pmpro_get_email_failure_alert_args();
+
+	$stats = pmpro_get_email_failure_stats( $args['days'] );
+
+	$active = $stats['failed'] >= absint( $args['min_failures'] ) && $stats['rate'] >= (float) $args['min_rate'];
+
+	/**
+	 * Filter whether the email failure alert is active.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool  $active Whether the alert is active.
+	 * @param array $stats  Failure statistics from pmpro_get_email_failure_stats().
+	 * @param array $args   The thresholds used for this check.
+	 */
+	return (bool) apply_filters( 'pmpro_email_failure_alert', $active, $stats, $args );
+}
+
+/**
+ * Whether the current user has dismissed the email failure alert.
+ *
+ * The dismissal expires after a week so a site that is still
+ * failing gets the alert again.
+ *
+ * @since TBD
+ *
+ * @return bool Whether the alert is dismissed for the current user.
+ */
+function pmpro_is_email_failure_alert_dismissed() {
+	$dismissed = get_user_meta( get_current_user_id(), 'pmpro_email_failure_alert_dismissed', true );
+
+	if ( empty( $dismissed ) ) {
+		return false;
+	}
+
+	return ( time() - absint( $dismissed ) ) < WEEK_IN_SECONDS;
+}
+
+/**
+ * Handle dismissal of the email failure alert.
+ *
+ * @since TBD
+ */
+function pmpro_maybe_dismiss_email_failure_alert() {
+	if ( empty( $_REQUEST['pmpro_dismiss_email_failure_alert'] ) ) {
+		return;
+	}
+
+	// Only handle the dismissal on the Email Settings page.
+	if ( empty( $_REQUEST['page'] ) || 'pmpro-emailsettings' !== $_REQUEST['page'] ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_emailsettings' ) ) {
+		return;
+	}
+
+	check_admin_referer( 'pmpro_dismiss_email_failure_alert', 'pmpro_email_failure_alert_nonce' );
+
+	update_user_meta( get_current_user_id(), 'pmpro_email_failure_alert_dismissed', time() );
+
+	// Redirect to clear the dismissal arguments from the URL.
+	wp_safe_redirect( admin_url( 'admin.php?page=pmpro-emailsettings#email-deliverability-settings' ) );
+	exit;
+}
+add_action( 'admin_init', 'pmpro_maybe_dismiss_email_failure_alert' );
+
+/**
  * Render email log details HTML for modal display
  *
  * @since 3.7
