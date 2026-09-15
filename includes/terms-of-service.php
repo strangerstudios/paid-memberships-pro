@@ -440,3 +440,246 @@ function pmpro_get_tos_consent_log_entry_post_modified_for_order_csv_export( $or
 	}
 	return '';
 }
+
+/**
+ * Add the re-acceptance meta box to the Terms of Service page.
+ *
+ * @since 3.9
+ *
+ * @param WP_Post $post The post being edited.
+ */
+function pmpro_tos_reaccept_add_metabox( $post ) {
+	// Only show on the page set as the Terms of Service page.
+	$tospage = get_option( 'pmpro_tospage' );
+	if ( empty( $tospage ) || $post->ID != $tospage ) {
+		return;
+	}
+
+	add_meta_box(
+		'pmpro_tos_reaccept',
+		__( 'Terms of Service', 'paid-memberships-pro' ),
+		'pmpro_tos_reaccept_metabox_html',
+		'page',
+		'side',
+		'high'
+	);
+}
+add_action( 'add_meta_boxes_page', 'pmpro_tos_reaccept_add_metabox' );
+
+/**
+ * Display the re-acceptance checkbox in the meta box.
+ *
+ * @since 3.9
+ *
+ * @param WP_Post $post The post being edited.
+ */
+function pmpro_tos_reaccept_metabox_html( $post ) {
+	wp_nonce_field( 'pmpro_tos_reaccept_metabox', 'pmpro_tos_reaccept_metabox_nonce' );
+	?>
+	<input type="hidden" name="pmpro_tos_reaccept_metabox_present" value="1" />
+	<p>
+		<label>
+			<input type="checkbox" name="pmpro_tos_reaccept" value="1" <?php checked( get_option( 'pmpro_tos_reaccept' ), $post->ID ); ?> />
+			<?php esc_html_e( 'Require all members to re-accept this Terms of Service.', 'paid-memberships-pro' ); ?>
+		</label>
+	</p>
+	<p class="description">
+		<?php esc_html_e( 'Members who have not accepted the current version will see a notice asking them to accept it again. Uncheck this to stop asking.', 'paid-memberships-pro' ); ?>
+	</p>
+	<?php
+}
+
+/**
+ * Save the re-acceptance checkbox when the Terms of Service page is saved.
+ *
+ * @since 3.9
+ *
+ * @param int $post_id The post being saved.
+ */
+function pmpro_tos_reaccept_save_metabox( $post_id ) {
+	// The meta box was not shown, so there is nothing to save.
+	if ( empty( $_POST['pmpro_tos_reaccept_metabox_present'] ) ) {
+		return;
+	}
+
+	if ( empty( $_POST['pmpro_tos_reaccept_metabox_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['pmpro_tos_reaccept_metabox_nonce'] ), 'pmpro_tos_reaccept_metabox' ) ) {
+		return;
+	}
+
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'edit_page', $post_id ) ) {
+		return;
+	}
+
+	// Only track the page that is currently set as the Terms of Service page.
+	$tospage = get_option( 'pmpro_tospage' );
+	if ( empty( $tospage ) || $post_id != $tospage ) {
+		return;
+	}
+
+	if ( ! empty( $_POST['pmpro_tos_reaccept'] ) ) {
+		update_option( 'pmpro_tos_reaccept', $tospage, false );
+	} else {
+		delete_option( 'pmpro_tos_reaccept' );
+	}
+}
+add_action( 'save_post_page', 'pmpro_tos_reaccept_save_metabox' );
+
+/**
+ * Check if members are being asked to re-accept the Terms of Service.
+ *
+ * @since 3.9
+ *
+ * @return int|false The Terms of Service page ID, or false if re-acceptance is not required.
+ */
+function pmpro_is_tos_reaccept_required() {
+	$tospage = get_option( 'pmpro_tospage' );
+	if ( empty( $tospage ) ) {
+		return false;
+	}
+
+	// The setting stores the page it applies to, so switching the TOS page turns this off.
+	$reaccept = get_option( 'pmpro_tos_reaccept' );
+	if ( empty( $reaccept ) || $reaccept != $tospage ) {
+		return false;
+	}
+
+	return intval( $tospage );
+}
+
+/**
+ * Check if a member still needs to accept the current Terms of Service.
+ *
+ * @since 3.9
+ *
+ * @param int $user_id Optional. The user ID to check. Defaults to the current user.
+ * @return bool True if the member should be asked to accept the Terms of Service again.
+ */
+function pmpro_user_needs_tos_reaccept( $user_id = null ) {
+	$tospage_id = pmpro_is_tos_reaccept_required();
+	if ( empty( $tospage_id ) ) {
+		return false;
+	}
+
+	if ( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
+
+	if ( empty( $user_id ) ) {
+		return false;
+	}
+
+	// If any consent entry matches the current version of the page, they are up to date.
+	$consent_log = pmpro_get_consent_log( $user_id );
+	if ( ! empty( $consent_log ) ) {
+		foreach ( $consent_log as $entry ) {
+			if ( empty( $entry['post_id'] ) || $entry['post_id'] != $tospage_id || empty( $entry['post_modified'] ) ) {
+				continue;
+			}
+
+			if ( pmpro_is_consent_current( $entry ) ) {
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+/**
+ * Show a notice asking the member to accept the Terms of Service again.
+ *
+ * @since 3.9
+ */
+function pmpro_tos_reaccept_banner() {
+	global $pmpro_tos_reaccept_banner_shown;
+
+	// Don't show the notice in the admin or to logged out visitors.
+	if ( is_admin() || ! is_user_logged_in() || ! pmpro_user_needs_tos_reaccept() ) {
+		return;
+	}
+
+	$tospage_id = pmpro_is_tos_reaccept_required();
+	$tospage    = get_post( $tospage_id );
+	if ( empty( $tospage ) ) {
+		return;
+	}
+
+	$pmpro_tos_reaccept_banner_shown = true;
+	?>
+	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_tos_reaccept_banner', 'pmpro_tos_reaccept_banner' ) ); ?>" role="region" aria-label="<?php esc_attr_e( 'Terms of Service', 'paid-memberships-pro' ); ?>">
+		<?php
+			/* translators: %s: Terms of Service page title. */
+			$message  = sprintf( __( 'Our %s has been updated. Please review it and accept it to continue.', 'paid-memberships-pro' ), esc_html( $tospage->post_title ) );
+			$message .= ' ' . sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_url( get_permalink( $tospage->ID ) ), esc_html__( 'View the Terms of Service', 'paid-memberships-pro' ) );
+		?>
+		<p><?php echo wp_kses_post( $message ); ?></p>
+		<form method="post">
+			<input type="hidden" name="pmpro_tos_reaccept_action" value="1" />
+			<?php wp_nonce_field( 'pmpro_tos_reaccept_' . get_current_user_id(), 'pmpro_tos_reaccept_nonce' ); ?>
+			<button type="submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_tos_reaccept_button', 'pmpro_tos_reaccept_button' ) ); ?>">
+				<?php
+					/* translators: %s: Terms of Service page title. */
+					echo esc_html( sprintf( __( 'I agree to the %s', 'paid-memberships-pro' ), $tospage->post_title ) );
+				?>
+			</button>
+		</form>
+	</div> <!-- end pmpro_tos_reaccept_banner -->
+	<?php
+}
+add_action( 'wp_body_open', 'pmpro_tos_reaccept_banner' );
+
+/**
+ * Show the re-acceptance notice in the footer for themes that don't call wp_body_open().
+ *
+ * @since 3.9
+ */
+function pmpro_tos_reaccept_banner_fallback() {
+	global $pmpro_tos_reaccept_banner_shown;
+
+	// The notice already rendered in the body, so don't show it twice.
+	if ( ! empty( $pmpro_tos_reaccept_banner_shown ) ) {
+		return;
+	}
+
+	pmpro_tos_reaccept_banner();
+}
+add_action( 'wp_footer', 'pmpro_tos_reaccept_banner_fallback', 5 );
+
+/**
+ * Log consent when a member accepts the Terms of Service from the re-acceptance notice.
+ *
+ * @since 3.9
+ */
+function pmpro_tos_reaccept_handle_acceptance() {
+	if ( is_admin() || empty( $_POST['pmpro_tos_reaccept_action'] ) || ! is_user_logged_in() ) {
+		return;
+	}
+
+	$user_id = get_current_user_id();
+
+	if ( empty( $_POST['pmpro_tos_reaccept_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['pmpro_tos_reaccept_nonce'] ), 'pmpro_tos_reaccept_' . $user_id ) ) {
+		return;
+	}
+
+	$tospage_id = pmpro_is_tos_reaccept_required();
+	if ( empty( $tospage_id ) ) {
+		return;
+	}
+
+	// Log consent only if the member has not accepted this version yet,
+	// so a double submit does not create duplicate consent entries.
+	if ( pmpro_user_needs_tos_reaccept( $user_id ) ) {
+		pmpro_save_consent( $user_id, $tospage_id );
+	}
+
+	// Redirect back to the same page so a refresh doesn't submit the form again.
+	if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
+		wp_safe_redirect( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) );
+		exit;
+	}
+}
+add_action( 'template_redirect', 'pmpro_tos_reaccept_handle_acceptance' );

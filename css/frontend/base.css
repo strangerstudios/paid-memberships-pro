@@ -101,6 +101,58 @@
 }
 
 /**
+ * Terms of Service re-acceptance notice
+ */
+.pmpro_tos_reaccept_banner {
+	background-color: var(--pmpro--color--alert2-background);
+	border-bottom: 1px solid var(--pmpro--color--alert2-border);
+	box-sizing: border-box;
+	color: var(--pmpro--color--alert2-text);
+	padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
+	text-align: left;
+	width: 100%;
+}
+
+.pmpro_tos_reaccept_banner p {
+	margin: 0 0 var(--pmpro--base--spacing--small);
+	padding: 0;
+}
+
+.pmpro_tos_reaccept_banner a {
+	color: var(--pmpro--color--alert2-link);
+	text-decoration: underline;
+}
+
+.pmpro_tos_reaccept_banner form {
+	margin: 0;
+}
+
+.pmpro_tos_reaccept_button {
+	background-color: var(--pmpro--color--accent);
+	border: 1px solid var(--pmpro--color--accent);
+	border-radius: var(--pmpro--btn--border-radius);
+	box-sizing: border-box;
+	color: var(--pmpro--color--base);
+	cursor: pointer;
+	display: inline-block;
+	font-weight: 600;
+	line-height: 1.2;
+	padding: var(--pmpro--btn--top-bottom-padding) var(--pmpro--btn--left-right-padding);
+	text-align: center;
+	text-decoration: none;
+}
+
+.pmpro_tos_reaccept_button:hover,
+.pmpro_tos_reaccept_button:focus {
+	background-color: var(--pmpro--color--accent--variation, var(--pmpro--color--accent));
+	color: var(--pmpro--color--base);
+}
+
+.pmpro_tos_reaccept_button:active {
+	opacity: .7;
+}
+
+/**
  * Form Elements
  */
 .pmpro_captcha {

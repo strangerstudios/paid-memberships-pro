@@ -10,6 +10,13 @@
 }
 
 /**
+ * Terms of Service re-acceptance notice
+ */
+.pmpro_tos_reaccept_banner {
+	text-align: right;
+}
+
+/**
  * Frontend page navigation
  */
 .pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav) {
