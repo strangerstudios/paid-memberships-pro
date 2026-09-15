@@ -5000,6 +5000,86 @@ function pmpro_disallowed_refund_statuses() {
 	return $disallowed_statuses;
 }
 
+/**
+ * Get the number of days after a payment that refunds are allowed for an order's gateway.
+ *
+ * Gateways declare this through their get_refund_window_days() method. A null value
+ * means the gateway has no known refund limit and the order can be refunded at any time.
+ *
+ * @since 3.9
+ *
+ * @param MemberOrder $order The order we want to refund.
+ * @return int|null Number of days, or null if there is no known refund limit.
+ */
+function pmpro_get_refund_window_days( $order ) {
+
+	// Look up the limit declared by the order's gateway class, if we can load it.
+	$window_days = null;
+	if ( ! empty( $order->gateway ) ) {
+		$gateway_class = 'PMProGateway_' . $order->gateway;
+		if ( class_exists( $gateway_class ) && method_exists( $gateway_class, 'get_refund_window_days' ) ) {
+			$window_days = $gateway_class::get_refund_window_days();
+		}
+	}
+
+	/**
+	 * Filter the number of days after a payment that refunds are allowed.
+	 *
+	 * Return null to allow refunds at any time.
+	 *
+	 * @since 3.9
+	 *
+	 * @param int|null    $window_days The number of days, or null if there is no known refund limit.
+	 * @param MemberOrder $order       The order we want to refund.
+	 */
+	return apply_filters( 'pmpro_refund_window_days', $window_days, $order );
+}
+
+/**
+ * Check whether an order can be refunded right now.
+ *
+ * This confirms the order passes pmpro_allowed_refunds() and is still inside the
+ * refund window declared by its payment gateway. It returns a WP_Error with the
+ * reason when the order can't be refunded, so the caller can show the admin why.
+ *
+ * @since 3.9
+ *
+ * @param MemberOrder $order The order we want to refund.
+ * @return true|WP_Error True if the order can be refunded, WP_Error otherwise.
+ */
+function pmpro_can_refund_order( $order ) {
+
+	// Run the general refund checks first.
+	if ( ! pmpro_allowed_refunds( $order ) ) {
+		return new WP_Error(
+			'pmpro_refund_not_allowed',
+			__( 'This order does not qualify for a refund.', 'paid-memberships-pro' )
+		);
+	}
+
+	$window_days = pmpro_get_refund_window_days( $order );
+
+	// Bail if the gateway has no refund limit or the order has no payment date.
+	if ( empty( $window_days ) || empty( $order->getTimestamp( true ) ) ) {
+		return true;
+	}
+
+	// Compare against the site clock in GMT, the same timezone the order timestamp is stored in.
+	$oldest_allowed = time() - ( absint( $window_days ) * DAY_IN_SECONDS );
+	if ( $order->getTimestamp( true ) < $oldest_allowed ) {
+		return new WP_Error(
+			'pmpro_refund_window_expired',
+			sprintf(
+				// translators: %d is the number of days the gateway allows a refund.
+				__( 'This order can no longer be refunded. The payment gateway only allows refunds within %d days of the payment.', 'paid-memberships-pro' ),
+				absint( $window_days )
+			)
+		);
+	}
+
+	return true;
+}
+
 /* Send the WP new user notification email, but also check our filter.
  * NOTE: includes/email.php has code to check for the related setting and
  *       filters on the pmpro_wp_new_user_notification hook.

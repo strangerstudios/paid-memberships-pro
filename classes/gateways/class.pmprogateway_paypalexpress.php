@@ -103,6 +103,20 @@
 		}
 
 		/**
+		 * Get the number of days after a payment that PayPal allows a refund.
+		 *
+		 * PayPal only allows a transaction to be refunded within 180 days of the
+		 * original payment.
+		 *
+		 * @since 3.9
+		 *
+		 * @return int|null Number of days, or null if there is no known refund limit.
+		 */
+		public static function get_refund_window_days() {
+			return 180;
+		}
+
+		/**
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *
 		 * @since 1.8

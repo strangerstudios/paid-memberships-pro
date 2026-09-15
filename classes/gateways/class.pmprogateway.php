@@ -163,6 +163,21 @@
 		}
 
 		/**
+		 * Get the number of days after a payment that this gateway allows a refund.
+		 *
+		 * Gateways should override this when the payment processor limits how long a
+		 * refund can be issued. Returning null means there is no known limit.
+		 *
+		 * @since 3.9
+		 *
+		 * @return int|null Number of days, or null if the gateway has no known refund limit.
+		 */
+		public static function get_refund_window_days() {
+			// The base gateway doesn't know of any refund limit.
+			return null;
+		}
+
+		/**
 		 * Synchronizes a subscription with this payment gateway.
 		 *
 		 * @since 3.0

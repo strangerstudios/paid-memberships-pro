@@ -88,6 +88,19 @@ class PMProGateway_stripe extends PMProGateway {
 
 		return $supports[$feature];
 	}
+
+	/**
+	 * Get the number of days after a payment that Stripe allows a refund.
+	 *
+	 * Stripe doesn't publish a refund time limit, so refunds are not restricted by date.
+	 *
+	 * @since 3.9
+	 *
+	 * @return int|null Number of days, or null if there is no known refund limit.
+	 */
+	public static function get_refund_window_days() {
+		return null;
+	}
 	
 	 /**
 	 * Load the Stripe API library.

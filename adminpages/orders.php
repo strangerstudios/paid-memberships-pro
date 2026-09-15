@@ -77,8 +77,12 @@ if ( $nonceokay ) {
 			$rorder_id = absint( wp_unslash( $_REQUEST['refund'] ?? 0 ) );
 			$rorder    = new MemberOrder( $rorder_id );
 
-			if ( ! empty( $rorder->id ) && pmpro_allowed_refunds( $rorder ) ) {
-				if ( pmpro_refund_order( $rorder ) ) {
+			if ( ! empty( $rorder->id ) ) {
+				$can_refund = pmpro_can_refund_order( $rorder );
+				if ( is_wp_error( $can_refund ) ) {
+					$pmpro_msg  = $can_refund->get_error_message();
+					$pmpro_msgt = 'pmpro_error';
+				} elseif ( pmpro_refund_order( $rorder ) ) {
 					$pmpro_msg  = __( 'Order refunded successfully.', 'paid-memberships-pro' );
 					$pmpro_msgt = 'pmpro_success';
 				} else {

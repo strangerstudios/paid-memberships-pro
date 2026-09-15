@@ -576,7 +576,13 @@ function pmpro_membership_level_profile_fields_update() {
 				$last_order = new MemberOrder();
 				$last_order->getLastMemberOrder( $user_id, array( 'success', 'refunded' ), $submitted_level );
 				if ( ! empty( $last_order ) ) {
-					pmpro_refund_order( $last_order );
+					$can_refund = pmpro_can_refund_order( $last_order );
+					if ( is_wp_error( $can_refund ) ) {
+						// Let the admin know the refund was skipped, as the level change still goes through.
+						pmpro_setMessage( $can_refund->get_error_message(), 'pmpro_error' );
+					} else {
+						pmpro_refund_order( $last_order );
+					}
 				}
 			}
 

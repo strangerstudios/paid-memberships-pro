@@ -736,6 +736,13 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 					return;
 				}
 
+				// Make sure the order can still be refunded.
+				$can_refund = pmpro_can_refund_order( $refund_order );
+				if ( is_wp_error( $can_refund ) ) {
+					pmpro_setMessage( $can_refund->get_error_message(), 'pmpro_error' );
+					return;
+				}
+
 				// Process the refund.
 				if ( ! pmpro_refund_order( $refund_order ) ) {
 					pmpro_setMessage(
@@ -870,6 +877,13 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				// Make sure the order belongs to the user.
 				if ( (int)$refund_order->user_id !== (int)$user->ID ) {
 					pmpro_setMessage( __( 'The order to refund does not belong to this user.', 'paid-memberships-pro' ), 'pmpro_error' );
+					return;
+				}
+
+				// Make sure the order can still be refunded.
+				$can_refund = pmpro_can_refund_order( $refund_order );
+				if ( is_wp_error( $can_refund ) ) {
+					pmpro_setMessage( $can_refund->get_error_message(), 'pmpro_error' );
 					return;
 				}
 
