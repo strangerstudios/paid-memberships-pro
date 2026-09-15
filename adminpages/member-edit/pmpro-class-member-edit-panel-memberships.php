@@ -218,7 +218,8 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											$expiration_input_enddate = date( 'Y-m-d H:i', strtotime( '+1 year', current_time( 'timestamp' ) ) ); // Default to 1 year in the future.
 											if ( ! empty( $shown_level->enddate ) ) {
 												// If the user's membership already has an end date, use that.
-												$expiration_input_enddate = date( 'Y-m-d H:i', $shown_level->enddate );
+												// The end date is stored as UTC, so show it in the site timezone.
+												$expiration_input_enddate = wp_date( 'Y-m-d H:i', $shown_level->enddate );
 											} elseif ( ! empty( $subscriptions ) ) {
 												// If the user has a subscription, default to the subscription's next payment date.
 												$expiration_input_enddate = $subscriptions[0]->get_next_payment_date('Y-m-d H:i');
@@ -766,8 +767,8 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				'billing_limit'   => 0,
 				'trial_amount'    => 0,
 				'trial_limit'     => 0,
-				'startdate'       => current_time( 'mysql' ),
-				'enddate'         => empty( $expiration ) ? 'NULL' : date( 'Y-m-d H:i:s', strtotime( $expiration ) )
+				'startdate'       => current_time( 'mysql', true ),
+				'enddate'         => empty( $expiration ) ? 'NULL' : get_gmt_from_date( $expiration )
 			);
 			$change_successful = pmpro_changeMembershipLevel( $level_to_add, $user->ID, 'admin_changed' );
 
@@ -812,7 +813,8 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			$level_data = array_map( 'sanitize_text_field', $level_data );
 
 			// Update the expiration date.
-			$expiration = ( ! empty( $level_data[ 'expires' ] ) && ! empty( $level_data[ 'expiration' ] ) ) ? $level_data[ 'expiration' ] : 'NULL';
+			// The expiration field is submitted in the site timezone, so store it as UTC.
+			$expiration = ( ! empty( $level_data[ 'expires' ] ) && ! empty( $level_data[ 'expiration' ] ) ) ? get_gmt_from_date( $level_data[ 'expiration' ] ) : 'NULL';
 			$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = %s WHERE user_id = %d AND membership_id = %d AND status = 'active'", $expiration, $user->ID, $level_id ) );
 
 			// If the expiration query failed, set an error.
