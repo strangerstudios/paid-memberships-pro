@@ -194,6 +194,17 @@
 						</thead>
 						<tbody>
 							<?php
+							// Allowed HTML for gateway descriptions that include links.
+							$allowed_gateway_description_html = array(
+								'a'      => array(
+									'href'   => array(),
+									'target' => array(),
+									'rel'    => array(),
+								),
+								'strong' => array(),
+								'em'     => array(),
+							);
+
 							foreach ( $pmpro_gateways as $gateway_slug => $gateway_name ) {
 								// Get information about what the gateway 'supports'.
 								$gateway_class_name = 'PMProGateway_' . $gateway_slug;
@@ -242,7 +253,7 @@
 										?>
 										</td>
 									<td class="column-description">
-										<?php echo ! empty( $gateway_instance ) ? esc_html( $gateway_instance->get_description_for_gateway_settings() ) : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
+										<?php echo ! empty( $gateway_instance ) ? wp_kses( $gateway_instance->get_description_for_gateway_settings(), $allowed_gateway_description_html ) : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
 									</td>
 									<td class="column-edit">
 										<?php echo ! empty( $gateway_instance ) ? '<a class="button button-secondary" href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Edit Settings', 'paid-memberships-pro' ) . '</a>' : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
