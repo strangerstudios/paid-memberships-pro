@@ -126,10 +126,10 @@ function pmpro_add_abandoned_signup_advanced_setting( $settings ) {
 			1 => __( 'Yes', 'paid-memberships-pro' ),
 		),
 		'is_associative' => true,
-		'label'         => __( 'Automatically Delete Abandoned Checkout Users', 'paid-memberships-pro' ),
+		'label'         => __( 'Automatically Delete Potential Spam Users', 'paid-memberships-pro' ),
 		'description'   => sprintf(
-			/* translators: %d: Number of days before an abandoned checkout user is deleted. */
-			__( 'Permanently delete user accounts that were created during checkout and remain marked as abandoned for more than %d days. This cannot be undone.', 'paid-memberships-pro' ),
+			/* translators: %d: Number of days before a potential spam user is deleted. */
+			__( 'Permanently delete users who were created during checkout but never completed it (shown as Potential Spam Checkouts on the Users page) after %d days. This cannot be undone.', 'paid-memberships-pro' ),
 			pmpro_get_abandoned_signup_deletion_days()
 		),
 	);
