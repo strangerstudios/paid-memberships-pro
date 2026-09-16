@@ -4665,23 +4665,37 @@ class PMProGateway_stripe extends PMProGateway {
 			} 
 
 			$client = new Stripe_Client( $secretkey );
-			$refund = $client->refunds->create( [
-				'charge' => $transaction_id,
-			] );			
+			$already_refunded = false;
+			try {
+				$refund = $client->refunds->create( [
+					'charge' => $transaction_id,
+				] );
+			} catch ( \Stripe\Exception\ApiErrorException $e ) {
+				// If the charge was already refunded at Stripe, sync the order instead of failing.
+				if ( 'charge_already_refunded' !== $e->getStripeCode() ) {
+					throw $e;
+				}
+				$already_refunded = true;
+			}
 
 			//Make sure we're refunding an order that was successful
-			if ( $refund->status != 'failed' ) {
+			if ( $already_refunded || $refund->status != 'failed' ) {
 				// Set the order to refunded status and save immediately.
 				// This helps to eliminate a race condition where the Stripe webhook may try to set the order status and send the refund email again.
 				$order->status = 'refunded';
-				$order->saveOrder();	
+				$order->saveOrder();
 
 				$success = true;
-			
+
 				global $current_user;
 
-				// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
-				$order->add_order_note( sprintf( __('Admin: Order successfully refunded for transaction ID %1$s by %2$s.', 'paid-memberships-pro' ), $transaction_id, $current_user->display_name ) );
+				if ( $already_refunded ) {
+					// translators: %1$s is the Transaction ID. %2$s is the user display name that synced the refund.
+					$order->add_order_note( sprintf( __( 'Admin: Transaction ID %1$s was already refunded at Stripe. Order status synced by %2$s.', 'paid-memberships-pro' ), $transaction_id, $current_user->display_name ) );
+				} else {
+					// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
+					$order->add_order_note( sprintf( __('Admin: Order successfully refunded for transaction ID %1$s by %2$s.', 'paid-memberships-pro' ), $transaction_id, $current_user->display_name ) );
+				}
 
 				$user = get_user_by( 'id', $order->user_id );
 				//send an email to the member
