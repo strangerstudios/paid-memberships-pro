@@ -4146,13 +4146,21 @@ function pmpro_cleanup_memberships_users_table() {
 /**
  * Check if the current page is a PMPro page.
  *
- * @since 3.9
+ * Unlike is_page(), this returns false when the requested PMPro page is not set
+ * instead of matching every page.
  *
- * @param string $page      PMPro page key.
- * @param bool   $shortcode Check for the page shortcode or block.
+ * When $check_content is true, pages that are not assigned in the PMPro page settings
+ * are also matched if their content contains the page's shortcode or block. Core page
+ * shortcodes are registered during the `wp` action for the current post only, so content
+ * detection is only reliable after that point.
+ *
+ * @since TBD
+ *
+ * @param string $page          PMPro page key, e.g. 'checkout' or 'account'.
+ * @param bool   $check_content Also check the queried page's content for the page shortcode or block.
  * @return bool True if the current page matches the PMPro page, false otherwise.
  */
-function pmpro_is_page( $page, $shortcode = false ) {
+function pmpro_is_page( $page, $check_content = false ) {
 	global $pmpro_pages, $wp_query;
 
 	if ( empty( $page ) ) {
@@ -4164,7 +4172,7 @@ function pmpro_is_page( $page, $shortcode = false ) {
 		$is_page = is_page( $pmpro_pages[ $page ] );
 	}
 
-	if ( ! $is_page && $shortcode && ! empty( $wp_query ) ) {
+	if ( ! $is_page && $check_content && ! empty( $wp_query ) ) {
 		$queried_object = get_queried_object();
 		$shortcodes     = array(
 			'account'             => 'pmpro_account',
