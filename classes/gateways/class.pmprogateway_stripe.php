@@ -4669,43 +4669,63 @@ class PMProGateway_stripe extends PMProGateway {
 				'charge' => $transaction_id,
 			] );			
 
-			//Make sure we're refunding an order that was successful
-			if ( $refund->status != 'failed' ) {
-				// Set the order to refunded status and save immediately.
-				// This helps to eliminate a race condition where the Stripe webhook may try to set the order status and send the refund email again.
-				$order->status = 'refunded';
-				$order->saveOrder();	
+				// Make sure the refund succeeded at Stripe.
+				// Pending refunds are completed later by the charge.refunded webhook.
+				if ( 'succeeded' === $refund->status ) {
+					$success = self::post_process_refund( $order, $transaction_id );
+				} else {
+					$order->add_order_note( __( 'Admin: An error occurred while attempting to process this refund.', 'paid-memberships-pro' ) );
+				}
 
-				$success = true;
-			
-				global $current_user;
-
-				// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
-				$order->add_order_note( sprintf( __('Admin: Order successfully refunded for transaction ID %1$s by %2$s.', 'paid-memberships-pro' ), $transaction_id, $current_user->display_name ) );
-
-				$user = get_user_by( 'id', $order->user_id );
-				//send an email to the member
-				$myemail = new PMProEmail();
-				$myemail->sendRefundedEmail( $user, $order );
-
-				//send an email to the admin
-				$myemail = new PMProEmail();
-				$myemail->sendRefundedAdminEmail( $user, $order );
-
-			} else {
-				$order->add_order_note( __('Admin: An error occurred while attempting to process this refund.', 'paid-memberships-pro' ) );
+			} catch ( \Stripe\Exception\ApiErrorException $e ) {
+				if ( 'charge_already_refunded' === $e->getStripeCode() ) {
+					$success = self::post_process_refund( $order, $transaction_id );
+				} else {
+					$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
+				}
+			} catch ( \Throwable $e ) {
+				$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
+			} catch ( \Exception $e ) {
+				$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
 			}
 
-		} catch ( \Throwable $e ) {
-			$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
-		} catch ( \Exception $e ) {
-			$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
+			$order->saveOrder();
+
+			return $success;
 		}
 
-		$order->saveOrder();
+		/**
+		 * Complete the PMPro refund process after a successful Stripe refund.
+		 *
+		 * @since 3.8.7
+		 *
+		 * @param MemberOrder $order         The Member Order object.
+		 * @param string      $transaction_id The Stripe transaction ID.
+		 * @return bool True when the refund was processed.
+		 */
+		public static function post_process_refund( $order, $transaction_id ) {
+			// Set the order to refunded status and save immediately.
+			// This helps to eliminate a race condition where the Stripe webhook may try to set the order status and send the refund email again.
+			$order->status = 'refunded';
+			$order->saveOrder();
 
-		return $success;
-	}
+			global $current_user;
+
+			// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
+			$order->add_order_note( sprintf( __( 'Admin: Order successfully refunded for transaction ID %1$s by %2$s.', 'paid-memberships-pro' ), $transaction_id, $current_user->display_name ) );
+
+			$user = get_user_by( 'id', $order->user_id );
+			// Send an email to the member.
+			$myemail = new PMProEmail();
+			$myemail->sendRefundedEmail( $user, $order );
+
+			// Send an email to the admin.
+			$myemail = new PMProEmail();
+			$myemail->sendRefundedAdminEmail( $user, $order );
+
+			return true;
+		}
+
 
 	/**
 	 * Check whether the payment for a token order has been completed. If so, process the order.
