@@ -156,8 +156,14 @@ jQuery(document).ready(function(){
 	});
 
 	jQuery('.pmpro_form_input-required').each(function() {
+		// Radio options are each wrapped in their own .pmpro_form_field div, so look up the
+		// label from the radio group container to avoid marking every option as required.
+		var $fieldDiv = jQuery(this).closest('.pmpro_form_field-radio-items').parent();
+		if ( ! $fieldDiv.length ) {
+			$fieldDiv = jQuery(this).closest('.pmpro_form_field');
+		}
+
 		// Check if there's an asterisk already
-		var $fieldDiv = jQuery(this).closest('.pmpro_form_field');
 		var $firstLabel = $fieldDiv.find('.pmpro_form_label').first();
 		var $hasAsterisk = $firstLabel.find('.pmpro_asterisk').length > 0;
 
