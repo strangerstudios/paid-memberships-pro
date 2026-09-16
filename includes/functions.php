@@ -2552,7 +2552,7 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
  *		Failure returns false.
  */
 function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = false ) {
-	global $current_user, $pmpro_pages;
+	global $current_user;
 	if ( empty( $user_id ) ) {
 		$user_id = $current_user->ID;
 	}
@@ -2570,13 +2570,13 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 		if (
 			! is_admin() &&
 			( empty( $GLOBALS['wp_query'] ) || ! pmpro_is_checkout() ) &&
-			( empty( $pmpro_pages['account'] ) || ! is_page( $pmpro_pages['account'] ) ) &&
-			( empty( $pmpro_pages['billing'] ) || ! is_page( $pmpro_pages['billing'] ) ) &&
-			( empty( $pmpro_pages['cancel'] ) || ! is_page( $pmpro_pages['cancel'] ) ) &&
-			( empty( $pmpro_pages['checkout'] ) || ! is_page( $pmpro_pages['checkout'] ) ) &&
-			( empty( $pmpro_pages['confirmation'] ) || ! is_page( $pmpro_pages['confirmation'] ) ) &&
-			( empty( $pmpro_pages['invoice'] ) || ! is_page( $pmpro_pages['invoice'] ) ) &&
-			( empty( $pmpro_pages['levels'] ) || ! is_page( $pmpro_pages['levels'] ) ) &&
+			! pmpro_is_page( 'account' ) &&
+			! pmpro_is_page( 'billing' ) &&
+			! pmpro_is_page( 'cancel' ) &&
+			! pmpro_is_page( 'checkout' ) &&
+			! pmpro_is_page( 'confirmation' ) &&
+			! pmpro_is_page( 'invoice' ) &&
+			! pmpro_is_page( 'levels' ) &&
 			! apply_filters( 'pmpro_disable_admin_membership_access', false )
 		) {
 			// This user meta can be changed via the admin bar.
@@ -4144,38 +4144,70 @@ function pmpro_cleanup_memberships_users_table() {
 }
 
 /**
+ * Check if the current page is a PMPro page.
+ *
+ * @since 3.9
+ *
+ * @param string $page      PMPro page key.
+ * @param bool   $shortcode Check for the page shortcode or block.
+ * @return bool True if the current page matches the PMPro page, false otherwise.
+ */
+function pmpro_is_page( $page, $shortcode = false ) {
+	global $pmpro_pages, $wp_query;
+
+	if ( empty( $page ) ) {
+		return false;
+	}
+
+	$is_page = false;
+	if ( ! empty( $pmpro_pages[ $page ] ) ) {
+		$is_page = is_page( $pmpro_pages[ $page ] );
+	}
+
+	if ( ! $is_page && $shortcode && ! empty( $wp_query ) ) {
+		$queried_object = get_queried_object();
+		$shortcodes     = array(
+			'account'             => 'pmpro_account',
+			'billing'             => 'pmpro_billing',
+			'cancel'              => 'pmpro_cancel',
+			'checkout'            => 'pmpro_checkout',
+			'confirmation'        => 'pmpro_confirmation',
+			'invoice'             => 'pmpro_invoice',
+			'levels'              => 'pmpro_levels',
+			'login'               => 'pmpro_login',
+			'member_profile_edit' => 'pmpro_member_profile_edit',
+		);
+		$blocks         = array(
+			'account'             => 'pmpro/account-page',
+			'billing'             => 'pmpro/billing-page',
+			'cancel'              => 'pmpro/cancel-page',
+			'checkout'            => 'pmpro/checkout-page',
+			'confirmation'        => 'pmpro/confirmation-page',
+			'invoice'             => 'pmpro/invoice-page',
+			'levels'              => 'pmpro/levels-page',
+			'login'               => 'pmpro/login-form',
+			'member_profile_edit' => 'pmpro/member-profile-edit',
+		);
+
+		if ( ! empty( $queried_object->post_content ) && isset( $shortcodes[ $page ] ) ) {
+			$is_page = has_shortcode( $queried_object->post_content, $shortcodes[ $page ] );
+
+			if ( ! $is_page && function_exists( 'has_block' ) && isset( $blocks[ $page ] ) ) {
+				$is_page = has_block( $blocks[ $page ], $queried_object->post_content );
+			}
+		}
+	}
+
+	return $is_page;
+}
+
+/**
  * Are we on the PMPro checkout page?
  * @since 2.1
  * @return bool True if we are on the checkout page, false otherwise
  */
 function pmpro_is_checkout() {
-	global $pmpro_pages, $wp_query;
-
-	// Try is_page first.
-	if ( ! empty( $pmpro_pages['checkout'] ) ) {
-		$is_checkout = is_page( $pmpro_pages['checkout'] );
-	} else {
-		$is_checkout = false;
-	}
-
-	// Page might not be setup yet or a custom page.
-	if ( ! empty( $wp_query ) ) {
-		$queried_object = get_queried_object();
-	} else {
-		$queried_object = null;
-	}
-
-	if ( ! $is_checkout &&
-		! empty( $queried_object ) &&
-		! empty( $queried_object->post_content ) &&
-		( has_shortcode( $queried_object->post_content, 'pmpro_checkout' ) ||
-			( function_exists( 'has_block' ) &&
-				has_block( 'pmpro/checkout-page', $queried_object->post_content )
-			)
-		)
-	) {
-		$is_checkout = true;
-	}
+	$is_checkout = pmpro_is_page( 'checkout', true );
 
 	/**
 	 * Filter for pmpro_is_checkout return value.
