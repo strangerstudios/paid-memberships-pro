@@ -4665,6 +4665,7 @@ class PMProGateway_stripe extends PMProGateway {
 			} 
 
 			$client = new Stripe_Client( $secretkey );
+			$refund = null;
 			$already_refunded = false;
 			try {
 				$refund = $client->refunds->create( [
@@ -4672,7 +4673,7 @@ class PMProGateway_stripe extends PMProGateway {
 				] );
 			} catch ( \Stripe\Exception\ApiErrorException $e ) {
 				// If the charge was already refunded at Stripe, sync the order instead of failing.
-				if ( 'charge_already_refunded' !== $e->getStripeCode() ) {
+				if ( \Stripe\ErrorObject::CODE_CHARGE_ALREADY_REFUNDED !== $e->getStripeCode() ) {
 					throw $e;
 				}
 				$already_refunded = true;
