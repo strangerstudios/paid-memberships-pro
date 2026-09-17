@@ -32,7 +32,7 @@
 			const strings = settings.strings || {};
 
 			function handleResize() {
-				closeMenu();
+				closeMenu( true );
 			}
 
 			function normalizeSettings( value ) {
@@ -613,10 +613,9 @@
 				// Screen readers do not read content inserted at the caret, and an
 				// assertive message also cuts off the option still being spoken.
 				speak(
-					( strings.autocompleteInserted || 'Inserted %s' ).replace(
-						'%s',
-						item.name
-					),
+					( strings.autocompleteInserted || 'Inserted %s' ).replace( '%s', function () {
+						return item.name;
+					} ),
 					'assertive'
 				);
 			}
