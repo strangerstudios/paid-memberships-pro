@@ -7,6 +7,8 @@
 
 	const CURSOR_MARKER = '__pmpro_cursor__';
 	const MENU_CLASS = 'pmpro-liquid-autocomplete';
+	// Typing re-renders the menu on every keystroke; wait this long for the burst to settle before speaking.
+	const ANNOUNCE_DELAY = 150;
 
 	tinymce.PluginManager.add(
 		'pmpro_liquid_autocomplete',
@@ -24,6 +26,9 @@
 			let activeIndex = -1;
 			let activeContext = null;
 			let markerIndex = 0;
+			let announceTimer = null;
+			let lastAnnounced = '';
+			let announceOpened = false;
 			const strings = settings.strings || {};
 
 			function handleResize() {
@@ -77,6 +82,29 @@
 				return menu;
 			}
 
+			function speak( text, politeness ) {
+				if ( window.wp && window.wp.a11y && window.wp.a11y.speak ) {
+					window.wp.a11y.speak( text, politeness );
+				}
+			}
+
+			function cancelAnnouncement() {
+				window.clearTimeout( announceTimer );
+				announceTimer = null;
+				announceOpened = false;
+				lastAnnounced = '';
+
+				// Empty the live regions, as wp.a11y.speak() does before each message,
+				// so a screen reader cannot re-read the last option after the list closes.
+				const regions = document.getElementsByClassName(
+					'a11y-speak-region'
+				);
+
+				for ( let i = 0; i < regions.length; i++ ) {
+					regions[ i ].textContent = '';
+				}
+			}
+
 			function closest( node, selector ) {
 				while ( node && node !== document ) {
 					if ( node.matches && node.matches( selector ) ) {
@@ -89,7 +117,9 @@
 				return null;
 			}
 
-			function closeMenu() {
+			function closeMenu( silent ) {
+				const wasOpen = isMenuOpen();
+
 				if ( menu ) {
 					menu.hidden = true;
 					menu.innerHTML = '';
@@ -99,6 +129,20 @@
 				items = [];
 				activeIndex = -1;
 				activeContext = null;
+
+				if ( ! wasOpen ) {
+					return;
+				}
+
+				cancelAnnouncement();
+
+				// Silent closes already have feedback: the inserted tag, or the new focus target.
+				if ( ! silent ) {
+					speak(
+						strings.autocompleteClosed || 'Autocomplete list closed',
+						'polite'
+					);
+				}
 			}
 
 			function isMenuOpen() {
@@ -139,7 +183,10 @@
 					itemNode.className = 'pmpro-liquid-autocomplete__item';
 					itemNode.setAttribute( 'role', 'option' );
 					itemNode.setAttribute( 'data-index', index );
-					itemNode.setAttribute( 'id', 'pmpro-liquid-autocomplete-option-' + index );
+					itemNode.setAttribute(
+						'id',
+						'pmpro-liquid-autocomplete-option-' + index
+					);
 
 					const labelNode = document.createElement( 'span' );
 					labelNode.className = 'pmpro-liquid-autocomplete__label';
@@ -157,12 +204,13 @@
 					container.appendChild( itemNode );
 				} );
 
+				const isOpening = container.hidden;
 				container.hidden = false;
 				positionMenu( context );
-				setActive( firstSelectable );
+				setActive( firstSelectable, isOpening ? 'open' : 'filter' );
 			}
 
-			function setActive( index ) {
+			function setActive( index, reason ) {
 				if ( ! items[ index ] || items[ index ].type === 'separator' ) {
 					return;
 				}
@@ -196,6 +244,74 @@
 					'aria-activedescendant',
 					'pmpro-liquid-autocomplete-option-' + activeIndex
 				);
+
+				announceActive( reason );
+			}
+
+			function describeActive() {
+				const item = items[ activeIndex ];
+				const options = items.filter( function ( i ) {
+					return i.type !== 'separator';
+				} );
+				const position = (
+					strings.autocompletePosition || '%1$d of %2$d'
+				)
+					.replace( '%1$d', options.indexOf( item ) + 1 )
+					.replace( '%2$d', options.length );
+
+				// Speak the bare name; the braces in the label are noise read aloud.
+				return (
+					item.name +
+					( item.description ? ', ' + item.description : '' ) +
+					', ' +
+					position
+				);
+			}
+
+			/**
+			 * Announce the active option.
+			 *
+			 * @param {string} reason One of 'open', 'filter' or 'navigate'.
+			 */
+			function announceActive( reason ) {
+				const text = describeActive();
+
+				if ( 'open' === reason ) {
+					announceOpened = true;
+				} else if ( 'filter' === reason && text === lastAnnounced ) {
+					return;
+				}
+
+				lastAnnounced = text;
+				window.clearTimeout( announceTimer );
+
+				// Arrow keys are deliberate, so interrupt and speak now. Opening and
+				// filtering happen mid-typing, so wait for the burst to settle.
+				if ( 'navigate' === reason ) {
+					speakActive( text, 'assertive' );
+					return;
+				}
+
+				announceTimer = window.setTimeout( function () {
+					speakActive( text, 'polite' );
+				}, ANNOUNCE_DELAY );
+			}
+
+			// The first message spoken after opening carries the "opened" prefix. `{{` renders twice,
+			// so the prefix has to survive until something is actually spoken.
+			function speakActive( text, politeness ) {
+				announceTimer = null;
+
+				if ( announceOpened ) {
+					announceOpened = false;
+					text =
+						( strings.autocompleteOpened ||
+							'Autocomplete list opened' ) +
+						', ' +
+						text;
+				}
+
+				speak( text, politeness );
 			}
 
 			function moveActive( direction ) {
@@ -221,7 +337,7 @@
 					checked <= items.length
 				);
 
-				setActive( nextIndex );
+				setActive( nextIndex, 'navigate' );
 			}
 
 			function positionMenu() {
@@ -461,6 +577,7 @@
 					.map( function ( item ) {
 						return {
 							type: 'item',
+							name: item.name || item.label,
 							label: item.label || item.name,
 							description: item.description || '',
 							insert: item.insert || item.label || item.name,
@@ -491,7 +608,17 @@
 				editor.undoManager.transact( function () {
 					replaceContextWith( activeContext, item.insert );
 				} );
-				closeMenu();
+				closeMenu( true );
+
+				// Screen readers do not read content inserted at the caret, and an
+				// assertive message also cuts off the option still being spoken.
+				speak(
+					( strings.autocompleteInserted || 'Inserted %s' ).replace(
+						'%s',
+						item.name
+					),
+					'assertive'
+				);
 			}
 
 			function replaceContextWith( context, insert ) {
@@ -526,11 +653,18 @@
 
 			function shouldIgnoreKeyup( event ) {
 				return (
-					event.keyCode === 13 ||
-					event.keyCode === 27 ||
-					event.keyCode === 38 ||
-					event.keyCode === 40 ||
-					event.keyCode === 9
+					event.keyCode === 9 || // Tab
+					event.keyCode === 13 || // Enter
+					event.keyCode === 16 || // Shift
+					event.keyCode === 17 || // Ctrl
+					event.keyCode === 18 || // Alt
+					event.keyCode === 20 || // Caps Lock
+					event.keyCode === 27 || // Escape
+					event.keyCode === 38 || // Up arrow
+					event.keyCode === 40 || // Down arrow
+					event.keyCode === 91 || // Meta left
+					event.keyCode === 92 || // Meta right
+					event.keyCode === 93 // Context menu / Meta
 				);
 			}
 
@@ -570,14 +704,20 @@
 				true
 			);
 
-			editor.on( 'click blur hide', closeMenu );
+			// Wrapped so TinyMCE's event object is not passed as the silent flag.
+			editor.on( 'click', function () {
+				closeMenu();
+			} );
+			editor.on( 'blur hide', function () {
+				closeMenu( true );
+			} );
 			editor.on( 'ScrollContent ResizeEditor', function () {
 				if ( isMenuOpen() && activeContext ) {
 					positionMenu( activeContext );
 				}
 			} );
 			editor.on( 'remove', function () {
-				closeMenu();
+				closeMenu( true );
 				window.removeEventListener( 'resize', handleResize );
 
 				if ( menu && menu.parentNode ) {
