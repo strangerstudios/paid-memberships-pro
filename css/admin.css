@@ -4900,6 +4900,11 @@ button.pmpro_report_th_closed:before {
 		content: attr(data-colname) ": ";
 	}
 
+	.pmpro_admin .wp-list-table .is-expanded td,
+	.pmpro_admin .wp-list-table .is-expanded th {
+		flex: 0 1 100%;
+	}
+
 	.pmpro_admin .wp-list-table .row-actions span.id {
 		font-size: inherit;
 		padding-right: 4px;
