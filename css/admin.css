@@ -4899,6 +4899,11 @@ button.pmpro_report_th_closed:before {
 		content: attr(data-colname) ": ";
 	}
 
+	.pmpro_admin .wp-list-table .is-expanded td,
+	.pmpro_admin .wp-list-table .is-expanded th {
+		flex: 0 1 100%;
+	}
+
 }
 
 /* plugin update notice */
