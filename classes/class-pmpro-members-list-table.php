@@ -588,16 +588,18 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		$actions = apply_filters( 'pmpro_memberslist_user_row_actions', $actions, (object) $item );
 
-		$action_count = count( $actions );
-		$i = 0;
-		if ( $action_count ) {
-			$output .= '<div class="row-actions">';
-			foreach ( $actions as $action => $link ) {
-				++$i;
-				( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-				$output .= "<span class='$action'>$link$sep</span>";
-			}
-			$output .= '</div>';
+		$actions_html = [];
+
+		foreach ( $actions as $action => $link ) {
+			$actions_html[] = sprintf(
+				'<span class="%1$s">%2$s</span>',
+				esc_attr( $action ),
+				$link
+			);
+		}
+
+		if ( ! empty( $actions_html ) ) {
+			$output .= '<div class="row-actions">' . implode( ' | ', $actions_html ) . '</div>';
 		}
 		return $output;
 	}
