@@ -210,6 +210,9 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.8.7 - TBD =
+* BUG FIX: The Stripe webhook no longer returns an HTTP 500 error for `charge.failed` and `charge.refunded` events when another plugin has loaded an older version of the Stripe PHP library that does not include the `InvoicePayment` class. The webhook now logs the problem and skips the event instead of fataling. #3764 (@faisalahammad)
+
 = 3.8.6 - 2026-09-08 =
 * ENHANCEMENT: Changed the "Edit Membership" button on the Edit Member memberships panel to "Update Membership" to make it clear that it saves the level change. #3781 (@flintfromthebasement)
 * ENHANCEMENT: The password visibility toggle now shows only the eye icon in the log in widget and on narrow screens so the field label and the toggle no longer wrap into each other. #3769 (@kimcoleman)
