@@ -4576,7 +4576,8 @@ function pmpro_get_liquid_autocomplete_variable_suggestion( $variable, $descript
 	return array(
 		'name'        => $name,
 		'label'       => $variable,
-		'description' => $description,
+		// Descriptions are typically HTML-escaped at the source. The autocomplete renders them as plain text, so decode any entities.
+		'description' => wp_specialchars_decode( $description, ENT_QUOTES ),
 		'insert'      => $variable,
 	);
 }
