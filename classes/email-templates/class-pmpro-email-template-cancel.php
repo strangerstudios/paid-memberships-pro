@@ -101,13 +101,13 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'{{ level_group_id }}' => esc_html__( 'The ID of the level group that the membership level belongs to.', 'paid-memberships-pro' ),
-			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'{{ renew_url }}' => esc_html__( 'The URL of the Membership Checkout page for the cancelled level.', 'paid-memberships-pro' ),
+			'{{ display_name }}' => __( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => __( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => __( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ level_group_id }}' => __( 'The ID of the level group that the membership level belongs to.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ renew_url }}' => __( 'The URL of the Membership Checkout page for the cancelled level.', 'paid-memberships-pro' ),
 		);
 	}
 
