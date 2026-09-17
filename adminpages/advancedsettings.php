@@ -49,6 +49,7 @@
 		update_option( 'pmpro_business_address', $business_address );
 
 		// Other settings.
+		pmpro_setOption( 'open_discount_code' );
 		pmpro_setOption("hideads");
 		pmpro_setOption("wisdom_opt_out");
 		pmpro_setOption("hideadslevels");
@@ -101,6 +102,7 @@
 	$activity_email_frequency = get_option( "pmpro_activity_email_frequency");
 
 	// Other settings.
+	$open_discount_code = get_option( 'pmpro_open_discount_code' );
 	$hideads = get_option( "pmpro_hideads");
 	$wisdom_opt_out = (int) get_option( "pmpro_wisdom_opt_out");
 	$hideadslevels = get_option( "pmpro_hideadslevels");
@@ -392,6 +394,15 @@
 			<div class="pmpro_section_inside">
 				<table class="form-table">
 				<tbody>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="open_discount_code"><?php esc_html_e( 'Discount Code Field', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<input id="open_discount_code" name="open_discount_code" type="checkbox" value="yes" <?php checked( $open_discount_code, 'yes' ); ?> />
+							<label for="open_discount_code"><?php esc_html_e( 'Show the discount code field open by default on the checkout page.', 'paid-memberships-pro' ); ?></label>
+						</td>
+					</tr>
 					<tr>
 						<th scope="row" valign="top">
 							<label for="site_type"><?php esc_html_e('What type of membership site are you creating?', 'paid-memberships-pro' );?></label>

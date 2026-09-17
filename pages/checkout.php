@@ -11,8 +11,10 @@
  * @author Paid Memberships Pro
  */
 
-global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_default_country;
+global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_show_discount_code, $pmpro_open_discount_code, $pmpro_error_fields, $pmpro_default_country;
 global $discount_code, $username, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
+
+$pmpro_open_discount_code = 'yes' === get_option( 'pmpro_open_discount_code' );
 
 $pmpro_levels = pmpro_getAllLevels();
 
@@ -192,11 +194,11 @@ if ( empty( $default_gateway ) ) {
 							<?php if($discount_code && !$pmpro_review) { ?>
 								<span id="other_discount_code_p"><button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to change your discount code', 'paid-memberships-pro' );?></button></span>
 							<?php } elseif(!$pmpro_review) { ?>
-								<span id="other_discount_code_p"><?php esc_html_e('Do you have a discount code?', 'paid-memberships-pro' );?> <button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to enter your discount code', 'paid-memberships-pro' );?></button></span>
+								<span id="other_discount_code_p" <?php if ( $pmpro_open_discount_code ) { ?>style="display: none;"<?php } ?>><?php esc_html_e('Do you have a discount code?', 'paid-memberships-pro' );?> <button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to enter your discount code', 'paid-memberships-pro' );?></button></span>
 							<?php } elseif($pmpro_review && $discount_code) { ?>
 								<span><strong><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $discount_code ); ?></span>
 							<?php } ?>
-							<div id="other_discount_code_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text' ) ); ?>" style="display: none;">
+							<div id="other_discount_code_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text' ) ); ?>" <?php if ( ! $pmpro_open_discount_code || $discount_code || $pmpro_review ) { ?>style="display: none;"<?php } ?>>
 								<label for="pmpro_other_discount_code" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
 									<input id="pmpro_other_discount_code" name="pmpro_other_discount_code" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_alter_price', 'other_discount_code' ) ); ?>" value="<?php echo esc_attr($discount_code); ?>" />
