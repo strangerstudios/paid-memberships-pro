@@ -419,14 +419,31 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			ON mu.membership_id = m.id
 			";
 
-		// The first and last name columns are sorted by user meta, so join the
-		// matching meta row only when one of them is the sort column. The count
-		// query has no ORDER BY, so it doesn't need the join.
-		if ( ! $count && 'MIN(um_first.meta_value)' === $orderby ) {
-			$sqlQuery .= " LEFT JOIN $wpdb->usermeta um_first ON u.ID = um_first.user_id AND um_first.meta_key = 'first_name' ";
-		}
-		if ( ! $count && 'MIN(um_last.meta_value)' === $orderby ) {
-			$sqlQuery .= " LEFT JOIN $wpdb->usermeta um_last ON u.ID = um_last.user_id AND um_last.meta_key = 'last_name' ";
+		if ( ! $count ) {
+			// Joins needed only for sorting. The count query has no ORDER BY, so it never needs these.
+			// The first and last name columns are sorted by user meta, so join the matching meta row only when one of them is the sort column.
+			$join_sql = '';
+			if ( 'MIN(um_first.meta_value)' === $orderby ) {
+				$join_sql .= " LEFT JOIN $wpdb->usermeta um_first ON u.ID = um_first.user_id AND um_first.meta_key = 'first_name' ";
+			}
+			if ( 'MIN(um_last.meta_value)' === $orderby ) {
+				$join_sql .= " LEFT JOIN $wpdb->usermeta um_last ON u.ID = um_last.user_id AND um_last.meta_key = 'last_name' ";
+			}
+
+			/**
+			 * Filter the JOIN clauses added to the Members List query for sorting.
+			 *
+			 * Runs only on the data query, not the count query. Use this together with
+			 * pmpro_memberslist_sortable_columns and pmpro_memberslist_allowed_orderbys to make
+			 * a custom column sortable. Because the query groups by u.ID and mu.membership_id,
+			 * the ORDER BY expression for a joined column must be wrapped in an aggregate like MIN().
+			 *
+			 * @since TBD
+			 *
+			 * @param string $join_sql SQL JOIN clauses to append to the query.
+			 * @param string $orderby  The sanitized ORDER BY expression for the current request.
+			 */
+			$sqlQuery .= apply_filters( 'pmpro_memberslist_sql_join', $join_sql, $orderby );
 		}
 
 		if ( !empty( $s ) ) {
