@@ -76,9 +76,6 @@
 			return $description;
 		}
 
-			return $description;
-		}
-
 		/**
 		 * Get a list of payment options that the Check gateway needs/supports.
 		 *		 
