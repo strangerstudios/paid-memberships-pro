@@ -69,6 +69,7 @@
 		$expires_year = intval($_POST['expires_year']);
 		$uses = intval($_POST['uses']);
 		$one_use_per_user = ! empty( $_POST['one_use_per_user'] ) ? 1 : 0;
+		$description = isset( $_POST['description'] ) ? sanitize_textarea_field( $_POST['description'] ) : '';
 
 		//fix up dates
 		$starts = date("Y-m-d", strtotime($starts_month . "/" . $starts_day . "/" . $starts_year, $now ));
@@ -83,7 +84,8 @@
 				'starts' => $starts,
 				'expires' => $expires,
 				'uses' => $uses,
-				'one_use_per_user' => $one_use_per_user
+				'one_use_per_user' => $one_use_per_user,
+				'description' => $description
 			),
 			array(
 				'%d',
@@ -91,7 +93,8 @@
 				'%s',
 				'%s',
 				'%d',
-				'%d'
+				'%d',
+				'%s'
 			)
 		);
 
@@ -432,6 +435,7 @@
 					$code->starts = $temp_code->starts;
 					$code->expires = $temp_code->expires;
 					$code->uses = $temp_code->uses;
+					$code->description = isset( $temp_code->description ) ? $temp_code->description : '';
 				}
 			}
 		?>
@@ -456,6 +460,14 @@
 						<tr>
 							<th scope="row" valign="top"><label for="code"><?php esc_html_e('Code', 'paid-memberships-pro' );?></label></th>
 							<td><input name="code" id="code" type="text" size="20" value="<?php echo esc_attr( $code->code ); ?>" /></td>
+						</tr>
+
+						<tr>
+							<th scope="row" valign="top"><label for="description"><?php esc_html_e( 'Description', 'paid-memberships-pro' ); ?></label></th>
+							<td>
+								<textarea name="description" id="description" rows="4" cols="50" class="large-text"><?php echo ! empty( $code->description ) ? esc_textarea( $code->description ) : ''; ?></textarea>
+								<p class="description"><?php esc_html_e( 'Add an internal description to help identify what this discount code is for.', 'paid-memberships-pro' ); ?></p>
+							</td>
 						</tr>
 
 						<?php

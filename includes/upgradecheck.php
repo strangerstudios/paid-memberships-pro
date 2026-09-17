@@ -460,6 +460,15 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.84' );
 	}
 
+	/**
+	 * Version 3.9
+	 * Add a description field to discount codes.
+	 */
+	if ( $pmpro_db_version < 3.9 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.9' );
+	}
+
 }
 
 function pmpro_db_delta() {
@@ -637,6 +646,7 @@ function pmpro_db_delta() {
 		  `expires` date NOT NULL,
 		  `uses` int(11) NOT NULL,
 		  `one_use_per_user` tinyint(4) NOT NULL DEFAULT '0',
+		  `description` TEXT NOT NULL,
 		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),

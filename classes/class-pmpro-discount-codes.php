@@ -37,6 +37,15 @@ class PMPro_Discount_Code {
 	 */
 	public $uses = 0;
 
+	/**
+	 * Internal description for the discount code.
+	 *
+	 * Null means the caller did not set a description, so the saved value is kept.
+	 *
+	 * @var string|null $description
+	 */
+	public $description = null;
+
 
 	/**
 	 * Levels and billing settings tied to the discount code.
@@ -72,6 +81,7 @@ class PMPro_Discount_Code {
         $discount_code->starts = date( 'Y-m-d' );
         $discount_code->expires = date( 'Y-m-d', time() + 86400 );
         $discount_code->uses = '';
+        $discount_code->description = '';
         $discount_code->levels = array(
         // 1 => array(
             // 'initial_payment' => '',
@@ -151,6 +161,7 @@ class PMPro_Discount_Code {
             $this->starts = $dcobj->starts;
             $this->expires = $dcobj->expires;
             $this->uses = $dcobj->uses;
+            $this->description = isset( $dcobj->description ) ? $dcobj->description : '';
             
             foreach( $levels as $level ) {
                 $this->levels[$level->level_id] = array(
@@ -214,7 +225,12 @@ class PMPro_Discount_Code {
                 if ( ! isset( $this->uses ) ) {
                     $this->uses = $results->uses;
                 }                
-                
+
+                // Keep the saved description when the caller did not pass one.
+                if ( ! isset( $this->description ) && isset( $results->description ) ) {
+                    $this->description = $results->description;
+                }
+
             }
 
         } else {
@@ -234,17 +250,23 @@ class PMPro_Discount_Code {
             }
         }      
 
+        // The description column does not allow NULL.
+        if ( ! isset( $this->description ) ) {
+            $this->description = '';
+        }
+
         // If the code doesn't exist, create it otherwise update it.
         if ( empty( $this->id ) ) {
 
             $before_action = 'pmpro_add_discount_code';
             $after_action = 'pmpro_added_discount_code';
 
-            $this->sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes ( `code`, `starts`, `expires`, `uses` ) 
+            $this->sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes ( `code`, `starts`, `expires`, `uses`, `description` )
                                VALUES ('" . esc_sql( $this->code ) . "',
                                        '" . esc_sql( $this->starts ) ."',
                                        '" . esc_sql( $this->expires ) ."',
-                                       " . intval( $this->uses ) ."
+                                       " . intval( $this->uses ) . ",
+                                       '" . esc_sql( $this->description ) . "'
                                )";                      
         } else {
             
@@ -255,7 +277,8 @@ class PMPro_Discount_Code {
                                 SET  `code` = '" . esc_sql( $this->code ) ."',
                                     `starts` = '" . esc_sql( $this->starts ) . "',
                                     `expires` = '" . esc_sql( $this->expires ) . "',
-                                    `uses` = " . intval( $this->uses ) . "
+                                    `uses` = " . intval( $this->uses ) . ",
+                                    `description` = '" . esc_sql( $this->description ) . "'
                                 WHERE code = '" . esc_sql( $this->code ) . "'
                                 LIMIT 1";
         }

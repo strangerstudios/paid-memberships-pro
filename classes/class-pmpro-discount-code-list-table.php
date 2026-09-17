@@ -136,6 +136,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			'discount_code' => __( 'Code', 'paid-memberships-pro' ),
 			'starts'    => __( 'Starts', 'paid-memberships-pro' ),
 			'expires'   => __( 'Expires', 'paid-memberships-pro' ),
+			'description' => __( 'Description', 'paid-memberships-pro' ),
             'uses'      => __( 'Uses', 'paid-memberships-pro' ),
 			'levels'      => __( 'Levels', 'paid-memberships-pro' ),
 		);
@@ -521,6 +522,24 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 		return date_i18n( get_option( 'date_format' ), $item->expires );
 		
+	}
+
+	/**
+	 * Render the discount code description.
+	 *
+	 * @param array $item
+	 *
+	 * @return string
+	 */
+	public function column_description( $item ) {
+
+		$description = isset( $item->description ) ? trim( (string) $item->description ) : '';
+
+		return sprintf(
+			'<span title="%1$s">%2$s</span>',
+			esc_attr( $description ),
+			esc_html( $description )
+		);
 	}
 
 	/**
