@@ -3058,6 +3058,14 @@ function pmpro_getDomainFromURL( $url = null ) {
 if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 	/**
 	 * Get a member's start date... either in general or for a specific level_id.
+	 *
+	 * Membership start and end dates are stored in the site's local timezone, so the value
+	 * returned here is a WordPress "local" timestamp in the same sense as current_time( 'timestamp' ).
+	 * Compare it against current_time( 'timestamp' ), not time().
+	 *
+	 * @param int|null $user_id  User ID. Defaults to the current user.
+	 * @param int      $level_id Level ID, or 0 for the member's oldest active level.
+	 * @return int|null Local timestamp, or null if the user has no active membership.
 	 */
 	function pmpro_getMemberStartdate( $user_id = null, $level_id = 0 ) {
 		if ( empty( $user_id ) ) {
