@@ -1066,6 +1066,9 @@ class PMPro_Wisdom_Tracker {
 	 */
 	public function goodbye_form_callback() {
 		check_ajax_referer( 'wisdom_goodbye_form', 'security' );
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			wp_die();
+		}
 		if ( isset( $_POST['values'] ) ) {
 			$values = json_encode( wp_unslash( sanitize_text_field( $_POST['values'] ) ) );
 			update_option( 'wisdom_deactivation_reason_' . $this->plugin_name, $values );

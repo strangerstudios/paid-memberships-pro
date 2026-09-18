@@ -65,8 +65,8 @@
 	$filename = ABSPATH . $new_uri;
 	$pathParts = pathinfo($filename);			
 		
-	//only checking if the image is pulled from outside the admin
-	if(!is_admin())
+	//skip the access check for users who can manage the site (e.g. admins previewing files); check everyone else
+	if(!current_user_can('manage_options'))
 	{
 		//get some info to use
 		$upload_dir = wp_upload_dir();			//wp upload dir

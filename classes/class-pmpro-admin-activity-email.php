@@ -131,21 +131,28 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					<tr>
 						<td valign="top" style="background:#F5F8FA;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px;text-align:left;border-top:1px solid #E7EEF6;border-bottom:1px solid #E7EEF6;">
 							<?php
-							$total_members = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('active')" );
+							// Use the same counts as the Members per Level report so the numbers here always match it.
+							$all_levels        = pmpro_getAllLevels( true );
+							$members_per_level = array();
+							foreach ( (array) pmpro_report_get_active_members_per_level() as $level_count ) {
+								// Skip levels that no longer exist.
+								if ( ! empty( $all_levels[ $level_count->membership_id ] ) ) {
+									$members_per_level[] = $level_count;
+								}
+							}
+
+							// Members may hold more than one membership, so these two numbers can differ.
+							$active_memberships = (int) array_sum( wp_list_pluck( $members_per_level, 'total_active_members' ) );
+							$active_members     = (int) $wpdb->get_var( "SELECT COUNT( DISTINCT mu.user_id ) FROM {$wpdb->pmpro_memberships_users} mu INNER JOIN {$wpdb->users} u ON u.ID = mu.user_id WHERE mu.status = 'active'" );
 							?>
-							<h3 style="color:#0C3D54;font-size:20px;line-height:30px;margin:0px 0px 5px 0px;padding:0px;"><span style="background:#0C3D54;color:#FFFFFF;padding:5px 10px 5px 10px;"><?php echo esc_html( number_format_i18n( $total_members )  ); ?></span><?php esc_html_e( ' Total Members', 'paid-memberships-pro' ); ?></h3>
+							<h3 style="color:#0C3D54;font-size:20px;line-height:30px;margin:0px 0px 5px 0px;padding:0px;"><span style="background:#0C3D54;color:#FFFFFF;padding:5px 10px 5px 10px;"><?php echo esc_html( number_format_i18n( $active_members ) ); ?></span> <?php esc_html_e( 'Active Members', 'paid-memberships-pro' ); ?></h3>
 							<?php
-							$members_per_level = $wpdb->get_results(
-								"
-								SELECT ml.name, COUNT(mu.id) as num_members
-								FROM $wpdb->pmpro_membership_levels ml
-								LEFT JOIN $wpdb->pmpro_memberships_users mu
-								ON ml.id = mu.membership_id
-								WHERE mu.status = 'active'
-								GROUP BY ml.name
-								ORDER BY num_members DESC
-								"
-							);
+							// Only show the membership count when it tells the admin something the member count doesn't.
+							if ( $active_memberships !== $active_members ) {
+								?>
+								<h3 style="color:#0C3D54;font-size:20px;line-height:30px;margin:0px 0px 5px 0px;padding:0px;"><span style="background:#0C3D54;color:#FFFFFF;padding:5px 10px 5px 10px;"><?php echo esc_html( number_format_i18n( $active_memberships ) ); ?></span> <?php esc_html_e( 'Active Memberships', 'paid-memberships-pro' ); ?></h3>
+								<?php
+							}
 
 							$num_levels_to_show = 5;
 							if ( count( $members_per_level ) > $num_levels_to_show ) {
@@ -156,7 +163,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<?php
 							$levels_outputted = 0;
 							foreach ( $members_per_level as $members_per_level_element ) {
-								echo( '<li>' . esc_html( $members_per_level_element->name ) . ': ' . esc_html( number_format_i18n( $members_per_level_element->num_members ) ) . '</li>' );
+								echo( '<li>' . esc_html( $all_levels[ $members_per_level_element->membership_id ]->name ) . ': ' . esc_html( number_format_i18n( $members_per_level_element->total_active_members ) ) . '</li>' );
 								if ( ++$levels_outputted >= $num_levels_to_show ) {
 									break;
 								}

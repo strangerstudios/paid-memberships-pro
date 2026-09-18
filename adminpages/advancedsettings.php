@@ -55,6 +55,7 @@
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("uninstall");
 		pmpro_setOption( 'avatar_enabled_sitewide' );
+		pmpro_setOption( 'hide_structured_data' );
 		pmpro_setOption("site_type");
 
         /**
@@ -109,6 +110,7 @@
 	}
 	$uninstall = get_option( 'pmpro_uninstall');
 	$avatar_enabled_sitewide = get_option( 'pmpro_avatar_enabled_sitewide' );
+	$hide_structured_data = get_option( 'pmpro_hide_structured_data' );
 	$site_type = get_option( 'pmpro_site_type' );
 
 	if ( empty( $activity_email_frequency ) ) {
@@ -423,6 +425,16 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 				'description'    => __( 'When enabled, all logged-in users can upload a custom profile picture. When disabled, profile pictures are only available for membership levels with the "Enable Profile Pictures" setting checked.', 'paid-memberships-pro' ),
 			);
 		}
+
+		$other_fields[] = array(
+			'name'           => 'hide_structured_data',
+			'label'          => __( 'Structured Data', 'paid-memberships-pro' ),
+			'type'           => 'checkbox',
+			'value'          => $hide_structured_data,
+			'checkbox_value' => 'yes',
+			'checkbox_label' => __( 'Hide membership level structured data (JSON-LD).', 'paid-memberships-pro' ),
+			'description'    => __( 'By default, Paid Memberships Pro adds Product and Offer structured data on levels and checkout pages. Enable this if another SEO plugin already outputs membership pricing schema and you want to avoid duplicate markup.', 'paid-memberships-pro' ),
+		);
 
 		$other_fields[] = array(
 			'name'        => 'uninstall',

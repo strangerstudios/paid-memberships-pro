@@ -131,6 +131,8 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_rebuild_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_rebuild_webhook' ) );
+		add_action( 'wp_ajax_pmpro_stripe_refresh_publishable_key', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_refresh_publishable_key' ) );
+		add_action( 'wp_ajax_nopriv_pmpro_stripe_refresh_publishable_key', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_refresh_publishable_key' ) );
 
 		//code to add at checkout if Stripe is the current gateway
 		$default_gateway = get_option( 'pmpro_gateway' );
@@ -649,20 +651,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<p class="description"><?php esc_html_e( 'Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
-		<?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
-				$allowed_appe_html = array (
-					'a' => array (
-						'href' => array(),
-						'target' => array(),
-						'title' => array(),
-					),
-				);
-				echo '<tr class="gateway gateway_stripe"';
-				if ( $gateway != "stripe" ) {
-					echo ' style="display: none;"';
-				}
-				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
-		}
+		<?php
 	}
 
 	/**
@@ -979,16 +968,6 @@ class PMProGateway_stripe extends PMProGateway {
 			),
 		);
 
-		if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
-			$payment_settings_fields[] = array(
-				'html' => '<p>' . sprintf(
-					/* translators: %s: URL to the Add PayPal Express Add On documentation. */
-					esc_html__( 'Optional: Offer PayPal Express as an option at checkout using the %s.', 'paid-memberships-pro' ),
-					'<a href="https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout" target="_blank">' . esc_html__( 'Add PayPal Express Add On', 'paid-memberships-pro' ) . '</a>'
-				) . '</p>',
-			);
-		}
-
 		pmpro_build_settings_section( array(
 			'id'     => 'pmpro_stripe_payment_settings',
 			'title'  => __( 'Stripe Payment Settings', 'paid-memberships-pro' ),
@@ -1157,6 +1136,21 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Refresh the Stripe Connect publishable key after a browser failure.
+	 *
+	 * @since 3.8.6
+	 */
+	public static function wp_ajax_pmpro_stripe_refresh_publishable_key() {
+		check_ajax_referer( 'pmpro_stripe_refresh_publishable_key', 'nonce' );
+
+		if ( self::using_api_keys() || ! self::has_connect_credentials() ) {
+			wp_send_json_error();
+		}
+
+		wp_send_json_success( array( 'refreshed' => (bool) self::refresh_connect_publishable_keys() ) );
+	}
+
+	/**
 	 * Code added to checkout preheader.
 	 *
 	 * @since 1.8
@@ -1171,9 +1165,12 @@ class PMProGateway_stripe extends PMProGateway {
 			wp_enqueue_script( "stripe", "https://js.stripe.com/v3/", array(), null );
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
+				self::maybe_refresh_connect_publishable_keys();
 				$stripe = new PMProGateway_stripe();
 				$localize_vars = array(
 					'publishableKey' => $stripe->get_publishablekey(),
+					'publishableKeyRefreshNonce' => ( self::using_api_keys() || ! self::has_connect_credentials() ) ? '' : wp_create_nonce( 'pmpro_stripe_refresh_publishable_key' ),
+					'msgPublishableKeyRefreshed' => __( 'There was a problem connecting to the payment gateway. Please reload this page and try again.', 'paid-memberships-pro' ),
 					'user_id'        => $stripe->get_connect_user_id(),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', get_option( 'pmpro_stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
@@ -1572,7 +1569,10 @@ class PMProGateway_stripe extends PMProGateway {
 		global $pmpro_stripe_error;
 		if ( ! empty( $pmpro_stripe_error ) ) {
 			$class   = 'notice notice-error pmpro-stripe-connect-message';
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $pmpro_stripe_error ) );
+			$allowed_html = array(
+				'strong' => array(),
+			);
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), wp_kses( $pmpro_stripe_error, $allowed_html ) );
 		}
 	}
 
@@ -1598,6 +1598,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if (
 			'false' === $_REQUEST['pmpro_stripe_disconnected']
 			&& isset( $_REQUEST['error_code'] )
+			&& isset( $_REQUEST['error_message'] )
 		) {
 
 			$class   = 'notice notice-warning pmpro-stripe-disconnect-message';
@@ -1822,7 +1823,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function has_connect_credentials( $gateway_environment = null ) {
 		if ( empty( $gateway_environment ) ) {
-			$gateway_environment = get_option( 'pmpro_pmpro_gateway_environment' );
+			$gateway_environment = get_option( 'pmpro_gateway_environment' );
 		}
 
 		if ( $gateway_environment === 'live' ) {
@@ -1839,6 +1840,72 @@ class PMProGateway_stripe extends PMProGateway {
 				get_option( 'pmpro_sandbox_stripe_connect_secretkey' ) &&
 				get_option( 'pmpro_sandbox_stripe_connect_publishablekey' )
 			);
+		}
+	}
+
+	/**
+	 * Refresh the cached Stripe Connect platform publishable keys.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @return bool Whether the keys were refreshed.
+	 */
+	public static function refresh_connect_publishable_keys() {
+		if ( get_transient( 'pmpro_stripe_connect_platform_keys_checked' ) ) {
+			return false;
+		}
+
+		set_transient( 'pmpro_stripe_connect_platform_keys_checked', true, 5 * MINUTE_IN_SECONDS );
+
+		$response = wp_safe_remote_get(
+			apply_filters( 'pmpro_stripe_connect_publishable_key_manifest_url', 'https://connect.paidmembershipspro.com/stripe/v1/platform-keys.json' ),
+			array( 'timeout' => 5 )
+		);
+
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return false;
+		}
+
+		$keys = json_decode( wp_remote_retrieve_body( $response ), true );
+		if (
+			! is_array( $keys ) ||
+			! isset( $keys['live']['publishable_key'] ) ||
+			! is_string( $keys['live']['publishable_key'] ) ||
+			! preg_match( '/^pk_live_[A-Za-z0-9]+$/', $keys['live']['publishable_key'] ) ||
+			! isset( $keys['test']['publishable_key'] ) ||
+			! is_string( $keys['test']['publishable_key'] ) ||
+			! preg_match( '/^pk_test_[A-Za-z0-9]+$/', $keys['test']['publishable_key'] )
+		) {
+			return false;
+		}
+
+		update_option(
+			'pmpro_stripe_connect_platform_keys',
+			array(
+				'live'       => $keys['live']['publishable_key'],
+				'test'       => $keys['test']['publishable_key'],
+				'checked_at' => time(),
+			),
+			false
+		);
+
+		return true;
+	}
+
+	/**
+	 * Refresh stale Stripe Connect platform publishable keys.
+	 *
+	 * @since 3.8.6
+	 */
+	public static function maybe_refresh_connect_publishable_keys() {
+		if ( self::using_api_keys() || ! self::has_connect_credentials() ) {
+			return;
+		}
+
+		$keys           = get_option( 'pmpro_stripe_connect_platform_keys' );
+		$cache_lifetime = apply_filters( 'pmpro_stripe_connect_publishable_key_cache_lifetime', WEEK_IN_SECONDS );
+		if ( ! is_array( $keys ) || empty( $keys['checked_at'] ) || $keys['checked_at'] < time() - $cache_lifetime ) {
+			self::refresh_connect_publishable_keys();
 		}
 	}
 
@@ -2184,7 +2251,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! empty( $order->payment_intent_id ) ) {
 			// User has just tried to confirm their payment intent. We need to make sure that it was
 			// confirmed successfully, and then try to create their subscription if needed.
-			$payment_intent = $this->process_payment_intent( $order->payment_intent_id );
+			$payment_intent = $this->process_payment_intent( $order->payment_intent_id, $order );
 			if ( is_string( $payment_intent ) ) {
 				$order->error      = __( 'Error processing payment intent.', 'paid-memberships-pro' ) . ' ' . $payment_intent;
 				$order->shorterror = $order->error;
@@ -3641,15 +3708,28 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 2.7.0.
 	 *
-	 * @param string $payment_intent_id to confirm.
+	 * @param string      $payment_intent_id to confirm.
+	 * @param MemberOrder $order that the payment intent is being confirmed for.
 	 * @return Stripe_PaymentIntent|string error.
 	 */
-	private function process_payment_intent( $payment_intent_id ) {
+	private function process_payment_intent( $payment_intent_id, $order ) {
+		global $pmpro_currency;
+
 		// Get the payment intent.
 		$payment_intent = $this->retrieve_payment_intent( $payment_intent_id );
 		if ( is_string( $payment_intent ) ) {
 			// There was an issue retrieving the payment intent.
 			return $payment_intent;
+		}
+
+		// Make sure that the payment intent's amount and currency match the amount due for this
+		// checkout before confirming it. The payment intent ID is submitted by the browser after
+		// authentication, so without this check a user could authenticate a cheap payment intent
+		// and then change the membership level (and thus the order total) on the resubmission,
+		// activating an expensive level while only paying the cheap amount.
+		$expected_amount = $this->convert_price_to_unit_amount( pmpro_round_price( (float) $order->subtotal + (float) $order->getTax( true ) ) );
+		if ( intval( $payment_intent->amount ) !== intval( $expected_amount ) || strtolower( $payment_intent->currency ) !== strtolower( $pmpro_currency ) ) {
+			return __( 'This payment does not match the amount due for this checkout.', 'paid-memberships-pro' );
 		}
 
 		// Confirm the payment.
@@ -4343,11 +4423,36 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( self::using_api_keys() ) {
 			$publishablekey = get_option( 'pmpro_stripe_publishablekey' );
 		} else {
-			$publishablekey = get_option( 'pmpro_gateway_environment' ) === 'live'
-				? get_option( 'pmpro_live_stripe_connect_publishablekey' )
-				: get_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
+			// Prefer the current platform key from the manifest cache and fall back to the key saved during OAuth.
+			$gateway_environment = get_option( 'pmpro_gateway_environment' );
+			$publishablekey      = self::get_cached_connect_publishable_key( $gateway_environment );
+			if ( empty( $publishablekey ) ) {
+				$publishablekey = $gateway_environment === 'live'
+					? get_option( 'pmpro_live_stripe_connect_publishablekey' )
+					: get_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
+			}
 		}
 		return $publishablekey;
+	}
+
+	/**
+	 * Get a cached Stripe Connect platform publishable key.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @param string $gateway_environment The gateway environment.
+	 * @return string The cached publishable key.
+	 */
+	private static function get_cached_connect_publishable_key( $gateway_environment ) {
+		$keys        = get_option( 'pmpro_stripe_connect_platform_keys' );
+		$environment = $gateway_environment === 'live' ? 'live' : 'test';
+		$pattern     = $environment === 'live' ? '/^pk_live_[A-Za-z0-9]+$/' : '/^pk_test_[A-Za-z0-9]+$/';
+
+		if ( ! is_array( $keys ) || ! isset( $keys[ $environment ] ) || ! is_string( $keys[ $environment ] ) || ! preg_match( $pattern, $keys[ $environment ] ) ) {
+			return '';
+		}
+
+		return $keys[ $environment ];
 	}
 
 	/**

@@ -89,7 +89,7 @@ function pmpro_report_get_active_members_per_level() {
 	}
 
 	// Query to get active members per level.
-	$sqlQuery = "SELECT membership_id, count(*) as total_active_members
+	$sqlQuery = "SELECT membership_id, COUNT(DISTINCT mu.user_id) as total_active_members
 	FROM $wpdb->pmpro_memberships_users as mu
 	INNER JOIN $wpdb->users as u on u.ID = mu.user_id
 	WHERE mu.status = 'active'
@@ -109,6 +109,9 @@ function pmpro_report_members_per_level_delete_transients() {
 	delete_transient( 'pmpro_report_members_per_level' );
 }
 add_action( 'pmpro_after_change_membership_level', 'pmpro_report_members_per_level_delete_transients' );
+
+// Deleting a user doesn't change a membership level, but it can leave behind membership rows that this report ignores.
+add_action( 'deleted_user', 'pmpro_report_members_per_level_delete_transients' );
 
 // Draw a pie chart of active members per level.
 function pmpro_report_draw_active_members_per_level_chart() {

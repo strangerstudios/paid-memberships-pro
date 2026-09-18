@@ -462,7 +462,8 @@ function pmpro_checkForUpgrades() {
 
 	/**
 	 * Version 3.9
-	 * Adding `discount_type`, `discount_value`, `apply_to_initial`, and `apply_to_recurring`
+	 * Run dbDelta to add the attachments column to the email log table and the
+	 * `discount_type`, `discount_value`, `apply_to_initial`, and `apply_to_recurring`
 	 * columns to discount codes for percentage/fixed amount discounts.
 	 */
 	if ( $pmpro_db_version < 3.9 ) {
@@ -806,6 +807,7 @@ function pmpro_db_delta() {
 		  `reply_to` varchar(255) NOT NULL DEFAULT '',
 		  `cc` text NOT NULL,
 		  `bcc` text NOT NULL,
+		  `attachments` text NOT NULL,
 		  `status` varchar(20) NOT NULL DEFAULT 'sent',
 		  `error_message` text NOT NULL,
 		  `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',

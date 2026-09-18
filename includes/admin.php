@@ -139,7 +139,7 @@ function pmpro_handle_pause_mode_actions() {
 	// Can the current user view the dashboard?
 	if ( current_user_can( 'pmpro_manage_pause_mode' ) ) {
 		//We're attempting to reactivate all services.
-		if( ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {			
+		if( ! empty( $_REQUEST['pmpro-reactivate-services'] ) && ! empty( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( sanitize_key( $_REQUEST['_wpnonce'] ), 'pmpro_reactivate_services' ) ) {
 			delete_option( 'pmpro_last_known_url' );
 		}
 	}
@@ -190,7 +190,7 @@ function pmpro_pause_mode_notice() {
 				<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
 				<p>
 					<a href='#' id="hide_pause_notification_button" class='button' value="hide_pause_notification"><?php esc_html_e( 'Dismiss notice and keep all services paused', 'paid-memberships-pro' ); ?></a>
-					<a href='<?php echo esc_url( admin_url( '?pmpro-reactivate-services=true' ) ); ?>' class='button button-secondary'><?php esc_html_e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
+					<a href='<?php echo esc_url( wp_nonce_url( admin_url( '?pmpro-reactivate-services=true' ), 'pmpro_reactivate_services' ) ); ?>' class='button button-secondary'><?php esc_html_e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
 				</p>
 				<?php } else { ?>
 					<p><?php echo wp_kses_post( __( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ) ); ?></p>
