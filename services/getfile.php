@@ -113,7 +113,7 @@
 	$ext = strtolower($parts[count($parts)-1]);
 	
 	//build blocklist and allow for filtering
-	$blocklist = array("inc", "php", "php3", "php4", "php5", "phps", "phtml");
+	$blocklist = array("inc", "php", "php3", "php4", "php5", "php7", "php8", "php9", "phps", "phtml", "phtm", "pht", "phar");
 	$blocklist = apply_filters("pmpro_getfile_extension_blocklist", $blocklist);
 
 	//check

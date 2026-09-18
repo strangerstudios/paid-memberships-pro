@@ -143,6 +143,7 @@ p.pmpro_meta_notice {
 
 .pmpro_banner .pmpro_banner_wrapper {
 	align-items: center;
+	clear: both;
 	display: flex;
 	flex-direction: column;
 	gap: calc( var(--pmpro--spacing--medium) / 2 );
@@ -4904,6 +4905,22 @@ button.pmpro_report_th_closed:before {
 	.pmpro_responsive_table tbody tr td::before,
 	.pmpro_responsive_table tfoot tr td::before {
 		content: attr(data-colname) ": ";
+	}
+
+	.pmpro_admin .wp-list-table .is-expanded td,
+	.pmpro_admin .wp-list-table .is-expanded th {
+		flex: 0 1 100%;
+	}
+
+	.pmpro_admin .wp-list-table .row-actions span.id {
+		font-size: inherit;
+		padding-right: 4px;
+		padding-left: 4px;
+	}
+
+	.pmpro_admin .wp-list-table .column-order_id,
+	.pmpro_admin .wp-list-table .is-expanded .column-order_id {
+		display: none !important;
 	}
 
 }
