@@ -2414,7 +2414,7 @@ class PMProGateway_stripe extends PMProGateway {
 			case 'connect_server':
 				return sprintf(
 					/* translators: %s: Link to Paid Memberships Pro support. */
-					esc_html__( 'Checkout continues to work with the last known publishable key. If this continues for more than a day, %s.', 'paid-memberships-pro' ),
+					esc_html__( 'If this continues for more than a day, %s.', 'paid-memberships-pro' ),
 					'<a href="https://www.paidmembershipspro.com/support/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'contact Paid Memberships Pro support', 'paid-memberships-pro' ) . '</a>'
 				);
 		}
