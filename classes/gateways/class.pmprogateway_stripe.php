@@ -3758,7 +3758,7 @@ class PMProGateway_stripe extends PMProGateway {
 			?>
 			<p class="description">
 				<?php esc_html_e( 'The connection has not been tested yet.', 'paid-memberships-pro' ); ?>
-				<a href="<?php echo esc_url( self::get_connection_test_url() ); ?>" class="pmpro_stripe_run_connection_test"><?php esc_html_e( 'Run connection test', 'paid-memberships-pro' ); ?></a>
+				<a href="<?php echo esc_url( self::get_connection_test_url() ); ?>" class="pmpro_stripe_run_connection_test"><?php esc_html_e( 'Run Connection Test', 'paid-memberships-pro' ); ?></a>
 			</p>
 			<?php
 			return;
@@ -3777,23 +3777,26 @@ class PMProGateway_stripe extends PMProGateway {
 		</p>
 		<div id="pmpro_stripe_connection_test" <?php if ( ! $expanded ) { ?>style="display: none;"<?php } ?>>
 			<?php foreach ( $results['results'] as $test => $result ) { ?>
-				<p>
-					<?php
-					if ( 'pass' === $result['status'] ) {
-						echo '<span class="pmpro_tag pmpro_tag-success">' . esc_html__( 'Passed', 'paid-memberships-pro' ) . '</span>';
-					} elseif ( 'fail' === $result['status'] ) {
-						echo '<span class="pmpro_tag pmpro_tag-error">' . esc_html__( 'Failed', 'paid-memberships-pro' ) . '</span>';
-					} else {
-						echo '<span class="pmpro_tag pmpro_tag-alert">' . esc_html__( 'Skipped', 'paid-memberships-pro' ) . '</span>';
-					}
-					?>
-					<strong><?php echo esc_html( self::get_connection_test_label( $test ) ); ?></strong>
-					<br /><span class="description"><?php echo esc_html( $result['message'] ); ?>
-					<?php if ( 'fail' === $result['status'] ) { ?>
-						<?php echo wp_kses( self::get_connection_test_fix( $test, $results['environment'] ), array( 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ); ?>
-					<?php } ?>
-					</span>
-				</p>
+				<div class="pmpro_stripe_connection_test-item">
+					<div class="pmpro_stripe_connection_test-item_title">
+						<?php
+						if ( 'pass' === $result['status'] ) {
+							echo '<span class="pmpro_tag pmpro_tag-small pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Passed', 'paid-memberships-pro' ) . '</span>';
+						} elseif ( 'fail' === $result['status'] ) {
+							echo '<span class="pmpro_tag pmpro_tag-small pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Failed', 'paid-memberships-pro' ) . '</span>';
+						} else {
+							echo '<span class="pmpro_tag pmpro_tag-small pmpro_tag-has_icon pmpro_tag-alert">' . esc_html__( 'Skipped', 'paid-memberships-pro' ) . '</span>';
+						}
+						?>
+						<strong><?php echo esc_html( self::get_connection_test_label( $test ) ); ?></strong>
+					</div>
+					<p class="description">
+						<?php echo esc_html( $result['message'] ); ?>
+						<?php if ( 'fail' === $result['status'] ) { ?>
+							<?php echo wp_kses( self::get_connection_test_fix( $test, $results['environment'] ), array( 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ); ?>
+						<?php } ?>
+					</p>
+				</div>
 			<?php } ?>
 			<p>
 				<a class="button button-secondary pmpro_stripe_run_connection_test" href="<?php echo esc_url( self::get_connection_test_url() ); ?>"><?php esc_html_e( 'Run Connection Test', 'paid-memberships-pro' ); ?></a>
