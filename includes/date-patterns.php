@@ -216,11 +216,30 @@ function pmpro_resolve_expiration_date_pattern( $set_expiration_date, $current_t
 }
 
 /**
+ * Check whether a discount code applies a formula to the level's own pricing.
+ *
+ * Percentage and fixed amount codes inherit their pricing schedule from the level,
+ * so they also inherit the level's subscription delay and set expiration date.
+ * Custom pricing codes define their own schedule per level.
+ *
+ * @since TBD
+ *
+ * @param int $code_id The discount code ID.
+ * @return bool True for percentage and fixed amount codes, false for custom pricing codes or unknown codes.
+ */
+function pmpro_discount_code_uses_level_pricing( $code_id ) {
+	$code_row = pmpro_get_discount_code( intval( $code_id ) );
+	return ! empty( $code_row->discount_type ) && 'set_price' !== $code_row->discount_type;
+}
+
+/**
  * Get the subscription delay value for a level, optionally with a discount code.
  *
- * When a discount code is passed, only the code's own setting is used - a code
- * with no delay configured means no delay, even if the level has one. This
- * matches the behavior of the retired Subscription Delays Add On.
+ * When a custom pricing discount code is passed, only the code's own setting is
+ * used - a code with no delay configured means no delay, even if the level has
+ * one. This matches the behavior of the retired Subscription Delays Add On.
+ * Percentage and fixed amount codes have no pricing schedule of their own and
+ * always mirror the level's delay.
  *
  * @since TBD
  *
@@ -229,7 +248,7 @@ function pmpro_resolve_expiration_date_pattern( $set_expiration_date, $current_t
  * @return string The subscription delay value (days or date pattern), or empty string.
  */
 function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
-	if ( ! empty( $code_id ) ) {
+	if ( ! empty( $code_id ) && ! pmpro_discount_code_uses_level_pricing( $code_id ) ) {
 		// Discount code delays are stored as a nested array in a single option.
 		$all_delays         = get_option( 'pmpro_discount_code_subscription_delays', array() );
 		$subscription_delay = is_array( $all_delays ) && ! empty( $all_delays[ $code_id ][ $level_id ] ) ? $all_delays[ $code_id ][ $level_id ] : '';
@@ -243,10 +262,11 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 /**
  * Get the set expiration date pattern for a level, optionally with a discount code.
  *
- * When a discount code is passed, only the code's own setting is used - a code
- * with no expiration date configured means no set expiration date, even if the
- * level has one. This matches the behavior of the retired Set Expiration Dates
- * Add On.
+ * When a custom pricing discount code is passed, only the code's own setting is
+ * used - a code with no expiration date configured means no set expiration date,
+ * even if the level has one. This matches the behavior of the retired Set
+ * Expiration Dates Add On. Percentage and fixed amount codes have no pricing
+ * schedule of their own and always mirror the level's set expiration date.
  *
  * @since TBD
  *
@@ -255,7 +275,7 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
  * @return string The expiration date pattern, or empty string.
  */
 function pmpro_get_set_expiration_date( $level_id, $code_id = null ) {
-	if ( ! empty( $code_id ) ) {
+	if ( ! empty( $code_id ) && ! pmpro_discount_code_uses_level_pricing( $code_id ) ) {
 		// Discount code expiration dates: pmprosed_{level_id}_{code_id}
 		$set_expiration_date = get_option( 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id ), '' );
 	} else {
