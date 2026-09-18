@@ -59,7 +59,7 @@ function pmpro_add_pages() {
 
 	// Main submenus
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
-	$members_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
+	$members_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Memberships', 'paid-memberships-pro' ), __( 'Memberships', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
 	$orders_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Orders', 'paid-memberships-pro' ), __( 'Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders' );
 	$subscriptions_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), pmpro_get_edit_member_capability(), 'pmpro-subscriptions', 'pmpro_subscriptions' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
@@ -229,13 +229,13 @@ function pmpro_admin_bar_menu() {
 		);
 	}
 	
-	// Add menu item for Members List.
+	// Add menu item for the Memberships list.
 	if ( current_user_can( 'pmpro_memberslist' ) ) {
-		$wp_admin_bar->add_menu( 
+		$wp_admin_bar->add_menu(
 			array(
 				'id' => 'pmpro-members-list',
 				'parent' => 'paid-memberships-pro',
-				'title' => __( 'Members', 'paid-memberships-pro' ),
+				'title' => __( 'Memberships', 'paid-memberships-pro' ),
 				'href' => admin_url( 'admin.php?page=pmpro-memberslist' )
 			)
 		);
