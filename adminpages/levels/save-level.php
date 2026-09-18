@@ -159,4 +159,28 @@ if ( ! empty( $ml_level_image ) && wp_attachment_is_image( $ml_level_image ) ) {
 	delete_pmpro_membership_level_meta( $saveid, 'level_image' );
 }
 
+// Save subscription delay settings. Only recurring levels can have a delay.
+// Unparseable patterns are saved as entered: checkout ignores them.
+// Uses same wp_options keys as the Subscription Delays Add On: pmpro_subscription_delay_{level_id}
+$delay_type = ! empty( $ml_recurring ) && isset( $_REQUEST['delay_type'] ) ? sanitize_text_field( $_REQUEST['delay_type'] ) : 'none';
+$delay_date_pattern = $delay_type === 'date' ? pmpro_get_date_pattern_from_request( 'subscription_delay_date' ) : '';
+if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) ) {
+	update_option( 'pmpro_subscription_delay_' . $saveid, max( 1, intval( $_REQUEST['subscription_delay_days'] ) ), false );
+} elseif ( '' !== $delay_date_pattern ) {
+	update_option( 'pmpro_subscription_delay_' . $saveid, $delay_date_pattern, false );
+} else {
+	delete_option( 'pmpro_subscription_delay_' . $saveid );
+}
+
+// Save set expiration date settings.
+// Uses same wp_options keys as the Set Expiration Dates Add On: pmprosed_{level_id}
+$expiration_date_type = isset( $_REQUEST['expiration_date_type'] ) ? sanitize_text_field( $_REQUEST['expiration_date_type'] ) : 'none';
+$expiration_date_pattern = ! empty( $ml_expiration ) && $expiration_date_type === 'date' ? pmpro_get_date_pattern_from_request( 'set_expiration_date' ) : '';
+if ( '' !== $expiration_date_pattern ) {
+	update_option( 'pmprosed_' . $saveid, $expiration_date_pattern, false );
+} else {
+	// Expiration unchecked, duration-based, or no pattern chosen: remove any date-based expiration.
+	delete_option( 'pmprosed_' . $saveid );
+}
+
 do_action("pmpro_save_membership_level", $saveid);
