@@ -14,6 +14,7 @@ function pmpro_member_edit_get_panels() {
 	$panels[] = new PMPro_Member_Edit_Panel_Memberships();
 	$panels[] = new PMPro_Member_Edit_Panel_Subscriptions();
 	$panels[] = new PMPro_Member_Edit_Panel_Orders();
+	$panels[] = new PMPro_Member_Edit_Panel_Member_Notes();
 	$panels[] = new PMPro_Member_Edit_Panel_TOS();
 
 	// Add user fields panels.
