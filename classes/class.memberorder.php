@@ -1246,9 +1246,8 @@
 				else
 					$discount_code = $this->discount_code;
 
-				$sqlQuery = $wpdb->prepare( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = %s AND cl.level_id = %d LIMIT 1", $discount_code, $this->membership_id );
-
-				$this->membership_level = $wpdb->get_row($sqlQuery);
+				// Resolve the effective level pricing for this code.
+				$this->membership_level = pmpro_get_discounted_level_for_code( $this->membership_id, $discount_code );
 			}
 
 			//just get the info from the membership table	(sigh, I really need to standardize the column names for membership_id/level_id) but we're checking if we got the information already or not

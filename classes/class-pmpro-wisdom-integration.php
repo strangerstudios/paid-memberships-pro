@@ -324,6 +324,9 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields']['pmpro_license_key']  = get_option( 'pmpro_license_key', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_license_plan'] = $license_plan;
 
+		// Hosting info.
+		$stats['plugin_options_fields']['pmpro_hosting'] = defined( 'PMPRO_HOSTING_IS_MU_PLUGIN' ) && PMPRO_HOSTING_IS_MU_PLUGIN ? 'yes' : 'no';
+
 		// Gateway info.
 		$stats['plugin_options_fields'] = array_merge( $stats['plugin_options_fields'], $this->get_gateway_info() );
 

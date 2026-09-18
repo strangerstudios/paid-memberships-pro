@@ -2595,7 +2595,7 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
  *		Failure returns false.
  */
 function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = false ) {
-	global $current_user, $pmpro_pages;
+	global $current_user;
 	if ( empty( $user_id ) ) {
 		$user_id = $current_user->ID;
 	}
@@ -2607,19 +2607,19 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	// make sure user id is int for security
 	$user_id = intval( $user_id );
 
-	// Admins have special rules for membership levels. Check them here.
-	if ( $user_id == $current_user->ID && current_user_can( 'manage_options' ) ) {
+	// Admins and users with the View As capability have special rules for membership levels. Check them here.
+	if ( $user_id == $current_user->ID && ( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_view_as' ) ) ) {
 		// Make sure that we are not on a page where we want to always show the user's true levels.
 		if (
 			! is_admin() &&
 			( empty( $GLOBALS['wp_query'] ) || ! pmpro_is_checkout() ) &&
-			( empty( $pmpro_pages['account'] ) || ! is_page( $pmpro_pages['account'] ) ) &&
-			( empty( $pmpro_pages['billing'] ) || ! is_page( $pmpro_pages['billing'] ) ) &&
-			( empty( $pmpro_pages['cancel'] ) || ! is_page( $pmpro_pages['cancel'] ) ) &&
-			( empty( $pmpro_pages['checkout'] ) || ! is_page( $pmpro_pages['checkout'] ) ) &&
-			( empty( $pmpro_pages['confirmation'] ) || ! is_page( $pmpro_pages['confirmation'] ) ) &&
-			( empty( $pmpro_pages['invoice'] ) || ! is_page( $pmpro_pages['invoice'] ) ) &&
-			( empty( $pmpro_pages['levels'] ) || ! is_page( $pmpro_pages['levels'] ) ) &&
+			! pmpro_is_page( 'account' ) &&
+			! pmpro_is_page( 'billing' ) &&
+			! pmpro_is_page( 'cancel' ) &&
+			! pmpro_is_page( 'checkout' ) &&
+			! pmpro_is_page( 'confirmation' ) &&
+			! pmpro_is_page( 'invoice' ) &&
+			! pmpro_is_page( 'levels' ) &&
 			! apply_filters( 'pmpro_disable_admin_membership_access', false )
 		) {
 			// This user meta can be changed via the admin bar.
@@ -2945,13 +2945,14 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// If we are using a discount code, check it and get the level.
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
-		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+		$discount_code_row = pmpro_get_discount_code( $discount_code );
+		$discount_code_id  = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
 
 		// check code
 		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
 		if ( $code_check[0] != false ) {
-			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "' AND cl.level_id = '" . esc_sql( $level_id ) . "' LIMIT 1";
-			$pmpro_level = $wpdb->get_row( $sqlQuery );
+			// Resolve the effective level pricing for this code.
+			$pmpro_level = pmpro_get_discounted_level_for_code( $level_id, $discount_code_row );
 
 			// if the discount code doesn't adjust the level, let's just get the straight level
 			if ( empty( $pmpro_level ) ) {
@@ -3134,6 +3135,14 @@ function pmpro_getDomainFromURL( $url = null ) {
 if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 	/**
 	 * Get a member's start date... either in general or for a specific level_id.
+	 *
+	 * Membership start and end dates are stored in the site's local timezone, so the value
+	 * returned here is a WordPress "local" timestamp in the same sense as current_time( 'timestamp' ).
+	 * Compare it against current_time( 'timestamp' ), not time().
+	 *
+	 * @param int|null $user_id  User ID. Defaults to the current user.
+	 * @param int      $level_id Level ID, or 0 for the member's oldest active level.
+	 * @return int|null Local timestamp, or null if the user has no active membership.
 	 */
 	function pmpro_getMemberStartdate( $user_id = null, $level_id = 0 ) {
 		if ( empty( $user_id ) ) {
@@ -4220,38 +4229,78 @@ function pmpro_cleanup_memberships_users_table() {
 }
 
 /**
+ * Check if the current page is a PMPro page.
+ *
+ * Unlike is_page(), this returns false when the requested PMPro page is not set
+ * instead of matching every page.
+ *
+ * When $check_content is true, pages that are not assigned in the PMPro page settings
+ * are also matched if their content contains the page's shortcode or block. Core page
+ * shortcodes are registered during the `wp` action for the current post only, so content
+ * detection is only reliable after that point.
+ *
+ * @since TBD
+ *
+ * @param string $page          PMPro page key, e.g. 'checkout' or 'account'.
+ * @param bool   $check_content Also check the queried page's content for the page shortcode or block.
+ * @return bool True if the current page matches the PMPro page, false otherwise.
+ */
+function pmpro_is_page( $page, $check_content = false ) {
+	global $pmpro_pages, $wp_query;
+
+	if ( empty( $page ) ) {
+		return false;
+	}
+
+	$is_page = false;
+	if ( ! empty( $pmpro_pages[ $page ] ) ) {
+		$is_page = is_page( $pmpro_pages[ $page ] );
+	}
+
+	if ( ! $is_page && $check_content && ! empty( $wp_query ) ) {
+		$queried_object = get_queried_object();
+		$shortcodes     = array(
+			'account'             => 'pmpro_account',
+			'billing'             => 'pmpro_billing',
+			'cancel'              => 'pmpro_cancel',
+			'checkout'            => 'pmpro_checkout',
+			'confirmation'        => 'pmpro_confirmation',
+			'invoice'             => 'pmpro_invoice',
+			'levels'              => 'pmpro_levels',
+			'login'               => 'pmpro_login',
+			'member_profile_edit' => 'pmpro_member_profile_edit',
+		);
+		$blocks         = array(
+			'account'             => 'pmpro/account-page',
+			'billing'             => 'pmpro/billing-page',
+			'cancel'              => 'pmpro/cancel-page',
+			'checkout'            => 'pmpro/checkout-page',
+			'confirmation'        => 'pmpro/confirmation-page',
+			'invoice'             => 'pmpro/invoice-page',
+			'levels'              => 'pmpro/levels-page',
+			'login'               => 'pmpro/login-form',
+			'member_profile_edit' => 'pmpro/member-profile-edit',
+		);
+
+		if ( ! empty( $queried_object->post_content ) && isset( $shortcodes[ $page ] ) ) {
+			$is_page = has_shortcode( $queried_object->post_content, $shortcodes[ $page ] );
+
+			if ( ! $is_page && function_exists( 'has_block' ) && isset( $blocks[ $page ] ) ) {
+				$is_page = has_block( $blocks[ $page ], $queried_object->post_content );
+			}
+		}
+	}
+
+	return $is_page;
+}
+
+/**
  * Are we on the PMPro checkout page?
  * @since 2.1
  * @return bool True if we are on the checkout page, false otherwise
  */
 function pmpro_is_checkout() {
-	global $pmpro_pages, $wp_query;
-
-	// Try is_page first.
-	if ( ! empty( $pmpro_pages['checkout'] ) ) {
-		$is_checkout = is_page( $pmpro_pages['checkout'] );
-	} else {
-		$is_checkout = false;
-	}
-
-	// Page might not be setup yet or a custom page.
-	if ( ! empty( $wp_query ) ) {
-		$queried_object = get_queried_object();
-	} else {
-		$queried_object = null;
-	}
-
-	if ( ! $is_checkout &&
-		! empty( $queried_object ) &&
-		! empty( $queried_object->post_content ) &&
-		( has_shortcode( $queried_object->post_content, 'pmpro_checkout' ) ||
-			( function_exists( 'has_block' ) &&
-				has_block( 'pmpro/checkout-page', $queried_object->post_content )
-			)
-		)
-	) {
-		$is_checkout = true;
-	}
+	$is_checkout = pmpro_is_page( 'checkout', true );
 
 	/**
 	 * Filter for pmpro_is_checkout return value.
@@ -4591,8 +4640,14 @@ function pmpro_get_liquid_autocomplete_settings( $variables = array() ) {
 		'filters'   => pmpro_get_liquid_autocomplete_filter_suggestions(),
 		'tags'      => pmpro_get_liquid_autocomplete_tag_suggestions(),
 		'strings'   => array(
-			'autocompleteLabel' => __( 'Liquid autocomplete', 'paid-memberships-pro' ),
-			'liquidTagsHeader' => __( 'Liquid Tags', 'paid-memberships-pro' ),
+			'autocompleteLabel'    => __( 'Liquid autocomplete', 'paid-memberships-pro' ),
+			'liquidTagsHeader'     => __( 'Liquid Tags', 'paid-memberships-pro' ),
+			'autocompleteOpened'   => __( 'Autocomplete list opened', 'paid-memberships-pro' ),
+			'autocompleteClosed'   => __( 'Autocomplete list closed', 'paid-memberships-pro' ),
+			/* translators: %s: the Liquid variable, tag or filter that was inserted. */
+			'autocompleteInserted' => __( 'Inserted %s', 'paid-memberships-pro' ),
+			/* translators: 1: the position of the highlighted autocomplete option. 2: the total number of options. */
+			'autocompletePosition' => __( '%1$d of %2$d', 'paid-memberships-pro' ),
 		),
 	);
 

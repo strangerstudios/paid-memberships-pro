@@ -19,13 +19,13 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 	 * Constructor.
 	 *
 	 * @since 3.4
-	 * @deprecated TBD
+	 * @deprecated 3.8
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
 	 * @param MemberOrder $order The order object that is associated to the member.
 	 */
 	public function __construct( WP_User $user,  MemberOrder $order ) {
-		_deprecated_function( __CLASS__, 'TBD' );
+		_deprecated_function( __CLASS__, '3.8' );
 		$this->user = $user;
 		$this->order = $order;
 	}
@@ -221,13 +221,13 @@ class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
  * Register the email template.
  *
  * @since 3.4
- * @deprecated TBD
+ * @deprecated 3.8
  *
  * @param array $email_templates The email templates (template slug => email template class name)
  * @return array The modified email templates array.
  */
 function pmpro_email_templates_credit_card_expiring( $email_templates ) {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.8' );
 	$email_templates['credit_card_expiring'] = 'PMPro_Email_Template_Credit_Card_Expiring';
 	return $email_templates;
 }

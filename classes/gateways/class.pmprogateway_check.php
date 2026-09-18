@@ -58,7 +58,22 @@
 		 * @return string
 		 */
 		public static function get_description_for_gateway_settings() {
-			return esc_html__( 'Allow members to pay by check or other manual payment methods like Bank Transfer or Venmo. After receiving a payment, you must manually update the order status to "success" in order to activate the membership.', 'paid-memberships-pro' );
+			$description = esc_html__( 'Allow members to pay by check or other manual payment methods like Bank Transfer or Venmo.', 'paid-memberships-pro' );
+
+			if ( defined( 'PMPROPBC_VER' ) ) {
+				// The Pay by Check Add On holds orders as pending until an admin marks them as paid.
+				$description .= ' ' . esc_html__( 'The Pay by Check Add On is active, so orders are held as pending until you mark them as paid.', 'paid-memberships-pro' );
+			} else {
+				// Without the Add On, this gateway marks orders as paid at checkout.
+				$description .= ' ' . esc_html__( 'Orders are marked as paid automatically at checkout, so members get access right away.', 'paid-memberships-pro' );
+				$description .= ' ' . sprintf(
+					/* translators: %s: Link to the Pay by Check Add On. */
+					esc_html__( 'To hold orders for manual approval or offer manual payments alongside your primary payment gateway, use the %s.', 'paid-memberships-pro' ),
+					'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=gateway-description' ) . '" target="_blank" rel="noopener">' . esc_html__( 'Pay by Check: Manual and Offline Payments Add On', 'paid-memberships-pro' ) . '</a>'
+				);
+			}
+
+			return $description;
 		}
 
 		/**

@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.8.5
+ * Version: 3.8.6
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '3.8.5' );
+define( 'PMPRO_VERSION', '3.8.6' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '7.4' );
 
@@ -35,6 +35,7 @@ require_once( PMPRO_DIR . '/includes/lib/glotpress-helper.php' );   		// handles
 require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        		// parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
 require_once( PMPRO_DIR . '/includes/functions.php' );              		// misc functions used by the plugin
 require_once( PMPRO_DIR . '/includes/date-patterns.php' );          		// date pattern utilities for subscription delays and set expiration dates
+require_once( PMPRO_DIR . '/includes/discount-codes.php' );         		// discount code pricing resolution
 require_once( PMPRO_DIR . '/includes/updates.php' );                		// database and other updates
 require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           		// database and other updates
 require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// deprecated hooks and functions
@@ -135,6 +136,7 @@ require_once( PMPRO_DIR . '/includes/email.php' );                  // code rela
 require_once( PMPRO_DIR . '/includes/email-logging.php' );           // email logging functionality
 require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fields
 require_once( PMPRO_DIR . '/includes/settings-fields.php' );         // render-only helpers for admin settings sections
+require_once( PMPRO_DIR . '/includes/captcha.php' );                // shared code for captcha services
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cloudflare-turnstile.php' );   // load CloudFlare Turnstile files if needed
 require_once( PMPRO_DIR . '/includes/terms-of-service.php' );       // code to add a terms of service checkbox to checkout

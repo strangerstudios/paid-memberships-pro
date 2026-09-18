@@ -231,13 +231,21 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		 * key => value
 		 * column name_in_list_table => columnname in the db
 		 */
-		return array(
+		$sortable_columns = array(
 			'ID'             => array(
 				'ID',
 				false,
 			),
 			'username'     => array(
 				'user_login',
+				false,
+			),
+			'first_name'     => array(
+				'first_name',
+				false,
+			),
+			'last_name'      => array(
+				'last_name',
 				false,
 			),
 			'display_name'   => array(
@@ -269,6 +277,19 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				false,
 			),
 		);
+
+		/**
+		 * Filter the list of sortable columns for the Members List table.
+		 *
+		 * Adding a column here only shows the sort link in the header. The
+		 * column key also needs an entry in the allowed orderbys array, which
+		 * is filterable through "pmpro_memberslist_allowed_orderbys".
+		 *
+		 * @since TBD
+		 *
+		 * @param array $sortable_columns Sortable columns in the format 'column' => array( 'orderby', $descending ).
+		 */
+		return apply_filters( 'pmpro_memberslist_sortable_columns', $sortable_columns );
 	}
 
 	/**
@@ -356,6 +377,16 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			}
 		}
 
+		// If the requested column isn't one we allow, fall back to the default
+		// order instead of building an ORDER BY with no column in it.
+		if ( empty( $orderby ) ) {
+			if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
+				$orderby = 'enddate';
+			} else {
+				$orderby = 'u.user_registered';
+			}
+		}
+
 		// some vars for pagination
 		if(isset($_REQUEST['paged']))
 			$pn = intval($_REQUEST['paged']);
@@ -387,6 +418,33 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			LEFT JOIN $wpdb->pmpro_membership_levels m
 			ON mu.membership_id = m.id
 			";
+
+		if ( ! $count ) {
+			// Joins needed only for sorting. The count query has no ORDER BY, so it never needs these.
+			// The first and last name columns are sorted by user meta, so join the matching meta row only when one of them is the sort column.
+			$join_sql = '';
+			if ( 'MIN(um_first.meta_value)' === $orderby ) {
+				$join_sql .= " LEFT JOIN $wpdb->usermeta um_first ON u.ID = um_first.user_id AND um_first.meta_key = 'first_name' ";
+			}
+			if ( 'MIN(um_last.meta_value)' === $orderby ) {
+				$join_sql .= " LEFT JOIN $wpdb->usermeta um_last ON u.ID = um_last.user_id AND um_last.meta_key = 'last_name' ";
+			}
+
+			/**
+			 * Filter the JOIN clauses added to the Members List query for sorting.
+			 *
+			 * Runs only on the data query, not the count query. Use this together with
+			 * pmpro_memberslist_sortable_columns and pmpro_memberslist_allowed_orderbys to make
+			 * a custom column sortable. Because the query groups by u.ID and mu.membership_id,
+			 * the ORDER BY expression for a joined column must be wrapped in an aggregate like MIN().
+			 *
+			 * @since TBD
+			 *
+			 * @param string $join_sql SQL JOIN clauses to append to the query.
+			 * @param string $orderby  The sanitized ORDER BY expression for the current request.
+			 */
+			$sqlQuery .= apply_filters( 'pmpro_memberslist_sql_join', $join_sql, $orderby );
+		}
 
 		if ( !empty( $s ) ) {
 			if ( ! empty( $search_key ) ) {
@@ -485,6 +543,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$allowed_orderbys = array(
 			'ID' 				=> 'u.ID',
 			'user_login' 		=> 'u.user_login',
+			'first_name' 		=> 'MIN(um_first.meta_value)',
+			'last_name' 		=> 'MIN(um_last.meta_value)',
 			'display_name' 		=> 'u.display_name',
 			'user_email' 		=> 'u.user_email',
 			'membership' 		=> 'mu.membership_id',
