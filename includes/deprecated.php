@@ -1177,19 +1177,19 @@ add_action( 'admin_notices', 'pmpro_was_loading_frontend_css_notice' );
  * Subscription Delays and Set Expiration Dates Add Ons.
  *
  * Defined on plugins_loaded with function_exists() guards because core loads
- * before those add-ons: if a still-active copy of an add-on declares the same
+ * before those Add Ons: if a still-active copy of an Add On declares the same
  * (unguarded) function later in the request, an eager definition here would
  * fatal with "cannot redeclare".
  *
  * @since TBD
  */
 function pmpro_define_deprecated_date_pattern_functions() {
-	// Bail if either add-on may be activated later in this request: plugins.php
+	// Bail if either Add On may be activated later in this request: plugins.php
 	// activations, the update.php activate link, PMPro's own Add Ons page AJAX
 	// activation, or WP-CLI (where we can't tell which plugin is activating).
-	// Activated plugins load after plugins_loaded, and both add-ons declare
+	// Activated plugins load after plugins_loaded, and both Add Ons declare
 	// these functions unguarded, so defining them here would fatal with
-	// "cannot redeclare" when the add-on file loads.
+	// "cannot redeclare" when the Add On file loads.
 	$sd_file  = 'pmpro-subscription-delays/pmpro-subscription-delays.php';
 	$sed_file = 'pmpro-set-expiration-dates/pmpro-set-expiration-dates.php';
 	if ( pmpro_activating_plugin( $sd_file ) || pmpro_activating_plugin( $sed_file ) ) {
@@ -1209,7 +1209,7 @@ function pmpro_define_deprecated_date_pattern_functions() {
 		function pmprosd_convert_date( $date ) {
 			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_date_pattern()' );
 			$converted_date = pmpro_resolve_date_pattern( $date );
-			// The retired add-on always appended a time component.
+			// The retired Add On always appended a time component.
 			return empty( $converted_date ) ? $converted_date : $converted_date . 'T0:0:0';
 		}
 	}
@@ -1292,10 +1292,10 @@ function pmpro_define_deprecated_date_pattern_functions() {
 add_action( 'plugins_loaded', 'pmpro_define_deprecated_date_pattern_functions' );
 
 /**
- * Unhook a retired add-on's handlers when it is still active.
+ * Unhook a retired Add On's handlers when it is still active.
  *
- * On the first request after updating core - before the add-on is
- * auto-deactivated from a wp-admin page - both core and the add-on are loaded.
+ * On the first request after updating core - before the Add On is
+ * auto-deactivated from a wp-admin page - both core and the Add On are loaded.
  * The legacy save handlers read form fields the new admin pages no longer
  * submit (silently wiping the settings the admin just saved), the text filters
  * double or replace core's wording, and the checkout/webhook filters re-apply
@@ -1305,7 +1305,7 @@ add_action( 'plugins_loaded', 'pmpro_define_deprecated_date_pattern_functions' )
  */
 function pmpro_neutralize_retired_date_pattern_add_ons() {
 	if ( function_exists( 'pmprosd_pmpro_save_membership_level' ) ) {
-		// Subscription Delays add-on is loaded.
+		// Subscription Delays Add On is loaded.
 		remove_action( 'pmpro_membership_level_after_other_settings', 'pmprosd_pmpro_membership_level_after_other_settings' );
 		remove_action( 'pmpro_save_membership_level', 'pmprosd_pmpro_save_membership_level' );
 		remove_action( 'pmpro_discount_code_after_level_settings', 'pmprosd_pmpro_discount_code_after_level_settings' );
@@ -1317,7 +1317,7 @@ function pmpro_neutralize_retired_date_pattern_add_ons() {
 		remove_filter( 'pmpro_subscribe_order', 'pmprosd_pmpro_subscribe_order' );
 	}
 	if ( function_exists( 'pmprosed_pmpro_save_membership_level' ) ) {
-		// Set Expiration Dates add-on is loaded.
+		// Set Expiration Dates Add On is loaded.
 		remove_action( 'pmpro_membership_level_after_expiration_settings', 'pmprosed_pmpro_membership_level_after_expiration_settings', 1 );
 		remove_action( 'pmpro_save_membership_level', 'pmprosed_pmpro_save_membership_level' );
 		remove_action( 'pmpro_discount_code_after_level_settings', 'pmprosed_pmpro_discount_code_after_level_settings' );
@@ -1334,7 +1334,7 @@ function pmpro_neutralize_retired_date_pattern_add_ons() {
 add_action( 'plugins_loaded', 'pmpro_neutralize_retired_date_pattern_add_ons' );
 
 /**
- * The Subscription Delays add-on registers its checkout filter on init, after
+ * The Subscription Delays Add On registers its checkout filter on init, after
  * the plugins_loaded pass above, so unhook it separately.
  *
  * @since TBD
