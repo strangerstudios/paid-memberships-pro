@@ -540,19 +540,36 @@ body[class*="memberships_page_pmpro-"] {
 	min-width: 200px;
 }
 
-.wp-core-ui .pmpro_admin .button-secondary:hover,
-.wp-core-ui .pmpro_admin .button.hover,
-.wp-core-ui .pmpro_admin .button:hover,
-.pmpro_admin .add-new-h2:hover,
-.pmpro_admin .page-title-action:hover {
-	background: #FFF;
-}
-
 .pmpro_admin .page-title-action {
 	margin: 0 calc( var(--pmpro--spacing--small) / 2 );
 }
-.wp-core-ui .pmpro_admin .button-primary:hover {
-	background: #135e96;
+
+.pmpro_admin .page-title-action.button-primary {
+	background: var(--wp-admin-theme-color);
+	color: #fff;
+	line-height: 2.30769231;
+	min-height: 32px;
+}
+
+.pmpro_admin .page-title-action.button-primary:hover {
+	background: var(--wp-admin-theme-color-darker-10);
+	border-color: transparent;
+}
+
+.pmpro_admin .page-title-action.button-primary:focus {
+	background: var(--wp-admin-theme-color);
+	border-color: transparent;
+}
+
+.pmpro_admin .page-title-action.button-primary:active {
+	background: var(--wp-admin-theme-color-darker-20);
+	border-color: transparent;
+}
+
+.pmpro_admin .page-title-action.button-primary:disabled {
+	background: #f0f0f0;
+	border-color: transparent;
+	color: #949494;
 }
 
 @media only screen and (max-width: 782px) {
