@@ -844,7 +844,7 @@ class PMPro_Wisdom_Tracker {
 			// Only act on a valid nonce from a user who can manage options.
 			if ( current_user_can( 'manage_options' ) && isset( $_GET['pmpro_wisdom_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_GET['pmpro_wisdom_nonce'] ) ), 'pmpro_wisdom_notice' ) ) {
 				// Set marketing optin
-				$this->set_can_collect_email( sanitize_text_field( wp_unslash( $_GET['marketing_optin'] ) ), $this->plugin_name );
+				$this->set_can_collect_email( 'yes' === sanitize_text_field( wp_unslash( $_GET['marketing_optin'] ) ), $this->plugin_name );
 				// Do tracking
 				$this->do_tracking( true );
 			}

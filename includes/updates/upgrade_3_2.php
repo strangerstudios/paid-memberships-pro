@@ -25,6 +25,11 @@ function pmpro_show_upgrade_3_2_notice_wpp() {
 		return;
 	}
 
+	// Only show to users who can manage options.
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
 	// Only show on PMPro admin pages.
 	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
 		return;
