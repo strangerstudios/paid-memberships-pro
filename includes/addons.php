@@ -187,8 +187,9 @@ if ( ! function_exists( 'pmpro_getPluginAPIObjectFromAddon' ) ) {
 		$api->tested                = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
 		$api->last_updated          = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
 		$api->homepage              = isset( $addon['URI'] ) ? $addon['URI'] : '';
-		$api->download_link         = isset( $addon['Download'] ) ? $addon['Download'] : '';
-		$api->package               = isset( $addon['Download'] ) ? $addon['Download'] : '';
+		$download                   = ! empty( $addon['Download'] ) ? set_url_scheme( $addon['Download'], 'https' ) : '';
+		$api->download_link         = $download;
+		$api->package               = $download;
 
 		// add sections
 		if ( !empty( $addon['Description'] ) ) {
