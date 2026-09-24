@@ -503,10 +503,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			return $wpdb->get_var( $sqlQuery );    
+			return $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values use esc_sql() inside quotes, and column names are whitelisted or stripped to [a-zA-Z0-9_].
 		} else {
 			$sqlQuery .= 'GROUP BY o.id ' . $order_query . " LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
-			$order_ids = $wpdb->get_col( $sqlQuery );
+			$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values use esc_sql() inside quotes, column names and ORDER BY are whitelisted or stripped to [a-zA-Z0-9_], and $start is derived from intval( paged ).
 			$order_data = array();
 			foreach ( $order_ids as $order_id ) {
 				$order            = new MemberOrder();

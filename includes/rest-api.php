@@ -1284,7 +1284,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				LIMIT %d
 			";
 
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $prepare ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $prepare ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql only interpolates $wpdb table names and a list of %s placeholders; values are bound by $wpdb->prepare() here.
 
 			// Let's format the date to ISO8601
 			$results[0]->modified = pmpro_format_date_iso8601( $results[0]->modified );
@@ -1353,7 +1353,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				LIMIT %d
 			";
 			
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql only interpolates $wpdb table names; the LIMIT value is bound by $wpdb->prepare() here.
 
 			$results[0]->timestamp = pmpro_format_date_iso8601( $results[0]->timestamp );
 

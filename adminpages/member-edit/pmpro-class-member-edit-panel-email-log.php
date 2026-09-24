@@ -139,7 +139,7 @@ class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 
 		<?php
 		// Render the email log modal
-		echo pmpro_render_email_log_modal();
+		echo pmpro_render_email_log_modal(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static modal markup, escaped when built.
 		?>
 
 		<?php

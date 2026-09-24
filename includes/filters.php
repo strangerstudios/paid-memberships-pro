@@ -96,7 +96,7 @@ function pmpro_checkout_start_date_keep_startdate( $startdate, $user_id, $level 
 	global $wpdb;
 	if ( ! empty( $level ) && pmpro_hasMembershipLevel( $level->id, $user_id ) ) {
 		$sqlQuery = "SELECT startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . esc_sql( $user_id ) . "' AND membership_id = '" . esc_sql( $level->id ) . "' AND status = 'active' ORDER BY id DESC LIMIT 1";
-		$old_startdate = $wpdb->get_var( $sqlQuery );
+		$old_startdate = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Values are escaped with esc_sql() inside quotes.
 
 		if ( ! empty( $old_startdate ) ) {
 			$startdate = "'" . $old_startdate . "'";

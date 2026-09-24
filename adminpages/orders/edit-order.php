@@ -185,7 +185,7 @@ if ( ! empty( $order->id ) ) { ?>
 
 				$sqlQuery = "SELECT * FROM $wpdb->pmpro_discount_codes ";
 				$sqlQuery .= "ORDER BY id DESC ";
-				$codes = $wpdb->get_results($sqlQuery, OBJECT);
+				$codes = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Static query; only the $wpdb table name is interpolated.
 				if ( ! empty( $codes ) ) { ?>
 				<tr>
 					<th scope="row" valign="top"><label for="discount_code_id"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label></th>

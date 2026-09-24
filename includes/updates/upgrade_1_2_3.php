@@ -17,25 +17,25 @@ function pmpro_upgrade_1_2_3()
 		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` ADD  `expiration_number` INT UNSIGNED NOT NULL ,
 ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	//expiration number and period for discount code levels
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_discount_codes_levels . "` ADD  `expiration_number` INT UNSIGNED NOT NULL ,
 ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	//end date for members
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD  `enddate` DATETIME NULL AFTER  `startdate`
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD INDEX (  `enddate` )
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	update_option("pmpro_db_version", "1.23");
 	return 1.23;

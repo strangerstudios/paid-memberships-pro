@@ -59,7 +59,7 @@
 			$sqlQuery .= "WHERE name LIKE '%" . esc_sql( $s ) . "%' ";
 			$sqlQuery .= "ORDER BY id ASC";
 
-			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			$levels = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- The only variable input, $s, is passed through esc_sql() inside quotes; the table name comes from $wpdb.
 
         if(empty($_REQUEST['s']) && !empty($pmpro_level_order)) {
             //reorder levels

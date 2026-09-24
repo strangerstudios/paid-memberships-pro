@@ -288,7 +288,7 @@
 
 			//save discount code use
 			if(!empty($discount_code_id))
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");
+				$wpdb->query( $wpdb->prepare( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES(%d, %d, %d, now())", $discount_code_id, $user_id, $morder->id ) );
 
 			do_action("pmpro_before_send_to_paypal_standard", $user_id, $morder);
 

@@ -187,7 +187,7 @@ function pmpro_get_group_id_for_level( $level_id ) {
 	global $wpdb;
 	
 	$sqlQuery = $wpdb->prepare( "SELECT `group` FROM $wpdb->pmpro_membership_levels_groups WHERE `level` = %d LIMIT 1", $level_id );
-	$group_id = $wpdb->get_var( $sqlQuery );
+	$group_id = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery is built with $wpdb->prepare() above.
 
 	return empty( $group_id ) ? false : $group_id;
 }
@@ -204,7 +204,7 @@ function pmpro_get_levels_for_group( $group_id ) {
 	global $wpdb;
 	
 	$sqlQuery = $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN ( SELECT level FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = %d )", $group_id );
-	$levels = $wpdb->get_results( $sqlQuery );
+	$levels = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery is built with $wpdb->prepare() above.
 
 	return empty( $levels ) ? array() : $levels;
 }
@@ -221,7 +221,7 @@ function pmpro_get_level_ids_for_group( $group_id ) {
 	global $wpdb;
 	
 	$sqlQuery = $wpdb->prepare( "SELECT level FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = %d", $group_id );
-	$levels = $wpdb->get_col( $sqlQuery );
+	$levels = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery is built with $wpdb->prepare() above.
 
 	return empty( $levels ) ? array() : $levels;
 }

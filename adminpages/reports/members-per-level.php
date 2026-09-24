@@ -96,7 +96,7 @@ function pmpro_report_get_active_members_per_level() {
 	GROUP BY membership_id
 	ORDER BY total_active_members DESC";
 
-	$results = $wpdb->get_results( $sqlQuery );
+	$results = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only $wpdb table names are interpolated.
 
 	// Cache the results for 24 hours.
 	set_transient( 'pmpro_report_members_per_level', $results, DAY_IN_SECONDS );

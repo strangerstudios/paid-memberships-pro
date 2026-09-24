@@ -159,8 +159,8 @@ function pmpro_report_login_page()
 		$sqlQuery_group_by = "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . (int) $start . "," . (int) $limit;
 
 		// Complete the queries.
-		$theusers = $wpdb->get_results( $sqlQuery_select_data . $sqlQuery_where . $sqlQuery_group_by );
-		$totalrows = $wpdb->get_var( $sqlQuery_select_count . $sqlQuery_where );
+		$theusers = $wpdb->get_results( $sqlQuery_select_data . $sqlQuery_where . $sqlQuery_group_by ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term and level go through esc_sql() inside quotes (level is also intval'd), and LIMIT values are cast to int.
+		$totalrows = $wpdb->get_var( $sqlQuery_select_count . $sqlQuery_where ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term and level go through esc_sql() inside quotes (level is also intval'd).
 	?>
 	<p>
 		<?php esc_html_e( 'This report offers a detailed view of data points by user and member. For various reasons, the numbers below will not perfectly match up to other tracking you might be doing (such as the data provided by an analytics plugin).', 'paid-memberships-pro' ); ?>
