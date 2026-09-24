@@ -733,10 +733,10 @@ class PMPro_Wisdom_Tracker {
 	 * @since 1.0.0
 	 */
 	public function optin_notice() {
-		// Check for plugin args
-		if ( isset( $_GET['plugin'] ) && isset( $_GET['plugin_action'] ) ) {
-			$plugin = sanitize_text_field( $_GET['plugin'] );
-			$action = sanitize_text_field( $_GET['plugin_action'] );
+		// Check for plugin args. Only act on a valid nonce from a user who can manage options.
+		if ( current_user_can( 'manage_options' ) && isset( $_GET['pmpro_wisdom_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_GET['pmpro_wisdom_nonce'] ) ), 'pmpro_wisdom_notice' ) && isset( $_GET['plugin'] ) && isset( $_GET['plugin_action'] ) ) {
+			$plugin = sanitize_text_field( wp_unslash( $_GET['plugin'] ) );
+			$action = sanitize_text_field( wp_unslash( $_GET['plugin_action'] ) );
 			if ( $action == 'yes' ) {
 				$this->set_is_tracking_allowed( true, $plugin );
 				// Run this straightaway
@@ -803,11 +803,11 @@ class PMPro_Wisdom_Tracker {
 				// Option 2 enables a second notice that fires after the user opts in to tracking
 				$yes_args['marketing'] = 'yes';
 			}
-			$url_yes = add_query_arg( $yes_args );
-			$url_no  = add_query_arg( [
+			$url_yes = wp_nonce_url( add_query_arg( $yes_args ), 'pmpro_wisdom_notice', 'pmpro_wisdom_nonce' );
+			$url_no  = wp_nonce_url( add_query_arg( [
 				'plugin'        => $this->plugin_name,
 				'plugin_action' => 'no',
-			] );
+			] ), 'pmpro_wisdom_notice', 'pmpro_wisdom_nonce' );
 
 			// Decide on notice text
 			if ( $this->marketing != 1 ) {
@@ -840,25 +840,28 @@ class PMPro_Wisdom_Tracker {
 	 */
 	public function marketing_notice() {
 		// Check if user has opted in to marketing
-		if ( isset( $_GET['marketing_optin'] ) ) {
-			// Set marketing optin
-			$this->set_can_collect_email( sanitize_text_field( $_GET['marketing_optin'] ), $this->plugin_name );
-			// Do tracking
-			$this->do_tracking( true );
-		} elseif ( isset( $_GET['marketing'] ) && $_GET['marketing'] == 'yes' ) {
+		if ( isset( $_GET['marketing_optin'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only routes the request; nonce and capability are verified below before anything changes.
+			// Only act on a valid nonce from a user who can manage options.
+			if ( current_user_can( 'manage_options' ) && isset( $_GET['pmpro_wisdom_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_GET['pmpro_wisdom_nonce'] ) ), 'pmpro_wisdom_notice' ) ) {
+				// Set marketing optin
+				$this->set_can_collect_email( sanitize_text_field( wp_unslash( $_GET['marketing_optin'] ) ), $this->plugin_name );
+				// Do tracking
+				$this->do_tracking( true );
+			}
+		} elseif ( isset( $_GET['marketing'] ) && $_GET['marketing'] == 'yes' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only decides whether to display the marketing opt-in notice.
 			// Display the notice requesting permission to collect email address
 			// Retrieve current plugin information
 			$plugin      = $this->plugin_data();
 			$plugin_name = $plugin['Name'];
 
-			$url_yes = add_query_arg( [
+			$url_yes = wp_nonce_url( add_query_arg( [
 				'plugin'          => $this->plugin_name,
 				'marketing_optin' => 'yes',
-			] );
-			$url_no  = add_query_arg( [
+			] ), 'pmpro_wisdom_notice', 'pmpro_wisdom_nonce' );
+			$url_no  = wp_nonce_url( add_query_arg( [
 				'plugin'          => $this->plugin_name,
 				'marketing_optin' => 'no',
-			] );
+			] ), 'pmpro_wisdom_notice', 'pmpro_wisdom_nonce' );
 
 			$marketing_text = sprintf( esc_html__( 'Thank you for opting in to tracking. Would you like to receive occasional news about this %s, including details of new features and special offers?', 'paid-memberships-pro' ), $this->what_am_i );
 			$marketing_text = apply_filters( 'wisdom_marketing_text_' . esc_attr( $this->plugin_name ), $marketing_text ); ?>

@@ -31,7 +31,7 @@ function pmpro_show_upgrade_3_2_notice_wpp() {
 	}
 
 	// Check if the user has dismissed the notice.
-	if ( ! empty( $_REQUEST['pmpro-upgrade_3_2_notice_wpp'] ) ) {
+	if ( ! empty( $_REQUEST['pmpro-upgrade_3_2_notice_wpp'] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'pmpro_upgrade_3_2_notice_wpp_dismiss' ) ) {
 		delete_option( 'pmpro_upgrade_3_2_notice_wpp' );
 		return;
 	}
@@ -51,7 +51,7 @@ function pmpro_show_upgrade_3_2_notice_wpp() {
 			?>
 		</p>
 		<p>
-			<a href="<?php echo esc_url( add_query_arg( 'pmpro-upgrade_3_2_notice_wpp', '1' ) ); ?>"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></a>
+			<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'pmpro-upgrade_3_2_notice_wpp', '1' ), 'pmpro_upgrade_3_2_notice_wpp_dismiss' ) ); ?>"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></a>
 		</p>
 	</div>
 	<?php
