@@ -442,6 +442,9 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				} else {
 					// Assume order table column.
 					$search_key = preg_replace( '/[^a-zA-Z0-9_]/', '', $search_key );
+					if ( '' === $search_key ) {
+						$search_key = 'id';
+					}
 					$sqlQuery .= " OR o.$search_key LIKE '%" . esc_sql( $s ) . "%' ";
 				}
 				$sqlQuery .= ') ';
