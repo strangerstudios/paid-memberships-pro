@@ -1118,7 +1118,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		}
 		else
 		{
-			$previous_error_reporting = error_reporting( E_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting -- Temporarily silences socket warnings; the previous level is restored below.
+			$previous_error_reporting = error_reporting( E_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting, PluginCheck.CodeAnalysis.PHPErrorReporting.DirectErrorReportingCall -- Temporarily silences socket warnings; the previous level is restored below.
 			fputs($fp, "POST $path  HTTP/1.1\r\n");
 			fputs($fp, $header.$content);
 			$response = "";
@@ -1127,7 +1127,7 @@ class PMProGateway_authorizenet extends PMProGateway
 				$response = $response . fgets($fp, 128);
 			}
 			fclose($fp);
-			error_reporting( $previous_error_reporting ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting -- Restores the site's error reporting level.
+			error_reporting( $previous_error_reporting ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting, PluginCheck.CodeAnalysis.PHPErrorReporting.DirectErrorReportingCall -- Restores the site's error reporting level.
 		}
 		return $response;
 	}
