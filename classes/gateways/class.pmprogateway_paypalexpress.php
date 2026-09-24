@@ -1467,7 +1467,7 @@
 
             //check for valid response
             if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
-	            return new WP_Error( 1, "Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint." );
+	            return new WP_Error( 1, "Invalid HTTP Response for POST request to $API_Endpoint." );
             }
 
 			return $httpParsedResponseAr;

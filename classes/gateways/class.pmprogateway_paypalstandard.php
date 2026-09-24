@@ -669,7 +669,7 @@
 
 				//check for valid response
 				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
-					exit( esc_html( "Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint." ) );
+					exit( esc_html( "Invalid HTTP Response for POST request to $API_Endpoint." ) );
 				}
 			}
 
