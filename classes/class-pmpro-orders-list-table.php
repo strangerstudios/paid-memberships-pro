@@ -441,6 +441,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 					$sqlQuery .= " OR $key_column LIKE '%" . esc_sql( $s ) . "%' ";
 				} else {
 					// Assume order table column.
+					$search_key = preg_replace( '/[^a-zA-Z0-9_]/', '', $search_key );
 					$sqlQuery .= " OR o.$search_key LIKE '%" . esc_sql( $s ) . "%' ";
 				}
 				$sqlQuery .= ') ';
