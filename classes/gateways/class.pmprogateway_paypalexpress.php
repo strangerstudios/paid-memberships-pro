@@ -1448,7 +1448,6 @@
 			//post to PayPal
 			$response = wp_remote_post( $API_Endpoint, array(
 					'timeout' => 60,
-					'sslverify' => FALSE,
 					'httpversion' => '1.1',
 					'body' => $nvpreq,
 					'headers'     => array(
@@ -1468,7 +1467,7 @@
 
             //check for valid response
             if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
-	            return new WP_Error( 1, "Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint." );
+	            return new WP_Error( 1, "Invalid HTTP Response for POST request to $API_Endpoint." );
             }
 
 			return $httpParsedResponseAr;
