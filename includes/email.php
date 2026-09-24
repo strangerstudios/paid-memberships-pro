@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Sanitize all PMPro email bodies. @since 2.6.1
 add_filter( 'pmpro_email_body', 'pmpro_kses', 11 );
 
@@ -305,8 +309,8 @@ function pmpro_email_templates_send_test() {
 add_action('wp_ajax_pmpro_email_templates_send_test', 'pmpro_email_templates_send_test');
 
 function pmpro_email_templates_test_recipient($email) {
-	if(!empty($_REQUEST['email']))
-		$email = sanitize_email( $_REQUEST['email'] );
+	if(!empty($_REQUEST['email'])) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
+		$email = sanitize_email( $_REQUEST['email'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
 	return $email;
 }
 
@@ -318,8 +322,8 @@ function pmpro_email_templates_test_body($body, $email = null) {
 
 function pmpro_email_templates_test_template($email)
 {
-	if( ! empty( $_REQUEST['template'] ) ) {
-		$email->template = str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) );
+	if( ! empty( $_REQUEST['template'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
+		$email->template = str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
 	}
 
 	return $email;

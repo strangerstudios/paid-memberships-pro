@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Set up restriction directories.
@@ -52,6 +55,7 @@ function pmpro_set_up_restricted_files_directory() {
  * @since 3.5
  */
 function pmpro_restricted_files_check_request() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only file download request; access is checked via the pmpro_can_access_restricted_file filter before it is served.
 	if ( empty( $_REQUEST['pmpro_restricted_file'] ) || empty( $_REQUEST['pmpro_restricted_file_dir'] ) ) {
 		return;
 	}
@@ -59,6 +63,7 @@ function pmpro_restricted_files_check_request() {
 	// Get the requested file.
 	$file = basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file'] ) ) );
 	$file_dir = basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file_dir'] ) ) );
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	/* 
  		Remove ../-like strings from the URI. 

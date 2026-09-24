@@ -3,6 +3,12 @@
 	Upgrade to 1.8.9.3
 	Fixing incorrect start and end dates.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade script that reads and fixes rows in PMPro custom tables, which have no WordPress API or object cache layer.
+
 function pmpro_upgrade_1_8_9_3() {
 	global $wpdb;	
 	

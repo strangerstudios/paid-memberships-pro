@@ -2,6 +2,13 @@
 /*
 	Clean things up when deletes happen, etc. (This stuff needs a better home.)
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Cleans up PMPro custom tables, which have no WordPress API or object cache layer.
+
 // deleting a user? remove their account info.
 function pmpro_delete_user( $user_id ) {
 	global $pmpro_user_taxonomies;
@@ -10,6 +17,7 @@ function pmpro_delete_user( $user_id ) {
 		return false;
 	}
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Runs on delete_user/wpmu_delete_user; WordPress core verifies the nonce (check_admin_referer 'delete-users' in wp-admin/users.php, 'ms-users-delete' in wp-admin/network/users.php) before deleting. These are checkboxes from that same form.
 	// Check if an admin chose to cancel the user's active subscriptions.
 	$cancel_active_subscriptions =  isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && $_REQUEST['pmpro_delete_active_subscriptions'] == '1';
 
@@ -32,6 +40,7 @@ function pmpro_delete_user( $user_id ) {
 		$_REQUEST['pmpro_delete_member_history'] == '1' ) {
 		pmpro_delete_membership_history( $user_id );
 	}	
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	
 }
 add_action( 'delete_user', 'pmpro_delete_user' );

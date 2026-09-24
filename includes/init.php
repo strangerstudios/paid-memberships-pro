@@ -2,6 +2,10 @@
 /*
 	Code that runs on the init, set_current_user, or wp hooks to set up PMPro
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //init code
 function pmpro_init() {
 	require_once(PMPRO_DIR . '/includes/countries.php');

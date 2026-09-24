@@ -2,6 +2,10 @@
 /**
  * Render the Level Name on the frontend.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Return if level name is empty.
 if ( empty( $content ) ) {
 	return;

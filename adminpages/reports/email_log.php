@@ -9,6 +9,12 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Email Log report reads and deletes rows in the PMPro email log custom table, which has no WordPress API or object cache layer.
+
 function pmpro_report_email_log_register( $pmpro_reports ) {
 	// If email logging is not enabled, do not register the report.
 	if ( ! pmpro_is_email_logging_enabled() ) {

@@ -9,6 +9,12 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Report aggregates PMPro custom tables, which have no WordPress API or object cache layer; results are cached in transients where appropriate.
+
 function pmpro_report_sales_register( $pmpro_reports ) {
 	$gateway_environment = get_option( "pmpro_gateway_environment" );
 	if ( $gateway_environment == "sandbox" ) {
@@ -25,7 +31,7 @@ add_filter( 'pmpro_registered_reports', 'pmpro_report_sales_register' );
 //queue Google Visualization JS on report page
 function pmpro_report_sales_init()
 {
-	if ( is_admin() && isset( $_REQUEST['report'] ) && $_REQUEST[ 'report' ] == 'sales' && isset( $_REQUEST['page'] ) && $_REQUEST[ 'page' ] == 'pmpro-reports' ) {
+	if ( is_admin() && isset( $_REQUEST['report'] ) && $_REQUEST[ 'report' ] == 'sales' && isset( $_REQUEST['page'] ) && $_REQUEST[ 'page' ] == 'pmpro-reports' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides whether to enqueue the chart script on the report page.
 		wp_enqueue_script( 'corechart', plugins_url( 'js/corechart.js',  plugin_dir_path( __DIR__ ) ) );
 	}
 
@@ -193,6 +199,7 @@ function pmpro_report_sales_data( $args ){
 
 function pmpro_report_sales_page()
 {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: report filter values (type, period, dates, levels, discount codes) only change what is displayed.
 	global $wpdb, $pmpro_currency_symbol, $pmpro_currency, $pmpro_currencies;
 
 	//get values from form
@@ -960,6 +967,7 @@ function pmpro_report_sales_page()
 		</table>
 	</div>
 	<?php
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 
 /*

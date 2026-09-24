@@ -2,6 +2,11 @@
 /**
  * Render the Membership Account block on the frontend.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 $str_atts = '';
 	if ( ! empty( $attributes['membership'] ) ) {
 		$str_atts .= 'membership, ';

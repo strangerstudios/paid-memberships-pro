@@ -10,6 +10,10 @@
  *
  * @author Paid Memberships Pro
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 <?php
@@ -338,7 +342,7 @@
 										?>
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
 											<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
-											<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
+											<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); } // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; repopulates the submitted field. ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
 										</div>
 									<?php } ?>
 								</div> <!-- end pmpro_form_fields -->

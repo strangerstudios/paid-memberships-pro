@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	
@@ -222,6 +226,7 @@
 		 * @since 3.5
 		 */
 		public static function save_settings_fields() {
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Nonce (pmpro_paymentsettings_nonce) verified in adminpages/paymentsettings.php before save_settings_fields() is called.
 			if ( isset( $_REQUEST['check_gateway_label'] ) ) {
 				update_option( 'pmpro_check_gateway_label', sanitize_text_field( wp_unslash( $_REQUEST['check_gateway_label'] ) ) );
 			}
@@ -230,6 +235,7 @@
 				global $allowedposttags;
 				update_option( 'pmpro_instructions', wp_kses( wp_unslash( $_REQUEST['instructions'] ), $allowedposttags ) );
 			}
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 		
 		/**

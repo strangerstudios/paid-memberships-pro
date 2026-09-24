@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 
 	/**
@@ -144,7 +149,7 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 		$membership_level_id = $this->membership_level_id;
 		// If we don't have a level ID, query the user's most recently expired level from the database.
 		if ( empty( $membership_level_id ) ) {
-			$membership_level_id = $wpdb->get_var(
+			$membership_level_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries a PMPro custom table, which has no WordPress API or object cache layer.
 				$wpdb->prepare(
 					"SELECT membership_id FROM $wpdb->pmpro_memberships_users
 					WHERE user_id = %d

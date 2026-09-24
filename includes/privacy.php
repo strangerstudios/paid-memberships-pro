@@ -5,6 +5,12 @@
  * @since  1.9.5
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Personal data export/erase reads and writes PMPro custom tables, which have no WordPress API or object cache layer.
+
 /** 
  * Add suggested Privacy Policy language for PMPro
  *

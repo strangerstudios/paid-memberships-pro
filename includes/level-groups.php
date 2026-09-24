@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- CRUD for the PMPro level group custom tables, which have no WordPress API or object cache layer.
+
 /**
  * Return an array of all level groups, with the key being the level group id.
  *

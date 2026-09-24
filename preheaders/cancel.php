@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	global $besecure;
 	$besecure = false;
 
@@ -15,7 +19,7 @@
 		$requested_ids = 'all';
 	} elseif ( ! empty( $_REQUEST['levelstocancel'] ) ) {		
 		// A single ID could be passed, or a few like 1+2+3.
-		$requested_ids = str_replace(array(' ', '%20'), '+', sanitize_text_field( $_REQUEST['levelstocancel'] ) );
+		$requested_ids = str_replace(array(' ', '%20'), '+', sanitize_text_field( $_REQUEST['levelstocancel'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only selects which levels to show on the cancel page. The cancellation itself is gated by the pmpro_cancel-nonce check below.
 		$requested_ids = preg_replace("/[^0-9\+]/", "", $requested_ids );
 	}	
 

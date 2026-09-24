@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_upgrade_1_3_18()
 {
 	//setting new email settings defaults

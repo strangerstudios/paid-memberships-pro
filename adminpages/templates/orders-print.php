@@ -7,6 +7,10 @@
  * @var object $level
  * @var MemberOrder $order
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <!doctype html>
 <html lang="en">

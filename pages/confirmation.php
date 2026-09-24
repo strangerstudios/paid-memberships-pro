@@ -10,6 +10,11 @@
  *
  * @author Paid Memberships Pro
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
 
 // If this file is loaded, $pmpro_invoice should have been set by preheaders/confirmation.php. If not, show an error.
@@ -48,7 +53,7 @@ if ( empty( $pmpro_invoice ) ) {
 
 				// Add the level confirmation message if set and the order is successful.
 				if ( 'success' == $pmpro_invoice->status ) {
-					$level_message = $wpdb->get_var("SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . intval( $pmpro_invoice->membership_id ) . "' LIMIT 1");
+					$level_message = $wpdb->get_var("SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . intval( $pmpro_invoice->membership_id ) . "' LIMIT 1"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads from the PMPro membership levels custom table, which has no WordPress API or object cache layer.
 					if ( ! empty( $level_message ) ) {
 						$confirmation_message .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_confirmation-level-message' ) ) . '">';
 						$confirmation_message .= wpautop( stripslashes( $level_message ) );

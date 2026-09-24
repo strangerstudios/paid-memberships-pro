@@ -1,4 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- List table queries against PMPro custom tables, which have no WordPress API or object cache layer.
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request vars are only used for list table search, sorting, pagination and building row action links.
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';

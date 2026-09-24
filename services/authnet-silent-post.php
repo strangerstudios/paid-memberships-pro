@@ -4,6 +4,8 @@
 		exit;
 	}
 	
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Authorize.net Silent Post requests cannot carry a WordPress nonce. They are authenticated only by the optional pmpro_authnet_silent_post_token shared secret checked below (opt-in by design); without it, requests are not authenticated beyond matching an existing subscription ID.
+
 	global $lostr, $wpdb;
 	$logstr = '';
 
@@ -104,6 +106,7 @@
 	if($arb == true)
 	{
 		// okay, add an order. first lookup the user_id from the subscription id passed
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro orders table, which has no WordPress API or object cache layer.
 		$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($fields['x_subscription_id']) . "' AND gateway = 'authorizenet' ORDER BY timestamp DESC LIMIT 1");
 		$old_order = new MemberOrder($old_order_id);
 		$user_id = $old_order->user_id;

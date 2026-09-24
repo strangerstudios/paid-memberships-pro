@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // For compatibility with old library (Namespace Alias)
 use Stripe\Customer as Stripe_Customer;
 use Stripe\Invoice as Stripe_Invoice;
@@ -139,7 +143,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$current_gateway = pmpro_getGateway();
 
 		// $_REQUEST['review'] here means the PayPal Express review pag
-		if ( ( $default_gateway == "stripe" || $current_gateway == "stripe" ) && empty( $_REQUEST['review'] ) ) {
+		if ( ( $default_gateway == "stripe" || $current_gateway == "stripe" ) && empty( $_REQUEST['review'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which checkout filters to register.
 			add_filter( 'pmpro_include_billing_address_fields', array(
 				'PMProGateway_stripe',
 				'pmpro_include_billing_address_fields'
@@ -993,8 +997,8 @@ class PMProGateway_stripe extends PMProGateway {
 		);
 
 		foreach ( $settings_to_save as $setting ) {
-			if ( isset( $_REQUEST[ $setting ] ) ) {
-				update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
+			if ( isset( $_REQUEST[ $setting ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
+				update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
 			}
 		}
 	}
@@ -1251,18 +1255,18 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Add the PaymentIntent ID to the order.
-		if ( ! empty ( $_REQUEST['payment_intent_id'] ) ) {
-			$morder->payment_intent_id = sanitize_text_field( $_REQUEST['payment_intent_id'] );
+		if ( ! empty ( $_REQUEST['payment_intent_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
+			$morder->payment_intent_id = sanitize_text_field( $_REQUEST['payment_intent_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
 		}
 
 		// Add the SetupIntent ID to the order.
-		if ( ! empty ( $_REQUEST['setup_intent_id'] ) ) {
-			$morder->setup_intent_id = sanitize_text_field( $_REQUEST['setup_intent_id'] );
+		if ( ! empty ( $_REQUEST['setup_intent_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
+			$morder->setup_intent_id = sanitize_text_field( $_REQUEST['setup_intent_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
 		}
 
 		// Add the PaymentMethod ID to the order.
-		if ( ! empty ( $_REQUEST['payment_method_id'] ) ) {
-			$morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
+		if ( ! empty ( $_REQUEST['payment_method_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
+			$morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
 		}
 
 		return $morder;
@@ -1461,7 +1465,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	public static function pmpro_set_up_apple_pay( $payment_option_values, $gateway  ) {
 		// Check that we just saved Stripe settings.
-		if ( $gateway != 'stripe' || empty( $_REQUEST['savesettings'] ) ) {
+		if ( $gateway != 'stripe' || empty( $_REQUEST['savesettings'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- adminpages/paymentsettings.php verifies pmpro_paymentsettings_nonce and unsets savesettings when it fails, before this hook runs.
 			return;
 		}
 
@@ -1658,7 +1662,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Only show on PMPro admin pages except for the payment settings page.
-		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false || 'pmpro-paymentsettings' === $_REQUEST['page'] ) {
+		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false || 'pmpro-paymentsettings' === $_REQUEST['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
 			return;
 		}
 
@@ -1718,7 +1722,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Check if we just switched to Stripe Checkout.
-		if ( isset( $pmpro_stripe_old_payment_flow ) && 'onsite' === $pmpro_stripe_old_payment_flow && isset( $_REQUEST['stripe_payment_flow'] ) && 'checkout' === $_REQUEST['stripe_payment_flow'] ) {
+		if ( isset( $pmpro_stripe_old_payment_flow ) && 'onsite' === $pmpro_stripe_old_payment_flow && isset( $_REQUEST['stripe_payment_flow'] ) && 'checkout' === $_REQUEST['stripe_payment_flow'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides whether to show the webhook setup popup.
 			$message = true;
 		}
 
@@ -2628,7 +2632,7 @@ class PMProGateway_stripe extends PMProGateway {
 			/*
                 Clear updates for this user. (But not if checking out, we would have already done that.)
             */
-			if ( empty( $_REQUEST['submit-checkout'] ) ) {
+			if ( empty( $_REQUEST['submit-checkout'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag check: skips clearing pmpro_stripe_updates during checkout. The cancellation itself is authorized by its caller.
 				update_user_meta( $order->user_id, "pmpro_stripe_updates", array() );
 			}
 

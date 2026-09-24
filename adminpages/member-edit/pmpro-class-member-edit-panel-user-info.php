@@ -19,6 +19,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		}
 
 		// Show user updated or user created message if necessary.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only chooses which status message to display after the redirect.
 		if ( isset( $_REQUEST['user_id'] ) && ! empty( $_REQUEST['user_id'] && ! empty( $_REQUEST['user_info_action'] ) ) ) {
 			// Check if there was an avatar error.
 			if ( ! empty( $_REQUEST['avatar_error'] ) ) {
@@ -36,6 +37,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				pmpro_setMessage( __( 'New user created.', 'paid-memberships-pro' ), 'pmpro_success' );
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		// If user cannot edit users, empty the submit text and title link.
 		if ( ! current_user_can( 'edit_users' ) ) {
@@ -50,11 +52,13 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	protected function display_panel_contents() {
 		// Populate values from form.
 		// TO DO: Is it strange that we populate these from the form then override with the $user object immediately after?
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Read-only; only prefills the form fields with previously submitted values.
 		$user_login = ! empty( $_POST['user_login'] ) ? sanitize_user( $_POST['user_login'] ) : '';
 		$user_email = ! empty( $_POST['email'] ) ? stripslashes( sanitize_email( $_POST['email'] ) ) : '';
 		$first_name = ! empty( $_POST['first_name'] ) ? stripslashes( sanitize_text_field( $_POST['first_name'] ) ): '';
 		$last_name = ! empty( $_POST['last_name'] ) ? stripslashes( sanitize_text_field( $_POST['last_name'] ) ) : '';	
 		$user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_textarea_field( $_POST['user_notes'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		// If we are edting a user, get the user information.
 		$user = self::get_user();
@@ -215,6 +219,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	 * Save panel data and redirect if we are creating a new user.
 	 */
 	public function save() {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called from pmpro_member_edit_save() in adminpages/member-edit.php after it verifies the pmpro_member_edit_saved_panel_nonce and the edit member capability.
 		// If the current user can't edit users, bail.
 		if ( ! current_user_can( 'edit_users' ) ) {
 			return;
@@ -349,5 +354,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_info_action=created&pmpro_member_edit_panel=memberships&user_id=' . $user_id . $avatar_error ) );
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 }

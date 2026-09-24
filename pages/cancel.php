@@ -10,6 +10,12 @@
  *
  * @author Paid Memberships Pro
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values only choose which cancel screen to display. The cancellation itself is processed in preheaders/cancel.php after verifying the pmpro_cancel-nonce.
+
 global $pmpro_msg, $pmpro_msgt, $current_user, $wpdb;
 
 // Get the user's current levels.

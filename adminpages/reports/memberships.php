@@ -9,6 +9,14 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Report queries PMPro custom tables, which have no WordPress API or object cache layer.
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values only filter and display report data.
+
 function pmpro_report_memberships_register( $pmpro_reports ) {
 	$pmpro_reports['memberships'] = __( 'Membership Stats', 'paid-memberships-pro' );
 

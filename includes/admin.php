@@ -2,6 +2,10 @@
 /*
 	Admin code.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Wizard pre-header
 include( PMPRO_DIR . '/adminpages/wizard/save-steps.php' );
 
@@ -210,6 +214,7 @@ function pmpro_spamprotection_notice() {
 	global $current_user;
 
 	// If spam protection is enabled, we are not on a PMPro settings page, or we are on the PMPro advanced settings page, don't show the notice.
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 	if (
 		get_option( 'pmpro_spamprotection' ) ||
 		! isset( $_REQUEST['page'] ) ||
@@ -218,6 +223,7 @@ function pmpro_spamprotection_notice() {
 	) {
 		return;
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	// Get notifications that have been archived.
 	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
@@ -247,7 +253,7 @@ add_action( 'admin_notices', 'pmpro_spamprotection_notice' );
  * Remove all WordPress admin notifications from our Wizard area as it's distracting.
  */
 function pmpro_wizard_remove_admin_notices() {
-	if ( is_admin() && ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-wizard' ) {
+	if ( is_admin() && ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-wizard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 		remove_all_actions( 'admin_notices' );
 		remove_all_actions( 'all_admin_notices' );
 	}
@@ -264,12 +270,12 @@ function pmpro_admin_header() {
 	$show_header = false;
 
 	// Show header on our settings pages.
-	if ( ! empty( $_GET['page'] ) && strpos( $_GET['page'], 'pmpro-' ) === 0 ) {
+	if ( ! empty( $_GET['page'] ) && strpos( $_GET['page'], 'pmpro-' ) === 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 		$show_header = true;
 	}
 
 	// Exclude the wizard.
-	if ( ! empty( $_GET['page'] ) && 'pmpro-wizard' === $_GET['page'] ) {
+	if ( ! empty( $_GET['page'] ) && 'pmpro-wizard' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 		$show_header = false;
 	}
 
@@ -336,12 +342,14 @@ add_action( 'admin_notices', 'pmpro_admin_header', 1 );
  */
 function pmpro_admin_footer_text( $text ) {
 	// Show footer on our pages in admin, but not on the block editor.
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 	if (
 		! isset( $_REQUEST['page'] ) ||
 		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) )
 	) {
 		return $text;
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	return sprintf(
 		wp_kses(
@@ -373,10 +381,12 @@ function pmpro_hide_non_pmpro_notices() {
 	global $wp_filter;
 
 	// Make sure we're on a PMPro page.
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 	if ( ! isset( $_REQUEST['page'] )
 			|| substr( sanitize_text_field( $_REQUEST['page'] ), 0, 6 ) !== 'pmpro-' ) {
 		return;
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	// Handle notices added through these hooks.
 	$hooks = ['admin_notices', 'all_admin_notices'];

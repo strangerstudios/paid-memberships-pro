@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_load_textdomain() {
 	$locale = apply_filters( 'plugin_locale', get_user_locale(), 'paid-memberships-pro' );
 	$mofile = esc_attr( 'paid-memberships-pro-' . $locale . '.mo' );
@@ -64,7 +68,7 @@ function pmpro_check_for_translations() {
 		return;
 	}
 
-	$is_pmpro_admin = ! empty( $_REQUEST['page'] ) && strpos( $_REQUEST['page'], 'pmpro' ) !== false;
+	$is_pmpro_admin = ! empty( $_REQUEST['page'] ) && strpos( $_REQUEST['page'], 'pmpro' ) !== false; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only checks which admin screen is loading.
 	$is_update_or_plugins_page = strpos( $_SERVER['REQUEST_URI'], 'update-core.php' ) !== false || strpos( $_SERVER['REQUEST_URI'], 'plugins.php' ) !== false;
 
 	// Only run this check when we're in the PMPro Page or plugins/update page to save some resources.

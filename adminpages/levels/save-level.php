@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Nonce verified via check_admin_referer() on pmpro_membershiplevels_nonce in adminpages/membershiplevels.php before this file is included.
+
 global $wpdb, $allowedposttags;
 
 if(isset($_REQUEST['saveid']))

@@ -11,6 +11,10 @@
  * @deprecated 3.6
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Helper function to get the PMPro_AddOns singleton instance.
  * 

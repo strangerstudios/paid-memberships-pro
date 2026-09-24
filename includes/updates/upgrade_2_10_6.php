@@ -9,6 +9,12 @@
 	2. Loop through and scrub the AccountNumbers.
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade routine querying PMPro custom tables, which have no WordPress API or object cache layer.
+
 /**
  * Show admin notice if site was affected.
  *
@@ -21,7 +27,7 @@ function pmpro_upgrade_2_10_6_notice() {
 	}
 
 	// Only show on PMPro admin pages.
-	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
 		return;
 	}
 

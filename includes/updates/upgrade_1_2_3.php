@@ -1,4 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time schema upgrade on PMPro custom tables; there is no WordPress API or object cache layer for this.
+
 function pmpro_upgrade_1_2_3()
 {
 	global $wpdb;

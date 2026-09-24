@@ -1,5 +1,8 @@
 <?php
 /* This file contains functions used to process required database updates sometimes logged after PMPro is upgraded. */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /*
 	Is there an update?
@@ -45,7 +48,7 @@ function pmpro_removeUpdate($update) {
 	Enqueue updates.js if needed
 */
 function pmpro_enqueue_update_js() {
-	if(!empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-updates') {
+	if(!empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-updates') { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed to enqueue a script.
 		wp_enqueue_script( 'pmpro-updates', plugin_dir_url( dirname(__FILE__) ) . 'js/updates.js', array('jquery'), PMPRO_VERSION );
 		wp_localize_script( 'pmpro-updates', 'pmpro_updates_l10n', array( 'nonce' => wp_create_nonce( 'pmpro_updates' ) ) );
 	}
@@ -95,7 +98,7 @@ add_action('wp_ajax_pmpro_updates', 'pmpro_wp_ajax_pmpro_updates');
 	Redirect away from updates page if there are no updates
 */
 function pmpro_admin_init_updates_redirect() {
-	if(is_admin() && !empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-updates' && !pmpro_isUpdateRequired()) {
+	if(is_admin() && !empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-updates' && !pmpro_isUpdateRequired()) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed. The redirect changes no data.
 		wp_redirect(admin_url('admin.php?page=pmpro-membershiplevels&updatescomplete=1'));
 		exit;
 	}
@@ -105,7 +108,7 @@ add_action('init', 'pmpro_admin_init_updates_redirect');
 /*
 	Show admin notice if an update is required and not already on the updates page.
 */
-if(pmpro_isUpdateRequired() && (empty($_REQUEST['page']) || $_REQUEST['page'] != 'pmpro-updates'))
+if(pmpro_isUpdateRequired() && (empty($_REQUEST['page']) || $_REQUEST['page'] != 'pmpro-updates')) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed to decide whether to show a notice.
 	add_action('admin_notices', 'pmpro_updates_notice');
 
 /*
@@ -126,7 +129,7 @@ function pmpro_updates_notice() {
 /*
 	Show admin notice when updates are complete.
 */
-if(is_admin() && !empty($_REQUEST['updatescomplete']))
+if(is_admin() && !empty($_REQUEST['updatescomplete'])) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only decides whether to show the updates complete notice.
 	add_action('admin_notices', 'pmpro_updates_notice_complete');
 
 /*

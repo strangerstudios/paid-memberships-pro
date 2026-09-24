@@ -15,6 +15,10 @@
  * GPLv2 Full license details in license.txt
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // version constant
 define( 'PMPRO_VERSION', '3.8.6' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );

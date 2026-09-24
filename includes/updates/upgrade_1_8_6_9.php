@@ -6,6 +6,12 @@
 	2. Search for an order for the same user_id and membership_id with a subscription_transaction_id LIKE 'sub_%'
 	3. Replace subscription_transaction_id field.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade routine that migrates rows in PMPro custom tables; caching does not apply.
+
 function pmpro_upgrade_1_8_6_9() {
 	global $wpdb;
 	$orders = $wpdb->get_results("SELECT id, user_id, membership_id, subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE gateway = 'stripe' AND subscription_transaction_id LIKE 'cus_%'");

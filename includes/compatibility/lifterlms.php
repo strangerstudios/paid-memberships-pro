@@ -13,6 +13,12 @@
  * 5. Override the My Memberships and My Orders tabs of the student dashboard.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries join PMPro custom tables with core tables, which have no WordPress API or object cache layer.
+
 /**
  * Add streamline setting to the PMPro Advanced Settings page.
  */
@@ -672,7 +678,7 @@ function pmpro_lifter_dashboard_admin_url( $url ) {
 	}
 
 	// Bail if not on the LifterLMS dashboard.
-	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) {
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin screen is loaded.
 		return $url;
 	}
 	
@@ -705,7 +711,7 @@ function pmpro_lifter_dashboard_checklist( $checklist ) {
 	}
 
 	// Bail if not on the LifterLMS dashboard.
-	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) {
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin screen is loaded.
 		return $checklist;
 	}
 
@@ -732,7 +738,7 @@ function pmpro_lifter_ajax_llms_widget_sold_pmpro() {
 	}
 
 	// Get the start date.
-	$startdate = sanitize_text_field( $_REQUEST['dates']['start'] );
+	$startdate = sanitize_text_field( $_REQUEST['dates']['start'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; returns sales totals to users with the pmpro_reports capability.
 	// Note: We ignore the enddate. pmpro_getRevenue assumes the enddate is today.
 
 	// Get total PMPro sales in this period.

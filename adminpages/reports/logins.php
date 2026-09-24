@@ -9,6 +9,11 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_report_login_register( $pmpro_reports ) {
 	$pmpro_reports['login'] = __( 'Visits, Views, and Logins', 'paid-memberships-pro' );
 
@@ -80,6 +85,9 @@ function pmpro_report_login_widget() {
 function pmpro_report_login_page()
 {
 	global $wpdb;
+
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only report screen: search, level filter, and pagination only affect what is displayed.
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Report queries join PMPro custom tables, which have no WordPress API or object cache layer.
 
 	//vars
 	if(!empty($_REQUEST['s']))
@@ -302,6 +310,7 @@ function pmpro_report_login_page()
 		</div>
 	</div>
 <?php
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 }
 
 /*

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $wpdb, $pmpro_msg, $pmpro_msgt;
 
 // only admins can get this
@@ -6,7 +10,7 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
-$subscription = PMPro_Subscription::get_subscription( empty( $_REQUEST['id'] ) ? null : sanitize_text_field( $_REQUEST['id'] ) );
+$subscription = PMPro_Subscription::get_subscription( empty( $_REQUEST['id'] ) ? null : sanitize_text_field( $_REQUEST['id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only loads the subscription to display. Actions below verify pmpro_subscriptions_nonce.
 
 // Process syncing with gateway.
 if ( ! empty( $subscription ) && ! empty( $_REQUEST['update'] ) && check_admin_referer( 'update', 'pmpro_subscriptions_nonce' ) ) {

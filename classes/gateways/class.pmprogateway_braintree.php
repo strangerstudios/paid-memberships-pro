@@ -2,6 +2,10 @@
 
 use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -233,6 +237,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//code to add at checkout if Braintree is the current gateway
 			$default_gateway = get_option('pmpro_gateway');
 			$current_gateway = pmpro_getGateway();
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only decides which checkout hooks to register.
 			if( ( $default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review'])))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 			    add_action('pmpro_checkout_preheader', array('PMProGateway_braintree', 'pmpro_checkout_preheader'));
@@ -389,6 +394,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		static function pmpro_checkout_order($morder)
 		{
 			//load up values
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Runs while building the checkout order; pmpro_checkout_nonce is verified in preheaders/checkout.php before checkout is processed.
 			if(isset($_REQUEST['number']))
 				$braintree_number = sanitize_text_field($_REQUEST['number']);
 			else
@@ -403,6 +409,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$braintree_cvv = sanitize_text_field($_REQUEST['cvv']);
 			else
 				$braintree_cvv = "";
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 			$morder->braintree = new stdClass();
 			$morder->braintree->number = $braintree_number;
@@ -518,7 +525,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 									if($pmpro_show_cvv) { ?>
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
 											<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
-											<input id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty( $_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" data-encrypted-name="cvv" />
+											<input id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty( $_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); } // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Prefills the checkout form. ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" data-encrypted-name="cvv" />
 										</div>
 								<?php } ?>
 							</div> <!-- end pmpro_cols-2 -->
@@ -1003,11 +1010,11 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				return false;
 			}
 
-			if ( isset( $_POST['bt_payload']) && isset( $_POST['bt_payload']) ) {
+			if ( isset( $_POST['bt_payload']) && isset( $_POST['bt_payload']) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Braintree webhook payloads cannot carry a WordPress nonce; they are authenticated by Braintree_WebhookNotification::parse() verifying bt_signature.
 
 				try {
 					// Note: Braintree needs the raw data.
-					$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- Braintree webhook payloads cannot carry a WordPress nonce; they are authenticated by Braintree_WebhookNotification::parse() verifying bt_signature.
 					if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
 					    // Return, we're already processing the cancellation
 					    return true;

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Upgrade to version 3.2
  *
@@ -26,7 +30,7 @@ function pmpro_show_upgrade_3_2_notice_wpp() {
 	}
 
 	// Only show on PMPro admin pages.
-	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 		return;
 	}
 

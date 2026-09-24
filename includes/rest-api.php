@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- REST endpoints query PMPro custom tables, which have no WordPress API or object cache layer.
+
 if ( class_exists( 'WP_REST_Controller' ) ) {
 	class PMPro_REST_API_Routes extends WP_REST_Controller {
 		

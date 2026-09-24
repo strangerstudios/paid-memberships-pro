@@ -8,6 +8,10 @@
  *
  * @since 2.3
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
  
 /**
  * Make sure the PMPro lost password form

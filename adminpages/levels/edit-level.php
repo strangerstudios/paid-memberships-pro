@@ -3,6 +3,13 @@
  * @var int $edit
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: URL parameters only choose which level, template, or group to prefill the edit form with. Saving is nonce-checked in adminpages/membershiplevels.php.
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+
 global $wpdb, $page_msg, $page_msgt, $pmpro_stripe_error;
 
 // Get level templates.

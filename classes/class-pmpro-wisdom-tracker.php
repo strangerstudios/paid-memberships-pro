@@ -754,7 +754,7 @@ class PMPro_Wisdom_Tracker {
 		}
 		
 		// Don't display on the PMPro Advanced Settings page.
-		if ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-advancedsettings' ) {
+		if ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-advancedsettings' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only decides whether to show the notice on this screen.
 		   return false;
 	   	}
 
@@ -845,7 +845,7 @@ class PMPro_Wisdom_Tracker {
 			$this->set_can_collect_email( sanitize_text_field( $_GET['marketing_optin'] ), $this->plugin_name );
 			// Do tracking
 			$this->do_tracking( true );
-		} elseif ( isset( $_GET['marketing'] ) && $_GET['marketing'] == 'yes' ) {
+		} elseif ( isset( $_GET['marketing'] ) && $_GET['marketing'] == 'yes' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only decides whether to display the marketing opt-in notice.
 			// Display the notice requesting permission to collect email address
 			// Retrieve current plugin information
 			$plugin      = $this->plugin_data();

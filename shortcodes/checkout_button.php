@@ -2,6 +2,11 @@
 /*
 	Shortcode to show a link/button linking to the checkout page for a specific level
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_checkout_button_shortcode($atts, $content=null, $code="")
 {
 	// $atts    ::= array of attributes

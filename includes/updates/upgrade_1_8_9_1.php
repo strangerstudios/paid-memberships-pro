@@ -1,5 +1,11 @@
 <?php
 use Stripe\Customer as Stripe_Customer;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade routine that reads and repairs the PMPro orders table directly; no WordPress API or object cache layer applies.
+
 /*
 	Upgrade to 1.8.9.1
 	* Fixing Stripe orders where user_id/membership_id = 0

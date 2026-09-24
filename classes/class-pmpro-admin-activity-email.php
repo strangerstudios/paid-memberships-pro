@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Aggregate counts over PMPro custom tables for a periodic admin email; these tables have no WordPress API or object cache layer.
+
 // Make sure PMPro is loaded.
 if ( ! class_exists( 'PMProEmail' ) ) {
 	return;

@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Check if email logging is enabled.
  *
@@ -289,7 +293,7 @@ function pmpro_log_email( $mail_data, $status = 'sent', $error_message = '' ) {
 		'error_message' => $error_message,
 	);
 
-	$wpdb->insert(
+	$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Inserts into a PMPro custom table, which has no WordPress API.
 		$wpdb->pmpro_email_log,
 		$log_data,
 		array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
@@ -509,7 +513,7 @@ function pmpro_auto_purge_email_log_entries() {
 
 	$cutoff_date = date( 'Y-m-d H:i:s', strtotime( "-{$purge_days} days" ) );
 
-	$wpdb->query(
+	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries a PMPro custom table, which has no WordPress API or object cache layer.
 		$wpdb->prepare(
 			"DELETE FROM {$wpdb->pmpro_email_log} WHERE timestamp < %s",
 			$cutoff_date

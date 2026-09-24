@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	global $pmpro_currencies, $pmpro_default_currency;
 	
 	$pmpro_default_currency = apply_filters("pmpro_default_currency", "USD");

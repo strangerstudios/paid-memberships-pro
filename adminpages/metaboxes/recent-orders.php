@@ -19,7 +19,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
 	if ( false === $order_ids) {
 		// No cached value. Get the orders.
 		$sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders ORDER BY id DESC, timestamp DESC LIMIT 5";
-		$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
+		$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query; only the $wpdb table name is interpolated. Reads the PMPro orders table, which has no object cache layer.
 		set_transient( 'pmpro_dashboard_report_recent_orders', $order_ids, 3600 * 24 );
 	}
 	?>

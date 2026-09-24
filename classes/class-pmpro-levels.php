@@ -1,4 +1,6 @@
 <?php
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- CRUD class for PMPro custom tables, which have no WordPress API or object cache layer.
+
 #[AllowDynamicProperties]
 class PMPro_Membership_Level{
 

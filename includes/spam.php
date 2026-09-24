@@ -2,6 +2,11 @@
 /**
  * Code related to spam detection and prevention.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Constants. Define these in wp-config.php to override.
 if ( ! defined( 'PMPRO_SPAM_ACTION_NUM_LIMIT' ) ) {
 	define( 'PMPRO_SPAM_ACTION_NUM_LIMIT', 10 );

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $wpdb, $pmpro_msg, $pmpro_msgt;
 
 // only admins can get this
@@ -8,7 +12,7 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 
 // Process form submissions.
 $action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : false;
-if ( ! empty( $action ) && ( empty( sanitize_key( $_REQUEST['pmpro_orders_nonce'] ) ) || ! check_admin_referer( $action, 'pmpro_orders_nonce' ) ) ) {
+if ( ! empty( $action ) && ( empty( sanitize_key( $_REQUEST['pmpro_orders_nonce'] ) ) || ! check_admin_referer( $action, 'pmpro_orders_nonce' ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This is the nonce check itself: the nonce value is read here and verified by check_admin_referer().
 	$page_msg = -1;
 	$page_msgt = __( 'Are you sure you want to do that? Try again.', 'paid-memberships-pro' );
 	$action = false;

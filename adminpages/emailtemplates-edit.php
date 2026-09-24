@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	// Get the template data.
 	$template_data['body'] = get_option( 'pmpro_email_' . $edit . '_body' );
 	$template_data['subject'] = get_option( 'pmpro_email_' . $edit . '_subject' );

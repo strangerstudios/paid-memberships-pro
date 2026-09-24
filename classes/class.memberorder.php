@@ -1,4 +1,6 @@
 <?php
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+
 	class MemberOrder
 	{	
 		/**
@@ -395,7 +397,7 @@
 					return pmpro_calculate_profile_start_date( $this, 'Y-m-d\TH:i:s' );
 				case 'CVV2':
 					_doing_it_wrong( __METHOD__, esc_html__( 'CVV2 is deprecated. Use the CVV from $_REQUEST instead.', 'paid-memberships-pro' ), '3.2' );
-					return empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] );
+					return empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only deprecated property shim that returns the submitted CVV; nothing is saved here.
 				case 'FirstName':
 					_doing_it_wrong( __METHOD__, esc_html__( 'FirstName is deprecated. Use the the billing name instead.', 'paid-memberships-pro' ), '3.2' );
 					$nameparts = pnp_split_full_name( $this->billing->name );

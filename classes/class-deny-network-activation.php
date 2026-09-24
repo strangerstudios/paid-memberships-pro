@@ -36,6 +36,7 @@ class PMPro_Deny_Network_Activation {
 	}
 
 	public function display_message_after_network_activation_attempt() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: only used to display an admin notice.
 		global $current_screen;
 		if ( !empty($_REQUEST['pmpro_deny_network_activation']) && ( 'sites-network' === $current_screen->id || 'plugins-network' === $current_screen->id ) ) {
 				//get plugin data
@@ -54,6 +55,7 @@ class PMPro_Deny_Network_Activation {
 				echo esc_html( $text );
 				echo '</p></div>';
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	public function pmpro_check_network_activation( $network_wide ) {
@@ -61,6 +63,7 @@ class PMPro_Deny_Network_Activation {
 			return;
 		}
 
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Runs on the plugin activation hook; WordPress core verifies the activation nonce in wp-admin/plugins.php before activating.
 		$plugin = isset($_REQUEST['plugin']) ? sanitize_file_name($_REQUEST['plugin']) : '';
 
 		deactivate_plugins( $plugin, true, true );
@@ -68,6 +71,7 @@ class PMPro_Deny_Network_Activation {
 			wp_redirect( add_query_arg( 'pmpro_deny_network_activation', $plugin, network_admin_url( 'plugins.php' ) ) );
 			exit;
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 }
 

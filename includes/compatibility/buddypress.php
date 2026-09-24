@@ -3,6 +3,10 @@
  * All BuddyPress/BuddyBoss compatibility goes in here.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * If a user is deleting their own account, we want to make sure we cancel their subscriptions as well.
  *

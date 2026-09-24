@@ -8,6 +8,8 @@
 if (!defined('ABSPATH') && !defined('WP_UNINSTALL_PLUGIN'))
     exit();
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup: drops PMPro custom tables and bulk-deletes rows by prefix, which no WordPress API covers.
+
 if ( get_option( 'pmpro_uninstall', 0 ) ) {
 	// otherwise remove pages
 	$pmpro_pages = array(
