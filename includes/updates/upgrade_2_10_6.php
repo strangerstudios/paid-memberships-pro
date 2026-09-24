@@ -26,6 +26,11 @@ function pmpro_upgrade_2_10_6_notice() {
 		return;
 	}
 
+	// Only show to users who can manage options.
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
 	// Only show on PMPro admin pages.
 	if ( empty( $_REQUEST['page'] ) || strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
 		return;
