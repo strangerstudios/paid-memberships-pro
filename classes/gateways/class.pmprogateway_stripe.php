@@ -173,6 +173,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Stripe Connect functions.
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
+		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_disconnect' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 
@@ -1635,6 +1636,56 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
+	/**
+	 * Delete the site's webhook and send the admin on to Stripe to complete disconnecting.
+	 *
+	 * The webhook must be deleted here, before the user is sent to Stripe, because the
+	 * secret key on file is no longer usable to make API calls once the account has
+	 * actually been deauthorized on Stripe's end.
+	 *
+	 * @since 3.8.6
+	 */
+	public static function stripe_connect_disconnect() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// Be sure only to run when param present.
+		if ( ! isset( $_REQUEST['pmpro_stripe_disconnect_environment'] ) ) {
+			return;
+		}
+
+		// Check the nonce.
+		if ( ! isset( $_REQUEST['pmpro_stripe_disconnect_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_stripe_disconnect_nonce'] ), 'pmpro_stripe_disconnect_nonce' ) ) {
+			return;
+		}
+
+		$environment2 = 'live' === $_REQUEST['pmpro_stripe_disconnect_environment'] ? 'live' : 'test';
+		$environment = 'live' === $environment2 ? 'live' : 'sandbox';
+
+		if ( ! self::has_connect_credentials( $environment ) ) {
+			return;
+		}
+
+		// Delete the site's webhook while the secret key on file is still active.
+		self::delete_webhook_before_disconnect( $environment );
+
+		// Continue on to Stripe to complete the disconnect.
+		$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
+		$connect_url = add_query_arg(
+			array(
+				'action' => 'disconnect',
+				'gateway_environment' => $environment2,
+				'stripe_user_id' => get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' ),
+				'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
+			),
+			$connect_url_base
+		);
+
+		wp_redirect( esc_url_raw( $connect_url ) );
+		exit;
+	}
+
 	public static function stripe_connect_show_errors() {
 		global $pmpro_stripe_error;
 		if ( ! empty( $pmpro_stripe_error ) ) {
@@ -3061,17 +3112,22 @@ class PMProGateway_stripe extends PMProGateway {
 								<?php
 								$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
 								if ( self::has_connect_credentials( $environment ) ) {
-									$connect_url = add_query_arg(
-										array(
-											'action' => 'disconnect',
-											'gateway_environment' => $environment2,
-											'stripe_user_id' => get_option( 'pmpro_' . $environment . '_stripe_connect_user_id' ),
-											'return_url' => rawurlencode( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_deauthorize_nonce' => wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ) ), admin_url( 'admin.php' ) ) ),
+									// Route through a local handler first so we can delete the site's webhook
+									// while the secret key on file is still active, before disconnecting.
+									$disconnect_url = wp_nonce_url(
+										add_query_arg(
+											array(
+												'page' => 'pmpro-paymentsettings',
+												'edit_gateway' => 'stripe',
+												'pmpro_stripe_disconnect_environment' => $environment2,
+											),
+											admin_url( 'admin.php' )
 										),
-										$connect_url_base
+										'pmpro_stripe_disconnect_nonce',
+										'pmpro_stripe_disconnect_nonce'
 									);
 									?>
-									<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
+									<a href="<?php echo esc_url( $disconnect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
 									<p class="description">
 										<?php
 										if ( $livemode ) {
@@ -3852,7 +3908,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
 	 */
-	private function get_site_webhook_url() {
+	private static function get_site_webhook_url() {
 		return admin_url( 'admin-ajax.php' ) . '?action=stripe_webhook';
 	}
 
@@ -4046,6 +4102,49 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return $delete;
+	}
+
+	/**
+	 * Delete the site's webhook for a given environment before disconnecting from Stripe.
+	 *
+	 * Uses the secret key on file directly, rather than the current gateway environment,
+	 * since the environment being disconnected may not be the active one and the key will
+	 * no longer be usable once the account has actually been deauthorized on Stripe's end.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @param string $environment 'live' or 'sandbox'.
+	 */
+	private static function delete_webhook_before_disconnect( $environment ) {
+		$secretkey = get_option( 'pmpro_' . $environment . '_stripe_connect_secretkey' );
+		if ( empty( $secretkey ) ) {
+			return;
+		}
+
+		self::loadStripeLibrary();
+
+		try {
+			$stripe   = new Stripe_Client( $secretkey );
+			$webhooks = $stripe->webhookEndpoints->all( array( 'limit' => 10 ) );
+		} catch ( \Throwable $th ) {
+			return;
+		}
+
+		if ( empty( $webhooks->data ) ) {
+			return;
+		}
+
+		$site_webhook_url = self::get_site_webhook_url();
+
+		foreach ( $webhooks->data as $webhook ) {
+			if ( $webhook->url === $site_webhook_url ) {
+				try {
+					$stripe->webhookEndpoints->delete( $webhook->id, array() );
+				} catch ( \Throwable $th ) {
+					// Best effort. Continue disconnecting regardless.
+				}
+			}
+		}
 	}
 
 	/**
