@@ -654,7 +654,6 @@
 			//post to PayPal
 			$response = wp_remote_post( $API_Endpoint, array(
 					'timeout' => 60,
-					'sslverify' => FALSE,
 					'httpversion' => '1.1',
 					'body' => $nvpreq
 			    )

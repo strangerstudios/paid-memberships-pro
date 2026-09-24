@@ -72,7 +72,6 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 			//find the subscription (via remote_get since this isn't the version of the library we use)
 			$subscription = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.stripe.com/v1/subscriptions/' . $order->subscription_transaction_id, array(
 					'timeout' => 60,
-					'sslverify' => FALSE,
 					'httpversion' => '1.1',
 					'headers'=>array('Authorization' => 'Bearer ' . get_option( "pmpro_stripe_secretkey")),
 			    ))));
