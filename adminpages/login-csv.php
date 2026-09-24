@@ -41,7 +41,7 @@ global $wpdb;
 
 	// vars
 if ( ! empty( $_REQUEST['s'] ) ) {
-	$s = sanitize_text_field( $_REQUEST['s'] );
+	$s = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 } else {
 	$s = '';
 }

@@ -180,8 +180,8 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_cloudflare_turnstile_settings' 
 function pmpro_cloudflare_turnstile_settings_save() {
 	// Keep the legacy on/off option in sync with the captcha setting for backwards compatibility.
 	update_option( 'pmpro_cloudflare_turnstile', 'turnstile' === pmpro_captcha() ? 1 : 0, false );
-	pmpro_setOption( 'cloudflare_turnstile_site_key', sanitize_text_field( $_POST['cloudflare_turnstile_site_key'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce (pmpro_securitysettings_nonce) verified in adminpages/securitysettings.php before the pmpro_save_security_settings action fires.
-	pmpro_setOption( 'cloudflare_turnstile_secret_key', sanitize_text_field( $_POST['cloudflare_turnstile_secret_key'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce (pmpro_securitysettings_nonce) verified in adminpages/securitysettings.php before the pmpro_save_security_settings action fires.
+	pmpro_setOption( 'cloudflare_turnstile_site_key', isset( $_POST['cloudflare_turnstile_site_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cloudflare_turnstile_site_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce (pmpro_securitysettings_nonce) verified in adminpages/securitysettings.php before the pmpro_save_security_settings action fires.
+	pmpro_setOption( 'cloudflare_turnstile_secret_key', isset( $_POST['cloudflare_turnstile_secret_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cloudflare_turnstile_secret_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce (pmpro_securitysettings_nonce) verified in adminpages/securitysettings.php before the pmpro_save_security_settings action fires.
 }
 add_action( 'pmpro_save_security_settings', 'pmpro_cloudflare_turnstile_settings_save' );
 

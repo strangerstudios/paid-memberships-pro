@@ -133,7 +133,7 @@ add_action( 'admin_menu', 'pmpro_add_pages' );
  * @since 3.7
  */
 function pmpro_maybe_redirect_list_table_referer() {
-	if ( 'GET' !== $_SERVER['REQUEST_METHOD'] || empty( $_REQUEST['_wp_http_referer'] ) || empty( $_SERVER['REQUEST_URI'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'GET' !== $_SERVER['REQUEST_METHOD'] || empty( $_REQUEST['_wp_http_referer'] ) || empty( $_SERVER['REQUEST_URI'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return;
 	}
 
@@ -164,7 +164,7 @@ function pmpro_parent_file( $parent_file ) {
 	if( isset( $_REQUEST['page']) && isset( $pmpro_settings_tabs[ $_REQUEST['page'] ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only used to decide which admin menu item to highlight.
 		$parent_file = 'pmpro-dashboard';
 		$plugin_page = 'pmpro-dashboard';
-		$submenu_file = $pmpro_settings_tabs[ $_REQUEST['page'] ]; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only used to decide which admin menu item to highlight.
+		$submenu_file = $pmpro_settings_tabs[ $_REQUEST['page'] ]; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Read-only; only used as a lookup key into the fixed $pmpro_settings_tabs array (checked with isset() above) to decide which admin menu item to highlight.
 	}
 	
 	return $parent_file;
@@ -370,7 +370,7 @@ add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000 );
 function pmpro_admin_init_redirect_single_item_edit() {
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only checks whether the requested item exists and redirects to the list screen if not.
 	// Set to the page we are on or empty string.
-	$pmpro_admin_page = isset( $_REQUEST['page'] ) ? sanitize_text_field( $_REQUEST['page'] ) : '';
+	$pmpro_admin_page = isset( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : '';
 
 	// Return if no page is set.
 	if ( empty( $pmpro_admin_page ) ) {
@@ -385,14 +385,14 @@ function pmpro_admin_init_redirect_single_item_edit() {
 	// Edit Membership Level or Group redirects.
 	if ( $pmpro_admin_page == 'pmpro-membershiplevels' ) {
 		// If the level they are trying to edit does not exist, redirect them to the membership levels page.
-		if ( ! empty( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 && empty( pmpro_getLevel( $_REQUEST['edit'] ) ) ) {
-			wp_redirect( add_query_arg( array( 'page' => 'pmpro-membershiplevels' ), admin_url( 'admin.php' ) ) );
+		if ( ! empty( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 && empty( pmpro_getLevel( intval( $_REQUEST['edit'] ) ) ) ) {
+			wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-membershiplevels' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
 
 		// If the group they are trying to edit does not exist, redirect them to the membership levels page.
-		if ( ! empty( $_REQUEST['edit_group'] ) && $_REQUEST['edit_group'] > 0 && empty( pmpro_get_level_group( $_REQUEST['edit_group'] ) ) ) {
-			wp_redirect( add_query_arg( array( 'page' => 'pmpro-membershiplevels' ), admin_url( 'admin.php' ) ) );
+		if ( ! empty( $_REQUEST['edit_group'] ) && $_REQUEST['edit_group'] > 0 && empty( pmpro_get_level_group( intval( $_REQUEST['edit_group'] ) ) ) ) {
+			wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-membershiplevels' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
 	}
@@ -401,7 +401,7 @@ function pmpro_admin_init_redirect_single_item_edit() {
 	if ( $pmpro_admin_page == 'pmpro-member' ) {
 		// If the user they are trying to edit does not exist, redirect them to the members list.
 		if ( ! empty( $_REQUEST['user_id'] ) && $_REQUEST['user_id'] > 0 && empty( PMPro_Member_Edit_Panel::get_user()->ID ) ) {
-			wp_redirect( add_query_arg( array( 'page' => 'pmpro-memberslist' ), admin_url( 'admin.php' ) ) );
+			wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-memberslist' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
 	}
@@ -411,9 +411,9 @@ function pmpro_admin_init_redirect_single_item_edit() {
 		// If the discount code they are trying to edit does not exist, redirect them to the discount codes page.
 		if ( ! empty( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) {
 			$discount_code = new PMPro_Discount_Code();
-			$discount_code->get_discount_code_by_id( $_REQUEST['edit'] );
+			$discount_code->get_discount_code_by_id( intval( $_REQUEST['edit'] ) );
 			if ( empty( $discount_code->id ) ) {
-				wp_redirect( add_query_arg( array( 'page' => 'pmpro-discountcodes' ), 	admin_url( 'admin.php' ) ) );
+				wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-discountcodes' ), 	admin_url( 'admin.php' ) ) );
 				exit;
 			}
 		}
@@ -422,8 +422,8 @@ function pmpro_admin_init_redirect_single_item_edit() {
 	// Edit Order redirect.
 	if ( $pmpro_admin_page == 'pmpro-orders' ) {
 		// If the order they are trying to edit does not exist, redirect them to the orders list.
-		if ( ! empty( $_REQUEST['id'] ) && $_REQUEST['id'] > 0 && empty( MemberOrder::get_order( $_REQUEST['id'] ) ) ) {
-			wp_redirect( add_query_arg( array( 'page' => 'pmpro-orders' ), admin_url( 'admin.php' ) ) );
+		if ( ! empty( $_REQUEST['id'] ) && $_REQUEST['id'] > 0 && empty( MemberOrder::get_order( intval( $_REQUEST['id'] ) ) ) ) {
+			wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-orders' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
 	}
@@ -431,8 +431,8 @@ function pmpro_admin_init_redirect_single_item_edit() {
 	// View Subscription redirect.
 	if ( $pmpro_admin_page == 'pmpro-subscriptions' ) {
 		// If the subscription they are trying to view does not exist, redirect them to the members list.
-		if ( ! empty( $_REQUEST['id'] ) && empty( PMPro_Subscription::get_subscription( $_REQUEST['id'] ) ) ) {
-			wp_redirect( add_query_arg( array( 'page' => 'pmpro-subscriptions' ), admin_url( 'admin.php' ) ) );
+		if ( ! empty( $_REQUEST['id'] ) && empty( PMPro_Subscription::get_subscription( sanitize_text_field( wp_unslash( $_REQUEST['id'] ) ) ) ) ) {
+			wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-subscriptions' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
 	}
@@ -472,7 +472,7 @@ function pmpro_admin_membership_access_menu_bar() {
 		check_admin_referer( 'pmpro_admin_membership_access', 'pmpro_admin_membership_access_nonce' );
 
 		// Let's get the value of the view_as now:
-		$admin_membership_access = sanitize_text_field( $_REQUEST['pmpro-admin-membership-access'] );
+		$admin_membership_access = sanitize_text_field( wp_unslash( $_REQUEST['pmpro-admin-membership-access'] ) );
 
 		if ( $admin_membership_access == 'no' ) {
 			update_user_meta( $current_user->ID, 'pmpro_admin_membership_access', 'no' );

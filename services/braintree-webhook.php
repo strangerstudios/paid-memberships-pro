@@ -59,13 +59,13 @@ try {
 	 * 
 	 * NOTE: The Braintree API needs the unsanitized input.
 	 */
-	$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Braintree verifies the raw signature against the raw payload; unslashing or sanitizing could alter the signed bytes.
 	
 	$logstr[] = "\webhookNotification:";
 	$logstr[] = var_export( $webhookNotification, true );
 	$logstr[] = "\n";
 } catch ( Exception $e ) {
-	$logstr[] = "Couldn't extract notification from payload: {$_REQUEST['bt_payload']}";
+	$logstr[] = "Couldn't extract notification from payload: {$_REQUEST['bt_payload']}"; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidatedNotSanitized -- Presence is checked by the empty( $_REQUEST['bt_payload'] ) exit above; logged verbatim for debugging (the log goes to a restricted file or an esc_html() email).
 	$logstr[] = "Error message: " . $e->getMessage();
 	
 	pmpro_braintreeWebhookExit();

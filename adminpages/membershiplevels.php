@@ -10,7 +10,7 @@
 	}
 
 	// Process form submissions.
-	$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : false;
+	$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : false;
 	if ( ! empty( $action ) && ( empty( sanitize_key( $_REQUEST['pmpro_membershiplevels_nonce'] ) ) || ! check_admin_referer( $action, 'pmpro_membershiplevels_nonce' ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This line is the nonce check; the value is passed to check_admin_referer().
 		$page_msg = -1;
 		$page_msgt = __( 'Are you sure you want to do that? Try again.', 'paid-memberships-pro' );
@@ -48,7 +48,7 @@
 		global $wpdb, $pmpro_pages;
 
 		if(isset($_REQUEST['s']))
-			$s = sanitize_text_field($_REQUEST['s']);
+			$s = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 		else
 			$s = "";
 

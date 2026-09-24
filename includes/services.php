@@ -137,7 +137,7 @@ function pmpro_get_order_json() {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
-	$order_id = intval( $_REQUEST['order_id'] );
+	$order_id = isset( $_REQUEST['order_id'] ) ? intval( $_REQUEST['order_id'] ) : 0;
 	$order = new MemberOrder($order_id);
 	$user = get_userdata($order->user_id);
 		
@@ -161,7 +161,7 @@ function pmpro_update_level_order() {
 	}
 
 	// Check the nonce.
-	if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_update_level_order' ) ) {
+	if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_update_level_order' ) ) {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
@@ -171,7 +171,7 @@ function pmpro_update_level_order() {
 		$level_order = array_map( 'intval', $_REQUEST['level_order'] );
 		$level_order = implode(',', $level_order );
 	} else if ( isset( $_REQUEST['level_order'] ) ) {
-		$level_order = sanitize_text_field( $_REQUEST['level_order'] );
+		$level_order = sanitize_text_field( wp_unslash( $_REQUEST['level_order'] ) );
 	}
 	
 	echo esc_html( update_option('pmpro_level_order', $level_order) );
@@ -186,7 +186,7 @@ function pmpro_update_level_group_order() {
 	}
 
 	// Check the nonce.
-	if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_update_level_group_order' ) ) {
+	if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_update_level_group_order' ) ) {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
@@ -195,7 +195,7 @@ function pmpro_update_level_group_order() {
 	if ( isset( $_REQUEST['level_group_order'] ) && is_array( $_REQUEST['level_group_order'] ) ) {
 		$level_group_order = array_map( 'intval', $_REQUEST['level_group_order'] );
 	} else if ( isset( $_REQUEST['level_group_order'] ) ) {
-		$level_group_order = explode(',', sanitize_text_field( $_REQUEST['level_group_order'] ) );
+		$level_group_order = explode(',', sanitize_text_field( wp_unslash( $_REQUEST['level_group_order'] ) ) );
 	}
 
 	$count = 1;

@@ -564,7 +564,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 			}
 
 			if( isset( $_REQUEST[$field->name] ) ) {
-				$_SESSION[$field->name] = pmpro_sanitize( $_REQUEST[$field->name], $field ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$_SESSION[$field->name] = pmpro_sanitize( $_REQUEST[$field->name], $field ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized by pmpro_sanitize(). Left slashed on purpose to match PMPro_Field::get_value_from_request(): the session value is later saved with update_user_meta(), which unslashes, so unslashing here would strip backslashes twice.
 			} elseif ( isset( $_FILES[$field->name] ) ) {
 				/*
 					We need to save the file somewhere and save values in $_SESSION

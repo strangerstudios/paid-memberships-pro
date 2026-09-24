@@ -362,7 +362,7 @@
 			$tco_url = 'https://www.2checkout.com/checkout/purchase' . $ptpStr;
 
 			//redirect to 2checkout
-			wp_redirect( $tco_url );
+			wp_redirect( $tco_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Redirects to the 2Checkout purchase URL (offsite by design).
 			exit;
 		}
 

@@ -90,7 +90,7 @@ if (!empty($_REQUEST['savesettings'])) {
 			if ( ! in_array( $_REQUEST[ 'pmpro_use_custom_page_template_' . $name ], array( 'yes', 'no' ) ) ) {
 				delete_option( 'pmpro_use_custom_page_template_' . $name );
 			} else {
-				update_option( 'pmpro_use_custom_page_template_' . $name, sanitize_text_field( $_REQUEST[ 'pmpro_use_custom_page_template_' . $name ] ) );
+				update_option( 'pmpro_use_custom_page_template_' . $name, sanitize_text_field( wp_unslash( $_REQUEST[ 'pmpro_use_custom_page_template_' . $name ] ) ) );
 			}
 		}
 	}
@@ -98,7 +98,7 @@ if (!empty($_REQUEST['savesettings'])) {
 	if ( empty( $_REQUEST['pmpro_disable_outdated_template_warning'] ) ) {
 		delete_option( 'pmpro_disable_outdated_template_warning' );
 	} else {
-		update_option( 'pmpro_disable_outdated_template_warning', sanitize_text_field( $_REQUEST['pmpro_disable_outdated_template_warning'] ) );
+		update_option( 'pmpro_disable_outdated_template_warning', sanitize_text_field( wp_unslash( $_REQUEST['pmpro_disable_outdated_template_warning'] ) ) );
 	}
 
     //assume success
@@ -139,7 +139,7 @@ if (!empty($_REQUEST['createpages'])) {
 		$pages['login'] = __('Log In', 'paid-memberships-pro' );
 		$pages['member_profile_edit'] = __('Your Profile', 'paid-memberships-pro' );
 	} elseif ( in_array( $_REQUEST['page_name'], array_keys( $generate_once ) ) ) {
-		$page_name = sanitize_text_field( $_REQUEST['page_name'] );
+		$page_name = sanitize_text_field( wp_unslash( $_REQUEST['page_name'] ) );
 		if ( ! empty( get_option( $page_name . '_page_generated' ) ) ) {
 			// Don't generate again.
 			unset( $pages[$page_name] );
@@ -166,7 +166,7 @@ if (!empty($_REQUEST['createpages'])) {
 		}
     } else {
         //generate extra pages one at a time
-        $pmpro_page_name = sanitize_text_field($_REQUEST['page_name']);
+        $pmpro_page_name = sanitize_text_field( wp_unslash( $_REQUEST['page_name'] ) );
         $pmpro_page_id = $pmpro_pages[$pmpro_page_name];
         $pages[$pmpro_page_name] = $extra_pages[$pmpro_page_name];
     }

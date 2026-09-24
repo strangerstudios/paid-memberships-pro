@@ -32,12 +32,12 @@
 		$delete = false;
 
 	if(isset($_REQUEST['saveid']))
-		$saveid = intval($_POST['saveid']);
+		$saveid = isset( $_POST['saveid'] ) ? intval( $_POST['saveid'] ) : false;
 	else
 		$saveid = false;
 
 	if(isset($_REQUEST['s']))
-		$s = sanitize_text_field($_REQUEST['s']);
+		$s = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 	else
 		$s = "";
 
@@ -66,25 +66,25 @@
 	{
 		//get vars
 		//disallow/strip all non-alphanumeric characters except -
-		$code = preg_replace("/[^A-Za-z0-9\-]/", "", sanitize_text_field($_POST['code']));
-		$starts_month = intval($_POST['starts_month']);
-		$starts_day = intval($_POST['starts_day']);
-		$starts_year = intval($_POST['starts_year']);
-		$expires_month = intval($_POST['expires_month']);
-		$expires_day = intval($_POST['expires_day']);
-		$expires_year = intval($_POST['expires_year']);
-		$uses = intval($_POST['uses']);
+		$code = isset( $_POST['code'] ) ? preg_replace("/[^A-Za-z0-9\-]/", "", sanitize_text_field( wp_unslash( $_POST['code'] ) ) ) : '';
+		$starts_month = isset( $_POST['starts_month'] ) ? intval( $_POST['starts_month'] ) : 0;
+		$starts_day = isset( $_POST['starts_day'] ) ? intval( $_POST['starts_day'] ) : 0;
+		$starts_year = isset( $_POST['starts_year'] ) ? intval( $_POST['starts_year'] ) : 0;
+		$expires_month = isset( $_POST['expires_month'] ) ? intval( $_POST['expires_month'] ) : 0;
+		$expires_day = isset( $_POST['expires_day'] ) ? intval( $_POST['expires_day'] ) : 0;
+		$expires_year = isset( $_POST['expires_year'] ) ? intval( $_POST['expires_year'] ) : 0;
+		$uses = isset( $_POST['uses'] ) ? intval( $_POST['uses'] ) : 0;
 		$one_use_per_user = ! empty( $_POST['one_use_per_user'] ) ? 1 : 0;
 
 		//discount type, value, and which payments the discount applies to
-		$posted_discount_type = isset( $_POST['discount_type'] ) ? sanitize_text_field( $_POST['discount_type'] ) : 'set_price';
+		$posted_discount_type = isset( $_POST['discount_type'] ) ? sanitize_text_field( wp_unslash( $_POST['discount_type'] ) ) : 'set_price';
 		$discount_type = array_key_exists( $posted_discount_type, pmpro_get_discount_code_types() ) ? $posted_discount_type : 'set_price';
 		if ( 'set_price' === $discount_type ) {
 			$discount_value = 0;
 			$apply_to_initial = 1;
 			$apply_to_recurring = 1;
 		} else {
-			$discount_value = isset( $_POST['discount_value'] ) ? max( 0, (float) sanitize_text_field( $_POST['discount_value'] ) ) : 0;
+			$discount_value = isset( $_POST['discount_value'] ) ? max( 0, (float) sanitize_text_field( wp_unslash( $_POST['discount_value'] ) ) ) : 0;
 			if ( 'percentage' === $discount_type ) {
 				$discount_value = min( 100, $discount_value );
 			}
@@ -156,29 +156,29 @@
 		if($saved && $edit > 0)
 		{
 			//get the submitted values
-			$all_levels_a = array_map( 'intval', $_REQUEST['all_levels'] );
+			$all_levels_a = ! empty( $_REQUEST['all_levels'] ) ? array_map( 'intval', $_REQUEST['all_levels'] ) : array();
 			if(!empty($_REQUEST['levels']))
 				$levels_a = array_map( 'intval', $_REQUEST['levels'] );
 			else
 				$levels_a = array();
-			$initial_payment_a = array_map( 'sanitize_text_field', $_REQUEST['initial_payment'] );
+			$initial_payment_a = ! empty( $_REQUEST['initial_payment'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_REQUEST['initial_payment'] ) ) : array();
 
 			if(!empty($_REQUEST['recurring']))
 				$recurring_a = array_map( 'intval', $_REQUEST['recurring'] );
-			$billing_amount_a = array_map( 'sanitize_text_field', $_REQUEST['billing_amount'] );
-			$cycle_number_a = array_map( 'intval', $_REQUEST['cycle_number'] );
-			$cycle_period_a = array_map( 'sanitize_text_field', $_REQUEST['cycle_period'] );
-			$billing_limit_a = array_map( 'intval', $_REQUEST['billing_limit'] );
+			$billing_amount_a = ! empty( $_REQUEST['billing_amount'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_REQUEST['billing_amount'] ) ) : array();
+			$cycle_number_a = ! empty( $_REQUEST['cycle_number'] ) ? array_map( 'intval', $_REQUEST['cycle_number'] ) : array();
+			$cycle_period_a = ! empty( $_REQUEST['cycle_period'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_REQUEST['cycle_period'] ) ) : array();
+			$billing_limit_a = ! empty( $_REQUEST['billing_limit'] ) ? array_map( 'intval', $_REQUEST['billing_limit'] ) : array();
 
 			if(!empty($_REQUEST['custom_trial']))
 				$custom_trial_a = array_map( 'intval', $_REQUEST['custom_trial'] );
-			$trial_amount_a = ! empty( $_REQUEST['trial_amount'] ) ? array_map( 'sanitize_text_field', $_REQUEST['trial_amount'] ) : array();
+			$trial_amount_a = ! empty( $_REQUEST['trial_amount'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_REQUEST['trial_amount'] ) ) : array();
 			$trial_limit_a = ! empty( $_REQUEST['trial_limit'] ) ? array_map( 'intval', $_REQUEST['trial_limit'] ) : array();
 
 			if(!empty($_REQUEST['expiration']))
 				$expiration_a = array_map( 'intval', $_REQUEST['expiration'] );
-			$expiration_number_a = array_map( 'intval', $_REQUEST['expiration_number'] );
-			$expiration_period_a = array_map( 'sanitize_text_field', $_REQUEST['expiration_period'] );
+			$expiration_number_a = ! empty( $_REQUEST['expiration_number'] ) ? array_map( 'intval', $_REQUEST['expiration_number'] ) : array();
+			$expiration_period_a = ! empty( $_REQUEST['expiration_period'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_REQUEST['expiration_period'] ) ) : array();
 
 			//clear the old rows
 			$wpdb->delete($wpdb->pmpro_discount_codes_levels, array('code_id' => $edit), array('%d'));

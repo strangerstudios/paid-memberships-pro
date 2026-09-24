@@ -40,7 +40,7 @@ class PMPro_Deny_Network_Activation {
 		global $current_screen;
 		if ( !empty($_REQUEST['pmpro_deny_network_activation']) && ( 'sites-network' === $current_screen->id || 'plugins-network' === $current_screen->id ) ) {
 				//get plugin data
-				$plugin = isset($_REQUEST['pmpro_deny_network_activation']) ? sanitize_file_name($_REQUEST['pmpro_deny_network_activation']) : '';
+				$plugin = isset($_REQUEST['pmpro_deny_network_activation']) ? sanitize_file_name( wp_unslash( $_REQUEST['pmpro_deny_network_activation'] ) ) : '';
 				$plugin_path = WP_PLUGIN_DIR . '/' . urldecode($plugin);
 				$plugin_data = get_plugin_data($plugin_path);
 
@@ -64,11 +64,11 @@ class PMPro_Deny_Network_Activation {
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Runs on the plugin activation hook; WordPress core verifies the activation nonce in wp-admin/plugins.php before activating.
-		$plugin = isset($_REQUEST['plugin']) ? sanitize_file_name($_REQUEST['plugin']) : '';
+		$plugin = isset($_REQUEST['plugin']) ? sanitize_file_name( wp_unslash( $_REQUEST['plugin'] ) ) : '';
 
 		deactivate_plugins( $plugin, true, true );
 		if ( ! isset( $_REQUEST['pmpro_deny_network_activation']) ) {
-			wp_redirect( add_query_arg( 'pmpro_deny_network_activation', $plugin, network_admin_url( 'plugins.php' ) ) );
+			wp_safe_redirect( add_query_arg( 'pmpro_deny_network_activation', $plugin, network_admin_url( 'plugins.php' ) ) );
 			exit;
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended

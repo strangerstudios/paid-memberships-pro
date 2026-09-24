@@ -610,7 +610,7 @@ class PMPro_Field {
 	function get_value_from_request() {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Getter only. Callers that save the value verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php); other callers only prefill or validate.
 		if ( isset( $_REQUEST[ $this->name ] ) ) {
-			$value = $_REQUEST[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$value = $_REQUEST[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized below when the field has sanitize set. Left slashed on purpose: update_user_meta() unslashes on save and the display code calls wp_unslash(), so unslashing here would strip backslashes twice.
 		} elseif ( isset( $_REQUEST[ $this->name . '_checkbox' ] ) && $this->type == 'checkbox' ) {
 			// Empty checkbox.
 			$value = 0;
@@ -619,7 +619,7 @@ class PMPro_Field {
 			$value = array();
 		} elseif ( isset( $_FILES[$this->name] ) && $this->type == 'file' ) {
 			// File field.
-			$value = $_FILES[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$value = $_FILES[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- isset( $_FILES[ $this->name ] ) is checked above and PHP always sets the name key for an upload entry. The file name is passed through sanitize_file_name() when the file is saved.
 		}  elseif ( isset( $_SESSION[$this->name] ) ) {
 			// Value stored in session.
 			if ( is_array( $_SESSION[$this->name] ) && isset( $_SESSION[$this->name]['name'] ) ) {
@@ -792,7 +792,7 @@ class PMPro_Field {
 
 		// deleting?
 		if( isset( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
-			$delete_old_file_name = sanitize_text_field( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
+			$delete_old_file_name = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
 			if ( ! empty( $delete_old_file_name ) ) {
 				// Use what's saved in user meta so we don't delete any old file.
 				$old_file_meta = get_user_meta( $user->ID, $meta_key, true );

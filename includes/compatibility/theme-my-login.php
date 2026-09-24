@@ -67,7 +67,7 @@ function pmpro_tml_login_head() {
 			$login_url = Theme_My_Login::get_page_link( 'login' ); // support < 7.x
 		}
 	
-		wp_redirect( $login_url );
+		wp_redirect( $login_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Login URL comes from Theme My Login and its filters, which may point to a host not in allowed_redirect_hosts.
 		exit;
 	}
 
@@ -82,7 +82,7 @@ function pmpro_tml_login_head() {
             //redirect to levels page unless filter is set.
             $link = apply_filters( "pmpro_register_redirect", pmpro_url( "levels" ) );	
 			if ( ! empty( $link ) ) {
-				wp_redirect ( $link );
+				wp_redirect ( $link ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- The pmpro_register_redirect filter lets developers point registration elsewhere, including offsite.
 				exit;
 			} else {
 				return;	//don't redirect if pmpro_register_redirect filter returns false or a blank URL
@@ -93,7 +93,7 @@ function pmpro_tml_login_head() {
 		// Redirect to frontend profile page.
 		if ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == "profile" && is_user_logged_in() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only decides which page to redirect to; nothing is saved.
 			$link = get_permalink($GLOBALS['theme_my_login']->options->options['page_id']);								
-			wp_redirect($link);
+			wp_redirect($link); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- get_permalink() is filterable (e.g. per-language domains) and returns false if the TML page is unset; wp_safe_redirect() would send those to wp-admin instead.
 			exit;
 		}
     }

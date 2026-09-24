@@ -94,7 +94,7 @@
 	}
 	
 	// default from email wordpress@sitename
-	$sitename = strtolower( sanitize_text_field( $_SERVER['SERVER_NAME'] ) );
+	$sitename = strtolower( isset( $_SERVER['SERVER_NAME'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) : '' );
 	if ( substr( $sitename, 0, 4 ) == 'www.' ) {
 		$sitename = substr( $sitename, 4 );
 	}

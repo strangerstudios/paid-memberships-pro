@@ -21,7 +21,7 @@
 		check_admin_referer( 'savesettings', 'pmpro_userfields_nonce' );
 
 		// Note: We sanitize the data below.
-		$groups = json_decode( stripslashes( $_REQUEST['pmpro_user_fields_settings'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$groups = json_decode( isset( $_REQUEST['pmpro_user_fields_settings'] ) ? wp_unslash( $_REQUEST['pmpro_user_fields_settings'] ) : '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON string; each decoded property is sanitized below.
 
 		// Sanitize everything.
 		foreach ( $groups as $group ) {

@@ -251,7 +251,7 @@
 				$cardtype = $order->cardtype;
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
 
 			//billing address, etc
 			if(!empty($order->billing->street))
@@ -354,7 +354,7 @@
 			$nvpStr .= "&CUSTIP=" . pmpro_get_ip() . "&INVNUM=" . $order->code;
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
 
 			//billing address, etc
 			if($order->billing->street)
@@ -449,7 +449,7 @@
 				$nvpStr .= "&TERM=0";
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
 
 			// Get the profile start date.
 			$trial_period_days = ceil(abs(strtotime(date_i18n("Y-m-d"), current_time('timestamp')) - pmpro_calculate_profile_start_date( $order, 'U' ) ) / 86400);
@@ -475,7 +475,7 @@
 			$nvpStr .= "&START=" . date_i18n("mdY", strtotime($profile_start_date));
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
 
 			//billing address, etc
 			if($order->billing->street)
@@ -541,7 +541,7 @@
 			$nvpStr .= "&CUSTIP=" . pmpro_get_ip(); // . "&INVNUM=" . $order->code;
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php.
 
 			//billing address, etc
 			if($order->billing->street)

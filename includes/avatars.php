@@ -312,7 +312,7 @@ function pmpro_avatar_validate_upload( $file_key = 'pmpro_avatar' ) {
 		return new WP_Error( 'pmpro_avatar_error', __( 'No file was uploaded.', 'paid-memberships-pro' ) );
 	}
 
-	$file = $_FILES[ $file_key ]; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Callers pmpro_save_avatar_field() and pmpro_change_avatar_process() verify pmpro_avatar_nonce before processing uploads.
+	$file = $_FILES[ $file_key ]; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Callers pmpro_save_avatar_field() and pmpro_change_avatar_process() verify pmpro_avatar_nonce before processing uploads. File upload array; validated below (upload error, is_uploaded_file(), size and wp_check_filetype_and_ext() checks). The client file name is never used to build the saved path.
 
 	// Check for upload errors.
 	if ( ! empty( $file['error'] ) && $file['error'] !== UPLOAD_ERR_OK ) {
@@ -425,7 +425,7 @@ function pmpro_avatar_process_upload( $user_id, $file_key = 'pmpro_avatar' ) {
 		return $validation;
 	}
 
-	$file = $_FILES[ $file_key ]; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Callers pmpro_save_avatar_field() and pmpro_change_avatar_process() verify pmpro_avatar_nonce before processing uploads.
+	$file = $_FILES[ $file_key ]; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Callers pmpro_save_avatar_field() and pmpro_change_avatar_process() verify pmpro_avatar_nonce before processing uploads. Existence and validity checked by pmpro_avatar_validate_upload() above; file upload array passed to wp_check_filetype_and_ext().
 	$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
 
 	// Determine the extension for saved files.
@@ -1032,7 +1032,7 @@ add_action( 'wpmu_delete_user', 'pmpro_avatar_cleanup_on_user_delete' );
  */
 function pmpro_avatar_allow_upload( $allow_upload, $file, $filetype ) {
 	// Check if this is an avatar upload.
-	if ( isset( $_FILES['pmpro_avatar'] ) && $file['name'] === $_FILES['pmpro_avatar']['name'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Read-only filename comparison in a pmpro_check_upload filter; callers verify their form nonce before saving.
+	if ( isset( $_FILES['pmpro_avatar']['name'] ) && $file['name'] === $_FILES['pmpro_avatar']['name'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Read-only filename comparison in a pmpro_check_upload filter; callers verify their form nonce before saving.
 		// Validate against our allowed types.
 		$allowed_types = pmpro_avatar_get_allowed_file_types();
 		if ( in_array( strtolower( $filetype['ext'] ), $allowed_types, true ) ) {

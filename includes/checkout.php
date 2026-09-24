@@ -320,13 +320,13 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		if ( ! empty( $_POST['first_name'] ) ) {
 			$old_firstname = get_user_meta( $order->user_id, "first_name", true );
 			if ( empty( $old_firstname ) ) {
-				update_user_meta( $order->user_id, "first_name", stripslashes( sanitize_text_field( $_POST['first_name'] ) ) );
+				update_user_meta( $order->user_id, "first_name", sanitize_text_field( $_POST['first_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
 			}
 		}
 		if ( ! empty( $_POST['last_name'] ) ) {
 			$old_lastname = get_user_meta( $order->user_id, "last_name", true );
 			if ( empty( $old_lastname ) ) {
-				update_user_meta( $order->user_id, "last_name", stripslashes( sanitize_text_field( $_POST['last_name'] ) ) );
+				update_user_meta( $order->user_id, "last_name", sanitize_text_field( $_POST['last_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
 			}
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing

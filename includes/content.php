@@ -509,7 +509,7 @@ function pmpro_hide_pages_redirect() {
 		if( $post->post_type == "attachment" ) {
 			//check if the user has access to the parent
 			if( ! pmpro_has_membership_access( $post->ID ) ) {
-				wp_redirect( pmpro_url( "levels" ) );
+				wp_redirect( pmpro_url( "levels" ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 				exit;
 			}
 		}

@@ -372,12 +372,12 @@ function pmpro_add_email_order_modal() {
 	// emailing?
 	if ( ! empty( $_REQUEST['pmpro_email_to'] ) && ! empty( $_REQUEST['pmpro_email_order'] ) ) {
 		// verify nonce
-		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_send_email_order_nonce'] ), 'pmpro_send_email_order' ) ) {
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_send_email_order_nonce'] ?? '' ), 'pmpro_send_email_order' ) ) {
 			wp_die( esc_html__( 'Security error.', 'paid-memberships-pro' ) );
 		}
 
 		$email = new PMProEmail();
-		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['pmpro_email_to'] ) );
+		$user  = get_user_by( 'email', sanitize_email( wp_unslash( $_REQUEST['pmpro_email_to'] ) ) );
 		$order = new MemberOrder( intval( $_REQUEST['pmpro_email_order'] ) );
 		if ( ! empty( $user ) && ! empty( $order ) && $email->sendInvoiceEmail( $user, $order ) ) { ?>
 			<div class="notice notice-success pmpro_message pmpro_success is-dismissible">

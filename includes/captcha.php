@@ -147,7 +147,7 @@ function pmpro_is_captcha_failed_request() {
 		}
 
 		// The errors param may contain a comma-separated list of error codes.
-		$codes = explode( ',', sanitize_text_field( $_REQUEST[ $param ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check for a login error code to display a message.
+		$codes = explode( ',', sanitize_text_field( wp_unslash( $_REQUEST[ $param ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check for a login error code to display a message.
 		if ( in_array( 'pmpro_captcha_failed', $codes, true ) ) {
 			return true;
 		}

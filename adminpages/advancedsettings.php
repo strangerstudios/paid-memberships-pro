@@ -30,7 +30,7 @@
 		pmpro_setOption("showexcerpts");
 		if ( ! empty( $_POST['nonmembertext_type'] ) ) {
 			// These use wp_kses for better security handling.
-			$nonmembertext = wp_kses( wp_unslash( $_POST['nonmembertext'] ), $allowedposttags );
+			$nonmembertext = isset( $_POST['nonmembertext'] ) ? wp_kses( wp_unslash( $_POST['nonmembertext'] ), $allowedposttags ) : '';
 			update_option( 'pmpro_nonmembertext', $nonmembertext );
 		} else {
 			delete_option( 'pmpro_nonmembertext' );

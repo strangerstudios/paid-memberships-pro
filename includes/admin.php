@@ -24,7 +24,7 @@ function pmpro_admin_init_redirect_to_dashboard() {
 	// Check if we should redirect to the wizard. This should only happen on new installs and once.
 	if ( get_option( 'pmpro_wizard_redirect' ) ) {
 		delete_option( 'pmpro_wizard_redirect' );	// Deleting right away to avoid redirect loops.
-		wp_redirect( admin_url( 'admin.php?page=pmpro-wizard' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=pmpro-wizard' ) );
 		exit;
 	}
 }
@@ -37,7 +37,7 @@ add_action( 'admin_init', 'pmpro_admin_init_redirect_to_dashboard' );
  */
 function pmpro_block_dashboard_redirect() {
 	if ( pmpro_block_dashboard() ) {
-		wp_redirect( pmpro_url( 'account' ) );
+		wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is empty when no Account page is set and is filterable; wp_safe_redirect() would fall back to wp-admin and loop back into this admin_init redirect.
 		exit;
 	}
 }
@@ -88,12 +88,12 @@ function pmpro_block_dashboard() {
 function pmpro_save_metabox_order() {
 
 	// Nonce check.
-	if ( ! wp_verify_nonce( $_POST['pmpro_metabox_nonce'], 'pmpro_metabox_order' ) ) {
+	if ( ! isset( $_POST['pmpro_metabox_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['pmpro_metabox_nonce'] ) ), 'pmpro_metabox_order' ) ) {
 		wp_send_json_error( __( 'Security check failed.', 'paid-memberships-pro' ) );
 	}
 
 	// Sanitize and validate order.
-	$order = sanitize_text_field( wp_unslash( $_POST['order'] ) );
+	$order = isset( $_POST['order'] ) ? sanitize_text_field( wp_unslash( $_POST['order'] ) ) : '';
 
 	// Save to user meta.
 	$user_id = get_current_user_id();
@@ -158,7 +158,7 @@ add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
  */
 function pmpro_pause_mode_notice() {
 	global $current_user;
-	if ( isset( $_REQUEST[ 'show_pause_notification' ] ) ) {
+	if ( isset( $_REQUEST[ 'show_pause_notification' ] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'pmpro_show_pause_notification' ) && current_user_can( 'pmpro_manage_pause_mode' ) ) {
 		$pmpro_show_pause_notification = (bool)$_REQUEST['show_pause_notification'];
 	} else {
 		$pmpro_show_pause_notification = false;
@@ -218,7 +218,7 @@ function pmpro_spamprotection_notice() {
 	if (
 		get_option( 'pmpro_spamprotection' ) ||
 		! isset( $_REQUEST['page'] ) ||
-		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ||
+		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 0, 6 ) ) ||
 		( isset( $_REQUEST['page'] ) && 'pmpro-securitysettings' === $_REQUEST['page'] )
 	) {
 		return;
@@ -270,7 +270,7 @@ function pmpro_admin_header() {
 	$show_header = false;
 
 	// Show header on our settings pages.
-	if ( ! empty( $_GET['page'] ) && strpos( $_GET['page'], 'pmpro-' ) === 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
+	if ( ! empty( $_GET['page'] ) && strpos( sanitize_text_field( wp_unslash( $_GET['page'] ) ), 'pmpro-' ) === 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 		$show_header = true;
 	}
 
@@ -319,7 +319,7 @@ function pmpro_admin_header() {
 					if ( pmpro_is_paused() ) {
 						// Link to reactivate the notification about pause mode if has cap.
 						if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
-							<a class="pmpro_paused_tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Services Paused', 'paid-memberships-pro' ); ?></a>
+							<a class="pmpro_paused_tag" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ), 'pmpro_show_pause_notification' ) ); ?>"><?php esc_html_e( 'Services Paused', 'paid-memberships-pro' ); ?></a>
 						<?php } else { ?>
 							<span class="pmpro_paused_tag"><?php esc_html_e( 'Crons Disabled', 'paid-memberships-pro' ); ?></span>
 						<?php }
@@ -345,7 +345,7 @@ function pmpro_admin_footer_text( $text ) {
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 	if (
 		! isset( $_REQUEST['page'] ) ||
-		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) )
+		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 0, 6 ) )
 	) {
 		return $text;
 	}
@@ -383,7 +383,7 @@ function pmpro_hide_non_pmpro_notices() {
 	// Make sure we're on a PMPro page.
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed.
 	if ( ! isset( $_REQUEST['page'] )
-			|| substr( sanitize_text_field( $_REQUEST['page'] ), 0, 6 ) !== 'pmpro-' ) {
+			|| substr( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 0, 6 ) !== 'pmpro-' ) {
 		return;
 	}
 	// phpcs:enable WordPress.Security.NonceVerification.Recommended

@@ -11,7 +11,7 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 }
 
 // Process form submissions.
-$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : false;
+$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : false;
 if ( ! empty( $action ) && ( empty( sanitize_key( $_REQUEST['pmpro_orders_nonce'] ) ) || ! check_admin_referer( $action, 'pmpro_orders_nonce' ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This is the nonce check itself: the nonce value is read here and verified by check_admin_referer().
 	$page_msg = -1;
 	$page_msgt = __( 'Are you sure you want to do that? Try again.', 'paid-memberships-pro' );
@@ -97,7 +97,7 @@ if ( $nonceokay ) {
 
 		case 'add_order_note':
 			$order_id = absint( wp_unslash( $_REQUEST['id'] ?? 0 ) );
-			$note = isset( $_POST['notes'] ) ? wp_unslash( $_POST['notes'] ) : '';
+			$note = isset( $_POST['notes'] ) ? wp_unslash( $_POST['notes'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- HTML note; sanitized with wp_kses() in MemberOrder::add_order_note().
 
 			if ( $order_id && $note !== '' ) {
 				$order = new MemberOrder( $order_id );
@@ -292,15 +292,15 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		<?php
 		// Gather current filters for the async export handler.
 		$orders_export_filters = array(
-			's'               => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '',
+			's'               => isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : '',
 			'l'               => isset( $_REQUEST['l'] ) ? intval( $_REQUEST['l'] ) : '',
-			'status'          => isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '',
+			'status'          => isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '',
 			'discount-code'   => isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : '',
-			'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : '',
-			'start-date'      => isset( $_REQUEST['start-date'] ) ? sanitize_text_field( $_REQUEST['start-date'] ) : '',
-			'end-date'        => isset( $_REQUEST['end-date'] ) ? sanitize_text_field( $_REQUEST['end-date'] ) : '',
-			'gateway'         => isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '',
-			'total'           => isset( $_REQUEST['total'] ) ? sanitize_text_field( $_REQUEST['total'] ) : '',
+			'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['predefined-date'] ) ) : '',
+			'start-date'      => isset( $_REQUEST['start-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['start-date'] ) ) : '',
+			'end-date'        => isset( $_REQUEST['end-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['end-date'] ) ) : '',
+			'gateway'         => isset( $_REQUEST['gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) ) : '',
+			'total'           => isset( $_REQUEST['total'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['total'] ) ) : '',
 		);
 		// Remove empty params to keep data clean.
 		$orders_export_filters = array_filter( $orders_export_filters, function( $v ) {

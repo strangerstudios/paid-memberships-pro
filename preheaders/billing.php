@@ -9,7 +9,7 @@ global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $
 // Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
 if ( ! is_user_logged_in() ) {
 	$billing_url = pmpro_url( 'billing' );
-    wp_redirect( add_query_arg( 'redirect_to', urlencode( $billing_url ), pmpro_login_url() ) );
+    wp_redirect( add_query_arg( 'redirect_to', urlencode( $billing_url ), pmpro_login_url() ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_login_url() is filterable (pmpro_login_url, login_url) and may point to an offsite SSO login page.
     exit;
 }
 
@@ -30,7 +30,7 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 
 	// Make sure the person trying to view the subscription owns it.
 	if ( $current_user->ID !== $pmpro_billing_subscription->get_user_id()) {
-		wp_redirect( pmpro_url( 'account' ) );
+		wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (add-ons such as Network Subsite point it at another domain) and is empty when no Account page is set.
 		exit;
 	}
 
@@ -129,35 +129,35 @@ if ( is_a( $pmpro_billing_subscription, 'PMPro_Subscription' ) ) {
 	if ($submit) {
 		//load em up (other fields)
 		if (isset($_REQUEST['bfirstname']))
-			$bfirstname = trim(sanitize_text_field($_REQUEST['bfirstname']));
+			$bfirstname = trim(sanitize_text_field(wp_unslash($_REQUEST['bfirstname'])));
 		if (isset($_REQUEST['blastname']))
-			$blastname = trim(sanitize_text_field($_REQUEST['blastname']));
+			$blastname = trim(sanitize_text_field(wp_unslash($_REQUEST['blastname'])));
 		if (isset($_REQUEST['fullname']))
-			$fullname = sanitize_text_field($_REQUEST['fullname']); //honeypot for spammers
+			$fullname = sanitize_text_field(wp_unslash($_REQUEST['fullname'])); //honeypot for spammers
 		if (isset($_REQUEST['baddress1']))
-			$baddress1 = trim(sanitize_text_field($_REQUEST['baddress1']));
+			$baddress1 = trim(sanitize_text_field(wp_unslash($_REQUEST['baddress1'])));
 		if (isset($_REQUEST['baddress2']))
-			$baddress2 = trim(sanitize_text_field($_REQUEST['baddress2']));
+			$baddress2 = trim(sanitize_text_field(wp_unslash($_REQUEST['baddress2'])));
 		if (isset($_REQUEST['bcity']))
-			$bcity = trim(sanitize_text_field($_REQUEST['bcity']));
+			$bcity = trim(sanitize_text_field(wp_unslash($_REQUEST['bcity'])));
 		if (isset($_REQUEST['bstate']))
-			$bstate = trim(sanitize_text_field($_REQUEST['bstate']));
+			$bstate = trim(sanitize_text_field(wp_unslash($_REQUEST['bstate'])));
 		if (isset($_REQUEST['bzipcode']))
-			$bzipcode = trim(sanitize_text_field($_REQUEST['bzipcode']));
+			$bzipcode = trim(sanitize_text_field(wp_unslash($_REQUEST['bzipcode'])));
 		if (isset($_REQUEST['bcountry']))
-			$bcountry = trim(sanitize_text_field($_REQUEST['bcountry']));
+			$bcountry = trim(sanitize_text_field(wp_unslash($_REQUEST['bcountry'])));
 		if (isset($_REQUEST['bphone']))
-			$bphone = trim(sanitize_text_field($_REQUEST['bphone']));
+			$bphone = trim(sanitize_text_field(wp_unslash($_REQUEST['bphone'])));
 		if (isset($_REQUEST['CardType']))
-			$CardType = sanitize_text_field($_REQUEST['CardType']);
+			$CardType = sanitize_text_field(wp_unslash($_REQUEST['CardType']));
 		if (isset($_REQUEST['AccountNumber']))
-			$AccountNumber = trim(sanitize_text_field($_REQUEST['AccountNumber']));
+			$AccountNumber = trim(sanitize_text_field(wp_unslash($_REQUEST['AccountNumber'])));
 		if (isset($_REQUEST['ExpirationMonth']))
-			$ExpirationMonth = sanitize_text_field($_REQUEST['ExpirationMonth']);
+			$ExpirationMonth = sanitize_text_field(wp_unslash($_REQUEST['ExpirationMonth']));
 		if (isset($_REQUEST['ExpirationYear']))
-			$ExpirationYear = sanitize_text_field($_REQUEST['ExpirationYear']);
+			$ExpirationYear = sanitize_text_field(wp_unslash($_REQUEST['ExpirationYear']));
 		if (isset($_REQUEST['CVV']))
-			$CVV = trim(sanitize_text_field($_REQUEST['CVV']));
+			$CVV = trim(sanitize_text_field(wp_unslash($_REQUEST['CVV'])));
 		
 		//avoid warnings for the required fields
 		if (!isset($bfirstname))

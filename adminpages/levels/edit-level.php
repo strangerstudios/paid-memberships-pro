@@ -23,7 +23,7 @@ $level_groups = pmpro_get_level_groups_in_order();
 
 // Get the template if passed in the URL.
 if ( isset( $_REQUEST['template'] ) ) {
-	$template = sanitize_text_field( $_REQUEST['template'] );
+	$template = sanitize_text_field( wp_unslash( $_REQUEST['template'] ) );
 } else {
 	$template = false;
 }

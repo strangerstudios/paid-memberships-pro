@@ -219,7 +219,7 @@
 		}
 
 		if(!empty($redirect))
-			wp_redirect($redirect);
+			wp_redirect($redirect); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Destination is built with pmpro_url(), which is filterable and may point to another host (e.g. Network Subsite add-on).
 
 		exit;
 	}
@@ -364,13 +364,13 @@
 			{
 				$old_firstname = get_user_meta($morder->user_id, "first_name", true);
 				if(!empty($old_firstname))
-					update_user_meta($morder->user_id, "first_name", sanitize_text_field($_POST['first_name']));
+					update_user_meta($morder->user_id, "first_name", sanitize_text_field($_POST['first_name'])); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes its value, so the slashed $_POST value is passed as WordPress expects.
 			}
 			if(!empty($_POST['last_name']))
 			{
 				$old_lastname = get_user_meta($morder->user_id, "last_name", true);
 				if(!empty($old_lastname))
-					update_user_meta($morder->user_id, "last_name", sanitize_text_field($_POST['last_name']));
+					update_user_meta($morder->user_id, "last_name", sanitize_text_field($_POST['last_name'])); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes its value, so the slashed $_POST value is passed as WordPress expects.
 			}
 
 			//hook
@@ -450,16 +450,16 @@
 			$morder->membership_id = $last_order->membership_id;
 			$morder->payment_transaction_id = $txn_id;
 			$morder->subscription_transaction_id = $last_order->subscription_transaction_id;
-			$morder->InitialPayment = sanitize_text_field($_POST['item_list_amount_1']);	//not the initial payment, but the class is expecting that
-			$morder->PaymentAmount = sanitize_text_field($_POST['item_list_amount_1']);
-			$morder->datetime = sanitize_text_field($_POST['timestamp']);
+			$morder->InitialPayment = isset( $_POST['item_list_amount_1'] ) ? sanitize_text_field( wp_unslash( $_POST['item_list_amount_1'] ) ) : '';	//not the initial payment, but the class is expecting that
+			$morder->PaymentAmount = isset( $_POST['item_list_amount_1'] ) ? sanitize_text_field( wp_unslash( $_POST['item_list_amount_1'] ) ) : '';
+			$morder->datetime = isset( $_POST['timestamp'] ) ? sanitize_text_field( wp_unslash( $_POST['timestamp'] ) ) : '';
 
 			//Assume no tax for now. Add ons will handle it later.
 			$morder->tax = 0;
 
-			$morder->FirstName = sanitize_text_field($_POST['customer_first_name']);
-			$morder->LastName = sanitize_text_field($_POST['customer_last_name']);
-			$morder->Email = sanitize_text_field($_POST['customer_email']);
+			$morder->FirstName = isset( $_POST['customer_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['customer_first_name'] ) ) : '';
+			$morder->LastName = isset( $_POST['customer_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['customer_last_name'] ) ) : '';
+			$morder->Email = isset( $_POST['customer_email'] ) ? sanitize_text_field( wp_unslash( $_POST['customer_email'] ) ) : '';
 
 			$morder->gateway = $last_order->gateway;
 			$morder->gateway_environment = $last_order->gateway_environment;

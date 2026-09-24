@@ -23,7 +23,7 @@ if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['
 
 // Do we have an order ID?
 if ( empty( $_REQUEST['id'] ) ) {
-	wp_redirect( admin_url( 'admin.php?page=pmpro-orders' ) );
+	wp_safe_redirect( admin_url( 'admin.php?page=pmpro-orders' ) );
 	exit;
 }
 

@@ -354,7 +354,7 @@ if ( empty( $default_gateway ) ) {
 											),
 											'strong' => array(),
 										);
-										echo wp_kses( sprintf( __('You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), $allowed_html );
+										echo wp_kses( sprintf( __('You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ) ) ), $allowed_html );
 									?>
 								</div> <!-- end pmpro_account_loggedin -->
 							<?php } ?>
@@ -530,7 +530,7 @@ if ( empty( $default_gateway ) ) {
 											if($pmpro_show_cvv) { ?>
 											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
 												<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Security Code (CVC)', 'paid-memberships-pro' );?></label>
-												<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); } // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, prefills the field after a failed submission. ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
+												<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ) ); } // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, prefills the field after a failed submission. ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
 											</div>
 										<?php } ?>
 									</div> <!-- end pmpro_cols-2 -->

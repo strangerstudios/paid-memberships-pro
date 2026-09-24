@@ -37,7 +37,7 @@ function pmpro_wp_mail_from_name( $from_name ) {
 function pmpro_wp_mail_from( $from_email ) {
 	// default from email wordpress@sitename
 	if ( isset( $_SERVER['SERVER_NAME'] ) ) {
-		$sitename = strtolower( sanitize_text_field( $_SERVER['SERVER_NAME'] ) );
+		$sitename = strtolower( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) );
 	} else {
 		$site_url = get_option( 'siteurl' );
 		$parsed_url = parse_url( $site_url );
@@ -203,12 +203,12 @@ function pmpro_email_templates_save_template_data() {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
-	$template = sanitize_text_field( $_REQUEST['template'] );
+	$template = isset( $_REQUEST['template'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ) : '';
 	$subject = isset( $_REQUEST['subject'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) ) : '';
-	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ), 'email' );	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	$to = isset( $_REQUEST['to'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['to'] ), ", \t\n\r\0\x0B" ) ) : '';
-	$cc = isset( $_REQUEST['cc'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['cc'] ), ", \t\n\r\0\x0B" ) ) : '';
-	$bcc = isset( $_REQUEST['bcc'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['bcc'] ), ", \t\n\r\0\x0B" ) ) : '';
+	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ?? '' ), 'email' );	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Email template HTML; sanitized by pmpro_kses().
+	$to = isset( $_REQUEST['to'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['to'] ), ", \t\n\r\0\x0B" ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by sanitize_text_field(); trim() only strips separator characters first.
+	$cc = isset( $_REQUEST['cc'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['cc'] ), ", \t\n\r\0\x0B" ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by sanitize_text_field(); trim() only strips separator characters first.
+	$bcc = isset( $_REQUEST['bcc'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['bcc'] ), ", \t\n\r\0\x0B" ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by sanitize_text_field(); trim() only strips separator characters first.
 
 	//update this template's settings
 	update_option( 'pmpro_email_' . $template . '_subject', $subject );
@@ -239,7 +239,7 @@ function pmpro_email_templates_reset_template_data() {
 
 	global $pmpro_email_templates_defaults;
 
-	$template = sanitize_text_field( $_REQUEST['template'] );
+	$template = isset( $_REQUEST['template'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ) : '';
 
 	delete_option('pmpro_email_' . $template . '_subject');
 	delete_option('pmpro_email_' . $template . '_body');
@@ -273,8 +273,8 @@ function pmpro_email_templates_disable_template() {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
-	$template = sanitize_text_field( $_REQUEST['template'] );
-	$disabled = sanitize_text_field( $_REQUEST['disabled'] );
+	$template = isset( $_REQUEST['template'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ) : '';
+	$disabled = isset( $_REQUEST['disabled'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disabled'] ) ) : '';
 	$response['result'] = update_option('pmpro_email_' . $template . '_disabled', $disabled );
 	$response['status'] = $disabled;
 	echo json_encode($response);
@@ -297,10 +297,10 @@ function pmpro_email_templates_send_test() {
 	}
 
 	//figure out PMPro_Email_Template class from template slug
-	$pmpro_email_template = PMPro_Email_Template::get_email_template( str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) ) );
+	$pmpro_email_template = PMPro_Email_Template::get_email_template( str_replace( 'email_', '', sanitize_text_field( wp_unslash( $_REQUEST['template'] ?? '' ) ) ) );
   
 	//it's a class name, not an instance and method is static. Call it directly.
-	$response = $pmpro_email_template::send_test( sanitize_email( $_REQUEST['email'] ) );
+	$response = $pmpro_email_template::send_test( sanitize_email( wp_unslash( $_REQUEST['email'] ?? '' ) ) );
 
 	//return the response
 	echo esc_html( $response );
@@ -310,7 +310,7 @@ add_action('wp_ajax_pmpro_email_templates_send_test', 'pmpro_email_templates_sen
 
 function pmpro_email_templates_test_recipient($email) {
 	if(!empty($_REQUEST['email'])) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
-		$email = sanitize_email( $_REQUEST['email'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
+		$email = sanitize_email( wp_unslash( $_REQUEST['email'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
 	return $email;
 }
 
@@ -323,7 +323,7 @@ function pmpro_email_templates_test_body($body, $email = null) {
 function pmpro_email_templates_test_template($email)
 {
 	if( ! empty( $_REQUEST['template'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
-		$email->template = str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
+		$email->template = str_replace( 'email_', '', sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Test-email filter callback, intended only for the pmpro_email_templates_send_test AJAX request, which verifies the pmproet nonce with check_ajax_referer(). Not hooked by core.
 	}
 
 	return $email;

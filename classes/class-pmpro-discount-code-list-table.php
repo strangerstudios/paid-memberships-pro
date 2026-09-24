@@ -245,7 +245,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		global $wpdb;
 
 		if( isset( $_REQUEST['s'] ) ) {
-			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
+			$s = trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) );
 		} else {
 			$s = '';
 		}
@@ -276,7 +276,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		if ( ! $count ) {
 
 			if( isset( $_REQUEST['orderby'] ) ) {
-				$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+				$orderby = $this->sanitize_orderby( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) );
 			} else {
 				$orderby = 'id';
 			}
@@ -396,9 +396,9 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 					[
 						'page'    => 'pmpro-discountcodes',
 						'delete'  => $item->id,
-						's' 	  => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : null,
-						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( $_REQUEST['orderby'] ) : null,
-						'order'   => isset( $_REQUEST['order'] ) ? sanitize_text_field( $_REQUEST['order'] ) : null,
+						's' 	  => isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : null,
+						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null,
+						'order'   => isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null,
 					],
 					admin_url( 'admin.php' )
 				),

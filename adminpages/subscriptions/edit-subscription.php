@@ -10,8 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Edit a subscription.
-$user_id = empty( $_REQUEST['user_id'] ) ? $subscription->get_user_id() : sanitize_text_field( $_REQUEST['user_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, only prefills the edit form.
-$membership_level_id = empty( $_REQUEST['membership_level_id'] ) ? $subscription->get_membership_level_id() : sanitize_text_field( $_REQUEST['membership_level_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, only prefills the edit form.
+$user_id = empty( $_REQUEST['user_id'] ) ? $subscription->get_user_id() : sanitize_text_field( wp_unslash( $_REQUEST['user_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, only prefills the edit form.
+$membership_level_id = empty( $_REQUEST['membership_level_id'] ) ? $subscription->get_membership_level_id() : sanitize_text_field( wp_unslash( $_REQUEST['membership_level_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, only prefills the edit form.
 ?>
 
 <h1 class="wp-heading-inline"><?php printf( esc_html__( 'Edit Subscription # %s', 'paid-memberships-pro' ), esc_html( $subscription->get_id() ) ); ?></h1>
