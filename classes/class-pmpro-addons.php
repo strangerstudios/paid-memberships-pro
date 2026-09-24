@@ -242,6 +242,25 @@ class PMPro_AddOns {
 	}
 
 	/**
+	 * Previously disabled SSL verification for Add On package downloads.
+	 *
+	 * SSL verification is no longer disabled. This method returns the args unchanged
+	 * and is no longer hooked to http_request_args.
+	 *
+	 * @since 1.8.5
+	 * @deprecated TBD
+	 *
+	 * @param array  $args  Array of request args.
+	 * @param string $url  The URL to be pinged.
+	 * @return array $args Unchanged array of request args.
+	 */
+	public function http_request_args_for_addons( $args, $url ) {
+		_deprecated_function( __METHOD__, 'TBD' );
+
+		return $args;
+	}
+
+	/**
 	 * Get a list of installed Add Ons with incorrect folder names.
 	 *
 	 * @since 3.1
