@@ -2469,8 +2469,13 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool True if a different account is already saved for this environment.
 	 */
 	private static function is_different_connected_account( $gateway_environment, $stripe_user_id ) {
+		// Only protect a live connection that's actually usable. A leftover user ID without keys has no Disconnect button to clear it.
+		if ( ! self::has_connect_credentials( $gateway_environment ) ) {
+			return false;
+		}
+
 		$saved_user_id = get_option( 'pmpro_' . ( 'live' === $gateway_environment ? 'live' : 'sandbox' ) . '_stripe_connect_user_id' );
-		return ! empty( $saved_user_id ) && $saved_user_id !== $stripe_user_id;
+		return $saved_user_id !== $stripe_user_id;
 	}
 
 	/**
