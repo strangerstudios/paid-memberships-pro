@@ -751,17 +751,20 @@ function pmpro_avatar_get_user_id_from_identifier( $id_or_email ) {
 
 	if ( is_numeric( $id_or_email ) && $id_or_email > 0 ) {
 		$user_id = (int) $id_or_email;
-	} elseif ( is_object( $id_or_email ) ) {
-		if ( isset( $id_or_email->user_id ) && $id_or_email->user_id > 0 ) {
-			// WP_Comment object.
+	} elseif ( $id_or_email instanceof WP_User ) {
+		$user_id = (int) $id_or_email->ID;
+	} elseif ( $id_or_email instanceof WP_Comment ) {
+		if ( $id_or_email->user_id > 0 ) {
 			$user_id = (int) $id_or_email->user_id;
-		} elseif ( isset( $id_or_email->ID ) && isset( $id_or_email->user_login ) ) {
-			// WP_User object.
-			$user_id = (int) $id_or_email->ID;
-		} elseif ( isset( $id_or_email->post_author ) ) {
-			// WP_Post object.
-			$user_id = (int) $id_or_email->post_author;
+		} elseif ( ! empty( $id_or_email->comment_author_email ) ) {
+			// Guest comment. Only match a registered user by email, never fall back to the post author.
+			$user = get_user_by( 'email', $id_or_email->comment_author_email );
+			if ( $user ) {
+				$user_id = $user->ID;
+			}
 		}
+	} elseif ( $id_or_email instanceof WP_Post ) {
+		$user_id = (int) $id_or_email->post_author;
 	} elseif ( is_string( $id_or_email ) && strpos( $id_or_email, '@' ) !== false ) {
 		// Email address.
 		$user = get_user_by( 'email', $id_or_email );

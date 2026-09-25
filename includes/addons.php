@@ -131,19 +131,21 @@ function pmpro_update_plugins_filter( $value ) {
 }
 
 /**
- * Disables SSL verification to prevent download package failures.
+ * Previously disabled SSL verification for Add On package downloads.
+ *
+ * SSL verification is no longer disabled. This function returns the args unchanged.
  *
  * @since 1.8.5
- * @deprecated 3.6 The PMPro_AddOns class handles this automatically
+ * @deprecated 3.6
  *
  * @param array  $args  Array of request args.
  * @param string $url  The URL to be pinged.
- * @return array $args Amended array of request args.
+ * @return array $args Unchanged array of request args.
  */
 function pmpro_http_request_args_for_addons( $args, $url ) {
-	_deprecated_function( __FUNCTION__, '3.6', 'PMPro_AddOns::http_request_args_for_addons()' );
-	
-	return _pmpro_get_addons_manager()->http_request_args_for_addons( $args, $url );
+	_deprecated_function( __FUNCTION__, '3.6' );
+
+	return $args;
 }
 
 /**
@@ -185,8 +187,9 @@ if ( ! function_exists( 'pmpro_getPluginAPIObjectFromAddon' ) ) {
 		$api->tested                = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
 		$api->last_updated          = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
 		$api->homepage              = isset( $addon['URI'] ) ? $addon['URI'] : '';
-		$api->download_link         = isset( $addon['Download'] ) ? $addon['Download'] : '';
-		$api->package               = isset( $addon['Download'] ) ? $addon['Download'] : '';
+		$download                   = ! empty( $addon['Download'] ) ? set_url_scheme( $addon['Download'], 'https' ) : '';
+		$api->download_link         = $download;
+		$api->package               = $download;
 
 		// add sections
 		if ( !empty( $addon['Description'] ) ) {

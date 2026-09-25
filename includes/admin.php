@@ -154,7 +154,7 @@ add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
  */
 function pmpro_pause_mode_notice() {
 	global $current_user;
-	if ( isset( $_REQUEST[ 'show_pause_notification' ] ) ) {
+	if ( isset( $_REQUEST[ 'show_pause_notification' ] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'pmpro_show_pause_notification' ) && current_user_can( 'pmpro_manage_pause_mode' ) ) {
 		$pmpro_show_pause_notification = (bool)$_REQUEST['show_pause_notification'];
 	} else {
 		$pmpro_show_pause_notification = false;
@@ -313,7 +313,7 @@ function pmpro_admin_header() {
 					if ( pmpro_is_paused() ) {
 						// Link to reactivate the notification about pause mode if has cap.
 						if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
-							<a class="pmpro_paused_tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Services Paused', 'paid-memberships-pro' ); ?></a>
+							<a class="pmpro_paused_tag" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ), 'pmpro_show_pause_notification' ) ); ?>"><?php esc_html_e( 'Services Paused', 'paid-memberships-pro' ); ?></a>
 						<?php } else { ?>
 							<span class="pmpro_paused_tag"><?php esc_html_e( 'Crons Disabled', 'paid-memberships-pro' ); ?></span>
 						<?php }
