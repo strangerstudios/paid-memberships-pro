@@ -1746,7 +1746,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * If Stripe is the current gateway and the last connection test found that Stripe is rejecting the saved keys, show an admin notice.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 */
 	public static function show_stripe_connection_notice() {
 		// Only show to users who can fix the connection.
@@ -1788,7 +1788,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Add a connection test tag to Stripe's status in the payment gateways list when the last test found problems.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @param string $gateway_status_html The status HTML for the gateway.
 	 * @param string $gateway_slug        The gateway being shown.
@@ -2092,7 +2092,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * (a 401 response) counts as a rejected key. Permission errors from a restricted key do not, since the
 	 * key itself is fine.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @param bool $check_connect_server Whether to always retrieve the current platform publishable key from the Connect server.
 	 *                                   If false, the key is only retrieved when Stripe rejects the one checkout is using.
@@ -2242,7 +2242,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Stripe authenticates the key before it looks up the resource, so retrieving a PaymentIntent that doesn't exist with the
 	 * publishable key is a read-only check: a valid key gets a 404, a rejected key gets a 401, and for Connect a revoked account gets a 403.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @return \Throwable|\Exception|null The error from Stripe, or null if the request did not fail.
 	 */
@@ -2264,7 +2264,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the results of the last connection test.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * Results are only returned if they were for the current gateway environment. Switching environments
 	 * changes every key being tested, so results from the other environment are treated as if the test never ran.
@@ -2290,7 +2290,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Forget the results of the last connection test so that the next check starts fresh.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 */
 	public static function clear_connection_test_results() {
 		delete_option( 'pmpro_stripe_connection_test' );
@@ -2299,7 +2299,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the keys of the checks that failed in a set of connection test results.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @param array|false $results Results from get_connection_test_results() or run_connection_test().
 	 * @return string[] The failed test keys.
@@ -2320,7 +2320,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Run the connection test from the daily scheduled task.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 */
 	public static function run_scheduled_connection_test() {
 		if ( 'stripe' !== get_option( 'pmpro_gateway' ) ) {
@@ -2339,7 +2339,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Run the connection test from the payment settings page and return the refreshed Status cell.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 */
 	public static function wp_ajax_pmpro_stripe_run_connection_test() {
 		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
@@ -2361,7 +2361,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Run the connection test when an admin follows the button link without JavaScript.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 */
 	public static function maybe_run_connection_test_on_demand() {
 		if ( ! isset( $_REQUEST['pmpro_stripe_connection_test'] ) || 'run' !== $_REQUEST['pmpro_stripe_connection_test'] ) {
@@ -2384,7 +2384,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the human-readable name of a connection test check.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @param string $test The test key.
 	 * @return string The label.
@@ -2402,7 +2402,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get escaped HTML explaining how to fix a failed connection test check.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @param string $test                The test key.
 	 * @param string $gateway_environment The gateway environment the test ran in, 'live' or 'sandbox'.
@@ -2446,7 +2446,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the nonce-protected URL that runs the connection test on demand.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @return string The URL.
 	 */
@@ -2462,7 +2462,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * Only enforced for live mode. Sandboxes get a new account ID whenever one is created, so switching them is routine.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @param string $gateway_environment The environment being connected, 'live' or 'sandbox'.
 	 * @param string $stripe_user_id      The Stripe account ID returned by the Connect server.
@@ -2481,7 +2481,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Build the URL used to start or end a Stripe Connect session for an environment.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @param string $environment The gateway environment, 'live' or 'sandbox'.
 	 * @param string $action      The Connect action, 'authorize' or 'disconnect'.
@@ -3737,7 +3737,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * Also used as the AJAX response after running the connection test.
 	 *
-	 * @since TBD
+	 * @since 3.8.7
 	 *
 	 * @param bool $livemode       True if showing the live environment, false for sandbox.
 	 * @param bool $force_expanded Whether to show the details even when every check passed.

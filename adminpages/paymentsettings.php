@@ -252,7 +252,7 @@
 											/**
 											 * Filter the status HTML shown for a gateway in the payment gateways list.
 											 *
-											 * @since TBD
+											 * @since 3.8.7
 											 *
 											 * @param string $gateway_status_html The status HTML, typically one or more pmpro_tag spans.
 											 * @param string $gateway_slug        The gateway being shown.
