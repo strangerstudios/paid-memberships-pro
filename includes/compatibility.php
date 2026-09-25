@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Check if certain plugins or themes are installed and activated
  * and if found dynamically load the relevant /includes/compatibility/ files.

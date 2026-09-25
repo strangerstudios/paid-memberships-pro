@@ -1,4 +1,10 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_discountcodes")))
 	{
@@ -725,11 +731,11 @@
 							<input type="checkbox" id="<?php echo esc_attr( $level_checkbox_id ); ?>" name="levels[]" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_selected ); ?> />
 							<label for="<?php echo esc_attr( $level_checkbox_id ); ?>"><?php echo esc_html( $level->name );?></label>
 						</div>
-						<div class="<?php echo esc_attr( $level_pricing_class ); ?>" data-pmpro-depends="<?php echo $level_pricing_depends; ?>">
-							<div class="<?php echo esc_attr( $formula_note_class ); ?>" data-pmpro-depends="<?php echo $formula_note_depends; ?>">
+						<div class="<?php echo esc_attr( $level_pricing_class ); ?>" data-pmpro-depends="<?php echo $level_pricing_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
+							<div class="<?php echo esc_attr( $formula_note_class ); ?>" data-pmpro-depends="<?php echo $formula_note_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
 								<p class="description"><?php esc_html_e( 'The discount will be applied to this level\'s regular pricing at checkout. Edit the membership level to change its regular pricing.', 'paid-memberships-pro' ); ?></p>
 							</div>
-							<table class="<?php echo esc_attr( $pricing_fields_class ); ?>" data-pmpro-depends="<?php echo $pricing_fields_depends; ?>">
+							<table class="<?php echo esc_attr( $pricing_fields_class ); ?>" data-pmpro-depends="<?php echo $pricing_fields_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
 							<tbody>
 								<tr>
 									<th scope="row" valign="top"><label for="initial_payment"><?php esc_html_e('Initial Payment', 'paid-memberships-pro' );?></label></th>
@@ -752,7 +758,7 @@
 									<td><input class="recurring_checkbox" id="<?php echo esc_attr( $level_recurring_checkbox_id ); ?>" name="recurring[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_recurring ); ?> /> <label for="<?php echo esc_attr( $level_recurring_checkbox_id ); ?>"><?php esc_html_e('Check if this level has a recurring subscription payment.', 'paid-memberships-pro' );?></label></td>
 								</tr>
 
-								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; ?>">
+								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
 									<th scope="row" valign="top"><label for="billing_amount"><?php esc_html_e('Billing Amount', 'paid-memberships-pro' );?></label></th>
 									<td>
 										<?php
@@ -785,7 +791,7 @@
 									</td>
 								</tr>
 
-								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; ?>">
+								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
 									<th scope="row" valign="top"><label for="billing_limit"><?php esc_html_e('Billing Cycle Limit', 'paid-memberships-pro' );?></label></th>
 									<td>
 										<input name="billing_limit[]" type="text" size="20" value="<?php echo esc_attr( $level->billing_limit ); ?>" />
@@ -801,7 +807,7 @@
 								$discount_gateway_supports_recurring_trials = method_exists( $discount_gateway_class, 'supports' ) && $discount_gateway_class::supports( 'recurring_trials' );
 								if ( $discount_gateway_supports_recurring_trials || pmpro_isLevelTrial( $level ) ) {
 								?>
-									<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; ?>">
+									<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
 										<th scope="row" valign="top"><label><?php esc_html_e('Custom Trial', 'paid-memberships-pro' );?></label></th>
 										<td>
 											<input id="<?php echo esc_attr( $level_trial_checkbox_id ); ?>" name="custom_trial[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_trial ); ?> /> <label for="<?php echo esc_attr( $level_trial_checkbox_id ); ?>"><?php esc_html_e('Check to add a custom trial period.', 'paid-memberships-pro' );?></label>
@@ -811,7 +817,7 @@
 										</td>
 									</tr>
 
-									<tr class="<?php echo esc_attr( $trial_info_class ); ?>" data-pmpro-depends="<?php echo $trial_info_depends; ?>">
+									<tr class="<?php echo esc_attr( $trial_info_class ); ?>" data-pmpro-depends="<?php echo $trial_info_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
 										<th scope="row" valign="top"><label for="trial_amount"><?php esc_html_e('Trial Billing Amount', 'paid-memberships-pro' );?></label></th>
 										<td>
 											<?php
@@ -842,7 +848,7 @@
 									<td><input id="<?php echo esc_attr( $level_expiration_checkbox_id ); ?>" name="expiration[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_expiring ); ?> /> <label for="<?php echo esc_attr( $level_expiration_checkbox_id ); ?>"><?php esc_html_e('Check this to set when membership access expires.', 'paid-memberships-pro' );?></label></td>
 								</tr>
 
-								<tr class="<?php echo esc_attr( $expiration_info_class ); ?>" data-pmpro-depends="<?php echo $expiration_info_depends; ?>">
+								<tr class="<?php echo esc_attr( $expiration_info_class ); ?>" data-pmpro-depends="<?php echo $expiration_info_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
 									<th scope="row" valign="top"><label for="billing_amount"><?php esc_html_e('Expires In', 'paid-memberships-pro' );?></label></th>
 									<td>
 										<input id="expiration_number" name="expiration_number[]" type="text" size="10" value="<?php echo esc_attr( $level->expiration_number ); ?>" />

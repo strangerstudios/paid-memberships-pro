@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_upgrade_1_6()
 {
 	global $wpdb;
@@ -7,7 +11,7 @@ function pmpro_upgrade_1_6()
 
 	//add notes column to orders
 	$sqlQuery = "ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` ADD  `notes` TEXT NOT NULL";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade; static ALTER on a $wpdb table name.
 
 	update_option("pmpro_db_version", "1.6");
 	return 1.6;

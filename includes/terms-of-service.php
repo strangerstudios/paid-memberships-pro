@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Add TOS field to advanced settings.
  *
@@ -67,8 +71,8 @@ function pmpro_show_tos_at_checkout() {
 	<div id="pmpro_tos_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_tos_fields' ) ); ?>">
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 			<?php
-				if ( isset( $_REQUEST['tos'] ) ) {
-					$tos = intval( $_REQUEST['tos'] );
+				if ( isset( $_REQUEST['tos'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, prefills the TOS checkbox.
+					$tos = intval( $_REQUEST['tos'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, prefills the TOS checkbox.
 				} else {
 					$tos = "";
 				}
@@ -167,7 +171,7 @@ function pmpro_validate_tos_at_checkout( $pmpro_continue_registration ) {
 	}
 
 	// If the TOS checkbox is not checked, halt registration.
-	if ( ! isset( $_REQUEST['tos'] ) || empty( $_REQUEST['tos'] ) ) {
+	if ( ! isset( $_REQUEST['tos'] ) || empty( $_REQUEST['tos'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs in the pmpro_checkout_*_creation_checks filters, after pmpro_checkout_nonce is verified in preheaders/checkout.php.
 		$pmpro_continue_registration = false;
 		$pmpro_error_fields[] = 'tospage';
 		/* translators: 1: TOS page title. */
@@ -184,7 +188,7 @@ add_filter( 'pmpro_checkout_order_creation_checks', 'pmpro_validate_tos_at_check
  * @since 1.9.5
  */
 function pmpro_after_checkout_update_consent( $user_id, $order ) {
-	if( !empty( $_REQUEST['tos'] ) ) {
+	if( !empty( $_REQUEST['tos'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; off-site gateway completions use the session value below instead.
 		$tospage_id = get_option( 'pmpro_tospage' );
 		pmpro_save_consent( $user_id, $tospage_id, NULL, $order->id );
 	} elseif ( !empty( $_SESSION['tos'] ) ) {

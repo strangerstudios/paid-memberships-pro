@@ -9,12 +9,16 @@
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}		
 	
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//this script must be enabled to run
 	if(!defined('PMPRO_GETFILE_ENABLED') || !PMPRO_GETFILE_ENABLED)
 		die("The getfile script is not enabled.");
 	
 	//prevent loops when redirecting to .php files
-	if(!empty($_REQUEST['noloop']))
+	if(!empty($_REQUEST['noloop'])) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag that only stops the request; no data is changed.
 	{
 		status_header( 500 );
 		die("This file cannot be loaded through the get file script.");
@@ -74,7 +78,7 @@
 		
 		//look the file up in the db				
 		$sqlQuery = "SELECT post_parent FROM $wpdb->posts WHERE ID = (SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wp_attached_file' AND meta_value = '" . esc_sql($filename_small) . "' LIMIT 1) LIMIT 1";		
-		$file_post_parent = $wpdb->get_var($sqlQuery);
+		$file_post_parent = $wpdb->get_var($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $filename_small is escaped with esc_sql() inside quotes in $sqlQuery. Direct attachment lookup by file path; there is no cached WordPress API for this reverse lookup.
 		
 		//has access?
 		if($file_post_parent)

@@ -1,4 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade routine on PMPro custom tables; no WordPress API exists and caching does not apply.
+
 function pmpro_upgrade_1_1_15()
 {
 	/*
@@ -21,62 +27,62 @@ function pmpro_upgrade_1_1_15()
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` CHANGE  `id`  `id` INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_categories . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_categories . "` CHANGE  `category_id`  `category_id` INT( 11 ) UNSIGNED NOT NULL
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_pages . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_pages . "` CHANGE  `page_id`  `page_id` INT( 11 ) UNSIGNED NOT NULL
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` CHANGE  `user_id`  `user_id`  INT( 11 ) UNSIGNED NOT NULL
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` CHANGE  `id`  `id` INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` CHANGE  `user_id`  `user_id` INT( 11 ) UNSIGNED NOT NULL DEFAULT  '0'
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL DEFAULT  '0'
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD  `code_id` INT UNSIGNED NOT NULL AFTER  `membership_id` ;
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD INDEX (  `code_id` )
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	/*
 		New tables for discount codes
@@ -96,7 +102,7 @@ function pmpro_upgrade_1_1_15()
 		  KEY `expires` (`expires`)
 		);
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	//wp_pmpro_discount_codes_levels
 	$sqlQuery = "		
@@ -114,7 +120,7 @@ function pmpro_upgrade_1_1_15()
 		  KEY `initial_payment` (`initial_payment`)
 		);
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	//wp_pmpro_discount_codes_uses
 	$sqlQuery = "		
@@ -129,7 +135,7 @@ function pmpro_upgrade_1_1_15()
 		  KEY `timestamp` (`timestamp`)
 		);
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-time upgrade query; only $wpdb table names are interpolated.
 
 	update_option("pmpro_db_version", "1.115");
 

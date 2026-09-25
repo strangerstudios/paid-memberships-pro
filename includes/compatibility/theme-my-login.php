@@ -5,6 +5,10 @@
  * @since 2.3
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
  /**
   * Force login redirect to go to TML page instead.
   * @since 2.3
@@ -70,8 +74,8 @@ function pmpro_tml_login_head() {
     if ( class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && (Theme_My_Login::is_tml_page("register") || Theme_My_Login::is_tml_page("login")) ||
     function_exists( 'tml_is_action' ) && ( tml_is_action( 'register' ) || tml_is_action( 'login' ) ) && $login_redirect ){
 
-        if ( isset($_REQUEST['action']) && $_REQUEST['action'] == "register" || 
-        isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled"	||
+        if ( isset($_REQUEST['action']) && $_REQUEST['action'] == "register" || // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only decides which page to redirect to; nothing is saved.
+        isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled"	|| // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only decides which page to redirect to; nothing is saved.
         !is_admin() && class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && Theme_My_Login::is_tml_page("register") ||
         function_exists( 'tml_is_action' ) && tml_is_action( 'register' ) ) {
 
@@ -87,7 +91,7 @@ function pmpro_tml_login_head() {
         }
 
 		// Redirect to frontend profile page.
-		if ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == "profile" && is_user_logged_in() ) {
+		if ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == "profile" && is_user_logged_in() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only decides which page to redirect to; nothing is saved.
 			$link = get_permalink($GLOBALS['theme_my_login']->options->options['page_id']);								
 			wp_redirect($link);
 			exit;

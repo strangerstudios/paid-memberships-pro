@@ -1,4 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+
 /**
  * Show an overview of active membership information linked to the single member dashboard.
  *
@@ -524,6 +530,7 @@ function pmpro_cancel_previous_subscriptions_false()
  * @deprecated 3.0 Use the single member dashboard.
  */
 function pmpro_membership_level_profile_fields_update() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Deprecated and no longer hooked by core. It was built for the personal_options_update/edit_user_profile_update hooks, which only fire after WordPress core verifies the update-user_{$user_id} nonce.
 	global $wpdb, $current_user;
 
 	_deprecated_function( __FUNCTION__, '3.0' );
@@ -660,6 +667,7 @@ function pmpro_membership_level_profile_fields_update() {
 			$myemail->sendAdminChangeAdminEmail( $edited_user );
 		}
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 
 /**
@@ -779,7 +787,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 								esc_html_e( '&#8212;', 'paid-memberships-pro' );
 							} else {
 								$discountQuery = $wpdb->prepare( "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = %d LIMIT 1", $invoice->code_id );
-								$discount_code = $wpdb->get_row( $discountQuery );
+								$discount_code = $wpdb->get_row( $discountQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $discountQuery is built with $wpdb->prepare() on the previous line.
 								echo '<a href="admin.php?page=pmpro-discountcodes&edit=' . esc_attr( $invoice->code_id ). '">'. esc_attr( $discount_code->code ) . '</a>';
 							}
 						?></td>

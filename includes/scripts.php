@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Enqueue frontend JavaScript and CSS
  */
@@ -35,7 +39,7 @@ function pmpro_enqueue_scripts() {
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'ajax_timeout' => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
 				'show_discount_code' => pmpro_show_discount_code(),
-				'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ),
+				'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.
 				'sensitiveCheckoutRequestVars' => pmpro_get_sensitive_checkout_request_vars(),
 				'update_nonce' => apply_filters( 'pmpro_update_nonce_at_checkout', false ),
 				'hide_password_text' =>  __( 'Hide Password', 'paid-memberships-pro' ),
@@ -48,12 +52,12 @@ function pmpro_enqueue_scripts() {
 	// Change Password page JS
 	$is_change_pass_page = ! empty( $pmpro_pages['member_profile_edit'] )
 							&& is_page( $pmpro_pages['member_profile_edit'] )
-							&& ! empty( $_REQUEST['view'] )
-							&& $_REQUEST['view'] === 'change-password';
+							&& ! empty( $_REQUEST['view'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.
+							&& $_REQUEST['view'] === 'change-password'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.
 	$is_reset_pass_page = ! empty( $pmpro_pages['login'] )
 							&& is_page( $pmpro_pages['login'] )
-							&& ! empty( $_REQUEST['action'] )
-							&& $_REQUEST['action'] === 'rp';
+							&& ! empty( $_REQUEST['action'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.
+							&& $_REQUEST['action'] === 'rp'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.
 		
 	if ( $is_change_pass_page || $is_reset_pass_page ) {
 		wp_register_script( 'pmpro_login',
@@ -89,7 +93,7 @@ function pmpro_enqueue_scripts() {
 
 	// Enqueue select2 on front end and user profiles
 	if( pmpro_is_checkout() || 
-		! empty( $_REQUEST['pmpro_level'] ) ||
+		! empty( $_REQUEST['pmpro_level'] ) || // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.
 		! empty( $pmpro_level ) ||
 		( class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && Theme_My_Login::is_tml_page("profile") ) ||
 		( isset( $pmpro_pages['member_profile_edit'] ) && is_page( $pmpro_pages['member_profile_edit'] ) ) ) {
@@ -112,7 +116,7 @@ function pmpro_admin_enqueue_scripts() {
     wp_enqueue_script( 'select2' );
 
 
-    if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-wizard' ) && ( isset( $_REQUEST['step'] ) && $_REQUEST['step'] == 'done' ) ) {
+    if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-wizard' ) && ( isset( $_REQUEST['step'] ) && $_REQUEST['step'] == 'done' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.
         wp_register_script( 'pmpro_confetti', plugins_url( 'js/pmpro-confetti.js', __DIR__ ), [
                 'jquery',
             ], PMPRO_VERSION );

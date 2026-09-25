@@ -4,6 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:disable WordPress.Security.NonceVerification.Missing -- PayPal IPN requests cannot carry a WordPress nonce; they are authenticated by posting back to PayPal (cmd=_notify-validate) in pmpro_ipnValidate() and checking the receiver email.
+
 //uncomment to log requests in logs/ipn.txt
 //define('PMPRO_IPN_DEBUG', true);
 
@@ -285,6 +287,7 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 if ( $txn_type == 'recurring_payment_profile_created' ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Updates the PMPro orders table, which has no WordPress API or object cache layer.
 		$wpdb->update( $wpdb->pmpro_membership_orders, array( 'payment_transaction_id' => $initial_payment_txn_id ), array(
 			'id' => $last_subscription_order->id
 		), array( '%s' ), array( '%d' ) );
@@ -609,16 +612,18 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 		//add discount code use
 		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Inserts into a PMPro custom table, which has no WordPress API or object cache layer.
 			$wpdb->query(
 				$wpdb->prepare(
 					"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
 						( code_id, user_id, order_id, timestamp ) 
 						VALUES( %d, %d, %s, %s )",
-					$discount_code_id),
+					$discount_code_id,
 					$morder->user_id,
 					$morder->id,
 					current_time( 'mysql' )
-				);
+				)
+			);
 		}
 
 		//save first and last name fields

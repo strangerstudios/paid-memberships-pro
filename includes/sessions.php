@@ -4,6 +4,9 @@
 	Copyright 2011	Stranger Studios	(email : jason@strangerstudios.com)
 	GPLv2 Full license details in license.txt
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 
 /**

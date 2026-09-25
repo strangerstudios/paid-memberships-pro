@@ -1,5 +1,12 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request values only filter, search, sort and paginate the members list.
+
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
@@ -523,9 +530,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
 
 		if( $count ) {
-			$sql_table_data = $wpdb->get_var( $sqlQuery );
+			$sql_table_data = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search terms go through esc_sql() inside quotes, IDs are cast to int or come from the DB, and orderby/order/limit are whitelisted or integers.
 		} else {
-			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A );
+			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search terms go through esc_sql() inside quotes, IDs are cast to int or come from the DB, and orderby/order/limit are whitelisted or integers.
 		}
 
 		return $sql_table_data;

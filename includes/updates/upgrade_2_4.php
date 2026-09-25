@@ -14,6 +14,12 @@
 	2. Loop through and check the Stripe API for a subscription for that user which has a plan with id equal to the order code.
     3. Set the subscription transaction id
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade routine against PMPro custom tables, which have no WordPress API or object cache layer.
+
 function pmpro_upgrade_2_4() {
     global $wpdb;
     $sqlQuery = "SELECT * 
@@ -24,7 +30,7 @@ function pmpro_upgrade_2_4() {
                     AND subscription_transaction_id = ''
                     AND status = 'success'
 				ORDER BY id";
-	$orders = $wpdb->get_results( $sqlQuery );
+	$orders = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade; static query, only the $wpdb table name is interpolated.
 	
 	if(!empty($orders)) {
 		if(count($orders) > 10) {
@@ -59,7 +65,7 @@ function pmpro_upgrade_2_4_ajax() {
                     AND subscription_transaction_id = ''
                     AND status = 'success'
 				ORDER BY id";
-	$orders = $wpdb->get_results( $sqlQuery );
+	$orders = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-time upgrade; $last_order_id is an internal option value escaped with esc_sql() inside quotes.
 
 	if(empty($orders)) {
 		//done with this update
@@ -107,7 +113,7 @@ function pmpro_upgrade_2_4_helper_get_subscriptions_for_orders( $orders, $update
 		foreach ( $subscriptions->data as $sub ) {
 			if ( in_array( $sub->plan->id, $codes ) ) {
 				$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql( $sub->id ) . "' WHERE id = '" . esc_sql( $order->id ) . "' LIMIT 1";
-				$wpdb->query( $sqlQuery );
+				$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-time upgrade; the subscription ID and order ID are escaped with esc_sql() inside quotes.
 				break;
 			}
 		}

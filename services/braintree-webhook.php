@@ -12,6 +12,8 @@ if( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Braintree webhook; gateway requests can't carry a WordPress nonce. The payload is authenticated by Braintree_WebhookNotification::parse(), which verifies bt_signature.
+
 //globals
 global $wpdb;
 

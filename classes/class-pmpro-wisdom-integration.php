@@ -288,7 +288,7 @@ class PMPro_Wisdom_Integration {
 	 * @since 2.8
 	 */
 	public function remove_wisdom_notices_from_non_plugin_screens() {
-		$settings_page = ! empty( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
+		$settings_page = ! empty( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only used to decide which admin notices to show.
 
 		// Check if we are on a settings page using isset() which is faster than in_array().
 		if ( isset( $this->plugin_pages[ $settings_page ] ) ) {
@@ -342,7 +342,7 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields']['pmpro_members_cancelled_count'] = pmpro_getCancellations( 'all time' );
 
 		// Orders info.
-		$stats['plugin_options_fields']['pmpro_orders_count'] = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->pmpro_membership_orders}`" );
+		$stats['plugin_options_fields']['pmpro_orders_count'] = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->pmpro_membership_orders}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Counts rows in the PMPro orders custom table, which has no WordPress API or object cache layer.
 
 		// Features.
 		$stats['plugin_options_fields']['pmpro_hide_toolbar']  = get_option( 'pmpro_hide_toolbar', 'No Value' );
@@ -479,7 +479,7 @@ class PMPro_Wisdom_Integration {
 			$level_data->subscription_delay  = get_option( 'pmpro_subscription_delay_' . $level_id , '' );
 
 			// Add if a category is set.
-			$categories = $wpdb->get_col(
+			$categories = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro memberships_categories custom table, which has no WordPress API or object cache layer.
 				$wpdb->prepare(
 					"SELECT category_id
 					FROM $wpdb->pmpro_memberships_categories

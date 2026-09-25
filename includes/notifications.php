@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Initialize a PMPro_Banner_Notifier object for PMPro.
  * This replaces the old PMPro notifications system.

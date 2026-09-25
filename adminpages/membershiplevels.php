@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_membershiplevels")))
 	{
@@ -7,7 +11,7 @@
 
 	// Process form submissions.
 	$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : false;
-	if ( ! empty( $action ) && ( empty( sanitize_key( $_REQUEST['pmpro_membershiplevels_nonce'] ) ) || ! check_admin_referer( $action, 'pmpro_membershiplevels_nonce' ) ) ) {
+	if ( ! empty( $action ) && ( empty( sanitize_key( $_REQUEST['pmpro_membershiplevels_nonce'] ) ) || ! check_admin_referer( $action, 'pmpro_membershiplevels_nonce' ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This line is the nonce check; the value is passed to check_admin_referer().
 		$page_msg = -1;
 		$page_msgt = __( 'Are you sure you want to do that? Try again.', 'paid-memberships-pro' );
 		$action = false;
@@ -59,7 +63,7 @@
 			$sqlQuery .= "WHERE name LIKE '%" . esc_sql( $s ) . "%' ";
 			$sqlQuery .= "ORDER BY id ASC";
 
-			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			$levels = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- The only variable input, $s, is passed through esc_sql() inside quotes; the table name comes from $wpdb.
 
         if(empty($_REQUEST['s']) && !empty($pmpro_level_order)) {
             //reorder levels
@@ -189,7 +193,7 @@
 						}
 					}
 					if ( ! $level_exists ) {
-						$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = %d AND `level` = %d", $level_group->id, $group_level_id ) );
+						$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = %d AND `level` = %d", $level_group->id, $group_level_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Cleans up the PMPro level groups custom table, which has no WordPress API or object cache layer.
 					}
 				}
 			}

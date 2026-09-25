@@ -1,4 +1,8 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Check if a variable is a PMPro_Field.
  * Also checks for PMProRH_Field.
@@ -141,6 +145,7 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	 */
 	add_filter( 'parent_file', function ( $parent_file ) use ( $safe_name ) {
 		global $submenu_file;
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only picks which admin menu item to highlight.
 		if (
 			isset( $_GET['taxonomy'] ) &&
 			$_GET['taxonomy'] == $safe_name &&
@@ -148,6 +153,7 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 		) {
 			$parent_file = 'users.php';
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return $parent_file;
 	} );
@@ -383,7 +389,7 @@ function pmpro_checkout_user_creation_checks_user_fields( $okay ) {
 		);
 		foreach($fields as $field) {
 			// If this is a file upload, check whether the file is allowed.
-			if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) {
+			if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in preheaders/checkout.php before the pmpro_checkout_user_creation_checks filter runs.
 				$upload_check = pmpro_check_upload( $field->name );
 				if ( is_wp_error( $upload_check ) ) {
 					pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
@@ -487,7 +493,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 		);
 		foreach($fields as $field) {
 			// If this is a file upload, check whether the file is allowed.
-			if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) {
+			if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in preheaders/checkout.php before the pmpro_checkout_order_creation_checks filter runs.
 				$upload_check = pmpro_check_upload( $field->name );
 				if ( is_wp_error( $upload_check ) ) {
 					pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
@@ -539,6 +545,7 @@ add_filter( 'pmpro_checkout_order_creation_checks', 'pmpro_registration_checks_f
  * @deprecated 2.12.4 Use pmpro_after_checkout_save_fields instead to save fields immediately or pmpro_save_checkout_data_to_order for delayed checkouts.
  */
 function pmpro_paypalexpress_session_vars_for_user_fields() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Deprecated and no longer hooked by core. It ran during PayPal Express checkout processing, after preheaders/checkout.php verified pmpro_checkout_nonce, and only copies submitted values into the visitor's own session.
 	_deprecated_function( __FUNCTION__, '2.12.4', 'pmpro_after_checkout_save_fields' );
 
 	// Loop through all the field groups.
@@ -599,6 +606,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 			}
 		}
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 }
 
 /**
@@ -904,7 +912,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 	//only update admin confirmation emails
 	if ( ! empty( $email ) && strpos( $email->template, "checkout" ) !== false && strpos( $email->template, "admin" ) !== false ) {
 		//get the user_id from the email
-		$user_id = $wpdb->get_var( "SELECT ID FROM $wpdb->users WHERE user_email = '" . esc_sql( $email->data['user_email'] ) . "' LIMIT 1" );
+		$user_id = $wpdb->get_var( "SELECT ID FROM $wpdb->users WHERE user_email = '" . esc_sql( $email->data['user_email'] ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off lookup of the user ID by email while building the admin checkout email; not worth caching.
 
 		if ( ! empty( $user_id ) ) {
 			//add to bottom of email

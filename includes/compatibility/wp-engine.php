@@ -11,6 +11,10 @@
  * @since 2.4.1
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Add wpe-login parameter when sending lost password email.
  *

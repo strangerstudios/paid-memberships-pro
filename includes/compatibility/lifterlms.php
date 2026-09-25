@@ -13,6 +13,12 @@
  * 5. Override the My Memberships and My Orders tabs of the student dashboard.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries join PMPro custom tables with core tables, which have no WordPress API or object cache layer.
+
 /**
  * Add streamline setting to the PMPro Advanced Settings page.
  */
@@ -141,6 +147,7 @@ function pmpro_lifter_get_courses_for_levels( $level_ids ) {
 	}
 	
 	$level_placeholders = implode(',', array_fill(0, count($level_ids), '%d'));
+	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $level_placeholders is a list of %d placeholders built with array_fill().
 	$course_ids = $wpdb->get_col(
 		$wpdb->prepare(
 			"
@@ -155,6 +162,7 @@ function pmpro_lifter_get_courses_for_levels( $level_ids ) {
 			...$level_ids
 		)
 	);
+	// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 	
 	return $course_ids;
 }
@@ -670,7 +678,7 @@ function pmpro_lifter_dashboard_admin_url( $url ) {
 	}
 
 	// Bail if not on the LifterLMS dashboard.
-	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) {
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin screen is loaded.
 		return $url;
 	}
 	
@@ -703,13 +711,13 @@ function pmpro_lifter_dashboard_checklist( $checklist ) {
 	}
 
 	// Bail if not on the LifterLMS dashboard.
-	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) {
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin screen is loaded.
 		return $checklist;
 	}
 
 	// Swap the Create Access Plan checklist item.
 	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID WHERE p.post_type = 'course' AND p.post_status = 'publish' GROUP BY mp.page_id LIMIT 1";
-	$ap_check = $wpdb->get_var( $sqlQuery );
+	$ap_check = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; table names from $wpdb.
 	if ( $ap_check ) {
 		$checklist['access_plan'] = '<i class="fa fa-check"></i> ' . esc_html__( 'Restrict a Course', 'paid-memberships-pro' );
 	} else {
@@ -730,7 +738,7 @@ function pmpro_lifter_ajax_llms_widget_sold_pmpro() {
 	}
 
 	// Get the start date.
-	$startdate = sanitize_text_field( $_REQUEST['dates']['start'] );
+	$startdate = sanitize_text_field( $_REQUEST['dates']['start'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; returns sales totals to users with the pmpro_reports capability.
 	// Note: We ignore the enddate. pmpro_getRevenue assumes the enddate is today.
 
 	// Get total PMPro sales in this period.

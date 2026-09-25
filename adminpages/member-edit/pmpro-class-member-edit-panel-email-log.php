@@ -7,6 +7,10 @@
  * @since 3.7
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 	/**
 	 * Set up the panel
@@ -40,6 +44,7 @@ class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 		}
 		
 		// Get all email log entries for this user (limited to 10 most recent)
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro email log custom table, which has no WordPress API or object cache layer.
 		$entries = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * FROM {$wpdb->pmpro_email_log} 
 			 WHERE user_id = %d OR email_to = %s 
@@ -139,7 +144,7 @@ class PMPro_Member_Edit_Panel_Email_Log extends PMPro_Member_Edit_Panel {
 
 		<?php
 		// Render the email log modal
-		echo pmpro_render_email_log_modal();
+		echo pmpro_render_email_log_modal(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static modal markup, escaped when built.
 		?>
 
 		<?php

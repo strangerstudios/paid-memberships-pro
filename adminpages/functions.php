@@ -17,6 +17,11 @@
 	https://www.paidmembershipspro.com/documentation/
 
 ****************************************************************/
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads PMPro custom tables (levels, discount codes), which have no WordPress API or object cache layer.
 
 /*
 	Checks if PMPro settings are complete or if there are any errors.
@@ -35,7 +40,7 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 		if(empty($level))
 		{
 			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
-			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			$levels = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 			if(!empty($levels))
 			{
 				foreach($levels as $level)
@@ -83,7 +88,7 @@ function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 		if(empty($level))
 		{
 			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
-			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			$levels = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 			if(!empty($levels))
 			{
 				foreach($levels as $level)
@@ -129,7 +134,7 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 		if(empty($level))
 		{
 			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
-			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			$levels = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 			if(!empty($levels))
 			{
 				foreach($levels as $level)
@@ -220,7 +225,7 @@ function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_co
 	// Check ALL the discount code levels if none specified.
 	if ( empty( $discount_code_level ) ) {
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_discount_codes_levels ORDER BY id ASC";
-		$discount_codes_levels = $wpdb->get_results($sqlQuery, OBJECT);
+		$discount_codes_levels = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 		if ( ! empty( $discount_codes_levels ) ) {
 			foreach ( $discount_codes_levels as $discount_code_level ) {
 				if ( ! pmpro_check_discount_code_level_for_gateway_compatibility( $discount_code_level ) ) {
@@ -289,7 +294,7 @@ function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
 		if(empty($level))
 		{
 			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
-			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			$levels = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 			if(!empty($levels))
 			{
 				foreach($levels as $level)

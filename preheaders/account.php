@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_pages;
 
 // Redirect to login.

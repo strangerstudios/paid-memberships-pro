@@ -4,6 +4,11 @@
  *
  * NOTE: Disabled for now until we need a new pointer.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ///add_action( 'admin_enqueue_scripts', 'pmpro_enqueue_admin_pointer_scripts' );
 
 /**

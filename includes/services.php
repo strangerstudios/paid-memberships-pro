@@ -2,10 +2,14 @@
 /*
 	Loading a service?
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
 	Note: The applydiscountcode goes through the site_url() instead of admin-ajax to avoid HTTP/HTTPS issues.
 */
-if(isset($_REQUEST['action']) && $_REQUEST['action'] == "applydiscountcode")
+if(isset($_REQUEST['action']) && $_REQUEST['action'] == "applydiscountcode") // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Routing only; the applydiscountcode service is a read-only discount code lookup for the checkout page.
 {		
 	function pmpro_applydiscountcode_init()
 	{

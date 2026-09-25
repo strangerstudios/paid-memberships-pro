@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMPro_Email_Template_Payment_Action extends PMPro_Email_Template {
 
 	/**

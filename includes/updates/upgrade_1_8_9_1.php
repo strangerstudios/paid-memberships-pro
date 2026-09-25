@@ -1,5 +1,11 @@
 <?php
 use Stripe\Customer as Stripe_Customer;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade routine that reads and repairs the PMPro orders table directly; no WordPress API or object cache layer applies.
+
 /*
 	Upgrade to 1.8.9.1
 	* Fixing Stripe orders where user_id/membership_id = 0
@@ -29,12 +35,12 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 	$last_order_id = get_option('pmpro_upgrade_1_8_9_1_last_order_id', 0);
 	
 	//Fixing old $0 Stripe orders.	
-	$orders = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND user_id = 0 AND membership_id = 0 AND status <> 'error' ORDER BY id LIMIT 2");
+	$orders = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND user_id = 0 AND membership_id = 0 AND status <> 'error' ORDER BY id LIMIT 2"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $last_order_id is an order ID this routine saved from the orders table.
 	
 	//track progress
 	$first_load = get_transient('pmpro_updates_first_load');
 	if($first_load) {
-		$total_orders = $wpdb->get_var("SELECT COUNT(id) FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND user_id = 0 AND membership_id = 0 AND status <> 'error' ");
+		$total_orders = $wpdb->get_var("SELECT COUNT(id) FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND user_id = 0 AND membership_id = 0 AND status <> 'error' "); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $last_order_id is an order ID this routine saved from the orders table.
 		update_option('pmpro_upgrade_1_8_9_1_total', $total_orders, 'no');
 		$progress = 0;
 	} else {
@@ -81,7 +87,7 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 				if($debug)
 					echo "- Can't find the subscription.\n";
 				if($run)
-					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the subscription.') WHERE id = $order->id LIMIT 1");
+					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the subscription.') WHERE id = $order->id LIMIT 1"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $order->id is the integer ID of an order loaded from the database.
 				
 				continue;
 			}
@@ -94,7 +100,7 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 				if($debug)
 					echo "- Can't find the customer.\n";
 				if($run)
-					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1");
+					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $order->id is the integer ID of an order loaded from the database.
 
 				continue;
 			}
@@ -108,22 +114,22 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 					//echo "- " . $invoice->subscription . ", " . $invoice->charge . ", " . $invoice->id . "<br />";
 					if($invoice->subscription == $order->subscription_transaction_id) {
 						//same sub. look for an order for this invoice or charge
-						$old_order = $wpdb->get_row("SELECT id, user_id, membership_id, subscription_transaction_id
+						$old_order = $wpdb->get_row( $wpdb->prepare( "SELECT id, user_id, membership_id, subscription_transaction_id
 														 FROM $wpdb->pmpro_membership_orders 
 														 WHERE gateway = 'stripe' AND
-														     (payment_transaction_id = '" . $invoice->charge . "' OR payment_transaction_id = '" . $invoice->id . "') AND
+														     (payment_transaction_id = %s OR payment_transaction_id = %s) AND
 															 user_id <> 0 AND
 															 membership_id <> 0
 													     LIMIT 1
-														 ");													
+														 ", $invoice->charge, $invoice->id ) );													
 						if(!empty($old_order)) {
 							//found it, let's fix data
 							if($debug)
 								echo esc_html( "- Order #" . $old_order->id . ", " . $old_order->code . " found! FIXED\n" );
 							
 							if($run) {
-								$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET user_id = " . $old_order->user_id . ", membership_id = " . $old_order->membership_id . " WHERE user_id = 0 AND membership_id = 0 AND subscription_transaction_id = '" . $order->subscription_transaction_id . "' ";							
-								$wpdb->query($sqlQuery);
+								$sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET user_id = %d, membership_id = %d WHERE user_id = 0 AND membership_id = 0 AND subscription_transaction_id = %s ", $old_order->user_id, $old_order->membership_id, $order->subscription_transaction_id );							
+								$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $sqlQuery is built with $wpdb->prepare() on the previous line.
 							}
 
 							continue 2;
@@ -136,7 +142,7 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 			if($debug)
 				echo "- No invoice for this sub.\n";
 			if($run)
-				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1");
+				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $order->id is the integer ID of an order loaded from the database.
 
 			continue;
 		}

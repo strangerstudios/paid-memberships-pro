@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Upgrade to 2.6
  * We changed the pmpro_cron_expire_memberships cron
