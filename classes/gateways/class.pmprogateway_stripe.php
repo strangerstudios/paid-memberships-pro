@@ -2094,9 +2094,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since TBD
 	 *
+	 * @param bool $check_connect_server Whether to always retrieve the current platform publishable key from the Connect server.
+	 *                                   If false, the key is only retrieved when Stripe rejects the one checkout is using.
 	 * @return array The saved results. See get_connection_test_results().
 	 */
-	public function run_connection_test() {
+	private function run_connection_test( $check_connect_server = true ) {
 		$results             = array();
 		$gateway_environment = 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox';
 		$secret_key          = $this->get_secretkey();
@@ -2162,7 +2164,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Connect server. Retrieve the current platform publishable key now, ignoring the usual throttle.
-		if ( ! self::using_api_keys() && ! empty( $secret_key ) ) {
+		if ( $check_connect_server && ! self::using_api_keys() && ! empty( $secret_key ) ) {
 			if ( self::refresh_connect_publishable_keys( true ) ) {
 				$results['connect_server'] = array( 'status' => 'pass', 'message' => __( 'The current platform publishable key was retrieved from Paid Memberships Pro.', 'paid-memberships-pro' ) );
 			} else {
@@ -2189,22 +2191,15 @@ class PMProGateway_stripe extends PMProGateway {
 		} elseif ( 'fail' === $results['stripe_api']['status'] ) {
 			$results['publishable_key'] = array( 'status' => 'unknown', 'message' => __( 'Skipped because Stripe could not be reached.', 'paid-memberships-pro' ) );
 		} else {
-			// Stripe authenticates the key before it looks up the resource, so retrieving a PaymentIntent that doesn't exist with the
-			// publishable key is a read-only check: a valid key gets a 404, a rejected key gets a 401, and for Connect a revoked account gets a 403.
-			$exception = null;
-			$options   = array( 'api_key' => $publishable_key );
-			if ( ! self::using_api_keys() ) {
-				$options['stripe_account'] = $this->get_connect_user_id();
-			}
-			try {
-				Stripe_PaymentIntent::retrieve( array( 'id' => 'pi_pmpro_connection_test', 'client_secret' => 'pi_pmpro_connection_test_secret' ), $options );
-			} catch ( \Throwable $e ) {
-				$exception = $e;
-			} catch ( \Exception $e ) {
-				$exception = $e;
+			$exception = $this->get_publishable_key_test_exception();
+			$status    = ! empty( $exception ) && method_exists( $exception, 'getHttpStatus' ) ? (int) $exception->getHttpStatus() : 0;
+
+			// If the Connect server wasn't checked above and Stripe rejected the platform key, try to get the current one and check again.
+			if ( ! $check_connect_server && 401 === $status && ! self::using_api_keys() && self::refresh_connect_publishable_keys() ) {
+				$exception = $this->get_publishable_key_test_exception();
+				$status    = ! empty( $exception ) && method_exists( $exception, 'getHttpStatus' ) ? (int) $exception->getHttpStatus() : 0;
 			}
 
-			$status = ! empty( $exception ) && method_exists( $exception, 'getHttpStatus' ) ? (int) $exception->getHttpStatus() : 0;
 			if ( empty( $exception ) || ( ! empty( $status ) && 401 !== $status ) ) {
 				// Only a 401 means the key was rejected. Anything else means Stripe recognized the key.
 				$results['publishable_key'] = array(
@@ -2239,6 +2234,31 @@ class PMProGateway_stripe extends PMProGateway {
 		update_option( 'pmpro_stripe_connection_test', $test_results, false );
 
 		return $test_results;
+	}
+
+	/**
+	 * Ask Stripe to authenticate the publishable key that checkout will use.
+	 *
+	 * Stripe authenticates the key before it looks up the resource, so retrieving a PaymentIntent that doesn't exist with the
+	 * publishable key is a read-only check: a valid key gets a 404, a rejected key gets a 401, and for Connect a revoked account gets a 403.
+	 *
+	 * @since TBD
+	 *
+	 * @return \Throwable|\Exception|null The error from Stripe, or null if the request did not fail.
+	 */
+	private function get_publishable_key_test_exception() {
+		$options = array( 'api_key' => $this->get_publishablekey() );
+		if ( ! self::using_api_keys() ) {
+			$options['stripe_account'] = $this->get_connect_user_id();
+		}
+		try {
+			Stripe_PaymentIntent::retrieve( array( 'id' => 'pi_pmpro_connection_test', 'client_secret' => 'pi_pmpro_connection_test_secret' ), $options );
+		} catch ( \Throwable $e ) {
+			return $e;
+		} catch ( \Exception $e ) {
+			return $e;
+		}
+		return null;
 	}
 
 	/**
@@ -2312,7 +2332,8 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		$stripe->run_connection_test();
+		// Don't contact the Connect server every day. The test will still ask it for a new key if Stripe rejects the current one.
+		$stripe->run_connection_test( false );
 	}
 
 	/**
