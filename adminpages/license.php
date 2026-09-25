@@ -9,7 +9,10 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 }
 
 //updating license?
-if ( ! empty( $_REQUEST['pmpro-verify-submit'] ) ) {
+if ( ! empty( $_REQUEST['pmpro-verify-submit'] ) && ( empty( $_REQUEST['pmpro-key-nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['pmpro-key-nonce'] ) ), 'pmpro-key-nonce' ) ) ) {
+	// Nonce check failed. Don't save the key; show the error in the license notice below.
+	$pmpro_license_check = new WP_Error( 'pmpro_license_nonce', __( 'Security check failed. Please try again.', 'paid-memberships-pro' ) );
+} elseif ( ! empty( $_REQUEST['pmpro-verify-submit'] ) ) {
 	$key = preg_replace("/[^a-zA-Z0-9]/", "", sanitize_text_field( $_REQUEST['pmpro-license-key'] ) );
 	
 	// Check key.

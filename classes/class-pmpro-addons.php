@@ -64,7 +64,6 @@ class PMPro_AddOns {
 	 */
 	public function update_hooks() {
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'update_plugins_filter' ) );
-		add_filter( 'http_request_args', array( $this, 'http_request_args_for_addons' ), 10, 2 );
 		add_action( 'update_option_pmpro_license_key', array( $this, 'reset_update_plugins_cache' ), 10, 2 );
 	}
 
@@ -243,19 +242,20 @@ class PMPro_AddOns {
 	}
 
 	/**
-	 * Disables SSL verification to prevent download package failures.
+	 * Previously disabled SSL verification for Add On package downloads.
+	 *
+	 * SSL verification is no longer disabled. This method returns the args unchanged
+	 * and is no longer hooked to http_request_args.
 	 *
 	 * @since 1.8.5
+	 * @deprecated 3.8.7
 	 *
 	 * @param array  $args  Array of request args.
 	 * @param string $url  The URL to be pinged.
-	 * @return array $args Amended array of request args.
+	 * @return array $args Unchanged array of request args.
 	 */
 	public function http_request_args_for_addons( $args, $url ) {
-		// If this is an SSL request and we are performing an upgrade routine, disable SSL verification.
-		if ( strpos( $url, 'https://' ) !== false && strpos( $url, PMPRO_LICENSE_SERVER ) !== false && strpos( $url, 'download' ) !== false ) {
-			$args['sslverify'] = false;
-		}
+		_deprecated_function( __METHOD__, '3.8.7' );
 
 		return $args;
 	}
@@ -1213,8 +1213,9 @@ class PMPro_AddOns {
 		$api->tested         = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
 		$api->last_updated   = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
 		$api->homepage       = isset( $addon['URI'] ) ? $addon['URI'] : '';
-		$api->download_link  = isset( $addon['Download'] ) ? $addon['Download'] : '';
-		$api->package        = isset( $addon['Download'] ) ? $addon['Download'] : '';
+		$download            = ! empty( $addon['Download'] ) ? set_url_scheme( $addon['Download'], 'https' ) : '';
+		$api->download_link  = $download;
+		$api->package        = $download;
 
 		// add sections
 		if ( ! empty( $addon['Description'] ) ) {
