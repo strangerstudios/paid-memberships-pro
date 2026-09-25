@@ -20,7 +20,7 @@ function pmpro_upgrade_3_0( $rerunning_migration = false ) {
 			UPDATE {$wpdb->pmpro_subscriptions}
 			SET billing_amount = 0, cycle_number = 0, cycle_period = 'Month', startdate = NULL, enddate = NULL, next_payment_date = NULL, billing_limit = 0, trial_amount = 0, trial_limit = 0
 		";
-		$wpdb->query( $sqlQuery );
+		$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 	}
 
 	// Create a subscription for each unique `subscription_transaction_id` in the orders table.
@@ -33,7 +33,7 @@ function pmpro_upgrade_3_0( $rerunning_migration = false ) {
 		AND gateway_environment <> ''
 		AND status in ('success','cancelled')
 		";
-	$wpdb->query( $sqlQuery );
+	$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only $wpdb table names are interpolated.
 
 	// If we added any subscriptions or are rerunning the migration script, create an update to fill out the data.
 	if ( $wpdb->rows_affected || $rerunning_migration ) {
@@ -46,7 +46,7 @@ function pmpro_upgrade_3_0( $rerunning_migration = false ) {
 		SET status = 'success'
 		WHERE status = 'cancelled'
 		";
-	$wpdb->query( $sqlQuery );
+	$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 
 	return 3.0;
 }

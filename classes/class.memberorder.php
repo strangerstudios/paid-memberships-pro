@@ -738,16 +738,16 @@
 
 			// Maybe prepare the query.
 			if ( $prepared ) {
-				$sql_query = $wpdb->prepare( $sql_query, $prepared );
+				$sql_query = $wpdb->prepare( $sql_query, $prepared ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is built from static SQL, $wpdb table names, placeholders, and a character-whitelisted $orderby.
 			}
 
 			// If we're returning a count, return the count.
 			if ( $return_count ) {
-				return (int) $wpdb->get_var( $sql_query );
+				return (int) $wpdb->get_var( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Values are bound via $wpdb->prepare() above; the rest is static SQL and $wpdb table names.
 			}
 
 			// Not returning a count, so get the order IDs.
-			$member_order_ids = $wpdb->get_col( $sql_query );
+			$member_order_ids = $wpdb->get_col( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Values are bound via $wpdb->prepare() above; $orderby is character-whitelisted and returns early otherwise.
 
 			if ( empty( $member_order_ids ) ) {
 				return array();
@@ -901,7 +901,7 @@
 				 )
 			 );
 			
-			$order_id = $wpdb->get_var( $sql );
+			$order_id = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql is built with $wpdb->prepare() above.
 			if ( ! empty( $order_id ) ) {
 				return new MemberOrder( $order_id );
 			} else {
@@ -945,7 +945,7 @@
 							AND status NOT IN('refunded', 'review', 'token', 'error')
 							AND timestamp < '" . esc_sql( date( 'Y-m-d H:i:s', $this->timestamp ) ) . "'
 						 LIMIT 1";
-			$older_order_id = $wpdb->get_var( $sqlQuery );
+			$older_order_id = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- All interpolated values are escaped with esc_sql() inside quotes.
 
 			if ( ! empty( $older_order_id ) ) {
 				$this->is_renewal = true;
@@ -1029,7 +1029,7 @@
 			}
 
 			if(!empty($membership_id) && is_array($membership_id)) {
-				$this->sqlQuery .= "AND membership_id IN(" . implode( ",", array_map( 'esc_sql', $membership_id ) ) . ") ";
+				$this->sqlQuery .= "AND membership_id IN(" . implode( ",", array_map( 'intval', $membership_id ) ) . ") ";
 			} elseif(!empty($membership_id)) {
 				$this->sqlQuery .= "AND membership_id = '" . esc_sql( $membership_id ) . "' ";
 			}
@@ -1043,7 +1043,7 @@
 			$this->sqlQuery .= "ORDER BY timestamp DESC LIMIT 1";
 
 			//get id
-			$id = $wpdb->get_var($this->sqlQuery);
+			$id = $wpdb->get_var($this->sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- String values are escaped with esc_sql() inside quotes and the membership ID list is cast with intval().
 
 			return $this->getMemberOrderByID($id);
 		}
@@ -1158,7 +1158,7 @@
 				LIMIT 1",
 				$this->id
 			);
-			$discount_codes_uses_id = $wpdb->get_var( $sqlQuery );
+			$discount_codes_uses_id = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery is built with $wpdb->prepare() above.
 
 			// INSTEAD: Delete the code use if found
 			if ( empty( $discount_code_id ) ) {
@@ -1231,7 +1231,7 @@
 			if(!empty($this->user_id))
 			{
 				$sqlQuery = $wpdb->prepare( "SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = %d AND mu.user_id = %d LIMIT 1", $this->membership_id, $this->user_id );
-				$this->membership_level = $wpdb->get_row( $sqlQuery );
+				$this->membership_level = $wpdb->get_row( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery is built with $wpdb->prepare() above.
 
 				//fix the membership level id
 				if(!empty($this->membership_level->level_id))
@@ -1386,7 +1386,7 @@
 			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET timestamp = %s WHERE id = %d LIMIT 1", $date, $this->id );
 
 			do_action('pmpro_update_order', $this);
-			if($wpdb->query($this->sqlQuery) !== "false") {
+			if($wpdb->query($this->sqlQuery) !== "false") { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $this->sqlQuery is built with $wpdb->prepare() above.
 				$this->timestamp = strtotime( $date );
 				do_action('pmpro_updated_order', $this);
 				
@@ -1524,7 +1524,7 @@
 			}
 
 			do_action($before_action, $this);
-			if($wpdb->query($this->sqlQuery) !== false)
+			if($wpdb->query($this->sqlQuery) !== false) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- All values are escaped with esc_sql() inside quotes or cast with intval().
 			{
 				if(empty($this->id))
 					$this->id = $wpdb->insert_id;
@@ -1591,8 +1591,8 @@
 				$secure_auth_code = SECURE_AUTH_KEY;
 			} else {
 				//Generate our own random string and hash it
-				$auth_code = md5( rand() );
-				$secure_auth_code = md5( rand() );
+				$auth_code = md5( wp_rand() );
+				$secure_auth_code = md5( wp_rand() );
 			}
 
 			while( empty( $code ) ) {
@@ -1628,7 +1628,7 @@
 			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET status = %s WHERE id = %d LIMIT 1", $newstatus, $this->id );			
 			
 			do_action( 'pmpro_update_order', $this );
-			if ( $wpdb->query( $this->sqlQuery ) !== false ) {
+			if ( $wpdb->query( $this->sqlQuery ) !== false ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $this->sqlQuery is built with $wpdb->prepare() above.
 				do_action('pmpro_updated_order', $this);
 				
 				return true;
@@ -1767,7 +1767,7 @@
 
 			global $wpdb;
 			$this->sqlQuery = $wpdb->prepare( "DELETE FROM $wpdb->pmpro_membership_orders WHERE id = %d LIMIT 1", $this->id );
-			if($wpdb->query($this->sqlQuery) !== false)
+			if($wpdb->query($this->sqlQuery) !== false) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $this->sqlQuery is built with $wpdb->prepare() above.
 			{
 				do_action("pmpro_delete_order", $this->id, $this);
 				return true;

@@ -158,12 +158,12 @@ class PMPro_Email_Template_Cancel extends PMPro_Email_Template {
 		} elseif ( is_array( $this->cancelled_level_ids ) ) {
 			$email_template_variables['membership_id'] = $this->cancelled_level_ids[0]; // Pass just the first as the level id.
 			$email_template_variables['level_group_id'] = pmpro_get_group_id_for_level( $this->cancelled_level_ids[0] ) ?: 0;
-			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode( "','", $this->cancelled_level_ids ) . "')" ) );
+			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode( "','", array_map( 'intval', $this->cancelled_level_ids ) ) . "')" ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Level IDs are cast to int.
 			$email_template_variables['renew_url'] = pmpro_url( 'levels' );
 		} else {
 			$email_template_variables['membership_id'] = $this->cancelled_level_ids;
 			$email_template_variables['level_group_id'] = pmpro_get_group_id_for_level( $this->cancelled_level_ids ) ?: 0;
-			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $this->cancelled_level_ids . "'" ) );
+			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . (int) $this->cancelled_level_ids . "'" ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Level IDs are cast to int.
 			$email_template_variables['renew_url'] = pmpro_url( 'checkout', '?pmpro_level=' . $this->cancelled_level_ids );
 		}
 

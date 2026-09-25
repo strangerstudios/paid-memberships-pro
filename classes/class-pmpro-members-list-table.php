@@ -523,9 +523,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
 
 		if( $count ) {
-			$sql_table_data = $wpdb->get_var( $sqlQuery );
+			$sql_table_data = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search terms go through esc_sql() inside quotes, IDs are cast to int or come from the DB, and orderby/order/limit are whitelisted or integers.
 		} else {
-			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A );
+			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search terms go through esc_sql() inside quotes, IDs are cast to int or come from the DB, and orderby/order/limit are whitelisted or integers.
 		}
 
 		return $sql_table_data;

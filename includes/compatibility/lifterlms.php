@@ -141,6 +141,7 @@ function pmpro_lifter_get_courses_for_levels( $level_ids ) {
 	}
 	
 	$level_placeholders = implode(',', array_fill(0, count($level_ids), '%d'));
+	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $level_placeholders is a list of %d placeholders built with array_fill().
 	$course_ids = $wpdb->get_col(
 		$wpdb->prepare(
 			"
@@ -155,6 +156,7 @@ function pmpro_lifter_get_courses_for_levels( $level_ids ) {
 			...$level_ids
 		)
 	);
+	// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 	
 	return $course_ids;
 }
@@ -709,7 +711,7 @@ function pmpro_lifter_dashboard_checklist( $checklist ) {
 
 	// Swap the Create Access Plan checklist item.
 	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID WHERE p.post_type = 'course' AND p.post_status = 'publish' GROUP BY mp.page_id LIMIT 1";
-	$ap_check = $wpdb->get_var( $sqlQuery );
+	$ap_check = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; table names from $wpdb.
 	if ( $ap_check ) {
 		$checklist['access_plan'] = '<i class="fa fa-check"></i> ' . esc_html__( 'Restrict a Course', 'paid-memberships-pro' );
 	} else {

@@ -189,9 +189,10 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 															  AND mo.gateway_environment = '" .  esc_sql( $gateway_environment ) . "'
 															  AND mo.timestamp >= '" . esc_sql( $report_start_date ) . " 00:00:00'
 															  AND mo.timestamp <= '" . esc_sql( $report_end_date ) . " 23:59:59'";
-								$order_ids_with_discount_code  = $wpdb->get_col( $sqlQuery );
+								$order_ids_with_discount_code  = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- All values are escaped with esc_sql() inside quotes above.
 								$num_orders_with_discount_code = count( $order_ids_with_discount_code );
 								if ( $num_orders_with_discount_code > 0 ) {
+									// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- Order IDs are cast with intval and the environment is escaped with esc_sql() inside quotes.
 									$orders_per_discount_code = $wpdb->get_results(
 										"
 											SELECT dc.code, COUNT(dcu.id) as uses
@@ -207,6 +208,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 											ORDER BY uses DESC
 										"
 									);
+									// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 									?>
 									<p style="margin:0px 0px 15px 0px;padding:0px;">
 									<?php

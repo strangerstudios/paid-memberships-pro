@@ -9,7 +9,7 @@ function pmpro_upgrade_1_8_8() {
 	
 	//Fixing old Authorize.net orders with empty status.
 	$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = 'success' WHERE gateway = 'authorizenet' AND status = ''";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only the $wpdb table name is interpolated.
 	
 	// Since 3.0: Removed the Stripe update, which relied on deprecated code.
 

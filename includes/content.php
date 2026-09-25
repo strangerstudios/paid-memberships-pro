@@ -74,7 +74,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	}
 
 
-	$post_membership_levels = $wpdb->get_results($sqlQuery);
+	$post_membership_levels = $wpdb->get_results($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Post ID is esc_sql()'d inside quotes and term IDs are intval().
 
 	$post_membership_levels_ids = array();
 	$post_membership_levels_names = array();
@@ -268,7 +268,7 @@ function pmpro_search_filter( $query ) {
 			  FROM {$wpdb->pmpro_memberships_pages} mp
 			  LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
 			  WHERE p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-	$posts_hidden_by_level = $wpdb->get_col( $sql_A );
+	$posts_hidden_by_level = $wpdb->get_col( $sql_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes.
 
 	// Query B: All posts hidden by category
 	// Note: pmpro_memberships_categories stores term IDs, so we join through
@@ -285,7 +285,7 @@ function pmpro_search_filter( $query ) {
 		)
 	)
 	AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-	$posts_hidden_by_category = $wpdb->get_col( $sql_B );
+	$posts_hidden_by_category = $wpdb->get_col( $sql_B ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes.
 
 	// Query C: All posts the current user has access to by level	
 	if ( ! empty( $level_ids ) ) {
@@ -294,7 +294,7 @@ function pmpro_search_filter( $query ) {
 			  LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
 			  WHERE mp.membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
 				  AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-		$accessible_posts_by_level = $wpdb->get_col( $sql_C );
+		$accessible_posts_by_level = $wpdb->get_col( $sql_C ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes; level IDs are integer IDs from the user's membership levels in the database.
 	} else {
 		$accessible_posts_by_level = [];
 	}
@@ -313,7 +313,7 @@ function pmpro_search_filter( $query ) {
 				WHERE membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
 			)
 		) AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-		$accessible_posts_by_category = $wpdb->get_col ($sql_D );
+		$accessible_posts_by_category = $wpdb->get_col ($sql_D ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes; level IDs are integer IDs from the user's membership levels in the database.
 	} else {
 		$accessible_posts_by_category = [];
 	}
