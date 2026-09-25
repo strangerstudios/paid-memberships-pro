@@ -174,7 +174,7 @@ class PMPro_Recurring_Actions {
 
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
-			$expiring_soon = $wpdb->get_results( $batched_query );
+			$expiring_soon = $wpdb->get_results( $batched_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Both parts built with $wpdb->prepare(). PMPro custom tables; no WordPress API or cache layer.
 
 			if ( empty( $expiring_soon ) ) {
 				break;
@@ -282,7 +282,7 @@ class PMPro_Recurring_Actions {
 
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
-			$expired       = $wpdb->get_results( $batched_query );
+			$expired       = $wpdb->get_results( $batched_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Both parts built with $wpdb->prepare(). PMPro custom tables; no WordPress API or cache layer.
 
 			if ( empty( $expired ) ) {
 				break;
@@ -467,7 +467,7 @@ class PMPro_Recurring_Actions {
 				$days
 			);
 
-			$subscriptions_to_notify = $wpdb->get_results( $sqlQuery );
+			$subscriptions_to_notify = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Built with $wpdb->prepare() above. PMPro custom tables; no WordPress API or cache layer.
 			if ( is_wp_error( $subscriptions_to_notify ) ) {
 				continue;
 			}
@@ -603,7 +603,7 @@ class PMPro_Recurring_Actions {
 			SET mu.status = 'inactive' 
 			WHERE mu.status = 'active' 
 			AND l.id IS NULL";
-		$wpdb->query( $sql_query );
+		$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query; table names from $wpdb. PMPro custom tables; no WordPress API or cache layer.
 	}
 
 	/**
@@ -630,6 +630,6 @@ class PMPro_Recurring_Actions {
 				ORDER BY mu1.user_id, mu1.id DESC) t2
 				ON t1.id = t2.id
 				SET t1.status = 'inactive'";
-		$wpdb->query( $sqlQuery );
+		$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query; table names from $wpdb. PMPro custom tables; no WordPress API or cache layer.
 	}
 }

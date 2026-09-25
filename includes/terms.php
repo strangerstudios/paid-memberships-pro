@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro memberships_categories custom table, which has no WordPress API or object cache layer.
+
 /**
  * Get the taxonomies whose terms can be restricted by membership level.
  *
@@ -170,7 +176,7 @@ function pmpro_term_saved( $term_id ) {
 
 	// Add the levels that are now checked.
 	if ( ! empty( $_REQUEST['pmpro_term_restrictions'] ) ) {
-		foreach ( $_REQUEST['pmpro_term_restrictions'] as $level_id ) {
+		foreach ( $_REQUEST['pmpro_term_restrictions'] as $level_id ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each level ID is cast with intval() before use in the query below.
 			$wpdb->query( "INSERT INTO $wpdb->pmpro_memberships_categories (membership_id, category_id) VALUES('" . intval( $level_id ) . "', '" . intval( $term_id ) . "')" );
 		}
 	}

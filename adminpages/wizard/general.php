@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Variables that may exist prior to running the Setup Wizard.
 $pmpro_license_key = get_option( 'pmpro_license_key' );
 $site_type         = get_option( 'pmpro_site_type' );
@@ -67,7 +71,7 @@ global $pmpro_pages;
 			<?php
 			// Check if the user tried to submit a license key, but is still on this page.
 			// If so, the license wasn't valid. Show an error.
-			if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
+			if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides whether to show the invalid license notice.
 				?>
 				<p class="pmpro_message pmpro_error"><?php esc_html_e( 'The license key you entered is invalid. Please try again.', 'paid-memberships-pro' ); ?></p>
 				<?php

@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- CRUD class for PMPro's discount code custom tables, which have no WordPress API or object cache layer.
+
 class PMPro_Discount_Code {
 
 	/**
@@ -213,7 +215,7 @@ class PMPro_Discount_Code {
         // Get the discount code by code, then call function
         $id = intval( $id );
 
-        $code = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE `id` =" . $id );
+        $code = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE `id` =" . $id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $id is cast with intval() above.
 
         return $this->get_discount_code_by_code( $code );
 
@@ -310,7 +312,7 @@ class PMPro_Discount_Code {
 
         // Make sure query ran okay.
         do_action( $before_action, $this );
-        if ( $wpdb->query( $this->sqlQuery ) !== false ) {
+        if ( $wpdb->query( $this->sqlQuery ) !== false ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Every value in sqlQuery is escaped with esc_sql() inside quotes or cast with intval()/floatval().
             if ( empty ( $this->id ) ) {
                 $this->id = $wpdb->insert_id;
             } 
@@ -355,7 +357,7 @@ class PMPro_Discount_Code {
                 )";                
                 
                 // Run the query here.
-                if ( $wpdb->query( $this->sqlQuery ) !== false ) {
+                if ( $wpdb->query( $this->sqlQuery ) !== false ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Every value in sqlQuery is escaped with esc_sql() inside quotes or cast with intval()/floatval().
                     $sql_okay = true;
                 }
 

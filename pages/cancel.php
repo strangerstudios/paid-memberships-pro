@@ -10,6 +10,12 @@
  *
  * @author Paid Memberships Pro
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values only choose which cancel screen to display. The cancellation itself is processed in preheaders/cancel.php after verifying the pmpro_cancel-nonce.
+
 global $pmpro_msg, $pmpro_msgt, $current_user, $wpdb;
 
 // Get the user's current levels.
@@ -39,10 +45,11 @@ $user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 				// Odd input format here (1+2+3). These values are sanitized.
 				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				//convert spaces back to +
-				$_REQUEST['levelstocancel'] = str_replace( array(' ', '%20'), '+', $_REQUEST['levelstocancel'] );
+				$_REQUEST['levelstocancel'] = str_replace( array(' ', '%20'), '+', wp_unslash( $_REQUEST['levelstocancel'] ) );
 
 				// Get the IDs being cancelled.
-				$old_level_ids = array_map('intval', explode("+", preg_replace("/[^0-9al\+]/", "", $_REQUEST['levelstocancel']))); // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$old_level_ids = array_map('intval', explode("+", preg_replace("/[^0-9al\+]/", "", wp_unslash( $_REQUEST['levelstocancel'] ) )));
+				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 				// Build messages.
 				$level_names = array_map(function($level_id) use ($user_levels) {
@@ -111,7 +118,7 @@ $user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 					?>
 
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">
-						<input type="hidden" name="levelstocancel" value="<?php echo esc_attr( $_REQUEST['levelstocancel'] ); ?>" />
+						<input type="hidden" name="levelstocancel" value="<?php echo esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['levelstocancel'] ) ) ); ?>" />
 						<input type="hidden" name="confirm" value="1" />
 						<?php wp_nonce_field( 'pmpro_cancel-nonce', 'pmpro_cancel-nonce' ); ?>
 						<input type="submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ) ); ?>" value="<?php echo esc_attr( $cancel_memberships_text ); ?>" />

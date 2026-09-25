@@ -608,8 +608,9 @@ class PMPro_Field {
 	 * @return mixed The value of the field or null if not found.
 	 */
 	function get_value_from_request() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Getter only. Callers that save the value verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php); other callers only prefill or validate.
 		if ( isset( $_REQUEST[ $this->name ] ) ) {
-			$value = $_REQUEST[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$value = $_REQUEST[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized below when the field has sanitize set. Left slashed on purpose: update_user_meta() unslashes on save and the display code calls wp_unslash(), so unslashing here would strip backslashes twice.
 		} elseif ( isset( $_REQUEST[ $this->name . '_checkbox' ] ) && $this->type == 'checkbox' ) {
 			// Empty checkbox.
 			$value = 0;
@@ -618,7 +619,7 @@ class PMPro_Field {
 			$value = array();
 		} elseif ( isset( $_FILES[$this->name] ) && $this->type == 'file' ) {
 			// File field.
-			$value = $_FILES[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$value = $_FILES[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- isset( $_FILES[ $this->name ] ) is checked above and PHP always sets the name key for an upload entry. The file name is passed through sanitize_file_name() when the file is saved.
 		}  elseif ( isset( $_SESSION[$this->name] ) ) {
 			// Value stored in session.
 			if ( is_array( $_SESSION[$this->name] ) && isset( $_SESSION[$this->name]['name'] ) ) {
@@ -636,6 +637,7 @@ class PMPro_Field {
 			// No value found.
 			return null;
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 		// Sanitize the value if needed.
 		if ( ! empty( $this->sanitize ) ) {
@@ -789,8 +791,8 @@ class PMPro_Field {
 		$meta_key = str_replace("pmprorhprefix_", "", $name);
 
 		// deleting?
-		if( isset( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ) {
-			$delete_old_file_name = sanitize_text_field( $_REQUEST['pmpro_delete_file_' . $name . '_field'] );
+		if( isset( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
+			$delete_old_file_name = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
 			if ( ! empty( $delete_old_file_name ) ) {
 				// Use what's saved in user meta so we don't delete any old file.
 				$old_file_meta = get_user_meta( $user->ID, $meta_key, true );
@@ -810,7 +812,7 @@ class PMPro_Field {
 		}
 
 		// If we don't have a file to upload, return.
-		if ( empty( $_FILES[ $name ] ) || empty( $_FILES[ $name ]['name'] ) ) {
+		if ( empty( $_FILES[ $name ] ) || empty( $_FILES[ $name ]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
 			return;
 		}
 
@@ -822,7 +824,7 @@ class PMPro_Field {
 		}
 
 		// Get $file and $filetype.
-		$file = array_map( 'sanitize_text_field', $_FILES[ $name ] );
+		$file = array_map( 'sanitize_text_field', $_FILES[ $name ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
 		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );;
 
 		/*
@@ -1923,6 +1925,7 @@ class PMPro_Field {
 		}
 
 		// Check if field is hidden because of "depends" option.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only. Only decides whether the field was shown; nothing is saved here.
 		if ( ! empty( $this->depends ) ) {
 			//build the checks
 			$checks = array();
@@ -1955,6 +1958,7 @@ class PMPro_Field {
 				}
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		// Field should have been showed at checkout.
 		return true;
@@ -2013,9 +2017,9 @@ class PMPro_Field {
 				$filled = ( null !== $value && '' !== trim( $value ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				break;
 			case 'file':
-				if ( ! empty( $_FILES[ $this->name ]['name'] ) ) {
+				if ( ! empty( $_FILES[ $this->name ]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Read-only. Only validates whether a required field was filled; nothing is saved here.
 					$filled = true;
-				} elseif ( ! empty( get_user_meta( get_current_user_id(), $this->name, true ) ) && empty( $_REQUEST['pmpro_delete_file_' . $this->name . '_field'] ) ) {
+				} elseif ( ! empty( get_user_meta( get_current_user_id(), $this->name, true ) ) && empty( $_REQUEST['pmpro_delete_file_' . $this->name . '_field'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only validates whether a required field was filled; nothing is saved here.
 					$filled = true;
 				} else {
 					$filled = false;

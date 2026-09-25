@@ -14,6 +14,10 @@
 	- You can override these prompts by setting the PMPRO_LICENSE_NAG constant to false.
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
 	Developers, add this line to your wp-config.php to remove PMPro license nags even if no license has been purchased.
 

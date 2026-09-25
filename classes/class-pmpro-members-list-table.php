@@ -1,5 +1,12 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request values only filter, search, sort and paginate the members list.
+
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
@@ -145,7 +152,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		);
 
 		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
+			$l = sanitize_text_field( wp_unslash( $_REQUEST['l'] ) );
 		} else {
 			$l = false;
 		}
@@ -301,12 +308,12 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function no_items() {
 		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
+			$l = sanitize_text_field( wp_unslash( $_REQUEST['l'] ) );
 		} else {
 			$l = false;
 		}
 		if(isset($_REQUEST['s']))
-			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
+			$s = trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) );
 		else
 			$s = "";
 		?>
@@ -337,14 +344,14 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		// some vars for the search
 		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
+			$l = sanitize_text_field( wp_unslash( $_REQUEST['l'] ) );
 		} else {
 			$l = false;
 		}
 
 		$search_key = false;
 		if( isset( $_REQUEST['s'] ) ) {
-			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
+			$s = trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) );
 		} else {
 			$s = '';
 		}
@@ -361,8 +368,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		// some vars for ordering
 		if(isset($_REQUEST['orderby'])) {
-			$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
-			if( $_REQUEST['order'] == 'asc' ) {
+			$orderby = $this->sanitize_orderby( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) );
+			if( isset( $_REQUEST['order'] ) && $_REQUEST['order'] == 'asc' ) {
 				$order = 'ASC';
 			} else {
 				$order = 'DESC';
@@ -523,9 +530,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
 
 		if( $count ) {
-			$sql_table_data = $wpdb->get_var( $sqlQuery );
+			$sql_table_data = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search terms go through esc_sql() inside quotes, IDs are cast to int or come from the DB, and orderby/order/limit are whitelisted or integers.
 		} else {
-			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A );
+			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search terms go through esc_sql() inside quotes, IDs are cast to int or come from the DB, and orderby/order/limit are whitelisted or integers.
 		}
 
 		return $sql_table_data;
@@ -827,7 +834,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_enddate( $item ) {
-		if ( isset( $_REQUEST['l'] ) && ! empty( pmpro_sanitize_with_safelist( $_REQUEST['l'] , array( 'oldmembers', 'expired', 'cancelled' ) ) ) ) {
+		if ( isset( $_REQUEST['l'] ) && ! empty( pmpro_sanitize_with_safelist( sanitize_text_field( wp_unslash( $_REQUEST['l'] ) ), array( 'oldmembers', 'expired', 'cancelled' ) ) ) ) {
 			// If viewing removed levels, show the end date for the membership that was removed.
 			return date_i18n( get_option( 'date_format' ), $item['enddate'] );
 		}
@@ -845,7 +852,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		if ( $which == 'top' ) {
 			// The code that goes before the table is here
 			if(isset($_REQUEST['l'])) {
-				$l = sanitize_text_field($_REQUEST['l']);
+				$l = sanitize_text_field( wp_unslash( $_REQUEST['l'] ) );
 			} else {
 				$l = false;
 			}

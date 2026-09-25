@@ -4,11 +4,13 @@
 		exit;
 	}
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only AJAX lookup: validates a discount code and returns price info for the checkout page; nothing is saved.
+
 	//vars
 	global $wpdb;
 	if(!empty($_REQUEST['code']))
 	{
-		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['code'] ) );
+		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( wp_unslash( $_REQUEST['code'] ) ) );
 		$discount_code_row = pmpro_get_discount_code( $discount_code );
 		$discount_code_id = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
 	}
@@ -20,7 +22,7 @@
 	}
 
 	if ( ! empty( $_REQUEST['pmpro_level'] ) ) {
-		$level_str = sanitize_text_field( $_REQUEST['pmpro_level'] );
+		$level_str = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_level'] ) );
 		$level_str = str_replace( ' ', '+', $level_str ); // If val passed via URL, + would be converted to space.
 		$level_ids = array_map( 'intval', explode( '+', $level_str ) );
 	} else {
@@ -28,7 +30,7 @@
 	}
 
 	if(!empty($_REQUEST['msgfield']))
-		$msgfield = preg_replace("/[^A-Za-z0-9\_\-]/", "", sanitize_text_field( $_REQUEST['msgfield'] ) );
+		$msgfield = preg_replace("/[^A-Za-z0-9\_\-]/", "", sanitize_text_field( wp_unslash( $_REQUEST['msgfield'] ) ) );
 	else
 		$msgfield = NULL;
 
@@ -72,7 +74,7 @@
 	// ... and then get prices for the remaining levels.
 	if ( ! empty( $levels_not_discounted ) ) {
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_map( 'intval', $levels_not_discounted ) ) . ")";
-		$code_levels = array_merge( $code_levels, $wpdb->get_results($sqlQuery) );
+		$code_levels = array_merge( $code_levels, $wpdb->get_results($sqlQuery) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Level IDs are cast with intval and the table name comes from $wpdb. Queries a PMPro custom table, which has no WordPress API or object cache layer.
 	}
 
 	//filter adjustments to the level

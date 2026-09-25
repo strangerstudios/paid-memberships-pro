@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	// Only admins can access this page.
 	if( !function_exists( "current_user_can" ) || ( !current_user_can( "manage_options" ) && 
 		!current_user_can( "pmpro_securitysettings" ) ) ) {
@@ -17,12 +21,12 @@
 
 	// Save settings.
 	if( !empty( $_REQUEST['savesettings'] ) ) {
-		pmpro_setOption( "spamprotection", intval( $_POST['spamprotection'] ) );
+		pmpro_setOption( "spamprotection", isset( $_POST['spamprotection'] ) ? intval( $_POST['spamprotection'] ) : 0 );
 
 		// Save the captcha setting. Note: This must be saved before the
 		// pmpro_save_security_settings hook fires so that the captcha services
 		// saving their settings on that hook can see the updated value.
-		$captcha = isset( $_POST['captcha'] ) ? sanitize_text_field( $_POST['captcha'] ) : '';
+		$captcha = isset( $_POST['captcha'] ) ? sanitize_text_field( wp_unslash( $_POST['captcha'] ) ) : '';
 		if ( ! array_key_exists( $captcha, pmpro_get_captcha_services() ) ) {
 			$captcha = '';
 		}

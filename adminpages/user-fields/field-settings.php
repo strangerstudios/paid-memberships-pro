@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( ! empty( $field ) ) {
 	// Assume field stdClass in format we save to settings.

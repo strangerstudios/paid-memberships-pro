@@ -8,6 +8,8 @@
 if (!defined('ABSPATH') && !defined('WP_UNINSTALL_PLUGIN'))
     exit();
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup: drops PMPro custom tables and bulk-deletes rows by prefix, which no WordPress API covers.
+
 if ( get_option( 'pmpro_uninstall', 0 ) ) {
 	// otherwise remove pages
 	$pmpro_pages = array(
@@ -57,13 +59,13 @@ if ( get_option( 'pmpro_uninstall', 0 ) ) {
 	    // setup sql query
 	    $sql = "DROP TABLE `$delete_table`";
 	    // run the query
-	    $wpdb->query($sql);
+	    $wpdb->query($sql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Table name built from $wpdb->prefix and a hard-coded list.
 	}
 
 	//delete options
 	global $wpdb;
 	$sqlQuery = "DELETE FROM $wpdb->options WHERE option_name LIKE 'pmpro_%'";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query.
 
 	//  Delete all Action Scheduler scheduled actions
 	$wpdb->query("DELETE FROM {$wpdb->prefix}actionscheduler_actions WHERE hook LIKE 'pmpro_%'");

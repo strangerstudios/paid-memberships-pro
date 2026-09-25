@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -227,8 +231,8 @@
 			);
 
 			foreach ( $settings_to_save as $setting ) {
-				if ( isset( $_REQUEST[ $setting ] ) ) {
-					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
+				if ( isset( $_REQUEST[ $setting ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce (pmpro_paymentsettings_nonce) verified in adminpages/paymentsettings.php before save_settings_fields() is called.
+					update_option( 'pmpro_' . $setting, sanitize_text_field( wp_unslash( $_REQUEST[ $setting ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce (pmpro_paymentsettings_nonce) verified in adminpages/paymentsettings.php before save_settings_fields() is called.
 				}
 			}
 		}
@@ -717,10 +721,10 @@
 			$order->updateStatus("cancelled");
 
 			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.
-			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) ||
-				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) {
+			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) || // phpcs:ignore WordPress.Security.NonceVerification.Missing -- IPN fields from PayPal (no WordPress nonce possible; IPN is verified by postback to PayPal in services/ipnhandler.php). Only used to skip a redundant gateway cancel.
+				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- IPN fields from PayPal (no WordPress nonce possible; IPN is verified by postback to PayPal in services/ipnhandler.php). Only used to skip a redundant gateway cancel.
 				// recurring_payment_failed transaction still need to be cancelled
-				if ( $_POST['txn_type'] !== 'recurring_payment_failed' ) {
+				if ( ! isset( $_POST['txn_type'] ) || $_POST['txn_type'] !== 'recurring_payment_failed' ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- IPN fields from PayPal (no WordPress nonce possible; IPN is verified by postback to PayPal in services/ipnhandler.php). Only used to skip a redundant gateway cancel.
 					return true;
 				}
 			}

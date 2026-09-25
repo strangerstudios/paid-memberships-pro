@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //make sure administrators have correct capabilities
 function pmpro_check_admin_capabilities()
 {

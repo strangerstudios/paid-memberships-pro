@@ -7,6 +7,8 @@
 		exit;
 	}
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- 2Checkout INS/return requests come from the gateway and cannot carry a WordPress nonce. Every request is authenticated by pmpro_twocheckoutValidate() (MD5 hash check with the 2Checkout secret word) before any processing.
+
 	// Require TwoCheckout class
 	if(!class_exists("Twocheckout"))
 		require_once(PMPRO_DIR . "/includes/lib/Twocheckout/Twocheckout.php");
@@ -217,7 +219,7 @@
 		}
 
 		if(!empty($redirect))
-			wp_redirect($redirect);
+			wp_redirect($redirect); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Destination is built with pmpro_url(), which is filterable and may point to another host (e.g. Network Subsite add-on).
 
 		exit;
 	}
@@ -354,7 +356,7 @@
 			//add discount code use
 			if(!empty($discount_code) && !empty($use_discount_code))
 			{
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . esc_sql( $discount_code_id ) . "', '" . esc_sql( $morder->user_id ) . "', '" . esc_sql( $morder->id ) . "', '" . current_time('mysql') . "')");
+				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . esc_sql( $discount_code_id ) . "', '" . esc_sql( $morder->user_id ) . "', '" . esc_sql( $morder->id ) . "', '" . current_time('mysql') . "')"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- IDs are escaped with esc_sql() inside quotes; current_time( 'mysql' ) returns a formatted date string. Writes to a PMPro custom table with no WordPress API.
 			}
 
 			//save first and last name fields
@@ -362,13 +364,13 @@
 			{
 				$old_firstname = get_user_meta($morder->user_id, "first_name", true);
 				if(!empty($old_firstname))
-					update_user_meta($morder->user_id, "first_name", sanitize_text_field($_POST['first_name']));
+					update_user_meta($morder->user_id, "first_name", sanitize_text_field($_POST['first_name'])); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes its value, so the slashed $_POST value is passed as WordPress expects.
 			}
 			if(!empty($_POST['last_name']))
 			{
 				$old_lastname = get_user_meta($morder->user_id, "last_name", true);
 				if(!empty($old_lastname))
-					update_user_meta($morder->user_id, "last_name", sanitize_text_field($_POST['last_name']));
+					update_user_meta($morder->user_id, "last_name", sanitize_text_field($_POST['last_name'])); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes its value, so the slashed $_POST value is passed as WordPress expects.
 			}
 
 			//hook
@@ -438,7 +440,7 @@
 		global $wpdb;
 
 		//check that txn_id has not been previously processed
-		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql( $txn_id ) . "' LIMIT 1");
+		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql( $txn_id ) . "' LIMIT 1"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Duplicate-transaction check against the PMPro orders table; must hit the database, not a cache.
 
 		if( empty( $old_txn ) ) {
 
@@ -448,16 +450,16 @@
 			$morder->membership_id = $last_order->membership_id;
 			$morder->payment_transaction_id = $txn_id;
 			$morder->subscription_transaction_id = $last_order->subscription_transaction_id;
-			$morder->InitialPayment = sanitize_text_field($_POST['item_list_amount_1']);	//not the initial payment, but the class is expecting that
-			$morder->PaymentAmount = sanitize_text_field($_POST['item_list_amount_1']);
-			$morder->datetime = sanitize_text_field($_POST['timestamp']);
+			$morder->InitialPayment = isset( $_POST['item_list_amount_1'] ) ? sanitize_text_field( wp_unslash( $_POST['item_list_amount_1'] ) ) : '';	//not the initial payment, but the class is expecting that
+			$morder->PaymentAmount = isset( $_POST['item_list_amount_1'] ) ? sanitize_text_field( wp_unslash( $_POST['item_list_amount_1'] ) ) : '';
+			$morder->datetime = isset( $_POST['timestamp'] ) ? sanitize_text_field( wp_unslash( $_POST['timestamp'] ) ) : '';
 
 			//Assume no tax for now. Add ons will handle it later.
 			$morder->tax = 0;
 
-			$morder->FirstName = sanitize_text_field($_POST['customer_first_name']);
-			$morder->LastName = sanitize_text_field($_POST['customer_last_name']);
-			$morder->Email = sanitize_text_field($_POST['customer_email']);
+			$morder->FirstName = isset( $_POST['customer_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['customer_first_name'] ) ) : '';
+			$morder->LastName = isset( $_POST['customer_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['customer_last_name'] ) ) : '';
+			$morder->Email = isset( $_POST['customer_email'] ) ? sanitize_text_field( wp_unslash( $_POST['customer_email'] ) ) : '';
 
 			$morder->gateway = $last_order->gateway;
 			$morder->gateway_environment = $last_order->gateway_environment;

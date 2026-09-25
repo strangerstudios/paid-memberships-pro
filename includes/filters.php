@@ -3,6 +3,10 @@
 	This file was added in version 1.5.5 of the plugin. This file is meant to store various hacks, filters, and actions that were originally developed outside of the PMPro core and brought in later... or just things that are cleaner/easier to implement via hooks and filters.
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
 	If checking out for the same level, add remaining days to the enddate.
 	Pulled in from: https://gist.github.com/3678054
@@ -96,7 +100,7 @@ function pmpro_checkout_start_date_keep_startdate( $startdate, $user_id, $level 
 	global $wpdb;
 	if ( ! empty( $level ) && pmpro_hasMembershipLevel( $level->id, $user_id ) ) {
 		$sqlQuery = "SELECT startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . esc_sql( $user_id ) . "' AND membership_id = '" . esc_sql( $level->id ) . "' AND status = 'active' ORDER BY id DESC LIMIT 1";
-		$old_startdate = $wpdb->get_var( $sqlQuery );
+		$old_startdate = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Values are escaped with esc_sql() inside quotes. Queries a PMPro custom table, which has no WordPress API or object cache layer.
 
 		if ( ! empty( $old_startdate ) ) {
 			$startdate = "'" . $old_startdate . "'";
@@ -147,15 +151,17 @@ function pmpro_required_billing_fields_stripe_lite( $fields ) {
 }
 
 // copy other discount code to discount code if latter is not set
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Only copies a request field alias into the request superglobals; nothing is saved here. Checkout processing that consumes it verifies pmpro_checkout_nonce in preheaders/checkout.php.
 if ( empty( $_REQUEST['pmpro_discount_code'] ) && ! empty( $_REQUEST['pmpro_other_discount_code'] ) ) {
-	$_REQUEST['pmpro_discount_code'] = sanitize_text_field( $_REQUEST['pmpro_other_discount_code'] );
+	$_REQUEST['pmpro_discount_code'] = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_other_discount_code'] ) );
 }
 if ( empty( $_POST['pmpro_discount_code'] ) && ! empty( $_POST['pmpro_other_discount_code'] ) ) {
-	$_POST['pmpro_discount_code'] = sanitize_text_field( $_POST['pmpro_other_discount_code'] );	
+	$_POST['pmpro_discount_code'] = sanitize_text_field( wp_unslash( $_POST['pmpro_other_discount_code'] ) );	
 }
 if ( empty( $_GET['pmpro_discount_code'] ) && ! empty( $_GET['pmpro_other_discount_code'] ) ) {
-	$_GET['pmpro_discount_code'] = sanitize_text_field( $_GET['pmpro_other_discount_code'] );	
+	$_GET['pmpro_discount_code'] = sanitize_text_field( wp_unslash( $_GET['pmpro_other_discount_code'] ) );	
 }
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 // apply all the_content filters to confirmation messages for levels
 function pmpro_pmpro_confirmation_message( $message ) {

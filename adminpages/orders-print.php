@@ -7,6 +7,10 @@
  * @since 1.8.6
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //only admins can get this
 if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_orders" ) ) ) {
 	die( esc_html__( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
@@ -19,7 +23,7 @@ if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['
 
 // Do we have an order ID?
 if ( empty( $_REQUEST['id'] ) ) {
-	wp_redirect( admin_url( 'admin.php?page=pmpro-orders' ) );
+	wp_safe_redirect( admin_url( 'admin.php?page=pmpro-orders' ) );
 	exit;
 }
 

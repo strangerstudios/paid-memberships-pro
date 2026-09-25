@@ -407,7 +407,7 @@ class PMPro_AddOns {
 		$addons           = $this->addons;
 		$addons_timestamp = $this->addons_timestamp;
 		// Check if forcing a pull from the server
-		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check;
+		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag; only forces a refresh of the cached Add On list from the PMPro server.
 
 		// if no addons locally, we need to hit the server
 		if ( empty( $addons ) || $force_check || current_time( 'timestamp' ) > $addons_timestamp + 86400 ) {
@@ -989,15 +989,16 @@ class PMPro_AddOns {
 	 * @since 1.9
 	 */
 	public function check_when_updating_plugins() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only inspects which plugins WordPress core is updating in order to block unlicensed updates. Core verifies its own nonces for the update itself.
 		// if user can't edit plugins, then WP will catch this later
 		if ( ! current_user_can( 'update_plugins' ) ) {
 			return;
 		}
 
 		// updating one or more plugins via Dashboard -> Upgrade
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
 			// figure out which plugins we are updating
-			$plugins = explode( ',', stripslashes( sanitize_text_field( $_GET['plugins'] ) ) );
+			$plugins = explode( ',', isset( $_GET['plugins'] ) ? sanitize_text_field( wp_unslash( $_GET['plugins'] ) ) : '' );
 			$plugins = array_map( 'urldecode', $plugins );
 
 			// look for addons
@@ -1045,9 +1046,9 @@ class PMPro_AddOns {
 		}
 
 		// upgrading just one or plugin via an update.php link
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 			// figure out which plugin we are updating
-			$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
+			$plugin = urldecode( trim( sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) ) );
 
 			$slug  = str_replace( '.php', '', basename( $plugin ) );
 			$addon = $this->get_addon_by_slug( $slug );
@@ -1076,9 +1077,9 @@ class PMPro_AddOns {
 		}
 
 		// updating via AJAX on the plugins page
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 			// figure out which plugin we are updating
-			$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
+			$plugin = urldecode( trim( sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) ) );
 
 			$slug  = str_replace( '.php', '', basename( $plugin ) );
 			$addon = $this->get_addon_by_slug( $slug );
@@ -1090,6 +1091,7 @@ class PMPro_AddOns {
 				exit;
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
