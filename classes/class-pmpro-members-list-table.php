@@ -367,19 +367,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$end = $pn * $limit;
 		$start = $end - $limit;
 
-		if ( $count ) {
-			$sqlQuery = "SELECT COUNT( DISTINCT u.ID, mu.membership_id ) ";
-		} else {
-			$sqlQuery =
-				"
-				SELECT u.ID, u.user_login, u.user_email, u.display_name,
-				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id,
-				UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
-				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate, m.name as membership
-				";
-		}
+		// Old member views and non-level filters can have several rows per user and level.
+		$group_rows = ! empty( $l ) && ! is_numeric( $l );
 
-		$sqlQuery .=
+		$sqlQuery =
 			"	
 			FROM $wpdb->users u 
 			INNER JOIN $wpdb->pmpro_memberships_users mu
@@ -406,6 +397,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 						LEFT JOIN $wpdb->pmpro_subscriptions s
 						ON mu.user_id = s.user_id
 						";
+					$group_rows = true;
 					$search_query = " AND s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND mu.status = 'active' ";
 				} else {
 					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value LIKE '%" . esc_sql( $s ) . "%'" );
@@ -427,6 +419,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 				// Default search checks a few fields.
 				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
+				$group_rows = true;
 				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' OR ( s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND s.status = 'active' ) ) ";
 			}
 		}
@@ -454,10 +447,40 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sqlQuery .= " AND mu.status = 'active' ";
 		}
 
-		if ( ! $count ) {
-			$sqlQuery .= ' GROUP BY u.ID, mu.membership_id ';
+		/**
+		 * Filter whether the Members List query groups rows by user and level.
+		 *
+		 * Grouping is only needed when the query can return more than one row per user and level.
+		 * Skipping it lets MySQL read the page straight from an index instead of sorting every member.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool   $group_rows Whether to group rows by user and level.
+		 * @param string $l          The level or status filter for the list.
+		 * @param string $s          The search string.
+		 */
+		$group_rows = apply_filters( 'pmpro_members_list_group_rows', $group_rows, $l, $s );
 
-			$sqlQuery .= " ORDER BY $orderby $order ";
+		if ( $count ) {
+			$select = 'SELECT COUNT( DISTINCT u.ID, mu.membership_id ) ';
+		} else {
+			$enddate_column = $group_rows ? 'max(mu.enddate)' : 'mu.enddate';
+			$select =
+				"
+				SELECT u.ID, u.user_login, u.user_email, u.display_name,
+				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id,
+				UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
+				UNIX_TIMESTAMP(CONVERT_TZ($enddate_column, '+00:00', @@global.time_zone)) as enddate, m.name as membership
+				";
+		}
+		$sqlQuery = $select . $sqlQuery;
+
+		if ( ! $count ) {
+			if ( $group_rows ) {
+				$sqlQuery .= ' GROUP BY u.ID, mu.membership_id ';
+			}
+
+			$sqlQuery .= " ORDER BY $orderby $order, u.ID $order ";
 
 			$sqlQuery .= " LIMIT $start, $limit ";
 		}
