@@ -177,9 +177,99 @@ jQuery(document).ready(function(){
 	});
 
 	//unhighlight error fields when the user edits them
-	jQuery('.pmpro_form_input-error').bind("change keyup input", function() {
+	//delegated so fields flagged by the AJAX validation below also unhighlight
+	jQuery(document).on("change keyup input", ".pmpro_form_input-error", function() {
 		jQuery(this).removeClass('pmpro_form_input-error');
 	});
+
+	// Validate account fields over AJAX when the user leaves a field.
+	// Only runs once the form has been submitted so we don't ping the server
+	// while the user is still filling out the form for the first time. A
+	// failed checkout POST re-renders the page with the error fields already
+	// marked, so start from that state.
+	var pmpro_checkout_submit_attempted = jQuery('.pmpro_form_input-error').length > 0;
+	jQuery('form#pmpro_form').on('submit', function() {
+		pmpro_checkout_submit_attempted = true;
+	});
+
+	if ( ! pmpro.skip_account_fields ) {
+		var pmpro_validate_fields = '#username, #bemail, #bconfirmemail, #password2';
+		var pmpro_validate_request = null;
+		var pmpro_validation_message_set = false;
+
+		jQuery(pmpro_validate_fields).on('blur', function() {
+			// Wait for a submit attempt before validating.
+			if ( ! pmpro_checkout_submit_attempted ) {
+				return;
+			}
+
+			pmpro_checkout_validate_fields(jQuery(this).closest('form'));
+		});
+
+		function pmpro_checkout_validate_fields($form) {
+			var data = $form.serialize() + '&action=pmpro_checkout_validate';
+
+			// Don't stack requests. Cancel the previous one.
+			if (pmpro_validate_request) {
+				pmpro_validate_request.abort();
+			}
+
+			pmpro_validate_request = jQuery.ajax({
+				url: pmpro.ajaxurl,
+				type: 'POST',
+				data: data,
+				timeout: pmpro.ajax_timeout,
+				error: function(xhr, status) {
+					// Leave the current error state in place when validation
+					// fails so server-rendered messages are not cleared.
+				},
+				success: function(response) {
+					// Drop the response if the user edited a field after the
+					// request was sent. A newer request follows this one.
+					if ( ! pmpro_validate_request || data === $form.serialize() + '&action=pmpro_checkout_validate' ) {
+						if (response && response.success && response.data && typeof response.data.fields !== 'undefined') {
+							pmpro_checkout_show_validation_errors(response.data.fields);
+						}
+					}
+				},
+				complete: function() {
+					pmpro_validate_request = null;
+				}
+			});
+		}
+
+		function pmpro_checkout_show_validation_errors(fields) {
+			// Clear the error class from the account fields first.
+			jQuery(pmpro_validate_fields).removeClass('pmpro_form_input-error');
+
+			// Mark the fields that came back with errors.
+			var messages = [];
+			jQuery.each(fields, function(field_name, field_message) {
+				var $input = jQuery('#' + field_name);
+				if ($input.length) {
+					$input.addClass('pmpro_form_input-error');
+				}
+				if (messages.indexOf(field_message) === -1) {
+					messages.push(field_message);
+				}
+			});
+
+			// Show the messages in the standard message box. The observer
+			// copies it to the bottom box. Only messages set by this
+			// validation get cleared here so server-rendered ones stay put.
+			var $msg = jQuery('#pmpro_message');
+			if (messages.length) {
+				$msg.html(messages.join('<br />')).show();
+				pmpro_validation_message_set = true;
+			} else if (pmpro_validation_message_set) {
+				// Clear the content so the observer syncs the bottom box.
+				$msg.empty().hide();
+				pmpro_validation_message_set = false;
+			}
+		}
+	}
+
+
 
 	//click apply button on enter in discount code box
 	jQuery('#pmpro_discount_code').keydown(function (e){

@@ -374,3 +374,132 @@ function pmpro_get_checkout_nonce() {
 }
 add_action( 'wp_ajax_pmpro_get_checkout_nonce', 'pmpro_get_checkout_nonce' );
 add_action( 'wp_ajax_nopriv_pmpro_get_checkout_nonce', 'pmpro_get_checkout_nonce' );
+
+/**
+ * AJAX endpoint to validate the account fields on the checkout page.
+ *
+ * Runs the same checks as the server-side checkout validation so the user can
+ * get feedback on a field as soon as they leave it instead of waiting for a
+ * full form submission.
+ *
+ * Note: The username and email checks reveal whether a value is already
+ * registered. That is inherent to validating these fields before checkout and
+ * matches what the checkout page already shows after a failed submission.
+ *
+ * @since 3.9
+ */
+function pmpro_checkout_validate() {
+	// Check the nonce. Skip enforcement for sites running a pre-3.0 custom
+	// checkout template, which does not print the nonce field. This mirrors
+	// the check in preheaders/checkout.php.
+	if ( empty( $_REQUEST['pmpro_checkout_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_checkout_nonce'] ), 'pmpro_checkout_nonce' ) ) {
+		$skip_nonce_check = false;
+		if ( 'yes' === get_option( 'pmpro_use_custom_page_template_checkout' ) ) {
+			$loaded_path    = pmpro_get_template_path_to_load( 'checkout' );
+			$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+			if ( empty( $loaded_version ) || version_compare( $loaded_version, '3.0', '<' ) ) {
+				$skip_nonce_check = true;
+			}
+		}
+		if ( ! $skip_nonce_check ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Nonce security check failed.', 'paid-memberships-pro' ) ),
+				403
+			);
+		}
+	}
+
+	// The account fields are only validated when the checkout is creating a new user.
+	if ( is_user_logged_in() ) {
+		wp_send_json_success( array( 'fields' => new stdClass() ) );
+	}
+
+	// Read and sanitize the posted values. Passwords are not sanitized, matching preheaders/checkout.php.
+	// The raw username is kept for the character check. sanitize_user() strips
+	// illegal characters, so validate_username() must run on the raw value to
+	// detect them, the same way the admin member-edit panel checks $_POST.
+	$raw_username  = isset( $_REQUEST['username'] ) ? wp_unslash( $_REQUEST['username'] ) : '';
+	$username      = sanitize_user( $raw_username, true );
+	$password      = isset( $_REQUEST['password'] ) ? wp_unslash( $_REQUEST['password'] ) : '';
+	$password2     = isset( $_REQUEST['password2'] ) ? wp_unslash( $_REQUEST['password2'] ) : '';
+	$bemail        = isset( $_REQUEST['bemail'] ) ? sanitize_email( wp_unslash( $_REQUEST['bemail'] ) ) : '';
+	$bconfirmemail = isset( $_REQUEST['bconfirmemail'] ) ? sanitize_email( wp_unslash( $_REQUEST['bconfirmemail'] ) ) : '';
+
+	// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- passwords must not be modified.
+	if ( isset( $_REQUEST['password2_copy'] ) ) {
+		$password2 = $password;
+	}
+	// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+	/**
+	 * Filter the fields that are required on the checkout page.
+	 *
+	 * @param array $pmpro_required_user_fields Array of field names and their submitted values.
+	 */
+	$pmpro_required_user_fields = array(
+		'username'      => $username,
+		'password'      => $password,
+		'password2'     => $password2,
+		'bemail'        => $bemail,
+		'bconfirmemail' => $bconfirmemail,
+	);
+	$pmpro_required_user_fields = apply_filters( 'pmpro_required_user_fields', $pmpro_required_user_fields );
+
+	$error_fields = array();
+
+	// Required field checks.
+	foreach ( $pmpro_required_user_fields as $key => $field ) {
+		if ( ! $field ) {
+			$error_fields[ $key ] = __( 'This field is required.', 'paid-memberships-pro' );
+		}
+	}
+
+	// Password confirmation check.
+	if ( $password !== $password2 ) {
+		$error_fields['password']  = __( 'Your passwords do not match. Please try again.', 'paid-memberships-pro' );
+		$error_fields['password2'] = __( 'Your passwords do not match. Please try again.', 'paid-memberships-pro' );
+	}
+
+	// Email confirmation check.
+	if ( strcasecmp( $bemail, $bconfirmemail ) !== 0 ) {
+		$error_fields['bemail']        = __( 'Your email addresses do not match. Please try again.', 'paid-memberships-pro' );
+		$error_fields['bconfirmemail'] = __( 'Your email addresses do not match. Please try again.', 'paid-memberships-pro' );
+	}
+
+	// Email format check. Skipped when empty since the required check already covers it.
+	if ( ! empty( $bemail ) && ! is_email( $bemail ) ) {
+		$error_fields['bemail']        = __( 'The email address entered is in an invalid format. Please try again.', 'paid-memberships-pro' );
+		$error_fields['bconfirmemail'] = __( 'The email address entered is in an invalid format. Please try again.', 'paid-memberships-pro' );
+	}
+
+	// Username format check.
+	if ( ! empty( $raw_username ) && ! validate_username( $raw_username ) ) {
+		$error_fields['username'] = __( 'This username is invalid because it uses illegal characters. Please enter a valid username.', 'paid-memberships-pro' );
+	}
+
+	// Username uniqueness check.
+	$ouser = get_user_by( 'login', $username );
+	if ( ! empty( $ouser->user_login ) ) {
+		$error_fields['username'] = __( 'That username is already taken. Please try another.', 'paid-memberships-pro' );
+	}
+
+	// Email uniqueness check.
+	$oldem_user = get_user_by( 'email', $bemail );
+	$oldem_user = apply_filters_deprecated( 'pmpro_checkout_oldemail', array( ( false !== $oldem_user ? $oldem_user->user_email : null ) ), '3.2' );
+	if ( ! empty( $oldem_user ) ) {
+		$error_fields['bemail']        = __( 'That email address is already in use. Please log in, or use a different email address.', 'paid-memberships-pro' );
+		$error_fields['bconfirmemail'] = __( 'That email address is already in use. Please log in, or use a different email address.', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Filter the field errors found while validating the checkout account fields.
+	 *
+	 * @param array $error_fields Array of field names pointing to error messages.
+	 */
+	$error_fields = apply_filters( 'pmpro_checkout_validate_field_errors', $error_fields );
+
+	// An empty map means every field passed.
+	wp_send_json_success( array( 'fields' => empty( $error_fields ) ? new stdClass() : $error_fields ) );
+}
+add_action( 'wp_ajax_pmpro_checkout_validate', 'pmpro_checkout_validate' );
+add_action( 'wp_ajax_nopriv_pmpro_checkout_validate', 'pmpro_checkout_validate' );

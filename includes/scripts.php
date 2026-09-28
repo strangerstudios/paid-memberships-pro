@@ -38,6 +38,7 @@ function pmpro_enqueue_scripts() {
 				'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ),
 				'sensitiveCheckoutRequestVars' => pmpro_get_sensitive_checkout_request_vars(),
 				'update_nonce' => apply_filters( 'pmpro_update_nonce_at_checkout', false ),
+				'skip_account_fields' => apply_filters( 'pmpro_skip_account_fields', is_user_logged_in(), wp_get_current_user() ),
 				'hide_password_text' =>  __( 'Hide Password', 'paid-memberships-pro' ),
 				'show_password_text' =>  __( 'Show Password', 'paid-memberships-pro' ),
 			)
