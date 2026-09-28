@@ -37,8 +37,9 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			}
 		}
 
-		// If user cannot edit users, empty the submit text and title link.
-		if ( ! current_user_can( 'edit_users' ) ) {
+		// If user cannot edit this user (or create users), empty the submit text and title link.
+		$can_edit = empty( $user->ID ) ? current_user_can( 'edit_users' ) : current_user_can( 'edit_user', $user->ID );
+		if ( ! $can_edit ) {
 			$this->submit_text = '';
 			$this->title_link = '';
 		}
@@ -71,8 +72,9 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			wp_enqueue_script( 'user-profile' );
 		}
 
-		// If the user doesn't have the edit_users capability, make the fields read-only.
-		$disable_fields = ! current_user_can( 'edit_users' ) ? 'disabled' : '';
+		// If the current user can't edit this user (or create users), make the fields read-only.
+		$can_edit = empty( $user->ID ) ? current_user_can( 'edit_users' ) : current_user_can( 'edit_user', $user->ID );
+		$disable_fields = ! $can_edit ? 'disabled' : '';
 
 		// Show a message if the user doesn't have permission to edit this user.
 		if ( ! empty( $disable_fields ) ) {
@@ -215,21 +217,23 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	 * Save panel data and redirect if we are creating a new user.
 	 */
 	public function save() {
-		// If the current user can't edit users, bail.
-		if ( ! current_user_can( 'edit_users' ) ) {
-			return;
-		}
-
 		// Get the user we are editing or set up a new blank user.
 		$user = self::get_user();
 		$update = $user->ID ? true : false;
+
+		// If the current user can't edit this user (or create users), bail.
+		$can_edit = $update ? current_user_can( 'edit_user', $user->ID ) : current_user_can( 'edit_users' );
+		if ( ! $can_edit ) {
+			return;
+		}
 
 		if ( ! $update && isset( $_POST['user_login'] ) ) {
 			$user->user_login = sanitize_user( wp_unslash( $_POST['user_login'] ), true );
 		}
 
+		// The password field is only shown when creating a new user.
 		$pass1 = '';
-		if ( isset( $_POST['pass1'] ) ) {
+		if ( ! $update && isset( $_POST['pass1'] ) ) {
 			$pass1 = trim( $_POST['pass1'] );
 		}
 
