@@ -255,8 +255,10 @@ if ( ! empty( $pmpro_level->discount_code ) ) {
 } else {
 	$discount_code = "";
 }
+$raw_username = "";
 if ( isset( $_REQUEST['username'] ) ) {
-	$username = sanitize_user( $_REQUEST['username'] , true);
+	$raw_username = wp_unslash( $_REQUEST['username'] );
+	$username = sanitize_user( $raw_username, true );
 } else {
 	$username = "";
 }
@@ -408,6 +410,11 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 			pmpro_setMessage( __( "The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "bemail";
 			$pmpro_error_fields[] = "bconfirmemail";
+		}
+		// Check the raw username. Sanitizing strips illegal characters instead of flagging them.
+		if ( ! empty( $raw_username ) && ! validate_username( $raw_username ) ) {
+			pmpro_setMessage( __( "This username is invalid because it uses illegal characters. Please enter a valid username.", 'paid-memberships-pro' ), "pmpro_error" );
+			$pmpro_error_fields[] = "username";
 		}
 		$ouser = get_user_by( 'login', $username );
 		if ( ! empty( $ouser->user_login ) ) {
