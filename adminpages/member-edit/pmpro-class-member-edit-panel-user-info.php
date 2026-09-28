@@ -37,8 +37,8 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			}
 		}
 
-		// If user cannot edit this user (or create users), empty the submit text and title link.
-		$can_edit = empty( $user->ID ) ? current_user_can( 'edit_users' ) : current_user_can( 'edit_user', $user->ID );
+		// If user cannot edit users, or cannot edit this specific user, empty the submit text and title link.
+		$can_edit = current_user_can( 'edit_users' ) && ( empty( $user->ID ) || current_user_can( 'edit_user', $user->ID ) );
 		if ( ! $can_edit ) {
 			$this->submit_text = '';
 			$this->title_link = '';
@@ -72,8 +72,8 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			wp_enqueue_script( 'user-profile' );
 		}
 
-		// If the current user can't edit this user (or create users), make the fields read-only.
-		$can_edit = empty( $user->ID ) ? current_user_can( 'edit_users' ) : current_user_can( 'edit_user', $user->ID );
+		// If the current user can't edit users, or can't edit this specific user, make the fields read-only.
+		$can_edit = current_user_can( 'edit_users' ) && ( empty( $user->ID ) || current_user_can( 'edit_user', $user->ID ) );
 		$disable_fields = ! $can_edit ? 'disabled' : '';
 
 		// Show a message if the user doesn't have permission to edit this user.
@@ -221,8 +221,8 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$user = self::get_user();
 		$update = $user->ID ? true : false;
 
-		// If the current user can't edit this user (or create users), bail.
-		$can_edit = $update ? current_user_can( 'edit_user', $user->ID ) : current_user_can( 'edit_users' );
+		// If the current user can't edit users, or can't edit this specific user, bail.
+		$can_edit = current_user_can( 'edit_users' ) && ( ! $update || current_user_can( 'edit_user', $user->ID ) );
 		if ( ! $can_edit ) {
 			return;
 		}

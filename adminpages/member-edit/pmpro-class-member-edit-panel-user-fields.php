@@ -14,7 +14,7 @@ class PMPro_Member_Edit_Panel_User_Fields extends PMPro_Member_Edit_Panel {
 		$this->field_group = PMPro_Field_Group::get( $field_group_name );
 		$this->slug = 'user-fields-' . sanitize_title( $field_group_name );
 		$this->title = $this->field_group->label;
-		$this->submit_text = current_user_can( 'edit_user', self::get_user()->ID ) ? __( 'Update Member', 'paid-memberships-pro' ) : '';
+		$this->submit_text = ( current_user_can( 'edit_users' ) && current_user_can( 'edit_user', self::get_user()->ID ) ) ?__( 'Update Member', 'paid-memberships-pro' ) : '';
 	}
 
 	/**
