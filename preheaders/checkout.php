@@ -727,6 +727,21 @@ if ( ! empty( $pmpro_confirmed ) ) {
 pmpro_getAllLevels();
 
 /**
+ * Filter the list of checkout fields that failed validation.
+ *
+ * Runs after all checkout checks, so the list includes required billing fields,
+ * required user fields, and any fields added by custom code during
+ * pmpro_checkout_checks, pmpro_checkout_user_creation_checks, or
+ * pmpro_checkout_order_creation_checks. Use this filter to inspect the fields,
+ * for example to log them while debugging a checkout form.
+ *
+ * @since TBD
+ *
+ * @param array $pmpro_error_fields Array of field names that failed validation.
+ */
+$pmpro_error_fields = apply_filters( 'pmpro_checkout_error_fields', $pmpro_error_fields );
+
+/**
  * Hook to run actions after the checkout preheader is loaded.
  * @since 2.1
  */
