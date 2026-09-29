@@ -90,8 +90,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								$edit_profile_url = pmpro_url( 'member_profile_edit' );
 								$change_password_url = add_query_arg( 'view', 'change-password', pmpro_url( 'member_profile_edit' ) );
 							} elseif ( ! pmpro_block_dashboard() ) {
-								$edit_profile_url = admin_url( 'profile.php' );
-								$change_password_url = admin_url( 'profile.php' );
+								// Use the core profile URL so the edit_profile_url filter is respected.
+								$edit_profile_url = get_edit_profile_url( $current_user->ID );
+								$change_password_url = get_edit_profile_url( $current_user->ID );
 							}
 
 							// Build the links to return.
