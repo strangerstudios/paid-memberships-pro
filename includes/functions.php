@@ -3126,12 +3126,35 @@ if ( ! function_exists( 'pmpro_getMemberDays' ) ) {
 	}
 }
 
-// the start of a message handling script
+/**
+ * Set a message to show to the user.
+ *
+ * Only the first message set during a request is kept unless $force is true.
+ *
+ * @since 1.7.5
+ *
+ * @param string $message The message to show.
+ * @param string $type    The message type, e.g. pmpro_error, pmpro_success, pmpro_alert.
+ * @param bool   $force   Whether to set the message even if one was already set.
+ */
 function pmpro_setMessage( $message, $type, $force = false ) {
 	global $pmpro_msg, $pmpro_msgt;
 
 	// for now, we only show the first message generated
 	if ( $force || empty( $pmpro_msg ) ) {
+		/**
+		 * Filter a message before it is shown to the user.
+		 *
+		 * Runs when pmpro_setMessage() sets a message, including the errors and
+		 * confirmations on the checkout, profile, and change password screens. Only the
+		 * first message of a request is kept, so this does not run for a call that is
+		 * ignored because a message was already set.
+		 *
+		 * @since 1.8.11
+		 *
+		 * @param string $message The message text.
+		 * @param string $type    The message type, e.g. pmpro_error, pmpro_success, pmpro_alert.
+		 */
 		$pmpro_msg = apply_filters( 'pmpro_set_message', $message, $type );
 		$pmpro_msgt = $type;
 	}

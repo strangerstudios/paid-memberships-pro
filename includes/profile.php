@@ -1228,8 +1228,46 @@ function pmpro_change_password_process() {
 		$error = __( 'Your current password is incorrect.', 'paid-memberships-pro' );
 	}
 
+	// Give custom code the chance to stop the password change, for example to enforce a password policy.
+	if ( empty( $error ) ) {
+		/**
+		 * Filter whether the current password change should be saved.
+		 *
+		 * Runs after PMPro has checked that all of the fields are filled in, that the
+		 * new passwords match, and that the current password is correct. Return false
+		 * to stop the change. Set your own message with pmpro_setMessage() so the
+		 * member knows why.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool    $pmpro_change_password_checks True if the password should be changed.
+		 * @param string  $pass1                        The new password.
+		 * @param WP_User $current_user                 The user changing their password.
+		 */
+		$pmpro_change_password_checks = apply_filters( 'pmpro_change_password_checks', true, $pass1, $current_user );
+		if ( ! $pmpro_change_password_checks ) {
+			// The filter should have set its own message, so this is only a fallback.
+			$error = __( 'Password checks failed.', 'paid-memberships-pro' );
+		}
+	}
+
 	// Change the password.
 	if ( ! empty( $pass1 ) && empty( $error ) ) {
+		/**
+		 * Fires before the user's password is changed.
+		 *
+		 * Use this for work that has to happen before the new password is saved. To stop
+		 * the change instead, use the pmpro_change_password_checks filter. A message set
+		 * here with pmpro_setMessage() replaces the confirmation shown after a successful
+		 * change, since only the first message of a request is shown.
+		 *
+		 * @since TBD
+		 *
+		 * @param WP_User $current_user The user whose password is being changed.
+		 * @param string  $pass1        The new password.
+		 */
+		do_action( 'pmpro_before_change_password', $current_user, $pass1 );
+
 		wp_set_password( $pass1, $current_user->ID );
 
 		//setting some cookies
@@ -1237,6 +1275,18 @@ function pmpro_change_password_process() {
 		wp_set_auth_cookie( $current_user->ID, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
 
 		pmpro_setMessage( __( 'Your password has been updated.', 'paid-memberships-pro' ), 'pmpro_success' );
+
+		/**
+		 * Fires after the user's password has been changed.
+		 *
+		 * The new password has already been saved and the user has been logged back in.
+		 *
+		 * @since TBD
+		 *
+		 * @param WP_User $current_user The user whose password was changed.
+		 * @param string  $pass1        The new password.
+		 */
+		do_action( 'pmpro_after_change_password', $current_user, $pass1 );
 	} else {
 		pmpro_setMessage( $error, 'pmpro_error' );
 	}
@@ -1305,6 +1355,16 @@ function pmpro_change_password_form() {
 									<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php esc_html_e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
 								</div> <!-- end pmpro_form_fields -->
 							</fieldset> <!-- end pmpro_form_fieldset -->
+							<?php
+							/**
+							 * Fires below the change password fields, directly under the strength meter.
+							 *
+							 * Use this to add your own text or fields before the submit button.
+							 *
+							 * @since TBD
+							 */
+							do_action( 'pmpro_change_password_form_before_submit_button' );
+							?>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">
 								<input type="hidden" name="action" value="change-password" />
 								<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ); ?>" />
