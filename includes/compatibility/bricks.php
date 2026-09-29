@@ -76,12 +76,13 @@ function pmpro_bricks_add_custom_condition( $options ) {
 		),
 		'value'   => array(
 			'type'        => 'select',
-			'options'     => wp_list_pluck( pmpro_getAllLevels( true ), 'name', 'id' ),
+			// The 0 entry lets a condition target non-members, pmpro_hasMembershipLevel() reads it as such.
+			'options'     => array( 0 => esc_html__( 'Non-members', 'paid-memberships-pro' ) ) + wp_list_pluck( pmpro_getAllLevels( true ), 'name', 'id' ),
 			'multiple'    => true,
 		),
 	);
 
-	// Non-members
+	// Logged-in users.
 	$options[] = array(
 		'key'   => 'pmpro_membership_level_logged_in_users',
 		'label' => esc_html__( 'Logged-in users', 'paid-memberships-pro' ),

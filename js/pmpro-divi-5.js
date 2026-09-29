@@ -34,6 +34,17 @@
 	// Membership levels localized from PHP via wp_localize_script.
 	var allLevels = ( window.pmproDivi && window.pmproDivi.levels ) || [];
 
+	/**
+	 * Check whether a comma-separated level ID string is the Non-members option on its own.
+	 *
+	 * @param {string} levelIds
+	 * @return {boolean}
+	 */
+	function isNonMembersOnly( levelIds ) {
+		var ids = ( levelIds || '' ).split( ',' ).map( function ( id ) { return id.trim(); } ).filter( function ( id ) { return '' !== id; } );
+		return 1 === ids.length && '0' === ids[ 0 ];
+	}
+
 	// Register our custom category "PMPro" and condition type in the dropdown.
 	addFilter(
 		'divi.fieldLibrary.conditionalDisplay.conditionCategories',
@@ -104,8 +115,12 @@
 					: __( 'PMPro - User is logged in', 'paid-memberships-pro' );
 			}
 
+			var nonMembersOnly = 'specific' === segment && isNonMembersOnly( s.levelIds );
+
 			var segmentText;
-			if ( segment === 'specific' && s.levelIds ) {
+			if ( nonMembersOnly ) {
+				segmentText = __( 'non-members only', 'paid-memberships-pro' );
+			} else if ( segment === 'specific' && s.levelIds ) {
 				segmentText = __( 'level(s)', 'paid-memberships-pro' ) + ' ' + s.levelIds;
 			} else {
 				segmentText = __( 'any membership level', 'paid-memberships-pro' );
@@ -212,7 +227,9 @@
 			}
 
 			function selectAllLevels() {
-				update( { levelIds: levels.map( function ( l ) { return l.value; } ).join( ',' ) } );
+				// Select All means every real level. Non-members is a separate
+				// choice, not one of the levels.
+				update( { levelIds: levels.filter( function ( l ) { return '0' !== l.value; } ).map( function ( l ) { return l.value; } ).join( ',' ) } );
 			}
 
 			function selectNone() {
@@ -277,6 +294,7 @@
 
 		var currentSegment    = settings.segment || 'all';
 		var currentRule       = settings.displayRule || 'hasMembership';
+		var currentNonMembers = 'specific' === currentSegment && isNonMembersOnly( settings.levelIds );
 
 		return createElement(
 			Fragment,
@@ -310,8 +328,10 @@
 				renderLevelSelect()
 			) : null,
 
-			// No access message only applies to positive access requirements.
-			currentRule === 'hasMembership' ? wrapField(
+			// No access message only applies to positive access requirements,
+			// and never to a Non-members restriction: only a member could ever
+			// see it, and the wording would read backwards.
+			currentRule === 'hasMembership' && ! currentNonMembers ? wrapField(
 				__( 'No Access Message', 'paid-memberships-pro' ),
 				renderSelect(
 					'pmpro-show-no-access',

@@ -95,23 +95,28 @@ function pmpro_beaver_builder_check_field_connections( $is_visible, $node ) {
 		return $is_visible;
 	}
 
-	if ( 'row' === $node->type ) {
-		if ( isset( $node->settings->pmpro_enable ) && 'yes' === $node->settings->pmpro_enable ) {
-			if ( pmpro_hasMembershipLevel( $node->settings->pmpro_memberships ) || empty( $node->settings->pmpro_memberships ) ) {
-				return $is_visible;
-			} else {
-				return false;
-			}
-		}
+	if ( ! isset( $node->settings->pmpro_enable ) || 'yes' !== $node->settings->pmpro_enable ) {
+		return $is_visible;
 	}
-	if ( isset( $node->settings->pmpro_enable ) && 'yes' === $node->settings->pmpro_enable ) {
-		if ( pmpro_hasMembershipLevel( $node->settings->pmpro_memberships ) || empty( $node->settings->pmpro_memberships ) ) {
-			return $is_visible;
-		} else {
-			return false;
-		}
+
+	$levels = isset( $node->settings->pmpro_memberships ) ? $node->settings->pmpro_memberships : array();
+
+	if ( is_array( $levels ) ) {
+		// Beaver Builder saves multi-select fields as an array. Blanks left
+		// behind when the field is cleared are not a selection, but a saved
+		// 0 (Non-members) is, and empty() on its own would discard it.
+		$levels        = array_filter( array_map( 'trim', array_map( 'strval', $levels ) ), 'strlen' );
+		$has_selection = ! empty( $levels );
+	} else {
+		$levels        = trim( (string) $levels );
+		$has_selection = '' !== $levels;
 	}
-	return $is_visible;
+
+	if ( ! $has_selection || pmpro_hasMembershipLevel( $levels ) ) {
+		return $is_visible;
+	}
+
+	return false;
 }
 add_filter( 'fl_builder_is_node_visible', 'pmpro_beaver_builder_check_field_connections', 200, 2 );
 

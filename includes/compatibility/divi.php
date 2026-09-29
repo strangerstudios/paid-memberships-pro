@@ -55,6 +55,23 @@ class PMProDivi {
 		add_action( 'pmpro_element_class', array( __CLASS__, 'pmpro_element_class' ), 10, 2 );
 	}
 
+	/**
+	 * Check whether a level selection is the Non-members option on its own.
+	 *
+	 * @since TBD
+	 *
+	 * @param mixed $levels Array of level IDs, or another value to reject.
+	 *
+	 * @return bool True when the only selected level is 0.
+	 */
+	private static function is_non_members_only( $levels ) {
+		if ( ! is_array( $levels ) || 1 !== count( $levels ) ) {
+			return false;
+		}
+
+		return '0' === (string) reset( $levels );
+	}
+
 	// -------------------------------------------------------------------------
 	// Divi 5 methods
 	// -------------------------------------------------------------------------
@@ -74,17 +91,28 @@ class PMProDivi {
 		$segment = isset( $settings['segment'] ) ? $settings['segment'] : 'all';
 
 		$levels = array();
-		if ( 'specific' === $segment && ! empty( $settings['levelIds'] ) ) {
-			$levels = array_filter( array_map( 'trim', explode( ',', $settings['levelIds'] ) ) );
+		if ( 'specific' === $segment && isset( $settings['levelIds'] ) && '' !== trim( (string) $settings['levelIds'] ) ) {
+			// strlen as the callback keeps a saved 0. A bare array_filter() drops
+			// it, because the string '0' is falsy in PHP, and an empty levels
+			// array means "any member", which is the opposite of the setting.
+			$levels = array_filter( array_map( 'trim', explode( ',', $settings['levelIds'] ) ), 'strlen' );
 		}
 
 		$invert_restrictions = isset( $settings['displayRule'] ) && 'doesNotHaveMembership' === $settings['displayRule'];
+
+		// A Non-members restriction is inverted by nature, so the no access
+		// message would only ever appear to a member. Match the Content
+		// Visibility block and leave it off.
+		$show_noaccess = ! $invert_restrictions
+			&& ! self::is_non_members_only( $levels )
+			&& isset( $settings['showNoAccessMessage'] )
+			&& 'on' === $settings['showNoAccessMessage'];
 
 		return array(
 			'segment'             => $segment,
 			'levels'              => $levels,
 			'invert_restrictions' => $invert_restrictions,
-			'show_noaccess'       => ! $invert_restrictions && isset( $settings['showNoAccessMessage'] ) && 'on' === $settings['showNoAccessMessage'],
+			'show_noaccess'       => $show_noaccess,
 		);
 	}
 
@@ -197,7 +225,12 @@ class PMProDivi {
 		);
 
 		$all_levels = pmpro_getAllLevels( true, true );
-		$levels_data = array();
+		$levels_data = array(
+			array(
+				'value' => '0',
+				'label' => esc_html__( 'Non-members', 'paid-memberships-pro' ),
+			),
+		);
 		foreach ( $all_levels as $level ) {
 			$levels_data[] = array(
 				'value' => (string) $level->id,
@@ -258,19 +291,31 @@ class PMProDivi {
 			return $converted;
 		}
 
-		$level_ids = isset( $attrs['paid-memberships-pro'] ) ? trim( $attrs['paid-memberships-pro'] ) : '';
+		$level_ids = isset( $attrs['paid-memberships-pro'] ) ? trim( (string) $attrs['paid-memberships-pro'] ) : '';
 
-		if ( empty( $level_ids ) || '0' === $level_ids ) {
+		if ( '' === $level_ids ) {
+			return $converted;
+		}
+
+		$migrated_levels = array_filter( array_map( 'trim', explode( ',', $level_ids ) ), 'strlen' );
+
+		if ( empty( $migrated_levels ) ) {
 			return $converted;
 		}
 
 		$show_message = isset( $attrs['pmpro_show_no_access_message'] ) ? $attrs['pmpro_show_no_access_message'] : 'off';
 
+		// The no access message reads backwards for a Non-members restriction,
+		// so drop it when migrating one.
+		if ( self::is_non_members_only( $migrated_levels ) ) {
+			$show_message = 'off';
+		}
+
 		$condition = array(
 			'id'                => wp_generate_uuid4(),
 			'conditionName'     => 'pmproMembershipLevel',
 			'conditionSettings' => array(
-				'levelIds'            => $level_ids,
+				'levelIds'            => implode( ',', $migrated_levels ),
 				'displayRule'         => 'hasMembership',
 				'segment'             => 'specific',
 				'showNoAccessMessage' => $show_message,
@@ -340,7 +385,7 @@ class PMProDivi {
 		$settings['paid-memberships-pro'] = array(
 			'tab_slug'        => 'custom_css',
 			'label'           => __( 'Restrict Row by Level', 'paid-memberships-pro' ),
-			'description'     => __( 'Enter comma-separated level IDs.', 'paid-memberships-pro' ),
+			'description'     => __( 'Enter comma-separated level IDs. Enter 0 to show this row to non-members only. Leave blank for no restriction.', 'paid-memberships-pro' ),
 			'type'            => 'text',
 			'default'         => '',
 			'option_category' => 'configuration',
@@ -392,25 +437,31 @@ class PMProDivi {
 
 		$level = $props['paid-memberships-pro'];
 
-		if ( empty( trim( $level ) ) || trim( $level ) === '0' ) {
+		// Compare against '' rather than empty(): the string '0' is the
+		// Non-members selection, and empty() would treat it as no selection.
+		if ( '' === trim( (string) $level ) ) {
 			return $output;
 		}
 
-		if ( strpos( $level, ',' ) ) {
-			$levels = explode( ',', $level );
-		} else {
-			$levels = array( $level );
+		$levels = array_filter( array_map( 'trim', explode( ',', (string) $level ) ), 'strlen' );
+
+		if ( empty( $levels ) ) {
+			return $output;
 		}
 
 		if ( pmpro_hasMembershipLevel( $levels ) ) {
 			return $output;
-		} else {
-			if ( ! empty( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] ) {
-				return pmpro_get_no_access_message( null, $levels );
-			} else {
-				return '';
-			}
 		}
+
+		// The no access message reads backwards for a Non-members restriction,
+		// since only a member can reach this point.
+		if ( ! self::is_non_members_only( $levels )
+			&& ! empty( $props['pmpro_show_no_access_message'] )
+			&& 'on' === $props['pmpro_show_no_access_message'] ) {
+			return pmpro_get_no_access_message( null, $levels );
+		}
+
+		return '';
 	}
 
 	/**
