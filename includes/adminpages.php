@@ -30,6 +30,158 @@ function pmpro_getPMProCaps() {
 }
 
 /**
+ * Get the tabs to show in the Memberships dashboard menu.
+ *
+ * Each tab is keyed by the page slug it links to and supports these arguments:
+ * - label:      The text shown for the tab. Required.
+ * - capability: The capability a user needs to see the tab. Required.
+ * - sub_tabs:   Whether the tab has its own sub tab menu. Default false.
+ * - visible:    Whether to show the tab. Accepts a boolean or a callable. Default true.
+ *
+ * The page a tab links to still has to be registered with add_submenu_page()
+ * for the link to work.
+ *
+ * @since TBD
+ *
+ * @return array The tabs to show in the Memberships dashboard menu.
+ */
+function pmpro_get_dashboard_tabs() {
+	$tabs = array(
+		'pmpro-dashboard'        => array(
+			'label'      => __( 'Dashboard', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_dashboard',
+		),
+		'pmpro-memberslist'      => array(
+			'label'      => __( 'Members', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_memberslist',
+		),
+		'pmpro-orders'           => array(
+			'label'      => __( 'Orders', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_orders',
+		),
+		'pmpro-subscriptions'    => array(
+			'label'      => __( 'Subscriptions', 'paid-memberships-pro' ),
+			'capability' => pmpro_get_edit_member_capability(),
+		),
+		'pmpro-reports'          => array(
+			'label'      => __( 'Reports', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_reports',
+		),
+		'pmpro-membershiplevels' => array(
+			'label'      => __( 'Settings', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_membershiplevels',
+			'sub_tabs'   => true,
+		),
+		'pmpro-addons'           => array(
+			'label'      => __( 'Add Ons', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_addons',
+		),
+		'pmpro-license'          => array(
+			'label'      => __( 'License', 'paid-memberships-pro' ),
+			'capability' => 'manage_options',
+		),
+		'pmpro-wizard'           => array(
+			'label'      => __( 'Setup Wizard', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_wizard',
+			'visible'    => 'pmpro_show_setup_wizard_link',
+		),
+	);
+
+	/**
+	 * Filter the tabs shown in the Memberships dashboard menu.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $tabs The tabs to show in the Memberships dashboard menu.
+	 */
+	return apply_filters( 'pmpro_dashboard_tabs', $tabs );
+}
+
+/**
+ * Get the tabs to show in the Settings menu of the Memberships dashboard.
+ *
+ * Each tab is keyed by the page slug it links to and supports these arguments:
+ * - label:      The text shown for the tab. Required.
+ * - capability: The capability a user needs to see the tab. Required.
+ *
+ * The page a tab links to still has to be registered with add_submenu_page()
+ * for the link to work.
+ *
+ * @since TBD
+ *
+ * @return array The tabs to show in the Settings menu.
+ */
+function pmpro_get_settings_tabs() {
+	$tabs = array(
+		'pmpro-membershiplevels' => array(
+			'label'      => __( 'Levels', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_membershiplevels',
+		),
+		'pmpro-discountcodes'    => array(
+			'label'      => __( 'Discount Codes', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_discountcodes',
+		),
+		'pmpro-pagesettings'     => array(
+			'label'      => __( 'Pages', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_pagesettings',
+		),
+		'pmpro-paymentsettings'  => array(
+			'label'      => __( 'Payments', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_paymentsettings',
+		),
+		'pmpro-securitysettings' => array(
+			'label'      => __( 'Security', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_securitysettings',
+		),
+		'pmpro-emailsettings'    => array(
+			'label'      => __( 'Email Settings', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_emailsettings',
+		),
+		'pmpro-emailtemplates'   => array(
+			'label'      => __( 'Email Templates', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_emailtemplates',
+		),
+		'pmpro-userfields'       => array(
+			'label'      => __( 'User Fields', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_userfields',
+		),
+		'pmpro-designsettings'   => array(
+			'label'      => __( 'Design', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_designsettings',
+		),
+		'pmpro-advancedsettings' => array(
+			'label'      => __( 'Advanced', 'paid-memberships-pro' ),
+			'capability' => 'pmpro_advancedsettings',
+		),
+	);
+
+	/**
+	 * Filter the tabs shown in the Settings menu of the Memberships dashboard.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $tabs The tabs to show in the Settings menu.
+	 */
+	return apply_filters( 'pmpro_dashboard_settings_tabs', $tabs );
+}
+
+/**
+ * Check whether a page is one of the Settings tabs in the Memberships dashboard.
+ *
+ * @since TBD
+ *
+ * @param string $page Optional. The page slug to check. Defaults to the current page.
+ * @return bool Whether the page is one of the Settings tabs.
+ */
+function pmpro_is_settings_tab( $page = '' ) {
+	if ( empty( $page ) ) {
+		$page = isset( $_REQUEST['page'] ) ? sanitize_text_field( $_REQUEST['page'] ) : '';
+	}
+
+	return array_key_exists( $page, pmpro_get_settings_tabs() );
+}
+
+/**
  * Dashboard Menu
  */
 function pmpro_add_pages() {
