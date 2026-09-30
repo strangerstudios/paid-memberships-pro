@@ -266,13 +266,17 @@ class PMProDivi {
 
 		$show_message = isset( $attrs['pmpro_show_no_access_message'] ) ? $attrs['pmpro_show_no_access_message'] : 'off';
 
+		// The D4 'ALL' keyword means any membership level, which maps to the
+		// 'all' segment in D5 rather than a list of specific level IDs.
+		$is_all = 'ALL' === strtoupper( $level_ids );
+
 		$condition = array(
 			'id'                => wp_generate_uuid4(),
 			'conditionName'     => 'pmproMembershipLevel',
 			'conditionSettings' => array(
-				'levelIds'            => $level_ids,
+				'levelIds'            => $is_all ? '' : $level_ids,
 				'displayRule'         => 'hasMembership',
-				'segment'             => 'specific',
+				'segment'             => $is_all ? 'all' : 'specific',
 				'showNoAccessMessage' => $show_message,
 				'enableCondition'     => 'on',
 			),
@@ -340,7 +344,7 @@ class PMProDivi {
 		$settings['paid-memberships-pro'] = array(
 			'tab_slug'        => 'custom_css',
 			'label'           => __( 'Restrict Row by Level', 'paid-memberships-pro' ),
-			'description'     => __( 'Enter comma-separated level IDs.', 'paid-memberships-pro' ),
+			'description'     => __( 'Enter comma-separated level IDs. Enter ALL to require any membership level. Leave blank for no restriction.', 'paid-memberships-pro' ),
 			'type'            => 'text',
 			'default'         => '',
 			'option_category' => 'configuration',
@@ -390,14 +394,20 @@ class PMProDivi {
 			return $output;
 		}
 
-		$level = $props['paid-memberships-pro'];
+		$level = trim( (string) $props['paid-memberships-pro'] );
 
-		if ( empty( trim( $level ) ) || trim( $level ) === '0' ) {
+		// A blank level or a saved 0 means there is no restriction.
+		if ( '' === $level || '0' === $level ) {
 			return $output;
 		}
 
-		if ( strpos( $level, ',' ) ) {
-			$levels = explode( ',', $level );
+		if ( 'ALL' === strtoupper( $level ) ) {
+			// ALL requires any active membership level, like the [membership]
+			// shortcode with no level attribute. An empty/false value is what
+			// pmpro_hasMembershipLevel() reads as "any member".
+			$levels = false;
+		} elseif ( false !== strpos( $level, ',' ) ) {
+			$levels = array_values( array_filter( array_map( 'trim', explode( ',', $level ) ), 'strlen' ) );
 		} else {
 			$levels = array( $level );
 		}
