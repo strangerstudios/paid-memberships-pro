@@ -401,6 +401,18 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 		$r .= '.';
 	}
 
+	// The tax options are read early so the short cost text below knows whether a
+	// tax sentence will be appended after the price.
+	$tax_state = get_option( 'pmpro_tax_state' );
+	$tax_rate  = get_option( 'pmpro_tax_rate' );
+
+	// Short cost text is a label, not a sentence, so the period after the price is
+	// dropped. It is kept when a trial or tax sentence follows, because the period
+	// separates the price from that sentence.
+	if ( $short && ! $level->trial_limit && ! ( $tax_state && $tax_rate && ! pmpro_isLevelFree( $level ) ) && substr( $r, -1 ) === '.' ) {
+		$r = substr( $r, 0, -1 );
+	}
+
 	// add a space
 	$r .= ' ';
 
@@ -425,9 +437,6 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	}
 
 	// taxes part
-	$tax_state = get_option( 'pmpro_tax_state' );
-	$tax_rate = get_option( 'pmpro_tax_rate' );
-
 	if ( $tax_state && $tax_rate && ! pmpro_isLevelFree( $level ) ) {
 		/* translators: 1: tax state, 2: tax rate percentage */
 		$r .= sprintf( __( 'Customers in %1$s will be charged %2$s%% tax.', 'paid-memberships-pro' ), $tax_state, round( $tax_rate * 100, 2 ) );
@@ -523,6 +532,18 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 		$r .= '.';
 	}
 
+	// The tax options are read early so the short cost text below knows whether a
+	// tax sentence will be appended after the price.
+	$tax_state = get_option( 'pmpro_tax_state' );
+	$tax_rate  = get_option( 'pmpro_tax_rate' );
+
+	// Short cost text is a label, not a sentence, so the period after the price is
+	// dropped. It is kept when a trial or tax sentence follows, because the period
+	// separates the price from that sentence.
+	if ( $short && ! $trialperiods && ! ( $tax_state && $tax_rate && ! pmpro_areLevelsFree( $levels ) ) && substr( $r, -1 ) === '.' ) {
+		$r = substr( $r, 0, -1 );
+	}
+
 	// add a space
 	$r .= ' ';
 
@@ -537,9 +558,6 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 	}
 
 	// taxes part
-	$tax_state = get_option( 'pmpro_tax_state' );
-	$tax_rate = get_option( 'pmpro_tax_rate' );
-
 	if ( $tax_state && $tax_rate && ! pmpro_areLevelsFree( $levels ) ) {
 		/* translators: 1: tax state, 2: tax rate percentage */
 		$r .= sprintf( __( 'Customers in %1$s will be charged %2$s%% tax.', 'paid-memberships-pro' ), $tax_state, round( $tax_rate * 100, 2 ) );
