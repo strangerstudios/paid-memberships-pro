@@ -411,15 +411,17 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 			$pmpro_error_fields[] = "bemail";
 			$pmpro_error_fields[] = "bconfirmemail";
 		}
-		// Check the raw username. Sanitizing strips illegal characters instead of flagging them.
-		if ( ! empty( $raw_username ) && ! validate_username( $raw_username ) ) {
+		// Checkout saves the strict sanitized username, but login looks up the non strict
+		// sanitized one. This errors only when those differ, so the typed username can not log in.
+		if ( ! empty( $raw_username ) && ! validate_username( sanitize_user( $raw_username ) ) ) {
 			pmpro_setMessage( __( "This username is invalid because it uses illegal characters. Please enter a valid username.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "username";
-		}
-		$ouser = get_user_by( 'login', $username );
-		if ( ! empty( $ouser->user_login ) ) {
-			pmpro_setMessage( __( "That username is already taken. Please try another.", 'paid-memberships-pro' ), "pmpro_error" );
-			$pmpro_error_fields[] = "username";
+		} else {
+			$ouser = get_user_by( 'login', $username );
+			if ( ! empty( $ouser->user_login ) ) {
+				pmpro_setMessage( __( "That username is already taken. Please try another.", 'paid-memberships-pro' ), "pmpro_error" );
+				$pmpro_error_fields[] = "username";
+			}
 		}
 		$oldem_user = get_user_by( 'email', $bemail );
 		$oldem_user = apply_filters_deprecated( "pmpro_checkout_oldemail", array( ( false !== $oldem_user ? $oldem_user->user_email : null ) ), '3.2' );
