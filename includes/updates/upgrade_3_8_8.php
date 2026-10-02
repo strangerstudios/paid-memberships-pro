@@ -47,7 +47,7 @@ function pmpro_add_user_field_upload_index_files() {
 	// Find folders that still need an index file, one batch at a time.
 	$batch_size = 1000;
 	$folders    = array();
-	if ( ! file_exists( $root . 'index.html' ) ) {
+	if ( ! file_exists( $root . 'index.html' ) && is_writable( $root ) ) {
 		$folders[] = $root;
 	}
 	$handle = opendir( $root );
@@ -59,7 +59,8 @@ function pmpro_add_user_field_upload_index_files() {
 			continue;
 		}
 		$folder = $root . $entry . '/';
-		if ( is_dir( $folder ) && ! is_link( $root . $entry ) && ! file_exists( $folder . 'index.html' ) ) {
+		// Skip folders we can't write to so that they don't keep the task re-queuing.
+		if ( is_dir( $folder ) && ! is_link( $root . $entry ) && ! file_exists( $folder . 'index.html' ) && is_writable( $folder ) ) {
 			$folders[] = $folder;
 		}
 	}
