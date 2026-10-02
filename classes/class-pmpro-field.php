@@ -1293,7 +1293,7 @@ class PMPro_Field {
 				if ( ( ! empty( $this->allow_delete ) ) && ! empty( $file['fullurl'] ) ) {
 					// Check whether the current user can delete the uploaded file based on the field attribute 'allow_delete'.
 					if ( $this->allow_delete === true || 
-						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options' ) )
+						( ( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' ) && current_user_can( 'manage_options' ) )
 					) {
 						$r_beginning .= '<button class="button is-destructive pmpro_btn pmpro_btn-delete" id="pmpro_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . esc_html__( 'Delete', 'paid-memberships-pro' ) . '</button>';
 					}

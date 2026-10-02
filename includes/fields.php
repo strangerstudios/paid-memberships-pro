@@ -916,6 +916,49 @@ function pmpro_create_user_field_upload_dir( $dir ) {
 }
 
 /**
+ * Delete the temporary files uploaded during an order's checkout when the order is deleted.
+ *
+ * Files from completed checkouts have already been moved to the user's folder, so this only
+ * removes files that are still waiting in the checkout tmp folder.
+ *
+ * @since TBD
+ *
+ * @param int $order_id The ID of the order being deleted.
+ */
+function pmpro_delete_order_checkout_files( $order_id ) {
+	$checkout_files = get_pmpro_membership_order_meta( $order_id, 'checkout_files', true );
+	if ( empty( $checkout_files ) || ! is_array( $checkout_files ) ) {
+		return;
+	}
+
+	$upload_dir = wp_upload_dir();
+	$tmp_path   = realpath( $upload_dir['basedir'] . '/pmpro-register-helper/tmp' );
+	if ( empty( $tmp_path ) ) {
+		return;
+	}
+	$tmp_path = trailingslashit( wp_normalize_path( $tmp_path ) );
+
+	foreach ( $checkout_files as $file ) {
+		if ( ! is_array( $file ) || empty( $file['tmp_name'] ) ) {
+			continue;
+		}
+
+		// Only delete files directly inside the checkout tmp folder.
+		$path = realpath( $file['tmp_name'] );
+		if ( empty( $path ) || ! is_file( $path ) ) {
+			continue;
+		}
+		$path = wp_normalize_path( $path );
+		if ( $tmp_path !== trailingslashit( dirname( $path ) ) || 'index.html' === basename( $path ) ) {
+			continue;
+		}
+
+		unlink( $path );
+	}
+}
+add_action( 'pmpro_delete_order', 'pmpro_delete_order_checkout_files', 5 );
+
+/**
  * Delete files uploaded through user fields when a user is deleted.
  *
  * @since TBD
