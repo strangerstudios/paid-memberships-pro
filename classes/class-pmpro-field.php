@@ -788,8 +788,8 @@ class PMPro_Field {
 		$user = get_userdata($user_id);
 		$meta_key = str_replace("pmprorhprefix_", "", $name);
 
-		// deleting?
-		if( isset( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ) {
+		// deleting? If a new file was uploaded too, the old file is deleted below once the new file is saved.
+		if( isset( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) && ( empty( $_FILES[ $name ] ) || empty( $_FILES[ $name ]['name'] ) ) ) {
 			$delete_old_file_name = sanitize_text_field( $_REQUEST['pmpro_delete_file_' . $name . '_field'] );
 			if ( ! empty( $delete_old_file_name ) ) {
 				// Use what's saved in user meta so we don't delete any old file.
