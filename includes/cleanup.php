@@ -62,11 +62,11 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		$placeholders = implode( ',', array_fill( 0, count( $userids ), '%d' ) );
 
 		$sqlQuery = $wpdb->prepare(
-			"SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN ($placeholders)",
+			"SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is a list of %d placeholders built with array_fill.
 			$userids
 		);
 
-		$member_history = $wpdb->get_var( $sqlQuery );
+		$member_history = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepared above with $wpdb->prepare().
 	}
 
 	// Make sure that there is actually PMPro content to delete for these users.

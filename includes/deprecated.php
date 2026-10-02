@@ -270,6 +270,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 			if($grouplist) {
 				foreach($grouplist as $curgroup) {
 					$curgroup = intval($curgroup);
+					// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $included is a comma-separated list of level IDs from pmpro_getAllLevels(), passed through esc_sql().
 					$levelsingroup = $wpdb->get_col(
 						$wpdb->prepare( "
 							SELECT level 
@@ -282,6 +283,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 						$curgroup
 						)
 					);
+					// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 					if(count($order)>0) {
 						$mylevels = array();
 						foreach($order as $level_id) {
@@ -375,7 +377,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 			$all_levels = pmpro_getAllLevels(true, true);
 			$checkoutid = intval($checkout_id);
 			if($checkoutid<1) {
-				$checkoutid = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders WHERE user_id=$user_id");
+				$checkoutid = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders WHERE user_id=$user_id"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $user_id is cast with intval() above.
 				if(empty($checkoutid) || intval($checkoutid)<1) { return $retval; }
 			}
 			$querySql = "SELECT membership_id FROM $wpdb->pmpro_membership_orders WHERE checkout_id = " . esc_sql( $checkoutid ) . " AND ( gateway = 'free' OR ";
@@ -387,7 +389,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 				$querySql .= "status = 'success'";
 			}
 			$querySql .= " )";
-			$levelids = $wpdb->get_col($querySql);
+			$levelids = $wpdb->get_col($querySql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $checkoutid is cast with intval(); $statuses_to_check is never set in this deprecated function, so the status clause is always the static 'success' branch.
 			foreach($levelids as $thelevel) {
 				if(array_key_exists($thelevel, $all_levels)) {
 					$retval[] = $all_levels[$thelevel];
@@ -833,7 +835,7 @@ function pmpro_get_deprecated_add_ons() {
 	static $pmpro_register_helper_restricting_by_email_or_username = null;
 	if ( ! isset( $pmpro_register_helper_restricting_by_email_or_username ) ) {
 		$sqlQuery = "SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'pmpro_level_%_restrict_emails' OR option_name LIKE 'pmpro_level_%_restrict_usernames' AND option_value <> '' LIMIT 1";
-		$pmpro_register_helper_restricting_by_email_or_username = $wpdb->get_var( $sqlQuery );
+		$pmpro_register_helper_restricting_by_email_or_username = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb->options table name is interpolated.
 
 		// If the option was not found then the feature was not being used.
 		if( $pmpro_register_helper_restricting_by_email_or_username === null ) {

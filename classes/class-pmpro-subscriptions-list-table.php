@@ -331,10 +331,10 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			return $wpdb->get_var( $sqlQuery );    
+			return $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from $wpdb table names, intval()/esc_sql()-quoted filter and search values, and a whitelisted orderby.
 		} else {
 			$sqlQuery .= 'GROUP BY s.id ' . $orderby_query . " LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
-			$subscription_ids = $wpdb->get_col( $sqlQuery );
+			$subscription_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from $wpdb table names, intval()/esc_sql()-quoted filter and search values, and a whitelisted orderby; LIMIT values are integers from paged/per-page.
 			$subscription_data = array();
 			foreach ( $subscription_ids as $subscription_id ) {
 				$subscription = PMPro_Subscription::get_subscription( $subscription_id );

@@ -887,9 +887,9 @@ class PMPro_Action_Scheduler {
 		);
 
 		if ( $actions_table_exists === $actions_table ) {
-			$priority_column = $wpdb->get_results(
+			$priority_column = $wpdb->get_results( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and a static string.
 				$wpdb->prepare(
-					"SHOW COLUMNS FROM `{$actions_table}` LIKE %s",
+					"SHOW COLUMNS FROM `{$actions_table}` LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name is built from $wpdb->prefix and a static string.
 					'priority'
 				)
 			);

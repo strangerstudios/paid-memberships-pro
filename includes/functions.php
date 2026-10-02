@@ -850,6 +850,7 @@ function pmpro_delete_orphaned_membership_level_relationships() {
 	$success = true;
 	foreach ( pmpro_get_membership_level_relationship_tables() as $relationship_table ) {
 		$orphaned_level_ids = array();
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table and column names come from the hard-coded list in pmpro_get_membership_level_relationship_tables().
 		if ( $relationship_table['table'] === $wpdb->pmpro_membership_levelmeta ) {
 			$orphaned_level_ids = (array) $wpdb->get_col(
 				"SELECT DISTINCT pmpro_level_relationship.`{$relationship_table['column']}`
@@ -867,6 +868,7 @@ function pmpro_delete_orphaned_membership_level_relationships() {
 				ON pmpro_level_relationship.`{$relationship_table['column']}` = pmpro_membership_level.id
 			WHERE pmpro_membership_level.id IS NULL"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		if ( false === $deleted ) {
 			$success = false;
@@ -1140,7 +1142,7 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 				$return = ( empty( $user_id ) || $user_id != $current_user->ID );       // -L, not logged in users
 			} elseif ( in_array( 'E', $levels ) || in_array( 'e', $levels ) ) {
 				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = " . (int) $user_id . " AND status ='expired' LIMIT 1";
-				$expired = $wpdb->get_var( $sql );                                    // E, expired members
+				$expired = $wpdb->get_var( $sql );                                    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- E, expired members. $user_id is cast to int above.
 				$return = ! empty( $expired );
 			}
 		} else {
@@ -1457,7 +1459,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 			);
 		}
 
-		if ( false === $wpdb->query( $sql ) ) {
+		if ( false === $wpdb->query( $sql ) ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql is built with $wpdb->prepare() above.
 			/* translators: %s: the database error message */
 			$pmpro_error = sprintf( __( 'Error interacting with database: %s', 'paid-memberships-pro' ), ( ! empty( $wpdb->last_error ) ? $wpdb->last_error : 'unavailable' ) );
 			return false;
@@ -1641,13 +1643,13 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 
 	if ( $value ) {
 		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('" . esc_sql( $level ) . "','" . esc_sql( $category ) . "')";
-		$wpdb->query( $sql );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $level and $category are ints, escaped with esc_sql() inside quotes.
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
 		}
 	} else {
 		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '" . esc_sql( $level ) . "' AND `category_id` = '" . esc_sql( $category ). "' LIMIT 1";
-		$wpdb->query( $sql );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $level and $category are ints, escaped with esc_sql() inside quotes.
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
 		}
@@ -1683,7 +1685,7 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 				 LEFT JOIN $wpdb->term_taxonomy tt ON tt.term_id = mc.category_id
 				 WHERE mc.membership_id = '" . esc_sql( $level ) . "'
 				 AND ( tt.term_taxonomy_id IS NULL OR tt.taxonomy = 'category' )";
-	$wpdb->query( $sqlQuery );
+	$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $level is escaped with esc_sql() inside quotes.
 	if ( $wpdb->last_error ) {
 		return $wpdb->last_error;
 	}
@@ -1803,7 +1805,7 @@ function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values
 function pmpro_getMetavalues( $query ) {
 	global $wpdb;
 
-	$results = $wpdb->get_results( $query );
+	$results = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- This helper runs a caller-built query by design; the caller is responsible for preparing it.
 	$r = new stdClass();
 	foreach ( $results as $result ) {
 		if ( ! empty( $r ) && ! empty( $result->key ) ) {
@@ -1971,7 +1973,7 @@ function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
 		$sqlQuery .= 'AND user_id IN(' . $user_ids_query . ') ';
 	}
 
-	$total = $wpdb->get_var( $sqlQuery );
+	$total = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $s and $l are escaped with esc_sql() inside quotes above.
 
 	return (float) $total;
 }
@@ -2006,7 +2008,7 @@ function pmpro_calculateRecurringRevenue( $s, $l ) {
 		SELECT SUM(billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Year' $user_ids_query
 	";
 
-	$annual_revenues = $wpdb->get_col( $sqlQuery );
+	$annual_revenues = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $s and $l are escaped with esc_sql() inside quotes above.
 
 	$total = 0;
 	foreach ( $annual_revenues as $r ) {
@@ -2102,8 +2104,8 @@ function pmpro_getDiscountCode( $seed = null ) {
 		$secure_auth_code = SECURE_AUTH_KEY;
 	} else {
 		//Generate our own random string and hash it
-		$auth_code = md5( rand() );
-		$secure_auth_code = md5( rand() );
+		$auth_code = md5( wp_rand() );
+		$secure_auth_code = md5( wp_rand() );
 	}
 
 	while ( empty( $code ) ) {
@@ -2197,7 +2199,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 			} else {
 				$level_id = intval( $level_id );
 			}
-			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . esc_sql( $dbcode->id ) . "' AND cl.level_id IN (" . $level_id . ") LIMIT 1" ); // $level_id is already escaped above.
+			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . esc_sql( $dbcode->id ) . "' AND cl.level_id IN (" . $level_id . ") LIMIT 1" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $level_id is already escaped above with intval; the code ID is escaped with esc_sql() inside quotes.
 
 			if ( empty( $code_level ) ) {
 				$error = __( 'This discount code does not apply to this membership level.', 'paid-memberships-pro' );
@@ -2480,6 +2482,7 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 		return $all_membership_levels[ $user_id ];
 	} else {
 		global $wpdb;
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $user_id is cast with intval above.
 		$all_membership_levels[ $user_id ] = $wpdb->get_row(
 			"SELECT
 				l.id AS ID,
@@ -2506,6 +2509,7 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 			WHERE mu.user_id = $user_id AND mu.status = 'active'
 			LIMIT 1"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		// if null, change to false to avoid user meta conflicts
 		if ( empty( $all_membership_levels[ $user_id ] ) ) {
@@ -2617,6 +2621,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 
 	if ( $levels === false ) {
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- $user_id is cast with intval above and the status clause is a static string.
 		$levels = $wpdb->get_results(
 			"SELECT
 				l.id AS ID,
@@ -2644,6 +2649,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 			WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
 			GROUP BY ID" )
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		wp_cache_set( $cache_key, $levels, 'pmpro', 3600 );
 	}
 
@@ -2793,7 +2799,7 @@ function pmpro_getAllLevels( $include_hidden = false, $deprecated_argument = fal
 	}
 
 	// get levels from the DB
-	$raw_levels = $wpdb->get_results( $sqlQuery );
+	$raw_levels = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Static query; only the $wpdb table name is interpolated.
 
 	// lets put them into an array where the key is the id of the level
 	$pmpro_levels = array();
@@ -3088,7 +3094,7 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user_id ) . "' ORDER BY id LIMIT 1";
 			}
 
-			$startdate = apply_filters( 'pmpro_member_startdate', $wpdb->get_var( $sqlQuery ), $user_id, $level_id );
+			$startdate = apply_filters( 'pmpro_member_startdate', $wpdb->get_var( $sqlQuery ), $user_id, $level_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $user_id and $level_id are cast with intval above.
 
 			$pmpro_startdates[ $user_id ][ $level_id ] = $startdate;
 		}
@@ -4134,7 +4140,7 @@ function pmpro_cleanup_memberships_users_table() {
 				SET mu.status = 'inactive'
 				WHERE mu.status = 'active'
 					AND l.id IS NULL";
-	$wpdb->query( $sqlQuery );
+	$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only $wpdb table names are interpolated.
 
 	// fix rows where there is more than one active status for the same user/level
 	$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users t1
@@ -4149,7 +4155,7 @@ function pmpro_cleanup_memberships_users_table() {
 				ORDER BY mu1.user_id, mu1.id DESC) t2
 				ON t1.id = t2.id
 				SET status = 'inactive'";
-	$wpdb->query( $sqlQuery );
+	$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only $wpdb table names are interpolated.
 }
 
 /**
@@ -5725,9 +5731,9 @@ function pmpro_get_memberships( $args = array() ) {
 
 	if ( $return_count ) {
 		if ( $prepared ) {
-			$sql = $wpdb->prepare( $sql, $prepared );
+			$sql = $wpdb->prepare( $sql, $prepared ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql only contains placeholders and $wpdb table names; values are passed in $prepared.
 		}
-		return (int) $wpdb->get_var( $sql );
+		return (int) $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above whenever it has placeholders.
 	}
 
 	// Sanitize orderby against an allowlist of safe columns.
@@ -5755,8 +5761,8 @@ function pmpro_get_memberships( $args = array() ) {
 	}
 
 	if ( $prepared ) {
-		$sql = $wpdb->prepare( $sql, $prepared );
+		$sql = $wpdb->prepare( $sql, $prepared ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql only contains placeholders, $wpdb table names, and allowlisted ORDER BY values; values are passed in $prepared.
 	}
 
-	return $wpdb->get_results( $sql, ARRAY_A );
+	return $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above whenever it has placeholders.
 }

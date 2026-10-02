@@ -24,7 +24,7 @@ function pmpro_upgrade_2_4() {
                     AND subscription_transaction_id = ''
                     AND status = 'success'
 				ORDER BY id";
-	$orders = $wpdb->get_results( $sqlQuery );
+	$orders = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade; static query, only the $wpdb table name is interpolated.
 	
 	if(!empty($orders)) {
 		if(count($orders) > 10) {
@@ -59,7 +59,7 @@ function pmpro_upgrade_2_4_ajax() {
                     AND subscription_transaction_id = ''
                     AND status = 'success'
 				ORDER BY id";
-	$orders = $wpdb->get_results( $sqlQuery );
+	$orders = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-time upgrade; $last_order_id is an internal option value escaped with esc_sql() inside quotes.
 
 	if(empty($orders)) {
 		//done with this update
@@ -107,7 +107,7 @@ function pmpro_upgrade_2_4_helper_get_subscriptions_for_orders( $orders, $update
 		foreach ( $subscriptions->data as $sub ) {
 			if ( in_array( $sub->plan->id, $codes ) ) {
 				$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql( $sub->id ) . "' WHERE id = '" . esc_sql( $order->id ) . "' LIMIT 1";
-				$wpdb->query( $sqlQuery );
+				$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-time upgrade; the subscription ID and order ID are escaped with esc_sql() inside quotes.
 				break;
 			}
 		}

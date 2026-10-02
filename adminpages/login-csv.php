@@ -100,7 +100,7 @@ if ( ! empty( $start ) && ! empty( $limit ) ) {
 
 		$sqlQuery = apply_filters( 'pmpro_visits_views_logins_csv_sql', $sqlQuery );
 
-		$theusers = $wpdb->get_results( $sqlQuery );
+		$theusers = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- search term is esc_sql()'d inside quotes, level and limits are cast to int.
 
 $headers   = array();
 $headers[] = 'Content-Type: text/csv';
@@ -173,7 +173,7 @@ $csv_fh = fopen( $filename, 'a' );
 // write the CSV header to the file
 fprintf( $csv_fh, '%s', $csv_file_header );
 
-$user_ids    = $wpdb->get_col( $sqlQuery );
+$user_ids    = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- search term is esc_sql()'d inside quotes, level and limits are cast to int.
 $users_found = count( $user_ids );
 
 if ( empty( $user_ids ) ) {

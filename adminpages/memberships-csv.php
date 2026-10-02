@@ -128,7 +128,7 @@ if ( ! empty( $discount_code ) ) {
 
 $sqlQuery .= " GROUP BY date ORDER BY date ";
 
-$dates = $wpdb->get_results($sqlQuery);
+$dates = $wpdb->get_results($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Dates go through esc_sql() inside quotes, $date_function comes from a hard-coded whitelist, $l and the discount code are int-only, and table names come from $wpdb.
 
 //fill in blanks in dates
 $cols = array();
@@ -243,7 +243,7 @@ if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type ===
 	 */
 	$sqlQuery = apply_filters('pmpro_reports_signups_sql', $sqlQuery, $type, $startdate, $enddate, $l);
 
-	$cdates = $wpdb->get_results($sqlQuery, OBJECT_K);
+	$cdates = $wpdb->get_results($sqlQuery, OBJECT_K); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Dates go through esc_sql() inside quotes, $date_function comes from a hard-coded whitelist, $l and the discount code are int-only, and table names come from $wpdb.
 
 	foreach ( $dates as $day => &$date ) {
 		if ( ! empty( $cdates ) && ! empty( $cdates[$day] ) ) {
@@ -296,7 +296,7 @@ $csv_fh = fopen( $filename, 'a' );
 // write the CSV header to the file
 fprintf( $csv_fh, '%s', $csv_file_header );
 
-$user_ids    = $wpdb->get_col( $sqlQuery );
+$user_ids    = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Reuses the query built above: dates are esc_sql()'d inside quotes, $date_function is whitelisted, and $l and the discount code are int-only.
 $users_found = count( $user_ids );
 
 if ( empty( $user_ids ) && empty( $_REQUEST['pmpro_no_download'] ) ) {
