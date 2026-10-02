@@ -934,10 +934,12 @@ function pmpro_delete_user_field_files( $user_id ) {
 		}
 	}
 
-	// Remove the user's folders if only the index file is left.
+	// Remove the user's folders inside the uploads directory if only the index file is left.
+	$uploads_path = realpath( $upload_dir['basedir'] );
+	$uploads_path = empty( $uploads_path ) ? '' : trailingslashit( wp_normalize_path( $uploads_path ) );
 	foreach ( array_unique( $user_dirs ) as $user_dir ) {
 		$user_dir = realpath( $user_dir );
-		if ( empty( $user_dir ) || basename( $user_dir ) !== $user->user_login || 'pmpro-register-helper' !== basename( dirname( $user_dir ) ) ) {
+		if ( empty( $uploads_path ) || empty( $user_dir ) || 0 !== strpos( wp_normalize_path( $user_dir ), $uploads_path ) || basename( $user_dir ) !== $user->user_login || 'pmpro-register-helper' !== basename( dirname( $user_dir ) ) ) {
 			continue;
 		}
 
