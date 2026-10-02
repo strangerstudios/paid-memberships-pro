@@ -951,12 +951,10 @@ class PMPro_Field {
 
 		// Only delete files that are inside a user's pmpro-register-helper folder in the uploads directory.
 		$user_folder_pattern = empty( $user_login ) ? '[^/]+' : preg_quote( $user_login, '#' );
-		$upload_dir = wp_upload_dir();
-		$uploads_path = realpath( $upload_dir['basedir'] );
+		$uploads_path = pmpro_get_user_field_uploads_root();
 		if ( empty( $uploads_path ) ) {
 			return;
 		}
-		$uploads_path = trailingslashit( wp_normalize_path( $uploads_path ) );
 
 		foreach ( array( 'fullpath', 'previewpath' ) as $path_key ) {
 			if ( empty( $file[ $path_key ] ) ) {
@@ -968,7 +966,7 @@ class PMPro_Field {
 				continue;
 			}
 
-			// The sites/N/ segment allows deleting subsite files when a user is deleted from the network admin.
+			// The sites/N/ segment matches subsite uploads, which are inside the main site's uploads folder on multisite.
 			$path = wp_normalize_path( $path );
 			if ( 0 !== strpos( $path, $uploads_path ) || ! preg_match( '#^(sites/\d+/)?pmpro-register-helper/' . $user_folder_pattern . '/#', substr( $path, strlen( $uploads_path ) ) ) ) {
 				continue;

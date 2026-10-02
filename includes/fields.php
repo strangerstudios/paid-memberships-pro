@@ -916,6 +916,29 @@ function pmpro_create_user_field_upload_dir( $dir ) {
 }
 
 /**
+ * Get the uploads folder that user field upload paths must be inside before they are deleted.
+ *
+ * On multisite this is the main site's uploads folder, which also contains each subsite's
+ * sites/N/ folder, so that a user deleted from the network can have files removed on every site.
+ *
+ * @since TBD
+ *
+ * @return string Normalized path with a trailing slash, or an empty string if it can't be found.
+ */
+function pmpro_get_user_field_uploads_root() {
+	if ( is_multisite() ) {
+		switch_to_blog( get_main_site_id() );
+		$upload_dir = wp_upload_dir();
+		restore_current_blog();
+	} else {
+		$upload_dir = wp_upload_dir();
+	}
+
+	$path = empty( $upload_dir['basedir'] ) ? false : realpath( $upload_dir['basedir'] );
+	return empty( $path ) ? '' : trailingslashit( wp_normalize_path( $path ) );
+}
+
+/**
  * Delete the temporary files uploaded during an order's checkout when the order is deleted.
  *
  * Files from completed checkouts have already been moved to the user's folder, so this only
@@ -976,33 +999,50 @@ function pmpro_delete_user_field_files( $user_id ) {
 		return;
 	}
 
-	// Folders that may be left empty once the user's files are deleted.
+	// Meta keys of registered file fields. Their values are only saved by PMPro_Field::saveFile(), so those files
+	// can be deleted from any user folder, e.g. if the user's login was changed after the upload.
+	$file_field_meta_keys = array();
+	foreach ( PMPro_Field_Group::get_all() as $field_group ) {
+		foreach ( $field_group->get_fields() as $field ) {
+			if ( 'file' === $field->type ) {
+				$file_field_meta_keys[ $field->meta_key ] = true;
+			}
+		}
+	}
+
+	// Folders that may be left empty once the user's files are deleted, and whether they may have another user's login as their name.
 	$upload_dir = wp_upload_dir();
-	$user_dirs  = array( wp_normalize_path( $upload_dir['basedir'] . '/pmpro-register-helper/' . $user->user_login ) );
+	$user_dirs  = array( wp_normalize_path( $upload_dir['basedir'] . '/pmpro-register-helper/' . $user->user_login ) => false );
 
 	// Check all user meta so that files are deleted even if their field is no longer registered.
-	foreach ( get_user_meta( $user_id ) as $meta_values ) {
+	foreach ( get_user_meta( $user_id ) as $meta_key => $meta_values ) {
+		$is_file_field = isset( $file_field_meta_keys[ $meta_key ] );
 		foreach ( $meta_values as $meta_value ) {
 			$meta_value = maybe_unserialize( $meta_value );
 			if ( is_array( $meta_value ) && ! empty( $meta_value['fullpath'] ) ) {
-				PMPro_Field::delete_uploaded_file( $meta_value, $user->user_login );
+				// Files from other meta are only deleted from this user's folder.
+				PMPro_Field::delete_uploaded_file( $meta_value, $is_file_field ? '' : $user->user_login );
 
 				// New uploads are in a unique folder inside the user's folder.
 				$user_dir = dirname( wp_normalize_path( $meta_value['fullpath'] ) );
 				if ( 'pmpro-register-helper' !== basename( dirname( $user_dir ) ) ) {
 					$user_dir = dirname( $user_dir );
 				}
-				$user_dirs[] = $user_dir;
+				$user_dirs[ $user_dir ] = $is_file_field || ! empty( $user_dirs[ $user_dir ] );
 			}
 		}
 	}
 
 	// Remove the user's folders inside the uploads directory if only the index file is left.
-	$uploads_path = realpath( $upload_dir['basedir'] );
-	$uploads_path = empty( $uploads_path ) ? '' : trailingslashit( wp_normalize_path( $uploads_path ) );
-	foreach ( array_unique( $user_dirs ) as $user_dir ) {
+	$uploads_path = pmpro_get_user_field_uploads_root();
+	foreach ( $user_dirs as $user_dir => $any_login ) {
 		$user_dir = realpath( $user_dir );
-		if ( empty( $uploads_path ) || empty( $user_dir ) || 0 !== strpos( wp_normalize_path( $user_dir ), $uploads_path ) || basename( $user_dir ) !== $user->user_login || 'pmpro-register-helper' !== basename( dirname( $user_dir ) ) ) {
+		if ( empty( $uploads_path ) || empty( $user_dir ) || 0 !== strpos( wp_normalize_path( $user_dir ), $uploads_path ) || 'pmpro-register-helper' !== basename( dirname( $user_dir ) ) || 'tmp' === basename( $user_dir ) ) {
+			continue;
+		}
+
+		// Unless the folder held a registered file field's upload, only remove this user's own folder.
+		if ( ! $any_login && basename( $user_dir ) !== $user->user_login ) {
 			continue;
 		}
 
