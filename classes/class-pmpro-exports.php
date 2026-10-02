@@ -858,8 +858,9 @@ class PMPro_Exports {
 	 */
 	protected function create_export_record( $user_id, $type, $filters, $total, $chunk_size, $file_name = '' ) {
 		$export_id = wp_generate_uuid4();
-		// Generate a URL-safe token (alphanumeric only) to avoid reserved characters breaking query strings.
-		$token      = wp_generate_password( 40, false, false );
+		// Generate a hex token (256 bits). It is added to the download URL unencoded, so it must never contain reserved characters.
+		// Avoid wp_generate_password() here; the random_password filter can add characters such as # & +.
+		$token      = bin2hex( random_bytes( 32 ) );
 		$token_hash = hash_hmac( 'sha256', $token, wp_salt( 'auth' ) );
 		$file_name  = empty( $file_name ) ? $this->get_file_name_for_type( $type, $export_id, $filters ) : $file_name;
 
