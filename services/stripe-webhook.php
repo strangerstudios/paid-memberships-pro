@@ -4,6 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Stripe webhook; gateway requests can't carry a WordPress nonce. Only the event ID is taken from the request, and the event is re-fetched from the Stripe API in PMPro_Stripe_Webhook_Handler::run().
+
 // Minimum PHP requirement for this script.
 if ( version_compare( PHP_VERSION, '5.3.29', '<' ) ) {
 	return;
@@ -25,7 +27,7 @@ if ( empty( $_REQUEST['event_id'] ) ) {
 		$livemode = ! empty( $post_event->livemode );
 	}
 } else {
-	$event_id = sanitize_text_field( $_REQUEST['event_id'] );
+	$event_id = sanitize_text_field( wp_unslash( $_REQUEST['event_id'] ) );
 }
 
 PMPro_Stripe_Webhook_Handler::run(

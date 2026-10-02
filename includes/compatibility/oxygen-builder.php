@@ -4,6 +4,10 @@
  *
  * @since 2.11
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if( function_exists( 'oxygen_vsb_register_condition' ) ) {
 
     $pmpro_levels = pmpro_getAllLevels( true );

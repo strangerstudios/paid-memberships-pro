@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMPro_Email_Template_Credit_Card_Expiring extends PMPro_Email_Template {
 
 	/**

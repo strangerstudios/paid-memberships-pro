@@ -594,7 +594,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 	</script>
 	<?php
 		// Show all membership history for user.
-		$levelshistory = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = %s ORDER BY id DESC", $user->ID ) );
+		$levelshistory = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = %s ORDER BY id DESC", $user->ID ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table; no WordPress API or object cache layer.
 
 		if ( $levelshistory ) { ?>
 			<div class="pmpro_section" data-visibility="hidden" data-activated="false">
@@ -673,6 +673,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 	 * @since 3.0
 	 */
 	public function save() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Only called from pmpro_member_edit_save() in adminpages/member-edit.php after the pmpro_member_edit_saved_panel_nonce is verified.
 		global $wpdb;
 
 		if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
@@ -696,7 +697,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			}
 
 			// Get the data for the level to add.
-			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ];
+			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ] ) ? null : wp_unslash( $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized with array_map( 'sanitize_text_field' ) below.
 			if ( empty( $level_data ) ) {
 				// At the very least, 'level_id' should be set.
 				pmpro_setMessage( __( 'Please pass level data to add.', 'paid-memberships-pro' ), 'pmpro_error' );
@@ -801,7 +802,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			}
 
 			// Get the data for the level to edit.
-			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ];
+			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ] ) ? null : wp_unslash( $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized with array_map( 'sanitize_text_field' ) below.
 			if ( empty( $level_data ) ) {
 				// At the very least, 'expiration' should be set even if the checkbox is empty.
 				pmpro_setMessage( __( 'Please pass level data to edit.', 'paid-memberships-pro' ), 'pmpro_error' );
@@ -813,7 +814,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 			// Update the expiration date.
 			$expiration = ( ! empty( $level_data[ 'expires' ] ) && ! empty( $level_data[ 'expiration' ] ) ) ? $level_data[ 'expiration' ] : 'NULL';
-			$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = %s WHERE user_id = %d AND membership_id = %d AND status = 'active'", $expiration, $user->ID, $level_id ) );
+			$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = %s WHERE user_id = %d AND membership_id = %d AND status = 'active'", $expiration, $user->ID, $level_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table; no WordPress API or object cache layer.
 
 			// If the expiration query failed, set an error.
 			if ( $wpdb->last_error ) {
@@ -853,7 +854,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			}
 
 			// Get the data for the level to cancel.
-			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ];
+			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ] ) ? null : wp_unslash( $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized with array_map( 'sanitize_text_field' ) below.
 			if ( empty( $level_data ) ) {
 				// It is possible that no data is passed if the user is cancelling a level that has no subscription. In this case, we will just cancel the level.
 				$level_data = array();
@@ -928,5 +929,6 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 		pmpro_clear_level_cache_for_user( $user->ID );
 
 		pmpro_setMessage( __( 'Memberships updated.', 'paid-memberships-pro' ), 'pmpro_success' );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 }

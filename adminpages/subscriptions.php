@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $wpdb, $pmpro_msg, $pmpro_msgt;
 
 // only admins can get this
@@ -6,7 +10,7 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
-$subscription = PMPro_Subscription::get_subscription( empty( $_REQUEST['id'] ) ? null : sanitize_text_field( $_REQUEST['id'] ) );
+$subscription = PMPro_Subscription::get_subscription( empty( $_REQUEST['id'] ) ? null : sanitize_text_field( wp_unslash( $_REQUEST['id'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only loads the subscription to display. Actions below verify pmpro_subscriptions_nonce.
 
 // Process syncing with gateway.
 if ( ! empty( $subscription ) && ! empty( $_REQUEST['update'] ) && check_admin_referer( 'update', 'pmpro_subscriptions_nonce' ) ) {
@@ -20,7 +24,7 @@ if ( ! empty( $subscription ) && ! empty( $_REQUEST['cancel'] ) && check_admin_r
 
 // Process moving a subscription to a new level.
 if ( ! empty( $subscription ) && ! empty( $_REQUEST['change-level'] ) && is_numeric( $_REQUEST['change-level'] ) && check_admin_referer( 'change-level', 'pmpro_subscriptions_nonce' ) ) {
-	$subscription->set( 'membership_level_id', sanitize_text_field( $_REQUEST['change-level'] ) );
+	$subscription->set( 'membership_level_id', sanitize_text_field( wp_unslash( $_REQUEST['change-level'] ) ) );
 	$subscription->save();
 }
 
@@ -34,20 +38,20 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 		}
 
 		// Make sure that the user ID is valid.
-		if ( ! get_userdata( sanitize_text_field( $_POST['user_id'] ) ) ) {
+		if ( ! get_userdata( sanitize_text_field( wp_unslash( $_POST['user_id'] ) ) ) ) {
 			$pmpro_msg  = esc_html__( 'Invalid user ID.', 'paid-memberships-pro' );
 			$pmpro_msgt = 'pmpro_error';
 		}
 
 		// Make sure that the membership level ID is valid.
-		if ( ! pmpro_getLevel( sanitize_text_field( $_POST['membership_level_id'] ) ) ) {
+		if ( ! pmpro_getLevel( sanitize_text_field( wp_unslash( $_POST['membership_level_id'] ) ) ) ) {
 			$pmpro_msg  = esc_html__( 'Invalid membership level ID.', 'paid-memberships-pro' );
 			$pmpro_msgt = 'pmpro_error';
 		}
 
 		// Check if this subscription already exists.
 		if ( 'pmpro_error' !== $pmpro_msgt ) {
-			$test_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( sanitize_text_field( $_POST['subscription_transaction_id'] ), sanitize_text_field( $_POST['gateway'] ), sanitize_text_field( $_POST['gateway_environment'] ) );
+			$test_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( sanitize_text_field( wp_unslash( $_POST['subscription_transaction_id'] ) ), sanitize_text_field( wp_unslash( $_POST['gateway'] ) ), sanitize_text_field( wp_unslash( $_POST['gateway_environment'] ) ) );
 
 			if ( ! empty( $test_subscription ) ) {
 				$pmpro_msg  = esc_html__( 'This subscription already exists on your website.', 'paid-memberships-pro' );
@@ -58,11 +62,11 @@ if ( isset( $_REQUEST['action'] ) && 'link' === $_REQUEST['action'] ) {
 		// Create a new subscription.
 		if ( 'pmpro_error' !== $pmpro_msgt ) {
 			$create_subscription_args = array(
-				'user_id'              => sanitize_text_field( $_POST['user_id'] ),
-				'membership_level_id'  => sanitize_text_field( $_POST['membership_level_id'] ),
-				'gateway'              => sanitize_text_field( $_POST['gateway'] ),
-				'gateway_environment'  => sanitize_text_field( $_POST['gateway_environment'] ),
-				'subscription_transaction_id' => sanitize_text_field( $_POST['subscription_transaction_id'] ),
+				'user_id'              => sanitize_text_field( wp_unslash( $_POST['user_id'] ) ),
+				'membership_level_id'  => sanitize_text_field( wp_unslash( $_POST['membership_level_id'] ) ),
+				'gateway'              => sanitize_text_field( wp_unslash( $_POST['gateway'] ) ),
+				'gateway_environment'  => sanitize_text_field( wp_unslash( $_POST['gateway_environment'] ) ),
+				'subscription_transaction_id' => sanitize_text_field( wp_unslash( $_POST['subscription_transaction_id'] ) ),
 				'status'               => 'active',
 			);
 			$subscription = PMPro_Subscription::create( $create_subscription_args );
@@ -93,21 +97,21 @@ if ( ! empty( $subscription ) && isset( $_REQUEST['action'] ) && 'edit' === $_RE
 		}
 
 		// Make sure that the user ID is valid.
-		if ( ! get_userdata( sanitize_text_field( $_POST['user_id'] ) ) ) {
+		if ( ! get_userdata( sanitize_text_field( wp_unslash( $_POST['user_id'] ) ) ) ) {
 			$pmpro_msg  = esc_html__( 'Invalid user ID.', 'paid-memberships-pro' );
 			$pmpro_msgt = 'pmpro_error';
 		}
 
 		// Make sure that the membership level ID is valid.
-		if ( ! pmpro_getLevel( sanitize_text_field( $_POST['membership_level_id'] ) ) ) {
+		if ( ! pmpro_getLevel( sanitize_text_field( wp_unslash( $_POST['membership_level_id'] ) ) ) ) {
 			$pmpro_msg  = esc_html__( 'Invalid membership level ID.', 'paid-memberships-pro' );
 			$pmpro_msgt = 'pmpro_error';
 		}
 
 		// Update the subscription.
 		if ( 'pmpro_error' !== $pmpro_msgt ) {
-			$subscription->set( 'user_id', sanitize_text_field( $_POST['user_id'] ) );
-			$subscription->set( 'membership_level_id', sanitize_text_field( $_POST['membership_level_id'] ) );
+			$subscription->set( 'user_id', sanitize_text_field( wp_unslash( $_POST['user_id'] ) ) );
+			$subscription->set( 'membership_level_id', sanitize_text_field( wp_unslash( $_POST['membership_level_id'] ) ) );
 			$subscription->save();
 
 			// Show a success message with link to view.
@@ -123,7 +127,7 @@ if ( ! empty( $subscription ) && isset( $_REQUEST['action'] ) && 'edit' === $_RE
 
 require_once( dirname( __FILE__ ) . '/admin_header.php' );
 
-$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : '';
+$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '';
 
 // Build breadcrumb navigation for single subscription views.
 if ( ! empty( $subscription ) || 'link' === $action ) {

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Upgrade to version 3.1
  *
@@ -31,7 +35,7 @@ function pmpro_upgrade_3_1() {
 	// The plan is to check if there is a PMPro order with a user ID greater than 4294967295. If so, we will show a notice on the PMPro dashboard.
 	// We are checking orders because on the vast majority of sites, users will always have an order created if they have a subscription associated with them.
 	global $wpdb;
-	$high_user_id_order_exists = $wpdb->get_var( "SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE user_id > 4294967295 LIMIT 1" );
+	$high_user_id_order_exists = $wpdb->get_var( "SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE user_id > 4294967295 LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade check on the PMPro orders custom table; caching is not appropriate.
 	if ( $high_user_id_order_exists ) {
 		update_option( 'pmpro_upgrade_3_1_notice', true );
 	}
@@ -55,7 +59,7 @@ function pmpro_show_upgrade_3_1_notice() {
 	}
 
 	// Only show on PMPro admin pages.
-	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+	if ( empty( $_REQUEST['page'] ) || strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
 		return;
 	}
 

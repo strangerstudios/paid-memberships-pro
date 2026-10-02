@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	// Only admins can get to this screen.
 	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can('pmpro_designsettings' ) ) ) {
 		die (esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
@@ -21,9 +25,9 @@
 
 		// Color settings.
 		$pmpro_colors = array(
-			'base' => sanitize_text_field( $_REQUEST['pmpro_base_color'] ),
-			'contrast' => sanitize_text_field( $_REQUEST['pmpro_contrast_color'] ),
-			'accent' => sanitize_text_field( $_REQUEST['pmpro_accent_color'] ),
+			'base' => isset( $_REQUEST['pmpro_base_color'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['pmpro_base_color'] ) ) : '',
+			'contrast' => isset( $_REQUEST['pmpro_contrast_color'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['pmpro_contrast_color'] ) ) : '',
+			'accent' => isset( $_REQUEST['pmpro_accent_color'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['pmpro_accent_color'] ) ) : '',
 		);
 		update_option( 'pmpro_colors', $pmpro_colors );
 

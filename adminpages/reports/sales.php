@@ -9,6 +9,12 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Report aggregates PMPro custom tables, which have no WordPress API or object cache layer; results are cached in transients where appropriate.
+
 function pmpro_report_sales_register( $pmpro_reports ) {
 	$gateway_environment = get_option( "pmpro_gateway_environment" );
 	if ( $gateway_environment == "sandbox" ) {
@@ -25,7 +31,7 @@ add_filter( 'pmpro_registered_reports', 'pmpro_report_sales_register' );
 //queue Google Visualization JS on report page
 function pmpro_report_sales_init()
 {
-	if ( is_admin() && isset( $_REQUEST['report'] ) && $_REQUEST[ 'report' ] == 'sales' && isset( $_REQUEST['page'] ) && $_REQUEST[ 'page' ] == 'pmpro-reports' ) {
+	if ( is_admin() && isset( $_REQUEST['report'] ) && $_REQUEST[ 'report' ] == 'sales' && isset( $_REQUEST['page'] ) && $_REQUEST[ 'page' ] == 'pmpro-reports' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides whether to enqueue the chart script on the report page.
 		wp_enqueue_script( 'corechart', plugins_url( 'js/corechart.js',  plugin_dir_path( __DIR__ ) ) );
 	}
 
@@ -187,17 +193,18 @@ function pmpro_report_sales_data( $args ){
 	$sqlQuery .= ") t1";
 	$sqlQuery .= " GROUP BY date ORDER by date";
 
-	return $wpdb->get_results( $sqlQuery );
+	return $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $type_function and $report_unit are whitelisted by the caller, dates/environment go through esc_sql() inside quotes, and level/discount code IDs are cast with intval.
 
 }
 
 function pmpro_report_sales_page()
 {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: report filter values (type, period, dates, levels, discount codes) only change what is displayed.
 	global $wpdb, $pmpro_currency_symbol, $pmpro_currency, $pmpro_currencies;
 
 	//get values from form
 	if(isset($_REQUEST['type']))
-		$type = sanitize_text_field($_REQUEST['type']);
+		$type = sanitize_text_field( wp_unslash( $_REQUEST['type'] ) );
 	else
 		$type = "revenue";
 
@@ -207,7 +214,7 @@ function pmpro_report_sales_page()
 		$type_function = "SUM";
 
 	if(isset($_REQUEST['period']))
-		$period = sanitize_text_field($_REQUEST['period']);
+		$period = sanitize_text_field( wp_unslash( $_REQUEST['period'] ) );
 	else
 		$period = "daily";
 
@@ -245,7 +252,7 @@ function pmpro_report_sales_page()
 	}
 
 	if ( isset( $_REQUEST[ 'show_parts' ] ) ) {
-		$new_renewals = sanitize_text_field( $_REQUEST[ 'show_parts' ] );
+		$new_renewals = sanitize_text_field( wp_unslash( $_REQUEST[ 'show_parts' ] ) );
 	} else {
 		$new_renewals = 'new_renewals';
 	}
@@ -300,8 +307,8 @@ function pmpro_report_sales_page()
 		$axis_date_format = 'd';
 		$tooltip_date_format = get_option( 'date_format' );
 		// Set up the start and end dates.
-		$startdate = sanitize_text_field( $_REQUEST['custom_start_date'] );
-		$enddate = sanitize_text_field( $_REQUEST['custom_end_date'] );
+		$startdate = isset( $_REQUEST['custom_start_date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['custom_start_date'] ) ) : '';
+		$enddate = isset( $_REQUEST['custom_end_date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['custom_end_date'] ) ) : '';
 	} else {
 		// Set up the report unit to use.
 		$report_unit = 'YEAR';
@@ -675,7 +682,7 @@ function pmpro_report_sales_page()
 			<?php
 			$sqlQuery = "SELECT * FROM $wpdb->pmpro_discount_codes ";
 			$sqlQuery .= "ORDER BY id DESC ";
-			$codes = $wpdb->get_results($sqlQuery, OBJECT);
+			$codes = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Static query using only the $wpdb table name.
 			if ( ! empty( $codes ) ) { ?>
 			<label for="discount_code" class="screen-reader-text"><?php esc_html_e( 'Filter report by discount code', 'paid-memberships-pro' ); ?></label>
 			<select id="discount_code" name="discount_code[]" multiple>
@@ -960,6 +967,7 @@ function pmpro_report_sales_page()
 		</table>
 	</div>
 	<?php
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 
 /*
@@ -1031,7 +1039,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	// We want the count of rows produced, so update the query.
 	$sqlQuery = "SELECT COUNT(*) FROM (" . $sqlQuery  . ") as t1";
 
-	$sales = $wpdb->get_var($sqlQuery);
+	$sales = $wpdb->get_var($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Dates/environment go through esc_sql() inside quotes, level IDs are cast with intval, and $type only selects static SQL fragments.
 
 	//save in cache
 	if(!empty($cache) && isset($cache[$param_hash])) {
@@ -1082,7 +1090,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 
 	$sql_query .= ' GROUP BY rtotal ORDER BY num DESC ';
 
-	$prices           = $wpdb->get_results( $sql_query );
+	$prices           = $wpdb->get_results( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Date and environment values go through esc_sql() inside quotes.
 	
 	if( !empty( $count) ) {
 		$prices = array_slice( $prices, 0, $count, true );
@@ -1098,7 +1106,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 						  	AND status NOT IN('refunded', 'review', 'token', 'error')
 							AND timestamp >= '" . esc_sql( $startdate ) . "'
 							AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
-			$total = $wpdb->get_var( $sql_query );
+			$total = $wpdb->get_var( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Total, date and environment values go through esc_sql() inside quotes.
 			
 			/* skipping this until we figure out how to make it performant
 			// New sales.
@@ -1223,7 +1231,7 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 	// Want the total across the orders found.
 	$sqlQuery = "SELECT SUM(total) FROM(" . $sqlQuery . ") as t1";
 	
-	$revenue = pmpro_round_price( $wpdb->get_var($sqlQuery) );
+	$revenue = pmpro_round_price( $wpdb->get_var($sqlQuery) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Dates/environment go through esc_sql() inside quotes, level IDs are cast with intval, and $type only selects static SQL fragments.
 
 	//save in cache
 	if(!empty($cache) && !empty($cache[$param_hash]))
@@ -1255,7 +1263,7 @@ function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_id
 	if ( ! empty( $level_ids ) ) {
 		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'intval', $level_ids ) ) . ') '; 
 	}
-	return $wpdb->get_var($sql_query);
+	return $wpdb->get_var($sql_query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Dates go through esc_sql() inside quotes and level IDs are cast with intval.
 }
 
 //delete transients when an order goes through

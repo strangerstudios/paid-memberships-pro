@@ -9,6 +9,12 @@
 	2. Loop through and scrub the AccountNumbers.
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade routine querying PMPro custom tables, which have no WordPress API or object cache layer.
+
 /**
  * Show admin notice if site was affected.
  *
@@ -26,7 +32,7 @@ function pmpro_upgrade_2_10_6_notice() {
 	}
 
 	// Only show on PMPro admin pages.
-	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+	if ( empty( $_REQUEST['page'] ) || strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
 		return;
 	}
 
@@ -74,7 +80,7 @@ function pmpro_orders_csv_extra_columns_2_10_6( $columns ) {
 				FROM $wpdb->pmpro_membership_ordermeta
 				WHERE meta_key = 'cleaned_fields_2_10_6'
 				LIMIT 1";
-	$cleaned_fields = $wpdb->get_var( $sqlQuery );
+	$cleaned_fields = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 	if ( ! empty( $cleaned_fields ) ) {
 		// Add the cleaned fields to the export.
 		$columns['cleaned_data_2_10_6'] = 'pmpro_orders_csv_column_cleaned_data_2_10_6';
@@ -113,7 +119,7 @@ function pmpro_add_site_health_info_2_10_6( $info ) {
 	$sqlQuery = "SELECT COUNT(*)
 				FROM $wpdb->pmpro_membership_ordermeta
 				WHERE meta_key = 'cleaned_fields_2_10_6'";
-	$affected_orders = (int) $wpdb->get_var( $sqlQuery );
+	$affected_orders = (int) $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 
 	// If there were affected orders, add a message to Site Health.
 	if ( $affected_orders > 0 ) {
@@ -145,7 +151,7 @@ function pmpro_upgrade_2_10_6() {
 						OR ( meta_value LIKE '%:\"add_sub_accounts_password\";%' )
 					)
 				ORDER BY meta_id";
-	$order_ids = $wpdb->get_col( $sqlQuery );
+	$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 
 	if(!empty($order_ids)) {
 		// Set an option so that we know to show the admin a notice that they may have been affected.
@@ -182,7 +188,7 @@ function pmpro_upgrade_2_10_6_ajax() {
 						OR ( meta_value LIKE '%:\"add_sub_accounts_password\";%' )
 					)
 				ORDER BY meta_id";
-	$order_ids = $wpdb->get_col( $sqlQuery );
+	$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb table name is interpolated.
 
 	if(empty($order_ids)) {
 		//done with this update

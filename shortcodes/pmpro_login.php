@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Display a Member Login Form and Optional "Logged In" state with Display Name, Log Out link and the "Member Form" menu.
  * The menu is only shown to users with an active membership level.

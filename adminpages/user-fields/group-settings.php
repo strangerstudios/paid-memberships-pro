@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! empty( $group ) ) {
 	// Assume group stdClass in format we save to settings.
 	$group_name = $group->name;

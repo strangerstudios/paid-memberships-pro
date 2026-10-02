@@ -2,6 +2,10 @@
 /**
  * Render the Member Profile Edit block on the frontend.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( function_exists( 'apply_shortcodes' ) ) {
 	$output = apply_shortcodes( '[pmpro_member_profile_edit]' );
 } else {

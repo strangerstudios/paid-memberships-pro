@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_checkout_level_ids;
 
 // we are on the checkout page
@@ -15,7 +19,7 @@ $pmpro_required_user_fields    = array();
  * If there is a token order passed in the URL, we are processing the payment for that order.
  */
 if ( ! empty( $_REQUEST['pmpro_order'] ) ) {
-	$order_code = sanitize_text_field( $_REQUEST['pmpro_order'] );
+	$order_code = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_order'] ) );
 	$order_obj  = new MemberOrder( $order_code );
 	if ( ! empty( $order_obj->id ) ) {
 		// $pmpro_review is a legacy variable from the old PayPal Express flow. When set, it was used to
@@ -27,20 +31,20 @@ if ( ! empty( $_REQUEST['pmpro_order'] ) ) {
 
 		// If the order is not for the current user or the order is in error status, redirect to the account page.
 		if ( $current_user->ID != $pmpro_review->user_id || 'error' === $pmpro_review->status ) {
-			wp_redirect( pmpro_url( 'account' ) );
+			wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 			exit;
 		}
 
 		// If the order has already had a payment submitted, redirect to the confirmation page.
 		if ( in_array( $pmpro_review->status, array( 'success', 'pending' ) ) ) {
-			wp_redirect( pmpro_url( 'confirmation', '?level=' . $pmpro_review->membership_id ) );
+			wp_redirect( pmpro_url( 'confirmation', '?level=' . $pmpro_review->membership_id ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 			exit;
 		}
 
 		pmpro_pull_checkout_data_from_order( $pmpro_review );
 	} else {
 		// This is an invalid order. Redirect to the account page.
-		wp_redirect( pmpro_url( 'account' ) );
+		wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 		exit;
 	}
 }
@@ -49,7 +53,7 @@ if ( ! empty( $_REQUEST['pmpro_order'] ) ) {
 if ( ! empty( $pmpro_review ) ) {
 	$gateway = $pmpro_review->gateway;
 } elseif ( ! empty( $_REQUEST['gateway'] ) ) {
-	$gateway = sanitize_text_field($_REQUEST['gateway']);
+	$gateway = sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) );
 } else {
 	$gateway = get_option( "pmpro_gateway" );
 }
@@ -82,7 +86,7 @@ $pmpro_level = pmpro_getLevelAtCheckout();
 do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', $pmpro_level );
 
 if ( empty( $pmpro_level->id ) ) {
-	wp_redirect( pmpro_url( "levels" ) );
+	wp_redirect( pmpro_url( "levels" ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 	exit( 0 );
 }
 
@@ -140,42 +144,43 @@ $skip_account_fields = apply_filters( "pmpro_skip_account_fields", ! empty( $cur
 //load em up (other fields)
 global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Only loads submitted values into globals to prefill the checkout form; nothing is processed until pmpro_checkout_nonce is verified below, when the form was submitted.
 if ( isset( $_REQUEST['order_id'] ) ) {
 	$order_id = intval( $_REQUEST['order_id'] );
 } else {
 	$order_id = "";
 }
 if ( isset( $_REQUEST['bfirstname'] ) ) {
-	$bfirstname = stripslashes( sanitize_text_field( $_REQUEST['bfirstname'] ) );
+	$bfirstname = sanitize_text_field( wp_unslash( $_REQUEST['bfirstname'] ) );
 } else {
 	$bfirstname = "";
 }
 if ( isset( $_REQUEST['blastname'] ) ) {
-	$blastname = stripslashes( sanitize_text_field( $_REQUEST['blastname'] ) );
+	$blastname = sanitize_text_field( wp_unslash( $_REQUEST['blastname'] ) );
 } else {
 	$blastname = "";
 }
 if ( isset( $_REQUEST['fullname'] ) ) {
-	$fullname = sanitize_text_field( $_REQUEST['fullname'] );
+	$fullname = sanitize_text_field( wp_unslash( $_REQUEST['fullname'] ) );
 }        //honeypot for spammers
 if ( isset( $_REQUEST['baddress1'] ) ) {
-	$baddress1 = stripslashes( sanitize_text_field( $_REQUEST['baddress1'] ) );
+	$baddress1 = sanitize_text_field( wp_unslash( $_REQUEST['baddress1'] ) );
 } else {
 	$baddress1 = "";
 }
 if ( isset( $_REQUEST['baddress2'] ) ) {
-	$baddress2 = stripslashes( sanitize_text_field( $_REQUEST['baddress2'] ) );
+	$baddress2 = sanitize_text_field( wp_unslash( $_REQUEST['baddress2'] ) );
 } else {
 	$baddress2 = "";
 }
 if ( isset( $_REQUEST['bcity'] ) ) {
-	$bcity = stripslashes( sanitize_text_field( $_REQUEST['bcity'] ) );
+	$bcity = sanitize_text_field( wp_unslash( $_REQUEST['bcity'] ) );
 } else {
 	$bcity = "";
 }
 
 if ( isset( $_REQUEST['bstate'] ) ) {
-	$bstate = stripslashes( sanitize_text_field( $_REQUEST['bstate'] ) );
+	$bstate = sanitize_text_field( wp_unslash( $_REQUEST['bstate'] ) );
 } else {
 	$bstate = "";
 }
@@ -192,22 +197,22 @@ if ( ! empty( $bstate ) ) {
 }
 
 if ( isset( $_REQUEST['bzipcode'] ) ) {
-	$bzipcode = stripslashes( sanitize_text_field( $_REQUEST['bzipcode'] ) );
+	$bzipcode = sanitize_text_field( wp_unslash( $_REQUEST['bzipcode'] ) );
 } else {
 	$bzipcode = "";
 }
 if ( isset( $_REQUEST['bcountry'] ) ) {
-	$bcountry = stripslashes( sanitize_text_field( $_REQUEST['bcountry'] ) );
+	$bcountry = sanitize_text_field( wp_unslash( $_REQUEST['bcountry'] ) );
 } else {
 	$bcountry = "";
 }
 if ( isset( $_REQUEST['bphone'] ) ) {
-	$bphone = stripslashes( sanitize_text_field( $_REQUEST['bphone'] ) );
+	$bphone = sanitize_text_field( wp_unslash( $_REQUEST['bphone'] ) );
 } else {
 	$bphone = "";
 }
 if ( isset ( $_REQUEST['bemail'] ) ) {
-	$bemail = stripslashes( sanitize_email( $_REQUEST['bemail'] ) );
+	$bemail = sanitize_email( wp_unslash( $_REQUEST['bemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bemail = $current_user->user_email;
 } else {
@@ -216,7 +221,7 @@ if ( isset ( $_REQUEST['bemail'] ) ) {
 if ( isset( $_REQUEST['bconfirmemail_copy'] ) ) {
 	$bconfirmemail = $bemail;
 } elseif ( isset( $_REQUEST['bconfirmemail'] ) ) {
-	$bconfirmemail = stripslashes( sanitize_email( $_REQUEST['bconfirmemail'] ) );
+	$bconfirmemail = sanitize_email( wp_unslash( $_REQUEST['bconfirmemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bconfirmemail = $current_user->user_email;
 } else {
@@ -224,28 +229,28 @@ if ( isset( $_REQUEST['bconfirmemail_copy'] ) ) {
 }
 
 if ( isset( $_REQUEST['CardType'] ) && ! empty( $_REQUEST['AccountNumber'] ) ) {
-	$CardType = sanitize_text_field( $_REQUEST['CardType'] );
+	$CardType = sanitize_text_field( wp_unslash( $_REQUEST['CardType'] ) );
 } else {
 	$CardType = "";
 }
 if ( isset( $_REQUEST['AccountNumber'] ) ) {
-	$AccountNumber = sanitize_text_field( $_REQUEST['AccountNumber'] );
+	$AccountNumber = sanitize_text_field( wp_unslash( $_REQUEST['AccountNumber'] ) );
 } else {
 	$AccountNumber = "";
 }
 
 if ( isset( $_REQUEST['ExpirationMonth'] ) ) {
-	$ExpirationMonth = sanitize_text_field( $_REQUEST['ExpirationMonth'] );
+	$ExpirationMonth = sanitize_text_field( wp_unslash( $_REQUEST['ExpirationMonth'] ) );
 } else {
 	$ExpirationMonth = "";
 }
 if ( isset( $_REQUEST['ExpirationYear'] ) ) {
-	$ExpirationYear = sanitize_text_field( $_REQUEST['ExpirationYear'] );
+	$ExpirationYear = sanitize_text_field( wp_unslash( $_REQUEST['ExpirationYear'] ) );
 } else {
 	$ExpirationYear = "";
 }
 if ( isset( $_REQUEST['CVV'] ) ) {
-	$CVV = sanitize_text_field( $_REQUEST['CVV'] );
+	$CVV = sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) );
 } else {
 	$CVV = "";
 }
@@ -256,7 +261,7 @@ if ( ! empty( $pmpro_level->discount_code ) ) {
 	$discount_code = "";
 }
 if ( isset( $_REQUEST['username'] ) ) {
-	$username = sanitize_user( $_REQUEST['username'] , true);
+	$username = sanitize_user( wp_unslash( $_REQUEST['username'] ) , true);
 } else {
 	$username = "";
 }
@@ -264,18 +269,19 @@ if ( isset( $_REQUEST['username'] ) ) {
 // Note: We can't sanitize the passwords. They get hashed when saved.
 // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 if ( isset( $_REQUEST['password'] ) ) {
-	$password = $_REQUEST['password'];
+	$password = $_REQUEST['password']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed, unsanitized).
 } else {
 	$password = "";
 }
 if ( isset( $_REQUEST['password2_copy'] ) ) {
 	$password2 = $password;
 } elseif ( isset( $_REQUEST['password2'] ) ) {
-	$password2 = $_REQUEST['password2'];
+	$password2 = $_REQUEST['password2']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed, unsanitized).
 } else {
 	$password2 = "";
 }
 // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 $submit = pmpro_was_checkout_form_submitted();
 
@@ -472,13 +478,13 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 	if ( $pmpro_msgt != "pmpro_error" && empty( $current_user->ID ) ) {
 		//first name
 		if ( ! empty( $_REQUEST['first_name'] ) ) {
-			$first_name = sanitize_text_field( $_REQUEST['first_name'] );
+			$first_name = sanitize_text_field( $_REQUEST['first_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Left slashed on purpose: wp_insert_user() unslashes its input before saving, so unslashing here would strip literal backslashes.
 		} else {
 			$first_name = $bfirstname;
 		}
 		//last name
 		if ( ! empty( $_REQUEST['last_name'] ) ) {
-			$last_name = sanitize_text_field( $_REQUEST['last_name'] );
+			$last_name = sanitize_text_field( $_REQUEST['last_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Left slashed on purpose: wp_insert_user() unslashes its input before saving, so unslashing here would strip literal backslashes.
 		} else {
 			$last_name = $blastname;
 		}
@@ -680,7 +686,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		//redirect to confirmation
 		$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
 		$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $current_user->ID, $pmpro_level );
-		wp_redirect( $rurl );
+		wp_redirect( $rurl ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- The pmpro_confirmation_url filter lets developers send members to any URL, including offsite.
 		exit;
 	} else {
 

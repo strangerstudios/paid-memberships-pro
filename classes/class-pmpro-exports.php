@@ -11,6 +11,8 @@
  * @since 3.7
  */
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Export queries read PMPro custom tables and user data in batches; there is no WordPress API or object cache layer for these.
+
 class PMPro_Exports {
 	/**
 	 * Singleton instance.
@@ -87,7 +89,7 @@ class PMPro_Exports {
 			$export_id       = isset( $_REQUEST['export_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['export_id'] ) ) : '';
 
 			// Do not sanitize token; use raw-unslashed for proper HMAC compare.
-			$token = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : '';
+			$token = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Token is hashed and checked with hash_equals() in validate_file_access(); sanitizing could alter its bytes.
 			$file  = isset( $_REQUEST['pmpro_restricted_file'] ) ? basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file'] ) ) ) : '';
 
 			// Nonce verification.
@@ -1056,7 +1058,7 @@ class PMPro_Exports {
 
 		// Allow manipulation of SQL if needed.
 		$query = apply_filters( 'pmpro_members_list_sql', $query );
-		$count = (int) $wpdb->get_var( $query );
+		$count = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- search/filter fragments use esc_sql() inside quotes, whitelisted columns and int casts.
 		return max( 0, $count );
 	}
 
@@ -1086,7 +1088,7 @@ class PMPro_Exports {
 		$query .= $wpdb->prepare( ' LIMIT %d, %d', (int) $offset, (int) $limit );
 
 		$query = apply_filters( 'pmpro_members_list_sql', $query );
-		$ids   = $wpdb->get_col( $query );
+		$ids   = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- search/filter fragments use esc_sql() inside quotes, whitelisted columns and int casts; LIMIT is prepared.
 		if ( empty( $ids ) ) {
 			return array();
 		}
@@ -1205,7 +1207,7 @@ class PMPro_Exports {
 		";
 		$user_sql = call_user_func( array( $wpdb, 'prepare' ), $user_sql, $user_ids );
 		// Query is already prepared above; safe to execute.
-		$usr_data = $wpdb->get_results( $user_sql );
+		$usr_data = $wpdb->get_results( $user_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepared above via call_user_func( $wpdb->prepare ).
 
 		$rows_written = 0;
 
@@ -1229,7 +1231,7 @@ class PMPro_Exports {
 				LIMIT 1",
 				$theuser->ID
 			);
-			$discount_code = $wpdb->get_row( $dis_sql );
+			$discount_code = $wpdb->get_row( $dis_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepared above with $wpdb->prepare().
 			if ( empty( $discount_code ) ) {
 				$discount_code = (object) array(
 					'id'   => '',
@@ -1663,7 +1665,7 @@ class PMPro_Exports {
 			$sql = call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $sql ), $params ) );
 		}
 
-		$count = (int) $wpdb->get_var( $sql );
+		$count = (int) $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepared above when params exist; otherwise only static conditions.
 		return max( 0, $count );
 	}
 
@@ -1703,7 +1705,7 @@ class PMPro_Exports {
 		$params[] = (int) $limit;
 
 		$sql = call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $sql ), $params ) );
-		$ids = $wpdb->get_col( $sql );
+		$ids = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepared above via call_user_func_array( $wpdb->prepare ).
 		$ids = is_array( $ids ) ? array_map( 'intval', $ids ) : array();
 		return $ids;
 	}
@@ -1852,7 +1854,7 @@ class PMPro_Exports {
 				$order_id
 			);
 
-			$discount_code = $wpdb->get_row( $sqlQuery );
+			$discount_code = $wpdb->get_row( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepared above with $wpdb->prepare().
 			if ( empty( $discount_code ) ) {
 				$discount_code = (object) array(
 					'id'   => '',

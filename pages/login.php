@@ -10,5 +10,9 @@
  *
  * @author Paid Memberships Pro
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 echo pmpro_shortcode_login('');

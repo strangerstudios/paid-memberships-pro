@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Calculate the profile start date to be sent to the payment gateway.
  *
@@ -60,7 +64,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 
 	// Save some checkout information in the order so that we can access it when the payment is complete.
 	// Save the request variables.
-	$request_vars = $_REQUEST;
+	$request_vars = $_REQUEST; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php.
 
 	// Unset sensitive request variables.
 	$sensitive_vars = pmpro_get_sensitive_checkout_request_vars();
@@ -80,10 +84,10 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 	update_pmpro_membership_order_meta( $order->id, 'checkout_discount_code', $discount_code );
 
 	// Save any files that were uploaded.
-	if ( ! empty( $_FILES ) ) {
+	if ( ! empty( $_FILES ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Runs during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php.
 		// Build an array of files to save.
 		$files = array();
-		foreach ( $_FILES as $arr_key => $file ) {
+		foreach ( $_FILES as $arr_key => $file ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Runs during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php.
 			// If this file should not be saved, skip it.
 			$upload_check = pmpro_check_upload( $arr_key );
 			if ( is_wp_error( $upload_check ) ) {
@@ -179,7 +183,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	// Set $_REQUEST.
 	$checkout_request_vars = get_pmpro_membership_order_meta( $order->id, 'checkout_request_vars', true );
 	if ( is_array( $checkout_request_vars ) ) {
-		$_REQUEST = array_merge( $_REQUEST, $checkout_request_vars );
+		$_REQUEST = array_merge( $_REQUEST, $checkout_request_vars ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Restores checkout data saved in order meta; request input is not processed here. Callers are the checkout review step (order owner checked in preheaders/checkout.php) and gateway webhooks or return handlers verified by calling back to the gateway.
 	} else {
 		$missing_data[] = 'checkout_request_vars';
 	}
@@ -187,7 +191,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	// Set $_FILES.
 	$checkout_files = get_pmpro_membership_order_meta( $order->id, 'checkout_files', true );
 	if ( is_array( $checkout_files ) ) {
-		$_FILES = array_merge( $_FILES, $checkout_files );
+		$_FILES = array_merge( $_FILES, $checkout_files ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Restores checkout data saved in order meta; request input is not processed here. Callers are the checkout review step (order owner checked in preheaders/checkout.php) and gateway webhooks or return handlers verified by calling back to the gateway.
 	}
 	// Note: We do not track missing 'checkout_files' meta since it is only saved when files were uploaded.
 
@@ -312,18 +316,20 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		}
 
 		//save first and last name fields
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- pmpro_checkout_nonce is verified in preheaders/checkout.php before this runs at checkout; async completions come from gateway webhooks or return handlers verified by calling back to the gateway. Only fills in empty name fields.
 		if ( ! empty( $_POST['first_name'] ) ) {
 			$old_firstname = get_user_meta( $order->user_id, "first_name", true );
 			if ( empty( $old_firstname ) ) {
-				update_user_meta( $order->user_id, "first_name", stripslashes( sanitize_text_field( $_POST['first_name'] ) ) );
+				update_user_meta( $order->user_id, "first_name", sanitize_text_field( $_POST['first_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
 			}
 		}
 		if ( ! empty( $_POST['last_name'] ) ) {
 			$old_lastname = get_user_meta( $order->user_id, "last_name", true );
 			if ( empty( $old_lastname ) ) {
-				update_user_meta( $order->user_id, "last_name", stripslashes( sanitize_text_field( $_POST['last_name'] ) ) );
+				update_user_meta( $order->user_id, "last_name", sanitize_text_field( $_POST['last_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		if ( $pmpro_level->expiration_period == 'Hour' ){
 			update_user_meta( $order->user_id, 'pmpro_disable_notifications', true );

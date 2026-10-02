@@ -1,4 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -275,7 +281,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		global $wpdb;
 		$now = current_time( 'timestamp' );
 
-		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
+		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
 
 		$items_per_page = $this->get_items_per_page( 'pmpro_orders_per_page' );
@@ -303,7 +309,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		// Status filter.
-		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
 		if ( ! empty( $status ) ) {
 			$conditions[] = $wpdb->prepare( "o.status = %s", $status );
 		}
@@ -316,9 +322,9 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		// Date filter (predefined or custom range).
-		$predefined_date = isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : '';
-		$start_date_input = isset( $_REQUEST['start-date'] ) ? sanitize_text_field( $_REQUEST['start-date'] ) : '';
-		$end_date_input = isset( $_REQUEST['end-date'] ) ? sanitize_text_field( $_REQUEST['end-date'] ) : '';
+		$predefined_date = isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['predefined-date'] ) ) : '';
+		$start_date_input = isset( $_REQUEST['start-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['start-date'] ) ) : '';
+		$end_date_input = isset( $_REQUEST['end-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['end-date'] ) ) : '';
 
 		$start_date = '';
 		$end_date   = '';
@@ -352,7 +358,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		// Gateway filter.
-		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
+		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) ) : '';
 		if ( ! empty( $gateway ) ) {
 			if ( 'no_gateway' === $gateway ) {
 				$conditions[] = '(o.gateway = "" OR o.gateway IS NULL)';
@@ -362,7 +368,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		// Total filter.
-		$total_filter = isset( $_REQUEST['total'] ) ? sanitize_text_field( $_REQUEST['total'] ) : '';
+		$total_filter = isset( $_REQUEST['total'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['total'] ) ) : '';
 		if ( $total_filter === 'paid' ) {
 			$conditions[] = "o.total > 0";
 		} elseif ( $total_filter === 'free' ) {
@@ -377,7 +383,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		// Backward-compatible hook. Pass combined condition and legacy filter value.
-		$legacy_filter = ! empty( $_REQUEST['filter'] ) ? sanitize_text_field( $_REQUEST['filter'] ) : 'all';
+		$legacy_filter = ! empty( $_REQUEST['filter'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['filter'] ) ) : 'all';
 		$condition = apply_filters( 'pmpro_admin_orders_query_condition', $condition, $legacy_filter );
 
 		$orderby = '';
@@ -385,12 +391,12 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		if( ! empty( $_REQUEST['orderby'] ) && ! $count ) {
 
 			if ( isset( $_REQUEST['orderby'] ) ) {
-				$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+				$orderby = $this->sanitize_orderby( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) );
 			} else {
 				$orderby = 'id';
 			}
 
-			if ( $_REQUEST['order'] == 'asc' ) {
+			if ( isset( $_REQUEST['order'] ) && $_REQUEST['order'] == 'asc' ) {
 				$order = 'ASC';
 			} else {
 				$order = 'DESC';
@@ -507,10 +513,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			return $wpdb->get_var( $sqlQuery );    
+			return $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values use esc_sql() inside quotes, and column names are whitelisted or stripped to [a-zA-Z0-9_].
 		} else {
 			$sqlQuery .= 'GROUP BY o.id ' . $order_query . " LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
-			$order_ids = $wpdb->get_col( $sqlQuery );
+			$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values use esc_sql() inside quotes, column names and ORDER BY are whitelisted or stripped to [a-zA-Z0-9_], and $start is derived from intval( paged ).
 			$order_data = array();
 			foreach ( $order_ids as $order_id ) {
 				$order            = new MemberOrder();
@@ -542,13 +548,13 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		// Read current filter values from request.
 		$l              = isset( $_REQUEST['l'] ) ? intval( $_REQUEST['l'] ) : 0;
-		$status         = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+		$status         = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
 		$discount_code  = isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : 0;
-		$predefined_date = isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : '';
-		$start_date     = isset( $_REQUEST['start-date'] ) ? sanitize_text_field( $_REQUEST['start-date'] ) : '';
-		$end_date       = isset( $_REQUEST['end-date'] ) ? sanitize_text_field( $_REQUEST['end-date'] ) : '';
-		$gateway        = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
-		$total_filter   = isset( $_REQUEST['total'] ) ? sanitize_text_field( $_REQUEST['total'] ) : '';
+		$predefined_date = isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['predefined-date'] ) ) : '';
+		$start_date     = isset( $_REQUEST['start-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['start-date'] ) ) : '';
+		$end_date       = isset( $_REQUEST['end-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['end-date'] ) ) : '';
+		$gateway        = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) ) : '';
+		$total_filter   = isset( $_REQUEST['total'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['total'] ) ) : '';
 
 		// Count active filters for the toggle button badge.
 		$active_filter_count = 0;
@@ -837,19 +843,19 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 						'action' => 'delete_order',
 						'delete' => $item->id,
 						'id'  => isset( $_REQUEST['id'] ) ? intval( $_REQUEST['id'] ) : null,
-						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( $_REQUEST['orderby'] ) : null,
-						's' => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : null,
-						'filter' => isset( $_REQUEST['filter'] ) ? sanitize_text_field( $_REQUEST['filter'] ) : null,
+						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null,
+						's' => isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : null,
+						'filter' => isset( $_REQUEST['filter'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['filter'] ) ) : null,
 						'start-month' => isset( $_REQUEST['start-month'] ) ? intval( $_REQUEST['start-month'] ) : null,
 						'start-day' => isset( $_REQUEST['start-day'] ) ? intval( $_REQUEST['start-day'] ) : null,
 						'start-year' => isset( $_REQUEST['start-year'] ) ? intval( $_REQUEST['start-year'] ) : null,
 						'end-month' => isset( $_REQUEST['end-month'] ) ? intval( $_REQUEST['end-month'] ) : null,
 						'end-day' => isset( $_REQUEST['end-day'] ) ? intval( $_REQUEST['end-day'] ) : null,
 						'end-year' => isset( $_REQUEST['end-year'] ) ? intval( $_REQUEST['end-year'] ) : null,
-						'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : null,
-						'l' => isset( $_REQUEST['l'] ) ? sanitize_text_field( $_REQUEST['l'] ) : null,
-						'status' => isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : null,
-						'discount-code' => isset( $_REQUEST['discount-code'] ) ? sanitize_text_field( $_REQUEST['discount-code'] ) : null,
+						'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['predefined-date'] ) ) : null,
+						'l' => isset( $_REQUEST['l'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['l'] ) ) : null,
+						'status' => isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : null,
+						'discount-code' => isset( $_REQUEST['discount-code'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['discount-code'] ) ) : null,
 					],
 					admin_url( 'admin.php' )
 				),

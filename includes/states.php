@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//US states for dropdowns, etc
 	global $pmpro_states, $pmpro_states_abbreviations;
 
