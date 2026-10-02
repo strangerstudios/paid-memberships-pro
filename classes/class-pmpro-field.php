@@ -797,7 +797,6 @@ class PMPro_Field {
 				if ( 
 					! empty( $old_file_meta ) && 
 					! empty( $old_file_meta['fullpath'] ) && 
-					file_exists( $old_file_meta['fullpath'] ) &&
 					$old_file_meta['filename'] ==  $delete_old_file_name
 				) {
 					self::delete_uploaded_file( $old_file_meta, $user->user_login );
@@ -834,26 +833,6 @@ class PMPro_Field {
 		$dir_path = $user_dir_path . $unique_dir . "/";
 		$dir_url  = $upload_dir['baseurl'] . "/pmpro-register-helper/" . $user->user_login . "/" . $unique_dir . "/";
 
-		//create the dir and subdir if needed
-		if(!is_dir($dir_path))
-		{
-			wp_mkdir_p($dir_path);
-		}
-
-		// Add empty index files so that servers with directory listing enabled do not reveal the random folder names.
-		foreach ( array( $upload_dir['basedir'] . "/pmpro-register-helper/", $user_dir_path ) as $index_dir ) {
-			if ( ! file_exists( $index_dir . 'index.php' ) ) {
-				file_put_contents( $index_dir . 'index.php', "<?php\n// Silence is golden.\n" );
-			}
-		}
-
-		//if we already have a file for this field, delete it
-		$old_file = get_user_meta($user->ID, $meta_key, true);
-		if(!empty($old_file) && !empty($old_file['fullpath']) && file_exists($old_file['fullpath']))
-		{
-			self::delete_uploaded_file( $old_file, $user->user_login );
-		}
-
 		//figure out new filename
 		$filename = sanitize_file_name( $file['name'] );
 		$count = 0;
@@ -875,22 +854,48 @@ class PMPro_Field {
 		$file_path = $dir_path . $filename;
 		$file_url = $dir_url . $filename;
 
-		//save file
-		if(strpos($file['tmp_name'], $upload_dir['basedir']) !== false)
+		// Make sure file was uploaded. Files saved to the uploads directory during checkout are moved below.
+		$is_saved_file = strpos($file['tmp_name'], $upload_dir['basedir']) !== false;
+		if ( ! $is_saved_file && ! is_uploaded_file( $file['tmp_name'] ) ) {
+			pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
+			return false;
+		}
+
+		//create the dir and subdir if needed
+		if(!is_dir($dir_path))
 		{
+			wp_mkdir_p($dir_path);
+		}
+
+		// Add empty index files so that servers with directory listing enabled do not reveal the random folder names.
+		foreach ( array( $upload_dir['basedir'] . "/pmpro-register-helper/", $user_dir_path ) as $index_dir ) {
+			if ( is_dir( $index_dir ) && ! file_exists( $index_dir . 'index.php' ) ) {
+				file_put_contents( $index_dir . 'index.php', "<?php\n// Silence is golden.\n" );
+			}
+		}
+
+		//save file
+		if ( $is_saved_file ) {
 			//was uploaded and saved to $_SESSION
 			rename($file['tmp_name'], $file_path);
-		}
-		else
-		{
-			// Make sure file was uploaded.
-			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-				pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
-				return false;
-			}
-
+		} else {
 			//it was just uploaded
 			move_uploaded_file($file['tmp_name'], $file_path);
+		}
+
+		// If the file could not be saved, remove the empty folder and keep the old file.
+		if ( ! file_exists( $file_path ) ) {
+			if ( is_dir( $dir_path ) ) {
+				rmdir( $dir_path );
+			}
+			pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
+			return false;
+		}
+
+		//if we already have a file for this field, delete it now that the new file is saved
+		$old_file = get_user_meta($user->ID, $meta_key, true);
+		if ( ! empty( $old_file ) ) {
+			self::delete_uploaded_file( $old_file, $user->user_login );
 		}
 
 		// If file is an image, save a preview thumbnail.
@@ -960,8 +965,9 @@ class PMPro_Field {
 				continue;
 			}
 
+			// The sites/N/ segment allows deleting subsite files when a user is deleted from the network admin.
 			$path = wp_normalize_path( $path );
-			if ( 0 !== strpos( $path, $uploads_path ) || false === strpos( $path, '/pmpro-register-helper/' . $user_login . '/' ) ) {
+			if ( 0 !== strpos( $path, $uploads_path ) || ! preg_match( '#^(sites/\d+/)?pmpro-register-helper/' . preg_quote( $user_login, '#' ) . '/#', substr( $path, strlen( $uploads_path ) ) ) ) {
 				continue;
 			}
 
