@@ -728,6 +728,14 @@ class PMPro_Field {
 			return;
 		}
 
+		// Never save to the meta key that stores a user's roles and capabilities, including other sites' keys on multisite.
+		// Matched case-insensitively because meta key lookups in the database are usually case-insensitive.
+		global $wpdb;
+		$capabilities_key_pattern = '/^' . preg_quote( $wpdb->base_prefix, '/' ) . '(\d+_)?capabilities$/i';
+		if ( preg_match( $capabilities_key_pattern, trim( $this->meta_key ) ) || preg_match( $capabilities_key_pattern, trim( str_replace( 'pmprorhprefix_', '', $this->name ) ) ) ) {
+			return;
+		}
+
 		// Check if we have a save function.
 		if ( ! empty( $this->save_function ) ) {
 			// Call the save function.
