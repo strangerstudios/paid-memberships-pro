@@ -38,11 +38,24 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		}
 
 		// If user cannot edit users, or cannot edit this specific user, empty the submit text and title link.
-		$can_edit = current_user_can( 'edit_users' ) && ( empty( $user->ID ) || current_user_can( 'edit_user', $user->ID ) );
-		if ( ! $can_edit ) {
+		if ( ! $this->current_user_can_edit( $user ) ) {
 			$this->submit_text = '';
 			$this->title_link = '';
 		}
+	}
+
+	/**
+	 * Check whether the current user can create a new user or edit the given user in this panel.
+	 *
+	 * edit_users is always required, since WordPress lets every user edit_user themselves.
+	 *
+	 * @since TBD
+	 *
+	 * @param WP_User $user The user being edited, or a blank user when creating a new user.
+	 * @return bool
+	 */
+	protected function current_user_can_edit( $user ) {
+		return current_user_can( 'edit_users' ) && ( empty( $user->ID ) || current_user_can( 'edit_user', $user->ID ) );
 	}
 
 	/**
@@ -73,8 +86,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		}
 
 		// If the current user can't edit users, or can't edit this specific user, make the fields read-only.
-		$can_edit = current_user_can( 'edit_users' ) && ( empty( $user->ID ) || current_user_can( 'edit_user', $user->ID ) );
-		$disable_fields = ! $can_edit ? 'disabled' : '';
+		$disable_fields = ! $this->current_user_can_edit( $user ) ? 'disabled' : '';
 
 		// Show a message if the user doesn't have permission to edit this user.
 		if ( ! empty( $disable_fields ) ) {
@@ -222,8 +234,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$update = $user->ID ? true : false;
 
 		// If the current user can't edit users, or can't edit this specific user, bail.
-		$can_edit = current_user_can( 'edit_users' ) && ( ! $update || current_user_can( 'edit_user', $user->ID ) );
-		if ( ! $can_edit ) {
+		if ( ! $this->current_user_can_edit( $user ) ) {
 			return;
 		}
 
