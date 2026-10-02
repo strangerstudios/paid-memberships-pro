@@ -913,13 +913,39 @@ function pmpro_delete_user_field_files( $user_id ) {
 		return;
 	}
 
+	// Folders that may be left empty once the user's files are deleted.
+	$upload_dir = wp_upload_dir();
+	$user_dirs  = array( wp_normalize_path( $upload_dir['basedir'] . '/pmpro-register-helper/' . $user->user_login ) );
+
 	// Check all user meta so that files are deleted even if their field is no longer registered.
 	foreach ( get_user_meta( $user_id ) as $meta_values ) {
 		foreach ( $meta_values as $meta_value ) {
 			$meta_value = maybe_unserialize( $meta_value );
 			if ( is_array( $meta_value ) && ! empty( $meta_value['fullpath'] ) ) {
 				PMPro_Field::delete_uploaded_file( $meta_value, $user->user_login );
+
+				// New uploads are in a unique folder inside the user's folder.
+				$user_dir = dirname( wp_normalize_path( $meta_value['fullpath'] ) );
+				if ( 'pmpro-register-helper' !== basename( dirname( $user_dir ) ) ) {
+					$user_dir = dirname( $user_dir );
+				}
+				$user_dirs[] = $user_dir;
 			}
+		}
+	}
+
+	// Remove the user's folders if only the index file is left.
+	foreach ( array_unique( $user_dirs ) as $user_dir ) {
+		$user_dir = realpath( $user_dir );
+		if ( empty( $user_dir ) || basename( $user_dir ) !== $user->user_login || 'pmpro-register-helper' !== basename( dirname( $user_dir ) ) ) {
+			continue;
+		}
+
+		if ( empty( array_diff( scandir( $user_dir ), array( '.', '..', 'index.html' ) ) ) ) {
+			if ( file_exists( $user_dir . '/index.html' ) ) {
+				unlink( $user_dir . '/index.html' );
+			}
+			rmdir( $user_dir );
 		}
 	}
 }
