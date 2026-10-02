@@ -1,4 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; the level parameter only selects which of the current user's orders to show and builds the login redirect URL.
+
 global $current_user, $pmpro_invoice;
 
 // Redirect non-user to the login page; pass the Confirmation page as the redirect_to query arg.

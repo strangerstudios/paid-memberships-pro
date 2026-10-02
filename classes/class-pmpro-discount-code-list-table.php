@@ -1,4 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- List table queries against PMPro custom tables, which have no WordPress API or object cache layer.
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request vars are only used for list table search, sorting, pagination and building row action links.
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -288,9 +294,9 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			$sql_table_data = $wpdb->get_var( $sqlQuery );
+			$sql_table_data = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term is esc_sql()'d inside quotes, orderby is whitelisted, order is hard-coded, and LIMIT values are integers.
 		} else {
-			$sql_table_data = $wpdb->get_results( $sqlQuery );
+			$sql_table_data = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term is esc_sql()'d inside quotes, orderby is whitelisted, order is hard-coded, and LIMIT values are integers.
 		}
 
 		return $sql_table_data;
@@ -548,7 +554,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			WHERE cl.code_id = %d",
 			esc_sql( $item->id )
 		);
-		$levels = $wpdb->get_results($sqlQuery);
+		$levels = $wpdb->get_results($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery was built with $wpdb->prepare() above.
 		$levels = pmpro_sort_levels_by_order( $levels );
 
 		$level_names = array();

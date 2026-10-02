@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //only admins can get this
 if (!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_pagesettings"))) {
     die(esc_html__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
@@ -236,11 +240,11 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 					'content' => function() use ( $key, $description_html, $args, $pmpro_pages, $post_type ) {
 						wp_dropdown_pages(
 							array(
-								'name'             => $key . '_page_id',
+								'name'             => $key . '_page_id', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_dropdown_pages() escapes the name attribute with esc_attr().
 								// wp_dropdown_pages() does not escape show_option_none, and none_label may come from add-ons.
 								'show_option_none' => esc_html( '-- ' . ( ! empty( $args['none_label'] ) ? $args['none_label'] : __( 'Choose One', 'paid-memberships-pro' ) ) . ' --' ),
-								'selected'         => $pmpro_pages[ $key ],
-								'post_type'        => $post_type,
+								'selected'         => $pmpro_pages[ $key ], // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_dropdown_pages() only compares selected against page IDs; it is not echoed.
+								'post_type'        => $post_type, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_dropdown_pages() passes post_type to get_pages(); it is not echoed.
 							)
 						);
 						if ( ! empty( $pmpro_pages[ $key ] ) ) {

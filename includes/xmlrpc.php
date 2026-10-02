@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Define the XMLRPC Methods We Add
  * Since v2.0

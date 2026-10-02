@@ -5,6 +5,10 @@
  * The crons themselves are located in /scheduled/crons.php and in corresponding Add-Ons.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Get the list of registered crons for Paid Memberships Pro.
  *

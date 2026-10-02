@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $pmpro_reports;
 if( null === $pmpro_reports ) {
 	$pmpro_reports = array();

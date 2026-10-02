@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -321,8 +325,8 @@
 			);
 
 			foreach ( $settings_to_save as $setting ) {
-				if ( isset( $_REQUEST[ $setting ] ) ) {
-					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
+				if ( isset( $_REQUEST[ $setting ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
+					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
 				}
 			}
 		}
@@ -377,7 +381,7 @@
 
 			// For backwards compatibility with pre-3.2 checkout page templates, also check if the $_REQUEST['confirm'] attribute is set.
 			// If so, we want to process the chekcout form submission.
-			if ( ! empty( $_REQUEST['confirm'] ) ) {
+			if ( ! empty( $_REQUEST['confirm'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only routes to checkout processing, which still verifies pmpro_checkout_nonce in preheaders/checkout.php.
 				// Process the checkout form submission.
 				$_REQUEST['submit-checkout'] = 1;
 			}
@@ -393,6 +397,7 @@
 		static function pmpro_checkout_before_processing() {
 			global $current_user, $gateway;
 
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Deprecated since 2.12.3 and not hooked by core. It ran on pmpro_checkout_before_processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php, and only stores values in the session.
 			_deprecated_function( __FUNCTION__, '2.12.3' );
 
 			//save user fields for PayPal Express
@@ -422,6 +427,7 @@
 			//can use this hook to save some other variables to the session
 			// @deprecated 2.12.3
 			do_action("pmpro_paypalexpress_session_vars");
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 
 		/**
@@ -432,6 +438,7 @@
 		 */
 		static function pmpro_checkout_confirmed($pmpro_confirmed)
 		{
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Deprecated since 3.2 and not hooked by core. It handled the PayPal return URL, which can't carry a WordPress nonce; the order is looked up by PayPal token and the token is verified with PayPal.
 			_deprecated_function( __FUNCTION__, '3.2', 'PMProGateway_paypalexpress::process()' );
 			global $pmpro_msg, $pmpro_msgt, $pmpro_level, $current_user, $pmpro_review, $pmpro_paypal_token, $discount_code, $bemail;
 
@@ -525,6 +532,7 @@
 				return array("pmpro_confirmed"=>$pmpro_confirmed, "morder"=>$morder);
 			else
 				return $pmpro_confirmed;
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 
 		/**
@@ -847,7 +855,7 @@
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1";
 
-			$nvpStr .= "&PAYERID=" . sanitize_text_field( $_REQUEST['PayerID'] ) . "&PAYMENTACTION=sale";
+			$nvpStr .= "&PAYERID=" . sanitize_text_field( $_REQUEST['PayerID'] ) . "&PAYMENTACTION=sale"; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called from checkout processing after pmpro_checkout_nonce is verified in preheaders/checkout.php; PayerID is PayPal's return value and PayPal validates it with the token.
 
 			$nvpStr = apply_filters("pmpro_do_express_checkout_payment_nvpstr", $nvpStr, $order);
 

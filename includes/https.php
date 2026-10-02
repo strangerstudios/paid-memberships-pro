@@ -3,6 +3,10 @@
 	Code related to HTTPS/SSL
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Check if we have set the $isapage variable,
  * and if so prevents WP from sending a 404.
@@ -108,6 +112,7 @@ function pmpro_check_site_url_for_https( $besecure = NULL ) {
 
 	//need to get this from the database because we filter get_option
 	if( empty( $pmpro_siteurl ) ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Intentionally reads the raw siteurl option, bypassing the get_option() filter; result is stored in a global.
 		$pmpro_siteurl = $wpdb->get_var( "SELECT option_value FROM $wpdb->options WHERE option_name = 'siteurl' LIMIT 1" );
 	}
 	

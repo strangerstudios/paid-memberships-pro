@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Nonce (pmpro_orders_nonce) and capability verified in adminpages/orders.php before this file is included.
+
 // start with old order if applicable
 $order_id = intval( $_REQUEST['id'] );
 if ( $order_id > 0 ) {

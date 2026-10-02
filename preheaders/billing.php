@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling, $pmpro_billing_subscription, $pmpro_billing_level;
 
 // Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
@@ -12,7 +16,7 @@ if ( ! is_user_logged_in() ) {
 // Get the subscription and order that was passed in.
 if ( ! empty( $_REQUEST['pmpro_subscription_id'] ) ) {
 	// A subscription ID was passed. Get the subscription and its order.
-	$pmpro_billing_subscription = PMPro_Subscription::get_subscription( (int)$_REQUEST['pmpro_subscription_id'] );
+	$pmpro_billing_subscription = PMPro_Subscription::get_subscription( (int)$_REQUEST['pmpro_subscription_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: selects which subscription to show. Ownership is checked below and the billing update is verified with pmpro_billing_nonce.
 } else {
 	// No subscription or order was passed. Check if the user has exactly one active subscription. If so, use it.
 	$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID );

@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	// Only admins can access this page.
 	if( !function_exists( "current_user_can" ) || ( !current_user_can( "manage_options" ) && 
 		!current_user_can( "pmpro_securitysettings" ) ) ) {

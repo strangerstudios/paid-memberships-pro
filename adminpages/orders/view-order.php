@@ -4,6 +4,10 @@
  *
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $wpdb;
 
 // Get the user, membership, and subscription for this order.

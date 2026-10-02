@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_checkout_level_ids;
 
 // we are on the checkout page
@@ -140,6 +144,7 @@ $skip_account_fields = apply_filters( "pmpro_skip_account_fields", ! empty( $cur
 //load em up (other fields)
 global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Only loads submitted values into globals to prefill the checkout form; nothing is processed until pmpro_checkout_nonce is verified below, when the form was submitted.
 if ( isset( $_REQUEST['order_id'] ) ) {
 	$order_id = intval( $_REQUEST['order_id'] );
 } else {
@@ -276,6 +281,7 @@ if ( isset( $_REQUEST['password2_copy'] ) ) {
 	$password2 = "";
 }
 // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 $submit = pmpro_was_checkout_form_submitted();
 

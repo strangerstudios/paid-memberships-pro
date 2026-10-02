@@ -3,6 +3,12 @@
 	Upgrade to 1.8.9.3
 	Fixing incorrect start and end dates.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade script that reads and fixes rows in PMPro custom tables, which have no WordPress API or object cache layer.
+
 function pmpro_upgrade_1_8_9_3() {
 	global $wpdb;	
 	
@@ -32,7 +38,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 	$last_user_id = get_option('pmpro_upgrade_1_8_9_3_last_user_id', 0);
 
 	//get all active users during the period where things may have been broken
-	$user_ids = $wpdb->get_col("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND modified > '2016-05-19' AND user_id > $last_user_id ORDER BY user_id LIMIT 10");
+	$user_ids = $wpdb->get_col("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND modified > '2016-05-19' AND user_id > $last_user_id ORDER BY user_id LIMIT 10"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: $last_user_id is a user ID stored by this script.
 
 	//track progress
 	$first_load = get_transient('pmpro_updates_first_load');
@@ -108,13 +114,13 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 
 			//discount code
 			$discount_code_id = $user->membership_level->code_id;
-			$discount_code = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE id = '" . $discount_code_id . "' LIMIT 1" );
+			$discount_code = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE id = '" . $discount_code_id . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: IDs and code come from the database, not the request.
 
 			//get level
 			if(!empty($discount_code_id)) {
 				$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . (int) $level_id . "' LIMIT 1";
 		
-				$pmpro_level = $wpdb->get_row( $sqlQuery );
+				$pmpro_level = $wpdb->get_row( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: IDs and code come from the database, not the request.
 
 				//if the discount code doesn't adjust the level, let's just get the straight level
 				if ( empty( $pmpro_level ) ) {
@@ -146,7 +152,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 
 			//calculate and fix start date
 			if(empty($user->membership_level->startdate)) {
-				$startdate = $wpdb->get_var("SELECT modified FROM $wpdb->pmpro_memberships_users WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active' LIMIT 1");
+				$startdate = $wpdb->get_var("SELECT modified FROM $wpdb->pmpro_memberships_users WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active' LIMIT 1"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: IDs and code come from the database, not the request.
 
 				//filter
 				$filtered_startdate = apply_filters( "pmpro_checkout_start_date", $startdate, $user_id, $pmpro_level );
@@ -159,7 +165,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 					echo esc_html( "- Adding startdate " . $startdate . ".\n" );
 				if($run) {
 					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET startdate = '" . esc_sql($startdate) . "' WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active' LIMIT 1";
-					$wpdb->query($sqlQuery);
+					$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: IDs and code come from the database, not the request. Date is esc_sql()'d.
 				}
 			} else {
 				$startdate = date_i18n( "Y-m-d", $user->membership_level->startdate );
@@ -180,7 +186,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 						echo esc_html( "- Adding enddate " . $enddate . ".\n" );
 					if($run) {
 						$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . esc_sql($enddate) . "' WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active' LIMIT 1";
-						$wpdb->query($sqlQuery);
+						$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: IDs and code come from the database, not the request. Date is esc_sql()'d.
 					}
 				}
 			}

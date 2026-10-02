@@ -1,5 +1,12 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Nonce and capability verified in adminpages/membershiplevels.php (check_admin_referer() on pmpro_membershiplevels_nonce) before this file is included.
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+
 global $wpdb;
 
 if(isset($_REQUEST['deleteid']))
@@ -49,7 +56,7 @@ if($ml_id > 0) {
         WHERE id = %d LIMIT 1",
         $ml_id
     );
-    $r3 = $wpdb->query($sqlQuery);
+    $r3 = $wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery is built with $wpdb->prepare() above.
 
     if($r1 !== FALSE && $r2 !== FALSE && $r3 !== FALSE) {
         $page_msg = 3;

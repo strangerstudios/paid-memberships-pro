@@ -3,6 +3,10 @@
  * The Memberships Reports admin page for Paid Memberships Pro
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $pmpro_reports;
 
 /**
@@ -14,8 +18,8 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 <?php
 $report_exists = false;
-if ( ! empty( $_REQUEST[ 'report' ] ) ) {
-	$report = sanitize_text_field( $_REQUEST[ 'report' ] );
+if ( ! empty( $_REQUEST[ 'report' ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only selects which report to show.
+	$report = sanitize_text_field( $_REQUEST[ 'report' ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only selects which report to show.
 	$report_function = 'pmpro_report_' . $report . '_page';
 	$report_exists = function_exists( $report_function ) ? true : false;
 }

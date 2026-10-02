@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Are we on the login page?
  * Checks for WP default, TML, and PMPro login page.
@@ -19,7 +23,7 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 
 	if ( $is_logged_in && empty( $redirect_to ) ) {
 		// Can't use the pmpro_hasMembershipLevel function because it won't be defined yet.
-		$is_member = $wpdb->get_var( "SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user->ID ) . "' LIMIT 1" );
+		$is_member = $wpdb->get_var( "SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user->ID ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries a PMPro custom table, which has no WordPress API or object cache layer.
 		if ( $is_member ) {
 			$redirect_to = pmpro_url( 'account' );
 		} else {
@@ -55,8 +59,8 @@ function pmpro_login_head() {
 
 	if ( ( pmpro_is_login_page() || is_page("login") ) && $login_redirect ) {
 		//redirect registration page to levels page
-		if ( isset ($_REQUEST['action'] ) && $_REQUEST['action'] == "register" ||
-			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled" ) {
+		if ( isset ($_REQUEST['action'] ) && $_REQUEST['action'] == "register" || // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides whether to redirect the registration page to the levels page.
+			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled" ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides whether to redirect the registration page to the levels page.
 
 				// don't redirect if in admin.
 				if ( is_admin() ) {
@@ -84,6 +88,7 @@ add_action('login_init', 'pmpro_login_head');
  * @since 1.7.14
  */
 function pmpro_redirect_to_logged_in() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: redirects an already logged-in user to redirect_to via wp_safe_redirect(); no data is changed.
 	// Fixes Site Health loopback test.
 	
 	if( ( pmpro_is_login_page() || is_page("login") )
@@ -95,6 +100,7 @@ function pmpro_redirect_to_logged_in() {
 		wp_safe_redirect( esc_url_raw( $_REQUEST['redirect_to'] ) );
 		exit;
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 add_action("template_redirect", "pmpro_redirect_to_logged_in", 15);
 add_action("login_init", "pmpro_redirect_to_logged_in", 5);
@@ -293,9 +299,9 @@ function pmpro_login_the_title( $title, $id = NULL ) {
 
 	if ( is_user_logged_in() ) {
 		$title = esc_html__( 'Welcome', 'paid-memberships-pro' );
-	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'reset_pass' ) {
+	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'reset_pass' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only chooses the page title.
 		$title = esc_html__( 'Lost Password', 'paid-memberships-pro' );
-	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'rp' ) {
+	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'rp' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only chooses the page title.
 		$title = esc_html__( 'Reset Password', 'paid-memberships-pro' );
 	}
 
@@ -317,9 +323,9 @@ function pmpro_login_document_title_parts( $titleparts ) {
 
 	if ( is_user_logged_in() ) {
 		$titleparts['title'] = esc_html__( 'Welcome', 'paid-memberships-pro' );
-	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'reset_pass' ) {
+	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'reset_pass' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only chooses the page title.
 		$titleparts['title'] = esc_html__( 'Lost Password', 'paid-memberships-pro' );
-	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'rp' ) {
+	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'rp' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only chooses the page title.
 		$titleparts['title'] = esc_html__( 'Reset Password', 'paid-memberships-pro' );
 	}
 
@@ -338,6 +344,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 		return '';
 	}
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: URL parameters only choose which message and login view to display and prefill the form. Data request confirmation is validated by its confirm key in pmpro_confirmaction_handler().
 	// Set the message return string.
 	$message = '';
 	$msgt = 'pmpro_alert';
@@ -625,6 +632,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				} else {
 					// Already signed in.
 					if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
+						// phpcs:enable WordPress.Security.NonceVerification.Recommended
 						esc_html_e( 'You are already signed in.', 'paid-memberships-pro' );
 					} elseif ( ! empty( $display_if_logged_in ) ) { ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card pmpro_logged_in_welcome_wrap', 'pmpro_logged_in_welcome_wrap' ) ); ?>">
@@ -758,7 +766,7 @@ function pmpro_lost_password_redirect() {
 	}
 
 	// Don't redirect if we're not on the PMPro form.
-	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
+	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Flag check on the public lost password form, which WordPress core also processes without a nonce; it grants nothing a logged-out visitor can't already do.
 		return;
 	}
 	
@@ -804,7 +812,7 @@ function pmpro_reset_password_redirect() {
 	}
 
 	// Get current REQUEST PARAMS and just add it to ours and then redirect to our login_url
-	$redirect_url = add_query_arg( array_map( 'sanitize_text_field', $_REQUEST ), $login_url );
+	$redirect_url = add_query_arg( array_map( 'sanitize_text_field', $_REQUEST ), $login_url ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: passes the request parameters through to the PMPro login page URL.
 
 	wp_redirect( $redirect_url );
 	exit;
@@ -817,6 +825,7 @@ add_action( 'login_form_resetpass', 'pmpro_reset_password_redirect' );
  * @since 2.3
  */
 function pmpro_reset_password_form() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: validates the reset key from the email link and prefills the reset form. The reset itself is authenticated by the key in pmpro_do_password_reset().
 	if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
 
 		// Check if reset key is valid.
@@ -891,6 +900,7 @@ function pmpro_reset_password_form() {
 		</form>
 		<?php
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 
 /**
@@ -954,6 +964,7 @@ function pmpro_do_password_reset() {
 		return;
 	}
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Password reset form (posted to wp-login.php, which has no nonce for it either); the request is authenticated by the emailed reset key via check_password_reset_key() before the password is changed.
 	// Request came from elsewhere, let's bail.
 	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return;
@@ -1017,6 +1028,7 @@ function pmpro_do_password_reset() {
 	} else {
 		esc_html_e( 'Invalid Request', 'paid-memberships-pro' );
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 	exit;
     
@@ -1038,7 +1050,7 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 	}
 
 	// Don't replace the password reset link if it came from elsewhere.
-	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
+	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag check: only decides which login URL goes in the email.
 		return $message;
 	}
 
@@ -1062,7 +1074,7 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
  function pmpro_authenticate_username_password( $user, $username, $password ) {
 
 	// Only work when the PMPro login form is used.
-	if ( empty( $_REQUEST['pmpro_login_form_used'] ) ) {
+	if ( empty( $_REQUEST['pmpro_login_form_used'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag check during login; login forms carry no nonce (same as wp-login.php) and are authenticated by the credentials.
 		return $user;
 	}
 
@@ -1122,7 +1134,7 @@ function pmpro_apply_custom_login_checks( $user, $username, $password ) {
 	// action and login_form_middle filter. Other login flows (XML-RPC, plugins that
 	// call wp_signon() directly or authenticate with their own handlers, e.g.
 	// WooCommerce) are intentionally not affected.
-	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_login' ) ) {
+	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_login' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag check during login; login forms carry no nonce (same as wp-login.php) and are authenticated by the credentials.
 		return $user;
 	}
 
@@ -1157,7 +1169,7 @@ function pmpro_login_failed( $username, $error = null ) {
 
 	$referrer = wp_get_referer();
 
-	$redirect_to = ( ! empty( $_REQUEST['redirect_to'] ) ) ? esc_url_raw( $_REQUEST['redirect_to'] ) : '';
+	$redirect_to = ( ! empty( $_REQUEST['redirect_to'] ) ) ? esc_url_raw( $_REQUEST['redirect_to'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: carries redirect_to back to the login page after a failed login.
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
@@ -1260,6 +1272,7 @@ add_action( 'pmpro_register_redirect', 'pmpro_no_level_page_register_redirect' )
  * Code pulled from wp-login.php.
  */
 function pmpro_confirmaction_handler() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Data request confirmation links come from an email and can't carry a nonce; they are authenticated by the confirm key via wp_validate_user_request_key(), same as wp-login.php.
 	if ( empty( $_REQUEST['action'] ) || $_REQUEST['action'] !== 'confirmaction' ) {
 		return false;
 	}
@@ -1275,6 +1288,7 @@ function pmpro_confirmaction_handler() {
 	$request_id = (int) $_GET['request_id'];
 	$key        = sanitize_text_field( wp_unslash( $_GET['confirm_key'] ) );
 	$result     = wp_validate_user_request_key( $request_id, $key );
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	if ( is_wp_error( $result ) ) {
 		wp_die( esc_html( $result ) );

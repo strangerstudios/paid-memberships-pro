@@ -2,6 +2,10 @@
 /**
  * Step 3 file content. [Memberships]
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Get option for collecting payments
 $collecting_payment = get_option( 'pmpro_wizard_collect_payment' );
 ?>

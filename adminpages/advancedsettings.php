@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_advancedsettings")))
 	{
@@ -191,11 +195,11 @@
 						<option value=""><?php esc_html_e( 'Let Paid Memberships Pro generate the message.', 'paid-memberships-pro' ); ?></option>
 					</select>
 					<p class="description"><?php esc_html_e( 'We recommend that you allow Paid Memberships Pro to generate the message for protected content.', 'paid-memberships-pro' ); ?></p>
-					<div id="pmpro_notice-nonmembertext_type" class="notice notice-warning pmpro-notice inline pmpro-hidden" data-pmpro-depends="<?php echo $generated_message_depends; ?>">
+					<div id="pmpro_notice-nonmembertext_type" class="notice notice-warning pmpro-notice inline pmpro-hidden" data-pmpro-depends="<?php echo $generated_message_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() above. ?>">
 						<p><strong><?php esc_html_e( 'Warning: Saving these settings will permanently delete your custom message. This change is irreversible.', 'paid-memberships-pro' ); ?></strong></p>
 						<p><?php esc_html_e( 'We recommend updating to allow PMPro to generate a smart message for protected content. This message is fully compatible with all of your PMPro Add Ons and includes a link to the checkout or levels page, based on whether the content is protected for a single level or multiple levels.', 'paid-memberships-pro' ); ?></p>
 					</div>
-					<div class="toggle_nonmembertext" data-pmpro-depends="<?php echo $custom_message_depends; ?>">
+					<div class="toggle_nonmembertext" data-pmpro-depends="<?php echo $custom_message_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() above. ?>">
 						<p><label for="nonmembertext"><strong><?php esc_html_e( 'Custom Membership Required Message (Legacy)', 'paid-memberships-pro' ); ?></strong></label></p>
 						<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes( $nonmembertext ) ); ?></textarea>
 						<p class="description"><?php esc_html_e( 'This is a legacy option that will be removed in a future version of PMPro. This message is shown in place of the post content for non-members. Available variables', 'paid-memberships-pro' ); ?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
@@ -278,7 +282,7 @@
 			$hideadslevels_selected = explode( ',', (string) $hideadslevels_selected );
 		}
 		$hideads_level_options = array();
-		foreach ( pmpro_sort_levels_by_order( $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT ) ) as $hideads_level ) {
+		foreach ( pmpro_sort_levels_by_order( $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT ) ) as $hideads_level ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads the PMPro levels custom table, which has no WordPress API or object cache layer.
 			$hideads_level_options[ $hideads_level->id ] = $hideads_level->name;
 		}
 		$other_fields = array(

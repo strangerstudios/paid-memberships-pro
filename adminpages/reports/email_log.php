@@ -9,6 +9,12 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Email Log report reads and deletes rows in the PMPro email log custom table, which has no WordPress API or object cache layer.
+
 function pmpro_report_email_log_register( $pmpro_reports ) {
 	// If email logging is not enabled, do not register the report.
 	if ( ! pmpro_is_email_logging_enabled() ) {
@@ -68,21 +74,21 @@ function pmpro_report_email_log_widget() {
 			<?php
 				// translators: %s is the total number of emails logged in the last 30 days.
 				printf(
-					__( 'Email activity: %s emails logged in the last 30 days.', 'paid-memberships-pro' ),
-					'<strong>' . number_format_i18n( $total_sent + $total_failed ) . '</strong>'
+					esc_html__( 'Email activity: %s emails logged in the last 30 days.', 'paid-memberships-pro' ),
+					'<strong>' . esc_html( number_format_i18n( $total_sent + $total_failed ) ) . '</strong>'
 				);
 
 				if ( ! empty( $email_log_purge_days ) ) {
 					echo ' ';
 					// translators: %s is the number of days after which email log entries are automatically purged.
 					printf(
-						_n(
+						esc_html( _n(
 							'Entries are automatically purged after %s day.',
 							'Entries are automatically purged after %s days.',
 							$email_log_purge_days,
 							'paid-memberships-pro'
-						),
-						'<strong>' . number_format_i18n( $email_log_purge_days ) . '</strong>'
+						) ),
+						'<strong>' . esc_html( number_format_i18n( $email_log_purge_days ) ) . '</strong>'
 					);
 				}
 
@@ -115,7 +121,7 @@ function pmpro_report_email_log_widget() {
 							$status_classes[] = 'pmpro_tag-success';
 							$status_class = implode( ' ', $status_classes );
 							?>
-							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( __( '%s Sent', 'paid-memberships-pro' ), number_format_i18n( $total_sent ) ); ?></span>
+							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( esc_html__( '%s Sent', 'paid-memberships-pro' ), esc_html( number_format_i18n( $total_sent ) ) ); ?></span>
 						<?php } else { ?>
 							<?php echo esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
 						<?php } ?>
@@ -147,7 +153,7 @@ function pmpro_report_email_log_widget() {
 							$status_classes[] = 'pmpro_tag-error';
 							$status_class = implode( ' ', $status_classes );
 							?>
-							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( __( '%s Failed', 'paid-memberships-pro' ), number_format_i18n( $total_failed ) ); ?></span>
+							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( esc_html__( '%s Failed', 'paid-memberships-pro' ), esc_html( number_format_i18n( $total_failed ) ) ); ?></span>
 						<?php } else { ?>
 							<?php echo esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
 						<?php } ?>
@@ -287,9 +293,9 @@ function pmpro_report_email_log_page() {
 	// Get total count
 	$count_query = "SELECT COUNT(*) FROM {$wpdb->pmpro_email_log} WHERE {$where_sql}";
 	if ( ! empty( $where_values ) ) {
-		$count_query = $wpdb->prepare( $count_query, $where_values );
+		$count_query = $wpdb->prepare( $count_query, $where_values ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $where_sql is built only from static clauses with placeholders; values are passed to prepare().
 	}
-	$totalrows = $wpdb->get_var( $count_query );
+	$totalrows = $wpdb->get_var( $count_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above when there are values; otherwise $where_sql is the static '1=1'.
 
 	// Get log entries with pagination
 	$log_query = "SELECT * FROM {$wpdb->pmpro_email_log}
@@ -298,7 +304,7 @@ function pmpro_report_email_log_page() {
 				   LIMIT %d, %d";
 
 	$query_values = array_merge( $where_values, array( $start, $limit ) );
-	$entries = $wpdb->get_results( $wpdb->prepare( $log_query, $query_values ) );
+	$entries = $wpdb->get_results( $wpdb->prepare( $log_query, $query_values ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where_sql is built only from static clauses with placeholders; values are passed to prepare().
 
 	// Get available templates for filter dropdown
 	$templates = $wpdb->get_col( 
@@ -369,7 +375,7 @@ function pmpro_report_email_log_page() {
 			<div class="tablenav top">
 				<div class="tablenav-pages">
 					<span class="displaying-num">
-						<?php printf( esc_html( _n( '%s email', '%s emails', $totalrows, 'paid-memberships-pro' ) ), number_format_i18n( $totalrows ) ); ?>
+						<?php printf( esc_html( _n( '%s email', '%s emails', $totalrows, 'paid-memberships-pro' ) ), esc_html( number_format_i18n( $totalrows ) ) ); ?>
 					</span>
 				</div>
 				<br class="clear" />
@@ -490,7 +496,7 @@ function pmpro_report_email_log_page() {
 
 	<?php
 	// Render the email log modal
-	echo pmpro_render_email_log_modal();
+	echo pmpro_render_email_log_modal(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static modal markup, escaped when built.
 	?>
 
 	<?php

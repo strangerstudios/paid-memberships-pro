@@ -407,7 +407,7 @@ class PMPro_AddOns {
 		$addons           = $this->addons;
 		$addons_timestamp = $this->addons_timestamp;
 		// Check if forcing a pull from the server
-		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check;
+		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag; only forces a refresh of the cached Add On list from the PMPro server.
 
 		// if no addons locally, we need to hit the server
 		if ( empty( $addons ) || $force_check || current_time( 'timestamp' ) > $addons_timestamp + 86400 ) {
@@ -989,6 +989,7 @@ class PMPro_AddOns {
 	 * @since 1.9
 	 */
 	public function check_when_updating_plugins() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only inspects which plugins WordPress core is updating in order to block unlicensed updates. Core verifies its own nonces for the update itself.
 		// if user can't edit plugins, then WP will catch this later
 		if ( ! current_user_can( 'update_plugins' ) ) {
 			return;
@@ -1090,6 +1091,7 @@ class PMPro_AddOns {
 				exit;
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**

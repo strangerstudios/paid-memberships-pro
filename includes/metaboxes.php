@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Require Membership Meta Box
  */
@@ -6,7 +10,7 @@ function pmpro_page_meta() {
 	global $post, $wpdb;
 	$membership_levels = pmpro_getAllLevels( true, true );
 	$membership_levels = pmpro_sort_levels_by_order( $membership_levels );
-	$page_levels = $wpdb->get_col( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post->ID ) . "'" );
+	$page_levels = $wpdb->get_col( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post->ID ) . "'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries a PMPro custom table, which has no WordPress API or object cache layer.
 
 	// Build the selectors for the #memberships list based on level count.
 	$pmpro_memberships_checklist_classes = array( 'list:category', 'categorychecklist', 'form-no-clear');
@@ -38,7 +42,7 @@ function pmpro_page_meta() {
 				<?php
 					echo esc_html( $level->name );
 					//Check which categories are protected for this level
-					$protectedcategories = $wpdb->get_col( "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '" . intval( $level->id ) . "'");
+					$protectedcategories = $wpdb->get_col( "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '" . intval( $level->id ) . "'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries a PMPro custom table, which has no WordPress API or object cache layer.
 					//See if this post is in any of the level's protected categories
 					if( in_category( $protectedcategories, $post->id ) ) {
 						$in_member_cat = true;

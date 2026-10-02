@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -188,8 +192,8 @@
 			);
 
 			foreach ( $settings_to_save as $setting ) {
-				if ( isset( $_REQUEST[ $setting ] ) ) {
-					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
+				if ( isset( $_REQUEST[ $setting ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php (pmpro_paymentsettings_nonce) before save_settings_fields() is called.
+					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php (pmpro_paymentsettings_nonce) before save_settings_fields() is called.
 				}
 			}
 		}
@@ -288,7 +292,7 @@
 
 			//save discount code use
 			if(!empty($discount_code_id))
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");
+				$wpdb->query( $wpdb->prepare( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES(%d, %d, %d, now())", $discount_code_id, $user_id, $morder->id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Inserts into the PMPro discount_codes_uses custom table, which has no WordPress API or object cache layer.
 
 			do_action("pmpro_before_send_to_paypal_standard", $user_id, $morder);
 

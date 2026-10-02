@@ -1,4 +1,8 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Get options.
 $filter_queries = get_option( 'pmpro_filterqueries' );
 $show_excerpts = get_option( 'pmpro_showexcerpts' );
