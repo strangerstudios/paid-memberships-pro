@@ -862,18 +862,10 @@ class PMPro_Field {
 			return false;
 		}
 
-		//create the dir and subdir if needed
-		if(!is_dir($dir_path))
-		{
-			wp_mkdir_p($dir_path);
-		}
-
-		// Add empty index files so that servers with directory listing enabled do not reveal the random folder names.
-		foreach ( array( $upload_dir['basedir'] . "/pmpro-register-helper/", $user_dir_path ) as $index_dir ) {
-			if ( is_dir( $index_dir ) && ! file_exists( $index_dir . 'index.html' ) ) {
-				file_put_contents( $index_dir . 'index.html', '' );
-			}
-		}
+		//create the dir and subdir if needed, with index files in the parent folders so the random folder names are not listed
+		pmpro_create_user_field_upload_dir( $upload_dir['basedir'] . "/pmpro-register-helper/" );
+		pmpro_create_user_field_upload_dir( $user_dir_path );
+		wp_mkdir_p( $dir_path );
 
 		//save file
 		if ( $is_saved_file ) {

@@ -98,14 +98,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 			// Check for a register helper directory in wp-content and create it if needed.
 			$upload_dir = wp_upload_dir();
 			$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
-			if( ! is_dir( $pmprorh_dir ) ) {
-				wp_mkdir_p( $pmprorh_dir );
-			}
-
-			// Add an empty index file so that servers with directory listing enabled do not list pending uploads.
-			if ( is_dir( $pmprorh_dir ) && ! file_exists( $pmprorh_dir . 'index.html' ) ) {
-				file_put_contents( $pmprorh_dir . 'index.html', '' );
-			}
+			pmpro_create_user_field_upload_dir( $pmprorh_dir );
 
 			// Move file.
 			$new_filename = $pmprorh_dir . basename( $file['tmp_name'] ) . '.' . $upload_check['filetype']['ext'];

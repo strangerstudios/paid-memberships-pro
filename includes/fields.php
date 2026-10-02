@@ -896,6 +896,26 @@ add_action( 'edit_user_profile_update', 'pmpro_save_user_fields_in_profile' );
 add_action( 'pmpro_personal_options_update', 'pmpro_save_user_fields_in_profile' );
 
 /**
+ * Create a folder for user field uploads if needed.
+ *
+ * Adds an empty index file so that servers with directory listing enabled do not list the folder's contents.
+ *
+ * @since TBD
+ *
+ * @param string $dir Path to the folder.
+ */
+function pmpro_create_user_field_upload_dir( $dir ) {
+	if ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) {
+		return;
+	}
+
+	$index_file = trailingslashit( $dir ) . 'index.html';
+	if ( ! file_exists( $index_file ) ) {
+		file_put_contents( $index_file, '' );
+	}
+}
+
+/**
  * Delete files uploaded through user fields when a user is deleted.
  *
  * @since TBD
