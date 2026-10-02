@@ -896,6 +896,37 @@ add_action( 'edit_user_profile_update', 'pmpro_save_user_fields_in_profile' );
 add_action( 'pmpro_personal_options_update', 'pmpro_save_user_fields_in_profile' );
 
 /**
+ * Delete files uploaded through user fields when a user is deleted.
+ *
+ * @since TBD
+ *
+ * @param int $user_id The ID of the user being deleted.
+ */
+function pmpro_delete_user_field_files( $user_id ) {
+	// On multisite, delete_user only removes the user from the current site, so wait for wpmu_delete_user.
+	if ( 'delete_user' === current_action() && is_multisite() ) {
+		return;
+	}
+
+	$user = get_userdata( $user_id );
+	if ( empty( $user ) ) {
+		return;
+	}
+
+	// Check all user meta so that files are deleted even if their field is no longer registered.
+	foreach ( get_user_meta( $user_id ) as $meta_values ) {
+		foreach ( $meta_values as $meta_value ) {
+			$meta_value = maybe_unserialize( $meta_value );
+			if ( is_array( $meta_value ) && ! empty( $meta_value['fullpath'] ) ) {
+				PMPro_Field::delete_uploaded_file( $meta_value, $user->user_login );
+			}
+		}
+	}
+}
+add_action( 'delete_user', 'pmpro_delete_user_field_files' );
+add_action( 'wpmu_delete_user', 'pmpro_delete_user_field_files' );
+
+/**
  * Add user fields to confirmation email.
  */
 function pmpro_add_user_fields_to_email( $email ) {

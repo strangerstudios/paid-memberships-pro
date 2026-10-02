@@ -800,10 +800,7 @@ class PMPro_Field {
 					file_exists( $old_file_meta['fullpath'] ) &&
 					$old_file_meta['filename'] ==  $delete_old_file_name
 				) {
-					unlink( $old_file_meta['fullpath'] );
-					if ( ! empty( $old_file_meta['previewpath'] ) ) {
-						unlink( $old_file_meta['previewpath'] );
-					}
+					self::delete_uploaded_file( $old_file_meta, $user->user_login );
 					delete_user_meta( $user->ID, $meta_key );
 				}
 			}
@@ -830,8 +827,12 @@ class PMPro_Field {
 		*/
 		//check for a register helper directory in wp-content
 		$upload_dir = wp_upload_dir();
-		$dir_path = $upload_dir['basedir'] . "/pmpro-register-helper/" . $user->user_login . "/";
-		$dir_url  = $upload_dir['baseurl'] . "/pmpro-register-helper/" . $user->user_login . "/";
+		$user_dir_path = $upload_dir['basedir'] . "/pmpro-register-helper/" . $user->user_login . "/";
+
+		// Store each upload in its own randomly named folder so that file URLs cannot be guessed.
+		$unique_dir = wp_generate_password( 16, false );
+		$dir_path = $user_dir_path . $unique_dir . "/";
+		$dir_url  = $upload_dir['baseurl'] . "/pmpro-register-helper/" . $user->user_login . "/" . $unique_dir . "/";
 
 		//create the dir and subdir if needed
 		if(!is_dir($dir_path))
@@ -839,11 +840,18 @@ class PMPro_Field {
 			wp_mkdir_p($dir_path);
 		}
 
+		// Add empty index files so that servers with directory listing enabled do not reveal the random folder names.
+		foreach ( array( $upload_dir['basedir'] . "/pmpro-register-helper/", $user_dir_path ) as $index_dir ) {
+			if ( ! file_exists( $index_dir . 'index.php' ) ) {
+				file_put_contents( $index_dir . 'index.php', "<?php\n// Silence is golden.\n" );
+			}
+		}
+
 		//if we already have a file for this field, delete it
 		$old_file = get_user_meta($user->ID, $meta_key, true);
 		if(!empty($old_file) && !empty($old_file['fullpath']) && file_exists($old_file['fullpath']))
 		{
-			unlink($old_file['fullpath']);
+			self::delete_uploaded_file( $old_file, $user->user_login );
 		}
 
 		//figure out new filename
@@ -917,6 +925,54 @@ class PMPro_Field {
 
 		//save filename in usermeta
 		update_user_meta($user_id, $meta_key, $file_meta_value_array );
+	}
+
+	/**
+	 * Delete a file uploaded through a file field, along with its preview.
+	 *
+	 * Also removes the file's unique upload folder if it is now empty.
+	 *
+	 * @since TBD
+	 *
+	 * @param array  $file       The file meta array saved for the field.
+	 * @param string $user_login The login of the user who uploaded the file.
+	 */
+	public static function delete_uploaded_file( $file, $user_login ) {
+		if ( ! is_array( $file ) || empty( $file['fullpath'] ) || empty( $user_login ) ) {
+			return;
+		}
+
+		// Only delete files that are inside this user's pmpro-register-helper folder in the uploads directory.
+		$upload_dir = wp_upload_dir();
+		$uploads_path = realpath( $upload_dir['basedir'] );
+		if ( empty( $uploads_path ) ) {
+			return;
+		}
+		$uploads_path = trailingslashit( wp_normalize_path( $uploads_path ) );
+
+		foreach ( array( 'fullpath', 'previewpath' ) as $path_key ) {
+			if ( empty( $file[ $path_key ] ) ) {
+				continue;
+			}
+
+			$path = realpath( $file[ $path_key ] );
+			if ( empty( $path ) || ! is_file( $path ) ) {
+				continue;
+			}
+
+			$path = wp_normalize_path( $path );
+			if ( 0 !== strpos( $path, $uploads_path ) || false === strpos( $path, '/pmpro-register-helper/' . $user_login . '/' ) ) {
+				continue;
+			}
+
+			unlink( $path );
+
+			// Remove the unique upload folder if it is now empty. Files uploaded before unique folders were used sit directly in the user's folder, which is kept.
+			$dir = dirname( $path );
+			if ( $user_login === basename( dirname( $dir ) ) && is_dir( $dir ) && 2 === count( scandir( $dir ) ) ) {
+				rmdir( $dir );
+			}
+		}
 	}
 
 	/**
