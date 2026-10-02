@@ -413,7 +413,9 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		}
 		// Checkout saves the strict sanitized username, but login looks up the non strict
 		// sanitized one. This errors only when those differ, so the typed username can not log in.
-		if ( ! empty( $raw_username ) && ! validate_username( sanitize_user( $raw_username ) ) ) {
+		// Skip when custom code removed the username from the required fields, since that code
+		// usually generates the username and hides the field, so the user could not fix it.
+		if ( isset( $pmpro_required_user_fields['username'] ) && ! empty( $raw_username ) && ! validate_username( sanitize_user( $raw_username ) ) ) {
 			pmpro_setMessage( __( "This username is invalid because it uses illegal characters. Please enter a valid username.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "username";
 		} else {
