@@ -5265,7 +5265,6 @@ function pmpro_check_upload( $file_index ) {
 
 		// If there are allowed file types, check if the file is an allowed file type.
 		// It does not look like the ext property is documented anywhere, but keeping it in case sites are using it.
-		// Extensions are compared case-insensitively since the uploaded file's extension keeps its original case (e.g. PHOTO.JPG).
 		if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( strtolower( (string) $filetype['ext'] ), array_map( 'strtolower', $field->ext ) ) ) {
 			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
 		}
