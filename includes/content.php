@@ -426,18 +426,28 @@ function pmpro_membership_excerpt_filter($content, $skipcheck = false) {
 	return $content;
 }
 
-function pmpro_membership_get_excerpt_filter_start($content, $skipcheck = false) {	
+function pmpro_membership_get_excerpt_filter_start( $content ) {
 	remove_filter('the_content', 'pmpro_membership_content_filter', 5);		
 	return $content;
 }
 
-function pmpro_membership_get_excerpt_filter_end($content, $skipcheck = false) {	
-	add_filter('the_content', 'pmpro_membership_content_filter', 5);		
+function pmpro_membership_get_excerpt_filter_end( $content, $post = null ) {
+	add_filter('the_content', 'pmpro_membership_content_filter', 5);
+
+	// If excerpts are hidden from non-members, don't return the excerpt of a restricted post.
+	// Feeds, embeds, and the Post Excerpt block use get_the_excerpt() without running the_excerpt filters.
+	if ( ! get_option( 'pmpro_showexcerpts' ) && ! pmpro_has_membership_access( empty( $post->ID ) ? NULL : $post->ID ) ) {
+		// Keep the excerpt if an Add On uses the pmpro_membership_content_filter filter to show this content.
+		if ( false === apply_filters( 'pmpro_membership_content_filter', false, $content, false ) ) {
+			return '';
+		}
+	}
+
 	return $content;
 }
 add_filter('the_excerpt', 'pmpro_membership_excerpt_filter', 15);
 add_filter('get_the_excerpt', 'pmpro_membership_get_excerpt_filter_start', 1);
-add_filter('get_the_excerpt', 'pmpro_membership_get_excerpt_filter_end', 100);
+add_filter('get_the_excerpt', 'pmpro_membership_get_excerpt_filter_end', 100, 2);
 
 function pmpro_comments_filter($comments, $post_id = NULL) {
 	global $current_user;

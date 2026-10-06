@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.8.7\n"
+"Project-Id-Version: Paid Memberships Pro 3.8.8\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-25T15:00:13+00:00\n"
+"POT-Creation-Date: 2026-10-06T19:00:04+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -869,7 +869,7 @@ msgstr ""
 #: adminpages/user-fields/field-settings.php:120
 #: adminpages/user-fields/group-settings.php:58
 #: adminpages/user-fields/group-settings.php:67
-#: classes/class-pmpro-field.php:1735
+#: classes/class-pmpro-field.php:1798
 #: classes/gateways/class.pmprogateway_stripe.php:561
 #: classes/gateways/class.pmprogateway_stripe.php:575
 #: classes/gateways/class.pmprogateway_stripe.php:917
@@ -915,7 +915,7 @@ msgstr ""
 #: adminpages/user-fields/field-settings.php:118
 #: adminpages/user-fields/group-settings.php:57
 #: adminpages/user-fields/group-settings.php:65
-#: classes/class-pmpro-field.php:1735
+#: classes/class-pmpro-field.php:1798
 #: classes/gateways/class.pmprogateway_stripe.php:563
 #: classes/gateways/class.pmprogateway_stripe.php:577
 #: classes/gateways/class.pmprogateway_stripe.php:919
@@ -1430,7 +1430,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:394
 #: adminpages/subscriptions/edit-subscription.php:102
 #: adminpages/subscriptions/link-subscription.php:111
-#: classes/class-pmpro-field.php:1239
+#: classes/class-pmpro-field.php:1302
 #: classes/email-templates/class-pmpro-email-template-cancel.php:53
 #: includes/avatars.php:924
 #: includes/avatars.php:1218
@@ -1644,7 +1644,7 @@ msgid "Display Name (Profile/Edit User > Display name publicly as)"
 msgstr ""
 
 #: adminpages/emailtemplates-edit.php:26
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:101
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:115
 #: adminpages/metaboxes/recent-members.php:58
 #: classes/class-pmpro-members-list-table.php:133
 #: classes/class-pmpro-subscription.php:1221
@@ -2965,8 +2965,8 @@ msgstr ""
 #: adminpages/orders/view-order.php:295
 #: adminpages/pagesettings.php:647
 #: adminpages/pagesettings.php:657
-#: classes/class-pmpro-exports.php:1257
 #: classes/class-pmpro-exports.php:1258
+#: classes/class-pmpro-exports.php:1259
 #: classes/gateways/class.pmprogateway_stripe.php:495
 #: classes/gateways/class.pmprogateway_stripe.php:831
 #: includes/profile.php:851
@@ -3278,7 +3278,7 @@ msgid "User Info"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:11
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:201
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:215
 #: adminpages/orders/view-order.php:347
 #: adminpages/subscriptions/view-subscription.php:196
 #: classes/class-pmpro-members-list-table.php:586
@@ -3325,27 +3325,27 @@ msgstr ""
 msgid "New user created."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:82
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:96
 msgid "You do not have permission to create new users."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:88
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:102
 msgid "You do not have permission to edit this user. User information is displayed below as read-only."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:103
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:117
 msgid "Username (required)"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:110
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:124
 msgid "Usernames cannot be changed."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:115
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:129
 msgid "Email (required)"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:119
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:133
 #: classes/class-pmpro-members-list-table.php:135
 #: includes/profile.php:1115
 #: pages/billing.php:187
@@ -3353,7 +3353,7 @@ msgstr ""
 msgid "First Name"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:123
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:137
 #: classes/class-pmpro-members-list-table.php:136
 #: includes/profile.php:1116
 #: pages/billing.php:191
@@ -3361,53 +3361,53 @@ msgstr ""
 msgid "Last Name"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:133
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:147
 #: classes/gateways/class.pmprogateway_payflowpro.php:140
 #: pages/checkout.php:272
 msgid "Password"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:134
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:148
 msgid "(required)"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:139
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:153
 msgid "Generate password"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:146
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:160
 msgid "Hide password"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:148
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:162
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:96
 msgid "Hide"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:154
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:168
 #: pages/checkout.php:287
 msgid "Confirm Password"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:158
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:172
 msgid "Confirm use of weak password"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:163
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:177
 msgid "Send User Notification"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:166
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:180
 msgid "Send the new user an email about their account."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:167
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:181
 msgid "This will send the user an email with their username and a link to reset their password. For security reasons, this email does not include the unencrypted password."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:177
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:191
 #: includes/avatars.php:855
 #: includes/avatars.php:880
 #: includes/avatars.php:1146
@@ -3415,63 +3415,64 @@ msgstr ""
 msgid "Profile Picture"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:186
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:200
 msgid "Member Notes"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:189
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:203
 msgid "Member notes are private and only visible to other users with membership management capabilities."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:196
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:210
 msgid "Role"
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:201
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:215
 #, php-format
 msgid "Roles can be changed from the %s page."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:251
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:266
 msgid "Please enter a username."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:256
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:271
 msgid "Please enter a password."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:261
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:276
 msgid "Passwords may not contain the character \"\\\"."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:269
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:284
+#: preheaders/checkout.php:419
 msgid "This username is invalid because it uses illegal characters. Please enter a valid username."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:274
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:289
 #, php-format
 msgid "A user with username %1$s already exists. <a href=\"%2$s\">Click here to edit this member</a>."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:284
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:299
 msgid "Sorry, that username is not allowed."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:289
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:304
 #: includes/profile.php:1053
 msgid "Please enter an email address."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:291
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:306
 msgid "The email address is not correct."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:296
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:311
 #, php-format
 msgid "A user with email address %1$s already exists. <a href=\"%2$s\">Click here to edit this member</a>."
 msgstr ""
 
-#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:305
+#: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:320
 msgid "There were errors in the form."
 msgstr ""
 
@@ -3594,7 +3595,7 @@ msgstr ""
 #: adminpages/user-fields/field-settings.php:58
 #: classes/class-pmpro-discount-code-list-table.php:429
 #: classes/class-pmpro-discount-code-list-table.php:431
-#: classes/class-pmpro-field.php:1233
+#: classes/class-pmpro-field.php:1296
 #: classes/class-pmpro-orders-list-table.php:941
 #: includes/avatars.php:922
 #: includes/avatars.php:1216
@@ -6902,17 +6903,17 @@ msgstr ""
 msgid "No export found."
 msgstr ""
 
-#: classes/class-pmpro-exports.php:1001
+#: classes/class-pmpro-exports.php:1002
 msgid "Unable to write to export file."
 msgstr ""
 
 #: classes/class-pmpro-field-group.php:80
-#: includes/fields.php:1013
+#: includes/fields.php:1175
 msgid "More Information"
 msgstr ""
 
 #: classes/class-pmpro-field-group.php:487
-#: classes/class-pmpro-field.php:1600
+#: classes/class-pmpro-field.php:1663
 #: includes/login.php:671
 #: includes/login.php:816
 #: includes/login.php:828
@@ -6960,24 +6961,25 @@ msgstr ""
 msgid "- choose one -"
 msgstr ""
 
-#: classes/class-pmpro-field.php:864
+#: classes/class-pmpro-field.php:860
 msgid "Error uploading file. Too many files with the same name."
 msgstr ""
 
-#: classes/class-pmpro-field.php:880
+#: classes/class-pmpro-field.php:869
+#: classes/class-pmpro-field.php:892
 #, php-format
 msgid "Sorry, the file %s was not uploaded."
 msgstr ""
 
-#: classes/class-pmpro-field.php:1072
+#: classes/class-pmpro-field.php:1135
 msgid "Choose one or more."
 msgstr ""
 
 #. translators: %s: file source (linked text or plain text)
 #. translators: %s: file name or source
 #. translators: %s: file source
-#: classes/class-pmpro-field.php:1221
-#: classes/class-pmpro-field.php:1223
+#: classes/class-pmpro-field.php:1284
+#: classes/class-pmpro-field.php:1286
 #: includes/avatars.php:895
 #: includes/avatars.php:909
 #: includes/avatars.php:1192
@@ -6986,17 +6988,17 @@ msgstr ""
 msgid "Current File: %s"
 msgstr ""
 
-#: classes/class-pmpro-field.php:1238
+#: classes/class-pmpro-field.php:1301
 #: includes/avatars.php:923
 #: includes/avatars.php:1217
 msgid "Replace"
 msgstr ""
 
-#: classes/class-pmpro-field.php:1768
+#: classes/class-pmpro-field.php:1831
 msgid "No file uploaded."
 msgstr ""
 
-#: classes/class-pmpro-field.php:1770
+#: classes/class-pmpro-field.php:1833
 msgid "Invalid file data."
 msgstr ""
 
@@ -11161,12 +11163,12 @@ msgid "Paid Memberships Pro Pages"
 msgstr ""
 
 #. translators: %s is a comma-separated list of order meta keys.
-#: includes/checkout.php:199
+#: includes/checkout.php:201
 #, php-format
 msgid "Warning: Could not load the checkout data for this order (%s). Information submitted during checkout may not have been saved."
 msgstr ""
 
-#: includes/checkout.php:267
+#: includes/checkout.php:269
 msgid "Discount codes should be set on the $pmpro_level object."
 msgstr ""
 
@@ -12754,7 +12756,7 @@ msgstr ""
 msgid "Unable to add/update user fields for this member"
 msgstr ""
 
-#: includes/fields.php:913
+#: includes/fields.php:1075
 msgid "Extra Fields:"
 msgstr ""
 
@@ -13125,30 +13127,30 @@ msgid "Invalid field input."
 msgstr ""
 
 #. translators: %s: list of allowed file types
-#: includes/functions.php:5283
+#: includes/functions.php:5284
 #, php-format
 msgid "Invalid file type. Please try uploading the file type(s): %s"
 msgstr ""
 
 #. translators: 1: field label, 2: maximum file size in MB
-#: includes/functions.php:5291
+#: includes/functions.php:5292
 #, php-format
 msgid "File size is too large for %s. Please upload files smaller than %dMB."
 msgstr ""
 
-#: includes/functions.php:5305
+#: includes/functions.php:5306
 msgid "Invalid file submission."
 msgstr ""
 
-#: includes/functions.php:5480
+#: includes/functions.php:5481
 msgid "Order not found."
 msgstr ""
 
-#: includes/functions.php:5485
+#: includes/functions.php:5486
 msgid "Order is not a token order."
 msgstr ""
 
-#: includes/functions.php:5490
+#: includes/functions.php:5491
 msgid "Order gateway not found."
 msgstr ""
 
@@ -14302,13 +14304,13 @@ msgid "Braintree"
 msgstr ""
 
 #: preheaders/billing.php:117
-#: preheaders/checkout.php:337
+#: preheaders/checkout.php:339
 msgid "Nonce security check failed."
 msgstr ""
 
 #: preheaders/billing.php:222
-#: preheaders/checkout.php:395
-#: preheaders/checkout.php:554
+#: preheaders/checkout.php:397
+#: preheaders/checkout.php:565
 msgid "Please complete all required fields."
 msgstr ""
 
@@ -14346,7 +14348,7 @@ msgid "Your recurring subscription has been cancelled. Your active membership wi
 msgstr ""
 
 #: preheaders/checkout.php:62
-#: preheaders/checkout.php:562
+#: preheaders/checkout.php:573
 msgid "Invalid gateway."
 msgstr ""
 
@@ -14358,75 +14360,75 @@ msgstr ""
 msgid "Set Up Your Account"
 msgstr ""
 
-#: preheaders/checkout.php:343
+#: preheaders/checkout.php:345
 msgid "There are JavaScript errors on the page. Please contact the webmaster."
 msgstr ""
 
-#: preheaders/checkout.php:348
-#: preheaders/checkout.php:565
+#: preheaders/checkout.php:350
+#: preheaders/checkout.php:576
 msgid "Are you a spammer?"
 msgstr ""
 
-#: preheaders/checkout.php:366
-#: preheaders/checkout.php:450
+#: preheaders/checkout.php:368
+#: preheaders/checkout.php:461
 msgid "Checkout checks failed."
 msgstr ""
 
-#: preheaders/checkout.php:398
+#: preheaders/checkout.php:400
 msgid "Your passwords do not match. Please try again."
 msgstr ""
 
-#: preheaders/checkout.php:403
+#: preheaders/checkout.php:405
 msgid "Your email addresses do not match. Please try again."
 msgstr ""
 
-#: preheaders/checkout.php:408
-#: preheaders/checkout.php:557
+#: preheaders/checkout.php:410
+#: preheaders/checkout.php:568
 msgid "The email address entered is in an invalid format. Please try again."
 msgstr ""
 
-#: preheaders/checkout.php:414
+#: preheaders/checkout.php:424
 msgid "That username is already taken. Please try another."
 msgstr ""
 
-#: preheaders/checkout.php:420
+#: preheaders/checkout.php:431
 msgid "That email address is already in use. Please log in, or use a different email address."
 msgstr ""
 
-#: preheaders/checkout.php:467
+#: preheaders/checkout.php:478
 msgid "User creation checks failed."
 msgstr ""
 
-#: preheaders/checkout.php:508
+#: preheaders/checkout.php:519
 msgid "There was an error setting up your account. Please contact us."
 msgstr ""
 
-#: preheaders/checkout.php:582
+#: preheaders/checkout.php:593
 msgid "Order creation checks failed."
 msgstr ""
 
-#: preheaders/checkout.php:631
+#: preheaders/checkout.php:642
 msgid "Payment accepted."
 msgstr ""
 
-#: preheaders/checkout.php:649
+#: preheaders/checkout.php:660
 msgid "Unknown error generating account. Please contact us to set up your membership."
 msgstr ""
 
-#: preheaders/checkout.php:691
+#: preheaders/checkout.php:702
 msgid "IMPORTANT: Something went wrong while processing your checkout. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:694
+#: preheaders/checkout.php:705
 msgid "IMPORTANT: Something went wrong while processing your checkout. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:702
+#: preheaders/checkout.php:713
 #, php-format
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr ""
 
-#: preheaders/checkout.php:704
+#: preheaders/checkout.php:715
 msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr ""
 

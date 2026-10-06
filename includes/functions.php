@@ -5312,7 +5312,7 @@ function pmpro_check_upload( $file_index ) {
 
 		// If there are allowed file types, check if the file is an allowed file type.
 		// It does not look like the ext property is documented anywhere, but keeping it in case sites are using it.
-		if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
+		if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( strtolower( (string) $filetype['ext'] ), array_map( 'strtolower', $field->ext ) ) ) {
 			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
 		}
 
@@ -5325,7 +5325,8 @@ function pmpro_check_upload( $file_index ) {
 		}, $allowed_mime_types );
 
 		// Check the file type against the allowed types. If empty allowed mimes, assume any file upload is okay.
-		if ( ! empty( $allowed_mime_types ) && ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
+		// Compare case-insensitively so that PHOTO.JPG matches "jpg" and photo.jpg matches "JPG".
+		if ( ! empty( $allowed_mime_types ) && ! in_array( strtolower( (string) $filetype['ext'] ), array_map( 'strtolower', $allowed_mime_types ) ) ) {
 			/* translators: %s: list of allowed file types */
 			return new WP_Error( 'pmpro_upload_file_type_error', sprintf( esc_html__( 'Invalid file type. Please try uploading the file type(s): %s', 'paid-memberships-pro' ), implode( ',' ,$allowed_mime_types ) ) );
 		}

@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.8.7
+Stable tag: 3.8.8
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,20 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.8.8 - 2026-10-06 =
+* SECURITY: Files uploaded through user fields are now stored in uniquely named folders, and are deleted when the user is deleted. #3847 (@dparker1005, @GrayOM)
+* SECURITY: Fixed restricted post excerpts showing in RSS feeds, embeds, and the Post Excerpt block when "Show Excerpts to Non-Members" is off. #3853 (@dparker1005, @Feldspar-AI-Agent)
+* SECURITY: The member edit screen's User Info panel now requires permission to edit the specific user being edited, and only accepts a password when creating a new user. #3835 (@dparker1005)
+* SECURITY: User fields can no longer save to the user meta key that stores roles and capabilities. #3848 (@dparker1005)
+* ENHANCEMENT: Pending checkout uploads are now deleted when their order is deleted. #3847 (@dparker1005)
+* BUG FIX: Fixed a fatal error when changing membership levels while WP Fusion Lite is active but not connected to a CRM. #3834 (@andrewlimaza)
+* BUG FIX: Checkout now stops with an error when the chosen username could not be used to log in, instead of silently saving a different username. #3837 (@faisalahammad)
+* BUG FIX: Fixed the file field Delete button showing to all users when `allow_delete` was set to `admins`. #3847 (@dparker1005)
+* BUG FIX: Fixed user field file uploads being rejected when the file extension's case did not match the field's allowed file types. #3850 (@dparker1005)
+* BUG FIX: Fixed a PHP warning and a missing file extension on temporary upload files for checkouts that are completed later, such as Stripe Checkout and PayPal Express. #3851 (@dparker1005)
+* BUG FIX: Fixed export downloads failing when a plugin filters `random_password` to add special characters to generated passwords. #3849 (@dparker1005)
+* BUG FIX: Stripe webhooks no longer try to update a subscription's application fee on sites using API keys, which logged failed requests in Stripe. #3852 (@flintfromthebasement)
+
 = 3.8.7 - 2026-09-25 =
 * SECURITY: Fixed a REST API authorization bypass where route capability checks were case-sensitive while WordPress routes are not. #3823 (@andrewlimaza, @kta1kri)
 * SECURITY: PayPal Express, Website Payments Pro, Payflow Pro, and PayPal Standard API requests now verify PayPal's SSL certificate. #3830 (@dparker1005, @kta1kri)

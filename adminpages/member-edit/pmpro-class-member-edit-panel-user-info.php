@@ -37,11 +37,25 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			}
 		}
 
-		// If user cannot edit users, empty the submit text and title link.
-		if ( ! current_user_can( 'edit_users' ) ) {
+		// If user cannot edit users, or cannot edit this specific user, empty the submit text and title link.
+		if ( ! $this->current_user_can_edit( $user ) ) {
 			$this->submit_text = '';
 			$this->title_link = '';
 		}
+	}
+
+	/**
+	 * Check whether the current user can create a new user or edit the given user in this panel.
+	 *
+	 * edit_users is always required, since WordPress lets every user edit_user themselves.
+	 *
+	 * @since 3.8.8
+	 *
+	 * @param WP_User $user The user being edited, or a blank user when creating a new user.
+	 * @return bool
+	 */
+	protected function current_user_can_edit( $user ) {
+		return current_user_can( 'edit_users' ) && ( empty( $user->ID ) || current_user_can( 'edit_user', $user->ID ) );
 	}
 
 	/**
@@ -71,8 +85,8 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			wp_enqueue_script( 'user-profile' );
 		}
 
-		// If the user doesn't have the edit_users capability, make the fields read-only.
-		$disable_fields = ! current_user_can( 'edit_users' ) ? 'disabled' : '';
+		// If the current user can't edit users, or can't edit this specific user, make the fields read-only.
+		$disable_fields = ! $this->current_user_can_edit( $user ) ? 'disabled' : '';
 
 		// Show a message if the user doesn't have permission to edit this user.
 		if ( ! empty( $disable_fields ) ) {
@@ -215,21 +229,22 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	 * Save panel data and redirect if we are creating a new user.
 	 */
 	public function save() {
-		// If the current user can't edit users, bail.
-		if ( ! current_user_can( 'edit_users' ) ) {
-			return;
-		}
-
 		// Get the user we are editing or set up a new blank user.
 		$user = self::get_user();
 		$update = $user->ID ? true : false;
+
+		// If the current user can't edit users, or can't edit this specific user, bail.
+		if ( ! $this->current_user_can_edit( $user ) ) {
+			return;
+		}
 
 		if ( ! $update && isset( $_POST['user_login'] ) ) {
 			$user->user_login = sanitize_user( wp_unslash( $_POST['user_login'] ), true );
 		}
 
+		// The password field is only shown when creating a new user.
 		$pass1 = '';
-		if ( isset( $_POST['pass1'] ) ) {
+		if ( ! $update && isset( $_POST['pass1'] ) ) {
 			$pass1 = trim( $_POST['pass1'] );
 		}
 
