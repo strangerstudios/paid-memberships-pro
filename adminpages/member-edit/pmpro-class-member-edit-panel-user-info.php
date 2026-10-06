@@ -49,7 +49,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	 *
 	 * edit_users is always required, since WordPress lets every user edit_user themselves.
 	 *
-	 * @since TBD
+	 * @since 3.8.8
 	 *
 	 * @param WP_User $user The user being edited, or a blank user when creating a new user.
 	 * @return bool

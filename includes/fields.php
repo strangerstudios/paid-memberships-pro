@@ -900,7 +900,7 @@ add_action( 'pmpro_personal_options_update', 'pmpro_save_user_fields_in_profile'
  *
  * Adds an empty index file so that servers with directory listing enabled do not list the folder's contents.
  *
- * @since TBD
+ * @since 3.8.8
  *
  * @param string $dir Path to the folder.
  */
@@ -921,7 +921,7 @@ function pmpro_create_user_field_upload_dir( $dir ) {
  * On multisite this is the main site's uploads folder, which also contains each subsite's
  * sites/N/ folder, so that a user deleted from the network can have files removed on every site.
  *
- * @since TBD
+ * @since 3.8.8
  *
  * @return string Normalized path with a trailing slash, or an empty string if it can't be found.
  */
@@ -944,7 +944,7 @@ function pmpro_get_user_field_uploads_root() {
  * Files from completed checkouts have already been moved to the user's folder, so this only
  * removes files that are still waiting in the checkout tmp folder.
  *
- * @since TBD
+ * @since 3.8.8
  *
  * @param int $order_id The ID of the order being deleted.
  */
@@ -984,7 +984,7 @@ add_action( 'pmpro_delete_order', 'pmpro_delete_order_checkout_files', 5 );
 /**
  * Delete files uploaded through user fields when a user is deleted.
  *
- * @since TBD
+ * @since 3.8.8
  *
  * @param int $user_id The ID of the user being deleted.
  */

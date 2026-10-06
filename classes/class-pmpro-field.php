@@ -938,7 +938,7 @@ class PMPro_Field {
 	 *
 	 * Also removes the file's unique upload folder if it is now empty.
 	 *
-	 * @since TBD
+	 * @since 3.8.8
 	 *
 	 * @param array  $file       The file meta array saved for the field.
 	 * @param string $user_login Optional. Only delete the file if it is in this user's folder.
