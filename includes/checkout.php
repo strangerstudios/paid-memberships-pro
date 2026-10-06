@@ -102,8 +102,12 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 				wp_mkdir_p( $pmprorh_dir );
 			}
 
-			// Move file.
-			$new_filename = $pmprorh_dir . basename( $file['tmp_name'] ) . '.' . $upload_check['filetype']['ext'];
+			// Move file. Keep the file's extension on the temp file if WordPress can determine it.
+			$filetype     = wp_check_filetype_and_ext( sanitize_text_field( $file['tmp_name'] ), sanitize_text_field( $file['name'] ) );
+			$new_filename = $pmprorh_dir . basename( $file['tmp_name'] );
+			if ( ! empty( $filetype['ext'] ) ) {
+				$new_filename .= '.' . $filetype['ext'];
+			}
 			move_uploaded_file($file['tmp_name'], $new_filename);
 
 			// Update location of file.
