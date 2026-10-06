@@ -460,6 +460,16 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.84' );
 	}
 
+	/**
+	 * Version 3.8.8
+	 * Add empty index files to user field upload folders created before 3.8.8.
+	 */
+	if ( $pmpro_db_version < 3.88 ) {
+		require_once( PMPRO_DIR . '/includes/updates/upgrade_3_8_8.php' );
+		pmpro_upgrade_3_8_8();
+		update_option( 'pmpro_db_version', '3.88' );
+	}
+
 }
 
 function pmpro_db_delta() {
@@ -820,3 +830,15 @@ function pmpro_stripe_recover_checkout_transaction_ids_task() {
 	pmpro_stripe_recover_checkout_transaction_ids();
 }
 add_action( 'pmpro_stripe_recover_checkout_transaction_ids', 'pmpro_stripe_recover_checkout_transaction_ids_task' );
+
+/**
+ * Add empty index files to user field upload folders via Action Scheduler.
+ *
+ * Scheduled by the v3.8.8 upgrade. Registered here so that the callback is available
+ * on every request (including WP Cron) while tasks may still be queued.
+ */
+function pmpro_add_user_field_upload_index_files_task() {
+	require_once PMPRO_DIR . '/includes/updates/upgrade_3_8_8.php';
+	pmpro_add_user_field_upload_index_files();
+}
+add_action( 'pmpro_add_user_field_upload_index_files', 'pmpro_add_user_field_upload_index_files_task' );
