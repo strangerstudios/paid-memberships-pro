@@ -1024,11 +1024,10 @@ class PMPro_Exports {
 	 * Sanitize members export filters.
 	 *
 	 * @param array $args Raw filter args from request.
-	 * @return array Sanitized filters array with keys 'l' and 's'.
+	 * @return array Sanitized filters array with keys 'l', 'status', 'excludeactive', and 's'.
 	 */
 	protected function sanitize_members_filters( $args ) {
-		$filters      = array();
-		$filters['l'] = isset( $args['l'] ) ? sanitize_text_field( $args['l'] ) : '';
+		$filters      = pmpro_sanitize_memberships_list_filters( $args );
 		$filters['s'] = isset( $args['s'] ) ? trim( sanitize_text_field( $args['s'] ) ) : '';
 		return $filters;
 	}
@@ -1158,7 +1157,7 @@ class PMPro_Exports {
 					'next_payment_date',
 					'joined',
 					'startdate',
-					( isset( $export['filters']['l'] ) && 'oldmembers' === $export['filters']['l'] ) ? 'ended' : 'expires',
+					( isset( $export['filters']['status'] ) && 'ended' === $export['filters']['status'] ) ? 'ended' : 'expires',
 				)
 			);
 			if ( ! empty( $extra_columns ) ) {
@@ -1282,25 +1281,9 @@ class PMPro_Exports {
 	 * @return string SQL fragment beginning with " AND ".
 	 */
 	protected function build_members_filter_sql_fragment( $filters ) {
-		global $wpdb;
-		$l      = isset( $filters['l'] ) ? $filters['l'] : '';
-		$filter = '';
-		if ( 'oldmembers' === $l ) {
-			$filter = " AND mu.status <> 'active' ";
-			$filter .= " AND NOT EXISTS ( SELECT 1 FROM {$wpdb->pmpro_memberships_users} mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active' ) ";
-		}
-		if ( 'expired' === $l || 'cancelled' === $l ) {
-			$statuses = ( 'expired' === $l ) ? array( 'expired' ) : array( 'cancelled', 'admin_cancelled' );
-			$filter   = " AND mu.status IN ('" . implode( "','", array_map( 'esc_sql', $statuses ) ) . "') ";
-			$filter  .= " AND NOT EXISTS ( SELECT 1 FROM {$wpdb->pmpro_memberships_users} mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active' ) ";
-		}
-		if ( empty( $filter ) && is_numeric( $l ) ) {
-			$filter = " AND mu.status = 'active' AND mu.membership_id = " . (int) $l . ' ';
-		}
-		if ( empty( $filter ) ) {
-			$filter = " AND mu.status = 'active' ";
-		}
-		return $filter;
+		// Filters passed to older export URLs may not have been normalized yet.
+		$filters = pmpro_sanitize_memberships_list_filters( $filters );
+		return pmpro_memberships_list_filter_sql( $filters );
 	}
 
 	/**
