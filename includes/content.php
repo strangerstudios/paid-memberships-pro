@@ -437,7 +437,10 @@ function pmpro_membership_get_excerpt_filter_end( $content, $post = null ) {
 	// If excerpts are hidden from non-members, don't return the excerpt of a restricted post.
 	// Feeds, embeds, and the Post Excerpt block use get_the_excerpt() without running the_excerpt filters.
 	if ( ! get_option( 'pmpro_showexcerpts' ) && ! pmpro_has_membership_access( empty( $post->ID ) ? NULL : $post->ID ) ) {
-		return '';
+		// Keep the excerpt if an Add On uses the pmpro_membership_content_filter filter to show this content.
+		if ( false === apply_filters( 'pmpro_membership_content_filter', false, $content, false ) ) {
+			return '';
+		}
 	}
 
 	return $content;
