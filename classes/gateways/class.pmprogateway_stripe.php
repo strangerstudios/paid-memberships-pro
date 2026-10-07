@@ -1532,7 +1532,7 @@ class PMProGateway_stripe extends PMProGateway {
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
 		) {
 			$error = __( 'Invalid response from the Stripe Connect server.', 'paid-memberships-pro' );
-		} elseif ( 'live' === $_REQUEST['pmpro_stripe_connected_environment'] && self::is_different_connected_account( 'live', $_REQUEST['pmpro_stripe_user_id'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		} elseif ( 'live' === $_REQUEST['pmpro_stripe_connected_environment'] && self::is_different_connected_account( 'live', $_REQUEST['pmpro_stripe_user_id'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Compared against the stored account ID, which is saved exactly as returned by the Connect server (below).
 			// Reconnecting live mode with a different account would orphan every existing customer and subscription.
 			// Redirect right away so the access token in the return URL doesn't linger in the address bar or server logs.
 			wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_error' => 'different_account' ), admin_url( 'admin.php' ) ) );
@@ -1694,7 +1694,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Only show on PMPro admin pages except for the payment settings page, which shows the results inline.
-		$page = isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) ? $_REQUEST['page'] : '';
+		$page = isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: the admin page slug only decides whether to show a notice.
 		if ( false === strpos( $page, 'pmpro' ) || 'pmpro-paymentsettings' === $page ) {
 			return;
 		}

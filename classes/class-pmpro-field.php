@@ -730,6 +730,14 @@ class PMPro_Field {
 			return;
 		}
 
+		// Never save to the meta key that stores a user's roles and capabilities, including other sites' keys on multisite.
+		// Matched case-insensitively because meta key lookups in the database are usually case-insensitive.
+		global $wpdb;
+		$capabilities_key_pattern = '/^' . preg_quote( $wpdb->base_prefix, '/' ) . '(\d+_)?capabilities$/i';
+		if ( preg_match( $capabilities_key_pattern, trim( $this->meta_key ) ) || preg_match( $capabilities_key_pattern, trim( str_replace( 'pmprorhprefix_', '', $this->name ) ) ) ) {
+			return;
+		}
+
 		// Check if we have a save function.
 		if ( ! empty( $this->save_function ) ) {
 			// Call the save function.
@@ -790,8 +798,8 @@ class PMPro_Field {
 		$user = get_userdata($user_id);
 		$meta_key = str_replace("pmprorhprefix_", "", $name);
 
-		// deleting?
-		if( isset( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
+		// deleting? If a new file was uploaded too, the old file is deleted below once the new file is saved.
+		if( isset( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) && ( empty( $_FILES[ $name ] ) || empty( $_FILES[ $name ]['name'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
 			$delete_old_file_name = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
 			if ( ! empty( $delete_old_file_name ) ) {
 				// Use what's saved in user meta so we don't delete any old file.
@@ -799,13 +807,9 @@ class PMPro_Field {
 				if ( 
 					! empty( $old_file_meta ) && 
 					! empty( $old_file_meta['fullpath'] ) && 
-					file_exists( $old_file_meta['fullpath'] ) &&
 					$old_file_meta['filename'] ==  $delete_old_file_name
 				) {
-					unlink( $old_file_meta['fullpath'] );
-					if ( ! empty( $old_file_meta['previewpath'] ) ) {
-						unlink( $old_file_meta['previewpath'] );
-					}
+					self::delete_uploaded_file( $old_file_meta );
 					delete_user_meta( $user->ID, $meta_key );
 				}
 			}
@@ -832,21 +836,13 @@ class PMPro_Field {
 		*/
 		//check for a register helper directory in wp-content
 		$upload_dir = wp_upload_dir();
-		$dir_path = $upload_dir['basedir'] . "/pmpro-register-helper/" . $user->user_login . "/";
-		$dir_url  = $upload_dir['baseurl'] . "/pmpro-register-helper/" . $user->user_login . "/";
+		$user_dir_path = $upload_dir['basedir'] . "/pmpro-register-helper/" . $user->user_login . "/";
 
-		//create the dir and subdir if needed
-		if(!is_dir($dir_path))
-		{
-			wp_mkdir_p($dir_path);
-		}
-
-		//if we already have a file for this field, delete it
-		$old_file = get_user_meta($user->ID, $meta_key, true);
-		if(!empty($old_file) && !empty($old_file['fullpath']) && file_exists($old_file['fullpath']))
-		{
-			unlink($old_file['fullpath']);
-		}
+		// Store each upload in its own randomly named folder so that file URLs cannot be guessed.
+		// random_bytes() is used instead of wp_generate_password() because the random_password filter could add characters that are not safe in a URL.
+		$unique_dir = bin2hex( random_bytes( 8 ) );
+		$dir_path = $user_dir_path . $unique_dir . "/";
+		$dir_url  = $upload_dir['baseurl'] . "/pmpro-register-helper/" . $user->user_login . "/" . $unique_dir . "/";
 
 		//figure out new filename
 		$filename = sanitize_file_name( $file['name'] );
@@ -869,22 +865,40 @@ class PMPro_Field {
 		$file_path = $dir_path . $filename;
 		$file_url = $dir_url . $filename;
 
+		// Make sure file was uploaded. Files saved to the uploads directory during checkout are moved below.
+		$is_saved_file = strpos($file['tmp_name'], $upload_dir['basedir']) !== false;
+		if ( ! $is_saved_file && ! is_uploaded_file( $file['tmp_name'] ) ) {
+			pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
+			return false;
+		}
+
+		//create the dir and subdir if needed, with index files in the parent folders so the random folder names are not listed
+		pmpro_create_user_field_upload_dir( $upload_dir['basedir'] . "/pmpro-register-helper/" );
+		pmpro_create_user_field_upload_dir( $user_dir_path );
+		wp_mkdir_p( $dir_path );
+
 		//save file
-		if(strpos($file['tmp_name'], $upload_dir['basedir']) !== false)
-		{
+		if ( $is_saved_file ) {
 			//was uploaded and saved to $_SESSION
 			rename($file['tmp_name'], $file_path);
-		}
-		else
-		{
-			// Make sure file was uploaded.
-			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-				pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
-				return false;
-			}
-
+		} else {
 			//it was just uploaded
 			move_uploaded_file($file['tmp_name'], $file_path);
+		}
+
+		// If the file could not be saved, remove the empty folder and keep the old file.
+		if ( ! file_exists( $file_path ) ) {
+			if ( is_dir( $dir_path ) ) {
+				rmdir( $dir_path );
+			}
+			pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
+			return false;
+		}
+
+		//if we already have a file for this field, delete it now that the new file is saved
+		$old_file = get_user_meta($user->ID, $meta_key, true);
+		if ( ! empty( $old_file ) ) {
+			self::delete_uploaded_file( $old_file );
 		}
 
 		// If file is an image, save a preview thumbnail.
@@ -919,6 +933,55 @@ class PMPro_Field {
 
 		//save filename in usermeta
 		update_user_meta($user_id, $meta_key, $file_meta_value_array );
+	}
+
+	/**
+	 * Delete a file uploaded through a file field, along with its preview.
+	 *
+	 * Also removes the file's unique upload folder if it is now empty.
+	 *
+	 * @since 3.8.8
+	 *
+	 * @param array  $file       The file meta array saved for the field.
+	 * @param string $user_login Optional. Only delete the file if it is in this user's folder.
+	 *                           Pass this when the file meta may not have been saved by a file field.
+	 */
+	public static function delete_uploaded_file( $file, $user_login = '' ) {
+		if ( ! is_array( $file ) || empty( $file['fullpath'] ) ) {
+			return;
+		}
+
+		// Only delete files that are inside a user's pmpro-register-helper folder in the uploads directory.
+		$user_folder_pattern = empty( $user_login ) ? '[^/]+' : preg_quote( $user_login, '#' );
+		$uploads_path = pmpro_get_user_field_uploads_root();
+		if ( empty( $uploads_path ) ) {
+			return;
+		}
+
+		foreach ( array( 'fullpath', 'previewpath' ) as $path_key ) {
+			if ( empty( $file[ $path_key ] ) ) {
+				continue;
+			}
+
+			$path = realpath( $file[ $path_key ] );
+			if ( empty( $path ) || ! is_file( $path ) ) {
+				continue;
+			}
+
+			// The sites/N/ segment matches subsite uploads, which are inside the main site's uploads folder on multisite.
+			$path = wp_normalize_path( $path );
+			if ( 0 !== strpos( $path, $uploads_path ) || ! preg_match( '#^(sites/\d+/)?pmpro-register-helper/' . $user_folder_pattern . '/#', substr( $path, strlen( $uploads_path ) ) ) ) {
+				continue;
+			}
+
+			unlink( $path );
+
+			// Remove the unique upload folder if it is now empty. Files uploaded before unique folders were used sit directly in the user's folder, which is kept.
+			$dir = dirname( $path );
+			if ( 'pmpro-register-helper' === basename( dirname( dirname( $dir ) ) ) && is_dir( $dir ) && 2 === count( scandir( $dir ) ) ) {
+				rmdir( $dir );
+			}
+		}
 	}
 
 	/**
@@ -1230,7 +1293,7 @@ class PMPro_Field {
 				if ( ( ! empty( $this->allow_delete ) ) && ! empty( $file['fullurl'] ) ) {
 					// Check whether the current user can delete the uploaded file based on the field attribute 'allow_delete'.
 					if ( $this->allow_delete === true || 
-						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options' ) )
+						( ( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' ) && current_user_can( 'manage_options' ) )
 					) {
 						$r_beginning .= '<button class="button is-destructive pmpro_btn pmpro_btn-delete" id="pmpro_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . esc_html__( 'Delete', 'paid-memberships-pro' ) . '</button>';
 					}

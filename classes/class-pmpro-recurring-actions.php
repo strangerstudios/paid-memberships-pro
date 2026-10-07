@@ -559,6 +559,9 @@ class PMPro_Recurring_Actions {
 	 */
 	public function delete_temp_files() {
 		$upload_dir  = wp_upload_dir();
+		// Do not point this at pmpro-register-helper/tmp/. Delayed checkouts (e.g. Stripe async payments, PayPal Express)
+		// read their uploaded files from there after this one hour limit. Those files are deleted when their order is
+		// deleted instead. See pmpro_delete_order_checkout_files().
 		$pmprorh_dir = trailingslashit( $upload_dir['basedir'] ) . 'paid-memberships-pro/tmp/';
 
 		if ( ! file_exists( $pmprorh_dir ) || ! is_dir( $pmprorh_dir ) ) {
