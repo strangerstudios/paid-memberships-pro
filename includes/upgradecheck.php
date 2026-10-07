@@ -2,6 +2,11 @@
 /*
 	These functions below handle DB upgrades, etc
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_checkForUpgrades() {
 	global $wpdb;
 	$pmpro_db_version = get_option("pmpro_db_version");
@@ -9,7 +14,7 @@ function pmpro_checkForUpgrades() {
 	//if we can't find the DB tables, reset db_version to 0
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
-	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");
+	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Upgrade check; must hit the database directly to see whether PMPro tables exist.
 	if(!$table_exists)
 		$pmpro_db_version = 0;
 
@@ -79,7 +84,7 @@ function pmpro_checkForUpgrades() {
 	{
 		//check if we have an id column in the memberships_users table
 		$wpdb->pmpro_memberships_users = $wpdb->prefix . 'pmpro_memberships_users';
-		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1");
+		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Upgrade check against a PMPro custom table schema; must not be cached.
 		if($wpdb->last_error == "Unknown column 'id' in 'field list'")
 		{
 			//redo 1.5 fix

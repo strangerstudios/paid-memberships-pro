@@ -5,6 +5,12 @@
  * @since  2.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Deprecated functions query PMPro custom tables and options directly; there is no WordPress API or object cache layer for them.
+
 /**
  * Check for deprecated filters.
  */
@@ -60,7 +66,7 @@ function pmpro_getClassForField( $field ) {
  */
 function pmpro_admin_init_redirect_old_menu_items() {	
 	if ( is_admin()
-		&& ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro_license_settings'
+		&& ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro_license_settings' // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only redirects an old menu URL to its new location.
 		&& basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'options-general.php' ) {
 		wp_safe_redirect( admin_url( 'admin.php?page=pmpro-license' ) );
 		exit;
@@ -283,7 +289,8 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 						$curgroup
 						)
 					);
-					// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+					// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Deprecated functions query PMPro custom tables and options directly; there is no WordPress API or object cache layer for them.
 					if(count($order)>0) {
 						$mylevels = array();
 						foreach($order as $level_id) {
@@ -934,7 +941,7 @@ function pmpro_check_for_deprecated_add_ons() {
 	// If any deprecated add ons are active, show warning.
 	if ( ! empty( $deprecated_active ) && is_array( $deprecated_active ) ) {
 		// Only show on certain pages.
-		if ( ! isset( $_REQUEST['page'] ) || strpos( sanitize_text_field( $_REQUEST['page'] ), 'pmpro' ) === false  ) {
+		if ( ! isset( $_REQUEST['page'] ) || strpos( sanitize_text_field( $_REQUEST['page'] ), 'pmpro' ) === false  ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only decides whether to show an admin notice.
 			return;
 		}
 		?>
@@ -1126,7 +1133,7 @@ function pmpro_was_loading_frontend_css_notice() {
 	global $current_user;
 
 	// If we are not on a PMPro admin page, don't show the notice.
-	if ( ! isset( $_REQUEST['page'] ) || ( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ) {
+	if ( ! isset( $_REQUEST['page'] ) || ( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only decides whether to show an admin notice.
 		return;
 	}
 

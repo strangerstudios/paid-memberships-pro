@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -240,7 +244,7 @@
 			if(isset($morder->membership_level) && !empty($morder->membership_level->code_id))
 			{
 				$discount_code_id = (int)$morder->membership_level->code_id;
-				$wpdb->query( $wpdb->prepare( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES(%d, %d, %d, now())", $discount_code_id, $user_id, $morder->id ) );
+				$wpdb->query( $wpdb->prepare( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES(%d, %d, %d, now())", $discount_code_id, $user_id, $morder->id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Writes to a PMPro custom table with no WordPress API.
 			}
 			do_action("pmpro_before_send_to_twocheckout", $user_id, $morder);
 

@@ -14,6 +14,12 @@
 	2. Loop through and check the Stripe API for a subscription for that user which has a plan with id equal to the order code.
     3. Set the subscription transaction id
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade routine against PMPro custom tables, which have no WordPress API or object cache layer.
+
 function pmpro_upgrade_2_4() {
     global $wpdb;
     $sqlQuery = "SELECT * 

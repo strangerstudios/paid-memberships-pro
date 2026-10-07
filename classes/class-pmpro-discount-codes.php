@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- CRUD class for PMPro's discount code custom tables, which have no WordPress API or object cache layer.
+
 class PMPro_Discount_Code {
 
 	/**

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Include the Wizard Save Steps File in the admin init hook when using the Wizard.
  * This is to save and handle data and redirects.

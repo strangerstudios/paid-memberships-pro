@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro memberships_categories custom table, which has no WordPress API or object cache layer.
+
 /**
  * Get the taxonomies whose terms can be restricted by membership level.
  *

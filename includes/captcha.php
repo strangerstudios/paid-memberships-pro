@@ -7,6 +7,10 @@
  * the code that is common to all captcha services.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Get the registered captcha services.
  *
@@ -138,12 +142,12 @@ add_action( 'template_redirect', 'pmpro_captcha_nocache_login_page' );
 function pmpro_is_captcha_failed_request() {
 	$error_params = array( 'action', 'errors', 'error' );
 	foreach ( $error_params as $param ) {
-		if ( empty( $_REQUEST[ $param ] ) ) {
+		if ( empty( $_REQUEST[ $param ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check for a login error code to display a message.
 			continue;
 		}
 
 		// The errors param may contain a comma-separated list of error codes.
-		$codes = explode( ',', sanitize_text_field( $_REQUEST[ $param ] ) );
+		$codes = explode( ',', sanitize_text_field( $_REQUEST[ $param ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check for a login error code to display a message.
 		if ( in_array( 'pmpro_captcha_failed', $codes, true ) ) {
 			return true;
 		}

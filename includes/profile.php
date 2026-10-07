@@ -1,4 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+
 /**
  * Show an overview of active membership information linked to the single member dashboard.
  *
@@ -524,6 +530,7 @@ function pmpro_cancel_previous_subscriptions_false()
  * @deprecated 3.0 Use the single member dashboard.
  */
 function pmpro_membership_level_profile_fields_update() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Deprecated and no longer hooked by core. It was built for the personal_options_update/edit_user_profile_update hooks, which only fire after WordPress core verifies the update-user_{$user_id} nonce.
 	global $wpdb, $current_user;
 
 	_deprecated_function( __FUNCTION__, '3.0' );
@@ -660,6 +667,7 @@ function pmpro_membership_level_profile_fields_update() {
 			$myemail->sendAdminChangeAdminEmail( $edited_user );
 		}
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 
 /**

@@ -17,6 +17,11 @@
 	https://www.paidmembershipspro.com/documentation/
 
 ****************************************************************/
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads PMPro custom tables (levels, discount codes), which have no WordPress API or object cache layer.
 
 /*
 	Checks if PMPro settings are complete or if there are any errors.

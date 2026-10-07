@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //include pmprogateway
 require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -363,8 +367,8 @@ class PMProGateway_authorizenet extends PMProGateway
 			// guide at: http://developer.authorize.net
 		);
 
-		if ( ! empty( $_REQUEST['CVV']  ) ) {
-			$post_values["x_card_code"] = sanitize_text_field( $_REQUEST['CVV'] );
+		if ( ! empty( $_REQUEST['CVV']  ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
+			$post_values["x_card_code"] = sanitize_text_field( $_REQUEST['CVV'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
 		}
 
 		$post_string = $this->build_post_string( $post_values, 'authorize' );
@@ -541,8 +545,8 @@ class PMProGateway_authorizenet extends PMProGateway
 		);
 
 
-		if ( ! empty( $_REQUEST['CVV']  ) ) {
-			$post_values["x_card_code"] = sanitize_text_field( $_REQUEST['CVV'] );
+		if ( ! empty( $_REQUEST['CVV']  ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
+			$post_values["x_card_code"] = sanitize_text_field( $_REQUEST['CVV'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
 		}
 
 		$post_string = $this->build_post_string( $post_values, 'charge' );
@@ -646,7 +650,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		$cardNumber = $order->accountnumber;
 		$expirationDate = $order->expirationmonth . '-' . $order->expirationyear;
-		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] );
+		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
 
 		$nameparts = pnp_split_full_name( $order->billing->name );
 		$firstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
@@ -780,7 +784,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		$cardNumber = $order->accountnumber;
 		$expirationDate = $order->expirationmonth . '-' . $order->expirationyear;
-		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] );
+		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during billing update; pmpro_billing_nonce is verified in preheaders/billing.php.
 
 		$nameparts = pnp_split_full_name( $order->billing->name );
 		$firstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];

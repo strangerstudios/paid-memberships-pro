@@ -1,13 +1,19 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $current_user, $pmpro_invoice;
 
 //get invoice from DB
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; selects which invoice to display.
 if ( ! empty( $_REQUEST['invoice'] ) ) {
 	$invoice_code = sanitize_text_field( $_REQUEST['invoice'] );
 } else {
 	$invoice_code = NULL;
 }
+// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 // Redirect non-user to the login page; pass the Invoice page as the redirect_to query arg.
 if ( ! is_user_logged_in() ) {

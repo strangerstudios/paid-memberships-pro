@@ -11,6 +11,8 @@
  * @since 3.7
  */
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Export queries read PMPro custom tables and user data in batches; there is no WordPress API or object cache layer for these.
+
 class PMPro_Exports {
 	/**
 	 * Singleton instance.

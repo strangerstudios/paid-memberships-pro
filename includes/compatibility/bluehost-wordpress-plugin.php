@@ -2,6 +2,9 @@
 /**
  * Compatibility for the Bluehost WordPress plugin.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * When a user is logged in, the BlueHost plugin will check if their password is

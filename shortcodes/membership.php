@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
 	Shortcode to hide/show content based on membership level
 */
@@ -59,7 +63,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 		else
 			$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $current_user->ID ) . "' ORDER BY id LIMIT 1";
 
-		$startdate = $wpdb->get_var($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Level IDs are cast with intval and the current user ID goes through esc_sql() inside quotes; table name comes from $wpdb.
+		$startdate = $wpdb->get_var($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Level IDs are cast with intval and the current user ID goes through esc_sql() inside quotes; table name comes from $wpdb. Queries a PMPro custom table, which has no WordPress API or object cache layer.
 
 		//adjust start date to 12AM
 		$startdate = strtotime(date_i18n("Y-m-d", $startdate));

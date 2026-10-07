@@ -1,6 +1,10 @@
 <?php
 
 // File used to setup default email templates data.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $pmpro_email_templates_defaults;
 
 $check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : esc_html__( 'Check', 'paid-memberships-pro' );

@@ -2,6 +2,13 @@
 /*
 	Functions to detect member content and protect it.
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries join PMPro custom tables with core tables, which have no WordPress API or object cache layer.
+
 function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_membership_levels = false)
 {
 	global $post, $wpdb, $current_user;

@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_advancedsettings")))
 	{
@@ -278,7 +282,7 @@
 			$hideadslevels_selected = explode( ',', (string) $hideadslevels_selected );
 		}
 		$hideads_level_options = array();
-		foreach ( pmpro_sort_levels_by_order( $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT ) ) as $hideads_level ) {
+		foreach ( pmpro_sort_levels_by_order( $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT ) ) as $hideads_level ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads the PMPro levels custom table, which has no WordPress API or object cache layer.
 			$hideads_level_options[ $hideads_level->id ] = $hideads_level->name;
 		}
 		$other_fields = array(

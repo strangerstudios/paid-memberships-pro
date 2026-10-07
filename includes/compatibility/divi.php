@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMProDivi {
 
 	/**
@@ -40,7 +44,7 @@ class PMProDivi {
 		//      in a `divi/shortcode-module` fallback block which bootstraps the full D4 shortcode
 		//      engine and fires et_pb_module_content. Without these hooks that legacy content
 		//      would lose its membership restriction silently.
-		if ( empty( $_GET['page'] ) || 'et_divi_role_editor' !== $_GET['page'] ) {
+		if ( empty( $_GET['page'] ) || 'et_divi_role_editor' !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only decides whether to register the builder hooks on this screen.
 			// UI settings hooks are only useful in Divi 4 mode.
 			if ( ! $is_d5 ) {
 				add_filter( 'et_builder_get_parent_modules', array( __CLASS__, 'toggle' ) );

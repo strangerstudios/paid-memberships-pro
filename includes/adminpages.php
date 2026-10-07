@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Get array of PMPro Capabilities
  * Used below to figure out which page to have the main Membership menu link to.
@@ -157,10 +161,10 @@ function pmpro_parent_file( $parent_file ) {
 		'pmpro-member' => 'pmpro-memberslist',
 	);
 	
-	if( isset( $_REQUEST['page']) && isset( $pmpro_settings_tabs[ $_REQUEST['page'] ] ) ) {
+	if( isset( $_REQUEST['page']) && isset( $pmpro_settings_tabs[ $_REQUEST['page'] ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only used to decide which admin menu item to highlight.
 		$parent_file = 'pmpro-dashboard';
 		$plugin_page = 'pmpro-dashboard';
-		$submenu_file = $pmpro_settings_tabs[ $_REQUEST['page'] ];
+		$submenu_file = $pmpro_settings_tabs[ $_REQUEST['page'] ]; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only used to decide which admin menu item to highlight.
 	}
 	
 	return $parent_file;
@@ -172,7 +176,7 @@ add_filter( 'parent_file', 'pmpro_parent_file' );
  */
 function pmpro_admin_title( $admin_title, $title ) {
 	// Only filter on the Edit Member page.
-	if ( isset( $_REQUEST['page']) && $_REQUEST['page'] === 'pmpro-member' ) {
+	if ( isset( $_REQUEST['page']) && $_REQUEST['page'] === 'pmpro-member' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only used to filter the admin page title.
 		$user = PMPro_Member_Edit_Panel::get_user();
 		if ( empty( $user->ID ) ) {
 			$title = __( 'Add Member', 'paid-memberships-pro' );
@@ -364,6 +368,7 @@ add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000 );
  * @return void
  */
 function pmpro_admin_init_redirect_single_item_edit() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only checks whether the requested item exists and redirects to the list screen if not.
 	// Set to the page we are on or empty string.
 	$pmpro_admin_page = isset( $_REQUEST['page'] ) ? sanitize_text_field( $_REQUEST['page'] ) : '';
 
@@ -431,6 +436,7 @@ function pmpro_admin_init_redirect_single_item_edit() {
 			exit;
 		}
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 add_action( 'admin_init', 'pmpro_admin_init_redirect_single_item_edit' );
 

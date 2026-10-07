@@ -4,6 +4,13 @@
 	* Fixing old Authorize.net orders with empty status.
 	* Fixing old $0 Stripe orders.	
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time upgrade query against a PMPro custom table; there is no WordPress API or object cache layer for it.
+
 function pmpro_upgrade_1_8_8() {
 	global $wpdb;
 	

@@ -114,7 +114,7 @@ class PMPro_Action_Scheduler {
 	 */
 	public static function show_outdated_notice() {
 		// Only show on PMPro admin pages.
-		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current admin page to decide whether to show a notice.
 			return;
 		}
 
@@ -694,7 +694,7 @@ class PMPro_Action_Scheduler {
 	 */
 	public function show_async_requests_paused_notice() {
 		// If this is not the action-scheduler page in the admin area, bail.
-		if ( ! is_admin() || empty( $_REQUEST['page'] ) || 'action-scheduler' !== $_REQUEST['page'] ) {
+		if ( ! is_admin() || empty( $_REQUEST['page'] ) || 'action-scheduler' !== $_REQUEST['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current admin page to decide whether to show a notice.
 			return;
 		}
 
@@ -863,7 +863,7 @@ class PMPro_Action_Scheduler {
 			$full_table_name    = $wpdb->prefix . $table;
 			$escaped_table_name = $wpdb->esc_like( $full_table_name );
 
-			$table_exists = $wpdb->get_var(
+			$table_exists = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the Action Scheduler table schema; there is no WordPress API for this and the result must not be cached.
 				$wpdb->prepare(
 					'SHOW TABLES LIKE %s',
 					$escaped_table_name
@@ -879,7 +879,7 @@ class PMPro_Action_Scheduler {
 		$actions_table         = $wpdb->prefix . 'actionscheduler_actions';
 		$escaped_actions_table = $wpdb->esc_like( $actions_table );
 
-		$actions_table_exists = $wpdb->get_var(
+		$actions_table_exists = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the Action Scheduler table schema; there is no WordPress API for this and the result must not be cached.
 			$wpdb->prepare(
 				'SHOW TABLES LIKE %s',
 				$escaped_actions_table
@@ -887,7 +887,7 @@ class PMPro_Action_Scheduler {
 		);
 
 		if ( $actions_table_exists === $actions_table ) {
-			$priority_column = $wpdb->get_results( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is built from $wpdb->prefix and a static string.
+			$priority_column = $wpdb->get_results( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- table name is built from $wpdb->prefix and a static string. Schema check; no WordPress API and the result must not be cached.
 				$wpdb->prepare(
 					"SHOW COLUMNS FROM `{$actions_table}` LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name is built from $wpdb->prefix and a static string.
 					'priority'
