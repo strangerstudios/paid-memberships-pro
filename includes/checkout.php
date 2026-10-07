@@ -102,12 +102,14 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 			// Check for a register helper directory in wp-content and create it if needed.
 			$upload_dir = wp_upload_dir();
 			$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
-			if( ! is_dir( $pmprorh_dir ) ) {
-				wp_mkdir_p( $pmprorh_dir );
-			}
+			pmpro_create_user_field_upload_dir( $pmprorh_dir );
 
-			// Move file.
-			$new_filename = $pmprorh_dir . basename( $file['tmp_name'] ) . '.' . $upload_check['filetype']['ext'];
+			// Move file. Keep the file's extension on the temp file if WordPress can determine it.
+			$filetype     = wp_check_filetype_and_ext( sanitize_text_field( $file['tmp_name'] ), sanitize_text_field( $file['name'] ) );
+			$new_filename = $pmprorh_dir . basename( $file['tmp_name'] );
+			if ( ! empty( $filetype['ext'] ) ) {
+				$new_filename .= '.' . $filetype['ext'];
+			}
 			move_uploaded_file($file['tmp_name'], $new_filename);
 
 			// Update location of file.
