@@ -407,7 +407,7 @@ class PMPro_AddOns {
 		$addons           = $this->addons;
 		$addons_timestamp = $this->addons_timestamp;
 		// Check if forcing a pull from the server
-		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag; only forces a refresh of the cached Add On list from the PMPro server.
+		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Not a read-only flag: it forces a remote fetch that rewrites the cached pmpro_addons and pmpro_addons_timestamp options. A forged link can only trigger that cache refresh, which is harmless.
 
 		// if no addons locally, we need to hit the server
 		if ( empty( $addons ) || $force_check || current_time( 'timestamp' ) > $addons_timestamp + 86400 ) {

@@ -3,7 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
@@ -50,6 +49,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @since 3.0
 	 */
 	public static function hook_screen_options() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 		// If we're viewing a single order, bail.
 		if ( ! empty( $_REQUEST['id'] ) ) {
 			return;
@@ -83,6 +83,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			3
 		);
 		set_screen_options();
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -277,6 +278,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @return Array|integer if $count parameter = true
 	 */
 	private function sql_table_data( $count = false, $limit = 15 ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 
 		global $wpdb;
 		$now = current_time( 'timestamp' );
@@ -528,6 +530,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			}            
 			return $order_data;
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -539,6 +542,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @param string $which 'top' or 'bottom'.
 	 */
 	function extra_tablenav( $which ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 
 		if ( $which !== 'top' ) {
 			return;
@@ -738,6 +742,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		});
 		</script>
 		<?php
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -824,6 +829,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_order_code( $item ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 		?>
 		<strong><a title="<?php echo esc_attr( sprintf( __( 'View order # %s', 'paid-memberships-pro' ), $item->code ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $item->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
 		<div class="row-actions">
@@ -1076,6 +1082,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			?>
 		</div>
 		<?php
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**

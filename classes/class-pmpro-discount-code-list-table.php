@@ -4,7 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- List table queries against PMPro custom tables, which have no WordPress API or object cache layer.
-// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request vars are only used for list table search, sorting, pagination and building row action links.
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -241,6 +240,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 * @return Array|integer if $count parameter = true
 	 */
 	private function sql_table_data( $count = false ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request vars are only used for list table search, sorting, pagination and building row action links.
 
 		global $wpdb;
 
@@ -300,6 +300,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		}
 
 		return $sql_table_data;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -372,6 +373,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 * @return mixed
 	 */
 	public function column_discount_code( $item ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request vars are only used for list table search, sorting, pagination and building row action links.
 
 		?>
 		<strong><a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $item->id ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->id ), admin_url('admin.php' ) ) ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
@@ -488,6 +490,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		?>
 		</div>
 		<?php
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
