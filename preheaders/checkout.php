@@ -206,7 +206,7 @@ if ( isset( $_REQUEST['bphone'] ) ) {
 } else {
 	$bphone = "";
 }
-if ( isset ( $_REQUEST['bemail'] ) ) {
+if ( isset( $_REQUEST['bemail'] ) && is_string( $_REQUEST['bemail'] ) ) {
 	$bemail = stripslashes( sanitize_email( $_REQUEST['bemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bemail = $current_user->user_email;
@@ -215,7 +215,7 @@ if ( isset ( $_REQUEST['bemail'] ) ) {
 }
 if ( isset( $_REQUEST['bconfirmemail_copy'] ) ) {
 	$bconfirmemail = $bemail;
-} elseif ( isset( $_REQUEST['bconfirmemail'] ) ) {
+} elseif ( isset( $_REQUEST['bconfirmemail'] ) && is_string( $_REQUEST['bconfirmemail'] ) ) {
 	$bconfirmemail = stripslashes( sanitize_email( $_REQUEST['bconfirmemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bconfirmemail = $current_user->user_email;
@@ -265,14 +265,14 @@ if ( isset( $_REQUEST['username'] ) ) {
 
 // Note: We can't sanitize the passwords. They get hashed when saved.
 // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-if ( isset( $_REQUEST['password'] ) ) {
+if ( isset( $_REQUEST['password'] ) && is_string( $_REQUEST['password'] ) ) {
 	$password = $_REQUEST['password'];
 } else {
 	$password = "";
 }
 if ( isset( $_REQUEST['password2_copy'] ) ) {
 	$password2 = $password;
-} elseif ( isset( $_REQUEST['password2'] ) ) {
+} elseif ( isset( $_REQUEST['password2'] ) && is_string( $_REQUEST['password2'] ) ) {
 	$password2 = $_REQUEST['password2'];
 } else {
 	$password2 = "";
