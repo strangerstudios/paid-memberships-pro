@@ -203,7 +203,12 @@ function pmpro_email_templates_save_template_data() {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
+	global $pmpro_email_templates_defaults;
+
 	$template = isset( $_REQUEST['template'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ) : '';
+	if ( ! isset( $pmpro_email_templates_defaults[ $template ] ) ) {
+		die( esc_html__( 'Invalid email template.', 'paid-memberships-pro' ) );
+	}
 	$subject = isset( $_REQUEST['subject'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) ) : '';
 	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ?? '' ), 'email' );	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Email template HTML; sanitized by pmpro_kses().
 	$to = isset( $_REQUEST['to'] ) ? sanitize_text_field( trim( wp_unslash( $_REQUEST['to'] ), ", \t\n\r\0\x0B" ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by sanitize_text_field(); trim() only strips separator characters first.
@@ -240,6 +245,9 @@ function pmpro_email_templates_reset_template_data() {
 	global $pmpro_email_templates_defaults;
 
 	$template = isset( $_REQUEST['template'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ) : '';
+	if ( ! isset( $pmpro_email_templates_defaults[ $template ] ) ) {
+		die( esc_html__( 'Invalid email template.', 'paid-memberships-pro' ) );
+	}
 
 	delete_option('pmpro_email_' . $template . '_subject');
 	delete_option('pmpro_email_' . $template . '_body');
@@ -273,7 +281,12 @@ function pmpro_email_templates_disable_template() {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
+	global $pmpro_email_templates_defaults;
+
 	$template = isset( $_REQUEST['template'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ) : '';
+	if ( ! isset( $pmpro_email_templates_defaults[ $template ] ) ) {
+		die( esc_html__( 'Invalid email template.', 'paid-memberships-pro' ) );
+	}
 	$disabled = isset( $_REQUEST['disabled'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['disabled'] ) ) : '';
 	$response['result'] = update_option('pmpro_email_' . $template . '_disabled', $disabled );
 	$response['status'] = $disabled;
