@@ -11,6 +11,7 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 }
 
 // Process form submissions.
+$nonceokay = false;
 $action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : false;
 if ( ! empty( $action ) && ( empty( sanitize_key( $_REQUEST['pmpro_orders_nonce'] ?? '' ) ) || ! check_admin_referer( $action, 'pmpro_orders_nonce' ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This is the nonce check itself: the nonce value is read here and verified by check_admin_referer().
 	$page_msg = -1;
