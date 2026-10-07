@@ -186,8 +186,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$columns = apply_filters( 'pmpro_manage_memberslist_columns', $columns );
 		}
 
-		return $columns;
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return $columns;
 	}
 
 	/**
@@ -562,8 +562,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search terms go through esc_sql() inside quotes, IDs are cast to int or come from the DB, and orderby/order/limit are whitelisted or integers.
 		}
 
-		return $sql_table_data;
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return $sql_table_data;
 	}
 
 	/**
@@ -868,8 +868,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			return date_i18n( get_option( 'date_format' ), $item['enddate'] );
 		}
 
-		return pmpro_get_membership_expiration_text( $item['membership_id'], $item['ID'] );
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return pmpro_get_membership_expiration_text( $item['membership_id'], $item['ID'] );
 	}
 
 	/**

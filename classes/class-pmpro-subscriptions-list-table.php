@@ -176,8 +176,8 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		}
 
 
-		return $columns;
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return $columns;
 	}
 
 	/**

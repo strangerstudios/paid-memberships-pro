@@ -299,8 +299,8 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$sql_table_data = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term is esc_sql()'d inside quotes, orderby is whitelisted, order is hard-coded, and LIMIT values are integers.
 		}
 
-		return $sql_table_data;
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return $sql_table_data;
 	}
 
 	/**
