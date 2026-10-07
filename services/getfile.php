@@ -74,7 +74,7 @@
 		
 		//look the file up in the db				
 		$sqlQuery = "SELECT post_parent FROM $wpdb->posts WHERE ID = (SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wp_attached_file' AND meta_value = '" . esc_sql($filename_small) . "' LIMIT 1) LIMIT 1";		
-		$file_post_parent = $wpdb->get_var($sqlQuery);
+		$file_post_parent = $wpdb->get_var($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $filename_small is escaped with esc_sql() inside quotes in $sqlQuery.
 		
 		//has access?
 		if($file_post_parent)

@@ -512,15 +512,15 @@ class PMPro_Subscription {
 
 		// Maybe prepare the query.
 		if ( $prepared ) {
-			$sql_query = $wpdb->prepare( $sql_query, $prepared );
+			$sql_query = $wpdb->prepare( $sql_query, $prepared ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query built from static SQL, the $wpdb table name, placeholders, and an orderby validated against a strict character whitelist above.
 		}
 
 		// If we're returning a count, return the count.
 		if ( $return_count ) {
-			return (int) $wpdb->get_var( $sql_query );
+			return (int) $wpdb->get_var( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from static SQL, the $wpdb table name, placeholders passed through $wpdb->prepare() above, and an orderby validated against a strict character whitelist.
 		}
 
-		$subscription_ids = $wpdb->get_col( $sql_query );
+		$subscription_ids = $wpdb->get_col( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from static SQL, the $wpdb table name, placeholders passed through $wpdb->prepare() above, and an orderby validated against a strict character whitelist.
 
 		if ( empty( $subscription_ids ) ) {
 			return [];
@@ -979,10 +979,10 @@ class PMPro_Subscription {
 
 		// Maybe prepare the query.
 		if ( $prepared ) {
-			$sql_query = $wpdb->prepare( $sql_query, $prepared );
+			$sql_query = $wpdb->prepare( $sql_query, $prepared ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query built from static SQL, the $wpdb table name, placeholders, and an orderby validated against a strict character whitelist above.
 		}
 
-		$order_ids = $wpdb->get_col( $sql_query );
+		$order_ids = $wpdb->get_col( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from static SQL, the $wpdb table name, placeholders passed through $wpdb->prepare() above, and an orderby validated against a strict character whitelist.
 
 		if ( empty( $order_ids ) ) {
 			return [];

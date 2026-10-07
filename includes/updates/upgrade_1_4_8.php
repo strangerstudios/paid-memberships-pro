@@ -13,7 +13,7 @@ function pmpro_upgrade_1_4_8()
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` ADD  `billing_country` VARCHAR( 128 ) NOT NULL AFTER  `billing_zip`
 	";
-	$wpdb->query($sqlQuery);
+	$wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- One-time upgrade query; only the $wpdb table name is interpolated.
 
 	update_option("pmpro_db_version", "1.48");
 	return 1.48;

@@ -165,11 +165,11 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 		} elseif ( is_array( $this->cancelled_level_ids ) ) {
 			$email_template_variables['membership_id'] = $this->cancelled_level_ids[0]; // Pass just the first as the level id.
 			$email_template_variables['level_group_id'] = pmpro_get_group_id_for_level( $this->cancelled_level_ids[0] ) ?: 0;
-			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode( "','", $this->cancelled_level_ids ) . "')" ) );
+			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode( "','", array_map( 'intval', $this->cancelled_level_ids ) ) . "')" ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Level IDs are cast to int.
 		} else {
 			$email_template_variables['membership_id'] = $this->cancelled_level_ids;
 			$email_template_variables['level_group_id'] = pmpro_get_group_id_for_level( $this->cancelled_level_ids ) ?: 0;
-			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $this->cancelled_level_ids . "'" ) );
+			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . (int) $this->cancelled_level_ids . "'" ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Level IDs are cast to int.
 		}
 
 		$startdate = $this->get_start_and_end_date( 'startdate' );
@@ -208,13 +208,15 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 			$old_level_id = $this->cancelled_level_ids[0];
 		}
 
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $end_or_start_date is only ever the literal startdate or enddate, and the user and level IDs are cast to int.
 		return $wpdb->get_var(
 			"SELECT UNIX_TIMESTAMP(CONVERT_TZ(" . $end_or_start_date .", '+00:00', @@global.time_zone)) as " . $end_or_start_date . " 
 			 FROM $wpdb->pmpro_memberships_users 
-			 WHERE user_id = '" . $this->user->ID . "' 
-			 	AND membership_id = '" . $old_level_id . "' 
+			 WHERE user_id = '" . (int) $this->user->ID . "' 
+			 	AND membership_id = '" . (int) $old_level_id . "' 
 				AND status IN('inactive', 'cancelled', 'admin_cancelled') 
 			ORDER BY id DESC" );
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	}
 
 	/**

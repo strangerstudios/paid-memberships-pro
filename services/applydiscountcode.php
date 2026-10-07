@@ -72,7 +72,7 @@
 	// ... and then get prices for the remaining levels.
 	if ( ! empty( $levels_not_discounted ) ) {
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_map( 'intval', $levels_not_discounted ) ) . ")";
-		$code_levels = array_merge( $code_levels, $wpdb->get_results($sqlQuery) );
+		$code_levels = array_merge( $code_levels, $wpdb->get_results($sqlQuery) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Level IDs are cast with intval and the table name comes from $wpdb.
 	}
 
 	//filter adjustments to the level

@@ -49,7 +49,7 @@ if($ml_id > 0) {
         WHERE id = %d LIMIT 1",
         $ml_id
     );
-    $r3 = $wpdb->query($sqlQuery);
+    $r3 = $wpdb->query($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery is built with $wpdb->prepare() above.
 
     if($r1 !== FALSE && $r2 !== FALSE && $r3 !== FALSE) {
         $page_msg = 3;
