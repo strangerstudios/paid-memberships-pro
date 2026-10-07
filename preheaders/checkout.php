@@ -265,14 +265,14 @@ if ( isset( $_REQUEST['username'] ) ) {
 
 // Note: We can't sanitize the passwords. They get hashed when saved.
 // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-if ( isset( $_REQUEST['password'] ) ) {
+if ( isset( $_REQUEST['password'] ) && is_string( $_REQUEST['password'] ) ) {
 	$password = $_REQUEST['password'];
 } else {
 	$password = "";
 }
 if ( isset( $_REQUEST['password2_copy'] ) ) {
 	$password2 = $password;
-} elseif ( isset( $_REQUEST['password2'] ) ) {
+} elseif ( isset( $_REQUEST['password2'] ) && is_string( $_REQUEST['password2'] ) ) {
 	$password2 = $_REQUEST['password2'];
 } else {
 	$password2 = "";
