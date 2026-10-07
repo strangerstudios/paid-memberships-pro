@@ -29,10 +29,10 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 	$all_levels = pmpro_getAllLevels(true, true);
 
 	//keeping track of which user we're working on
-	$last_user_id = get_option('pmpro_upgrade_1_8_9_3_last_user_id', 0);
+	$last_user_id = (int) get_option('pmpro_upgrade_1_8_9_3_last_user_id', 0);
 
 	//get all active users during the period where things may have been broken
-	$user_ids = $wpdb->get_col("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND modified > '2016-05-19' AND user_id > $last_user_id ORDER BY user_id LIMIT 10"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: $last_user_id is a user ID stored by this script.
+	$user_ids = $wpdb->get_col("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND modified > '2016-05-19' AND user_id > $last_user_id ORDER BY user_id LIMIT 10"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: $last_user_id is cast to int when read from the option.
 
 	//track progress
 	$first_load = get_transient('pmpro_updates_first_load');
@@ -112,9 +112,9 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 
 			//get level
 			if(!empty($discount_code_id)) {
-				$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . (int) $level_id . "' LIMIT 1";
+				$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "' AND cl.level_id = '" . (int) $level_id . "' LIMIT 1";
 		
-				$pmpro_level = $wpdb->get_row( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: IDs and code come from the database, not the request.
+				$pmpro_level = $wpdb->get_row( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-time upgrade script: IDs come from the database and the code is esc_sql()'d.
 
 				//if the discount code doesn't adjust the level, let's just get the straight level
 				if ( empty( $pmpro_level ) ) {

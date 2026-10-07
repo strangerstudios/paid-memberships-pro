@@ -258,7 +258,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 			 WHERE user_id = %d
 			 ORDER BY id DESC", intval( $user->ID ) );
 			 
-		$order_ids = $wpdb->get_col( $sqlQuery );		 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Built with $wpdb->prepare() above.
+		$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Built with $wpdb->prepare() above.
 		
 		foreach( $order_ids as $order_id ) {
 			$order = new MemberOrder( $order_id );

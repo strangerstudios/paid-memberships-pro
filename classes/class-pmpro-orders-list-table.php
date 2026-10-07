@@ -405,13 +405,13 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$order_query = 'ORDER BY id DESC';
 		}
 
-		$paid_string = __( 'Paid', 'paid-memberships-pro' );
-		$cancelled_string = __( 'Cancelled', 'paid-memberships-pro' );
-		$refunded_string = __( 'Refunded', 'paid-memberships-pro' );
-		$token_string = __( 'Token', 'paid-memberships-pro' );
-		$review_string = __( 'Review', 'paid-memberships-pro' );
-		$pending_string = __( 'Pending', 'paid-memberships-pro' );
-		$error_string = __( 'Error', 'paid-memberships-pro' );
+		$paid_string = esc_sql( __( 'Paid', 'paid-memberships-pro' ) );
+		$cancelled_string = esc_sql( __( 'Cancelled', 'paid-memberships-pro' ) );
+		$refunded_string = esc_sql( __( 'Refunded', 'paid-memberships-pro' ) );
+		$token_string = esc_sql( __( 'Token', 'paid-memberships-pro' ) );
+		$review_string = esc_sql( __( 'Review', 'paid-memberships-pro' ) );
+		$pending_string = esc_sql( __( 'Pending', 'paid-memberships-pro' ) );
+		$error_string = esc_sql( __( 'Error', 'paid-memberships-pro' ) );
 
 		if( $count ) {
 			$sqlQuery = 'SELECT COUNT(DISTINCT o.id) ';
@@ -507,10 +507,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			return $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values use esc_sql() inside quotes, and column names are whitelisted or stripped to [a-zA-Z0-9_].
+			return $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values and status labels use esc_sql() inside quotes, the key:value column is stripped to [a-zA-Z0-9_], and pmpro_orders_search_fields columns go through esc_sql().
 		} else {
-			$sqlQuery .= 'GROUP BY o.id ' . $order_query . " LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
-			$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values use esc_sql() inside quotes, column names and ORDER BY are whitelisted or stripped to [a-zA-Z0-9_], and $start is derived from intval( paged ).
+			$sqlQuery .= 'GROUP BY o.id ' . $order_query . " LIMIT " . (int) $start . "," . (int) $limit;
+			$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values and status labels use esc_sql() inside quotes, the key:value column is stripped to [a-zA-Z0-9_], pmpro_orders_search_fields columns go through esc_sql(), ORDER BY is whitelisted, and LIMIT values are cast to int.
 			$order_data = array();
 			foreach ( $order_ids as $order_id ) {
 				$order            = new MemberOrder();
