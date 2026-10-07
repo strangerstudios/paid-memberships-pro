@@ -186,11 +186,8 @@
 				}
 			}
 			
-			//swap data into body and subject line
-			$this->body = $this->substitute_variables( $this->body );
-			$this->subject = $this->substitute_variables( $this->subject );
-
 			// Apply per-template To override before the recipient filter.
+			// This runs before the body is built so !!header_name!! can match the new recipient.
 			if ( ! empty( $this->template ) ) {
 				$custom_to = get_option( 'pmpro_email_' . $this->template . '_to' );
 				if ( ! empty( $custom_to ) ) {
@@ -198,9 +195,27 @@
 					if ( ! is_email( $custom_to ) ) {
 						return false;
 					}
+
+					// header_name was set for the original recipient, so update it when the recipient changes.
+					// Fall back to the same generic name the admin and member templates use.
+					if ( strtolower( $custom_to ) !== strtolower( (string) $this->email ) ) {
+						$custom_to_user = get_user_by( 'email', $custom_to );
+						if ( $custom_to_user ) {
+							$this->data['header_name'] = $custom_to_user->display_name;
+						} elseif ( '_admin' === substr( $this->template, -6 ) ) {
+							$this->data['header_name'] = esc_html__( 'Admin', 'paid-memberships-pro' );
+						} else {
+							$this->data['header_name'] = esc_html__( 'User', 'paid-memberships-pro' );
+						}
+					}
+
 					$this->email = $custom_to;
 				}
 			}
+
+			//swap data into body and subject line
+			$this->body = $this->substitute_variables( $this->body );
+			$this->subject = $this->substitute_variables( $this->subject );
 
 			//filters
 			$temail = apply_filters("pmpro_email_filter", $this);		//allows filtering entire email at once
