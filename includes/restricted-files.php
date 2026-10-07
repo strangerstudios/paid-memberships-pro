@@ -167,7 +167,8 @@ function pmpro_get_restricted_file_path( $file_dir = '', $file = '' ) {
 	// Get a random string to prevent directory traversal attacks.
 	$random_string = get_option( 'pmpro_restricted_files_random_string', '' );
 	if ( empty( $random_string ) ) {
-		$random_string = substr( md5( wp_rand() ), 0, 10 );
+		// random_bytes() instead of wp_rand(): this can run during the upgrade check, before pluggable.php loads.
+		$random_string = bin2hex( random_bytes( 5 ) );
 		update_option( 'pmpro_restricted_files_random_string', $random_string );
 	}
 

@@ -32,15 +32,15 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 	$run = true;
 
 	//keeping track of which order we're working on
-	$last_order_id = get_option('pmpro_upgrade_1_8_9_1_last_order_id', 0);
+	$last_order_id = (int) get_option('pmpro_upgrade_1_8_9_1_last_order_id', 0);
 	
 	//Fixing old $0 Stripe orders.	
-	$orders = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND user_id = 0 AND membership_id = 0 AND status <> 'error' ORDER BY id LIMIT 2"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $last_order_id is an order ID this routine saved from the orders table.
+	$orders = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND user_id = 0 AND membership_id = 0 AND status <> 'error' ORDER BY id LIMIT 2"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $last_order_id is cast to int when read from the option.
 	
 	//track progress
 	$first_load = get_transient('pmpro_updates_first_load');
 	if($first_load) {
-		$total_orders = $wpdb->get_var("SELECT COUNT(id) FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND user_id = 0 AND membership_id = 0 AND status <> 'error' "); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $last_order_id is an order ID this routine saved from the orders table.
+		$total_orders = $wpdb->get_var("SELECT COUNT(id) FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND user_id = 0 AND membership_id = 0 AND status <> 'error' "); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $last_order_id is cast to int when read from the option.
 		update_option('pmpro_upgrade_1_8_9_1_total', $total_orders, 'no');
 		$progress = 0;
 	} else {

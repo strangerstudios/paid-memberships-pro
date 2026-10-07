@@ -63,10 +63,10 @@ function pmpro_upgrade_1_8_6_9_ajax() {
 	global $wpdb;
 
 	//keeping track of which order we're working on
-	$last_order_id = get_option('pmpro_upgrade_1_8_6_9_last_order_id', 0);
+	$last_order_id = (int) get_option('pmpro_upgrade_1_8_6_9_last_order_id', 0);
 	
 	//get orders
-	$orders = $wpdb->get_results("SELECT id, user_id, membership_id, subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND subscription_transaction_id LIKE 'cus_%' ORDER BY id LIMIT 100"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $last_order_id is an order ID saved by this routine from an integer DB column.
+	$orders = $wpdb->get_results("SELECT id, user_id, membership_id, subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND subscription_transaction_id LIKE 'cus_%' ORDER BY id LIMIT 100"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $last_order_id is cast to int when read from the option.
 
 	if(empty($orders)) {
 		//done with this update

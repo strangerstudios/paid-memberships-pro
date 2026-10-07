@@ -269,14 +269,14 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 			foreach( $pmpro_levels as $level ) {
 				$include[] = $level->id;
 			}
-			$included = esc_sql( implode(',', $include) );
+			$included = implode( ',', array_map( 'intval', $include ) );
 			$order = array();
 			if(! empty($pmpro_level_order)) { $order = explode(',', $pmpro_level_order); }
 			$grouplist = $wpdb->get_col("SELECT id FROM {$wpdb->pmpro_groups} ORDER BY displayorder, id ASC");
 			if($grouplist) {
 				foreach($grouplist as $curgroup) {
 					$curgroup = intval($curgroup);
-					// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $included is a comma-separated list of level IDs from pmpro_getAllLevels(), passed through esc_sql().
+					// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $included is a comma-separated list of level IDs cast with intval().
 					$levelsingroup = $wpdb->get_col(
 						$wpdb->prepare( "
 							SELECT level 
@@ -384,7 +384,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 			$all_levels = pmpro_getAllLevels(true, true);
 			$checkoutid = intval($checkout_id);
 			if($checkoutid<1) {
-				$checkoutid = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders WHERE user_id=$user_id"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $user_id is cast with intval() above.
+				$checkoutid = (int) $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders WHERE user_id=$user_id"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $user_id is cast with intval() above.
 				if(empty($checkoutid) || intval($checkoutid)<1) { return $retval; }
 			}
 			$querySql = "SELECT membership_id FROM $wpdb->pmpro_membership_orders WHERE checkout_id = " . esc_sql( $checkoutid ) . " AND ( gateway = 'free' OR ";
@@ -396,7 +396,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 				$querySql .= "status = 'success'";
 			}
 			$querySql .= " )";
-			$levelids = $wpdb->get_col($querySql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $checkoutid is cast with intval(); $statuses_to_check is never set in this deprecated function, so the status clause is always the static 'success' branch.
+			$levelids = $wpdb->get_col($querySql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $checkoutid is cast to int; $statuses_to_check is never set in this deprecated function, so the status clause is always the static 'success' branch.
 			foreach($levelids as $thelevel) {
 				if(array_key_exists($thelevel, $all_levels)) {
 					$retval[] = $all_levels[$thelevel];
