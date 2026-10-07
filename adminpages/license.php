@@ -99,7 +99,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 			<img class="pmpro_icon alignright" src="<?php echo esc_attr( PMPRO_URL );?>/images/Paid-Memberships-Pro_icon.png" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" />			
 
 			<?php
-				echo '<p>' . sprintf( wp_kses( __( 'Paid Memberships Pro and our Add Ons are distributed under the <a href="%s" target="_blank">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ), 'https://www.paidmembershipspro.com/features/paid-memberships-pro-is-100-gpl/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=documentation&utm_content=gpl' ) . '</p>';
+				echo '<p>' . sprintf( wp_kses( __( 'Paid Memberships Pro and our Add Ons are distributed under the <a href="%s" target="_blank">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ), 'https://www.paidmembershipspro.com/license/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=documentation&utm_content=gpl' ) . '</p>';
 			?>
 
 			<?php
