@@ -4,7 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter, search, sort and paginate the list table.
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
@@ -146,6 +145,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_columns() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter, search, sort and paginate the list table.
 
 		$columns = array(
 			'id'                          => __( 'Subscription ID', 'paid-memberships-pro' ),
@@ -177,6 +177,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 
 
 		return $columns;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -251,6 +252,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return Array|integer if $count parameter = true
 	 */
 	private function sql_table_data( $count = false, $limit = 15 ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter, search, sort and paginate the list table.
 		global $wpdb;
 
 		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '';
@@ -340,8 +342,8 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		if( $count ) {
 			return $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from $wpdb table names, intval()/esc_sql()-quoted filter and search values, and a whitelisted orderby.
 		} else {
-			$sqlQuery .= 'GROUP BY s.id ' . $orderby_query . " LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
-			$subscription_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from $wpdb table names, intval()/esc_sql()-quoted filter and search values, and a whitelisted orderby; LIMIT values are integers from paged/per-page.
+			$sqlQuery .= 'GROUP BY s.id ' . $orderby_query . " LIMIT " . (int) $start . "," . (int) $limit;
+			$subscription_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from $wpdb table names, intval()/esc_sql()-quoted filter and search values, and a whitelisted orderby; LIMIT values are cast to int.
 			$subscription_data = array();
 			foreach ( $subscription_ids as $subscription_id ) {
 				$subscription = PMPro_Subscription::get_subscription( $subscription_id );
@@ -351,6 +353,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			}
 			return $subscription_data;
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -359,6 +362,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @param string $which, helps you decide if you add the markup after (bottom) or before (top) the list array( '' => 'Select a Level' )
 	 */
 	function extra_tablenav( $which ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter, search, sort and paginate the list table.
 		if ( $which !== 'top' ) {
 			return;
 		}
@@ -481,6 +485,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		});
 		</script>
 		<?php
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**

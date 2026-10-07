@@ -3,7 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
@@ -50,6 +49,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @since 3.0
 	 */
 	public static function hook_screen_options() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 		// If we're viewing a single order, bail.
 		if ( ! empty( $_REQUEST['id'] ) ) {
 			return;
@@ -83,6 +83,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			3
 		);
 		set_screen_options();
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -277,6 +278,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @return Array|integer if $count parameter = true
 	 */
 	private function sql_table_data( $count = false, $limit = 15 ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 
 		global $wpdb;
 		$now = current_time( 'timestamp' );
@@ -411,13 +413,13 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$order_query = 'ORDER BY id DESC';
 		}
 
-		$paid_string = __( 'Paid', 'paid-memberships-pro' );
-		$cancelled_string = __( 'Cancelled', 'paid-memberships-pro' );
-		$refunded_string = __( 'Refunded', 'paid-memberships-pro' );
-		$token_string = __( 'Token', 'paid-memberships-pro' );
-		$review_string = __( 'Review', 'paid-memberships-pro' );
-		$pending_string = __( 'Pending', 'paid-memberships-pro' );
-		$error_string = __( 'Error', 'paid-memberships-pro' );
+		$paid_string = esc_sql( __( 'Paid', 'paid-memberships-pro' ) );
+		$cancelled_string = esc_sql( __( 'Cancelled', 'paid-memberships-pro' ) );
+		$refunded_string = esc_sql( __( 'Refunded', 'paid-memberships-pro' ) );
+		$token_string = esc_sql( __( 'Token', 'paid-memberships-pro' ) );
+		$review_string = esc_sql( __( 'Review', 'paid-memberships-pro' ) );
+		$pending_string = esc_sql( __( 'Pending', 'paid-memberships-pro' ) );
+		$error_string = esc_sql( __( 'Error', 'paid-memberships-pro' ) );
 
 		if( $count ) {
 			$sqlQuery = 'SELECT COUNT(DISTINCT o.id) ';
@@ -513,10 +515,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			return $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values use esc_sql() inside quotes, and column names are whitelisted or stripped to [a-zA-Z0-9_].
+			return $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values and status labels use esc_sql() inside quotes, the key:value column is stripped to [a-zA-Z0-9_], and pmpro_orders_search_fields columns go through esc_sql().
 		} else {
-			$sqlQuery .= 'GROUP BY o.id ' . $order_query . " LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
-			$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values use esc_sql() inside quotes, column names and ORDER BY are whitelisted or stripped to [a-zA-Z0-9_], and $start is derived from intval( paged ).
+			$sqlQuery .= 'GROUP BY o.id ' . $order_query . " LIMIT " . (int) $start . "," . (int) $limit;
+			$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Filter conditions are built with $wpdb->prepare(), search values and status labels use esc_sql() inside quotes, the key:value column is stripped to [a-zA-Z0-9_], pmpro_orders_search_fields columns go through esc_sql(), ORDER BY is whitelisted, and LIMIT values are cast to int.
 			$order_data = array();
 			foreach ( $order_ids as $order_id ) {
 				$order            = new MemberOrder();
@@ -528,6 +530,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			}            
 			return $order_data;
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -539,6 +542,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @param string $which 'top' or 'bottom'.
 	 */
 	function extra_tablenav( $which ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 
 		if ( $which !== 'top' ) {
 			return;
@@ -738,6 +742,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		});
 		</script>
 		<?php
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -824,6 +829,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_order_code( $item ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used for list table filtering, sorting, pagination, and building links.
 		?>
 		<strong><a title="<?php echo esc_attr( sprintf( __( 'View order # %s', 'paid-memberships-pro' ), $item->code ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'id' => $item->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
 		<div class="row-actions">
@@ -1076,6 +1082,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			?>
 		</div>
 		<?php
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**

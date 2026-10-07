@@ -121,7 +121,7 @@ function pmpro_report_sales_data( $args ){
 
 	global $wpdb;
 
-	$type_function = ! empty( $args['type_function'] ) ? $args['type_function'] : '';
+	$type_function = ! empty( $args['type_function'] ) && in_array( $args['type_function'], array( 'COUNT', 'SUM' ), true ) ? $args['type_function'] : 'COUNT';
 	$report_unit = ! empty( $args['report_unit'] ) ? $args['report_unit'] : '';
 	$discount_code = ! empty( $args['discount_code'] ) ? $args['discount_code'] : array();
 	$startdate = ! empty( $args['startdate'] ) ? $args['startdate'] : '';
@@ -193,7 +193,7 @@ function pmpro_report_sales_data( $args ){
 	$sqlQuery .= ") t1";
 	$sqlQuery .= " GROUP BY date ORDER by date";
 
-	return $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $type_function and $report_unit are whitelisted by the caller, dates/environment go through esc_sql() inside quotes, and level/discount code IDs are cast with intval.
+	return $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $type_function is limited to COUNT or SUM above, $tz_offset is an integer from strtotime() arithmetic, dates/environment go through esc_sql() inside quotes, and level/discount code IDs are cast with intval.
 
 }
 

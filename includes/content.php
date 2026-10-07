@@ -299,9 +299,9 @@ function pmpro_search_filter( $query ) {
 		$sql_C = "SELECT DISTINCT(mp.page_id)
 			  FROM {$wpdb->pmpro_memberships_pages} mp
 			  LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
-			  WHERE mp.membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+			  WHERE mp.membership_id IN (" . implode(',', array_map('intval', $level_ids)) . ")
 				  AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-		$accessible_posts_by_level = $wpdb->get_col( $sql_C ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes; level IDs are integer IDs from the user's membership levels in the database.
+		$accessible_posts_by_level = $wpdb->get_col( $sql_C ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes; level IDs are cast with intval().
 	} else {
 		$accessible_posts_by_level = [];
 	}
@@ -317,10 +317,10 @@ function pmpro_search_filter( $query ) {
 			WHERE tt.term_id IN(
 				SELECT category_id
 				FROM {$wpdb->pmpro_memberships_categories}
-				WHERE membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+				WHERE membership_id IN (" . implode(',', array_map('intval', $level_ids)) . ")
 			)
 		) AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-		$accessible_posts_by_category = $wpdb->get_col ($sql_D ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes; level IDs are integer IDs from the user's membership levels in the database.
+		$accessible_posts_by_category = $wpdb->get_col ($sql_D ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes; level IDs are cast with intval().
 	} else {
 		$accessible_posts_by_category = [];
 	}

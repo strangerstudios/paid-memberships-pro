@@ -356,7 +356,7 @@
 			//add discount code use
 			if(!empty($discount_code) && !empty($use_discount_code))
 			{
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . esc_sql( $discount_code_id ) . "', '" . esc_sql( $morder->user_id ) . "', '" . esc_sql( $morder->id ) . "', '" . current_time('mysql') . "')"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- IDs are escaped with esc_sql() inside quotes; current_time( 'mysql' ) returns a formatted date string. Writes to a PMPro custom table with no WordPress API.
+				$wpdb->query( $wpdb->prepare( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES(%d, %d, %d, %s)", $discount_code_id, $morder->user_id, $morder->id, current_time( 'mysql' ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Writes to a PMPro custom table with no WordPress API.
 			}
 
 			//save first and last name fields
