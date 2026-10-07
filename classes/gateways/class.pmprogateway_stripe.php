@@ -1694,7 +1694,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Only show on PMPro admin pages except for the payment settings page, which shows the results inline.
-		$page = isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) ? $_REQUEST['page'] : '';
+		$page = isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) ? $_REQUEST['page'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: the admin page slug only decides whether to show a notice.
 		if ( false === strpos( $page, 'pmpro' ) || 'pmpro-paymentsettings' === $page ) {
 			return;
 		}
