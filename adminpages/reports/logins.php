@@ -573,8 +573,14 @@ add_action("wp", "pmpro_report_login_wp_visits");
 
 //we want to clear the pmpro_visit cookie on login/logout
 function pmpro_report_login_clear_visit_cookie() {
-	if(isset($_COOKIE['pmpro_visit']))
+	if(isset($_COOKIE['pmpro_visit'])) {
 		unset($_COOKIE['pmpro_visit']);
+
+		// Also expire the cookie in the browser so the next page load is tracked as a new visit.
+		if ( ! headers_sent() ) {
+			setcookie( 'pmpro_visit', '', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		}
+	}
 }
 add_action("wp_login", "pmpro_report_login_clear_visit_cookie");
 add_action("wp_logout", "pmpro_report_login_clear_visit_cookie");
