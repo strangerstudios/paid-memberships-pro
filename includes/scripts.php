@@ -40,6 +40,7 @@ function pmpro_enqueue_scripts() {
 				'update_nonce' => apply_filters( 'pmpro_update_nonce_at_checkout', false ),
 				'hide_password_text' =>  __( 'Hide Password', 'paid-memberships-pro' ),
 				'show_password_text' =>  __( 'Show Password', 'paid-memberships-pro' ),
+				'discount_code_empty_text' => __( 'Please enter a discount code to apply.', 'paid-memberships-pro' ),
 			)
 		);
 		wp_enqueue_script( 'pmpro_checkout' );
