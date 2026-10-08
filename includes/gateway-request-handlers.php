@@ -65,7 +65,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	}
 
 	// Check to see if the user has the membership level associated with this subscription.
-	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
+	if ( empty( pmpro_getSpecificMembershipLevelForUser( $user->ID, $subscription->get_membership_level_id() ) ) ) {
 		return 'The user no longer has the membership level associated with this subscription. No membership cancellation is needed. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
 	}
 
