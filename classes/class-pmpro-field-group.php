@@ -77,7 +77,7 @@ class PMPro_Field_Group {
 		// If no label is provided, use the name.
 		if ( empty( $label ) ) {
 			if ( $name === 'checkout_boxes' ) {
-				apply_filters( 'pmpro_default_field_group_label', esc_html__( 'More Information','paid-memberships-pro' ) );
+				$label = apply_filters( 'pmpro_default_field_group_label', esc_html__( 'More Information','paid-memberships-pro' ) );
 			} else {
 				$label = ucwords( str_replace( '_', ' ', $name ) );
 			}
