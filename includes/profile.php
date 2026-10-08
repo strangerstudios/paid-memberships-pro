@@ -1136,7 +1136,10 @@ function pmpro_member_profile_edit_form() {
 									<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Account Information', 'paid-memberships-pro' ); ?></h2>
 								</legend>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields pmpro_cols-2' ) ); ?>">
-									<?php foreach ( $user_fields as $field_key => $label ) { ?>
+									<?php foreach ( $user_fields as $field_key => $label ) {
+										// Submitted values are still slashed. Saved values are not, so don't strip backslashes from them.
+										$field_value = $update ? wp_unslash( $user->{$field_key} ) : $user->{$field_key};
+										?>
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-' . $field_key, 'pmpro_form_field-' . $field_key ) ); ?>">
 											<label for="<?php echo esc_attr( $field_key ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php echo esc_html( $label ); ?></label>
 											<?php if ( $field_key === 'user_email' ) {
@@ -1144,10 +1147,10 @@ function pmpro_member_profile_edit_form() {
 													<input type="email" readonly="readonly" name="user_email" id="user_email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', 'user_email' ) ); ?>" />
 													<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_hint' ) ); ?>"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
 												<?php } else { ?>
-													<input type="email" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( stripslashes( $user->{$field_key} ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', $field_key ) ); ?>" autocomplete="email" />
+													<input type="email" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $field_value ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', $field_key ) ); ?>" autocomplete="email" />
 												<?php }
 											} else { ?>
-												<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( stripslashes( $user->{$field_key} ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', $field_key ) ); ?>"
+												<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $field_value ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', $field_key ) ); ?>"
 												<?php echo isset( $user_field_autocomplete[ $field_key ] ) ? ' autocomplete="' . esc_attr( $user_field_autocomplete[ $field_key ] ) . '"' : ''; ?> />
 											<?php } ?>
 										</div>	<!-- end pmpro_form_field -->
