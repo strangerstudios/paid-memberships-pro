@@ -27,7 +27,7 @@ if ( empty( $_REQUEST['event_id'] ) ) {
 		$livemode = ! empty( $post_event->livemode );
 	}
 } else {
-	$event_id = sanitize_text_field( $_REQUEST['event_id'] );
+	$event_id = sanitize_text_field( wp_unslash( $_REQUEST['event_id'] ) );
 }
 
 PMPro_Stripe_Webhook_Handler::run(

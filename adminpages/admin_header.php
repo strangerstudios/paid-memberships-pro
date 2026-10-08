@@ -6,7 +6,7 @@
 	require_once(dirname(__FILE__) . "/functions.php");
 
 	if(isset($_REQUEST['page'])) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
-		$view = sanitize_text_field($_REQUEST['page']); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
+		$view = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
 	else
 		$view = "";
 

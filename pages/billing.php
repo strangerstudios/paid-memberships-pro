@@ -59,7 +59,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							),
 							'strong' => array(),
 						);
-						echo '<p>' . wp_kses( sprintf( __('You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), $allowed_html ) . '</p>';
+						echo '<p>' . wp_kses( sprintf( __('You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' ) ), $allowed_html ) . '</p>';
 					?>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_divider' ) ); ?>"></div>
 					<?php
@@ -342,7 +342,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										?>
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
 											<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
-											<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); } // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; repopulates the submitted field. ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
+											<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ) ); } // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; repopulates the submitted field. ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
 										</div>
 									<?php } ?>
 								</div> <!-- end pmpro_form_fields -->

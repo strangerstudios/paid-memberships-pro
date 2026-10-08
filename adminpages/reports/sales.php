@@ -204,7 +204,7 @@ function pmpro_report_sales_page()
 
 	//get values from form
 	if(isset($_REQUEST['type']))
-		$type = sanitize_text_field($_REQUEST['type']);
+		$type = sanitize_text_field( wp_unslash( $_REQUEST['type'] ) );
 	else
 		$type = "revenue";
 
@@ -214,7 +214,7 @@ function pmpro_report_sales_page()
 		$type_function = "SUM";
 
 	if(isset($_REQUEST['period']))
-		$period = sanitize_text_field($_REQUEST['period']);
+		$period = sanitize_text_field( wp_unslash( $_REQUEST['period'] ) );
 	else
 		$period = "daily";
 
@@ -252,7 +252,7 @@ function pmpro_report_sales_page()
 	}
 
 	if ( isset( $_REQUEST[ 'show_parts' ] ) ) {
-		$new_renewals = sanitize_text_field( $_REQUEST[ 'show_parts' ] );
+		$new_renewals = sanitize_text_field( wp_unslash( $_REQUEST[ 'show_parts' ] ) );
 	} else {
 		$new_renewals = 'new_renewals';
 	}
@@ -307,8 +307,8 @@ function pmpro_report_sales_page()
 		$axis_date_format = 'd';
 		$tooltip_date_format = get_option( 'date_format' );
 		// Set up the start and end dates.
-		$startdate = sanitize_text_field( $_REQUEST['custom_start_date'] );
-		$enddate = sanitize_text_field( $_REQUEST['custom_end_date'] );
+		$startdate = isset( $_REQUEST['custom_start_date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['custom_start_date'] ) ) : '';
+		$enddate = isset( $_REQUEST['custom_end_date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['custom_end_date'] ) ) : '';
 	} else {
 		// Set up the report unit to use.
 		$report_unit = 'YEAR';

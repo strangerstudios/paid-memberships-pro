@@ -237,7 +237,7 @@ class PMPro_Wisdom_Tracker {
 		}
 		$body['marketing_method'] = $this->marketing;
 
-		$body['server'] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( $_SERVER['SERVER_SOFTWARE'] ) : '';
+		$body['server'] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '';
 
 		// Extra PHP fields
 		$body['memory_limit']        = ini_get( 'memory_limit' );
@@ -1073,11 +1073,11 @@ class PMPro_Wisdom_Tracker {
 			wp_die();
 		}
 		if ( isset( $_POST['values'] ) ) {
-			$values = json_encode( wp_unslash( sanitize_text_field( $_POST['values'] ) ) );
+			$values = json_encode( sanitize_text_field( wp_unslash( $_POST['values'] ) ) );
 			update_option( 'wisdom_deactivation_reason_' . $this->plugin_name, $values );
 		}
 		if ( isset( $_POST['details'] ) ) {
-			$details = sanitize_text_field( $_POST['details'] );
+			$details = sanitize_text_field( wp_unslash( $_POST['details'] ) );
 			update_option( 'wisdom_deactivation_details_' . $this->plugin_name, $details );
 		}
 		$this->do_tracking(); // Run this straightaway

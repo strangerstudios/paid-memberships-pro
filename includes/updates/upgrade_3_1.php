@@ -59,7 +59,7 @@ function pmpro_show_upgrade_3_1_notice() {
 	}
 
 	// Only show on PMPro admin pages.
-	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
+	if ( empty( $_REQUEST['page'] ) || strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
 		return;
 	}
 

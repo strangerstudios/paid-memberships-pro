@@ -34,7 +34,7 @@
 	}
 
 	if ( '' !== $_pmpro_authnet_expected_token ) {
-		$_pmpro_authnet_provided_token = isset( $_GET['pmpro_authnet_token'] ) ? $_GET['pmpro_authnet_token'] : '';
+		$_pmpro_authnet_provided_token = isset( $_GET['pmpro_authnet_token'] ) ? $_GET['pmpro_authnet_token'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslashed below after the is_scalar() check; not sanitized because it is compared byte-for-byte against the stored token with hash_equals().
 		if ( ! is_scalar( $_pmpro_authnet_provided_token ) ) {
 			$_pmpro_authnet_provided_token = '';
 		} else {

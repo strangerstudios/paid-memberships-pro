@@ -19,7 +19,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 <?php
 $report_exists = false;
 if ( ! empty( $_REQUEST[ 'report' ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only selects which report to show.
-	$report = sanitize_text_field( $_REQUEST[ 'report' ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only selects which report to show.
+	$report = sanitize_text_field( wp_unslash( $_REQUEST[ 'report' ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only selects which report to show.
 	$report_function = 'pmpro_report_' . $report . '_page';
 	$report_exists = function_exists( $report_function ) ? true : false;
 }

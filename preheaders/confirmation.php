@@ -11,11 +11,11 @@ global $current_user, $pmpro_invoice;
 if ( ! is_user_logged_in() ) {
 	// Get level ID from URL parameter.
 	if ( ! empty( $_REQUEST['pmpro_level'] ) ) {
-		$confirmation_url = add_query_arg( 'pmpro_level', sanitize_text_field( $_REQUEST['pmpro_level'] ), pmpro_url( 'confirmation' ) );
+		$confirmation_url = add_query_arg( 'pmpro_level', sanitize_text_field( wp_unslash( $_REQUEST['pmpro_level'] ) ), pmpro_url( 'confirmation' ) );
 	} else {
 		$confirmation_url = pmpro_url( 'confirmation' );
 	}
-	wp_redirect( add_query_arg( 'redirect_to', urlencode( $confirmation_url ), pmpro_login_url() ) );
+	wp_redirect( add_query_arg( 'redirect_to', urlencode( $confirmation_url ), pmpro_login_url() ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_login_url() is filterable (pmpro_login_url, login_url) and may point to an offsite SSO login page.
 	exit;
 }
 
@@ -36,7 +36,7 @@ if ( ! empty( $confirmation_level ) ) {
 // If no invoice was found or we still don't have a level, redirect to the account page.
 if ( empty( $pmpro_invoice ) || empty( $confirmation_level ) ) {
 	$redirect_url = pmpro_url( 'account' );
-	wp_redirect( $redirect_url );
+	wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 	exit;
 }
 
@@ -47,7 +47,7 @@ $current_user->membership_level = $user_level; // Backwards compatibility.
 // If the user doesn't have the level they are confirming (including pending checkouts), redirect them to the account page.
 if ( ! in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) && empty( $user_level ) ) {
 	$redirect_url = pmpro_url( 'account' );
-	wp_redirect( $redirect_url );
+	wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 	exit;
 }
 

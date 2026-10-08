@@ -19,7 +19,7 @@
 		$requested_ids = 'all';
 	} elseif ( ! empty( $_REQUEST['levelstocancel'] ) ) {		
 		// A single ID could be passed, or a few like 1+2+3.
-		$requested_ids = str_replace(array(' ', '%20'), '+', sanitize_text_field( $_REQUEST['levelstocancel'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only selects which levels to show on the cancel page. The cancellation itself is gated by the pmpro_cancel-nonce check below.
+		$requested_ids = str_replace(array(' ', '%20'), '+', sanitize_text_field( wp_unslash( $_REQUEST['levelstocancel'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only selects which levels to show on the cancel page. The cancellation itself is gated by the pmpro_cancel-nonce check below.
 		$requested_ids = preg_replace("/[^0-9\+]/", "", $requested_ids );
 	}	
 
@@ -31,14 +31,14 @@
 			$redirect = pmpro_url( 'cancel' );
 		}
 		// Redirect non-user to the login page; pass the Cancel page with specific ?levelstocancel as the redirect_to query arg.
-		wp_redirect( add_query_arg( 'redirect_to', urlencode( $redirect ), pmpro_login_url() ) );
+		wp_redirect( add_query_arg( 'redirect_to', urlencode( $redirect ), pmpro_login_url() ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_login_url() is filterable (pmpro_login_url, login_url) and may point to an offsite SSO/login host by design.
 		exit;
 	}
 
 	// If user has no membership level, redirect to levels page.
 	$user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 	if ( empty( $user_levels ) ) {
-		wp_redirect( pmpro_url( 'levels' ) );
+		wp_redirect( pmpro_url( 'levels' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 		exit;
 	}
 
@@ -49,7 +49,7 @@
 		// Make sure the user has the level they are trying to cancel.
 		if ( ! empty( array_diff( $old_level_ids, wp_list_pluck( $user_levels, 'ID' ) ) ) ) {
 			// If they don't have the level, return to Membership Account.
-			wp_redirect( pmpro_url( 'account' ) );
+			wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 			exit;
 		}
 	} else {
@@ -59,7 +59,7 @@
 	// Are we confirming a cancellation?
 	if ( ! empty( $_REQUEST['confirm'] ) ) {
 		// Check the nonce.
-		if ( ! wp_verify_nonce( $_REQUEST['pmpro_cancel-nonce'], 'pmpro_cancel-nonce' ) ) {
+		if ( ! isset( $_REQUEST['pmpro_cancel-nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['pmpro_cancel-nonce'] ) ), 'pmpro_cancel-nonce' ) ) {
 			wp_die( esc_html__( 'Error: Invalid nonce.', 'paid-memberships-pro' ) );
 		}
 

@@ -79,7 +79,7 @@ function pmpro_member_edit_display() {
 	// Get the panel to default to.
 	$default_panel_slug = 'user-info';
 	if ( ! empty( $user->ID ) && ! empty( $_REQUEST['pmpro_member_edit_panel'] ) && ! empty( $panels[ $_REQUEST['pmpro_member_edit_panel'] ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only selects which panel to display.
-		$default_panel_slug = sanitize_text_field( $_REQUEST['pmpro_member_edit_panel'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only selects which panel to display.
+		$default_panel_slug = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_member_edit_panel'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only selects which panel to display.
 	}
 
 	/**
@@ -194,13 +194,13 @@ function pmpro_member_edit_save() {
  	}
 
 	// Get the panel slug that was submitted.
-	$panel_slug = empty( $_REQUEST['pmpro_member_edit_panel'] ) ? '' : sanitize_text_field( $_REQUEST['pmpro_member_edit_panel'] );
+	$panel_slug = empty( $_REQUEST['pmpro_member_edit_panel'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['pmpro_member_edit_panel'] ) );
 	if ( empty( $panel_slug ) ) {
 		return;
 	}
 
 	// Check the nonce.
-	if ( empty( $_REQUEST['pmpro_member_edit_saved_panel_nonce'] ) || ! wp_verify_nonce( $_REQUEST['pmpro_member_edit_saved_panel_nonce'], 'pmpro_member_edit_saved_panel_' . $panel_slug ) ) {
+	if ( empty( $_REQUEST['pmpro_member_edit_saved_panel_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['pmpro_member_edit_saved_panel_nonce'] ) ), 'pmpro_member_edit_saved_panel_' . $panel_slug ) ) {
 		return;
 	}
 
