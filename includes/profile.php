@@ -1207,19 +1207,19 @@ function pmpro_change_password_process() {
 		return;
 	}
 
-	// Get all password values from the $_POST.
+	// Get all password values from the $_POST. Don't sanitize them: sanitize_text_field() strips tags, %xx sequences and extra spaces, so the saved password wouldn't match what the member types at login.
 	if ( ! empty( $_POST['password_current'] ) ) {
-		$password_current = sanitize_text_field( $_POST['password_current'] );
+		$password_current = trim( $_POST['password_current'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords are used as submitted (slashed and trimmed), like core edit_user() and wp_authenticate(). Sanitizing would change the password.
 	} else {
 		$password_current = '';
 	}
 	if ( ! empty( $_POST['pass1'] ) ) {
-		$pass1 = sanitize_text_field( $_POST['pass1'] );
+		$pass1 = trim( $_POST['pass1'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords are used as submitted (slashed and trimmed), like core edit_user() and wp_authenticate(). Sanitizing would change the password.
 	} else {
 		$pass1 = '';
 	}
 	if ( ! empty( $_POST['pass2'] ) ) {
-		$pass2 = sanitize_text_field( $_POST['pass2'] );
+		$pass2 = trim( $_POST['pass2'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords are used as submitted (slashed and trimmed), like core edit_user() and wp_authenticate(). Sanitizing would change the password.
 	} else {
 		$pass2 = '';
 	}
