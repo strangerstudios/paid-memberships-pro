@@ -271,7 +271,7 @@ if (!empty($page_msg)) { ?>
 						<th scope="row" valign="top"><label for="confirmation"><?php esc_html_e('Confirmation Message', 'paid-memberships-pro'); ?></label></th>
 						<td class="pmpro_confirmation">
 							<?php wp_editor($level->confirmation, 'confirmation', array('textarea_rows' => 5)); ?>
-							<p><input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked($confirmation_in_email, 1); ?> aria-describedby="confirmation_in_email_description" /> <label for="confirmation_in_email"><?php esc_html_e('Check to include this message in the membership confirmation email.', 'paid-memberships-pro'); ?></label></p>
+							<p><input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked($confirmation_in_email, 1); ?> aria-describedby="confirmation_in_email_description" /> <label for="confirmation_in_email"><?php esc_html_e('Include this message in the membership confirmation email.', 'paid-memberships-pro'); ?></label></p>
 							<p id="confirmation_in_email_description" class="description">
 								<?php
 								$allowed_confirmation_in_email_html = array(
@@ -372,7 +372,7 @@ if (!empty($page_msg)) { ?>
 						<th scope="row" valign="top"><label><?php esc_html_e('Recurring Subscription', 'paid-memberships-pro'); ?></label></th>
 						<td><input id="recurring" name="recurring" type="checkbox" value="yes" <?php if (pmpro_isLevelRecurring($level)) {
 																									echo "checked='checked'";
-																								} ?> onclick="if(jQuery('#recurring').is(':checked')) { jQuery('.recurring_info').show(); if(jQuery('#custom_trial').is(':checked')) {jQuery('.trial_info').show();} else {jQuery('.trial_info').hide();} } else { jQuery('.recurring_info').hide();}" /> <label for="recurring"><?php esc_html_e('Check if this level has a recurring subscription payment.', 'paid-memberships-pro'); ?></label></td>
+																								} ?> onclick="if(jQuery('#recurring').is(':checked')) { jQuery('.recurring_info').show(); if(jQuery('#custom_trial').is(':checked')) {jQuery('.trial_info').show();} else {jQuery('.trial_info').hide();} } else { jQuery('.recurring_info').hide();}" /> <label for="recurring"><?php esc_html_e('This level has a recurring subscription payment.', 'paid-memberships-pro'); ?></label></td>
 					</tr>
 
 					<tr class="recurring_info" <?php if (!pmpro_isLevelRecurring($level)) { ?>style="display: none;" <?php } ?>>
@@ -461,7 +461,7 @@ if (!empty($page_msg)) { ?>
 					<td>
 						<input id="custom_trial" name="custom_trial" type="checkbox" value="yes" <?php if (pmpro_isLevelTrial($level)) {
 																										echo "checked='checked'";
-																									} ?> onclick="jQuery('.trial_info').toggle();" /> <label for="custom_trial"><?php esc_html_e('Check to add a custom trial period.', 'paid-memberships-pro'); ?></label>
+																									} ?> onclick="jQuery('.trial_info').toggle();" /> <label for="custom_trial"><?php esc_html_e('Add a custom trial period.', 'paid-memberships-pro'); ?></label>
 						<?php if ( ! $gateway_supports_recurring_trials ) { ?>
 							<p class="description"><strong class="pmpro_red"><?php esc_html_e( 'The current payment gateway does not support recurring trials.', 'paid-memberships-pro' ); ?></strong></p>
 						<?php } ?>
@@ -553,7 +553,7 @@ if (!empty($page_msg)) { ?>
 						<th scope="row" valign="top"><label><?php esc_html_e('Membership Expiration', 'paid-memberships-pro'); ?></label></th>
 						<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if (pmpro_isLevelExpiring($level)) {
 																										echo "checked='checked'";
-																									} ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <label for="expiration"><?php esc_html_e('Check this to set when membership access expires.', 'paid-memberships-pro'); ?></label></a></td>
+																									} ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <label for="expiration"><?php esc_html_e('Set when membership access expires.', 'paid-memberships-pro'); ?></label></a></td>
 					</tr>
 					<?php if (!function_exists('pmprosed_pmpro_membership_level_after_other_settings')) {
 						$allowed_sed_html = array(
@@ -744,7 +744,7 @@ if (!empty($page_msg)) { ?>
 				<tbody>
 					<tr>
 						<th scope="row" valign="top"><label><?php esc_html_e('Disable New Signups', 'paid-memberships-pro'); ?></label></th>
-						<td><input id="disable_signups" name="disable_signups" type="checkbox" value="yes" <?php if ($level->id && !$level->allow_signups) { ?>checked="checked" <?php } ?> /> <label for="disable_signups"><?php esc_html_e('Check to hide this level from the membership levels page and disable registration.', 'paid-memberships-pro'); ?></label></td>
+						<td><input id="disable_signups" name="disable_signups" type="checkbox" value="yes" <?php if ($level->id && !$level->allow_signups) { ?>checked="checked" <?php } ?> /> <label for="disable_signups"><?php esc_html_e('Hide this level from the membership levels page and disable registration.', 'paid-memberships-pro'); ?></label></td>
 					</tr>
 				</tbody>
 			</table>

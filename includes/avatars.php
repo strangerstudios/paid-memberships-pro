@@ -33,7 +33,7 @@ function pmpro_membership_level_after_other_settings_avatar( $level ) {
 				<th scope="row" valign="top"><label><?php esc_html_e( 'Enable Profile Pictures', 'paid-memberships-pro' ); ?></label></th>
 				<td>
 					<input id="enable_avatars" name="enable_avatars" type="checkbox" value="1" <?php checked( $enabled ); ?> />
-					<label for="enable_avatars"><?php esc_html_e( 'Check to enable custom profile picture support for users with this membership level.', 'paid-memberships-pro' ); ?></label>
+					<label for="enable_avatars"><?php esc_html_e( 'Enable custom profile picture support for users with this membership level.', 'paid-memberships-pro' ); ?></label>
 				</td>
 			</tr>
 		</tbody>
