@@ -34,6 +34,9 @@ if ( $nonceokay ) {
 				$pmpro_msg  = __( 'Error deleting order.', 'paid-memberships-pro' );
 				$pmpro_msgt = 'pmpro_error';
 			}
+
+			// Remove the delete args so that pagination and sorting links don't repeat the delete.
+			$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'action', 'delete', 'pmpro_orders_nonce' ), $_SERVER['REQUEST_URI'] );
 			break;
 
 		case 'check_token_order':
