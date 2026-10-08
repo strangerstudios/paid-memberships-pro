@@ -850,6 +850,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 						'l' => isset( $_REQUEST['l'] ) ? sanitize_text_field( $_REQUEST['l'] ) : null,
 						'status' => isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : null,
 						'discount-code' => isset( $_REQUEST['discount-code'] ) ? sanitize_text_field( $_REQUEST['discount-code'] ) : null,
+						'paged' => isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : null,
 					],
 					admin_url( 'admin.php' )
 				),

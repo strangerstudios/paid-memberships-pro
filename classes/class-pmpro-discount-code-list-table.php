@@ -387,6 +387,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 						's' 	  => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : null,
 						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( $_REQUEST['orderby'] ) : null,
 						'order'   => isset( $_REQUEST['order'] ) ? sanitize_text_field( $_REQUEST['order'] ) : null,
+						'paged'   => isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : null,
 					],
 					admin_url( 'admin.php' )
 				),
