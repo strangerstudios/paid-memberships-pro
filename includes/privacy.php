@@ -184,7 +184,16 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 		$user_meta_data_to_export = array();
 		foreach( $personal_user_meta_fields as $key => $name ) {
 			if( !empty( $personal_user_meta_data[$key] ) ) {
-				$value = $personal_user_meta_data[$key]->meta_value;
+				$value = maybe_unserialize( $personal_user_meta_data[$key]->meta_value );
+
+				// Show array values (e.g. login, visit, and view data) as readable "key: value" pairs.
+				if ( is_array( $value ) || is_object( $value ) ) {
+					$pairs = array();
+					foreach ( (array) $value as $value_key => $value_item ) {
+						$pairs[] = $value_key . ': ' . ( is_scalar( $value_item ) ? $value_item : wp_json_encode( $value_item ) );
+					}
+					$value = implode( ', ', $pairs );
+				}
 			} else {
 				$value = '';
 			}
