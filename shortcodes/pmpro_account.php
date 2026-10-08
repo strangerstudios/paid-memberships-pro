@@ -77,10 +77,30 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					</h3>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 						<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ); ?>">
-							<?php do_action('pmpro_account_bullets_top');?>
-							<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>"><strong><?php esc_html_e( 'Username', 'paid-memberships-pro' ); ?>:</strong> <?php echo esc_html( $current_user->user_login ); ?></li>
-							<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>"><strong><?php esc_html_e( 'Email', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->user_email ); ?></li>
-							<?php do_action('pmpro_account_bullets_bottom');?>
+							<?php
+								do_action('pmpro_account_bullets_top');
+
+								// Build the profile list items.
+								$pmpro_account_profile_list_items = array(
+									'username' => '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ) . '"><strong>' . esc_html__( 'Username', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( $current_user->user_login ) . '</li>',
+									'email'    => '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ) . '"><strong>' . esc_html__( 'Email', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( $current_user->user_email ) . '</li>',
+								);
+
+								/**
+								 * Filter the profile list items shown on the Membership Account page.
+								 *
+								 * @since TBD
+								 *
+								 * @param array   $pmpro_account_profile_list_items Profile list item HTML, keyed by item ('username', 'email').
+								 * @param WP_User $current_user                     The current user.
+								 * @return array $pmpro_account_profile_list_items Profile list item HTML.
+								 */
+								$pmpro_account_profile_list_items = apply_filters( 'pmpro_account_profile_list_items', $pmpro_account_profile_list_items, $current_user );
+
+								echo wp_kses_post( implode( '', (array) $pmpro_account_profile_list_items ) );
+
+								do_action('pmpro_account_bullets_bottom');
+							?>
 						</ul>
 					</div> <!-- end pmpro_card_content -->
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
