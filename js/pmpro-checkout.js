@@ -70,6 +70,16 @@ jQuery(document).ready(function(){
                     }
                 });
             }
+            else
+            {
+                //show an error if no code was entered
+                jQuery('#pmpro_message').text(pmpro.discount_code_empty_text);
+                jQuery('#pmpro_message').removeClass('pmpro_success');
+                jQuery('#pmpro_message').addClass('pmpro_error');
+                jQuery('#pmpro_message').addClass('pmpro_discount_code_msg');
+                jQuery('#pmpro_message').attr('role', 'alert');
+                jQuery('#pmpro_message').show();
+            }
         });
     }
 	
