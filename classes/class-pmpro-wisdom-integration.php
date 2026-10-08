@@ -288,7 +288,7 @@ class PMPro_Wisdom_Integration {
 	 * @since 2.8
 	 */
 	public function remove_wisdom_notices_from_non_plugin_screens() {
-		$settings_page = ! empty( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only used to decide which admin notices to show.
+		$settings_page = ! empty( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only used to decide which admin notices to show.
 
 		// Check if we are on a settings page using isset() which is faster than in_array().
 		if ( isset( $this->plugin_pages[ $settings_page ] ) ) {

@@ -697,7 +697,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			}
 
 			// Get the data for the level to add.
-			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ];
+			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ] ) ? null : wp_unslash( $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized with array_map( 'sanitize_text_field' ) below.
 			if ( empty( $level_data ) ) {
 				// At the very least, 'level_id' should be set.
 				pmpro_setMessage( __( 'Please pass level data to add.', 'paid-memberships-pro' ), 'pmpro_error' );
@@ -802,7 +802,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			}
 
 			// Get the data for the level to edit.
-			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ];
+			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ] ) ? null : wp_unslash( $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized with array_map( 'sanitize_text_field' ) below.
 			if ( empty( $level_data ) ) {
 				// At the very least, 'expiration' should be set even if the checkbox is empty.
 				pmpro_setMessage( __( 'Please pass level data to edit.', 'paid-memberships-pro' ), 'pmpro_error' );
@@ -854,7 +854,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			}
 
 			// Get the data for the level to cancel.
-			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ];
+			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ] ) ? null : wp_unslash( $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized with array_map( 'sanitize_text_field' ) below.
 			if ( empty( $level_data ) ) {
 				// It is possible that no data is passed if the user is cancelling a level that has no subscription. In this case, we will just cancel the level.
 				$level_data = array();

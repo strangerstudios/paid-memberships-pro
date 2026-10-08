@@ -114,7 +114,7 @@ if ( $txn_type == "subscr_payment" ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) == false ) {
 		//first payment, get order
-		$morder = new MemberOrder( sanitize_text_field( $_POST['item_number'] ) );
+		$morder = new MemberOrder( sanitize_text_field( wp_unslash( $_POST['item_number'] ?? '' ) ) );
 
 		//No order?
 		if ( empty( $morder ) || empty( $morder->id ) ) {
@@ -125,7 +125,7 @@ if ( $txn_type == "subscr_payment" ) {
 			$morder->getUser();
 
 			//Check that the corresponding order has the same amount as what we're getting from PayPal
-			$amount = sanitize_text_field( $_POST['mc_gross'] );
+			$amount = sanitize_text_field( wp_unslash( $_POST['mc_gross'] ?? '' ) );
 			
 			//Adjust gross for tax if provided
 			if( !empty($_POST['tax']) ) {
@@ -183,7 +183,7 @@ if ( $txn_type == "web_accept" && ! empty( $item_number ) ) {
 		$morder->getUser();
 
 		//Check that the corresponding order has the same amount
-		$amount = sanitize_text_field( $_POST['mc_gross'] );
+		$amount = sanitize_text_field( wp_unslash( $_POST['mc_gross'] ?? '' ) );
 		
 		//Adjust gross for tax if provided
 		if(!empty($_POST['tax']) ) {
@@ -334,7 +334,7 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 		}
 		
 		// Handle partial refunds. Only updating the log and notes for now.
-		if ( abs( (float)$_POST['mc_gross'] ) < (float)$morder->total ) {				
+		if ( abs( isset( $_POST['mc_gross'] ) ? (float) $_POST['mc_gross'] : 0.0 ) < (float)$morder->total ) {				
 			ipnlog( sprintf( 'IPN: Order was partially refunded on %1$s for transaction ID %2$s at the gateway. The order will need to be updated in the WP dashboard.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
 			$morder->add_order_note( sprintf( 'IPN: Order was partially refunded for transaction ID %1$s at the gateway. The order will need to be updated in the WP dashboard.', $payment_transaction_id ) );
@@ -522,13 +522,13 @@ function pmpro_ipnCheckReceiverEmail( $email ) {
 		return true;
 	} else {
 		if ( ! empty( $_POST['receiver_email'] ) ) {
-			$receiver_email = sanitize_text_field( $_POST['receiver_email'] );
+			$receiver_email = sanitize_text_field( wp_unslash( $_POST['receiver_email'] ) );
 		} else {
 			$receiver_email = "N/A";
 		}
 
 		if ( ! empty( $_POST['business'] ) ) {
-			$business = sanitize_text_field( $_POST['business'] );
+			$business = sanitize_text_field( wp_unslash( $_POST['business'] ) );
 		} else {
 			$business = "N/A";
 		}
@@ -603,7 +603,7 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 		$morder->status                 = "success";
 		$morder->payment_transaction_id = $txn_id;
 		if ( ! empty( $_POST['subscr_id'] ) ) {
-			$morder->subscription_transaction_id = sanitize_text_field( $_POST['subscr_id'] );
+			$morder->subscription_transaction_id = sanitize_text_field( wp_unslash( $_POST['subscr_id'] ) );
 		} else {
 			$morder->subscription_transaction_id = "";
 		}
@@ -630,13 +630,13 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 		if ( ! empty( $_POST['first_name'] ) ) {
 			$old_firstname = get_user_meta( $morder->user_id, "first_name", true );
 			if ( empty( $old_firstname ) ) {
-				update_user_meta( $morder->user_id, "first_name", sanitize_text_field( $_POST['first_name'] ) );
+				update_user_meta( $morder->user_id, "first_name", sanitize_text_field( $_POST['first_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
 			}
 		}
 		if ( ! empty( $_POST['last_name'] ) ) {
 			$old_lastname = get_user_meta( $morder->user_id, "last_name", true );
 			if ( empty( $old_lastname ) ) {
-				update_user_meta( $morder->user_id, "last_name", sanitize_text_field( $_POST['last_name'] ) );
+				update_user_meta( $morder->user_id, "last_name", sanitize_text_field( $_POST['last_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
 			}
 		}
 
@@ -704,7 +704,7 @@ function pmpro_ipnSaveOrder( $txn_id, $subscription ) {
 	}
 
 	// Save the event ID for the last processed user/IPN (in case we want to be able to replay IPN requests)
-	$ipn_id = isset($_POST['ipn_track_id']) ? sanitize_text_field( $_POST['ipn_track_id'] ) : null;
+	$ipn_id = isset($_POST['ipn_track_id']) ? sanitize_text_field( wp_unslash( $_POST['ipn_track_id'] ) ) : null;
 
 	// Get the data that should be used to create the order.
 	$order_data = pmpro_ipn_get_order_data( $subscription );
@@ -762,18 +762,18 @@ function pmpro_ipn_get_order_data( $subscription ) {
 		'gateway'        => $subscription->get_gateway(),
 		'gateway_environment' => $subscription->get_gateway_environment(),
 		'subscription_transaction_id' => $subscription->get_subscription_transaction_id(),
-		'timestamp' => ! empty( $_POST['payment_date'] ) ? strtotime( sanitize_text_field( $_POST['payment_date'] ) ) : current_time( 'timestamp' ),
+		'timestamp' => ! empty( $_POST['payment_date'] ) ? strtotime( sanitize_text_field( wp_unslash( $_POST['payment_date'] ) ) ) : current_time( 'timestamp' ),
 	);
 
 	//set amount based on which PayPal type
 	if ( false !== stripos( $order_data['gateway'], "paypal" ) ) {
 
 		if ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
-			$order_data['total']  = sanitize_text_field( $_POST['mc_gross'] );
+			$order_data['total']  = sanitize_text_field( wp_unslash( $_POST['mc_gross'] ) );
 		} elseif ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
-			$order_data['total']  = sanitize_text_field( $_POST['amount'] );
+			$order_data['total']  = sanitize_text_field( wp_unslash( $_POST['amount'] ) );
 		} elseif ( isset( $_POST['payment_gross'] )  && ! empty( $_POST['payment_gross' ] ) ) {
-			$order_data['total']  = sanitize_text_field( $_POST['payment_gross'] );
+			$order_data['total']  = sanitize_text_field( wp_unslash( $_POST['payment_gross'] ) );
 		}
 		
 		//check for tax

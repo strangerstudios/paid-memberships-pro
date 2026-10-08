@@ -153,13 +153,13 @@ function pmpro_required_billing_fields_stripe_lite( $fields ) {
 // copy other discount code to discount code if latter is not set
 // phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Only copies a request field alias into the request superglobals; nothing is saved here. Checkout processing that consumes it verifies pmpro_checkout_nonce in preheaders/checkout.php.
 if ( empty( $_REQUEST['pmpro_discount_code'] ) && ! empty( $_REQUEST['pmpro_other_discount_code'] ) ) {
-	$_REQUEST['pmpro_discount_code'] = sanitize_text_field( $_REQUEST['pmpro_other_discount_code'] );
+	$_REQUEST['pmpro_discount_code'] = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_other_discount_code'] ) );
 }
 if ( empty( $_POST['pmpro_discount_code'] ) && ! empty( $_POST['pmpro_other_discount_code'] ) ) {
-	$_POST['pmpro_discount_code'] = sanitize_text_field( $_POST['pmpro_other_discount_code'] );	
+	$_POST['pmpro_discount_code'] = sanitize_text_field( wp_unslash( $_POST['pmpro_other_discount_code'] ) );	
 }
 if ( empty( $_GET['pmpro_discount_code'] ) && ! empty( $_GET['pmpro_other_discount_code'] ) ) {
-	$_GET['pmpro_discount_code'] = sanitize_text_field( $_GET['pmpro_other_discount_code'] );	
+	$_GET['pmpro_discount_code'] = sanitize_text_field( wp_unslash( $_GET['pmpro_other_discount_code'] ) );	
 }
 // phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 

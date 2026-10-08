@@ -34,15 +34,15 @@ function pmpro_init_save_wizard_data() {
 	/**
 	 * Step 1 - Update settings and generate anything we may need based off settings.
 	 */
-	if ( $_REQUEST['wizard-action'] == 'step-1' ) {
+	if ( isset( $_REQUEST['wizard-action'] ) && $_REQUEST['wizard-action'] == 'step-1' ) {
 
 		// Verify the nonce for step 1
-		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_1_nonce'] ), 'pmpro_wizard_step_1_nonce' ) ) {
+		if ( ! isset( $_REQUEST['pmpro_wizard_step_1_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_1_nonce'] ), 'pmpro_wizard_step_1_nonce' ) ) {
 			return;
 		}
 
 		// Save the type of membership site. May be saved as "Blank"?
-		pmpro_setOption( 'site_type', sanitize_text_field( $_REQUEST['membership_site_type'] ) );
+		pmpro_setOption( 'site_type', isset( $_REQUEST['membership_site_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['membership_site_type'] ) ) : '' );
 
 		// Generate pages
 		if ( ! empty( $_REQUEST['createpages'] ) ) {
@@ -92,11 +92,11 @@ function pmpro_init_save_wizard_data() {
 		// Update license key value
 		if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
 			// Check if license key is valid.
-			if ( ! pmpro_license_isValid( sanitize_text_field( $_REQUEST['pmpro_license_key'] ), NULL, true ) ) {
+			if ( ! pmpro_license_isValid( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_license_key'] ) ), NULL, true ) ) {
 				return;
 			}
 
-			pmpro_setOption( 'license_key', sanitize_text_field( $_REQUEST['pmpro_license_key'] ) );
+			pmpro_setOption( 'license_key', sanitize_text_field( wp_unslash( $_REQUEST['pmpro_license_key'] ) ) );
 		}
 
 		$next_step = add_query_arg(
@@ -108,21 +108,21 @@ function pmpro_init_save_wizard_data() {
 		);
 		// Before redirecting to next step, save the step we're redirecting to.
 		pmpro_setOption( 'wizard_step', $step );
-		wp_redirect( $next_step );
+		wp_safe_redirect( $next_step );
 		exit;
 	}
 
 	/**
 	 * Payment Settings Step
 	 */
-	if ( $_REQUEST['wizard-action'] == 'step-2' ) {
+	if ( isset( $_REQUEST['wizard-action'] ) && $_REQUEST['wizard-action'] == 'step-2' ) {
 
-		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_2_nonce'] ), 'pmpro_wizard_step_2_nonce' ) ) {
+		if ( ! isset( $_REQUEST['pmpro_wizard_step_2_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_2_nonce'] ), 'pmpro_wizard_step_2_nonce' ) ) {
 			return;
 		}
 
 		if ( ! empty( $_REQUEST['currency'] ) ) {
-			$pmpro_currency = sanitize_text_field( $_REQUEST['currency'] );
+			$pmpro_currency = sanitize_text_field( wp_unslash( $_REQUEST['currency'] ) );
 			pmpro_setOption( 'currency', $pmpro_currency );
 		}
 
@@ -136,7 +136,7 @@ function pmpro_init_save_wizard_data() {
 
 		// If Stripe is not already set up, and the user wants to use Stripe, then redirect them to Stripe Connect.
 		$environment = apply_filters( 'pmpro_wizard_stripe_environment', 'live' );
-		if ( ! empty( $_REQUEST['gateway'] ) && 'stripe' === sanitize_text_field( $_REQUEST['gateway'] ) && ! PMProGateway_Stripe::has_connect_credentials( $environment ) && ! PMProGateway_Stripe::using_api_keys() ) {
+		if ( ! empty( $_REQUEST['gateway'] ) && 'stripe' === sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) ) && ! PMProGateway_Stripe::has_connect_credentials( $environment ) && ! PMProGateway_Stripe::using_api_keys() ) {
 			$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
 			$connect_url = add_query_arg(
 				array(
@@ -146,23 +146,23 @@ function pmpro_init_save_wizard_data() {
 				),
 				esc_url( $connect_url_base )
 			);
-			wp_redirect( $connect_url );
+			wp_redirect( $connect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Redirects to the Stripe Connect authorization URL (offsite by design).
 			exit;
 		}
 
 		// Save the step should they come back at a later stage.
 		pmpro_setOption( 'wizard_step', 'memberships' );
-		wp_redirect( $next_step );
+		wp_safe_redirect( $next_step );
 		exit;
 	}
 
 	/**
 	 * Memberships Step
 	 */
-	if ( $_REQUEST['wizard-action'] == 'step-3' ) {
+	if ( isset( $_REQUEST['wizard-action'] ) && $_REQUEST['wizard-action'] == 'step-3' ) {
 		global $wpdb;
 
-		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_3_nonce'] ), 'pmpro_wizard_step_3_nonce' ) ) {
+		if ( ! isset( $_REQUEST['pmpro_wizard_step_3_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_3_nonce'] ), 'pmpro_wizard_step_3_nonce' ) ) {
 			return;
 		}
 
@@ -196,7 +196,7 @@ function pmpro_init_save_wizard_data() {
 
 			$paid_level_name = ! empty( $_REQUEST['pmpro-wizard__paid-level-name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['pmpro-wizard__paid-level-name'] ) ) :  sanitize_text_field( __( 'Premium', 'paid-memberships-pro' ) );
 			$amount          = ! empty( $_REQUEST['pmpro-wizard__paid-level-amount'] ) ? floatval( $_REQUEST['pmpro-wizard__paid-level-amount'] ) : 10.00;
-			$period          = ! empty( $_REQUEST['cycle_period'] ) ? sanitize_text_field( $_REQUEST['cycle_period'] ) : 'Month';
+			$period          = ! empty( $_REQUEST['cycle_period'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['cycle_period'] ) ) : 'Month';
 
 			$levels_array['paid'] = array(
 				'id'                => 0,
@@ -251,7 +251,7 @@ function pmpro_init_save_wizard_data() {
 
 		// Save the step should they come back at a later stage.
 		pmpro_setOption( 'wizard_step', 'advanced' );
-		wp_redirect( $next_step );
+		wp_safe_redirect( $next_step );
 
 		// Now we can redirect to the next step we might need.
 	} // End of step 2.
@@ -259,8 +259,8 @@ function pmpro_init_save_wizard_data() {
 	/**
 	 * Advanced Settings Step
 	 */
-	if ( $_REQUEST['wizard-action'] == 'step-4' ) {
-		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_4_nonce'] ), 'pmpro_wizard_step_4_nonce' ) ) {
+	if ( isset( $_REQUEST['wizard-action'] ) && $_REQUEST['wizard-action'] == 'step-4' ) {
+		if ( ! isset( $_REQUEST['pmpro_wizard_step_4_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_4_nonce'] ), 'pmpro_wizard_step_4_nonce' ) ) {
 			return;
 		}
 
@@ -300,7 +300,7 @@ function pmpro_init_save_wizard_data() {
 
 		// Set option to complete right before redirect (in case something goes wrong or they quit during this process for some reason.)
 		pmpro_setOption( 'wizard_step', 'done' );
-		wp_redirect( $next_step );
+		wp_safe_redirect( $next_step );
 	}
 
 	// Final step is handled further up as no form submission is needed, but rather clean things up on page load.

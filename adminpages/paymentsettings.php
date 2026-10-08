@@ -12,7 +12,7 @@
 	global $wpdb, $pmpro_currency_symbol, $msg, $msgt;
 
 	// Check if we are editing a specific gateway.
-	$edit_gateway = ! empty( $_REQUEST['edit_gateway'] ) ? sanitize_text_field( $_REQUEST['edit_gateway'] ) : '';
+	$edit_gateway = ! empty( $_REQUEST['edit_gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_gateway'] ) ) : '';
 
 	// If we have a gateway, try to build its gateway class name.
 	$gateway_class_name = '';

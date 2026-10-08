@@ -560,13 +560,12 @@ function pmpro_membership_level_profile_fields_update() {
 	
 	// Key is level ID, value is array of user selections. Sanitize input.
 	$submitted_levels = array();
-	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	foreach( $_REQUEST['pmpro_membership_levels'] as $key => $values ) {
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Keys and values are sanitized inside the loop.
+	foreach( wp_unslash( $_REQUEST['pmpro_membership_levels'] ) as $key => $values ) {
 		$key = intval( $key );
 		$values = array_map( 'sanitize_text_field', $values );
 		$submitted_levels[$key] = $values;
-	}	
-	$submitted_levels = $_REQUEST['pmpro_membership_levels'];
+	}
 
 	// Loop through the submitted levels.
 	foreach ( $submitted_levels as $submitted_level => $submitted_level_data ) {
@@ -1018,7 +1017,7 @@ function pmpro_member_profile_edit_form() {
 	}
 
 	// Saving profile updates.
-	if ( isset( $_POST['action'] ) && $_POST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( sanitize_key( $_POST['update_user_nonce'] ), 'update-user_' . $current_user->ID ) ) {
+	if ( isset( $_POST['action'] ) && $_POST['action'] == 'update-profile' && isset( $_POST['user_id'], $_POST['update_user_nonce'] ) && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( sanitize_key( $_POST['update_user_nonce'] ), 'update-user_' . $current_user->ID ) ) {
 		$update           = true;
 		$user     		  = new stdClass;
 		$user->ID         = intval( $_POST[ 'user_id' ] );
@@ -1036,13 +1035,13 @@ function pmpro_member_profile_edit_form() {
 			$user->user_email = sanitize_text_field( wp_unslash( $_POST['user_email'] ) );
 		}
 		if ( isset( $_POST['first_name'] ) ) {
-			$user->first_name = sanitize_text_field( $_POST['first_name'] );
+			$user->first_name = sanitize_text_field( $_POST['first_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Left slashed on purpose, like core edit_user(): wp_update_user() unslashes its input before saving, so unslashing here would strip literal backslashes.
 		}
 		if ( isset( $_POST['last_name'] ) ) {
-			$user->last_name = sanitize_text_field( $_POST['last_name'] );
+			$user->last_name = sanitize_text_field( $_POST['last_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Left slashed on purpose, like core edit_user(): wp_update_user() unslashes its input before saving, so unslashing here would strip literal backslashes.
 		}
 		if ( isset( $_POST['display_name'] ) ) {
-			$user->display_name = sanitize_text_field( $_POST['display_name'] );
+			$user->display_name = sanitize_text_field( $_POST['display_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Left slashed on purpose, like core edit_user(): wp_update_user() unslashes its input before saving, so unslashing here would strip literal backslashes.
 			$user->nickname = $user->display_name;
 		}
 
@@ -1203,23 +1202,23 @@ function pmpro_change_password_process() {
 	}
 
 	// Check the nonce.
-	if ( ! wp_verify_nonce( sanitize_key( $_POST['change_password_user_nonce'] ), 'change-password-user_' . $current_user->ID ) ) {
+	if ( ! isset( $_POST['change_password_user_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['change_password_user_nonce'] ), 'change-password-user_' . $current_user->ID ) ) {
 		return;
 	}
 
 	// Get all password values from the $_POST.
 	if ( ! empty( $_POST['password_current'] ) ) {
-		$password_current = sanitize_text_field( $_POST['password_current'] );
+		$password_current = sanitize_text_field( $_POST['password_current'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed); the existing sanitize_text_field() is kept so previously set passwords still match.
 	} else {
 		$password_current = '';
 	}
 	if ( ! empty( $_POST['pass1'] ) ) {
-		$pass1 = sanitize_text_field( $_POST['pass1'] );
+		$pass1 = sanitize_text_field( $_POST['pass1'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed); the existing sanitize_text_field() is kept so previously set passwords still match.
 	} else {
 		$pass1 = '';
 	}
 	if ( ! empty( $_POST['pass2'] ) ) {
-		$pass2 = sanitize_text_field( $_POST['pass2'] );
+		$pass2 = sanitize_text_field( $_POST['pass2'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed); the existing sanitize_text_field() is kept so previously set passwords still match.
 	} else {
 		$pass2 = '';
 	}

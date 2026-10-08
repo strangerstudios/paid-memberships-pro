@@ -212,13 +212,13 @@ function pmpro_report_email_log_page() {
 	}
 
 	// Get search parameter
-	$s = isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '';
+	$s = isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : '';
 
 	// Get template filter
-	$template_filter = isset( $_REQUEST['template'] ) ? sanitize_text_field( $_REQUEST['template'] ) : '';
+	$template_filter = isset( $_REQUEST['template'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ) : '';
 
 	// Get status filter
-	$status_filter = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+	$status_filter = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
 
 	// Pagination
 	$pn = isset( $_REQUEST['pn'] ) ? intval( $_REQUEST['pn'] ) : 1;

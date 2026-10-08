@@ -114,7 +114,7 @@ class PMPro_Action_Scheduler {
 	 */
 	public static function show_outdated_notice() {
 		// Only show on PMPro admin pages.
-		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current admin page to decide whether to show a notice.
+		if ( empty( $_REQUEST['page'] ) || strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current admin page to decide whether to show a notice.
 			return;
 		}
 

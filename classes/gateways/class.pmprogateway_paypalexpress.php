@@ -326,7 +326,7 @@
 
 			foreach ( $settings_to_save as $setting ) {
 				if ( isset( $_REQUEST[ $setting ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
-					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
+					update_option( 'pmpro_' . $setting, sanitize_text_field( wp_unslash( $_REQUEST[ $setting ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
 				}
 			}
 		}
@@ -404,17 +404,17 @@
 			if(!$current_user->ID) {
 				//get values from post
 				if(isset($_REQUEST['username']))
-					$username = trim(sanitize_text_field($_REQUEST['username']));
+					$username = trim(sanitize_text_field(wp_unslash($_REQUEST['username'])));
 				else
 					$username = "";
 				if(isset($_REQUEST['password'])) {
 					// Can't sanitize the password. Be careful.
-					$password = $_REQUEST['password']; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$password = $_REQUEST['password']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed, unsanitized).
 				} else {
 					$password = "";
 				}
 				if(isset($_REQUEST['bemail']))
-					$bemail = sanitize_email($_REQUEST['bemail']);
+					$bemail = sanitize_email(wp_unslash($_REQUEST['bemail']));
 				else
 					$bemail = "";
 
@@ -446,16 +446,16 @@
 			if(!empty($_REQUEST['review']))
 			{
 				if(!empty($_REQUEST['PayerID']))
-					$_SESSION['payer_id'] = sanitize_text_field($_REQUEST['PayerID']);
+					$_SESSION['payer_id'] = sanitize_text_field(wp_unslash($_REQUEST['PayerID']));
 				if(!empty($_REQUEST['paymentAmount']))
-					$_SESSION['paymentAmount'] = sanitize_text_field($_REQUEST['paymentAmount']);
+					$_SESSION['paymentAmount'] = sanitize_text_field(wp_unslash($_REQUEST['paymentAmount']));
 				if(!empty($_REQUEST['currencyCodeType']))
-					$_SESSION['currCodeType'] = sanitize_text_field($_REQUEST['currencyCodeType']);
+					$_SESSION['currCodeType'] = sanitize_text_field(wp_unslash($_REQUEST['currencyCodeType']));
 				if(!empty($_REQUEST['paymentType']))
-					$_SESSION['paymentType'] = sanitize_text_field($_REQUEST['paymentType']);
+					$_SESSION['paymentType'] = sanitize_text_field(wp_unslash($_REQUEST['paymentType']));
 
 				$morder = new MemberOrder();
-				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
+				$morder->getMemberOrderByPayPalToken(isset($_REQUEST['token']) ? sanitize_text_field(wp_unslash($_REQUEST['token'])) : '');
 
 				// Pull checkout values from order meta.
 				pmpro_pull_checkout_data_from_order( $morder );
@@ -491,7 +491,7 @@
 			)
 			{
 				$morder = new MemberOrder();
-				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
+				$morder->getMemberOrderByPayPalToken(isset($_REQUEST['token']) ? sanitize_text_field(wp_unslash($_REQUEST['token'])) : '');
 				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
 
 				// Pull checkout values from order meta.
@@ -550,13 +550,13 @@
 			{
 				//reload the user fields
 				if( ! empty( $_SESSION['pmpro_signup_username'] ) ){
-					$new_user_array['user_login'] = $_SESSION['pmpro_signup_username'];
+					$new_user_array['user_login'] = $_SESSION['pmpro_signup_username']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized before it was stored in the session by pmpro_checkout_before_processing().
 				}
 				if( ! empty( $_SESSION['pmpro_signup_password'] ) ){
-					$new_user_array['user_pass'] = $_SESSION['pmpro_signup_password'];
+					$new_user_array['user_pass'] = $_SESSION['pmpro_signup_password']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed, unsanitized).
 				}
 				if( ! empty( $_SESSION['pmpro_signup_email'] ) ){
-					$new_user_array['user_email'] = $_SESSION['pmpro_signup_email'];
+					$new_user_array['user_email'] = $_SESSION['pmpro_signup_email']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized with sanitize_email() before it was stored in the session by pmpro_checkout_before_processing().
 				}
 
 				//unset the user fields in session
@@ -785,7 +785,7 @@
 					$paypal_url = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token="  . $this->httpParsedResponseAr['TOKEN'];
 				}
 
-				wp_redirect($paypal_url);
+				wp_redirect($paypal_url); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Redirects to the PayPal Express Checkout URL (offsite by design).
 				exit;
 
 				//exit('SetExpressCheckout Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
@@ -855,7 +855,7 @@
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1";
 
-			$nvpStr .= "&PAYERID=" . sanitize_text_field( $_REQUEST['PayerID'] ) . "&PAYMENTACTION=sale"; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called from checkout processing after pmpro_checkout_nonce is verified in preheaders/checkout.php; PayerID is PayPal's return value and PayPal validates it with the token.
+			$nvpStr .= "&PAYERID=" . ( isset( $_REQUEST['PayerID'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['PayerID'] ) ) : '' ) . "&PAYMENTACTION=sale"; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called from checkout processing after pmpro_checkout_nonce is verified in preheaders/checkout.php; PayerID is PayPal's return value and PayPal validates it with the token.
 
 			$nvpStr = apply_filters("pmpro_do_express_checkout_payment_nvpstr", $nvpStr, $order);
 

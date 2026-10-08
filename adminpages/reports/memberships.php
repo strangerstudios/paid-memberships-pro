@@ -123,13 +123,13 @@ function pmpro_report_memberships_page() {
 
 	// get values from form
 	if ( isset( $_REQUEST['type'] ) ) {
-		$type = sanitize_text_field( $_REQUEST['type'] );
+		$type = sanitize_text_field( wp_unslash( $_REQUEST['type'] ) );
 	} else {
 		$type = 'signup_v_all';
 	}
 
 	if ( isset( $_REQUEST['period'] ) ) {
-		$period = sanitize_text_field( $_REQUEST['period'] );
+		$period = sanitize_text_field( wp_unslash( $_REQUEST['period'] ) );
 	} else {
 		$period = 'monthly';
 	}

@@ -13,7 +13,7 @@ if ( ! empty( $_REQUEST['pmpro-verify-submit'] ) && ( empty( $_REQUEST['pmpro-ke
 	// Nonce check failed. Don't save the key; show the error in the license notice below.
 	$pmpro_license_check = new WP_Error( 'pmpro_license_nonce', __( 'Security check failed. Please try again.', 'paid-memberships-pro' ) );
 } elseif ( ! empty( $_REQUEST['pmpro-verify-submit'] ) ) {
-	$key = preg_replace("/[^a-zA-Z0-9]/", "", sanitize_text_field( $_REQUEST['pmpro-license-key'] ) );
+	$key = preg_replace("/[^a-zA-Z0-9]/", "", isset( $_REQUEST['pmpro-license-key'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['pmpro-license-key'] ) ) : '' );
 	
 	// Check key.
 	$pmpro_license_check = pmpro_license_check_key( $key );

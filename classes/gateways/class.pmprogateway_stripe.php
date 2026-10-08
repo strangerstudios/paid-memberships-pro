@@ -1005,7 +1005,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		foreach ( $settings_to_save as $setting ) {
 			if ( isset( $_REQUEST[ $setting ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
-				update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
+				update_option( 'pmpro_' . $setting, sanitize_text_field( wp_unslash( $_REQUEST[ $setting ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
 			}
 		}
 
@@ -1266,17 +1266,17 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Add the PaymentIntent ID to the order.
 		if ( ! empty ( $_REQUEST['payment_intent_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
-			$morder->payment_intent_id = sanitize_text_field( $_REQUEST['payment_intent_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
+			$morder->payment_intent_id = sanitize_text_field( wp_unslash( $_REQUEST['payment_intent_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
 		}
 
 		// Add the SetupIntent ID to the order.
 		if ( ! empty ( $_REQUEST['setup_intent_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
-			$morder->setup_intent_id = sanitize_text_field( $_REQUEST['setup_intent_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
+			$morder->setup_intent_id = sanitize_text_field( wp_unslash( $_REQUEST['setup_intent_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
 		}
 
 		// Add the PaymentMethod ID to the order.
 		if ( ! empty ( $_REQUEST['payment_method_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
-			$morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
+			$morder->payment_method_id = sanitize_text_field( wp_unslash( $_REQUEST['payment_method_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_checkout_order during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; the ID is verified with Stripe when the payment is processed.
 		}
 
 		return $morder;
@@ -1515,7 +1515,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Check the nonce.
-		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_stripe_connect_nonce'] ), 'pmpro_stripe_connect_nonce' ) ) {
+		if ( ! isset( $_REQUEST['pmpro_stripe_connect_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_stripe_connect_nonce'] ), 'pmpro_stripe_connect_nonce' ) ) {
 			return false;
 		}
 
@@ -1524,7 +1524,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'false' === $_REQUEST['pmpro_stripe_connected']
 			&& isset( $_REQUEST['error_message'] )
 		) {
-			$error = sanitize_text_field( $_REQUEST['error_message'] );
+			$error = sanitize_text_field( wp_unslash( $_REQUEST['error_message'] ) );
 		} elseif (
 			'false' === $_REQUEST['pmpro_stripe_connected']
 			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
@@ -1532,7 +1532,7 @@ class PMProGateway_stripe extends PMProGateway {
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
 		) {
 			$error = __( 'Invalid response from the Stripe Connect server.', 'paid-memberships-pro' );
-		} elseif ( 'live' === $_REQUEST['pmpro_stripe_connected_environment'] && self::is_different_connected_account( 'live', $_REQUEST['pmpro_stripe_user_id'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		} elseif ( 'live' === $_REQUEST['pmpro_stripe_connected_environment'] && self::is_different_connected_account( 'live', $_REQUEST['pmpro_stripe_user_id'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Compared against the stored account ID, which is saved exactly as returned by the Connect server (below).
 			// Reconnecting live mode with a different account would orphan every existing customer and subscription.
 			// Redirect right away so the access token in the return URL doesn't linger in the address bar or server logs.
 			wp_safe_redirect( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => 'stripe', 'pmpro_stripe_connect_error' => 'different_account' ), admin_url( 'admin.php' ) ) );
@@ -1540,19 +1540,19 @@ class PMProGateway_stripe extends PMProGateway {
 		} else {
 			// Change current gateway to Stripe. Only once the connection succeeded, so a failed or refused connection leaves the settings alone.
 			update_option( 'pmpro_gateway', 'stripe' );
-			update_option( 'pmpro_gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			update_option( 'pmpro_gateway_environment', sanitize_text_field( wp_unslash( $_REQUEST['pmpro_stripe_connected_environment'] ) ) );
 
 			// Update keys.
 			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
 				// Update live keys.
-				update_option( 'pmpro_live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				update_option( 'pmpro_live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				update_option( 'pmpro_live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				update_option( 'pmpro_live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Stripe Connect credentials are stored exactly as returned by the Connect server; nonce and manage_options are checked above.
+				update_option( 'pmpro_live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Stripe Connect credentials are stored exactly as returned by the Connect server; nonce and manage_options are checked above.
+				update_option( 'pmpro_live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Stripe Connect credentials are stored exactly as returned by the Connect server; nonce and manage_options are checked above.
 			} else {
 				// Update sandbox keys.
-				update_option( 'pmpro_sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				update_option( 'pmpro_sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				update_option( 'pmpro_sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				update_option( 'pmpro_sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Stripe Connect credentials are stored exactly as returned by the Connect server; nonce and manage_options are checked above.
+				update_option( 'pmpro_sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Stripe Connect credentials are stored exactly as returned by the Connect server; nonce and manage_options are checked above.
+				update_option( 'pmpro_sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Stripe Connect credentials are stored exactly as returned by the Connect server; nonce and manage_options are checked above.
 			}
 
 
@@ -1573,7 +1573,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$stripe = new PMProGateway_stripe();
 			$stripe->update_webhook_events();
 
-			wp_redirect( admin_url( sprintf( 'admin.php?%s', http_build_query( $_GET ) ) ) );
+			wp_safe_redirect( admin_url( sprintf( 'admin.php?%s', http_build_query( $_GET ) ) ) );
 			exit;
 		}
 
@@ -1618,7 +1618,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Check the nonce.
-		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_stripe_connect_deauthorize_nonce'] ), 'pmpro_stripe_connect_deauthorize_nonce' ) ) {
+		if ( ! isset( $_REQUEST['pmpro_stripe_connect_deauthorize_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_stripe_connect_deauthorize_nonce'] ), 'pmpro_stripe_connect_deauthorize_nonce' ) ) {
 			return false;
 		}
 
@@ -1633,7 +1633,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$message = sprintf(
 				/* translators: %s Error Message */
 				__( '<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s', 'paid-memberships-pro' ),
-				sanitize_text_field( $_REQUEST['error_message'] )
+				sanitize_text_field( wp_unslash( $_REQUEST['error_message'] ) )
 			);
 
 			$allowed_html = array(
@@ -1694,7 +1694,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Only show on PMPro admin pages except for the payment settings page, which shows the results inline.
-		$page = isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) ? $_REQUEST['page'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: the admin page slug only decides whether to show a notice.
+		$page = isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: the admin page slug only decides whether to show a notice.
 		if ( false === strpos( $page, 'pmpro' ) || 'pmpro-paymentsettings' === $page ) {
 			return;
 		}
@@ -1759,7 +1759,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Only show on PMPro admin pages except for the payment settings page.
-		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false || 'pmpro-paymentsettings' === $_REQUEST['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
+		if ( empty( $_REQUEST['page'] ) || strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) === false || 'pmpro-paymentsettings' === $_REQUEST['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
 			return;
 		}
 
@@ -2703,7 +2703,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Save so that we can confirm the payment later.
 		update_pmpro_membership_order_meta( $morder->id, 'stripe_checkout_session_id', $checkout_session->id );
-		wp_redirect( $checkout_session->url );
+		wp_redirect( $checkout_session->url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Redirects to the Stripe Checkout session URL (offsite by design).
 		exit;
 	}
 
@@ -2748,7 +2748,7 @@ class PMProGateway_stripe extends PMProGateway {
 			// Send the user to the customer portal.
 			$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
 			if ( ! empty( $customer_portal_url ) ) {
-				wp_redirect( $customer_portal_url );
+				wp_redirect( $customer_portal_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Redirects to the Stripe Customer Portal URL (offsite by design).
 				exit;
 			}
 			$error = __( 'Could not get Customer Portal URL. This feature may not be set up in Stripe.', 'paid-memberships-pro' );
@@ -4895,7 +4895,7 @@ class PMProGateway_stripe extends PMProGateway {
 	private function pmpro_create_apple_pay_domain() {
 		try {
 			$create = Stripe_ApplePayDomain::create([
-				'domain_name' => sanitize_text_field( $_SERVER['HTTP_HOST'] ),
+				'domain_name' => isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '',
 			]);
 		} catch (\Throwable $th) {
 			//throw $th;
@@ -4919,7 +4919,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		foreach( $apple_pay_domains as $apple_pay_domain ) {
-			if ( $apple_pay_domain->domain_name === $_SERVER['HTTP_HOST'] ) {
+			if ( isset( $_SERVER['HTTP_HOST'] ) && $apple_pay_domain->domain_name === $_SERVER['HTTP_HOST'] ) {
 				return true;
 			}
 		}

@@ -11,11 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Link a subscription.
 // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: prefills the link form with submitted values; the link action itself is processed in adminpages/subscriptions.php.
-$subscription_transaction_id = ! empty( $_REQUEST['subscription_transaction_id'] ) ? sanitize_text_field( $_REQUEST['subscription_transaction_id'] ) : '';
-$gateway                    = ! empty( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : get_option( 'pmpro_gateway', '' );
-$gateway_environment        = ! empty( $_REQUEST['gateway_environment'] ) ? sanitize_text_field( $_REQUEST['gateway_environment'] ) : get_option( 'pmpro_gateway_environment', '' );
-$user_id                    = ! empty( $_REQUEST['user_id'] ) ? sanitize_text_field( $_REQUEST['user_id'] ) : '';
-$membership_level_id        = ! empty( $_REQUEST['membership_level_id'] ) ? sanitize_text_field( $_REQUEST['membership_level_id'] ) : '';
+$subscription_transaction_id = ! empty( $_REQUEST['subscription_transaction_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['subscription_transaction_id'] ) ) : '';
+$gateway                    = ! empty( $_REQUEST['gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) ) : get_option( 'pmpro_gateway', '' );
+$gateway_environment        = ! empty( $_REQUEST['gateway_environment'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['gateway_environment'] ) ) : get_option( 'pmpro_gateway_environment', '' );
+$user_id                    = ! empty( $_REQUEST['user_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['user_id'] ) ) : '';
+$membership_level_id        = ! empty( $_REQUEST['membership_level_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['membership_level_id'] ) ) : '';
 // phpcs:enable WordPress.Security.NonceVerification.Recommended
 ?>
 

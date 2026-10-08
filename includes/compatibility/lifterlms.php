@@ -738,7 +738,7 @@ function pmpro_lifter_ajax_llms_widget_sold_pmpro() {
 	}
 
 	// Get the start date.
-	$startdate = sanitize_text_field( $_REQUEST['dates']['start'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; returns sales totals to users with the pmpro_reports capability.
+	$startdate = isset( $_REQUEST['dates']['start'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['dates']['start'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; returns sales totals to users with the pmpro_reports capability.
 	// Note: We ignore the enddate. pmpro_getRevenue assumes the enddate is today.
 
 	// Get total PMPro sales in this period.

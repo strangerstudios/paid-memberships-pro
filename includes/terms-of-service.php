@@ -193,8 +193,8 @@ function pmpro_after_checkout_update_consent( $user_id, $order ) {
 		pmpro_save_consent( $user_id, $tospage_id, NULL, $order->id );
 	} elseif ( !empty( $_SESSION['tos'] ) ) {
 		// PayPal Express and others might save tos info into a session variable
-		$tospage_id = $_SESSION['tos']['post_id'];
-		$tospage_modified = $_SESSION['tos']['post_modified'];
+		$tospage_id = isset( $_SESSION['tos']['post_id'] ) ? $_SESSION['tos']['post_id'] : NULL; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Server-side session value set by gateway code, not request input; pmpro_save_consent() falls back to the TOS page option when empty.
+		$tospage_modified = isset( $_SESSION['tos']['post_modified'] ) ? $_SESSION['tos']['post_modified'] : NULL; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Server-side session value set by gateway code, not request input; pmpro_save_consent() falls back to the TOS post's post_modified when empty.
 		pmpro_save_consent( $user_id, $tospage_id, $tospage_modified, $order->id );
 		unset( $_SESSION['tos'] );
 	}

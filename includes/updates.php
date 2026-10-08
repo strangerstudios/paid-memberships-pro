@@ -99,7 +99,7 @@ add_action('wp_ajax_pmpro_updates', 'pmpro_wp_ajax_pmpro_updates');
 */
 function pmpro_admin_init_updates_redirect() {
 	if(is_admin() && !empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-updates' && !pmpro_isUpdateRequired()) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only checks which admin page is being viewed. The redirect changes no data.
-		wp_redirect(admin_url('admin.php?page=pmpro-membershiplevels&updatescomplete=1'));
+		wp_safe_redirect(admin_url('admin.php?page=pmpro-membershiplevels&updatescomplete=1'));
 		exit;
 	}
 }

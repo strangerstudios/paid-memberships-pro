@@ -16,7 +16,7 @@ if ( empty( $_REQUEST['step'] ) ) {
 		$active_step = 'general';
 	}
 } elseif ( ! empty( $_REQUEST['step'] ) ) {
-	$active_step = sanitize_text_field( $_REQUEST['step'] );
+	$active_step = sanitize_text_field( wp_unslash( $_REQUEST['step'] ) );
 } else {
 	$active_step = 'general';
 }

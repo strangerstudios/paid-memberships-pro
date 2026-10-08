@@ -62,14 +62,14 @@ function pmpro_besecure() {
 	$besecure = apply_filters( 'pmpro_besecure', $besecure );
 
 	$use_ssl = get_option( 'pmpro_use_ssl' );
-	if( $use_ssl == 1 ) {
+	if( $use_ssl == 1 && isset( $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'] ) ) {
 		if( $besecure && ( empty( $_SERVER['HTTPS'] ) || $_SERVER['HTTPS'] == 'off' || $_SERVER['HTTPS'] == 'false' ) ) {
 			//need to be secure		
-			wp_safe_redirect( 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+			wp_safe_redirect( 'https://' . wp_unslash( $_SERVER['HTTP_HOST'] ) . wp_unslash( $_SERVER['REQUEST_URI'] ) );
 			exit;
 		} elseif ( ! $besecure && ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' && $_SERVER['HTTPS'] != 'false' ) {
 			//don't need to be secure		
-			wp_safe_redirect('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+			wp_safe_redirect('http://' . wp_unslash( $_SERVER['HTTP_HOST'] ) . wp_unslash( $_SERVER['REQUEST_URI'] ) );
 			exit;
 		}	
 	}
@@ -128,11 +128,11 @@ add_filter( 'pmpro_besecure', 'pmpro_check_site_url_for_https' );
 //capturing case where a user links to https admin without admin over https
 function pmpro_admin_https_handler() {
 	if ( ! empty( $_SERVER['HTTPS'] ) ) {
-		$https = sanitize_text_field( $_SERVER['HTTPS'] );
+		$https = sanitize_text_field( wp_unslash( $_SERVER['HTTPS'] ) );
 		if( strtolower( $https ) != 'off' && strtolower( $https ) != 'false' && is_admin() ) {
-			if( substr( get_option( 'siteurl' ), 0, 5 ) == 'http:' && ! force_ssl_admin() ) {
+			if( substr( get_option( 'siteurl' ), 0, 5 ) == 'http:' && ! force_ssl_admin() && isset( $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'] ) ) {
 				//need to redirect to non https
-				wp_safe_redirect( esc_url_raw( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) );
+				wp_safe_redirect( esc_url_raw( 'http://' . wp_unslash( $_SERVER['HTTP_HOST'] ) . wp_unslash( $_SERVER['REQUEST_URI'] ) ) );
 				exit;
 			}
 		}

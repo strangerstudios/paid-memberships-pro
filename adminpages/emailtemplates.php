@@ -13,7 +13,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 global $wpdb, $msg, $msgt, $pmpro_email_templates_defaults, $current_user;
 
 // Set the template based on the request or post value, if set.
-$edit = isset( $_REQUEST['edit'] ) ? $_REQUEST['edit'] : ( isset( $_POST['edit'] ) ? $_POST['edit'] : null ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Read-only; only selects which template screen to show.
+$edit = isset( $_REQUEST['edit'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit'] ) ) : ( isset( $_POST['edit'] ) ? sanitize_text_field( wp_unslash( $_POST['edit'] ) ) : null ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Read-only; only selects which template screen to show.
 $template = isset( $pmpro_email_templates_defaults[ $edit ] ) ? $pmpro_email_templates_defaults[ $edit ] : null;
 
 // Do we have a template to edit? If so, show the edit screen.

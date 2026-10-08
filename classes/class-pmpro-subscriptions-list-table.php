@@ -255,10 +255,10 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter, search, sort and paginate the list table.
 		global $wpdb;
 
-		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
+		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '';
 		$level = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : false;
-		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
-		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
+		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
+		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) ) : '';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
 		$items_per_page = $this->get_items_per_page( 'pmpro_subscriptions_per_page' );
 		/**
@@ -298,7 +298,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 
 		if ( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) && ! $count ) {
 			$order         = $_REQUEST['order'] == 'asc' ? 'ASC' : 'DESC';
-			$orderby       = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+			$orderby       = $this->sanitize_orderby( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) );
 			$orderby_query = "ORDER BY $orderby $order";
 		} else {
 			$orderby_query = 'ORDER BY id DESC';
@@ -371,8 +371,8 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 
 		// Read current filter values from request.
 		$l       = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : 0;
-		$status  = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
-		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
+		$status  = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
+		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) ) : '';
 
 		// Count active filters for the toggle button badge.
 		$active_filter_count = 0;

@@ -15,7 +15,7 @@ if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['
 
 //get values from form
 if(isset($_REQUEST['type']))
-	$type = sanitize_text_field($_REQUEST['type']);
+	$type = sanitize_text_field( wp_unslash( $_REQUEST['type'] ) );
 else
 	$type = "revenue";
 
@@ -25,7 +25,7 @@ else
 	$type_function = "SUM";
 
 if(isset($_REQUEST['period']))
-	$period = sanitize_text_field($_REQUEST['period']);
+	$period = sanitize_text_field( wp_unslash( $_REQUEST['period'] ) );
 else
 	$period = "daily";
 

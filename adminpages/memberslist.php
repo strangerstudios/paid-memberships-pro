@@ -15,10 +15,10 @@ require_once dirname( __DIR__ ) . '/adminpages/admin_header.php';
 $members_export_filters = array();
 // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; current list filters are only passed along to the export button.
 if ( isset( $_REQUEST['s'] ) ) {
-    $members_export_filters['s'] = esc_attr( trim( sanitize_text_field( $_REQUEST['s'] ) ) );
+    $members_export_filters['s'] = esc_attr( trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) );
 }
 if ( isset( $_REQUEST['l'] ) ) {
-    $members_export_filters['l'] = trim( sanitize_text_field( $_REQUEST['l'] ) );
+    $members_export_filters['l'] = trim( sanitize_text_field( wp_unslash( $_REQUEST['l'] ) ) );
 }
 // phpcs:enable WordPress.Security.NonceVerification.Recommended
 

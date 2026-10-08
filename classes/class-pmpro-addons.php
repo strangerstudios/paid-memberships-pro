@@ -996,9 +996,9 @@ class PMPro_AddOns {
 		}
 
 		// updating one or more plugins via Dashboard -> Upgrade
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
 			// figure out which plugins we are updating
-			$plugins = explode( ',', stripslashes( sanitize_text_field( $_GET['plugins'] ) ) );
+			$plugins = explode( ',', isset( $_GET['plugins'] ) ? sanitize_text_field( wp_unslash( $_GET['plugins'] ) ) : '' );
 			$plugins = array_map( 'urldecode', $plugins );
 
 			// look for addons
@@ -1046,9 +1046,9 @@ class PMPro_AddOns {
 		}
 
 		// upgrading just one or plugin via an update.php link
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 			// figure out which plugin we are updating
-			$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
+			$plugin = urldecode( trim( sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) ) );
 
 			$slug  = str_replace( '.php', '', basename( $plugin ) );
 			$addon = $this->get_addon_by_slug( $slug );
@@ -1077,9 +1077,9 @@ class PMPro_AddOns {
 		}
 
 		// updating via AJAX on the plugins page
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 			// figure out which plugin we are updating
-			$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
+			$plugin = urldecode( trim( sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) ) );
 
 			$slug  = str_replace( '.php', '', basename( $plugin ) );
 			$addon = $this->get_addon_by_slug( $slug );

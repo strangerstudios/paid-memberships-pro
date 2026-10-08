@@ -89,7 +89,7 @@ class PMPro_Exports {
 			$export_id       = isset( $_REQUEST['export_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['export_id'] ) ) : '';
 
 			// Do not sanitize token; use raw-unslashed for proper HMAC compare.
-			$token = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : '';
+			$token = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Token is hashed and checked with hash_equals() in validate_file_access(); sanitizing could alter its bytes.
 			$file  = isset( $_REQUEST['pmpro_restricted_file'] ) ? basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file'] ) ) ) : '';
 
 			// Nonce verification.

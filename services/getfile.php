@@ -29,7 +29,7 @@
 	global $wpdb;
 
 	// Get the file path.
-	$uri = sanitize_text_field( $_SERVER['REQUEST_URI'] );
+	$uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 
 	// Remove the query string from the path.
 	$uri_parts = explode( '?', $uri );
@@ -128,9 +128,9 @@
 		
 		//guess scheme and add host back to uri
 		if(is_ssl())
-			$uri = "https://" . sanitize_text_field( $_SERVER['HTTP_HOST'] ) . "/" . $uri;
+			$uri = "https://" . ( isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '' ) . "/" . $uri;
 		else
-			$uri = "http://" . sanitize_text_field( $_SERVER['HTTP_HOST'] )	 . "/" . $uri;
+			$uri = "http://" . ( isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '' )	 . "/" . $uri;
 				
 		wp_safe_redirect( $uri );
 		exit;
