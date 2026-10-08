@@ -174,7 +174,7 @@ class PMPro_Recurring_Actions {
 
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
-			$expiring_soon = $wpdb->get_results( $batched_query );
+			$expiring_soon = $wpdb->get_results( $batched_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Both parts built with $wpdb->prepare(). PMPro custom tables; no WordPress API or cache layer.
 
 			if ( empty( $expiring_soon ) ) {
 				break;
@@ -282,7 +282,7 @@ class PMPro_Recurring_Actions {
 
 		do {
 			$batched_query = $sqlQuery . $wpdb->prepare( ' LIMIT %d OFFSET %d', $query_limit, $query_offset );
-			$expired       = $wpdb->get_results( $batched_query );
+			$expired       = $wpdb->get_results( $batched_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Both parts built with $wpdb->prepare(). PMPro custom tables; no WordPress API or cache layer.
 
 			if ( empty( $expired ) ) {
 				break;
@@ -467,7 +467,7 @@ class PMPro_Recurring_Actions {
 				$days
 			);
 
-			$subscriptions_to_notify = $wpdb->get_results( $sqlQuery );
+			$subscriptions_to_notify = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Built with $wpdb->prepare() above. PMPro custom tables; no WordPress API or cache layer.
 			if ( is_wp_error( $subscriptions_to_notify ) ) {
 				continue;
 			}
@@ -559,6 +559,9 @@ class PMPro_Recurring_Actions {
 	 */
 	public function delete_temp_files() {
 		$upload_dir  = wp_upload_dir();
+		// Do not point this at pmpro-register-helper/tmp/. Delayed checkouts (e.g. Stripe async payments, PayPal Express)
+		// read their uploaded files from there after this one hour limit. Those files are deleted when their order is
+		// deleted instead. See pmpro_delete_order_checkout_files().
 		$pmprorh_dir = trailingslashit( $upload_dir['basedir'] ) . 'paid-memberships-pro/tmp/';
 
 		if ( ! file_exists( $pmprorh_dir ) || ! is_dir( $pmprorh_dir ) ) {
@@ -603,7 +606,7 @@ class PMPro_Recurring_Actions {
 			SET mu.status = 'inactive' 
 			WHERE mu.status = 'active' 
 			AND l.id IS NULL";
-		$wpdb->query( $sql_query );
+		$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query; table names from $wpdb. PMPro custom tables; no WordPress API or cache layer.
 	}
 
 	/**
@@ -630,6 +633,6 @@ class PMPro_Recurring_Actions {
 				ORDER BY mu1.user_id, mu1.id DESC) t2
 				ON t1.id = t2.id
 				SET t1.status = 'inactive'";
-		$wpdb->query( $sqlQuery );
+		$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query; table names from $wpdb. PMPro custom tables; no WordPress API or cache layer.
 	}
 }

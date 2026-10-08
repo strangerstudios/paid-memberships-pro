@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <div class="pmpro-wizard__step pmpro-wizard__step-2">
 	<div class="pmpro-wizard__step-header">
 		<h2><?php esc_html_e( 'Payment Settings', 'paid-memberships-pro' ); ?></h2>

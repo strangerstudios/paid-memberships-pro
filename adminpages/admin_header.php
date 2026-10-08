@@ -1,13 +1,17 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	require_once(dirname(__FILE__) . "/functions.php");
 
-	if(isset($_REQUEST['page']))
-		$view = sanitize_text_field($_REQUEST['page']);
+	if(isset($_REQUEST['page'])) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
+		$view = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
 	else
 		$view = "";
 
-	if ( ! empty( $_REQUEST['edit'] ) ) {
-		$edit_level = intval( $_REQUEST['edit'] );
+	if ( ! empty( $_REQUEST['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
+		$edit_level = intval( $_REQUEST['edit'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
 	} else {
 		$edit_level = false;
 	}
@@ -171,7 +175,7 @@
 
 		// Hide notifications on certain pages.
 		$hide_on_these_pages = array( 'pmpro-updates' );
-		if ( ! empty( $_REQUEST['page'] ) && in_array( sanitize_text_field( $_REQUEST['page'] ), $hide_on_these_pages ) ) {
+		if ( ! empty( $_REQUEST['page'] ) && in_array( sanitize_text_field( $_REQUEST['page'] ), $hide_on_these_pages ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only decides whether to show notifications.
 			$show_notifications = false;
 		}
 
@@ -187,8 +191,8 @@
         </div>
         <?php
             // To debug a specific notification.
-            if ( !empty( $_REQUEST['pmpro_notification'] ) ) {
-                $specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] );
+            if ( !empty( $_REQUEST['pmpro_notification'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only selects a notification to display for debugging.
+                $specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only selects a notification to display for debugging.
             } else {
                 $specific_notification = '';
             }
@@ -321,8 +325,8 @@
 	if ( 'stripe' === get_option( 'pmpro_gateway' ) ) {
 		// Check if the user is not paying for a license.
 		if ( ! pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) {
-			// Check if the user selected to acknowledge the 2% fee.
-			if ( ! empty( $_REQUEST['acknowledge_stripe_connect_fee'] ) && '1' === $_REQUEST['acknowledge_stripe_connect_fee'] ) {
+			// Check if the user selected to acknowledge the 2% fee. Requires a valid nonce and the payment settings capability.
+			if ( current_user_can( 'pmpro_paymentsettings' ) && ! empty( $_REQUEST['pmpro_stripe_fee_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['pmpro_stripe_fee_nonce'] ) ), 'pmpro_acknowledge_stripe_connect_fee' ) && ! empty( $_REQUEST['acknowledge_stripe_connect_fee'] ) && '1' === $_REQUEST['acknowledge_stripe_connect_fee'] ) {
 				// Delete the option to acknowledge the fee.
 				delete_option( 'pmpro_stripe_connect_reduced_application_fee' );
 
@@ -360,7 +364,7 @@
 						</li>
 					</ol>
 					<p>
-						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'acknowledge_stripe_connect_fee' => '1' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-primary">
+						<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'acknowledge_stripe_connect_fee' => '1' ), admin_url( 'admin.php' ) ), 'pmpro_acknowledge_stripe_connect_fee', 'pmpro_stripe_fee_nonce' ) ); ?>" class="button button-primary">
 							<?php esc_html_e( 'Accept and Continue With 2% Fee', 'paid-memberships-pro' ); ?>
 						</a>
 					</p>
@@ -393,7 +397,7 @@
 						</li>
 					</ol>
 					<p>
-						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'acknowledge_stripe_connect_fee' => '1' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-primary">
+						<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'acknowledge_stripe_connect_fee' => '1' ), admin_url( 'admin.php' ) ), 'pmpro_acknowledge_stripe_connect_fee', 'pmpro_stripe_fee_nonce' ) ); ?>" class="button button-primary">
 							<?php esc_html_e( 'Dismiss this Notice', 'paid-memberships-pro' ); ?>
 						</a>
 					</p>

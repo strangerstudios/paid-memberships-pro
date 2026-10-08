@@ -3,6 +3,8 @@
  * Stripe webhook handler.
  */
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables and MySQL named locks; webhook processing must read current order state, not a cached copy.
+
 use Stripe\Invoice as Stripe_Invoice;
 use Stripe\Subscription as Stripe_Subscription;
 use Stripe\Charge as Stripe_Charge;
@@ -589,16 +591,19 @@ class PMPro_Stripe_Webhook_Handler {
 			}
 
 			// Remove any application fee on the subscription. We will add it to individual invoices when they're created.
-			try {
-				Stripe_Subscription::update(
-					$checkout_session->subscription,
-					array(
-						'application_fee_percent' => 0,
-					)
-				);
-				$logstr .= 'Updated application fee for subscription ' . $checkout_session->subscription . ' to 0%.';
-			} catch ( Exception $e ) {
-				$logstr .= 'Could not update application fee for subscription ' . $checkout_session->subscription . '. ' . $e->getMessage();
+			// Application fees only exist for Connect accounts, so skip this when using API keys.
+			if ( ! PMProGateway_stripe::using_api_keys() ) {
+				try {
+					Stripe_Subscription::update(
+						$checkout_session->subscription,
+						array(
+							'application_fee_percent' => 0,
+						)
+					);
+					$logstr .= 'Updated application fee for subscription ' . $checkout_session->subscription . ' to 0%.';
+				} catch ( Exception $e ) {
+					$logstr .= 'Could not update application fee for subscription ' . $checkout_session->subscription . '. ' . $e->getMessage();
+				}
 			}
 		}
 
@@ -713,6 +718,12 @@ class PMPro_Stripe_Webhook_Handler {
 			return;
 		}
 
+		// Application fees only exist for Connect accounts. Sites using API keys have nothing to update.
+		if ( $stripe->using_api_keys() ) {
+			$logstr .= 'Using API keys, so not updating application fees for subscription ' . $subscription_id . '.';
+			return;
+		}
+
 		// Remove the application fee on the subscription. We will add it to individual invoices when they're created.
 		try {
 			Stripe_Subscription::update(
@@ -734,12 +745,6 @@ class PMPro_Stripe_Webhook_Handler {
 		// If the invoice is not in draft status, we don't need to do anything.
 		if ( 'draft' !== $invoice->status ) {
 			$logstr .= 'Invoice ' . $invoice->id . ' is not in draft status. No action taken.';
-			return;
-		}
-
-		// If the site is using API keys, we don't need to update the application fee.
-		if ( $stripe->using_api_keys() ) {
-			$logstr .= 'Using API keys, so not updating application fee for invoice ' . $invoice->id . '.';
 			return;
 		}
 

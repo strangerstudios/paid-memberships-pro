@@ -3,6 +3,10 @@
  * Render the Level Description on the frontend.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Get the level description.
 $level = pmpro_getLevel( $attributes['selected_membership_level'] );
 $level_description = isset( $level->description ) ? $level->description : '';

@@ -219,7 +219,7 @@ class PMPro_Site_Health {
 	public function get_discount_codes() {
 		global $wpdb;
 
-		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `$wpdb->pmpro_discount_codes`" );
+		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `$wpdb->pmpro_discount_codes`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Counts rows in a PMPro custom table for Site Health; no WordPress API or object cache layer.
 
 		// translators: %d: The total count of discount codes.
 		return sprintf( _n( '%d discount code', '%d discount codes', $count, 'paid-memberships-pro' ), $count );
@@ -235,7 +235,7 @@ class PMPro_Site_Health {
 	public function get_orders() {
 		global $wpdb;
 
-		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `$wpdb->pmpro_membership_orders`" );
+		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `$wpdb->pmpro_membership_orders`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Counts rows in a PMPro custom table for Site Health; no WordPress API or object cache layer.
 
 		// translators: %d: The total count of orders.
 		return sprintf( _n( '%d order', '%d orders', $count, 'paid-memberships-pro' ), $count );
@@ -270,6 +270,18 @@ class PMPro_Site_Health {
 
 			if ( defined( 'PMPRO_STRIPE_API_VERSION' ) ) {
 				$gateway_text .= ' (' . __( 'API Version', 'paid-memberships-pro' ) . ': ' . PMPRO_STRIPE_API_VERSION . ')';
+			}
+
+			$connection_test = PMProGateway_stripe::get_connection_test_results();
+			if ( ! empty( $connection_test ) ) {
+				$not_passed = array();
+				foreach ( $connection_test['results'] as $check => $result ) {
+					if ( 'pass' !== $result['status'] ) {
+						$not_passed[] = $check . ':' . $result['status'];
+					}
+				}
+				// translators: %1$s: "passed" or a comma-separated list of checks that did not pass. %2$s: The date of the last test.
+				$gateway_text .= ' (' . sprintf( __( 'Connection Test: %1$s on %2$s', 'paid-memberships-pro' ), empty( $not_passed ) ? __( 'passed', 'paid-memberships-pro' ) : implode( ', ', $not_passed ), gmdate( 'Y-m-d', (int) $connection_test['timestamp'] ) ) . ')';
 			}
 
 			if ( $legacy ) {

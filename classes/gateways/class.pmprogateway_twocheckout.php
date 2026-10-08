@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -240,7 +244,7 @@
 			if(isset($morder->membership_level) && !empty($morder->membership_level->code_id))
 			{
 				$discount_code_id = (int)$morder->membership_level->code_id;
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");
+				$wpdb->query( $wpdb->prepare( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES(%d, %d, %d, now())", $discount_code_id, $user_id, $morder->id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Writes to a PMPro custom table with no WordPress API.
 			}
 			do_action("pmpro_before_send_to_twocheckout", $user_id, $morder);
 
@@ -358,7 +362,7 @@
 			$tco_url = 'https://www.2checkout.com/checkout/purchase' . $ptpStr;
 
 			//redirect to 2checkout
-			wp_redirect( $tco_url );
+			wp_redirect( $tco_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Redirects to the 2Checkout purchase URL (offsite by design).
 			exit;
 		}
 

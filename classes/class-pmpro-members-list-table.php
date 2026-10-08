@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
@@ -129,6 +135,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_columns() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request values only filter, search, sort and paginate the members list.
 		$columns = array(
 			'username'      => __( 'Username', 'paid-memberships-pro' ),
 			'ID'            => __( 'ID', 'paid-memberships-pro' ),
@@ -145,7 +152,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		);
 
 		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
+			$l = sanitize_text_field( wp_unslash( $_REQUEST['l'] ) );
 		} else {
 			$l = false;
 		}
@@ -179,6 +186,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$columns = apply_filters( 'pmpro_manage_memberslist_columns', $columns );
 		}
 
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		return $columns;
 	}
 
@@ -300,13 +308,14 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function no_items() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request values only filter, search, sort and paginate the members list.
 		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
+			$l = sanitize_text_field( wp_unslash( $_REQUEST['l'] ) );
 		} else {
 			$l = false;
 		}
 		if(isset($_REQUEST['s']))
-			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
+			$s = trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) );
 		else
 			$s = "";
 		?>
@@ -325,6 +334,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'oldmembers', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Old Members', 'paid-memberships-pro' ); ?></a></li>
 		</ul>
 		<?php
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -333,18 +343,19 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return Array|integer if $count parameter = true
 	 */
 	private function sql_table_data( $count = false ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request values only filter, search, sort and paginate the members list.
 		global $wpdb;
 
 		// some vars for the search
 		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
+			$l = sanitize_text_field( wp_unslash( $_REQUEST['l'] ) );
 		} else {
 			$l = false;
 		}
 
 		$search_key = false;
 		if( isset( $_REQUEST['s'] ) ) {
-			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
+			$s = trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) );
 		} else {
 			$s = '';
 		}
@@ -361,8 +372,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		// some vars for ordering
 		if(isset($_REQUEST['orderby'])) {
-			$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
-			if( $_REQUEST['order'] == 'asc' ) {
+			$orderby = $this->sanitize_orderby( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) );
+			if( isset( $_REQUEST['order'] ) && $_REQUEST['order'] == 'asc' ) {
 				$order = 'ASC';
 			} else {
 				$order = 'DESC';
@@ -398,19 +409,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$end = $pn * $limit;
 		$start = $end - $limit;
 
-		if ( $count ) {
-			$sqlQuery = "SELECT COUNT( DISTINCT u.ID, mu.membership_id ) ";
-		} else {
-			$sqlQuery =
-				"
-				SELECT u.ID, u.user_login, u.user_email, u.display_name,
-				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id,
-				UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
-				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate, m.name as membership
-				";
-		}
+		// Old member views and non-level filters can have several rows per user and level.
+		$group_rows = ! empty( $l ) && ! is_numeric( $l );
 
-		$sqlQuery .=
+		$sqlQuery =
 			"	
 			FROM $wpdb->users u 
 			INNER JOIN $wpdb->pmpro_memberships_users mu
@@ -464,6 +466,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 						LEFT JOIN $wpdb->pmpro_subscriptions s
 						ON mu.user_id = s.user_id
 						";
+					$group_rows = true;
 					$search_query = " AND s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND mu.status = 'active' ";
 				} else {
 					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value LIKE '%" . esc_sql( $s ) . "%'" );
@@ -485,6 +488,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 				// Default search checks a few fields.
 				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
+				$group_rows = true;
 				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' OR ( s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND s.status = 'active' ) ) ";
 			}
 		}
@@ -512,10 +516,40 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sqlQuery .= " AND mu.status = 'active' ";
 		}
 
-		if ( ! $count ) {
-			$sqlQuery .= ' GROUP BY u.ID, mu.membership_id ';
+		/**
+		 * Filter whether the Members List query groups rows by user and level.
+		 *
+		 * Grouping is only needed when the query can return more than one row per user and level.
+		 * Skipping it lets MySQL read the page straight from an index instead of sorting every member.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool   $group_rows Whether to group rows by user and level.
+		 * @param string $l          The level or status filter for the list.
+		 * @param string $s          The search string.
+		 */
+		$group_rows = apply_filters( 'pmpro_members_list_group_rows', $group_rows, $l, $s );
 
-			$sqlQuery .= " ORDER BY $orderby $order ";
+		if ( $count ) {
+			$select = 'SELECT COUNT( DISTINCT u.ID, mu.membership_id ) ';
+		} else {
+			$enddate_column = $group_rows ? 'max(mu.enddate)' : 'mu.enddate';
+			$select =
+				"
+				SELECT u.ID, u.user_login, u.user_email, u.display_name,
+				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id,
+				UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
+				UNIX_TIMESTAMP(CONVERT_TZ($enddate_column, '+00:00', @@global.time_zone)) as enddate, m.name as membership
+				";
+		}
+		$sqlQuery = $select . $sqlQuery;
+
+		if ( ! $count ) {
+			if ( $group_rows ) {
+				$sqlQuery .= ' GROUP BY u.ID, mu.membership_id ';
+			}
+
+			$sqlQuery .= " ORDER BY $orderby $order, u.ID $order ";
 
 			$sqlQuery .= " LIMIT $start, $limit ";
 		}
@@ -523,11 +557,12 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
 
 		if( $count ) {
-			$sql_table_data = $wpdb->get_var( $sqlQuery );
+			$sql_table_data = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search terms go through esc_sql() inside quotes, IDs are cast to int or come from the DB, and orderby/order/limit are whitelisted or integers.
 		} else {
-			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A );
+			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search terms go through esc_sql() inside quotes, IDs are cast to int or come from the DB, and orderby/order/limit are whitelisted or integers.
 		}
 
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		return $sql_table_data;
 	}
 
@@ -648,16 +683,18 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		$actions = apply_filters( 'pmpro_memberslist_user_row_actions', $actions, (object) $item );
 
-		$action_count = count( $actions );
-		$i = 0;
-		if ( $action_count ) {
-			$output .= '<div class="row-actions">';
-			foreach ( $actions as $action => $link ) {
-				++$i;
-				( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-				$output .= "<span class='$action'>$link$sep</span>";
-			}
-			$output .= '</div>';
+		$actions_html = [];
+
+		foreach ( $actions as $action => $link ) {
+			$actions_html[] = sprintf(
+				'<span class="%1$s">%2$s</span>',
+				esc_attr( $action ),
+				$link
+			);
+		}
+
+		if ( ! empty( $actions_html ) ) {
+			$output .= '<div class="row-actions">' . implode( ' | ', $actions_html ) . '</div>';
 		}
 		return $output;
 	}
@@ -825,11 +862,13 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_enddate( $item ) {
-		if ( isset( $_REQUEST['l'] ) && ! empty( pmpro_sanitize_with_safelist( $_REQUEST['l'] , array( 'oldmembers', 'expired', 'cancelled' ) ) ) ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request values only filter, search, sort and paginate the members list.
+		if ( isset( $_REQUEST['l'] ) && ! empty( pmpro_sanitize_with_safelist( sanitize_text_field( wp_unslash( $_REQUEST['l'] ) ), array( 'oldmembers', 'expired', 'cancelled' ) ) ) ) {
 			// If viewing removed levels, show the end date for the membership that was removed.
 			return date_i18n( get_option( 'date_format' ), $item['enddate'] );
 		}
 
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		return pmpro_get_membership_expiration_text( $item['membership_id'], $item['ID'] );
 	}
 
@@ -839,11 +878,12 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @param string $which, helps you decide if you add the markup after (bottom) or before (top) the list array( '' => 'Select a Level' )
 	 */
 	function extra_tablenav( $which ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request values only filter, search, sort and paginate the members list.
 		global $membership_levels, $wpdb;
 		if ( $which == 'top' ) {
 			// The code that goes before the table is here
 			if(isset($_REQUEST['l'])) {
-				$l = sanitize_text_field($_REQUEST['l']);
+				$l = sanitize_text_field( wp_unslash( $_REQUEST['l'] ) );
 			} else {
 				$l = false;
 			}
@@ -868,5 +908,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		if ( $which == 'bottom' ) {
 			// The code that goes after the table is there
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 }

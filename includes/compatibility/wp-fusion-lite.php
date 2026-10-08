@@ -8,8 +8,17 @@
  * @since 3.6
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // WP Fusion Pro is active, then let's give WP Fusion Pro priority to include their own PMPro integration code.
 if ( class_exists( 'WP_Fusion' ) ) {
+	return;
+}
+
+// WP Fusion Lite only sets up wp_fusion()->user once it's connected to a CRM. Until then there's nothing to sync to, and the integration would fatal on every membership level change.
+if ( ! function_exists( 'wp_fusion' ) || empty( wp_fusion()->user ) ) {
 	return;
 }
 

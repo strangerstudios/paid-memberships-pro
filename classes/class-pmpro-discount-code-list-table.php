@@ -1,4 +1,9 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- List table queries against PMPro custom tables, which have no WordPress API or object cache layer.
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -235,11 +240,12 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 * @return Array|integer if $count parameter = true
 	 */
 	private function sql_table_data( $count = false ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request vars are only used for list table search, sorting, pagination and building row action links.
 
 		global $wpdb;
 
 		if( isset( $_REQUEST['s'] ) ) {
-			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
+			$s = trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) );
 		} else {
 			$s = '';
 		}
@@ -270,7 +276,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		if ( ! $count ) {
 
 			if( isset( $_REQUEST['orderby'] ) ) {
-				$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+				$orderby = $this->sanitize_orderby( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) );
 			} else {
 				$orderby = 'id';
 			}
@@ -288,11 +294,12 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			$sql_table_data = $wpdb->get_var( $sqlQuery );
+			$sql_table_data = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term is esc_sql()'d inside quotes, orderby is whitelisted, order is hard-coded, and LIMIT values are integers.
 		} else {
-			$sql_table_data = $wpdb->get_results( $sqlQuery );
+			$sql_table_data = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term is esc_sql()'d inside quotes, orderby is whitelisted, order is hard-coded, and LIMIT values are integers.
 		}
 
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		return $sql_table_data;
 	}
 
@@ -366,6 +373,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 * @return mixed
 	 */
 	public function column_discount_code( $item ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: request vars are only used for list table search, sorting, pagination and building row action links.
 
 		?>
 		<strong><a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $item->id ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->id ), admin_url('admin.php' ) ) ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
@@ -390,9 +398,9 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 					[
 						'page'    => 'pmpro-discountcodes',
 						'delete'  => $item->id,
-						's' 	  => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : null,
-						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( $_REQUEST['orderby'] ) : null,
-						'order'   => isset( $_REQUEST['order'] ) ? sanitize_text_field( $_REQUEST['order'] ) : null,
+						's' 	  => isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : null,
+						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null,
+						'order'   => isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null,
 					],
 					admin_url( 'admin.php' )
 				),
@@ -482,6 +490,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		?>
 		</div>
 		<?php
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -548,7 +557,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			WHERE cl.code_id = %d",
 			esc_sql( $item->id )
 		);
-		$levels = $wpdb->get_results($sqlQuery);
+		$levels = $wpdb->get_results($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery was built with $wpdb->prepare() above.
 		$levels = pmpro_sort_levels_by_order( $levels );
 
 		$level_names = array();

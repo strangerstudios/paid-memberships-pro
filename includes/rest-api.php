@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- REST endpoints query PMPro custom tables, which have no WordPress API or object cache layer.
+
 if ( class_exists( 'WP_REST_Controller' ) ) {
 	class PMPro_REST_API_Routes extends WP_REST_Controller {
 		
@@ -1074,7 +1080,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_permissions_get_order( $permission, $request ) {
 			$method = $request->get_method();
-			$route  = $request->get_route();
+			$route  = strtolower( $request->get_route() );
 
 			// Check if the user does not have access but is trying to get an order.
 			if ( ! $permission && 'GET' === $method && '/pmpro/v1/order' === $route ) {
@@ -1284,7 +1290,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				LIMIT %d
 			";
 
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $prepare ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $prepare ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql only interpolates $wpdb table names and a list of %s placeholders; values are bound by $wpdb->prepare() here.
 
 			// Let's format the date to ISO8601
 			$results[0]->modified = pmpro_format_date_iso8601( $results[0]->modified );
@@ -1353,7 +1359,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				LIMIT %d
 			";
 			
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql only interpolates $wpdb table names; the LIMIT value is bound by $wpdb->prepare() here.
 
 			$results[0]->timestamp = pmpro_format_date_iso8601( $results[0]->timestamp );
 
@@ -2312,7 +2318,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 function pmpro_rest_api_get_permissions_check( $request ) {
 
 			$method = $request->get_method();
-			$route = $request->get_route();
+			$route = strtolower( $request->get_route() );
 
 			// Default to requiring pmpro_edit_members capability.
 			// NOTE: This basically means that anyone with the pmpro_edit_members capability could potentially do anything made available through the API in this file.
@@ -2351,6 +2357,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/quick_search' => true, // Permissions will be checked per result type.
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );
+
+			// Routes are matched case-insensitively by WordPress, so normalize the keys to match the lowercased $route.
+			$route_caps = array_change_key_case( $route_caps, CASE_LOWER );
 			
 			// Check if we have a specific permission to check for this route/method.
 			if ( isset( $route_caps[$route] ) ) {

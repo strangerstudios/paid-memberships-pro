@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Get the template path that should be loaded for a given page.
  *
@@ -191,7 +195,7 @@ function pmpro_get_outdated_page_templates() {
 function pmpro_page_template_notices() {
 
 	//Only show this notice on PMPro admin pages
-	if ( ! isset( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false || $_REQUEST['page'] === 'pmpro-pagesettings' ) {
+	if ( ! isset( $_REQUEST['page'] ) || strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) === false || $_REQUEST['page'] === 'pmpro-pagesettings' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current admin page to decide whether to show a notice.
 		return;
 	}
 

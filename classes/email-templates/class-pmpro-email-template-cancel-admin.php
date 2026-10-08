@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	/**
@@ -106,14 +109,14 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		 return array(
-			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'{{ level_group_id }}' => esc_html__( 'The ID of the level group that the membership level belongs to.', 'paid-memberships-pro' ),
-			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'{{ startdate }}' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
-			'{{ enddate }}' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' )
+			'{{ display_name }}' => __( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => __( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => __( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ level_group_id }}' => __( 'The ID of the level group that the membership level belongs to.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ startdate }}' => __( 'The start date of the membership level.', 'paid-memberships-pro' ),
+			'{{ enddate }}' => __( 'The end date of the membership level.', 'paid-memberships-pro' )
 		 );
 	}
 
@@ -165,11 +168,11 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 		} elseif ( is_array( $this->cancelled_level_ids ) ) {
 			$email_template_variables['membership_id'] = $this->cancelled_level_ids[0]; // Pass just the first as the level id.
 			$email_template_variables['level_group_id'] = pmpro_get_group_id_for_level( $this->cancelled_level_ids[0] ) ?: 0;
-			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode( "','", $this->cancelled_level_ids ) . "')" ) );
+			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode( "','", array_map( 'intval', $this->cancelled_level_ids ) ) . "')" ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Level IDs are cast to int. PMPro levels table has no object cache layer here.
 		} else {
 			$email_template_variables['membership_id'] = $this->cancelled_level_ids;
 			$email_template_variables['level_group_id'] = pmpro_get_group_id_for_level( $this->cancelled_level_ids ) ?: 0;
-			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $this->cancelled_level_ids . "'" ) );
+			$email_template_variables['membership_level_name'] = pmpro_implodeToEnglish( $wpdb->get_col( "SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . (int) $this->cancelled_level_ids . "'" ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Level IDs are cast to int. PMPro levels table has no object cache layer here.
 		}
 
 		$startdate = $this->get_start_and_end_date( 'startdate' );
@@ -208,13 +211,15 @@ class PMPro_Email_Template_Cancel_Admin extends PMPro_Email_Template {
 			$old_level_id = $this->cancelled_level_ids[0];
 		}
 
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $end_or_start_date is only ever the literal startdate or enddate, and the user and level IDs are cast to int. Reads the PMPro memberships_users table, which has no object cache layer.
 		return $wpdb->get_var(
 			"SELECT UNIX_TIMESTAMP(CONVERT_TZ(" . $end_or_start_date .", '+00:00', @@global.time_zone)) as " . $end_or_start_date . " 
 			 FROM $wpdb->pmpro_memberships_users 
-			 WHERE user_id = '" . $this->user->ID . "' 
-			 	AND membership_id = '" . $old_level_id . "' 
+			 WHERE user_id = '" . (int) $this->user->ID . "' 
+			 	AND membership_id = '" . (int) $old_level_id . "' 
 				AND status IN('inactive', 'cancelled', 'admin_cancelled') 
 			ORDER BY id DESC" );
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	/**
