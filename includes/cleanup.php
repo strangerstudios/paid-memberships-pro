@@ -131,6 +131,24 @@ function pmpro_delete_post( $post_id = null ) {
 }
 add_action( 'delete_post', 'pmpro_delete_post' );
 
+// trashing or deleting a post? clear any PMPro page settings that use it
+function pmpro_clear_page_settings_for_post( $post_id = null ) {
+	global $pmpro_pages;
+
+	if ( empty( $post_id ) || empty( $pmpro_pages ) ) {
+		return;
+	}
+
+	foreach ( $pmpro_pages as $name => $page_id ) {
+		if ( (int) $page_id === (int) $post_id ) {
+			pmpro_setOption( $name . '_page_id', 0 );
+			$pmpro_pages[ $name ] = 0;
+		}
+	}
+}
+add_action( 'wp_trash_post', 'pmpro_clear_page_settings_for_post' );
+add_action( 'delete_post', 'pmpro_clear_page_settings_for_post' );
+
 /**
  * Delete all membership data for a specific user from the membership users table.
  *
