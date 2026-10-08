@@ -1207,7 +1207,7 @@ function pmpro_change_password_process() {
 		return;
 	}
 
-	// Get all password values from the $_POST. Don't sanitize them: sanitize_text_field() strips tags, %xx sequences and extra spaces, so the saved password wouldn't match what the member types at login.
+	// Get all password values from the $_POST.
 	if ( ! empty( $_POST['password_current'] ) ) {
 		$password_current = trim( $_POST['password_current'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords are used as submitted (slashed and trimmed), like core edit_user() and wp_authenticate(). Sanitizing would change the password.
 	} else {
