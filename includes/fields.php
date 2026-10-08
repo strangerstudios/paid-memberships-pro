@@ -1287,6 +1287,7 @@ function pmpro_load_user_fields_from_settings() {
             
             // Figure out options.
             $option_types = array( 'checkbox_grouped', 'radio', 'select', 'select2', 'multiselect' );
+            $has_option_values = false;
             if ( in_array( $settings_field->type, $option_types ) ) {
                 $options = array();
                 $settings_options = explode( "\n", $settings_field->options );
@@ -1294,6 +1295,7 @@ function pmpro_load_user_fields_from_settings() {
                     if ( strpos( $settings_option, ':' ) !== false ) {
                         $parts = explode( ':', $settings_option );
                         $options[trim( $parts[0] )] = trim( $parts[1] );
+                        $has_option_values = true;
                     } else {
                         $options[] = trim( $settings_option );
                     }
@@ -1322,6 +1324,8 @@ function pmpro_load_user_fields_from_settings() {
                     'allowed_file_types' => $settings_field->allowed_file_types,
                     'max_file_size' => $settings_field->max_file_size,
                     'default' => $settings_field->default,
+                    // Explicit value:label options may be keyed 0..n-1. Don't replace those values with labels.
+                    'repair_non_associative_options' => ! $has_option_values,
                 )
             );
             $group_obj->add_field( $field );

@@ -537,12 +537,15 @@ class PMPro_Field {
 			if ( empty( $this->options ) )
 				$this->options = array( '', esc_html__( '- choose one -', 'paid-memberships-pro' ) );
 
+			// Fields can opt out of the repair, e.g. User Fields settings with explicit value:label options.
+			$repair_non_associative_options = ! isset( $this->repair_non_associative_options ) || ! empty( $this->repair_non_associative_options );
+
 			/**
 			 * Legacy filter to repair non-associative options.
 			 *
 			 * @deprecated 3.1
 			 */
-			$repair_non_associative_options = apply_filters_deprecated( 'pmprorh_repair_non_associative_options', array( true ), '3.1', 'pmpro_field_repair_non_associative_options' );
+			$repair_non_associative_options = apply_filters_deprecated( 'pmprorh_repair_non_associative_options', array( $repair_non_associative_options ), '3.1', 'pmpro_field_repair_non_associative_options' );
 
 			/**
 			 * Filter to repair non-associative options.
@@ -2074,6 +2077,11 @@ class PMPro_Field {
 			case 'textarea':
 			case 'number':
 				$filled = ( null !== $value && '' !== trim( $value ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				break;
+			case 'select':
+			case 'radio':
+				// Option values can be "0", so only treat a missing or blank value as empty.
+				$filled = ( null !== $value && '' !== $value );
 				break;
 			case 'file':
 				if ( ! empty( $_FILES[ $this->name ]['name'] ) ) {
