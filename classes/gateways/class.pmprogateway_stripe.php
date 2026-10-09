@@ -5278,6 +5278,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//need a transaction id
 		if ( empty( $transaction_id ) ) {
+			$order->error = __( 'This order has no payment transaction ID to refund.', 'paid-memberships-pro' );
 			return false;
 		}
 
@@ -5359,8 +5360,10 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 
 		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
 			$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
 		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
 			$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
 		}
 
