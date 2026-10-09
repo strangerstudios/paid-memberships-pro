@@ -1375,6 +1375,7 @@
 
 			//need a transaction id
 			if ( empty( $morder->payment_transaction_id ) ) {
+				$morder->error = __( 'This order has no payment transaction ID to refund.', 'paid-memberships-pro' );
 				return false;
 			}
 
@@ -1409,6 +1410,7 @@
 
 			} else {
 				//The refund failed, so lets return the gateway message
+				$morder->error = urldecode( $httpParsedResponseAr['L_LONGMESSAGE0'] );
 
 				// translators: %1$s is the Transaction ID. %2$s is the Gateway Error.
 				$morder->add_order_note( sprintf( __( 'Admin: There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s.', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] ) );
