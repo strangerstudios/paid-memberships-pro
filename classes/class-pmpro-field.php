@@ -1790,6 +1790,12 @@ class PMPro_Field {
 							$output = $value;
 							break;
 					}
+				} elseif ( 'textarea' === $this->type ) {
+					$output = wpautop( $output );
+					$allowed_html = array(
+						'p'  => array(),
+						'br' => array(),
+					);
 				} else {
 					$output = $value;
 				}
