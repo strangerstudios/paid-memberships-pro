@@ -82,6 +82,12 @@ function pmpro_wp()
 				function pmpro_pages_shortcode($atts, $content=null, $code="")
 				{
 					global $pmpro_page_name;
+
+					// Honor account shortcode attributes even when the page shortcode handler is used.
+					if ( 'account' === $pmpro_page_name && ! empty( $atts ) ) {
+						return pmpro_shortcode_account( $atts, $content, $code );
+					}
+
 					$temp_content = pmpro_loadTemplate($pmpro_page_name, 'local', 'pages');
 					return apply_filters("pmpro_pages_shortcode_" . $pmpro_page_name, $temp_content);
 				}
