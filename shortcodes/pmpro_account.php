@@ -235,7 +235,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										// Build the links to return.
 										$pmpro_member_action_links = array();
 
-										$renew_url = pmpro_url( 'checkout', 'level=' . $level->id, 'https' );
+										$renew_url = pmpro_url( 'checkout', 'pmpro_level=' . $level->id, 'https' );
 										if ( array_key_exists($level->id, $pmpro_levels) && pmpro_isLevelExpiringSoon( $level ) && ! empty( $renew_url ) ) {
 											$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew-' . $level->id . '" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
 
