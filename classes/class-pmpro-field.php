@@ -1790,7 +1790,8 @@ class PMPro_Field {
 							$output = $value;
 							break;
 					}
-				} elseif ( 'textarea' === $this->type ) {
+				} elseif ( 'textarea' === $this->type && false !== strpos( $output, "\n" ) ) {
+					// Only add paragraph and line break markup when there are line breaks to keep.
 					$output = wpautop( $output );
 					$allowed_html = array(
 						'p'  => array(),
