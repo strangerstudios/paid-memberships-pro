@@ -133,6 +133,11 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         );
         $should_render = ! empty( pmpro_apply_block_visibility( $apply_block_visibility_params, 'sample content' ) );
 		
+		// The deprecated filter below has only ever run for sections and containers.
+		if ( 'widget' === $element->get_type() ) {
+			return $should_render;
+		}
+
 		return apply_filters_deprecated( 'pmpro_elementor_section_access', array( $should_render, $element ), '3.5' );
 	}
 
