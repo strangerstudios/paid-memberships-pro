@@ -5278,28 +5278,28 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//need a transaction id
 		if ( empty( $transaction_id ) ) {
+			$order->error = __( 'This order has no payment transaction ID to refund.', 'paid-memberships-pro' );
 			return false;
-		}
-
-		//if an invoice ID is passed, get the charge/payment id
-		if ( strpos( $transaction_id, "in_" ) !== false ) {
-			$invoice = Stripe_Invoice::retrieve(
-				array(
-					'id' => $transaction_id,
-					'expand' => array( 'payments', 'payments.data.payment.payment_intent' )
-				)
-			);
-
-			if ( ! empty( $invoice ) && ! empty( $invoice->payments->data[0]->payment->payment_intent->latest_charge ) ) {
-				$transaction_id = $invoice->payments->data[0]->payment->payment_intent->latest_charge;
-			}
 		}
 
 		$success = false;
 
 		//attempt refund
 		try {
-			
+			//if an invoice ID is passed, get the charge/payment id
+			if ( strpos( $transaction_id, "in_" ) !== false ) {
+				$invoice = Stripe_Invoice::retrieve(
+					array(
+						'id' => $transaction_id,
+						'expand' => array( 'payments', 'payments.data.payment.payment_intent' )
+					)
+				);
+
+				if ( ! empty( $invoice ) && ! empty( $invoice->payments->data[0]->payment->payment_intent->latest_charge ) ) {
+					$transaction_id = $invoice->payments->data[0]->payment->payment_intent->latest_charge;
+				}
+			}
+
 			$secretkey = get_option( 'pmpro_stripe_secretkey' );
 
 			// If they are not using API keys, get Stripe Connect keys for the relevant environment.
@@ -5359,8 +5359,10 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 
 		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
 			$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
 		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
 			$order->add_order_note( __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
 		}
 
