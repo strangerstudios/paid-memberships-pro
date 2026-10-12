@@ -33,6 +33,13 @@ function pmpro_tos_advanced_settings_callback() {
 			'selected' => esc_html( $tospage )
 		)
 	);
+	if ( ! empty( $tospage ) ) { ?>
+		<a target="_blank" href="post.php?post=<?php echo esc_attr( $tospage ); ?>&action=edit"
+		class="button button-secondary pmpro_page_edit"><?php esc_html_e( 'edit page', 'paid-memberships-pro' ); ?></a>
+		&nbsp;
+		<a target="_blank" href="<?php echo esc_url( get_permalink( $tospage ) ); ?>"
+		class="button button-secondary pmpro_page_view"><?php esc_html_e( 'view page', 'paid-memberships-pro' ); ?></a>
+	<?php }
 }
 
 /**
