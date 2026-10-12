@@ -131,6 +131,56 @@ function pmpro_delete_post( $post_id = null ) {
 }
 add_action( 'delete_post', 'pmpro_delete_post' );
 
+// trashing or deleting a post? clear any PMPro page settings that use it
+function pmpro_clear_page_settings_for_post( $post_id = null ) {
+	global $pmpro_pages;
+
+	if ( empty( $post_id ) || empty( $pmpro_pages ) ) {
+		return;
+	}
+
+	$cleared = array();
+	foreach ( $pmpro_pages as $name => $page_id ) {
+		if ( (int) $page_id === (int) $post_id ) {
+			update_option( 'pmpro_' . $name . '_page_id', 0 );
+			$pmpro_pages[ $name ] = 0;
+			$cleared[] = $name;
+		}
+	}
+
+	// If trashed, remember which settings were cleared so they can be restored on untrash.
+	if ( ! empty( $cleared ) && 'trashed_post' === current_action() ) {
+		update_post_meta( $post_id, '_pmpro_cleared_page_settings', $cleared );
+	}
+}
+add_action( 'trashed_post', 'pmpro_clear_page_settings_for_post' );
+add_action( 'deleted_post', 'pmpro_clear_page_settings_for_post' );
+
+// restoring a post from the trash? reassign any PMPro page settings cleared when it was trashed
+function pmpro_restore_page_settings_for_post( $post_id = null ) {
+	global $pmpro_pages;
+
+	if ( empty( $post_id ) ) {
+		return;
+	}
+
+	$cleared = get_post_meta( $post_id, '_pmpro_cleared_page_settings', true );
+	if ( empty( $cleared ) || ! is_array( $cleared ) ) {
+		return;
+	}
+
+	foreach ( $cleared as $name ) {
+		// Don't overwrite a page that was reassigned while this one was in the trash.
+		if ( empty( get_option( 'pmpro_' . $name . '_page_id' ) ) ) {
+			update_option( 'pmpro_' . $name . '_page_id', $post_id );
+			$pmpro_pages[ $name ] = $post_id;
+		}
+	}
+
+	delete_post_meta( $post_id, '_pmpro_cleared_page_settings' );
+}
+add_action( 'untrashed_post', 'pmpro_restore_page_settings_for_post' );
+
 /**
  * Delete all membership data for a specific user from the membership users table.
  *
