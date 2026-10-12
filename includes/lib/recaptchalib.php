@@ -77,9 +77,16 @@ class pmpro_ReCaptcha
         $response = wp_remote_post($path, [
             'method' => 'POST',
             'body'   => $data,
-        ])['body'];
+        ]);
 
-        return $response;
+        // If the request failed, e.g. a network error reaching the reCAPTCHA
+        // server, return an empty string so that verification fails safely
+        // instead of fatal erroring when trying to index a WP_Error.
+        if ( is_wp_error( $response ) ) {
+            return '';
+        }
+
+        return wp_remote_retrieve_body( $response );
     }
 
     /**

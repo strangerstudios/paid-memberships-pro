@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMPro_Email_Template_Refund_Admin extends PMPro_Email_Template {
 	/**
 	 * The user object of the user to send the email to.

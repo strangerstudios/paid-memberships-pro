@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	$site_type = get_option( 'pmpro_site_type' );
 
 	$addon_manager = PMPro_AddOns::instance();

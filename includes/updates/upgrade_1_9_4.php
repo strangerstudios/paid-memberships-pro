@@ -3,6 +3,10 @@
 	Upgrade to 1.9.4
 	Update for div layout.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_upgrade_1_9_4() {
 
 	$parent_theme_template = get_template_directory() . "/paid-memberships-pro/pages/checkout.php";
@@ -11,7 +15,7 @@ function pmpro_upgrade_1_9_4() {
 	$pmpro_hide_notice = get_option( 'pmpro_hide_div_notice', 0 );
 		
 		// Show admin notice if the user has a custom checkout page template.
-		if( ( file_exists( $parent_theme_template ) || file_exists( $child_theme_template ) ) && empty( $pmpro_hide_notice ) && empty( $_REQUEST['pmpro_div_notice_hide'] ) ) {
+		if( ( file_exists( $parent_theme_template ) || file_exists( $child_theme_template ) ) && empty( $pmpro_hide_notice ) && empty( $_REQUEST['pmpro_div_notice_hide'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only decides whether to register the admin notice.
 			add_action( 'admin_notices', 'pmpro_upgrade_1_9_4_show_div_notice' );
 		}
 

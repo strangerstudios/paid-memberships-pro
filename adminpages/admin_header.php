@@ -1,13 +1,17 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	require_once(dirname(__FILE__) . "/functions.php");
 
-	if(isset($_REQUEST['page']))
-		$view = sanitize_text_field($_REQUEST['page']);
+	if(isset($_REQUEST['page'])) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
+		$view = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
 	else
 		$view = "";
 
-	if ( ! empty( $_REQUEST['edit'] ) ) {
-		$edit_level = intval( $_REQUEST['edit'] );
+	if ( ! empty( $_REQUEST['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
+		$edit_level = intval( $_REQUEST['edit'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only determines which admin screen is being viewed.
 	} else {
 		$edit_level = false;
 	}
@@ -171,7 +175,7 @@
 
 		// Hide notifications on certain pages.
 		$hide_on_these_pages = array( 'pmpro-updates' );
-		if ( ! empty( $_REQUEST['page'] ) && in_array( sanitize_text_field( $_REQUEST['page'] ), $hide_on_these_pages ) ) {
+		if ( ! empty( $_REQUEST['page'] ) && in_array( sanitize_text_field( $_REQUEST['page'] ), $hide_on_these_pages ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only decides whether to show notifications.
 			$show_notifications = false;
 		}
 
@@ -187,8 +191,8 @@
         </div>
         <?php
             // To debug a specific notification.
-            if ( !empty( $_REQUEST['pmpro_notification'] ) ) {
-                $specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] );
+            if ( !empty( $_REQUEST['pmpro_notification'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only selects a notification to display for debugging.
+                $specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only selects a notification to display for debugging.
             } else {
                 $specific_notification = '';
             }

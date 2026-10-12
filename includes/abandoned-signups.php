@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Set up a user taxonomy to track users who were created during the PMPro
@@ -115,7 +118,7 @@ function pmpro_add_users_table_view_abandoned_signups( $views ) {
 	$views['pmpro-abandoned-signups'] = sprintf(
 		'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
 		esc_url( add_query_arg( 'pmpro-abandoned-signups', '1', admin_url( 'users.php' ) ) ),
-		empty( $_REQUEST['pmpro-abandoned-signups'] ) ? '' : ' class="current"',
+		empty( $_REQUEST['pmpro-abandoned-signups'] ) ? '' : ' class="current"', // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag that filters the Users list view.
 		__( 'Potential Spam Checkouts', 'paid-memberships-pro' ),
 		count( $abandoned_signup_users )
 	);
@@ -135,7 +138,7 @@ add_filter( 'views_users', 'pmpro_add_users_table_view_abandoned_signups' );
  */
 function pmpro_add_users_table_user_registered_column( $columns ) {
 	// Bail if we are not on the Users page or not filtering by abandoned signups.
-	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
+	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag that filters the Users list view.
 		return $columns;
 	}
 
@@ -150,7 +153,7 @@ add_filter( 'manage_users_columns', 'pmpro_add_users_table_user_registered_colum
  */
 function pmpro_make_users_table_user_registered_column_sortable( $columns ) {
 	// Bail if we are not on the Users page or not filtering by abandoned signups.
-	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
+	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag that filters the Users list view.
 		return $columns;
 	}
 
@@ -172,7 +175,7 @@ add_filter( 'manage_users_sortable_columns', 'pmpro_make_users_table_user_regist
  */
 function pmpro_add_users_table_user_registered_column_output( $output, $column_name, $user_id ) {
 	// Bail if we are not on the Users page or not filtering by abandoned signups.
-	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
+	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag that filters the Users list view.
 		return $output;
 	}
 
@@ -204,7 +207,7 @@ add_filter( 'manage_users_custom_column', 'pmpro_add_users_table_user_registered
  */
 function pmpro_abandoned_signups_users_list_table_query_args( $query_args ) {    
 	// Bail if we are not on the Users page or not filtering by abandoned signups.
-	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
+	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag that filters the Users list view.
 		return $query_args;
 	}
 
@@ -236,7 +239,7 @@ function pmpro_abandoned_signups_users_list_table_description() {
 	global $current_screen;
 
 	// Bail if we are not on the Users page or not filtering by abandoned signups.
-	if ( ! is_admin() || empty( $current_screen->id ) || 'users' !== $current_screen->id || empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
+	if ( ! is_admin() || empty( $current_screen->id ) || 'users' !== $current_screen->id || empty( $_REQUEST['pmpro-abandoned-signups'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag that filters the Users list view.
 		return;
 	}
 

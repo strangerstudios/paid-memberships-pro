@@ -2,6 +2,12 @@
 /**
  * Setup Wizard containing file that handles logic and loading of templates.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: the step parameter only selects which wizard screen to display.
 if ( empty( $_REQUEST['step'] ) ) {
 	$previous_step = get_option( 'pmpro_wizard_step' );
 	if ( ! empty( $previous_step ) ) {
@@ -10,10 +16,11 @@ if ( empty( $_REQUEST['step'] ) ) {
 		$active_step = 'general';
 	}
 } elseif ( ! empty( $_REQUEST['step'] ) ) {
-	$active_step = sanitize_text_field( $_REQUEST['step'] );
+	$active_step = sanitize_text_field( wp_unslash( $_REQUEST['step'] ) );
 } else {
 	$active_step = 'general';
 }
+// phpcs:enable WordPress.Security.NonceVerification.Recommended
 ?>
 <div class="pmpro-wizard">
 	<div class="pmpro-wizard__background"></div>

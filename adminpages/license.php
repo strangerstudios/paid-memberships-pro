@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //only let admins get here
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_license') ) ) {
 	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
@@ -9,7 +13,7 @@ if ( ! empty( $_REQUEST['pmpro-verify-submit'] ) && ( empty( $_REQUEST['pmpro-ke
 	// Nonce check failed. Don't save the key; show the error in the license notice below.
 	$pmpro_license_check = new WP_Error( 'pmpro_license_nonce', __( 'Security check failed. Please try again.', 'paid-memberships-pro' ) );
 } elseif ( ! empty( $_REQUEST['pmpro-verify-submit'] ) ) {
-	$key = preg_replace("/[^a-zA-Z0-9]/", "", sanitize_text_field( $_REQUEST['pmpro-license-key'] ) );
+	$key = preg_replace("/[^a-zA-Z0-9]/", "", isset( $_REQUEST['pmpro-license-key'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['pmpro-license-key'] ) ) : '' );
 	
 	// Check key.
 	$pmpro_license_check = pmpro_license_check_key( $key );
@@ -45,14 +49,14 @@ if ( defined( 'PMPRO_DIR' ) ) {
 } ?>
 	<hr class="wp-header-end">
 	<h1><?php esc_html_e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h1>
-	<div id="pmpro-license-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-		<div class="pmpro_section_toggle">
-			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-				<span class="dashicons dashicons-arrow-up-alt2"></span>
-				<?php esc_html_e( 'Manage Your License', 'paid-memberships-pro' ); ?>
-			</button>
-		</div>
-		<div class="pmpro_section_inside">
+	<?php
+	// The license page bodies are bespoke (status notices, key form, marketing buttons), so only the
+	// collapsible section wrappers use the shared helpers.
+	pmpro_build_settings_section_open( array(
+		'id'    => 'pmpro-license-settings',
+		'title' => __( 'Manage Your License', 'paid-memberships-pro' ),
+	) );
+	?>
 			<?php if ( is_wp_error( $pmpro_license_check ) ) { ?>
 				<p class="pmpro_message pmpro_error"><strong><?php echo esc_html( sprintf( __( 'There was an issue validating your license key: %s', 'paid-memberships-pro' ), $pmpro_license_check->get_error_message() ) );?></strong> <?php echo wp_kses( sprintf( __('Visit the PMPro <a href="%s" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dkey-not-valid' ), $allowed_pmpro_license_strings_html );?></p>
 			<?php } elseif( ! pmpro_license_isValid() && empty( $key ) ) { ?>
@@ -86,17 +90,15 @@ if ( defined( 'PMPRO_DIR' ) ) {
 					<?php }
 				} ?>
 			</p>
-		</div> <!-- end pmpro_section_inside -->
-	</div> <!-- end pmpro_section -->
-	<div id="pmpro-license-about" class="pmpro_section" data-visibility="shown" data-activated="true">
-		<div class="pmpro_section_toggle">
-			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-				<span class="dashicons dashicons-arrow-up-alt2"></span>
-				<?php esc_html_e( 'About the PMPro Support License', 'paid-memberships-pro' ); ?>
-			</button>
-		</div>
-		<div class="pmpro_section_inside">
-			<img class="pmpro_icon alignright" src="<?php echo esc_attr( PMPRO_URL );?>/images/Paid-Memberships-Pro_icon.png" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" />			
+	<?php
+	pmpro_build_settings_section_close();
+
+	pmpro_build_settings_section_open( array(
+		'id'    => 'pmpro-license-about',
+		'title' => __( 'About the PMPro Support License', 'paid-memberships-pro' ),
+	) );
+	?>
+			<img class="pmpro_icon alignright" src="<?php echo esc_attr( PMPRO_URL );?>/images/Paid-Memberships-Pro_icon.png" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" />
 
 			<?php
 				echo '<p>' . sprintf( wp_kses( __( 'Paid Memberships Pro and our Add Ons are distributed under the <a href="%s" target="_blank">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ), 'https://www.paidmembershipspro.com/features/paid-memberships-pro-is-100-gpl/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=documentation&utm_content=gpl' ) . '</p>';
@@ -114,8 +116,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 				<p><br /><a class="button button-secondary button-hero" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=pricing&utm_content=view-license-options" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Support License Options', 'paid-memberships-pro' ); ?></a></p>
 			<?php } ?>
 
-		</div> <!-- end pmpro_section_inside -->
-	</div> <!-- end pmpro_section -->
+	<?php pmpro_build_settings_section_close(); ?>
 
 <?php
 
