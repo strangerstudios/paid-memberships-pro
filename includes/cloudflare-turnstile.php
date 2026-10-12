@@ -76,9 +76,10 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 		$displayed_message = isset( $error_messages[ $error_code ] ) ? $error_messages[ $error_code ] : esc_html__( 'An error occurred while validating the security check.', 'paid-memberships-pro' );
 
 		pmpro_setMessage( $displayed_message, 'pmpro_error' );
-		$okay = false;
+		return false;
 	}
 
+	// Only remember the validation after Cloudflare confirms the token.
 	pmpro_set_session_var( 'pmpro_cloudflare_turnstile_validated', true );
 	return $okay;
 }
