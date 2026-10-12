@@ -60,6 +60,10 @@ if(empty($ml_recurring)) {
 } elseif(empty($ml_custom_trial)) {
 	$ml_trial_amount = $ml_trial_limit = 0;
 }
+// Recurring levels must bill at least every 1 period.
+if ( ! empty( $ml_recurring ) && $ml_cycle_number < 1 ) {
+	$ml_cycle_number = 1;
+}
 if(empty($ml_expiration)) {
 	$ml_expiration_number = $ml_expiration_period = 0;
 }
