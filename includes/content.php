@@ -69,7 +69,12 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		}
 	}
 
-	if( ! $post_terms )
+	if ( empty( $mypost->ID ) )
+	{
+		// No post to check, so there are no levels that restrict it.
+		$sqlQuery = '';
+	}
+	elseif( ! $post_terms )
 	{
 		//just check for entries in the memberships_pages table
 		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "'";
@@ -81,7 +86,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	}
 
 
-	$post_membership_levels = $wpdb->get_results($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Post ID is esc_sql()'d inside quotes and term IDs are intval().
+	$post_membership_levels = empty( $sqlQuery ) ? array() : $wpdb->get_results($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Post ID is esc_sql()'d inside quotes and term IDs are intval().
 
 	$post_membership_levels_ids = array();
 	$post_membership_levels_names = array();
@@ -425,21 +430,44 @@ add_filter('comment_text_rss', 'pmpro_membership_content_filter', 5);
 /*
 	If the_excerpt is called, we want to disable the_content filters so the PMPro messages aren't added to the content before AND after the excerpt.
 */
-function pmpro_membership_excerpt_filter($content, $skipcheck = false) {		
-	remove_filter('the_content', 'pmpro_membership_content_filter', 5);	
+function pmpro_membership_excerpt_filter($content, $skipcheck = false) {
+	// Remove and restore the filter at its current priority. Compatibility code (e.g. Elementor) may have moved it from 5.
+	$priority = has_filter( 'the_content', 'pmpro_membership_content_filter' );
+	if ( false !== $priority ) {
+		remove_filter( 'the_content', 'pmpro_membership_content_filter', $priority );
+	}
 	$content = pmpro_membership_content_filter($content, $skipcheck);
-	add_filter('the_content', 'pmpro_membership_content_filter', 5);
+	if ( false !== $priority ) {
+		add_filter( 'the_content', 'pmpro_membership_content_filter', $priority );
+	}
 	
 	return $content;
 }
 
 function pmpro_membership_get_excerpt_filter_start( $content ) {
-	remove_filter('the_content', 'pmpro_membership_content_filter', 5);		
+	global $pmpro_excerpt_content_filter_priorities;
+
+	// Remember the filter's current priority (or false if it isn't hooked) so the end filter can restore it. A stack handles nested get_the_excerpt() calls.
+	if ( ! is_array( $pmpro_excerpt_content_filter_priorities ) ) {
+		$pmpro_excerpt_content_filter_priorities = array();
+	}
+	$priority = has_filter( 'the_content', 'pmpro_membership_content_filter' );
+	if ( false !== $priority ) {
+		remove_filter( 'the_content', 'pmpro_membership_content_filter', $priority );
+	}
+	$pmpro_excerpt_content_filter_priorities[] = $priority;
+
 	return $content;
 }
 
 function pmpro_membership_get_excerpt_filter_end( $content, $post = null ) {
-	add_filter('the_content', 'pmpro_membership_content_filter', 5);
+	global $pmpro_excerpt_content_filter_priorities;
+
+	// Restore the filter at the priority it had before get_the_excerpt() ran.
+	$priority = is_array( $pmpro_excerpt_content_filter_priorities ) ? array_pop( $pmpro_excerpt_content_filter_priorities ) : null;
+	if ( is_int( $priority ) ) {
+		add_filter( 'the_content', 'pmpro_membership_content_filter', $priority );
+	}
 
 	// If excerpts are hidden from non-members, don't return the excerpt of a restricted post.
 	// Feeds, embeds, and the Post Excerpt block use get_the_excerpt() without running the_excerpt filters.

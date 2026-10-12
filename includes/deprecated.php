@@ -20,7 +20,7 @@ function pmpro_init_check_for_deprecated_filters() {
 	// Deprecated filter name => new filter name (or null if there is no alternative).
 	$pmpro_map_deprecated_filters = array(
 		'pmpro_getfile_extension_blacklist' => 'pmpro_getfile_extension_blocklist',
-		'pmpro_default_field_group_label'   => 'pmprorh_section_header',
+		'pmprorh_section_header'            => 'pmpro_default_field_group_label',
 		'pmpro_stripe_subscription_deleted' => null,
 		'pmpro_subscription_cancelled'      => null,
 		'pmpro_longform_address'            => null,

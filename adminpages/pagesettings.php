@@ -248,13 +248,16 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 							)
 						);
 						if ( ! empty( $pmpro_pages[ $key ] ) ) {
-							?>
-							<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages[ $key ] ); ?>&action=edit"
-							class="button button-secondary pmpro_page_edit"><?php esc_html_e( 'edit page', 'paid-memberships-pro' ); ?></a>
-							&nbsp;
-							<a target="_blank" href="<?php echo esc_url( get_permalink( $pmpro_pages[ $key ] ) ); ?>"
-							class="button button-secondary pmpro_page_view"><?php esc_html_e( 'view page', 'paid-memberships-pro' ); ?></a>
-							<?php
+							// Only link to the assigned page if it's published, matching what wp_dropdown_pages() lists.
+							if ( 'publish' === get_post_status( $pmpro_pages[ $key ] ) ) {
+								?>
+								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages[ $key ] ); ?>&action=edit"
+								class="button button-secondary pmpro_page_edit"><?php esc_html_e( 'edit page', 'paid-memberships-pro' ); ?></a>
+								&nbsp;
+								<a target="_blank" href="<?php echo esc_url( get_permalink( $pmpro_pages[ $key ] ) ); ?>"
+								class="button button-secondary pmpro_page_view"><?php esc_html_e( 'view page', 'paid-memberships-pro' ); ?></a>
+								<?php
+							}
 						} elseif ( ! empty( $args['generate'] ) ) {
 							?>
 							&nbsp;

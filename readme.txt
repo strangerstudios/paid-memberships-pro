@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.8.8
+Stable tag: 3.8.9
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,36 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.8.9 - 2026-10-12 =
+* SECURITY: Fixed an issue where a failed Cloudflare Turnstile check allowed later checkout and billing update submissions in the same session to skip the security check. #3884 (@dparker1005, Jenny Dougherty)
+* ENHANCEMENT: Added the `pmpro_account_profile_list_items` filter to customize the profile items on the Membership Account page. The Username and Email items now also have their own CSS classes. #3870 (@dparker1005)
+* ENHANCEMENT: Added edit and view page buttons to the Terms of Service setting. #3881 (@dparker1005)
+* ENHANCEMENT: Applying an empty discount code at checkout now shows an error message. #3866 (@dparker1005)
+* ENHANCEMENT: When an admin refund fails, the notice now includes the payment gateway's error message. #3883 (@dparker1005)
+* BUG FIX: Fixed the membership required message showing twice on restricted content when Elementor and Yoast SEO are both active. #3879 (@dparker1005)
+* BUG FIX: Restricted Elementor widgets are no longer rendered as empty styled containers for users without access. #3875 (@dparker1005)
+* BUG FIX: Fixed the level confirmation message losing its paragraph formatting in checkout emails. #3861 (@dparker1005)
+* BUG FIX: Fixed the default "More Information" heading not showing for the checkout_boxes field group, and the `pmpro_default_field_group_label` filter being ignored. #3859 (@dparker1005)
+* BUG FIX: Fixed a deprecation notice when using the `pmpro_default_field_group_label` filter. The legacy `pmprorh_section_header` filter is now the one flagged as deprecated. #3888 (@dparker1005)
+* BUG FIX: Textarea user field values now keep their line breaks when displayed. #3878 (@dparker1005)
+* BUG FIX: Fixed `[pmpro_account]` shortcode attributes being ignored when the same page also has a `[pmpro_account]` shortcode or Membership Account block without attributes. #3877 (@dparker1005)
+* BUG FIX: PMPro page settings are now cleared when the assigned page is trashed or deleted, and restored if the page is restored from the trash. #3872 (@dparker1005)
+* BUG FIX: Page Settings no longer shows edit and view buttons for an assigned page that isn't published. #3886 (@dparker1005)
+* BUG FIX: Renew links and the redirect for already-submitted orders now use the `pmpro_level` URL parameter instead of `level`. #3876 (@dparker1005)
+* BUG FIX: Gateway cancellations now cancel memberships for members whose level is hidden by the `pmpro_has_membership_level` filter, such as unconfirmed Email Confirmation members. #3867 (@dparker1005)
+* BUG FIX: Gateway cancellations for deleted users are no longer logged as errors. #3882 (@dparker1005)
+* BUG FIX: Fixed fatal errors when checkout email or password fields were submitted as arrays. #3855 (@dwanjuki)
+* BUG FIX: Recurring levels now save a billing cycle number of at least 1. #3865 (@dparker1005)
+* BUG FIX: Deleting an order now also deletes its order meta. #3869 (@dparker1005)
+* BUG FIX: Deleting an order now keeps all Orders list filters, sorting and the current page. #3868 (@dparker1005)
+* BUG FIX: Paginating or sorting after deleting a discount code or order no longer repeats the delete request. #3863 (@dparker1005)
+* BUG FIX: The personal data exporter now shows array user meta as readable text instead of serialized data. #3860 (@dparker1005)
+* BUG FIX: Fixed a PHP warning in `pmpro_has_membership_access()` when the post doesn't exist. #3862 (@dparker1005)
+* BUG FIX: Failed AJAX and REST API logins no longer redirect to the login page. #3864 (@dparker1005)
+* BUG FIX: The Logins report now tracks visits after a member logs in or out. #3871 (@dparker1005)
+* BUG FIX: The membership section and Edit Member link are now hidden on Network Admin user profiles. #3880 (@dparker1005)
+* BUG FIX: Updated the GPL license link on the License page. #3856 (@dparker1005)
+
 = 3.8.8 - 2026-10-06 =
 * SECURITY: Files uploaded through user fields are now stored in uniquely named folders, and are deleted when the user is deleted. #3847 (@dparker1005, @GrayOM)
 * SECURITY: Fixed restricted post excerpts showing in RSS feeds, embeds, and the Post Excerpt block when "Show Excerpts to Non-Members" is off. #3853 (@dparker1005, @Feldspar-AI-Agent)
