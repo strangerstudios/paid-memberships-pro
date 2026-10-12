@@ -5282,25 +5282,24 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		//if an invoice ID is passed, get the charge/payment id
-		if ( strpos( $transaction_id, "in_" ) !== false ) {
-			$invoice = Stripe_Invoice::retrieve(
-				array(
-					'id' => $transaction_id,
-					'expand' => array( 'payments', 'payments.data.payment.payment_intent' )
-				)
-			);
-
-			if ( ! empty( $invoice ) && ! empty( $invoice->payments->data[0]->payment->payment_intent->latest_charge ) ) {
-				$transaction_id = $invoice->payments->data[0]->payment->payment_intent->latest_charge;
-			}
-		}
-
 		$success = false;
 
 		//attempt refund
 		try {
-			
+			//if an invoice ID is passed, get the charge/payment id
+			if ( strpos( $transaction_id, "in_" ) !== false ) {
+				$invoice = Stripe_Invoice::retrieve(
+					array(
+						'id' => $transaction_id,
+						'expand' => array( 'payments', 'payments.data.payment.payment_intent' )
+					)
+				);
+
+				if ( ! empty( $invoice ) && ! empty( $invoice->payments->data[0]->payment->payment_intent->latest_charge ) ) {
+					$transaction_id = $invoice->payments->data[0]->payment->payment_intent->latest_charge;
+				}
+			}
+
 			$secretkey = get_option( 'pmpro_stripe_secretkey' );
 
 			// If they are not using API keys, get Stripe Connect keys for the relevant environment.
