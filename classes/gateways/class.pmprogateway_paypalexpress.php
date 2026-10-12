@@ -423,7 +423,7 @@
 				} else {
 					$password = "";
 				}
-				if(isset($_REQUEST['bemail']))
+				if(isset($_REQUEST['bemail']) && is_string($_REQUEST['bemail']))
 					$bemail = sanitize_email($_REQUEST['bemail']);
 				else
 					$bemail = "";
