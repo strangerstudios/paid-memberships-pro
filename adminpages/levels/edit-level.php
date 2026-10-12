@@ -553,7 +553,7 @@ if (!empty($page_msg)) { ?>
 						<th scope="row" valign="top"><label><?php esc_html_e('Membership Expiration', 'paid-memberships-pro'); ?></label></th>
 						<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if (pmpro_isLevelExpiring($level)) {
 																										echo "checked='checked'";
-																									} ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <label for="expiration"><?php esc_html_e('Set when membership access expires.', 'paid-memberships-pro'); ?></label></a></td>
+																									} ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <label for="expiration"><?php esc_html_e('Set when membership access expires.', 'paid-memberships-pro'); ?></label></td>
 					</tr>
 					<?php if (!function_exists('pmprosed_pmpro_membership_level_after_other_settings')) {
 						$allowed_sed_html = array(
