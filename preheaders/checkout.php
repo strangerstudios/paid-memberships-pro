@@ -33,7 +33,7 @@ if ( ! empty( $_REQUEST['pmpro_order'] ) ) {
 
 		// If the order has already had a payment submitted, redirect to the confirmation page.
 		if ( in_array( $pmpro_review->status, array( 'success', 'pending' ) ) ) {
-			wp_redirect( pmpro_url( 'confirmation', '?level=' . $pmpro_review->membership_id ) );
+			wp_redirect( pmpro_url( 'confirmation', '?pmpro_level=' . $pmpro_review->membership_id ) );
 			exit;
 		}
 
