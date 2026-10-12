@@ -84,12 +84,14 @@ class PMPro_Stripe_Webhook_Handler {
 
 		global $pmpro_stripe_event;
 		$pmpro_stripe_event = null;
+		$retrieve_error = null;
 		
 		// Get the event through the API now.
 		if ( ! empty( $event_id ) ) {
 			try {
 				$pmpro_stripe_event = Stripe_Event::retrieve( $event_id );
 			} catch ( Exception $e ) {
+				$retrieve_error = $e;
 				$logstr .= 'Could not find an event with ID #' . $event_id . '. ' . $e->getMessage();
 
 				/**
@@ -118,6 +120,11 @@ class PMPro_Stripe_Webhook_Handler {
 				$logstr .= 'Could not find an event with ID #' . $event_id;
 			} else {
 				$logstr .= 'No event ID given.';
+			}
+
+			// If the error may go away, answer 503 so that Stripe sends the event again.
+			if ( ! $scheduled_request && ! empty( $retrieve_error ) && self::is_retryable_retrieve_error( $retrieve_error ) ) {
+				status_header( 503 );
 			}
 
 			pmpro_unhandled_webhook( 'stripe' );
@@ -759,6 +766,30 @@ class PMPro_Stripe_Webhook_Handler {
 		} catch ( Exception $e ) {
 			$logstr .= 'Could not update application fee for invoice ' . $invoice->id . '. ' . $e->getMessage();
 		}
+	}
+
+	/**
+	 * Check whether an error from retrieving the webhook event may go away if Stripe sends the event again.
+	 *
+	 * Connection errors, rate limits, authentication and permission errors and 5xx responses may be temporary.
+	 * Other errors, such as a 404 for an event that does not exist in this Stripe account, are not.
+	 *
+	 * @since TBD
+	 *
+	 * @param Exception $e The exception thrown while retrieving the event.
+	 * @return bool
+	 */
+	private static function is_retryable_retrieve_error( $e ) {
+		if ( ! $e instanceof \Stripe\Exception\ApiErrorException ) {
+			return false;
+		}
+
+		if ( $e instanceof \Stripe\Exception\ApiConnectionException ) {
+			return true;
+		}
+
+		$status = (int) $e->getHttpStatus();
+		return $status >= 500 || in_array( $status, array( 401, 403, 429 ), true );
 	}
 
 	/**
