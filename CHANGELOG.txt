@@ -1,6 +1,6 @@
 == Changelog ==
 = 3.8.9 - 2026-10-12 =
-* SECURITY: Fixed an issue where a failed Cloudflare Turnstile check allowed later checkout and billing update submissions in the same session to skip the security check. #3884 (@dparker1005, Jenny Dougherty)
+* SECURITY: Fixed an issue where a failed Cloudflare Turnstile check allowed later checkout and billing update submissions in the same session to skip the security check. #3884 (@dparker1005, Freelance Studio)
 * ENHANCEMENT: Added the `pmpro_account_profile_list_items` filter to customize the profile items on the Membership Account page. The Username and Email items now also have their own CSS classes. #3870 (@dparker1005)
 * ENHANCEMENT: Added edit and view page buttons to the Terms of Service setting. #3881 (@dparker1005)
 * ENHANCEMENT: Applying an empty discount code at checkout now shows an error message. #3866 (@dparker1005)
