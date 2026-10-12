@@ -154,6 +154,29 @@ add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_recaptcha' );
 add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha' );
 
 /**
+ * Clear the reCAPTCHA session variable when payment fails
+ * so that each new payment attempt requires a new reCAPTCHA check.
+ *
+ * @since TBD
+ *
+ * @param MemberOrder $order The order that failed to process.
+ */
+function pmpro_failed_payment_reset_recaptcha( $order ) {
+	// Stripe fails on purpose when the card needs authentication, then resubmits the form after the customer authenticates. Keep the flag for that resubmission.
+	$payment_intent = $order->stripe_payment_intent;
+	if ( ! empty( $payment_intent ) && 'requires_action' === $payment_intent->status ) {
+		return;
+	}
+
+	pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
+
+	// pmpro_init_recaptcha() already ran on the preheader and skipped loading the reCAPTCHA JS because the session was validated. Run it again so the widget works on the page that shows the error.
+	pmpro_init_recaptcha();
+}
+add_action( 'pmpro_checkout_processing_failed', 'pmpro_failed_payment_reset_recaptcha' );
+add_action( 'pmpro_update_billing_failed', 'pmpro_failed_payment_reset_recaptcha' );
+
+/**
  * Check if ReCAPTCHA is validated.
  *
  * @return true|string True if validated, error message if not.
