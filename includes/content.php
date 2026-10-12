@@ -62,7 +62,12 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		}
 	}
 
-	if( ! $post_terms )
+	if ( empty( $mypost->ID ) )
+	{
+		// No post to check, so there are no levels that restrict it.
+		$sqlQuery = '';
+	}
+	elseif( ! $post_terms )
 	{
 		//just check for entries in the memberships_pages table
 		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "'";
@@ -74,7 +79,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	}
 
 
-	$post_membership_levels = $wpdb->get_results($sqlQuery);
+	$post_membership_levels = empty( $sqlQuery ) ? array() : $wpdb->get_results($sqlQuery);
 
 	$post_membership_levels_ids = array();
 	$post_membership_levels_names = array();
