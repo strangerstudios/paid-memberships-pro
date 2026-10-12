@@ -82,8 +82,8 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 
 								// Build the profile list items.
 								$pmpro_account_profile_list_items = array(
-									'username' => '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ) . '"><strong>' . esc_html__( 'Username', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( $current_user->user_login ) . '</li>',
-									'email'    => '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ) . '"><strong>' . esc_html__( 'Email', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( $current_user->user_email ) . '</li>',
+									'username' => '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_list_item-username' ) ) . '"><strong>' . esc_html__( 'Username', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( $current_user->user_login ) . '</li>',
+									'email'    => '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_list_item-email' ) ) . '"><strong>' . esc_html__( 'Email', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( $current_user->user_email ) . '</li>',
 								);
 
 								/**
