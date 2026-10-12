@@ -11,6 +11,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 
 		// Filter elementor render_content hook
 		add_action( 'elementor/widget/render_content', array( $this, 'pmpro_elementor_render_content' ), 10, 2 );
+		add_action( 'elementor/frontend/widget/should_render', array( $this, 'pmpro_elementor_should_render' ), 10, 2 );
 		add_action( 'elementor/frontend/section/should_render', array( $this, 'pmpro_elementor_should_render' ), 10, 2 );
 		add_action( 'elementor/frontend/container/should_render', array( $this, 'pmpro_elementor_should_render' ), 10, 2 );
 
@@ -132,6 +133,11 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         );
         $should_render = ! empty( pmpro_apply_block_visibility( $apply_block_visibility_params, 'sample content' ) );
 		
+		// The deprecated filter below has only ever run for sections and containers.
+		if ( 'widget' === $element->get_type() ) {
+			return $should_render;
+		}
+
 		return apply_filters_deprecated( 'pmpro_elementor_section_access', array( $should_render, $element ), '3.5' );
 	}
 
