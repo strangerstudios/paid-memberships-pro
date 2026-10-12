@@ -1093,7 +1093,7 @@ class PMPro_Field {
 				$r .= '<option value="' . esc_attr( trim( $ovalue ) ) . '" ';
 				if(!empty($this->multiple) && in_array($ovalue, $value))
 					$r .= 'selected="selected" ';
-				elseif ( ! empty( $ovalue ) && is_string( $value ) && trim( $ovalue ) == trim( $value ) )
+				elseif ( '' !== (string) $ovalue && is_string( $value ) && trim( $ovalue ) == trim( $value ) )
 					$r .= 'selected="selected" ';
 				$r .= '>' . esc_html( $option ) . "</option>\n";
 			}
@@ -1169,7 +1169,7 @@ class PMPro_Field {
 				$count++;
 				$r .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-radio-item' ) ) . '">';
 				$r .= '<input type="radio" id="pmpro_field_' . esc_attr( $this->name . $count ) . '" name="' . esc_attr( $this->name ) . '" value="' . esc_attr($ovalue) . '" ';
-				if(!empty($ovalue) && is_string($value) && trim( $ovalue ) == trim( $value ) )
+				if('' !== (string) $ovalue && is_string($value) && trim( $ovalue ) == trim( $value ) )
 					$r .= 'checked="checked"';
 				if(!empty($this->class))
 				$r .= 'class="' . esc_attr( $this->class ) . '" ';
@@ -2080,8 +2080,13 @@ class PMPro_Field {
 				break;
 			case 'select':
 			case 'radio':
-				// Option values can be "0", so only treat a missing or blank value as empty.
-				$filled = ( null !== $value && '' !== $value );
+				if ( isset( $this->repair_non_associative_options ) && ! $this->repair_non_associative_options && ! $this->is_assoc( $this->options ) ) {
+					// Explicit 0..n-1 option values (User Fields settings) can be "0", so only treat a missing or blank value as empty.
+					$filled = ( null !== $value && '' !== $value );
+				} else {
+					// Other fields keep the empty() check so a 0-keyed placeholder option still fails the required check.
+					$filled = ! empty( $value );
+				}
 				break;
 			case 'file':
 				if ( ! empty( $_FILES[ $this->name ]['name'] ) ) {
