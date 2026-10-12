@@ -192,7 +192,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 					foreach ( (array) $value as $value_key => $value_item ) {
 						$pairs[] = $value_key . ': ' . ( is_scalar( $value_item ) ? $value_item : wp_json_encode( $value_item ) );
 					}
-					$value = implode( ', ', $pairs );
+					$value = implode( '; ', $pairs );
 				}
 			} else {
 				$value = '';
