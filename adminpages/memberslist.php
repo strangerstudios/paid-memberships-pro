@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 global $user_list_table;
 // Query, filter, and sort the data.
@@ -9,10 +12,12 @@ require_once dirname( __DIR__ ) . '/adminpages/admin_header.php';
 
 // Build CSV export link.
 // We now use the REST API for exports. Gather current filters to pass along when starting an export.
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; current list filters are only passed along to the export button.
 $members_export_filters = pmpro_sanitize_memberships_list_filters( $_REQUEST );
 if ( isset( $_REQUEST['s'] ) ) {
-    $members_export_filters['s'] = esc_attr( trim( sanitize_text_field( $_REQUEST['s'] ) ) );
+    $members_export_filters['s'] = esc_attr( trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) );
 }
+// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 // Render the List Table.
 ?>

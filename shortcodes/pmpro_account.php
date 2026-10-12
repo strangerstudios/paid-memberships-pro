@@ -2,6 +2,10 @@
 /*
 	Shortcode to show membership account information
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_shortcode_account($atts, $content=null, $code="")
 {
 	global $wpdb, $current_user;
@@ -77,10 +81,30 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					</h3>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 						<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ); ?>">
-							<?php do_action('pmpro_account_bullets_top');?>
-							<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>"><strong><?php esc_html_e( 'Username', 'paid-memberships-pro' ); ?>:</strong> <?php echo esc_html( $current_user->user_login ); ?></li>
-							<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>"><strong><?php esc_html_e( 'Email', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->user_email ); ?></li>
-							<?php do_action('pmpro_account_bullets_bottom');?>
+							<?php
+								do_action('pmpro_account_bullets_top');
+
+								// Build the profile list items.
+								$pmpro_account_profile_list_items = array(
+									'username' => '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_list_item-username' ) ) . '"><strong>' . esc_html__( 'Username', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( $current_user->user_login ) . '</li>',
+									'email'    => '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_list_item-email' ) ) . '"><strong>' . esc_html__( 'Email', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( $current_user->user_email ) . '</li>',
+								);
+
+								/**
+								 * Filter the profile list items shown on the Membership Account page.
+								 *
+								 * @since 3.8.9
+								 *
+								 * @param array   $pmpro_account_profile_list_items Profile list item HTML, keyed by item ('username', 'email').
+								 * @param WP_User $current_user                     The current user.
+								 * @return array $pmpro_account_profile_list_items Profile list item HTML.
+								 */
+								$pmpro_account_profile_list_items = apply_filters( 'pmpro_account_profile_list_items', $pmpro_account_profile_list_items, $current_user );
+
+								echo wp_kses_post( implode( '', (array) $pmpro_account_profile_list_items ) );
+
+								do_action('pmpro_account_bullets_bottom');
+							?>
 						</ul>
 					</div> <!-- end pmpro_card_content -->
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
@@ -235,7 +259,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										// Build the links to return.
 										$pmpro_member_action_links = array();
 
-										$renew_url = pmpro_url( 'checkout', 'level=' . $level->id, 'https' );
+										$renew_url = pmpro_url( 'checkout', 'pmpro_level=' . $level->id, 'https' );
 										if ( array_key_exists($level->id, $pmpro_levels) && pmpro_isLevelExpiringSoon( $level ) && ! empty( $renew_url ) ) {
 											$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew-' . $level->id . '" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
 

@@ -1,4 +1,7 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 // Show the edit order form if an order ID is provided.
 if ( ! empty( $order->id ) ) { ?>
@@ -53,7 +56,7 @@ if ( ! empty( $order->id ) ) { ?>
 						<th scope="row" valign="top"><label for="user_id"><?php esc_html_e( 'User ID', 'paid-memberships-pro' ); ?></label></th>
 						<td>
 							<?php
-								$user_id = ! empty( $_REQUEST['user'] ) ? intval( $_REQUEST['user'] ) : $order->user_id;
+								$user_id = ! empty( $_REQUEST['user'] ) ? intval( $_REQUEST['user'] ) : $order->user_id; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; prefills the form field.
 							?>
 							<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $user_id ); ?>" size="10" />
 						</td>
@@ -63,7 +66,7 @@ if ( ! empty( $order->id ) ) { ?>
 						<td>
 							<?php
 								// Get the order's current membership level ID.
-								$membership_id = ! empty( $_REQUEST['membership_id'] ) ? intval( $_REQUEST['membership_id'] ) : $order->membership_id;
+								$membership_id = ! empty( $_REQUEST['membership_id'] ) ? intval( $_REQUEST['membership_id'] ) : $order->membership_id; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; prefills the form field.
 
 								// Get all membership levels.
 								$levels = pmpro_getAllLevels( true, true );
@@ -185,7 +188,7 @@ if ( ! empty( $order->id ) ) { ?>
 
 				$sqlQuery = "SELECT * FROM $wpdb->pmpro_discount_codes ";
 				$sqlQuery .= "ORDER BY id DESC ";
-				$codes = $wpdb->get_results($sqlQuery, OBJECT);
+				$codes = $wpdb->get_results($sqlQuery, OBJECT); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query; only the $wpdb table name is interpolated.
 				if ( ! empty( $codes ) ) { ?>
 				<tr>
 					<th scope="row" valign="top"><label for="discount_code_id"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label></th>

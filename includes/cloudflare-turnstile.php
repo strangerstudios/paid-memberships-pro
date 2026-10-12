@@ -3,6 +3,10 @@
  * Logic for CloudFlare Turnstile.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Register Cloudflare Turnstile as an available captcha service.
  *
@@ -176,8 +180,8 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_cloudflare_turnstile_settings' 
 function pmpro_cloudflare_turnstile_settings_save() {
 	// Keep the legacy on/off option in sync with the captcha setting for backwards compatibility.
 	update_option( 'pmpro_cloudflare_turnstile', 'turnstile' === pmpro_captcha() ? 1 : 0, false );
-	pmpro_setOption( 'cloudflare_turnstile_site_key', sanitize_text_field( $_POST['cloudflare_turnstile_site_key'] ) );
-	pmpro_setOption( 'cloudflare_turnstile_secret_key', sanitize_text_field( $_POST['cloudflare_turnstile_secret_key'] ) );
+	pmpro_setOption( 'cloudflare_turnstile_site_key', isset( $_POST['cloudflare_turnstile_site_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cloudflare_turnstile_site_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce (pmpro_securitysettings_nonce) verified in adminpages/securitysettings.php before the pmpro_save_security_settings action fires.
+	pmpro_setOption( 'cloudflare_turnstile_secret_key', isset( $_POST['cloudflare_turnstile_secret_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cloudflare_turnstile_secret_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce (pmpro_securitysettings_nonce) verified in adminpages/securitysettings.php before the pmpro_save_security_settings action fires.
 }
 add_action( 'pmpro_save_security_settings', 'pmpro_cloudflare_turnstile_settings_save' );
 
@@ -309,7 +313,7 @@ function pmpro_cloudflare_turnstile_lostpassword_check( $errors, $user_data ) {
 	// Only check submissions from the PMPro or wp-login.php lost password forms. This hook
 	// also fires for other plugins that call retrieve_password() from their own forms,
 	// which never displayed our captcha.
-	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_lostpassword' ) && ! did_action( 'login_form_retrievepassword' ) ) {
+	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_lostpassword' ) && ! did_action( 'login_form_retrievepassword' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag; only decides whether to require a captcha on the public lost password form.
 		return;
 	}
 

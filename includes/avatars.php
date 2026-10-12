@@ -47,7 +47,7 @@ add_action( 'pmpro_membership_level_after_other_settings', 'pmpro_membership_lev
  * @param int $level_id The ID of the membership level being saved.
  */
 function pmpro_save_membership_level_avatar( $level_id ) {
-	if ( ! empty( $_REQUEST['enable_avatars'] ) ) {
+	if ( ! empty( $_REQUEST['enable_avatars'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_save_membership_level, fired from adminpages/levels/save-level.php after adminpages/membershiplevels.php verifies pmpro_membershiplevels_nonce.
 		update_pmpro_membership_level_meta( $level_id, 'enable_avatars', 1 );
 	} else {
 		delete_pmpro_membership_level_meta( $level_id, 'enable_avatars' );
@@ -70,6 +70,7 @@ function pmpro_avatar_get_enabled_levels() {
 	if ( null === $enabled_levels ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table with no WordPress API; result is cached in a static variable.
 		$enabled_levels = $wpdb->get_col( "
 			SELECT DISTINCT pmpro_membership_level_id
 			FROM {$wpdb->pmpro_membership_levelmeta}
@@ -307,11 +308,11 @@ function pmpro_avatar_setup_directory() {
  */
 function pmpro_avatar_validate_upload( $file_key = 'pmpro_avatar' ) {
 	// Check if file was uploaded.
-	if ( empty( $_FILES[ $file_key ] ) || empty( $_FILES[ $file_key ]['name'] ) ) {
+	if ( empty( $_FILES[ $file_key ] ) || empty( $_FILES[ $file_key ]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Callers pmpro_save_avatar_field() and pmpro_change_avatar_process() verify pmpro_avatar_nonce before processing uploads.
 		return new WP_Error( 'pmpro_avatar_error', __( 'No file was uploaded.', 'paid-memberships-pro' ) );
 	}
 
-	$file = $_FILES[ $file_key ];
+	$file = $_FILES[ $file_key ]; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Callers pmpro_save_avatar_field() and pmpro_change_avatar_process() verify pmpro_avatar_nonce before processing uploads. File upload array; validated below (upload error, is_uploaded_file(), size and wp_check_filetype_and_ext() checks). The client file name is never used to build the saved path.
 
 	// Check for upload errors.
 	if ( ! empty( $file['error'] ) && $file['error'] !== UPLOAD_ERR_OK ) {
@@ -424,7 +425,7 @@ function pmpro_avatar_process_upload( $user_id, $file_key = 'pmpro_avatar' ) {
 		return $validation;
 	}
 
-	$file = $_FILES[ $file_key ];
+	$file = $_FILES[ $file_key ]; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Callers pmpro_save_avatar_field() and pmpro_change_avatar_process() verify pmpro_avatar_nonce before processing uploads. Existence and validity checked by pmpro_avatar_validate_upload() above; file upload array passed to wp_check_filetype_and_ext().
 	$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
 
 	// Determine the extension for saved files.
@@ -751,17 +752,20 @@ function pmpro_avatar_get_user_id_from_identifier( $id_or_email ) {
 
 	if ( is_numeric( $id_or_email ) && $id_or_email > 0 ) {
 		$user_id = (int) $id_or_email;
-	} elseif ( is_object( $id_or_email ) ) {
-		if ( isset( $id_or_email->user_id ) && $id_or_email->user_id > 0 ) {
-			// WP_Comment object.
+	} elseif ( $id_or_email instanceof WP_User ) {
+		$user_id = (int) $id_or_email->ID;
+	} elseif ( $id_or_email instanceof WP_Comment ) {
+		if ( $id_or_email->user_id > 0 ) {
 			$user_id = (int) $id_or_email->user_id;
-		} elseif ( isset( $id_or_email->ID ) && isset( $id_or_email->user_login ) ) {
-			// WP_User object.
-			$user_id = (int) $id_or_email->ID;
-		} elseif ( isset( $id_or_email->post_author ) ) {
-			// WP_Post object.
-			$user_id = (int) $id_or_email->post_author;
+		} elseif ( ! empty( $id_or_email->comment_author_email ) ) {
+			// Guest comment. Only match a registered user by email, never fall back to the post author.
+			$user = get_user_by( 'email', $id_or_email->comment_author_email );
+			if ( $user ) {
+				$user_id = $user->ID;
+			}
 		}
+	} elseif ( $id_or_email instanceof WP_Post ) {
+		$user_id = (int) $id_or_email->post_author;
 	} elseif ( is_string( $id_or_email ) && strpos( $id_or_email, '@' ) !== false ) {
 		// Email address.
 		$user = get_user_by( 'email', $id_or_email );
@@ -1031,7 +1035,7 @@ add_action( 'wpmu_delete_user', 'pmpro_avatar_cleanup_on_user_delete' );
  */
 function pmpro_avatar_allow_upload( $allow_upload, $file, $filetype ) {
 	// Check if this is an avatar upload.
-	if ( isset( $_FILES['pmpro_avatar'] ) && $file['name'] === $_FILES['pmpro_avatar']['name'] ) {
+	if ( isset( $_FILES['pmpro_avatar']['name'] ) && $file['name'] === $_FILES['pmpro_avatar']['name'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Read-only filename comparison in a pmpro_check_upload filter; callers verify their form nonce before saving.
 		// Validate against our allowed types.
 		$allowed_types = pmpro_avatar_get_allowed_file_types();
 		if ( in_array( strtolower( $filetype['ext'] ), $allowed_types, true ) ) {

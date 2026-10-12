@@ -417,7 +417,7 @@ function pmpro_build_settings_input( $field ) {
 				esc_attr( $name ),
 				esc_attr( $value ),
 				'' !== $input_class ? ' class="' . esc_attr( $input_class ) . '"' : '', // An empty class ('' passed to suppress the default) omits the attribute.
-				$required,
+				$required, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static string, either ' required' or ''.
 				pmpro_build_settings_input_attrs( $field ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- keys sanitized and values escaped in the helper.
 			);
 			break;
