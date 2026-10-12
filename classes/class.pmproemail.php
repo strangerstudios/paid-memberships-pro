@@ -198,9 +198,10 @@
 
 					// header_name was set for the original recipient, so update it when the recipient changes.
 					// Fall back to the same generic name the admin and member templates use.
+					// The fallback is picked by the template slug suffix, not by the recipient's role.
 					if ( strtolower( $custom_to ) !== strtolower( (string) $this->email ) ) {
 						$custom_to_user = get_user_by( 'email', $custom_to );
-						if ( $custom_to_user ) {
+						if ( $custom_to_user && ! empty( $custom_to_user->display_name ) ) {
 							$this->data['header_name'] = $custom_to_user->display_name;
 						} elseif ( '_admin' === substr( $this->template, -6 ) ) {
 							$this->data['header_name'] = esc_html__( 'Admin', 'paid-memberships-pro' );
