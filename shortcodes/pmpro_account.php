@@ -89,7 +89,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								/**
 								 * Filter the profile list items shown on the Membership Account page.
 								 *
-								 * @since TBD
+								 * @since 3.8.9
 								 *
 								 * @param array   $pmpro_account_profile_list_items Profile list item HTML, keyed by item ('username', 'email').
 								 * @param WP_User $current_user                     The current user.
