@@ -1307,8 +1307,9 @@ add_action( 'plugins_loaded', 'pmpro_define_deprecated_date_pattern_functions' )
  * auto-deactivated from a wp-admin page - both core and the Add On are loaded.
  * The legacy save handlers read form fields the new admin pages no longer
  * submit (silently wiping the settings the admin just saved), the text filters
- * double or replace core's wording, and the checkout/webhook filters re-apply
- * the old date engine on top of core's native handling.
+ * double or replace core's wording, the checkout/webhook filters re-apply
+ * the old date engine on top of core's native handling, and the levels list
+ * column and past-date notice duplicate core's Expiration column.
  *
  * @since TBD
  */
@@ -1338,6 +1339,9 @@ function pmpro_neutralize_retired_date_pattern_add_ons() {
 		remove_filter( 'pmpro_paystack_webhook_level', 'pmprosed_pmpro_ipnhandler_level' );
 		remove_filter( 'pmpro_checkout_end_date', 'pmprosed_force_set_expiration_enddate' );
 		remove_filter( 'pmpro_level_expiration_text', 'pmprosed_pmpro_level_expiration_text' );
+		remove_action( 'pmpro_membership_levels_table_extra_cols_header', 'pmprosed_membership_levels_table_extra_cols_header', 15 );
+		remove_action( 'pmpro_membership_levels_table_extra_cols_body', 'pmprosed_membership_levels_table_extra_cols_body', 15 );
+		remove_action( 'admin_notices', 'pmprosed_show_admin_notice_past_dates' );
 	}
 }
 add_action( 'plugins_loaded', 'pmpro_neutralize_retired_date_pattern_add_ons' );
