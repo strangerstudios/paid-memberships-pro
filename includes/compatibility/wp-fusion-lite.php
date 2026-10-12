@@ -8,6 +8,10 @@
  * @since 3.6
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // WP Fusion Pro is active, then let's give WP Fusion Pro priority to include their own PMPro integration code.
 if ( class_exists( 'WP_Fusion' ) ) {
 	return;

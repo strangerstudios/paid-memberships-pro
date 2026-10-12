@@ -9,6 +9,11 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_report_login_register( $pmpro_reports ) {
 	$pmpro_reports['login'] = __( 'Visits, Views, and Logins', 'paid-memberships-pro' );
 
@@ -81,9 +86,12 @@ function pmpro_report_login_page()
 {
 	global $wpdb;
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only report screen: search, level filter, and pagination only affect what is displayed.
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Report queries join PMPro custom tables, which have no WordPress API or object cache layer.
+
 	//vars
 	if(!empty($_REQUEST['s']))
-		$s = sanitize_text_field( $_REQUEST['s'] );
+		$s = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 	else
 		$s = "";
 
@@ -159,8 +167,8 @@ function pmpro_report_login_page()
 		$sqlQuery_group_by = "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . (int) $start . "," . (int) $limit;
 
 		// Complete the queries.
-		$theusers = $wpdb->get_results( $sqlQuery_select_data . $sqlQuery_where . $sqlQuery_group_by );
-		$totalrows = $wpdb->get_var( $sqlQuery_select_count . $sqlQuery_where );
+		$theusers = $wpdb->get_results( $sqlQuery_select_data . $sqlQuery_where . $sqlQuery_group_by ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term and level go through esc_sql() inside quotes (level is also intval'd), and LIMIT values are cast to int.
+		$totalrows = $wpdb->get_var( $sqlQuery_select_count . $sqlQuery_where ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term and level go through esc_sql() inside quotes (level is also intval'd).
 	?>
 	<p>
 		<?php esc_html_e( 'This report offers a detailed view of data points by user and member. For various reasons, the numbers below will not perfectly match up to other tracking you might be doing (such as the data provided by an analytics plugin).', 'paid-memberships-pro' ); ?>
@@ -302,6 +310,7 @@ function pmpro_report_login_page()
 		</div>
 	</div>
 <?php
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 }
 
 /*

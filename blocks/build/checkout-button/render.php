@@ -2,6 +2,11 @@
 /**
  * Render the Level Checkout Button on the frontend.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Don't return if selected level is empty.
 if ( empty( $attributes['selected_membership_level'] ) ) {
 	return;

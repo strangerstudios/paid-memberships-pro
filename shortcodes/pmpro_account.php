@@ -2,6 +2,10 @@
 /*
 	Shortcode to show membership account information
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_shortcode_account($atts, $content=null, $code="")
 {
 	global $wpdb, $current_user;

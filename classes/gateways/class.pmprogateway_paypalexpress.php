@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -236,6 +240,9 @@
 		/**
 		 * Display fields for PayPal options.
 		 *
+		 * Field values default to get_option( 'pmpro_' . $name ) inside the helper, so only the
+		 * field definitions are needed here.
+		 *
 		 * @since 3.5
 		 */
 		public static function show_settings_fields() {
@@ -249,76 +256,58 @@
 					);
 				?>
 			</p>
-			<div id="pmpro_paypalexpress" class="pmpro_section" data-visibility="shown" data-activated="true">
-				<div class="pmpro_section_toggle">
-					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-						<span class="dashicons dashicons-arrow-up-alt2"></span>
-						<?php esc_html_e( 'Settings', 'paid-memberships-pro' ); ?>
-					</button>
-				</div>
-				<div class="pmpro_section_inside">
-					<table class="form-table">
-						<tbody>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
-								<th scope="row" valign="top">
-									<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr( get_option( 'pmpro_gateway_email' ) ); ?>" class="regular-text code" />
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
-								<th scope="row" valign="top">
-									<label for="apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="apiusername" name="apiusername" value="<?php echo esc_attr( get_option( 'pmpro_apiusername' ) ); ?>" class="regular-text code" />
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
-								<th scope="row" valign="top">
-									<label for="apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="apipassword" name="apipassword" value="<?php echo esc_attr( get_option( 'pmpro_apipassword' ) ); ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
-								<th scope="row" valign="top">
-									<label for="apisignature"><?php esc_html_e('API Signature', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="apisignature" name="apisignature" value="<?php echo esc_attr( get_option( 'pmpro_apisignature' ) ); ?>" class="regular-text code" />
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress">
-								<th scope="row" valign="top">
-									<label for="paypalexpress_skip_confirmation"><?php esc_html_e('Confirmation Step', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
-										<option value="0" <?php selected( get_option('pmpro_paypalexpress_skip_confirmation'), 0 );?>><?php esc_html_e( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
-										<option value="1" <?php selected( get_option('pmpro_paypalexpress_skip_confirmation'), 1 );?>><?php esc_html_e( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
-									</select>
-								</td>
-							</tr>
-							<tr class="gateway gateway_paypalwpp gateway_paypalexpress gateway_paypalstandard">
-								<th scope="row" valign="top">
-									<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<p><code><?php echo esc_html( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );?></code></p>
-									<p class="description">
-										<?php esc_html_e( 'You must set up this IPN (Instant Payment Notification) URL in your PayPal account to fully integrate with PayPal Express.', 'paid-memberships-pro' ); ?>
-										<a href="https://www.paidmembershipspro.com/setting-ipn-urls-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=set-up-paypal-ipn" target="_blank"><?php esc_html_e( 'Read the documentation on setting up your PayPal IPN', 'paid-memberships-pro' ); ?></a>
-									</p>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
 			<?php
+			pmpro_build_settings_section( array(
+				'id'     => 'pmpro_paypalexpress',
+				'title'  => __( 'Settings', 'paid-memberships-pro' ),
+				'fields' => array(
+					array(
+						'name'  => 'gateway_email',
+						'label' => __( 'Gateway Account Email', 'paid-memberships-pro' ),
+						'type'  => 'text',
+						'class' => 'regular-text code',
+					),
+					array(
+						'name'  => 'apiusername',
+						'label' => __( 'API Username', 'paid-memberships-pro' ),
+						'type'  => 'text',
+						'class' => 'regular-text code',
+					),
+					array(
+						'name'  => 'apipassword',
+						'label' => __( 'API Password', 'paid-memberships-pro' ),
+						'type'  => 'secure_key',
+					),
+					array(
+						'name'  => 'apisignature',
+						'label' => __( 'API Signature', 'paid-memberships-pro' ),
+						'type'  => 'text',
+						'class' => 'regular-text code',
+					),
+					array(
+						'name'    => 'paypalexpress_skip_confirmation',
+						'label'   => __( 'Confirmation Step', 'paid-memberships-pro' ),
+						'type'    => 'select',
+						'options' => array(
+							0 => __( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ),
+							1 => __( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ),
+						),
+					),
+					array(
+						'label'   => __( 'IPN Handler URL', 'paid-memberships-pro' ),
+						'type'    => 'html',
+						'content' => function() {
+							?>
+							<p><code><?php echo esc_html( add_query_arg( 'action', 'ipnhandler', admin_url( 'admin-ajax.php' ) ) ); ?></code></p>
+							<p class="description">
+								<?php esc_html_e( 'You must set up this IPN (Instant Payment Notification) URL in your PayPal account to fully integrate with PayPal Express.', 'paid-memberships-pro' ); ?>
+								<a href="https://www.paidmembershipspro.com/setting-ipn-urls-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=set-up-paypal-ipn" target="_blank"><?php esc_html_e( 'Read the documentation on setting up your PayPal IPN', 'paid-memberships-pro' ); ?></a>
+							</p>
+							<?php
+						},
+					),
+				),
+			) );
 		}
 
 		/**
@@ -336,8 +325,8 @@
 			);
 
 			foreach ( $settings_to_save as $setting ) {
-				if ( isset( $_REQUEST[ $setting ] ) ) {
-					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
+				if ( isset( $_REQUEST[ $setting ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
+					update_option( 'pmpro_' . $setting, sanitize_text_field( wp_unslash( $_REQUEST[ $setting ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in adminpages/paymentsettings.php before save_settings_fields() is called.
 				}
 			}
 		}
@@ -392,7 +381,7 @@
 
 			// For backwards compatibility with pre-3.2 checkout page templates, also check if the $_REQUEST['confirm'] attribute is set.
 			// If so, we want to process the chekcout form submission.
-			if ( ! empty( $_REQUEST['confirm'] ) ) {
+			if ( ! empty( $_REQUEST['confirm'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only routes to checkout processing, which still verifies pmpro_checkout_nonce in preheaders/checkout.php.
 				// Process the checkout form submission.
 				$_REQUEST['submit-checkout'] = 1;
 			}
@@ -408,23 +397,24 @@
 		static function pmpro_checkout_before_processing() {
 			global $current_user, $gateway;
 
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Deprecated since 2.12.3 and not hooked by core. It ran on pmpro_checkout_before_processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php, and only stores values in the session.
 			_deprecated_function( __FUNCTION__, '2.12.3' );
 
 			//save user fields for PayPal Express
 			if(!$current_user->ID) {
 				//get values from post
 				if(isset($_REQUEST['username']))
-					$username = trim(sanitize_text_field($_REQUEST['username']));
+					$username = trim(sanitize_text_field(wp_unslash($_REQUEST['username'])));
 				else
 					$username = "";
 				if(isset($_REQUEST['password'])) {
 					// Can't sanitize the password. Be careful.
-					$password = $_REQUEST['password']; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$password = $_REQUEST['password']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed, unsanitized).
 				} else {
 					$password = "";
 				}
 				if(isset($_REQUEST['bemail']))
-					$bemail = sanitize_email($_REQUEST['bemail']);
+					$bemail = sanitize_email(wp_unslash($_REQUEST['bemail']));
 				else
 					$bemail = "";
 
@@ -437,6 +427,7 @@
 			//can use this hook to save some other variables to the session
 			// @deprecated 2.12.3
 			do_action("pmpro_paypalexpress_session_vars");
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 
 		/**
@@ -447,6 +438,7 @@
 		 */
 		static function pmpro_checkout_confirmed($pmpro_confirmed)
 		{
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Deprecated since 3.2 and not hooked by core. It handled the PayPal return URL, which can't carry a WordPress nonce; the order is looked up by PayPal token and the token is verified with PayPal.
 			_deprecated_function( __FUNCTION__, '3.2', 'PMProGateway_paypalexpress::process()' );
 			global $pmpro_msg, $pmpro_msgt, $pmpro_level, $current_user, $pmpro_review, $pmpro_paypal_token, $discount_code, $bemail;
 
@@ -454,16 +446,16 @@
 			if(!empty($_REQUEST['review']))
 			{
 				if(!empty($_REQUEST['PayerID']))
-					$_SESSION['payer_id'] = sanitize_text_field($_REQUEST['PayerID']);
+					$_SESSION['payer_id'] = sanitize_text_field(wp_unslash($_REQUEST['PayerID']));
 				if(!empty($_REQUEST['paymentAmount']))
-					$_SESSION['paymentAmount'] = sanitize_text_field($_REQUEST['paymentAmount']);
+					$_SESSION['paymentAmount'] = sanitize_text_field(wp_unslash($_REQUEST['paymentAmount']));
 				if(!empty($_REQUEST['currencyCodeType']))
-					$_SESSION['currCodeType'] = sanitize_text_field($_REQUEST['currencyCodeType']);
+					$_SESSION['currCodeType'] = sanitize_text_field(wp_unslash($_REQUEST['currencyCodeType']));
 				if(!empty($_REQUEST['paymentType']))
-					$_SESSION['paymentType'] = sanitize_text_field($_REQUEST['paymentType']);
+					$_SESSION['paymentType'] = sanitize_text_field(wp_unslash($_REQUEST['paymentType']));
 
 				$morder = new MemberOrder();
-				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
+				$morder->getMemberOrderByPayPalToken(isset($_REQUEST['token']) ? sanitize_text_field(wp_unslash($_REQUEST['token'])) : '');
 
 				// Pull checkout values from order meta.
 				pmpro_pull_checkout_data_from_order( $morder );
@@ -499,7 +491,7 @@
 			)
 			{
 				$morder = new MemberOrder();
-				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
+				$morder->getMemberOrderByPayPalToken(isset($_REQUEST['token']) ? sanitize_text_field(wp_unslash($_REQUEST['token'])) : '');
 				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
 
 				// Pull checkout values from order meta.
@@ -540,6 +532,7 @@
 				return array("pmpro_confirmed"=>$pmpro_confirmed, "morder"=>$morder);
 			else
 				return $pmpro_confirmed;
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 
 		/**
@@ -557,13 +550,13 @@
 			{
 				//reload the user fields
 				if( ! empty( $_SESSION['pmpro_signup_username'] ) ){
-					$new_user_array['user_login'] = $_SESSION['pmpro_signup_username'];
+					$new_user_array['user_login'] = $_SESSION['pmpro_signup_username']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized before it was stored in the session by pmpro_checkout_before_processing().
 				}
 				if( ! empty( $_SESSION['pmpro_signup_password'] ) ){
-					$new_user_array['user_pass'] = $_SESSION['pmpro_signup_password'];
+					$new_user_array['user_pass'] = $_SESSION['pmpro_signup_password']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed, unsanitized).
 				}
 				if( ! empty( $_SESSION['pmpro_signup_email'] ) ){
-					$new_user_array['user_email'] = $_SESSION['pmpro_signup_email'];
+					$new_user_array['user_email'] = $_SESSION['pmpro_signup_email']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized with sanitize_email() before it was stored in the session by pmpro_checkout_before_processing().
 				}
 
 				//unset the user fields in session
@@ -792,7 +785,7 @@
 					$paypal_url = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token="  . $this->httpParsedResponseAr['TOKEN'];
 				}
 
-				wp_redirect($paypal_url);
+				wp_redirect($paypal_url); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Redirects to the PayPal Express Checkout URL (offsite by design).
 				exit;
 
 				//exit('SetExpressCheckout Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
@@ -862,7 +855,7 @@
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1";
 
-			$nvpStr .= "&PAYERID=" . sanitize_text_field( $_REQUEST['PayerID'] ) . "&PAYMENTACTION=sale";
+			$nvpStr .= "&PAYERID=" . ( isset( $_REQUEST['PayerID'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['PayerID'] ) ) : '' ) . "&PAYMENTACTION=sale"; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called from checkout processing after pmpro_checkout_nonce is verified in preheaders/checkout.php; PayerID is PayPal's return value and PayPal validates it with the token.
 
 			$nvpStr = apply_filters("pmpro_do_express_checkout_payment_nvpstr", $nvpStr, $order);
 
