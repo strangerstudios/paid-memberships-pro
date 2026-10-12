@@ -33,7 +33,7 @@ function pmpro_tos_advanced_settings_callback() {
 			'selected' => esc_html( $tospage )
 		)
 	);
-	if ( ! empty( $tospage ) ) { ?>
+	if ( ! empty( $tospage ) && 'publish' === get_post_status( $tospage ) ) { ?>
 		<a target="_blank" href="post.php?post=<?php echo esc_attr( $tospage ); ?>&action=edit"
 		class="button button-secondary pmpro_page_edit"><?php esc_html_e( 'edit page', 'paid-memberships-pro' ); ?></a>
 		&nbsp;

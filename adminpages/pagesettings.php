@@ -248,7 +248,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								)
 							);
 							?>
-							<?php if (!empty($pmpro_pages['account'])) { ?>
+							<?php if ( ! empty( $pmpro_pages['account'] ) && 'publish' === get_post_status( $pmpro_pages['account'] ) ) { ?>
 								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['account'] ); ?>&action=edit"
 								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
 								&nbsp;
@@ -272,7 +272,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								)
 							);
 							?>
-							<?php if (!empty($pmpro_pages['billing'])) { ?>
+							<?php if ( ! empty( $pmpro_pages['billing'] ) && 'publish' === get_post_status( $pmpro_pages['billing'] ) ) { ?>
 								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['billing'] ); ?>&action=edit"
 								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
 								&nbsp;
@@ -296,7 +296,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								)
 							);
 							?>
-							<?php if (!empty($pmpro_pages['cancel'])) { ?>
+							<?php if ( ! empty( $pmpro_pages['cancel'] ) && 'publish' === get_post_status( $pmpro_pages['cancel'] ) ) { ?>
 								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['cancel'] ); ?>&action=edit"
 								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
 								&nbsp;
@@ -321,7 +321,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								)
 							);
 							?>
-							<?php if (!empty($pmpro_pages['checkout'])) { ?>
+							<?php if ( ! empty( $pmpro_pages['checkout'] ) && 'publish' === get_post_status( $pmpro_pages['checkout'] ) ) { ?>
 								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['checkout'] ); ?>&action=edit"
 								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
 								&nbsp;
@@ -346,7 +346,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								)
 							);
 							?>
-							<?php if (!empty($pmpro_pages['confirmation'])) { ?>
+							<?php if ( ! empty( $pmpro_pages['confirmation'] ) && 'publish' === get_post_status( $pmpro_pages['confirmation'] ) ) { ?>
 								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['confirmation'] ); ?>&action=edit"
 								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
 								&nbsp;
@@ -371,7 +371,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								)
 							);
 							?>
-							<?php if (!empty($pmpro_pages['levels'])) { ?>
+							<?php if ( ! empty( $pmpro_pages['levels'] ) && 'publish' === get_post_status( $pmpro_pages['levels'] ) ) { ?>
 								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['levels'] ) ?>&action=edit"
 								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
 								&nbsp;
@@ -409,11 +409,13 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 							?>
 
 							<?php if ( ! empty( $pmpro_pages['login'] ) ) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['login'] ); ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['login']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
+								<?php if ( 'publish' === get_post_status( $pmpro_pages['login'] ) ) { ?>
+									<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['login'] ); ?>&action=edit"
+									class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
+									&nbsp;
+									<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['login']) ); ?>"
+									class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
+								<?php } ?>
 							<?php } elseif ( empty( get_option( 'pmpro_login_page_generated' ) ) ) { ?>
 								&nbsp;
 								<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'login' ) ), admin_url('admin.php') ) ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php esc_html_e('Generate Page', 'paid-memberships-pro' ); ?></a>
@@ -438,11 +440,13 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 							?>
 
 							<?php if ( ! empty( $pmpro_pages['member_profile_edit'] ) ) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['member_profile_edit'] );?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['member_profile_edit']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
+								<?php if ( 'publish' === get_post_status( $pmpro_pages['member_profile_edit'] ) ) { ?>
+									<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['member_profile_edit'] );?>&action=edit"
+									class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
+									&nbsp;
+									<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['member_profile_edit']) ); ?>"
+									class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
+								<?php } ?>
 							<?php } elseif ( empty( get_option( 'pmpro_member_profile_edit_page_generated' ) ) ) { ?>
 								&nbsp;
 								<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'member_profile_edit' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ) ); ?>"><?php esc_html_e('Generate Page', 'paid-memberships-pro' ); ?></a>
@@ -465,7 +469,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								)
 							);
 							?>
-							<?php if (!empty($pmpro_pages['invoice'])) { ?>
+							<?php if ( ! empty( $pmpro_pages['invoice'] ) && 'publish' === get_post_status( $pmpro_pages['invoice'] ) ) { ?>
 								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['invoice'] ); ?>&action=edit"
 								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
 								&nbsp;
@@ -521,13 +525,16 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 										)
 									);
 									if(!empty($pmpro_pages[$name])) {
-										?>
-										<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages[$name] );?>&action=edit"
-										class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-										&nbsp;
-										<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages[$name]) ); ?>"
-										class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-									<?php } else { ?>
+										if ( 'publish' === get_post_status( $pmpro_pages[ $name ] ) ) {
+											?>
+											<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages[$name] );?>&action=edit"
+											class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
+											&nbsp;
+											<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages[$name]) ); ?>"
+											class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
+											<?php
+										}
+									} else { ?>
 										&nbsp;
 										<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( $name ) ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ) ); ?>"><?php esc_html_e('Generate Page', 'paid-memberships-pro' ); ?></a>
 									<?php } ?>
