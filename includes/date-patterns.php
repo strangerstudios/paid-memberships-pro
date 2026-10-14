@@ -260,6 +260,43 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 }
 
 /**
+ * Get the date of the first subscription payment for a level with a subscription delay.
+ *
+ * Used to set the profile start date at checkout and to show that date in the
+ * level cost text, so that both always agree.
+ *
+ * @since TBD
+ *
+ * @param int      $level_id          The membership level ID.
+ * @param int|null $code_id           Optional discount code ID.
+ * @param int|null $current_timestamp Optional local timestamp of the checkout. Defaults to now.
+ * @return string|false The first payment date in Y-m-d format, or false if there is no valid delay.
+ */
+function pmpro_get_subscription_delay_date( $level_id, $code_id = null, $current_timestamp = null ) {
+	$subscription_delay = pmpro_get_subscription_delay( $level_id, $code_id );
+	if ( empty( $subscription_delay ) ) {
+		return false;
+	}
+
+	if ( null === $current_timestamp ) {
+		$current_timestamp = current_time( 'timestamp' );
+	}
+
+	if ( is_numeric( $subscription_delay ) ) {
+		$delay_date = date( 'Y-m-d', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', $current_timestamp ) );
+	} else {
+		// Ignore malformed stored patterns rather than sending a bad date to the gateway.
+		$delay_date = pmpro_resolve_date_pattern( $subscription_delay, $current_timestamp );
+		if ( empty( $delay_date ) ) {
+			return false;
+		}
+	}
+
+	// Don't let a stored negative day count or a resolved date in the past move the start date backwards.
+	return max( $delay_date, date( 'Y-m-d', $current_timestamp ) );
+}
+
+/**
  * Get the set expiration date pattern for a level, optionally with a discount code.
  *
  * When a custom pricing discount code is passed, only the code's own setting is

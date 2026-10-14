@@ -136,6 +136,14 @@
 			if ( count( $code_levels ) <= 1 ) {
 				$code_level = empty( $code_levels ) ? null : $code_levels[0];
 
+				// Show the same first payment date that checkout will send to the gateway.
+				if ( ! empty( $code_level->id ) && pmpro_isLevelRecurring( $code_level ) ) {
+					$delay_date = pmpro_get_subscription_delay_date( $code_level->id, ! empty( $code_level->code_id ) ? $code_level->code_id : null );
+					if ( ! empty( $delay_date ) ) {
+						$code_level->profile_start_date = $delay_date . 'T0:0:0';
+					}
+				}
+
 				$level_cost_text = pmpro_getLevelCost( $code_level );
 				if ( ! empty( $level_cost_text ) ) {
 					$html[] = '<div class="' . pmpro_get_element_class( 'pmpro_level_cost_text' ) . '">' . wpautop( $level_cost_text ) . '</div>';
