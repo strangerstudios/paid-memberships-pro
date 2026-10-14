@@ -339,8 +339,6 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 	return $r;
 }
 
-
-
 function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	//Bail if no level
 	if ( empty( $level ) ) {
@@ -408,6 +406,35 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 
 	// add a space
 	$r .= ' ';
+
+	// subscription delay part: say when the first subscription payment will be if it is delayed.
+	// Existing memberships (with a startdate) describe a past checkout, so skip them unless the
+	// first payment date has been set on the object, as the checkout emails do.
+	if ( (float)$level->billing_amount > 0 && ! empty( $level->id ) && ( ! property_exists( $level, 'startdate' ) || ! empty( $level->profile_start_date ) ) ) {
+		$code_id            = ! empty( $level->code_id ) ? $level->code_id : null;
+		$subscription_delay = pmpro_get_subscription_delay( $level->id, $code_id );
+		if ( ! empty( $subscription_delay ) ) {
+			if ( ! empty( $level->profile_start_date ) ) {
+				// Checkout levels have the date that is sent to the gateway.
+				$first_payment_date = $level->profile_start_date;
+			} elseif ( ! is_numeric( $subscription_delay ) ) {
+				// A date pattern is the same date wherever it is shown.
+				$first_payment_date = pmpro_get_subscription_delay_date( $level->id, $code_id );
+			} else {
+				// A number of days moves with the checkout date.
+				$first_payment_date = false;
+			}
+
+			if ( ! empty( $first_payment_date ) ) {
+				/* translators: %s: the date of the first subscription payment. */
+				$r .= sprintf( __( 'Your first subscription payment will be on <strong>%s</strong>.', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), strtotime( $first_payment_date ) ) ) . ' ';
+			} elseif ( is_numeric( $subscription_delay ) ) {
+				$delay_days = intval( $subscription_delay );
+				/* translators: %d: the number of days until the first subscription payment. */
+				$r .= sprintf( _n( 'Your first subscription payment will be <strong>%d day after checkout</strong>.', 'Your first subscription payment will be <strong>%d days after checkout</strong>.', $delay_days, 'paid-memberships-pro' ), $delay_days ) . ' ';
+			}
+		}
+	}
 
 	// trial part
 	if ( $level->trial_limit ) {
@@ -567,7 +594,22 @@ function pmpro_getLevelExpiration( &$level ) {
 		return '';
 	}
 
-	if ( $level->expiration_number ) {
+	// Levels being checked out have any set expiration date stored on them alongside the
+	// number of days. Level objects loaded directly from the database (e.g. the levels page)
+	// fall back to the configured set expiration date, which replaces any duration at checkout.
+	$resolved_date = ! empty( $level->expiration_date ) ? $level->expiration_date : false;
+	if ( empty( $resolved_date ) && ! empty( $level->id ) ) {
+		$set_expiration_date = pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null );
+		$resolved_date       = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
+	}
+
+	if ( ! empty( $resolved_date ) ) {
+		$expiration_text = sprintf(
+			/* translators: %s: the date that the membership expires. */
+			__( 'Membership expires on %s.', 'paid-memberships-pro' ),
+			date_i18n( get_option( 'date_format' ), strtotime( $resolved_date, current_time( 'timestamp' ) ) )
+		);
+	} elseif ( $level->expiration_number ) {
 		$expiration_text = sprintf(
 			/* translators: 1: expiration number, 2: expiration period */
 			__( 'Membership expires after %1$d %2$s.', 'paid-memberships-pro' ),
@@ -2942,6 +2984,15 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
 	}
 
+	// If the level or discount code has a subscription delay, set the profile start
+	// date on the level so that gateways delay the first recurring payment.
+	if ( ! empty( $pmpro_level->id ) && pmpro_isLevelRecurring( $pmpro_level ) ) {
+		$delay_date = pmpro_get_subscription_delay_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null );
+		if ( ! empty( $delay_date ) ) {
+			$pmpro_level->profile_start_date = $delay_date . 'T0:0:0';
+		}
+	}
+
 	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
 
@@ -5018,7 +5069,6 @@ function pmpro_allowed_refunds( $order ) {
 	return $okay;
 }
 
-
 /**
  * Decides which filter should be used for the refund depending on gateway
  * @param  object $order Member Order that we are refunding
@@ -5369,7 +5419,6 @@ function pmpro_check_upload( $file_index ) {
 			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file submission.', 'paid-memberships-pro' ) );
 		}
 	}
-
 
 	// If we made it this far, the file is allowed.
 	return true;
