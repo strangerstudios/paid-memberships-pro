@@ -259,6 +259,11 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
 		$subscription_delay = get_option( 'pmpro_subscription_delay_' . intval( $level_id ), '' );
 	}
 
+	// A day count below 1 means no delay.
+	if ( is_numeric( $subscription_delay ) && intval( $subscription_delay ) < 1 ) {
+		$subscription_delay = '';
+	}
+
 	return $subscription_delay;
 }
 
