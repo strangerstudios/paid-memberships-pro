@@ -334,7 +334,7 @@ if (!empty($page_msg)) { ?>
 				'callback' => function() use ( $level, $confirmation_in_email ) {
 					wp_editor( $level->confirmation, 'confirmation', array( 'textarea_rows' => 5 ) );
 					?>
-					<p><input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked( $confirmation_in_email, 1 ); ?> aria-describedby="confirmation_in_email_description" /> <label for="confirmation_in_email"><?php esc_html_e( 'Check to include this message in the membership confirmation email.', 'paid-memberships-pro' ); ?></label></p>
+					<p><input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked( $confirmation_in_email, 1 ); ?> aria-describedby="confirmation_in_email_description" /> <label for="confirmation_in_email"><?php esc_html_e( 'Include this message in the membership confirmation email.', 'paid-memberships-pro' ); ?></label></p>
 					<p id="confirmation_in_email_description" class="description">
 						<?php
 						$allowed_confirmation_in_email_html = array(
@@ -426,7 +426,7 @@ if (!empty($page_msg)) { ?>
 			'label'          => __( 'Recurring Subscription', 'paid-memberships-pro' ),
 			'type'           => 'checkbox',
 			'value'          => $level_is_recurring,
-			'checkbox_label' => __( 'Check if this level has a recurring subscription payment.', 'paid-memberships-pro' ),
+			'checkbox_label' => __( 'This level has a recurring subscription payment.', 'paid-memberships-pro' ),
 		),
 			array(
 				'label'       => __( 'Billing Amount', 'paid-memberships-pro' ),
@@ -483,7 +483,7 @@ if (!empty($page_msg)) { ?>
 			'label'          => __( 'Custom Trial', 'paid-memberships-pro' ),
 			'type'           => 'checkbox',
 				'value'          => $level_has_trial,
-				'checkbox_label' => __( 'Check to add a custom trial period.', 'paid-memberships-pro' ),
+				'checkbox_label' => __( 'Add a custom trial period.', 'paid-memberships-pro' ),
 				'row_class'      => 'recurring_info',
 				'depends'        => array( $depends_on_recurring ),
 				'description'    => $gateway_supports_recurring_trials ? '' : '<strong class="pmpro_red">' . esc_html__( 'The current payment gateway does not support recurring trials.', 'paid-memberships-pro' ) . '</strong>',
@@ -551,7 +551,7 @@ if (!empty($page_msg)) { ?>
 			'label'          => __( 'Membership Expiration', 'paid-memberships-pro' ),
 			'type'           => 'checkbox',
 			'value'          => pmpro_isLevelExpiring( $level ),
-			'checkbox_label' => __( 'Check this to set when membership access expires.', 'paid-memberships-pro' ),
+			'checkbox_label' => __( 'Set when membership access expires.', 'paid-memberships-pro' ),
 		),
 	);
 
@@ -708,7 +708,7 @@ if (!empty($page_msg)) { ?>
 				'label'          => __( 'Disable New Signups', 'paid-memberships-pro' ),
 				'type'           => 'checkbox',
 				'value'          => $level->id && ! $level->allow_signups,
-				'checkbox_label' => __( 'Check to hide this level from the membership levels page and disable registration.', 'paid-memberships-pro' ),
+				'checkbox_label' => __( 'Hide this level from the membership levels page and disable registration.', 'paid-memberships-pro' ),
 			),
 			array(
 				'hook' => 'pmpro_membership_level_after_other_settings',

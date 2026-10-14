@@ -33,7 +33,7 @@ function pmpro_membership_level_after_other_settings_avatar( $level ) {
 			'label'          => __( 'Enable Profile Pictures', 'paid-memberships-pro' ),
 			'type'           => 'checkbox',
 			'value'          => $enabled,
-			'checkbox_label' => __( 'Check to enable custom profile picture support for users with this membership level.', 'paid-memberships-pro' ),
+			'checkbox_label' => __( 'Enable custom profile picture support for users with this membership level.', 'paid-memberships-pro' ),
 		),
 	) );
 }

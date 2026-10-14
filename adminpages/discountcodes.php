@@ -760,7 +760,7 @@
 
 								<tr>
 									<th scope="row" valign="top"><label><?php esc_html_e('Recurring Subscription', 'paid-memberships-pro' );?></label></th>
-									<td><input class="recurring_checkbox" id="<?php echo esc_attr( $level_recurring_checkbox_id ); ?>" name="recurring[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_recurring ); ?> /> <label for="<?php echo esc_attr( $level_recurring_checkbox_id ); ?>"><?php esc_html_e('Check if this level has a recurring subscription payment.', 'paid-memberships-pro' );?></label></td>
+									<td><input class="recurring_checkbox" id="<?php echo esc_attr( $level_recurring_checkbox_id ); ?>" name="recurring[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_recurring ); ?> /> <label for="<?php echo esc_attr( $level_recurring_checkbox_id ); ?>"><?php esc_html_e('This level has a recurring subscription payment.', 'paid-memberships-pro' );?></label></td>
 								</tr>
 
 								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
@@ -815,7 +815,7 @@
 									<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
 										<th scope="row" valign="top"><label><?php esc_html_e('Custom Trial', 'paid-memberships-pro' );?></label></th>
 										<td>
-											<input id="<?php echo esc_attr( $level_trial_checkbox_id ); ?>" name="custom_trial[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_trial ); ?> /> <label for="<?php echo esc_attr( $level_trial_checkbox_id ); ?>"><?php esc_html_e('Check to add a custom trial period.', 'paid-memberships-pro' );?></label>
+											<input id="<?php echo esc_attr( $level_trial_checkbox_id ); ?>" name="custom_trial[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_trial ); ?> /> <label for="<?php echo esc_attr( $level_trial_checkbox_id ); ?>"><?php esc_html_e('Add a custom trial period.', 'paid-memberships-pro' );?></label>
 											<?php if ( ! $discount_gateway_supports_recurring_trials ) { ?>
 												<p class="description"><strong class="pmpro_red"><?php esc_html_e( 'The current payment gateway does not support recurring trials.', 'paid-memberships-pro' ); ?></strong></p>
 											<?php } ?>
@@ -850,7 +850,7 @@
 
 								<tr>
 									<th scope="row" valign="top"><label><?php esc_html_e('Membership Expiration', 'paid-memberships-pro' );?></label></th>
-									<td><input id="<?php echo esc_attr( $level_expiration_checkbox_id ); ?>" name="expiration[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_expiring ); ?> /> <label for="<?php echo esc_attr( $level_expiration_checkbox_id ); ?>"><?php esc_html_e('Check this to set when membership access expires.', 'paid-memberships-pro' );?></label></td>
+									<td><input id="<?php echo esc_attr( $level_expiration_checkbox_id ); ?>" name="expiration[]" type="checkbox" value="<?php echo esc_attr( $level->id ); ?>" <?php checked( $level_is_expiring ); ?> /> <label for="<?php echo esc_attr( $level_expiration_checkbox_id ); ?>"><?php esc_html_e('Set when membership access expires.', 'paid-memberships-pro' );?></label></td>
 								</tr>
 
 								<tr class="<?php echo esc_attr( $expiration_info_class ); ?>" data-pmpro-depends="<?php echo $expiration_info_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
