@@ -95,7 +95,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 
 <p>To keep your membership, please check out again before {{ expiration_date }} so you don\'t lose access. Note that checking out again before that date may replace any remaining time on your current membership.</p>
 
-<p><a href="{{ checkout_url }}">Renew Your Membership</a></p>', 'paid-memberships-pro' ) );
+<p>Renew your membership here: {{ checkout_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

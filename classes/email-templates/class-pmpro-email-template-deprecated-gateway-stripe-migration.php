@@ -85,7 +85,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 
 <p><strong>To keep your membership active, please add your payment information before {{ next_payment_date }}.</strong> If we don\'t have a payment method on file by then, your membership will be cancelled.</p>
 
-<p><a href="{{ billing_update_url }}">Update Billing Information</a></p>', 'paid-memberships-pro' ) );
+<p>Update your billing information here: {{ billing_update_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
