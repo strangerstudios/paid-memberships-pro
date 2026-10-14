@@ -378,7 +378,7 @@ function pmpro_render_date_pattern_builder( $field_prefix, $existing_value ) {
 					)
 				);
 				?>
-				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/membership-levels/initial-membership-level-setup/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=date-patterns#h-billing-details' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn more about date patterns', 'paid-memberships-pro' ); ?></a>
+				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/membership-levels/date-patterns/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=date-patterns' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn more about date patterns', 'paid-memberships-pro' ); ?></a>
 			</p>
 		</span>
 	</div>
