@@ -215,7 +215,7 @@ function pmpro_report_email_log_page() {
 	$status_filter = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
 
 	// Get the report period. Defaults to "all" (no date filtering).
-	$period = isset( $_REQUEST['period'] ) ? sanitize_text_field( $_REQUEST['period'] ) : 'all';
+	$period = isset( $_REQUEST['period'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['period'] ) ) : 'all';
 
 	// Pagination
 	$pn = isset( $_REQUEST['pn'] ) ? intval( $_REQUEST['pn'] ) : 1;
@@ -287,15 +287,15 @@ function pmpro_report_email_log_page() {
 
 	// Resolve the period to concrete start/end dates. These also drive the From/To input values.
 	if ( $period === 'custom' ) {
-		$startdate = ! empty( $_REQUEST['custom_start_date'] ) ? sanitize_text_field( $_REQUEST['custom_start_date'] ) : date( 'Y-m-01', strtotime( current_time( 'mysql' ) ) );
-		$enddate = ! empty( $_REQUEST['custom_end_date'] ) ? sanitize_text_field( $_REQUEST['custom_end_date'] ) : date( 'Y-m-t', strtotime( current_time( 'mysql' ) ) );
+		$startdate = ! empty( $_REQUEST['custom_start_date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['custom_start_date'] ) ) : date( 'Y-m-01', strtotime( current_time( 'mysql' ) ) );
+		$enddate = ! empty( $_REQUEST['custom_end_date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['custom_end_date'] ) ) : date( 'Y-m-t', strtotime( current_time( 'mysql' ) ) );
 	} elseif ( $period === '7days' || $period === '30days' ) {
 		$timeframe = ( $period === '7days' ) ? 7 : 30;
 		$startdate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) . ' -' . $timeframe . ' DAY' ) );
 		$enddate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) ) );
 	} elseif ( $period === '12months' ) {
 		$startdate = date( 'Y-m-01', strtotime( current_time( 'mysql' ) . ' -12 month' ) );
-		$enddate = date( 'Y-m-t', strtotime( current_time( 'mysql' ) . ' -1 month' ) );
+		$enddate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) ) );
 	} else {
 		// All Time.
 		$startdate = '1970-01-01';
