@@ -52,6 +52,13 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 		return $okay;
 	}
 
+	// Let Stripe's resubmission after card authentication through. Stripe.js submits it before the customer can solve the new widget, and it can only confirm the same payment.
+	$payment_intent_id = pmpro_get_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id' );
+	if ( ! empty( $payment_intent_id ) && ! empty( $_REQUEST['payment_intent_id'] ) && hash_equals( $payment_intent_id, sanitize_text_field( wp_unslash( $_REQUEST['payment_intent_id'] ) ) ) ) {
+		pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id' );
+		return $okay;
+	}
+
 	// If the Turnstile is not passed, show an error.
 	if ( empty( $_POST['cf-turnstile-response'] ) ) {
 		pmpro_setMessage( __( 'Please complete the security check.', 'paid-memberships-pro' ), 'pmpro_error' );
@@ -178,6 +185,7 @@ function pmpro_cloudflare_turnstile_get_error_message() {
  */
 function pmpro_after_checkout_reset_cloudflare_turnstile() {
     pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_validated' );
+    pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id' );
 }
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
 add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
@@ -191,13 +199,13 @@ add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_cloudflare
  * @param MemberOrder $order The order that failed to process.
  */
 function pmpro_failed_payment_reset_cloudflare_turnstile( $order ) {
-	// Stripe fails on purpose when the card needs authentication, then resubmits the form after the customer authenticates. Keep the flag for that resubmission.
+	pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_validated' );
+
+	// Stripe fails on purpose when the card needs authentication, then resubmits the form with the PaymentIntent ID after the customer authenticates. Remember that PaymentIntent so only that resubmission skips the check.
 	$payment_intent = $order->stripe_payment_intent;
 	if ( ! empty( $payment_intent ) && 'requires_action' === $payment_intent->status ) {
-		return;
+		pmpro_set_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id', $payment_intent->id );
 	}
-
-	pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_validated' );
 }
 add_action( 'pmpro_checkout_processing_failed', 'pmpro_failed_payment_reset_cloudflare_turnstile' );
 add_action( 'pmpro_update_billing_failed', 'pmpro_failed_payment_reset_cloudflare_turnstile' );
