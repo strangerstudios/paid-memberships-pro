@@ -2319,7 +2319,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			'download_csv'            => __( 'Download Migration CSV', 'paid-memberships-pro' ),
 			'csv_none'                => __( 'No Migration CSV files were found for this gateway.', 'paid-memberships-pro' ),
 			'confirm_stop'            => __( 'Stop this workflow? Subscriptions that were already processed stay processed. You can start the workflow again later to continue.', 'paid-memberships-pro' ),
-			'confirm_cleanup'         => __( 'This will permanently delete the stored credentials for this gateway and stop loading it on this site. Your migration log and Migration CSVs are kept.', 'paid-memberships-pro' ),
+			'confirm_cleanup'         => __( 'This will permanently delete the stored credentials for this gateway and stop loading it on this site. Your Migration Log and Migration CSV files are kept.', 'paid-memberships-pro' ),
 			'error_generic'           => __( 'Something went wrong. Please reload the page and try again.', 'paid-memberships-pro' ),
 			'start_dry'               => __( 'Preview Migration (Dry Run)', 'paid-memberships-pro' ),
 			'start_real'              => __( 'Start Real Migration', 'paid-memberships-pro' ),
@@ -2411,7 +2411,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 					</p>
 				</div>
 				<div id="pmpro-dgs-finish-clear" hidden>
-					<p><?php esc_html_e( 'All subscriptions have been migrated off this gateway. Removing gateway data permanently deletes this gateway\'s stored API credentials and stops loading the gateway. The migration log and Migration CSVs are kept as a record.', 'paid-memberships-pro' ); ?></p>
+					<p><?php esc_html_e( 'All subscriptions have been migrated off this gateway. Removing gateway data permanently deletes this gateway\'s stored API credentials and stops loading the gateway. The migration log and Migration CSV files are kept as a record.', 'paid-memberships-pro' ); ?></p>
 					<p class="description"><?php esc_html_e( 'Migration CSVs for this gateway:', 'paid-memberships-pro' ); ?></p>
 					<ul class="pmpro-dgs-csv-list" id="pmpro-dgs-csv-list"></ul>
 					<p id="pmpro-dgs-cancel-pending" hidden>
