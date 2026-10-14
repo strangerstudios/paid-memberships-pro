@@ -13,6 +13,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 function pmpro_membership_levels_table_on_profile( $user ) {
 	global $current_user;
 
+	// Membership data belongs to a single site, so don't show it on the Network Admin edit user screen.
+	if ( is_network_admin() ) {
+		return false;
+	}
+
 	// If the user doesn't have the capability to edit members, don't show the table.
 	if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
 		return false;
@@ -1136,7 +1141,10 @@ function pmpro_member_profile_edit_form() {
 									<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Account Information', 'paid-memberships-pro' ); ?></h2>
 								</legend>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields pmpro_cols-2' ) ); ?>">
-									<?php foreach ( $user_fields as $field_key => $label ) { ?>
+									<?php foreach ( $user_fields as $field_key => $label ) {
+										// Submitted values are still slashed. Saved values are not, so don't strip backslashes from them.
+										$field_value = $update ? wp_unslash( $user->{$field_key} ) : $user->{$field_key};
+										?>
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-' . $field_key, 'pmpro_form_field-' . $field_key ) ); ?>">
 											<label for="<?php echo esc_attr( $field_key ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php echo esc_html( $label ); ?></label>
 											<?php if ( $field_key === 'user_email' ) {
@@ -1144,10 +1152,10 @@ function pmpro_member_profile_edit_form() {
 													<input type="email" readonly="readonly" name="user_email" id="user_email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', 'user_email' ) ); ?>" />
 													<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_hint' ) ); ?>"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
 												<?php } else { ?>
-													<input type="email" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( stripslashes( $user->{$field_key} ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', $field_key ) ); ?>" autocomplete="email" />
+													<input type="email" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $field_value ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', $field_key ) ); ?>" autocomplete="email" />
 												<?php }
 											} else { ?>
-												<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( stripslashes( $user->{$field_key} ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', $field_key ) ); ?>"
+												<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $field_value ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', $field_key ) ); ?>"
 												<?php echo isset( $user_field_autocomplete[ $field_key ] ) ? ' autocomplete="' . esc_attr( $user_field_autocomplete[ $field_key ] ) . '"' : ''; ?> />
 											<?php } ?>
 										</div>	<!-- end pmpro_form_field -->
@@ -1208,17 +1216,17 @@ function pmpro_change_password_process() {
 
 	// Get all password values from the $_POST.
 	if ( ! empty( $_POST['password_current'] ) ) {
-		$password_current = sanitize_text_field( $_POST['password_current'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed); the existing sanitize_text_field() is kept so previously set passwords still match.
+		$password_current = trim( $_POST['password_current'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords are used as submitted (slashed and trimmed), like core edit_user() and wp_authenticate(). Sanitizing would change the password.
 	} else {
 		$password_current = '';
 	}
 	if ( ! empty( $_POST['pass1'] ) ) {
-		$pass1 = sanitize_text_field( $_POST['pass1'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed); the existing sanitize_text_field() is kept so previously set passwords still match.
+		$pass1 = trim( $_POST['pass1'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords are used as submitted (slashed and trimmed), like core edit_user() and wp_authenticate(). Sanitizing would change the password.
 	} else {
 		$pass1 = '';
 	}
 	if ( ! empty( $_POST['pass2'] ) ) {
-		$pass2 = sanitize_text_field( $_POST['pass2'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed); the existing sanitize_text_field() is kept so previously set passwords still match.
+		$pass2 = trim( $_POST['pass2'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords are used as submitted (slashed and trimmed), like core edit_user() and wp_authenticate(). Sanitizing would change the password.
 	} else {
 		$pass2 = '';
 	}
@@ -1331,6 +1339,11 @@ function pmpro_change_password_form() {
  * Add a link to the Edit Member page in PMPro inline with the Edit User screen's page title.
  */
 function pmpro_add_edit_member_link_on_profile( $user ) {
+	// The Edit Member page belongs to a single site, so don't link to it from the Network Admin edit user screen.
+	if ( is_network_admin() ) {
+		return;
+	}
+
 	// Only show the link to users who can edit members.
 	if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
 		return;

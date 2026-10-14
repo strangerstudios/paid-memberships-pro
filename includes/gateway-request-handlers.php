@@ -29,10 +29,12 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	// Get the user associated with the subscription.
 	$user = get_userdata( $subscription->get_user_id() );
 	if ( empty( $user ) ) {
-		// The user for this subscription does not exist. Let's just set the subscription status to cancelled.
-		$subscription->set( 'status', 'cancelled' );
-		$subscription->save();
-		return 'ERROR: Could not cancel membership. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscription_transaction_id . '.';
+		// The user for this subscription does not exist (likely deleted). Let's just make sure the subscription status is cancelled.
+		if ( 'cancelled' !== $subscription->get_status() ) {
+			$subscription->set( 'status', 'cancelled' );
+			$subscription->save();
+		}
+		return 'User #' . $subscription->get_user_id() . ' for subscription #' . $subscription->get_id() . ' no longer exists. Subscription marked as cancelled. No further action needed. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
 	}
 
 	// Legacy Stripe code to add action on subscription cancellation.
@@ -69,7 +71,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	}
 
 	// Check to see if the user has the membership level associated with this subscription.
-	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
+	if ( empty( pmpro_getSpecificMembershipLevelForUser( $user->ID, $subscription->get_membership_level_id() ) ) ) {
 		return 'The user no longer has the membership level associated with this subscription. No membership cancellation is needed. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
 	}
 

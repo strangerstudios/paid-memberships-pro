@@ -1772,6 +1772,11 @@
 			if($wpdb->query($this->sqlQuery) !== false) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $this->sqlQuery is built with $wpdb->prepare() above.
 			{
 				do_action("pmpro_delete_order", $this->id, $this);
+
+				// Delete the order meta after the hook so that callbacks can still read it.
+				$wpdb->delete( $wpdb->pmpro_membership_ordermeta, array( 'pmpro_membership_order_id' => $this->id ), array( '%d' ) );
+				wp_cache_delete( $this->id, 'pmpro_membership_order_meta' );
+
 				return true;
 			}
 			else

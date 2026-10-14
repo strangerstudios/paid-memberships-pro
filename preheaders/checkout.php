@@ -37,7 +37,7 @@ if ( ! empty( $_REQUEST['pmpro_order'] ) ) {
 
 		// If the order has already had a payment submitted, redirect to the confirmation page.
 		if ( in_array( $pmpro_review->status, array( 'success', 'pending' ) ) ) {
-			wp_redirect( pmpro_url( 'confirmation', '?level=' . $pmpro_review->membership_id ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
+			wp_redirect( pmpro_url( 'confirmation', '?pmpro_level=' . $pmpro_review->membership_id ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 			exit;
 		}
 
@@ -211,7 +211,7 @@ if ( isset( $_REQUEST['bphone'] ) ) {
 } else {
 	$bphone = "";
 }
-if ( isset ( $_REQUEST['bemail'] ) ) {
+if ( isset( $_REQUEST['bemail'] ) && is_string( $_REQUEST['bemail'] ) ) {
 	$bemail = sanitize_email( wp_unslash( $_REQUEST['bemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bemail = $current_user->user_email;
@@ -220,7 +220,7 @@ if ( isset ( $_REQUEST['bemail'] ) ) {
 }
 if ( isset( $_REQUEST['bconfirmemail_copy'] ) ) {
 	$bconfirmemail = $bemail;
-} elseif ( isset( $_REQUEST['bconfirmemail'] ) ) {
+} elseif ( isset( $_REQUEST['bconfirmemail'] ) && is_string( $_REQUEST['bconfirmemail'] ) ) {
 	$bconfirmemail = sanitize_email( wp_unslash( $_REQUEST['bconfirmemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bconfirmemail = $current_user->user_email;
@@ -270,14 +270,14 @@ if ( isset( $_REQUEST['username'] ) ) {
 
 // Note: We can't sanitize the passwords. They get hashed when saved.
 // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-if ( isset( $_REQUEST['password'] ) ) {
+if ( isset( $_REQUEST['password'] ) && is_string( $_REQUEST['password'] ) ) {
 	$password = $_REQUEST['password']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed, unsanitized).
 } else {
 	$password = "";
 }
 if ( isset( $_REQUEST['password2_copy'] ) ) {
 	$password2 = $password;
-} elseif ( isset( $_REQUEST['password2'] ) ) {
+} elseif ( isset( $_REQUEST['password2'] ) && is_string( $_REQUEST['password2'] ) ) {
 	$password2 = $_REQUEST['password2']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Passwords must stay byte-for-byte identical to what WordPress core hashes and checks (slashed, unsanitized).
 } else {
 	$password2 = "";
