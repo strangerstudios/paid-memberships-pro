@@ -1786,6 +1786,7 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 		// admins have one place to download them (cleanup keeps them as a record).
 		// Skipped while a run is active to avoid globbing the logs dir on every poll.
 		'csv_files'        => $is_running ? array() : pmpro_deprecated_gateway_get_csv_files( $gateway ),
+		'has_log'          => file_exists( pmpro_get_restricted_file_path( 'logs', 'deprecated-gateways.txt' ) ),
 	);
 }
 
@@ -2152,7 +2153,88 @@ function pmpro_deprecated_gateway_get_csv_files( $gateway ) {
 }
 
 /**
- * Render the deprecated gateway panel on the payment settings page.
+ * Render the deprecated gateway notice on the gateway's settings page.
+ *
+ * Links to the migration tool and surfaces any unfinished migration work.
+ *
+ * @since TBD
+ *
+ * @param string $gateway Gateway slug.
+ */
+function pmpro_deprecated_gateway_render_notice( $gateway ) {
+	$gateway = sanitize_key( $gateway );
+
+	$gateway_names = pmpro_gateways();
+	$gateway_name  = empty( $gateway_names[ $gateway ] ) ? $gateway : $gateway_names[ $gateway ];
+
+	$tool_url = add_query_arg(
+		array(
+			'page'                               => 'pmpro-paymentsettings',
+			'edit_gateway'                       => $gateway,
+			'pmpro_deprecated_gateway_migration' => 1,
+		),
+		admin_url( 'admin.php' )
+	);
+
+	// Surface unfinished work so an admin returning to this page can find it.
+	$environment    = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
+	$state          = pmpro_deprecated_gateway_get_state( $gateway, $environment );
+	$cancel_pending = pmpro_deprecated_gateway_get_cancel_pending_count( $gateway );
+	$status_line    = '';
+	if ( ! empty( $state['status'] ) && in_array( $state['status'], array( 'running', 'stopped' ), true ) ) {
+		$status_line = sprintf(
+			'running' === $state['status']
+				// translators: %1$d: number processed, %2$d: total number.
+				? __( 'A migration is in progress: %1$d of %2$d subscriptions processed.', 'paid-memberships-pro' )
+				// translators: %1$d: number processed, %2$d: total number.
+				: __( 'A migration was stopped after processing %1$d of %2$d subscriptions.', 'paid-memberships-pro' ),
+			empty( $state['processed'] ) ? 0 : (int) $state['processed'],
+			empty( $state['total'] ) ? 0 : (int) $state['total']
+		);
+	}
+	if ( $cancel_pending > 0 ) {
+		$status_line .= ' ' . sprintf(
+			// translators: %d: number of subscriptions.
+			_n( '%d subscription still needs to be cancelled in the gateway dashboard.', '%d subscriptions still need to be cancelled in the gateway dashboard.', $cancel_pending, 'paid-memberships-pro' ),
+			$cancel_pending
+		);
+	}
+	?>
+	<div class="pmpro_notification pmpro_notification-error">
+		<div class="pmpro_notification-icon">
+			<span class="dashicons dashicons-warning"></span>
+		</div>
+		<div class="pmpro_notification-content">
+			<h3><?php esc_html_e( 'You Are Using a Deprecated Gateway', 'paid-memberships-pro' ); ?></h3>
+			<p>
+				<?php
+				// translators: %s is the gateway name.
+				printf( esc_html__( 'The %s gateway has been deprecated and will not receive updates or support. To ensure your payments continue running smoothly, switch to a supported payment gateway.', 'paid-memberships-pro' ), esc_html( $gateway_name ) );
+				?>
+			</p>
+			<?php if ( '' !== trim( $status_line ) ) { ?>
+				<p><strong><?php echo esc_html( trim( $status_line ) ); ?></strong></p>
+			<?php } ?>
+			<ul>
+				<?php if ( 'paypalexpress' === $gateway ) { ?>
+					<li><a href="https://www.paidmembershipspro.com/paypal-express-deprecation-hub/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=paypal-express-deprecation" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'PayPal Express Deprecation Hub', 'paid-memberships-pro' ); ?></a></li>
+				<?php } ?>
+				<li><a href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'About Deprecated Gateways', 'paid-memberships-pro' ); ?></a></li>
+				<li><a href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'How to Switch Payment Gateways', 'paid-memberships-pro' ); ?></a></li>
+			</ul>
+			<p>
+				<a class="button" href="<?php echo esc_url( $tool_url ); ?>"><?php esc_html_e( 'Migrate Subscriptions Off This Gateway', 'paid-memberships-pro' ); ?></a>
+			</p>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Render the deprecated gateway migration tool.
+ *
+ * Shown in place of the gateway's settings when the migration tool is opened
+ * from the deprecated gateway notice.
  *
  * @since TBD
  *
@@ -2163,67 +2245,6 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 
 	$gateway_names = pmpro_gateways();
 	$gateway_name  = empty( $gateway_names[ $gateway ] ) ? $gateway : $gateway_names[ $gateway ];
-
-	// The migration tool is opt-in. By default this page shows only the deprecation notice and a
-	// button that adds the query flag; the status queries, polling, and inline script below do not
-	// load until an admin asks for the tool.
-	$tool_url = add_query_arg(
-		array(
-			'page'                                => 'pmpro-paymentsettings',
-			'edit_gateway'                        => $gateway,
-			'pmpro_deprecated_gateway_migration' => 1,
-		),
-		admin_url( 'admin.php' )
-	);
-	if ( empty( $_REQUEST['pmpro_deprecated_gateway_migration'] ) ) {
-		// Surface unfinished work so an admin returning to this page can find it.
-		$environment    = pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) );
-		$state          = pmpro_deprecated_gateway_get_state( $gateway, $environment );
-		$cancel_pending = pmpro_deprecated_gateway_get_cancel_pending_count( $gateway );
-		$status_line    = '';
-		if ( ! empty( $state['status'] ) && in_array( $state['status'], array( 'running', 'stopped' ), true ) ) {
-			$status_line = sprintf(
-				'running' === $state['status']
-					// translators: %1$d: number processed, %2$d: total number.
-					? __( 'A migration is in progress: %1$d of %2$d subscriptions processed.', 'paid-memberships-pro' )
-					// translators: %1$d: number processed, %2$d: total number.
-					: __( 'A migration was stopped after processing %1$d of %2$d subscriptions.', 'paid-memberships-pro' ),
-				empty( $state['processed'] ) ? 0 : (int) $state['processed'],
-				empty( $state['total'] ) ? 0 : (int) $state['total']
-			);
-		}
-		if ( $cancel_pending > 0 ) {
-			$status_line .= ' ' . sprintf(
-				// translators: %d: number of subscriptions.
-				_n( '%d subscription still needs to be cancelled in the gateway dashboard.', '%d subscriptions still need to be cancelled in the gateway dashboard.', $cancel_pending, 'paid-memberships-pro' ),
-				$cancel_pending
-			);
-		}
-		?>
-		<div class="pmpro_message pmpro_error">
-			<p><strong><?php esc_html_e( 'Notice: You Are Using a Deprecated Gateway', 'paid-memberships-pro' ); ?></strong></p>
-			<p>
-				<?php
-				// translators: %s is the gateway name.
-				printf( esc_html__( 'The %s gateway has been deprecated and will not receive updates or support. To ensure your payments continue running smoothly, switch to a supported payment gateway.', 'paid-memberships-pro' ), esc_html( $gateway_name ) );
-				?>
-			</p>
-			<?php if ( '' !== trim( $status_line ) ) { ?>
-				<p><strong><?php echo esc_html( trim( $status_line ) ); ?></strong></p>
-			<?php } ?>
-			<p>
-				<a class="button button-primary" href="<?php echo esc_url( $tool_url ); ?>"><?php esc_html_e( 'Migrate Subscriptions Off This Gateway', 'paid-memberships-pro' ); ?></a>
-				<?php if ( 'paypalexpress' === $gateway ) { ?>
-					<a class="button button-secondary" href="https://www.paidmembershipspro.com/paypal-express-deprecation-hub/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=paypal-express-deprecation" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn More', 'paid-memberships-pro' ); ?></a>
-				<?php } ?>
-				<a class="button button-secondary" href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'About Deprecated Gateways', 'paid-memberships-pro' ); ?></a>
-				<a class="button button-secondary" href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'How to Switch Payment Gateways', 'paid-memberships-pro' ); ?></a>
-			</p>
-		</div>
-		<?php
-		return;
-	}
-
 	$data = pmpro_deprecated_gateway_get_status_data( $gateway );
 
 	$log_url = add_query_arg(
@@ -2302,69 +2323,15 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 	);
 	?>
 	<div class="pmpro-dgs" id="pmpro-dgs">
-		<style>
-			/* WP admin's .button sets display:inline-block, which overrides the
-			   browser's built-in [hidden] rule. Make hidden mean hidden. */
-			.pmpro-dgs [hidden] { display: none !important; }
-			.pmpro-dgs-counts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 0 0 16px; }
-			.pmpro-dgs-count { background: #FFF; border: 1px solid var(--pmpro--border--color, #E5E7EB); border-radius: var(--pmpro--border--radius, 6px); box-shadow: var(--pmpro--box-shadow, 1px 2px 3px #12196110); padding: 16px 20px; text-align: center; }
-			.pmpro-dgs-count.is-current { border-color: #1A688B; background-color: var(--pmpro--color--blue-lightest, #F5F8FA); }
-			.pmpro-dgs-count.is-current .pmpro-dgs-count-label { color: #1A688B; font-weight: 600; }
-			.pmpro-dgs-count.is-current .pmpro-dgs-count-label:after { content: " (" attr(data-current-label) ")"; font-weight: 400; }
-			.pmpro-dgs-count-num { display: block; font-size: 26px; font-weight: 700; line-height: 1.2; color: var(--pmpro--color--almost-black, #0F172A); }
-			.pmpro-dgs-count-num.is-live { color: var(--pmpro--color--error-text, #721c24); }
-			.pmpro-dgs-count-label { color: #666; }
-			.pmpro-dgs .pmpro-stepper { margin: 20px 0; }
-			.pmpro-dgs .pmpro-stepper__steps { list-style: none; margin: 0; padding: 0; }
-			.pmpro-dgs .pmpro-stepper__step.is-done .pmpro-stepper__step-icon { background-color: var(--pmpro--color--success-text-alt, #45b45c); color: #FFF; font-weight: 700; }
-			.pmpro-dgs .pmpro-stepper__step.is-done .pmpro-stepper__step-label { color: var(--pmpro--color--success-text, #0F441C); }
-			.pmpro-dgs-workflow { border: 1px solid var(--pmpro--border--color, #E5E7EB); border-radius: var(--pmpro--border--radius, 6px); background: var(--pmpro--color--blue-lightest, #F5F8FA); padding: 12px 16px; margin: 0 0 16px; }
-			.pmpro-dgs-workflow-title { font-weight: 600; margin: 0 0 4px; }
-			.pmpro-dgs .spinner { float: none; margin: 0 4px 0 0; vertical-align: middle; }
-			.pmpro-dgs .pmpro_message { margin: 0 0 16px; }
-			.pmpro-dgs-meta { color: #646970; font-size: 12px; margin: 0 0 8px; }
-			.pmpro-dgs-bar { height: 12px; background: #fff; border: 1px solid var(--pmpro--border--color, #E5E7EB); border-radius: var(--pmpro--border--radius, 6px); overflow: hidden; margin: 8px 0; }
-			.pmpro-dgs-bar-fill { height: 100%; background: var(--pmpro--color--success-text-alt, #45b45c); }
-			.pmpro-dgs-summary .pmpro_tag { margin-right: 5px; }
-			.pmpro-dgs-actions { margin: 16px 0 0; }
-			.pmpro-dgs-actions .button { margin-right: 8px; }
-			.pmpro-dgs-blockers { margin: 10px 0 0 20px; color: #646970; font-size: 12px; list-style: disc; }
-			.pmpro-dgs-footer { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--pmpro--border--color, #E5E7EB); }
-			.pmpro-dgs a .dashicons-external { font-size: 14px; width: 14px; height: 14px; vertical-align: text-bottom; text-decoration: none; }
-			/* Real-run emphasis: the panel goes from a calm dry-run preview to a
-			   serious, permanent migration when Dry Run is unchecked. */
-			.pmpro-dgs-warnbar { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--pmpro--color--error-text, #721c24); border-left-width: 4px; border-radius: var(--pmpro--border--radius, 6px); background: #FCEBEC; color: var(--pmpro--color--error-text, #721c24); font-weight: 600; }
-			.pmpro-dgs-warnbar .dashicons { color: inherit; flex: 0 0 auto; }
-			/* The real-run bar uses the warnbar look but only appears when Dry Run is off. */
-			#pmpro-dgs-realbar { display: none; }
-			.pmpro-dgs.is-real #pmpro-dgs-realbar { display: flex; }
-			.pmpro-dgs.is-real #pmpro-dgs-start { background: #b32d2e; border-color: #9b2226; color: #fff; box-shadow: none; }
-			.pmpro-dgs.is-real #pmpro-dgs-start:hover:not(:disabled) { background: #9b2226; border-color: #7d1c1f; }
-			.pmpro-dgs-csv-list { margin: 0 0 12px 20px; list-style: disc; }
-			.pmpro-dgs-csv-list li { margin: 0 0 4px; }
-			@keyframes pmpro-dgs-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
-			@keyframes pmpro-dgs-flash { 0% { background: #f3a7ab; } 100% { background: #FCEBEC; } }
-			.pmpro-dgs-shake { animation: pmpro-dgs-shake 0.45s ease; }
-			.pmpro-dgs-flash { animation: pmpro-dgs-flash 0.7s ease; }
-			@media ( prefers-reduced-motion: reduce ) { .pmpro-dgs-shake, .pmpro-dgs-flash { animation: none; } }
-		</style>
-		<div class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Deprecated Gateway Migration', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
+		<p>
+			<?php
+			// translators: %s is the gateway name.
+			printf( esc_html__( 'Move your active %s subscriptions to a supported payment gateway, let your members know what changed, and then remove the deprecated gateway from your site.', 'paid-memberships-pro' ), esc_html( $gateway_name ) );
+			?>
+			<a href="https://www.paidmembershipspro.com/documentation/settings/payment-gateway-settings/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateway-migration" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn more about the gateway migration tool', 'paid-memberships-pro' ); ?></a>
+		</p>
+		<div class="pmpro_section">
 			<div class="pmpro_section_inside">
-			<div class="pmpro_message pmpro_error">
-				<p><strong><?php esc_html_e( 'Notice: You Are Using a Deprecated Gateway', 'paid-memberships-pro' ); ?></strong></p>
-				<p>
-					<?php
-					// translators: %s is the gateway name.
-					printf( esc_html__( 'The %s gateway has been deprecated and will not receive updates or support. Follow the steps below to move your members to a supported gateway and remove this one from your site.', 'paid-memberships-pro' ), esc_html( $gateway_name ) );
-					?>
-				</p>
-			</div>
 			<nav class="pmpro-stepper">
 				<ul class="pmpro-stepper__steps">
 					<li class="pmpro-stepper__step" id="pmpro-dgs-step-1" data-step="1">
@@ -2391,7 +2358,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				<p>
 					<?php if ( $stripe_connected ) { ?>
 						<button type="button" class="button button-primary" id="pmpro-dgs-activate-stripe"><?php esc_html_e( 'Make Stripe the Active Gateway', 'paid-memberships-pro' ); ?></button>
-						<span class="description"><?php esc_html_e( 'Your Stripe account is already connected in this environment.', 'paid-memberships-pro' ); ?></span>
+						<p class="description"><?php esc_html_e( 'Your Stripe account is already connected in this environment.', 'paid-memberships-pro' ); ?></p>
 					<?php } elseif ( ! current_user_can( 'manage_options' ) ) { ?>
 						<?php // The Stripe Connect return handler requires manage_options, so a lesser payment settings user would come back with the credentials silently discarded. ?>
 						<span class="description"><?php esc_html_e( 'Connecting to Stripe requires an administrator. Ask an administrator to connect Stripe from the Stripe gateway settings, then return here.', 'paid-memberships-pro' ); ?></span>
@@ -2399,9 +2366,10 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 						<a href="<?php echo esc_url( $stripe_connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 					<?php } ?>
 				</p>
+				<hr />
 				<p class="description">
-					<?php esc_html_e( 'Prefer PayPal? The new PayPal Add On is also supported, but subscriptions cannot be migrated automatically, so members will be emailed to check out again.', 'paid-memberships-pro' ); ?>
-					<a href="https://www.paidmembershipspro.com/add-ons/pmpro-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-paypal" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Get the PayPal Add On', 'paid-memberships-pro' ); ?> <span class="dashicons dashicons-external"></span></a>
+					<?php esc_html_e( 'Prefer PayPal? The new PayPal Add On is also supported, but it cannot migrate subscriptions automatically. Your site will email members a link to check out again.', 'paid-memberships-pro' ); ?>
+					<a href="https://www.paidmembershipspro.com/add-ons/pmpro-paypal/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-paypal" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Get the PayPal Add On', 'paid-memberships-pro' ); ?></a>
 				</p>
 			</div>
 			<div id="pmpro-dgs-main" <?php if ( ! $data['has_replacement'] ) { echo 'hidden'; } ?>>
@@ -2465,12 +2433,10 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<option value="expiration"><?php esc_html_e( 'Cancel subscriptions and set expiration dates', 'paid-memberships-pro' ); ?></option>
 							</select>
 							<p class="description" id="pmpro-dgs-desc-stripe" hidden>
-								<?php esc_html_e( 'Each subscription is recreated at Stripe at its current price and billing schedule, with no payment method on file, and the old gateway subscription is cancelled. Trial pricing cannot be migrated: members still in a trial period will be billed their subscription\'s regular price beginning with their next payment. Memberships and expiration dates do not change. Members are emailed to add billing information, see a notice on their account page, and receive a reminder before their next payment date until a payment method is added. Members who do not add one by that date will have their Stripe subscription and membership cancelled. Track these members on the Subscriptions list under Awaiting Payment Method.', 'paid-memberships-pro' ); ?>
-								<a href="<?php echo esc_url( $stripe_template_url ); ?>"><?php esc_html_e( 'Edit the Stripe migration email', 'paid-memberships-pro' ); ?></a>
+								<?php esc_html_e( 'Each subscription is recreated at Stripe with the same price and billing schedule, starting on its next payment date, and the old subscription is cancelled. Memberships don\'t change. The new subscription has no payment method on file: if the member doesn\'t add one by their next payment date, Stripe cancels it and the membership ends. Members in a trial period move to the regular price. Track these members on the Subscriptions list under Awaiting Payment Method.', 'paid-memberships-pro' ); ?>
 							</p>
 							<p class="description" id="pmpro-dgs-desc-expiration" hidden>
-								<?php esc_html_e( 'Each membership is set to expire on the subscription\'s old next payment date and the old gateway subscription is cancelled. Members are emailed to check out again, and also receive the standard membership expiration emails before their membership ends. A new checkout uses your current level pricing, so members do not keep grandfathered prices or billing schedules.', 'paid-memberships-pro' ); ?>
-								<a href="<?php echo esc_url( $checkout_template_url ); ?>"><?php esc_html_e( 'Edit the checkout required email', 'paid-memberships-pro' ); ?></a>
+								<?php esc_html_e( 'Each old subscription is cancelled and the membership is set to expire on its next payment date. To stay, members check out again at your current level pricing, so they lose any grandfathered price or billing schedule.', 'paid-memberships-pro' ); ?>
 							</p>
 						</td>
 					</tr>
@@ -2483,7 +2449,12 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<option value="yes"><?php esc_html_e( 'Email members about the change', 'paid-memberships-pro' ); ?></option>
 								<option value="no"><?php esc_html_e( 'Do not email members', 'paid-memberships-pro' ); ?></option>
 							</select>
-							<p class="description"><?php esc_html_e( 'On larger migrations, emailing each member individually can be slow and may run into your mail server\'s sending limits or spam filtering. To send through a dedicated email service instead, choose "Do not email members" and use the Migration CSV you can download after the migration to send in bulk.', 'paid-memberships-pro' ); ?></p>
+							<p class="description">
+								<?php esc_html_e( 'Send each migrated member one email when their subscription is processed: the Stripe migration email asks them to add a payment method, and the checkout required email asks them to check out again. To send through your own email service instead, choose "Do not email members" and use the Migration CSV after the migration. Either way, members still get your site\'s regular automatic emails: Stripe members without a payment method get the Stripe migration email in place of the usual payment reminder, and expiring members get the standard expiration warning.', 'paid-memberships-pro' ); ?>
+								<a href="<?php echo esc_url( $stripe_template_url ); ?>"><?php esc_html_e( 'Edit the Stripe migration email', 'paid-memberships-pro' ); ?></a>
+								|
+								<a href="<?php echo esc_url( $checkout_template_url ); ?>"><?php esc_html_e( 'Edit the checkout required email', 'paid-memberships-pro' ); ?></a>
+							</p>
 						</td>
 					</tr>
 					<tr>
@@ -2495,7 +2466,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<option value="skip"><?php esc_html_e( 'Skip them and log them for manual review', 'paid-memberships-pro' ); ?></option>
 								<option value="expire"><?php esc_html_e( 'Cancel them and expire the membership', 'paid-memberships-pro' ); ?></option>
 							</select>
-							<p class="description"><?php esc_html_e( 'Some active subscriptions have a next payment date in the past (or none at all). This is most often caused by a missed payment notification (an IPN or webhook the old gateway never delivered), which means the gateway may still be billing the member even though the record looks overdue. Skip them to verify each one at the gateway and handle it yourself, or cancel the subscriptions at the old gateway and expire the memberships on your site. This applies regardless of the migration type selected above.', 'paid-memberships-pro' ); ?></p>
+							<p class="description"><?php esc_html_e( 'A next payment date in the past (or none at all) usually means a payment notification from the old gateway never arrived, so the gateway may still be billing the member. Skip leaves these subscriptions alone and lists them in the migration log to check by hand. Cancel and expire cancels them at the old gateway and ends the membership on the missed payment date. This applies to either migration type.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -2507,14 +2478,13 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<input type="checkbox" id="pmpro-dgs-dry-run" checked />
 								<?php esc_html_e( 'Preview the migration without making any changes', 'paid-memberships-pro' ); ?>
 							</label>
-							<p class="description"><?php esc_html_e( 'Each subscription is analyzed and the planned outcome is recorded in the migration log, but nothing is changed: no subscriptions are created or cancelled, no emails are sent, and no memberships are modified. Problems that only occur at the gateway can still surface during the real migration.', 'paid-memberships-pro' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Records what would happen to each subscription in the migration log without changing anything or sending email. Some gateway errors only show up during a real migration.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 				</tbody>
 			</table>
-			<div class="pmpro-dgs-warnbar" id="pmpro-dgs-realbar" hidden>
-				<span class="dashicons dashicons-warning"></span>
-				<span><?php esc_html_e( 'Dry run is off, so this is a real migration. These changes are permanent and cannot be undone: subscriptions will be migrated and cancelled at the old gateway.', 'paid-memberships-pro' ); ?></span>
+			<div class="pmpro_message pmpro_error" id="pmpro-dgs-realbar" hidden>
+				<p><?php esc_html_e( 'Dry run is off, so this is a real migration. These changes are permanent and cannot be undone: subscriptions will be migrated and cancelled at the old gateway.', 'paid-memberships-pro' ); ?></p>
 			</div>
 			<div class="pmpro-dgs-actions">
 				<button type="button" class="button button-primary" id="pmpro-dgs-start"><?php esc_html_e( 'Start Migration', 'paid-memberships-pro' ); ?></button>
@@ -2522,13 +2492,8 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			</div>
 			<ul class="pmpro-dgs-blockers" id="pmpro-dgs-blockers"></ul>
 			</div><!-- end pmpro-dgs-main -->
-			<div class="pmpro-dgs-footer">
-				<a href="<?php echo esc_url( $log_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View the full migration log', 'paid-memberships-pro' ); ?></a> |
-				<a href="https://www.paidmembershipspro.com/documentation/compatibility/incompatible-deprecated-add-ons/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateways#deprecated-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'About Deprecated Gateways', 'paid-memberships-pro' ); ?> <span class="dashicons dashicons-external"></span></a> |
-				<a href="https://www.paidmembershipspro.com/switching-payment-gateways/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=switching-payment-gateways" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'How to Switch Payment Gateways', 'paid-memberships-pro' ); ?> <span class="dashicons dashicons-external"></span></a>
-				<?php if ( 'paypalexpress' === $gateway ) { ?>
-					| <a href="https://www.paidmembershipspro.com/paypal-express-deprecation-hub/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=paypal-express-deprecation" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'PayPal Express Deprecation Hub', 'paid-memberships-pro' ); ?> <span class="dashicons dashicons-external"></span></a>
-				<?php } ?>
+			<div class="pmpro-dgs-footer" id="pmpro-dgs-footer" <?php if ( empty( $data['has_log'] ) ) { echo 'hidden'; } ?>>
+				<a href="<?php echo esc_url( $log_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View the full migration log', 'paid-memberships-pro' ); ?></a>
 			</div>
 			</div><!-- end pmpro_section_inside -->
 		</div><!-- end pmpro_section -->
@@ -2671,6 +2636,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				var envMigrated = 0 === ( isLive ? d.counts.live : d.counts.sandbox );
 				step( 'pmpro-dgs-step-3', envMigrated && d.can_cleanup ? 'active' : '' );
 
+				$( 'pmpro-dgs-footer' ).hidden = ! d.has_log;
 				$( 'pmpro-dgs-switch' ).hidden = d.has_replacement;
 				$( 'pmpro-dgs-main' ).hidden = ! d.has_replacement;
 
@@ -2732,10 +2698,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				$( 'pmpro-dgs-dry-run' ).disabled = d.is_running;
 				updateDescription();
 
-				// Hide the real-run warning bar whenever the Start button is hidden
-				// (running or on the cleanup step) and keep the button label/styling in sync.
-				$( 'pmpro-dgs-realbar' ).hidden = $( 'pmpro-dgs-start' ).hidden;
-				updateDryRunMode( false );
+				updateDryRunMode();
 				updateStartButton();
 
 				var blockers = $( 'pmpro-dgs-blockers' );
@@ -2784,23 +2747,13 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			}
 			$( 'pmpro-dgs-strategy' ).addEventListener( 'change', updateDescription );
 
-			// Switch the panel between the calm dry-run preview and the serious
-			// real-run treatment. Animate only when the admin actively turns dry
-			// run off, so unchecking the box feels like a real, deliberate choice.
-			function updateDryRunMode( animate ) {
+			// Show the real-run warning while Start is on screen with Dry Run off, and keep the button label in sync.
+			function updateDryRunMode() {
 				var dryRun = $( 'pmpro-dgs-dry-run' ).checked;
-				$( 'pmpro-dgs' ).classList.toggle( 'is-real', ! dryRun );
+				$( 'pmpro-dgs-realbar' ).hidden = dryRun || $( 'pmpro-dgs-start' ).hidden;
 				$( 'pmpro-dgs-start' ).textContent = dryRun ? cfg.i18n.start_dry : cfg.i18n.start_real;
-				if ( animate && ! dryRun ) {
-					[ [ 'pmpro-dgs-start', 'pmpro-dgs-shake' ], [ 'pmpro-dgs-realbar', 'pmpro-dgs-flash' ] ].forEach( function( pair ) {
-						var node = $( pair[0] );
-						node.classList.remove( pair[1] );
-						void node.offsetWidth; // Force a reflow so the animation can replay on repeated toggles.
-						node.classList.add( pair[1] );
-					} );
-				}
 			}
-			$( 'pmpro-dgs-dry-run' ).addEventListener( 'change', function() { updateDryRunMode( true ); updateStartButton(); } );
+			$( 'pmpro-dgs-dry-run' ).addEventListener( 'change', function() { updateDryRunMode(); updateStartButton(); } );
 
 			if ( $( 'pmpro-dgs-activate-stripe' ) ) {
 				$( 'pmpro-dgs-activate-stripe' ).addEventListener( 'click', function() {

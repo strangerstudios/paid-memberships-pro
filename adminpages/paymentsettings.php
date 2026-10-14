@@ -316,6 +316,23 @@
 			) );
 			?>
 			<?php
+		} elseif ( in_array( $edit_gateway, $deprecated_gateways, true ) && ! empty( $_REQUEST['pmpro_deprecated_gateway_migration'] ) ) {
+			// Show the migration tool for a deprecated gateway in place of its settings.
+			?>
+			<h1 class="wp-heading-inline">
+				<?php
+					echo sprintf(
+						// translators: %s is the gateway name.
+						esc_html__( 'Migrate Subscriptions Off %s', 'paid-memberships-pro' ),
+						esc_html( $pmpro_gateways[ $edit_gateway ] )
+					);
+				?>
+			</h1>
+			<?php pmpro_deprecated_gateway_render_panel( $edit_gateway ); ?>
+			<p class="submit">
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-secondary"><?php esc_html_e( 'Back to Payment Settings', 'paid-memberships-pro' ); ?></a>
+			</p>
+			<?php
 		} else {
 			// Show the settings for a specific gateway.
 			?>
@@ -329,9 +346,9 @@
 				?>
 			</h1>
 			<?php
-			// If this gateway is deprecated, show the deprecation notice and migration workflow.
+			// If this gateway is deprecated, show the deprecation notice with a link to the migration tool.
 			if ( in_array( $edit_gateway, $deprecated_gateways, true ) ) {
-				pmpro_deprecated_gateway_render_panel( $edit_gateway );
+				pmpro_deprecated_gateway_render_notice( $edit_gateway );
 			}
 
 			// Show the settings for the specific gateway.
