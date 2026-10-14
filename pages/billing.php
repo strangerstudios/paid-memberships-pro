@@ -426,7 +426,7 @@
 						// Build the links to return.
 						$pmpro_member_action_links = array();
 
-						$renew_url = pmpro_url( 'checkout', 'level=' . $membership->id, 'https' );
+						$renew_url = pmpro_url( 'checkout', 'pmpro_level=' . $membership->id, 'https' );
 						if ( pmpro_isLevelExpiringSoon( $membership ) && ! empty( $renew_url ) ) {
 							$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew-' . $membership->id . '" href="' . esc_url( $renew_url ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $membership->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
 

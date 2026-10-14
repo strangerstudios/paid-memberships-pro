@@ -34,6 +34,9 @@ if ( $nonceokay ) {
 				$pmpro_msg  = __( 'Error deleting order.', 'paid-memberships-pro' );
 				$pmpro_msgt = 'pmpro_error';
 			}
+
+			// Remove the delete args so that pagination and sorting links don't repeat the delete.
+			$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'action', 'delete', 'pmpro_orders_nonce' ), $_SERVER['REQUEST_URI'] );
 			break;
 
 		case 'check_token_order':
@@ -83,10 +86,14 @@ if ( $nonceokay ) {
 					$pmpro_msgt = 'pmpro_success';
 				} else {
 					$pmpro_msg  = __( 'Error refunding order. Please check the order notes for more information.', 'paid-memberships-pro' );
+					if ( ! empty( $rorder->error ) ) {
+						/* translators: %s is the error message returned by the gateway. */
+						$pmpro_msg .= ' ' . sprintf( __( 'Gateway error: %s', 'paid-memberships-pro' ), esc_html( $rorder->error ) );
+					}
 					$pmpro_msgt = 'pmpro_error';
 				}
 			} else {
-				$pmpro_msg  = __( 'Error refunding order. Please check the order notes for more information.', 'paid-memberships-pro' );
+				$pmpro_msg  = __( 'Error refunding order. This order cannot be refunded.', 'paid-memberships-pro' );
 				$pmpro_msgt = 'pmpro_error';
 			}
 			break;

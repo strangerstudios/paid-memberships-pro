@@ -1056,6 +1056,10 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  * @param WP_Error|null $error Error object. Added in 2.10.
  */
 function pmpro_login_failed( $username, $error = null ) {
+	// Don't redirect AJAX or REST logins. The caller expects its own response.
+	if ( wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		return;
+	}
 
 	$redirect_url = pmpro_url( 'login' );
 	if ( ! $redirect_url ) {

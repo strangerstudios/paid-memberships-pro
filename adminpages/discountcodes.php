@@ -349,6 +349,11 @@
 		}
 	}
 
+	// Remove the delete args so that pagination and sorting links don't repeat the delete.
+	if ( isset( $_REQUEST['delete'] ) ) {
+		$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'delete', 'pmpro_discountcodes_nonce' ), $_SERVER['REQUEST_URI'] );
+	}
+
 	if( ! empty( $pmpro_msg ) && ! empty( $expiration_warning_flag ) ) {
 		$pmpro_msg .= ' <strong>' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" rel="nofollow noopener" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
 
