@@ -8,7 +8,7 @@ global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $
 
 // Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
 if ( ! is_user_logged_in() ) {
-	$billing_url = pmpro_url( 'billing' );
+	$billing_url = pmpro_url( 'billing', empty( $_REQUEST['pmpro_subscription_id'] ) ? '' : 'pmpro_subscription_id=' . (int) $_REQUEST['pmpro_subscription_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: keeps the requested subscription selected after login. Ownership is checked after login.
     wp_redirect( add_query_arg( 'redirect_to', urlencode( $billing_url ), pmpro_login_url() ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_login_url() is filterable (pmpro_login_url, login_url) and may point to an offsite SSO login page.
     exit;
 }
