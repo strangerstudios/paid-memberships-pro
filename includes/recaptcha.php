@@ -163,12 +163,16 @@ add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha'
  */
 function pmpro_failed_payment_reset_recaptcha( $order ) {
 	// Stripe fails on purpose when the card needs authentication, then resubmits the form after the customer authenticates. Keep the flag for that resubmission.
+	// The flag also stays set if the customer abandons authentication and tries another card. Loading reCAPTCHA on this page would get in the way of the resubmission, so we accept that gap.
 	$payment_intent = $order->stripe_payment_intent;
 	if ( ! empty( $payment_intent ) && 'requires_action' === $payment_intent->status ) {
 		return;
 	}
 
 	pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
+
+	// The response posted with this form was already used, or was never checked because the session was validated. Discard it so pmpro_init_recaptcha() doesn't validate the session again with it.
+	unset( $_POST['g-recaptcha-response'], $_POST['recaptcha_challenge_field'] );
 
 	// pmpro_init_recaptcha() already ran on the preheader and skipped loading the reCAPTCHA JS because the session was validated. Run it again so the widget works on the page that shows the error.
 	pmpro_init_recaptcha();
