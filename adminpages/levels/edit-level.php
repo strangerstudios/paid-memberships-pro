@@ -485,16 +485,16 @@ if (!empty($page_msg)) { ?>
 						<input type="radio" id="delay_type_days" name="delay_type" value="days" <?php checked( $delay_type, 'days' ); ?> />
 						<?php esc_html_e( 'After a number of days', 'paid-memberships-pro' ); ?>
 					</label>
-					<span class="<?php echo $delay_type === 'days' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends='[{"id":"delay_type_days","checked":true}]'>
-						&mdash;
+					<br />
+					<div class="<?php echo $delay_type === 'days' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends='[{"id":"delay_type_days","checked":true}]'>
 						<input id="subscription_delay_days" name="subscription_delay_days" type="number" min="1" value="<?php echo esc_attr( $delay_type === 'days' ? $subscription_delay : '' ); ?>" class="small-text" aria-label="<?php esc_attr_e( 'Number of days after checkout', 'paid-memberships-pro' ); ?>" />
 						<?php esc_html_e( 'days after checkout', 'paid-memberships-pro' ); ?>
-					</span>
-					<br />
+					</div>
 					<label>
 						<input type="radio" id="delay_type_date" name="delay_type" value="date" <?php checked( $delay_type, 'date' ); ?> />
 						<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 					</label>
+					<br />
 					<div class="<?php echo $delay_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends='[{"id":"delay_type_date","checked":true}]'>
 						<?php pmpro_render_date_pattern_builder( 'subscription_delay_date', $delay_type === 'date' ? $subscription_delay : '' ); ?>
 					</div>
@@ -600,6 +600,7 @@ if (!empty($page_msg)) { ?>
 					<input type="radio" id="expiration_date_type_none" name="expiration_date_type" value="none" <?php checked( $expiration_date_type, 'none' ); ?> />
 					<?php esc_html_e( 'After a set duration', 'paid-memberships-pro' ); ?>
 				</label>
+				<br />
 				<div class="<?php echo $expiration_date_type === 'date' ? 'pmpro-hidden' : ''; ?>" data-pmpro-depends='[{"id":"expiration_date_type_none","checked":true}]'>
 					<input id="expiration_number" name="expiration_number" type="text" value="<?php echo esc_attr( $level->expiration_number ); ?>" class="small-text" aria-label="<?php esc_attr_e( 'Expiration number', 'paid-memberships-pro' ); ?>" />
 					<select id="expiration_period" name="expiration_period" aria-label="<?php esc_attr_e( 'Expiration period', 'paid-memberships-pro' ); ?>">
@@ -619,11 +620,11 @@ if (!empty($page_msg)) { ?>
 					</select>
 					<p class="description"><?php esc_html_e( 'Set the duration of membership access. Note that any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' ); ?></p>
 				</div>
-				<br />
 				<label>
 					<input type="radio" id="expiration_date_type_date" name="expiration_date_type" value="date" <?php checked( $expiration_date_type, 'date' ); ?> />
 					<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 				</label>
+				<br />
 				<div class="<?php echo $expiration_date_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends='[{"id":"expiration_date_type_date","checked":true}]'>
 					<?php pmpro_render_date_pattern_builder( 'set_expiration_date', $set_expiration_date ); ?>
 				</div>

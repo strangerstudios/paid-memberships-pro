@@ -365,7 +365,21 @@ function pmpro_render_date_pattern_builder( $field_prefix, $existing_value ) {
 			<input type="text" name="<?php echo esc_attr( $field_prefix ); ?>_custom" placeholder="<?php echo esc_attr( sprintf( /* translators: %s: an example date pattern. */ __( 'e.g. %s', 'paid-memberships-pro' ), 'Y-01-01' ) ); ?>"
 				value="<?php echo esc_attr( $custom_pattern ); ?>"
 				aria-label="<?php esc_attr_e( 'Custom date pattern', 'paid-memberships-pro' ); ?>" />
-			<p class="description"><?php echo esc_html( sprintf( /* translators: 1: the literal Y token, 2: the literal M token. Do not translate the tokens themselves. */ __( '%1$s = current/next year, %2$s = current/next month.', 'paid-memberships-pro' ), 'Y', 'M' ) ); ?></p>
+			<p class="description">
+				<?php
+				echo esc_html(
+					sprintf(
+						/* translators: 1: the literal Y token, 2: the literal M token, 3 and 4: example date patterns. Do not translate the tokens or patterns. */
+						__( 'Use %1$s or %2$s in place of the year or month to mean the next one that occurs, so %3$s is the next January 1 and %4$s is the next 15th of the month.', 'paid-memberships-pro' ),
+						'Y',
+						'M',
+						'Y-01-01',
+						'Y-M-15'
+					)
+				);
+				?>
+				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/membership-levels/initial-membership-level-setup/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=date-patterns#h-billing-details' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn more about date patterns', 'paid-memberships-pro' ); ?></a>
+			</p>
 		</span>
 	</div>
 	<?php

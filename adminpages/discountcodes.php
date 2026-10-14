@@ -876,17 +876,17 @@
 												<input type="radio" id="delay_type_<?php echo intval( $level->id ); ?>_days" name="delay_type_<?php echo intval( $level->id ); ?>" value="days" <?php checked( $dc_delay_type, 'days' ); ?> />
 												<?php esc_html_e( 'After a number of days', 'paid-memberships-pro' ); ?>
 											</label>
-											<span class="<?php echo $dc_delay_type === 'days' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'delay_type_' . intval( $level->id ) . '_days', 'checked' => true ) ) ) ); ?>">
-												&mdash;
+											<br />
+											<div class="<?php echo $dc_delay_type === 'days' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'delay_type_' . intval( $level->id ) . '_days', 'checked' => true ) ) ) ); ?>">
 												<input name="subscription_delay_days_<?php echo intval( $level->id ); ?>" type="number" min="1" class="small-text"
 													value="<?php echo esc_attr( $dc_delay_type === 'days' ? $dc_delay : '' ); ?>" aria-label="<?php esc_attr_e( 'Number of days after checkout', 'paid-memberships-pro' ); ?>" />
 												<?php esc_html_e( 'days after checkout', 'paid-memberships-pro' ); ?>
-											</span>
-											<br />
+											</div>
 											<label>
 												<input type="radio" id="delay_type_<?php echo intval( $level->id ); ?>_date" name="delay_type_<?php echo intval( $level->id ); ?>" value="date" <?php checked( $dc_delay_type, 'date' ); ?> />
 												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 											</label>
+											<br />
 											<div class="<?php echo $dc_delay_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'delay_type_' . intval( $level->id ) . '_date', 'checked' => true ) ) ) ); ?>">
 												<?php pmpro_render_date_pattern_builder( 'subscription_delay_date_' . intval( $level->id ), $dc_delay_type === 'date' ? $dc_delay : '' ); ?>
 											</div>
@@ -950,6 +950,7 @@
 												<input type="radio" id="expiration_date_type_<?php echo intval( $level->id ); ?>_none" name="expiration_date_type_<?php echo intval( $level->id ); ?>" value="none" <?php checked( $dc_exp_type, 'none' ); ?> />
 												<?php esc_html_e( 'After a set duration', 'paid-memberships-pro' ); ?>
 											</label>
+											<br />
 											<div class="<?php echo $dc_exp_type === 'date' ? 'pmpro-hidden' : ''; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'expiration_date_type_' . intval( $level->id ) . '_none', 'checked' => true ) ) ) ); ?>">
 												<input name="expiration_number[]" type="text" size="10" value="<?php echo esc_attr( $level->expiration_number ); ?>" />
 												<select name="expiration_period[]">
@@ -964,11 +965,11 @@
 												</select>
 												<p class="description"><?php esc_html_e('Membership access will end this long after checkout. Any recurring subscription will be cancelled at that time.', 'paid-memberships-pro' );?></p>
 											</div>
-											<br />
 											<label>
 												<input type="radio" id="expiration_date_type_<?php echo intval( $level->id ); ?>_date" name="expiration_date_type_<?php echo intval( $level->id ); ?>" value="date" <?php checked( $dc_exp_type, 'date' ); ?> />
 												<?php esc_html_e( 'On a specific date', 'paid-memberships-pro' ); ?>
 											</label>
+											<br />
 											<div class="<?php echo $dc_exp_type === 'date' ? '' : 'pmpro-hidden'; ?>" data-pmpro-depends="<?php echo esc_attr( wp_json_encode( array( array( 'id' => 'expiration_date_type_' . intval( $level->id ) . '_date', 'checked' => true ) ) ) ); ?>">
 												<?php pmpro_render_date_pattern_builder( 'set_expiration_date_' . intval( $level->id ), $dc_set_expiration_date ); ?>
 											</div>
