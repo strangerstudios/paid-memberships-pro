@@ -1125,7 +1125,11 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 
 	$cancelled = pmpro_deprecated_gateway_cancel_old_subscription( $subscription, $gateway );
 	if ( false === $cancelled ) {
-		return pmpro_deprecated_gateway_subscription_result( 'needs_review', ( $expire_this_subscription ? 'Missed payment: set the membership expiration date for ' . $subscription_description . ', but could not confirm cancellation' : 'Could not confirm cancellation of ' . $subscription_description ) . ' at the gateway. Verify this subscription in the gateway; an error email was sent to the admin.' . $bridge_note . $email_note, $use_stripe ? 'migrated_to_stripe' : 'membership_expired', array( 'handoff_date' => $handoff_date, 'new_subscription_id' => ( $use_stripe && ! empty( $placeholder ) ) ? $placeholder->get_id() : '', 'new_subscription_transaction_id' => $use_stripe ? $transaction_id : '', 'email_sent' => $email_sent_status ) );
+		// Lead with what was completed so the entry does not read as a failed migration.
+		$completed_phrase = $use_stripe
+			? 'Migrated ' . $subscription_description . ' to Stripe placeholder subscription #' . $placeholder->get_id() . $billing_terms
+			: ( $expire_this_subscription ? 'Missed payment: set' : 'Set' ) . ' the membership expiration date for ' . $subscription_description . ' to ' . $handoff_date;
+		return pmpro_deprecated_gateway_subscription_result( 'needs_review', $completed_phrase . ', but could not confirm cancellation of the old gateway subscription. Verify it in the gateway; an error email was sent to the admin.' . $handoff_note . $bridge_note . $email_note, $use_stripe ? 'migrated_to_stripe' : 'membership_expired', array( 'handoff_date' => $handoff_date, 'new_subscription_id' => ( $use_stripe && ! empty( $placeholder ) ) ? $placeholder->get_id() : '', 'new_subscription_transaction_id' => $use_stripe ? $transaction_id : '', 'email_sent' => $email_sent_status ) );
 	}
 
 	// Gateways that cannot cancel automatically leave the old subscription active at the gateway.
