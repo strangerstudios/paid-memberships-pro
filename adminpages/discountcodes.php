@@ -762,12 +762,14 @@
 						else
 							$level_checked = false;
 
-						// Load subscription delay and set expiration date for this discount code level.
-						$dc_delay = '';
-						$dc_set_expiration_date = '';
-						if ( ( $edit > 0 || ! empty( $copy ) ) && ! empty( $temp_code->id ) ) {
+						// Load subscription delay and set expiration date for this discount code level. Levels not
+						// on this code yet start from the level's own settings, like the pricing fields.
+						if ( ! empty( $level->checked ) ) {
 							$dc_delay = pmpro_get_subscription_delay( $level->id, $temp_code->id );
 							$dc_set_expiration_date = pmpro_get_set_expiration_date( $level->id, $temp_code->id );
+						} else {
+							$dc_delay = pmpro_get_subscription_delay( $level->id );
+							$dc_set_expiration_date = pmpro_get_set_expiration_date( $level->id );
 						}
 						$dc_delay_type = ! empty( $dc_delay ) ? ( is_numeric( $dc_delay ) ? 'days' : 'date' ) : 'none';
 						$dc_exp_type = ! empty( $dc_set_expiration_date ) ? 'date' : 'none';

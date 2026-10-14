@@ -228,8 +228,11 @@ function pmpro_resolve_expiration_date_pattern( $set_expiration_date, $current_t
  * @return bool True for percentage and fixed amount codes, false for custom pricing codes or unknown codes.
  */
 function pmpro_discount_code_uses_level_pricing( $code_id ) {
-	$code_row = pmpro_get_discount_code( intval( $code_id ) );
-	return ! empty( $code_row->discount_type ) && 'set_price' !== $code_row->discount_type;
+	global $wpdb;
+
+	// Look up by ID. pmpro_get_discount_code() would match a code named e.g. "12" before the code with ID 12.
+	$discount_type = $wpdb->get_var( $wpdb->prepare( "SELECT discount_type FROM $wpdb->pmpro_discount_codes WHERE id = %d LIMIT 1", $code_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries a PMPro custom table, which has no WordPress API or object cache layer.
+	return ! empty( $discount_type ) && 'set_price' !== $discount_type;
 }
 
 /**

@@ -50,6 +50,44 @@ function pmpro_checkout_level_extend_memberships( $level ) {
 	return $level;
 }
 add_filter( 'pmpro_checkout_level', 'pmpro_checkout_level_extend_memberships' );
+
+/**
+ * Apply a level's or discount code's set expiration date to a level being checked out.
+ *
+ * A set expiration date replaces any duration-based expiration. Like the retired Set Expiration
+ * Dates Add On, express it in days so that the level object stays the source of truth for the
+ * end date everywhere downstream. This runs on the same filters and at the same priority as the
+ * Add On did, so that Add Ons that filter the level before it (e.g. Auto-Renewal Checkbox) or
+ * apply these filters themselves (e.g. Paystack) keep working.
+ *
+ * @since TBD
+ *
+ * @param object $level The level being checked out.
+ * @return object The level with any set expiration date applied.
+ */
+function pmpro_checkout_level_set_expiration_date( $level ) {
+	if ( empty( $level->id ) ) {
+		return $level;
+	}
+
+	$set_expiration_date      = pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null );
+	$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
+	if ( ! empty( $resolved_expiration_date ) ) {
+		// Calendar days from today; the membership expires at the end of that day. A fixed
+		// date that has already passed expires after one day rather than never.
+		$days_until_expiration    = intval( round( ( strtotime( $resolved_expiration_date ) - strtotime( date( 'Y-m-d', current_time( 'timestamp' ) ) ) ) / DAY_IN_SECONDS ) );
+		$level->expiration_number = max( 1, $days_until_expiration );
+		$level->expiration_period = 'Day';
+
+		// Keep the date so that the expiration text shows a date, not a number of days.
+		$level->expiration_date = date( 'Y-m-d', strtotime( '+ ' . $level->expiration_number . ' Days', current_time( 'timestamp' ) ) );
+	}
+
+	return $level;
+}
+add_filter( 'pmpro_checkout_level', 'pmpro_checkout_level_set_expiration_date' );
+add_filter( 'pmpro_paystack_webhook_level', 'pmpro_checkout_level_set_expiration_date' );
+add_filter( 'pmpro_payfast_itnhandler_level', 'pmpro_checkout_level_set_expiration_date' );
 /*
 	Same thing as above but when processed by the ipnhandler for PayPal standard.
 */
