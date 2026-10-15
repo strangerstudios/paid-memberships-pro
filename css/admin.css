@@ -1852,6 +1852,13 @@ a.pmpro_order-renewal {
 	top: -1px;
 }
 
+.pmpro-filter-learn-more {
+	color: #646970;
+	display: inline-block;
+	line-height: 32px;
+	margin-inline-start: 12px;
+}
+
 .pmpro-filter-layout {
 	clear: both;
 	display: flex;
