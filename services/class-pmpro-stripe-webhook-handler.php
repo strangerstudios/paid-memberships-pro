@@ -769,10 +769,16 @@ class PMPro_Stripe_Webhook_Handler {
 	}
 
 	/**
-	 * Check whether an error from retrieving the webhook event may go away if Stripe sends the event again.
+	 * Check whether the webhook should answer 503 after an error from retrieving the event, so that Stripe sends the event again.
 	 *
-	 * Connection errors, rate limits, authentication and permission errors and 5xx responses may be temporary.
-	 * Other errors, such as a 404 for an event that does not exist in this Stripe account, are not.
+	 * Connection errors, rate limits (429) and 5xx responses are usually temporary.
+	 *
+	 * 401 and 403 usually are not: they mean the API key was revoked or rolled, the Stripe Connect account was
+	 * disconnected, or the key belongs to another account or mode. They get a 503 as well, so the failure shows up
+	 * in Stripe (failed deliveries, retries for up to three days in live mode, emails about the failing endpoint)
+	 * instead of the event being dropped with a 200.
+	 *
+	 * Other errors, such as a 404 for an event that does not exist in this Stripe account, are not retried.
 	 *
 	 * @since TBD
 	 *
