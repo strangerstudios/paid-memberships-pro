@@ -1129,7 +1129,8 @@ add_filter( 'pmpro_members_list_csv_extra_columns', 'pmpro_members_list_csv_extr
  * Get user meta for the added CSV columns.
  */
 function pmpro_csv_columns_for_user_fields( $user, $column ) {
-	if(!empty($user->metavalues->{$column}))
+	// Check for an empty string instead of empty() so that a "0" option value is exported.
+	if ( isset( $user->metavalues->{$column} ) && '' !== $user->metavalues->{$column} )
 	{
 		// check for multiple values
 		$value = maybe_unserialize($user->metavalues->{$column});

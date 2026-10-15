@@ -1021,6 +1021,9 @@ class PMPro_Field {
 			$value = apply_filters( 'pmpro_field_default_value', $this->default, $this );
 		}
 
+		// Show answers saved as labels before User Fields settings kept explicit 0..n-1 option values.
+		$value = $this->map_saved_option_labels_to_values( $value );
+
 		if($this->type == "text")
 		{
 			$r = '<input type="text" id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '" value="' . ( is_string( $value ) ? esc_attr(wp_unslash($value) ) : '' ) . '" ';
@@ -1936,6 +1939,42 @@ class PMPro_Field {
 		} else {
 			return wp_kses( $output, $allowed_html );
 		}
+	}
+
+	/**
+	 * Map option labels saved by older versions to their option values.
+	 *
+	 * User Fields settings fields with explicit 0..n-1 option values (e.g. 0:No / 1:Yes) used to save the
+	 * label because the options were repaired to label => label. They now save the value. Treating a saved
+	 * label as its value keeps the answer selected, and the next save stores the value.
+	 *
+	 * @since TBD
+	 *
+	 * @param mixed $value The saved value.
+	 * @return mixed The value with any saved labels replaced by their option values.
+	 */
+	private function map_saved_option_labels_to_values( $value ) {
+		// Only fields that opted out of the repair and kept 0..n-1 option values saved labels before.
+		if ( ! in_array( $this->type, array( 'select', 'multiselect', 'select2', 'radio' ), true ) || ! isset( $this->repair_non_associative_options ) || $this->repair_non_associative_options || ! is_array( $this->options ) || $this->is_assoc( $this->options ) ) {
+			return $value;
+		}
+
+		$labels = array_map( 'trim', $this->options );
+		$map    = function ( $item ) use ( $labels ) {
+			// Blank values and values that are already option values don't need mapping.
+			if ( ! is_string( $item ) || '' === trim( $item ) || array_key_exists( $item, $labels ) ) {
+				return $item;
+			}
+
+			$key = array_search( trim( $item ), $labels, true );
+			return false === $key ? $item : (string) $key;
+		};
+
+		if ( $this->stores_array_values() ) {
+			return array_map( $map, $this->get_values_as_array( $value ) );
+		}
+
+		return $map( $value );
 	}
 
 	/**
