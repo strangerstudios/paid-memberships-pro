@@ -284,7 +284,8 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		} elseif ( 'upcoming' === $timeframe ) {
 			$conditions[] = $wpdb->prepare( 'do.starts > %s', $today );
 		} elseif ( 'expired' === $timeframe ) {
-			$conditions[] = $wpdb->prepare( 'do.expires < %s', $today );
+			// Codes that haven't started yet are Upcoming, even if their expiration date has passed, matching checkout.
+			$conditions[] = $wpdb->prepare( 'do.expires < %s AND do.starts <= %s', $today, $today );
 		}
 
 		// Level filter.
