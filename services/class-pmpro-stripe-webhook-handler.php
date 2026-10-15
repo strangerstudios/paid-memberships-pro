@@ -122,9 +122,16 @@ class PMPro_Stripe_Webhook_Handler {
 				$logstr .= 'No event ID given.';
 			}
 
-			// If the error may go away, answer 503 so that Stripe sends the event again.
-			if ( ! $scheduled_request && ! empty( $retrieve_error ) && self::is_retryable_retrieve_error( $retrieve_error ) ) {
-				status_header( 503 );
+			if ( ! empty( $retrieve_error ) && self::is_retryable_retrieve_error( $retrieve_error ) ) {
+				if ( ! $scheduled_request ) {
+					// If the error may go away, answer 503 so that Stripe sends the event again.
+					status_header( 503 );
+				} else {
+					// Stripe got a 200 when the event was queued, so it won't send the event again. Run again later.
+					$logstr .= self::reschedule_event( $event_id, $livemode );
+				}
+			} elseif ( $scheduled_request && ! empty( $event_id ) ) {
+				delete_transient( self::retrieve_attempts_key( $event_id ) );
 			}
 
 			pmpro_unhandled_webhook( 'stripe' );
@@ -135,6 +142,8 @@ class PMPro_Stripe_Webhook_Handler {
 		// Send a 200 HTTP response to Stripe to avoid timeout.
 		if ( ! $scheduled_request ) {
 			pmpro_send_200_http_response();
+		} else {
+			delete_transient( self::retrieve_attempts_key( $pmpro_stripe_event->id ) );
 		}
 
 		// Log that we have successfully received a webhook from Stripe.
@@ -790,6 +799,8 @@ class PMPro_Stripe_Webhook_Handler {
 	 * in Stripe (failed deliveries, retries for up to three days in live mode, emails about the failing endpoint)
 	 * instead of the event being dropped with a 200.
 	 *
+	 * In a scheduled run (async processing), the same errors schedule another run instead, a limited number of times.
+	 *
 	 * Other errors, such as a 404 for an event that does not exist in this Stripe account, are not retried.
 	 *
 	 * @since TBD
@@ -808,6 +819,57 @@ class PMPro_Stripe_Webhook_Handler {
 
 		$status = (int) $e->getHttpStatus();
 		return $status >= 500 || in_array( $status, array( 401, 403, 429 ), true );
+	}
+
+	/**
+	 * Schedule another run for a queued event whose retrieval failed with a retryable error.
+	 *
+	 * Waits 5, 10, 20, 40 and 80 minutes between runs, then gives up. The retry uses the same
+	 * action arguments as the original task, so a redelivery from Stripe that arrives while a retry
+	 * is pending is not queued a second time. The attempt count is kept in a transient.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $event_id Stripe event ID.
+	 * @param bool   $livemode Whether the event was live mode.
+	 * @return string Text for the webhook log.
+	 */
+	private static function reschedule_event( $event_id, $livemode ) {
+		$max_retries = 5;
+		$key         = self::retrieve_attempts_key( $event_id );
+		$retries     = (int) get_transient( $key );
+
+		if ( $retries >= $max_retries ) {
+			delete_transient( $key );
+			return ' Not retrying: ' . ( $retries + 1 ) . ' scheduled runs could not retrieve the event.';
+		}
+
+		$delay     = 5 * MINUTE_IN_SECONDS * pow( 2, $retries );
+		$action_id = PMPro_Action_Scheduler::instance()->maybe_add_task(
+			'pmpro_stripe_webhook_process_scheduled_event',
+			array( $event_id, $livemode ),
+			'pmpro_async_tasks',
+			time() + $delay
+		);
+
+		if ( empty( $action_id ) ) {
+			return ' Not scheduling another run: one is already pending for this event.';
+		}
+
+		set_transient( $key, $retries + 1, DAY_IN_SECONDS );
+		return ' Scheduled another run in ' . ( $delay / MINUTE_IN_SECONDS ) . ' minutes (retry ' . ( $retries + 1 ) . ' of ' . $max_retries . ').';
+	}
+
+	/**
+	 * Get the transient key that counts scheduled retries for an event.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $event_id Stripe event ID.
+	 * @return string
+	 */
+	private static function retrieve_attempts_key( $event_id ) {
+		return 'pmpro_stripe_webhook_retries_' . md5( $event_id );
 	}
 
 	/**
