@@ -243,6 +243,20 @@ function pmpro_handle_recurring_payment_failure_at_gateway( $order_data ) {
 		return 'ERROR: Could not process failed payment. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscription_transaction_id . '.';
 	}
 
+	// If we already have a successful order for this payment_transaction_id, this failure is stale.
+	if ( ! empty( $order_data['payment_transaction_id'] ) ) {
+		$successful_orders = $subscription->get_orders(
+			array(
+				'status' => 'success',
+				'payment_transaction_id' => $order_data['payment_transaction_id'],
+				'limit' => 1,
+			)
+		);
+		if ( ! empty( $successful_orders ) ) {
+			return 'Payment transaction ID ' . $order_data['payment_transaction_id'] . ' has already been paid. ( Order ID #' . current( $successful_orders )->id . ') No action taken for failed payment.';
+		}
+	}
+
 	// Check if we have an existing pending order for this subscription and payment_transaction_id.
 	$existing_orders = $subscription->get_orders(
 		array(
