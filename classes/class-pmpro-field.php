@@ -1961,8 +1961,7 @@ class PMPro_Field {
 	 * @return mixed The value with any saved labels replaced by their option values.
 	 */
 	private function map_saved_option_labels_to_values( $value, $split_values = true ) {
-		// Only fields that opted out of the repair and kept 0..n-1 option values saved labels before.
-		if ( ! in_array( $this->type, array( 'select', 'multiselect', 'select2', 'radio' ), true ) || ! isset( $this->repair_non_associative_options ) || $this->repair_non_associative_options || ! is_array( $this->options ) || $this->is_assoc( $this->options ) ) {
+		if ( ! $this->saved_option_labels_before_values() ) {
 			return $value;
 		}
 
@@ -1982,6 +1981,54 @@ class PMPro_Field {
 		}
 
 		return $map( $value );
+	}
+
+	/**
+	 * Map saved option values to their labels for email variables.
+	 *
+	 * User Fields settings fields with explicit 0..n-1 option values (e.g. 0:No / 1:Yes) used to save the
+	 * label, so email variables like !!field_name!! showed the label. They now save the value, so map it
+	 * back to keep emails showing the label. Other fields return the value unchanged.
+	 *
+	 * @since TBD
+	 *
+	 * @param mixed $value The saved value.
+	 * @return mixed The label, or labels for a multi-value field, or the value unchanged.
+	 */
+	public function map_saved_option_values_to_labels( $value ) {
+		if ( ! $this->saved_option_labels_before_values() ) {
+			return $value;
+		}
+
+		$options = $this->options;
+		$map     = function ( $item ) use ( $options ) {
+			// Values saved as labels before this change are already labels.
+			if ( ( is_string( $item ) || is_int( $item ) ) && '' !== trim( (string) $item ) && array_key_exists( $item, $options ) ) {
+				return $options[ $item ];
+			}
+
+			return $item;
+		};
+
+		if ( is_array( $value ) || $this->stores_array_values() ) {
+			return array_map( $map, $this->get_values_as_array( $value ) );
+		}
+
+		return $map( $value );
+	}
+
+	/**
+	 * Whether this field saved option labels in older versions and saves option values now.
+	 *
+	 * True for User Fields settings fields that opted out of the non-associative options repair and have
+	 * explicit 0..n-1 option values.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool
+	 */
+	private function saved_option_labels_before_values() {
+		return in_array( $this->type, array( 'select', 'multiselect', 'select2', 'radio' ), true ) && isset( $this->repair_non_associative_options ) && ! $this->repair_non_associative_options && is_array( $this->options ) && ! $this->is_assoc( $this->options );
 	}
 
 	/**
@@ -2130,8 +2177,9 @@ class PMPro_Field {
 				break;
 			case 'select':
 			case 'radio':
-				if ( isset( $this->repair_non_associative_options ) && ! $this->repair_non_associative_options ) {
-					// Explicit value:label options (User Fields settings) can use "0" as a value, so only treat a missing or blank value as empty. Arrays keep the empty() check.
+				if ( isset( $this->repair_non_associative_options ) && ! $this->repair_non_associative_options && ! $this->is_assoc( $this->options ) ) {
+					// Explicit 0..n-1 option values (User Fields settings) can be "0", so only treat a missing or blank value as empty. Arrays keep the empty() check.
+					// Other lists keep empty(), since a 0-keyed option there may be a placeholder, as before.
 					$filled = is_array( $value ) ? ! empty( $value ) : ( null !== $value && '' !== $value );
 				} else {
 					// Other fields keep the empty() check so a 0-keyed placeholder option still fails the required check.

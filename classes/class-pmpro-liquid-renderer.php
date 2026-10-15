@@ -663,7 +663,14 @@ class PMPro_Liquid_Renderer {
 		if ( ! empty( $args['usermeta_fallback_user_id'] ) ) {
 			$user_id = (int) $args['usermeta_fallback_user_id'];
 			if ( $user_id > 0 ) {
-				$usermeta      = get_user_meta( $user_id, $token, true );
+				$usermeta = get_user_meta( $user_id, $token, true );
+
+				// User Fields settings fields with explicit 0..n-1 option values now save the value. Show the label, as before.
+				$user_field = PMPro_Field_Group::get_field( $token );
+				if ( ! empty( $user_field ) ) {
+					$usermeta = $user_field->map_saved_option_values_to_labels( $usermeta );
+				}
+
 				$resolved_meta = self::normalize_usermeta_value( $usermeta );
 
 				// Memoize lookups (including misses) for the remainder of this render call.

@@ -452,6 +452,13 @@ function pmpro_email_templates_email_data($data, $email) {
 		foreach($matches as $match) {
 			if ( empty( $new_data[ $match ] ) ) {
 				$usermeta = get_user_meta($user->ID, $match, true);
+
+				// User Fields settings fields with explicit 0..n-1 option values now save the value. Show the label, as before.
+				$user_field = PMPro_Field_Group::get_field( $match );
+				if ( ! empty( $user_field ) ) {
+					$usermeta = $user_field->map_saved_option_values_to_labels( $usermeta );
+				}
+
 				if ( ! empty( $usermeta ) ) {
 					if( is_array( $usermeta ) && ! empty( $usermeta['fullurl'] ) ) {
 						$new_data[$match] = $usermeta['fullurl'];
