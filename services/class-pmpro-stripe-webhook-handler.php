@@ -286,6 +286,12 @@ class PMPro_Stripe_Webhook_Handler {
 		// Make sure we have the invoice in the desired API version.
 		$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
 
+		// If the invoice has since been paid (e.g. the customer completed authentication), no action is required.
+		if ( 'paid' === $invoice->status ) {
+			$logstr .= 'Invoice ' . $invoice->id . ' has already been paid. No action required.';
+			return;
+		}
+
 		// Get the subscription ID for this invoice.
 		if ( ! empty( $invoice->parent->subscription_details->subscription ) ) {
 			$subscription_id = $invoice->parent->subscription_details->subscription;
@@ -380,6 +386,12 @@ class PMPro_Stripe_Webhook_Handler {
 		// If we don't have an invoice, bail.
 		if ( empty( $invoice ) ) {
 			$logstr .= 'Could not find an invoice for failed charge ' . $charge->id . '.';
+			return;
+		}
+
+		// If the invoice has since been paid (e.g. the customer retried with another card), this failure is stale.
+		if ( 'paid' === $invoice->status ) {
+			$logstr .= 'Invoice ' . $invoice->id . ' has already been paid. No action taken for failed charge ' . $charge->id . '.';
 			return;
 		}
 
