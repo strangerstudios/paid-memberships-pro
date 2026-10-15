@@ -667,6 +667,10 @@ class PMPro_Liquid_Renderer {
 
 				// User Fields settings fields with explicit 0..n-1 option values now save the value. Show the label, as before.
 				$user_field = PMPro_Field_Group::get_field( $token );
+				if ( empty( $user_field ) ) {
+					// Fields named like a WordPress query var save under this name but are registered with a prefix.
+					$user_field = PMPro_Field_Group::get_field( 'pmprorhprefix_' . $token );
+				}
 				if ( ! empty( $user_field ) ) {
 					$usermeta = $user_field->map_saved_option_values_to_labels( $usermeta );
 				}
