@@ -383,6 +383,12 @@ class PMPro_Stripe_Webhook_Handler {
 			return;
 		}
 
+		// If the invoice has since been paid (e.g. the customer retried with another card), this failure is stale.
+		if ( 'paid' === $invoice->status ) {
+			$logstr .= 'Invoice ' . $invoice->id . ' has already been paid. No action taken for failed charge ' . $charge->id . '.';
+			return;
+		}
+
 		// If we don't have a subscription on the invoice, bail.
 		if ( empty( $invoice->parent->subscription_details->subscription ) ) {
 			$logstr .= 'No subscription associated with invoice ' . $invoice->id . ' with failed payment.';
