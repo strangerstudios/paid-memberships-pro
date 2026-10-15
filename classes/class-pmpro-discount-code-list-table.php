@@ -276,16 +276,27 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$conditions[] = "do.code LIKE '%" . esc_sql( $s ) . "%'";
 		}
 
-		// Timeframe filter. Compared against the site's current date to match checkout.
-		$today     = current_time( 'Y-m-d' );
-		$timeframe = isset( $_REQUEST['timeframe'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['timeframe'] ) ) : '';
-		if ( 'current' === $timeframe ) {
+		// Status filter. Compared against the site's current date to match checkout.
+		$today  = current_time( 'Y-m-d' );
+		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
+		if ( 'current' === $status ) {
 			$conditions[] = $wpdb->prepare( 'do.starts <= %s AND do.expires >= %s', $today, $today );
-		} elseif ( 'upcoming' === $timeframe ) {
+		} elseif ( 'upcoming' === $status ) {
 			$conditions[] = $wpdb->prepare( 'do.starts > %s', $today );
-		} elseif ( 'expired' === $timeframe ) {
+		} elseif ( 'expired' === $status ) {
 			// Codes that haven't started yet are Upcoming, even if their expiration date has passed, matching checkout.
 			$conditions[] = $wpdb->prepare( 'do.expires < %s AND do.starts <= %s', $today, $today );
+		}
+
+		// Usage filter. "Used" includes codes that are used up. A code with a uses limit of 0 is unlimited and is never used up, matching checkout.
+		$usage      = isset( $_REQUEST['usage'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['usage'] ) ) : '';
+		$uses_count = "( SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = do.id )";
+		if ( 'unused' === $usage ) {
+			$conditions[] = "$uses_count = 0";
+		} elseif ( 'used' === $usage ) {
+			$conditions[] = "$uses_count > 0";
+		} elseif ( 'used_up' === $usage ) {
+			$conditions[] = "do.uses > 0 AND $uses_count >= do.uses";
 		}
 
 		// Level filter.
@@ -427,7 +438,8 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null,
 						'order'   => isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null,
 						'paged'   => isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : null,
-						'timeframe' => isset( $_REQUEST['timeframe'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['timeframe'] ) ) : null,
+						'status'  => isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : null,
+						'usage'   => isset( $_REQUEST['usage'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['usage'] ) ) : null,
 						'level'   => isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : null,
 					],
 					admin_url( 'admin.php' )
@@ -614,12 +626,16 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter the list table.
 		if ( 'top' === $which ) {
 			// Read current filter values from request.
-			$timeframe = isset( $_REQUEST['timeframe'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['timeframe'] ) ) : '';
-			$level     = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : 0;
+			$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
+			$usage  = isset( $_REQUEST['usage'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['usage'] ) ) : '';
+			$level  = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : 0;
 
 			// Count active filters for the toggle button badge.
 			$active_filter_count = 0;
-			if ( ! empty( $timeframe ) ) {
+			if ( ! empty( $status ) ) {
+				$active_filter_count++;
+			}
+			if ( ! empty( $usage ) ) {
 				$active_filter_count++;
 			}
 			if ( ! empty( $level ) ) {
@@ -655,14 +671,25 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 					</div>
 
 					<div class="pmpro-filter-body">
-						<?php // Timeframe filter. ?>
+						<?php // Status filter. ?>
 						<div class="pmpro-filter-section">
-							<label for="pmpro-filter-timeframe"><?php esc_html_e( 'Timeframe', 'paid-memberships-pro' ); ?></label>
-							<select id="pmpro-filter-timeframe" name="timeframe">
-								<option value=""><?php esc_html_e( 'All Timeframes', 'paid-memberships-pro' ); ?></option>
-								<option value="current" <?php selected( $timeframe, 'current' ); ?>><?php esc_html_e( 'Current', 'paid-memberships-pro' ); ?></option>
-								<option value="upcoming" <?php selected( $timeframe, 'upcoming' ); ?>><?php esc_html_e( 'Upcoming', 'paid-memberships-pro' ); ?></option>
-								<option value="expired" <?php selected( $timeframe, 'expired' ); ?>><?php esc_html_e( 'Expired', 'paid-memberships-pro' ); ?></option>
+							<label for="pmpro-filter-status"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></label>
+							<select id="pmpro-filter-status" name="status">
+								<option value=""><?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?></option>
+								<option value="current" <?php selected( $status, 'current' ); ?>><?php esc_html_e( 'Current', 'paid-memberships-pro' ); ?></option>
+								<option value="upcoming" <?php selected( $status, 'upcoming' ); ?>><?php esc_html_e( 'Upcoming', 'paid-memberships-pro' ); ?></option>
+								<option value="expired" <?php selected( $status, 'expired' ); ?>><?php esc_html_e( 'Expired', 'paid-memberships-pro' ); ?></option>
+							</select>
+						</div>
+
+						<?php // Usage filter. ?>
+						<div class="pmpro-filter-section">
+							<label for="pmpro-filter-usage"><?php esc_html_e( 'Usage', 'paid-memberships-pro' ); ?></label>
+							<select id="pmpro-filter-usage" name="usage">
+								<option value=""><?php esc_html_e( 'All Usage', 'paid-memberships-pro' ); ?></option>
+								<option value="unused" <?php selected( $usage, 'unused' ); ?>><?php esc_html_e( 'Unused', 'paid-memberships-pro' ); ?></option>
+								<option value="used" <?php selected( $usage, 'used' ); ?>><?php esc_html_e( 'Used', 'paid-memberships-pro' ); ?></option>
+								<option value="used_up" <?php selected( $usage, 'used_up' ); ?>><?php esc_html_e( 'Used Up', 'paid-memberships-pro' ); ?></option>
 							</select>
 						</div>
 
