@@ -1528,6 +1528,11 @@ class PMPro_Field {
 						continue;
 					}
 
+					// Rules may compare against a label that the field used to save as its value.
+					if ( isset( $check['value'] ) ) {
+						$check['value'] = $depends_field->map_saved_option_labels_to_values( $check['value'], false );
+					}
+
 					// Let's simplify.
 					switch ( $depends_field->type ) {
 						case 'checkbox_grouped':
@@ -1946,14 +1951,16 @@ class PMPro_Field {
 	 *
 	 * User Fields settings fields with explicit 0..n-1 option values (e.g. 0:No / 1:Yes) used to save the
 	 * label because the options were repaired to label => label. They now save the value. Treating a saved
-	 * label as its value keeps the answer selected, and the next save stores the value.
+	 * label as its value keeps the answer selected, and the next save stores the value. Dependency rules
+	 * written against those labels are mapped the same way.
 	 *
 	 * @since TBD
 	 *
-	 * @param mixed $value The saved value.
+	 * @param mixed $value        The saved value, or the value from a dependency rule.
+	 * @param bool  $split_values Whether to read a string for a multi-value field as comma-separated saved values. False for dependency rules.
 	 * @return mixed The value with any saved labels replaced by their option values.
 	 */
-	private function map_saved_option_labels_to_values( $value ) {
+	private function map_saved_option_labels_to_values( $value, $split_values = true ) {
 		// Only fields that opted out of the repair and kept 0..n-1 option values saved labels before.
 		if ( ! in_array( $this->type, array( 'select', 'multiselect', 'select2', 'radio' ), true ) || ! isset( $this->repair_non_associative_options ) || $this->repair_non_associative_options || ! is_array( $this->options ) || $this->is_assoc( $this->options ) ) {
 			return $value;
@@ -1970,7 +1977,7 @@ class PMPro_Field {
 			return false === $key ? $item : (string) $key;
 		};
 
-		if ( $this->stores_array_values() ) {
+		if ( is_array( $value ) || ( $split_values && $this->stores_array_values() ) ) {
 			return array_map( $map, $this->get_values_as_array( $value ) );
 		}
 
@@ -2123,8 +2130,8 @@ class PMPro_Field {
 				break;
 			case 'select':
 			case 'radio':
-				if ( isset( $this->repair_non_associative_options ) && ! $this->repair_non_associative_options && ! $this->is_assoc( $this->options ) ) {
-					// Explicit 0..n-1 option values (User Fields settings) can be "0", so only treat a missing or blank value as empty.
+				if ( isset( $this->repair_non_associative_options ) && ! $this->repair_non_associative_options ) {
+					// Explicit value:label options (User Fields settings) can use "0" as a value, so only treat a missing or blank value as empty.
 					$filled = ( null !== $value && '' !== $value );
 				} else {
 					// Other fields keep the empty() check so a 0-keyed placeholder option still fails the required check.
