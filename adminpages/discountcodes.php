@@ -1041,7 +1041,13 @@
 					<input type="hidden" name="page" value="pmpro-discountcodes" />
 					<?php
 						$discountcode_list_table->search_box( __( 'Search', 'paid-memberships-pro' ), 'paid-memberships-pro' );
-						$discountcode_list_table->display();
+					?>
+					<div id="pmpro-discountcodes-layout" class="pmpro-filter-layout">
+						<div class="pmpro-filter-content">
+							<?php $discountcode_list_table->display(); ?>
+						</div>
+					</div>
+					<?php
 				}
 			?>
 			</form>

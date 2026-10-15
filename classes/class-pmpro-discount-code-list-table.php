@@ -263,14 +263,38 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		$start = $end - $limit;
 
 		if ( $count ) {
-			$sqlQuery = "SELECT COUNT( DISTINCT id ) FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery = "SELECT COUNT( DISTINCT id ) FROM $wpdb->pmpro_discount_codes as do ";
 		} else {
 			//Includes uses for each discount code as 'used' so we can sort by it later
-			$sqlQuery = "SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires, (SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = do.id) as used FROM $wpdb->pmpro_discount_codes as do ";			
+			$sqlQuery = "SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires, (SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = do.id) as used FROM $wpdb->pmpro_discount_codes as do ";
 		}
 
+		// Build filter conditions. Multiple filters are combined with AND.
+		$conditions = array();
+
 		if ( ! empty( $s ) ) {
-			$sqlQuery .= "WHERE code LIKE '%" . esc_sql( $s ) . "%' ";
+			$conditions[] = "do.code LIKE '%" . esc_sql( $s ) . "%'";
+		}
+
+		// Timeframe filter. Compared against the site's current date to match checkout.
+		$today     = current_time( 'Y-m-d' );
+		$timeframe = isset( $_REQUEST['timeframe'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['timeframe'] ) ) : '';
+		if ( 'current' === $timeframe ) {
+			$conditions[] = $wpdb->prepare( 'do.starts <= %s AND do.expires >= %s', $today, $today );
+		} elseif ( 'upcoming' === $timeframe ) {
+			$conditions[] = $wpdb->prepare( 'do.starts > %s', $today );
+		} elseif ( 'expired' === $timeframe ) {
+			$conditions[] = $wpdb->prepare( 'do.expires < %s', $today );
+		}
+
+		// Level filter.
+		$level = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : 0;
+		if ( ! empty( $level ) ) {
+			$conditions[] = $wpdb->prepare( "do.id IN ( SELECT code_id FROM $wpdb->pmpro_discount_codes_levels WHERE level_id = %d )", $level ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Only interpolates a $wpdb table name.
+		}
+
+		if ( ! empty( $conditions ) ) {
+			$sqlQuery .= 'WHERE ' . implode( ' AND ', $conditions ) . ' ';
 		}
 
 		if ( ! $count ) {
@@ -294,9 +318,9 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			$sql_table_data = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term is esc_sql()'d inside quotes, orderby is whitelisted, order is hard-coded, and LIMIT values are integers.
+			$sql_table_data = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term is esc_sql()'d inside quotes, filter values are prepared, orderby is whitelisted, order is hard-coded, and LIMIT values are integers.
 		} else {
-			$sql_table_data = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term is esc_sql()'d inside quotes, orderby is whitelisted, order is hard-coded, and LIMIT values are integers.
+			$sql_table_data = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term is esc_sql()'d inside quotes, filter values are prepared, orderby is whitelisted, order is hard-coded, and LIMIT values are integers.
 		}
 
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
@@ -402,6 +426,8 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : null,
 						'order'   => isset( $_REQUEST['order'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : null,
 						'paged'   => isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : null,
+						'timeframe' => isset( $_REQUEST['timeframe'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['timeframe'] ) ) : null,
+						'level'   => isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : null,
 					],
 					admin_url( 'admin.php' )
 				),
@@ -578,23 +604,105 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Add the "Learn more" link to the top tablenav area.
+	 * Add the filters and "Learn more" link to the top tablenav area.
 	 *
 	 * @param string $which The location of the extra table nav markup: 'top' or 'bottom'.
 	 * @since 3.x
 	 */
 	protected function extra_tablenav( $which ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter the list table.
 		if ( 'top' === $which ) {
+			// Read current filter values from request.
+			$timeframe = isset( $_REQUEST['timeframe'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['timeframe'] ) ) : '';
+			$level     = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : 0;
+
+			// Count active filters for the toggle button badge.
+			$active_filter_count = 0;
+			if ( ! empty( $timeframe ) ) {
+				$active_filter_count++;
+			}
+			if ( ! empty( $level ) ) {
+				$active_filter_count++;
+			}
+
+			$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 			?>
-			<div class="alignleft actions">
+			<button type="button" id="pmpro-discountcodes-toggle-filters" class="button button-primary pmpro-has-icon pmpro-has-icon-filter pmpro-filter-toggle">
+				<?php esc_html_e( 'Filter Results', 'paid-memberships-pro' ); ?>
+				<?php if ( $active_filter_count > 0 ) { ?>
+					<span class="pmpro-filter-badge"><?php echo esc_html( $active_filter_count ); ?></span>
+				<?php } ?>
+			</button>
+			<?php if ( $active_filter_count > 0 ) { ?>
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'Clear Filters', 'paid-memberships-pro' ); ?></a>
+			<?php } ?>
+			<span class="pmpro-filter-learn-more">
 				<?php
 					$discount_codes_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Discount Codes Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/discount-codes/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=documentation&utm_content=&utm_term=">' . esc_html__( 'Discount Codes', 'paid-memberships-pro' ) . '</a>';
 					// translators: %s: Link to Discount Codes doc.
 					printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $discount_codes_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				?>
+			</span>
+
+			<div id="pmpro-discountcodes-filter-panel" class="pmpro-filter-panel">
+				<div class="pmpro_section">
+					<div class="pmpro-filter-header">
+						<h2><?php esc_html_e( 'Filters', 'paid-memberships-pro' ); ?></h2>
+						<button type="button" id="pmpro-discountcodes-close-filters" class="pmpro-filter-close" aria-label="<?php esc_attr_e( 'Close filters', 'paid-memberships-pro' ); ?>">
+							<span class="dashicons dashicons-no-alt"></span>
+						</button>
+					</div>
+
+					<div class="pmpro-filter-body">
+						<?php // Timeframe filter. ?>
+						<div class="pmpro-filter-section">
+							<label for="pmpro-filter-timeframe"><?php esc_html_e( 'Timeframe', 'paid-memberships-pro' ); ?></label>
+							<select id="pmpro-filter-timeframe" name="timeframe">
+								<option value=""><?php esc_html_e( 'All Timeframes', 'paid-memberships-pro' ); ?></option>
+								<option value="current" <?php selected( $timeframe, 'current' ); ?>><?php esc_html_e( 'Current', 'paid-memberships-pro' ); ?></option>
+								<option value="upcoming" <?php selected( $timeframe, 'upcoming' ); ?>><?php esc_html_e( 'Upcoming', 'paid-memberships-pro' ); ?></option>
+								<option value="expired" <?php selected( $timeframe, 'expired' ); ?>><?php esc_html_e( 'Expired', 'paid-memberships-pro' ); ?></option>
+							</select>
+						</div>
+
+						<?php // Level filter. ?>
+						<div class="pmpro-filter-section">
+							<label for="pmpro-filter-level"><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></label>
+							<select id="pmpro-filter-level" name="level">
+								<option value=""><?php esc_html_e( 'All Levels', 'paid-memberships-pro' ); ?></option>
+								<?php foreach ( $levels as $level_obj ) { ?>
+									<option value="<?php echo esc_attr( $level_obj->id ); ?>" <?php selected( $level, $level_obj->id ); ?>><?php echo esc_html( $level_obj->name ); ?></option>
+								<?php } ?>
+							</select>
+						</div>
+					</div>
+
+					<div class="pmpro-filter-actions">
+						<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Apply Filters', 'paid-memberships-pro' ); ?>" />
+						<?php if ( $active_filter_count > 0 ) { ?>
+							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes' ), admin_url( 'admin.php' ) ) ); ?>" class="pmpro-filter-clear"><?php esc_html_e( 'Clear All', 'paid-memberships-pro' ); ?></a>
+						<?php } ?>
+					</div>
+				</div>
 			</div>
+
+			<script>
+			jQuery(document).ready(function($) {
+				if ( typeof window.pmproInitFilterSidebar !== 'function' ) {
+					return;
+				}
+
+				window.pmproInitFilterSidebar({
+					panelSelector: '#pmpro-discountcodes-filter-panel',
+					layoutSelector: '#pmpro-discountcodes-layout',
+					toggleButtonSelector: '#pmpro-discountcodes-toggle-filters',
+					closeButtonSelector: '#pmpro-discountcodes-close-filters'
+				});
+			});
+			</script>
 			<?php
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
