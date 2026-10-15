@@ -2338,6 +2338,17 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	padding: 0 calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 );
 }
 
+/* The pricing panel has no top padding (the form-table provides its own spacing), so the
+   formula note supplies matching top spacing when it is the only visible child. Padding,
+   not margin: a margin would collapse through the unpadded panel and land outside it. */
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_level_formula_note {
+	padding-top: calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_level_formula_note p {
+	margin: 0;
+}
+
 .pmpro_discount_code-tag {
 	border: 2px dashed var(--pmpro--color--blue-darkest);
 	display: block;
@@ -2529,14 +2540,10 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	line-height: 1;
 }
 
-.pmpro_admin-pmpro-paymentsettings .pmpro-admin-secure-key {
+/* Secret-credential inputs (the secure_key settings field type and hand-rolled gateway key fields).
+   Unscoped so masking applies on any admin screen, not just payment settings. */
+.pmpro-admin-secure-key {
 	-webkit-text-security: disc;
-}
-
-@media only screen and (min-width: 1200px) {
-	.pmpro_admin-pmpro-paymentsettings .pmpro-admin-secure-key {
-		-webkit-text-security: disc;
-	}
 }
 
 /**
@@ -4983,4 +4990,9 @@ button.pmpro_report_th_closed:before {
 	float: left;
 	height: 30px;
 	width: 26px;
+}
+
+/* Declarative field visibility for pmpro_build_settings_field() depends rules (toggled by pmpro-admin.js). */
+.pmpro-hidden {
+	display: none;
 }

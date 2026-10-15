@@ -5,6 +5,10 @@
  * @since 3.5
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Helper function to get all site types and their human-readable labels.
  *

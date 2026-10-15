@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handle IPN/webhook requests from gateways
  * notifying site of subscription cancellation.

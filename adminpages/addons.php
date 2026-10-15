@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	// Only admins can control Add Ons.
 	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_addons' ) ) ) {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
@@ -9,7 +13,7 @@
 	require_once __DIR__ . '/admin_header.php';
 
 	// force a check of plugin versions?
-	if ( ! empty( $_REQUEST['force-check'] ) ) {
+	if ( ! empty( $_REQUEST['force-check'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only refreshes the cached update and license checks from the remote servers; the manage_options/pmpro_addons capability is checked at the top of this file.
 		wp_version_check( array(), true );
 		wp_update_plugins();
 		$pmpro_license_key = get_option( 'pmpro_license_key', '' );
@@ -70,7 +74,7 @@
 			<div class="search-form">
 				<label class="screen-reader-text" for="search-plugins"><?php esc_html_e( 'Search Add Ons', 'paid-memberships-pro' ); ?></label>
 				<?php
-					$pmpro_addon_search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+					$pmpro_addon_search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; prefills the search field.
 				?>
 				<input type="search" name="s" id="search-add-ons" data-search="content" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search Add Ons...', 'paid-memberships-pro' ); ?>" value="<?php echo esc_attr( $pmpro_addon_search ); ?>">
 			</div>

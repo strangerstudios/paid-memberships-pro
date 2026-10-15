@@ -9,6 +9,14 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Report queries PMPro custom tables, which have no WordPress API or object cache layer.
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values only filter and display report data.
+
 function pmpro_report_memberships_register( $pmpro_reports ) {
 	$pmpro_reports['memberships'] = __( 'Membership Stats', 'paid-memberships-pro' );
 
@@ -115,13 +123,13 @@ function pmpro_report_memberships_page() {
 
 	// get values from form
 	if ( isset( $_REQUEST['type'] ) ) {
-		$type = sanitize_text_field( $_REQUEST['type'] );
+		$type = sanitize_text_field( wp_unslash( $_REQUEST['type'] ) );
 	} else {
 		$type = 'signup_v_all';
 	}
 
 	if ( isset( $_REQUEST['period'] ) ) {
-		$period = sanitize_text_field( $_REQUEST['period'] );
+		$period = sanitize_text_field( wp_unslash( $_REQUEST['period'] ) );
 	} else {
 		$period = 'monthly';
 	}
@@ -196,7 +204,7 @@ function pmpro_report_memberships_page() {
 
 	$sqlQuery .= ' GROUP BY date ORDER BY date ';
 
-	$dates = $wpdb->get_results( $sqlQuery );
+	$dates = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Dates are built from intval() values and esc_sql(), $l is a list of intval() level IDs, discount code is intval(), and $date_function is hard-coded.
 
 	// Build array of dates to track.
 	// We are doing this after getting the signup data in case annual is selected so that we know the first year we have data for.
@@ -294,7 +302,7 @@ function pmpro_report_memberships_page() {
 	 */
 	$sqlQuery = apply_filters( 'pmpro_reports_signups_sql', $sqlQuery, $type, $startdate, $enddate, $l );
 
-	$cdates = $wpdb->get_results( $sqlQuery, OBJECT_K );
+	$cdates = $wpdb->get_results( $sqlQuery, OBJECT_K ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Dates are built from intval() values, $l is a list of intval() level IDs, discount code is intval(), and statuses are hard-coded.
 
 	foreach ( $dates as $day => &$date ) {
 		if ( ! empty( $cdates ) && ! empty( $cdates[ $day ] ) ) {
@@ -397,7 +405,7 @@ function pmpro_report_memberships_page() {
 			<?php
 			$sqlQuery  = "SELECT * FROM $wpdb->pmpro_discount_codes ";
 			$sqlQuery .= 'ORDER BY id DESC ';
-			$codes     = $wpdb->get_results( $sqlQuery, OBJECT );
+			$codes     = $wpdb->get_results( $sqlQuery, OBJECT ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Static query with only the table name from $wpdb.
 			if ( ! empty( $codes ) ) {
 				?>
 			<label for="discount_code" class="screen-reader-text"><?php esc_html_e( 'Filter report by discount code', 'paid-memberships-pro' ); ?></label>
@@ -577,7 +585,7 @@ function pmpro_getSignups( $period = false, $levels = 'all' ) {
 		if ( count( $clean ) > 1 ) {
 			_doing_it_wrong(
 				__FUNCTION__,
-				__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
+				esc_html__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
 				'3.7'
 			);
 			return 0;
@@ -588,7 +596,7 @@ function pmpro_getSignups( $period = false, $levels = 'all' ) {
 		if ( count( $clean ) > 1 ) {
 			_doing_it_wrong(
 				__FUNCTION__,
-				__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
+				esc_html__( 'The $levels parameter only supports a single level ID or "all". Passing multiple level IDs is no longer supported.', 'paid-memberships-pro' ),
 				'3.7'
 			);
 			return 0;
@@ -645,7 +653,7 @@ function pmpro_getSignups( $period = false, $levels = 'all' ) {
 			$bounds['all time']
 		);
 
-		$rows = $wpdb->get_results( $sql );
+		$rows = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql was built with $wpdb->prepare() above.
 
 		$cache = array(
 			'_primed' => true,
@@ -778,7 +786,7 @@ function pmpro_getCancellations( $period = null, $levels = 'all', $status = arra
 	 */
 	$sqlQuery = apply_filters( 'pmpro_reports_get_cancellations_sql', $sqlQuery, $period, $levels, $status );
 
-	$cancellations = $wpdb->get_var( $sqlQuery );
+	$cancellations = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Statuses are esc_sql()'d, dates are generated from date_i18n(), and level IDs are intval().
 
 	// save in cache
 	if ( ! empty( $cache ) && ! empty( $cache[ $hash ] ) ) {

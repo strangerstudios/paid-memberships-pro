@@ -4,6 +4,9 @@
 	Copyright 2011	Stranger Studios	(email : jason@strangerstudios.com)
 	GPLv2 Full license details in license.txt
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 
 /**
@@ -81,7 +84,7 @@ function pmpro_set_session_var($key, $value) {
 function pmpro_get_session_var( $key ) {
     pmpro_start_session();
 	if ( ! empty( $_SESSION ) && isset( $_SESSION[$key] ) ) {
-		return  $_SESSION[$key];
+		return  $_SESSION[$key]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Generic getter for values PMPro stored with pmpro_set_session_var(); values may be arrays or objects, and callers sanitize for their own context.
 	} else {
 		return false;
 	}

@@ -2,6 +2,11 @@
 /*
 	These functions below handle DB upgrades, etc
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_checkForUpgrades() {
 	global $wpdb;
 	$pmpro_db_version = get_option("pmpro_db_version");
@@ -9,7 +14,7 @@ function pmpro_checkForUpgrades() {
 	//if we can't find the DB tables, reset db_version to 0
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
-	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");
+	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Upgrade check; must hit the database directly to see whether PMPro tables exist.
 	if(!$table_exists)
 		$pmpro_db_version = 0;
 
@@ -79,7 +84,7 @@ function pmpro_checkForUpgrades() {
 	{
 		//check if we have an id column in the memberships_users table
 		$wpdb->pmpro_memberships_users = $wpdb->prefix . 'pmpro_memberships_users';
-		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1");
+		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Upgrade check against a PMPro custom table schema; must not be cached.
 		if($wpdb->last_error == "Unknown column 'id' in 'field list'")
 		{
 			//redo 1.5 fix
@@ -470,6 +475,17 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.88' );
 	}
 
+	/**
+	 * Version 3.9
+	 * Run dbDelta to add the attachments column to the email log table and the
+	 * `discount_type`, `discount_value`, `apply_to_initial`, and `apply_to_recurring`
+	 * columns to discount codes for percentage/fixed amount discounts.
+	 */
+	if ( $pmpro_db_version < 3.9 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.9' );
+	}
+
 }
 
 function pmpro_db_delta() {
@@ -647,6 +663,10 @@ function pmpro_db_delta() {
 		  `expires` date NOT NULL,
 		  `uses` int(11) NOT NULL,
 		  `one_use_per_user` tinyint(4) NOT NULL DEFAULT '0',
+		  `discount_type` varchar(20) NOT NULL DEFAULT 'set_price',
+		  `discount_value` decimal(18,8) NOT NULL DEFAULT '0.00',
+		  `apply_to_initial` tinyint(4) NOT NULL DEFAULT '1',
+		  `apply_to_recurring` tinyint(4) NOT NULL DEFAULT '1',
 		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),
@@ -802,6 +822,7 @@ function pmpro_db_delta() {
 		  `reply_to` varchar(255) NOT NULL DEFAULT '',
 		  `cc` text NOT NULL,
 		  `bcc` text NOT NULL,
+		  `attachments` text NOT NULL,
 		  `status` varchar(20) NOT NULL DEFAULT 'sent',
 		  `error_message` text NOT NULL,
 		  `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',

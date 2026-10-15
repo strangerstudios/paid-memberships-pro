@@ -1,4 +1,6 @@
 <?php
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- CRUD class for PMPro custom tables, which have no WordPress API or object cache layer.
+
 #[AllowDynamicProperties]
 class PMPro_Membership_Level{
 
@@ -84,7 +86,7 @@ class PMPro_Membership_Level{
     function get_membership_level_categories( $id ) {
         global $wpdb;
 
-        $dblc = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_memberships_categories WHERE membership_id = " . $id . "", ARRAY_A );
+        $dblc = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_memberships_categories WHERE membership_id = %d", $id ), ARRAY_A );
 
         $category_array = array();
 

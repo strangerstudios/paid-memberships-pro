@@ -3,6 +3,10 @@
  * Render the Level Price on the frontend.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Get the level cost.
 $level = pmpro_getLevel( $attributes['selected_membership_level'] );
 $level_cost = pmpro_getLevelCost($level, true, true); 

@@ -5,6 +5,12 @@
  * @since  2.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Deprecated functions query PMPro custom tables and options directly; there is no WordPress API or object cache layer for them.
+
 /**
  * Check for deprecated filters.
  */
@@ -60,8 +66,8 @@ function pmpro_getClassForField( $field ) {
  */
 function pmpro_admin_init_redirect_old_menu_items() {	
 	if ( is_admin()
-		&& ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro_license_settings'
-		&& basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'options-general.php' ) {
+		&& ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro_license_settings' // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only redirects an old menu URL to its new location.
+		&& isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'options-general.php' ) {
 		wp_safe_redirect( admin_url( 'admin.php?page=pmpro-license' ) );
 		exit;
 	}
@@ -263,13 +269,14 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 			foreach( $pmpro_levels as $level ) {
 				$include[] = $level->id;
 			}
-			$included = esc_sql( implode(',', $include) );
+			$included = implode( ',', array_map( 'intval', $include ) );
 			$order = array();
 			if(! empty($pmpro_level_order)) { $order = explode(',', $pmpro_level_order); }
 			$grouplist = $wpdb->get_col("SELECT id FROM {$wpdb->pmpro_groups} ORDER BY displayorder, id ASC");
 			if($grouplist) {
 				foreach($grouplist as $curgroup) {
 					$curgroup = intval($curgroup);
+					// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $included is a comma-separated list of level IDs cast with intval().
 					$levelsingroup = $wpdb->get_col(
 						$wpdb->prepare( "
 							SELECT level 
@@ -282,6 +289,8 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 						$curgroup
 						)
 					);
+					// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Deprecated functions query PMPro custom tables and options directly; there is no WordPress API or object cache layer for them.
 					if(count($order)>0) {
 						$mylevels = array();
 						foreach($order as $level_id) {
@@ -375,7 +384,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 			$all_levels = pmpro_getAllLevels(true, true);
 			$checkoutid = intval($checkout_id);
 			if($checkoutid<1) {
-				$checkoutid = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders WHERE user_id=$user_id");
+				$checkoutid = (int) $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders WHERE user_id=$user_id"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $user_id is cast with intval() above.
 				if(empty($checkoutid) || intval($checkoutid)<1) { return $retval; }
 			}
 			$querySql = "SELECT membership_id FROM $wpdb->pmpro_membership_orders WHERE checkout_id = " . esc_sql( $checkoutid ) . " AND ( gateway = 'free' OR ";
@@ -387,7 +396,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 				$querySql .= "status = 'success'";
 			}
 			$querySql .= " )";
-			$levelids = $wpdb->get_col($querySql);
+			$levelids = $wpdb->get_col($querySql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $checkoutid is cast to int; $statuses_to_check is never set in this deprecated function, so the status clause is always the static 'success' branch.
 			foreach($levelids as $thelevel) {
 				if(array_key_exists($thelevel, $all_levels)) {
 					$retval[] = $all_levels[$thelevel];
@@ -833,7 +842,7 @@ function pmpro_get_deprecated_add_ons() {
 	static $pmpro_register_helper_restricting_by_email_or_username = null;
 	if ( ! isset( $pmpro_register_helper_restricting_by_email_or_username ) ) {
 		$sqlQuery = "SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'pmpro_level_%_restrict_emails' OR option_name LIKE 'pmpro_level_%_restrict_usernames' AND option_value <> '' LIMIT 1";
-		$pmpro_register_helper_restricting_by_email_or_username = $wpdb->get_var( $sqlQuery );
+		$pmpro_register_helper_restricting_by_email_or_username = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Static query; only the $wpdb->options table name is interpolated.
 
 		// If the option was not found then the feature was not being used.
 		if( $pmpro_register_helper_restricting_by_email_or_username === null ) {
@@ -897,6 +906,14 @@ function pmpro_get_deprecated_add_ons() {
 			'file' => 'pmpro-subscription-check.php',
 			'label' => 'Subscription Check'
 		),
+		'pmpro-subscription-delays' => array(
+			'file' => 'pmpro-subscription-delays.php',
+			'label' => 'Subscription Delays'
+		),
+		'pmpro-set-expiration-dates' => array(
+			'file' => 'pmpro-set-expiration-dates.php',
+			'label' => 'Set Expiration Dates'
+		),
 	);
 	
 	$deprecated = apply_filters( 'pmpro_deprecated_add_ons_list', $deprecated );
@@ -932,7 +949,7 @@ function pmpro_check_for_deprecated_add_ons() {
 	// If any deprecated add ons are active, show warning.
 	if ( ! empty( $deprecated_active ) && is_array( $deprecated_active ) ) {
 		// Only show on certain pages.
-		if ( ! isset( $_REQUEST['page'] ) || strpos( sanitize_text_field( $_REQUEST['page'] ), 'pmpro' ) === false  ) {
+		if ( ! isset( $_REQUEST['page'] ) || strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) === false  ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only decides whether to show an admin notice.
 			return;
 		}
 		?>
@@ -1124,7 +1141,7 @@ function pmpro_was_loading_frontend_css_notice() {
 	global $current_user;
 
 	// If we are not on a PMPro admin page, don't show the notice.
-	if ( ! isset( $_REQUEST['page'] ) || ( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ) {
+	if ( ! isset( $_REQUEST['page'] ) || ( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 0, 6 ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only decides whether to show an admin notice.
 		return;
 	}
 
@@ -1163,3 +1180,181 @@ function pmpro_was_loading_frontend_css_notice() {
 	}
 }
 add_action( 'admin_notices', 'pmpro_was_loading_frontend_css_notice' );
+
+/**
+ * Define deprecated wrappers for the public helper functions from the retired
+ * Subscription Delays and Set Expiration Dates Add Ons.
+ *
+ * Defined on plugins_loaded with function_exists() guards because core loads
+ * before those Add Ons: if a still-active copy of an Add On declares the same
+ * (unguarded) function later in the request, an eager definition here would
+ * fatal with "cannot redeclare".
+ *
+ * @since TBD
+ */
+function pmpro_define_deprecated_date_pattern_functions() {
+	// Bail if either Add On may be activated later in this request: plugins.php
+	// activations, the update.php activate link, PMPro's own Add Ons page AJAX
+	// activation, or WP-CLI (where we can't tell which plugin is activating).
+	// Activated plugins load after plugins_loaded, and both Add Ons declare
+	// these functions unguarded, so defining them here would fatal with
+	// "cannot redeclare" when the Add On file loads.
+	$sd_file  = 'pmpro-subscription-delays/pmpro-subscription-delays.php';
+	$sed_file = 'pmpro-set-expiration-dates/pmpro-set-expiration-dates.php';
+	if ( pmpro_activating_plugin( $sd_file ) || pmpro_activating_plugin( $sed_file ) ) {
+		return;
+	}
+	if ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'activate-plugin', 'pmpro_addon_activate' ), true ) ) {
+		return;
+	}
+	if ( defined( 'WP_CLI' ) && WP_CLI && ( file_exists( WP_PLUGIN_DIR . '/' . $sd_file ) || file_exists( WP_PLUGIN_DIR . '/' . $sed_file ) ) ) {
+		return;
+	}
+
+	if ( ! function_exists( 'pmprosd_convert_date' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_resolve_date_pattern().
+		 */
+		function pmprosd_convert_date( $date ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_date_pattern()' );
+			$converted_date = pmpro_resolve_date_pattern( $date );
+			// The retired Add On always appended a time component.
+			return empty( $converted_date ) ? $converted_date : $converted_date . 'T0:0:0';
+		}
+	}
+
+	if ( ! function_exists( 'pmprosd_getDelay' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_get_subscription_delay().
+		 */
+		function pmprosd_getDelay( $level_id, $code_id = null ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_get_subscription_delay()' );
+			return pmpro_get_subscription_delay( $level_id, $code_id );
+		}
+	}
+
+	if ( ! function_exists( 'pmpro_getDCSDs' ) ) {
+		/**
+		 * @deprecated TBD Use get_option( 'pmpro_discount_code_subscription_delays' ) directly.
+		 */
+		function pmpro_getDCSDs( $code_id ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+			if ( is_array( $all_delays ) && ! empty( $all_delays[ $code_id ] ) ) {
+				return $all_delays[ $code_id ];
+			}
+			return array();
+		}
+	}
+
+	if ( ! function_exists( 'pmpro_saveDCSDs' ) ) {
+		/**
+		 * @deprecated TBD Use update_option( 'pmpro_discount_code_subscription_delays' ) directly.
+		 */
+		function pmpro_saveDCSDs( $code_id, $delays ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
+			if ( ! is_array( $all_delays ) ) {
+				$all_delays = array();
+			}
+			$all_delays[ $code_id ] = $delays;
+			update_option( 'pmpro_discount_code_subscription_delays', $all_delays );
+		}
+	}
+
+	if ( ! function_exists( 'pmprosed_fixDate' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_resolve_expiration_date_pattern().
+		 */
+		function pmprosed_fixDate( $set_date, $current_date = null ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_expiration_date_pattern()' );
+			return pmpro_resolve_expiration_date_pattern( $set_date, $current_date );
+		}
+	}
+
+	if ( ! function_exists( 'pmpro_getSetExpirationDate' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_get_set_expiration_date().
+		 */
+		function pmpro_getSetExpirationDate( $level_id, $code_id = null ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_get_set_expiration_date()' );
+			return pmpro_get_set_expiration_date( $level_id, $code_id );
+		}
+	}
+
+	if ( ! function_exists( 'pmpro_saveSetExpirationDate' ) ) {
+		/**
+		 * @deprecated TBD Use update_option( 'pmprosed_{level_id}' ) directly.
+		 */
+		function pmpro_saveSetExpirationDate( $level_id, $set_expiration_date, $code_id = null ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			if ( $code_id ) {
+				$key = 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id );
+			} else {
+				$key = 'pmprosed_' . intval( $level_id );
+			}
+			update_option( $key, $set_expiration_date, false );
+		}
+	}
+
+}
+add_action( 'plugins_loaded', 'pmpro_define_deprecated_date_pattern_functions' );
+
+/**
+ * Unhook a retired Add On's handlers when it is still active.
+ *
+ * On the first request after updating core - before the Add On is
+ * auto-deactivated from a wp-admin page - both core and the Add On are loaded.
+ * The legacy save handlers read form fields the new admin pages no longer
+ * submit (silently wiping the settings the admin just saved), the text filters
+ * double or replace core's wording, the checkout/webhook filters re-apply
+ * the old date engine on top of core's native handling, and the levels list
+ * column and past-date notice duplicate core's Expiration column.
+ *
+ * @since TBD
+ */
+function pmpro_neutralize_retired_date_pattern_add_ons() {
+	if ( function_exists( 'pmprosd_pmpro_save_membership_level' ) ) {
+		// Subscription Delays Add On is loaded.
+		remove_action( 'pmpro_membership_level_after_other_settings', 'pmprosd_pmpro_membership_level_after_other_settings' );
+		remove_action( 'pmpro_save_membership_level', 'pmprosd_pmpro_save_membership_level' );
+		remove_action( 'pmpro_discount_code_after_level_settings', 'pmprosd_pmpro_discount_code_after_level_settings' );
+		remove_action( 'pmpro_save_discount_code_level', 'pmprosd_pmpro_save_discount_code_level' );
+		remove_action( 'pmpro_after_checkout', 'pmprosd_pmpro_after_checkout' );
+		remove_filter( 'pmpro_next_payment', 'pmprosd_pmpro_next_payment' );
+		remove_filter( 'pmpro_discount_code_level', 'pmprosd_pmpro_discount_code_level' );
+		remove_filter( 'pmpro_level_cost_text', 'pmprosd_level_cost_text' );
+		remove_filter( 'pmpro_subscribe_order', 'pmprosd_pmpro_subscribe_order' );
+	}
+	if ( function_exists( 'pmprosed_pmpro_save_membership_level' ) ) {
+		// Set Expiration Dates Add On is loaded.
+		remove_action( 'pmpro_membership_level_after_expiration_settings', 'pmprosed_pmpro_membership_level_after_expiration_settings', 1 );
+		remove_action( 'pmpro_save_membership_level', 'pmprosed_pmpro_save_membership_level' );
+		remove_action( 'pmpro_discount_code_after_level_settings', 'pmprosed_pmpro_discount_code_after_level_settings' );
+		remove_action( 'pmpro_save_discount_code_level', 'pmprosed_pmpro_save_discount_code_level' );
+		remove_filter( 'pmpro_checkout_level', 'pmprosed_pmpro_checkout_level' );
+		remove_filter( 'pmpro_discount_code_level', 'pmprosed_pmpro_checkout_level' );
+		remove_filter( 'pmpro_ipnhandler_level', 'pmprosed_pmpro_ipnhandler_level' );
+		remove_filter( 'pmpro_payfast_itnhandler_level', 'pmprosed_pmpro_ipnhandler_level' );
+		remove_filter( 'pmpro_paystack_webhook_level', 'pmprosed_pmpro_ipnhandler_level' );
+		remove_filter( 'pmpro_checkout_end_date', 'pmprosed_force_set_expiration_enddate' );
+		remove_filter( 'pmpro_level_expiration_text', 'pmprosed_pmpro_level_expiration_text' );
+		remove_action( 'pmpro_membership_levels_table_extra_cols_header', 'pmprosed_membership_levels_table_extra_cols_header', 15 );
+		remove_action( 'pmpro_membership_levels_table_extra_cols_body', 'pmprosed_membership_levels_table_extra_cols_body', 15 );
+		remove_action( 'admin_notices', 'pmprosed_show_admin_notice_past_dates' );
+	}
+}
+add_action( 'plugins_loaded', 'pmpro_neutralize_retired_date_pattern_add_ons' );
+
+/**
+ * The Subscription Delays Add On registers its checkout filter on init, after
+ * the plugins_loaded pass above, so unhook it separately.
+ *
+ * @since TBD
+ */
+function pmpro_neutralize_retired_subscription_delays_checkout_filter() {
+	if ( function_exists( 'pmprosd_pmpro_checkout_level' ) ) {
+		remove_filter( 'pmpro_checkout_level', 'pmprosd_pmpro_checkout_level' );
+	}
+}
+add_action( 'init', 'pmpro_neutralize_retired_subscription_delays_checkout_filter', 11 );
