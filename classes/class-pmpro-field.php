@@ -2178,9 +2178,16 @@ class PMPro_Field {
 			case 'select':
 			case 'radio':
 				if ( isset( $this->repair_non_associative_options ) && ! $this->repair_non_associative_options && ! $this->is_assoc( $this->options ) ) {
-					// Explicit 0..n-1 option values (User Fields settings) can be "0", so only treat a missing or blank value as empty. Arrays keep the empty() check.
+					// Explicit 0..n-1 option values (User Fields settings) can be "0". These fields used to submit the label, so treat an
+					// answer as empty when it's blank or its option's label is blank, as before. Arrays keep the empty() check.
 					// Other lists keep empty(), since a 0-keyed option there may be a placeholder, as before.
-					$filled = is_array( $value ) ? ! empty( $value ) : ( null !== $value && '' !== $value );
+					if ( is_array( $value ) ) {
+						$filled = ! empty( $value );
+					} elseif ( null === $value || '' === $value ) {
+						$filled = false;
+					} else {
+						$filled = ! array_key_exists( $value, $this->options ) || '' !== trim( (string) $this->options[ $value ] );
+					}
 				} else {
 					// Other fields keep the empty() check so a 0-keyed placeholder option still fails the required check.
 					$filled = ! empty( $value );
