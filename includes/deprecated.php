@@ -1150,7 +1150,7 @@ function pmpro_define_deprecated_date_pattern_functions() {
 	if ( pmpro_activating_plugin( $sd_file ) || pmpro_activating_plugin( $sed_file ) ) {
 		return;
 	}
-	if ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'activate-plugin', 'pmpro_addon_activate' ), true ) ) {
+	if ( isset( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], array( 'activate-plugin', 'pmpro_addon_activate' ), true ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only skips defining the wrappers while an Add On is being activated.
 		return;
 	}
 	if ( defined( 'WP_CLI' ) && WP_CLI && ( file_exists( WP_PLUGIN_DIR . '/' . $sd_file ) || file_exists( WP_PLUGIN_DIR . '/' . $sed_file ) ) ) {

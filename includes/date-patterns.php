@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Date pattern utilities for subscription delays and set expiration dates.
  *
@@ -439,7 +443,8 @@ function pmpro_render_date_pattern_builder( $field_prefix, $existing_value ) {
  * @return string The assembled date pattern, or empty string if no mode was chosen.
  */
 function pmpro_get_date_pattern_from_request( $field_prefix ) {
-	$mode = isset( $_REQUEST[ $field_prefix . '_mode' ] ) ? sanitize_text_field( $_REQUEST[ $field_prefix . '_mode' ] ) : '';
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Only called while saving a level or discount code, after pmpro_membershiplevels_nonce or pmpro_discountcodes_nonce is verified with check_admin_referer().
+	$mode = isset( $_REQUEST[ $field_prefix . '_mode' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ $field_prefix . '_mode' ] ) ) : '';
 
 	if ( 'monthly' === $mode ) {
 		$day = isset( $_REQUEST[ $field_prefix . '_monthly_day' ] ) ? max( 1, min( 31, intval( $_REQUEST[ $field_prefix . '_monthly_day' ] ) ) ) : 1;
@@ -453,8 +458,9 @@ function pmpro_get_date_pattern_from_request( $field_prefix ) {
 	}
 
 	if ( 'custom' === $mode && isset( $_REQUEST[ $field_prefix . '_custom' ] ) ) {
-		return strtoupper( trim( sanitize_text_field( $_REQUEST[ $field_prefix . '_custom' ] ) ) );
+		return strtoupper( trim( sanitize_text_field( wp_unslash( $_REQUEST[ $field_prefix . '_custom' ] ) ) ) );
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	return '';
 }

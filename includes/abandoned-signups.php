@@ -175,7 +175,7 @@ function pmpro_delete_abandoned_signups() {
 
 	// Query only one batch so a large bot-driven spike cannot exhaust the scheduled action.
 	// Users with any membership history are skipped as a safeguard, since this deletion cannot be undone.
-	$user_ids = $wpdb->get_col(
+	$user_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins the PMPro memberships custom table, which WP_User_Query can't express; batch results for a deletion run must not be cached.
 		$wpdb->prepare(
 			"SELECT DISTINCT users.ID
 			FROM {$wpdb->users} AS users

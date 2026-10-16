@@ -121,7 +121,7 @@ function pmpro_deprecated_gateway_get_subscription_counts( $gateway ) {
 		'sandbox' => 0,
 	);
 
-	$rows = $wpdb->get_results(
+	$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro subscriptions custom table, which has no WordPress API or object cache layer.
 		$wpdb->prepare(
 			"SELECT gateway_environment, COUNT(*) as count
 				FROM {$wpdb->pmpro_subscriptions}
@@ -155,7 +155,8 @@ function pmpro_deprecated_gateway_get_active_subscription_ids( $gateway, $enviro
 
 	$environment_condition = 'live' === $environment ? "gateway_environment = 'live'" : "gateway_environment != 'live'";
 
-	$subscription_ids = $wpdb->get_col(
+	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $environment_condition is only ever one of the two hard-coded clauses above.
+	$subscription_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro subscriptions custom table, which has no WordPress API or object cache layer.
 		$wpdb->prepare(
 			"SELECT id
 				FROM {$wpdb->pmpro_subscriptions}
@@ -170,6 +171,7 @@ function pmpro_deprecated_gateway_get_active_subscription_ids( $gateway, $enviro
 			(int) $limit
 		)
 	);
+	// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 	return array_map( 'intval', $subscription_ids );
 }
@@ -705,7 +707,7 @@ function pmpro_deprecated_gateway_cancel_old_subscription( $subscription, $gatew
 function pmpro_deprecated_gateway_get_cancel_pending_count( $gateway ) {
 	global $wpdb;
 
-	return (int) $wpdb->get_var(
+	return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro subscriptions and subscription meta custom tables, which have no WordPress API or object cache layer.
 		$wpdb->prepare(
 			"SELECT COUNT(*)
 				FROM {$wpdb->pmpro_subscriptions} s
@@ -729,7 +731,7 @@ function pmpro_deprecated_gateway_get_cancel_pending_count( $gateway ) {
 function pmpro_deprecated_gateway_clear_cancel_pending( $gateway ) {
 	global $wpdb;
 
-	$wpdb->query(
+	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Deletes from the PMPro subscription meta custom table with a join, which no WordPress API supports.
 		$wpdb->prepare(
 			"DELETE sm
 				FROM {$wpdb->pmpro_subscriptionmeta} sm
@@ -1410,7 +1412,8 @@ function pmpro_deprecated_gateway_get_needs_payment_method_count() {
 	$count       = get_transient( 'pmpro_deprecated_gateway_needs_pm_count_' . $environment );
 	if ( false === $count ) {
 		$environment_condition = 'live' === $environment ? "s.gateway_environment = 'live'" : "s.gateway_environment != 'live'";
-		$count = (int) $wpdb->get_var(
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $environment_condition is only ever one of the two hard-coded clauses above.
+		$count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro subscriptions and subscription meta custom tables, which have no WordPress API; the result is cached in a transient.
 			"SELECT COUNT(*)
 				FROM {$wpdb->pmpro_subscriptions} s
 				INNER JOIN {$wpdb->pmpro_subscriptionmeta} sm
@@ -1419,6 +1422,7 @@ function pmpro_deprecated_gateway_get_needs_payment_method_count() {
 				WHERE s.status = 'active'
 					AND {$environment_condition}"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		set_transient( 'pmpro_deprecated_gateway_needs_pm_count_' . $environment, $count, 15 * MINUTE_IN_SECONDS );
 	}
 
@@ -1620,6 +1624,7 @@ add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_deprecat
  * @since TBD
  */
 function pmpro_deprecated_gateway_needs_payment_method_admin_notice() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
 	if ( empty( $_REQUEST['page'] ) || 0 !== strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) ) {
 		return;
 	}
@@ -1632,6 +1637,7 @@ function pmpro_deprecated_gateway_needs_payment_method_admin_notice() {
 	if ( 'pmpro-subscriptions' === $_REQUEST['page'] && isset( $_REQUEST['status'] ) && 'needs_payment_method' === $_REQUEST['status'] ) {
 		return;
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	$count = pmpro_deprecated_gateway_get_needs_payment_method_count();
 	if ( empty( $count ) ) {

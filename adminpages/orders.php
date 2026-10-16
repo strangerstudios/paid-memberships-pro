@@ -41,7 +41,7 @@ if ( $nonceokay ) {
 			}
 
 			// Remove the delete args so that pagination and sorting links don't repeat the delete.
-			$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'action', 'delete', 'pmpro_orders_nonce' ), $_SERVER['REQUEST_URI'] );
+			$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'action', 'delete', 'pmpro_orders_nonce' ), $_SERVER['REQUEST_URI'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Rewrites the raw request URI that WP_List_Table builds pagination and sorting links from, so it stays in the form WordPress provides; only the delete args are removed.
 			break;
 
 		case 'check_token_order':
