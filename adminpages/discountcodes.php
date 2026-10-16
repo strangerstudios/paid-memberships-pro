@@ -335,7 +335,7 @@
 						//Unparseable patterns are saved as entered: checkout ignores them.
 						//Percentage and fixed amount codes mirror the level's delay and set expiration date, so nothing is stored for them.
 						$dc_delay_value = '';
-						$dc_delay_type  = 'set_price' === $discount_type && ! empty( $recurring ) && isset( $_REQUEST[ 'delay_type_' . $level_id ] ) ? sanitize_text_field( $_REQUEST[ 'delay_type_' . $level_id ] ) : 'none';
+						$dc_delay_type  = 'set_price' === $discount_type && ! empty( $recurring ) && isset( $_REQUEST[ 'delay_type_' . $level_id ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'delay_type_' . $level_id ] ) ) : 'none';
 						if ( 'days' === $dc_delay_type && ! empty( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) ) {
 							$dc_delay_value = max( 1, intval( $_REQUEST[ 'subscription_delay_days_' . $level_id ] ) );
 						} elseif ( 'date' === $dc_delay_type ) {
@@ -354,7 +354,7 @@
 
 						//save the set expiration date for this code level; it only applies
 						//while the level's Membership Expiration box is checked
-						$dc_expiration_value = 'set_price' === $discount_type && ! empty( $expiration ) && isset( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) && 'date' === sanitize_text_field( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) ? pmpro_get_date_pattern_from_request( 'set_expiration_date_' . $level_id ) : '';
+						$dc_expiration_value = 'set_price' === $discount_type && ! empty( $expiration ) && isset( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) && 'date' === sanitize_text_field( wp_unslash( $_REQUEST[ 'expiration_date_type_' . $level_id ] ) ) ? pmpro_get_date_pattern_from_request( 'set_expiration_date_' . $level_id ) : '';
 						if ( '' !== $dc_expiration_value ) {
 							update_option( 'pmprosed_' . $level_id . '_' . $edit, $dc_expiration_value, false );
 						} else {
@@ -459,7 +459,7 @@
 
 	// Remove the delete args so that pagination and sorting links don't repeat the delete.
 	if ( isset( $_REQUEST['delete'] ) ) {
-		$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'delete', 'pmpro_discountcodes_nonce' ), $_SERVER['REQUEST_URI'] );
+		$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'delete', 'pmpro_discountcodes_nonce' ), $_SERVER['REQUEST_URI'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Rewrites the raw request URI that WP_List_Table builds pagination and sorting links from, so it stays in the form WordPress provides; only the delete args are removed.
 	}
 
 	if( ! empty( $pmpro_msg ) && ! empty( $expiration_warning_flag ) ) {
@@ -869,7 +869,7 @@
 									</td>
 								</tr>
 
-								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; ?>">
+								<tr class="<?php echo esc_attr( $recurring_info_class ); ?>" data-pmpro-depends="<?php echo $recurring_info_depends; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_attr() when assigned above. ?>">
 									<th scope="row" valign="top"><label><?php esc_html_e( 'First Recurring Payment', 'paid-memberships-pro' ); ?></label></th>
 									<td>
 										<fieldset>
