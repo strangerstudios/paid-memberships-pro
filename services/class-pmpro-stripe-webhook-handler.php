@@ -86,12 +86,14 @@ class PMPro_Stripe_Webhook_Handler {
 
 		global $pmpro_stripe_event;
 		$pmpro_stripe_event = null;
+		$retrieve_error = null;
 		
 		// Get the event through the API now.
 		if ( ! empty( $event_id ) ) {
 			try {
 				$pmpro_stripe_event = Stripe_Event::retrieve( $event_id );
 			} catch ( Exception $e ) {
+				$retrieve_error = $e;
 				$logstr .= 'Could not find an event with ID #' . $event_id . '. ' . $e->getMessage();
 
 				/**
@@ -122,6 +124,18 @@ class PMPro_Stripe_Webhook_Handler {
 				$logstr .= 'No event ID given.';
 			}
 
+			if ( ! empty( $retrieve_error ) && self::is_retryable_retrieve_error( $retrieve_error ) ) {
+				if ( ! $scheduled_request ) {
+					// If the error may go away, answer 503 so that Stripe sends the event again.
+					status_header( 503 );
+				} else {
+					// Stripe got a 200 when the event was queued, so it won't send the event again. Run again later.
+					$logstr .= self::reschedule_event( $event_id, $livemode );
+				}
+			} elseif ( $scheduled_request && ! empty( $event_id ) ) {
+				delete_transient( self::retrieve_attempts_key( $event_id ) );
+			}
+
 			pmpro_unhandled_webhook( 'stripe' );
 			self::result( $logstr, $echo_output );
 			return;
@@ -130,6 +144,8 @@ class PMPro_Stripe_Webhook_Handler {
 		// Send a 200 HTTP response to Stripe to avoid timeout.
 		if ( ! $scheduled_request ) {
 			pmpro_send_200_http_response();
+		} else {
+			delete_transient( self::retrieve_attempts_key( $pmpro_stripe_event->id ) );
 		}
 
 		// Log that we have successfully received a webhook from Stripe.
@@ -281,6 +297,12 @@ class PMPro_Stripe_Webhook_Handler {
 		// Make sure we have the invoice in the desired API version.
 		$invoice = Stripe_Invoice::retrieve( $pmpro_stripe_event->data->object->id );
 
+		// If the invoice has since been paid (e.g. the customer completed authentication), no action is required.
+		if ( 'paid' === $invoice->status ) {
+			$logstr .= 'Invoice ' . $invoice->id . ' has already been paid. No action required.';
+			return;
+		}
+
 		// Get the subscription ID for this invoice.
 		if ( ! empty( $invoice->parent->subscription_details->subscription ) ) {
 			$subscription_id = $invoice->parent->subscription_details->subscription;
@@ -375,6 +397,12 @@ class PMPro_Stripe_Webhook_Handler {
 		// If we don't have an invoice, bail.
 		if ( empty( $invoice ) ) {
 			$logstr .= 'Could not find an invoice for failed charge ' . $charge->id . '.';
+			return;
+		}
+
+		// If the invoice has since been paid (e.g. the customer retried with another card), this failure is stale.
+		if ( 'paid' === $invoice->status ) {
+			$logstr .= 'Invoice ' . $invoice->id . ' has already been paid. No action taken for failed charge ' . $charge->id . '.';
 			return;
 		}
 
@@ -761,6 +789,89 @@ class PMPro_Stripe_Webhook_Handler {
 		} catch ( Exception $e ) {
 			$logstr .= 'Could not update application fee for invoice ' . $invoice->id . '. ' . $e->getMessage();
 		}
+	}
+
+	/**
+	 * Check whether the webhook should answer 503 after an error from retrieving the event, so that Stripe sends the event again.
+	 *
+	 * Connection errors, rate limits (429) and 5xx responses are usually temporary.
+	 *
+	 * 401 and 403 usually are not: they mean the API key was revoked or rolled, the Stripe Connect account was
+	 * disconnected, or the key belongs to another account or mode. They get a 503 as well, so the failure shows up
+	 * in Stripe (failed deliveries, retries for up to three days in live mode, emails about the failing endpoint)
+	 * instead of the event being dropped with a 200.
+	 *
+	 * In a scheduled run (async processing), the same errors schedule another run instead, a limited number of times.
+	 *
+	 * Other errors, such as a 404 for an event that does not exist in this Stripe account, are not retried.
+	 *
+	 * @since TBD
+	 *
+	 * @param Exception $e The exception thrown while retrieving the event.
+	 * @return bool
+	 */
+	private static function is_retryable_retrieve_error( $e ) {
+		if ( ! $e instanceof \Stripe\Exception\ApiErrorException ) {
+			return false;
+		}
+
+		if ( $e instanceof \Stripe\Exception\ApiConnectionException ) {
+			return true;
+		}
+
+		$status = (int) $e->getHttpStatus();
+		return $status >= 500 || in_array( $status, array( 401, 403, 429 ), true );
+	}
+
+	/**
+	 * Schedule another run for a queued event whose retrieval failed with a retryable error.
+	 *
+	 * Waits 5, 10, 20, 40 and 80 minutes between runs, then gives up. The retry uses the same
+	 * action arguments as the original task, so a redelivery from Stripe that arrives while a retry
+	 * is pending is not queued a second time. The attempt count is kept in a transient.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $event_id Stripe event ID.
+	 * @param bool   $livemode Whether the event was live mode.
+	 * @return string Text for the webhook log.
+	 */
+	private static function reschedule_event( $event_id, $livemode ) {
+		$max_retries = 5;
+		$key         = self::retrieve_attempts_key( $event_id );
+		$retries     = (int) get_transient( $key );
+
+		if ( $retries >= $max_retries ) {
+			delete_transient( $key );
+			return ' Not retrying: ' . ( $retries + 1 ) . ' scheduled runs could not retrieve the event.';
+		}
+
+		$delay     = 5 * MINUTE_IN_SECONDS * pow( 2, $retries );
+		$action_id = PMPro_Action_Scheduler::instance()->maybe_add_task(
+			'pmpro_stripe_webhook_process_scheduled_event',
+			array( $event_id, $livemode ),
+			'pmpro_async_tasks',
+			time() + $delay
+		);
+
+		if ( empty( $action_id ) ) {
+			return ' Not scheduling another run: one is already pending for this event.';
+		}
+
+		set_transient( $key, $retries + 1, DAY_IN_SECONDS );
+		return ' Scheduled another run in ' . ( $delay / MINUTE_IN_SECONDS ) . ' minutes (retry ' . ( $retries + 1 ) . ' of ' . $max_retries . ').';
+	}
+
+	/**
+	 * Get the transient key that counts scheduled retries for an event.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $event_id Stripe event ID.
+	 * @return string
+	 */
+	private static function retrieve_attempts_key( $event_id ) {
+		return 'pmpro_stripe_webhook_retries_' . md5( $event_id );
 	}
 
 	/**
