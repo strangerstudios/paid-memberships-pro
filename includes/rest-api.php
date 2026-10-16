@@ -847,6 +847,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Create/update a discount code.
 		 * @since 2.3
+		 * @since TBD PUT/PATCH requests for an existing code now update that code, changing only the fields sent. Returns a 500 error if the code could not be saved.
 		 * Example: https://example.com/wp-json/pmpro/v1/discount_code
 		 */
 		function pmpro_rest_api_set_discount_code( $request ) {
@@ -887,17 +888,37 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$discount_code = new PMPro_Discount_Code();
 
-			// See if code already exists when POSTING.
-			if ( $method == 'POST' && ! empty( $code ) ) {
-				// See if discount code exists.
+			// See if the discount code already exists. Numeric values are checked as an ID first, then as a code.
+			if ( ! empty( $code ) ) {
 				if ( is_numeric( $code ) ) {
 					$discount_code->get_discount_code_by_id( $code );
-				} else {
-					$discount_code->get_discount_code_by_code( $code );
 				}
 
-				if ( ! empty( $discount_code->id ) ) {
+				if ( empty( $discount_code->id ) ) {
+					$discount_code->get_discount_code_by_code( $code );
+				}
+			}
+
+			if ( ! empty( $discount_code->id ) ) {
+				// Don't overwrite an existing code when POSTING.
+				if ( $method == 'POST' ) {
 					return new WP_REST_Response( 'Discount code already exists.', 400 );
+				}
+
+				// Updating an existing code via PUT/PATCH. Keep the stored code (it may have been
+				// looked up by ID) and keep stored values for any fields not sent in the request.
+				$code = $discount_code->code;
+				if ( ! isset( $params['uses'] ) ) {
+					$uses = $discount_code->uses;
+				}
+				if ( ! isset( $params['starts'] ) ) {
+					$starts = $discount_code->starts;
+				}
+				if ( ! isset( $params['expires'] ) ) {
+					$expires = $discount_code->expires;
+				}
+				if ( ! isset( $params['levels'] ) ) {
+					$levels = $discount_code->levels;
 				}
 			}
 
@@ -907,6 +928,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$discount_code->uses = $uses;
 			$discount_code->levels = !empty( $levels_array ) ? $levels_array : $levels;
 			$discount_code->save();
+
+			// save() returns false for codes without levels, so check the ID to confirm the code was saved.
+			if ( empty( $discount_code->id ) ) {
+				return new WP_REST_Response( 'Discount code could not be saved.', 500 );
+			}
 
 			return new WP_REST_Response( $discount_code, 200 );
 		}
