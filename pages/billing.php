@@ -1,7 +1,7 @@
 <?php
 /**
  * Template: Billing
- * Version: 3.8.1
+ * Version: 3.9
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
