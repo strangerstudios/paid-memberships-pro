@@ -273,9 +273,9 @@ class PMPro_CLI extends \WP_CLI_Command {
 	}
 
 	/**
-	 * Add a membership level (legacy name for add-level).
+	 * Add a membership level, or remove all levels with --level=0.
 	 *
-	 * Prefer `wp pmpro member add-level`. `--level=0` still cancels all levels.
+	 * Same as `wp pmpro member add-level`, except `--level=0` removes all of the member's levels.
 	 *
 	 * ## OPTIONS
 	 *
@@ -335,9 +335,9 @@ class PMPro_CLI extends \WP_CLI_Command {
 	}
 
 	/**
-	 * Cancel a member's membership (legacy name for remove-level).
+	 * Remove one level, or all levels if --level is omitted.
 	 *
-	 * Prefer `wp pmpro member remove-level` when removing one level.
+	 * Same as `wp pmpro member remove-level` when --level is given.
 	 *
 	 * ## OPTIONS
 	 *
@@ -1039,8 +1039,19 @@ WP_CLI::add_command( 'pmpro subscription get', array( $pmpro_cli, 'subscription_
 WP_CLI::add_command( 'pmpro subscription sync', array( $pmpro_cli, 'subscription_sync' ) );
 
 /**
- * Fires after PMPro registers its core WP-CLI commands, so Add Ons can register their own.
+ * Fire pmpro_cli_init on WP-CLI's cli_init hook, after all plugins have loaded.
  *
  * @since TBD
  */
-do_action( 'pmpro_cli_init' );
+function pmpro_do_cli_init() {
+	/**
+	 * Fires after PMPro registers its core WP-CLI commands, so Add Ons can register their own.
+	 *
+	 * Runs on WP-CLI's cli_init hook (during init). Hook it from an Add On's main
+	 * plugin file or on plugins_loaded; hooking it on init or later is too late.
+	 *
+	 * @since TBD
+	 */
+	do_action( 'pmpro_cli_init' );
+}
+add_action( 'cli_init', 'pmpro_do_cli_init' );
