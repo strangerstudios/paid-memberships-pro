@@ -67,7 +67,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	 * @return string The help text.
 	 */
 	public static function get_template_description() {
-		return esc_html__( 'This email is sent when an administrator cancels a deprecated gateway subscription and sets the member\'s expiration date to the old next payment date. It tells the member they will need to check out again to continue their membership.', 'paid-memberships-pro' );
+		return esc_html__( 'This email is sent when an administrator cancels a deprecated gateway subscription and sets the member\'s expiration date to the old next payment date, or three days out if that date is sooner. It tells the member they will need to check out again to continue their membership.', 'paid-memberships-pro' );
 	}
 
 	/**

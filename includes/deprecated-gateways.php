@@ -303,9 +303,10 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
 		return new WP_Error( 'pmpro_deprecated_gateway_stripe_unavailable', __( 'Stripe must be the active payment gateway before subscriptions can be migrated to Stripe.', 'paid-memberships-pro' ) );
 	}
 
-	// Refuse to start a Stripe migration without credentials: every subscription
-	// would be flagged needs_review.
-	if ( 'stripe' === $strategy ) {
+	// Refuse to start while Stripe is active without credentials for this environment: a Stripe
+	// migration would flag every subscription needs_review, and an expiration migration would send
+	// members to a checkout that cannot take payment.
+	if ( 'stripe' === get_option( 'pmpro_gateway' ) ) {
 		$stripe_blockers = pmpro_deprecated_gateway_get_stripe_migration_blockers();
 		if ( ! empty( $stripe_blockers ) ) {
 			return new WP_Error( 'pmpro_deprecated_gateway_stripe_not_ready', $stripe_blockers[0] );
@@ -888,19 +889,21 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
 		if ( ! $expire_past_due ) {
 			return pmpro_deprecated_gateway_subscription_result( 'skipped', ucfirst( $subscription_description ) . ' has a next payment date in the past (or none at all). This is often caused by a missed IPN or webhook, so the gateway may still be billing it. Verify this subscription at the gateway and migrate it manually, or run the migration again set to cancel and expire subscriptions with a missed payment.', 'skipped_missed_payment' );
 		}
-		// Admin chose to expire: set the expiration to the missed payment date and cancel below.
+		// Admin chose to expire: expire the membership and cancel below. The three day minimum
+		// below moves the expiration date out of the past.
 		$expire_this_subscription  = true;
 		$handoff_timestamp = empty( $handoff_timestamp ) ? time() : $handoff_timestamp;
 	}
 
-	// Give members time to act on the email. A handoff within the next few days would have Stripe
-	// cancel the placeholder, or the membership expire, almost as soon as the email arrives. Push it
-	// out to a minimum of three days. The old gateway subscription is cancelled below, so (where the
-	// gateway supports cancellation) the member is not charged there in between.
+	// Give members time to act on the email. A handoff within the next few days (or in the past, for
+	// a missed payment) would have Stripe cancel the placeholder, or the membership expire, almost as
+	// soon as the email arrives. Push it out to a minimum of three days. The old gateway subscription
+	// is cancelled below, so (where the gateway supports cancellation) the member is not charged there
+	// in between.
 	$handoff_note = '';
-	if ( empty( $placeholder ) && ! $expire_this_subscription && $handoff_timestamp < time() + 3 * DAY_IN_SECONDS ) {
+	if ( empty( $placeholder ) && $handoff_timestamp < time() + 3 * DAY_IN_SECONDS ) {
 		$handoff_timestamp = time() + 3 * DAY_IN_SECONDS;
-		$handoff_note      = ' The next payment date was less than three days away, so the handoff was moved to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' to give the member time to act.';
+		$handoff_note      = ( $expire_this_subscription ? ' The missed payment date is in the past' : ' The next payment date was less than three days away' ) . ', so the handoff was moved to ' . gmdate( 'Y-m-d', $handoff_timestamp ) . ' to give the member time to act.';
 	}
 
 	$use_stripe = ( 'stripe' === $strategy && ! $expire_this_subscription ) || ! empty( $placeholder );
@@ -1279,8 +1282,8 @@ function pmpro_deprecated_gateway_cleanup_gateway( $gateway, $cancel_pending_con
 /**
  * Flag a migrated subscription as having no payment method yet.
  *
- * Drives the member-facing account notice, the swapped recurring payment
- * reminder email, and the admin "awaiting payment method" count and filter.
+ * Drives the member-facing account notice, the {{ needs_payment_method }}
+ * recurring payment reminder variable, and the admin "awaiting payment method" count and filter.
  *
  * @since TBD
  *
@@ -1331,13 +1334,9 @@ function pmpro_deprecated_gateway_clear_needs_payment_method( $subscription_id )
  * @param bool               $skip_throttle Whether to verify even if recently checked.
  *                           Use before acting on the flag in ways that are hard
  *                           to take back, like emailing the member.
- * @param bool               $require_verification Return false unless Stripe positively
- *                           confirmed there is no payment method. When the flag cannot be
- *                           verified (environment mismatch, API error) callers that would
- *                           email the member should not act on it.
  * @return bool
  */
-function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscription, $verify = true, $skip_throttle = false, $require_verification = false ) {
+function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscription, $verify = true, $skip_throttle = false ) {
 	if ( empty( $subscription ) || ! is_a( $subscription, 'PMPro_Subscription' ) ) {
 		return false;
 	}
@@ -1356,7 +1355,7 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
 
 	// Only call Stripe when the active API keys match this subscription's environment.
 	if ( $subscription->get_gateway_environment() !== pmpro_deprecated_gateway_normalize_environment( get_option( 'pmpro_gateway_environment', 'sandbox' ) ) ) {
-		return ! $require_verification;
+		return true;
 	}
 
 	if ( ! $skip_throttle ) {
@@ -1367,7 +1366,7 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
 	}
 
 	if ( ! class_exists( 'PMProGateway_stripe' ) || ! method_exists( 'PMProGateway_stripe', 'subscription_has_payment_method' ) ) {
-		return ! $require_verification;
+		return true;
 	}
 
 	$stripe_gateway     = new PMProGateway_stripe( 'stripe' );
@@ -1380,9 +1379,6 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
 	// No payment method, or the API call failed. Keep the flag and let the
 	// throttle prevent hammering Stripe.
 	update_pmpro_subscription_meta( $subscription->get_id(), 'deprecated_gateway_needs_payment_method_checked', time() );
-	if ( is_wp_error( $has_payment_method ) ) {
-		return ! $require_verification;
-	}
 	return true;
 }
 
@@ -1398,7 +1394,7 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
 function pmpro_deprecated_gateway_get_needs_payment_method_count() {
 	global $wpdb;
 
-	// This runs on every request through email template registration, so sites that never
+	// This runs on every PMPro admin page through the admin notice, so sites that never
 	// migrated a subscription must not pay for the query.
 	if ( empty( get_option( 'pmpro_deprecated_gateway_migrated_subscriptions' ) ) ) {
 		return 0;
@@ -1495,34 +1491,30 @@ function pmpro_deprecated_gateway_billing_preheader_reset_throttle() {
 add_action( 'pmpro_billing_preheader', 'pmpro_deprecated_gateway_billing_preheader_reset_throttle', 1 );
 
 /**
- * Send the migration email in place of the generic recurring payment reminder
- * for migrated subscriptions that still have no payment method.
+ * Prepare the recurring payment reminder for migrated subscriptions that still
+ * have no payment method.
  *
- * Without this, members who never added a payment method would receive a
- * reminder implying their renewal will happen normally. This is also the
- * reconciliation point: the flag is reverified against Stripe (no throttle)
- * before the urgent email is sent.
+ * The reminder reads the stored flag through {{ needs_payment_method }}, so
+ * reverify it against Stripe (no throttle) first in case a payment method was
+ * added outside of PMPro. Also skip the reminder if the migration email just
+ * went out (the migration ran inside the reminder window), since it says the same thing.
  *
  * @since TBD
  *
- * @param bool               $send_email Whether to send the generic reminder.
+ * @param bool               $send_email Whether to send the reminder.
  * @param PMPro_Subscription $subscription The subscription being reminded.
  * @param int                $days Days until the next payment.
  * @return bool
  */
-function pmpro_deprecated_gateway_swap_recurring_payment_reminder( $send_email, $subscription, $days ) {
+function pmpro_deprecated_gateway_recurring_payment_reminder( $send_email, $subscription, $days ) {
 	if ( empty( $send_email ) ) {
 		return $send_email;
 	}
 
-	// Only swap in the urgent email when Stripe positively confirms there is no payment method;
-	// on an environment mismatch or API error the member gets the normal reminder instead.
-	if ( ! pmpro_deprecated_gateway_subscription_needs_payment_method( $subscription, true, true, true ) ) {
+	if ( ! pmpro_deprecated_gateway_subscription_needs_payment_method( $subscription, true, true ) ) {
 		return $send_email;
 	}
 
-	// If the migration email itself just went out (the migration ran inside the
-	// reminder window), don't send the same message again within days.
 	$old_subscription_id = (int) get_pmpro_subscription_meta( $subscription->get_id(), 'deprecated_gateway_old_subscription_id', true );
 	if ( ! empty( $old_subscription_id ) ) {
 		$migration_email_sent = (int) get_pmpro_subscription_meta( $old_subscription_id, 'deprecated_gateway_email_sent', true );
@@ -1531,12 +1523,41 @@ function pmpro_deprecated_gateway_swap_recurring_payment_reminder( $send_email, 
 		}
 	}
 
-	$email = new PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration( $subscription );
-	$email->send();
+	return $send_email;
+}
+add_filter( 'pmpro_send_recurring_payment_reminder_email', 'pmpro_deprecated_gateway_recurring_payment_reminder', 10, 3 );
+
+/**
+ * Whether the site's customized recurring payment reminder subject or body is
+ * missing the {{ needs_payment_method }} check while migrated Stripe subscriptions exist.
+ *
+ * Members without a payment method would otherwise get a reminder implying
+ * their renewal will happen normally.
+ *
+ * @since TBD
+ *
+ * @return bool
+ */
+function pmpro_deprecated_gateway_recurring_reminder_missing_payment_method_check() {
+	if ( ! get_option( 'pmpro_deprecated_gateway_migrated_subscriptions' ) ) {
+		return false;
+	}
+
+	$disabled = get_option( 'pmpro_email_membership_recurring_disabled' );
+	if ( ! empty( $disabled ) && 'false' !== $disabled ) {
+		return false;
+	}
+
+	// An empty subject or body means the default, which already has the check.
+	foreach ( array( 'subject', 'body' ) as $part ) {
+		$value = get_option( 'pmpro_email_membership_recurring_' . $part );
+		if ( ! empty( $value ) && false === strpos( $value, 'needs_payment_method' ) ) {
+			return true;
+		}
+	}
 
 	return false;
 }
-add_filter( 'pmpro_send_recurring_payment_reminder_email', 'pmpro_deprecated_gateway_swap_recurring_payment_reminder', 10, 3 );
 
 /**
  * Show an action-required notice on the Membership Account page for migrated
@@ -1654,7 +1675,7 @@ function pmpro_deprecated_gateway_get_stripe_migration_blockers() {
 
 	$stripe_gateway = new PMProGateway_stripe( 'stripe' );
 	if ( ! $stripe_gateway->has_credentials() ) {
-		return array( __( 'Stripe is not connected for the current gateway environment, so subscriptions cannot be migrated to Stripe.', 'paid-memberships-pro' ) );
+		return array( __( 'Stripe is not connected for the current gateway environment.', 'paid-memberships-pro' ) );
 	}
 
 	return array();
@@ -1764,14 +1785,17 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 	// Only offer the Stripe strategy when Stripe can actually receive
 	// migrations; the blockers explain a disabled Stripe option to the admin.
 	$stripe_blockers = ( 'stripe' === $active && $gateway !== $active ) ? pmpro_deprecated_gateway_get_stripe_migration_blockers() : array();
+	// The new gateway step is only done once the active gateway can take payments. Stripe is the only
+	// gateway that can be checked here, so other gateways are trusted to be set up.
+	$has_replacement = $gateway !== $active && empty( $stripe_blockers );
 
 	return array(
 		'gateway'          => $gateway,
 		'environment'      => $environment,
 		'counts'           => $counts,
 		'paused'           => $paused,
-		'has_replacement'  => $gateway !== $active,
-		'stripe_available' => 'stripe' === $active && $gateway !== $active && empty( $stripe_blockers ),
+		'has_replacement'  => $has_replacement,
+		'stripe_available' => 'stripe' === $active && $has_replacement,
 		'stripe_blockers'  => $stripe_blockers,
 		'workflow'         => $workflow,
 		'is_running'       => $is_running,
@@ -1789,6 +1813,9 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 		// The full list of this gateway's run CSVs, surfaced at the cleanup step so
 		// admins have one place to download them (cleanup keeps them as a record).
 		// Skipped while a run is active to avoid globbing the logs dir on every poll.
+		// Shown at the last step when the customized Recurring Payment Reminder cannot tell
+		// migrated members that they need to add a payment method.
+		'recurring_reminder_outdated' => pmpro_deprecated_gateway_recurring_reminder_missing_payment_method_check(),
 		'csv_files'        => $is_running ? array() : pmpro_deprecated_gateway_get_csv_files( $gateway ),
 		'has_log'          => file_exists( pmpro_get_restricted_file_path( 'logs', 'deprecated-gateways.txt' ) ),
 	);
@@ -2260,6 +2287,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 	);
 	$stripe_template_url   = add_query_arg( array( 'page' => 'pmpro-emailtemplates', 'edit' => 'deprecated_gateway_stripe_migration' ), admin_url( 'admin.php' ) );
 	$checkout_template_url = add_query_arg( array( 'page' => 'pmpro-emailtemplates', 'edit' => 'deprecated_gateway_checkout_required' ), admin_url( 'admin.php' ) );
+	$recurring_template_url = add_query_arg( array( 'page' => 'pmpro-emailtemplates', 'edit' => 'membership_recurring' ), admin_url( 'admin.php' ) );
 
 	// For the "activate a new gateway" step, offer the same Stripe Connect flow used in the setup wizard.
 	// Stripe Connect or legacy API keys both work for migrations; has_credentials() checks the current environment.
@@ -2356,8 +2384,13 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			<div id="pmpro-dgs-notice" hidden></div>
 			<div id="pmpro-dgs-switch" <?php if ( $data['has_replacement'] ) { echo 'hidden'; } ?>>
 				<p>
-					<strong><?php esc_html_e( 'First, activate a new payment gateway.', 'paid-memberships-pro' ); ?></strong>
-					<?php esc_html_e( 'We recommend Stripe: it is the only gateway with an automatic migration flow. Each active subscription is recreated at Stripe with its price and billing schedule intact, and members add a payment method instead of checking out again.', 'paid-memberships-pro' ); ?>
+					<?php if ( ! empty( $data['stripe_blockers'] ) ) { ?>
+						<strong><?php esc_html_e( 'First, connect Stripe.', 'paid-memberships-pro' ); ?></strong>
+						<?php echo esc_html( $data['stripe_blockers'][0] ); ?>
+					<?php } else { ?>
+						<strong><?php esc_html_e( 'First, activate a new payment gateway.', 'paid-memberships-pro' ); ?></strong>
+						<?php esc_html_e( 'We recommend Stripe: it is the only gateway with an automatic migration flow. Each active subscription is recreated at Stripe with its price and billing schedule intact, and members add a payment method instead of checking out again.', 'paid-memberships-pro' ); ?>
+					<?php } ?>
 				</p>
 				<p>
 					<?php if ( $stripe_connected ) { ?>
@@ -2404,6 +2437,19 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				</div>
 			<?php } ?>
 			<div id="pmpro-dgs-finish" hidden>
+				<div class="pmpro_message pmpro_alert" id="pmpro-dgs-recurring-outdated" hidden>
+					<p>
+						<strong><?php esc_html_e( 'Your Recurring Payment Reminder email is customized.', 'paid-memberships-pro' ); ?></strong>
+						<?php
+						printf(
+							/* translators: %s: Liquid conditional tag. */
+							esc_html__( 'Migrated Stripe members without a payment method get this reminder before their next payment date, but your version does not check for a missing payment method, so it tells them their membership will renew normally. Use %s in the subject and body to ask them to update their billing information, or reset the template to the default.', 'paid-memberships-pro' ),
+							'<code>{% if needs_payment_method %}</code>'
+						);
+						?>
+						<a href="<?php echo esc_url( $recurring_template_url ); ?>"><?php esc_html_e( 'Edit the Recurring Payment Reminder email', 'paid-memberships-pro' ); ?></a>
+					</p>
+				</div>
 				<div id="pmpro-dgs-finish-other" hidden>
 					<p id="pmpro-dgs-finish-other-text"></p>
 					<p>
@@ -2454,7 +2500,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<option value="no"><?php esc_html_e( 'Do not email members', 'paid-memberships-pro' ); ?></option>
 							</select>
 							<p class="description">
-								<?php esc_html_e( 'Send each migrated member one email when their subscription is processed: the Stripe migration email asks them to add a payment method, and the checkout required email asks them to check out again. To send through your own email service instead, choose "Do not email members" and use the Migration CSV after the migration. Either way, members still get your site\'s regular automatic emails: Stripe members without a payment method get the Stripe migration email in place of the usual payment reminder, and expiring members get the standard expiration warning.', 'paid-memberships-pro' ); ?>
+								<?php esc_html_e( 'Send each migrated member one email when their subscription is processed: the Stripe migration email asks them to add a payment method, and the checkout required email asks them to check out again. To send through your own email service instead, choose "Do not email members" and use the Migration CSV after the migration. Either way, members still get your site\'s regular automatic emails: Stripe members without a payment method get a recurring payment reminder asking them to add one, and expiring members get the standard expiration warning.', 'paid-memberships-pro' ); ?>
 								<a href="<?php echo esc_url( $stripe_template_url ); ?>"><?php esc_html_e( 'Edit the Stripe migration email', 'paid-memberships-pro' ); ?></a>
 								|
 								<a href="<?php echo esc_url( $checkout_template_url ); ?>"><?php esc_html_e( 'Edit the checkout required email', 'paid-memberships-pro' ); ?></a>
@@ -2470,7 +2516,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 								<option value="skip"><?php esc_html_e( 'Skip them and log them for manual review', 'paid-memberships-pro' ); ?></option>
 								<option value="expire"><?php esc_html_e( 'Cancel them and expire the membership', 'paid-memberships-pro' ); ?></option>
 							</select>
-							<p class="description"><?php esc_html_e( 'A next payment date in the past (or none at all) usually means a payment notification from the old gateway never arrived, so the gateway may still be billing the member. Skip leaves these subscriptions alone and lists them in the migration log to check by hand. Cancel and expire cancels them at the old gateway and ends the membership on the missed payment date. This applies to either migration type.', 'paid-memberships-pro' ); ?></p>
+							<p class="description"><?php esc_html_e( 'A next payment date in the past (or none at all) usually means a payment notification from the old gateway never arrived, so the gateway may still be billing the member. Skip leaves these subscriptions alone and lists them in the migration log to check by hand. Cancel and expire cancels them at the old gateway and ends the membership three days after the migration runs. This applies to either migration type.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -2654,6 +2700,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				$( 'pmpro-dgs-finish' ).hidden = ! onStep3;
 				$( 'pmpro-dgs-finish-other' ).hidden = ! onStep3 || 0 === otherCount;
 				$( 'pmpro-dgs-finish-clear' ).hidden = ! onStep3 || otherCount > 0;
+				$( 'pmpro-dgs-recurring-outdated' ).hidden = ! d.recurring_reminder_outdated;
 				$( 'pmpro-dgs-finish-other-text' ).textContent = sprintf( isLive ? cfg.i18n.finish_other_sandbox : cfg.i18n.finish_other_live, otherCount );
 
 				// List this gateway's Migration CSVs at the cleanup step as a convenient
@@ -2710,9 +2757,8 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 				if ( ! d.is_running ) {
 					// Only explain the action that is actually on screen: cleanup
 					// blockers on step 3, start blockers while migrating. Stripe
-					// blockers explain a disabled Stripe option without blocking
-					// the expiration strategy.
-					var visible_blockers = onStep3 ? ( 0 === otherCount ? d.cleanup_blockers : [] ) : d.start_blockers.concat( d.stripe_blockers || [] );
+					// blockers keep step 1 open, so they are shown there instead.
+					var visible_blockers = onStep3 ? ( 0 === otherCount ? d.cleanup_blockers : [] ) : d.start_blockers;
 					visible_blockers.forEach( function( blocker ) {
 						blockers.appendChild( el( 'li', '', blocker ) );
 					} );

@@ -57,7 +57,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	 * @return string The help text.
 	 */
 	public static function get_template_description() {
-		return esc_html__( 'This email is sent when an administrator migrates a deprecated gateway subscription to Stripe. It asks the member to add billing information to the new Stripe subscription before its next payment date. It is also sent in place of the upcoming payment reminder while the subscription has no payment method on file. Members who do not add a payment method by that date will have their membership cancelled.', 'paid-memberships-pro' );
+		return esc_html__( 'This email is sent when an administrator migrates a deprecated gateway subscription to Stripe. It asks the member to add billing information to the new Stripe subscription before its next payment date. Members who do not add a payment method by that date will have their membership cancelled.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -202,13 +202,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
  * @return array The modified email templates array.
  */
 function pmpro_deprecated_gateway_register_stripe_migration_email_template( $email_templates ) {
-	// Keep this template registered after gateway cleanup while migrated
-	// subscriptions are still waiting for a payment method, since it is
-	// also sent in place of their recurring payment reminders.
-	if (
-		( function_exists( 'pmpro_has_undeprecated_gateways' ) && pmpro_has_undeprecated_gateways() ) ||
-		( function_exists( 'pmpro_deprecated_gateway_get_needs_payment_method_count' ) && pmpro_deprecated_gateway_get_needs_payment_method_count() > 0 )
-	) {
+	if ( function_exists( 'pmpro_has_undeprecated_gateways' ) && pmpro_has_undeprecated_gateways() ) {
 		$email_templates['deprecated_gateway_stripe_migration'] = 'PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration';
 	}
 
