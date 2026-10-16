@@ -287,7 +287,8 @@ class PMPro_Discount_Code {
             }
         }      
 
-        // New codes apply percentage/fixed discounts to both payments unless told otherwise.
+        // Codes with no stored row default to applying to both payments.
+        // discount_type and discount_value fall back to set_price and 0 in the validation below.
         if ( ! isset( $this->apply_to_initial ) ) {
             $this->apply_to_initial = 1;
         }
