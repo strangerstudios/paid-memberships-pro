@@ -363,7 +363,7 @@ class PMPro_Recurring_Actions {
 		}
 
 		// Allow filtering of the email sending.
-		$send_email = apply_filters( 'pmpro_send_expiration_email', true, $user_id );
+		$send_email = apply_filters( 'pmpro_send_expiration_email', $send_email, $user_id );
 
 		if ( $send_email ) {
 			// send an email
