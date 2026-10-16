@@ -425,10 +425,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			// Joins needed only for sorting. The count query has no ORDER BY, so it never needs these.
 			// The first and last name columns are sorted by user meta, so join the matching meta row only when one of them is the sort column.
 			$join_sql = '';
-			if ( 'MIN(um_first.meta_value)' === $orderby ) {
+			if ( 'um_first.meta_value' === $orderby ) {
 				$join_sql .= " LEFT JOIN $wpdb->usermeta um_first ON u.ID = um_first.user_id AND um_first.meta_key = 'first_name' ";
 			}
-			if ( 'MIN(um_last.meta_value)' === $orderby ) {
+			if ( 'um_last.meta_value' === $orderby ) {
 				$join_sql .= " LEFT JOIN $wpdb->usermeta um_last ON u.ID = um_last.user_id AND um_last.meta_key = 'last_name' ";
 			}
 
@@ -437,8 +437,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			 *
 			 * Runs only on the data query, not the count query. Use this together with
 			 * pmpro_memberslist_sortable_columns and pmpro_memberslist_allowed_orderbys to make
-			 * a custom column sortable. Because the query groups by u.ID and mu.membership_id,
-			 * the ORDER BY expression for a joined column must be wrapped in an aggregate like MIN().
+			 * a custom column sortable. Use the plain joined column as the ORDER BY expression,
+			 * not an aggregate like MIN(), since most views do not group rows.
 			 *
 			 * @since TBD
 			 *
@@ -578,8 +578,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$allowed_orderbys = array(
 			'ID' 				=> 'u.ID',
 			'user_login' 		=> 'u.user_login',
-			'first_name' 		=> 'MIN(um_first.meta_value)',
-			'last_name' 		=> 'MIN(um_last.meta_value)',
+			'first_name' 		=> 'um_first.meta_value',
+			'last_name' 		=> 'um_last.meta_value',
 			'display_name' 		=> 'u.display_name',
 			'user_email' 		=> 'u.user_email',
 			'membership' 		=> 'mu.membership_id',
