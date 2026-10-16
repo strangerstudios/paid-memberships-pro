@@ -41,31 +41,35 @@ class PMPro_Discount_Code {
 
 	/**
 	 * Discount type: set_price, percentage, or fixed.
+	 * Null until loaded or set. save() keeps the stored value for existing codes and uses set_price for new codes.
 	 *
-	 * @var string $discount_type
+	 * @var string|null $discount_type
 	 */
-	public $discount_type = 'set_price';
+	public $discount_type = null;
 
 	/**
 	 * Discount value for percentage/fixed codes, e.g. 20 for 20% off or 10 for 10 off.
+	 * Null until loaded or set. save() keeps the stored value for existing codes and uses 0 for new codes.
 	 *
-	 * @var float $discount_value
+	 * @var float|null $discount_value
 	 */
-	public $discount_value = 0;
+	public $discount_value = null;
 
 	/**
 	 * Whether a percentage/fixed discount applies to the initial payment.
+	 * Null until loaded or set. save() keeps the stored value for existing codes and uses 1 for new codes.
 	 *
-	 * @var int $apply_to_initial
+	 * @var int|null $apply_to_initial
 	 */
-	public $apply_to_initial = 1;
+	public $apply_to_initial = null;
 
 	/**
 	 * Whether a percentage/fixed discount applies to recurring payments.
+	 * Null until loaded or set. save() keeps the stored value for existing codes and uses 1 for new codes.
 	 *
-	 * @var int $apply_to_recurring
+	 * @var int|null $apply_to_recurring
 	 */
-	public $apply_to_recurring = 1;
+	public $apply_to_recurring = null;
 
 	/**
 	 * Levels and billing settings tied to the discount code.
@@ -246,7 +250,23 @@ class PMPro_Discount_Code {
         
                 if ( ! isset( $this->uses ) ) {
                     $this->uses = $results->uses;
-                }                
+                }
+
+                if ( ! isset( $this->discount_type ) ) {
+                    $this->discount_type = $results->discount_type;
+                }
+
+                if ( ! isset( $this->discount_value ) ) {
+                    $this->discount_value = $results->discount_value;
+                }
+
+                if ( ! isset( $this->apply_to_initial ) ) {
+                    $this->apply_to_initial = $results->apply_to_initial;
+                }
+
+                if ( ! isset( $this->apply_to_recurring ) ) {
+                    $this->apply_to_recurring = $results->apply_to_recurring;
+                }
                 
             }
 
@@ -266,6 +286,14 @@ class PMPro_Discount_Code {
                 $this->uses = 0;
             }
         }      
+
+        // New codes apply percentage/fixed discounts to both payments unless told otherwise.
+        if ( ! isset( $this->apply_to_initial ) ) {
+            $this->apply_to_initial = 1;
+        }
+        if ( ! isset( $this->apply_to_recurring ) ) {
+            $this->apply_to_recurring = 1;
+        }
 
         // Make sure the discount type and value are valid.
         if ( empty( $this->discount_type ) || ! array_key_exists( $this->discount_type, pmpro_get_discount_code_types() ) ) {
