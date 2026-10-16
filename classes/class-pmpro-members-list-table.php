@@ -582,6 +582,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$allowed_orderbys = array(
 			'ID' 				=> 'u.ID',
 			'user_login' 		=> 'u.user_login',
+			// MIN() is stripped from the name columns on views without GROUP BY. Custom columns should use the plain joined column.
 			'first_name' 		=> 'MIN(um_first.meta_value)',
 			'last_name' 		=> 'MIN(um_last.meta_value)',
 			'display_name' 		=> 'u.display_name',
