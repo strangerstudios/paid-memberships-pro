@@ -555,7 +555,8 @@
 		 * Get orders based on various parameters
 		 *
 		 * @since 2.9
-		 * 
+		 * @since TBD Added the `code` argument.
+		 *
 		 * @param array $args Specify what you'd like to filter the query by
 		 *
 		 */
@@ -591,6 +592,17 @@
 				} else {
 					$where[]  = '`o`.`id` IN ( ' . implode( ', ', array_fill( 0, count( $args['id'] ), '%d' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['id'] );
+				}
+			}
+
+			// Filter by order code(s).
+			if ( isset( $args['code'] ) ) {
+				if ( ! is_array( $args['code'] ) ) {
+					$where[]    = '`o`.`code` = %s';
+					$prepared[] = $args['code'];
+				} else {
+					$where[]  = '`o`.`code` IN ( ' . implode( ', ', array_fill( 0, count( $args['code'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['code'] );
 				}
 			}
 
