@@ -64,7 +64,8 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( '{% if needs_payment_method %}Action required: add a payment method for {{ sitename }}{% else %}Your membership at {{ sitename }} will renew soon{% endif %}', 'paid-memberships-pro' );
+		// The original subject is its own string so existing translations still apply.
+		return '{% if needs_payment_method %}' . esc_html__( 'Action required: add a payment method for {{ sitename }}', 'paid-memberships-pro' ) . '{% else %}' . esc_html__( 'Your membership at {{ sitename }} will renew soon', 'paid-memberships-pro' ) . '{% endif %}';
 	}
 
 	/**
@@ -75,17 +76,24 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}.</p>
+		// The original body is its own string so existing translations still apply.
+		return '{% if needs_payment_method %}' . wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}.</p>
 
-{% if needs_payment_method %}<p>Your {{ membership_level_name }} membership is scheduled to renew on {{ renewaldate }}, but we don\'t have a payment method on file.</p>
+<p>Your {{ membership_level_name }} membership is scheduled to renew on {{ renewaldate }}, but we don\'t have a payment method on file.</p>
 
 <p><strong>To keep your membership active, please add your payment information before {{ renewaldate }}.</strong> If we don\'t have a payment method on file by then, your membership will be cancelled.</p>
 
-<p>Update your billing information here: {{ billing_update_url }}</p>{% else %}<p>This is just a reminder that your {{ membership_level_name }} membership will automatically renew on {{ renewaldate }}.</p>{% endif %}
+<p>Update your billing information here: {{ billing_update_url }}</p>
 
 <p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>If for some reason you do not want to renew your membership you can cancel here: {{ cancel_url }}</p>', 'paid-memberships-pro' ) );
+<p>If for some reason you do not want to renew your membership you can cancel here: {{ cancel_url }}</p>', 'paid-memberships-pro' ) ) . '{% else %}' . wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}.</p>
+
+<p>This is just a reminder that your {{ membership_level_name }} membership will automatically renew on {{ renewaldate }}.</p>
+
+<p>Account: {{ display_name }} ({{ user_email }})</p>
+
+<p>If for some reason you do not want to renew your membership you can cancel here: {{ cancel_url }}</p>', 'paid-memberships-pro' ) ) . '{% endif %}';
 	}
 
 	/**
