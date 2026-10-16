@@ -1169,6 +1169,22 @@ function pmpro_define_deprecated_date_pattern_functions() {
 		}
 	}
 
+	if ( ! function_exists( 'pmprosd_daysUntilDate' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_resolve_date_pattern().
+		 */
+		function pmprosd_daysUntilDate( $date ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_date_pattern()' );
+			$new_date = pmpro_resolve_date_pattern( $date );
+			if ( empty( $new_date ) ) {
+				return 0;
+			}
+			$now_timestamp = current_time( 'timestamp' );
+			$diff          = strtotime( $new_date, $now_timestamp ) - $now_timestamp;
+			return $diff < 0 ? 0 : ceil( $diff / 60 / 60 / 24 );
+		}
+	}
+
 	if ( ! function_exists( 'pmprosd_getDelay' ) ) {
 		/**
 		 * @deprecated TBD Use pmpro_get_subscription_delay().
@@ -1240,6 +1256,21 @@ function pmpro_define_deprecated_date_pattern_functions() {
 				$key = 'pmprosed_' . intval( $level_id );
 			}
 			update_option( $key, $set_expiration_date, false );
+		}
+	}
+
+	if ( ! function_exists( 'pmprosed_is_past_date' ) ) {
+		/**
+		 * @deprecated TBD Use pmpro_get_set_expiration_date() and pmpro_resolve_expiration_date_pattern().
+		 */
+		function pmprosed_is_past_date( $level_id ) {
+			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_expiration_date_pattern()' );
+			$set_expiration_date = pmpro_get_set_expiration_date( $level_id );
+			if ( empty( $set_expiration_date ) ) {
+				return false;
+			}
+			$resolved_date = pmpro_resolve_expiration_date_pattern( $set_expiration_date );
+			return ! empty( $resolved_date ) && $resolved_date < date( 'Y-m-d' );
 		}
 	}
 
