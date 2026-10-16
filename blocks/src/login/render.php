@@ -2,6 +2,11 @@
 /**
  * Render the Login Form block on the frontend.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( isset( $attributes['display_if_logged_in'] ) ) {
 	$attributes['display_if_logged_in'] = filter_var( $attributes['display_if_logged_in'], FILTER_VALIDATE_BOOLEAN );
 }

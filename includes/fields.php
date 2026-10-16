@@ -1,4 +1,8 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Check if a variable is a PMPro_Field.
  * Also checks for PMProRH_Field.
@@ -141,6 +145,7 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	 */
 	add_filter( 'parent_file', function ( $parent_file ) use ( $safe_name ) {
 		global $submenu_file;
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only picks which admin menu item to highlight.
 		if (
 			isset( $_GET['taxonomy'] ) &&
 			$_GET['taxonomy'] == $safe_name &&
@@ -148,6 +153,7 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 		) {
 			$parent_file = 'users.php';
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return $parent_file;
 	} );
@@ -383,7 +389,7 @@ function pmpro_checkout_user_creation_checks_user_fields( $okay ) {
 		);
 		foreach($fields as $field) {
 			// If this is a file upload, check whether the file is allowed.
-			if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) {
+			if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in preheaders/checkout.php before the pmpro_checkout_user_creation_checks filter runs.
 				$upload_check = pmpro_check_upload( $field->name );
 				if ( is_wp_error( $upload_check ) ) {
 					pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
@@ -487,7 +493,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 		);
 		foreach($fields as $field) {
 			// If this is a file upload, check whether the file is allowed.
-			if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) {
+			if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in preheaders/checkout.php before the pmpro_checkout_order_creation_checks filter runs.
 				$upload_check = pmpro_check_upload( $field->name );
 				if ( is_wp_error( $upload_check ) ) {
 					pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
@@ -539,6 +545,7 @@ add_filter( 'pmpro_checkout_order_creation_checks', 'pmpro_registration_checks_f
  * @deprecated 2.12.4 Use pmpro_after_checkout_save_fields instead to save fields immediately or pmpro_save_checkout_data_to_order for delayed checkouts.
  */
 function pmpro_paypalexpress_session_vars_for_user_fields() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Deprecated and no longer hooked by core. It ran during PayPal Express checkout processing, after preheaders/checkout.php verified pmpro_checkout_nonce, and only copies submitted values into the visitor's own session.
 	_deprecated_function( __FUNCTION__, '2.12.4', 'pmpro_after_checkout_save_fields' );
 
 	// Loop through all the field groups.
@@ -557,7 +564,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 			}
 
 			if( isset( $_REQUEST[$field->name] ) ) {
-				$_SESSION[$field->name] = pmpro_sanitize( $_REQUEST[$field->name], $field ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$_SESSION[$field->name] = pmpro_sanitize( $_REQUEST[$field->name], $field ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized by pmpro_sanitize(). Left slashed on purpose to match PMPro_Field::get_value_from_request(): the session value is later saved with update_user_meta(), which unslashes, so unslashing here would strip backslashes twice.
 			} elseif ( isset( $_FILES[$field->name] ) ) {
 				/*
 					We need to save the file somewhere and save values in $_SESSION
@@ -599,6 +606,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 			}
 		}
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 }
 
 /**
@@ -896,6 +904,168 @@ add_action( 'edit_user_profile_update', 'pmpro_save_user_fields_in_profile' );
 add_action( 'pmpro_personal_options_update', 'pmpro_save_user_fields_in_profile' );
 
 /**
+ * Create a folder for user field uploads if needed.
+ *
+ * Adds an empty index file so that servers with directory listing enabled do not list the folder's contents.
+ *
+ * @since 3.8.8
+ *
+ * @param string $dir Path to the folder.
+ */
+function pmpro_create_user_field_upload_dir( $dir ) {
+	if ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) {
+		return;
+	}
+
+	$index_file = trailingslashit( $dir ) . 'index.html';
+	if ( ! file_exists( $index_file ) ) {
+		file_put_contents( $index_file, '' );
+	}
+}
+
+/**
+ * Get the uploads folder that user field upload paths must be inside before they are deleted.
+ *
+ * On multisite this is the main site's uploads folder, which also contains each subsite's
+ * sites/N/ folder, so that a user deleted from the network can have files removed on every site.
+ *
+ * @since 3.8.8
+ *
+ * @return string Normalized path with a trailing slash, or an empty string if it can't be found.
+ */
+function pmpro_get_user_field_uploads_root() {
+	if ( is_multisite() ) {
+		switch_to_blog( get_main_site_id() );
+		$upload_dir = wp_upload_dir();
+		restore_current_blog();
+	} else {
+		$upload_dir = wp_upload_dir();
+	}
+
+	$path = empty( $upload_dir['basedir'] ) ? false : realpath( $upload_dir['basedir'] );
+	return empty( $path ) ? '' : trailingslashit( wp_normalize_path( $path ) );
+}
+
+/**
+ * Delete the temporary files uploaded during an order's checkout when the order is deleted.
+ *
+ * Files from completed checkouts have already been moved to the user's folder, so this only
+ * removes files that are still waiting in the checkout tmp folder.
+ *
+ * @since 3.8.8
+ *
+ * @param int $order_id The ID of the order being deleted.
+ */
+function pmpro_delete_order_checkout_files( $order_id ) {
+	$checkout_files = get_pmpro_membership_order_meta( $order_id, 'checkout_files', true );
+	if ( empty( $checkout_files ) || ! is_array( $checkout_files ) ) {
+		return;
+	}
+
+	$upload_dir = wp_upload_dir();
+	$tmp_path   = realpath( $upload_dir['basedir'] . '/pmpro-register-helper/tmp' );
+	if ( empty( $tmp_path ) ) {
+		return;
+	}
+	$tmp_path = trailingslashit( wp_normalize_path( $tmp_path ) );
+
+	foreach ( $checkout_files as $file ) {
+		if ( ! is_array( $file ) || empty( $file['tmp_name'] ) ) {
+			continue;
+		}
+
+		// Only delete files directly inside the checkout tmp folder.
+		$path = realpath( $file['tmp_name'] );
+		if ( empty( $path ) || ! is_file( $path ) ) {
+			continue;
+		}
+		$path = wp_normalize_path( $path );
+		if ( $tmp_path !== trailingslashit( dirname( $path ) ) || 'index.html' === basename( $path ) ) {
+			continue;
+		}
+
+		unlink( $path );
+	}
+}
+add_action( 'pmpro_delete_order', 'pmpro_delete_order_checkout_files', 5 );
+
+/**
+ * Delete files uploaded through user fields when a user is deleted.
+ *
+ * @since 3.8.8
+ *
+ * @param int $user_id The ID of the user being deleted.
+ */
+function pmpro_delete_user_field_files( $user_id ) {
+	// On multisite, delete_user only removes the user from the current site, so wait for wpmu_delete_user.
+	if ( 'delete_user' === current_action() && is_multisite() ) {
+		return;
+	}
+
+	$user = get_userdata( $user_id );
+	if ( empty( $user ) ) {
+		return;
+	}
+
+	// Meta keys of registered file fields. Their values are only saved by PMPro_Field::saveFile(), so those files
+	// can be deleted from any user folder, e.g. if the user's login was changed after the upload.
+	$file_field_meta_keys = array();
+	foreach ( PMPro_Field_Group::get_all() as $field_group ) {
+		foreach ( $field_group->get_fields() as $field ) {
+			if ( 'file' === $field->type ) {
+				$file_field_meta_keys[ $field->meta_key ] = true;
+			}
+		}
+	}
+
+	// Folders that may be left empty once the user's files are deleted, and whether they may have another user's login as their name.
+	$upload_dir = wp_upload_dir();
+	$user_dirs  = array( wp_normalize_path( $upload_dir['basedir'] . '/pmpro-register-helper/' . $user->user_login ) => false );
+
+	// Check all user meta so that files are deleted even if their field is no longer registered.
+	foreach ( get_user_meta( $user_id ) as $meta_key => $meta_values ) {
+		$is_file_field = isset( $file_field_meta_keys[ $meta_key ] );
+		foreach ( $meta_values as $meta_value ) {
+			$meta_value = maybe_unserialize( $meta_value );
+			if ( is_array( $meta_value ) && ! empty( $meta_value['fullpath'] ) ) {
+				// Files from other meta are only deleted from this user's folder.
+				PMPro_Field::delete_uploaded_file( $meta_value, $is_file_field ? '' : $user->user_login );
+
+				// New uploads are in a unique folder inside the user's folder.
+				$user_dir = dirname( wp_normalize_path( $meta_value['fullpath'] ) );
+				if ( 'pmpro-register-helper' !== basename( dirname( $user_dir ) ) ) {
+					$user_dir = dirname( $user_dir );
+				}
+				$user_dirs[ $user_dir ] = $is_file_field || ! empty( $user_dirs[ $user_dir ] );
+			}
+		}
+	}
+
+	// Remove the user's folders inside the uploads directory if only the index file is left.
+	$uploads_path = pmpro_get_user_field_uploads_root();
+	foreach ( $user_dirs as $user_dir => $any_login ) {
+		$user_dir = realpath( $user_dir );
+		if ( empty( $uploads_path ) || empty( $user_dir ) || 0 !== strpos( wp_normalize_path( $user_dir ), $uploads_path ) || 'pmpro-register-helper' !== basename( dirname( $user_dir ) ) || 'tmp' === basename( $user_dir ) ) {
+			continue;
+		}
+
+		// Unless the folder held a registered file field's upload, only remove this user's own folder.
+		if ( ! $any_login && basename( $user_dir ) !== $user->user_login ) {
+			continue;
+		}
+
+		if ( empty( array_diff( scandir( $user_dir ), array( '.', '..', 'index.html' ) ) ) ) {
+			if ( file_exists( $user_dir . '/index.html' ) ) {
+				unlink( $user_dir . '/index.html' );
+			}
+			rmdir( $user_dir );
+		}
+	}
+}
+add_action( 'delete_user', 'pmpro_delete_user_field_files' );
+add_action( 'wpmu_delete_user', 'pmpro_delete_user_field_files' );
+
+/**
  * Add user fields to confirmation email.
  */
 function pmpro_add_user_fields_to_email( $email ) {
@@ -904,7 +1074,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 	//only update admin confirmation emails
 	if ( ! empty( $email ) && strpos( $email->template, "checkout" ) !== false && strpos( $email->template, "admin" ) !== false ) {
 		//get the user_id from the email
-		$user_id = $wpdb->get_var( "SELECT ID FROM $wpdb->users WHERE user_email = '" . esc_sql( $email->data['user_email'] ) . "' LIMIT 1" );
+		$user_id = $wpdb->get_var( "SELECT ID FROM $wpdb->users WHERE user_email = '" . esc_sql( $email->data['user_email'] ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off lookup of the user ID by email while building the admin checkout email; not worth caching.
 
 		if ( ! empty( $user_id ) ) {
 			//add to bottom of email

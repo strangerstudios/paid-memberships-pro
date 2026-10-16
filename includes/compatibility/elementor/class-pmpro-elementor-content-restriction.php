@@ -34,6 +34,8 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 		// should_render filters (e.g. display-condition plugins). This lets pmpro_elementor_should_render()
 		// stand down — and discard any buffered no-access message — when something else has already
 		// hidden the element.
+		// Widgets also use should_render so a restricted widget that isn't showing a no access message is skipped entirely, instead of leaving an empty styled wrapper.
+		add_action( 'elementor/frontend/widget/should_render', array( $this, 'pmpro_elementor_should_render' ), 9999, 2 );
 		add_action( 'elementor/frontend/section/should_render', array( $this, 'pmpro_elementor_should_render' ), 9999, 2 );
 		add_action( 'elementor/frontend/container/should_render', array( $this, 'pmpro_elementor_should_render' ), 9999, 2 );
 		add_action( 'elementor/frontend/before_render', array( $this, 'pmpro_elementor_before_render' ), 0 );
@@ -516,6 +518,11 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         $apply_block_visibility_params = $this->build_visibility_params( $element_settings );
         $should_render = ! empty( pmpro_apply_block_visibility( $apply_block_visibility_params, 'sample content' ) );
 		
+		// The deprecated filter below has only ever run for sections and containers.
+		if ( 'widget' === $element->get_type() ) {
+			return $should_render;
+		}
+
 		return apply_filters_deprecated( 'pmpro_elementor_section_access', array( $should_render, $element ), '3.5' );
 	}
 

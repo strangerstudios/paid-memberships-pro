@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	global $msg, $msgt;
 	
 	// Only admins can get this.
@@ -17,35 +21,41 @@
 		check_admin_referer( 'savesettings', 'pmpro_userfields_nonce' );
 
 		// Note: We sanitize the data below.
-		$groups = json_decode( stripslashes( $_REQUEST['pmpro_user_fields_settings'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$groups = json_decode( isset( $_REQUEST['pmpro_user_fields_settings'] ) ? wp_unslash( $_REQUEST['pmpro_user_fields_settings'] ) : '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON string; each decoded property is sanitized below.
 
-		// Sanitize everything.
-		foreach ( $groups as $group ) {
-			$group->name        = sanitize_text_field( $group->name );
-			$group->checkout    = 'yes' === $group->checkout ? 'yes' : 'no';
-			$group->profile     = sanitize_text_field( $group->profile );
-			$group->description = wp_kses_post( $group->description );
-			$group->levels      = array_map( 'intval', $group->levels );
-			foreach ( $group->fields as $field ) {
-				$field_name 		  = pmpro_format_field_name( $field->name ); //Replace spaces and dashes with underscores.
-				$field->name          = sanitize_text_field( $field_name );
-				$field->label         = wp_kses_post( $field->label );
-				$field->type          = sanitize_text_field( $field->type );
-				$field->required      = 'yes' === $field->required ? 'yes' : 'no';
-				$field->readonly      = 'yes' === $field->readonly ? 'yes' : 'no';
-				$field->profile       = sanitize_text_field( $field->profile );
-				$field->wrapper_class = sanitize_text_field( $field->wrapper_class );
-				$field->element_class = sanitize_text_field( $field->element_class );
-				$field->hint          = wp_kses_post( $field->hint );
-				$field->options       = sanitize_textarea_field( $field->options );
+		// Bail if the JSON is missing or malformed so we don't wipe the saved settings.
+		if ( ! is_array( $groups ) ) {
+			$msg  = -1;
+			$msgt = esc_html__( 'Your user field settings could not be saved. Please try again.', 'paid-memberships-pro' );
+		} else {
+			// Sanitize everything.
+			foreach ( $groups as $group ) {
+				$group->name        = sanitize_text_field( $group->name );
+				$group->checkout    = 'yes' === $group->checkout ? 'yes' : 'no';
+				$group->profile     = sanitize_text_field( $group->profile );
+				$group->description = wp_kses_post( $group->description );
+				$group->levels      = array_map( 'intval', $group->levels );
+				foreach ( $group->fields as $field ) {
+					$field_name 		  = pmpro_format_field_name( $field->name ); //Replace spaces and dashes with underscores.
+					$field->name          = sanitize_text_field( $field_name );
+					$field->label         = wp_kses_post( $field->label );
+					$field->type          = sanitize_text_field( $field->type );
+					$field->required      = 'yes' === $field->required ? 'yes' : 'no';
+					$field->readonly      = 'yes' === $field->readonly ? 'yes' : 'no';
+					$field->profile       = sanitize_text_field( $field->profile );
+					$field->wrapper_class = sanitize_text_field( $field->wrapper_class );
+					$field->element_class = sanitize_text_field( $field->element_class );
+					$field->hint          = wp_kses_post( $field->hint );
+					$field->options       = sanitize_textarea_field( $field->options );
+				}
 			}
-		}
 
-		update_option( 'pmpro_user_fields_settings', $groups, false );
-		
-		// Assume success.
-		$msg = true;
-		$msgt = esc_html__( 'Your user field settings have been updated.', 'paid-memberships-pro' );
+			update_option( 'pmpro_user_fields_settings', $groups, false );
+
+			// Assume success.
+			$msg = true;
+			$msgt = esc_html__( 'Your user field settings have been updated.', 'paid-memberships-pro' );
+		}
 	}
 
 	/**

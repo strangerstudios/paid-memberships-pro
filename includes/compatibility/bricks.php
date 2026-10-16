@@ -9,6 +9,10 @@
  * @link https://academy.bricksbuilder.io/article/element-conditions/
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 add_filter( 'bricks/conditions/groups', 'pmpro_bricks_add_condition_group' );
 add_filter( 'bricks/conditions/options', 'pmpro_bricks_add_custom_condition' );
 add_filter( 'bricks/conditions/result', 'pmpro_bricks_condition_result', 10, 3 );

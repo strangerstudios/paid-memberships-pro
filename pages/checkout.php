@@ -11,6 +11,10 @@
  * @author Paid Memberships Pro
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_default_country;
 global $discount_code, $username, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 
@@ -67,7 +71,7 @@ if ( empty( $default_gateway ) ) {
 
 	<section id="pmpro_level-<?php echo intval( $pmpro_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_checkout_gateway_class, 'pmpro_level-' . $pmpro_level->id ) ); ?>">
 
-		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>"<?php if(!empty($_REQUEST['review'])) { echo ' action="' . esc_url( pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id ) ) . '"'; } ?> method="post">
+		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>"<?php if(!empty($_REQUEST['review'])) { echo ' action="' . esc_url( pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id ) ) . '"'; } // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, only sets the form action for the review step. ?> method="post">
 
 			<input type="hidden" id="pmpro_level" name="pmpro_level" value="<?php echo esc_attr( $pmpro_level->id ) ?>" />
 			<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />
@@ -350,7 +354,7 @@ if ( empty( $default_gateway ) ) {
 											),
 											'strong' => array(),
 										);
-										echo wp_kses( sprintf( __('You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), $allowed_html );
+										echo wp_kses( sprintf( __('You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ) ) ), $allowed_html );
 									?>
 								</div> <!-- end pmpro_account_loggedin -->
 							<?php } ?>
@@ -526,7 +530,7 @@ if ( empty( $default_gateway ) ) {
 											if($pmpro_show_cvv) { ?>
 											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
 												<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Security Code (CVC)', 'paid-memberships-pro' );?></label>
-												<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
+												<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ) ); } // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, prefills the field after a failed submission. ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'CVV' ) ); ?>" />
 											</div>
 										<?php } ?>
 									</div> <!-- end pmpro_cols-2 -->

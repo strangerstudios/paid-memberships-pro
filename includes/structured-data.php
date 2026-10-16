@@ -10,6 +10,10 @@
  * @since TBD
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Whether structured data output is enabled.
  *

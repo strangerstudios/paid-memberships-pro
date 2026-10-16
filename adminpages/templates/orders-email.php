@@ -7,6 +7,10 @@
  * @var object $level
  * @var MemberOrder $order
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <table style="width:600px;margin-left:auto;margin-right:auto;">
 	<thead>

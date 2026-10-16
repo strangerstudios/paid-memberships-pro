@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_paymentsettings")))
 	{
@@ -8,7 +12,7 @@
 	global $wpdb, $pmpro_currency_symbol, $msg, $msgt;
 
 	// Check if we are editing a specific gateway.
-	$edit_gateway = ! empty( $_REQUEST['edit_gateway'] ) ? sanitize_text_field( $_REQUEST['edit_gateway'] ) : '';
+	$edit_gateway = ! empty( $_REQUEST['edit_gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_gateway'] ) ) : '';
 
 	// If we have a gateway, try to build its gateway class name.
 	$gateway_class_name = '';
@@ -193,6 +197,17 @@
 						</thead>
 						<tbody>
 							<?php
+							// Allowed HTML for gateway descriptions that include links.
+							$allowed_gateway_description_html = array(
+								'a'      => array(
+									'href'   => array(),
+									'target' => array(),
+									'rel'    => array(),
+								),
+								'strong' => array(),
+								'em'     => array(),
+							);
+
 							foreach ( $pmpro_gateways as $gateway_slug => $gateway_name ) {
 								// Get information about what the gateway 'supports'.
 								$gateway_class_name = 'PMProGateway_' . $gateway_slug;
@@ -237,11 +252,21 @@
 												}
 											}
 
+											/**
+											 * Filter the status HTML shown for a gateway in the payment gateways list.
+											 *
+											 * @since 3.8.7
+											 *
+											 * @param string $gateway_status_html The status HTML, typically one or more pmpro_tag spans.
+											 * @param string $gateway_slug        The gateway being shown.
+											 */
+											$gateway_status_html = apply_filters( 'pmpro_payment_settings_gateway_status_html', $gateway_status_html, $gateway_slug );
+
 											echo wp_kses_post( $gateway_status_html );
 										?>
 										</td>
 									<td class="column-description">
-										<?php echo ! empty( $gateway_instance ) ? esc_html( $gateway_instance->get_description_for_gateway_settings() ) : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
+										<?php echo ! empty( $gateway_instance ) ? wp_kses( $gateway_instance->get_description_for_gateway_settings(), $allowed_gateway_description_html ) : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
 									</td>
 									<td class="column-edit">
 										<?php echo ! empty( $gateway_instance ) ? '<a class="button button-secondary" href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-paymentsettings', 'edit_gateway' => esc_attr( $gateway_slug ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Edit Settings', 'paid-memberships-pro' ) . '</a>' : esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>

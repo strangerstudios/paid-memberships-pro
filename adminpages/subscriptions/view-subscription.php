@@ -5,6 +5,10 @@
  * @since 3.7
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $wpdb;
 
 // We have a subscription. Display all of its data.
@@ -115,7 +119,7 @@ $sub_membership_level_id = $subscription->get_membership_level_id();
 						<span class="pmpro_list_item_label"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></span>
 						<?php
 							// Display the number of orders for this subscription and link to the orders page filtered by this subscription.
-							$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $subscription->get_subscription_transaction_id() ) );
+							$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $subscription->get_subscription_transaction_id() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries a PMPro custom table, which has no WordPress API or object cache layer.
 							if ( (int) $orders_count === 0 ) {
 								esc_html_e( '&#8212;', 'paid-memberships-pro' );
 							} else { ?>

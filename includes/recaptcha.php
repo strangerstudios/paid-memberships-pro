@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Register reCAPTCHA as an available captcha service.
  *
@@ -148,7 +152,7 @@ function pmpro_wp_ajax_validate_recaptcha() {
 	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 	
 	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-	$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $_REQUEST['g-recaptcha-response'] ) );
+	$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), isset( $_REQUEST['g-recaptcha-response'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['g-recaptcha-response'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public AJAX endpoint for anonymous visitors; the reCAPTCHA token is the credential and is verified with Google before setting a session flag.
 	if ( $resp->success ) {
 	    pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
 		echo "1";
@@ -168,6 +172,33 @@ add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_recaptcha' );
 add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha' );
 
 /**
+ * Clear the reCAPTCHA session variable when payment fails
+ * so that each new payment attempt requires a new reCAPTCHA check.
+ *
+ * @since TBD
+ *
+ * @param MemberOrder $order The order that failed to process.
+ */
+function pmpro_failed_payment_reset_recaptcha( $order ) {
+	// Stripe fails on purpose when the card needs authentication, then resubmits the form after the customer authenticates. Keep the flag for that resubmission.
+	// The flag also stays set if the customer abandons authentication and tries another card. Loading reCAPTCHA on this page would get in the way of the resubmission, so we accept that gap.
+	$payment_intent = $order->stripe_payment_intent;
+	if ( ! empty( $payment_intent ) && 'requires_action' === $payment_intent->status ) {
+		return;
+	}
+
+	pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
+
+	// The response posted with this form was already used, or was never checked because the session was validated. Discard it so pmpro_init_recaptcha() doesn't validate the session again with it.
+	unset( $_POST['g-recaptcha-response'], $_POST['recaptcha_challenge_field'] );
+
+	// pmpro_init_recaptcha() already ran on the preheader and skipped loading the reCAPTCHA JS because the session was validated. Run it again so the widget works on the page that shows the error.
+	pmpro_init_recaptcha();
+}
+add_action( 'pmpro_checkout_processing_failed', 'pmpro_failed_payment_reset_recaptcha' );
+add_action( 'pmpro_update_billing_failed', 'pmpro_failed_payment_reset_recaptcha' );
+
+/**
  * Check if ReCAPTCHA is validated.
  *
  * @return true|string True if validated, error message if not.
@@ -183,18 +214,18 @@ function pmpro_recaptcha_is_validated() {
 	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 
 	// Check if the user has completed a ReCAPTCHA challenge.
-	if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
+	if ( isset( $_POST["recaptcha_challenge_field"] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- The reCAPTCHA response is itself the credential and is verified with Google; checkout and billing verify their own nonces.
 		// Using older recaptcha lib. Google needs the raw POST data.
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$resp = recaptcha_check_answer( $recaptcha_privatekey,
 			pmpro_get_ip(),
-			$_POST["recaptcha_challenge_field"],
-			$_POST["recaptcha_response_field"] );
+			$_POST["recaptcha_challenge_field"], // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- The reCAPTCHA response is itself the credential and is verified with Google; checkout and billing verify their own nonces. The legacy library is passed the raw POST data.
+			$_POST["recaptcha_response_field"] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- The reCAPTCHA response is itself the credential and is verified with Google; checkout and billing verify their own nonces. The legacy library is passed the raw POST data and rejects a missing response itself.
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		$recaptcha_valid  = $resp->is_valid;
 		$recaptcha_errors = $resp->error;
-	} elseif ( isset( $_POST["g-recaptcha-response"] ) ) {
+	} elseif ( isset( $_POST["g-recaptcha-response"] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- The reCAPTCHA response is itself the credential and is verified with Google; checkout and billing verify their own nonces.
 		//using newer recaptcha lib
 		// NOTE: In practice, we don't execute this code because
 		// we use AJAX to send the data back to the server and set the
@@ -202,7 +233,7 @@ function pmpro_recaptcha_is_validated() {
 		// earlier. We should remove/refactor this code.
 		require_once(PMPRO_DIR . '/includes/lib/recaptchalib.php' );
 		$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-		$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), $_POST["g-recaptcha-response"] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), $_POST["g-recaptcha-response"] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- The reCAPTCHA response is itself the credential and is verified with Google; checkout and billing verify their own nonces. The token is passed to Google unchanged.
 
 		$recaptcha_valid  = $resp->success;
 		$recaptcha_errors = $resp->errorCodes;
@@ -313,9 +344,9 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_recaptcha_settings' );
 function pmpro_recaptcha_settings_save() {
 	// Keep the legacy on/off option in sync with the captcha setting for backwards compatibility.
 	update_option( 'pmpro_recaptcha', 'recaptcha' === pmpro_captcha() ? 2 : 0, false );
-	pmpro_setOption( "recaptcha_version", sanitize_text_field( $_POST['recaptcha_version'] ) );
-	pmpro_setOption( "recaptcha_publickey", sanitize_text_field( $_POST['recaptcha_publickey'] ) );
-	pmpro_setOption( "recaptcha_privatekey", sanitize_text_field( $_POST['recaptcha_privatekey'] ) );
+	pmpro_setOption( "recaptcha_version", isset( $_POST['recaptcha_version'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_version'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in adminpages/securitysettings.php before pmpro_save_security_settings fires.
+	pmpro_setOption( "recaptcha_publickey", isset( $_POST['recaptcha_publickey'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_publickey'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in adminpages/securitysettings.php before pmpro_save_security_settings fires.
+	pmpro_setOption( "recaptcha_privatekey", isset( $_POST['recaptcha_privatekey'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_privatekey'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in adminpages/securitysettings.php before pmpro_save_security_settings fires.
 }
 add_action( 'pmpro_save_security_settings', 'pmpro_recaptcha_settings_save' );
 
@@ -559,7 +590,7 @@ function pmpro_recaptcha_login_check( $user, $username ) {
 		return $user;
 	}
 
-	$token = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( $_POST['g-recaptcha-response'] ) : '';
+	$token = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( wp_unslash( $_POST['g-recaptcha-response'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress login and lost password forms carry no nonce; the reCAPTCHA token itself is the credential and is verified with Google.
 	if ( ! pmpro_recaptcha_verify_token( $token ) ) {
 		return new WP_Error( 'pmpro_captcha_failed', pmpro_captcha_failed_error_message() );
 	}
@@ -580,7 +611,7 @@ function pmpro_recaptcha_lostpassword_check( $errors, $user_data ) {
 	// Only check submissions from the PMPro or wp-login.php lost password forms. This hook
 	// also fires for other plugins that call retrieve_password() from their own forms,
 	// which never displayed our captcha.
-	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_lostpassword' ) && ! did_action( 'login_form_retrievepassword' ) ) {
+	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_lostpassword' ) && ! did_action( 'login_form_retrievepassword' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only checks which form was submitted.
 		return;
 	}
 
@@ -588,7 +619,7 @@ function pmpro_recaptcha_lostpassword_check( $errors, $user_data ) {
 		return;
 	}
 
-	$token = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( $_POST['g-recaptcha-response'] ) : '';
+	$token = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( wp_unslash( $_POST['g-recaptcha-response'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress login and lost password forms carry no nonce; the reCAPTCHA token itself is the credential and is verified with Google.
 	if ( ! pmpro_recaptcha_verify_token( $token ) ) {
 		$errors->add( 'pmpro_captcha_failed', pmpro_captcha_failed_error_message() );
 	}

@@ -133,8 +133,8 @@ abstract class PMPro_Member_Edit_Panel {
 		}
 
 		// Get the user that we are editing.
-		if ( ! empty( $_REQUEST['user_id'] ) ) {
-			$check_user = get_userdata( intval( $_REQUEST['user_id'] ) );
+		if ( ! empty( $_REQUEST['user_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: selects which user the Edit Member screen displays. Saves are nonce-checked separately.
+			$check_user = get_userdata( intval( $_REQUEST['user_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: loads the user being displayed.
 			if ( ! empty( $check_user->ID ) ) {
 				$user = $check_user;
 			}

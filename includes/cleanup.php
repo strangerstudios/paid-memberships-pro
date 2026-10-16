@@ -2,6 +2,13 @@
 /*
 	Clean things up when deletes happen, etc. (This stuff needs a better home.)
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Cleans up PMPro custom tables, which have no WordPress API or object cache layer.
+
 // deleting a user? remove their account info.
 function pmpro_delete_user( $user_id ) {
 	global $pmpro_user_taxonomies;
@@ -10,6 +17,7 @@ function pmpro_delete_user( $user_id ) {
 		return false;
 	}
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Runs on delete_user/wpmu_delete_user; WordPress core verifies the nonce (check_admin_referer 'delete-users' in wp-admin/users.php, 'ms-users-delete' in wp-admin/network/users.php) before deleting. These are checkboxes from that same form.
 	// Check if an admin chose to cancel the user's active subscriptions.
 	$cancel_active_subscriptions =  isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && $_REQUEST['pmpro_delete_active_subscriptions'] == '1';
 
@@ -32,6 +40,7 @@ function pmpro_delete_user( $user_id ) {
 		$_REQUEST['pmpro_delete_member_history'] == '1' ) {
 		pmpro_delete_membership_history( $user_id );
 	}	
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	
 }
 add_action( 'delete_user', 'pmpro_delete_user' );
@@ -62,11 +71,11 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		$placeholders = implode( ',', array_fill( 0, count( $userids ), '%d' ) );
 
 		$sqlQuery = $wpdb->prepare(
-			"SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN ($placeholders)",
+			"SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is a list of %d placeholders built with array_fill.
 			$userids
 		);
 
-		$member_history = $wpdb->get_var( $sqlQuery );
+		$member_history = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepared above with $wpdb->prepare().
 	}
 
 	// Make sure that there is actually PMPro content to delete for these users.
@@ -130,6 +139,56 @@ function pmpro_delete_post( $post_id = null ) {
 	);
 }
 add_action( 'delete_post', 'pmpro_delete_post' );
+
+// trashing or deleting a post? clear any PMPro page settings that use it
+function pmpro_clear_page_settings_for_post( $post_id = null ) {
+	global $pmpro_pages;
+
+	if ( empty( $post_id ) || empty( $pmpro_pages ) ) {
+		return;
+	}
+
+	$cleared = array();
+	foreach ( $pmpro_pages as $name => $page_id ) {
+		if ( (int) $page_id === (int) $post_id ) {
+			update_option( 'pmpro_' . $name . '_page_id', 0 );
+			$pmpro_pages[ $name ] = 0;
+			$cleared[] = $name;
+		}
+	}
+
+	// If trashed, remember which settings were cleared so they can be restored on untrash.
+	if ( ! empty( $cleared ) && 'trashed_post' === current_action() ) {
+		update_post_meta( $post_id, '_pmpro_cleared_page_settings', $cleared );
+	}
+}
+add_action( 'trashed_post', 'pmpro_clear_page_settings_for_post' );
+add_action( 'deleted_post', 'pmpro_clear_page_settings_for_post' );
+
+// restoring a post from the trash? reassign any PMPro page settings cleared when it was trashed
+function pmpro_restore_page_settings_for_post( $post_id = null ) {
+	global $pmpro_pages;
+
+	if ( empty( $post_id ) ) {
+		return;
+	}
+
+	$cleared = get_post_meta( $post_id, '_pmpro_cleared_page_settings', true );
+	if ( empty( $cleared ) || ! is_array( $cleared ) ) {
+		return;
+	}
+
+	foreach ( $cleared as $name ) {
+		// Don't overwrite a page that was reassigned while this one was in the trash.
+		if ( empty( get_option( 'pmpro_' . $name . '_page_id' ) ) ) {
+			update_option( 'pmpro_' . $name . '_page_id', $post_id );
+			$pmpro_pages[ $name ] = $post_id;
+		}
+	}
+
+	delete_post_meta( $post_id, '_pmpro_cleared_page_settings' );
+}
+add_action( 'untrashed_post', 'pmpro_restore_page_settings_for_post' );
 
 /**
  * Delete all membership data for a specific user from the membership users table.

@@ -3,6 +3,10 @@
  * Logic for CloudFlare Turnstile.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Register Cloudflare Turnstile as an available captcha service.
  *
@@ -72,6 +76,13 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 
 	// Don't show it more than once on a screen. This is for "PayPal Express".
 	if ( pmpro_get_session_var( 'pmpro_cloudflare_turnstile_validated' ) ) {
+		return $okay;
+	}
+
+	// Let Stripe's resubmission after card authentication through. Stripe.js submits it before the customer can solve the new widget, and it can only confirm the same payment.
+	$payment_intent_id = pmpro_get_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id' );
+	if ( ! empty( $payment_intent_id ) && ! empty( $_REQUEST['payment_intent_id'] ) && hash_equals( $payment_intent_id, sanitize_text_field( wp_unslash( $_REQUEST['payment_intent_id'] ) ) ) ) {
+		pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id' );
 		return $okay;
 	}
 
@@ -176,8 +187,8 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_cloudflare_turnstile_settings' 
 function pmpro_cloudflare_turnstile_settings_save() {
 	// Keep the legacy on/off option in sync with the captcha setting for backwards compatibility.
 	update_option( 'pmpro_cloudflare_turnstile', 'turnstile' === pmpro_captcha() ? 1 : 0, false );
-	pmpro_setOption( 'cloudflare_turnstile_site_key', sanitize_text_field( $_POST['cloudflare_turnstile_site_key'] ) );
-	pmpro_setOption( 'cloudflare_turnstile_secret_key', sanitize_text_field( $_POST['cloudflare_turnstile_secret_key'] ) );
+	pmpro_setOption( 'cloudflare_turnstile_site_key', isset( $_POST['cloudflare_turnstile_site_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cloudflare_turnstile_site_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce (pmpro_securitysettings_nonce) verified in adminpages/securitysettings.php before the pmpro_save_security_settings action fires.
+	pmpro_setOption( 'cloudflare_turnstile_secret_key', isset( $_POST['cloudflare_turnstile_secret_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cloudflare_turnstile_secret_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce (pmpro_securitysettings_nonce) verified in adminpages/securitysettings.php before the pmpro_save_security_settings action fires.
 }
 add_action( 'pmpro_save_security_settings', 'pmpro_cloudflare_turnstile_settings_save' );
 
@@ -206,6 +217,7 @@ function pmpro_cloudflare_turnstile_get_error_message() {
  */
 function pmpro_after_checkout_reset_cloudflare_turnstile() {
     pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_validated' );
+    pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id' );
 }
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
 add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_cloudflare_turnstile' );
@@ -309,7 +321,7 @@ function pmpro_cloudflare_turnstile_lostpassword_check( $errors, $user_data ) {
 	// Only check submissions from the PMPro or wp-login.php lost password forms. This hook
 	// also fires for other plugins that call retrieve_password() from their own forms,
 	// which never displayed our captcha.
-	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_lostpassword' ) && ! did_action( 'login_form_retrievepassword' ) ) {
+	if ( empty( $_REQUEST['pmpro_login_form_used'] ) && ! did_action( 'login_form_lostpassword' ) && ! did_action( 'login_form_retrievepassword' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag; only decides whether to require a captcha on the public lost password form.
 		return;
 	}
 
@@ -322,3 +334,23 @@ function pmpro_cloudflare_turnstile_lostpassword_check( $errors, $user_data ) {
 	}
 }
 add_action( 'lostpassword_post', 'pmpro_cloudflare_turnstile_lostpassword_check', 10, 2 );
+
+/**
+ * Clear the CloudFlare Turnstile session variable when payment fails
+ * so that each new payment attempt requires a new Turnstile check.
+ *
+ * @since TBD
+ *
+ * @param MemberOrder $order The order that failed to process.
+ */
+function pmpro_failed_payment_reset_cloudflare_turnstile( $order ) {
+	pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_validated' );
+
+	// Stripe fails on purpose when the card needs authentication, then resubmits the form with the PaymentIntent ID after the customer authenticates. Remember that PaymentIntent so only that resubmission skips the check.
+	$payment_intent = $order->stripe_payment_intent;
+	if ( ! empty( $payment_intent ) && 'requires_action' === $payment_intent->status ) {
+		pmpro_set_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id', $payment_intent->id );
+	}
+}
+add_action( 'pmpro_checkout_processing_failed', 'pmpro_failed_payment_reset_cloudflare_turnstile' );
+add_action( 'pmpro_update_billing_failed', 'pmpro_failed_payment_reset_cloudflare_turnstile' );

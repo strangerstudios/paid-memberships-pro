@@ -2,6 +2,10 @@
 /**
  * Render the Membership Billing block on the frontend.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 $output = pmpro_loadTemplate( 'billing', 'local', 'pages' );
 ?>
 <div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>

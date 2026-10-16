@@ -10,6 +10,10 @@
  *
  * @author Paid Memberships Pro
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 	<?php
