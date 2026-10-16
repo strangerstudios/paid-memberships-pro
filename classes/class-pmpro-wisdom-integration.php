@@ -198,17 +198,8 @@ class PMPro_Wisdom_Integration {
 		}
 
 		if (
-			// localhost
-			$this->host_starts_with( $host, 'localhost' ) ||
-
-			// domains starting with
-			$this->host_starts_with( $host, 'stage' ) ||
-			$this->host_starts_with( $host, 'staging' ) ||
-
-			// subdomains
-			$this->host_starts_with( $host, 'dev.' ) ||
-			$this->host_starts_with( $host, 'test.' ) ||
-			$this->host_starts_with( $host, 'testing.' ) ||
+			// localhost and environment labels (staging., stage-2., dev1., test.)
+			$this->host_has_environment_prefix( $host ) ||
 
 			// local tlds
 			$this->host_ends_with( $host, '.test' ) ||
@@ -233,6 +224,22 @@ class PMPro_Wisdom_Integration {
 		}
 
 		return $is_local;
+	}
+
+	/**
+	 * Check whether a hostname starts with an environment label.
+	 *
+	 * "staging" counts as a bare prefix. localhost, dev, stage, test, and testing need a dot,
+	 * dash, or digit after them so brand names like stagecoach.com or devon.org stay production.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $host Lowercased hostname without port or trailing dot.
+	 *
+	 * @return bool Whether the hostname starts with an environment label.
+	 */
+	protected function host_has_environment_prefix( $host ) {
+		return (bool) preg_match( '/^staging|^localhost(?:\.|$)|^(?:dev|stage|test|testing)(?:[.-]|\d+(?:[.-]|$)|$)/', $host );
 	}
 
 	/**
