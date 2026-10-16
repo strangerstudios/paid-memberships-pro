@@ -437,8 +437,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			 *
 			 * Runs only on the data query, not the count query. Use this together with
 			 * pmpro_memberslist_sortable_columns and pmpro_memberslist_allowed_orderbys to make
-			 * a custom column sortable. Because the query groups by u.ID and mu.membership_id,
-			 * the ORDER BY expression for a joined column must be wrapped in an aggregate like MIN().
+			 * a custom column sortable. Use the plain joined column as the ORDER BY expression.
+			 * Do not wrap it in an aggregate like MIN(): most views do not group rows, and MySQL
+			 * rejects an aggregate in the ORDER BY of a query without GROUP BY.
 			 *
 			 * @since TBD
 			 *
@@ -547,6 +548,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		if ( ! $count ) {
 			if ( $group_rows ) {
 				$sqlQuery .= ' GROUP BY u.ID, mu.membership_id ';
+			} else {
+				// MySQL rejects an aggregate in ORDER BY without GROUP BY, so sort the name columns by the plain meta value.
+				$orderby = str_replace( array( 'MIN(um_first.meta_value)', 'MIN(um_last.meta_value)' ), array( 'um_first.meta_value', 'um_last.meta_value' ), $orderby );
 			}
 
 			$sqlQuery .= " ORDER BY $orderby $order, u.ID $order ";
