@@ -160,11 +160,17 @@ class PMPro_Email_Template_Checkout_Paid extends PMPro_Email_Template {
 			$membership_level = pmpro_getLevel( $order->membership_id );
 		}
 
-		// Show the first payment date of a delayed subscription as of the checkout date. Clone the level
-		// since membership levels for a user are cached.
+		// Show the first payment date of a delayed subscription. Clone the level since membership levels
+		// for a user are cached.
 		if ( ! empty( $membership_level ) ) {
 			$membership_level = clone $membership_level;
-			$membership_level->profile_start_date = pmpro_get_subscription_delay_date( $membership_level->id, ! empty( $membership_level->code_id ) ? $membership_level->code_id : null, $order->getTimestamp() );
+			if ( ! empty( $order->membership_level->profile_start_date ) ) {
+				// Use the date that checkout sent to the gateway, which Add Ons like Proration may have changed.
+				$membership_level->profile_start_date = pmpro_calculate_profile_start_date( $order, 'Y-m-d H:i:s' );
+			} else {
+				// The order doesn't have its checkout level, so get the delay date as of the checkout date.
+				$membership_level->profile_start_date = pmpro_get_subscription_delay_date( $membership_level->id, ! empty( $membership_level->code_id ) ? $membership_level->code_id : null, $order->getTimestamp() );
+			}
 		}
 
 		$confirmation_message = '';
