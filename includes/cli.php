@@ -273,9 +273,9 @@ class PMPro_CLI extends \WP_CLI_Command {
 	}
 
 	/**
-	 * Add a membership level (legacy name for add-level).
+	 * Add a membership level, or remove all levels with --level=0.
 	 *
-	 * Prefer `wp pmpro member add-level`. `--level=0` still cancels all levels.
+	 * Same as `wp pmpro member add-level`, except `--level=0` removes all of the member's levels.
 	 *
 	 * ## OPTIONS
 	 *
@@ -335,9 +335,9 @@ class PMPro_CLI extends \WP_CLI_Command {
 	}
 
 	/**
-	 * Cancel a member's membership (legacy name for remove-level).
+	 * Remove one level, or all levels if --level is omitted.
 	 *
-	 * Prefer `wp pmpro member remove-level` when removing one level.
+	 * Same as `wp pmpro member remove-level` when --level is given.
 	 *
 	 * ## OPTIONS
 	 *
