@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Email_Template {
 	/**
@@ -107,13 +110,13 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'{{ expiration_date }}' => esc_html__( 'The date when the member\'s current access expires.', 'paid-memberships-pro' ),
-			'{{ checkout_url }}' => esc_html__( 'The checkout URL for the member\'s membership level.', 'paid-memberships-pro' ),
+			'{{ display_name }}' => __( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => __( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => __( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ expiration_date }}' => __( 'The date when the member\'s current access expires.', 'paid-memberships-pro' ),
+			'{{ checkout_url }}' => __( 'The checkout URL for the member\'s membership level.', 'paid-memberships-pro' ),
 		);
 	}
 

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Email_Template {
 	/**
@@ -97,13 +100,13 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'{{ next_payment_date }}' => esc_html__( 'The next payment date for the new Stripe subscription.', 'paid-memberships-pro' ),
-			'{{ billing_update_url }}' => esc_html__( 'The URL where the member can update billing information for the new Stripe subscription.', 'paid-memberships-pro' ),
+			'{{ display_name }}' => __( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => __( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => __( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ next_payment_date }}' => __( 'The next payment date for the new Stripe subscription.', 'paid-memberships-pro' ),
+			'{{ billing_update_url }}' => __( 'The URL where the member can update billing information for the new Stripe subscription.', 'paid-memberships-pro' ),
 		);
 	}
 
