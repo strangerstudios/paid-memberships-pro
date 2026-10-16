@@ -750,7 +750,7 @@ function pmpro_recurring_emails_deprecated() {
 	if ( ! function_exists( 'pmpror_recurring_emails' ) ) {
 		function pmpror_recurring_emails() {
 			_deprecated_function( __FUNCTION__, '3.2' );
-			pmpro_cron_recurring_payment_reminders();
+			PMPro_Recurring_Actions::instance()->recurring_payment_reminders();
 		}
 	}
 
@@ -780,7 +780,7 @@ function pmpro_recurring_emails_deprecated() {
 	if ( ! function_exists( 'pmpror_recurring_emails_legacy' ) ) {
 		function pmpror_recurring_emails_legacy() {
 			_deprecated_function( __FUNCTION__, '3.2' );
-			pmpro_cron_recurring_payment_reminders();
+			PMPro_Recurring_Actions::instance()->recurring_payment_reminders();
 		}
 	}
 
