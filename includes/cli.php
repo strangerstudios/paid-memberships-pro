@@ -1038,9 +1038,17 @@ WP_CLI::add_command( 'pmpro subscription list', array( $pmpro_cli, 'subscription
 WP_CLI::add_command( 'pmpro subscription get', array( $pmpro_cli, 'subscription_get' ) );
 WP_CLI::add_command( 'pmpro subscription sync', array( $pmpro_cli, 'subscription_sync' ) );
 
-/**
- * Fires after PMPro registers its core WP-CLI commands, so Add Ons can register their own.
- *
- * @since TBD
- */
-do_action( 'pmpro_cli_init' );
+add_action(
+	'cli_init',
+	function () {
+		/**
+		 * Fires after PMPro registers its core WP-CLI commands, so Add Ons can register their own.
+		 *
+		 * Runs on WP-CLI's cli_init hook (during init), after all plugins have loaded,
+		 * so Add Ons can hook it from their main plugin file.
+		 *
+		 * @since TBD
+		 */
+		do_action( 'pmpro_cli_init' );
+	}
+);
