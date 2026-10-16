@@ -77,8 +77,10 @@ function pmpro_checkout_level_set_expiration_date( $level ) {
 		$days_until_expiration = intval( round( ( strtotime( $resolved_expiration_date ) - strtotime( date( 'Y-m-d', current_time( 'timestamp' ) ) ) ) / DAY_IN_SECONDS ) );
 
 		// A fixed date that is today or already passed closes the level to new checkouts, like
-		// the retired Add On. Gateway notifications for a payment already taken still apply it
-		// and expire the membership after one day rather than never.
+		// the retired Add On. The current_filter() check separates new checkouts, which run
+		// pmpro_checkout_level, from the gateway notification filters that this function is
+		// also hooked to. Those run after a payment is taken, so they still apply the date and
+		// expire the membership after one day rather than never.
 		if ( $days_until_expiration < 1 && 'pmpro_checkout_level' === current_filter() ) {
 			return null;
 		}
