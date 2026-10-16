@@ -81,7 +81,7 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 
 	// Let Stripe's resubmission after card authentication through. Stripe.js submits it before the customer can solve the new widget, and it can only confirm the same payment.
 	$payment_intent_id = pmpro_get_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id' );
-	if ( ! empty( $payment_intent_id ) && ! empty( $_REQUEST['payment_intent_id'] ) && hash_equals( $payment_intent_id, sanitize_text_field( wp_unslash( $_REQUEST['payment_intent_id'] ) ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout or billing update; nonce verified in preheaders/checkout.php or preheaders/billing.php. The ID is only compared to the one saved in the session.
+	if ( ! empty( $payment_intent_id ) && ! empty( $_REQUEST['payment_intent_id'] ) && hash_equals( $payment_intent_id, sanitize_text_field( wp_unslash( $_REQUEST['payment_intent_id'] ) ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only compared to the payment intent ID saved in this user's session; runs after the checkout/billing nonce check.
 		pmpro_unset_session_var( 'pmpro_cloudflare_turnstile_payment_intent_id' );
 		return $okay;
 	}

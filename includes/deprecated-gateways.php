@@ -3,8 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro subscriptions and subscription meta custom tables, which have no WordPress API or object cache layer.
-
 /**
  * Deprecated gateway handling.
  *
@@ -123,7 +121,7 @@ function pmpro_deprecated_gateway_get_subscription_counts( $gateway ) {
 		'sandbox' => 0,
 	);
 
-	$rows = $wpdb->get_results(
+	$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro subscriptions custom table, which has no WordPress API or object cache layer.
 		$wpdb->prepare(
 			"SELECT gateway_environment, COUNT(*) as count
 				FROM {$wpdb->pmpro_subscriptions}
@@ -158,7 +156,7 @@ function pmpro_deprecated_gateway_get_active_subscription_ids( $gateway, $enviro
 	$environment_condition = 'live' === $environment ? "gateway_environment = 'live'" : "gateway_environment != 'live'";
 
 	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $environment_condition is only ever one of the two hard-coded clauses above.
-	$subscription_ids = $wpdb->get_col(
+	$subscription_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro subscriptions custom table, which has no WordPress API or object cache layer.
 		$wpdb->prepare(
 			"SELECT id
 				FROM {$wpdb->pmpro_subscriptions}
@@ -709,7 +707,7 @@ function pmpro_deprecated_gateway_cancel_old_subscription( $subscription, $gatew
 function pmpro_deprecated_gateway_get_cancel_pending_count( $gateway ) {
 	global $wpdb;
 
-	return (int) $wpdb->get_var(
+	return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro subscriptions and subscription meta custom tables, which have no WordPress API or object cache layer.
 		$wpdb->prepare(
 			"SELECT COUNT(*)
 				FROM {$wpdb->pmpro_subscriptions} s
@@ -733,7 +731,7 @@ function pmpro_deprecated_gateway_get_cancel_pending_count( $gateway ) {
 function pmpro_deprecated_gateway_clear_cancel_pending( $gateway ) {
 	global $wpdb;
 
-	$wpdb->query(
+	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Deletes from the PMPro subscription meta custom table with a join, which no WordPress API supports.
 		$wpdb->prepare(
 			"DELETE sm
 				FROM {$wpdb->pmpro_subscriptionmeta} sm
@@ -1415,7 +1413,7 @@ function pmpro_deprecated_gateway_get_needs_payment_method_count() {
 	if ( false === $count ) {
 		$environment_condition = 'live' === $environment ? "s.gateway_environment = 'live'" : "s.gateway_environment != 'live'";
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $environment_condition is only ever one of the two hard-coded clauses above.
-		$count = (int) $wpdb->get_var(
+		$count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro subscriptions and subscription meta custom tables, which have no WordPress API; the result is cached in a transient.
 			"SELECT COUNT(*)
 				FROM {$wpdb->pmpro_subscriptions} s
 				INNER JOIN {$wpdb->pmpro_subscriptionmeta} sm
