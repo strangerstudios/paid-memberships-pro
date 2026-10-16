@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.8.9
+Stable tag: 3.8.99
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,65 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.9 RC1 - 2026-10-16 =
+* SECURITY: Improved escaping and SQL query preparation throughout the plugin. #3827 (@dparker1005)
+* SECURITY: Added direct file access protection to plugin files. #3828 (@dparker1005)
+* SECURITY: Improved request input handling and redirect safety throughout the plugin. #3829 (@dparker1005)
+* FEATURE: Merged the Subscription Delays Add On into core. The new First Recurring Payment setting on levels and custom pricing discount codes can delay the first recurring payment by a number of days or until a date set with a date pattern. #3630 (@dparker1005, @kimcoleman)
+* FEATURE: Merged the Set Expiration Dates Add On into core. Levels and custom pricing discount codes can expire memberships on a date set with a date pattern. #3630 (@dparker1005, @kimcoleman)
+* FEATURE: Added percentage and fixed amount discount code types alongside the existing per-level custom pricing. The discount is calculated from each level's current pricing and can apply to the initial payment, recurring payments, or both, while the billing cycle, trial, and expiration come from the level. #3727 (@dparker1005)
+* FEATURE: Added a migration tool for deprecated gateways, opened from the "Migrate Subscriptions Off This Gateway" button on the gateway's Payment Settings page. It recreates active subscriptions at Stripe (or sets the memberships to expire), can email members, cancels the old gateway subscriptions, and supports a dry run. A final step deletes the gateway's stored API credentials and stops loading the gateway; orders and subscriptions are kept. #3700 (@dparker1005)
+* FEATURE: Added WordPress Abilities API support (WordPress 6.9+) for querying membership levels, orders, subscriptions, and PMPro search results, and for viewing, changing, and cancelling a member's memberships. Abilities are available over the REST API and to MCP clients through an MCP adapter plugin. #3736, #3757 (@mircobabini, @dparker1005)
+* FEATURE: Added a `wp pmpro` WP-CLI command set for memberships, members, levels, orders, and subscriptions, and the `pmpro_cli_init` action for Add Ons to register their own commands. #3740, #3757 (@flintfromthebasement, @dparker1005)
+* FEATURE: Added `/pmpro/v1/memberships`, `/pmpro/v1/orders`, and `/pmpro/v1/subscriptions` REST API collection endpoints with filtering, sorting, and pagination. #3740, #3757 (@flintfromthebasement, @dparker1005)
+* ENHANCEMENT: The Subscription Delays and Set Expiration Dates Add Ons are now automatically deactivated and can no longer be activated. Their saved settings are used as-is, their filters still run, and their helper functions remain as deprecated wrappers. Custom code that removed the Add Ons' own hook callbacks no longer has any effect. #3630 (@dparker1005)
+* ENHANCEMENT: Added an "Awaiting Payment Method" filter and tag on the Subscriptions list, an admin notice, and a Membership Account page notice for subscriptions migrated to Stripe that have no payment method on file. The default Recurring Payment Reminder email now asks these members to add a payment method. #3700 (@dparker1005)
+* ENHANCEMENT: Added the "Deprecated Gateway Stripe Migration" and "Deprecated Gateway Checkout Required" email templates, shown on sites that still use a deprecated gateway. #3700 (@dparker1005)
+* ENHANCEMENT: The "Update Billing Info" links on the Membership Account and Billing pages no longer require the subscription to have an order. The Billing page link now only shows for subscriptions on the active gateway when that gateway supports payment method updates, matching the Membership Account page. #3700 (@dparker1005)
+* ENHANCEMENT: Added the `pmpro_deprecated_gateway_batch_size` filter to set how many subscriptions the deprecated gateway migration processes per batch. #3700 (@dparker1005)
+* ENHANCEMENT: Added a captcha to the login and lost password forms, including wp-login.php, when reCAPTCHA or Cloudflare Turnstile is enabled. The captcha is only shown after a failed login or other suspicious activity from the visitor's IP address in the last 15 minutes. #3765 (@dparker1005)
+* ENHANCEMENT: Replaced the separate reCAPTCHA and Cloudflare Turnstile settings with a single Captcha setting on the Security Settings page, so only one captcha runs at a time. Existing settings carry over, and sites that had both enabled now use reCAPTCHA. Added the `pmpro_captcha_services` filter for registering other captcha services. #3765 (@dparker1005)
+* ENHANCEMENT: Added the `pmpro_login_form_before_submit_button` action and the `pmpro_authenticate_login_checks`, `pmpro_login_forms_handler_message`, and `pmpro_login_forms_handler_msgt` filters to the login flow. #3765 (@dparker1005)
+* ENHANCEMENT: A failed payment at checkout or on the Update Billing page now requires a new reCAPTCHA or Cloudflare Turnstile check before the next attempt. Thanks to Freelance Studio for the report. #3885, #3887 (@dparker1005)
+* ENHANCEMENT: Membership Account page now shows when a membership's latest payment is past due and shows a card for memberships with a pending checkout that is waiting on payment. #3714 (@kimcoleman, @dparker1005)
+* ENHANCEMENT: Added the `pmpro_membership_account_after_pending_level_card_content` action for adding content to a pending membership card on the Membership Account page. #3714 (@kimcoleman, @dparker1005)
+* ENHANCEMENT: Added an optional Advanced Setting to automatically delete abandoned checkout users (Potential Spam Checkouts) after 30 days. Users with any membership history, users who can edit posts, and users who have written posts are never deleted. Added the `pmpro_abandoned_signup_deletion_days` filter to change the retention period. #3737, #3901 (@dparker1005)
+* ENHANCEMENT: Added Status, Usage and Level filters to the Discount Codes admin page. #3896 (@dparker1005)
+* ENHANCEMENT: Added a date filter (All Time, Last 7 Days, Last 30 Days, Last 12 Months, or a custom range) to the Email Log report. #3692 (@dwanjuki)
+* ENHANCEMENT: The Email Log now records the file names of email attachments and shows them in the log details and the personal data exporter. #3773 (@faisalahammad)
+* ENHANCEMENT: Added the `{{ billing_update_url }}` email template variable to the Payment Failure email and linked to the Billing page in its default body. #3892 (@dparker1005)
+* ENHANCEMENT: The Admin Activity Email now reports active members and active memberships as separate numbers when they differ. #3768 (@flintfromthebasement, @dparker1005)
+* ENHANCEMENT: Added Product/Offer JSON-LD structured data for membership levels on the levels page, the checkout page, and pages using the Single Membership Level block. It can be turned off with the Structured Data setting on the Advanced Settings page, and developers can customize it with the new `pmpro_structured_data_*` filters. #3735 (@flintfromthebasement, @dparker1005)
+* ENHANCEMENT: Added an optional Level Image setting on the edit level page, used as the product image in membership level structured data. #3735, #3906 (@flintfromthebasement, @dparker1005)
+* ENHANCEMENT: Added Elementor v4 (atomic elements) support to PMPro content restriction controls. Added the `pmpro_elementor_atomic_element_types` filter to change which atomic elements support restriction. #3709 (@dparker1005)
+* ENHANCEMENT: Added a new `pmpro_view_as` capability so the "View As" toolbar in the admin bar can be granted to roles that should not have `manage_options`. #3786 (@faisalahammad)
+* ENHANCEMENT: Added the `pmpro_memberslist_sortable_columns` and `pmpro_memberslist_sql_join` filters and made the First Name and Last Name columns sortable in the Members List. #3805, #3902 (@faisalahammad, @dparker1005)
+* ENHANCEMENT: Improved Members List performance for the default and single-level views by no longer grouping rows when each row is already one member and level. Added the `pmpro_members_list_group_rows` filter so custom code that adds joins through `pmpro_members_list_sql` can turn grouping back on. #3833 (@flintfromthebasement)
+* ENHANCEMENT: Added the `pmpro_is_page()` function to safely check PMPro pages, with optional shortcode and block detection for custom pages. #3810 (@faisalahammad, @dparker1005)
+* ENHANCEMENT: Added screen reader announcements to the Liquid autocomplete in the email template editor. #3819 (@kimcoleman, @RachelRVasquez, @dparker1005)
+* ENHANCEMENT: Reworded checkbox labels on the Edit Membership Level and Edit Discount Code screens to describe what each setting does. #3874 (@dparker1005)
+* ENHANCEMENT: Added `pmpro_build_settings_fields()` and related helpers for building admin settings screens from field arrays, and converted most core settings screens to use them. #3721 (@dparker1005)
+* ENHANCEMENT: Added the `pmpro_get_memberships()` function, an `offset` argument for `MemberOrder::get_orders()`, and `offset` and `return_count` arguments for `PMPro_Subscription::get_subscriptions()`. #3736, #3740 (@mircobabini, @flintfromthebasement)
+* BUG FIX: Date patterns now resolve consistently for subscription delays and set expiration dates. Day 29-31 patterns use the last day of shorter months, a pattern that lands on today moves to its next occurrence instead of a year later, and monthly expiration patterns use the current month when the day has not passed yet, as in Set Expiration Dates 0.7 and earlier. #3630 (@dparker1005)
+* BUG FIX: Fixed the frontend Change Password form changing passwords that contain certain characters (such as "<", a "%" code like "%41", or repeated spaces) before saving them, which locked the member out. #3857 (@dparker1005)
+* BUG FIX: Fixed the frontend Edit Profile form removing backslashes from saved names. #3858 (@dparker1005)
+* BUG FIX: Fixed values containing quotes being saved or sent with extra backslashes on the frontend Update Billing page, the Payment Settings page, and the Edit Order screen. #3829 (@dparker1005)
+* BUG FIX: Fixed the User Fields settings page deleting all saved fields when the submitted settings could not be read. #3829 (@dparker1005)
+* BUG FIX: Fixed a fatal error when the reCAPTCHA verification request to Google fails with a network error. #3765 (@dparker1005)
+* BUG FIX: Fixed the Billing page losing the selected subscription when redirecting a logged-out member to log in. #3892 (@dparker1005)
+* BUG FIX: Fixed the Admin Activity Email counting memberships that belong to deleted users and merging membership levels that share the same name. #3768 (@flintfromthebasement, @dparker1005)
+* BUG FIX: Fixed the Members per Level report counting a member more than once when they had duplicate active rows for the same level, and showing outdated counts after a user was deleted. #3768 (@flintfromthebasement, @dparker1005)
+* BUG FIX: Fixed Members List pages repeating or skipping members who share the same registration date. #3833 (@flintfromthebasement)
+* REFACTOR: Settings screens built with the new field helpers show and hide dependent rows with a `data-pmpro-depends` attribute instead of inline scripts. The Advanced Settings Hide Ads setting's ID changed from `pmpro-hideads` to `hideads`, the `pmpro_updateHideAdsTRs()` JavaScript function was removed, and the Recurring Subscription, Custom Trial, Membership Expiration, and Disable New Signups checkboxes on the Edit Membership Level screen now submit `1` instead of `yes`. #3721 (@dparker1005)
+
+= Next Release - TBD =
+* BUG FIX: The Stripe webhook now answers 503 instead of 200 when it can't retrieve an event because of a connection error, rate limit, Stripe server error, or an authentication or permission error (such as a revoked API key), so Stripe sends the event again and the failure shows in the Stripe dashboard. #3890 (@terminalstate)
+* BUG FIX: With async Stripe webhook processing on, a scheduled run that can't retrieve the event from Stripe now tries again up to five times instead of dropping the event. #3898 (@terminalstate)
+* BUG FIX: Fixed an issue where a Stripe payment that failed or needed authentication and was later paid could create a duplicate order and send the "Payment Failure" or "Payment Action Required" emails. This was most likely when Stripe webhooks are processed asynchronously. #3897 (@dparker1005)
+* BUG FIX: Fixed an issue where the email greeting used the original recipient's name when an email template had a custom To address. #3854 (@faisalahammad)
+* BUG FIX: Fixed a fatal error when calling the deprecated `pmpror_recurring_emails()` or `pmpror_recurring_emails_legacy()` functions. They now queue reminder emails via Action Scheduler. #3900 (@dparker1005)
+* BUG FIX: Usage tracking no longer treats production sites whose hostnames start with "stage" or "localhost" followed by other letters (such as stagecoach.com) as development sites, and now treats hostnames that start with dev, stage, test, or testing followed by a dash or number (such as dev-2.example.com) as development sites. #3894 (@flintfromthebasement)
+
 = 3.8.9 - 2026-10-12 =
 * SECURITY: Fixed an issue where a failed Cloudflare Turnstile check allowed later checkout and billing update submissions in the same session to skip the security check. #3884 (@dparker1005, Freelance Studio)
 * ENHANCEMENT: Added the `pmpro_account_profile_list_items` filter to customize the profile items on the Membership Account page. The Username and Email items now also have their own CSS classes. #3870 (@dparker1005)

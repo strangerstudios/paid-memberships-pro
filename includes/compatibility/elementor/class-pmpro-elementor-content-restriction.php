@@ -75,7 +75,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	 * messages, etc.) are intentionally excluded: hiding them in isolation breaks their parent widget.
 	 * Atomic widgets are handled via the render_content filter and are not included here.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return array Array of atomic container element type names.
 	 */
@@ -102,7 +102,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	 * classes and the control classes are always verified together. If only one set were present we
 	 * could end up binding controls to props that were never registered.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return bool True if all required Elementor v4 classes exist.
 	 */
@@ -131,7 +131,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	 * - The "no access" message only applies when showing content to members, never when hiding
 	 *   content from them, so show_noaccess is forced off whenever the rule is inverted.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array $settings The element's resolved settings (atomic get_atomic_settings() or classic get_active_settings()).
 	 * @return array Parameters for pmpro_apply_block_visibility().
@@ -152,7 +152,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	/**
 	 * Add PMPro props to Elementor v4 atomic element schemas.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array $schema The atomic element props schema.
 	 * @return array
@@ -244,7 +244,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	/**
 	 * Add PMPro controls to Elementor v4 atomic elements.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array  $controls The atomic controls.
 	 * @param object $element  The atomic element.
@@ -408,7 +408,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	 *
 	 * Widgets are handled separately via pmpro_elementor_render_content(), so they are skipped here.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param object $element The Elementor element being rendered.
 	 */
@@ -455,7 +455,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 	/**
 	 * Output the buffered "no access" message in place of a restricted atomic container's content.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param object $element The Elementor element being rendered.
 	 */

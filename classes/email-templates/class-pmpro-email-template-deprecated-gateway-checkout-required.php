@@ -28,7 +28,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Constructor.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param WP_User $user The user object of the user to send the email to.
 	 * @param int     $membership_level_id The ID of the membership level.
@@ -43,7 +43,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Get the email template slug.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The email template slug.
 	 */
@@ -54,7 +54,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Get the "nice name" of the email template.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The "nice name" of the email template.
 	 */
@@ -65,7 +65,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Get "help text" to display to the admin when editing the email template.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The help text.
 	 */
@@ -76,7 +76,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Get the default subject for the email.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The default subject.
 	 */
@@ -87,7 +87,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Get the default body content for the email.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The default body content.
 	 */
@@ -104,7 +104,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Get the email template variables for the email paired with a description.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return array The email template variables for the email.
 	 */
@@ -123,7 +123,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Get the email address to send the email to.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The email address.
 	 */
@@ -134,7 +134,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Get the name of the email recipient.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The name.
 	 */
@@ -145,7 +145,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Get the email template variables for the email.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return array The email template variables.
 	 */
@@ -173,7 +173,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 	/**
 	 * Returns the arguments to send the test email from the abstract class.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return array The arguments to send the test email from the abstract class.
 	 */
@@ -191,7 +191,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Checkout_Required extends PMPro_Em
 /**
  * Register the email template.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $email_templates The email templates.
  * @return array The modified email templates array.

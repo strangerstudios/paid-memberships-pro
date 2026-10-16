@@ -485,7 +485,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 									 * level and the level object comes from pmpro_getLevel(), so it does not have membership
 									 * properties like startdate and enddate.
 									 *
-									 * @since TBD
+									 * @since 3.9
 									 *
 									 * @param object      $pending_order_level The membership level that is waiting on payment.
 									 * @param MemberOrder $pending_order       The pending order that the membership is waiting on.

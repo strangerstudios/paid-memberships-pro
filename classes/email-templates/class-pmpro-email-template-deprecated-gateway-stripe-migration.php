@@ -21,7 +21,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Constructor.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param PMPro_Subscription $subscription The Stripe subscription.
 	 */
@@ -33,7 +33,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Get the email template slug.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The email template slug.
 	 */
@@ -44,7 +44,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Get the "nice name" of the email template.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The "nice name" of the email template.
 	 */
@@ -55,7 +55,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Get "help text" to display to the admin when editing the email template.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The help text.
 	 */
@@ -66,7 +66,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Get the default subject for the email.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The default subject.
 	 */
@@ -77,7 +77,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Get the default body content for the email.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The default body content.
 	 */
@@ -94,7 +94,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Get the email template variables for the email paired with a description.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return array The email template variables for the email.
 	 */
@@ -113,7 +113,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Get the email address to send the email to.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The email address.
 	 */
@@ -125,7 +125,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Get the name of the email recipient.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return string The name.
 	 */
@@ -137,7 +137,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Get the email template variables for the email.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return array The email template variables.
 	 */
@@ -163,7 +163,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 	/**
 	 * Returns the arguments to send the test email from the abstract class.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return array The arguments to send the test email from the abstract class.
 	 */
@@ -199,7 +199,7 @@ class PMPro_Email_Template_Deprecated_Gateway_Stripe_Migration extends PMPro_Ema
 /**
  * Register the email template.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $email_templates The email templates.
  * @return array The modified email templates array.

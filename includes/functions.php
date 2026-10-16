@@ -4227,7 +4227,7 @@ function pmpro_cleanup_memberships_users_table() {
  * shortcodes are registered during the `wp` action for the current post only, so content
  * detection is only reliable after that point.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $page          PMPro page key, e.g. 'checkout' or 'account'.
  * @param bool   $check_content Also check the queried page's content for the page shortcode or block.
@@ -5698,7 +5698,7 @@ function pmpro_update_post_level_restrictions( $post_id, $level_ids ) {
  * and the `wp pmpro membership list` CLI command, so both share the same filtering,
  * pagination, and output shape.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $args {
  *     Optional. Query arguments.

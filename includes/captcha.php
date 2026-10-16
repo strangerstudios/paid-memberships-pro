@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Get the registered captcha services.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return array Captcha services as slug => label.
  */
@@ -27,7 +27,7 @@ function pmpro_get_captcha_services() {
 	 * checkout display and validation hooks and gate its logic on
 	 * pmpro_captcha() returning its slug.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array $services Captcha services as slug => label.
 	 */
@@ -37,7 +37,7 @@ function pmpro_get_captcha_services() {
 /**
  * Get which captcha service is enabled, if any.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return string The slug of the enabled captcha service, or an empty string if no captcha is enabled.
  */
@@ -82,7 +82,7 @@ function pmpro_captcha() {
  * Activity is deliberately not cleared on a successful login, since on shared
  * IPs that would let an attacker reset the signal; it expires on its own.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return bool True if the current IP has recent suspicious activity.
  */
@@ -94,7 +94,7 @@ function pmpro_captcha_has_recent_spam_activity() {
 /**
  * Get the error message to show when a captcha check fails on a login or password reset form.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return string The error message. Escaped, may contain <strong> tags.
  */
@@ -110,7 +110,7 @@ function pmpro_captcha_failed_error_message() {
  * cached copy of the page could serve a captcha-less form to a visitor whose
  * submission would then be rejected.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_captcha_nocache_login_page() {
 	// Bail if no captcha is enabled.
@@ -135,7 +135,7 @@ add_action( 'template_redirect', 'pmpro_captcha_nocache_login_page' );
  * Check whether the current request includes a pmpro_captcha_failed error code
  * passed back to the login page in the URL.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return bool True if the request includes a captcha failed error code.
  */
@@ -159,7 +159,7 @@ function pmpro_is_captcha_failed_request() {
 /**
  * Show a message on the frontend login page when a captcha check failed.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $message The message to show.
  * @param string $msgt    The message type.
@@ -177,7 +177,7 @@ add_filter( 'pmpro_login_forms_handler_message', 'pmpro_captcha_failed_login_mes
 /**
  * Set the message type for the captcha failed message on the frontend login page.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $msgt The message type.
  * @return string $msgt The message type.

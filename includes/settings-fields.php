@@ -19,7 +19,7 @@
  *   - pmpro_build_settings_section_open() - start a section for custom body markup; pair with
  *     pmpro_build_settings_section_close().
  *
- * @since TBD
+ * @since 3.9
  *
  * @package Paid_Memberships_Pro
  */
@@ -33,7 +33,7 @@ defined( 'ABSPATH' ) || exit;
  * explicit `value` whenever the current value is not stored in that option, or when rendering a
  * checklist (checklists need an explicit array of selected values).
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $field {
  *     Field definition.
@@ -211,7 +211,7 @@ function pmpro_build_settings_field( $field ) {
  * This is the rendering atom behind pmpro_build_settings_field(). Composite fields also call it
  * for each inline sub-input so those rows reuse the same control markup as standalone rows.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $field Field definition. See pmpro_build_settings_field() for the supported keys.
  */
@@ -429,7 +429,7 @@ function pmpro_build_settings_input( $field ) {
  *
  * Keys are sanitized and values escaped, so the returned string is safe to echo into an HTML tag.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $field The field definition.
  * @return string The attribute string (leading space included), or ''.
@@ -454,7 +454,7 @@ function pmpro_build_settings_input_attrs( $field ) {
  * the browser will actually show; for text-like controls, the rendered value. Radio groups are
  * never recorded (they render without ids, so JS conditions cannot target them either).
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string     $id    The control id (the same as its name for helper-rendered controls).
  * @param array|null $state Optional. State to record: `value`, plus `checked` for checkboxes.
@@ -476,7 +476,7 @@ function pmpro_settings_rendered_state( $id, $state = null ) {
  *
  * Used by the `currency` field type and by composite rows that need a price control.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $name  The input name/id.
  * @param mixed  $value The current price value (formatted for display via pmpro_filter_price_for_text_field()).
@@ -541,7 +541,7 @@ function pmpro_build_settings_currency_input( $name, $value, $class = 'regular-t
  * new table. That keeps the list flat while still supporting copy, notices, scripts, hooks, and
  * custom table blocks between normal field rows.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $fields Ordered array of field definitions and submit/html/hook entries.
  */
@@ -595,7 +595,7 @@ function pmpro_build_settings_fields( $fields ) {
  * expressed as a fields list, or when existing custom markup should stay inline. For normal field
  * rows, intro copy, notices, scripts, and hooks, prefer pmpro_build_settings_section().
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $args {
  *     Section definition.
@@ -631,7 +631,7 @@ function pmpro_build_settings_section_open( $args ) {
 /**
  * Close a settings section opened with pmpro_build_settings_section_open().
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_build_settings_section_close() {
 	?>
@@ -646,7 +646,7 @@ function pmpro_build_settings_section_close() {
  * This is the common all-in-one form. The fields list may include normal rows plus html and hook
  * entries between rows; see pmpro_build_settings_fields().
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $args {
  *     Section definition.

@@ -7,7 +7,7 @@
  * snippets and machine-readable pricing for agents — not full merchant-listing
  * eligibility (no shipping/returns/GTIN).
  *
- * @since TBD
+ * @since 3.9
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Whether structured data output is enabled.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return bool
  */
@@ -28,7 +28,7 @@ function pmpro_structured_data_is_enabled() {
 	/**
 	 * Filter whether PMPro should emit membership-level structured data.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param bool $enabled Whether output is enabled.
 	 */
@@ -38,7 +38,7 @@ function pmpro_structured_data_is_enabled() {
 /**
  * Print JSON-LD structured data in wp_head when on a relevant page.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_structured_data_output() {
 	static $printed = false;
@@ -56,7 +56,7 @@ function pmpro_structured_data_output() {
 	 * Return empty/false to suppress output. Multi-level checkout integrations
 	 * can replace the context with authoritative level data here.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array|false $context {
 	 *     @type string $type                 Context type: levels_list|checkout|single_levels.
@@ -94,7 +94,7 @@ function pmpro_structured_data_output() {
 		/**
 		 * Filter the ItemList schema for multi-level pages.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param array $schema  ItemList schema.
 		 * @param array $context Resolved context.
@@ -116,7 +116,7 @@ add_action( 'wp_head', 'pmpro_structured_data_output', 20 );
 /**
  * Resolve the current page context for structured data.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return array|false
  */
@@ -136,7 +136,7 @@ function pmpro_structured_data_get_context() {
 			 * Default is to skip automatic output when more than one level is
 			 * being purchased together.
 			 *
-			 * @since TBD
+			 * @since 3.9
 			 *
 			 * @param array|false $context Default false (skip).
 			 * @param array       $level_ids Level IDs at checkout.
@@ -220,7 +220,7 @@ function pmpro_structured_data_get_context() {
 /**
  * Levels array matching the default levels page template.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return array
  */
@@ -238,7 +238,7 @@ function pmpro_structured_data_get_levels_list_levels() {
 /**
  * Normalize a mixed list of level objects into unique signup-eligible levels.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param mixed $levels Levels array or single level.
  * @return array
@@ -279,7 +279,7 @@ function pmpro_structured_data_normalize_levels( $levels ) {
  *
  * Walks nested blocks. Does not resolve reusable/synced pattern refs (v1).
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $content Post content.
  * @return int[]
@@ -298,7 +298,7 @@ function pmpro_structured_data_get_single_level_block_ids( $content ) {
 /**
  * Recursive helper for single-level block IDs.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $blocks Parsed blocks.
  * @return int[]
@@ -341,7 +341,7 @@ function pmpro_structured_data_collect_single_level_ids_from_blocks( $blocks ) {
 /**
  * Build Product schema for one membership level.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param object $level                Level object.
  * @param string $context_type         Context type string.
@@ -409,7 +409,7 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
 	 * Default: level image meta → site icon → custom logo → omitted. Image is
 	 * recommended for product snippets and required only for merchant listings.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param string $image        Image URL.
 	 * @param object $level        Level object.
@@ -424,7 +424,7 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
 	 * Filter the full Product schema for a membership level.
 	 * Return empty to skip this product.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array  $schema       Product schema.
 	 * @param object $level        Level object.
@@ -448,7 +448,7 @@ function pmpro_structured_data_build_product_schema( $level, $context_type = '',
  * (including after a trial) so agents can see the ongoing rate. Finite
  * billing_limit is modeled via billingDuration.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param object $level        Level object.
  * @param string $context_type Context type.
@@ -496,7 +496,7 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 	/**
 	 * Filter the Offer.seller Organization for membership structured data.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array  $seller Seller organization schema.
 	 * @param object $level  Level object.
@@ -554,7 +554,7 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 	/**
 	 * Filter the Offer schema for a membership level.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array  $offer        Offer schema.
 	 * @param object $level        Level object.
@@ -568,7 +568,7 @@ function pmpro_structured_data_build_offer( $level, $context_type = '' ) {
 /**
  * Build ItemList schema wrapping Product entries.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $products Product schema arrays.
  * @return array
@@ -603,7 +603,7 @@ function pmpro_structured_data_build_item_list_schema( $products ) {
  * Site icon, then custom logo. Empty when neither is set so we never publish
  * an image that doesn't represent the site's own branding.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return string Image URL or empty.
  */
@@ -625,7 +625,7 @@ function pmpro_structured_data_get_fallback_image() {
  * in crawlable JSON-LD. Checkout pages still use the discount-adjusted level
  * object for Offer.price when a code is active in the request.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param object $level Level object.
  * @return string
@@ -643,7 +643,7 @@ function pmpro_structured_data_get_level_checkout_url( $level ) {
 /**
  * Map PMPro cycle_period to UN/CEFACT unit codes used by schema.org.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $period Day|Week|Month|Year.
  * @return string Empty if unknown.
@@ -662,7 +662,7 @@ function pmpro_structured_data_cycle_unit_code( $period ) {
 /**
  * Format a price for schema.org (dot decimal, no currency symbol).
  *
- * @since TBD
+ * @since 3.9
  *
  * @param mixed $amount Amount.
  * @return string
@@ -689,7 +689,7 @@ function pmpro_structured_data_format_price_value( $amount ) {
 /**
  * Echo a JSON-LD script tag. Uses HEX flags so filtered values cannot break out of the script element.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $schema Schema array.
  */

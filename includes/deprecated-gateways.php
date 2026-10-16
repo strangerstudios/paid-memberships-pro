@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * deprecated gateway (either to placeholder Stripe subscriptions or to
  * expiration dates) so the stored gateway credentials can be removed.
  *
- * @since TBD
+ * @since 3.9
  */
 
 /**
@@ -35,7 +35,7 @@ function pmpro_get_deprecated_gateways() {
 /**
  * Get the list of deprecated gateways that are still loaded by this site.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return array
  */
@@ -56,7 +56,7 @@ function pmpro_get_undeprecated_gateways() {
 /**
  * Whether the site has any deprecated gateways still loaded.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return bool
  */
@@ -96,7 +96,7 @@ function pmpro_check_for_deprecated_gateways() {
  * to process it in another would leave the workflow unable to finish and
  * cleanup permanently blocked.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $environment Gateway environment value.
  * @return string 'live' or 'sandbox'.
@@ -108,7 +108,7 @@ function pmpro_deprecated_gateway_normalize_environment( $environment ) {
 /**
  * Get the number of active subscriptions for a gateway in each environment.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @return array Counts keyed 'live' and 'sandbox'. Unrecognized environments count as sandbox.
@@ -140,7 +140,7 @@ function pmpro_deprecated_gateway_get_subscription_counts( $gateway ) {
 /**
  * Get active subscription IDs for a gateway/environment after a given ID.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param string $environment Gateway environment. 'sandbox' matches every
@@ -179,7 +179,7 @@ function pmpro_deprecated_gateway_get_active_subscription_ids( $gateway, $enviro
 /**
  * Get the Action Scheduler group for a gateway/environment.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param string $environment Gateway environment.
@@ -192,7 +192,7 @@ function pmpro_deprecated_gateway_get_action_group( $gateway, $environment ) {
 /**
  * Whether pending or running batch actions exist for a gateway/environment.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param string $environment Gateway environment.
@@ -209,7 +209,7 @@ function pmpro_deprecated_gateway_has_scheduled_actions( $gateway, $environment 
 /**
  * Get the saved workflow state for a gateway/environment.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param string $environment Gateway environment.
@@ -223,7 +223,7 @@ function pmpro_deprecated_gateway_get_state( $gateway, $environment ) {
 /**
  * Merge changes into the saved workflow state for a gateway/environment.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param string $environment Gateway environment.
@@ -239,7 +239,7 @@ function pmpro_deprecated_gateway_update_state( $gateway, $environment, $changes
 /**
  * Record the result of processing one subscription in the workflow state and log.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param string $environment Gateway environment.
@@ -267,7 +267,7 @@ function pmpro_deprecated_gateway_record_result( $gateway, $environment, $outcom
 /**
  * Schedule a deprecated gateway workflow for the current environment.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param string $strategy Strategy slug: 'stripe' or 'expiration'.
@@ -411,7 +411,7 @@ function pmpro_deprecated_gateway_schedule( $gateway, $strategy, $send_email = t
  * Pending batches are unscheduled immediately; a batch that is mid-run will
  * finish its current group of subscriptions and then stop.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @return true|WP_Error
@@ -441,7 +441,7 @@ function pmpro_deprecated_gateway_stop( $gateway ) {
 /**
  * Process one batch of deprecated gateway subscriptions.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param string $environment Gateway environment.
@@ -506,7 +506,7 @@ function pmpro_deprecated_gateway_process_batch( $gateway, $environment, $strate
 	 * sequential gateway API calls, so a larger batch risks exceeding the PHP
 	 * execution time limit mid-run, which would break the chain to the next batch.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param int    $batch_size Number of subscriptions per batch.
 	 * @param string $gateway Gateway slug.
@@ -554,7 +554,7 @@ add_action( 'pmpro_deprecated_gateway_process_batch', 'pmpro_deprecated_gateway_
  * subscription allows billing_limit + 1 successful orders in total. One initial
  * order is assumed even if it predates the recorded order history.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param PMPro_Subscription $subscription The subscription to check.
  * @return int Remaining payments. 0 or less means the limit is already reached.
@@ -568,7 +568,7 @@ function pmpro_deprecated_gateway_get_remaining_payments( $subscription ) {
 /**
  * Get identifying details for a subscription log entry.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param PMPro_Subscription $subscription The subscription to describe.
  * @return string Subscription details for logs.
@@ -596,7 +596,7 @@ function pmpro_deprecated_gateway_get_subscription_log_description( $subscriptio
  * Build a process-subscription result, including the structured fields recorded
  * in the per-run migration CSV.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $outcome One of 'complete', 'skipped', 'needs_review'.
  * @param string $message Log message.
@@ -632,7 +632,7 @@ function pmpro_deprecated_gateway_subscription_result( $outcome, $message, $acti
  * this workflow. Their subscriptions are marked cancelled in PMPro and recorded
  * as needs_review so the admin cancels them in the gateway dashboard.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @return string Empty when the gateway can cancel subscriptions automatically.
@@ -661,7 +661,7 @@ function pmpro_deprecated_gateway_get_manual_cancel_reason( $gateway ) {
 /**
  * Cancel the old gateway subscription as the last step of processing it.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param PMPro_Subscription $subscription The deprecated gateway subscription.
  * @param string             $gateway Gateway slug.
@@ -699,7 +699,7 @@ function pmpro_deprecated_gateway_cancel_old_subscription( $subscription, $gatew
  * Deliberately not scoped to an environment: this gates cleanup, which deletes the
  * credentials for both environments at once, so the confirmation covers both.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @return int
@@ -724,7 +724,7 @@ function pmpro_deprecated_gateway_get_cancel_pending_count( $gateway ) {
  * Clear the pending-cancellation markers for a gateway once the admin confirms the
  * subscriptions were cancelled in the gateway dashboard.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  */
@@ -747,7 +747,7 @@ function pmpro_deprecated_gateway_clear_cancel_pending( $gateway ) {
 /**
  * Get the log note for a subscription that must be cancelled manually at the gateway.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param bool   $dry_run Whether to phrase the note for a dry run.
@@ -773,7 +773,7 @@ function pmpro_deprecated_gateway_get_manual_cancel_note( $gateway, $dry_run = f
  * subscription last. Cancelling flips the local status permanently, so anything
  * that must happen for the member needs to happen before that final step.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param int    $subscription_id Subscription ID.
  * @param string $gateway Gateway slug.
@@ -1159,7 +1159,7 @@ function pmpro_deprecated_gateway_process_subscription( $subscription_id, $gatew
  * selected: the stored credentials are shared by both environments, and
  * deleting them would strand any remaining live subscriptions.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @param bool   $cancel_pending_confirmed Whether the admin confirmed that subscriptions this
@@ -1291,7 +1291,7 @@ function pmpro_deprecated_gateway_cleanup_gateway( $gateway, $cancel_pending_con
  * Drives the member-facing account notice, the {{ needs_payment_method }}
  * recurring payment reminder variable, and the admin "awaiting payment method" count and filter.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param int $subscription_id The subscription to flag.
  */
@@ -1305,7 +1305,7 @@ function pmpro_deprecated_gateway_flag_needs_payment_method( $subscription_id ) 
 /**
  * Invalidate the cached "awaiting payment method" counts for both environments.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_deprecated_gateway_delete_needs_payment_method_count_cache() {
 	delete_transient( 'pmpro_deprecated_gateway_needs_pm_count_live' );
@@ -1315,7 +1315,7 @@ function pmpro_deprecated_gateway_delete_needs_payment_method_count_cache() {
 /**
  * Clear the no-payment-method flag for a migrated subscription.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param int $subscription_id The subscription to clear.
  */
@@ -1333,7 +1333,7 @@ function pmpro_deprecated_gateway_clear_needs_payment_method( $subscription_id )
  * against Stripe, throttled to one API call per subscription per six hours.
  * The flag is cleared permanently as soon as a payment method is found.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param PMPro_Subscription $subscription The subscription to check.
  * @param bool               $verify Whether to reverify the flag against Stripe.
@@ -1393,7 +1393,7 @@ function pmpro_deprecated_gateway_subscription_needs_payment_method( $subscripti
  *
  * Cached briefly; the cache is invalidated whenever a flag is set or cleared.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return int
  */
@@ -1432,7 +1432,7 @@ function pmpro_deprecated_gateway_get_needs_payment_method_count() {
 /**
  * Clear the no-payment-method flag once an order proves a payment method exists.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param MemberOrder $order The order whose subscription now has a payment method.
  */
@@ -1463,7 +1463,7 @@ add_action( 'pmpro_subscription_payment_completed', 'pmpro_deprecated_gateway_pa
 /**
  * Clear the no-payment-method flag after a successful billing update.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param int         $user_id The user who updated their billing information.
  * @param MemberOrder $order The order used for the billing update.
@@ -1483,7 +1483,7 @@ add_action( 'pmpro_after_update_billing', 'pmpro_deprecated_gateway_after_update
  * priority 5) means the next account page view reverifies against Stripe
  * immediately instead of showing a stale notice for up to six hours.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_deprecated_gateway_billing_preheader_reset_throttle() {
 	global $pmpro_billing_subscription;
@@ -1507,7 +1507,7 @@ add_action( 'pmpro_billing_preheader', 'pmpro_deprecated_gateway_billing_prehead
  * added outside of PMPro. Also skip the reminder if the migration email just
  * went out (the migration ran inside the reminder window), since it says the same thing.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param bool               $send_email Whether to send the reminder.
  * @param PMPro_Subscription $subscription The subscription being reminded.
@@ -1542,7 +1542,7 @@ add_filter( 'pmpro_send_recurring_payment_reminder_email', 'pmpro_deprecated_gat
  * Members without a payment method would otherwise get a reminder implying
  * their renewal will happen normally.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return bool
  */
@@ -1571,7 +1571,7 @@ function pmpro_deprecated_gateway_recurring_reminder_missing_payment_method_chec
  * Show an action-required notice on the Membership Account page for migrated
  * subscriptions that still have no payment method.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param object $level The level whose card is being rendered.
  */
@@ -1621,7 +1621,7 @@ add_action( 'pmpro_membership_account_after_level_card_content', 'pmpro_deprecat
  * Show a notice on PMPro admin pages while migrated subscriptions are still
  * waiting for a payment method, linking to the filtered Subscriptions list.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_deprecated_gateway_needs_payment_method_admin_notice() {
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
@@ -1674,7 +1674,7 @@ add_action( 'admin_notices', 'pmpro_deprecated_gateway_needs_payment_method_admi
  * Credentials only: webhook detection and warnings live on the Stripe gateway
  * settings page and intentionally do not gate or annotate the migration.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return string[] Empty when Stripe can receive migrations.
  */
@@ -1696,7 +1696,7 @@ function pmpro_deprecated_gateway_get_stripe_migration_blockers() {
  *
  * Used for both the initial page render and AJAX status polling.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @return array
@@ -1834,7 +1834,7 @@ function pmpro_deprecated_gateway_get_status_data( $gateway ) {
 /**
  * Handle AJAX requests from the deprecated gateway panel.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_deprecated_gateway_ajax() {
 	if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_paymentsettings' ) ) {
@@ -1915,7 +1915,7 @@ add_action( 'wp_ajax_pmpro_deprecated_gateway', 'pmpro_deprecated_gateway_ajax' 
 /**
  * Allow payment settings admins to view the migration log.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param bool   $can_access Whether the file can be accessed.
  * @param string $file_dir File directory.
@@ -1938,7 +1938,7 @@ add_filter( 'pmpro_can_access_restricted_file', 'pmpro_deprecated_gateway_allow_
 /**
  * Append a message to the migration log file.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $logstr Log output.
  */
@@ -1963,7 +1963,7 @@ function pmpro_deprecated_gateway_log( $logstr ) {
 /**
  * Column headings for the per-run migration CSV.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return string[]
  */
@@ -1988,7 +1988,7 @@ function pmpro_deprecated_gateway_get_csv_columns() {
 /**
  * Get the file name for a run's migration CSV.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $run_id Run identifier stored in the workflow state.
  * @return string Empty string if no run ID.
@@ -2003,7 +2003,7 @@ function pmpro_deprecated_gateway_get_csv_filename( $run_id ) {
 /**
  * Get the file path for a run's migration CSV.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $run_id Run identifier.
  * @return string Empty string if no run ID.
@@ -2019,7 +2019,7 @@ function pmpro_deprecated_gateway_get_csv_path( $run_id ) {
 /**
  * Get the download URL for a run's migration CSV.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $run_id Run identifier.
  * @return string Empty string if no run ID.
@@ -2041,7 +2041,7 @@ function pmpro_deprecated_gateway_get_csv_url( $run_id ) {
 /**
  * Create a run's migration CSV and write the header row.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $run_id Run identifier.
  */
@@ -2066,7 +2066,7 @@ function pmpro_deprecated_gateway_csv_init( $run_id ) {
  * Display names and emails are member-controlled, so a value starting with a
  * formula character could execute when the CSV is opened in a spreadsheet.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param mixed $value Cell value.
  * @return string
@@ -2085,7 +2085,7 @@ function pmpro_deprecated_gateway_csv_cell( $value ) {
  * Batches run sequentially (Action Scheduler concurrency is 1), so appending
  * here needs no locking, just like the text log.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $run_id Run identifier.
  * @param int    $subscription_id The subscription that was processed.
@@ -2141,7 +2141,7 @@ function pmpro_deprecated_gateway_csv_append( $run_id, $subscription_id, $result
 /**
  * Get the migration CSV files that exist for a gateway, newest first.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  * @return array[] Each entry has 'filename', 'url', and 'date' keys.
@@ -2198,7 +2198,7 @@ function pmpro_deprecated_gateway_get_csv_files( $gateway ) {
  *
  * Links to the migration tool and surfaces any unfinished migration work.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  */
@@ -2277,7 +2277,7 @@ function pmpro_deprecated_gateway_render_notice( $gateway ) {
  * Shown in place of the gateway's settings when the migration tool is opened
  * from the deprecated gateway notice.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $gateway Gateway slug.
  */

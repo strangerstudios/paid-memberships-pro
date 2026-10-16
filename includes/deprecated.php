@@ -1136,7 +1136,7 @@ add_action( 'admin_notices', 'pmpro_was_loading_frontend_css_notice' );
  * (unguarded) function later in the request, an eager definition here would
  * fatal with "cannot redeclare".
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_define_deprecated_date_pattern_functions() {
 	// Bail if either Add On may be activated later in this request: plugins.php
@@ -1159,10 +1159,10 @@ function pmpro_define_deprecated_date_pattern_functions() {
 
 	if ( ! function_exists( 'pmprosd_convert_date' ) ) {
 		/**
-		 * @deprecated TBD Use pmpro_resolve_date_pattern().
+		 * @deprecated 3.9 Use pmpro_resolve_date_pattern().
 		 */
 		function pmprosd_convert_date( $date ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_date_pattern()' );
+			_deprecated_function( __FUNCTION__, '3.9', 'pmpro_resolve_date_pattern()' );
 			$converted_date = pmpro_resolve_date_pattern( $date );
 			// The retired Add On always appended a time component.
 			return empty( $converted_date ) ? $converted_date : $converted_date . 'T0:0:0';
@@ -1171,10 +1171,10 @@ function pmpro_define_deprecated_date_pattern_functions() {
 
 	if ( ! function_exists( 'pmprosd_daysUntilDate' ) ) {
 		/**
-		 * @deprecated TBD Use pmpro_resolve_date_pattern().
+		 * @deprecated 3.9 Use pmpro_resolve_date_pattern().
 		 */
 		function pmprosd_daysUntilDate( $date ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_date_pattern()' );
+			_deprecated_function( __FUNCTION__, '3.9', 'pmpro_resolve_date_pattern()' );
 			$new_date = pmpro_resolve_date_pattern( $date );
 			if ( empty( $new_date ) ) {
 				return 0;
@@ -1187,20 +1187,20 @@ function pmpro_define_deprecated_date_pattern_functions() {
 
 	if ( ! function_exists( 'pmprosd_getDelay' ) ) {
 		/**
-		 * @deprecated TBD Use pmpro_get_subscription_delay().
+		 * @deprecated 3.9 Use pmpro_get_subscription_delay().
 		 */
 		function pmprosd_getDelay( $level_id, $code_id = null ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_get_subscription_delay()' );
+			_deprecated_function( __FUNCTION__, '3.9', 'pmpro_get_subscription_delay()' );
 			return pmpro_get_subscription_delay( $level_id, $code_id );
 		}
 	}
 
 	if ( ! function_exists( 'pmpro_getDCSDs' ) ) {
 		/**
-		 * @deprecated TBD Use get_option( 'pmpro_discount_code_subscription_delays' ) directly.
+		 * @deprecated 3.9 Use get_option( 'pmpro_discount_code_subscription_delays' ) directly.
 		 */
 		function pmpro_getDCSDs( $code_id ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.9' );
 			$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
 			if ( is_array( $all_delays ) && ! empty( $all_delays[ $code_id ] ) ) {
 				return $all_delays[ $code_id ];
@@ -1211,10 +1211,10 @@ function pmpro_define_deprecated_date_pattern_functions() {
 
 	if ( ! function_exists( 'pmpro_saveDCSDs' ) ) {
 		/**
-		 * @deprecated TBD Use update_option( 'pmpro_discount_code_subscription_delays' ) directly.
+		 * @deprecated 3.9 Use update_option( 'pmpro_discount_code_subscription_delays' ) directly.
 		 */
 		function pmpro_saveDCSDs( $code_id, $delays ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.9' );
 			$all_delays = get_option( 'pmpro_discount_code_subscription_delays', array() );
 			if ( ! is_array( $all_delays ) ) {
 				$all_delays = array();
@@ -1226,30 +1226,30 @@ function pmpro_define_deprecated_date_pattern_functions() {
 
 	if ( ! function_exists( 'pmprosed_fixDate' ) ) {
 		/**
-		 * @deprecated TBD Use pmpro_resolve_expiration_date_pattern().
+		 * @deprecated 3.9 Use pmpro_resolve_expiration_date_pattern().
 		 */
 		function pmprosed_fixDate( $set_date, $current_date = null ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_expiration_date_pattern()' );
+			_deprecated_function( __FUNCTION__, '3.9', 'pmpro_resolve_expiration_date_pattern()' );
 			return pmpro_resolve_expiration_date_pattern( $set_date, $current_date );
 		}
 	}
 
 	if ( ! function_exists( 'pmpro_getSetExpirationDate' ) ) {
 		/**
-		 * @deprecated TBD Use pmpro_get_set_expiration_date().
+		 * @deprecated 3.9 Use pmpro_get_set_expiration_date().
 		 */
 		function pmpro_getSetExpirationDate( $level_id, $code_id = null ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_get_set_expiration_date()' );
+			_deprecated_function( __FUNCTION__, '3.9', 'pmpro_get_set_expiration_date()' );
 			return pmpro_get_set_expiration_date( $level_id, $code_id );
 		}
 	}
 
 	if ( ! function_exists( 'pmpro_saveSetExpirationDate' ) ) {
 		/**
-		 * @deprecated TBD Use update_option( 'pmprosed_{level_id}' ) directly.
+		 * @deprecated 3.9 Use update_option( 'pmprosed_{level_id}' ) directly.
 		 */
 		function pmpro_saveSetExpirationDate( $level_id, $set_expiration_date, $code_id = null ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.9' );
 			if ( $code_id ) {
 				$key = 'pmprosed_' . intval( $level_id ) . '_' . intval( $code_id );
 			} else {
@@ -1261,10 +1261,10 @@ function pmpro_define_deprecated_date_pattern_functions() {
 
 	if ( ! function_exists( 'pmprosed_is_past_date' ) ) {
 		/**
-		 * @deprecated TBD Use pmpro_get_set_expiration_date() and pmpro_resolve_expiration_date_pattern().
+		 * @deprecated 3.9 Use pmpro_get_set_expiration_date() and pmpro_resolve_expiration_date_pattern().
 		 */
 		function pmprosed_is_past_date( $level_id ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_resolve_expiration_date_pattern()' );
+			_deprecated_function( __FUNCTION__, '3.9', 'pmpro_resolve_expiration_date_pattern()' );
 			$set_expiration_date = pmpro_get_set_expiration_date( $level_id );
 			if ( empty( $set_expiration_date ) ) {
 				return false;
@@ -1289,7 +1289,7 @@ add_action( 'plugins_loaded', 'pmpro_define_deprecated_date_pattern_functions' )
  * the old date engine on top of core's native handling, and the levels list
  * column and past-date notice duplicate core's Expiration column.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_neutralize_retired_date_pattern_add_ons() {
 	if ( function_exists( 'pmprosd_pmpro_save_membership_level' ) ) {
@@ -1328,7 +1328,7 @@ add_action( 'plugins_loaded', 'pmpro_neutralize_retired_date_pattern_add_ons' );
  * The Subscription Delays Add On registers its checkout filter on init, after
  * the plugins_loaded pass above, so unhook it separately.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_neutralize_retired_subscription_delays_checkout_filter() {
 	if ( function_exists( 'pmprosd_pmpro_checkout_level' ) ) {

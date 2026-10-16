@@ -557,7 +557,7 @@
 		 * Get orders based on various parameters
 		 *
 		 * @since 2.9
-		 * @since TBD Added support for the `offset` argument.
+		 * @since 3.9 Added support for the `offset` argument.
 		 *
 		 * @param array $args Specify what you'd like to filter the query by
 		 *

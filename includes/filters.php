@@ -60,7 +60,7 @@ add_filter( 'pmpro_checkout_level', 'pmpro_checkout_level_extend_memberships' );
  * Add On did, so that Add Ons that filter the level before it (e.g. Auto-Renewal Checkbox) or
  * apply these filters themselves (e.g. Paystack) keep working.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param object $level The level being checked out.
  * @return object The level with any set expiration date applied.

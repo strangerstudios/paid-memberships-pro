@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Register Cloudflare Turnstile as an available captcha service.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $services Captcha services as slug => label.
  * @return array $services Captcha services as slug => label.
@@ -101,7 +101,7 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 /**
  * Verify a CloudFlare Turnstile response token.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $token The cf-turnstile-response token to verify.
  * @return true|string True if the token is valid, or an error message to display if not.
@@ -225,7 +225,7 @@ add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_cloudflare
 /**
  * Check whether login and password reset forms should be challenged with Turnstile.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return bool True if forms should be challenged.
  */
@@ -253,7 +253,7 @@ function pmpro_cloudflare_turnstile_should_challenge_login() {
  * is validated server-side; pmpro_cloudflare_turnstile_get_html() only loads
  * the API script once.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_cloudflare_turnstile_login_forms_html() {
 	if ( ! pmpro_cloudflare_turnstile_should_challenge_login() ) {
@@ -272,7 +272,7 @@ add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_cloudflare_turnst
  * that post to wp-login.php and are validated by pmpro_authenticate_login_checks,
  * so every form that is validated also displays the challenge.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $content Content to display. Default empty.
  * @param array  $args    Array of login form arguments.
@@ -290,7 +290,7 @@ add_filter( 'login_form_middle', 'pmpro_cloudflare_turnstile_login_form_middle',
 /**
  * Require a valid Turnstile token on login attempts once the current IP has failed a login.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param WP_User|WP_Error|null $user     WP_User if the login is valid so far, otherwise WP_Error or null.
  * @param string                $username The username being used to log in.
@@ -312,7 +312,7 @@ add_filter( 'pmpro_authenticate_login_checks', 'pmpro_cloudflare_turnstile_login
 /**
  * Require a valid Turnstile token on lost password submissions once the current IP has failed a login.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param WP_Error      $errors    Error object to add a captcha error to.
  * @param WP_User|false $user_data WP_User object if found, false if the user does not exist.
@@ -339,7 +339,7 @@ add_action( 'lostpassword_post', 'pmpro_cloudflare_turnstile_lostpassword_check'
  * Clear the CloudFlare Turnstile session variable when payment fails
  * so that each new payment attempt requires a new Turnstile check.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param MemberOrder $order The order that failed to process.
  */

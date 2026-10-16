@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Register reCAPTCHA as an available captcha service.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $services Captcha services as slug => label.
  * @return array $services Captcha services as slug => label.
@@ -175,7 +175,7 @@ add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha'
  * Clear the reCAPTCHA session variable when payment fails
  * so that each new payment attempt requires a new reCAPTCHA check.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param MemberOrder $order The order that failed to process.
  */
@@ -353,7 +353,7 @@ add_action( 'pmpro_save_security_settings', 'pmpro_recaptcha_settings_save' );
 /**
  * Check whether login and password reset forms should be challenged with reCAPTCHA.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return bool True if forms should be challenged.
  */
@@ -376,7 +376,7 @@ function pmpro_recaptcha_should_challenge_login() {
 /**
  * Verify a reCAPTCHA response token with Google.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $token The g-recaptcha-response token to verify.
  * @return bool True if the token is valid.
@@ -404,7 +404,7 @@ function pmpro_recaptcha_verify_token( $token ) {
  * A widget is output for every form on the page since every form's submission
  * is validated server-side. Shared assets (scripts) are only output once.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_recaptcha_get_login_html() {
 	static $assets_shown = false;
@@ -542,7 +542,7 @@ function pmpro_recaptcha_get_login_html() {
  * Show reCAPTCHA on login and lost password forms once a challenge is
  * active for the current IP.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_recaptcha_login_forms_html() {
 	if ( ! pmpro_recaptcha_should_challenge_login() ) {
@@ -561,7 +561,7 @@ add_action( 'pmpro_lost_password_before_submit_button', 'pmpro_recaptcha_login_f
  * that post to wp-login.php and are validated by pmpro_authenticate_login_checks,
  * so every form that is validated also displays the challenge.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $content Content to display. Default empty.
  * @param array  $args    Array of login form arguments.
@@ -579,7 +579,7 @@ add_filter( 'login_form_middle', 'pmpro_recaptcha_login_form_middle', 100, 2 );
 /**
  * Require a valid reCAPTCHA on login attempts once the current IP has failed a login.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param WP_User|WP_Error|null $user     WP_User if the login is valid so far, otherwise WP_Error or null.
  * @param string                $username The username being used to log in.
@@ -602,7 +602,7 @@ add_filter( 'pmpro_authenticate_login_checks', 'pmpro_recaptcha_login_check', 10
 /**
  * Require a valid reCAPTCHA on lost password submissions once the current IP has failed a login.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param WP_Error      $errors    Error object to add a captcha error to.
  * @param WP_User|false $user_data WP_User object if found, false if the user does not exist.

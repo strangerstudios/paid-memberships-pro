@@ -256,7 +256,7 @@ function pmpro_login_form_hidden_field( $html ) {
  * added right before wp_login_form() is called in pmpro_login_form()
  * and removed right after so that it only runs on PMPro login forms.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $content Content to display. Default empty.
  * @param array  $args    Array of login form arguments.
@@ -268,7 +268,7 @@ function pmpro_login_form_middle( $content, $args ) {
 	/**
 	 * Fires before the submit button on the PMPro login form.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array $args Array of login form arguments.
 	 */
@@ -496,7 +496,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	 * Allows custom messages to be shown for custom error codes
 	 * passed back to the login page in the URL.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param string $message The message to show. Empty string if no message.
 	 * @param string $msgt    The message type, e.g. pmpro_error, pmpro_success, pmpro_alert.
@@ -506,7 +506,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	/**
 	 * Filter the type of the message shown above the frontend login form.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param string $msgt    The message type, e.g. pmpro_error, pmpro_success, pmpro_alert.
 	 * @param string $message The message to show. Empty string if no message.
@@ -1115,7 +1115,7 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  * Allow custom checks (e.g. captchas) for login attempts made from the
  * PMPro login form or the WP default login form on wp-login.php.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param WP_User|WP_Error|null $user     WP_User if the login is valid so far, otherwise WP_Error or null.
  * @param string                $username The username being used to log in.
@@ -1143,7 +1143,7 @@ function pmpro_apply_custom_login_checks( $user, $username, $password ) {
 	 * Runs after WP core has checked the user's credentials.
 	 * Return a WP_Error to block the login and show that error's message.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param WP_User|WP_Error|null $user     WP_User if the login is valid so far, otherwise WP_Error or null.
 	 * @param string                $username The username being used to log in.

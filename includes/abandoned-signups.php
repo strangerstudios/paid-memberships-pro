@@ -95,7 +95,7 @@ add_action( 'wp', 'pmpro_remove_abandoned_signup_taxonomy_on_page_load' );
 /**
  * Get the number of days that an abandoned signup should be kept before deletion.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return int The number of days to keep abandoned signups.
  */
@@ -103,7 +103,7 @@ function pmpro_get_abandoned_signup_deletion_days() {
 	/**
 	 * Filter the number of days that an abandoned signup should be kept before deletion.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param int $days The number of days to keep abandoned signups. Default 30.
 	 */
@@ -115,7 +115,7 @@ function pmpro_get_abandoned_signup_deletion_days() {
 /**
  * Add the automatic abandoned signup deletion setting to the Advanced Settings page.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param array $settings The custom Advanced Settings fields.
  * @return array The custom Advanced Settings fields.
@@ -148,7 +148,7 @@ add_filter( 'pmpro_custom_advanced_settings', 'pmpro_add_abandoned_signup_advanc
 /**
  * Delete a batch of old abandoned signup users.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return void
  */

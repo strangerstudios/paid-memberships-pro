@@ -3,7 +3,7 @@
  * Register Paid Memberships Pro abilities for the WordPress Abilities API.
  *
  * @package PaidMembershipsPro
- * @since TBD
+ * @since 3.9
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ add_action( 'wp_abilities_api_init', 'pmpro_abilities_register_abilities' );
 /**
  * Check whether the WordPress Abilities API is available.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return bool
  */
@@ -29,7 +29,7 @@ function pmpro_abilities_is_abilities_api_available() {
 /**
  * Check whether PMPro can register abilities.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return bool
  */
@@ -37,7 +37,7 @@ function pmpro_abilities_can_boot() {
 	/**
 	 * Filter whether PMPro should register Abilities API categories and abilities.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param bool $enabled Whether ability registration is enabled.
 	 */

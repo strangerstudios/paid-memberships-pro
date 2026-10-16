@@ -18,7 +18,7 @@
  * with code that reads that table directly, but the calculation at checkout is
  * always performed against the level's current pricing.
  *
- * @since TBD
+ * @since 3.9
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Get the valid discount code types.
  *
- * @since TBD
+ * @since 3.9
  *
  * @return array Array of type slug => label.
  */
@@ -47,7 +47,7 @@ function pmpro_get_discount_code_types() {
  *
  * Codes can be fully numeric, so a matching code string wins over an ID match.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string|int|object $code The discount code string, ID, or a row object from pmpro_discount_codes.
  * @return object|null The discount code row or null if not found.
@@ -70,7 +70,7 @@ function pmpro_get_discount_code( $code ) {
 /**
  * Apply a percentage or fixed discount to a single price.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param float  $price          The price before the discount.
  * @param string $discount_type  The discount type, `percentage` or `fixed`.
@@ -104,7 +104,7 @@ function pmpro_calculate_discounted_price( $price, $discount_type, $discount_val
  * apply the `pmpro_discount_code_level` filter; callers apply that filter
  * so that existing filter contracts are preserved.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param object|int        $level The base level object (a full pmpro_membership_levels row) or level ID.
  * @param string|int|object $code  The discount code string, ID, or row object.
@@ -168,7 +168,7 @@ function pmpro_get_discounted_level_for_code( $level, $code ) {
 	 * Runs before the legacy `pmpro_discount_code_level` filter at the call sites,
 	 * so existing extensions hooking that filter continue to receive final prices.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param object $discounted_level The effective level object with discounted pricing.
 	 * @param object $level            The base level object.
@@ -187,7 +187,7 @@ function pmpro_get_discounted_level_for_code( $level, $code ) {
  * level's current pricing. Snapshots are refreshed whenever the code or the
  * level is saved.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param object $code_row The discount code row (with discount_type, discount_value, apply_to_* set).
  * @param object $level    The base level object.
@@ -228,7 +228,7 @@ function pmpro_get_discount_code_level_snapshot( $code_row, $level ) {
  * Runs when a membership level is saved so that percentage/fixed codes' snapshot
  * rows track the level's current pricing.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param int $level_id The membership level ID that was saved.
  */
@@ -270,7 +270,7 @@ add_action( 'pmpro_save_membership_level', 'pmpro_refresh_discount_code_level_sn
  *
  * Used on the discount codes admin list table and edit screen.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param object $code_row The discount code row.
  * @return string Description of the discount, or an empty string for set_price codes.

@@ -10,7 +10,7 @@
  *   wp pmpro order list|get
  *   wp pmpro subscription list|get|sync
  *
- * @since TBD
+ * @since 3.9
  * @package PaidMembershipsPro
  */
 
@@ -23,7 +23,7 @@ if ( ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 /**
  * PMPro WP-CLI commands.
  *
- * @since TBD
+ * @since 3.9
  */
 class PMPro_CLI extends \WP_CLI_Command {
 
@@ -1041,7 +1041,7 @@ WP_CLI::add_command( 'pmpro subscription sync', array( $pmpro_cli, 'subscription
 /**
  * Fire pmpro_cli_init on WP-CLI's cli_init hook, after all plugins have loaded.
  *
- * @since TBD
+ * @since 3.9
  */
 function pmpro_do_cli_init() {
 	/**
@@ -1050,7 +1050,7 @@ function pmpro_do_cli_init() {
 	 * Runs on WP-CLI's cli_init hook (during init). Hook it from an Add On's main
 	 * plugin file or on plugins_loaded; hooking it on init or later is too late.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 */
 	do_action( 'pmpro_cli_init' );
 }

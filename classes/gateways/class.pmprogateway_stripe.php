@@ -670,7 +670,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * Public because it is invoked as a callable by the settings field helpers.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param array|false $webhook The webhook data returned by does_webhook_exist(), if any.
 	 */
@@ -714,7 +714,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * Public because it is invoked as a callable by the settings field helpers.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 */
 	public static function show_webhook_history_field() {
 		$required_webhook_events = self::webhook_events();
@@ -3971,7 +3971,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * member is then sent through the billing update flow to attach a payment method
 	 * before the trial ends.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param PMPro_Subscription $old_subscription The subscription being migrated.
 	 * @param array              $args {
@@ -4114,7 +4114,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Unlike has_connect_credentials(), this also covers sites using legacy
 	 * API keys.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @return bool
 	 */
@@ -4130,7 +4130,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * when invoicing. Used to verify migrated subscriptions that were created
 	 * without a payment method.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param PMPro_Subscription $subscription The subscription to check.
 	 * @return bool|WP_Error Whether a payment method is attached, or WP_Error on API failure.

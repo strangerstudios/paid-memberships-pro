@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the Subscription Delays and Set Expiration Dates Add Ons, which share these
  * option formats.
  *
- * @since TBD
+ * @since 3.9
  */
 
 /**
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * (M, M2-M99), and {day} is 1-31. Zero tokens (Y0, M0) and offsets over 99
  * are rejected rather than resolving to surprising dates.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $date_pattern The date pattern string to check.
  * @return bool True if the pattern is valid.
@@ -65,7 +65,7 @@ function pmpro_is_valid_date_pattern( $date_pattern ) {
  * A pattern that resolves to today advances to the next occurrence: the next
  * month for M patterns and the next year for Y patterns.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $date_pattern      The date pattern string.
  * @param int    $current_timestamp Optional. Unix timestamp to use as "today". Defaults to current_time( "timestamp" ).
@@ -186,7 +186,7 @@ function pmpro_resolve_date_pattern( $date_pattern, $current_timestamp = null ) 
  * directly and runs the filters that the retired Set Expiration Dates Add On
  * ran inside pmprosed_fixDate().
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $set_expiration_date The expiration date pattern.
  * @param int    $current_timestamp        Optional. Unix timestamp to use as "today".
@@ -226,7 +226,7 @@ function pmpro_resolve_expiration_date_pattern( $set_expiration_date, $current_t
  * so they also inherit the level's subscription delay and set expiration date.
  * Custom pricing codes define their own schedule per level.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param int $code_id The discount code ID.
  * @return bool True for percentage and fixed amount codes, false for custom pricing codes or unknown codes.
@@ -248,7 +248,7 @@ function pmpro_discount_code_uses_level_pricing( $code_id ) {
  * Percentage and fixed amount codes have no pricing schedule of their own and
  * always mirror the level's delay.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param int      $level_id The membership level ID.
  * @param int|null $code_id  Optional discount code ID.
@@ -277,7 +277,7 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
  * Used to set the profile start date at checkout and to show that date in the
  * level cost text, so that both always agree.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param int      $level_id          The membership level ID.
  * @param int|null $code_id           Optional discount code ID.
@@ -317,7 +317,7 @@ function pmpro_get_subscription_delay_date( $level_id, $code_id = null, $current
  * Expiration Dates Add On. Percentage and fixed amount codes have no pricing
  * schedule of their own and always mirror the level's set expiration date.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param int      $level_id The membership level ID.
  * @param int|null $code_id  Optional discount code ID.
@@ -344,7 +344,7 @@ function pmpro_get_set_expiration_date( $level_id, $code_id = null ) {
  * engine in pmpro-admin.js; the parts are assembled into a date pattern at save
  * time by pmpro_get_date_pattern_from_request().
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $field_prefix   Prefix for the input names and ids. Must be unique on the page.
  * @param string $existing_value The stored date pattern to preselect.
@@ -437,7 +437,7 @@ function pmpro_render_date_pattern_builder( $field_prefix, $existing_value ) {
 /**
  * Assemble a date pattern from a date pattern builder's submitted fields.
  *
- * @since TBD
+ * @since 3.9
  *
  * @param string $field_prefix The prefix used when rendering the builder.
  * @return string The assembled date pattern, or empty string if no mode was chosen.

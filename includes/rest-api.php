@@ -264,7 +264,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get a paginated, filterable collection of memberships (one row per user/level pair).
-		 * @since TBD
+		 * @since 3.9
 		 * Example: https://example.com/wp-json/pmpro/v1/memberships?level=1&status=active&page=1&per_page=20
 		 */
 		register_rest_route( $pmpro_namespace, '/memberships',
@@ -294,7 +294,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get a paginated, filterable collection of orders.
-		 * @since TBD
+		 * @since 3.9
 		 * Example: https://example.com/wp-json/pmpro/v1/orders?status=success&per_page=20
 		 */
 		register_rest_route( $pmpro_namespace, '/orders',
@@ -327,7 +327,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get a paginated, filterable collection of subscriptions.
-		 * @since TBD
+		 * @since 3.9
 		 * Example: https://example.com/wp-json/pmpro/v1/subscriptions?status=active&per_page=20
 		 */
 		register_rest_route( $pmpro_namespace, '/subscriptions',
@@ -398,7 +398,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * Example:.../wp-json/pmpro/v1/export/start
 		 *
 		 * @since 3.7
-		 * @since TBD Added the `$return_raw` and `$limit_override` parameters.
+		 * @since 3.9 Added the `$return_raw` and `$limit_override` parameters.
 		 */
 		register_rest_route( $pmpro_namespace, '/export/start',
 			array(
@@ -1369,7 +1369,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get a paginated, filterable collection of memberships (one row per user/level pair).
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response The REST response.
@@ -1426,7 +1426,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get a paginated, filterable collection of orders.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response The REST response.
@@ -1504,7 +1504,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get a paginated, filterable collection of subscriptions.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response The REST response.
@@ -1578,7 +1578,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get the requested page number for a collection request. Minimum 1.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param array $params The request parameters.
 		 * @return int
@@ -1590,7 +1590,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get the requested per_page value for a collection request, clamped to a hard maximum.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param array $params The request parameters.
 		 * @return int
@@ -1601,7 +1601,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			/**
 			 * Filter the maximum number of items a PMPro REST collection endpoint will return per page.
 			 *
-			 * @since TBD
+			 * @since 3.9
 			 *
 			 * @param int $max The maximum per_page value. Default 100.
 			 */
@@ -1617,7 +1617,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Parse the requested field list for a collection request.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param array $params The request parameters.
 		 * @return array Array of requested field names, or empty array for all fields.
@@ -1632,7 +1632,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get the field names a collection endpoint can return.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param string $collection One of 'memberships', 'orders' or 'subscriptions'.
 		 * @return array Array of valid field names.
@@ -1692,7 +1692,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * Unknown names are rejected rather than silently dropped so that callers
 		 * get told which fields actually exist.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param mixed  $value      The `fields` parameter value.
 		 * @param string $collection One of 'memberships', 'orders' or 'subscriptions'.
@@ -1725,7 +1725,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Reduce an item array to only the requested fields.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param array $item   The full item array.
 		 * @param array $fields The requested field names. Empty means all fields.
@@ -1741,7 +1741,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Format a stored datetime string as ISO 8601, returning null for empty or zero dates.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param string $date The datetime string.
 		 * @return string|null
@@ -1756,7 +1756,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Build a collection response with pagination headers.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param array $items    The response items.
 		 * @param int   $total    The total number of matching records.

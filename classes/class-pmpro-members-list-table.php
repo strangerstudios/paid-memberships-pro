@@ -293,7 +293,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		 * column key also needs an entry in the allowed orderbys array, which
 		 * is filterable through "pmpro_memberslist_allowed_orderbys".
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param array $sortable_columns Sortable columns in the format 'column' => array( 'orderby', $descending ).
 		 */
@@ -440,7 +440,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			 * a custom column sortable. Use the plain joined column as the ORDER BY expression,
 			 * not an aggregate like MIN(), since most views do not group rows.
 			 *
-			 * @since TBD
+			 * @since 3.9
 			 *
 			 * @param string $join_sql SQL JOIN clauses to append to the query.
 			 * @param string $orderby  The sanitized ORDER BY expression for the current request.
@@ -522,7 +522,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		 * Grouping is only needed when the query can return more than one row per user and level.
 		 * Skipping it lets MySQL read the page straight from an index instead of sorting every member.
 		 *
-		 * @since TBD
+		 * @since 3.9
 		 *
 		 * @param bool   $group_rows Whether to group rows by user and level.
 		 * @param string $l          The level or status filter for the list.
