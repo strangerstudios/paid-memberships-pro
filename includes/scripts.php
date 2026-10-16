@@ -124,6 +124,11 @@ function pmpro_admin_enqueue_scripts() {
 
         wp_enqueue_script( 'pmpro_confetti' );
     }
+
+    // Load the media library for the level image selector on the Edit Level page.
+    if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-membershiplevels' ) && isset( $_REQUEST['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.
+        wp_enqueue_media();
+    }
    
 	$all_levels = pmpro_getAllLevels( true, true );
 	$all_level_values_and_labels = array();

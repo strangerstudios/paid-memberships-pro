@@ -15,9 +15,6 @@ global $wpdb, $page_msg, $page_msgt, $pmpro_stripe_error;
 // Get level templates.
 $level_templates = pmpro_edit_level_templates();
 
-// Load the media library for the level image selector.
-wp_enqueue_media();
-
 // Get level groups in order.
 $level_groups = pmpro_get_level_groups_in_order();
 
