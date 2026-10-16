@@ -914,7 +914,7 @@ function pmpro_abilities_execute_levels_query( $input ) {
 			'page'           => 1,
 		)
 	);
-	$include_hidden = ! empty( $input['include_hidden'] );
+	$include_hidden = rest_sanitize_boolean( $input['include_hidden'] );
 	$query          = strtolower( trim( (string) $input['query'] ) );
 	$limit          = max( 1, min( 50, (int) $input['limit'] ) );
 	$page           = max( 1, (int) $input['page'] );
@@ -959,7 +959,7 @@ function pmpro_abilities_execute_member_memberships_get( $input ) {
 		return $user;
 	}
 
-	$include_inactive = ! empty( $input['include_inactive'] );
+	$include_inactive = ! empty( $input['include_inactive'] ) && rest_sanitize_boolean( $input['include_inactive'] );
 
 	$memberships = pmpro_getMembershipLevelsForUser( $user->ID, $include_inactive );
 	if ( ! is_array( $memberships ) ) {
@@ -1170,7 +1170,8 @@ function pmpro_abilities_execute_order_get( $input ) {
 	if ( ! empty( $input['order_id'] ) ) {
 		$order = MemberOrder::get_order( (int) $input['order_id'] );
 	} elseif ( ! empty( $input['order_code'] ) ) {
-		$order = MemberOrder::get_order( (string) $input['order_code'] );
+		$order = new MemberOrder();
+		$order->getMemberOrderByCode( (string) $input['order_code'] );
 	}
 
 	if ( empty( $order ) || empty( $order->id ) ) {
