@@ -85,7 +85,11 @@ $pmpro_level = pmpro_getLevelAtCheckout();
  */
 do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', $pmpro_level );
 
-if ( empty( $pmpro_level->id ) ) {
+// A fixed set expiration date that is today or already passed closes the level to new checkouts.
+$set_expiration_date      = ! empty( $pmpro_level->id ) ? pmpro_get_set_expiration_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null ) : '';
+$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
+
+if ( empty( $pmpro_level->id ) || ( ! empty( $resolved_expiration_date ) && $resolved_expiration_date <= date( 'Y-m-d', current_time( 'timestamp' ) ) ) ) {
 	wp_redirect( pmpro_url( "levels" ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 	exit( 0 );
 }
