@@ -63,7 +63,7 @@ add_filter( 'pmpro_checkout_level', 'pmpro_checkout_level_extend_memberships' );
  * @since TBD
  *
  * @param object $level The level being checked out.
- * @return object The level with any set expiration date applied.
+ * @return object|null The level with any set expiration date applied, or null at checkout if the date has passed.
  */
 function pmpro_checkout_level_set_expiration_date( $level ) {
 	if ( empty( $level->id ) ) {
@@ -73,9 +73,16 @@ function pmpro_checkout_level_set_expiration_date( $level ) {
 	$set_expiration_date      = pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null );
 	$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
 	if ( ! empty( $resolved_expiration_date ) ) {
-		// Calendar days from today; the membership expires at the end of that day. A fixed
-		// date that has already passed expires after one day rather than never.
-		$days_until_expiration    = intval( round( ( strtotime( $resolved_expiration_date ) - strtotime( date( 'Y-m-d', current_time( 'timestamp' ) ) ) ) / DAY_IN_SECONDS ) );
+		// Calendar days from today; the membership expires at the end of that day.
+		$days_until_expiration = intval( round( ( strtotime( $resolved_expiration_date ) - strtotime( date( 'Y-m-d', current_time( 'timestamp' ) ) ) ) / DAY_IN_SECONDS ) );
+
+		// A fixed date that is today or already passed closes the level to new checkouts, like
+		// the retired Add On. Gateway notifications for a payment already taken still apply it
+		// and expire the membership after one day rather than never.
+		if ( $days_until_expiration < 1 && 'pmpro_checkout_level' === current_filter() ) {
+			return null;
+		}
+
 		$level->expiration_number = max( 1, $days_until_expiration );
 		$level->expiration_period = 'Day';
 
