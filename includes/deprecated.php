@@ -1270,6 +1270,7 @@ function pmpro_define_deprecated_date_pattern_functions() {
 				return false;
 			}
 			$resolved_date = pmpro_resolve_expiration_date_pattern( $set_expiration_date );
+			// Compare against the UTC date, as the retired Add On did, to keep its return values.
 			return ! empty( $resolved_date ) && $resolved_date < date( 'Y-m-d' );
 		}
 	}
