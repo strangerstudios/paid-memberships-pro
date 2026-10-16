@@ -209,9 +209,10 @@ function pmpro_delete_abandoned_signups() {
 			continue;
 		}
 
-		// Never delete users who can edit posts (Contributors and above, plus most staff roles). They are not spam
-		// signups, and deleting them would also delete their posts. Remove the term so they are not selected again.
-		if ( user_can( $user_id, 'edit_posts' ) ) {
+		// Never delete users who can edit posts (Contributors and above, plus most staff roles) or who have authored
+		// any posts. They are not spam signups, and wp_delete_user() would also delete their posts. Remove the term so
+		// they are not selected again.
+		if ( user_can( $user_id, 'edit_posts' ) || $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM {$wpdb->posts} WHERE post_author = %d LIMIT 1", $user_id ) ) ) {
 			pmpro_remove_abandoned_signup_taxonomy( $user_id );
 			continue;
 		}
