@@ -1210,6 +1210,12 @@ class PMPro_Subscription {
 			}
 		}
 
+		// Gateway classes can keep a sanitized reason from the caught API error.
+		$gateway_error = '';
+		if ( is_object( $gateway_object ) && method_exists( $gateway_object, 'get_cancel_subscription_error' ) ) {
+			$gateway_error = $gateway_object->get_cancel_subscription_error();
+		}
+
 		// If the cancellation failed, send an email to the admin.
 		if ( ! $cancelled ) {
 			// Notify the admin.
@@ -1223,16 +1229,31 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ' . $this->id . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>' . "\n";
+			if ( ! empty( $gateway_error ) ) {
+				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway Error', 'paid-memberships-pro' ) . ': ' . esc_html( $gateway_error ) . '</p>' . "\n";
+			}
 			$pmproemail->data['body'] .= '<hr />' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit Member', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $this->user_id ), self_admin_url( 'admin.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 
-			pmpro_setMessage( __( 'There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active.', 'paid-memberships-pro' ), 'pmpro_error', true ); // Will overwrite previous messages.
+			$cancel_error_message = __( 'There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active.', 'paid-memberships-pro' );
+			// Members keep the generic notice. Admins also see the gateway reason.
+			if ( ! empty( $gateway_error ) && ( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_edit_members' ) ) ) {
+				$cancel_error_message .= ' ' . $gateway_error;
+			}
+			pmpro_setMessage( $cancel_error_message, 'pmpro_error', true ); // Will overwrite previous messages.
 		} else {
 			pmpro_setMessage( __( 'Subscription cancelled at gateway.', 'paid-memberships-pro' ), 'pmpro_success', true ); // Will overwrite previous messages.
 		}
 
 		$this->update();
+
+		// update() replaces sync_error with the follow-up sync result. Put the cancel reason back
+		// so the existing subscription error notice still says why the gateway cancel failed.
+		if ( ! $cancelled && ! empty( $gateway_error ) ) {
+			update_pmpro_subscription_meta( $this->id, 'sync_error', $gateway_error );
+			update_pmpro_subscription_meta( $this->id, 'sync_error_timestamp', current_time( 'timestamp' ) );
+		}
 
 		return $cancelled;
 	}
