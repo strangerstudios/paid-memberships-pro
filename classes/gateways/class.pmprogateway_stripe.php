@@ -41,14 +41,7 @@ class PMProGateway_stripe extends PMProGateway {
 	private static $is_loaded = false;
 
 	/**
-	 * Longest Stripe exception message kept when a cancellation fails.
-	 *
-	 * Longer gateway text is cut so emails, order notes, and logs stay bounded.
-	 */
-	const CANCEL_SUBSCRIPTION_ERROR_MESSAGE_LENGTH = 500;
-
-	/**
-	 * Sanitized Stripe error from the last failed subscription cancellation.
+	 * Sanitized reason from the last failed Stripe cancel.
 	 *
 	 * @var string
 	 */
@@ -3203,18 +3196,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Sanitized Stripe error from the last failed subscription cancellation.
-	 *
-	 * Empty when that attempt did not catch an error. The subscription cancel
-	 * flow reads this for the admin email and the subscription error field.
-	 *
-	 * @return string
-	 */
-	public function get_cancel_subscription_error() {
-		return $this->cancel_subscription_error;
-	}
-
-	/**
 	 * Cancel a subscription at Stripe
 	 *
 	 * @since 1.4
@@ -3245,9 +3226,6 @@ class PMProGateway_stripe extends PMProGateway {
 					//we're okay, going to return true later
 				} else {
 					$order->error      = __( "Could not cancel old subscription.", 'paid-memberships-pro' );
-					if ( ! empty( $this->cancel_subscription_error ) ) {
-						$order->error .= ' ' . $this->cancel_subscription_error;
-					}
 					$order->shorterror = $order->error;
 
 					return false;
@@ -4798,13 +4776,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	function cancel_subscription( $subscription ) {
 		try {
+			$operation           = 'retrieve_subscription';
 			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
 		} catch ( \Throwable $e ) {
-			//assume no subscription found
-			return false;
+			return $this->log_stripe_cancel_error( $e, $operation );
 		} catch ( \Exception $e ) {
-			//assume no subscription found
-			return false;
+			return $this->log_stripe_cancel_error( $e, $operation );
 		}
 
 		$success = false;
@@ -4816,86 +4793,40 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Keep a bounded Stripe cancellation error for the admin email, order note, and log.
+	 * Last sanitized Stripe cancel failure.
 	 *
-	 * The cancel attempt still fails closed. This only records why Stripe refused.
-	 *
-	 * @param \Throwable|\Exception $exception Caught Stripe or PHP error.
-	 * @param PMPro_Subscription    $pmpro_subscription Subscription being cancelled.
-	 * @param string                $operation Failed step: void_open_invoice, preserve_local_membership, or cancel_subscription.
+	 * @return string Empty when the last attempt did not fail.
 	 */
-	private function report_stripe_cancel_subscription_error( $exception, $pmpro_subscription, $operation ) {
-		$exception_class = get_class( $exception );
-		if ( ! preg_match( '/^[A-Za-z0-9_\\\\]+$/', $exception_class ) ) {
-			$exception_class = 'Exception';
-		}
+	public function get_cancel_subscription_error() {
+		return $this->cancel_subscription_error;
+	}
 
-		$exception_message = sanitize_text_field( $exception->getMessage() );
-		$exception_message = preg_replace( '/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}/i', '[email]', $exception_message );
-		if ( ! is_string( $exception_message ) ) {
-			$exception_message = '';
-		}
-		if ( strlen( $exception_message ) > self::CANCEL_SUBSCRIPTION_ERROR_MESSAGE_LENGTH ) {
-			$exception_message = substr( $exception_message, 0, self::CANCEL_SUBSCRIPTION_ERROR_MESSAGE_LENGTH );
-		}
+	/**
+	 * Store a cleaned Stripe cancel failure and fail the cancel.
+	 *
+	 * @param \Throwable|\Exception $exception Caught error.
+	 * @param string                $operation Failed step.
+	 * @return false
+	 */
+	private function log_stripe_cancel_error( $exception, $operation ) {
+		$message = preg_replace( '/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}/i', '[email]', sanitize_text_field( $exception->getMessage() ) );
+		$message = mb_substr( is_string( $message ) ? $message : '', 0, 500 );
+		$class   = preg_replace( '/[^A-Za-z0-9_\\\\]/', '', get_class( $exception ) );
+		$parts   = array( sanitize_text_field( $operation ), $class ? $class : 'Exception', $message );
 
-		$error_details = array(
-			sprintf(
-				/* translators: 1: failed step, 2: exception class, 3: exception message. */
-				__( 'Stripe %1$s failed (%2$s): %3$s.', 'paid-memberships-pro' ),
-				sanitize_text_field( $operation ),
-				$exception_class,
-				$exception_message
-			),
-		);
-
-		if ( method_exists( $exception, 'getStripeCode' ) ) {
-			$stripe_code = $exception->getStripeCode();
-			if ( is_string( $stripe_code ) && '' !== $stripe_code ) {
-				/* translators: %s: Stripe error code. */
-				$error_details[] = sprintf( __( 'Stripe error code: %s.', 'paid-memberships-pro' ), sanitize_text_field( $stripe_code ) );
+		foreach ( array( 'getStripeCode', 'getRequestId' ) as $reader ) {
+			if ( ! method_exists( $exception, $reader ) ) {
+				continue;
+			}
+			$value = $exception->$reader();
+			if ( is_string( $value ) && '' !== $value ) {
+				$parts[] = sanitize_text_field( $value );
 			}
 		}
 
-		if ( method_exists( $exception, 'getRequestId' ) ) {
-			$request_id = $exception->getRequestId();
-			if ( is_string( $request_id ) && '' !== $request_id ) {
-				/* translators: %s: Stripe request ID. */
-				$error_details[] = sprintf( __( 'Stripe request ID: %s.', 'paid-memberships-pro' ), sanitize_text_field( $request_id ) );
-			}
-		}
-
-		$this->cancel_subscription_error = implode( ' ', $error_details );
-
-		// Same channel PayPal and Braintree use for gateway failures.
-		error_log( 'PMPro Stripe cancel subscription failed: ' . $this->cancel_subscription_error );
-
-		if ( empty( $pmpro_subscription ) ) {
-			return;
-		}
-
-		$orders = $pmpro_subscription->get_orders( array( 'limit' => 1 ) );
-		if ( empty( $orders ) ) {
-			return;
-		}
-
-		$order = current( $orders );
-		if ( empty( $order ) || empty( $order->id ) ) {
-			return;
-		}
-
-		// Order error is read during this request. The note is what stays on the order.
-		$order->error      = $this->cancel_subscription_error;
-		$order->shorterror = $this->cancel_subscription_error;
-		$order->add_order_note(
-			sprintf(
-				/* translators: 1: gateway subscription ID, 2: sanitized Stripe error. */
-				__( 'Admin: There was a problem cancelling subscription %1$s at Stripe. Gateway Error: %2$s.', 'paid-memberships-pro' ),
-				$pmpro_subscription->get_subscription_transaction_id(),
-				$this->cancel_subscription_error
-			)
-		);
-		$order->saveOrder();
+		$this->cancel_subscription_error = trim( implode( ' ', $parts ) );
+		error_log( 'PMPro Stripe cancel subscription failed: ' . $this->cancel_subscription_error ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		return false;
 	}
 
 	/**
@@ -4906,18 +4837,17 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 3.0 Updated to private non-static.
 	 */
 	private function cancelSubscriptionAtGateway( $subscription, $preserve_local_membership = false ) {
-		// A new attempt should not keep a reason from an earlier failure.
 		$this->cancel_subscription_error = '';
 
 		// Check if a valid sub.
 		if ( empty( $subscription ) || empty( $subscription->id ) ) {
-			return false;
+			return $this->log_stripe_cancel_error( new \Exception( 'Empty Stripe subscription.' ), 'empty_subscription' );
 		}
 
 		// Get the PMPro subscription.
 		$pmpro_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription->id, 'stripe', get_option( 'pmpro_gateway_environment', 'sandbox' ) );
 		if ( empty( $pmpro_subscription ) ) {
-			return false;
+			return $this->log_stripe_cancel_error( new \Exception( 'Missing local subscription.' ), 'missing_pmpro_subscription' );
 		}
 
 		// Okay have an order, so get customer so we can cancel invoices too
@@ -4927,11 +4857,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$invoices = Stripe_Invoice::all(['customer' => $customer->id, 'status' => 'open']);
 
 		// Found it, cancel it.
-		// Name the step before each call so the catch can say which one threw.
-		$stripe_cancel_operation = 'cancel_subscription';
 		try {
-			$stripe_cancel_operation = 'void_open_invoice';
-
+			$operation = 'void_open_invoice';
 			// Find any open invoices for this subscription and forgive them.
 			if ( ! empty( $invoices ) ) {
 				foreach ( $invoices->data as $invoice ) {
@@ -4943,22 +4870,19 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 
 			// Sometimes we don't want to cancel the local membership when Stripe sends its webhook.
-			$stripe_cancel_operation = 'preserve_local_membership';
+			$operation = 'preserve_local_membership';
 			if ( $preserve_local_membership ) {
 				$this->ignoreCancelWebhookForThisSubscription( $subscription->id, $pmpro_subscription->get_user_id() );
 			}
 
 			// Cancel
-			$stripe_cancel_operation = 'cancel_subscription';
-			$r = $subscription->cancel();
+			$operation = 'cancel_subscription';
+			$r         = $subscription->cancel();
 			return true;
 		} catch ( \Throwable $e ) {
-			$this->report_stripe_cancel_subscription_error( $e, $pmpro_subscription, $stripe_cancel_operation );
-			return false;
+			return $this->log_stripe_cancel_error( $e, $operation );
 		} catch ( \Exception $e ) {
-			// PHP 5 has no Throwable. Report the same way, then still fail the cancel.
-			$this->report_stripe_cancel_subscription_error( $e, $pmpro_subscription, $stripe_cancel_operation );
-			return false;
+			return $this->log_stripe_cancel_error( $e, $operation );
 		}
 	}
 
