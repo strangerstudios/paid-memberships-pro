@@ -1242,6 +1242,7 @@ class PMPro_Subscription {
 			$pmproemail                = new PMProEmail();
 			$pmproemail->template      = 'subscription_cancel_error';
 			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active.', 'paid-memberships-pro' ) . '</p>' . "\n" );
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Details about the error may be in the notes on the most recent order for this subscription.', 'paid-memberships-pro' ) . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User Email', 'paid-memberships-pro' ) . ': ' . $user->user_email . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Username', 'paid-memberships-pro' ) . ': ' . $user->user_login . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $user->display_name . '</p>' . "\n";

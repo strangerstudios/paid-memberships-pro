@@ -3149,10 +3149,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 			if ( ! empty( $subscription )
 			     && ( empty( $pmpro_stripe_event ) || empty( $pmpro_stripe_event->type ) || $pmpro_stripe_event->type != 'customer.subscription.deleted' ) ) {
-				if ( $this->cancelSubscriptionAtGateway( $subscription ) ) {
+				$cancel_result = $this->cancelSubscriptionAtGateway( $subscription );
+				if ( true === $cancel_result ) {
 					//we're okay, going to return true later
 				} else {
-					$order->error      = __( "Could not cancel old subscription.", 'paid-memberships-pro' );
+					$order->error      = __( "Could not cancel old subscription.", 'paid-memberships-pro' ) . ' ' . $cancel_result;
 					$order->shorterror = $order->error;
 
 					return false;
@@ -4915,22 +4916,32 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param PMPro_Subscription $subscription to cancel.
 	 */
 	function cancel_subscription( $subscription ) {
+		$result = true;
 		try {
 			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
 		} catch ( \Throwable $e ) {
-			//assume no subscription found
-			return false;
+			$result = $e->getMessage();
 		} catch ( \Exception $e ) {
-			//assume no subscription found
+			$result = $e->getMessage();
+		}
+
+		if ( true === $result ) {
+			$result = $this->cancelSubscriptionAtGateway( $stripe_subscription );
+			$this->update_subscription_info( $subscription );
+		}
+
+		// If the cancellation failed, note the error on the subscription's most recent order.
+		if ( true !== $result ) {
+			$orders = $subscription->get_orders( array( 'limit' => 1 ) );
+			if ( ! empty( $orders ) ) {
+				/* translators: 1: Subscription transaction ID, 2: Error message from Stripe. */
+				$orders[0]->add_order_note( sprintf( __( 'There was an error cancelling subscription %1$s at Stripe: %2$s', 'paid-memberships-pro' ), $subscription->get_subscription_transaction_id(), $result ) );
+				$orders[0]->saveOrder();
+			}
 			return false;
 		}
 
-		$success = false;
-		if ( $this->cancelSubscriptionAtGateway( $stripe_subscription ) ) {
-			$success = true;
-		}
-		$this->update_subscription_info( $subscription );
-		return $success;
+		return true;
 	}
 
 	/**
@@ -4939,27 +4950,27 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
+	 * @since TBD Returns an error message string on failure instead of false.
+	 *
+	 * @return true|string True if the subscription was cancelled, otherwise an error message.
 	 */
 	private function cancelSubscriptionAtGateway( $subscription, $preserve_local_membership = false ) {
 		// Check if a valid sub.
 		if ( empty( $subscription ) || empty( $subscription->id ) ) {
-			return false;
+			return __( 'The subscription could not be found at Stripe.', 'paid-memberships-pro' );
 		}
 
 		// Get the PMPro subscription.
 		$pmpro_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription->id, 'stripe', get_option( 'pmpro_gateway_environment', 'sandbox' ) );
 		if ( empty( $pmpro_subscription ) ) {
-			return false;
+			return __( 'The subscription could not be found on this site.', 'paid-memberships-pro' );
 		}
-
-		// Okay have an order, so get customer so we can cancel invoices too
-		$customer = $this->get_customer_for_user( $pmpro_subscription->get_user_id() );
-
-		// Get open invoices.
-		$invoices = Stripe_Invoice::all(['customer' => $customer->id, 'status' => 'open']);
 
 		// Found it, cancel it.
 		try {
+			// Get open invoices for this subscription.
+			$invoices = Stripe_Invoice::all( [ 'subscription' => $subscription->id, 'status' => 'open' ] );
+
 			// Find any open invoices for this subscription and forgive them.
 			if ( ! empty( $invoices ) ) {
 				foreach ( $invoices->data as $invoice ) {
@@ -4979,9 +4990,9 @@ class PMProGateway_stripe extends PMProGateway {
 			$r = $subscription->cancel();
 			return true;
 		} catch ( \Throwable $e ) {
-			return false;
+			return $e->getMessage();
 		} catch ( \Exception $e ) {
-			return false;
+			return $e->getMessage();
 		}
 	}
 
