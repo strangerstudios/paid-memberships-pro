@@ -3153,8 +3153,8 @@ class PMProGateway_stripe extends PMProGateway {
 				if ( true === $cancel_result ) {
 					//we're okay, going to return true later
 				} else {
-					$order->error      = __( "Could not cancel old subscription.", 'paid-memberships-pro' ) . ' ' . $cancel_result;
-					$order->shorterror = $order->error;
+					$order->shorterror = __( "Could not cancel old subscription.", 'paid-memberships-pro' );
+					$order->error      = $order->shorterror . ' ' . $cancel_result;
 
 					return false;
 				}
