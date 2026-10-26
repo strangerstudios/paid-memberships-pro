@@ -517,8 +517,14 @@
 					// Get the most recent order.
 					$newest_order = current( $newest_orders );
 
-					// Calculate the next payment date.
-					$update_array['next_payment_date'] = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $subscription->get_cycle_number() . ' ' . $subscription->get_cycle_period(), $newest_order->getTimestamp( true ) ) );
+					// If the most recent order is the first order for this subscription, no recurring payments have been made yet,
+					// so keep the first payment date that was set at checkout, which may be delayed (ex. a subscription delay).
+					// Otherwise, calculate the next payment date from the most recent order.
+					$is_first_order = ! empty( $oldest_order ) && (int) $newest_order->id === (int) $oldest_order->id;
+					if ( ! $is_first_order || empty( $subscription->get_next_payment_date() ) ) {
+						// Calculate the next payment date.
+						$update_array['next_payment_date'] = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $subscription->get_cycle_number() . ' ' . $subscription->get_cycle_period(), $newest_order->getTimestamp( true ) ) );
+					}
 				}
 			}
 
