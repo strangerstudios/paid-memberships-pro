@@ -27,7 +27,6 @@
 			Twocheckout::sellerId(get_option('pmpro_twocheckout_accountnumber'));
 			Twocheckout::username(get_option('pmpro_twocheckout_apiusername'));
 			Twocheckout::password(get_option('pmpro_twocheckout_apipassword'));
-			Twocheckout::$verifySSL = false;
 
 			$this->gateway = $gateway;
 			return $this->gateway;
