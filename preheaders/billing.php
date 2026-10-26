@@ -17,6 +17,12 @@ if ( ! is_user_logged_in() ) {
 if ( ! empty( $_REQUEST['pmpro_subscription_id'] ) ) {
 	// A subscription ID was passed. Get the subscription and its order.
 	$pmpro_billing_subscription = PMPro_Subscription::get_subscription( (int)$_REQUEST['pmpro_subscription_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: selects which subscription to show. Ownership is checked below and the billing update is verified with pmpro_billing_nonce.
+
+	// Redirect to the account page if the subscription was not found.
+	if ( empty( $pmpro_billing_subscription ) ) {
+		wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (add-ons such as Network Subsite point it at another domain) and is empty when no Account page is set.
+		exit;
+	}
 } else {
 	// No subscription or order was passed. Check if the user has exactly one active subscription. If so, use it.
 	$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID );
