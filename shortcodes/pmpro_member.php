@@ -298,9 +298,9 @@ function pmpro_maybe_strip_member_shortcode_from_post_meta( $meta_id, $object_id
 
 	// If there was a change, save our stripped version.
 	if ( $stripped_value !== $_meta_value ) {
-		// The hook passes an unslashed value, but update_metadata() unslashes again, so slash it first.
-		// Use update_metadata() so revisions/autosaves are updated directly instead of their parent post.
-		update_metadata( 'post', $object_id, $meta_key, wp_slash( $stripped_value ) );
+		// Update only the meta row that fired the hook. Unlike update_post_meta(), this does not
+		// unslash the value again, touch other rows with the same key, or redirect revisions to the parent post.
+		update_metadata_by_mid( 'post', $meta_id, $stripped_value );
 	}
 }
 add_action( 'added_post_meta', 'pmpro_maybe_strip_member_shortcode_from_post_meta', 10, 4 );
