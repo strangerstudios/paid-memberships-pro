@@ -278,6 +278,7 @@ add_filter( 'widget_update_callback', 'pmpro_maybe_strip_member_shortcode' );
 /**
  * Only allow those with the edit_users capability
  * to use the pmpro_member shortcode in post_meta.
+ * Runs when post meta is added or updated.
  *
  * @since 2.12.9
  * @param int    $meta_id     ID of the meta data entry.
@@ -297,7 +298,10 @@ function pmpro_maybe_strip_member_shortcode_from_post_meta( $meta_id, $object_id
 
 	// If there was a change, save our stripped version.
 	if ( $stripped_value !== $_meta_value ) {
-		update_post_meta( $object_id, $meta_key, $stripped_value );
+		// Update only the meta row that fired the hook. Unlike update_post_meta(), this does not
+		// unslash the value again, touch other rows with the same key, or redirect revisions to the parent post.
+		update_metadata_by_mid( 'post', $meta_id, $stripped_value );
 	}
 }
+add_action( 'added_post_meta', 'pmpro_maybe_strip_member_shortcode_from_post_meta', 10, 4 );
 add_action( 'updated_post_meta', 'pmpro_maybe_strip_member_shortcode_from_post_meta', 10, 4 );
