@@ -1067,7 +1067,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$order_data_to_return->timestamp = $order->timestamp;
 				$order_data_to_return->affiliate_id = $order->affiliate_id;
 				$order_data_to_return->affiliate_subid = $order->affiliate_subid;
-				$order_data_to_return->notes = $order->notes;
+				// Order notes are admin-only. Members can view their own orders here, so only include notes for admins.
+				if ( current_user_can( 'pmpro_orders' ) ) {
+					$order_data_to_return->notes = $order->notes;
+				}
 				$order_data_to_return->checkout_id = $order->checkout_id;
 			}
 
