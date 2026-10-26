@@ -368,6 +368,11 @@ add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000 );
  * @return void
  */
 function pmpro_admin_init_redirect_single_item_edit() {
+	// Only run for users who can see the Memberships menu.
+	if ( ! current_user_can( 'pmpro_memberships_menu' ) ) {
+		return;
+	}
+
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only checks whether the requested item exists and redirects to the list screen if not.
 	// Set to the page we are on or empty string.
 	$pmpro_admin_page = isset( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : '';
