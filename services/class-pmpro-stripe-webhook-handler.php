@@ -3,6 +3,8 @@
  * Stripe webhook handler.
  */
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables and MySQL named locks; webhook processing must read current order state, not a cached copy.
+
 use Stripe\Invoice as Stripe_Invoice;
 use Stripe\Subscription as Stripe_Subscription;
 use Stripe\Charge as Stripe_Charge;

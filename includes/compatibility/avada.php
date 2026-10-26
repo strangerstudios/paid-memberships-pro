@@ -3,6 +3,10 @@
  * Compatibility for Avada Theme.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
  // Unhook the_content changes for Avada.
 function pmpro_remove_content_changes_avada() {
 	global $pmpro_avada_content_filter_priorities;

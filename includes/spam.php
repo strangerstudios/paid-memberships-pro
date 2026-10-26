@@ -2,6 +2,11 @@
 /**
  * Code related to spam detection and prevention.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Constants. Define these in wp-config.php to override.
 if ( ! defined( 'PMPRO_SPAM_ACTION_NUM_LIMIT' ) ) {
 	define( 'PMPRO_SPAM_ACTION_NUM_LIMIT', 10 );
@@ -231,9 +236,10 @@ add_filter( 'pmpro_check_discount_code', 'pmpro_check_discount_code_spam_check',
  * @param string $username The username that failed to login.
  */
 function pmpro_track_login_spam( $username ) {
-	// Bail if Spam Protection is disabled.
+	// Bail if Spam Protection is disabled, unless a captcha is enabled.
+	// Captchas use this failed login activity to decide when to show a challenge.
 	$spamprotection = get_option( 'pmpro_spamprotection' );
-	if ( empty( $spamprotection ) ) {
+	if ( empty( $spamprotection ) && empty( pmpro_captcha() ) ) {
 		return;
 	}
 

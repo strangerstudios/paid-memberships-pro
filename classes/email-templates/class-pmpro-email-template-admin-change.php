@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMPro_Email_Template_Admin_Change  extends PMPro_Email_Template {
 
 	/**

@@ -1852,6 +1852,13 @@ a.pmpro_order-renewal {
 	top: -1px;
 }
 
+.pmpro-filter-learn-more {
+	color: #646970;
+	display: inline-block;
+	line-height: 32px;
+	margin-inline-start: 12px;
+}
+
 .pmpro-filter-layout {
 	clear: both;
 	display: flex;
@@ -2338,6 +2345,17 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	padding: 0 calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 );
 }
 
+/* The pricing panel has no top padding (the form-table provides its own spacing), so the
+   formula note supplies matching top spacing when it is the only visible child. Padding,
+   not margin: a margin would collapse through the unpadded panel and land outside it. */
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_level_formula_note {
+	padding-top: calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_level_formula_note p {
+	margin: 0;
+}
+
 .pmpro_discount_code-tag {
 	border: 2px dashed var(--pmpro--color--blue-darkest);
 	display: block;
@@ -2529,14 +2547,150 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	line-height: 1;
 }
 
-.pmpro_admin-pmpro-paymentsettings .pmpro-admin-secure-key {
+/* Secret-credential inputs (the secure_key settings field type and hand-rolled gateway key fields).
+   Unscoped so masking applies on any admin screen, not just payment settings. */
+.pmpro-admin-secure-key {
 	-webkit-text-security: disc;
 }
 
-@media only screen and (min-width: 1200px) {
-	.pmpro_admin-pmpro-paymentsettings .pmpro-admin-secure-key {
-		-webkit-text-security: disc;
-	}
+/* Deprecated gateway migration tool */
+/* WP admin's .button sets display: inline-block, which overrides the browser's [hidden] rule. */
+.pmpro-dgs [hidden] {
+	display: none !important;
+}
+
+.pmpro-dgs .pmpro-stepper {
+	margin: 20px 0;
+}
+
+.pmpro-dgs .pmpro-stepper__steps {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.pmpro-dgs .pmpro_message {
+	margin: 0 0 16px;
+}
+
+.pmpro-dgs .spinner {
+	float: none;
+	margin: 0 4px 0 0;
+	vertical-align: middle;
+}
+
+.pmpro-dgs-counts {
+	display: grid;
+	gap: 15px;
+	grid-template-columns: repeat(2, 1fr);
+	margin: 0 0 16px;
+}
+
+.pmpro-dgs-count {
+	background: #FFF;
+	border: 1px solid var(--pmpro--border--color, #E5E7EB);
+	border-radius: var(--pmpro--border--radius, 6px);
+	box-shadow: var(--pmpro--box-shadow, 1px 2px 3px #12196110);
+	padding: 16px 20px;
+	text-align: center;
+}
+
+.pmpro-dgs-count.is-current {
+	background-color: var(--pmpro--color--blue-lightest, #F5F8FA);
+	border-color: #1A688B;
+}
+
+.pmpro-dgs-count.is-current .pmpro-dgs-count-label {
+	color: #1A688B;
+	font-weight: 600;
+}
+
+.pmpro-dgs-count.is-current .pmpro-dgs-count-label:after {
+	content: " (" attr(data-current-label) ")";
+	font-weight: 400;
+}
+
+.pmpro-dgs-count-num {
+	color: var(--pmpro--color--almost-black, #0F172A);
+	display: block;
+	font-size: 26px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.pmpro-dgs-count-num.is-live {
+	color: var(--pmpro--color--error-text, #721c24);
+}
+
+.pmpro-dgs-count-label {
+	color: #666;
+}
+
+.pmpro-dgs-workflow {
+	background: var(--pmpro--color--blue-lightest, #F5F8FA);
+	border: 1px solid var(--pmpro--border--color, #E5E7EB);
+	border-radius: var(--pmpro--border--radius, 6px);
+	margin: 0 0 16px;
+	padding: 12px 16px;
+}
+
+.pmpro-dgs-workflow-title {
+	font-weight: 600;
+	margin: 0 0 4px;
+}
+
+.pmpro-dgs-meta {
+	color: #646970;
+	font-size: 12px;
+	margin: 0 0 8px;
+}
+
+.pmpro-dgs-bar {
+	background: #FFF;
+	border: 1px solid var(--pmpro--border--color, #E5E7EB);
+	border-radius: var(--pmpro--border--radius, 6px);
+	height: 12px;
+	margin: 8px 0;
+	overflow: hidden;
+}
+
+.pmpro-dgs-bar-fill {
+	background: var(--pmpro--color--success-text-alt, #45b45c);
+	height: 100%;
+}
+
+.pmpro-dgs-summary .pmpro_tag {
+	margin-right: 5px;
+}
+
+.pmpro-dgs-actions {
+	margin: 16px 0 0;
+}
+
+.pmpro-dgs-actions .button {
+	margin-right: 8px;
+}
+
+.pmpro-dgs-blockers {
+	color: #646970;
+	font-size: 12px;
+	list-style: disc;
+	margin: 10px 0 0 20px;
+}
+
+.pmpro-dgs-footer {
+	border-top: 1px solid var(--pmpro--border--color, #E5E7EB);
+	margin: 14px 0 0;
+	padding-top: 12px;
+}
+
+.pmpro-dgs-csv-list {
+	list-style: disc;
+	margin: 0 0 12px 20px;
+}
+
+.pmpro-dgs-csv-list li {
+	margin: 0 0 4px;
 }
 
 /**
@@ -3256,6 +3410,17 @@ td.has-row-actions > .pmpro_message {
 	max-width: 65em;
 }
 
+.pmpro_notification ul {
+	list-style: disc;
+	margin: 15px 0 0 20px;
+}
+
+.pmpro_notification li {
+	font-size: 14px;
+	line-height: 22px;
+	margin: 0 0 4px 0;
+}
+
 .pmpro_notification .button {
 	border-radius: 4px;
 	font-size: 14px;
@@ -3419,6 +3584,16 @@ td.has-row-actions > .pmpro_message {
 .pmpro-stepper .pmpro-stepper__step.is-active .pmpro-stepper__step-label {
 	color: #1A688B;
 	font-weight: 700;
+}
+
+.pmpro-stepper .pmpro-stepper__step.is-done .pmpro-stepper__step-icon {
+	background-color: var(--pmpro--color--success-text-alt, #45b45c);
+	color: #FFF;
+	font-weight: 700;
+}
+
+.pmpro-stepper .pmpro-stepper__step.is-done .pmpro-stepper__step-label {
+	color: var(--pmpro--color--success-text, #0F441C);
 }
 
 .pmpro-wizard .pmpro-wizard__container {
@@ -4983,4 +5158,9 @@ button.pmpro_report_th_closed:before {
 	float: left;
 	height: 30px;
 	width: 26px;
+}
+
+/* Declarative field visibility for pmpro_build_settings_field() depends rules (toggled by pmpro-admin.js). */
+.pmpro-hidden {
+	display: none;
 }

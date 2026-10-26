@@ -9,6 +9,10 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_report_members_per_level_register( $pmpro_reports ) {
 	$pmpro_reports['members_per_level'] = __('Active Members Per Level', 'paid-memberships-pro' );
 
@@ -19,6 +23,7 @@ add_filter( 'pmpro_registered_reports', 'pmpro_report_members_per_level_register
 
 // Enqueue Google Visualization JS on report page
 function pmpro_report_members_per_level_init() {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of which admin page is loading to decide whether to enqueue a script.
 	if ( is_admin() && isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-reports' && isset( $_REQUEST['report'] ) && $_REQUEST['report'] == 'members_per_level' ) {
 		wp_enqueue_script( 'corechart', plugins_url( 'js/corechart.js',  plugin_dir_path( __DIR__ ) ) );
 	}
@@ -89,14 +94,14 @@ function pmpro_report_get_active_members_per_level() {
 	}
 
 	// Query to get active members per level.
-	$sqlQuery = "SELECT membership_id, count(*) as total_active_members
+	$sqlQuery = "SELECT membership_id, COUNT(DISTINCT mu.user_id) as total_active_members
 	FROM $wpdb->pmpro_memberships_users as mu
 	INNER JOIN $wpdb->users as u on u.ID = mu.user_id
 	WHERE mu.status = 'active'
 	GROUP BY membership_id
 	ORDER BY total_active_members DESC";
 
-	$results = $wpdb->get_results( $sqlQuery );
+	$results = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query; only $wpdb table names are interpolated. Queries a PMPro custom table; results are cached in a transient.
 
 	// Cache the results for 24 hours.
 	set_transient( 'pmpro_report_members_per_level', $results, DAY_IN_SECONDS );
@@ -109,6 +114,9 @@ function pmpro_report_members_per_level_delete_transients() {
 	delete_transient( 'pmpro_report_members_per_level' );
 }
 add_action( 'pmpro_after_change_membership_level', 'pmpro_report_members_per_level_delete_transients' );
+
+// Deleting a user doesn't change a membership level, but it can leave behind membership rows that this report ignores.
+add_action( 'deleted_user', 'pmpro_report_members_per_level_delete_transients' );
 
 // Draw a pie chart of active members per level.
 function pmpro_report_draw_active_members_per_level_chart() {

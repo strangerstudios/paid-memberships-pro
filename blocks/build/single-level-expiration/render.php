@@ -2,6 +2,10 @@
 /**
  * Render the Level Expiration block on the frontend.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Return if level expiration is empty.
 if ( empty( $content ) ) {
 	return;

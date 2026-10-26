@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //only admins can get this
 if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_sales_report_csv" ) ) ) {
 	die( esc_html__( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
@@ -11,7 +15,7 @@ if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['
 
 //get values from form
 if(isset($_REQUEST['type']))
-	$type = sanitize_text_field($_REQUEST['type']);
+	$type = sanitize_text_field( wp_unslash( $_REQUEST['type'] ) );
 else
 	$type = "revenue";
 
@@ -21,7 +25,7 @@ else
 	$type_function = "SUM";
 
 if(isset($_REQUEST['period']))
-	$period = sanitize_text_field($_REQUEST['period']);
+	$period = sanitize_text_field( wp_unslash( $_REQUEST['period'] ) );
 else
 	$period = "daily";
 

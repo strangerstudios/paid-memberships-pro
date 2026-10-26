@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 
@@ -85,7 +88,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 
 <p>
 	<strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br />
-	{{ login_url }}
+	{{ billing_update_url }}
 </p>
 
 <p>Account: {{ display_name }} ({{ user_email }})</p>', 'paid-memberships-pro' ) );
@@ -141,6 +144,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 			'{{ accountnumber }}' => __( 'The last four digits of the credit card number.', 'paid-memberships-pro' ),
 			'{{ expirationmonth }}' => __( 'The expiration month of the credit card.', 'paid-memberships-pro' ),
 			'{{ expirationyear }}' => __( 'The expiration year of the credit card.', 'paid-memberships-pro' ),
+			'{{ billing_update_url }}' => __( 'The URL where the member can update billing information for the failed subscription.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -155,6 +159,14 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 		$order = $this->order;
 		$user = $this->user;
 		$membership_level = pmpro_getLevel( $order->membership_id );
+
+		// Link to the Billing page for the failed subscription. Fall back to the login page if there is no Billing page.
+		$subscription       = $order->get_subscription();
+		$billing_update_url = pmpro_url( 'billing', empty( $subscription ) ? '' : 'pmpro_subscription_id=' . (int) $subscription->get_id(), 'https' );
+		if ( empty( $billing_update_url ) ) {
+			$billing_update_url = pmpro_login_url();
+		}
+
 		return array(
 			'subject' => $this->get_default_subject(),
 			'name' => $user->display_name,
@@ -184,6 +196,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 			'accountnumber' => hideCardNumber( $order->accountnumber ),
 			'expirationmonth' => $order->expirationmonth,
 			'expirationyear' => $order->expirationyear,
+			'billing_update_url' => $billing_update_url,
 		);
 	}
 
