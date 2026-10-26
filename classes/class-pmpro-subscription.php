@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+
 /**
  * The PMPro Subscription object.
  *
@@ -315,19 +321,25 @@ class PMPro_Subscription {
 	 *
 	 * Defaults to returning the latest 100 subscriptions.
 	 *
+	 * @since 3.9 Added support for the `offset` and `return_count` arguments.
+	 *
 	 * @param array $args The query arguments to use.
 	 *
-	 * @return PMPro_Subscription[] The list of subscription objects.
+	 * @return PMPro_Subscription[]|int The list of subscription objects, or the count if return_count is true.
 	 */
 	public static function get_subscriptions( array $args = [] ) {
 		global $wpdb;
 
-		$sql_query = "SELECT `id` FROM `$wpdb->pmpro_subscriptions`";
+		// Check if we are going to return the count of subscriptions.
+		$return_count = isset( $args['return_count'] ) ? (bool) $args['return_count'] : false;
+
+		$sql_query = $return_count ? "SELECT COUNT(*) FROM `$wpdb->pmpro_subscriptions`" : "SELECT `id` FROM `$wpdb->pmpro_subscriptions`";
 
 		$prepared = [];
 		$where    = [];
 		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`startdate` DESC';
 		$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
+		$offset   = isset( $args['offset'] ) ? max( 0, (int) $args['offset'] ) : 0;
 
 		// Detect unsupported orderby usage (in the future we may support better syntax).
 		if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,`]/', ' ', $orderby ) ) {
@@ -487,21 +499,34 @@ class PMPro_Subscription {
 			$sql_query .= ' WHERE ' . implode( ' AND ', $where );
 		}
 
-		// Handle the order of data.
-		$sql_query .= ' ORDER BY ' . $orderby;
+		if ( ! $return_count ) {
+			// Handle the order of data.
+			$sql_query .= ' ORDER BY ' . $orderby;
 
-		// Maybe limit the data.
-		if ( $limit ) {
-			$sql_query .= ' LIMIT %d';
-			$prepared[] = $limit;
+			// Maybe limit the data.
+			if ( $limit ) {
+				$sql_query .= ' LIMIT %d';
+				$prepared[] = $limit;
+
+				// Maybe offset the data for pagination.
+				if ( $offset > 0 ) {
+					$sql_query .= ' OFFSET %d';
+					$prepared[] = $offset;
+				}
+			}
 		}
 
 		// Maybe prepare the query.
 		if ( $prepared ) {
-			$sql_query = $wpdb->prepare( $sql_query, $prepared );
+			$sql_query = $wpdb->prepare( $sql_query, $prepared ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query built from static SQL, the $wpdb table name, placeholders, and an orderby validated against a strict character whitelist above.
 		}
 
-		$subscription_ids = $wpdb->get_col( $sql_query );
+		// If we're returning a count, return the count.
+		if ( $return_count ) {
+			return (int) $wpdb->get_var( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from static SQL, the $wpdb table name, placeholders passed through $wpdb->prepare() above, and an orderby validated against a strict character whitelist.
+		}
+
+		$subscription_ids = $wpdb->get_col( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from static SQL, the $wpdb table name, placeholders passed through $wpdb->prepare() above, and an orderby validated against a strict character whitelist.
 
 		if ( empty( $subscription_ids ) ) {
 			return [];
@@ -960,10 +985,10 @@ class PMPro_Subscription {
 
 		// Maybe prepare the query.
 		if ( $prepared ) {
-			$sql_query = $wpdb->prepare( $sql_query, $prepared );
+			$sql_query = $wpdb->prepare( $sql_query, $prepared ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query built from static SQL, the $wpdb table name, placeholders, and an orderby validated against a strict character whitelist above.
 		}
 
-		$order_ids = $wpdb->get_col( $sql_query );
+		$order_ids = $wpdb->get_col( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from static SQL, the $wpdb table name, placeholders passed through $wpdb->prepare() above, and an orderby validated against a strict character whitelist.
 
 		if ( empty( $order_ids ) ) {
 			return [];

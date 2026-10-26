@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_upgrade_1_7()
 {
 	pmpro_db_delta();	//just a db delta

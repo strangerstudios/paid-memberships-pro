@@ -13,6 +13,10 @@
  * @since 3.5.5
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Increase the batch size for Action Scheduler on Pantheon.
  */

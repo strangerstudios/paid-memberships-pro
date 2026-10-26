@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The Trusted Membership Platform That Grows with You
- * Version: 3.8.9
+ * Version: 3.8.99
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -15,8 +15,12 @@
  * GPLv2 Full license details in license.txt
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // version constant
-define( 'PMPRO_VERSION', '3.8.9' );
+define( 'PMPRO_VERSION', '3.8.99' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '7.4' );
 
@@ -34,9 +38,12 @@ require_once( PMPRO_DIR . '/includes/localization.php' );           		// localiz
 require_once( PMPRO_DIR . '/includes/lib/glotpress-helper.php' );   		// handles translation updates logic from our own server.
 require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        		// parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
 require_once( PMPRO_DIR . '/includes/functions.php' );              		// misc functions used by the plugin
+require_once( PMPRO_DIR . '/includes/date-patterns.php' );          		// date pattern utilities for subscription delays and set expiration dates
+require_once( PMPRO_DIR . '/includes/discount-codes.php' );         		// discount code pricing resolution
 require_once( PMPRO_DIR . '/includes/updates.php' );                		// database and other updates
 require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           		// database and other updates
 require_once( PMPRO_DIR . '/includes/deprecated.php' );             		// deprecated hooks and functions
+require_once( PMPRO_DIR . '/includes/deprecated-gateways.php' );          // Deprecated gateway loading and migration workflow.
 require_once( PMPRO_DIR . '/includes/crons.php' ); 							// load cron functions for PMPro
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
@@ -89,6 +96,8 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-b
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-billing-failure-admin.php' ); // billing failure email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date.php' ); //cancel auto renewals email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php' ); //cancel auto renewals admin email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-deprecated-gateway-stripe-migration.php' ); // deprecated gateway Stripe migration email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-deprecated-gateway-checkout-required.php' ); // deprecated gateway checkout required email template
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
@@ -124,6 +133,7 @@ require_once( PMPRO_DIR . '/includes/menus.php' );                  // custom me
 require_once( PMPRO_DIR . '/includes/notifications.php' );          // check for notifications at PMPro, shown in PMPro settings
 require_once( PMPRO_DIR . '/includes/init.php' );                   // code run during init, set_current_user, and wp hooks
 require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue frontend and admin JS and CSS
+require_once( PMPRO_DIR . '/includes/structured-data.php' );        // JSON-LD Product/Offer schema for membership levels
 require_once( PMPRO_DIR . '/includes/terms.php' );                  // allow restricting terms by membership level
 require_once( PMPRO_DIR . '/includes/page-templates.php' );         // page templates
 
@@ -132,6 +142,8 @@ require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to s
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
 require_once( PMPRO_DIR . '/includes/email-logging.php' );           // email logging functionality
 require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fields
+require_once( PMPRO_DIR . '/includes/settings-fields.php' );         // render-only helpers for admin settings sections
+require_once( PMPRO_DIR . '/includes/captcha.php' );                // shared code for captcha services
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cloudflare-turnstile.php' );   // load CloudFlare Turnstile files if needed
 require_once( PMPRO_DIR . '/includes/terms-of-service.php' );       // code to add a terms of service checkbox to checkout
@@ -150,6 +162,8 @@ require_once( PMPRO_DIR . '/includes/restricted-files.php' );		// Restrict acces
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
+require_once( PMPRO_DIR . '/includes/abilities.php' );              // WordPress Abilities API integrations
+require_once( PMPRO_DIR . '/includes/cli.php' );                    // WP-CLI commands (loaded only under WP-CLI)
 require_once( PMPRO_DIR . '/includes/widgets.php' );                // widgets for PMPro
 require_once( PMPRO_DIR . '/includes/gateway-request-handlers.php' ); // gateway request handlers
 

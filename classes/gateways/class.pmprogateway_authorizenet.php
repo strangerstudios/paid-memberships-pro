@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //include pmprogateway
 require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -363,8 +367,8 @@ class PMProGateway_authorizenet extends PMProGateway
 			// guide at: http://developer.authorize.net
 		);
 
-		if ( ! empty( $_REQUEST['CVV']  ) ) {
-			$post_values["x_card_code"] = sanitize_text_field( $_REQUEST['CVV'] );
+		if ( ! empty( $_REQUEST['CVV']  ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
+			$post_values["x_card_code"] = sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
 		}
 
 		$post_string = $this->build_post_string( $post_values, 'authorize' );
@@ -374,7 +378,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			curl_setopt($request, CURLOPT_HEADER, 0); // set to 0 to eliminate header info from response
 			curl_setopt($request, CURLOPT_RETURNTRANSFER, 1); // Returns response data instead of TRUE(1)
 			curl_setopt($request, CURLOPT_POSTFIELDS, $post_string); // use HTTP POST to send form data
-			curl_setopt($request, CURLOPT_SSL_VERIFYPEER, FALSE); // uncomment this line if you get no gateway response.
+			curl_setopt($request, CURLOPT_CAINFO, ABSPATH . WPINC . '/certificates/ca-bundle.crt'); // use the CA bundle that ships with WordPress
 			curl_setopt($request, CURLOPT_USERAGENT, PMPRO_USER_AGENT); // setting the user agent
 			$post_response = curl_exec($request); // execute curl post and store results in $post_response
 			// additional options may be required depending upon your server configuration
@@ -444,7 +448,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			curl_setopt($request, CURLOPT_HEADER, 0); // set to 0 to eliminate header info from response
 			curl_setopt($request, CURLOPT_RETURNTRANSFER, 1); // Returns response data instead of TRUE(1)
 			curl_setopt($request, CURLOPT_POSTFIELDS, $post_string); // use HTTP POST to send form data
-			curl_setopt($request, CURLOPT_SSL_VERIFYPEER, FALSE); // uncomment this line if you get no gateway response.
+			curl_setopt($request, CURLOPT_CAINFO, ABSPATH . WPINC . '/certificates/ca-bundle.crt'); // use the CA bundle that ships with WordPress
 			$post_response = curl_exec($request); // execute curl post and store results in $post_response
 			// additional options may be required depending upon your server configuration
 			// you can find documentation on curl options at http://www.php.net/curl_setopt
@@ -541,8 +545,8 @@ class PMProGateway_authorizenet extends PMProGateway
 		);
 
 
-		if ( ! empty( $_REQUEST['CVV']  ) ) {
-			$post_values["x_card_code"] = sanitize_text_field( $_REQUEST['CVV'] );
+		if ( ! empty( $_REQUEST['CVV']  ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
+			$post_values["x_card_code"] = sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
 		}
 
 		$post_string = $this->build_post_string( $post_values, 'charge' );
@@ -552,7 +556,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			curl_setopt($request, CURLOPT_HEADER, 0); // set to 0 to eliminate header info from response
 			curl_setopt($request, CURLOPT_RETURNTRANSFER, 1); // Returns response data instead of TRUE(1)
 			curl_setopt($request, CURLOPT_POSTFIELDS, $post_string); // use HTTP POST to send form data
-			curl_setopt($request, CURLOPT_SSL_VERIFYPEER, FALSE); // uncomment this line if you get no gateway response.
+			curl_setopt($request, CURLOPT_CAINFO, ABSPATH . WPINC . '/certificates/ca-bundle.crt'); // use the CA bundle that ships with WordPress
 			$post_response = curl_exec($request); // execute curl post and store results in $post_response
 			// additional options may be required depending upon your server configuration
 			// you can find documentation on curl options at http://www.php.net/curl_setopt
@@ -646,7 +650,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		$cardNumber = $order->accountnumber;
 		$expirationDate = $order->expirationmonth . '-' . $order->expirationyear;
-		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] );
+		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during checkout; pmpro_checkout_nonce is verified in preheaders/checkout.php.
 
 		$nameparts = pnp_split_full_name( $order->billing->name );
 		$firstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
@@ -780,7 +784,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		$cardNumber = $order->accountnumber;
 		$expirationDate = $order->expirationmonth . '-' . $order->expirationyear;
-		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] );
+		$cardCode = empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['CVV'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Called during billing update; pmpro_billing_nonce is verified in preheaders/billing.php.
 
 		$nameparts = pnp_split_full_name( $order->billing->name );
 		$firstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
@@ -1118,7 +1122,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		}
 		else
 		{
-			error_reporting(E_ERROR);
+			$previous_error_reporting = error_reporting( E_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting, PluginCheck.CodeAnalysis.PHPErrorReporting.DirectErrorReportingCall -- Temporarily silences socket warnings; the previous level is restored below.
 			fputs($fp, "POST $path  HTTP/1.1\r\n");
 			fputs($fp, $header.$content);
 			$response = "";
@@ -1127,7 +1131,7 @@ class PMProGateway_authorizenet extends PMProGateway
 				$response = $response . fgets($fp, 128);
 			}
 			fclose($fp);
-			error_reporting(E_ALL ^ E_NOTICE);
+			error_reporting( $previous_error_reporting ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting, PluginCheck.CodeAnalysis.PHPErrorReporting.DirectErrorReportingCall -- Restores the site's error reporting level.
 		}
 		return $response;
 	}
@@ -1145,7 +1149,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		curl_setopt($ch, CURLOPT_HEADER, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
 		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_CAINFO, ABSPATH . WPINC . '/certificates/ca-bundle.crt');
 		curl_setopt($ch, CURLOPT_USERAGENT, PMPRO_USER_AGENT);	//set user agent
 		$response = curl_exec($ch);
 		return $response;

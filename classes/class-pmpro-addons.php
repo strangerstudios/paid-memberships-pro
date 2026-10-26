@@ -136,9 +136,7 @@ class PMPro_AddOns {
 				'pmpro-member-directory',
 				'pmpro-nav-menus',
 				'pmpro-roles',
-				'pmpro-set-expiration-dates',
 				'pmpro-signup-shortcode',
-				'pmpro-subscription-delays',
 			),
 			'association'     => array(
 				'basic-user-avatars',
@@ -152,9 +150,7 @@ class PMPro_AddOns {
 				'pmpro-membership-card',
 				'pmpro-membership-manager-role',
 				'pmpro-pay-by-check',
-				'pmpro-set-expiration-dates',
 				'pmpro-shipping',
-				'pmpro-subscription-delays',
 			),
 			'premium_content' => array(
 				'pmpro-abandoned-cart-recovery',
@@ -407,7 +403,7 @@ class PMPro_AddOns {
 		$addons           = $this->addons;
 		$addons_timestamp = $this->addons_timestamp;
 		// Check if forcing a pull from the server
-		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check;
+		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Not a read-only flag: it forces a remote fetch that rewrites the cached pmpro_addons and pmpro_addons_timestamp options. A forged link can only trigger that cache refresh, which is harmless.
 
 		// if no addons locally, we need to hit the server
 		if ( empty( $addons ) || $force_check || current_time( 'timestamp' ) > $addons_timestamp + 86400 ) {
@@ -501,6 +497,13 @@ class PMPro_AddOns {
 		$plugin_file = $this->resolve_plugin_file( $slug_or_plugin );
 		if ( is_wp_error( $plugin_file ) ) {
 			return $plugin_file;
+		}
+
+		// Don't reactivate add ons whose functionality has been merged into core.
+		// They are auto-deactivated, and core may define their legacy function
+		// names, so loading one mid-request could fatal with "cannot redeclare".
+		if ( function_exists( 'pmpro_get_deprecated_add_ons' ) && array_key_exists( dirname( $plugin_file ), pmpro_get_deprecated_add_ons() ) ) {
+			return new WP_Error( 'pmpro_addon_deprecated', __( 'This Add On has been merged into Paid Memberships Pro and can no longer be activated. You should delete it.', 'paid-memberships-pro' ) );
 		}
 
 		if ( is_plugin_active( $plugin_file ) ) {
@@ -989,15 +992,16 @@ class PMPro_AddOns {
 	 * @since 1.9
 	 */
 	public function check_when_updating_plugins() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only inspects which plugins WordPress core is updating in order to block unlicensed updates. Core verifies its own nonces for the update itself.
 		// if user can't edit plugins, then WP will catch this later
 		if ( ! current_user_can( 'update_plugins' ) ) {
 			return;
 		}
 
 		// updating one or more plugins via Dashboard -> Upgrade
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
 			// figure out which plugins we are updating
-			$plugins = explode( ',', stripslashes( sanitize_text_field( $_GET['plugins'] ) ) );
+			$plugins = explode( ',', isset( $_GET['plugins'] ) ? sanitize_text_field( wp_unslash( $_GET['plugins'] ) ) : '' );
 			$plugins = array_map( 'urldecode', $plugins );
 
 			// look for addons
@@ -1045,9 +1049,9 @@ class PMPro_AddOns {
 		}
 
 		// upgrading just one or plugin via an update.php link
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 			// figure out which plugin we are updating
-			$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
+			$plugin = urldecode( trim( sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) ) );
 
 			$slug  = str_replace( '.php', '', basename( $plugin ) );
 			$addon = $this->get_addon_by_slug( $slug );
@@ -1076,9 +1080,9 @@ class PMPro_AddOns {
 		}
 
 		// updating via AJAX on the plugins page
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 			// figure out which plugin we are updating
-			$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
+			$plugin = urldecode( trim( sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) ) );
 
 			$slug  = str_replace( '.php', '', basename( $plugin ) );
 			$addon = $this->get_addon_by_slug( $slug );
@@ -1090,6 +1094,7 @@ class PMPro_AddOns {
 				exit;
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**

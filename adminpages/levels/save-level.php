@@ -1,39 +1,45 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Nonce verified via check_admin_referer() on pmpro_membershiplevels_nonce in adminpages/membershiplevels.php before this file is included.
+
 global $wpdb, $allowedposttags;
 
 if(isset($_REQUEST['saveid']))
 $saveid = intval($_REQUEST['saveid']);
 
-$ml_name = wp_kses(wp_unslash($_REQUEST['name']), $allowedposttags);
-$ml_description = wp_kses(wp_unslash($_REQUEST['description']), $allowedposttags);
-$ml_confirmation = wp_kses(wp_unslash($_REQUEST['confirmation']), $allowedposttags);
+$ml_name = isset( $_REQUEST['name'] ) ? wp_kses(wp_unslash($_REQUEST['name']), $allowedposttags) : '';
+$ml_description = isset( $_REQUEST['description'] ) ? wp_kses(wp_unslash($_REQUEST['description']), $allowedposttags) : '';
+$ml_confirmation = isset( $_REQUEST['confirmation'] ) ? wp_kses(wp_unslash($_REQUEST['confirmation']), $allowedposttags) : '';
 if(!empty($_REQUEST['confirmation_in_email']))
 	$ml_confirmation_in_email = 1;
 else
 	$ml_confirmation_in_email = 0;
 
-$ml_initial_payment = sanitize_text_field($_REQUEST['initial_payment']);
+$ml_initial_payment = isset( $_REQUEST['initial_payment'] ) ? sanitize_text_field(wp_unslash($_REQUEST['initial_payment'])) : '';
 if(!empty($_REQUEST['recurring']))
 	$ml_recurring = 1;
 else
 	$ml_recurring = 0;
-$ml_billing_amount = sanitize_text_field($_REQUEST['billing_amount']);
-$ml_cycle_number = intval($_REQUEST['cycle_number']);
-$ml_cycle_period = sanitize_text_field($_REQUEST['cycle_period']);
-$ml_billing_limit = intval($_REQUEST['billing_limit']);
+$ml_billing_amount = isset( $_REQUEST['billing_amount'] ) ? sanitize_text_field(wp_unslash($_REQUEST['billing_amount'])) : '';
+$ml_cycle_number = isset( $_REQUEST['cycle_number'] ) ? intval($_REQUEST['cycle_number']) : 0;
+$ml_cycle_period = isset( $_REQUEST['cycle_period'] ) ? sanitize_text_field(wp_unslash($_REQUEST['cycle_period'])) : '';
+$ml_billing_limit = isset( $_REQUEST['billing_limit'] ) ? intval($_REQUEST['billing_limit']) : 0;
 if(!empty($_REQUEST['custom_trial']))
 	$ml_custom_trial = 1;
 else
 	$ml_custom_trial = 0;
-$ml_trial_amount = isset( $_REQUEST['trial_amount'] ) ? sanitize_text_field( $_REQUEST['trial_amount'] ) : '';
+$ml_trial_amount = isset( $_REQUEST['trial_amount'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['trial_amount'] ) ) : '';
 $ml_trial_limit = isset( $_REQUEST['trial_limit'] ) ? intval( $_REQUEST['trial_limit'] ) : 0;
 if(!empty($_REQUEST['expiration']))
 	$ml_expiration = 1;
 else
 	$ml_expiration = 0;
-$ml_expiration_number = intval($_REQUEST['expiration_number']);
-$ml_expiration_period = sanitize_text_field($_REQUEST['expiration_period']);
+$ml_expiration_number = isset( $_REQUEST['expiration_number'] ) ? intval($_REQUEST['expiration_number']) : 0;
+$ml_expiration_period = isset( $_REQUEST['expiration_period'] ) ? sanitize_text_field(wp_unslash($_REQUEST['expiration_period'])) : '';
 $ml_categories = array();
 
 if ( ! empty( $_REQUEST['membership_account_message'] ) ) {
@@ -154,5 +160,37 @@ if ( ! empty( $_REQUEST['level_group'] ) ) {
 
 // Update the Membership Account Message.
 update_pmpro_membership_level_meta( $saveid, 'membership_account_message', $ml_membership_account_message );
+
+// Update the level image.
+$ml_level_image = isset( $_REQUEST['level_image'] ) ? intval( $_REQUEST['level_image'] ) : 0;
+if ( ! empty( $ml_level_image ) && wp_attachment_is_image( $ml_level_image ) ) {
+	update_pmpro_membership_level_meta( $saveid, 'level_image', $ml_level_image );
+} else {
+	delete_pmpro_membership_level_meta( $saveid, 'level_image' );
+}
+
+// Save subscription delay settings. Only recurring levels can have a delay.
+// Unparseable patterns are saved as entered: checkout ignores them.
+// Uses same wp_options keys as the Subscription Delays Add On: pmpro_subscription_delay_{level_id}
+$delay_type = ! empty( $ml_recurring ) && isset( $_REQUEST['delay_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['delay_type'] ) ) : 'none';
+$delay_date_pattern = $delay_type === 'date' ? pmpro_get_date_pattern_from_request( 'subscription_delay_date' ) : '';
+if ( $delay_type === 'days' && ! empty( $_REQUEST['subscription_delay_days'] ) ) {
+	update_option( 'pmpro_subscription_delay_' . $saveid, max( 1, intval( $_REQUEST['subscription_delay_days'] ) ), false );
+} elseif ( '' !== $delay_date_pattern ) {
+	update_option( 'pmpro_subscription_delay_' . $saveid, $delay_date_pattern, false );
+} else {
+	delete_option( 'pmpro_subscription_delay_' . $saveid );
+}
+
+// Save set expiration date settings.
+// Uses same wp_options keys as the Set Expiration Dates Add On: pmprosed_{level_id}
+$expiration_date_type = isset( $_REQUEST['expiration_date_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['expiration_date_type'] ) ) : 'none';
+$expiration_date_pattern = ! empty( $ml_expiration ) && $expiration_date_type === 'date' ? pmpro_get_date_pattern_from_request( 'set_expiration_date' ) : '';
+if ( '' !== $expiration_date_pattern ) {
+	update_option( 'pmprosed_' . $saveid, $expiration_date_pattern, false );
+} else {
+	// Expiration unchecked, duration-based, or no pattern chosen: remove any date-based expiration.
+	delete_option( 'pmprosed_' . $saveid );
+}
 
 do_action("pmpro_save_membership_level", $saveid);

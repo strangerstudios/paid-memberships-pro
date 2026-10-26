@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries PMPro custom tables, which have no WordPress API or object cache layer.
+
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
@@ -139,6 +145,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_columns() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter, search, sort and paginate the list table.
 
 		$columns = array(
 			'id'                          => __( 'Subscription ID', 'paid-memberships-pro' ),
@@ -169,6 +176,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		}
 
 
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		return $columns;
 	}
 
@@ -244,12 +252,13 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @return Array|integer if $count parameter = true
 	 */
 	private function sql_table_data( $count = false, $limit = 15 ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter, search, sort and paginate the list table.
 		global $wpdb;
 
-		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
+		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '';
 		$level = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : false;
-		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
-		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
+		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
+		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) ) : '';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
 		$items_per_page = $this->get_items_per_page( 'pmpro_subscriptions_per_page' );
 		/**
@@ -273,6 +282,8 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		if ( ! empty( $status ) ) {
 			if ( $status === 'sync_error' ) {
 				$condition .= ' AND sm.meta_value IS NOT NULL';
+			} elseif ( $status === 'needs_payment_method' ) {
+				$condition .= ' AND s.status = "active" AND smnpm.meta_value IS NOT NULL';
 			} else {
 				$condition .= ' AND s.status = "' . esc_sql( $status ) . '"';
 			}
@@ -289,7 +300,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 
 		if ( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) && ! $count ) {
 			$order         = $_REQUEST['order'] == 'asc' ? 'ASC' : 'DESC';
-			$orderby       = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+			$orderby       = $this->sanitize_orderby( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) );
 			$orderby_query = "ORDER BY $orderby $order";
 		} else {
 			$orderby_query = 'ORDER BY id DESC';
@@ -302,6 +313,9 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		}
 
 		$sqlQuery .= "FROM $wpdb->pmpro_subscriptions s LEFT JOIN $wpdb->pmpro_membership_levels ml ON s.membership_level_id = ml.id LEFT JOIN $wpdb->users u ON s.user_id = u.ID LEFT JOIN $wpdb->pmpro_subscriptionmeta sm ON s.id = sm.pmpro_subscription_id AND sm.meta_key = 'sync_error' ";
+		if ( 'needs_payment_method' === $status ) {
+			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_subscriptionmeta smnpm ON s.id = smnpm.pmpro_subscription_id AND smnpm.meta_key = 'deprecated_gateway_needs_payment_method' ";
+		}
 
 		if ( $s ) {
 			$sqlQuery .= 'WHERE (1=2 ';
@@ -331,10 +345,10 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		}
 
 		if( $count ) {
-			return $wpdb->get_var( $sqlQuery );    
+			return $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from $wpdb table names, intval()/esc_sql()-quoted filter and search values, and a whitelisted orderby.
 		} else {
-			$sqlQuery .= 'GROUP BY s.id ' . $orderby_query . " LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
-			$subscription_ids = $wpdb->get_col( $sqlQuery );
+			$sqlQuery .= 'GROUP BY s.id ' . $orderby_query . " LIMIT " . (int) $start . "," . (int) $limit;
+			$subscription_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query built from $wpdb table names, intval()/esc_sql()-quoted filter and search values, and a whitelisted orderby; LIMIT values are cast to int.
 			$subscription_data = array();
 			foreach ( $subscription_ids as $subscription_id ) {
 				$subscription = PMPro_Subscription::get_subscription( $subscription_id );
@@ -344,6 +358,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			}
 			return $subscription_data;
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -352,6 +367,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 * @param string $which, helps you decide if you add the markup after (bottom) or before (top) the list array( '' => 'Select a Level' )
 	 */
 	function extra_tablenav( $which ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; request values are only used to filter, search, sort and paginate the list table.
 		if ( $which !== 'top' ) {
 			return;
 		}
@@ -360,8 +376,8 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 
 		// Read current filter values from request.
 		$l       = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : 0;
-		$status  = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
-		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( $_REQUEST['gateway'] ) : '';
+		$status  = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
+		$gateway = isset( $_REQUEST['gateway'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['gateway'] ) ) : '';
 
 		// Count active filters for the toggle button badge.
 		$active_filter_count = 0;
@@ -432,6 +448,9 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 							<option value="active" <?php selected( $status, 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
 							<option value="cancelled" <?php selected( $status, 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
 							<option value="sync_error" <?php selected( $status, 'sync_error' ); ?>><?php esc_html_e( 'Sync Error', 'paid-memberships-pro' ); ?></option>
+							<?php if ( 'needs_payment_method' === $status || pmpro_deprecated_gateway_get_needs_payment_method_count() > 0 ) { ?>
+								<option value="needs_payment_method" <?php selected( $status, 'needs_payment_method' ); ?>><?php esc_html_e( 'Awaiting Payment Method', 'paid-memberships-pro' ); ?></option>
+							<?php } ?>
 						</select>
 					</div>
 
@@ -474,6 +493,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		});
 		</script>
 		<?php
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -666,6 +686,14 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
 				<?php esc_html_e( 'Sync Error:', 'paid-memberships-pro' ); ?>
 				<?php echo esc_html( $sync_error ); ?>
+			</span>
+			<?php
+		}
+		if ( 'active' === $item->get_status() && get_pmpro_subscription_meta( $item->get_id(), 'deprecated_gateway_needs_payment_method', true ) ) {
+			// This subscription was migrated from a deprecated gateway and the member has not added a payment method yet.
+			?>
+			<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-alert">
+				<?php esc_html_e( 'Awaiting Payment Method', 'paid-memberships-pro' ); ?>
 			</span>
 			<?php
 		}
