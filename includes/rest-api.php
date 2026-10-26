@@ -847,7 +847,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Create/update a discount code.
 		 * @since 2.3
-		 * @since TBD PUT/PATCH requests for an existing code now update that code, changing only the fields sent. Returns a 500 error if the code could not be saved.
+		 * @since TBD PUT/PATCH requests for an existing code now update that code, changing only the fields sent. The code param is matched as a code first, then as an ID. Returns a 500 error if a new code could not be created.
 		 * Example: https://example.com/wp-json/pmpro/v1/discount_code
 		 */
 		function pmpro_rest_api_set_discount_code( $request ) {
@@ -875,12 +875,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 							'billing_amount' => isset( $level['billing_amount'] ) ? $level['billing_amount'] : null,
 							'cycle_number' => isset( $level['cycle_number'] ) ? $level['cycle_number'] : null,
 							'cycle_period' => isset( $level['cycle_period'] ) ? $level['cycle_period'] : null,
-							'billing_limit' => isset( $level['cycle_period'] ) ? $level['cycle_period'] : null,
+							'billing_limit' => isset( $level['billing_limit'] ) ? $level['billing_limit'] : null,
 							'custom_trial' => isset( $level['custom_trial'] ) ? $level['custom_trial'] : null,
 							'trial_amount' => isset( $level['trial_amount'] ) ? $level['trial_amount'] : null,
 							'trial_limit' => isset( $level['trial_limit'] ) ? $level['trial_limit'] : null,
-							'expiration_number' => isset( $level['expiration_number'] ) ?  : null,
-							'expiration_period' => isset( $level['expiration_period'] ) ?  : null
+							'expiration_number' => isset( $level['expiration_number'] ) ? $level['expiration_number'] : null,
+							'expiration_period' => isset( $level['expiration_period'] ) ? $level['expiration_period'] : null
 						);
 					}
 				}
@@ -888,14 +888,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$discount_code = new PMPro_Discount_Code();
 
-			// See if the discount code already exists. Numeric values are checked as an ID first, then as a code.
+			// See if the discount code already exists. Values are checked as a code first, then numeric values as an ID.
 			if ( ! empty( $code ) ) {
-				if ( is_numeric( $code ) ) {
-					$discount_code->get_discount_code_by_id( $code );
-				}
+				$discount_code->get_discount_code_by_code( $code );
 
-				if ( empty( $discount_code->id ) ) {
-					$discount_code->get_discount_code_by_code( $code );
+				if ( empty( $discount_code->id ) && is_numeric( $code ) ) {
+					$discount_code->get_discount_code_by_id( $code );
 				}
 			}
 
@@ -929,7 +927,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$discount_code->levels = !empty( $levels_array ) ? $levels_array : $levels;
 			$discount_code->save();
 
-			// save() returns false for codes without levels, so check the ID to confirm the code was saved.
+			// save() returns false for codes without levels, so check the ID to confirm the code was created.
 			if ( empty( $discount_code->id ) ) {
 				return new WP_REST_Response( 'Discount code could not be saved.', 500 );
 			}
