@@ -983,11 +983,17 @@ class PMPro_Exports {
 	/**
 	 * Enclose a value for CSV output.
 	 *
+	 * @since TBD Non-numeric values starting with a spreadsheet formula character are prefixed with a single quote.
+	 *
 	 * @param mixed $s
 	 * @return string
 	 */
 	protected function csv_enclose( $s ) {
 		$s = (string) $s;
+		// Prefix formula-like values so spreadsheet apps don't run member-controlled data as a formula.
+		if ( ! is_numeric( $s ) && preg_match( '/^[=+\-@\t\r]/', $s ) ) {
+			$s = "'" . $s;
+		}
 		return '"' . str_replace( '"', '""', $s ) . '"';
 	}
 
