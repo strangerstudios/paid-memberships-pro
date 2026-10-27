@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.8.99
+Stable tag: 3.9
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,10 +210,17 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
-= 3.9 RC1 - 2026-10-16 =
+= 3.9 - 2026-10-27 =
 * SECURITY: Improved escaping and SQL query preparation throughout the plugin. #3827 (@dparker1005)
 * SECURITY: Added direct file access protection to plugin files. #3828 (@dparker1005)
 * SECURITY: Improved request input handling and redirect safety throughout the plugin. #3829 (@dparker1005)
+* SECURITY: The Authorize.net gateway now verifies TLS certificates when connecting to Authorize.net. #3916 (@dparker1005)
+* SECURITY: The 2Checkout gateway now verifies TLS certificates when sending API requests. #3917 (@dparker1005)
+* SECURITY: The `[pmpro_member]` shortcode is now also removed from newly added post meta saved by users who cannot edit users. #3921 (@dparker1005)
+* SECURITY: The REST API order endpoint now only includes order notes for users with the `pmpro_orders` capability. #3918 (@dparker1005)
+* SECURITY: Values in the members, orders, and logins report CSV exports that start with a spreadsheet formula character are now prefixed with a single quote so they are not run as formulas. #3922 (@dparker1005)
+* SECURITY: The admin redirect for missing members, orders, subscriptions, discount codes, and levels now only runs for users who can access the Memberships menu. #3920 (@dparker1005)
+* SECURITY: The Billing page now redirects to the Membership Account page when the requested subscription does not exist. #3919 (@dparker1005)
 * FEATURE: Merged the Subscription Delays Add On into core. The new First Recurring Payment setting on levels and custom pricing discount codes can delay the first recurring payment by a number of days or until a date set with a date pattern. #3630 (@dparker1005, @kimcoleman)
 * FEATURE: Merged the Set Expiration Dates Add On into core. Levels and custom pricing discount codes can expire memberships on a date set with a date pattern. #3630 (@dparker1005, @kimcoleman)
 * FEATURE: Added percentage and fixed amount discount code types alongside the existing per-level custom pricing. The discount is calculated from each level's current pricing and can apply to the initial payment, recurring payments, or both, while the billing cycle, trial, and expiration come from the level. #3727 (@dparker1005)
@@ -265,6 +272,9 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed an issue where the email greeting used the original recipient's name when an email template had a custom To address. #3854 (@faisalahammad)
 * BUG FIX: Fixed a fatal error when calling the deprecated `pmpror_recurring_emails()` or `pmpror_recurring_emails_legacy()` functions. They now queue reminder emails via Action Scheduler. #3900 (@dparker1005)
 * BUG FIX: Usage tracking no longer treats production sites whose hostnames start with "stage" or "localhost" followed by other letters (such as stagecoach.com) as development sites, and now treats hostnames that start with dev, stage, test, or testing followed by a dash or number (such as dev-2.example.com) as development sites. #3894 (@flintfromthebasement)
+* BUG FIX: Fixed `MemberOrder::get_order()` returning the site's newest order instead of the matching order when passed an order code. `MemberOrder::get_orders()` now supports a `code` argument. #3908 (@dparker1005)
+* BUG FIX: Fixed PUT and PATCH requests to the `discount_code` REST API endpoint not updating existing discount codes, and fixed the `billing_limit` and expiration values sent for levels being saved incorrectly. #3910 (@dparker1005)
+* BUG FIX: Stripe subscription cancellation errors are now recorded in the notes on the subscription's most recent order, and an error while looking up open invoices no longer leaves the Stripe subscription active without notifying the admin. #3923 (@dparker1005, @ashwaniarya)
 * REFACTOR: Settings screens built with the new field helpers show and hide dependent rows with a `data-pmpro-depends` attribute instead of inline scripts. The Advanced Settings Hide Ads setting's ID changed from `pmpro-hideads` to `hideads`, the `pmpro_updateHideAdsTRs()` JavaScript function was removed, and the Recurring Subscription, Custom Trial, Membership Expiration, and Disable New Signups checkboxes on the Edit Membership Level screen now submit `1` instead of `yes`. #3721 (@dparker1005)
 
 = 3.8.9 - 2026-10-12 =

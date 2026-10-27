@@ -558,7 +558,7 @@
 		 *
 		 * @since 2.9
 		 * @since 3.9 Added support for the `offset` argument.
-		 * @since TBD Added the `code` argument.
+		 * @since 3.9 Added the `code` argument.
 		 *
 		 * @param array $args Specify what you'd like to filter the query by
 		 *

@@ -318,7 +318,7 @@ if ( empty( $_REQUEST['pmpro_no_download'] ) ) {
 /**
  * Enclose items passed through to ensure data structure is valid for export CSV.
  *
- * @since TBD Non-numeric values starting with a spreadsheet formula character are prefixed with a single quote.
+ * @since 3.9 Non-numeric values starting with a spreadsheet formula character are prefixed with a single quote.
  *
  * @param mixed $string|$date Enclose and return a given string, required for CSV files.
  * @return string

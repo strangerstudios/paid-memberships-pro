@@ -948,7 +948,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Create/update a discount code.
 		 * @since 2.3
-		 * @since TBD PUT/PATCH requests for an existing code now update that code, changing only the fields sent. The code param is matched as a code first, then as an ID. Returns a 500 error if a new code could not be created.
+		 * @since 3.9 PUT/PATCH requests for an existing code now update that code, changing only the fields sent. The code param is matched as a code first, then as an ID. Returns a 500 error if a new code could not be created.
 		 * Example: https://example.com/wp-json/pmpro/v1/discount_code
 		 */
 		function pmpro_rest_api_set_discount_code( $request ) {

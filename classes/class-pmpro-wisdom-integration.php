@@ -232,7 +232,7 @@ class PMPro_Wisdom_Integration {
 	 * "staging" counts as a bare prefix. localhost, dev, stage, test, and testing need a dot,
 	 * dash, or digit after them so brand names like stagecoach.com or devon.org stay production.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param string $host Lowercased hostname without port or trailing dot.
 	 *

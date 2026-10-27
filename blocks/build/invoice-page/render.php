@@ -2,6 +2,7 @@
 /**
  * Render the Membership Orders block on the frontend.
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

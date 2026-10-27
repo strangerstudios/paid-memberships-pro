@@ -2,7 +2,6 @@
 /**
  * Render the Level Price on the frontend.
  */
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

@@ -2,7 +2,6 @@
 /**
  * Render the Level Description on the frontend.
  */
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

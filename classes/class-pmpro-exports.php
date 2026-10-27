@@ -983,7 +983,7 @@ class PMPro_Exports {
 	/**
 	 * Enclose a value for CSV output.
 	 *
-	 * @since TBD Non-numeric values starting with a spreadsheet formula character are prefixed with a single quote.
+	 * @since 3.9 Non-numeric values starting with a spreadsheet formula character are prefixed with a single quote.
 	 *
 	 * @param mixed $s
 	 * @return string

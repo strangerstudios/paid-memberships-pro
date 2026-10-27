@@ -4950,7 +4950,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
-	 * @since TBD Returns an error message string on failure instead of false.
+	 * @since 3.9 Returns an error message string on failure instead of false.
 	 *
 	 * @return true|string True if the subscription was cancelled, otherwise an error message.
 	 */

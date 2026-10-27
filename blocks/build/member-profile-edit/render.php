@@ -2,7 +2,6 @@
 /**
  * Render the Member Profile Edit block on the frontend.
  */
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

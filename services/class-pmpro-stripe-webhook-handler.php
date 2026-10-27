@@ -805,7 +805,7 @@ class PMPro_Stripe_Webhook_Handler {
 	 *
 	 * Other errors, such as a 404 for an event that does not exist in this Stripe account, are not retried.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param Exception $e The exception thrown while retrieving the event.
 	 * @return bool
@@ -830,7 +830,7 @@ class PMPro_Stripe_Webhook_Handler {
 	 * action arguments as the original task, so a redelivery from Stripe that arrives while a retry
 	 * is pending is not queued a second time. The attempt count is kept in a transient.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param string $event_id Stripe event ID.
 	 * @param bool   $livemode Whether the event was live mode.
@@ -865,7 +865,7 @@ class PMPro_Stripe_Webhook_Handler {
 	/**
 	 * Get the transient key that counts scheduled retries for an event.
 	 *
-	 * @since TBD
+	 * @since 3.9
 	 *
 	 * @param string $event_id Stripe event ID.
 	 * @return string

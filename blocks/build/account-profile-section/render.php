@@ -2,6 +2,7 @@
 /**
  * Render the Membership Account: Profile block on the frontend.
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
