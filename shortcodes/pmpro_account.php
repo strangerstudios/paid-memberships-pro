@@ -15,6 +15,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	// $code    ::= the shortcode found, when == callback name
 	// examples: [pmpro_account] [pmpro_account sections="membership,profile"/]
 
+	// Signed links from emails only show the member's email preferences.
+	if ( pmpro_is_email_preferences_link_request() ) {
+		return '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro' ) ) . '">' . pmpro_get_email_preferences_link_page() . '</div>';
+	}
+
 	extract(shortcode_atts(array(
 		'section' => '',
 		'sections' => 'membership,profile,invoices,links',
