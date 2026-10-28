@@ -235,6 +235,25 @@
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
 			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
 
+			// Don't send optional emails to members who opted out of them.
+			$email_category      = pmpro_get_email_template_category( $this->template );
+			$email_category_user = empty( $email_category ) ? false : get_user_by( 'email', $this->email );
+			if ( ! empty( $email_category_user ) && pmpro_is_user_opted_out_of_email_category( $email_category_user->ID, $email_category ) ) {
+				return false;
+			}
+
+			// Let members unsubscribe from optional emails with the unsubscribe button in their email app.
+			$unsubscribe_url = empty( $email_category_user ) ? '' : pmpro_get_email_preferences_url( $email_category_user->ID, $email_category );
+			if ( ! empty( $unsubscribe_url ) ) {
+				$this->headers[] = 'List-Unsubscribe: <' . $unsubscribe_url . '>';
+				$this->headers[] = 'List-Unsubscribe-Post: List-Unsubscribe=One-Click';
+			}
+
+			// Fill the unsubscribe links variable. It is empty in emails that members can't opt out of.
+			if ( is_array( $this->data ) ) {
+				$this->data['email_preferences'] = empty( $unsubscribe_url ) ? '' : pmpro_get_email_unsubscribe_footer( $email_category_user->ID, $email_category );
+			}
+
 			// Apply per-template CC/BCC settings after filters so we merge with any headers added by custom code.
 			if ( ! empty( $this->template ) ) {
 				// Get CC addresses and append to any existing CC header.

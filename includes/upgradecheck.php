@@ -486,6 +486,16 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.9' );
 	}
 
+	/**
+	 * Version TBD
+	 * Add the {{ email_preferences }} variable to saved email footers.
+	 */
+	if ( $pmpro_db_version < 3.91 ) {
+		require_once( PMPRO_DIR . '/includes/updates/upgrade_3_9_1.php' );
+		pmpro_upgrade_3_9_1();
+		update_option( 'pmpro_db_version', '3.91' );
+	}
+
 }
 
 function pmpro_db_delta() {
