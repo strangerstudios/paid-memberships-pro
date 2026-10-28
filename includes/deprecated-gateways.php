@@ -2370,7 +2370,7 @@ function pmpro_deprecated_gateway_render_panel( $gateway ) {
 			// translators: %s is the gateway name.
 			printf( esc_html__( 'Move your active %s subscriptions to a supported payment gateway, let your members know what changed, and then remove the deprecated gateway from your site.', 'paid-memberships-pro' ), esc_html( $gateway_name ) );
 			?>
-			<a href="https://www.paidmembershipspro.com/documentation/settings/payment-gateway-settings/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateway-migration" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn more about the gateway migration tool', 'paid-memberships-pro' ); ?></a>
+			<a href="https://www.paidmembershipspro.com/documentation/settings/payment-gateway-settings/deprecated-gateway-migration-tool/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=deprecated-gateway-migration" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn more about the gateway migration tool', 'paid-memberships-pro' ); ?></a>
 		</p>
 		<div class="pmpro_section">
 			<div class="pmpro_section_inside">
