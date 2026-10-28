@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Upgrade to version TBD
+ * Upgrade to version 3.10
  *
  * Optional emails get their unsubscribe links from the {{ email_preferences }} variable in the
  * email footer. Sites that saved their own footer don't have the variable yet, so add it.
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since TBD
  */
-function pmpro_upgrade_3_9_1() {
+function pmpro_upgrade_3_10() {
 	$footer = get_option( 'pmpro_email_footer_body' );
 	if ( empty( $footer ) || false !== strpos( $footer, 'email_preferences' ) ) {
 		return;

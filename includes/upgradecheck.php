@@ -487,13 +487,14 @@ function pmpro_checkForUpgrades() {
 	}
 
 	/**
-	 * Version TBD
+	 * Version 3.10
 	 * Add the {{ email_preferences }} variable to saved email footers.
+	 * Uses 3.95 because 3.10 would compare as 3.1. Leaves 3.91-3.94 for 3.9.x updates.
 	 */
-	if ( $pmpro_db_version < 3.91 ) {
-		require_once( PMPRO_DIR . '/includes/updates/upgrade_3_9_1.php' );
-		pmpro_upgrade_3_9_1();
-		update_option( 'pmpro_db_version', '3.91' );
+	if ( $pmpro_db_version < 3.95 ) {
+		require_once( PMPRO_DIR . '/includes/updates/upgrade_3_10.php' );
+		pmpro_upgrade_3_10();
+		update_option( 'pmpro_db_version', '3.95' );
 	}
 
 }
