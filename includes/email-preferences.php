@@ -27,6 +27,8 @@ function pmpro_get_email_categories() {
 	 * Register a category here when your plugin sends a new type of optional email.
 	 * If your email fits a category that is already registered, use that category instead.
 	 *
+	 * Opt-outs and unsubscribe links only apply when the email's recipient is a single address that belongs to a user.
+	 *
 	 * @since TBD
 	 *
 	 * @param array $email_categories Email categories (slug => array( 'label' => string, 'description' => string )).
@@ -300,7 +302,9 @@ function pmpro_get_email_preferences_user() {
 	$key  = ( isset( $_REQUEST['pmpro_email_key'] ) && is_string( $_REQUEST['pmpro_email_key'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['pmpro_email_key'] ) ) : '';
 	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-	if ( empty( $user ) || empty( $key ) || ! hash_equals( pmpro_get_email_preferences_key( $user->ID ), $key ) ) {
+	// Read the stored key directly so that invalid links don't create one.
+	$user_key = empty( $user ) ? '' : get_user_meta( $user->ID, 'pmpro_email_preferences_key', true );
+	if ( empty( $user_key ) || empty( $key ) || ! hash_equals( $user_key, $key ) ) {
 		return false;
 	}
 
@@ -629,6 +633,10 @@ function pmpro_get_email_preferences_link_page() {
 
 	$category = pmpro_get_email_preferences_unsubscribe_category();
 	if ( ! empty( $category ) ) {
+		// Members who turned off all optional emails don't get this category either, so show and change that setting instead.
+		if ( pmpro_get_user_email_opt_out( $user->ID, 'all' ) ) {
+			$category = 'all';
+		}
 		return pmpro_get_email_preferences_unsubscribe_card( $user, $category );
 	}
 

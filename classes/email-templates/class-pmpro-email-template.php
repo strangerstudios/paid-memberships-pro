@@ -67,7 +67,8 @@ abstract class PMPro_Email_Template {
 			'siteemail' => get_option( 'pmpro_from_email' ),
 			'wordpress_admin_email' => get_bloginfo( 'admin_email' ),
 			'header_name' => $this->get_recipient_name(),
-			'email_preferences' => '', // Filled in PMProEmail::sendEmail() once the final recipient is known.
+			// email_preferences is filled in PMProEmail::sendEmail() once the final recipient is known.
+			// Don't set it here, or !!email_preferences!! in the email body would be replaced with an empty string before then.
 		);
 
 		return $base_email_template_variables;
