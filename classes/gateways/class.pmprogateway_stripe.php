@@ -84,6 +84,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'subscription_sync' => true,
 			'payment_method_updates' => 'individual',
 			'check_token_orders' => true,
+			'membershipless_checkout' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -904,7 +905,8 @@ class PMProGateway_stripe extends PMProGateway {
 				<h2 id="pmpro_payment_information_fields-title" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' ); ?></h2>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 				<?php
-					if ( get_option( 'pmpro_stripe_payment_request_button' ) ) { ?>
+					// The Payment Request Button prices itself from the checkout level, so it is not shown on a checkout without a membership level.
+					if ( get_option( 'pmpro_stripe_payment_request_button' ) && ! pmpro_is_membershipless_checkout() ) { ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-request-button', 'pmpro_payment-request-button' ) ); ?>">
 							<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
 							<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>">
@@ -1952,9 +1954,9 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		// Next, let's get the product being purchased.
-		$product_id = $stripe->get_product_id_for_level( $morder->membership_id );
-		if ( empty( $product_id ) ) {
+		// Next, let's get the product being purchased. An order without a membership level is a one-time payment for its lines.
+		$product_id = empty( $morder->membership_id ) ? null : $stripe->get_product_id_for_level( $morder->membership_id );
+		if ( empty( $product_id ) && ! empty( $morder->membership_id ) ) {
 			// Something went wrong getting the product ID or creating the product.
 			// Show the user a general error message.
 			pmpro_setMessage( __( 'Could not get product ID.', 'paid-memberships-pro' ), 'pmpro_error', true );
@@ -1969,7 +1971,24 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// If the level is recurring, check if we can combine the initial and recurring payments.
 		$level = $morder->getMembershipLevelAtCheckout();
-		if ( pmpro_isLevelRecurring( $level ) ) {
+		if ( empty( $morder->membership_id ) ) {
+			// An order without a membership level is charged once for its subtotal plus tax, as one line item.
+			$line_item = $stripe->get_line_item_for_membershipless_order( $morder );
+			if ( is_string( $line_item ) ) {
+				pmpro_setMessage( __( 'Could not get price for initial payment. ', 'paid-memberships-pro' ) . $line_item, 'pmpro_error', true );
+				return;
+			}
+			$line_items[] = $line_item;
+			$payment_intent_data = array(
+				'description' => self::get_order_description( $morder ),
+			);
+			if ( ! empty( $application_fee_percentage ) ) {
+				$application_fee = floor( $line_item['price_data']['unit_amount'] * $application_fee_percentage / 100 );
+				if ( ! empty( $application_fee ) ) {
+					$payment_intent_data['application_fee_amount'] = $application_fee;
+				}
+			}
+		} elseif ( pmpro_isLevelRecurring( $level ) ) {
 			$trial_period_days = $stripe->calculate_trial_period_days( $morder );
 
 			$combine_initial_and_recurring = (
@@ -1981,7 +2000,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// If we have an initial payment that is not being combined into a recurring payment, we need to build the initial payment line item.
-		if ( ! empty( $level->initial_payment ) && empty( $combine_initial_and_recurring ) ) {
+		if ( ! empty( $morder->membership_id ) && ! empty( $level->initial_payment ) && empty( $combine_initial_and_recurring ) ) {
 			$initial_subtotal       = $level->initial_payment;
 			$initial_tax            = $morder->getTaxForPrice( $initial_subtotal );
 			$initial_payment_amount = pmpro_round_price( (float) $initial_subtotal + (float) $initial_tax );
@@ -2064,8 +2083,9 @@ class PMProGateway_stripe extends PMProGateway {
 				'address' => 'auto',
 				'name' => 'auto'
 			),
-			'success_url' => apply_filters( 'pmpro_confirmation_url', add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("confirmation" ) ), $user_id, $pmpro_level ),
-			'cancel_url' =>  add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("checkout" ) ),
+			// An order without a membership level is confirmed by its code, and a cancelled payment returns to the same lines.
+			'success_url' => empty( $morder->membership_id ) ? pmpro_url( 'confirmation', '?pmpro_order=' . $morder->code ) : apply_filters( 'pmpro_confirmation_url', add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("confirmation" ) ), $user_id, $pmpro_level ),
+			'cancel_url' =>  empty( $morder->membership_id ) ? pmpro_get_membershipless_checkout_url() : add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("checkout" ) ),
 		);
 		if ( ! empty( $subscription_data ) ) {
 			$checkout_session_params['subscription_data'] = $subscription_data;
@@ -3687,6 +3707,53 @@ class PMProGateway_stripe extends PMProGateway {
 			return $e->getMessage();
 		}
 		return esc_html__( 'Could not create price.', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Get the Stripe Checkout line item for an order without a membership level.
+	 *
+	 * The order is charged once for its subtotal plus tax, the same way that a level's initial payment is.
+	 * The line item is named after the order's lines.
+	 *
+	 * @since TBD
+	 *
+	 * @param MemberOrder $order The order.
+	 * @return array|string The line item, or an error message.
+	 */
+	private function get_line_item_for_membershipless_order( $order ) {
+		global $pmpro_currency;
+
+		$amount      = pmpro_round_price( (float) $order->subtotal + (float) $order->getTaxForPrice( $order->subtotal ) );
+		$unit_amount = $this->convert_price_to_unit_amount( $amount );
+		if ( empty( $unit_amount ) ) {
+			return esc_html__( 'There is nothing to charge.', 'paid-memberships-pro' );
+		}
+
+		$names = array();
+		foreach ( pmpro_get_order_items( $order ) as $line ) {
+			$names[] = pmpro_get_order_item_label( $line );
+		}
+		/* translators: %s: order code. */
+		$name = empty( $names ) ? sprintf( __( 'Order #%s', 'paid-memberships-pro' ), $order->code ) : implode( ', ', $names );
+
+		$price_data = array(
+			'currency'     => strtolower( $pmpro_currency ),
+			'unit_amount'  => $unit_amount,
+			'product_data' => array(
+				'name' => wp_html_excerpt( $name, 250, '…' ),
+			),
+		);
+
+		// Only for use with Stripe Checkout, as in get_price_for_product().
+		$tax_behavior = get_option( 'pmpro_stripe_tax' );
+		if ( ! empty( $tax_behavior ) && 'no' !== $tax_behavior ) {
+			$price_data['tax_behavior'] = $tax_behavior;
+		}
+
+		return array(
+			'price_data' => $price_data,
+			'quantity'   => 1,
+		);
 	}
 
 	/**
