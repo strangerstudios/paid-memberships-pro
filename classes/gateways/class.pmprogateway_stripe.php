@@ -2264,8 +2264,8 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 		}
 
-		// Create a subscription if we need to.
-		if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
+		// Create a subscription if we need to. An order without a membership level is a one-time payment.
+		if ( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) ) {
 			$subscription = $this->create_subscription_for_customer_from_order( $customer->id, $order );
 			if ( empty( $subscription ) ) {
 				// There was an issue creating the subscription. Order will have error message.

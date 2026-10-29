@@ -154,7 +154,8 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		$missing_data[] = 'checkout_level';
 		$checkout_level_arr = array();
 	}
-	$pmpro_level = (object) $checkout_level_arr;
+	// An order without a membership level has no checkout level.
+	$pmpro_level = empty( $order->membership_id ) ? null : (object) $checkout_level_arr;
 	$order->membership_level = $pmpro_level;
 
 	// Set $discount_code_id.
