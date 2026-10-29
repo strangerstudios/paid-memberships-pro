@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Add TOS field to advanced settings.
  *
@@ -33,6 +37,13 @@ function pmpro_tos_advanced_settings_callback() {
 			'selected' => esc_html( $tospage )
 		)
 	);
+	if ( ! empty( $tospage ) && 'publish' === get_post_status( $tospage ) ) { ?>
+		<a target="_blank" href="post.php?post=<?php echo esc_attr( $tospage ); ?>&action=edit"
+		class="button button-secondary pmpro_page_edit"><?php esc_html_e( 'edit page', 'paid-memberships-pro' ); ?></a>
+		&nbsp;
+		<a target="_blank" href="<?php echo esc_url( get_permalink( $tospage ) ); ?>"
+		class="button button-secondary pmpro_page_view"><?php esc_html_e( 'view page', 'paid-memberships-pro' ); ?></a>
+	<?php }
 }
 
 /**
@@ -64,11 +75,11 @@ function pmpro_show_tos_at_checkout() {
 
 	// Show the TOS checkbox.
 	?>
-	<fieldset id="pmpro_tos_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_tos_fields' ) ); ?>">
+	<div id="pmpro_tos_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_tos_fields' ) ); ?>">
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 			<?php
-				if ( isset( $_REQUEST['tos'] ) ) {
-					$tos = intval( $_REQUEST['tos'] );
+				if ( isset( $_REQUEST['tos'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, prefills the TOS checkbox.
+					$tos = intval( $_REQUEST['tos'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, prefills the TOS checkbox.
 				} else {
 					$tos = "";
 				}
@@ -103,7 +114,7 @@ function pmpro_show_tos_at_checkout() {
 				do_action_deprecated( 'pmpro_checkout_after_tos', array(), '3.2' );
 			?>
 		</div> <!-- end pmpro_form_fields -->
-	</fieldset> <!-- end pmpro_tos_fields -->
+	</div> <!-- end pmpro_tos_fields -->
 	<?php
 	do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), '3.2' );
 
@@ -167,7 +178,7 @@ function pmpro_validate_tos_at_checkout( $pmpro_continue_registration ) {
 	}
 
 	// If the TOS checkbox is not checked, halt registration.
-	if ( ! isset( $_REQUEST['tos'] ) || empty( $_REQUEST['tos'] ) ) {
+	if ( ! isset( $_REQUEST['tos'] ) || empty( $_REQUEST['tos'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs in the pmpro_checkout_*_creation_checks filters, after pmpro_checkout_nonce is verified in preheaders/checkout.php.
 		$pmpro_continue_registration = false;
 		$pmpro_error_fields[] = 'tospage';
 		/* translators: 1: TOS page title. */
@@ -184,13 +195,13 @@ add_filter( 'pmpro_checkout_order_creation_checks', 'pmpro_validate_tos_at_check
  * @since 1.9.5
  */
 function pmpro_after_checkout_update_consent( $user_id, $order ) {
-	if( !empty( $_REQUEST['tos'] ) ) {
+	if( !empty( $_REQUEST['tos'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php; off-site gateway completions use the session value below instead.
 		$tospage_id = get_option( 'pmpro_tospage' );
 		pmpro_save_consent( $user_id, $tospage_id, NULL, $order->id );
 	} elseif ( !empty( $_SESSION['tos'] ) ) {
 		// PayPal Express and others might save tos info into a session variable
-		$tospage_id = $_SESSION['tos']['post_id'];
-		$tospage_modified = $_SESSION['tos']['post_modified'];
+		$tospage_id = isset( $_SESSION['tos']['post_id'] ) ? $_SESSION['tos']['post_id'] : NULL; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Server-side session value set by gateway code, not request input; pmpro_save_consent() falls back to the TOS page option when empty.
+		$tospage_modified = isset( $_SESSION['tos']['post_modified'] ) ? $_SESSION['tos']['post_modified'] : NULL; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Server-side session value set by gateway code, not request input; pmpro_save_consent() falls back to the TOS post's post_modified when empty.
 		pmpro_save_consent( $user_id, $tospage_id, $tospage_modified, $order->id );
 		unset( $_SESSION['tos'] );
 	}
@@ -328,21 +339,12 @@ function pmpro_show_tos_log_on_view_order_page( $order ) {
 
 	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
 	if ( ! empty( $consent_entry ) ) {
-		?>
-		<div id="pmpro_order-tos-consent" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<?php
-					echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-				?>
-			</div>
-		</div>
-		<?php
+		pmpro_build_settings_section_open( array(
+			'id'    => 'pmpro_order-tos-consent',
+			'title' => __( 'TOS Consent', 'paid-memberships-pro' ),
+		) );
+		echo esc_html( pmpro_consent_to_text( $consent_entry ) );
+		pmpro_build_settings_section_close();
 	}
 }
 add_action( 'pmpro_after_order_view_main', 'pmpro_show_tos_log_on_view_order_page' );
@@ -362,16 +364,13 @@ function pmpro_show_tos_log_on_edit_order_page( $order ) {
 
 	$consent_entry = pmpro_get_consent_log_entry_for_order( $order );
 	if ( ! empty( $consent_entry ) ) {
-		?>
-		<tr>
-			<th scope="row" valign="top"><label for="tos_consent"><?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?></label></th>
-			<td id="tos_consent">
-				<?php
-					echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-				?>
-			</td>
-		</tr>
-		<?php
+		pmpro_build_settings_field( array(
+			'label'    => __( 'TOS Consent', 'paid-memberships-pro' ),
+			'type'     => 'callback',
+			'callback' => function() use ( $consent_entry ) {
+				echo '<span id="tos_consent">' . esc_html( pmpro_consent_to_text( $consent_entry ) ) . '</span>';
+			},
+		) );
 	}
 }
 add_action( 'pmpro_after_order_settings', 'pmpro_show_tos_log_on_edit_order_page' );

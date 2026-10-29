@@ -2,6 +2,11 @@
 /**
  * Render the Membership Account: Profile block on the frontend.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 $title = isset( $attributes['title'] ) ? $attributes['title'] : null;
 $output = pmpro_shortcode_account( array( 'sections' => 'profile', 'title' => $title ) );
 ?>

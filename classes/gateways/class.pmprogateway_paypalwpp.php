@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -54,6 +58,25 @@
 				$gateways['paypalwpp'] = __('PayPal Website Payments Pro', 'paid-memberships-pro' );
 
 			return $gateways;
+		}
+
+		/**
+		 * Check whether or not a gateway supports a specific feature.
+		 *
+		 * @since 3.6
+		 *
+		 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
+		 */
+		public static function supports( $feature ) {
+			$supports = array(
+				'recurring_trials' => true,
+			);
+
+			if ( empty( $supports[$feature] ) ) {
+				return false;
+			}
+
+			return $supports[$feature];
 		}
 
 		/**
@@ -147,8 +170,8 @@
 			);
 
 			foreach ( $settings_to_save as $setting ) {
-				if ( isset( $_REQUEST[ $setting ] ) ) {
-					update_option( 'pmpro_' . $setting, sanitize_text_field( $_REQUEST[ $setting ] ) );
+				if ( isset( $_REQUEST[ $setting ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce (pmpro_paymentsettings_nonce) verified in adminpages/paymentsettings.php before save_settings_fields() is called.
+					update_option( 'pmpro_' . $setting, sanitize_text_field( wp_unslash( $_REQUEST[ $setting ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce (pmpro_paymentsettings_nonce) verified in adminpages/paymentsettings.php before save_settings_fields() is called.
 				}
 			}
 		}
@@ -637,10 +660,10 @@
 			$order->updateStatus("cancelled");
 
 			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.
-			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) ||
-				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) {
+			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) || // phpcs:ignore WordPress.Security.NonceVerification.Missing -- IPN fields from PayPal (no WordPress nonce possible; IPN is verified by postback to PayPal in services/ipnhandler.php). Only used to skip a redundant gateway cancel.
+				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- IPN fields from PayPal (no WordPress nonce possible; IPN is verified by postback to PayPal in services/ipnhandler.php). Only used to skip a redundant gateway cancel.
 				// recurring_payment_failed transaction still need to be cancelled
-				if ( $_POST['txn_type'] !== 'recurring_payment_failed' ) {
+				if ( ! isset( $_POST['txn_type'] ) || $_POST['txn_type'] !== 'recurring_payment_failed' ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- IPN fields from PayPal (no WordPress nonce possible; IPN is verified by postback to PayPal in services/ipnhandler.php). Only used to skip a redundant gateway cancel.
 					return true;
 				}
 			}
@@ -819,7 +842,6 @@
 			//post to PayPal
 			$response = wp_remote_post( $API_Endpoint, array(
 					'timeout' => 60,
-					'sslverify' => FALSE,
 					'httpversion' => '1.1',
 					'body' => $nvpreq
 			    )
@@ -835,7 +857,7 @@
 
 				//check for valid response
 				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
-					exit( esc_html( "Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint." ) );
+					exit( esc_html( "Invalid HTTP Response for POST request to $API_Endpoint." ) );
 				}
 			}
 

@@ -24,6 +24,9 @@ class PMPro_Liquid_Renderer {
 			return $content;
 		}
 
+		// Unwrap Liquid tags that a visual editor wrapped in paragraph tags.
+		$content = self::unautop( $content );
+
 		// Process conditionals first so we only render the winning branches.
 		$content = self::process_conditionals( $content, $data, $args );
 
@@ -31,6 +34,34 @@ class PMPro_Liquid_Renderer {
 		$content = self::process_output_tags( $content, $data, $args );
 
 		return $content;
+	}
+
+	/**
+	 * Remove paragraph tags that wrap nothing but Liquid tags.
+	 *
+	 * TinyMCE wraps bare text in <p> tags, so a template line that only contains
+	 * Liquid tags such as {% if %}, {{ variable }}, or {% endif %} is saved as
+	 * <p>{% endif %}</p>. Control tags render to nothing, so the paragraph would be
+	 * sent as an empty <p></p> or would split around the conditional and leave
+	 * unbalanced tags. This mirrors shortcode_unautop(). Paragraphs that contain
+	 * only output tags, like <p>{{ display_name }}</p>, are left alone.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @param string $content The content to process.
+	 * @return string The content with paragraph tags around Liquid tags removed.
+	 */
+	private static function unautop( $content ) {
+		$tag_pattern = '(?:\{\{(?:(?!\}\}).)*\}\}|\{%(?:(?!%\}).)*%\})';
+
+		return preg_replace_callback(
+			'#<p>\s*((?:' . $tag_pattern . '\s*)+)</p>#s',
+			function ( $matches ) {
+				// Only unwrap when at least one control tag is present.
+				return ( strpos( $matches[1], '{%' ) !== false ) ? $matches[1] : $matches[0];
+			},
+			$content
+		);
 	}
 
 	/**
@@ -374,21 +405,13 @@ class PMPro_Liquid_Renderer {
 				continue;
 			}
 
-			$operator        = null;
-			$operator_length = 0;
+			$operator_match = self::parse_comparison_operator_at_position( $condition_string, $i );
 
-			$two_char_operator = substr( $condition_string, $i, 2 );
-			if ( in_array( $two_char_operator, array( '==', '!=', '>=', '<=' ), true ) ) {
-				$operator        = $two_char_operator;
-				$operator_length = 2;
-			} elseif ( $char === '>' || $char === '<' ) {
-				$operator        = $char;
-				$operator_length = 1;
-			}
-
-			if ( $operator !== null ) {
-				$left_token  = trim( substr( $condition_string, 0, $i ) );
-				$right_token = trim( substr( $condition_string, $i + $operator_length ) );
+			if ( ! empty( $operator_match ) ) {
+				$operator        = $operator_match['operator'];
+				$operator_length = $operator_match['length'];
+				$left_token      = trim( substr( $condition_string, 0, $i ) );
+				$right_token     = trim( substr( $condition_string, $i + $operator_length ) );
 
 				if ( $left_token === '' || $right_token === '' ) {
 					return null;
@@ -400,6 +423,58 @@ class PMPro_Liquid_Renderer {
 					'right'    => $right_token,
 				);
 			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Parse a comparison operator at a specific position in a condition string.
+	 *
+	 * @since 3.8
+	 *
+	 * @param string $condition_string The condition expression to parse.
+	 * @param int    $position         The position to check for a comparison operator.
+	 * @return array|null {
+	 *     Parsed comparison operator.
+	 *
+	 *     @type string $operator Canonical comparison operator.
+	 *     @type int    $length   Length of the matched operator string.
+	 * }
+	 */
+	private static function parse_comparison_operator_at_position( $condition_string, $position ) {
+		$operators = array(
+			'=='      => '==',
+			'!='      => '!=',
+			'>='      => '>=',
+			'<='      => '<=',
+			'&gt;='   => '>=',
+			'&#62;='  => '>=',
+			'&#x3e;=' => '>=',
+			'&lt;='   => '<=',
+			'&#60;='  => '<=',
+			'&#x3c;=' => '<=',
+			'>'       => '>',
+			'<'       => '<',
+			'&gt;'    => '>',
+			'&#62;'   => '>',
+			'&#x3e;'  => '>',
+			'&lt;'    => '<',
+			'&#60;'   => '<',
+			'&#x3c;'  => '<',
+		);
+
+		foreach ( $operators as $operator_string => $canonical_operator ) {
+			$operator_length = strlen( $operator_string );
+
+			if ( strtolower( substr( $condition_string, $position, $operator_length ) ) !== $operator_string ) {
+				continue;
+			}
+
+			return array(
+				'operator' => $canonical_operator,
+				'length'   => $operator_length,
+			);
 		}
 
 		return null;

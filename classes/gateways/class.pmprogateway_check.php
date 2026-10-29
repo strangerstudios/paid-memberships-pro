@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	
@@ -58,7 +62,22 @@
 		 * @return string
 		 */
 		public static function get_description_for_gateway_settings() {
-			return esc_html__( 'Allow members to pay by check or other manual payment methods like Bank Transfer or Venmo. After receiving a payment, you must manually update the order status to "success" in order to activate the membership.', 'paid-memberships-pro' );
+			$description = esc_html__( 'Allow members to pay by check or other manual payment methods like Bank Transfer or Venmo.', 'paid-memberships-pro' );
+
+			if ( defined( 'PMPROPBC_VER' ) ) {
+				// The Pay by Check Add On holds orders as pending until an admin marks them as paid.
+				$description .= ' ' . esc_html__( 'The Pay by Check Add On is active, so orders are held as pending until you mark them as paid.', 'paid-memberships-pro' );
+			} else {
+				// Without the Add On, this gateway marks orders as paid at checkout.
+				$description .= ' ' . esc_html__( 'Orders are marked as paid automatically at checkout, so members get access right away.', 'paid-memberships-pro' );
+				$description .= ' ' . sprintf(
+					/* translators: %s: Link to the Pay by Check Add On. */
+					esc_html__( 'To hold orders for manual approval or offer manual payments alongside your primary payment gateway, use the %s.', 'paid-memberships-pro' ),
+					'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=gateway-description' ) . '" target="_blank" rel="noopener">' . esc_html__( 'Pay by Check: Manual and Offline Payments Add On', 'paid-memberships-pro' ) . '</a>'
+				);
+			}
+
+			return $description;
 		}
 
 		/**
@@ -68,7 +87,6 @@
 		 */
 		public static function show_settings_fields() {
 			$check_gateway_label = get_option( 'pmpro_check_gateway_label', __( 'Check', 'paid-memberships-pro' ) );
-			$instructions = get_option( 'pmpro_instructions' );
 			?>
 			<p>
 				<?php
@@ -79,54 +97,48 @@
 					);
 				?>
 			</p>
-			<div id="pmpro_check" class="pmpro_section" data-visibility="shown" data-activated="true">
-				<div class="pmpro_section_toggle">
-					<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-						<span class="dashicons dashicons-arrow-up-alt2"></span>
-						<?php esc_html_e( 'Settings', 'paid-memberships-pro' ); ?>
-					</button>
-				</div>
-				<div class="pmpro_section_inside">
-					<table class="form-table">
-						<tbody>
-							<tr class="gateway gateway_check">
-								<th scope="row" valign="top">
-									<label for="check_gateway_label"><?php esc_html_e( 'Gateway Label', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<input type="text" id="check_gateway_label" name="check_gateway_label" class="regular-text code" value="<?php echo esc_attr( $check_gateway_label ); ?>"/>
-									<p class="description"><?php esc_html_e('The name of the custom payment method that will show on the frontend of your site. Useful for manual payment methods name like Wire Transfer, Direct Deposit, or Cash. Defaults to "Pay By Check".', 'paid-memberships-pro' );?></p>
-								</td>
-							</tr>
-							<tr class="gateway gateway_check">
-								<th scope="row" valign="top">
-									<label for="instructions"><?php esc_html_e('Instructions', 'paid-memberships-pro' );?></label>
-								</th>
-								<td>
-									<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( wpautop(  $instructions ) ); ?></textarea>
-									<p class="description"><?php echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and order pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<?php
-						if ( ! defined( 'PMPROPBC_VER' ) ) {
-							?>
-							<p>
-								<?php
-									printf(
-										/* translators: %s: URL to the Pay by Check Add On documentation. */
-										esc_html__( 'Optional: Offer manual payments in addition to your primary payment gateway using the %s.', 'paid-memberships-pro' ),
-										'<a href="https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=offer-manual-payments" target="_blank">' . esc_html__( 'Pay by Check: Manual and Offline Payments Add On', 'paid-memberships-pro' ) . '</a>'
-									);
-								?>
-							</p>
-							<?php
-						}
-					?>
-				</div>
-			</div>
 			<?php
+			$fields = array(
+				array(
+					'name'        => 'check_gateway_label',
+					'label'       => __( 'Gateway Label', 'paid-memberships-pro' ),
+					'type'        => 'text',
+					'class'       => 'regular-text code',
+					'value'       => $check_gateway_label,
+					'description' => __( 'The name of the custom payment method that will show on the frontend of your site. Useful for manual payment methods name like Wire Transfer, Direct Deposit, or Cash. Defaults to "Pay By Check".', 'paid-memberships-pro' ),
+				),
+				array(
+					'name'        => 'instructions',
+					'label'       => __( 'Instructions', 'paid-memberships-pro' ),
+					'type'        => 'textarea',
+					'attrs'       => array(
+						'rows' => 3,
+						'cols' => 50,
+					),
+					'value'       => wpautop( get_option( 'pmpro_instructions' ) ),
+					'description' => sprintf(
+						/* translators: %s: the gateway label. */
+						__( 'Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and order pages.', 'paid-memberships-pro' ),
+						esc_html( $check_gateway_label )
+					),
+				),
+			);
+
+			if ( ! defined( 'PMPROPBC_VER' ) ) {
+				$fields[] = array(
+					'html' => '<p>' . sprintf(
+						/* translators: %s: URL to the Pay by Check Add On documentation. */
+						esc_html__( 'Optional: Offer manual payments in addition to your primary payment gateway using the %s.', 'paid-memberships-pro' ),
+						'<a href="https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=offer-manual-payments" target="_blank">' . esc_html__( 'Pay by Check: Manual and Offline Payments Add On', 'paid-memberships-pro' ) . '</a>'
+					) . '</p>',
+				);
+			}
+
+			pmpro_build_settings_section( array(
+				'id'     => 'pmpro_check',
+				'title'  => __( 'Settings', 'paid-memberships-pro' ),
+				'fields' => $fields,
+			) );
 		}
 
 		/**
@@ -135,6 +147,7 @@
 		 * @since 3.5
 		 */
 		public static function save_settings_fields() {
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Nonce (pmpro_paymentsettings_nonce) verified in adminpages/paymentsettings.php before save_settings_fields() is called.
 			if ( isset( $_REQUEST['check_gateway_label'] ) ) {
 				update_option( 'pmpro_check_gateway_label', sanitize_text_field( wp_unslash( $_REQUEST['check_gateway_label'] ) ) );
 			}
@@ -143,6 +156,7 @@
 				global $allowedposttags;
 				update_option( 'pmpro_instructions', wp_kses( wp_unslash( $_REQUEST['instructions'] ), $allowedposttags ) );
 			}
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 		
 		/**
@@ -181,12 +195,10 @@
 				$instructions = get_option( 'pmpro_instructions' );
 				$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
 				?>
-				<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>">
+				<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+						<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php echo esc_html( sprintf( __( 'Pay by %s', 'paid-memberships-pro' ), $check_gateway_label ) ); ?></h2>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-							<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
-								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo esc_html( sprintf( __( 'Pay by %s', 'paid-memberships-pro' ), $check_gateway_label ) ); ?></h2>
-							</legend>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_check_instructions' ) ); ?>">
 									<?php echo wp_kses_post( wpautop( wp_unslash( $instructions ) ) ); ?>
@@ -194,7 +206,7 @@
 							</div> <!-- end pmpro_form_fields -->
 						</div> <!-- end pmpro_card_content -->
 					</div> <!-- end pmpro_card -->
-				</fieldset> <!-- end pmpro_payment_information_fields -->
+				</div> <!-- end pmpro_payment_information_fields -->
 				<?php
 			}
 		}
@@ -426,8 +438,14 @@
 					// Get the most recent order.
 					$newest_order = current( $newest_orders );
 
-					// Calculate the next payment date.
-					$update_array['next_payment_date'] = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $subscription->get_cycle_number() . ' ' . $subscription->get_cycle_period(), $newest_order->getTimestamp( true ) ) );
+					// If the most recent order is the first order for this subscription, no recurring payments have been made yet,
+					// so keep the first payment date that was set at checkout, which may be delayed (ex. a subscription delay).
+					// Otherwise, calculate the next payment date from the most recent order.
+					$is_first_order = ! empty( $oldest_order ) && (int) $newest_order->id === (int) $oldest_order->id;
+					if ( ! $is_first_order || empty( $subscription->get_next_payment_date() ) ) {
+						// Calculate the next payment date.
+						$update_array['next_payment_date'] = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $subscription->get_cycle_number() . ' ' . $subscription->get_cycle_period(), $newest_order->getTimestamp( true ) ) );
+					}
 				}
 			}
 

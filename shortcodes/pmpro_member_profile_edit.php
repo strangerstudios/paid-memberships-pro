@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Display a Member Profile Form that allows members to edit their information on the front end.
  * Supports the core WordPress User fields that PMPro uses.
@@ -13,8 +17,8 @@ function pmpro_shortcode_member_profile_edit( $atts, $content=null, $code='' ) {
 	ob_start();
 
 	// Get the current action for the view.
-	if ( ! empty( $_REQUEST[ 'view' ] ) ) {
-		$view = sanitize_text_field( $_REQUEST[ 'view' ] );
+	if ( ! empty( $_REQUEST[ 'view' ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only selects which profile form view to display.
+		$view = sanitize_text_field( wp_unslash( $_REQUEST[ 'view' ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: only selects which profile form view to display.
 	} else {
 		$view = NULL;
 	}

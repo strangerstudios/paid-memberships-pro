@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Calculate the profile start date to be sent to the payment gateway.
  *
@@ -39,7 +43,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format ) {
 
 	// Save some checkout information in the order so that we can access it when the payment is complete.
 	// Save the request variables.
-	$request_vars = $_REQUEST;
+	$request_vars = $_REQUEST; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php.
 
 	// Unset sensitive request variables.
 	$sensitive_vars = pmpro_get_sensitive_checkout_request_vars();
@@ -59,10 +63,10 @@ function pmpro_calculate_profile_start_date( $order, $date_format ) {
 	update_pmpro_membership_order_meta( $order->id, 'checkout_discount_code', $discount_code );
 
 	// Save any files that were uploaded.
-	if ( ! empty( $_FILES ) ) {
+	if ( ! empty( $_FILES ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Runs during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php.
 		// Build an array of files to save.
 		$files = array();
-		foreach ( $_FILES as $arr_key => $file ) {
+		foreach ( $_FILES as $arr_key => $file ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Runs during checkout processing, after pmpro_checkout_nonce is verified in preheaders/checkout.php.
 			// If this file should not be saved, skip it.
 			$upload_check = pmpro_check_upload( $arr_key );
 			if ( is_wp_error( $upload_check ) ) {
@@ -77,12 +81,14 @@ function pmpro_calculate_profile_start_date( $order, $date_format ) {
 			// Check for a register helper directory in wp-content and create it if needed.
 			$upload_dir = wp_upload_dir();
 			$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
-			if( ! is_dir( $pmprorh_dir ) ) {
-				wp_mkdir_p( $pmprorh_dir );
-			}
+			pmpro_create_user_field_upload_dir( $pmprorh_dir );
 
-			// Move file.
-			$new_filename = $pmprorh_dir . basename( $file['tmp_name'] ) . '.' . $upload_check['filetype']['ext'];
+			// Move file. Keep the file's extension on the temp file if WordPress can determine it.
+			$filetype     = wp_check_filetype_and_ext( sanitize_text_field( $file['tmp_name'] ), sanitize_text_field( $file['name'] ) );
+			$new_filename = $pmprorh_dir . basename( $file['tmp_name'] );
+			if ( ! empty( $filetype['ext'] ) ) {
+				$new_filename .= '.' . $filetype['ext'];
+			}
 			move_uploaded_file($file['tmp_name'], $new_filename);
 
 			// Update location of file.
@@ -138,23 +144,53 @@ function pmpro_get_sensitive_checkout_request_vars() {
  */
 function pmpro_pull_checkout_data_from_order( $order ) {
 	global $pmpro_level, $discount_code;
+
+	// Keep track of any checkout data that we expected to find but could not.
+	$missing_data = array();
+
 	// We need to pull the checkout level and fields data from the order.
 	$checkout_level_arr = get_pmpro_membership_order_meta( $order->id, 'checkout_level', true );
+	if ( ! is_array( $checkout_level_arr ) ) {
+		$missing_data[] = 'checkout_level';
+		$checkout_level_arr = array();
+	}
 	$pmpro_level = (object) $checkout_level_arr;
 	$order->membership_level = $pmpro_level;
 
 	// Set $discount_code_id.
 	// @TODO: Remove this in v4.0. Discount codes should be set on the level object.
 	$discount_code = get_pmpro_membership_order_meta( $order->id, 'checkout_discount_code', true );
-	
+
 	// Set $_REQUEST.
 	$checkout_request_vars = get_pmpro_membership_order_meta( $order->id, 'checkout_request_vars', true );
-	$_REQUEST = array_merge( $_REQUEST, $checkout_request_vars );
+	if ( is_array( $checkout_request_vars ) ) {
+		$_REQUEST = array_merge( $_REQUEST, $checkout_request_vars ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Restores checkout data saved in order meta; request input is not processed here. Callers are the checkout review step (order owner checked in preheaders/checkout.php) and gateway webhooks or return handlers verified by calling back to the gateway.
+	} else {
+		$missing_data[] = 'checkout_request_vars';
+	}
 
 	// Set $_FILES.
 	$checkout_files = get_pmpro_membership_order_meta( $order->id, 'checkout_files', true );
-	if ( ! empty( $checkout_files ) ) {
-		$_FILES = array_merge( $_FILES, $checkout_files );
+	if ( is_array( $checkout_files ) ) {
+		$_FILES = array_merge( $_FILES, $checkout_files ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Restores checkout data saved in order meta; request input is not processed here. Callers are the checkout review step (order owner checked in preheaders/checkout.php) and gateway webhooks or return handlers verified by calling back to the gateway.
+	}
+	// Note: We do not track missing 'checkout_files' meta since it is only saved when files were uploaded.
+
+	// If any of the checkout data that we expected is missing, note it on the order. Membership will still be
+	// assigned, but data submitted during checkout may not be saved, so admins should know to follow up.
+	if ( ! empty( $missing_data ) && ! empty( $order->id ) ) {
+		$missing_data_note = sprintf(
+			// translators: %s is a comma-separated list of order meta keys.
+			__( 'Warning: Could not load the checkout data for this order (%s). Information submitted during checkout may not have been saved.', 'paid-memberships-pro' ),
+			implode( ', ', $missing_data )
+		);
+
+		// Only add the note if we haven't already added it. This function may run more than once for
+		// an order, such as when an admin rechecks the payment status for a token order.
+		if ( false === strpos( (string) $order->notes, $missing_data_note ) ) {
+			$order->add_order_note( $missing_data_note );
+			$order->saveOrder();
+		}
 	}
 }
 
@@ -209,12 +245,18 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	// If we have a discount code but not the ID, get the ID.
 	if ( ! empty( $pmpro_level->discount_code ) ) {
 		$discount_code = $pmpro_level->discount_code;
-		$discount_code_id = empty( $pmpro_level->code_id ) ? $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" ) : $pmpro_level->code_id;
+		if ( ! empty( $pmpro_level->code_id ) ) {
+			$discount_code_id = $pmpro_level->code_id;
+		} else {
+			$discount_code_row = pmpro_get_discount_code( $discount_code );
+			$discount_code_id  = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
+		}
 	} elseif ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
 		// Throw a doing it wrong warning. If a discount code is being used, it should be set on the level.
 		// @TODO: Remove this in v4.0 along with references to the discount code globals. Discount codes should be set on the level object.
 		_doing_it_wrong( __FUNCTION__, esc_html__( 'Discount codes should be set on the $pmpro_level object.', 'paid-memberships-pro' ), '3.4' );
-		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+		$discount_code_row = pmpro_get_discount_code( $discount_code );
+		$discount_code_id  = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
 	}
 
 	//custom level to change user to
@@ -255,18 +297,20 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		}
 
 		//save first and last name fields
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- pmpro_checkout_nonce is verified in preheaders/checkout.php before this runs at checkout; async completions come from gateway webhooks or return handlers verified by calling back to the gateway. Only fills in empty name fields.
 		if ( ! empty( $_POST['first_name'] ) ) {
 			$old_firstname = get_user_meta( $order->user_id, "first_name", true );
 			if ( empty( $old_firstname ) ) {
-				update_user_meta( $order->user_id, "first_name", stripslashes( sanitize_text_field( $_POST['first_name'] ) ) );
+				update_user_meta( $order->user_id, "first_name", sanitize_text_field( $_POST['first_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
 			}
 		}
 		if ( ! empty( $_POST['last_name'] ) ) {
 			$old_lastname = get_user_meta( $order->user_id, "last_name", true );
 			if ( empty( $old_lastname ) ) {
-				update_user_meta( $order->user_id, "last_name", stripslashes( sanitize_text_field( $_POST['last_name'] ) ) );
+				update_user_meta( $order->user_id, "last_name", sanitize_text_field( $_POST['last_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		if ( $pmpro_level->expiration_period == 'Hour' ){
 			update_user_meta( $order->user_id, 'pmpro_disable_notifications', true );

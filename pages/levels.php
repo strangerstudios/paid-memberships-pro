@@ -10,6 +10,10 @@
  *
  * @author Paid Memberships Pro
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 global $wpdb, $pmpro_msg, $pmpro_msgt, $current_user;
 
 $pmpro_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels(false, true) );
@@ -55,7 +59,7 @@ $level_groups  = pmpro_get_level_groups_in_order();
 						?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 							<?php
-								if ( count( $level_groups ) > 1  ) {
+								if ( count( $level_groups ) > 1 && count( $levels_to_show_for_group ) > 1 ) {
 									if ( ! empty( $level_group->allow_multiple_selections ) ) {
 										?>
 										<p><?php esc_html_e( 'You may select multiple levels from this group.', 'paid-memberships-pro' ); ?></p>

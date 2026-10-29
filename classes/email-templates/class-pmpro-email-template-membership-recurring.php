@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 
 	/**
@@ -64,7 +68,8 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html__( 'Your membership at {{ sitename }} will renew soon', 'paid-memberships-pro' );
+		// The original subject is its own string so existing translations still apply.
+		return '{% if needs_payment_method %}' . esc_html__( 'Action required: add a payment method for {{ sitename }}', 'paid-memberships-pro' ) . '{% else %}' . esc_html__( 'Your membership at {{ sitename }} will renew soon', 'paid-memberships-pro' ) . '{% endif %}';
 	}
 
 	/**
@@ -75,13 +80,24 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}.</p>
+		// The original body is its own string so existing translations still apply.
+		return '{% if needs_payment_method %}' . wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}.</p>
+
+<p>Your {{ membership_level_name }} membership is scheduled to renew on {{ renewaldate }}, but we don\'t have a payment method on file.</p>
+
+<p><strong>To keep your membership active, please add your payment information before {{ renewaldate }}.</strong> If we don\'t have a payment method on file by then, your membership will be cancelled.</p>
+
+<p>Update your billing information here: {{ billing_update_url }}</p>
+
+<p>Account: {{ display_name }} ({{ user_email }})</p>
+
+<p>If for some reason you do not want to renew your membership you can cancel here: {{ cancel_url }}</p>', 'paid-memberships-pro' ) ) . '{% else %}' . wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}.</p>
 
 <p>This is just a reminder that your {{ membership_level_name }} membership will automatically renew on {{ renewaldate }}.</p>
 
 <p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>If for some reason you do not want to renew your membership you can cancel here: {{ cancel_url }}</p>', 'paid-memberships-pro' ) );
+<p>If for some reason you do not want to renew your membership you can cancel here: {{ cancel_url }}</p>', 'paid-memberships-pro' ) ) . '{% endif %}';
 	}
 
 	/**
@@ -118,15 +134,18 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'{{ membership_cost }}' => esc_html__( 'The cost of the membership level.', 'paid-memberships-pro' ),
-			'{{ billing_amount }}' => esc_html__( 'The amount billed for the subscription.', 'paid-memberships-pro' ),
-			'{{ renewaldate }}' => esc_html__( 'The date of the next payment.', 'paid-memberships-pro' ),
-			'{{ cancel_url }}' => esc_html__( 'The link to cancel the subscription.', 'paid-memberships-pro' ),
+			'{{ display_name }}' => __( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => __( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => __( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ level_group_id }}' => __( 'The ID of the level group that the membership level belongs to.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ membership_cost }}' => __( 'The cost of the membership level.', 'paid-memberships-pro' ),
+			'{{ billing_amount }}' => __( 'The amount billed for the subscription.', 'paid-memberships-pro' ),
+			'{{ renewaldate }}' => __( 'The date of the next payment.', 'paid-memberships-pro' ),
+			'{{ cancel_url }}' => __( 'The link to cancel the subscription.', 'paid-memberships-pro' ),
+			'{{ billing_update_url }}' => __( 'The URL where the member can update billing information for the subscription.', 'paid-memberships-pro' ),
+			'{{ needs_payment_method }}' => __( 'Whether the subscription was moved to Stripe by the deprecated gateway migration and still has no payment method. Use it in a conditional, for example: {% if needs_payment_method %}...{% endif %}', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -142,6 +161,10 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 		$membership_id = $subscription_obj->get_membership_level_id();		
 		$membership_level = pmpro_getLevel( $membership_id );
 		$user = get_userdata( $subscription_obj->get_user_id() );
+		$billing_update_url = pmpro_url( 'billing', empty( $subscription_obj->get_id() ) ? '' : 'pmpro_subscription_id=' . (int) $subscription_obj->get_id(), 'https' );
+		if ( empty( $billing_update_url ) ) {
+			$billing_update_url = pmpro_login_url();
+		}
 
 		return array(
 			'name' => $user->display_name,
@@ -149,12 +172,16 @@ class PMPro_Email_Template_Membership_Recurring extends PMPro_Email_Template {
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
 			'membership_id' => $membership_id,
+			'level_group_id' => pmpro_get_group_id_for_level( $membership_id ) ?: 0,
 			'membership_level_name' => $membership_level->name,
 			'membership_cost' => $subscription_obj->get_cost_text(),
 			'billing_amount' =>  pmpro_formatPrice( $subscription_obj->get_billing_amount() ),
 			'renewaldate' => date_i18n( get_option( 'date_format' ), $subscription_obj->get_next_payment_date() ),
 			'cancel_link' => wp_login_url( pmpro_url( 'cancel' ) ),
 			'cancel_url' => wp_login_url( pmpro_url( 'cancel' ) ),
+			'billing_update_url' => $billing_update_url,
+			// Uses the stored flag; pmpro_deprecated_gateway_recurring_payment_reminder() refreshes it before the reminder is sent.
+			'needs_payment_method' => pmpro_deprecated_gateway_subscription_needs_payment_method( $subscription_obj, false ),
 		);
 	}
 

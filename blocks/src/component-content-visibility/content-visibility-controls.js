@@ -124,7 +124,6 @@ export default function ContentVisibilityControls (props) {
 								__nextHasNoMarginBottom
 								value={show_noaccess}
 								label={ __( 'Show No Access Message?', 'paid-memberships-pro' ) }
-								help={ __ ( "Modify the 'no access' message on the Memberships > Advanced Settings page.", "paid-memberships-pro" ) }
 								options={[
 									{ label: __( 'No - Hide this block if the user does not have access', 'paid-memberships-pro' ), value: '0' },
 									{ label: __( "Yes - Show the 'no access' message if the user does not have access", 'paid-memberships-pro' ), value: '1' },

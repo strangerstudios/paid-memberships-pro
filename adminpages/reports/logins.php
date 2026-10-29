@@ -9,6 +9,11 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_report_login_register( $pmpro_reports ) {
 	$pmpro_reports['login'] = __( 'Visits, Views, and Logins', 'paid-memberships-pro' );
 
@@ -81,9 +86,12 @@ function pmpro_report_login_page()
 {
 	global $wpdb;
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only report screen: search, level filter, and pagination only affect what is displayed.
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Report queries join PMPro custom tables, which have no WordPress API or object cache layer.
+
 	//vars
 	if(!empty($_REQUEST['s']))
-		$s = sanitize_text_field( $_REQUEST['s'] );
+		$s = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 	else
 		$s = "";
 
@@ -104,6 +112,7 @@ function pmpro_report_login_page()
 	if ( ! empty( $l ) ) {
 		$csv_export_link = add_query_arg( 'l', $l, $csv_export_link );
 	}
+	$csv_export_link = add_query_arg( 'nonce', wp_create_nonce( 'login_report_csv' ), $csv_export_link );
 ?>
 	<form id="visits-views-logins-form" method="get" action="">
 	<h1 class="wp-heading-inline">
@@ -158,8 +167,8 @@ function pmpro_report_login_page()
 		$sqlQuery_group_by = "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . (int) $start . "," . (int) $limit;
 
 		// Complete the queries.
-		$theusers = $wpdb->get_results( $sqlQuery_select_data . $sqlQuery_where . $sqlQuery_group_by );
-		$totalrows = $wpdb->get_var( $sqlQuery_select_count . $sqlQuery_where );
+		$theusers = $wpdb->get_results( $sqlQuery_select_data . $sqlQuery_where . $sqlQuery_group_by ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term and level go through esc_sql() inside quotes (level is also intval'd), and LIMIT values are cast to int.
+		$totalrows = $wpdb->get_var( $sqlQuery_select_count . $sqlQuery_where ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Search term and level go through esc_sql() inside quotes (level is also intval'd).
 	?>
 	<p>
 		<?php esc_html_e( 'This report offers a detailed view of data points by user and member. For various reasons, the numbers below will not perfectly match up to other tracking you might be doing (such as the data provided by an analytics plugin).', 'paid-memberships-pro' ); ?>
@@ -301,6 +310,7 @@ function pmpro_report_login_page()
 		</div>
 	</div>
 <?php
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 }
 
 /*
@@ -453,9 +463,28 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 
 	//set cookie for visits
 	if( $type === 'visits' && empty( $_COOKIE['pmpro_visit'] ) ) {
-		// The secure parameter is set to is_ssl(), true if HTTPS.
-        setcookie( 'pmpro_visit', '1', 0, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
-    }
+		/**
+		 * Filter whether to set the pmpro_visit dedup cookie on the response.
+		 *
+		 * The cookie is a server-side dedup marker so we don't double-count a
+		 * single visitor's visits within a session. Setting it on the response
+		 * adds a Set-Cookie header, which causes most page caches (Surge,
+		 * Cloudflare, Varnish, WP Super Cache, etc.) to bypass the cache for
+		 * that response — defeating page caching entirely on the front end.
+		 *
+		 * Default: skip setting the cookie when WP_CACHE is true (a page cache
+		 * is installed). Set to true to force the cookie regardless.
+		 *
+		 * @since 3.7.4
+		 *
+		 * @param bool $should_set Default !( WP_CACHE === true ).
+		 */
+		$should_set = apply_filters( 'pmpro_set_visit_cookie', ! ( defined( 'WP_CACHE' ) && WP_CACHE ) );
+		if ( $should_set ) {
+			// The secure parameter is set to is_ssl(), true if HTTPS.
+			setcookie( 'pmpro_visit', '1', 0, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		}
+	}
 
 	//some vars for below
 	$now = current_time('timestamp');
@@ -553,8 +582,14 @@ add_action("wp", "pmpro_report_login_wp_visits");
 
 //we want to clear the pmpro_visit cookie on login/logout
 function pmpro_report_login_clear_visit_cookie() {
-	if(isset($_COOKIE['pmpro_visit']))
+	if(isset($_COOKIE['pmpro_visit'])) {
 		unset($_COOKIE['pmpro_visit']);
+
+		// Also expire the cookie in the browser so the next page load is tracked as a new visit.
+		if ( ! headers_sent() ) {
+			setcookie( 'pmpro_visit', '', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		}
+	}
 }
 add_action("wp_login", "pmpro_report_login_clear_visit_cookie");
 add_action("wp_logout", "pmpro_report_login_clear_visit_cookie");

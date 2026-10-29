@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email_Template {
 	
 	/**
@@ -126,13 +130,14 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'{{ display_name }}' => esc_html__( 'The display name of the user.', 'paid-memberships-pro' ),
-			'{{ user_login }}' => esc_html__( 'The username of the user.', 'paid-memberships-pro' ),
-			'{{ user_email }}' => esc_html__( 'The email address of the user.', 'paid-memberships-pro' ),
-			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'paid-memberships-pro' ),
-			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'paid-memberships-pro' ),
-			'{{ startdate }}' => esc_html__( 'The start date of the membership level.', 'paid-memberships-pro' ),
-			'{{ enddate }}' => esc_html__( 'The end date of the membership level.', 'paid-memberships-pro' ),
+			'{{ display_name }}' => __( 'The display name of the user.', 'paid-memberships-pro' ),
+			'{{ user_login }}' => __( 'The username of the user.', 'paid-memberships-pro' ),
+			'{{ user_email }}' => __( 'The email address of the user.', 'paid-memberships-pro' ),
+			'{{ membership_id }}' => __( 'The ID of the membership level.', 'paid-memberships-pro' ),
+			'{{ level_group_id }}' => __( 'The ID of the level group that the membership level belongs to.', 'paid-memberships-pro' ),
+			'{{ membership_level_name }}' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
+			'{{ startdate }}' => __( 'The start date of the membership level.', 'paid-memberships-pro' ),
+			'{{ enddate }}' => __( 'The end date of the membership level.', 'paid-memberships-pro' ),
 		);
 	}
 
@@ -153,6 +158,7 @@ class PMPro_Email_Template_Cancel_On_Next_Payment_Date_Admin extends PMPro_Email
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
 			'membership_id' => $level->id,
+			'level_group_id' => pmpro_get_group_id_for_level( $level->id ) ?: 0,
 			'membership_level_name' => $level->name,
 			'startdate' => date_i18n( get_option( 'date_format' ), $level->startdate ),
 			'enddate' => date_i18n( get_option( 'date_format' ), $level->enddate ),

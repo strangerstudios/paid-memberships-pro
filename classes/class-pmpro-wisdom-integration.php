@@ -198,17 +198,8 @@ class PMPro_Wisdom_Integration {
 		}
 
 		if (
-			// localhost
-			$this->host_starts_with( $host, 'localhost' ) ||
-
-			// domains starting with
-			$this->host_starts_with( $host, 'stage' ) ||
-			$this->host_starts_with( $host, 'staging' ) ||
-
-			// subdomains
-			$this->host_starts_with( $host, 'dev.' ) ||
-			$this->host_starts_with( $host, 'test.' ) ||
-			$this->host_starts_with( $host, 'testing.' ) ||
+			// localhost and environment labels (staging., stage-2., dev1., test.)
+			$this->host_has_environment_prefix( $host ) ||
 
 			// local tlds
 			$this->host_ends_with( $host, '.test' ) ||
@@ -233,6 +224,22 @@ class PMPro_Wisdom_Integration {
 		}
 
 		return $is_local;
+	}
+
+	/**
+	 * Check whether a hostname starts with an environment label.
+	 *
+	 * "staging" counts as a bare prefix. localhost, dev, stage, test, and testing need a dot,
+	 * dash, or digit after them so brand names like stagecoach.com or devon.org stay production.
+	 *
+	 * @since 3.9
+	 *
+	 * @param string $host Lowercased hostname without port or trailing dot.
+	 *
+	 * @return bool Whether the hostname starts with an environment label.
+	 */
+	protected function host_has_environment_prefix( $host ) {
+		return (bool) preg_match( '/^staging|^localhost(?:\.|$)|^(?:dev|stage|test|testing)(?:[.-]|\d+(?:[.-]|$)|$)/', $host );
 	}
 
 	/**
@@ -288,7 +295,7 @@ class PMPro_Wisdom_Integration {
 	 * @since 2.8
 	 */
 	public function remove_wisdom_notices_from_non_plugin_screens() {
-		$settings_page = ! empty( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
+		$settings_page = ! empty( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; only used to decide which admin notices to show.
 
 		// Check if we are on a settings page using isset() which is faster than in_array().
 		if ( isset( $this->plugin_pages[ $settings_page ] ) ) {
@@ -324,6 +331,9 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields']['pmpro_license_key']  = get_option( 'pmpro_license_key', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_license_plan'] = $license_plan;
 
+		// Hosting info.
+		$stats['plugin_options_fields']['pmpro_hosting'] = defined( 'PMPRO_HOSTING_IS_MU_PLUGIN' ) && PMPRO_HOSTING_IS_MU_PLUGIN ? 'yes' : 'no';
+
 		// Gateway info.
 		$stats['plugin_options_fields'] = array_merge( $stats['plugin_options_fields'], $this->get_gateway_info() );
 
@@ -339,7 +349,7 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields']['pmpro_members_cancelled_count'] = pmpro_getCancellations( 'all time' );
 
 		// Orders info.
-		$stats['plugin_options_fields']['pmpro_orders_count'] = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->pmpro_membership_orders}`" );
+		$stats['plugin_options_fields']['pmpro_orders_count'] = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->pmpro_membership_orders}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Counts rows in the PMPro orders custom table, which has no WordPress API or object cache layer.
 
 		// Features.
 		$stats['plugin_options_fields']['pmpro_hide_toolbar']  = get_option( 'pmpro_hide_toolbar', 'No Value' );
@@ -476,7 +486,7 @@ class PMPro_Wisdom_Integration {
 			$level_data->subscription_delay  = get_option( 'pmpro_subscription_delay_' . $level_id , '' );
 
 			// Add if a category is set.
-			$categories = $wpdb->get_col(
+			$categories = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries the PMPro memberships_categories custom table, which has no WordPress API or object cache layer.
 				$wpdb->prepare(
 					"SELECT category_id
 					FROM $wpdb->pmpro_memberships_categories

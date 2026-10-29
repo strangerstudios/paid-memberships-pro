@@ -572,8 +572,9 @@ class PMPro_Field {
 	 * @return mixed The value of the field or null if not found.
 	 */
 	function get_value_from_request() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Getter only. Callers that save the value verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php); other callers only prefill or validate.
 		if ( isset( $_REQUEST[ $this->name ] ) ) {
-			$value = $_REQUEST[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$value = $_REQUEST[$this->name]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized below when the field has sanitize set. Left slashed on purpose: update_user_meta() unslashes on save and the display code calls wp_unslash(), so unslashing here would strip backslashes twice.
 		} elseif ( isset( $_REQUEST[ $this->name . '_checkbox' ] ) && $this->type == 'checkbox' ) {
 			// Empty checkbox.
 			$value = 0;
@@ -582,7 +583,7 @@ class PMPro_Field {
 			$value = array();
 		} elseif ( isset( $_FILES[$this->name] ) && $this->type == 'file' ) {
 			// File field.
-			$value = $_FILES[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$value = $_FILES[$this->name]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- isset( $_FILES[ $this->name ] ) is checked above and PHP always sets the name key for an upload entry. The file name is passed through sanitize_file_name() when the file is saved.
 		}  elseif ( isset( $_SESSION[$this->name] ) ) {
 			// Value stored in session.
 			if ( is_array( $_SESSION[$this->name] ) && isset( $_SESSION[$this->name]['name'] ) ) {
@@ -600,9 +601,10 @@ class PMPro_Field {
 			// No value found.
 			return null;
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 		// Sanitize the value if needed.
-		if ( ! empty( $field->sanitize ) ) {
+		if ( ! empty( $this->sanitize ) ) {
 			if ( $this->type == 'textarea' ) {
 				$value = sanitize_textarea_field( $value );
 			} elseif ( is_array( $value ) ) {
@@ -613,6 +615,60 @@ class PMPro_Field {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Whether this field stores multiple selected values as an array.
+	 *
+	 * @since 3.8.3
+	 *
+	 * @return bool
+	 */
+	public function stores_array_values() {
+		if ( in_array( $this->type, array( 'checkbox_grouped', 'multiselect', 'select2' ), true ) ) {
+			return true;
+		}
+
+		return ( 'select' === $this->type && ! empty( $this->multiple ) );
+	}
+
+	/**
+	 * Normalize a multi-value field's stored value to an array of option keys.
+	 *
+	 * Profile/checkout saves store arrays. Members List CSV export joins those
+	 * arrays with commas, and Import Users from CSV may write the cell back as a
+	 * string. Display and comparison code need a real array either way.
+	 *
+	 * Does not unserialize. get_user_meta() already unserializes stored arrays,
+	 * and this helper is also used on request-sourced values during checkout
+	 * re-display.
+	 *
+	 * @since 3.8.3
+	 *
+	 * @param mixed $value Raw value (array from UI save, or CSV string).
+	 * @return array List of selected option keys.
+	 */
+	public function get_values_as_array( $value ) {
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+
+		if ( null === $value || false === $value || '' === $value ) {
+			return array();
+		}
+
+		if ( ! is_string( $value ) ) {
+			return array( $value );
+		}
+
+		// Comma-separated option keys from CSV import/export.
+		// Option keys are expected not to contain commas (same as export).
+		if ( false !== strpos( $value, ',' ) ) {
+			$parts = array_map( 'trim', explode( ',', $value ) );
+			return array_values( array_filter( $parts, 'strlen' ) );
+		}
+
+		return array( $value );
 	}
 
 	/**
@@ -628,6 +684,21 @@ class PMPro_Field {
 
 		// If field was not submitted, bail.
 		if ( null === $value ) {
+			return;
+		}
+
+		// Read-only fields are display-only; their value is managed server-side
+		// (via update_user_meta by add-ons/admin tooling), never from the request.
+		// Skipping the save here prevents users from tampering with fields they cannot edit.
+		if ( 'readonly' === $this->type || ! empty( $this->readonly ) ) {
+			return;
+		}
+
+		// Never save to the meta key that stores a user's roles and capabilities, including other sites' keys on multisite.
+		// Matched case-insensitively because meta key lookups in the database are usually case-insensitive.
+		global $wpdb;
+		$capabilities_key_pattern = '/^' . preg_quote( $wpdb->base_prefix, '/' ) . '(\d+_)?capabilities$/i';
+		if ( preg_match( $capabilities_key_pattern, trim( $this->meta_key ) ) || preg_match( $capabilities_key_pattern, trim( str_replace( 'pmprorhprefix_', '', $this->name ) ) ) ) {
 			return;
 		}
 
@@ -691,29 +762,25 @@ class PMPro_Field {
 		$user = get_userdata($user_id);
 		$meta_key = str_replace("pmprorhprefix_", "", $name);
 
-		// deleting?
-		if( isset( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ) {
-			$delete_old_file_name = sanitize_text_field( $_REQUEST['pmpro_delete_file_' . $name . '_field'] );
+		// deleting? If a new file was uploaded too, the old file is deleted below once the new file is saved.
+		if( isset( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) && ( empty( $_FILES[ $name ] ) || empty( $_FILES[ $name ]['name'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
+			$delete_old_file_name = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_delete_file_' . $name . '_field'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
 			if ( ! empty( $delete_old_file_name ) ) {
 				// Use what's saved in user meta so we don't delete any old file.
 				$old_file_meta = get_user_meta( $user->ID, $meta_key, true );
 				if ( 
 					! empty( $old_file_meta ) && 
 					! empty( $old_file_meta['fullpath'] ) && 
-					file_exists( $old_file_meta['fullpath'] ) &&
 					$old_file_meta['filename'] ==  $delete_old_file_name
 				) {
-					unlink( $old_file_meta['fullpath'] );
-					if ( ! empty( $old_file_meta['previewpath'] ) ) {
-						unlink( $old_file_meta['previewpath'] );
-					}
+					self::delete_uploaded_file( $old_file_meta );
 					delete_user_meta( $user->ID, $meta_key );
 				}
 			}
 		}
 
 		// If we don't have a file to upload, return.
-		if ( empty( $_FILES[ $name ] ) || empty( $_FILES[ $name ]['name'] ) ) {
+		if ( empty( $_FILES[ $name ] ) || empty( $_FILES[ $name ]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
 			return;
 		}
 
@@ -725,7 +792,7 @@ class PMPro_Field {
 		}
 
 		// Get $file and $filetype.
-		$file = array_map( 'sanitize_text_field', $_FILES[ $name ] );
+		$file = array_map( 'sanitize_text_field', $_FILES[ $name ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Only reached via save_field_for_user(), whose save callers verify a nonce first (pmpro_checkout_nonce in preheaders/checkout.php, the update-user_ nonce for profile saves, or the member edit panel nonce in adminpages/member-edit.php).
 		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );;
 
 		/*
@@ -733,21 +800,13 @@ class PMPro_Field {
 		*/
 		//check for a register helper directory in wp-content
 		$upload_dir = wp_upload_dir();
-		$dir_path = $upload_dir['basedir'] . "/pmpro-register-helper/" . $user->user_login . "/";
-		$dir_url  = $upload_dir['baseurl'] . "/pmpro-register-helper/" . $user->user_login . "/";
+		$user_dir_path = $upload_dir['basedir'] . "/pmpro-register-helper/" . $user->user_login . "/";
 
-		//create the dir and subdir if needed
-		if(!is_dir($dir_path))
-		{
-			wp_mkdir_p($dir_path);
-		}
-
-		//if we already have a file for this field, delete it
-		$old_file = get_user_meta($user->ID, $meta_key, true);
-		if(!empty($old_file) && !empty($old_file['fullpath']) && file_exists($old_file['fullpath']))
-		{
-			unlink($old_file['fullpath']);
-		}
+		// Store each upload in its own randomly named folder so that file URLs cannot be guessed.
+		// random_bytes() is used instead of wp_generate_password() because the random_password filter could add characters that are not safe in a URL.
+		$unique_dir = bin2hex( random_bytes( 8 ) );
+		$dir_path = $user_dir_path . $unique_dir . "/";
+		$dir_url  = $upload_dir['baseurl'] . "/pmpro-register-helper/" . $user->user_login . "/" . $unique_dir . "/";
 
 		//figure out new filename
 		$filename = sanitize_file_name( $file['name'] );
@@ -770,22 +829,40 @@ class PMPro_Field {
 		$file_path = $dir_path . $filename;
 		$file_url = $dir_url . $filename;
 
+		// Make sure file was uploaded. Files saved to the uploads directory during checkout are moved below.
+		$is_saved_file = strpos($file['tmp_name'], $upload_dir['basedir']) !== false;
+		if ( ! $is_saved_file && ! is_uploaded_file( $file['tmp_name'] ) ) {
+			pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
+			return false;
+		}
+
+		//create the dir and subdir if needed, with index files in the parent folders so the random folder names are not listed
+		pmpro_create_user_field_upload_dir( $upload_dir['basedir'] . "/pmpro-register-helper/" );
+		pmpro_create_user_field_upload_dir( $user_dir_path );
+		wp_mkdir_p( $dir_path );
+
 		//save file
-		if(strpos($file['tmp_name'], $upload_dir['basedir']) !== false)
-		{
+		if ( $is_saved_file ) {
 			//was uploaded and saved to $_SESSION
 			rename($file['tmp_name'], $file_path);
-		}
-		else
-		{
-			// Make sure file was uploaded.
-			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-				pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
-				return false;
-			}
-
+		} else {
 			//it was just uploaded
 			move_uploaded_file($file['tmp_name'], $file_path);
+		}
+
+		// If the file could not be saved, remove the empty folder and keep the old file.
+		if ( ! file_exists( $file_path ) ) {
+			if ( is_dir( $dir_path ) ) {
+				rmdir( $dir_path );
+			}
+			pmpro_setMessage( sprintf( esc_html__( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
+			return false;
+		}
+
+		//if we already have a file for this field, delete it now that the new file is saved
+		$old_file = get_user_meta($user->ID, $meta_key, true);
+		if ( ! empty( $old_file ) ) {
+			self::delete_uploaded_file( $old_file );
 		}
 
 		// If file is an image, save a preview thumbnail.
@@ -820,6 +897,55 @@ class PMPro_Field {
 
 		//save filename in usermeta
 		update_user_meta($user_id, $meta_key, $file_meta_value_array );
+	}
+
+	/**
+	 * Delete a file uploaded through a file field, along with its preview.
+	 *
+	 * Also removes the file's unique upload folder if it is now empty.
+	 *
+	 * @since 3.8.8
+	 *
+	 * @param array  $file       The file meta array saved for the field.
+	 * @param string $user_login Optional. Only delete the file if it is in this user's folder.
+	 *                           Pass this when the file meta may not have been saved by a file field.
+	 */
+	public static function delete_uploaded_file( $file, $user_login = '' ) {
+		if ( ! is_array( $file ) || empty( $file['fullpath'] ) ) {
+			return;
+		}
+
+		// Only delete files that are inside a user's pmpro-register-helper folder in the uploads directory.
+		$user_folder_pattern = empty( $user_login ) ? '[^/]+' : preg_quote( $user_login, '#' );
+		$uploads_path = pmpro_get_user_field_uploads_root();
+		if ( empty( $uploads_path ) ) {
+			return;
+		}
+
+		foreach ( array( 'fullpath', 'previewpath' ) as $path_key ) {
+			if ( empty( $file[ $path_key ] ) ) {
+				continue;
+			}
+
+			$path = realpath( $file[ $path_key ] );
+			if ( empty( $path ) || ! is_file( $path ) ) {
+				continue;
+			}
+
+			// The sites/N/ segment matches subsite uploads, which are inside the main site's uploads folder on multisite.
+			$path = wp_normalize_path( $path );
+			if ( 0 !== strpos( $path, $uploads_path ) || ! preg_match( '#^(sites/\d+/)?pmpro-register-helper/' . $user_folder_pattern . '/#', substr( $path, strlen( $uploads_path ) ) ) ) {
+				continue;
+			}
+
+			unlink( $path );
+
+			// Remove the unique upload folder if it is now empty. Files uploaded before unique folders were used sit directly in the user's folder, which is kept.
+			$dir = dirname( $path );
+			if ( 'pmpro-register-helper' === basename( dirname( dirname( $dir ) ) ) && is_dir( $dir ) && 2 === count( scandir( $dir ) ) ) {
+				rmdir( $dir );
+			}
+		}
 	}
 
 	/**
@@ -906,9 +1032,10 @@ class PMPro_Field {
 		}
 		elseif($this->type == "select")
 		{
-			//if multiple is set, value must be an array
-			if(!empty($this->multiple) && !is_array($value))
-				$value = array($value);
+			// Multi-select values may be arrays (UI save) or CSV strings (import).
+			if ( ! empty( $this->multiple ) ) {
+				$value = $this->get_values_as_array( $value );
+			}
 
 			if(!empty($this->multiple))
 				$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" ';	//multiselect
@@ -937,9 +1064,8 @@ class PMPro_Field {
 		}
 		elseif($this->type == "multiselect")
 		{
-			//value must be an array
-			if(!is_array($value))
-				$value = array($value);
+			// Arrays from UI saves; CSV strings from import/export round-trips.
+			$value = $this->get_values_as_array( $value );
 
 			$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" multiple="multiple" ';
 			if(!empty($this->class))
@@ -961,19 +1087,18 @@ class PMPro_Field {
 		}
 		elseif($this->type == "select2")
 		{
-			//value must be an array
-			if(!is_array($value))
-				$value = array($value);
+			// Arrays from UI saves; CSV strings from import/export round-trips.
+			$value = $this->get_values_as_array( $value );
 
 			//build multi select
 			$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" multiple="multiple" style="width: 100%" ';
 			if(isset($this->placeholder)) {
-				$r .= 'placeholder="' . esc_attr($this->placeholder) . '" ';
+				$r .= 'data-placeholder="' . esc_attr($this->placeholder) . '" ';
 				if(empty($this->select2options)) {
 					$this->select2options = 'placeholder: "' . esc_attr($this->placeholder) . '"';
 				}
 			} else {
-				$r .= 'placeholder="' . esc_html__('Choose one or more.', 'paid-memberships-pro') . '" ';
+				$r .= 'data-placeholder="' . esc_html__('Choose one or more.', 'paid-memberships-pro') . '" ';
 			}
 			if(!empty($this->class))
 				$r .= 'class="' . esc_attr( $this->class ) . '" ';
@@ -1040,19 +1165,14 @@ class PMPro_Field {
 
 		elseif($this->type == "checkbox_grouped")
 		{
-			//value must be an array
-			if(!is_array($value))
-				$value = array($value);
+			// Arrays from UI saves; CSV strings from import/export round-trips.
+			$value = $this->get_values_as_array( $value );
 
 			$r = '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped' ) ) . '">';
 			$r .= '<ul class="' . esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ) . '">';
 			$counter = 1;
 			foreach($this->options as $ovalue => $option)
 			{
-				if ( ! empty( $this->class ) ) {
-					$class = $this->class;
-				}
-
 				$r .= '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ) . '">';
 				$r .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped-item' ) ) . '">';
 				$r .= sprintf(
@@ -1060,9 +1180,9 @@ class PMPro_Field {
 					esc_attr( $this->name ),
 					esc_html( $ovalue ),
 					esc_attr( "{$this->id}_{$counter}" ),
-					esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-checkbox ' . $this->id ), $this->id ),
+					esc_attr( $this->class ),
 					( in_array($ovalue, $value) ? 'checked="checked"' : null ),
-					( !empty( $this->readonly ) ? 'readonly="readonly"' : null ),
+					( !empty( $this->readonly ) ? 'disabled="disabled"' : null ),
 					$this->getHTMLAttributes()
 				);
 
@@ -1137,7 +1257,7 @@ class PMPro_Field {
 				if ( ( ! empty( $this->allow_delete ) ) && ! empty( $file['fullurl'] ) ) {
 					// Check whether the current user can delete the uploaded file based on the field attribute 'allow_delete'.
 					if ( $this->allow_delete === true || 
-						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options' ) )
+						( ( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' ) && current_user_can( 'manage_options' ) )
 					) {
 						$r_beginning .= '<button class="button is-destructive pmpro_btn pmpro_btn-delete" id="pmpro_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . esc_html__( 'Delete', 'paid-memberships-pro' ) . '</button>';
 					}
@@ -1245,9 +1365,10 @@ class PMPro_Field {
 		elseif($this->type == "readonly")
 		{
 			if ( empty( $value ) ) {
-				$value = '&#8212;';
+				$r = '&#8212;';
+			} else {
+				$r = esc_html( $value );
 			}
-			$r = $value;
 		}
 		else
 		{
@@ -1505,6 +1626,13 @@ class PMPro_Field {
 							$output = $value;
 							break;
 					}
+				} elseif ( 'textarea' === $this->type && false !== strpos( $output, "\n" ) ) {
+					// Only add paragraph and line break markup when there are line breaks to keep.
+					$output = wpautop( $output );
+					$allowed_html = array(
+						'p'  => array(),
+						'br' => array(),
+					);
 				} else {
 					$output = $value;
 				}
@@ -1525,8 +1653,10 @@ class PMPro_Field {
 			case 'select2':
 			case 'radio':
 			case 'checkbox_grouped':
-				// For simplicity, make sure that $value and $this->options are arrays.
-				if ( ! is_array( $value ) ) {
+				// Multi-value fields may be arrays (UI) or CSV strings (import).
+				if ( $this->stores_array_values() ) {
+					$value = $this->get_values_as_array( $value );
+				} elseif ( ! is_array( $value ) ) {
 					$value = array( $value );
 				}
 				if ( ! is_array( $this->options ) ) {
@@ -1714,9 +1844,9 @@ class PMPro_Field {
 				$filled = ( null !== $value && '' !== trim( $value ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				break;
 			case 'file':
-				if ( ! empty( $_FILES[ $this->name ]['name'] ) ) {
+				if ( ! empty( $_FILES[ $this->name ]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Read-only. Only validates whether a required field was filled; nothing is saved here.
 					$filled = true;
-				} elseif ( ! empty( get_user_meta( get_current_user_id(), $this->name, true ) ) && empty( $_REQUEST['pmpro_delete_file_' . $this->name . '_field'] ) ) {
+				} elseif ( ! empty( get_user_meta( get_current_user_id(), $this->name, true ) ) && empty( $_REQUEST['pmpro_delete_file_' . $this->name . '_field'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only. Only validates whether a required field was filled; nothing is saved here.
 					$filled = true;
 				} else {
 					$filled = false;

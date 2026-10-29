@@ -143,6 +143,7 @@ p.pmpro_meta_notice {
 
 .pmpro_banner .pmpro_banner_wrapper {
 	align-items: center;
+	clear: both;
 	display: flex;
 	flex-direction: column;
 	gap: calc( var(--pmpro--spacing--medium) / 2 );
@@ -539,19 +540,36 @@ body[class*="memberships_page_pmpro-"] {
 	min-width: 200px;
 }
 
-.wp-core-ui .pmpro_admin .button-secondary:hover,
-.wp-core-ui .pmpro_admin .button.hover,
-.wp-core-ui .pmpro_admin .button:hover,
-.pmpro_admin .add-new-h2:hover,
-.pmpro_admin .page-title-action:hover {
-	background: #FFF;
-}
-
 .pmpro_admin .page-title-action {
 	margin: 0 calc( var(--pmpro--spacing--small) / 2 );
 }
-.wp-core-ui .pmpro_admin .button-primary:hover {
-	background: #135e96;
+
+.pmpro_admin .page-title-action.button-primary {
+	background: var(--wp-admin-theme-color);
+	color: #fff;
+	line-height: 2.30769231;
+	min-height: 32px;
+}
+
+.pmpro_admin .page-title-action.button-primary:hover {
+	background: var(--wp-admin-theme-color-darker-10);
+	border-color: transparent;
+}
+
+.pmpro_admin .page-title-action.button-primary:focus {
+	background: var(--wp-admin-theme-color);
+	border-color: transparent;
+}
+
+.pmpro_admin .page-title-action.button-primary:active {
+	background: var(--wp-admin-theme-color-darker-20);
+	border-color: transparent;
+}
+
+.pmpro_admin .page-title-action.button-primary:disabled {
+	background: #f0f0f0;
+	border-color: transparent;
+	color: #949494;
 }
 
 @media only screen and (max-width: 782px) {
@@ -635,6 +653,12 @@ body[class*="memberships_page_pmpro-"] {
 
 td > .pmpro_tag {
 	text-wrap: wrap;
+}
+
+.pmpro_tag-small {
+	font-size: 12px;
+	margin: 3px 0;
+	padding: 0 calc( var(--pmpro--spacing--small) / 2 );
 }
 
 .pmpro_tag-has_icon:before {
@@ -1692,10 +1716,6 @@ td > .pmpro_tag {
 }
 
 /* buttons */
-.pmpro_admin .button-hero .dashicons {
-	vertical-align: middle;
-}
-
 .pmpro_admin .pmpro_section .button.is-destructive {
 	border-color: #AA0000;
 	color: #AA0000;
@@ -1712,6 +1732,10 @@ td > .pmpro_tag {
  */
  #member-list-form {
 	margin-top: var(--pmpro--spacing--medium);
+}
+
+.wp-core-ui #member-list-form .tablenav select {
+	float: none;
 }
 
 #member-list-form h1.wp-heading-inline {
@@ -1826,6 +1850,13 @@ a.pmpro_order-renewal {
 	min-width: 18px;
 	position: relative;
 	top: -1px;
+}
+
+.pmpro-filter-learn-more {
+	color: #646970;
+	display: inline-block;
+	line-height: 32px;
+	margin-inline-start: 12px;
 }
 
 .pmpro-filter-layout {
@@ -2314,6 +2345,17 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	padding: 0 calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 );
 }
 
+/* The pricing panel has no top padding (the form-table provides its own spacing), so the
+   formula note supplies matching top spacing when it is the only visible child. Padding,
+   not margin: a margin would collapse through the unpadded panel and land outside it. */
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_level_formula_note {
+	padding-top: calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_level_formula_note p {
+	margin: 0;
+}
+
 .pmpro_discount_code-tag {
 	border: 2px dashed var(--pmpro--color--blue-darkest);
 	display: block;
@@ -2481,20 +2523,174 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	}
 }
 
+.pmpro_admin-pmpro-paymentsettings .pmpro_stripe_connection_test-item {
+	margin: var(--pmpro--spacing--small) 0;
+}
+
+.pmpro_admin-pmpro-paymentsettings .pmpro_stripe_connection_test-item_title {
+	align-items: center;
+	display: flex;
+	gap: calc( var(--pmpro--spacing--small) / 2 );
+}
+
+.pmpro_admin-pmpro-paymentsettings .pmpro_stripe_connection_test-item p {
+	margin: 0;
+}
+
 .pmpro_admin-pmpro-paymentsettings #pmpro_stripe_create_webhook {
 	align-items: center;
 	display: flex;
 	gap: 5px;
 }
 
-.pmpro_admin-pmpro-paymentsettings .pmpro-admin-secure-key {
+.wp-core-ui .pmpro_admin-pmpro-paymentsettings #pmpro_stripe_create_webhook .dashicons {
+	line-height: 1;
+}
+
+/* Secret-credential inputs (the secure_key settings field type and hand-rolled gateway key fields).
+   Unscoped so masking applies on any admin screen, not just payment settings. */
+.pmpro-admin-secure-key {
 	-webkit-text-security: disc;
 }
 
-@media only screen and (min-width: 1200px) {
-	.pmpro_admin-pmpro-paymentsettings .pmpro-admin-secure-key {
-		-webkit-text-security: disc;
-	}
+/* Deprecated gateway migration tool */
+/* WP admin's .button sets display: inline-block, which overrides the browser's [hidden] rule. */
+.pmpro-dgs [hidden] {
+	display: none !important;
+}
+
+.pmpro-dgs .pmpro-stepper {
+	margin: 20px 0;
+}
+
+.pmpro-dgs .pmpro-stepper__steps {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.pmpro-dgs .pmpro_message {
+	margin: 0 0 16px;
+}
+
+.pmpro-dgs .spinner {
+	float: none;
+	margin: 0 4px 0 0;
+	vertical-align: middle;
+}
+
+.pmpro-dgs-counts {
+	display: grid;
+	gap: 15px;
+	grid-template-columns: repeat(2, 1fr);
+	margin: 0 0 16px;
+}
+
+.pmpro-dgs-count {
+	background: #FFF;
+	border: 1px solid var(--pmpro--border--color, #E5E7EB);
+	border-radius: var(--pmpro--border--radius, 6px);
+	box-shadow: var(--pmpro--box-shadow, 1px 2px 3px #12196110);
+	padding: 16px 20px;
+	text-align: center;
+}
+
+.pmpro-dgs-count.is-current {
+	background-color: var(--pmpro--color--blue-lightest, #F5F8FA);
+	border-color: #1A688B;
+}
+
+.pmpro-dgs-count.is-current .pmpro-dgs-count-label {
+	color: #1A688B;
+	font-weight: 600;
+}
+
+.pmpro-dgs-count.is-current .pmpro-dgs-count-label:after {
+	content: " (" attr(data-current-label) ")";
+	font-weight: 400;
+}
+
+.pmpro-dgs-count-num {
+	color: var(--pmpro--color--almost-black, #0F172A);
+	display: block;
+	font-size: 26px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.pmpro-dgs-count-num.is-live {
+	color: var(--pmpro--color--error-text, #721c24);
+}
+
+.pmpro-dgs-count-label {
+	color: #666;
+}
+
+.pmpro-dgs-workflow {
+	background: var(--pmpro--color--blue-lightest, #F5F8FA);
+	border: 1px solid var(--pmpro--border--color, #E5E7EB);
+	border-radius: var(--pmpro--border--radius, 6px);
+	margin: 0 0 16px;
+	padding: 12px 16px;
+}
+
+.pmpro-dgs-workflow-title {
+	font-weight: 600;
+	margin: 0 0 4px;
+}
+
+.pmpro-dgs-meta {
+	color: #646970;
+	font-size: 12px;
+	margin: 0 0 8px;
+}
+
+.pmpro-dgs-bar {
+	background: #FFF;
+	border: 1px solid var(--pmpro--border--color, #E5E7EB);
+	border-radius: var(--pmpro--border--radius, 6px);
+	height: 12px;
+	margin: 8px 0;
+	overflow: hidden;
+}
+
+.pmpro-dgs-bar-fill {
+	background: var(--pmpro--color--success-text-alt, #45b45c);
+	height: 100%;
+}
+
+.pmpro-dgs-summary .pmpro_tag {
+	margin-right: 5px;
+}
+
+.pmpro-dgs-actions {
+	margin: 16px 0 0;
+}
+
+.pmpro-dgs-actions .button {
+	margin-right: 8px;
+}
+
+.pmpro-dgs-blockers {
+	color: #646970;
+	font-size: 12px;
+	list-style: disc;
+	margin: 10px 0 0 20px;
+}
+
+.pmpro-dgs-footer {
+	border-top: 1px solid var(--pmpro--border--color, #E5E7EB);
+	margin: 14px 0 0;
+	padding-top: 12px;
+}
+
+.pmpro-dgs-csv-list {
+	list-style: disc;
+	margin: 0 0 12px 20px;
+}
+
+.pmpro-dgs-csv-list li {
+	margin: 0 0 4px;
 }
 
 /**
@@ -2538,6 +2734,79 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 #email-variable-reference table {
 	margin-bottom: 3em;
 	max-width: 900px;
+}
+
+.pmpro-liquid-autocomplete {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+	box-sizing: border-box;
+	max-height: 280px;
+	overflow-y: auto;
+	position: absolute;
+	max-width: calc(100vw - 24px);
+	width: 380px;
+	z-index: 100100;
+}
+
+.pmpro-liquid-autocomplete[hidden] {
+	display: none;
+}
+
+.pmpro-liquid-autocomplete__item {
+	background: transparent;
+	border: 0;
+	box-sizing: border-box;
+	color: #1d2327;
+	cursor: pointer;
+	display: block;
+	margin: 0;
+	padding: 8px 10px;
+	text-align: left;
+	width: 100%;
+}
+
+.pmpro-liquid-autocomplete__item:hover,
+.pmpro-liquid-autocomplete__item:focus,
+.pmpro-liquid-autocomplete__item:focus-visible,
+.pmpro-liquid-autocomplete__item.is-active {
+	background: #2271b1;
+	color: #fff;
+}
+
+.pmpro-liquid-autocomplete__label,
+.pmpro-liquid-autocomplete__description {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.pmpro-liquid-autocomplete__label {
+	font-family: Consolas, Monaco, monospace;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.pmpro-liquid-autocomplete__description {
+	font-size: 12px;
+	line-height: 1.35;
+	margin-top: 2px;
+	opacity: 0.78;
+}
+
+.pmpro-liquid-autocomplete__separator {
+	background: #f6f7f7;
+	border-bottom: 1px solid #dcdcde;
+	border-top: 1px solid #dcdcde;
+	color: #50575e;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0;
+	padding: 6px 10px;
+	text-transform: uppercase;
 }
 
 /**
@@ -3141,6 +3410,17 @@ td.has-row-actions > .pmpro_message {
 	max-width: 65em;
 }
 
+.pmpro_notification ul {
+	list-style: disc;
+	margin: 15px 0 0 20px;
+}
+
+.pmpro_notification li {
+	font-size: 14px;
+	line-height: 22px;
+	margin: 0 0 4px 0;
+}
+
 .pmpro_notification .button {
 	border-radius: 4px;
 	font-size: 14px;
@@ -3304,6 +3584,16 @@ td.has-row-actions > .pmpro_message {
 .pmpro-stepper .pmpro-stepper__step.is-active .pmpro-stepper__step-label {
 	color: #1A688B;
 	font-weight: 700;
+}
+
+.pmpro-stepper .pmpro-stepper__step.is-done .pmpro-stepper__step-icon {
+	background-color: var(--pmpro--color--success-text-alt, #45b45c);
+	color: #FFF;
+	font-weight: 700;
+}
+
+.pmpro-stepper .pmpro-stepper__step.is-done .pmpro-stepper__step-label {
+	color: var(--pmpro--color--success-text, #0F441C);
 }
 
 .pmpro-wizard .pmpro-wizard__container {
@@ -4822,6 +5112,22 @@ button.pmpro_report_th_closed:before {
 		content: attr(data-colname) ": ";
 	}
 
+	.pmpro_admin .wp-list-table .is-expanded td,
+	.pmpro_admin .wp-list-table .is-expanded th {
+		flex: 0 1 100%;
+	}
+
+	.pmpro_admin .wp-list-table .row-actions span.id {
+		font-size: inherit;
+		padding-right: 4px;
+		padding-left: 4px;
+	}
+
+	.pmpro_admin .wp-list-table .column-order_id,
+	.pmpro_admin .wp-list-table .is-expanded .column-order_id {
+		display: none !important;
+	}
+
 }
 
 /* plugin update notice */
@@ -4852,4 +5158,9 @@ button.pmpro_report_th_closed:before {
 	float: left;
 	height: 30px;
 	width: 26px;
+}
+
+/* Declarative field visibility for pmpro_build_settings_field() depends rules (toggled by pmpro-admin.js). */
+.pmpro-hidden {
+	display: none;
 }

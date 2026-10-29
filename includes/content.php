@@ -2,6 +2,13 @@
 /*
 	Functions to detect member content and protect it.
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Queries join PMPro custom tables with core tables, which have no WordPress API or object cache layer.
+
 function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_membership_levels = false)
 {
 	global $post, $wpdb, $current_user;
@@ -48,33 +55,38 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	// Allow plugins and themes to find the protected post        
     $mypost = apply_filters( 'pmpro_membership_access_post', $mypost, $myuser );
 	
-	if(isset($mypost->post_type) && $mypost->post_type == "post")
+	// Get this post's terms in restrictable taxonomies (e.g. categories and tags for posts).
+	$post_terms = array();
+	if ( ! empty( $mypost->post_type ) ) {
+		$restrictable_taxonomies = array_intersect( pmpro_get_restrictable_taxonomies(), get_object_taxonomies( $mypost->post_type ) );
+
+		if ( ! empty( $restrictable_taxonomies ) ) {
+			$terms = wp_get_object_terms( $mypost->ID, array_values( $restrictable_taxonomies ), array( 'fields' => 'ids' ) );
+
+			if ( ! is_wp_error( $terms ) ) {
+				$post_terms = $terms;
+			}
+		}
+	}
+
+	if ( empty( $mypost->ID ) )
 	{
-		// Get the categories for this post.
-		$post_terms = wp_get_post_categories( $mypost->ID );
-
-		// Get the tags for this post.
-		$post_terms = array_merge( $post_terms, wp_get_post_tags( $mypost->ID, array('fields' => 'ids' ) ) );
-
-		if( ! $post_terms )
-		{
-			//just check for entries in the memberships_pages table
-			$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "'";
-		}
-		else
-		{
-			//are any of the post categories associated with membership levels? also check the memberships_pages table
-			$sqlQuery = "(SELECT m.id, m.name FROM $wpdb->pmpro_memberships_categories mc LEFT JOIN $wpdb->pmpro_membership_levels m ON mc.membership_id = m.id WHERE mc.category_id IN(" . implode(",", array_map( 'intval', $post_terms ) ) . ") AND m.id IS NOT NULL) UNION (SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "')";
-		}
+		// No post to check, so there are no levels that restrict it.
+		$sqlQuery = '';
+	}
+	elseif( ! $post_terms )
+	{
+		//just check for entries in the memberships_pages table
+		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "'";
 	}
 	else
 	{
-		//are any membership levels associated with this page?
-		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "'";
+		//are any of the post's terms associated with membership levels? also check the memberships_pages table
+		$sqlQuery = "(SELECT m.id, m.name FROM $wpdb->pmpro_memberships_categories mc LEFT JOIN $wpdb->pmpro_membership_levels m ON mc.membership_id = m.id WHERE mc.category_id IN(" . implode(",", array_map( 'intval', $post_terms ) ) . ") AND m.id IS NOT NULL) UNION (SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . esc_sql( $mypost->ID ) . "')";
 	}
 
 
-	$post_membership_levels = $wpdb->get_results($sqlQuery);
+	$post_membership_levels = empty( $sqlQuery ) ? array() : $wpdb->get_results($sqlQuery); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Post ID is esc_sql()'d inside quotes and term IDs are intval().
 
 	$post_membership_levels_ids = array();
 	$post_membership_levels_names = array();
@@ -268,27 +280,33 @@ function pmpro_search_filter( $query ) {
 			  FROM {$wpdb->pmpro_memberships_pages} mp
 			  LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
 			  WHERE p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-	$posts_hidden_by_level = $wpdb->get_col( $sql_A );
+	$posts_hidden_by_level = $wpdb->get_col( $sql_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes.
 
 	// Query B: All posts hidden by category
+	// Note: pmpro_memberships_categories stores term IDs, so we join through
+	// term_taxonomy to get term_taxonomy IDs for the term_relationships lookup.
 	$sql_B = "SELECT DISTINCT(tr.object_id)
 	FROM {$wpdb->term_relationships} tr
 	LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
 	WHERE tr.term_taxonomy_id IN(
-		SELECT category_id
-		FROM {$wpdb->pmpro_memberships_categories}
+		SELECT tt.term_taxonomy_id
+		FROM {$wpdb->term_taxonomy} tt
+		WHERE tt.term_id IN(
+			SELECT category_id
+			FROM {$wpdb->pmpro_memberships_categories}
+		)
 	)
 	AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-	$posts_hidden_by_category = $wpdb->get_col( $sql_B );
+	$posts_hidden_by_category = $wpdb->get_col( $sql_B ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes.
 
 	// Query C: All posts the current user has access to by level	
 	if ( ! empty( $level_ids ) ) {
 		$sql_C = "SELECT DISTINCT(mp.page_id)
 			  FROM {$wpdb->pmpro_memberships_pages} mp
 			  LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
-			  WHERE mp.membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+			  WHERE mp.membership_id IN (" . implode(',', array_map('intval', $level_ids)) . ")
 				  AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-		$accessible_posts_by_level = $wpdb->get_col( $sql_C );
+		$accessible_posts_by_level = $wpdb->get_col( $sql_C ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes; level IDs are cast with intval().
 	} else {
 		$accessible_posts_by_level = [];
 	}
@@ -299,11 +317,15 @@ function pmpro_search_filter( $query ) {
 		FROM {$wpdb->term_relationships} tr
 		LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
 		WHERE tr.term_taxonomy_id IN(
-			SELECT category_id
-			FROM {$wpdb->pmpro_memberships_categories}
-			WHERE membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+			SELECT tt.term_taxonomy_id
+			FROM {$wpdb->term_taxonomy} tt
+			WHERE tt.term_id IN(
+				SELECT category_id
+				FROM {$wpdb->pmpro_memberships_categories}
+				WHERE membership_id IN (" . implode(',', array_map('intval', $level_ids)) . ")
+			)
 		) AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
-		$accessible_posts_by_category = $wpdb->get_col ($sql_D );
+		$accessible_posts_by_category = $wpdb->get_col ($sql_D ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table names from $wpdb; post types are esc_sql()'d inside quotes; level IDs are cast with intval().
 	} else {
 		$accessible_posts_by_category = [];
 	}
@@ -408,26 +430,59 @@ add_filter('comment_text_rss', 'pmpro_membership_content_filter', 5);
 /*
 	If the_excerpt is called, we want to disable the_content filters so the PMPro messages aren't added to the content before AND after the excerpt.
 */
-function pmpro_membership_excerpt_filter($content, $skipcheck = false) {		
-	remove_filter('the_content', 'pmpro_membership_content_filter', 5);	
+function pmpro_membership_excerpt_filter($content, $skipcheck = false) {
+	// Remove and restore the filter at its current priority. Compatibility code (e.g. Elementor) may have moved it from 5.
+	$priority = has_filter( 'the_content', 'pmpro_membership_content_filter' );
+	if ( false !== $priority ) {
+		remove_filter( 'the_content', 'pmpro_membership_content_filter', $priority );
+	}
 	$content = pmpro_membership_content_filter($content, $skipcheck);
-	add_filter('the_content', 'pmpro_membership_content_filter', 5);
+	if ( false !== $priority ) {
+		add_filter( 'the_content', 'pmpro_membership_content_filter', $priority );
+	}
 	
 	return $content;
 }
 
-function pmpro_membership_get_excerpt_filter_start($content, $skipcheck = false) {	
-	remove_filter('the_content', 'pmpro_membership_content_filter', 5);		
+function pmpro_membership_get_excerpt_filter_start( $content ) {
+	global $pmpro_excerpt_content_filter_priorities;
+
+	// Remember the filter's current priority (or false if it isn't hooked) so the end filter can restore it. A stack handles nested get_the_excerpt() calls.
+	if ( ! is_array( $pmpro_excerpt_content_filter_priorities ) ) {
+		$pmpro_excerpt_content_filter_priorities = array();
+	}
+	$priority = has_filter( 'the_content', 'pmpro_membership_content_filter' );
+	if ( false !== $priority ) {
+		remove_filter( 'the_content', 'pmpro_membership_content_filter', $priority );
+	}
+	$pmpro_excerpt_content_filter_priorities[] = $priority;
+
 	return $content;
 }
 
-function pmpro_membership_get_excerpt_filter_end($content, $skipcheck = false) {	
-	add_filter('the_content', 'pmpro_membership_content_filter', 5);		
+function pmpro_membership_get_excerpt_filter_end( $content, $post = null ) {
+	global $pmpro_excerpt_content_filter_priorities;
+
+	// Restore the filter at the priority it had before get_the_excerpt() ran.
+	$priority = is_array( $pmpro_excerpt_content_filter_priorities ) ? array_pop( $pmpro_excerpt_content_filter_priorities ) : null;
+	if ( is_int( $priority ) ) {
+		add_filter( 'the_content', 'pmpro_membership_content_filter', $priority );
+	}
+
+	// If excerpts are hidden from non-members, don't return the excerpt of a restricted post.
+	// Feeds, embeds, and the Post Excerpt block use get_the_excerpt() without running the_excerpt filters.
+	if ( ! get_option( 'pmpro_showexcerpts' ) && ! pmpro_has_membership_access( empty( $post->ID ) ? NULL : $post->ID ) ) {
+		// Keep the excerpt if an Add On uses the pmpro_membership_content_filter filter to show this content.
+		if ( false === apply_filters( 'pmpro_membership_content_filter', false, $content, false ) ) {
+			return '';
+		}
+	}
+
 	return $content;
 }
 add_filter('the_excerpt', 'pmpro_membership_excerpt_filter', 15);
 add_filter('get_the_excerpt', 'pmpro_membership_get_excerpt_filter_start', 1);
-add_filter('get_the_excerpt', 'pmpro_membership_get_excerpt_filter_end', 100);
+add_filter('get_the_excerpt', 'pmpro_membership_get_excerpt_filter_end', 100, 2);
 
 function pmpro_comments_filter($comments, $post_id = NULL) {
 	global $current_user;
@@ -492,7 +547,7 @@ function pmpro_hide_pages_redirect() {
 		if( $post->post_type == "attachment" ) {
 			//check if the user has access to the parent
 			if( ! pmpro_has_membership_access( $post->ID ) ) {
-				wp_redirect( pmpro_url( "levels" ) );
+				wp_redirect( pmpro_url( "levels" ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 				exit;
 			}
 		}

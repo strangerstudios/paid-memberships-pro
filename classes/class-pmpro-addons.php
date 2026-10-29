@@ -44,7 +44,27 @@ class PMPro_AddOns {
 		$this->addons           = get_option( 'pmpro_addons', array() );
 		$this->addons_timestamp = get_option( 'pmpro_addons_timestamp', false );
 
+		// Register update hooks in all contexts, including WP-Cron, so PMPro plugins can auto-update in the background.
+		$this->update_hooks();
+
 		add_action( 'admin_init', array( $this, 'admin_hooks' ), 0 ); // Priority 0 to run before other admin_init hooks.
+	}
+
+	/**
+	 * Hooks that must run in all contexts, including WP-Cron.
+	 *
+	 * The plugin update injection and Add On download filters previously only
+	 * registered on admin_init. WordPress runs background auto-updates under
+	 * WP-Cron, where admin_init never fires, so these filters were absent and
+	 * PMPro core and Add Ons never auto-updated even with auto-updates enabled
+	 * and a valid license. Registering them unconditionally lets the automatic
+	 * updater see and install PMPro plugin updates.
+	 *
+	 * @since 3.8.3
+	 */
+	public function update_hooks() {
+		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'update_plugins_filter' ) );
+		add_action( 'update_option_pmpro_license_key', array( $this, 'reset_update_plugins_cache' ), 10, 2 );
 	}
 
 	/**
@@ -91,9 +111,6 @@ class PMPro_AddOns {
 	public function admin_hooks() {
 		$this->check_when_updating_plugins();
 		add_filter( 'plugins_api', array( $this, 'plugins_api' ), 10, 3 );
-		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'update_plugins_filter' ) );
-		add_filter( 'http_request_args', array( $this, 'http_request_args_for_addons' ), 10, 2 );
-		add_action( 'update_option_pmpro_license_key', array( $this, 'reset_update_plugins_cache' ), 10, 2 );
 		// Register AJAX endpoints for add-on actions.
 		$this->register_ajax_endpoints();
 	}
@@ -119,9 +136,7 @@ class PMPro_AddOns {
 				'pmpro-member-directory',
 				'pmpro-nav-menus',
 				'pmpro-roles',
-				'pmpro-set-expiration-dates',
 				'pmpro-signup-shortcode',
-				'pmpro-subscription-delays',
 			),
 			'association'     => array(
 				'basic-user-avatars',
@@ -135,9 +150,7 @@ class PMPro_AddOns {
 				'pmpro-membership-card',
 				'pmpro-membership-manager-role',
 				'pmpro-pay-by-check',
-				'pmpro-set-expiration-dates',
 				'pmpro-shipping',
-				'pmpro-subscription-delays',
 			),
 			'premium_content' => array(
 				'pmpro-abandoned-cart-recovery',
@@ -225,19 +238,20 @@ class PMPro_AddOns {
 	}
 
 	/**
-	 * Disables SSL verification to prevent download package failures.
+	 * Previously disabled SSL verification for Add On package downloads.
+	 *
+	 * SSL verification is no longer disabled. This method returns the args unchanged
+	 * and is no longer hooked to http_request_args.
 	 *
 	 * @since 1.8.5
+	 * @deprecated 3.8.7
 	 *
 	 * @param array  $args  Array of request args.
 	 * @param string $url  The URL to be pinged.
-	 * @return array $args Amended array of request args.
+	 * @return array $args Unchanged array of request args.
 	 */
 	public function http_request_args_for_addons( $args, $url ) {
-		// If this is an SSL request and we are performing an upgrade routine, disable SSL verification.
-		if ( strpos( $url, 'https://' ) !== false && strpos( $url, PMPRO_LICENSE_SERVER ) !== false && strpos( $url, 'download' ) !== false ) {
-			$args['sslverify'] = false;
-		}
+		_deprecated_function( __METHOD__, '3.8.7' );
 
 		return $args;
 	}
@@ -333,6 +347,12 @@ class PMPro_AddOns {
 			return $value;
 		}
 
+		// Ensure the get_plugin_data() function is available. This filter runs in all contexts,
+		// including WP-Cron and the front end, where wp-admin/includes/plugin.php is not always loaded.
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		// Check Add Ons
 		foreach ( $addons as $addon ) {
 			// Skip for wordpress.org plugins
@@ -362,7 +382,8 @@ class PMPro_AddOns {
 					$value->response[ $plugin_file ]->icons = array( 'default' => esc_url( $icon ) );
 				}
 			} else {
-				$value->no_update[ $plugin_file ] = $this->get_plugin_API_object_from_addon( $addon );
+				$value->no_update[ $plugin_file ]              = $this->get_plugin_API_object_from_addon( $addon );
+				$value->no_update[ $plugin_file ]->new_version = $addon['Version'];
 			}
 		}
 
@@ -382,7 +403,7 @@ class PMPro_AddOns {
 		$addons           = $this->addons;
 		$addons_timestamp = $this->addons_timestamp;
 		// Check if forcing a pull from the server
-		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check;
+		$force_check = ! empty( $_REQUEST['force-check'] ) || $force_check; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Not a read-only flag: it forces a remote fetch that rewrites the cached pmpro_addons and pmpro_addons_timestamp options. A forged link can only trigger that cache refresh, which is harmless.
 
 		// if no addons locally, we need to hit the server
 		if ( empty( $addons ) || $force_check || current_time( 'timestamp' ) > $addons_timestamp + 86400 ) {
@@ -476,6 +497,13 @@ class PMPro_AddOns {
 		$plugin_file = $this->resolve_plugin_file( $slug_or_plugin );
 		if ( is_wp_error( $plugin_file ) ) {
 			return $plugin_file;
+		}
+
+		// Don't reactivate add ons whose functionality has been merged into core.
+		// They are auto-deactivated, and core may define their legacy function
+		// names, so loading one mid-request could fatal with "cannot redeclare".
+		if ( function_exists( 'pmpro_get_deprecated_add_ons' ) && array_key_exists( dirname( $plugin_file ), pmpro_get_deprecated_add_ons() ) ) {
+			return new WP_Error( 'pmpro_addon_deprecated', __( 'This Add On has been merged into Paid Memberships Pro and can no longer be activated. You should delete it.', 'paid-memberships-pro' ) );
 		}
 
 		if ( is_plugin_active( $plugin_file ) ) {
@@ -964,15 +992,16 @@ class PMPro_AddOns {
 	 * @since 1.9
 	 */
 	public function check_when_updating_plugins() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; only inspects which plugins WordPress core is updating in order to block unlicensed updates. Core verifies its own nonces for the update itself.
 		// if user can't edit plugins, then WP will catch this later
 		if ( ! current_user_can( 'update_plugins' ) ) {
 			return;
 		}
 
 		// updating one or more plugins via Dashboard -> Upgrade
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
 			// figure out which plugins we are updating
-			$plugins = explode( ',', stripslashes( sanitize_text_field( $_GET['plugins'] ) ) );
+			$plugins = explode( ',', isset( $_GET['plugins'] ) ? sanitize_text_field( wp_unslash( $_GET['plugins'] ) ) : '' );
 			$plugins = array_map( 'urldecode', $plugins );
 
 			// look for addons
@@ -1020,9 +1049,9 @@ class PMPro_AddOns {
 		}
 
 		// upgrading just one or plugin via an update.php link
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 			// figure out which plugin we are updating
-			$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
+			$plugin = urldecode( trim( sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) ) );
 
 			$slug  = str_replace( '.php', '', basename( $plugin ) );
 			$addon = $this->get_addon_by_slug( $slug );
@@ -1051,9 +1080,9 @@ class PMPro_AddOns {
 		}
 
 		// updating via AJAX on the plugins page
-		if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+		if ( isset( $_SERVER['SCRIPT_NAME'] ) && basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 			// figure out which plugin we are updating
-			$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
+			$plugin = urldecode( trim( sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) ) );
 
 			$slug  = str_replace( '.php', '', basename( $plugin ) );
 			$addon = $this->get_addon_by_slug( $slug );
@@ -1065,6 +1094,7 @@ class PMPro_AddOns {
 				exit;
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -1124,7 +1154,10 @@ class PMPro_AddOns {
 
 		// Check for errors and if we're okay, save the addons formatted
 		if ( is_wp_error( $remote_addons ) ) {
-			pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
+			// pmpro_setMessage() is only available when PMPro core is active.
+			if ( function_exists( 'pmpro_setMessage' ) ) {
+				pmpro_setMessage( 'Could not connect to the PMPro License Server to update addon information. Try again later.', 'error' );
+			}
 			// Return cached addons if available
 			return $this->addons ? : array();
 		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
@@ -1136,7 +1169,10 @@ class PMPro_AddOns {
 
 			// If for some reason the addons are not formatted correctly
 			if ( empty( $addons ) ) {
-				pmpro_setMessage( 'No addons found.', 'error' );
+				// pmpro_setMessage() is only available when PMPro core is active.
+				if ( function_exists( 'pmpro_setMessage' ) ) {
+					pmpro_setMessage( 'No addons found.', 'error' );
+				}
 				return $addons;
 			}
 
@@ -1180,8 +1216,9 @@ class PMPro_AddOns {
 		$api->tested         = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
 		$api->last_updated   = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
 		$api->homepage       = isset( $addon['URI'] ) ? $addon['URI'] : '';
-		$api->download_link  = isset( $addon['Download'] ) ? $addon['Download'] : '';
-		$api->package        = isset( $addon['Download'] ) ? $addon['Download'] : '';
+		$download            = ! empty( $addon['Download'] ) ? set_url_scheme( $addon['Download'], 'https' ) : '';
+		$api->download_link  = $download;
+		$api->package        = $download;
 
 		// add sections
 		if ( ! empty( $addon['Description'] ) ) {

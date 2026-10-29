@@ -11,6 +11,8 @@
  * @since 3.7
  */
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Export queries read PMPro custom tables and user data in batches; there is no WordPress API or object cache layer for these.
+
 class PMPro_Exports {
 	/**
 	 * Singleton instance.
@@ -40,6 +42,14 @@ class PMPro_Exports {
 	protected $default_export_exp = 6 * HOUR_IN_SECONDS;
 
 	/**
+	 * Pending post-serve cleanup context.
+	 * Populated by export_can_access_restricted_files() and consumed by handle_restricted_file_served().
+	 *
+	 * @var array|null
+	 */
+	protected $pending_post_serve = null;
+
+	/**
 	 * Get singleton instance.
 	 *
 	 * @return PMPro_Exports
@@ -61,6 +71,8 @@ class PMPro_Exports {
 		add_action( 'pmpro_export_delete_file', array( $this, 'delete_file_task' ), 10, 1 );
 		// File access filter.
 		add_filter( 'pmpro_can_access_restricted_file', array( $this, 'export_can_access_restricted_files' ), 10, 2 );
+		// Post-serve cleanup (fires after readfile() confirms the file was delivered).
+		add_action( 'pmpro_restricted_file_served', array( $this, 'handle_restricted_file_served' ), 10, 2 );
 	}
 
 	/**
@@ -77,7 +89,7 @@ class PMPro_Exports {
 			$export_id       = isset( $_REQUEST['export_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['export_id'] ) ) : '';
 
 			// Do not sanitize token; use raw-unslashed for proper HMAC compare.
-			$token = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : '';
+			$token = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Token is hashed and checked with hash_equals() in validate_file_access(); sanitizing could alter its bytes.
 			$file  = isset( $_REQUEST['pmpro_restricted_file'] ) ? basename( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_restricted_file'] ) ) ) : '';
 
 			// Nonce verification.
@@ -89,10 +101,14 @@ class PMPro_Exports {
 			}
 			if ( ! empty( $export_id ) && ! empty( $token ) && ! empty( $file ) ) {
 				$can_access = $this->validate_file_access( $current_user_id, $export_id, $token, $file );
-				// If access is granted, perform cleanup and schedule file deletion.
+				// If access is granted, store cleanup context for after the file is confirmed served.
+				// Actual cleanup runs in handle_restricted_file_served() once readfile() completes.
 				if ( $can_access ) {
-					$this->cleanup_after_download( $current_user_id, $export_id );
-					$this->schedule_file_deletion( $file, $this->default_export_exp, $current_user_id, $export_id );
+					$this->pending_post_serve = array(
+						'user_id'   => $current_user_id,
+						'export_id' => $export_id,
+						'file'      => $file,
+					);
 				}
 			}
 		}
@@ -128,6 +144,26 @@ class PMPro_Exports {
 		// Clear transients.
 		delete_transient( 'pmpro_export_owner_' . $export_id );
 		delete_transient( 'pmpro_export_token_' . $export_id );
+	}
+
+	/**
+	 * Perform cleanup after a restricted export file has been successfully served.
+	 * Fires on the pmpro_restricted_file_served action, which is triggered by
+	 * pmpro_restricted_files_check_request() immediately after readfile() completes.
+	 * This ensures the export record is only removed once file delivery is confirmed.
+	 *
+	 * @param string $file_dir Directory of the file that was served.
+	 * @param string $file     File name of the file that was served.
+	 * @return void
+	 */
+	public function handle_restricted_file_served( $file_dir, $file ) {
+		if ( 'exports' !== $file_dir || empty( $this->pending_post_serve ) || $file !== $this->pending_post_serve['file'] ) {
+			return;
+		}
+		$ctx                    = $this->pending_post_serve;
+		$this->pending_post_serve = null;
+		$this->cleanup_after_download( $ctx['user_id'], $ctx['export_id'] );
+		$this->schedule_file_deletion( $ctx['file'], $this->default_export_exp, $ctx['user_id'], $ctx['export_id'] );
 	}
 
 	/**
@@ -449,6 +485,11 @@ class PMPro_Exports {
 		$chunk_size = $this->get_chunk_size_for_type( $type );
 		$threshold  = $this->get_async_threshold_for_type( $type );
 
+		// Bail early if there is nothing to export.
+		if ( 0 === $total ) {
+			return array( 'error' => __( 'No records match the selected filters. Nothing to export.', 'paid-memberships-pro' ) );
+		}
+
 		// Create export record in user meta.
 		$export = $this->create_export_record( $user_id, $type, $filters, $total, $chunk_size );
 
@@ -625,7 +666,11 @@ class PMPro_Exports {
 		$processed                  = (int) $written;
 		$export['processed_count'] += $processed;
 		$export['next_offset']      = $offset + count( $ids );
-		$export['status']           = ( $export['processed_count'] >= $export['total_count'] ) ? 'complete' : 'running';
+		// Use offset-based completion instead of processed_count. Row count can
+		// exceed ID count when a single user has multiple memberships (GROUP BY
+		// u.ID, mu.membership_id), causing the export to finish early and skip
+		// higher-ID users.
+		$export['status']           = ( $export['next_offset'] >= $export['total_count'] ) ? 'complete' : 'running';
 		$this->save_export_record( $export );
 
 		if ( 'complete' === $export['status'] && 'orders' === $export['type'] ) {
@@ -647,7 +692,10 @@ class PMPro_Exports {
 			'processed_count' => (int) $export['processed_count'],
 		);
 		if ( 'complete' === $export['status'] ) {
-			$resp['download_url'] = $this->get_download_url( $export );
+			$url = $this->get_download_url( $export );
+			if ( ! empty( $url ) ) {
+				$resp['download_url'] = $url;
+			}
 		}
 		if ( ! empty( $export['error'] ) ) {
 			$resp['error'] = $export['error'];
@@ -677,7 +725,7 @@ class PMPro_Exports {
 			return array( 'error' => __( 'You do not have permission to export this data.', 'paid-memberships-pro' ) );
 		}
 
-		// Self-heal: if export is queued/running but no chunk task is pending, enqueue it.
+		// Self-heal: if export is queued/running but no chunk task is pending or running, enqueue it.
 		if ( in_array( $export['status'], array( 'queued', 'running' ), true ) && class_exists( '\ActionScheduler' ) ) {
 			$args   = array(
 				array(
@@ -685,12 +733,28 @@ class PMPro_Exports {
 					'user_id'   => (int) $export['user_id'],
 				),
 			);
-			$exists = PMPro_Action_Scheduler::instance()->has_existing_task( 'pmpro_export_process_chunk', $args, 'pmpro_async_tasks' );
+			$exists_pending = PMPro_Action_Scheduler::instance()->has_existing_task( 'pmpro_export_process_chunk', $args, 'pmpro_async_tasks' );
+
+			// Also check for a currently-running task. has_existing_task only
+			// checks STATUS_PENDING, so a chunk actively being processed by
+			// Action Scheduler would appear as "no task exists", triggering
+			// the self-heal to process the same offset concurrently and
+			// producing duplicate rows in the CSV.
+			$running_actions = as_get_scheduled_actions(
+				array(
+					'hook'   => 'pmpro_export_process_chunk',
+					'args'   => $args,
+					'group'  => 'pmpro_async_tasks',
+					'status' => \ActionScheduler_Store::STATUS_RUNNING,
+				)
+			);
+			$exists = $exists_pending || ! empty( $running_actions );
+
 			if ( $exists && 'queued' === $export['status'] ) {
 				$export['status'] = 'running';
 				$this->save_export_record( $export );
 			}
-			// If no task exists, process a chunk inline (to surface progress) and enqueue the next chunk.
+			// If no task exists (pending or running), process a chunk inline and enqueue the next.
 			if ( ! $exists ) {
 				$result = $this->process_export_chunk_record( $export );
 				if ( is_wp_error( $result ) ) {
@@ -711,12 +775,17 @@ class PMPro_Exports {
 	 * Secure download URL for export file.
 	 */
 	protected function get_download_url( $export ) {
+		// Token is stored transiently; fallback to in-memory value if present (e.g. fresh sync export).
+		$token = isset( $export['token'] ) ? $export['token'] : get_transient( 'pmpro_export_token_' . $export['id'] );
+		if ( empty( $token ) ) {
+			// Token has expired; cannot build a valid download URL.
+			return null;
+		}
 		$query = array(
 			'pmpro_restricted_file_dir' => 'exports',
 			'pmpro_restricted_file'     => $export['file_name'],
 			'export_id'                 => $export['id'],
-			// Token is stored transiently; fallback to record if present.
-			'token'                     => isset( $export['token'] ) ? $export['token'] : get_transient( 'pmpro_export_token_' . $export['id'] ),
+			'token'                     => $token,
 			'_wpnonce'                  => wp_create_nonce( 'pmpro_export_download_' . $export['id'] ),
 		);
 		return add_query_arg( $query, home_url( '/' ) );
@@ -791,8 +860,9 @@ class PMPro_Exports {
 	 */
 	protected function create_export_record( $user_id, $type, $filters, $total, $chunk_size, $file_name = '' ) {
 		$export_id = wp_generate_uuid4();
-		// Generate a URL-safe token (alphanumeric only) to avoid reserved characters breaking query strings.
-		$token      = wp_generate_password( 40, false, false );
+		// Generate a hex token (256 bits). It is added to the download URL unencoded, so it must never contain reserved characters.
+		// Avoid wp_generate_password() here; the random_password filter can add characters such as # & +.
+		$token      = bin2hex( random_bytes( 32 ) );
 		$token_hash = hash_hmac( 'sha256', $token, wp_salt( 'auth' ) );
 		$file_name  = empty( $file_name ) ? $this->get_file_name_for_type( $type, $export_id, $filters ) : $file_name;
 
@@ -817,7 +887,7 @@ class PMPro_Exports {
 		// Mark active for this user/type.
 		update_user_meta( $user_id, $this->get_active_meta_key( $type ), $export_id );
 		// Store a transient so async Action Scheduler contexts can resolve the owner.
-		set_transient( 'pmpro_export_owner_' . $export_id, (int) $user_id, DAY_IN_SECONDS );
+		set_transient( 'pmpro_export_owner_' . $export_id, (int) $user_id, 7 * DAY_IN_SECONDS );
 		return $record;
 	}
 
@@ -833,7 +903,7 @@ class PMPro_Exports {
 		$to_store = $record;
 		if ( isset( $record['token'] ) ) {
 			// Persist token so download_url can be built after async completion.
-			set_transient( 'pmpro_export_token_' . $record['id'], $record['token'], DAY_IN_SECONDS );
+			set_transient( 'pmpro_export_token_' . $record['id'], $record['token'], 7 * DAY_IN_SECONDS );
 		}
 		unset( $to_store['token'] );
 		update_user_meta( (int) $record['user_id'], $key, wp_json_encode( $to_store ) );
@@ -913,12 +983,18 @@ class PMPro_Exports {
 	/**
 	 * Enclose a value for CSV output.
 	 *
+	 * @since 3.9 Non-numeric values starting with a spreadsheet formula character are prefixed with a single quote.
+	 *
 	 * @param mixed $s
 	 * @return string
 	 */
 	protected function csv_enclose( $s ) {
 		$s = (string) $s;
-		return '"' . str_replace( '"', '\\"', $s ) . '"';
+		// Prefix formula-like values so spreadsheet apps don't run member-controlled data as a formula.
+		if ( ! is_numeric( $s ) && preg_match( '/^[=+\-@\t\r]/', $s ) ) {
+			$s = "'" . $s;
+		}
+		return '"' . str_replace( '"', '""', $s ) . '"';
 	}
 
 	/**
@@ -978,10 +1054,10 @@ class PMPro_Exports {
 		$query               = "SELECT COUNT(DISTINCT u.ID) FROM {$wpdb->users} u ";
 		$needs_usermeta_join = false;
 		$search              = $this->build_members_search_sql_fragment( $filters, $needs_usermeta_join );
+		$query              .= " INNER JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		if ( $needs_usermeta_join ) {
 			$query .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
 		}
-		$query .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		$query .= ' WHERE mu.membership_id > 0 ';
 
 		$filter = $this->build_members_filter_sql_fragment( $filters );
@@ -989,7 +1065,7 @@ class PMPro_Exports {
 
 		// Allow manipulation of SQL if needed.
 		$query = apply_filters( 'pmpro_members_list_sql', $query );
-		$count = (int) $wpdb->get_var( $query );
+		$count = (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- search/filter fragments use esc_sql() inside quotes, whitelisted columns and int casts.
 		return max( 0, $count );
 	}
 
@@ -1007,10 +1083,10 @@ class PMPro_Exports {
 		$query               = "SELECT DISTINCT u.ID FROM {$wpdb->users} u ";
 		$needs_usermeta_join = false;
 		$search              = $this->build_members_search_sql_fragment( $filters, $needs_usermeta_join );
+		$query              .= " INNER JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		if ( $needs_usermeta_join ) {
 			$query .= " LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
 		}
-		$query .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 		$query .= ' WHERE mu.membership_id > 0 ';
 
 		$filter = $this->build_members_filter_sql_fragment( $filters );
@@ -1019,7 +1095,7 @@ class PMPro_Exports {
 		$query .= $wpdb->prepare( ' LIMIT %d, %d', (int) $offset, (int) $limit );
 
 		$query = apply_filters( 'pmpro_members_list_sql', $query );
-		$ids   = $wpdb->get_col( $query );
+		$ids   = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- search/filter fragments use esc_sql() inside quotes, whitelisted columns and int casts; LIMIT is prepared.
 		if ( empty( $ids ) ) {
 			return array();
 		}
@@ -1138,7 +1214,7 @@ class PMPro_Exports {
 		";
 		$user_sql = call_user_func( array( $wpdb, 'prepare' ), $user_sql, $user_ids );
 		// Query is already prepared above; safe to execute.
-		$usr_data = $wpdb->get_results( $user_sql );
+		$usr_data = $wpdb->get_results( $user_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepared above via call_user_func( $wpdb->prepare ).
 
 		$rows_written = 0;
 
@@ -1162,7 +1238,7 @@ class PMPro_Exports {
 				LIMIT 1",
 				$theuser->ID
 			);
-			$discount_code = $wpdb->get_row( $dis_sql );
+			$discount_code = $wpdb->get_row( $dis_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepared above with $wpdb->prepare().
 			if ( empty( $discount_code ) ) {
 				$discount_code = (object) array(
 					'id'   => '',
@@ -1220,6 +1296,7 @@ class PMPro_Exports {
 		$filter = '';
 		if ( 'oldmembers' === $l ) {
 			$filter = " AND mu.status <> 'active' ";
+			$filter .= " AND NOT EXISTS ( SELECT 1 FROM {$wpdb->pmpro_memberships_users} mu2 WHERE mu2.user_id = u.ID AND mu2.status = 'active' ) ";
 		}
 		if ( 'expired' === $l || 'cancelled' === $l ) {
 			$statuses = ( 'expired' === $l ) ? array( 'expired' ) : array( 'cancelled', 'admin_cancelled' );
@@ -1274,7 +1351,10 @@ class PMPro_Exports {
 			return " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
 		} else {
 			$needs_usermeta_join = true;
-			return " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
+			// Exclude pmpro_export_* meta keys: the export record itself is stored in the
+			// exporting admin's usermeta (containing the search term in its JSON), which would
+			// otherwise cause the admin to appear as the first row of every export.
+			return " AND ( u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR (um.meta_value LIKE '%" . esc_sql( $s ) . "%' AND um.meta_key NOT LIKE 'pmpro\\_export%') OR u.display_name LIKE '%" . esc_sql( $s ) . "%' ) ";
 		}
 	}
 
@@ -1592,7 +1672,7 @@ class PMPro_Exports {
 			$sql = call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $sql ), $params ) );
 		}
 
-		$count = (int) $wpdb->get_var( $sql );
+		$count = (int) $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepared above when params exist; otherwise only static conditions.
 		return max( 0, $count );
 	}
 
@@ -1632,7 +1712,7 @@ class PMPro_Exports {
 		$params[] = (int) $limit;
 
 		$sql = call_user_func_array( array( $wpdb, 'prepare' ), array_merge( array( $sql ), $params ) );
-		$ids = $wpdb->get_col( $sql );
+		$ids = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepared above via call_user_func_array( $wpdb->prepare ).
 		$ids = is_array( $ids ) ? array_map( 'intval', $ids ) : array();
 		return $ids;
 	}
@@ -1781,7 +1861,7 @@ class PMPro_Exports {
 				$order_id
 			);
 
-			$discount_code = $wpdb->get_row( $sqlQuery );
+			$discount_code = $wpdb->get_row( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepared above with $wpdb->prepare().
 			if ( empty( $discount_code ) ) {
 				$discount_code = (object) array(
 					'id'   => '',

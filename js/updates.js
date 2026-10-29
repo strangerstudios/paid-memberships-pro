@@ -18,7 +18,7 @@ jQuery(document).ready(function() {
 			jQuery.ajax({
 				url: ajaxurl,type:'GET', timeout: $timeout * 1000,
 				dataType: 'html',
-				data: 'action=pmpro_updates',
+				data: 'action=pmpro_updates&nonce=' + pmpro_updates_l10n.nonce,
 				error: function( xml, status, error ) {
 					$error_count++;
 					// If we haven't failed 3 times, try again.

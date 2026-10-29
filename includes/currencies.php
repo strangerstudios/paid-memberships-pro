@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	global $pmpro_currencies, $pmpro_default_currency;
 	
 	$pmpro_default_currency = apply_filters("pmpro_default_currency", "USD");
@@ -162,7 +166,11 @@
 	 */
 	function pmpro_get_currency( $currency = null ) {
 		global $pmpro_currency, $pmpro_currencies;
-		
+
+		if ( empty( $currency ) ) {
+			$currency = $pmpro_currency;
+		}
+
 		// Defaults
 		$currency_array = array(
 			'name' =>__('US Dollars (&#36;)', 'paid-memberships-pro' ),
@@ -172,14 +180,14 @@
 			'symbol' => '&#36;',
 			'position' => 'left',
 		);
-		
-		if ( ! empty( $pmpro_currency ) ) {
-			if ( is_array( $pmpro_currencies[$pmpro_currency] ) ) {
-				$currency_array = array_merge( $currency_array, $pmpro_currencies[$pmpro_currency] );
+
+		if ( ! empty( $currency ) && ! empty( $pmpro_currencies[ $currency ] ) ) {
+			if ( is_array( $pmpro_currencies[ $currency ] ) ) {
+				$currency_array = array_merge( $currency_array, $pmpro_currencies[ $currency ] );
 			} else {
-				$currency_array['name'] = $pmpro_currencies[$pmpro_currency];
+				$currency_array['name'] = $pmpro_currencies[ $currency ];
 			}
 		}
-		
+
 		return $currency_array;
 	}

@@ -22,7 +22,7 @@
     "docs": "https://www.paidmembershipspro.com/documentation/"
   },
   "require": {
-    "composer/installers": "^1.9",
+    "composer/installers": "^1.0 || ^2.0",
     "php": ">=7.4"
   },
   "minimum-stability": "stable",

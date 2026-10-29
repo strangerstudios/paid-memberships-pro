@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handle IPN/webhook requests from gateways
  * notifying site of subscription cancellation.
@@ -25,10 +29,12 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	// Get the user associated with the subscription.
 	$user = get_userdata( $subscription->get_user_id() );
 	if ( empty( $user ) ) {
-		// The user for this subscription does not exist. Let's just set the subscription status to cancelled.
-		$subscription->set( 'status', 'cancelled' );
-		$subscription->save();
-		return 'ERROR: Could not cancel membership. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscription_transaction_id . '.';
+		// The user for this subscription does not exist (likely deleted). Let's just make sure the subscription status is cancelled.
+		if ( 'cancelled' !== $subscription->get_status() ) {
+			$subscription->set( 'status', 'cancelled' );
+			$subscription->save();
+		}
+		return 'User #' . $subscription->get_user_id() . ' for subscription #' . $subscription->get_id() . ' no longer exists. Subscription marked as cancelled. No further action needed. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
 	}
 
 	// Check if we have already cancelled the subscription in PMPro.
@@ -52,7 +58,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	}
 
 	// Check to see if the user has the membership level associated with this subscription.
-	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
+	if ( empty( pmpro_getSpecificMembershipLevelForUser( $user->ID, $subscription->get_membership_level_id() ) ) ) {
 		return 'The user no longer has the membership level associated with this subscription. No membership cancellation is needed. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
 	}
 
@@ -210,6 +216,20 @@ function pmpro_handle_recurring_payment_failure_at_gateway( $order_data ) {
 	if ( empty( $user ) ) {
 		// The user for this subscription does not exist
 		return 'ERROR: Could not process failed payment. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscription_transaction_id . '.';
+	}
+
+	// If we already have a successful order for this payment_transaction_id, this failure is stale.
+	if ( ! empty( $order_data['payment_transaction_id'] ) ) {
+		$successful_orders = $subscription->get_orders(
+			array(
+				'status' => 'success',
+				'payment_transaction_id' => $order_data['payment_transaction_id'],
+				'limit' => 1,
+			)
+		);
+		if ( ! empty( $successful_orders ) ) {
+			return 'Payment transaction ID ' . $order_data['payment_transaction_id'] . ' has already been paid. ( Order ID #' . current( $successful_orders )->id . ') No action taken for failed payment.';
+		}
 	}
 
 	// Check if we have an existing pending order for this subscription and payment_transaction_id.

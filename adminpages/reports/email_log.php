@@ -9,6 +9,12 @@
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Email Log report reads and deletes rows in the PMPro email log custom table, which has no WordPress API or object cache layer.
+
 function pmpro_report_email_log_register( $pmpro_reports ) {
 	// If email logging is not enabled, do not register the report.
 	if ( ! pmpro_is_email_logging_enabled() ) {
@@ -68,21 +74,21 @@ function pmpro_report_email_log_widget() {
 			<?php
 				// translators: %s is the total number of emails logged in the last 30 days.
 				printf(
-					__( 'Email activity: %s emails logged in the last 30 days.', 'paid-memberships-pro' ),
-					'<strong>' . number_format_i18n( $total_sent + $total_failed ) . '</strong>'
+					esc_html__( 'Email activity: %s emails logged in the last 30 days.', 'paid-memberships-pro' ),
+					'<strong>' . esc_html( number_format_i18n( $total_sent + $total_failed ) ) . '</strong>'
 				);
 
 				if ( ! empty( $email_log_purge_days ) ) {
 					echo ' ';
 					// translators: %s is the number of days after which email log entries are automatically purged.
 					printf(
-						_n(
+						esc_html( _n(
 							'Entries are automatically purged after %s day.',
 							'Entries are automatically purged after %s days.',
 							$email_log_purge_days,
 							'paid-memberships-pro'
-						),
-						'<strong>' . number_format_i18n( $email_log_purge_days ) . '</strong>'
+						) ),
+						'<strong>' . esc_html( number_format_i18n( $email_log_purge_days ) ) . '</strong>'
 					);
 				}
 
@@ -115,7 +121,7 @@ function pmpro_report_email_log_widget() {
 							$status_classes[] = 'pmpro_tag-success';
 							$status_class = implode( ' ', $status_classes );
 							?>
-							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( __( '%s Sent', 'paid-memberships-pro' ), number_format_i18n( $total_sent ) ); ?></span>
+							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( esc_html__( '%s Sent', 'paid-memberships-pro' ), esc_html( number_format_i18n( $total_sent ) ) ); ?></span>
 						<?php } else { ?>
 							<?php echo esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
 						<?php } ?>
@@ -147,7 +153,7 @@ function pmpro_report_email_log_widget() {
 							$status_classes[] = 'pmpro_tag-error';
 							$status_class = implode( ' ', $status_classes );
 							?>
-							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( __( '%s Failed', 'paid-memberships-pro' ), number_format_i18n( $total_failed ) ); ?></span>
+							<span class="<?php echo esc_attr( $status_class ); ?>"><?php printf( esc_html__( '%s Failed', 'paid-memberships-pro' ), esc_html( number_format_i18n( $total_failed ) ) ); ?></span>
 						<?php } else { ?>
 							<?php echo esc_html__( '&#8212;', 'paid-memberships-pro' ); ?>
 						<?php } ?>
@@ -206,13 +212,16 @@ function pmpro_report_email_log_page() {
 	}
 
 	// Get search parameter
-	$s = isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '';
+	$s = isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : '';
 
 	// Get template filter
-	$template_filter = isset( $_REQUEST['template'] ) ? sanitize_text_field( $_REQUEST['template'] ) : '';
+	$template_filter = isset( $_REQUEST['template'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ) : '';
 
 	// Get status filter
-	$status_filter = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
+	$status_filter = isset( $_REQUEST['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ) ) : '';
+
+	// Get the report period. Defaults to "all" (no date filtering).
+	$period = isset( $_REQUEST['period'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['period'] ) ) : 'all';
 
 	// Pagination
 	$pn = isset( $_REQUEST['pn'] ) ? intval( $_REQUEST['pn'] ) : 1;
@@ -282,14 +291,35 @@ function pmpro_report_email_log_page() {
 		$where_values[] = $status_filter;
 	}
 
+	// Resolve the period to concrete start/end dates. These also drive the From/To input values.
+	if ( $period === 'custom' ) {
+		$startdate = ! empty( $_REQUEST['custom_start_date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['custom_start_date'] ) ) : date( 'Y-m-01', strtotime( current_time( 'mysql' ) ) );
+		$enddate = ! empty( $_REQUEST['custom_end_date'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['custom_end_date'] ) ) : date( 'Y-m-t', strtotime( current_time( 'mysql' ) ) );
+	} elseif ( $period === '7days' || $period === '30days' ) {
+		$timeframe = ( $period === '7days' ) ? 7 : 30;
+		$startdate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) . ' -' . $timeframe . ' DAY' ) );
+		$enddate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) ) );
+	} elseif ( $period === '12months' ) {
+		$startdate = date( 'Y-m-01', strtotime( current_time( 'mysql' ) . ' -12 month' ) );
+		$enddate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) ) );
+	} else {
+		// All Time.
+		$startdate = '1970-01-01';
+		$enddate = date( 'Y-m-d', strtotime( current_time( 'mysql' ) ) );
+	}
+	$where_clauses[] = "timestamp >= %s";
+	$where_values[] = get_gmt_from_date( $startdate . ' 00:00:00' );
+	$where_clauses[] = "timestamp <= %s";
+	$where_values[] = get_gmt_from_date( $enddate . ' 23:59:59' );
+
 	$where_sql = implode( ' AND ', $where_clauses );
 
 	// Get total count
 	$count_query = "SELECT COUNT(*) FROM {$wpdb->pmpro_email_log} WHERE {$where_sql}";
 	if ( ! empty( $where_values ) ) {
-		$count_query = $wpdb->prepare( $count_query, $where_values );
+		$count_query = $wpdb->prepare( $count_query, $where_values ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $where_sql is built only from static clauses with placeholders; values are passed to prepare().
 	}
-	$totalrows = $wpdb->get_var( $count_query );
+	$totalrows = $wpdb->get_var( $count_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above when there are values; otherwise $where_sql is the static '1=1'.
 
 	// Get log entries with pagination
 	$log_query = "SELECT * FROM {$wpdb->pmpro_email_log}
@@ -298,7 +328,7 @@ function pmpro_report_email_log_page() {
 				   LIMIT %d, %d";
 
 	$query_values = array_merge( $where_values, array( $start, $limit ) );
-	$entries = $wpdb->get_results( $wpdb->prepare( $log_query, $query_values ) );
+	$entries = $wpdb->get_results( $wpdb->prepare( $log_query, $query_values ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where_sql is built only from static clauses with placeholders; values are passed to prepare().
 
 	// Get available templates for filter dropdown
 	$templates = $wpdb->get_col( 
@@ -338,7 +368,7 @@ function pmpro_report_email_log_page() {
 				<label for="template" class="pmpro_report-filter-text">
 					<?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?>
 				</label>
-				<select id="template" name="template" onchange="jQuery('#email-log-form').trigger('submit');">
+				<select id="template" name="template">
 					<option value="all" <?php selected( $template_filter, 'all' ); ?>>
 						<?php esc_html_e( 'All Templates', 'paid-memberships-pro' ); ?>
 					</option>
@@ -351,7 +381,7 @@ function pmpro_report_email_log_page() {
 				<label for="status" class="pmpro_report-filter-text">
 					<?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?>
 				</label>
-				<select id="status" name="status" onchange="jQuery('#email-log-form').trigger('submit');">
+				<select id="status" name="status">
 					<option value="all" <?php selected( $status_filter, 'all' ); ?>>
 						<?php esc_html_e( 'All Statuses', 'paid-memberships-pro' ); ?>
 					</option>
@@ -362,14 +392,58 @@ function pmpro_report_email_log_page() {
 						<?php esc_html_e( 'Failed', 'paid-memberships-pro' ); ?>
 					</option>
 				</select>
+				<label for="period" class="pmpro_report-filter-text">
+					<?php esc_html_e( 'for', 'paid-memberships-pro' ); ?>
+				</label>
+				<select id="period" name="period">
+					<option value="all" <?php selected( $period, 'all' ); ?>>
+						<?php esc_html_e( 'All Time', 'paid-memberships-pro' ); ?>
+					</option>
+					<option value="7days" <?php selected( $period, '7days' ); ?>>
+						<?php esc_html_e( 'Last 7 Days', 'paid-memberships-pro' ); ?>
+					</option>
+					<option value="30days" <?php selected( $period, '30days' ); ?>>
+						<?php esc_html_e( 'Last 30 Days', 'paid-memberships-pro' ); ?>
+					</option>
+					<option value="12months" <?php selected( $period, '12months' ); ?>>
+						<?php esc_html_e( 'Last 12 Months', 'paid-memberships-pro' ); ?>
+					</option>
+					<option value="custom" <?php selected( $period, 'custom' ); ?>>
+						<?php esc_html_e( 'Custom Range', 'paid-memberships-pro' ); ?>
+					</option>
+				</select>
+				<span class="pmpro_report-filter-text pmpro-email-log-custom"><?php esc_html_e( 'from', 'paid-memberships-pro' ); ?></span>
+				<label for="custom_start_date" class="screen-reader-text pmpro-email-log-custom"><?php esc_html_e( 'Select report start date', 'paid-memberships-pro' ); ?></label>
+				<input type="date" id="custom_start_date" name="custom_start_date" class="pmpro-email-log-custom" value="<?php echo esc_attr( $startdate ); ?>" />
+				<span class="pmpro_report-filter-text pmpro-email-log-custom"><?php esc_html_e( 'to', 'paid-memberships-pro' ); ?></span>
+				<label for="custom_end_date" class="screen-reader-text pmpro-email-log-custom"><?php esc_html_e( 'Select report end date', 'paid-memberships-pro' ); ?></label>
+				<input type="date" id="custom_end_date" name="custom_end_date" class="pmpro-email-log-custom" value="<?php echo esc_attr( $enddate ); ?>" />
 			</div>
+			<input type="submit" class="button button-primary action" value="<?php esc_attr_e( 'Generate Report', 'paid-memberships-pro' ); ?>" />
+			<script>
+				jQuery(document).ready(function() {
+					jQuery('#period').on('change', function() {
+						pmpro_email_log_toggle_custom_range();
+					});
+				});
+
+				function pmpro_email_log_toggle_custom_range() {
+					if ( jQuery('#period').val() === 'custom' ) {
+						jQuery('.pmpro-email-log-custom').show();
+					} else {
+						jQuery('.pmpro-email-log-custom').hide();
+					}
+				}
+
+				pmpro_email_log_toggle_custom_range();
+			</script>
 		</div>
 
 		<?php if ( $entries ) { ?>
 			<div class="tablenav top">
 				<div class="tablenav-pages">
 					<span class="displaying-num">
-						<?php printf( esc_html( _n( '%s email', '%s emails', $totalrows, 'paid-memberships-pro' ) ), number_format_i18n( $totalrows ) ); ?>
+						<?php printf( esc_html( _n( '%s email', '%s emails', $totalrows, 'paid-memberships-pro' ) ), esc_html( number_format_i18n( $totalrows ) ) ); ?>
 					</span>
 				</div>
 				<br class="clear" />
@@ -472,7 +546,7 @@ function pmpro_report_email_log_page() {
 							$limit, 
 							1, 
 							admin_url( "admin.php?page=pmpro-reports&report=email_log&s=" . urlencode( $s ) ), 
-							"&template=" . urlencode( $template_filter ) . "&status=" . urlencode( $status_filter ) . "&limit=" . $limit . "&pn=", 
+							"&template=" . urlencode( $template_filter ) . "&status=" . urlencode( $status_filter ) . "&period=" . urlencode( $period ) . "&custom_start_date=" . urlencode( $startdate ) . "&custom_end_date=" . urlencode( $enddate ) . "&limit=" . $limit . "&pn=",
 							__( 'Email Log Pagination', 'paid-memberships-pro' ) 
 						) 
 					);
@@ -490,7 +564,7 @@ function pmpro_report_email_log_page() {
 
 	<?php
 	// Render the email log modal
-	echo pmpro_render_email_log_modal();
+	echo pmpro_render_email_log_modal(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static modal markup, escaped when built.
 	?>
 
 	<?php

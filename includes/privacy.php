@@ -5,6 +5,12 @@
  * @since  1.9.5
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Personal data export/erase reads and writes PMPro custom tables, which have no WordPress API or object cache layer.
+
 /** 
  * Add suggested Privacy Policy language for PMPro
  *
@@ -93,13 +99,13 @@ function pmpro_personal_data_eraser( $email_address, $page = 1 ) {
 		$in_clause = "'" . implode( "', '", $in_clause_data ) . "'";	
 		$sqlQuery = preg_replace( '/\[IN_CLAUSE\]/', $in_clause, $sqlQuery );
 
-		$wpdb->query( $sqlQuery );
+		$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Built with $wpdb->prepare(); the IN list is internal meta keys escaped with esc_sql() inside quotes.
 		$num_deleted = $wpdb->rows_affected;
 		$num_items_removed += $num_deleted;
 
 		// We retain all orders. Get the number of them to report them as retained.
 		$sqlQuery = $wpdb->prepare( "SELECT COUNT(id) FROM {$wpdb->pmpro_membership_orders} WHERE user_id = %d", intval( $user->ID ) );
-		$num_orders = $wpdb->get_var( $sqlQuery );
+		$num_orders = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Built with $wpdb->prepare() on the previous line.
 		if( $num_orders > 0 ) {
 			$num_items_retained += $num_orders;
 			// We could have used _n below, but that doesn't work well with our script for generating the .pot file.
@@ -179,12 +185,21 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 		$in_clause = "'" . implode( "', '", $in_clause_data ) . "'";	
 		$sqlQuery = preg_replace( '/\[IN_CLAUSE\]/', $in_clause, $sqlQuery );
 		
-		$personal_user_meta_data = $wpdb->get_results( $sqlQuery, OBJECT_K );
+		$personal_user_meta_data = $wpdb->get_results( $sqlQuery, OBJECT_K ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Built with $wpdb->prepare(); the IN list is internal meta keys escaped with esc_sql() inside quotes.
 		
 		$user_meta_data_to_export = array();
 		foreach( $personal_user_meta_fields as $key => $name ) {
 			if( !empty( $personal_user_meta_data[$key] ) ) {
-				$value = $personal_user_meta_data[$key]->meta_value;
+				$value = maybe_unserialize( $personal_user_meta_data[$key]->meta_value );
+
+				// Show array values (e.g. login, visit, and view data) as readable "key: value" pairs.
+				if ( is_array( $value ) || is_object( $value ) ) {
+					$pairs = array();
+					foreach ( (array) $value as $value_key => $value_item ) {
+						$pairs[] = $value_key . ': ' . ( is_scalar( $value_item ) ? $value_item : wp_json_encode( $value_item ) );
+					}
+					$value = implode( '; ', $pairs );
+				}
 			} else {
 				$value = '';
 			}
@@ -209,7 +224,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 			 WHERE user_id = %d
 			 ORDER BY id DESC", intval( $user->ID ) );
 			 
-		$history = $wpdb->get_results( $sqlQuery );
+		$history = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Built with $wpdb->prepare() above.
 		foreach( $history as $item ) {
 			if( $item->enddate === null || $item->enddate == '0000-00-00 00:00:00' ) {
 				$item->enddate = __( 'Never', 'paid-memberships-pro' );
@@ -258,7 +273,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 			 WHERE user_id = %d
 			 ORDER BY id DESC", intval( $user->ID ) );
 			 
-		$order_ids = $wpdb->get_col( $sqlQuery );		
+		$order_ids = $wpdb->get_col( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Built with $wpdb->prepare() above.
 		
 		foreach( $order_ids as $order_id ) {
 			$order = new MemberOrder( $order_id );
@@ -400,6 +415,15 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 					'value' => $log->body,
 				),
 			);
+
+			$log_attachments = pmpro_get_email_log_attachments( $log );
+
+			if ( ! empty( $log_attachments ) ) {
+				$email_data_to_export[] = array(
+					'name'  => __( 'Attachments', 'paid-memberships-pro' ),
+					'value' => implode( ', ', $log_attachments ),
+				);
+			}
 
 			$data_to_export[] = array(
 				'group_id'    => 'pmpro_email_log',

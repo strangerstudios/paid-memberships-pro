@@ -114,7 +114,7 @@ class PMPro_Action_Scheduler {
 	 */
 	public static function show_outdated_notice() {
 		// Only show on PMPro admin pages.
-		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+		if ( empty( $_REQUEST['page'] ) || strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) === false ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current admin page to decide whether to show a notice.
 			return;
 		}
 
@@ -298,6 +298,8 @@ class PMPro_Action_Scheduler {
 	/**
 	 * Maybe add a recurring task (if not exists)
 	 *
+	 * Also cancels duplicate pending actions for the hook, keeping the earliest scheduled one.
+	 *
 	 * @access public
 	 * @since 3.5
 	 * @param string   $hook The hook for the task.
@@ -307,6 +309,31 @@ class PMPro_Action_Scheduler {
 	 * @return void
 	 */
 	public function maybe_add_recurring_task( $hook, $interval_in_seconds = null, $first_run_datetime = null, $group = 'pmpro_recurring_tasks' ) {
+		// Cancel duplicate pending actions for this hook, keeping the earliest scheduled one.
+		// The $unique flag below only guards new scheduling. Duplicate chains that already
+		// exist (e.g. inherited from a cloned or migrated database) self-perpetuate because
+		// Action Scheduler reschedules each chain's next occurrence without a uniqueness check.
+		$pending_action_ids = (array) as_get_scheduled_actions(
+			array(
+				'hook'     => $hook,
+				'args'     => array(),
+				'group'    => $group,
+				'status'   => ActionScheduler_Store::STATUS_PENDING,
+				'claimed'  => false,
+				'per_page' => 20,
+				'orderby'  => 'date',
+				'order'    => 'ASC',
+			),
+			'ids'
+		);
+		foreach ( array_slice( $pending_action_ids, 1 ) as $duplicate_action_id ) {
+			try {
+				ActionScheduler::store()->cancel_action( $duplicate_action_id );
+			} catch ( Exception $e ) {
+				// The action may have been deleted or claimed by another process.
+			}
+		}
+
 		if ( ! as_next_scheduled_action( $hook, array(), $group ) ) {
 			// Make sure first run datetime has been set.
 			$first_run_datetime = $first_run_datetime ?: self::as_strtotime( 'now +5 minutes' );
@@ -667,7 +694,7 @@ class PMPro_Action_Scheduler {
 	 */
 	public function show_async_requests_paused_notice() {
 		// If this is not the action-scheduler page in the admin area, bail.
-		if ( ! is_admin() || empty( $_REQUEST['page'] ) || 'action-scheduler' !== $_REQUEST['page'] ) {
+		if ( ! is_admin() || empty( $_REQUEST['page'] ) || 'action-scheduler' !== $_REQUEST['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current admin page to decide whether to show a notice.
 			return;
 		}
 
@@ -836,7 +863,7 @@ class PMPro_Action_Scheduler {
 			$full_table_name    = $wpdb->prefix . $table;
 			$escaped_table_name = $wpdb->esc_like( $full_table_name );
 
-			$table_exists = $wpdb->get_var(
+			$table_exists = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the Action Scheduler table schema; there is no WordPress API for this and the result must not be cached.
 				$wpdb->prepare(
 					'SHOW TABLES LIKE %s',
 					$escaped_table_name
@@ -852,7 +879,7 @@ class PMPro_Action_Scheduler {
 		$actions_table         = $wpdb->prefix . 'actionscheduler_actions';
 		$escaped_actions_table = $wpdb->esc_like( $actions_table );
 
-		$actions_table_exists = $wpdb->get_var(
+		$actions_table_exists = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the Action Scheduler table schema; there is no WordPress API for this and the result must not be cached.
 			$wpdb->prepare(
 				'SHOW TABLES LIKE %s',
 				$escaped_actions_table
@@ -860,9 +887,9 @@ class PMPro_Action_Scheduler {
 		);
 
 		if ( $actions_table_exists === $actions_table ) {
-			$priority_column = $wpdb->get_results(
+			$priority_column = $wpdb->get_results( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- table name is built from $wpdb->prefix and a static string. Schema check; no WordPress API and the result must not be cached.
 				$wpdb->prepare(
-					"SHOW COLUMNS FROM `{$actions_table}` LIKE %s",
+					"SHOW COLUMNS FROM `{$actions_table}` LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name is built from $wpdb->prefix and a static string.
 					'priority'
 				)
 			);

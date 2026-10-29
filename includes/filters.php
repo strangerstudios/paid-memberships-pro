@@ -3,12 +3,21 @@
 	This file was added in version 1.5.5 of the plugin. This file is meant to store various hacks, filters, and actions that were originally developed outside of the PMPro core and brought in later... or just things that are cleaner/easier to implement via hooks and filters.
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
 	If checking out for the same level, add remaining days to the enddate.
 	Pulled in from: https://gist.github.com/3678054
 */
 function pmpro_checkout_level_extend_memberships( $level ) {
 	global $pmpro_msg, $pmpro_msgt;
+
+	// A set expiration date replaces duration-based expiration, so there is nothing to extend.
+	if ( ! empty( $level ) && ! empty( $level->id ) && pmpro_resolve_expiration_date_pattern( pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null ) ) ) {
+		return $level;
+	}
 
 	// does this level expire? are they an existing user of this level?
 	if ( ! empty( $level ) && ! empty( $level->expiration_number ) && pmpro_hasMembershipLevel( $level->id ) ) {
@@ -41,6 +50,44 @@ function pmpro_checkout_level_extend_memberships( $level ) {
 	return $level;
 }
 add_filter( 'pmpro_checkout_level', 'pmpro_checkout_level_extend_memberships' );
+
+/**
+ * Apply a level's or discount code's set expiration date to a level being checked out.
+ *
+ * A set expiration date replaces any duration-based expiration. Like the retired Set Expiration
+ * Dates Add On, express it in days so that the level object stays the source of truth for the
+ * end date everywhere downstream. This runs on the same filters and at the same priority as the
+ * Add On did, so that Add Ons that filter the level before it (e.g. Auto-Renewal Checkbox) or
+ * apply these filters themselves (e.g. Paystack) keep working.
+ *
+ * @since 3.9
+ *
+ * @param object $level The level being checked out.
+ * @return object The level with any set expiration date applied.
+ */
+function pmpro_checkout_level_set_expiration_date( $level ) {
+	if ( empty( $level->id ) ) {
+		return $level;
+	}
+
+	$set_expiration_date      = pmpro_get_set_expiration_date( $level->id, ! empty( $level->code_id ) ? $level->code_id : null );
+	$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
+	if ( ! empty( $resolved_expiration_date ) ) {
+		// Calendar days from today; the membership expires at the end of that day. A fixed
+		// date that has already passed expires after one day rather than never.
+		$days_until_expiration    = intval( round( ( strtotime( $resolved_expiration_date ) - strtotime( date( 'Y-m-d', current_time( 'timestamp' ) ) ) ) / DAY_IN_SECONDS ) );
+		$level->expiration_number = max( 1, $days_until_expiration );
+		$level->expiration_period = 'Day';
+
+		// Keep the date so that the expiration text shows a date, not a number of days.
+		$level->expiration_date = date( 'Y-m-d', strtotime( '+ ' . $level->expiration_number . ' Days', current_time( 'timestamp' ) ) );
+	}
+
+	return $level;
+}
+add_filter( 'pmpro_checkout_level', 'pmpro_checkout_level_set_expiration_date' );
+add_filter( 'pmpro_paystack_webhook_level', 'pmpro_checkout_level_set_expiration_date' );
+add_filter( 'pmpro_payfast_itnhandler_level', 'pmpro_checkout_level_set_expiration_date' );
 /*
 	Same thing as above but when processed by the ipnhandler for PayPal standard.
 */
@@ -96,7 +143,7 @@ function pmpro_checkout_start_date_keep_startdate( $startdate, $user_id, $level 
 	global $wpdb;
 	if ( ! empty( $level ) && pmpro_hasMembershipLevel( $level->id, $user_id ) ) {
 		$sqlQuery = "SELECT startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . esc_sql( $user_id ) . "' AND membership_id = '" . esc_sql( $level->id ) . "' AND status = 'active' ORDER BY id DESC LIMIT 1";
-		$old_startdate = $wpdb->get_var( $sqlQuery );
+		$old_startdate = $wpdb->get_var( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Values are escaped with esc_sql() inside quotes. Queries a PMPro custom table, which has no WordPress API or object cache layer.
 
 		if ( ! empty( $old_startdate ) ) {
 			$startdate = "'" . $old_startdate . "'";
@@ -147,15 +194,17 @@ function pmpro_required_billing_fields_stripe_lite( $fields ) {
 }
 
 // copy other discount code to discount code if latter is not set
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Only copies a request field alias into the request superglobals; nothing is saved here. Checkout processing that consumes it verifies pmpro_checkout_nonce in preheaders/checkout.php.
 if ( empty( $_REQUEST['pmpro_discount_code'] ) && ! empty( $_REQUEST['pmpro_other_discount_code'] ) ) {
-	$_REQUEST['pmpro_discount_code'] = sanitize_text_field( $_REQUEST['pmpro_other_discount_code'] );
+	$_REQUEST['pmpro_discount_code'] = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_other_discount_code'] ) );
 }
 if ( empty( $_POST['pmpro_discount_code'] ) && ! empty( $_POST['pmpro_other_discount_code'] ) ) {
-	$_POST['pmpro_discount_code'] = sanitize_text_field( $_POST['pmpro_other_discount_code'] );	
+	$_POST['pmpro_discount_code'] = sanitize_text_field( wp_unslash( $_POST['pmpro_other_discount_code'] ) );	
 }
 if ( empty( $_GET['pmpro_discount_code'] ) && ! empty( $_GET['pmpro_other_discount_code'] ) ) {
-	$_GET['pmpro_discount_code'] = sanitize_text_field( $_GET['pmpro_other_discount_code'] );	
+	$_GET['pmpro_discount_code'] = sanitize_text_field( wp_unslash( $_GET['pmpro_other_discount_code'] ) );	
 }
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 // apply all the_content filters to confirmation messages for levels
 function pmpro_pmpro_confirmation_message( $message ) {

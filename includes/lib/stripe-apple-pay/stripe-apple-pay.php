@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /*
  * Add query var if Stripe is looking for domain association file.
@@ -29,7 +32,7 @@ function pmpro_stripe_apple_pay_controller() {
 
 	require_once ( ABSPATH . '/wp-admin/includes/file.php' );
 	WP_Filesystem();
-	echo $wp_filesystem->get_contents( PMPRO_DIR . '/includes/lib/stripe-apple-pay/apple-developer-merchantid-domain-association' );
+	echo $wp_filesystem->get_contents( PMPRO_DIR . '/includes/lib/stripe-apple-pay/apple-developer-merchantid-domain-association' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Serves the static Apple Pay domain association file bundled with the plugin verbatim; escaping would corrupt it.
 	exit;
 }
 add_action( 'template_redirect', 'pmpro_stripe_apple_pay_controller' );

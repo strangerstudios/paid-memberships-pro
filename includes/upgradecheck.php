@@ -2,6 +2,11 @@
 /*
 	These functions below handle DB upgrades, etc
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pmpro_checkForUpgrades() {
 	global $wpdb;
 	$pmpro_db_version = get_option("pmpro_db_version");
@@ -9,7 +14,7 @@ function pmpro_checkForUpgrades() {
 	//if we can't find the DB tables, reset db_version to 0
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
-	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");
+	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Upgrade check; must hit the database directly to see whether PMPro tables exist.
 	if(!$table_exists)
 		$pmpro_db_version = 0;
 
@@ -79,7 +84,7 @@ function pmpro_checkForUpgrades() {
 	{
 		//check if we have an id column in the memberships_users table
 		$wpdb->pmpro_memberships_users = $wpdb->prefix . 'pmpro_memberships_users';
-		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1");
+		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Upgrade check against a PMPro custom table schema; must not be cached.
 		if($wpdb->last_error == "Unknown column 'id' in 'field list'")
 		{
 			//redo 1.5 fix
@@ -438,6 +443,49 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.71' );
 	}
 
+	/**
+	 * Version 3.8
+	 * Clean up membership level relationship rows orphaned by deleted levels.
+	 */
+	if ( $pmpro_db_version < 3.8 ) {
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_8.php" );
+		pmpro_upgrade_3_8();
+		update_option( 'pmpro_db_version', '3.8' );
+	}
+
+	/**
+	 * Version 3.8.4
+	 * Recover transaction IDs for Stripe Checkout orders that were completed
+	 * without them by concurrent or out-of-order webhooks (delayed
+	 * notification payment methods like SEPA or bank transfers).
+	 */
+	require_once( PMPRO_DIR . '/includes/updates/upgrade_3_8_4.php' );
+	if ( $pmpro_db_version < 3.84 ) {
+		pmpro_upgrade_3_8_4();
+		update_option( 'pmpro_db_version', '3.84' );
+	}
+
+	/**
+	 * Version 3.8.8
+	 * Add empty index files to user field upload folders created before 3.8.8.
+	 */
+	if ( $pmpro_db_version < 3.88 ) {
+		require_once( PMPRO_DIR . '/includes/updates/upgrade_3_8_8.php' );
+		pmpro_upgrade_3_8_8();
+		update_option( 'pmpro_db_version', '3.88' );
+	}
+
+	/**
+	 * Version 3.9
+	 * Run dbDelta to add the attachments column to the email log table and the
+	 * `discount_type`, `discount_value`, `apply_to_initial`, and `apply_to_recurring`
+	 * columns to discount codes for percentage/fixed amount discounts.
+	 */
+	if ( $pmpro_db_version < 3.9 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '3.9' );
+	}
+
 }
 
 function pmpro_db_delta() {
@@ -615,6 +663,10 @@ function pmpro_db_delta() {
 		  `expires` date NOT NULL,
 		  `uses` int(11) NOT NULL,
 		  `one_use_per_user` tinyint(4) NOT NULL DEFAULT '0',
+		  `discount_type` varchar(20) NOT NULL DEFAULT 'set_price',
+		  `discount_value` decimal(18,8) NOT NULL DEFAULT '0.00',
+		  `apply_to_initial` tinyint(4) NOT NULL DEFAULT '1',
+		  `apply_to_recurring` tinyint(4) NOT NULL DEFAULT '1',
 		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),
@@ -770,6 +822,7 @@ function pmpro_db_delta() {
 		  `reply_to` varchar(255) NOT NULL DEFAULT '',
 		  `cc` text NOT NULL,
 		  `bcc` text NOT NULL,
+		  `attachments` text NOT NULL,
 		  `status` varchar(20) NOT NULL DEFAULT 'sent',
 		  `error_message` text NOT NULL,
 		  `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -784,3 +837,29 @@ function pmpro_db_delta() {
 	";
 	dbDelta($sqlQuery);
 }
+
+/**
+ * Recover missing Stripe Checkout transaction IDs via Action Scheduler.
+ *
+ * Scheduled by the v3.8.4 upgrade. The recovery logic lives in the upgrade file;
+ * this shim is registered here, outside of pmpro_checkForUpgrades(), so the
+ * callback is available on every request (including WP Cron, where
+ * pmpro_checkForUpgrades() does not run) while recovery tasks may still be queued.
+ */
+function pmpro_stripe_recover_checkout_transaction_ids_task() {
+	require_once PMPRO_DIR . '/includes/updates/upgrade_3_8_4.php';
+	pmpro_stripe_recover_checkout_transaction_ids();
+}
+add_action( 'pmpro_stripe_recover_checkout_transaction_ids', 'pmpro_stripe_recover_checkout_transaction_ids_task' );
+
+/**
+ * Add empty index files to user field upload folders via Action Scheduler.
+ *
+ * Scheduled by the v3.8.8 upgrade. Registered here so that the callback is available
+ * on every request (including WP Cron) while tasks may still be queued.
+ */
+function pmpro_add_user_field_upload_index_files_task() {
+	require_once PMPRO_DIR . '/includes/updates/upgrade_3_8_8.php';
+	pmpro_add_user_field_upload_index_files();
+}
+add_action( 'pmpro_add_user_field_upload_index_files', 'pmpro_add_user_field_upload_index_files_task' );

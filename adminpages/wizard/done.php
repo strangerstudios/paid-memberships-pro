@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	$site_type = get_option( 'pmpro_site_type' );
 
 	$addon_manager = PMPro_AddOns::instance();
@@ -94,11 +98,11 @@
 					if ( $addon['License'] == 'free' ) {
 						$license_label = __( 'Free Add On', 'paid-memberships-pro' );
 					} elseif( $addon['License'] == 'standard' ) {
-						$license_label = __( 'Standard Add On', 'paid-memberships-pro' );
+						$license_label = __( 'Premium Add On', 'paid-memberships-pro' );
 					} elseif( $addon['License'] == 'plus' ) {
-						$license_label = __( 'Plus Add On', 'paid-memberships-pro' );
+						$license_label = __( 'Premium Add On', 'paid-memberships-pro' );
 					} elseif( $addon['License'] == 'builder' ) {
-						$license_label = __( 'Builder Add On', 'paid-memberships-pro' );
+						$license_label = __( 'Premium Add On', 'paid-memberships-pro' );
 					} elseif( $addon['License'] == 'wordpress.org' ) {
 						$license_label = __( 'Free Plugin', 'paid-memberships-pro' );
 					} else {
