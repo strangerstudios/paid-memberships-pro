@@ -113,8 +113,8 @@
 		 */
 		function process(&$order)
 		{
-			//check for initial payment
-			if(floatval($order->InitialPayment) == 0)
+			//check for initial payment. An order without a membership level is a one-time charge.
+			if( ! empty( $order->membership_id ) && floatval($order->InitialPayment) == 0)
 			{
 				//auth first, then process
 				if($this->authorize($order))
@@ -162,7 +162,7 @@
 				if($this->charge($order))
 				{
 					//set up recurring billing
-					if(pmpro_isLevelRecurring($order->membership_level))
+					if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) )
 					{
 						if(!pmpro_isLevelTrial($order->membership_level))
 						{
@@ -441,7 +441,7 @@
 			//customer stuff
 			$customer_email = $order->Email;
 			$customer_phone = $order->billing->phone;
-			if(!isset($order->membership_level->name))
+			if( ! empty( $order->membership_id ) && !isset($order->membership_level->name))
 				$order->membership_level->name = "";
 			//to store our request
 			$request = new stdClass();
@@ -491,8 +491,14 @@
 			$item0 = new stdClass();
 			$item0->unitPrice = $amount;
 			$item0->quantity = "1";
-			$item0->productName = $order->membership_level->name . " Membership";
-			$item0->productSKU = $order->membership_level->id;
+			if ( empty( $order->membership_id ) ) {
+				// An order without a membership level is described by its lines.
+				$item0->productName = pmpro_get_order_items_description( $order );
+				$item0->productSKU = '';
+			} else {
+				$item0->productName = $order->membership_level->name . " Membership";
+				$item0->productSKU = $order->membership_level->id;
+			}
 			$item0->id = $order->membership_id;
 			$request->item = array($item0);
 

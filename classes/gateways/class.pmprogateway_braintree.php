@@ -568,7 +568,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				//charge then subscribe
 				if($this->charge($order))
 				{
-					if(pmpro_isLevelRecurring($order->membership_level))
+					// An order without a membership level is a one-time charge.
+					if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) )
 					{
 						if($this->subscribe($order))
 						{

@@ -249,8 +249,8 @@ class PMProGateway_authorizenet extends PMProGateway
 			//charge first payment
 			if($this->charge($order))
 			{
-				//set up recurring billing
-				if(pmpro_isLevelRecurring($order->membership_level))
+				//set up recurring billing. An order without a membership level is a one-time charge.
+				if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) )
 				{
 					if($this->subscribe($order))
 					{
@@ -497,8 +497,14 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		$user = get_userdata($order->user_id);
 
-		if(!isset($order->membership_level->name))
-			$order->membership_level->name = "";
+		// An order without a membership level is described by its lines.
+		if ( empty( $order->membership_id ) ) {
+			$level_name = pmpro_get_order_items_description( $order );
+		} else {
+			if(!isset($order->membership_level->name))
+				$order->membership_level->name = "";
+			$level_name = $order->membership_level->name;
+		}
 
 		$post_values = array(
 
@@ -519,7 +525,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 			"x_amount"			=> $amount,
 			"x_tax"				=> $tax,
-			"x_description"		=> apply_filters( 'pmpro_authorizenet_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")),
+			"x_description"		=> apply_filters( 'pmpro_authorizenet_level_description', substr($level_name . " at " . get_bloginfo("name"), 0, 127), $level_name, $order, get_bloginfo("name")),
 
 			"x_first_name"		=> empty( $nameparts['fname'] ) ? '' : $nameparts['fname'],
 			"x_last_name"		=> empty( $nameparts['lname'] ) ? '' : $nameparts['lname'],
