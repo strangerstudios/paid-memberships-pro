@@ -84,7 +84,6 @@ class PMProGateway_stripe extends PMProGateway {
 			'subscription_sync' => true,
 			'payment_method_updates' => 'individual',
 			'check_token_orders' => true,
-			'membershipless_checkout' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -3729,12 +3728,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return esc_html__( 'There is nothing to charge.', 'paid-memberships-pro' );
 		}
 
-		$names = array();
-		foreach ( pmpro_get_order_items( $order ) as $line ) {
-			$names[] = pmpro_get_order_item_label( $line );
-		}
-		/* translators: %s: order code. */
-		$name = empty( $names ) ? sprintf( __( 'Order #%s', 'paid-memberships-pro' ), $order->code ) : implode( ', ', $names );
+		$name = pmpro_get_order_items_description( $order );
 
 		$price_data = array(
 			'currency'     => strtolower( $pmpro_currency ),

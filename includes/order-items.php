@@ -383,8 +383,6 @@ add_filter( 'pmpro_show_discount_code', 'pmpro_checkout_items_show_discount_code
  * @return bool
  */
 function pmpro_checkout_items_checkout_checks( $continue ) {
-	global $gateway;
-
 	$items = pmpro_get_checkout_items();
 	if ( ! $continue || empty( $items ) ) {
 		return $continue;
@@ -419,11 +417,6 @@ function pmpro_checkout_items_checkout_checks( $continue ) {
 		return false;
 	}
 
-	if ( ! pmpro_gateway_supports_membershipless_checkout( $gateway ) ) {
-		pmpro_setMessage( __( 'This purchase can\'t be paid for with the selected payment method. Please contact the site owner.', 'paid-memberships-pro' ), 'pmpro_error' );
-		return false;
-	}
-
 	return $continue;
 }
 add_filter( 'pmpro_checkout_checks', 'pmpro_checkout_items_checkout_checks' );
@@ -450,29 +443,6 @@ function pmpro_checkout_items_check_order( $order ) {
 	}
 
 	return true;
-}
-
-/**
- * Check whether a gateway can process a checkout without a membership level.
- *
- * Gateways declare support with the 'membershipless_checkout' feature in their supports() method. The
- * check uses the gateway object that checkout uses, after the pmpro_order_gateway_object filter.
- *
- * @since TBD
- *
- * @param string $gateway The gateway slug.
- * @return bool
- */
-function pmpro_gateway_supports_membershipless_checkout( $gateway ) {
-	if ( empty( $gateway ) ) {
-		return false;
-	}
-
-	$order = new MemberOrder();
-	$order->setGateway( $gateway );
-	$gateway_object = $order->Gateway;
-
-	return is_object( $gateway_object ) && method_exists( $gateway_object, 'supports' ) && call_user_func( array( get_class( $gateway_object ), 'supports' ), 'membershipless_checkout' );
 }
 
 /**
@@ -866,6 +836,37 @@ function pmpro_get_order_item_label( $line ) {
 		return sprintf( __( '%1$d × %2$s', 'paid-memberships-pro' ), $line->quantity, $line->name );
 	}
 	return $line->name;
+}
+
+/**
+ * Describe what an order without a membership level is for, such as "Donation, 2 × Gift".
+ *
+ * Gateways use this where they would show the level name, such as in the payment description.
+ * Uses the order's saved lines, or the checkout lines if the order hasn't been saved yet.
+ *
+ * @since TBD
+ *
+ * @param MemberOrder $order The order.
+ * @return string The line names, or "Order #CODE" if the order has no lines.
+ */
+function pmpro_get_order_items_description( $order ) {
+	$lines = pmpro_get_order_items( $order );
+	if ( empty( $lines ) && ! empty( $order->checkout_items ) ) {
+		$lines = array_map(
+			function ( $item ) {
+				return (object) $item;
+			},
+			array_values( $order->checkout_items )
+		);
+	}
+
+	$names = array();
+	foreach ( $lines as $line ) {
+		$names[] = pmpro_get_order_item_label( $line );
+	}
+
+	/* translators: %s: order code. */
+	return empty( $names ) ? sprintf( __( 'Order #%s', 'paid-memberships-pro' ), $order->code ) : implode( ', ', $names );
 }
 
 /**
