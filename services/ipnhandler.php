@@ -548,6 +548,13 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
 	global $wpdb;
 
+	// An order without a membership level is completed without changing the user's memberships.
+	if ( pmpro_is_membershipless_order( $morder ) ) {
+		$morder->payment_transaction_id      = $txn_id;
+		$morder->subscription_transaction_id = '';
+		return pmpro_complete_membershipless_checkout( $morder );
+	}
+
 	//filter for level
 	$morder->membership_level = apply_filters( "pmpro_ipnhandler_level", $morder->membership_level, $morder->user_id );
 

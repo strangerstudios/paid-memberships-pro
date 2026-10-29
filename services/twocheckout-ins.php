@@ -66,7 +66,8 @@
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
 		}
 
-		pmpro_twocheckoutExit(pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
+		// An order without a membership level is confirmed by its code.
+		pmpro_twocheckoutExit( pmpro_is_membershipless_order( $morder ) ? pmpro_url( 'confirmation', '?pmpro_order=' . $morder->code ) : pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
 	}
 
 	// First Payment (checkout) (Will probably want to update order, but not send another email/etc)
@@ -90,7 +91,8 @@
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
 		}
 
-		pmpro_twocheckoutExit(pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
+		// An order without a membership level is confirmed by its code.
+		pmpro_twocheckoutExit( pmpro_is_membershipless_order( $morder ) ? pmpro_url( 'confirmation', '?pmpro_order=' . $morder->code ) : pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
 	}
 
 	// Recurring Payment Success (recurring installment success and recurring is true)
@@ -279,6 +281,13 @@
 	{
 		global $wpdb;
 		$recurring = pmpro_getParam( 'recurring', 'POST' );
+
+		// An order without a membership level is completed without changing the user's memberships.
+		if ( pmpro_is_membershipless_order( $morder ) ) {
+			$morder->payment_transaction_id      = $txn_id;
+			$morder->subscription_transaction_id = '';
+			return pmpro_complete_membershipless_checkout( $morder );
+		}
 
 		// Get discount code.
 		$morder->getDiscountCode();
