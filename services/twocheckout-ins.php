@@ -289,6 +289,12 @@
 			return pmpro_complete_membershipless_checkout( $morder );
 		}
 
+		// An order without a membership level whose lines weren't saved can't be completed as a level checkout.
+		if ( empty( $morder->membership_id ) ) {
+			inslog( 'Order ' . $morder->code . ' has no membership level and no saved lines. Not completed.' );
+			return false;
+		}
+
 		// Get discount code.
 		$morder->getDiscountCode();
 		if ( ! empty( $morder->discount_code ) ) {

@@ -555,6 +555,12 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 		return pmpro_complete_membershipless_checkout( $morder );
 	}
 
+	// An order without a membership level whose lines weren't saved can't be completed as a level checkout.
+	if ( empty( $morder->membership_id ) ) {
+		ipnlog( 'Order ' . $morder->code . ' has no membership level and no saved lines. Not completed.' );
+		return false;
+	}
+
 	//filter for level
 	$morder->membership_level = apply_filters( "pmpro_ipnhandler_level", $morder->membership_level, $morder->user_id );
 

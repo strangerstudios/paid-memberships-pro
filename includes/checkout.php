@@ -211,6 +211,11 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		return pmpro_complete_membershipless_checkout( $order );
 	}
 
+	// An order without a membership level whose lines weren't saved can't be completed as a level checkout.
+	if ( empty( $order->membership_id ) ) {
+		return false;
+	}
+
 	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
 	do_action( 'pmpro_checkout_before_change_membership_level', $order->user_id, $order );
 

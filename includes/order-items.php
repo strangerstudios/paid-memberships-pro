@@ -66,7 +66,7 @@ function pmpro_normalize_checkout_item( $item ) {
 
 	$item['type']           = sanitize_key( $item['type'] );
 	$item['object_id']      = (int) $item['object_id'];
-	$item['name']           = sanitize_text_field( $item['name'] );
+	$item['name']           = mb_substr( sanitize_text_field( $item['name'] ), 0, 255 ); // The name column is varchar(255).
 	$item['quantity']       = max( 1, (int) $item['quantity'] );
 	$item['subtotal']       = pmpro_round_price( (float) $item['subtotal'] );
 	$item['billing_amount'] = pmpro_round_price( (float) $item['billing_amount'] );
@@ -457,6 +457,7 @@ function pmpro_checkout_items_check_order( $order ) {
  */
 function pmpro_get_membershipless_checkout_url() {
 	$args = map_deep( wp_unslash( $_GET ), 'sanitize_text_field' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, rebuilds the checkout URL.
+	$args = array_combine( array_map( 'sanitize_key', array_keys( $args ) ), $args );
 	unset( $args['pmpro_order'], $args['submit-checkout'], $args['pmpro_checkout_nonce'] );
 	return add_query_arg( urlencode_deep( $args ), pmpro_url( 'checkout' ) );
 }
@@ -622,7 +623,7 @@ function pmpro_save_order_items( $order, $items ) {
 			$item['subtotal'] = max( 0, pmpro_round_price( (float) $order->subtotal - $others ) );
 		}
 
-		$wpdb->insert(
+		$inserted = $wpdb->insert(
 			$wpdb->pmpro_membership_order_items,
 			array(
 				'order_id'       => (int) $order->id,
@@ -637,6 +638,13 @@ function pmpro_save_order_items( $order, $items ) {
 			),
 			array( '%d', '%d', '%s', '%d', '%s', '%d', '%f', '%f', '%s' )
 		);
+
+		// If a line can't be saved, don't leave a partial set of lines behind.
+		if ( false === $inserted ) {
+			pmpro_delete_order_items( $order->id );
+			return false;
+		}
+
 		$saved_ids[ $item['key'] ] = (int) $wpdb->insert_id;
 	}
 

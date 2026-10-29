@@ -1939,6 +1939,12 @@ class PMProGateway_stripe extends PMProGateway {
 		$morder->status  = 'token';
 		$morder->saveOrder();
 
+		// An order without a membership level is completed by the webhook from its saved lines.
+		if ( empty( $morder->membership_id ) && ! pmpro_order_has_saved_items( $morder->id ) ) {
+			pmpro_setMessage( __( 'There was an error saving this order. Please try again.', 'paid-memberships-pro' ), 'pmpro_error', true );
+			return;
+		}
+
 		pmpro_save_checkout_data_to_order( $morder );
 
 		// Time to send the user to pay with Stripe!
