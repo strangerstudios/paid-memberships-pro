@@ -859,7 +859,6 @@ function pmpro_db_delta() {
 		  `quantity` int(11) unsigned NOT NULL DEFAULT '1',
 		  `subtotal` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
-		  `data` longtext,
 		  PRIMARY KEY (`id`),
 		  KEY `order_id` (`order_id`),
 		  KEY `item_type_object_id` (`item_type`, `object_id`)

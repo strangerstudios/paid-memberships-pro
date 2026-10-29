@@ -41,7 +41,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * - subtotal       (float)       Amount charged on this order for the whole quantity, before tax.
  * - billing_amount (float)       Amount added to each recurring payment. Always 0 for a one-time line.
  * - parent         (string|null) 'membership' for a line under the membership line, or null for a top-level line.
- * - data           (array)       The Add On's own inputs. Saved with the order line as JSON.
  *
  * @since TBD
  *
@@ -60,7 +59,6 @@ function pmpro_normalize_checkout_item( $item ) {
 			'subtotal'       => 0,
 			'billing_amount' => 0,
 			'parent'         => null,
-			'data'           => array(),
 		)
 	);
 
@@ -71,7 +69,6 @@ function pmpro_normalize_checkout_item( $item ) {
 	$item['subtotal']       = pmpro_round_price( (float) $item['subtotal'] );
 	$item['billing_amount'] = pmpro_round_price( (float) $item['billing_amount'] );
 	$item['parent']         = ( null === $item['parent'] || '' === $item['parent'] ) ? null : (string) $item['parent'];
-	$item['data']           = is_array( $item['data'] ) ? $item['data'] : array();
 	$item['key']            = ( '' === (string) $item['key'] ) ? $item['type'] . '-' . $item['object_id'] : (string) $item['key'];
 
 	return $item;
@@ -634,9 +631,8 @@ function pmpro_save_order_items( $order, $items ) {
 				'quantity'       => $item['quantity'],
 				'subtotal'       => $item['subtotal'],
 				'billing_amount' => $item['billing_amount'],
-				'data'           => empty( $item['data'] ) ? null : wp_json_encode( $item['data'] ),
 			),
-			array( '%d', '%d', '%s', '%d', '%s', '%d', '%f', '%f', '%s' )
+			array( '%d', '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
 		);
 
 		// If a line can't be saved, don't leave a partial set of lines behind.
@@ -678,8 +674,8 @@ add_action( 'pmpro_updated_order', 'pmpro_save_order_items_on_order_save', 5 );
  * @since TBD
  *
  * @param MemberOrder $order The order.
- * @return object[] Lines with id, order_id, parent_item_id, item_type, object_id, name, quantity, subtotal,
- *                  billing_amount and data (array). A line built from the order has id 0.
+ * @return object[] Lines with id, order_id, parent_item_id, item_type, object_id, name, quantity, subtotal
+ *                  and billing_amount. A line built from the order has id 0.
  */
 function pmpro_get_order_items( $order ) {
 	global $wpdb;
@@ -704,7 +700,6 @@ function pmpro_get_order_items( $order ) {
 				'quantity'       => 1,
 				'subtotal'       => (float) $order->subtotal,
 				'billing_amount' => empty( $subscription ) ? 0 : (float) $subscription->get_billing_amount(),
-				'data'           => null,
 			),
 		);
 	} else {
@@ -729,7 +724,6 @@ function pmpro_get_order_items( $order ) {
 		$row->quantity       = (int) $row->quantity;
 		$row->subtotal       = pmpro_round_price( (float) $row->subtotal );
 		$row->billing_amount = pmpro_round_price( (float) $row->billing_amount );
-		$row->data           = empty( $row->data ) ? array() : (array) json_decode( $row->data, true );
 	}
 
 	return $rows;
