@@ -549,16 +549,10 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 	global $wpdb;
 
 	// An order without a membership level is completed without changing the user's memberships.
-	if ( pmpro_is_membershipless_order( $morder ) ) {
+	if ( empty( $morder->membership_id ) ) {
 		$morder->payment_transaction_id      = $txn_id;
 		$morder->subscription_transaction_id = '';
-		return pmpro_complete_membershipless_checkout( $morder );
-	}
-
-	// An order without a membership level whose lines weren't saved can't be completed as a level checkout.
-	if ( empty( $morder->membership_id ) ) {
-		ipnlog( 'Order ' . $morder->code . ' has no membership level and no saved lines. Not completed.' );
-		return false;
+		return pmpro_complete_checkout( $morder );
 	}
 
 	//filter for level

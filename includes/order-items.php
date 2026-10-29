@@ -234,18 +234,6 @@ function pmpro_build_checkout_items( $level, $code_level = null ) {
 }
 
 /**
- * Check whether checkout lines include lines added by Add Ons.
- *
- * @since TBD
- *
- * @param array $items Checkout lines.
- * @return bool
- */
-function pmpro_checkout_items_have_add_on_lines( $items ) {
-	return ! empty( array_diff_key( (array) $items, array_flip( array( 'membership', 'discount' ) ) ) );
-}
-
-/**
  * Set up the checkout lines for a checkout level.
  *
  * Called at the end of pmpro_getLevelAtCheckout(), after the pmpro_checkout_level filter. When Add Ons
@@ -272,7 +260,7 @@ function pmpro_set_up_checkout_items_for_level( $level, $code_level = null ) {
 	$pmpro_checkout_items = empty( $level->id ) ? array() : pmpro_build_checkout_items( $level, $code_level );
 
 	// Core's lines add up to the level's price, so only Add On lines change what the level charges.
-	if ( ! pmpro_checkout_items_have_add_on_lines( $pmpro_checkout_items ) ) {
+	if ( empty( array_diff_key( $pmpro_checkout_items, array_flip( array( 'membership', 'discount' ) ) ) ) ) {
 		return $level;
 	}
 
@@ -286,47 +274,6 @@ function pmpro_set_up_checkout_items_for_level( $level, $code_level = null ) {
 	}
 
 	return $level;
-}
-
-/**
- * Get a copy of a checkout level priced as the membership alone.
- *
- * pmpro_getLevelCost() uses this so that the cost text describes the membership. The other lines are
- * listed under it.
- *
- * @since TBD
- *
- * @param object $level The checkout level.
- * @return object The level priced as the membership, or the level itself if it carries no Add On lines.
- */
-function pmpro_get_membership_price_level( $level ) {
-	if ( empty( $level->pmpro_membership_price ) ) {
-		return $level;
-	}
-
-	$membership_level                  = clone $level;
-	$membership_level->initial_payment = $level->pmpro_membership_price['initial_payment'];
-	$membership_level->billing_amount  = $level->pmpro_membership_price['billing_amount'];
-	unset( $membership_level->pmpro_membership_price );
-
-	return $membership_level;
-}
-
-/**
- * Check whether the current request is a checkout without a membership level.
- *
- * Called by pmpro_getLevelAtCheckout() when no level was requested. Builds the lines with no membership
- * line and keeps them as the checkout lines.
- *
- * @since TBD
- *
- * @return bool True if Add Ons added lines to purchase without a membership level.
- */
-function pmpro_is_membershipless_checkout_request() {
-	global $pmpro_checkout_items;
-
-	$pmpro_checkout_items = pmpro_build_checkout_items( null );
-	return ! empty( $pmpro_checkout_items );
 }
 
 /**
@@ -417,30 +364,6 @@ function pmpro_checkout_items_checkout_checks( $continue ) {
 	return $continue;
 }
 add_filter( 'pmpro_checkout_checks', 'pmpro_checkout_items_checkout_checks' );
-
-/**
- * Refuse a checkout without a membership level whose subtotal doesn't match its lines.
- *
- * Called after the pmpro_checkout_order filter, before payment. An order with a membership level needs no
- * check: its membership line takes up any difference.
- *
- * @since TBD
- *
- * @param MemberOrder $order The checkout order.
- * @return bool False if the order was refused. An error message is set.
- */
-function pmpro_checkout_items_check_order( $order ) {
-	if ( ! empty( $order->membership_id ) || empty( $order->checkout_items ) ) {
-		return true;
-	}
-
-	if ( abs( pmpro_get_items_total( $order->checkout_items, 'subtotal' ) - (float) $order->subtotal ) > 0.001 ) {
-		pmpro_setMessage( __( 'The order total does not match the items being purchased. Please contact the site owner.', 'paid-memberships-pro' ), 'pmpro_error', true );
-		return false;
-	}
-
-	return true;
-}
 
 /**
  * Get the checkout URL with the current request's query string.
@@ -563,22 +486,6 @@ function pmpro_get_checkout_items_recurring_text( $amount, $level ) {
  */
 
 /**
- * Check whether an order has saved lines.
- *
- * @since TBD
- *
- * @param int $order_id The order ID.
- * @return bool
- */
-function pmpro_order_has_saved_items( $order_id ) {
-	global $wpdb;
-	if ( empty( $order_id ) ) {
-		return false;
-	}
-	return (bool) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d LIMIT 1", $order_id ) );
-}
-
-/**
  * Save the lines of an order.
  *
  * Lines are only saved once per order. The membership line is saved as the order subtotal minus the
@@ -593,7 +500,12 @@ function pmpro_order_has_saved_items( $order_id ) {
 function pmpro_save_order_items( $order, $items ) {
 	global $wpdb;
 
-	if ( empty( $order->id ) || empty( $items ) || pmpro_order_has_saved_items( $order->id ) ) {
+	if ( empty( $order->id ) || empty( $items ) ) {
+		return false;
+	}
+
+	// Lines are saved once, when the order is first saved.
+	if ( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d LIMIT 1", $order->id ) ) ) {
 		return false;
 	}
 
@@ -741,89 +653,6 @@ function pmpro_delete_order_items( $order_id ) {
 	$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => (int) $order_id ), array( '%d' ) );
 }
 add_action( 'pmpro_delete_order', 'pmpro_delete_order_items', 999 );
-
-/*
- * Completing checkouts without a membership level.
- */
-
-/**
- * Check whether an order is a checkout without a membership level.
- *
- * @since TBD
- *
- * @param MemberOrder $order The order.
- * @return bool
- */
-function pmpro_is_membershipless_order( $order ) {
-	return empty( $order->membership_id ) && ( ! empty( $order->checkout_items ) || pmpro_order_has_saved_items( $order->id ) );
-}
-
-/**
- * Complete a checkout that has no membership level.
- *
- * Called by pmpro_complete_checkout(). The buyer's memberships and subscriptions are not changed, so the
- * membership hooks (pmpro_checkout_before_change_membership_level, the level change) do not run.
- * pmpro_after_checkout runs, and the checkout emails are sent.
- *
- * @since TBD
- *
- * @param MemberOrder $order The checkout order.
- * @return bool True if the checkout was completed.
- */
-function pmpro_complete_membershipless_checkout( $order ) {
-	$order->status = 'success';
-	if ( false === $order->saveOrder() ) {
-		return false;
-	}
-
-	// Save first and last name fields.
-	// phpcs:disable WordPress.Security.NonceVerification.Missing -- Same as pmpro_complete_checkout(): the checkout nonce is verified in preheaders/checkout.php, and async completions come from verified gateway callbacks. Only fills in empty name fields.
-	foreach ( array( 'first_name', 'last_name' ) as $field ) {
-		if ( ! empty( $_POST[ $field ] ) && empty( get_user_meta( $order->user_id, $field, true ) ) ) {
-			update_user_meta( $order->user_id, $field, sanitize_text_field( $_POST[ $field ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself.
-		}
-	}
-	// phpcs:enable WordPress.Security.NonceVerification.Missing
-
-	/** This action is documented in includes/checkout.php */
-	do_action( 'pmpro_after_checkout', $order->user_id, $order );
-
-	/** This filter is documented in includes/checkout.php */
-	if ( apply_filters( 'pmpro_send_checkout_emails', true, $order ) ) {
-		$user = get_userdata( $order->user_id );
-
-		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutEmail( $user, $order );
-
-		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutAdminEmail( $user, $order );
-	}
-
-	return true;
-}
-
-/**
- * Check whether a page template is showing a purchase without a membership level.
- *
- * Custom checkout, confirmation and invoice templates made before PMPro TBD expect a level, so the core
- * template is used for these purchases.
- *
- * @since TBD
- *
- * @param string $page_name The page template name.
- * @return bool
- */
-function pmpro_is_membershipless_page_template( $page_name ) {
-	global $pmpro_invoice;
-
-	if ( 'checkout' === $page_name ) {
-		return pmpro_is_membershipless_checkout();
-	}
-	if ( in_array( $page_name, array( 'confirmation', 'invoice' ), true ) ) {
-		return ! empty( $pmpro_invoice ) && ! empty( $pmpro_invoice->id ) && pmpro_is_membershipless_order( $pmpro_invoice );
-	}
-	return false;
-}
 
 /*
  * Display.

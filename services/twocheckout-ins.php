@@ -67,7 +67,7 @@
 		}
 
 		// An order without a membership level is confirmed by its code.
-		pmpro_twocheckoutExit( pmpro_is_membershipless_order( $morder ) ? pmpro_url( 'confirmation', '?pmpro_order=' . $morder->code ) : pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
+		pmpro_twocheckoutExit( empty( $morder->membership_id ) ? pmpro_url( 'confirmation', '?pmpro_order=' . $morder->code ) : pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
 	}
 
 	// First Payment (checkout) (Will probably want to update order, but not send another email/etc)
@@ -92,7 +92,7 @@
 		}
 
 		// An order without a membership level is confirmed by its code.
-		pmpro_twocheckoutExit( pmpro_is_membershipless_order( $morder ) ? pmpro_url( 'confirmation', '?pmpro_order=' . $morder->code ) : pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
+		pmpro_twocheckoutExit( empty( $morder->membership_id ) ? pmpro_url( 'confirmation', '?pmpro_order=' . $morder->code ) : pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
 	}
 
 	// Recurring Payment Success (recurring installment success and recurring is true)
@@ -283,16 +283,10 @@
 		$recurring = pmpro_getParam( 'recurring', 'POST' );
 
 		// An order without a membership level is completed without changing the user's memberships.
-		if ( pmpro_is_membershipless_order( $morder ) ) {
+		if ( empty( $morder->membership_id ) ) {
 			$morder->payment_transaction_id      = $txn_id;
 			$morder->subscription_transaction_id = '';
-			return pmpro_complete_membershipless_checkout( $morder );
-		}
-
-		// An order without a membership level whose lines weren't saved can't be completed as a level checkout.
-		if ( empty( $morder->membership_id ) ) {
-			inslog( 'Order ' . $morder->code . ' has no membership level and no saved lines. Not completed.' );
-			return false;
+			return pmpro_complete_checkout( $morder );
 		}
 
 		// Get discount code.

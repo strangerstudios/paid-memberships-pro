@@ -1,7 +1,7 @@
 <?php 
 /**
  * Template: Invoice
- * Version: 3.1
+ * Version: 4.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/

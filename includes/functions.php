@@ -348,7 +348,10 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 
 	// If Add Ons added lines at checkout, describe the membership's own price. The lines are listed separately.
 	if ( ! empty( $level->pmpro_membership_price ) ) {
-		$membership_level = pmpro_get_membership_price_level( $level );
+		$membership_level                  = clone $level;
+		$membership_level->initial_payment = $level->pmpro_membership_price['initial_payment'];
+		$membership_level->billing_amount  = $level->pmpro_membership_price['billing_amount'];
+		unset( $membership_level->pmpro_membership_price );
 		return pmpro_getLevelCost( $membership_level, $tags, $short );
 	}
 
@@ -2838,7 +2841,7 @@ function pmpro_are_any_visible_levels() {
  * @return mixed|void
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
-	global $pmpro_level, $wpdb, $post;
+	global $pmpro_level, $pmpro_checkout_items, $wpdb, $post;
 
 	// Reset $pmpro_level global.
 	$previous_level = $pmpro_level;
@@ -2862,12 +2865,15 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	}
 
 	// If no level was requested but Add Ons added lines to purchase, this checkout has no membership level.
-	if ( empty( $level_id ) && pmpro_is_membershipless_checkout_request() ) {
-		// Keep the placeholder level that the checkout template sets up while it renders.
-		if ( is_object( $previous_level ) && empty( $previous_level->id ) ) {
-			$pmpro_level = $previous_level;
+	if ( empty( $level_id ) ) {
+		$pmpro_checkout_items = pmpro_build_checkout_items( null );
+		if ( ! empty( $pmpro_checkout_items ) ) {
+			// Keep the placeholder level that the checkout template sets up while it renders.
+			if ( is_object( $previous_level ) && empty( $previous_level->id ) ) {
+				$pmpro_level = $previous_level;
+			}
+			return null;
 		}
-		return null;
 	}
 
 	// If we still don't have a level, use the default level.

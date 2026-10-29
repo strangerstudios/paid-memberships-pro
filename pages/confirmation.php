@@ -1,7 +1,7 @@
 <?php
 /**
  * Template: Confirmation
- * Version: 3.8
+ * Version: 4.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/

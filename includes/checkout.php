@@ -206,14 +206,37 @@ function pmpro_pull_checkout_data_from_order( $order ) {
  function pmpro_complete_checkout( $order ) {
 	global $wpdb, $pmpro_level, $discount_code, $discount_code_id;
 
-	// A checkout without a membership level does not change the user's memberships.
-	if ( pmpro_is_membershipless_order( $order ) ) {
-		return pmpro_complete_membershipless_checkout( $order );
-	}
-
-	// An order without a membership level whose lines weren't saved can't be completed as a level checkout.
+	// A checkout without a membership level doesn't change the user's memberships.
 	if ( empty( $order->membership_id ) ) {
-		return false;
+		$order->status = 'success';
+		if ( false === $order->saveOrder() ) {
+			return false;
+		}
+
+		// Save first and last name fields.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Same as below. Only fills in empty name fields.
+		foreach ( array( 'first_name', 'last_name' ) as $field ) {
+			if ( ! empty( $_POST[ $field ] ) && empty( get_user_meta( $order->user_id, $field, true ) ) ) {
+				update_user_meta( $order->user_id, $field, sanitize_text_field( $_POST[ $field ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself.
+			}
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		/** This action is documented below. */
+		do_action( 'pmpro_after_checkout', $order->user_id, $order );
+
+		/** This filter is documented below. */
+		if ( apply_filters( 'pmpro_send_checkout_emails', true, $order ) ) {
+			$user = get_userdata( $order->user_id );
+
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendCheckoutEmail( $user, $order );
+
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendCheckoutAdminEmail( $user, $order );
+		}
+
+		return true;
 	}
 
 	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.

@@ -632,11 +632,6 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		} else {
 			$pmpro_review = apply_filters( 'pmpro_checkout_order_free', $pmpro_review );
 		}
-
-		// A checkout without a membership level must charge exactly its lines.
-		if ( ! empty( $pmpro_review ) && ! pmpro_checkout_items_check_order( $pmpro_review ) ) {
-			$pmpro_review = false;
-		}
 	}
 } // End if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) )
 

@@ -595,7 +595,7 @@
 			if(!$user)
 				return false;
 
-			if ( empty( $order->membership_id ) && ! pmpro_is_membershipless_order( $order ) ) {
+			if ( empty( $order->membership_id ) && empty( $order->id ) ) {
 				return false;
 			}
 
@@ -648,7 +648,7 @@
 				return false;
 			}
 
-			if ( empty( $order->membership_id ) && ! pmpro_is_membershipless_order( $order ) ) {
+			if ( empty( $order->membership_id ) && empty( $order->id ) ) {
 				return false;
 			}
 
