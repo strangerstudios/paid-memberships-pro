@@ -1585,7 +1585,9 @@ jQuery(document).ready(function ($) {
 	}
 
 	function startExport($btn){
-		if(($btn.attr('data-status')||'idle') !== 'idle'){ return; }
+		// Allow starting from idle or retrying after an error.
+		var currentStatus = $btn.attr('data-status') || 'idle';
+		if(currentStatus !== 'idle' && currentStatus !== 'error' && currentStatus !== 'error_start'){ return; }
 		var type = $btn.data('type') || 'members';
 		var filters = $btn.data('filters') || {};
 		if (typeof filters === 'string') { try { filters = JSON.parse(filters); } catch(e){ filters = {}; } }
@@ -1601,6 +1603,8 @@ jQuery(document).ready(function ($) {
 		}).then(function(r){ return r.json(); }).then(function(data){
 			if(data && data.error){
 				setButtonStateKey($btn, 'error_start');
+				// Show the server's message (e.g. no records match the current filters).
+				if(typeof data.error === 'string'){ $btn.text(data.error); }
 				return;
 			}
 			$btn.attr('data-export-id', data.export_id || '');
