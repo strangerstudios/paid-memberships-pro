@@ -465,7 +465,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						if ( isset( $params['filters'] ) ) {
 							$filters = is_array( $params['filters'] ) ? $params['filters'] : json_decode( (string) $params['filters'], true );
 							if ( ! is_array( $filters ) ) {
-								$filters = array();
+								// Invalid filters can't match any export.
+								return new WP_REST_Response( array( 'error' => __( 'No export found.', 'paid-memberships-pro' ), 'http_status' => 200 ), 200 );
 							}
 						}
 						$exports = PMPro_Exports::instance();

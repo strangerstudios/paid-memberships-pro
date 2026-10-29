@@ -134,8 +134,8 @@ class PMPro_Exports {
 				$type = $record['type'];
 			}
 		}
-		// Delete the active export pointer for this type.
-		if ( ! empty( $type ) ) {
+		// Delete the active export pointer for this type, unless a newer export has replaced it.
+		if ( ! empty( $type ) && get_user_meta( $current_user_id, $this->get_active_meta_key( $type ), true ) === $export_id ) {
 			delete_user_meta( $current_user_id, $this->get_active_meta_key( $type ) );
 		}
 		// Delete the export record stored under the owner.
@@ -488,6 +488,11 @@ class PMPro_Exports {
 		// Bail early if there is nothing to export.
 		if ( 0 === $total ) {
 			return array( 'error' => __( 'No records match the selected filters. Nothing to export.', 'paid-memberships-pro' ) );
+		}
+
+		// The new export replaces the active one, which can no longer be resumed. Schedule its file for deletion.
+		if ( $active ) {
+			$this->schedule_file_deletion( $active['file_name'], $this->default_export_exp, $user_id, $active['id'] );
 		}
 
 		// Create export record in user meta.
