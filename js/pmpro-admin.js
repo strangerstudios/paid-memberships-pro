@@ -1601,10 +1601,12 @@ jQuery(document).ready(function ($) {
 			headers: { 'Content-Type':'application/json', 'X-WP-Nonce': nonce },
 			body: JSON.stringify(payload)
 		}).then(function(r){ return r.json(); }).then(function(data){
-			if(data && data.error){
+			// PMPro returns { error }; WordPress REST errors (e.g. expired nonce) return { code, message }.
+			var errorMessage = data && ( data.error || ( data.code && data.message ) );
+			if(errorMessage){
 				setButtonStateKey($btn, 'error_start');
 				// Show the server's message (e.g. no records match the current filters).
-				if(typeof data.error === 'string'){ $btn.text(data.error); }
+				if(typeof errorMessage === 'string'){ $btn.text(errorMessage); }
 				return;
 			}
 			$btn.attr('data-export-id', data.export_id || '');
