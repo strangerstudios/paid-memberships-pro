@@ -493,7 +493,7 @@
 			$item0->quantity = "1";
 			if ( empty( $order->membership_id ) ) {
 				// An order without a membership level is described by its lines.
-				$item0->productName = pmpro_get_order_items_description( $order );
+				$item0->productName = $order->get_items_description();
 				$item0->productSKU = '';
 			} else {
 				$item0->productName = $order->membership_level->name . " Membership";

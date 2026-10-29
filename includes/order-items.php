@@ -437,149 +437,6 @@ function pmpro_get_checkout_items_recurring_text( $amount, $level ) {
 }
 
 /*
- * Saving and reading order lines.
- */
-
-/**
- * Save the lines of an order.
- *
- * Lines are only saved once per order. The membership line is saved as the order subtotal minus the
- * other lines.
- *
- * @since TBD
- *
- * @param MemberOrder $order The saved order.
- * @param array       $items Lines in the pmpro_checkout_items shape.
- * @return bool True if lines were saved.
- */
-function pmpro_save_order_items( $order, $items ) {
-	global $wpdb;
-
-	if ( empty( $order->id ) || empty( $items ) ) {
-		return false;
-	}
-
-	// Lines are saved once, when the order is first saved.
-	if ( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d LIMIT 1", $order->id ) ) ) {
-		return false;
-	}
-
-	$items = array_map( 'pmpro_normalize_checkout_item', array_values( (array) $items ) );
-
-	// Save the membership line first so that the lines under it can point to it.
-	usort(
-		$items,
-		function ( $a, $b ) {
-			return (int) ( 'membership' === $b['type'] ) - (int) ( 'membership' === $a['type'] );
-		}
-	);
-
-	$others = 0;
-	foreach ( $items as $item ) {
-		if ( 'membership' !== $item['type'] ) {
-			$others += $item['subtotal'];
-		}
-	}
-
-	$saved_ids = array();
-	foreach ( $items as $item ) {
-		if ( 'membership' === $item['type'] ) {
-			$item['subtotal'] = max( 0, pmpro_round_price( (float) $order->subtotal - $others ) );
-		}
-
-		$inserted = $wpdb->insert(
-			$wpdb->pmpro_membership_order_items,
-			array(
-				'order_id'       => (int) $order->id,
-				'parent_item_id' => ( null !== $item['parent'] && isset( $saved_ids[ $item['parent'] ] ) ) ? $saved_ids[ $item['parent'] ] : 0,
-				'item_type'      => $item['type'],
-				'object_id'      => $item['object_id'],
-				'name'           => $item['name'],
-				'quantity'       => $item['quantity'],
-				'subtotal'       => $item['subtotal'],
-				'billing_amount' => $item['billing_amount'],
-			),
-			array( '%d', '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
-		);
-
-		// If a line can't be saved, don't leave a partial set of lines behind.
-		if ( false === $inserted ) {
-			$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => (int) $order->id ), array( '%d' ) );
-			return false;
-		}
-
-		$saved_ids[ $item['key'] ] = (int) $wpdb->insert_id;
-	}
-
-	return true;
-}
-
-/**
- * Get the lines of an order.
- *
- * - Orders without saved lines (renewals and orders saved before lines existed) read as one membership
- *   line built from the order. Orders without saved lines or a level have no lines.
- * - The membership line is always the order subtotal minus the other lines.
- *
- * @since TBD
- *
- * @param MemberOrder $order The order.
- * @return object[] Lines with id, order_id, parent_item_id, item_type, object_id, name, quantity, subtotal
- *                  and billing_amount. A line built from the order has id 0.
- */
-function pmpro_get_order_items( $order ) {
-	global $wpdb;
-
-	$rows = empty( $order->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $order->id ) );
-
-	if ( empty( $rows ) ) {
-		if ( empty( $order->membership_id ) ) {
-			return array();
-		}
-
-		$level        = pmpro_getLevel( $order->membership_id );
-		$subscription = empty( $order->subscription_transaction_id ) ? null : PMPro_Subscription::get_subscription_from_subscription_transaction_id( $order->subscription_transaction_id, $order->gateway, $order->gateway_environment );
-		$rows         = array(
-			(object) array(
-				'id'             => 0,
-				'order_id'       => (int) $order->id,
-				'parent_item_id' => 0,
-				'item_type'      => 'membership',
-				'object_id'      => (int) $order->membership_id,
-				'name'           => empty( $level->name ) ? '' : $level->name,
-				'quantity'       => 1,
-				'subtotal'       => (float) $order->subtotal,
-				'billing_amount' => empty( $subscription ) ? 0 : (float) $subscription->get_billing_amount(),
-			),
-		);
-	} else {
-		$others = 0;
-		foreach ( $rows as $row ) {
-			if ( 'membership' !== $row->item_type ) {
-				$others += (float) $row->subtotal;
-			}
-		}
-		foreach ( $rows as $row ) {
-			if ( 'membership' === $row->item_type ) {
-				$row->subtotal = max( 0, pmpro_round_price( (float) $order->subtotal - $others ) );
-			}
-		}
-	}
-
-	foreach ( $rows as $row ) {
-		$row->id             = (int) $row->id;
-		$row->order_id       = (int) $row->order_id;
-		$row->parent_item_id = (int) $row->parent_item_id;
-		$row->object_id      = (int) $row->object_id;
-		$row->quantity       = (int) $row->quantity;
-		$row->subtotal       = pmpro_round_price( (float) $row->subtotal );
-		$row->billing_amount = pmpro_round_price( (float) $row->billing_amount );
-	}
-
-	return $rows;
-}
-
-/*
  * Display.
  */
 
@@ -613,37 +470,6 @@ function pmpro_get_order_item_label( $line ) {
 }
 
 /**
- * Describe what an order without a membership level is for, such as "Donation, 2 × Gift".
- *
- * Gateways use this where they would show the level name, such as in the payment description.
- * Uses the order's saved lines, or the checkout lines if the order hasn't been saved yet.
- *
- * @since TBD
- *
- * @param MemberOrder $order The order.
- * @return string The line names, or "Order #CODE" if the order has no lines.
- */
-function pmpro_get_order_items_description( $order ) {
-	$lines = pmpro_get_order_items( $order );
-	if ( empty( $lines ) && ! empty( $order->checkout_items ) ) {
-		$lines = array_map(
-			function ( $item ) {
-				return (object) $item;
-			},
-			array_values( $order->checkout_items )
-		);
-	}
-
-	$names = array();
-	foreach ( $lines as $line ) {
-		$names[] = pmpro_get_order_item_label( $line );
-	}
-
-	/* translators: %s: order code. */
-	return empty( $names ) ? sprintf( __( 'Order #%s', 'paid-memberships-pro' ), $order->code ) : implode( ', ', $names );
-}
-
-/**
  * Check whether an order's lines should be listed instead of its single summary row.
  *
  * A single membership line keeps the order's existing display.
@@ -670,7 +496,7 @@ function pmpro_should_display_order_items( $order, $lines ) {
  * @return bool True if rows were displayed. False means the caller should display its single summary row.
  */
 function pmpro_display_order_item_rows( $order ) {
-	$lines = pmpro_get_order_items( $order );
+	$lines = $order->get_items();
 	if ( ! pmpro_should_display_order_items( $order, $lines ) ) {
 		return false;
 	}
@@ -702,7 +528,7 @@ function pmpro_display_order_item_rows( $order ) {
  * @return string
  */
 function pmpro_get_order_items_email_html( $order ) {
-	$lines = pmpro_get_order_items( $order );
+	$lines = $order->get_items();
 	if ( ! pmpro_should_display_order_items( $order, $lines ) ) {
 		return '';
 	}

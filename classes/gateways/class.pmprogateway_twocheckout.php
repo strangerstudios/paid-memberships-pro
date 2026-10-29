@@ -283,7 +283,7 @@
 				'sid' => get_option("pmpro_twocheckout_accountnumber"),
 				'mode' => '2CO', // will always be 2CO according to docs (@see https://www.2checkout.com/documentation/checkout/parameter-sets/pass-through-products/)
 				'li_0_type' => 'product',
-				'li_0_name' => substr( ( empty( $order->membership_id ) ? pmpro_get_order_items_description( $order ) : $order->membership_level->name ) . " at " . get_bloginfo("name"), 0, 127), // An order without a membership level is described by its lines.
+				'li_0_name' => substr( ( empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name ) . " at " . get_bloginfo("name"), 0, 127), // An order without a membership level is described by its lines.
 				'li_0_quantity' => 1,
 				'li_0_tangible' => 'N',
 				'li_0_product_id' => $order->code,

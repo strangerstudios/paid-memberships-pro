@@ -434,7 +434,7 @@
 			else
 			{
 				// An order without a membership level is described by its lines.
-				$level_name = empty( $order->membership_id ) ? pmpro_get_order_items_description( $order ) : $order->membership_level->name;
+				$level_name = empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name;
 
 				//other args
 				$paypal_args = array(

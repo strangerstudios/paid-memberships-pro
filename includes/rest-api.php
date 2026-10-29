@@ -1083,7 +1083,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					$order_data_to_return->notes = $order->notes;
 				}
 				$order_data_to_return->checkout_id = $order->checkout_id;
-				$order_data_to_return->items = pmpro_get_order_items( $order );
+				$order_data_to_return->items = $order->get_items();
 			}
 
 			return new WP_REST_Response( $order_data_to_return, 200 );

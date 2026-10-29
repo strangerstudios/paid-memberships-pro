@@ -370,7 +370,7 @@
 
 			// Get the level. An order without a membership level is a one-time payment, described by its lines.
 			$level = empty( $order->membership_id ) ? null : $order->getMembershipLevelAtCheckout();
-			$level_name = empty( $order->membership_id ) ? pmpro_get_order_items_description( $order ) : $order->membership_level->name;
+			$level_name = empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name;
 
 			//taxes on initial amount
 			$initial_payment = $order->subtotal;
@@ -527,7 +527,7 @@
 			if(!empty($level->cycle_number))
 				$nvpStr .= "&BILLINGPERIOD=" . $level->cycle_period . "&BILLINGFREQUENCY=" . $level->cycle_number . "&AUTOBILLOUTAMT=AddToNextBilling";
 			// An order without a membership level is described by its lines.
-			$level_name = empty( $order->membership_id ) ? pmpro_get_order_items_description( $order ) : $order->membership_level->name;
+			$level_name = empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name;
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($level_name . " at " . get_bloginfo("name"), 0, 127), $level_name, $order, get_bloginfo("name")) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1";

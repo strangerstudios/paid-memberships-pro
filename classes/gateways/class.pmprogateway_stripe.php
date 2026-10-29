@@ -3728,7 +3728,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return esc_html__( 'There is nothing to charge.', 'paid-memberships-pro' );
 		}
 
-		$name = pmpro_get_order_items_description( $order );
+		$name = $order->get_items_description();
 
 		$price_data = array(
 			'currency'     => strtolower( $pmpro_currency ),

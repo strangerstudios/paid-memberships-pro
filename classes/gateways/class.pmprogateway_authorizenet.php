@@ -499,7 +499,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		// An order without a membership level is described by its lines.
 		if ( empty( $order->membership_id ) ) {
-			$level_name = pmpro_get_order_items_description( $order );
+			$level_name = $order->get_items_description();
 		} else {
 			if(!isset($order->membership_level->name))
 				$order->membership_level->name = "";
