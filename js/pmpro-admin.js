@@ -1675,8 +1675,12 @@ jQuery(document).ready(function ($) {
 		var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/export/status') : null);
 		var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
 		if(!statusUrlBase || !nonce){ return; }
+		// Only resume an export that was started with this page's filters.
+		var filters = $btn.data('filters') || {};
+		if (typeof filters === 'string') { try { filters = JSON.parse(filters); } catch(e){ filters = {}; } }
 		var url = new URL(statusUrlBase);
 		url.searchParams.set('type', type);
+		url.searchParams.set('filters', JSON.stringify(filters));
 		fetch(url.toString(), { headers: { 'X-WP-Nonce': nonce } })
 			.then(function(r){ return r.json(); })
 			.then(function(data){

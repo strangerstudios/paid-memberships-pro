@@ -134,8 +134,8 @@ class PMPro_Exports {
 				$type = $record['type'];
 			}
 		}
-		// Delete the active export pointer for this type.
-		if ( ! empty( $type ) ) {
+		// Delete the active export pointer for this type, unless a newer export has replaced it.
+		if ( ! empty( $type ) && get_user_meta( $current_user_id, $this->get_active_meta_key( $type ), true ) === $export_id ) {
 			delete_user_meta( $current_user_id, $this->get_active_meta_key( $type ) );
 		}
 		// Delete the export record stored under the owner.
@@ -468,17 +468,17 @@ class PMPro_Exports {
 			return array( 'error' => __( 'You do not have permission to export this data.', 'paid-memberships-pro' ) );
 		}
 
-		// If an active export for this type exists for the user, return it instead of creating a new one.
+		// Normalize and sanitize args.
+		$filters = $this->sanitize_filters_for_type( $type, $args );
+
+		// If an active export for this type and these filters exists for the user, return it instead of creating a new one.
 		$active = $this->get_active_export_for_user( $user_id, $type );
-		if ( $active && ! in_array( $active['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
+		if ( $active && $active['filters'] == $filters && ! in_array( $active['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
 			return $this->format_public_export_response( $active );
 		}
 
 		// Ensure restricted dir exists.
 		pmpro_set_up_restricted_files_directory();
-
-		// Normalize and sanitize args.
-		$filters = $this->sanitize_filters_for_type( $type, $args );
 
 		// Determine counts and chunk sizes.
 		$total      = $this->count_total_for_type( $type, $filters );
@@ -488,6 +488,11 @@ class PMPro_Exports {
 		// Bail early if there is nothing to export.
 		if ( 0 === $total ) {
 			return array( 'error' => __( 'No records match the selected filters. Nothing to export.', 'paid-memberships-pro' ) );
+		}
+
+		// The new export replaces the active one, which can no longer be resumed. Schedule its file for deletion.
+		if ( $active ) {
+			$this->schedule_file_deletion( $active['file_name'], $this->default_export_exp, $user_id, $active['id'] );
 		}
 
 		// Create export record in user meta.
@@ -705,8 +710,14 @@ class PMPro_Exports {
 
 	/**
 	 * Get status for an export. If export_id omitted, return active export for current user and type.
+	 *
+	 * @since 3.9.1 Added the `$filters` parameter.
+	 *
+	 * @param string     $type      Export type.
+	 * @param string     $export_id Optional. Export ID.
+	 * @param array|null $filters   Optional. When looking up the active export, only return it if it was started with these filters.
 	 */
-	public function get_status( $type, $export_id = '' ) {
+	public function get_status( $type, $export_id = '', $filters = null ) {
 		$user_id = get_current_user_id();
 		if ( empty( $user_id ) ) {
 			return array( 'error' => __( 'Not logged in.', 'paid-memberships-pro' ) );
@@ -719,6 +730,10 @@ class PMPro_Exports {
 			$export = $this->get_active_export_for_user( $user_id, $type );
 		}
 		if ( empty( $export ) || (int) $export['user_id'] !== (int) $user_id || $export['type'] !== $type ) {
+			return array( 'error' => __( 'No export found.', 'paid-memberships-pro' ) );
+		}
+		// Don't offer an export that was started with different filters (e.g. another membership level).
+		if ( empty( $export_id ) && null !== $filters && $export['filters'] != $this->sanitize_filters_for_type( $type, $filters ) ) {
 			return array( 'error' => __( 'No export found.', 'paid-memberships-pro' ) );
 		}
 		if ( ! $this->user_can_export( $type, $user_id ) ) {
