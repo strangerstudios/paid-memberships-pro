@@ -50,6 +50,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
 	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
+	$wpdb->pmpro_membership_order_items = $wpdb->prefix . 'pmpro_membership_order_items';
 }
 pmpro_setDBTables();
 
