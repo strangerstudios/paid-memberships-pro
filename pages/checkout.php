@@ -97,14 +97,14 @@ if ( empty( $default_gateway ) ) {
 				?>
 				<div id="pmpro_pricing_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card', 'pmpro_pricing_fields' ) ); ?>">
 
-					<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php echo pmpro_is_membershipless_checkout() ? esc_html__( 'Purchase Information', 'paid-memberships-pro' ) : esc_html__( 'Membership Information', 'paid-memberships-pro' ); ?></h2>
+					<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php echo pmpro_is_membershipless_checkout( $pmpro_level ) ? esc_html__( 'Purchase Information', 'paid-memberships-pro' ) : esc_html__( 'Membership Information', 'paid-memberships-pro' ); ?></h2>
 
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 
 						<?php
 						// A checkout without a membership level lists the lines being purchased instead of the level.
-						if ( pmpro_is_membershipless_checkout() ) {
-							pmpro_display_checkout_items();
+						if ( pmpro_is_membershipless_checkout( $pmpro_level ) ) {
+							pmpro_display_checkout_items( $pmpro_level );
 						} else { ?><p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
 							<?php
 							// Tell the user which level they are signing up for.
@@ -184,6 +184,11 @@ if ( empty( $default_gateway ) ) {
 						</div> <!-- end #pmpro_level_cost -->
 
 						<?php
+						// List the lines when there is more than the membership line.
+						if ( count( pmpro_get_checkout_items( $pmpro_level ) ) > 1 ) {
+							pmpro_display_checkout_items( $pmpro_level );
+						}
+
 						/**
 						 * Fires after the level cost text is shown.
 						 *
@@ -366,7 +371,7 @@ if ( empty( $default_gateway ) ) {
 						</div> <!-- end pmpro_card_content -->
 						<?php if ( ! $skip_account_fields ) { ?>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-								<?php esc_html_e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo esc_url( wp_login_url( apply_filters( 'pmpro_checkout_login_redirect', pmpro_is_membershipless_checkout() ? pmpro_get_membershipless_checkout_url() : pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id . $discount_code_link) ) ) ); ?>"><?php esc_html_e('Log in here', 'paid-memberships-pro' ); ?></a>
+								<?php esc_html_e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo esc_url( wp_login_url( apply_filters( 'pmpro_checkout_login_redirect', pmpro_is_membershipless_checkout( $pmpro_level ) ? pmpro_get_membershipless_checkout_url() : pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id . $discount_code_link) ) ) ); ?>"><?php esc_html_e('Log in here', 'paid-memberships-pro' ); ?></a>
 							</div> <!-- end pmpro_card_actions -->
 						<?php } ?>
 					</div> <!-- end pmpro_card -->
@@ -568,6 +573,12 @@ if ( empty( $default_gateway ) ) {
 			 * @param object $pmpro_level The PMPro Level object being purchased.
 			 */
       		do_action( 'pmpro_checkout_after_payment_information_fields', $pmpro_level );
+
+			// Applying a discount code by AJAX only knows the level, so tell it when Add On lines still need to be paid for.
+			$pmpro_add_on_items = array_diff_key( pmpro_get_checkout_items( $pmpro_level ), array_flip( array( 'membership', 'discount' ) ) );
+			if ( pmpro_get_items_total( $pmpro_add_on_items ) > 0 || pmpro_get_items_total( $pmpro_add_on_items, 'billing_amount' ) > 0 ) {
+				echo '<input type="hidden" id="pmpro_checkout_has_items" name="pmpro_checkout_has_items" value="1" />';
+			}
 
 			/**
 			 * Fires before the submit button on the checkout page.

@@ -895,7 +895,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function pmpro_include_payment_information_fields( $include ) {
 		//global vars
-		global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+		global $pmpro_level, $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 		//include ours
 		?>
@@ -905,7 +905,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 				<?php
 					// The Payment Request Button prices itself from the checkout level, so it is not shown on a checkout without a membership level.
-					if ( get_option( 'pmpro_stripe_payment_request_button' ) && ! pmpro_is_membershipless_checkout() ) { ?>
+					if ( get_option( 'pmpro_stripe_payment_request_button' ) && ! pmpro_is_membershipless_checkout( $pmpro_level ) ) { ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-request-button', 'pmpro_payment-request-button' ) ); ?>">
 							<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
 							<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>">

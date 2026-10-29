@@ -1470,6 +1470,11 @@
 					$this->updateDiscountCode( $this->discount_code_id );
 				}
 
+				// Save the checkout lines the first time a checkout order is saved.
+				if ( ! empty( $this->checkout_items ) ) {
+					pmpro_save_order_items( $this, $this->checkout_items );
+				}
+
 				do_action($after_action, $this);
 
 				// Create a subscription if we need to.
@@ -1643,6 +1648,9 @@
 				// Delete the order meta after the hook so that callbacks can still read it.
 				$wpdb->delete( $wpdb->pmpro_membership_ordermeta, array( 'pmpro_membership_order_id' => $this->id ), array( '%d' ) );
 				wp_cache_delete( $this->id, 'pmpro_membership_order_meta' );
+
+				// Delete the order's lines too.
+				$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => $this->id ), array( '%d' ) );
 
 				return true;
 			}

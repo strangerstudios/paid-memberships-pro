@@ -88,7 +88,7 @@ $pmpro_level = pmpro_getLevelAtCheckout();
 do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', $pmpro_level );
 
 // Send the user to the levels page if there is nothing to purchase. A checkout without a membership level has lines instead.
-if ( empty( $pmpro_level->id ) && ! pmpro_is_membershipless_checkout() ) {
+if ( empty( $pmpro_level->id ) && ! pmpro_is_membershipless_checkout( $pmpro_level ) ) {
 	wp_redirect( pmpro_url( "levels" ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 	exit( 0 );
 }
@@ -354,6 +354,11 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 	}
 }
 
+// Check the lines being purchased before the user or order is created.
+if ( $submit && $pmpro_msgt != "pmpro_error" ) {
+	pmpro_check_checkout_items( pmpro_get_checkout_items( $pmpro_level ) );
+}
+
 // If there is still a valid checkout submission, allow custom code to halt the checkout.
 if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 	/**
@@ -617,14 +622,14 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		$pmpro_review->billing->phone   = $bphone;
 
 		// Calculate the order subtotal, tax, and total.
-		$pmpro_review->subtotal         = pmpro_round_price( empty( $pmpro_level->id ) ? pmpro_get_items_total( pmpro_get_checkout_items() ) : $pmpro_level->initial_payment );
+		$pmpro_review->subtotal         = pmpro_round_price( empty( $pmpro_level->id ) ? pmpro_get_items_total( pmpro_get_checkout_items( $pmpro_level ) ) : $pmpro_level->initial_payment );
 		$pmpro_review->tax              = pmpro_round_price( $pmpro_review->getTax( true ) );
 		$pmpro_review->total            = pmpro_round_price( $pmpro_review->subtotal + $pmpro_review->tax );
 
 		// Finish setting up the order.
 		$pmpro_review->setGateway();
 		$pmpro_review->getMembershipLevelAtCheckout();	
-		$pmpro_review->checkout_items = pmpro_get_checkout_items(); // Saved as the order's lines when the order is first saved.
+		$pmpro_review->checkout_items = pmpro_get_checkout_items( $pmpro_level ); // Saved as the order's lines when the order is first saved.
 
 		// Filter for order, since v1.8
 		if ( $pmpro_requirebilling ) {

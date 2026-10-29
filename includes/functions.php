@@ -2841,7 +2841,7 @@ function pmpro_are_any_visible_levels() {
  * @return mixed|void
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
-	global $pmpro_level, $pmpro_checkout_items, $wpdb, $post;
+	global $pmpro_level, $wpdb, $post;
 
 	// Reset $pmpro_level global.
 	$previous_level = $pmpro_level;
@@ -2865,15 +2865,12 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	}
 
 	// If no level was requested but Add Ons added lines to purchase, this checkout has no membership level.
-	if ( empty( $level_id ) ) {
-		$pmpro_checkout_items = pmpro_build_checkout_items( null );
-		if ( ! empty( $pmpro_checkout_items ) ) {
-			// Keep the placeholder level that the checkout template sets up while it renders.
-			if ( is_object( $previous_level ) && empty( $previous_level->id ) ) {
-				$pmpro_level = $previous_level;
-			}
-			return null;
+	if ( empty( $level_id ) && ! empty( pmpro_build_checkout_items( null ) ) ) {
+		// Keep the placeholder level that the checkout template sets up while it renders.
+		if ( is_object( $previous_level ) && empty( $previous_level->id ) ) {
+			$pmpro_level = $previous_level;
 		}
+		return null;
 	}
 
 	// If we still don't have a level, use the default level.
@@ -4265,8 +4262,13 @@ function pmpro_is_checkout() {
  * Are we showing discount codes at checkout?
  */
 function pmpro_show_discount_code() {
-	global $wpdb;
+	global $wpdb, $pmpro_level;
 	static $show;
+
+	// Discount codes only change a level's price, so they aren't shown on a checkout without a membership level.
+	if ( pmpro_is_checkout() && pmpro_is_membershipless_checkout( $pmpro_level ) ) {
+		return false;
+	}
 
 	// check DB if we haven't yet
 	if ( !isset( $show ) ) {

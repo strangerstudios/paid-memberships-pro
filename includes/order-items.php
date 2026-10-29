@@ -204,8 +204,9 @@ function pmpro_build_checkout_items( $level, $code_level = null ) {
 	 *
 	 * When no level is being purchased and this filter returns lines, the checkout has no membership level.
 	 *
-	 * This filter runs every time the checkout level is resolved, so callbacks must not have side effects or
-	 * call pmpro_getLevelAtCheckout(). Read your inputs from the request and keep the parameters that start a
+	 * This filter runs every time the checkout level is resolved and every time the lines of a checkout
+	 * without a membership level are read, so callbacks must not have side effects or call
+	 * pmpro_getLevelAtCheckout(). Read your inputs from the request and keep the parameters that start a
 	 * purchase in the checkout URL's query string. Offsite gateways send the buyer back to that URL.
 	 *
 	 * @since TBD
@@ -238,8 +239,9 @@ function pmpro_build_checkout_items( $level, $code_level = null ) {
  *
  * Called at the end of pmpro_getLevelAtCheckout(), after the pmpro_checkout_level filter. When Add Ons
  * added lines, the level's initial_payment becomes the total of all lines and its billing_amount the
- * total of the recurring lines, so that every gateway charges the whole order. The membership's own
- * price is kept in the level's pmpro_membership_price property for the cost text.
+ * total of the recurring lines, so that every gateway charges the whole order. The lines are kept in the
+ * level's checkout_items property, and the membership's own price in its pmpro_membership_price property
+ * for the cost text.
  *
  * @since TBD
  *
@@ -248,7 +250,9 @@ function pmpro_build_checkout_items( $level, $code_level = null ) {
  * @return object|null The checkout level.
  */
 function pmpro_set_up_checkout_items_for_level( $level, $code_level = null ) {
-	global $pmpro_checkout_items;
+	if ( empty( $level->id ) ) {
+		return $level;
+	}
 
 	// A filter may hand back a level object that already carries the lines. Start again from the membership's price.
 	if ( ! empty( $level->pmpro_membership_price ) ) {
@@ -257,10 +261,10 @@ function pmpro_set_up_checkout_items_for_level( $level, $code_level = null ) {
 		unset( $level->pmpro_membership_price );
 	}
 
-	$pmpro_checkout_items = empty( $level->id ) ? array() : pmpro_build_checkout_items( $level, $code_level );
+	$level->checkout_items = pmpro_build_checkout_items( $level, $code_level );
 
 	// Core's lines add up to the level's price, so only Add On lines change what the level charges.
-	if ( empty( array_diff_key( $pmpro_checkout_items, array_flip( array( 'membership', 'discount' ) ) ) ) ) {
+	if ( empty( array_diff_key( $level->checkout_items, array_flip( array( 'membership', 'discount' ) ) ) ) ) {
 		return $level;
 	}
 
@@ -268,68 +272,55 @@ function pmpro_set_up_checkout_items_for_level( $level, $code_level = null ) {
 		'initial_payment' => $level->initial_payment,
 		'billing_amount'  => $level->billing_amount,
 	);
-	$level->initial_payment = pmpro_get_items_total( $pmpro_checkout_items, 'subtotal' );
+	$level->initial_payment = pmpro_get_items_total( $level->checkout_items, 'subtotal' );
 	if ( pmpro_isLevelRecurring( $level ) ) {
-		$level->billing_amount = pmpro_get_items_total( $pmpro_checkout_items, 'billing_amount' );
+		$level->billing_amount = pmpro_get_items_total( $level->checkout_items, 'billing_amount' );
 	}
 
 	return $level;
 }
 
 /**
- * Get the lines being purchased at the current checkout.
+ * Get the lines being purchased at checkout.
+ *
+ * A level checkout's lines are kept on the level by pmpro_getLevelAtCheckout(). A checkout without a
+ * membership level has no level to keep them on, so its lines are built again.
  *
  * @since TBD
  *
- * @return array Normalized lines keyed by key. Empty before the checkout level is resolved.
+ * @param object|null $level The checkout level, or null (or a level with no ID) when no level is being purchased.
+ * @return array Normalized lines keyed by key.
  */
-function pmpro_get_checkout_items() {
-	global $pmpro_checkout_items;
-	return empty( $pmpro_checkout_items ) ? array() : $pmpro_checkout_items;
-}
-
-/**
- * Check whether the current checkout has no membership level.
- *
- * @since TBD
- *
- * @return bool
- */
-function pmpro_is_membershipless_checkout() {
-	$items = pmpro_get_checkout_items();
-	return ! empty( $items ) && ! isset( $items['membership'] );
-}
-
-/**
- * Hide the discount code field on checkouts without a membership level.
- *
- * Discount codes only change a level's price.
- *
- * @since TBD
- *
- * @param bool $show Whether to show the discount code field.
- * @return bool
- */
-function pmpro_checkout_items_show_discount_code( $show ) {
-	if ( pmpro_is_checkout() && pmpro_is_membershipless_checkout() ) {
-		return false;
+function pmpro_get_checkout_items( $level ) {
+	if ( empty( $level->id ) ) {
+		return pmpro_build_checkout_items( null );
 	}
-	return $show;
+	return empty( $level->checkout_items ) ? array() : $level->checkout_items;
 }
-add_filter( 'pmpro_show_discount_code', 'pmpro_checkout_items_show_discount_code' );
+
+/**
+ * Check whether a checkout has no membership level.
+ *
+ * @since TBD
+ *
+ * @param object|null $level The checkout level.
+ * @return bool True if no level is being purchased and Add Ons added lines to purchase.
+ */
+function pmpro_is_membershipless_checkout( $level ) {
+	return empty( $level->id ) && ! empty( pmpro_build_checkout_items( null ) );
+}
 
 /**
  * Check the checkout lines when the checkout form is submitted, before the user is created.
  *
  * @since TBD
  *
- * @param bool $continue Whether the checkout should continue.
- * @return bool
+ * @param array $items The checkout lines.
+ * @return bool False if the lines can't be purchased. An error message is set.
  */
-function pmpro_checkout_items_checkout_checks( $continue ) {
-	$items = pmpro_get_checkout_items();
-	if ( ! $continue || empty( $items ) ) {
-		return $continue;
+function pmpro_check_checkout_items( $items ) {
+	if ( empty( $items ) ) {
+		return true;
 	}
 
 	foreach ( $items as $key => $item ) {
@@ -353,7 +344,7 @@ function pmpro_checkout_items_checkout_checks( $continue ) {
 
 	// The rest is only for checkouts without a membership level.
 	if ( isset( $items['membership'] ) ) {
-		return $continue;
+		return true;
 	}
 
 	if ( pmpro_get_items_total( $items, 'subtotal' ) <= 0 ) {
@@ -361,10 +352,8 @@ function pmpro_checkout_items_checkout_checks( $continue ) {
 		return false;
 	}
 
-	return $continue;
+	return true;
 }
-add_filter( 'pmpro_checkout_checks', 'pmpro_checkout_items_checkout_checks' );
-
 /**
  * Get the checkout URL with the current request's query string.
  *
@@ -383,52 +372,18 @@ function pmpro_get_membershipless_checkout_url() {
 }
 
 /**
- * List the checkout lines under the level cost when there is more than the membership line.
- *
- * @since TBD
- */
-function pmpro_checkout_items_after_level_cost() {
-	$items = pmpro_get_checkout_items();
-	if ( count( $items ) < 2 || ! isset( $items['membership'] ) ) {
-		return;
-	}
-	pmpro_display_checkout_items();
-}
-add_action( 'pmpro_checkout_after_level_cost', 'pmpro_checkout_items_after_level_cost' );
-
-/**
- * Flag a checkout that has Add On lines to charge, so applying a discount code can't hide billing.
- *
- * Applying a code by AJAX only knows the level. A code that makes the level free must still collect
- * payment for the Add On lines.
- *
- * @since TBD
- */
-function pmpro_checkout_items_add_on_lines_flag() {
-	foreach ( pmpro_get_checkout_items() as $item ) {
-		if ( ! in_array( $item['type'], array( 'membership', 'discount' ), true ) && ( $item['subtotal'] > 0 || $item['billing_amount'] > 0 ) ) {
-			echo '<input type="hidden" id="pmpro_checkout_has_items" name="pmpro_checkout_has_items" value="1" />';
-			return;
-		}
-	}
-}
-add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_items_add_on_lines_flag' );
-
-/**
  * Display the checkout lines with the total due today.
  *
  * @since TBD
+ *
+ * @param object|null $level The checkout level.
  */
-function pmpro_display_checkout_items() {
-	global $pmpro_level;
-
-	$items = pmpro_get_checkout_items();
+function pmpro_display_checkout_items( $level ) {
+	$items = pmpro_get_checkout_items( $level );
 	if ( empty( $items ) ) {
 		return;
 	}
 
-	// Recurring amounts use the checkout level's billing cycle.
-	$level = isset( $items['membership'] ) ? $pmpro_level : null;
 	?>
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_items' ) ); ?>">
 		<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ); ?>">
@@ -549,7 +504,7 @@ function pmpro_save_order_items( $order, $items ) {
 
 		// If a line can't be saved, don't leave a partial set of lines behind.
 		if ( false === $inserted ) {
-			pmpro_delete_order_items( $order->id );
+			$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => (int) $order->id ), array( '%d' ) );
 			return false;
 		}
 
@@ -558,23 +513,6 @@ function pmpro_save_order_items( $order, $items ) {
 
 	return true;
 }
-
-/**
- * Save a checkout order's lines when the order is first saved.
- *
- * The checkout sets $order->checkout_items before the order is saved.
- *
- * @since TBD
- *
- * @param MemberOrder $order The order that was saved.
- */
-function pmpro_save_order_items_on_order_save( $order ) {
-	if ( ! empty( $order->checkout_items ) ) {
-		pmpro_save_order_items( $order, $order->checkout_items );
-	}
-}
-add_action( 'pmpro_added_order', 'pmpro_save_order_items_on_order_save', 5 );
-add_action( 'pmpro_updated_order', 'pmpro_save_order_items_on_order_save', 5 );
 
 /**
  * Get the lines of an order.
@@ -640,19 +578,6 @@ function pmpro_get_order_items( $order ) {
 
 	return $rows;
 }
-
-/**
- * Delete an order's lines when the order is deleted.
- *
- * @since TBD
- *
- * @param int $order_id The deleted order's ID.
- */
-function pmpro_delete_order_items( $order_id ) {
-	global $wpdb;
-	$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => (int) $order_id ), array( '%d' ) );
-}
-add_action( 'pmpro_delete_order', 'pmpro_delete_order_items', 999 );
 
 /*
  * Display.
