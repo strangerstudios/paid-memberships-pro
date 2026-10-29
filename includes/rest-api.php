@@ -443,7 +443,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 *
 		 * Example: .../wp-json/pmpro/v1/export/status?type=members&export_id=12345
 		 *
+		 * Optional `filters` param (JSON object): when no export_id is passed, only return
+		 * the active export if it was started with these filters.
+		 *
 		 * @since 3.7
+		 * @since 3.9.1 Added the `filters` parameter.
 		 */
 		register_rest_route( $pmpro_namespace, '/export/status',
 			array(
@@ -456,8 +460,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						if ( empty( $type ) ) {
 							return new WP_REST_Response( array( 'error' => 'Missing export type.' ), 400 );
 						}
+						// Filters are sanitized by the export type's filter sanitizer in get_status().
+						$filters = null;
+						if ( isset( $params['filters'] ) ) {
+							$filters = is_array( $params['filters'] ) ? $params['filters'] : json_decode( (string) $params['filters'], true );
+							if ( ! is_array( $filters ) ) {
+								$filters = array();
+							}
+						}
 						$exports = PMPro_Exports::instance();
-						$result  = $exports->get_status( $type, $export_id );
+						$result  = $exports->get_status( $type, $export_id, $filters );
 						// Never respond with 404 for logical export errors; keep 200 and surface error message.
 						if ( isset( $result['error'] ) ) {
 							$result['http_status'] = 200;
