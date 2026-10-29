@@ -45,7 +45,7 @@ jQuery(document).ready(function(){
                 jQuery.ajax({
                     url: pmpro.ajaxurl, type:'GET',timeout: pmpro.ajax_timeout,
                     dataType: 'html',
-                    data: "action=applydiscountcode&code=" + code + "&pmpro_level=" + level_id + "&msgfield=pmpro_message",
+                    data: "action=applydiscountcode&code=" + code + "&pmpro_level=" + level_id + "&msgfield=pmpro_message" + ( jQuery('#pmpro_checkout_has_items').length ? "&pmpro_checkout_has_items=1" : "" ),
                     error: function(xml){
                         alert('Error applying discount code [1]');
 

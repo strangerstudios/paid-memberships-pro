@@ -476,6 +476,24 @@ function pmpro_checkout_items_after_level_cost() {
 add_action( 'pmpro_checkout_after_level_cost', 'pmpro_checkout_items_after_level_cost' );
 
 /**
+ * Flag a checkout that has Add On lines to charge, so applying a discount code can't hide billing.
+ *
+ * Applying a code by AJAX only knows the level. A code that makes the level free must still collect
+ * payment for the Add On lines.
+ *
+ * @since TBD
+ */
+function pmpro_checkout_items_add_on_lines_flag() {
+	foreach ( pmpro_get_checkout_items() as $item ) {
+		if ( ! in_array( $item['type'], array( 'membership', 'discount' ), true ) && ( $item['subtotal'] > 0 || $item['billing_amount'] > 0 ) ) {
+			echo '<input type="hidden" id="pmpro_checkout_has_items" name="pmpro_checkout_has_items" value="1" />';
+			return;
+		}
+	}
+}
+add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_items_add_on_lines_flag' );
+
+/**
  * Display the checkout lines with the total due today.
  *
  * @since TBD
