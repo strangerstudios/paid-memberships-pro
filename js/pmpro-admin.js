@@ -1585,7 +1585,9 @@ jQuery(document).ready(function ($) {
 	}
 
 	function startExport($btn){
-		if(($btn.attr('data-status')||'idle') !== 'idle'){ return; }
+		// Allow starting from idle or retrying after an error.
+		var currentStatus = $btn.attr('data-status') || 'idle';
+		if(currentStatus !== 'idle' && currentStatus !== 'error' && currentStatus !== 'error_start'){ return; }
 		var type = $btn.data('type') || 'members';
 		var filters = $btn.data('filters') || {};
 		if (typeof filters === 'string') { try { filters = JSON.parse(filters); } catch(e){ filters = {}; } }
@@ -1599,8 +1601,12 @@ jQuery(document).ready(function ($) {
 			headers: { 'Content-Type':'application/json', 'X-WP-Nonce': nonce },
 			body: JSON.stringify(payload)
 		}).then(function(r){ return r.json(); }).then(function(data){
-			if(data && data.error){
+			// PMPro returns { error }; WordPress REST errors (e.g. expired nonce) return { code, message }.
+			var errorMessage = data && ( data.error || ( data.code && data.message ) );
+			if(errorMessage){
 				setButtonStateKey($btn, 'error_start');
+				// Show the server's message (e.g. no records match the current filters).
+				if(typeof errorMessage === 'string'){ $btn.text(errorMessage); }
 				return;
 			}
 			$btn.attr('data-export-id', data.export_id || '');
