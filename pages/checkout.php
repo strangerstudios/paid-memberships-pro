@@ -97,11 +97,15 @@ if ( empty( $default_gateway ) ) {
 				?>
 				<div id="pmpro_pricing_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card', 'pmpro_pricing_fields' ) ); ?>">
 
-					<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Membership Information', 'paid-memberships-pro' ); ?></h2>
+					<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php echo pmpro_is_membershipless_checkout() ? esc_html__( 'Purchase Information', 'paid-memberships-pro' ) : esc_html__( 'Membership Information', 'paid-memberships-pro' ); ?></h2>
 
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 
-						<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
+						<?php
+						// A checkout without a membership level lists the lines being purchased instead of the level.
+						if ( pmpro_is_membershipless_checkout() ) {
+							pmpro_display_checkout_items();
+						} else { ?><p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
 							<?php
 							// Tell the user which level they are signing up for.
 							printf( esc_html__('You have selected the %s membership level.', 'paid-memberships-pro' ), '<strong>' . esc_html( $pmpro_level->name ) . '</strong>' );
@@ -188,6 +192,7 @@ if ( empty( $default_gateway ) ) {
 						 * @param object $pmpro_level The PMPro Level object being purchased.
 						 */
 						do_action( 'pmpro_checkout_after_level_cost', $pmpro_level );
+						}
 						?>
 
 					</div> <!-- end pmpro_card_content -->
@@ -361,7 +366,7 @@ if ( empty( $default_gateway ) ) {
 						</div> <!-- end pmpro_card_content -->
 						<?php if ( ! $skip_account_fields ) { ?>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-								<?php esc_html_e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo esc_url( wp_login_url( apply_filters( 'pmpro_checkout_login_redirect', pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id . $discount_code_link) ) ) ); ?>"><?php esc_html_e('Log in here', 'paid-memberships-pro' ); ?></a>
+								<?php esc_html_e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo esc_url( wp_login_url( apply_filters( 'pmpro_checkout_login_redirect', pmpro_is_membershipless_checkout() ? pmpro_get_membershipless_checkout_url() : pmpro_url("checkout", "?pmpro_level=" . $pmpro_level->id . $discount_code_link) ) ) ); ?>"><?php esc_html_e('Log in here', 'paid-memberships-pro' ); ?></a>
 							</div> <!-- end pmpro_card_actions -->
 						<?php } ?>
 					</div> <!-- end pmpro_card -->

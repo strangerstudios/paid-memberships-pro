@@ -80,7 +80,8 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 
 	// If this is a custom page template, check if we should load it.
 	if ( $type = 'pages' && $path !== $default_path ) {
-		$use_custom_page_template = get_option( 'pmpro_use_custom_page_template_' . $page_name );
+		// Custom templates made before PMPro TBD don't know about purchases without a membership level.
+		$use_custom_page_template = pmpro_is_membershipless_page_template( $page_name ) ? 'no' : get_option( 'pmpro_use_custom_page_template_' . $page_name );
 		switch( $use_custom_page_template ) {
 			case 'yes':
 				break;

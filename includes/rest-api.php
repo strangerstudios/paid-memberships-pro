@@ -1037,6 +1037,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get an order.
 		 * @since 2.8
+		 * @since TBD The response includes the order's lines in 'items'.
 		 * Example: https://example.com/wp-json/pmpro/v1/order
 		 */
 		function pmpro_rest_api_get_order( $request ) {
@@ -1082,6 +1083,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					$order_data_to_return->notes = $order->notes;
 				}
 				$order_data_to_return->checkout_id = $order->checkout_id;
+				$order_data_to_return->items = pmpro_get_order_items( $order );
 			}
 
 			return new WP_REST_Response( $order_data_to_return, 200 );
