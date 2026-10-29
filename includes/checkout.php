@@ -205,6 +205,11 @@ function pmpro_pull_checkout_data_from_order( $order ) {
  function pmpro_complete_checkout( $order ) {
 	global $wpdb, $pmpro_level, $discount_code, $discount_code_id;
 
+	// A checkout without a membership level does not change the user's memberships.
+	if ( pmpro_is_membershipless_order( $order ) ) {
+		return pmpro_complete_membershipless_checkout( $order );
+	}
+
 	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
 	do_action( 'pmpro_checkout_before_change_membership_level', $order->user_id, $order );
 

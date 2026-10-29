@@ -169,6 +169,7 @@
 			$html = implode( "\n\n", $html );
 			?>
 				jQuery('#pmpro_level_cost').html( <?php echo wp_json_encode( wp_kses_post( $html ) ); ?> );
+				jQuery('.pmpro_checkout_items').remove(); // The checkout lines are rebuilt when the checkout is submitted.
 			<?php
 
 			//tell gateway javascripts whether or not to fire (e.g. no Stripe on free levels)
