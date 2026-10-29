@@ -96,7 +96,9 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 
 {% if membership_expiration %}{{ membership_expiration }}{% endif %}
 
-{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}
+{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}{% if order_lines %}
+
+{{ order_lines }}{% endif %}
 
 <p>Log in to your WordPress admin here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
