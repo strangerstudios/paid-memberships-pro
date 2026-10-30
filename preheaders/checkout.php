@@ -629,7 +629,6 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		// Finish setting up the order.
 		$pmpro_review->setGateway();
 		$pmpro_review->getMembershipLevelAtCheckout();	
-		$pmpro_review->checkout_items = pmpro_get_checkout_items( $pmpro_level ); // Saved as the order's lines when the order is first saved.
 
 		// Filter for order, since v1.8
 		if ( $pmpro_requirebilling ) {

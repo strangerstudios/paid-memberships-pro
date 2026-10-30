@@ -249,6 +249,8 @@
 		 */
 		function process(&$order)
 		{
+			global $pmpro_level;
+
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
 
@@ -260,6 +262,9 @@
 			//just save, the user will go to PayPal to pay
 			$order->status = "review";
 			$order->saveOrder();
+
+			// Save the checkout lines now. The payment is completed later, outside the checkout.
+			$order->add_items( pmpro_get_checkout_items( $pmpro_level ) );
 
 			// An order without a membership level doesn't run the level change hooks, so send the user to PayPal now.
 			if ( empty( $order->membership_id ) ) {

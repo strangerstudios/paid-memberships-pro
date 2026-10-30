@@ -7,8 +7,9 @@
  *
  * - Lines describe the order. The order's subtotal, tax and total stay the source of truth for money, and
  *   gateways, tax and reports keep reading them.
- * - Checkout orders save their lines. Renewal orders and orders saved before lines existed read as one
- *   membership line built from the order. Nothing is backfilled.
+ * - The checkout saves the lines to the order with MemberOrder::add_items(), and MemberOrder::get_items()
+ *   reads them. Renewal orders and orders saved before lines existed read as one membership line built
+ *   from the order. Nothing is backfilled.
  * - On an order with a membership level, the membership line is whatever is left of the order subtotal
  *   after the other lines, so code that changes the order's price is reflected on the membership line.
  * - Add Ons add lines at checkout with the pmpro_checkout_items filter. Lines under the membership line
@@ -30,8 +31,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Normalize a checkout line to the shape used by the pmpro_checkout_items filter.
  *
- * A checkout line is an array. It uses the same names as a saved line (PMPro_Order_Item) for the same
- * values, plus two that only exist at checkout: key and parent_key.
+ * A checkout line is an array. It uses the same names as a saved line (see MemberOrder::get_items()) for
+ * the same values, plus two that only exist at checkout: key and parent_key.
  *
  * Line shape:
  * - key            (string)      Unique key for this line in the checkout. Defaults to "{item_type}-{object_id}".
@@ -390,7 +391,7 @@ function pmpro_display_checkout_items( $level ) {
 		<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ); ?>">
 			<?php foreach ( $items as $item ) { ?>
 				<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_checkout_item pmpro_checkout_item-' . $item['item_type'] ) ); ?>">
-					<?php echo esc_html( ( new PMPro_Order_Item( $item ) )->get_label() ); ?>:
+					<?php echo esc_html( pmpro_get_order_item_label( $item ) ); ?>:
 					<strong><?php echo esc_html( pmpro_format_order_item_price( $item['subtotal'] ) ); ?></strong>
 					<?php
 					if ( 0 != $item['billing_amount'] && ! empty( $level->cycle_number ) ) {
@@ -455,14 +456,31 @@ function pmpro_format_order_item_price( $amount ) {
 }
 
 /**
+ * Get the label of a line, such as "Seats" or "3 × Seats".
+ *
+ * @since TBD
+ *
+ * @param object|array $line A saved line or a checkout line.
+ * @return string
+ */
+function pmpro_get_order_item_label( $line ) {
+	$line = (object) $line;
+	if ( $line->quantity > 1 ) {
+		/* translators: 1: quantity, 2: item name. */
+		return sprintf( __( '%1$d × %2$s', 'paid-memberships-pro' ), $line->quantity, $line->name );
+	}
+	return $line->name;
+}
+
+/**
  * Check whether an order's lines should be listed instead of its single summary row.
  *
  * A single membership line keeps the order's existing display.
  *
  * @since TBD
  *
- * @param MemberOrder        $order The order.
- * @param PMPro_Order_Item[] $lines The order's lines.
+ * @param MemberOrder $order The order.
+ * @param object[]    $lines The order's lines, from MemberOrder::get_items().
  * @return bool
  */
 function pmpro_should_display_order_items( $order, $lines ) {
@@ -490,7 +508,7 @@ function pmpro_display_order_item_rows( $order ) {
 		?>
 		<tr class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_order_item pmpro_order_item-' . $line->item_type ) ); ?>">
 			<th data-title="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>">
-				<?php echo esc_html( ( $line->parent_item_id ? '— ' : '' ) . $line->get_label() ); ?>
+				<?php echo esc_html( ( $line->parent_item_id ? '— ' : '' ) . pmpro_get_order_item_label( $line ) ); ?>
 			</th>
 			<td data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>">
 				<?php echo esc_html( pmpro_format_order_item_price( $line->subtotal ) ); ?>
@@ -520,7 +538,7 @@ function pmpro_get_order_items_email_html( $order ) {
 
 	$html = '<ul>';
 	foreach ( $lines as $line ) {
-		$html .= '<li>' . esc_html( ( $line->parent_item_id ? '— ' : '' ) . $line->get_label() . ': ' . pmpro_format_order_item_price( $line->subtotal ) ) . '</li>';
+		$html .= '<li>' . esc_html( ( $line->parent_item_id ? '— ' : '' ) . pmpro_get_order_item_label( $line ) . ': ' . pmpro_format_order_item_price( $line->subtotal ) ) . '</li>';
 	}
 	$html .= '</ul>';
 

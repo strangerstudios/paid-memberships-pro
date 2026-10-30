@@ -57,7 +57,6 @@ require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-field-group.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
-require_once( PMPRO_DIR . '/classes/class-pmpro-order-item.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-exports.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );	// setup the admin activity email
 
