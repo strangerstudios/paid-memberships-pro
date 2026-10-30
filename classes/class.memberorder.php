@@ -1648,7 +1648,7 @@
 				wp_cache_delete( $this->id, 'pmpro_membership_order_meta' );
 
 				// Delete the order's lines too.
-				$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => $this->id ), array( '%d' ) );
+				PMPro_Order_Item::delete_order_items( $this->id );
 
 				return true;
 			}
@@ -1772,14 +1772,11 @@
 		 * @return PMPro_Order_Item[] The lines. A line built from the order has id 0.
 		 */
 		public function get_items() {
-			global $wpdb;
-
-			$rows = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, parent_item_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
-			$lines = array_map(
-				function ( $row ) {
-					return new PMPro_Order_Item( $row );
-				},
-				$rows
+			$lines = empty( $this->id ) ? array() : PMPro_Order_Item::get_order_items(
+				array(
+					'order_id' => $this->id,
+					'limit'    => 0,
+				)
 			);
 
 			if ( empty( $lines ) ) {
@@ -1858,14 +1855,12 @@
 		 * @return bool True if lines were saved.
 		 */
 		private function save_items() {
-			global $wpdb;
-
 			if ( empty( $this->id ) || empty( $this->checkout_items ) ) {
 				return false;
 			}
 
 			// Lines are saved once, when the order is first saved.
-			if ( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d LIMIT 1", $this->id ) ) ) {
+			if ( ! empty( PMPro_Order_Item::get_order_items( array( 'order_id' => $this->id, 'limit' => 1 ) ) ) ) {
 				return false;
 			}
 
@@ -1892,28 +1887,17 @@
 					$item['subtotal'] = max( 0, pmpro_round_price( (float) $this->subtotal - $others ) );
 				}
 
-				$inserted = $wpdb->insert(
-					$wpdb->pmpro_membership_order_items,
-					array(
-						'order_id'       => (int) $this->id,
-						'parent_item_id' => ( null !== $item['parent_key'] && isset( $saved_ids[ $item['parent_key'] ] ) ) ? $saved_ids[ $item['parent_key'] ] : 0,
-						'item_type'      => $item['item_type'],
-						'object_id'      => $item['object_id'],
-						'name'           => $item['name'],
-						'quantity'       => $item['quantity'],
-						'subtotal'       => $item['subtotal'],
-						'billing_amount' => $item['billing_amount'],
-					),
-					array( '%d', '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
-				);
+				$line = new PMPro_Order_Item( $item );
+				$line->order_id       = $this->id;
+				$line->parent_item_id = ( null !== $item['parent_key'] && isset( $saved_ids[ $item['parent_key'] ] ) ) ? $saved_ids[ $item['parent_key'] ] : 0;
 
 				// If a line can't be saved, don't leave a partial set of lines behind.
-				if ( false === $inserted ) {
-					$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => (int) $this->id ), array( '%d' ) );
+				if ( ! $line->save() ) {
+					PMPro_Order_Item::delete_order_items( $this->id );
 					return false;
 				}
 
-				$saved_ids[ $item['key'] ] = (int) $wpdb->insert_id;
+				$saved_ids[ $item['key'] ] = $line->id;
 			}
 
 			return true;
