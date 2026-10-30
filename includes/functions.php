@@ -50,6 +50,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
 	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
+	$wpdb->pmpro_membership_order_items = $wpdb->prefix . 'pmpro_membership_order_items';
 }
 pmpro_setDBTables();
 
@@ -343,6 +344,15 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	//Bail if no level
 	if ( empty( $level ) ) {
 		return '';
+	}
+
+	// If Add Ons added lines at checkout, describe the membership's own price. The lines are listed separately.
+	if ( ! empty( $level->pmpro_membership_price ) ) {
+		$membership_level                  = clone $level;
+		$membership_level->initial_payment = $level->pmpro_membership_price['initial_payment'];
+		$membership_level->billing_amount  = $level->pmpro_membership_price['billing_amount'];
+		unset( $membership_level->pmpro_membership_price );
+		return pmpro_getLevelCost( $membership_level, $tags, $short );
 	}
 
 	// initial payment
@@ -2834,7 +2844,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
 
 	// Reset $pmpro_level global.
+	$previous_level = $pmpro_level;
 	$pmpro_level = null;
+	$code_level = null;
 
 	// Default to level passed in via URL.
 	if ( empty( $level_id ) && ! empty( $_REQUEST['pmpro_level'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, selects the level/discount code to show at checkout; the checkout submission is nonce-verified in preheaders/checkout.php.
@@ -2850,6 +2862,15 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	// If we still don't have a level yet, check for a default level in the custom fields for this post.
 	if ( empty( $level_id ) && ! empty( $post ) ) {
 		$level_id = intval( get_post_meta( $post->ID, 'pmpro_default_level', true ) );
+	}
+
+	// If no level was requested but Add Ons added lines to purchase, this checkout has no membership level.
+	if ( empty( $level_id ) && ! empty( pmpro_build_checkout_items( null ) ) ) {
+		// Keep the placeholder level that the checkout template sets up while it renders.
+		if ( is_object( $previous_level ) && empty( $previous_level->id ) ) {
+			$pmpro_level = $previous_level;
+		}
+		return null;
 	}
 
 	// If we still don't have a level, use the default level.
@@ -2896,6 +2917,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		if ( $code_check[0] != false ) {
 			// Resolve the effective level pricing for this code.
 			$pmpro_level = pmpro_get_discounted_level_for_code( $level_id, $discount_code_row );
+			$code_level  = empty( $pmpro_level ) ? null : clone $pmpro_level; // For the discount line.
 
 			// if the discount code doesn't adjust the level, let's just get the straight level
 			if ( empty( $pmpro_level ) ) {
@@ -2928,6 +2950,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
+
+	// Add the lines being purchased. This must be the last step since the level is resolved more than once per request.
+	$pmpro_level = pmpro_set_up_checkout_items_for_level( $pmpro_level, $code_level );
 
 	return $pmpro_level;
 }
@@ -4237,8 +4262,13 @@ function pmpro_is_checkout() {
  * Are we showing discount codes at checkout?
  */
 function pmpro_show_discount_code() {
-	global $wpdb;
+	global $wpdb, $pmpro_level;
 	static $show;
+
+	// Discount codes only change a level's price, so they aren't shown on a checkout without a membership level.
+	if ( pmpro_is_checkout() && pmpro_is_membershipless_checkout( $pmpro_level ) ) {
+		return false;
+	}
 
 	// check DB if we haven't yet
 	if ( !isset( $show ) ) {

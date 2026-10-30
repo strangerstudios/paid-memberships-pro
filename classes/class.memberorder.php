@@ -1644,6 +1644,9 @@
 				$wpdb->delete( $wpdb->pmpro_membership_ordermeta, array( 'pmpro_membership_order_id' => $this->id ), array( '%d' ) );
 				wp_cache_delete( $this->id, 'pmpro_membership_order_meta' );
 
+				// Delete the order's lines too.
+				$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => $this->id ), array( '%d' ) );
+
 				return true;
 			}
 			else
@@ -1752,6 +1755,166 @@
 
 			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
 			return ! empty( $new_subscription ) ? $new_subscription : null;
+		}
+
+		/**
+		 * Get the lines of this order.
+		 *
+		 * Each line is an object with the columns of the order items table: id, order_id, parent_item_id,
+		 * item_type, object_id, name, quantity, subtotal and billing_amount. A saved line is never changed.
+		 *
+		 * - Orders without saved lines (renewals and orders saved before lines existed) read as one membership
+		 *   line built from the order. Orders without saved lines or a level have no lines.
+		 * - The membership line is always the order subtotal minus the other lines.
+		 *
+		 * @since TBD
+		 *
+		 * @return object[] The lines, oldest first. A line built from the order has id 0.
+		 */
+		public function get_items() {
+			global $wpdb;
+
+			$lines = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, parent_item_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
+
+			if ( empty( $lines ) ) {
+				if ( empty( $this->membership_id ) ) {
+					return array();
+				}
+
+				$level        = pmpro_getLevel( $this->membership_id );
+				$subscription = empty( $this->subscription_transaction_id ) ? null : PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
+				$lines        = array(
+					(object) array(
+						'id'             => 0,
+						'order_id'       => $this->id,
+						'parent_item_id' => 0,
+						'item_type'      => 'membership',
+						'object_id'      => $this->membership_id,
+						'name'           => empty( $level->name ) ? '' : $level->name,
+						'quantity'       => 1,
+						'subtotal'       => $this->subtotal,
+						'billing_amount' => empty( $subscription ) ? 0 : $subscription->get_billing_amount(),
+					),
+				);
+			}
+
+			$others = 0;
+			foreach ( $lines as $line ) {
+				$line->id             = (int) $line->id;
+				$line->order_id       = (int) $line->order_id;
+				$line->parent_item_id = (int) $line->parent_item_id;
+				$line->object_id      = (int) $line->object_id;
+				$line->quantity       = (int) $line->quantity;
+				$line->subtotal       = pmpro_round_price( (float) $line->subtotal );
+				$line->billing_amount = pmpro_round_price( (float) $line->billing_amount );
+				if ( 'membership' !== $line->item_type ) {
+					$others += $line->subtotal;
+				}
+			}
+			foreach ( $lines as $line ) {
+				if ( 'membership' === $line->item_type ) {
+					$line->subtotal = max( 0, pmpro_round_price( (float) $this->subtotal - $others ) );
+				}
+			}
+
+			return $lines;
+		}
+
+		/**
+		 * Describe what this order is for from its lines, such as "Donation, 2 × Gift".
+		 *
+		 * Gateways use this where they would show the level name, such as in the payment description.
+		 * Uses the checkout lines if the order hasn't been saved yet.
+		 *
+		 * @since TBD
+		 *
+		 * @return string The line names, or "Order #CODE" if the order has no lines.
+		 */
+		public function get_items_description() {
+			$lines = $this->get_items();
+			if ( empty( $lines ) && empty( $this->id ) ) {
+				$lines = pmpro_get_checkout_items( $this->membership_level );
+			}
+
+			$names = array();
+			foreach ( $lines as $line ) {
+				$names[] = pmpro_get_order_item_label( $line );
+			}
+
+			/* translators: %s: order code. */
+			return empty( $names ) ? sprintf( __( 'Order #%s', 'paid-memberships-pro' ), $this->code ) : implode( ', ', $names );
+		}
+
+		/**
+		 * Save the checkout lines as this order's lines.
+		 *
+		 * The checkout calls this once the order is saved. Lines are only added once, so this does nothing if
+		 * the order already has lines. The membership line is saved as the order subtotal minus the other lines.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $items The checkout lines, from pmpro_get_checkout_items().
+		 * @return bool True if lines were saved.
+		 */
+		public function add_items( $items ) {
+			global $wpdb;
+
+			if ( empty( $this->id ) || empty( $items ) ) {
+				return false;
+			}
+
+			if ( ! empty( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d LIMIT 1", $this->id ) ) ) ) {
+				return false;
+			}
+
+			$items = array_map( 'pmpro_normalize_checkout_item', array_values( (array) $items ) );
+
+			// Save the membership line first so that the lines under it can point to it.
+			usort(
+				$items,
+				function ( $a, $b ) {
+					return (int) ( 'membership' === $b['item_type'] ) - (int) ( 'membership' === $a['item_type'] );
+				}
+			);
+
+			$others = 0;
+			foreach ( $items as $item ) {
+				if ( 'membership' !== $item['item_type'] ) {
+					$others += $item['subtotal'];
+				}
+			}
+
+			$saved_ids = array();
+			foreach ( $items as $item ) {
+				if ( 'membership' === $item['item_type'] ) {
+					$item['subtotal'] = max( 0, pmpro_round_price( (float) $this->subtotal - $others ) );
+				}
+
+				$inserted = $wpdb->insert(
+					$wpdb->pmpro_membership_order_items,
+					array(
+						'order_id'       => $this->id,
+						'parent_item_id' => ( null !== $item['parent_key'] && isset( $saved_ids[ $item['parent_key'] ] ) ) ? $saved_ids[ $item['parent_key'] ] : 0,
+						'item_type'      => $item['item_type'],
+						'object_id'      => $item['object_id'],
+						'name'           => $item['name'],
+						'quantity'       => $item['quantity'],
+						'subtotal'       => $item['subtotal'],
+						'billing_amount' => $item['billing_amount'],
+					),
+					array( '%d', '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
+				);
+
+				// If a line can't be saved, don't leave a partial set of lines behind.
+				if ( false === $inserted ) {
+					$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => $this->id ), array( '%d' ) );
+					return false;
+				}
+
+				$saved_ids[ $item['key'] ] = (int) $wpdb->insert_id;
+			}
+
+			return true;
 		}
 
 		/**

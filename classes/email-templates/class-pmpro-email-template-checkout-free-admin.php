@@ -96,7 +96,9 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 
 {% if membership_expiration %}{{ membership_expiration }}{% endif %}
 
-{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}
+{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}{% if order_lines %}
+
+{{ order_lines }}{% endif %}
 
 <p>Log in to your WordPress admin here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
@@ -148,6 +150,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 			'{{ order_id }}' => __( 'The ID of the order.', 'paid-memberships-pro' ),
 			'{{ order_date }}' => __( 'The date of the order.', 'paid-memberships-pro' ),
 			'{{ order_url }}' => __( 'The URL of the order.', 'paid-memberships-pro' ),
+			'{{ order_lines }}' => __( 'The items in the order with their prices. Empty when the order only has a membership.', 'paid-memberships-pro' ),
 			'{{ discount_code }}' => __( 'The discount code for the order displayed as a formatted paragraph with label.', 'paid-memberships-pro' ),
 			'{{ discount_code_name }}' => __( 'The name of the discount code used for the order.', 'paid-memberships-pro' ),
 			'{{ discount_code_id }}' => __( 'The ID of the discount code used for the order.', 'paid-memberships-pro' ),
@@ -171,7 +174,7 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 		}
 
 		$confirmation_message = '';
-		$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
+		$confirmation_in_email = empty( $membership_level ) ? '' : get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
 		if ( ! empty( $confirmation_in_email ) ) {
 			$confirmation_message = wpautop( $membership_level->confirmation );
 		}
@@ -197,15 +200,16 @@ class PMPro_Email_Template_Checkout_Free_Admin extends PMPro_Email_Template {
 			'display_name' => $user->display_name,
 			'user_login' => $user->user_login,
 			'user_email' => $user->user_email,
-			'membership_id' => $membership_level->id,
-			'level_group_id' => pmpro_get_group_id_for_level( $membership_level->id ) ?: 0,
-			'membership_level_name' => $membership_level->name,
+			'membership_id' => empty( $membership_level ) ? 0 : $membership_level->id,
+			'level_group_id' => empty( $membership_level ) ? 0 : ( pmpro_get_group_id_for_level( $membership_level->id ) ?: 0 ),
+			'membership_level_name' => empty( $membership_level ) ? '' : $membership_level->name,
 			'membership_level_confirmation_message' => $confirmation_message,
 			'membership_cost' => pmpro_getLevelCost( $membership_level ),
 			'membership_expiration' => $membership_expiration,
 			'order_id' => $order->code,
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 			'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
+			'order_lines' => pmpro_get_order_items_email_html( $order ),
 			'discount_code' => $discount_code,
 			'discount_code_name' => $discount_code_name,
 			'discount_code_id' => $discount_code_id,

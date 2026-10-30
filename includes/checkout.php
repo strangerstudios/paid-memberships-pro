@@ -58,6 +58,9 @@ function pmpro_calculate_profile_start_date( $order, $date_format ) {
 	$pmpro_level_arr = (array) $pmpro_level;
 	update_pmpro_membership_order_meta( $order->id, 'checkout_level', $pmpro_level_arr );
 
+	// Save the checkout lines.
+	$order->add_items( pmpro_get_checkout_items( $pmpro_level ) );
+
 	// Save the discount code.
 	// @TODO: Remove this in v4.0. Discount codes should be set on the level object.
 	update_pmpro_membership_order_meta( $order->id, 'checkout_discount_code', $discount_code );
@@ -154,7 +157,8 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		$missing_data[] = 'checkout_level';
 		$checkout_level_arr = array();
 	}
-	$pmpro_level = (object) $checkout_level_arr;
+	// An order without a membership level has no checkout level.
+	$pmpro_level = empty( $order->membership_id ) ? null : (object) $checkout_level_arr;
 	$order->membership_level = $pmpro_level;
 
 	// Set $discount_code_id.
@@ -204,6 +208,42 @@ function pmpro_pull_checkout_data_from_order( $order ) {
  */
  function pmpro_complete_checkout( $order ) {
 	global $wpdb, $pmpro_level, $discount_code, $discount_code_id;
+
+	// A checkout without a membership level doesn't change the user's memberships.
+	if ( empty( $order->membership_id ) ) {
+		$order->status = 'success';
+		if ( false === $order->saveOrder() ) {
+			return false;
+		}
+
+		// Save the checkout lines, unless they were saved before the buyer went offsite to pay.
+		$order->add_items( pmpro_get_checkout_items( $pmpro_level ) );
+
+		// Save first and last name fields.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Same as below. Only fills in empty name fields.
+		foreach ( array( 'first_name', 'last_name' ) as $field ) {
+			if ( ! empty( $_POST[ $field ] ) && empty( get_user_meta( $order->user_id, $field, true ) ) ) {
+				update_user_meta( $order->user_id, $field, sanitize_text_field( $_POST[ $field ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself.
+			}
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		/** This action is documented below. */
+		do_action( 'pmpro_after_checkout', $order->user_id, $order );
+
+		/** This filter is documented below. */
+		if ( apply_filters( 'pmpro_send_checkout_emails', true, $order ) ) {
+			$user = get_userdata( $order->user_id );
+
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendCheckoutEmail( $user, $order );
+
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendCheckoutAdminEmail( $user, $order );
+		}
+
+		return true;
+	}
 
 	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
 	do_action( 'pmpro_checkout_before_change_membership_level', $order->user_id, $order );
@@ -290,6 +330,9 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 			$order->discount_code_id = $discount_code_id;
 		}
 		$order->saveOrder();
+
+		// Save the checkout lines, unless they were saved before the buyer went offsite to pay.
+		$order->add_items( pmpro_get_checkout_items( $pmpro_level ) );
 
 		//add discount code use
 		if ( ! empty( $discount_code_id ) ) {

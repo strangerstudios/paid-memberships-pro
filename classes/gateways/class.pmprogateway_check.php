@@ -217,7 +217,7 @@
 		 * @since 3.1
 		 */
 		static function pmpro_order_single_before_order_details( $order) {
-			if ( $order->gateway == 'check' && ! pmpro_isLevelFree( $order->membership_level ) && $order->status == 'pending' ) {
+			if ( $order->gateway == 'check' && ( empty( $order->membership_id ) || ! pmpro_isLevelFree( $order->membership_level ) ) && $order->status == 'pending' ) {
 				$instructions = get_option( 'pmpro_instructions' );
 				$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
 				?>
@@ -275,7 +275,7 @@
 				if($this->charge($order))
 				{							
 					//set up recurring billing					
-					if(pmpro_isLevelRecurring($order->membership_level))
+					if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) )
 					{						
 						
 						if($this->subscribe($order))

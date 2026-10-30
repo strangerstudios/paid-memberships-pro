@@ -486,6 +486,15 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.9' );
 	}
 
+	/**
+	 * Version 4.0
+	 * Run dbDelta to add the order items table.
+	 */
+	if ( $pmpro_db_version < 4.0 ) {
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '4.0' );
+	}
+
 }
 
 function pmpro_db_delta() {
@@ -508,6 +517,7 @@ function pmpro_db_delta() {
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
 	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
+	$wpdb->pmpro_membership_order_items = $wpdb->prefix . 'pmpro_membership_order_items';
 
 	$collate = '';
 	if ( $wpdb->has_cap( 'collation' ) ) {
@@ -833,6 +843,25 @@ function pmpro_db_delta() {
 		  KEY `template` (`template`),
 		  KEY `status` (`status`),
 		  KEY `timestamp` (`timestamp`)
+		) $collate;
+	";
+	dbDelta($sqlQuery);
+
+	//pmpro_membership_order_items
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_membership_order_items . "` (
+		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `order_id` bigint(20) unsigned NOT NULL,
+		  `parent_item_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+		  `item_type` varchar(64) NOT NULL DEFAULT '',
+		  `object_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+		  `name` varchar(255) NOT NULL DEFAULT '',
+		  `quantity` int(11) unsigned NOT NULL DEFAULT '1',
+		  `subtotal` decimal(18,8) NOT NULL DEFAULT '0.00',
+		  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
+		  PRIMARY KEY (`id`),
+		  KEY `order_id` (`order_id`),
+		  KEY `item_type_object_id` (`item_type`, `object_id`)
 		) $collate;
 	";
 	dbDelta($sqlQuery);

@@ -1,7 +1,7 @@
 <?php
 /**
  * Template: Confirmation
- * Version: 3.8
+ * Version: 4.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -45,7 +45,10 @@ if ( empty( $pmpro_invoice ) ) {
 				}
 
 				// Start building the confirmation message.
-				if ( 'success' != $pmpro_invoice->status ) {
+				if ( empty( $pmpro_invoice->membership_id ) ) {
+					// A purchase without a membership level.
+					$confirmation_message = '<p>' . sprintf( __( 'Thank you for your purchase from %s.', 'paid-memberships-pro' ), get_bloginfo( 'name' ) ) . '</p>';
+				} elseif ( 'success' != $pmpro_invoice->status ) {
 					$confirmation_message = '<p>' . sprintf(__('Thank you for your membership to %1$s. Your %2$s membership will be activated once the payment has been completed.', 'paid-memberships-pro' ), get_bloginfo("name"), $pmpro_invoice->membership_level->name) . '</p>';
 				} else {
 					$confirmation_message = '<p>' . sprintf(__('Thank you for your membership to %s. Your %s membership is now active.', 'paid-memberships-pro' ), get_bloginfo("name"), $pmpro_invoice->membership_level->name) . '</p>';
@@ -62,7 +65,9 @@ if ( empty( $pmpro_invoice ) ) {
 				}
 
 				// Add some details to the confirmation message about the order.
-				if ( ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
+				if ( empty( $pmpro_invoice->membership_id ) ) {
+					$confirmation_message .= '<p>' . sprintf( __( 'Below is a receipt for your order. A copy has been sent to %s.', 'paid-memberships-pro' ), $pmpro_invoice->user->user_email ) . '</p>';
+				} elseif ( ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
 					$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account and a receipt for your initial membership order. A welcome email with a copy of your initial membership order has been sent to %s.', 'paid-memberships-pro' ), $pmpro_invoice->user->user_email ) . '</p>';
 				} else {
 					$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account. A welcome email has been sent to %s.', 'paid-memberships-pro' ), $pmpro_invoice->user->user_email ) . '</p>';
@@ -99,7 +104,7 @@ if ( empty( $pmpro_invoice ) ) {
 					<?php
 				}
 
-				if ( pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
+				if ( ! empty( $pmpro_invoice->membership_id ) && pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
 					// The invoice is free, so we don't need to show a full order.
 					?>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div>
@@ -146,7 +151,7 @@ if ( empty( $pmpro_invoice ) ) {
 	</section> <!-- end pmpro_confirmation -->
 </div> <!-- end pmpro -->
 <?php
-	if ( ! empty( $pmpro_invoice ) && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
+	if ( ! empty( $pmpro_invoice ) && ( empty( $pmpro_invoice->membership_id ) || ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) ) {
 		// If the order is not free, show the full order, but make sure we don't show $pmpro_msg again.
 		$pmpro_msg = false;
 		$pmpro_msgt = false;

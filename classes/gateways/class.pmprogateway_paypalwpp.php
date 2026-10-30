@@ -263,7 +263,8 @@
 		 */
 		function process(&$order)
 		{
-			if(floatval($order->InitialPayment) == 0)
+			// An order without a membership level is a one-time charge.
+			if( ! empty( $order->membership_id ) && floatval($order->InitialPayment) == 0)
 			{
 				//auth first, then process
 				$authorization_id = $this->authorize($order);
@@ -286,7 +287,7 @@
 				if($this->charge($order))
 				{
 					//set up recurring billing
-					if(pmpro_isLevelRecurring($order->membership_level))
+					if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) )
 					{
 						$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 						if($this->subscribe($order))

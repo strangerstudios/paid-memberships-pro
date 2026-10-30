@@ -196,8 +196,8 @@
 				//charge first payment
 				if($this->charge($order))
 				{
-					//set up recurring billing
-					if(pmpro_isLevelRecurring($order->membership_level))
+					//set up recurring billing. An order without a membership level is a one-time charge.
+					if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) )
 					{
 						if($this->subscribe($order))
 						{
@@ -336,8 +336,8 @@
 			//paypal profile stuff
 			$nvpStr = "";
 
-			// Only add CARDONFILE for initial charge if it's recurring.
-			if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
+			// Only add CARDONFILE for initial charge if it's recurring. An order without a membership level is a one-time charge.
+			if ( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) ) {
 				/*
 				 * Card on File is now required.
 				 *

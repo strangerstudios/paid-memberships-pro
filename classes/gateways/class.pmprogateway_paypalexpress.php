@@ -291,20 +291,23 @@
 				return false;
 			}
 
-			//set up values
-			$pmpro_level = $order->getMembershipLevelAtCheckout();
-			$user        = get_userdata( $order->user_id );
-			$order->membership_id = $pmpro_level->id;
-			$order->membership_name = $pmpro_level->name;
-			$order->subtotal = pmpro_round_price( $pmpro_level->initial_payment );
+			//set up values. An order without a membership level keeps the subtotal of its lines.
+			if ( ! empty( $order->membership_id ) ) {
+				$pmpro_level = $order->getMembershipLevelAtCheckout();
+				$user        = get_userdata( $order->user_id );
+				$order->membership_id = $pmpro_level->id;
+				$order->membership_name = $pmpro_level->name;
+				$order->subtotal = pmpro_round_price( $pmpro_level->initial_payment );
 
-			//setup level var
-			$order->getMembershipLevelAtCheckout();
+				//setup level var
+				$order->getMembershipLevelAtCheckout();
+			}
 
 			//tax
 			$order->getTax();
 
-			if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
+			// An order without a membership level is a one-time charge.
+			if ( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) ) {
 				$success = $this->subscribe($order);
 			} else {
 				$success = $this->charge($order);
@@ -365,8 +368,9 @@
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
 
-			// Get the level.
-			$level = $order->getMembershipLevelAtCheckout();
+			// Get the level. An order without a membership level is a one-time payment, described by its lines.
+			$level = empty( $order->membership_id ) ? null : $order->getMembershipLevelAtCheckout();
+			$level_name = empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name;
 
 			//taxes on initial amount
 			$initial_payment = $order->subtotal;
@@ -375,7 +379,7 @@
 			// Note: SetExpressCheckout expects this amount to be the total including tax.
 			$initial_payment = pmpro_round_price_as_string( (float) $initial_payment + (float) $initial_payment_tax );
 
-			$profile_start_date = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
+			$profile_start_date = empty( $order->membership_id ) ? '' : pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -384,9 +388,9 @@
 				$nvpStr .= "&PROFILESTARTDATE=" . $profile_start_date;
 			if(!empty($level->cycle_number))
 				$nvpStr .= "&BILLINGPERIOD=" . $level->cycle_period . "&BILLINGFREQUENCY=" . $level->cycle_number . "&AUTOBILLOUTAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
-			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr( trim( $order->membership_level->name ) . " at " . trim( get_bloginfo( "name" ) ), 0, 127 ), trim( $order->membership_level->name ), $order, trim( get_bloginfo( "name" ) ) ) );
+			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr( trim( $level_name ) . " at " . trim( get_bloginfo( "name" ) ), 0, 127 ), trim( $level_name ), $order, trim( get_bloginfo( "name" ) ) ) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
-			$nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ) ) . "&L_PAYMENTTYPE0=Any";
+			$nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($level_name . " at " . get_bloginfo("name"), 0, 127), $level_name, $order, get_bloginfo("name") ) ) . "&L_PAYMENTTYPE0=Any";
 
 			//if billing cycles are defined
 			if(!empty($level->billing_limit))
@@ -522,7 +526,9 @@
 			*/
 			if(!empty($level->cycle_number))
 				$nvpStr .= "&BILLINGPERIOD=" . $level->cycle_period . "&BILLINGFREQUENCY=" . $level->cycle_number . "&AUTOBILLOUTAMT=AddToNextBilling";
-			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
+			// An order without a membership level is described by its lines.
+			$level_name = empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name;
+			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($level_name . " at " . get_bloginfo("name"), 0, 127), $level_name, $order, get_bloginfo("name")) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1";
 

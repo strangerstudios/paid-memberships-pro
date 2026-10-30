@@ -37,7 +37,9 @@ if ( ! empty( $_REQUEST['pmpro_order'] ) ) {
 
 		// If the order has already had a payment submitted, redirect to the confirmation page.
 		if ( in_array( $pmpro_review->status, array( 'success', 'pending' ) ) ) {
-			wp_redirect( pmpro_url( 'confirmation', '?pmpro_level=' . $pmpro_review->membership_id ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
+			// An order without a membership level is confirmed by its code.
+			$confirmation_args = empty( $pmpro_review->membership_id ) ? '?pmpro_order=' . $pmpro_review->code : '?pmpro_level=' . $pmpro_review->membership_id;
+			wp_redirect( pmpro_url( 'confirmation', $confirmation_args ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 			exit;
 		}
 
@@ -85,7 +87,8 @@ $pmpro_level = pmpro_getLevelAtCheckout();
  */
 do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', $pmpro_level );
 
-if ( empty( $pmpro_level->id ) ) {
+// Send the user to the levels page if there is nothing to purchase. A checkout without a membership level has lines instead.
+if ( empty( $pmpro_level->id ) && ! pmpro_is_membershipless_checkout( $pmpro_level ) ) {
 	wp_redirect( pmpro_url( "levels" ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 	exit( 0 );
 }
@@ -351,6 +354,11 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 	}
 }
 
+// Check the lines being purchased before the user or order is created.
+if ( $submit && $pmpro_msgt != "pmpro_error" ) {
+	pmpro_check_checkout_items( pmpro_get_checkout_items( $pmpro_level ) );
+}
+
 // If there is still a valid checkout submission, allow custom code to halt the checkout.
 if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 	/**
@@ -519,7 +527,7 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 			$pmpro_msgt = "pmpro_error";
 		} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
 
-			pmpro_maybe_send_wp_new_user_notification( $user_id, $pmpro_level->id );
+			pmpro_maybe_send_wp_new_user_notification( $user_id, empty( $pmpro_level->id ) ? null : $pmpro_level->id );
 
 			$wpuser = get_userdata( $user_id );
 			$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
@@ -597,7 +605,7 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 	if ( $pmpro_msgt != "pmpro_error" ) {
 		$pmpro_review                   = new MemberOrder();
 		$pmpro_review->user_id          = $current_user->ID;
-		$pmpro_review->membership_id    = $pmpro_level->id;
+		$pmpro_review->membership_id    = empty( $pmpro_level->id ) ? 0 : $pmpro_level->id;
 		$pmpro_review->cardtype         = $CardType;
 		$pmpro_review->accountnumber    = $AccountNumber;
 		$pmpro_review->expirationmonth  = $ExpirationMonth;
@@ -614,7 +622,7 @@ if ( $submit && $pmpro_msgt != 'pmpro_error' && empty( $pmpro_review ) ) {
 		$pmpro_review->billing->phone   = $bphone;
 
 		// Calculate the order subtotal, tax, and total.
-		$pmpro_review->subtotal         = pmpro_round_price( $pmpro_level->initial_payment );
+		$pmpro_review->subtotal         = pmpro_round_price( empty( $pmpro_level->id ) ? pmpro_get_items_total( pmpro_get_checkout_items( $pmpro_level ) ) : $pmpro_level->initial_payment );
 		$pmpro_review->tax              = pmpro_round_price( $pmpro_review->getTax( true ) );
 		$pmpro_review->total            = pmpro_round_price( $pmpro_review->subtotal + $pmpro_review->tax );
 
@@ -688,8 +696,13 @@ if ( is_array( $pmpro_confirmed_data ) ) {
 if ( ! empty( $pmpro_confirmed ) ) {
 	if ( pmpro_complete_checkout( $pmpro_review ) ) {
 		//redirect to confirmation
-		$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
-		$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $current_user->ID, $pmpro_level );
+		if ( empty( $pmpro_level->id ) ) {
+			// An order without a membership level is confirmed by its code.
+			$rurl = pmpro_url( 'confirmation', '?pmpro_order=' . $pmpro_review->code );
+		} else {
+			$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
+			$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $current_user->ID, $pmpro_level );
+		}
 		wp_redirect( $rurl ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- The pmpro_confirmation_url filter lets developers send members to any URL, including offsite.
 		exit;
 	} else {

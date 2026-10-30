@@ -256,6 +256,8 @@
 		 */
 		function process(&$order)
 		{
+			global $pmpro_level;
+
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
 
@@ -266,6 +268,14 @@
 			//just save, the user will go to 2checkout to pay
 			$order->status = "review";
 			$order->saveOrder();
+
+			// Save the checkout lines now. The payment is completed later, outside the checkout.
+			$order->add_items( pmpro_get_checkout_items( $pmpro_level ) );
+
+			// An order without a membership level doesn't run the level change hooks, so send the user to 2Checkout now.
+			if ( empty( $order->membership_id ) ) {
+				self::pmpro_checkout_before_change_membership_level( $order->user_id, $order );
+			}
 
 			return true;
 		}
@@ -278,7 +288,7 @@
 				'sid' => get_option("pmpro_twocheckout_accountnumber"),
 				'mode' => '2CO', // will always be 2CO according to docs (@see https://www.2checkout.com/documentation/checkout/parameter-sets/pass-through-products/)
 				'li_0_type' => 'product',
-				'li_0_name' => substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127),
+				'li_0_name' => substr( ( empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name ) . " at " . get_bloginfo("name"), 0, 127), // An order without a membership level is described by its lines.
 				'li_0_quantity' => 1,
 				'li_0_tangible' => 'N',
 				'li_0_product_id' => $order->code,
@@ -299,8 +309,8 @@
 			$amount_tax = $order->getTaxForPrice($amount);
 			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
-			// Recurring membership
-			if( pmpro_isLevelRecurring( $order->membership_level ) ) {
+			// Recurring membership. An order without a membership level is a one-time payment.
+			if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) ) {
 				$tco_args['li_0_startup_fee'] = pmpro_round_price_as_string( $initial_payment - $amount );		//negative amount for lower initial payments
 				$recurring_payment = (float) $order->membership_level->billing_amount;
 				$recurring_payment_tax = (float) $order->getTaxForPrice( $recurring_payment );

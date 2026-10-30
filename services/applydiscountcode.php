@@ -169,10 +169,14 @@
 			$html = implode( "\n\n", $html );
 			?>
 				jQuery('#pmpro_level_cost').html( <?php echo wp_json_encode( wp_kses_post( $html ) ); ?> );
+				jQuery('.pmpro_checkout_items').remove(); // The checkout lines are rebuilt when the checkout is submitted.
 			<?php
 
+			// A checkout with Add On lines still has something to pay for when the code makes the level free.
+			$code_levels_free = pmpro_areLevelsFree( $code_levels ) && empty( $_REQUEST['pmpro_checkout_has_items'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, only decides whether billing fields are shown.
+
 			//tell gateway javascripts whether or not to fire (e.g. no Stripe on free levels)
-			if(pmpro_areLevelsFree($code_levels))
+			if($code_levels_free)
 			{
 			?>
 				pmpro_require_billing = false;
@@ -186,7 +190,7 @@
 			}
 
 			//hide/show billing
-			if(pmpro_areLevelsFree($code_levels) || pmpro_getGateway() == "paypalexpress" || pmpro_getGateway() == "paypalstandard" || pmpro_getGateway() == 'check')
+			if($code_levels_free || pmpro_getGateway() == "paypalexpress" || pmpro_getGateway() == "paypalstandard" || pmpro_getGateway() == 'check')
 			{
 				?>
 				jQuery('#pmpro_billing_address_fields').hide();
@@ -204,7 +208,7 @@
 			//hide/show paypal button
 			if(pmpro_getGateway() == "paypalexpress" || pmpro_getGateway() == "paypalstandard")
 			{
-				if(pmpro_areLevelsFree($code_levels))
+				if($code_levels_free)
 				{
 					?>
 					jQuery('#pmpro_paypalexpress_checkout').hide();
