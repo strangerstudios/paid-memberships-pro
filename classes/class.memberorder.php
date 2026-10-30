@@ -1769,59 +1769,53 @@
 		 *
 		 * @since TBD
 		 *
-		 * @return object[] Lines with id, order_id, parent_item_id, item_type, object_id, name, quantity, subtotal
-		 *                  and billing_amount. A line built from the order has id 0.
+		 * @return PMPro_Order_Item[] The lines. A line built from the order has id 0.
 		 */
 		public function get_items() {
 			global $wpdb;
 
-			$rows = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
+			$rows = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, parent_item_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
+			$lines = array_map(
+				function ( $row ) {
+					return new PMPro_Order_Item( $row );
+				},
+				$rows
+			);
 
-			if ( empty( $rows ) ) {
+			if ( empty( $lines ) ) {
 				if ( empty( $this->membership_id ) ) {
 					return array();
 				}
 
 				$level        = pmpro_getLevel( $this->membership_id );
 				$subscription = empty( $this->subscription_transaction_id ) ? null : PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
-				$rows         = array(
-					(object) array(
-						'id'             => 0,
-						'order_id'       => (int) $this->id,
-						'parent_item_id' => 0,
-						'item_type'      => 'membership',
-						'object_id'      => (int) $this->membership_id,
-						'name'           => empty( $level->name ) ? '' : $level->name,
-						'quantity'       => 1,
-						'subtotal'       => (float) $this->subtotal,
-						'billing_amount' => empty( $subscription ) ? 0 : (float) $subscription->get_billing_amount(),
+				return array(
+					new PMPro_Order_Item(
+						array(
+							'order_id'       => $this->id,
+							'item_type'      => 'membership',
+							'object_id'      => $this->membership_id,
+							'name'           => empty( $level->name ) ? '' : $level->name,
+							'subtotal'       => $this->subtotal,
+							'billing_amount' => empty( $subscription ) ? 0 : $subscription->get_billing_amount(),
+						)
 					),
 				);
-			} else {
-				$others = 0;
-				foreach ( $rows as $row ) {
-					if ( 'membership' !== $row->item_type ) {
-						$others += (float) $row->subtotal;
-					}
+			}
+
+			$others = 0;
+			foreach ( $lines as $line ) {
+				if ( 'membership' !== $line->item_type ) {
+					$others += $line->subtotal;
 				}
-				foreach ( $rows as $row ) {
-					if ( 'membership' === $row->item_type ) {
-						$row->subtotal = max( 0, pmpro_round_price( (float) $this->subtotal - $others ) );
-					}
+			}
+			foreach ( $lines as $line ) {
+				if ( 'membership' === $line->item_type ) {
+					$line->subtotal = max( 0, pmpro_round_price( (float) $this->subtotal - $others ) );
 				}
 			}
 
-			foreach ( $rows as $row ) {
-				$row->id             = (int) $row->id;
-				$row->order_id       = (int) $row->order_id;
-				$row->parent_item_id = (int) $row->parent_item_id;
-				$row->object_id      = (int) $row->object_id;
-				$row->quantity       = (int) $row->quantity;
-				$row->subtotal       = pmpro_round_price( (float) $row->subtotal );
-				$row->billing_amount = pmpro_round_price( (float) $row->billing_amount );
-			}
-
-			return $rows;
+			return $lines;
 		}
 
 		/**
@@ -1839,7 +1833,7 @@
 			if ( empty( $lines ) && ! empty( $this->checkout_items ) ) {
 				$lines = array_map(
 					function ( $item ) {
-						return (object) $item;
+						return new PMPro_Order_Item( $item );
 					},
 					array_values( $this->checkout_items )
 				);
@@ -1847,7 +1841,7 @@
 
 			$names = array();
 			foreach ( $lines as $line ) {
-				$names[] = pmpro_get_order_item_label( $line );
+				$names[] = $line->get_label();
 			}
 
 			/* translators: %s: order code. */
@@ -1881,20 +1875,20 @@
 			usort(
 				$items,
 				function ( $a, $b ) {
-					return (int) ( 'membership' === $b['type'] ) - (int) ( 'membership' === $a['type'] );
+					return (int) ( 'membership' === $b['item_type'] ) - (int) ( 'membership' === $a['item_type'] );
 				}
 			);
 
 			$others = 0;
 			foreach ( $items as $item ) {
-				if ( 'membership' !== $item['type'] ) {
+				if ( 'membership' !== $item['item_type'] ) {
 					$others += $item['subtotal'];
 				}
 			}
 
 			$saved_ids = array();
 			foreach ( $items as $item ) {
-				if ( 'membership' === $item['type'] ) {
+				if ( 'membership' === $item['item_type'] ) {
 					$item['subtotal'] = max( 0, pmpro_round_price( (float) $this->subtotal - $others ) );
 				}
 
@@ -1902,8 +1896,8 @@
 					$wpdb->pmpro_membership_order_items,
 					array(
 						'order_id'       => (int) $this->id,
-						'parent_item_id' => ( null !== $item['parent'] && isset( $saved_ids[ $item['parent'] ] ) ) ? $saved_ids[ $item['parent'] ] : 0,
-						'item_type'      => $item['type'],
+						'parent_item_id' => ( null !== $item['parent_key'] && isset( $saved_ids[ $item['parent_key'] ] ) ) ? $saved_ids[ $item['parent_key'] ] : 0,
+						'item_type'      => $item['item_type'],
 						'object_id'      => $item['object_id'],
 						'name'           => $item['name'],
 						'quantity'       => $item['quantity'],

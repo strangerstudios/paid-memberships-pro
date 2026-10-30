@@ -23,8 +23,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- CRUD for the PMPro order items custom table, which has no WordPress API or object cache layer.
-
 /*
  * Checkout lines.
  */
@@ -32,15 +30,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Normalize a checkout line to the shape used by the pmpro_checkout_items filter.
  *
+ * A checkout line is an array. It uses the same names as a saved line (PMPro_Order_Item) for the same
+ * values, plus two that only exist at checkout: key and parent_key.
+ *
  * Line shape:
- * - key            (string)      Unique key for this line in the checkout. Defaults to "{type}-{object_id}".
- * - type           (string)      What the line is, such as 'seats' or 'donation'. 'membership' and 'discount' are core only.
+ * - key            (string)      Unique key for this line in the checkout. Defaults to "{item_type}-{object_id}".
+ * - item_type      (string)      What the line is, such as 'seats' or 'donation'. 'membership' and 'discount' are core only.
  * - object_id      (int)         The level ID for the membership line. Defined by the Add On otherwise.
  * - name           (string)      Name shown at checkout, on the invoice and in emails.
  * - quantity       (int)         Quantity. At least 1.
  * - subtotal       (float)       Amount charged on this order for the whole quantity, before tax.
  * - billing_amount (float)       Amount added to each recurring payment. Always 0 for a one-time line.
- * - parent         (string|null) 'membership' for a line under the membership line, or null for a top-level line.
+ * - parent_key     (string|null) 'membership' for a line under the membership line, or null for a top-level line.
  *
  * @since TBD
  *
@@ -52,24 +53,24 @@ function pmpro_normalize_checkout_item( $item ) {
 		(array) $item,
 		array(
 			'key'            => '',
-			'type'           => '',
+			'item_type'      => '',
 			'object_id'      => 0,
 			'name'           => '',
 			'quantity'       => 1,
 			'subtotal'       => 0,
 			'billing_amount' => 0,
-			'parent'         => null,
+			'parent_key'     => null,
 		)
 	);
 
-	$item['type']           = sanitize_key( $item['type'] );
+	$item['item_type']      = sanitize_key( $item['item_type'] );
 	$item['object_id']      = (int) $item['object_id'];
 	$item['name']           = mb_substr( sanitize_text_field( $item['name'] ), 0, 255 ); // The name column is varchar(255).
 	$item['quantity']       = max( 1, (int) $item['quantity'] );
 	$item['subtotal']       = pmpro_round_price( (float) $item['subtotal'] );
 	$item['billing_amount'] = pmpro_round_price( (float) $item['billing_amount'] );
-	$item['parent']         = ( null === $item['parent'] || '' === $item['parent'] ) ? null : (string) $item['parent'];
-	$item['key']            = ( '' === (string) $item['key'] ) ? $item['type'] . '-' . $item['object_id'] : (string) $item['key'];
+	$item['parent_key']     = ( null === $item['parent_key'] || '' === $item['parent_key'] ) ? null : (string) $item['parent_key'];
+	$item['key']            = ( '' === (string) $item['key'] ) ? $item['item_type'] . '-' . $item['object_id'] : (string) $item['key'];
 
 	return $item;
 }
@@ -147,7 +148,7 @@ function pmpro_get_membership_checkout_items( $level, $code_level = null ) {
 		'membership' => pmpro_normalize_checkout_item(
 			array(
 				'key'            => 'membership',
-				'type'           => 'membership',
+				'item_type'      => 'membership',
 				'object_id'      => (int) $level->id,
 				'name'           => $level->name,
 				'subtotal'       => (float) $level->initial_payment + $initial_discount,
@@ -160,13 +161,13 @@ function pmpro_get_membership_checkout_items( $level, $code_level = null ) {
 		$items['discount'] = pmpro_normalize_checkout_item(
 			array(
 				'key'            => 'discount',
-				'type'           => 'discount',
+				'item_type'      => 'discount',
 				'object_id'      => (int) $code->id,
 				/* translators: %s: discount code. */
 				'name'           => sprintf( __( 'Discount code %s', 'paid-memberships-pro' ), $code->code ),
 				'subtotal'       => - $initial_discount,
 				'billing_amount' => - $recurring_discount,
-				'parent'         => 'membership',
+				'parent_key'     => 'membership',
 			)
 		);
 	}
@@ -196,8 +197,8 @@ function pmpro_build_checkout_items( $level, $code_level = null ) {
 	 * and, when a discount code lowers the price, a 'discount' line under it. Add Ons add their own lines.
 	 * See pmpro_normalize_checkout_item() for the line shape.
 	 *
-	 * - A line with 'parent' set to 'membership' sits under the membership line and renews with it. If the
-	 *   membership is one-time, the line is one-time too.
+	 * - A line with 'parent_key' set to 'membership' sits under the membership line and renews with it. If
+	 *   the membership is one-time, the line is one-time too.
 	 * - A line without a parent is one-time. Its billing_amount is ignored.
 	 * - Amounts can't be negative. Discount codes only discount the membership line, but an Add On may read
 	 *   the code to price its own lines.
@@ -224,7 +225,7 @@ function pmpro_build_checkout_items( $level, $code_level = null ) {
 		}
 
 		// Top-level lines are one-time. Lines under a one-time membership are one-time too.
-		if ( null === $item['parent'] || empty( $core_items['membership']['billing_amount'] ) ) {
+		if ( null === $item['parent_key'] || empty( $core_items['membership']['billing_amount'] ) ) {
 			$item['billing_amount'] = 0;
 		}
 
@@ -330,13 +331,13 @@ function pmpro_check_checkout_items( $items ) {
 		}
 
 		// Only core makes membership and discount lines, and only core lines can be negative.
-		if ( in_array( $item['type'], array( 'membership', 'discount' ), true ) || $item['subtotal'] < 0 || $item['billing_amount'] < 0 ) {
+		if ( in_array( $item['item_type'], array( 'membership', 'discount' ), true ) || $item['subtotal'] < 0 || $item['billing_amount'] < 0 ) {
 			pmpro_setMessage( __( 'An item in this checkout has an invalid price. Please contact the site owner.', 'paid-memberships-pro' ), 'pmpro_error' );
 			return false;
 		}
 
 		// A line under the membership needs a membership in this checkout.
-		if ( null !== $item['parent'] && ( 'membership' !== $item['parent'] || ! isset( $items['membership'] ) ) ) {
+		if ( null !== $item['parent_key'] && ( 'membership' !== $item['parent_key'] || ! isset( $items['membership'] ) ) ) {
 			pmpro_setMessage( __( 'An item in this checkout requires a membership that is not being purchased.', 'paid-memberships-pro' ), 'pmpro_error' );
 			return false;
 		}
@@ -388,8 +389,8 @@ function pmpro_display_checkout_items( $level ) {
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_items' ) ); ?>">
 		<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ); ?>">
 			<?php foreach ( $items as $item ) { ?>
-				<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_checkout_item pmpro_checkout_item-' . $item['type'] ) ); ?>">
-					<?php echo esc_html( pmpro_get_order_item_label( (object) $item ) ); ?>:
+				<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_checkout_item pmpro_checkout_item-' . $item['item_type'] ) ); ?>">
+					<?php echo esc_html( ( new PMPro_Order_Item( $item ) )->get_label() ); ?>:
 					<strong><?php echo esc_html( pmpro_format_order_item_price( $item['subtotal'] ) ); ?></strong>
 					<?php
 					if ( 0 != $item['billing_amount'] && ! empty( $level->cycle_number ) ) {
@@ -454,30 +455,14 @@ function pmpro_format_order_item_price( $amount ) {
 }
 
 /**
- * Get the label of a line, such as "Seats" or "3 × Seats".
- *
- * @since TBD
- *
- * @param object $line The order line or checkout line (as an object).
- * @return string
- */
-function pmpro_get_order_item_label( $line ) {
-	if ( $line->quantity > 1 ) {
-		/* translators: 1: quantity, 2: item name. */
-		return sprintf( __( '%1$d × %2$s', 'paid-memberships-pro' ), $line->quantity, $line->name );
-	}
-	return $line->name;
-}
-
-/**
  * Check whether an order's lines should be listed instead of its single summary row.
  *
  * A single membership line keeps the order's existing display.
  *
  * @since TBD
  *
- * @param MemberOrder $order The order.
- * @param object[]    $lines The order's lines.
+ * @param MemberOrder        $order The order.
+ * @param PMPro_Order_Item[] $lines The order's lines.
  * @return bool
  */
 function pmpro_should_display_order_items( $order, $lines ) {
@@ -505,7 +490,7 @@ function pmpro_display_order_item_rows( $order ) {
 		?>
 		<tr class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_order_item pmpro_order_item-' . $line->item_type ) ); ?>">
 			<th data-title="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>">
-				<?php echo esc_html( ( $line->parent_item_id ? '— ' : '' ) . pmpro_get_order_item_label( $line ) ); ?>
+				<?php echo esc_html( ( $line->parent_item_id ? '— ' : '' ) . $line->get_label() ); ?>
 			</th>
 			<td data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>">
 				<?php echo esc_html( pmpro_format_order_item_price( $line->subtotal ) ); ?>
@@ -535,7 +520,7 @@ function pmpro_get_order_items_email_html( $order ) {
 
 	$html = '<ul>';
 	foreach ( $lines as $line ) {
-		$html .= '<li>' . esc_html( ( $line->parent_item_id ? '— ' : '' ) . pmpro_get_order_item_label( $line ) . ': ' . pmpro_format_order_item_price( $line->subtotal ) ) . '</li>';
+		$html .= '<li>' . esc_html( ( $line->parent_item_id ? '— ' : '' ) . $line->get_label() . ': ' . pmpro_format_order_item_price( $line->subtotal ) ) . '</li>';
 	}
 	$html .= '</ul>';
 
