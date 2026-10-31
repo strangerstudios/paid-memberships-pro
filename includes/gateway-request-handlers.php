@@ -311,13 +311,35 @@ function pmpro_handle_recurring_payment_failure_at_gateway( $order_data ) {
 		return 'Processed failed payment for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '. Order id = ' . $order->id . '. Already sent failure email within the last 24 hours.';
 	}
 
-	// Email the user and ask them to update their credit card information
-	$pmproemail = new PMProEmail();
-	$pmproemail->sendBillingFailureEmail($user, $order);
+	/**
+	 * Filter whether to send the billing failure email to the member.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool        $send  Whether to send the email. Default true.
+	 * @param MemberOrder $order The pending order for the failed payment.
+	 * @param WP_User     $user  The member whose payment failed.
+	 */
+	if ( apply_filters( 'pmpro_send_billing_failure_email', true, $order, $user ) ) {
+		// Email the user and ask them to update their credit card information
+		$pmproemail = new PMProEmail();
+		$pmproemail->sendBillingFailureEmail($user, $order);
+	}
 
-	// Email admin so they are aware of the failure
-	$pmproemail = new PMProEmail();
-	$pmproemail->sendBillingFailureAdminEmail(get_bloginfo("admin_email"), $order);
+	/**
+	 * Filter whether to send the billing failure email to the admin.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool        $send  Whether to send the email. Default true.
+	 * @param MemberOrder $order The pending order for the failed payment.
+	 * @param WP_User     $user  The member whose payment failed.
+	 */
+	if ( apply_filters( 'pmpro_send_billing_failure_admin_email', true, $order, $user ) ) {
+		// Email admin so they are aware of the failure
+		$pmproemail = new PMProEmail();
+		$pmproemail->sendBillingFailureAdminEmail(get_bloginfo("admin_email"), $order);
+	}
 
 	// Update order meta with the time we sent the failure email.
 	update_pmpro_membership_order_meta( $order->id, 'last_failure_email_sent', time() );
