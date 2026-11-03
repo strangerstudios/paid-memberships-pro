@@ -85,17 +85,17 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 	 * @return string The email body.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '{% if membership_level_name %}' . __( '<p>There was a new member checkout at {{ sitename }}.</p>
+		return wp_kses_post( __( '<p>{% if membership_level_name %}There was a new member checkout at {{ sitename }}.{% else %}There was a new order at {{ sitename }}.{% endif %}</p>
 
-<p>Below are details about the new membership account and a receipt for the initial membership order.</p>
+<p>{% if membership_level_name %}Below are details about the new membership account and a receipt for the initial membership order.{% else %}Below is a receipt for the order.{% endif %}</p>
 
 <p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: {{ membership_level_name }}</p>
+{% if membership_level_name %}<p>Membership Level: {{ membership_level_name }}</p>
 
 <p>Membership Fee: {{ membership_cost }}</p>
 
-{% if membership_expiration %}{{ membership_expiration }}{% endif %}
+{% endif %}{% if membership_expiration %}{{ membership_expiration }}{% endif %}
 
 {% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}{% if order_lines %}
 
@@ -116,30 +116,7 @@ class PMPro_Email_Template_Checkout_Paid_Admin extends PMPro_Email_Template {
 	Expires: {{ expirationmonth }}/{{ expirationyear }}
 </p>{% endif %}
 
-<p>Log in to your WordPress admin here: {{ login_url }}</p>', 'paid-memberships-pro' ) . '{% else %}' . __( '<p>There was a new order at {{ sitename }}.</p>
-
-<p>Below is a receipt for the order.</p>
-
-<p>Account: {{ display_name }} ({{ user_email }})</p>
-
-{{ order_lines }}
-
-<p>
-	Order #{{ order_id }} on {{ order_date }}<br />
-	Total Billed: {{ order_total }}
-</p>
-
-<p>
-	Billing Information:<br />
-	{{ billing_address }}
-</p>
-
-{% if accountnumber %}<p>
-	{{ cardtype }}: {{ accountnumber }}<br />
-	Expires: {{ expirationmonth }}/{{ expirationyear }}
-</p>{% endif %}
-
-<p>Log in to your WordPress admin here: {{ login_url }}</p>', 'paid-memberships-pro' ) . '{% endif %}' );
+<p>Log in to your WordPress admin here: {{ login_url }}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**

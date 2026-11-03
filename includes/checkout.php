@@ -58,9 +58,6 @@ function pmpro_calculate_profile_start_date( $order, $date_format ) {
 	$pmpro_level_arr = (array) $pmpro_level;
 	update_pmpro_membership_order_meta( $order->id, 'checkout_level', $pmpro_level_arr );
 
-	// Save the checkout lines.
-	$order->add_items( pmpro_get_checkout_items( $pmpro_level ) );
-
 	// Save the discount code.
 	// @TODO: Remove this in v4.0. Discount codes should be set on the level object.
 	update_pmpro_membership_order_meta( $order->id, 'checkout_discount_code', $discount_code );
@@ -216,9 +213,6 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 			return false;
 		}
 
-		// Save the checkout lines, unless they were saved before the buyer went offsite to pay.
-		$order->add_items( pmpro_get_checkout_items( $pmpro_level ) );
-
 		// Save first and last name fields.
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Same as below. Only fills in empty name fields.
 		foreach ( array( 'first_name', 'last_name' ) as $field ) {
@@ -330,9 +324,6 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 			$order->discount_code_id = $discount_code_id;
 		}
 		$order->saveOrder();
-
-		// Save the checkout lines, unless they were saved before the buyer went offsite to pay.
-		$order->add_items( pmpro_get_checkout_items( $pmpro_level ) );
 
 		//add discount code use
 		if ( ! empty( $discount_code_id ) ) {

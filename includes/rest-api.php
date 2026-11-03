@@ -191,7 +191,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		add_filter( 'pmpro_rest_api_permissions', array( $this, 'pmpro_rest_api_permissions_get_order' ), 10, 2 );
 
 		/**
-		 * Get membership level after checkout options are applied.
+		 * Get the checkout level after the discount code and Add On lines are applied.
+		 *
+		 * Gateways use this to show the amount due before checkout is submitted, such as in Stripe's Payment
+		 * Request Button. See pmpro_rest_api_get_checkout_level() for the response.
+		 *
 		 * @since 2.4
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
 		 */
@@ -1122,8 +1126,28 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get a membership level at checkout.
 		 *
+		 * Takes the checkout form's level (pmpro_level, level_id or level), discount code (pmpro_discount_code
+		 * or discount_code) and any fields that change the price, and returns the level as checkout would
+		 * price it with those values.
+		 *
+		 * - initial_payment is the whole first payment and billing_amount the whole recurring payment, before
+		 *   tax. Both include the lines that Add Ons add with the pmpro_checkout_items filter, so clients that
+		 *   need the amount due should read these.
+		 * - checkout_items lists the lines, keyed by key. See pmpro_normalize_checkout_item() for their shape.
+		 * - Add Ons read their inputs from the request. The checkout JavaScript only sends the level, the
+		 *   discount code and fields with the pmpro_alter_price class, so a field that changes a line needs
+		 *   that class or the amounts here won't include it.
+		 * - When no level is requested and Add Ons add lines, the checkout has no membership level and the
+		 *   response is not a level: id is 0, initial_payment is the total of the lines, billing_amount is 0
+		 *   and checkout_items lists the lines. The discount code is ignored.
+		 * - With no level and no lines, the response is a 400 error.
+		 *
 		 * @since 2.4
+		 * @since TBD Includes Add On lines, and responds for checkouts without a membership level.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
+		 *
+		 * @param WP_REST_Request $request The request.
+		 * @return WP_REST_Response
 		 */
 		function pmpro_rest_api_get_checkout_level( $request ) {
 			$params = $request->get_params();
@@ -1137,7 +1161,22 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			if ( empty( $level_id ) ) {
-				return new WP_REST_Response( 'No level found.', 400 );
+				// Without a level, respond for a checkout without a membership level if Add Ons add lines.
+				$items = pmpro_get_checkout_items( null );
+				if ( empty( $items ) ) {
+					return new WP_REST_Response( 'No level found.', 400 );
+				}
+
+				$initial_payment = pmpro_get_items_total( $items, 'subtotal' );
+				return new WP_REST_Response(
+					(object) array(
+						'id'                        => 0,
+						'initial_payment'           => $initial_payment,
+						'billing_amount'            => 0,
+						'initial_payment_formatted' => pmpro_formatPrice( $initial_payment ),
+						'checkout_items'            => $items,
+					)
+				);
 			}
 
 			if ( isset( $params['pmpro_discount_code'] ) ) {

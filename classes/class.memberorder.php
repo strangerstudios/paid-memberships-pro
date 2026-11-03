@@ -256,6 +256,15 @@
 		private $discount_code_id = null;
 
 		/**
+		 * The checkout lines to save the first time this order is saved. See set_items().
+		 *
+		 * @since TBD
+		 *
+		 * @var array
+		 */
+		private $items_to_save = array();
+
+		/**
 		 * Defines an array of optionally used properties
 		 *
 		 * @since 2.9
@@ -1470,6 +1479,9 @@
 					$this->updateDiscountCode( $this->discount_code_id );
 				}
 
+				// Save the checkout lines the first time the order is saved.
+				$this->save_items();
+
 				do_action($after_action, $this);
 
 				// Create a subscription if we need to.
@@ -1763,6 +1775,8 @@
 		 * Each line is an object with the columns of the order items table: id, order_id, parent_item_id,
 		 * item_type, object_id, name, quantity, subtotal and billing_amount. A saved line is never changed.
 		 *
+		 * - An order whose lines haven't been saved yet, such as during checkout, reads the lines set with
+		 *   set_items(). They have id 0 and parent_item_id 0.
 		 * - Orders without saved lines (renewals and orders saved before lines existed) read as one membership
 		 *   line built from the order. Orders without saved lines or a level have no lines.
 		 * - The membership line is always the order subtotal minus the other lines.
@@ -1775,6 +1789,23 @@
 			global $wpdb;
 
 			$lines = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, parent_item_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
+
+			// Lines that will be saved with the order, such as during checkout. They aren't saved, so they have no IDs.
+			if ( empty( $lines ) && ! empty( $this->items_to_save ) ) {
+				foreach ( $this->items_to_save as $item ) {
+					$lines[] = (object) array(
+						'id'             => 0,
+						'order_id'       => $this->id,
+						'parent_item_id' => 0,
+						'item_type'      => $item['item_type'],
+						'object_id'      => $item['object_id'],
+						'name'           => $item['name'],
+						'quantity'       => $item['quantity'],
+						'subtotal'       => $item['subtotal'],
+						'billing_amount' => $item['billing_amount'],
+					);
+				}
+			}
 
 			if ( empty( $lines ) ) {
 				if ( empty( $this->membership_id ) ) {
@@ -1824,7 +1855,6 @@
 		 * Describe what this order is for from its lines, such as "Donation, 2 × Gift".
 		 *
 		 * Gateways use this where they would show the level name, such as in the payment description.
-		 * Uses the checkout lines if the order hasn't been saved yet.
 		 *
 		 * @since TBD
 		 *
@@ -1832,9 +1862,6 @@
 		 */
 		public function get_items_description() {
 			$lines = $this->get_items();
-			if ( empty( $lines ) && empty( $this->id ) ) {
-				$lines = pmpro_get_checkout_items( $this->membership_level );
-			}
 
 			$names = array();
 			foreach ( $lines as $line ) {
@@ -1846,28 +1873,42 @@
 		}
 
 		/**
-		 * Save the checkout lines as this order's lines.
+		 * Set the checkout lines to save with this order.
 		 *
-		 * The checkout calls this once the order is saved. Lines are only added once, so this does nothing if
-		 * the order already has lines. The membership line is saved as the order subtotal minus the other lines.
+		 * The checkout sets the lines before the order is first saved, and saveOrder() saves them. Lines are
+		 * saved once: an order that already has saved lines keeps them.
 		 *
 		 * @since TBD
 		 *
 		 * @param array $items The checkout lines, from pmpro_get_checkout_items().
+		 */
+		public function set_items( $items ) {
+			$this->items_to_save = array_map( 'pmpro_normalize_checkout_item', array_values( (array) $items ) );
+		}
+
+		/**
+		 * Save the lines set with set_items() if this order doesn't have saved lines yet.
+		 *
+		 * The membership line is saved as the order subtotal minus the other lines.
+		 *
+		 * @since TBD
+		 *
 		 * @return bool True if lines were saved.
 		 */
-		public function add_items( $items ) {
+		private function save_items() {
 			global $wpdb;
 
-			if ( empty( $this->id ) || empty( $items ) ) {
+			if ( empty( $this->id ) || empty( $this->items_to_save ) ) {
 				return false;
 			}
 
+			// An order's lines are only saved once.
 			if ( ! empty( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d LIMIT 1", $this->id ) ) ) ) {
+				$this->items_to_save = array();
 				return false;
 			}
 
-			$items = array_map( 'pmpro_normalize_checkout_item', array_values( (array) $items ) );
+			$items = $this->items_to_save;
 
 			// Save the membership line first so that the lines under it can point to it.
 			usort(
@@ -1914,6 +1955,7 @@
 				$saved_ids[ $item['key'] ] = (int) $wpdb->insert_id;
 			}
 
+			$this->items_to_save = array();
 			return true;
 		}
 

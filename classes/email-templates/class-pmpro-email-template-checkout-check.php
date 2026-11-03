@@ -85,21 +85,21 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 	 * @return string The default body for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( '{% if membership_level_name %}' . __( '<p>Thank you for your membership to {{ sitename }}. Your membership account is now active.</p>
+		return wp_kses_post( __( '<p>{% if membership_level_name %}Thank you for your membership to {{ sitename }}. Your membership account is now active.{% else %}Thank you for your purchase from {{ sitename }}.{% endif %}</p>
 
 {% if membership_level_confirmation_message %}{{ membership_level_confirmation_message }}{% endif %}
 
 {{ instructions }}
 
-<p>Below are details about your membership account and a receipt for your initial membership order.</p>
+<p>{% if membership_level_name %}Below are details about your membership account and a receipt for your initial membership order.{% else %}Below is a receipt for your order.{% endif %}</p>
 
 <p>Account: {{ display_name }} ({{ user_email }})</p>
 
-<p>Membership Level: {{ membership_level_name }}</p>
+{% if membership_level_name %}<p>Membership Level: {{ membership_level_name }}</p>
 
 <p>Membership Fee: {{ membership_cost }}</p>
 
-{% if membership_expiration %}{{ membership_expiration }}{% endif %}
+{% endif %}{% if membership_expiration %}{{ membership_expiration }}{% endif %}
 
 {% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}{% if order_lines %}
 
@@ -110,22 +110,7 @@ class PMPro_Email_Template_Checkout_Check extends PMPro_Email_Template {
 	Total Billed: {{ order_total }}
 </p>
 
-<p>Log in to your membership account here: {{ login_url }}</p>', 'paid-memberships-pro' ) . '{% else %}' . __( '<p>Thank you for your purchase from {{ sitename }}.</p>
-
-{{ instructions }}
-
-<p>Below is a receipt for your order.</p>
-
-<p>Account: {{ display_name }} ({{ user_email }})</p>
-
-{{ order_lines }}
-
-<p>
-	Order #{{ order_id }} on {{ order_date }}<br />
-	Total Billed: {{ order_total }}
-</p>
-
-<p>Log in to your account here: {{ login_url }}</p>', 'paid-memberships-pro' ) . '{% endif %}' );
+<p>{% if membership_level_name %}Log in to your membership account here: {{ login_url }}{% else %}Log in to your account here: {{ login_url }}{% endif %}</p>', 'paid-memberships-pro' ) );
 	}
 
 	/**
