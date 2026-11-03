@@ -97,6 +97,7 @@
 				'subscription_sync' => true,
 				'payment_method_updates' => false,
 				'recurring_trials' => true,
+				'membershipless_checkout' => true,
 			);
 
 			if ( empty( $supports[$feature] ) ) {

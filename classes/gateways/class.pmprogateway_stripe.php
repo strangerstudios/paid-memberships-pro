@@ -84,6 +84,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'subscription_sync' => true,
 			'payment_method_updates' => 'individual',
 			'check_token_orders' => true,
+			'membershipless_checkout' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {

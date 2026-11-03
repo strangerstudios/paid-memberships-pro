@@ -17,6 +17,26 @@
 			return $this->gateway;
 		}
 		/**
+		 * Check whether or not a gateway supports a specific feature.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $feature The feature to check.
+		 * @return bool|string
+		 */
+		public static function supports( $feature ) {
+			$supports = array(
+				'membershipless_checkout' => true,
+			);
+
+			if ( empty( $supports[ $feature ] ) ) {
+				return false;
+			}
+
+			return $supports[ $feature ];
+		}
+
+		/**
 		 * Run on WP init
 		 *
 		 * @since 1.8

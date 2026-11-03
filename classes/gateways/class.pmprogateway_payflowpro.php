@@ -55,6 +55,7 @@
 		public static function supports( $feature ) {
 			$supports = array(
 				'subscription_sync' => false,
+				'membershipless_checkout' => true,
 			);
 
 			if ( empty( $supports[$feature] ) ) {

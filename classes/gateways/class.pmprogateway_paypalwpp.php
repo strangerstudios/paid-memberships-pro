@@ -70,6 +70,7 @@
 		public static function supports( $feature ) {
 			$supports = array(
 				'recurring_trials' => true,
+				'membershipless_checkout' => true,
 			);
 
 			if ( empty( $supports[$feature] ) ) {
