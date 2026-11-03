@@ -575,7 +575,7 @@ if ( empty( $default_gateway ) ) {
       		do_action( 'pmpro_checkout_after_payment_information_fields', $pmpro_level );
 
 			// Applying a discount code by AJAX only knows the level, so tell it when Add On lines still need to be paid for.
-			$pmpro_add_on_items = array_diff_key( pmpro_get_checkout_items( $pmpro_level ), array_flip( array( 'membership', 'discount' ) ) );
+			$pmpro_add_on_items = array_diff_key( pmpro_get_checkout_items( $pmpro_level ), array( 'membership' => true ) );
 			if ( pmpro_get_items_total( $pmpro_add_on_items ) > 0 || pmpro_get_items_total( $pmpro_add_on_items, 'billing_amount' ) > 0 ) {
 				echo '<input type="hidden" id="pmpro_checkout_has_items" name="pmpro_checkout_has_items" value="1" />';
 			}

@@ -1772,11 +1772,11 @@
 		/**
 		 * Get the lines of this order.
 		 *
-		 * Each line is an object with the columns of the order items table: id, order_id, parent_item_id,
-		 * item_type, object_id, name, quantity, subtotal and billing_amount. A saved line is never changed.
+		 * Each line is an object with the columns of the order items table: id, order_id, item_type,
+		 * object_id, name, quantity, subtotal and billing_amount. A saved line is never changed.
 		 *
 		 * - An order whose lines haven't been saved yet, such as during checkout, reads the lines set with
-		 *   set_items(). They have id 0 and parent_item_id 0.
+		 *   set_items(). They have id 0.
 		 * - Orders without saved lines (renewals and orders saved before lines existed) read as one membership
 		 *   line built from the order. Orders without saved lines or a level have no lines.
 		 * - The membership line is always the order subtotal minus the other lines.
@@ -1788,7 +1788,7 @@
 		public function get_items() {
 			global $wpdb;
 
-			$lines = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, parent_item_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
+			$lines = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
 
 			// Lines that will be saved with the order, such as during checkout. They aren't saved, so they have no IDs.
 			if ( empty( $lines ) && ! empty( $this->items_to_save ) ) {
@@ -1796,7 +1796,6 @@
 					$lines[] = (object) array(
 						'id'             => 0,
 						'order_id'       => $this->id,
-						'parent_item_id' => 0,
 						'item_type'      => $item['item_type'],
 						'object_id'      => $item['object_id'],
 						'name'           => $item['name'],
@@ -1818,7 +1817,6 @@
 					(object) array(
 						'id'             => 0,
 						'order_id'       => $this->id,
-						'parent_item_id' => 0,
 						'item_type'      => 'membership',
 						'object_id'      => $this->membership_id,
 						'name'           => empty( $level->name ) ? '' : $level->name,
@@ -1833,7 +1831,6 @@
 			foreach ( $lines as $line ) {
 				$line->id             = (int) $line->id;
 				$line->order_id       = (int) $line->order_id;
-				$line->parent_item_id = (int) $line->parent_item_id;
 				$line->object_id      = (int) $line->object_id;
 				$line->quantity       = (int) $line->quantity;
 				$line->subtotal       = pmpro_round_price( (float) $line->subtotal );
@@ -1910,14 +1907,6 @@
 
 			$items = $this->items_to_save;
 
-			// Save the membership line first so that the lines under it can point to it.
-			usort(
-				$items,
-				function ( $a, $b ) {
-					return (int) ( 'membership' === $b['item_type'] ) - (int) ( 'membership' === $a['item_type'] );
-				}
-			);
-
 			$others = 0;
 			foreach ( $items as $item ) {
 				if ( 'membership' !== $item['item_type'] ) {
@@ -1925,7 +1914,6 @@
 				}
 			}
 
-			$saved_ids = array();
 			foreach ( $items as $item ) {
 				if ( 'membership' === $item['item_type'] ) {
 					$item['subtotal'] = max( 0, pmpro_round_price( (float) $this->subtotal - $others ) );
@@ -1935,7 +1923,6 @@
 					$wpdb->pmpro_membership_order_items,
 					array(
 						'order_id'       => $this->id,
-						'parent_item_id' => ( null !== $item['parent_key'] && isset( $saved_ids[ $item['parent_key'] ] ) ) ? $saved_ids[ $item['parent_key'] ] : 0,
 						'item_type'      => $item['item_type'],
 						'object_id'      => $item['object_id'],
 						'name'           => $item['name'],
@@ -1943,7 +1930,7 @@
 						'subtotal'       => $item['subtotal'],
 						'billing_amount' => $item['billing_amount'],
 					),
-					array( '%d', '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
+					array( '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
 				);
 
 				// If a line can't be saved, don't leave a partial set of lines behind.
@@ -1951,8 +1938,6 @@
 					$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => $this->id ), array( '%d' ) );
 					return false;
 				}
-
-				$saved_ids[ $item['key'] ] = (int) $wpdb->insert_id;
 			}
 
 			$this->items_to_save = array();

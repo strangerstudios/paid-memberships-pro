@@ -2,8 +2,8 @@
 /**
  * Order items.
  *
- * An order item (a "line") describes one thing that a checkout order bought: the membership, a discount
- * code's saving, seats, a donation, a package and so on.
+ * An order item (a "line") describes one thing that a checkout order bought: the membership, seats, a
+ * donation, a package and so on.
  *
  * - Lines describe the order. The order's subtotal, tax and total stay the source of truth for money, and
  *   gateways, tax and reports keep reading them.
@@ -12,8 +12,8 @@
  *   lines existed read as one membership line built from the order. Nothing is backfilled.
  * - On an order with a membership level, the membership line is whatever is left of the order subtotal
  *   after the other lines, so code that changes the order's price is reflected on the membership line.
- * - Add Ons add lines at checkout with the pmpro_checkout_items filter. Lines under the membership line
- *   renew with it. Lines next to it are one-time.
+ * - Add Ons add lines at checkout with the pmpro_checkout_items filter. A line's billing_amount renews
+ *   with the membership.
  * - When no level is being purchased and Add Ons added lines, the checkout has no membership level. The
  *   buyer's memberships are not changed.
  *
@@ -32,17 +32,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Normalize a checkout line to the shape used by the pmpro_checkout_items filter.
  *
  * A checkout line is an array. It uses the same names as a saved line (see MemberOrder::get_items()) for
- * the same values, plus two that only exist at checkout: key and parent_key.
+ * the same values, plus a key that only exists at checkout.
  *
  * Line shape:
- * - key            (string)      Unique key for this line in the checkout. Defaults to "{item_type}-{object_id}".
- * - item_type      (string)      What the line is, such as 'seats' or 'donation'. 'membership' and 'discount' are core only.
- * - object_id      (int)         The level ID for the membership line. Defined by the Add On otherwise.
- * - name           (string)      Name shown at checkout, on the invoice and in emails.
- * - quantity       (int)         Quantity. At least 1.
- * - subtotal       (float)       Amount charged on this order for the whole quantity, before tax.
- * - billing_amount (float)       Amount added to each recurring payment. Always 0 for a one-time line.
- * - parent_key     (string|null) 'membership' for a line under the membership line, or null for a top-level line.
+ * - key            (string) Unique key for this line in the checkout. Defaults to "{item_type}-{object_id}".
+ * - item_type      (string) What the line is, such as 'seats' or 'donation'. 'membership' is core only.
+ * - object_id      (int)    The level ID for the membership line. Defined by the Add On otherwise.
+ * - name           (string) Name shown at checkout, on the invoice and in emails.
+ * - quantity       (int)    Quantity. At least 1.
+ * - subtotal       (float)  Amount charged on this order for the whole quantity, before tax.
+ * - billing_amount (float)  Amount added to each recurring payment of the membership. 0 for a one-time line.
  *
  * @since TBD
  *
@@ -60,7 +59,6 @@ function pmpro_normalize_checkout_item( $item ) {
 			'quantity'       => 1,
 			'subtotal'       => 0,
 			'billing_amount' => 0,
-			'parent_key'     => null,
 		)
 	);
 
@@ -70,7 +68,6 @@ function pmpro_normalize_checkout_item( $item ) {
 	$item['quantity']       = max( 1, (int) $item['quantity'] );
 	$item['subtotal']       = pmpro_round_price( (float) $item['subtotal'] );
 	$item['billing_amount'] = pmpro_round_price( (float) $item['billing_amount'] );
-	$item['parent_key']     = ( null === $item['parent_key'] || '' === $item['parent_key'] ) ? null : (string) $item['parent_key'];
 	$item['key']            = ( '' === (string) $item['key'] ) ? $item['item_type'] . '-' . $item['object_id'] : (string) $item['key'];
 
 	return $item;
@@ -95,112 +92,40 @@ function pmpro_get_items_total( $items, $field = 'subtotal' ) {
 }
 
 /**
- * Get the membership line and its discount line for a checkout level.
+ * Build the lines being purchased at checkout.
  *
- * When a discount code applies, the membership line shows the level's price before the code and a
- * discount line under it carries the negative difference, for the first payment and for each renewal.
- * A part of the price (initial or recurring) gets no discount amount when:
- * - the code does not lower it,
- * - the code is a set-price code that changes the level's billing structure (cycle, billing limit or trial), or
- * - a callback changed it after the code was applied, such as on the pmpro_checkout_level filter.
- * Then the membership line shows what is actually charged for that part.
+ * Core seeds the membership line from the checkout level, then Add Ons add lines with the
+ * pmpro_checkout_items filter. Add Ons can't change or remove core's line.
  *
  * @since TBD
  *
- * @param object      $level      The checkout level after the pmpro_checkout_level filter.
- * @param object|null $code_level The level as priced by the discount code, from pmpro_get_discounted_level_for_code().
- * @return array Lines keyed by key: 'membership', and 'discount' when there is a discount amount.
+ * @param object|null $level The checkout level after the pmpro_checkout_level filter, or null when no level is being purchased.
+ * @return array Normalized lines keyed by key. Core's line comes first.
  */
-function pmpro_get_membership_checkout_items( $level, $code_level = null ) {
-	$recurring          = pmpro_isLevelRecurring( $level );
-	$initial_discount   = 0;
-	$recurring_discount = 0;
-
-	$code       = ( empty( $code_level->code_id ) || empty( $level->code_id ) ) ? null : pmpro_get_discount_code( $code_level->code_id );
-	$base_level = empty( $code ) ? null : pmpro_getLevel( $level->id );
-	if ( ! empty( $code ) && ! empty( $base_level ) ) {
-		$discount_type = ( ! empty( $code->discount_type ) && array_key_exists( $code->discount_type, pmpro_get_discount_code_types() ) ) ? $code->discount_type : 'set_price';
-
-		// Percentage and fixed codes keep the level's billing structure. Set-price codes must keep it too.
-		$same_structure = true;
-		if ( 'set_price' === $discount_type ) {
-			$same_structure = (int) $code_level->cycle_number === (int) $base_level->cycle_number
-				&& ( empty( $base_level->cycle_number ) || (string) $code_level->cycle_period === (string) $base_level->cycle_period )
-				&& (int) $code_level->billing_limit === (int) $base_level->billing_limit
-				&& pmpro_round_price( (float) $code_level->trial_amount ) === pmpro_round_price( (float) $base_level->trial_amount )
-				&& (int) $code_level->trial_limit === (int) $base_level->trial_limit;
-		}
-
-		if ( $same_structure ) {
-			// Only count a part that nothing changed after the code was applied.
-			$code_initial = pmpro_round_price( (float) $code_level->initial_payment );
-			if ( pmpro_round_price( (float) $level->initial_payment ) === $code_initial ) {
-				$initial_discount = max( 0, pmpro_round_price( (float) $base_level->initial_payment - $code_initial ) );
-			}
-
-			$code_billing = pmpro_round_price( (float) $code_level->billing_amount );
-			if ( $recurring && pmpro_round_price( (float) $level->billing_amount ) === $code_billing ) {
-				$recurring_discount = max( 0, pmpro_round_price( (float) $base_level->billing_amount - $code_billing ) );
-			}
-		}
-	}
-
-	$items = array(
-		'membership' => pmpro_normalize_checkout_item(
+function pmpro_build_checkout_items( $level ) {
+	$core_items = array();
+	if ( ! empty( $level->id ) ) {
+		$core_items['membership'] = pmpro_normalize_checkout_item(
 			array(
 				'key'            => 'membership',
 				'item_type'      => 'membership',
 				'object_id'      => (int) $level->id,
 				'name'           => $level->name,
-				'subtotal'       => (float) $level->initial_payment + $initial_discount,
-				'billing_amount' => $recurring ? (float) $level->billing_amount + $recurring_discount : 0,
-			)
-		),
-	);
-
-	if ( $initial_discount > 0 || $recurring_discount > 0 ) {
-		$items['discount'] = pmpro_normalize_checkout_item(
-			array(
-				'key'            => 'discount',
-				'item_type'      => 'discount',
-				'object_id'      => (int) $code->id,
-				/* translators: %s: discount code. */
-				'name'           => sprintf( __( 'Discount code %s', 'paid-memberships-pro' ), $code->code ),
-				'subtotal'       => - $initial_discount,
-				'billing_amount' => - $recurring_discount,
-				'parent_key'     => 'membership',
+				'subtotal'       => $level->initial_payment,
+				'billing_amount' => pmpro_isLevelRecurring( $level ) ? $level->billing_amount : 0,
 			)
 		);
 	}
 
-	return $items;
-}
-
-/**
- * Build the lines being purchased at checkout.
- *
- * Core seeds the membership line (and its discount line) from the checkout level, then Add Ons add lines
- * with the pmpro_checkout_items filter. Add Ons can't change or remove core's lines.
- *
- * @since TBD
- *
- * @param object|null $level      The checkout level after the pmpro_checkout_level filter, or null when no level is being purchased.
- * @param object|null $code_level The level as priced by the discount code, if one applies.
- * @return array Normalized lines keyed by key. Core's lines come first.
- */
-function pmpro_build_checkout_items( $level, $code_level = null ) {
-	$core_items = empty( $level->id ) ? array() : pmpro_get_membership_checkout_items( $level, $code_level );
-
 	/**
 	 * Filter the lines being purchased at checkout.
 	 *
-	 * When a level is being purchased, $items holds core's 'membership' line (its object_id is the level ID)
-	 * and, when a discount code lowers the price, a 'discount' line under it. Add Ons add their own lines.
-	 * See pmpro_normalize_checkout_item() for the line shape.
+	 * When a level is being purchased, $items holds core's 'membership' line. Its object_id is the level ID
+	 * and it is priced as charged, after any discount code. Add Ons add their own lines. See
+	 * pmpro_normalize_checkout_item() for the line shape.
 	 *
-	 * - A line with 'parent_key' set to 'membership' sits under the membership line and renews with it. If
-	 *   the membership is one-time, the line is one-time too.
-	 * - A line without a parent is one-time. Its billing_amount is ignored.
+	 * - A line's billing_amount is added to each recurring payment of the membership. If the membership is
+	 *   one-time, or no level is being purchased, every line is one-time and billing_amount is ignored.
 	 * - Amounts can't be negative. Discount codes only discount the membership line, but an Add On may read
 	 *   the code to price its own lines.
 	 *
@@ -225,8 +150,8 @@ function pmpro_build_checkout_items( $level, $code_level = null ) {
 			continue;
 		}
 
-		// Top-level lines are one-time. Lines under a one-time membership are one-time too.
-		if ( null === $item['parent_key'] || empty( $core_items['membership']['billing_amount'] ) ) {
+		// Lines only renew with a recurring membership.
+		if ( empty( $core_items['membership']['billing_amount'] ) ) {
 			$item['billing_amount'] = 0;
 		}
 
@@ -247,11 +172,10 @@ function pmpro_build_checkout_items( $level, $code_level = null ) {
  *
  * @since TBD
  *
- * @param object|null $level      The checkout level.
- * @param object|null $code_level The level as priced by the discount code, if one applies.
+ * @param object|null $level The checkout level.
  * @return object|null The checkout level.
  */
-function pmpro_set_up_checkout_items_for_level( $level, $code_level = null ) {
+function pmpro_set_up_checkout_items_for_level( $level ) {
 	if ( empty( $level->id ) ) {
 		return $level;
 	}
@@ -263,10 +187,10 @@ function pmpro_set_up_checkout_items_for_level( $level, $code_level = null ) {
 		unset( $level->pmpro_membership_price );
 	}
 
-	$level->checkout_items = pmpro_build_checkout_items( $level, $code_level );
+	$level->checkout_items = pmpro_build_checkout_items( $level );
 
-	// Core's lines add up to the level's price, so only Add On lines change what the level charges.
-	if ( empty( array_diff_key( $level->checkout_items, array_flip( array( 'membership', 'discount' ) ) ) ) ) {
+	// Core's line is the level's price, so only Add On lines change what the level charges.
+	if ( 1 === count( $level->checkout_items ) ) {
 		return $level;
 	}
 
@@ -328,20 +252,14 @@ function pmpro_check_checkout_items( $items ) {
 	}
 
 	foreach ( $items as $key => $item ) {
-		// Core's lines were checked when they were built.
-		if ( in_array( $key, array( 'membership', 'discount' ), true ) ) {
+		// Core's line was checked when it was built.
+		if ( 'membership' === $key ) {
 			continue;
 		}
 
-		// Only core makes membership and discount lines, and only core lines can be negative.
-		if ( in_array( $item['item_type'], array( 'membership', 'discount' ), true ) || $item['subtotal'] < 0 || $item['billing_amount'] < 0 ) {
+		// Only core makes membership lines, and amounts can't be negative.
+		if ( 'membership' === $item['item_type'] || $item['subtotal'] < 0 || $item['billing_amount'] < 0 ) {
 			pmpro_setMessage( __( 'An item in this checkout has an invalid price. Please contact the site owner.', 'paid-memberships-pro' ), 'pmpro_error' );
-			return false;
-		}
-
-		// A line under the membership needs a membership in this checkout.
-		if ( null !== $item['parent_key'] && ( 'membership' !== $item['parent_key'] || ! isset( $items['membership'] ) ) ) {
-			pmpro_setMessage( __( 'An item in this checkout requires a membership that is not being purchased.', 'paid-memberships-pro' ), 'pmpro_error' );
 			return false;
 		}
 	}
@@ -541,7 +459,7 @@ function pmpro_display_order_item_rows( $order ) {
 		?>
 		<tr class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_order_item pmpro_order_item-' . $line->item_type ) ); ?>">
 			<th data-title="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>">
-				<?php echo esc_html( ( $line->parent_item_id ? '— ' : '' ) . pmpro_get_order_item_label( $line ) ); ?>
+				<?php echo esc_html( pmpro_get_order_item_label( $line ) ); ?>
 			</th>
 			<td data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>">
 				<?php echo esc_html( pmpro_format_order_item_price( $line->subtotal ) ); ?>
@@ -571,7 +489,7 @@ function pmpro_get_order_items_email_html( $order ) {
 
 	$html = '<ul>';
 	foreach ( $lines as $line ) {
-		$html .= '<li>' . esc_html( ( $line->parent_item_id ? '— ' : '' ) . pmpro_get_order_item_label( $line ) . ': ' . pmpro_format_order_item_price( $line->subtotal ) ) . '</li>';
+		$html .= '<li>' . esc_html( pmpro_get_order_item_label( $line ) . ': ' . pmpro_format_order_item_price( $line->subtotal ) ) . '</li>';
 	}
 	$html .= '</ul>';
 

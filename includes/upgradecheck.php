@@ -852,7 +852,6 @@ function pmpro_db_delta() {
 		CREATE TABLE `" . $wpdb->pmpro_membership_order_items . "` (
 		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  `order_id` bigint(20) unsigned NOT NULL,
-		  `parent_item_id` bigint(20) unsigned NOT NULL DEFAULT '0',
 		  `item_type` varchar(64) NOT NULL DEFAULT '',
 		  `object_id` bigint(20) unsigned NOT NULL DEFAULT '0',
 		  `name` varchar(255) NOT NULL DEFAULT '',
