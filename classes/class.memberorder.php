@@ -256,13 +256,22 @@
 		private $discount_code_id = null;
 
 		/**
-		 * The checkout lines to save the first time this order is saved. See set_items().
+		 * The order's lines. Null until get_items() loads them or set_items() sets them.
 		 *
 		 * @since TBD
 		 *
-		 * @var array
+		 * @var object[]|null
 		 */
-		private $items_to_save = array();
+		private $items = null;
+
+		/**
+		 * Whether the lines were set with set_items() and still need to be saved.
+		 *
+		 * @since TBD
+		 *
+		 * @var bool
+		 */
+		private $items_changed = false;
 
 		/**
 		 * Defines an array of optionally used properties
@@ -739,6 +748,12 @@
 
 			if($dbobj)
 			{
+				// Loading a different order. Forget the lines of the previous one.
+				if ( (int) $dbobj->id !== (int) $this->id ) {
+					$this->items         = null;
+					$this->items_changed = false;
+				}
+
 				$this->id = $dbobj->id;
 				$this->code = $dbobj->code;
 				$this->session_id = $dbobj->session_id;
@@ -1479,8 +1494,10 @@
 					$this->updateDiscountCode( $this->discount_code_id );
 				}
 
-				// Save the checkout lines the first time the order is saved.
-				$this->save_items();
+				// Save the lines if they were set.
+				if ( $this->items_changed ) {
+					$this->save_items();
+				}
 
 				do_action($after_action, $this);
 
@@ -1773,79 +1790,52 @@
 		 * Get the lines of this order.
 		 *
 		 * Each line is an object with the columns of the order items table: id, order_id, item_type,
-		 * object_id, name, quantity, subtotal and billing_amount. A saved line is never changed.
+		 * object_id, name, quantity, subtotal and billing_amount.
 		 *
-		 * - An order whose lines haven't been saved yet, such as during checkout, reads the lines set with
-		 *   set_items(). They have id 0.
-		 * - Orders without saved lines (renewals and orders saved before lines existed) read as one membership
-		 *   line built from the order. Orders without saved lines or a level have no lines.
-		 * - The membership line is always the order subtotal minus the other lines.
+		 * - Lines set with set_items() are returned until the order is saved. They have id 0.
+		 * - Orders without lines (renewals and orders saved before lines existed) read as one membership line
+		 *   built from the order, with id 0. Orders without lines or a level have no lines.
+		 *
+		 * The lines are copies. To change them, pass the changed lines to set_items() and save the order.
 		 *
 		 * @since TBD
 		 *
-		 * @return object[] The lines, oldest first. A line built from the order has id 0.
+		 * @return object[] The lines.
 		 */
 		public function get_items() {
 			global $wpdb;
 
-			$lines = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
-
-			// Lines that will be saved with the order, such as during checkout. They aren't saved, so they have no IDs.
-			if ( empty( $lines ) && ! empty( $this->items_to_save ) ) {
-				foreach ( $this->items_to_save as $item ) {
-					$lines[] = (object) array(
-						'id'             => 0,
-						'order_id'       => $this->id,
-						'item_type'      => $item['item_type'],
-						'object_id'      => $item['object_id'],
-						'name'           => $item['name'],
-						'quantity'       => $item['quantity'],
-						'subtotal'       => $item['subtotal'],
-						'billing_amount' => $item['billing_amount'],
-					);
-				}
+			if ( null === $this->items ) {
+				$rows        = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
+				$this->items = array_map( array( $this, 'get_item_object' ), $rows );
 			}
 
-			if ( empty( $lines ) ) {
-				if ( empty( $this->membership_id ) ) {
-					return array();
-				}
-
-				$level        = pmpro_getLevel( $this->membership_id );
-				$subscription = empty( $this->subscription_transaction_id ) ? null : PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
-				$lines        = array(
-					(object) array(
-						'id'             => 0,
-						'order_id'       => $this->id,
-						'item_type'      => 'membership',
-						'object_id'      => $this->membership_id,
-						'name'           => empty( $level->name ) ? '' : $level->name,
-						'quantity'       => 1,
-						'subtotal'       => $this->subtotal,
-						'billing_amount' => empty( $subscription ) ? 0 : $subscription->get_billing_amount(),
-					),
+			if ( ! empty( $this->items ) ) {
+				return array_map(
+					function ( $line ) {
+						return clone $line;
+					},
+					$this->items
 				);
 			}
 
-			$others = 0;
-			foreach ( $lines as $line ) {
-				$line->id             = (int) $line->id;
-				$line->order_id       = (int) $line->order_id;
-				$line->object_id      = (int) $line->object_id;
-				$line->quantity       = (int) $line->quantity;
-				$line->subtotal       = pmpro_round_price( (float) $line->subtotal );
-				$line->billing_amount = pmpro_round_price( (float) $line->billing_amount );
-				if ( 'membership' !== $line->item_type ) {
-					$others += $line->subtotal;
-				}
-			}
-			foreach ( $lines as $line ) {
-				if ( 'membership' === $line->item_type ) {
-					$line->subtotal = max( 0, pmpro_round_price( (float) $this->subtotal - $others ) );
-				}
+			if ( empty( $this->membership_id ) ) {
+				return array();
 			}
 
-			return $lines;
+			$level        = pmpro_getLevel( $this->membership_id );
+			$subscription = empty( $this->subscription_transaction_id ) ? null : PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
+			return array(
+				$this->get_item_object(
+					array(
+						'item_type'      => 'membership',
+						'object_id'      => $this->membership_id,
+						'name'           => empty( $level->name ) ? '' : $level->name,
+						'subtotal'       => $this->subtotal,
+						'billing_amount' => empty( $subscription ) ? 0 : $subscription->get_billing_amount(),
+					)
+				),
+			);
 		}
 
 		/**
@@ -1870,77 +1860,103 @@
 		}
 
 		/**
-		 * Set the checkout lines to save with this order.
+		 * Replace the lines of this order. They are saved the next time the order is saved.
 		 *
-		 * The checkout sets the lines before the order is first saved, and saveOrder() saves them. Lines are
-		 * saved once: an order that already has saved lines keeps them.
+		 * Takes checkout lines from pmpro_get_checkout_items(), or lines from get_items() to change them. Pass
+		 * an empty array to remove the order's lines. When the lines are saved, the membership line is saved as
+		 * the order subtotal minus the other lines.
 		 *
 		 * @since TBD
 		 *
-		 * @param array $items The checkout lines, from pmpro_get_checkout_items().
+		 * @param array $items The lines, as arrays or objects. See pmpro_normalize_checkout_item() for their shape.
 		 */
 		public function set_items( $items ) {
-			$this->items_to_save = array_map( 'pmpro_normalize_checkout_item', array_values( (array) $items ) );
+			$this->items         = array_map( array( $this, 'get_item_object' ), array_map( 'pmpro_normalize_checkout_item', array_values( (array) $items ) ) );
+			$this->items_changed = true;
 		}
 
 		/**
-		 * Save the lines set with set_items() if this order doesn't have saved lines yet.
-		 *
-		 * The membership line is saved as the order subtotal minus the other lines.
+		 * Build a line object for this order in the shape that get_items() returns.
 		 *
 		 * @since TBD
 		 *
-		 * @return bool True if lines were saved.
+		 * @param array|object $item A saved line or a checkout line.
+		 * @return object The line.
+		 */
+		private function get_item_object( $item ) {
+			$item = (array) $item;
+			return (object) array(
+				'id'             => empty( $item['id'] ) ? 0 : (int) $item['id'],
+				'order_id'       => (int) $this->id,
+				'item_type'      => (string) $item['item_type'],
+				'object_id'      => (int) $item['object_id'],
+				'name'           => (string) $item['name'],
+				'quantity'       => isset( $item['quantity'] ) ? (int) $item['quantity'] : 1,
+				'subtotal'       => pmpro_round_price( (float) $item['subtotal'] ),
+				'billing_amount' => pmpro_round_price( (float) $item['billing_amount'] ),
+			);
+		}
+
+		/**
+		 * Save the lines set with set_items(), replacing the order's saved lines.
+		 *
+		 * The membership line is saved as the order subtotal minus the other lines. The new lines are saved
+		 * before the old ones are deleted, so a failed save keeps the old lines.
+		 *
+		 * @since TBD
+		 *
+		 * @return bool True if the lines were saved.
 		 */
 		private function save_items() {
 			global $wpdb;
 
-			if ( empty( $this->id ) || empty( $this->items_to_save ) ) {
+			if ( empty( $this->id ) ) {
 				return false;
 			}
 
-			// An order's lines are only saved once.
-			if ( ! empty( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d LIMIT 1", $this->id ) ) ) ) {
-				$this->items_to_save = array();
-				return false;
-			}
-
-			$items = $this->items_to_save;
+			$old_ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d", $this->id ) );
 
 			$others = 0;
-			foreach ( $items as $item ) {
-				if ( 'membership' !== $item['item_type'] ) {
-					$others += $item['subtotal'];
+			foreach ( $this->items as $item ) {
+				if ( 'membership' !== $item->item_type ) {
+					$others += $item->subtotal;
 				}
 			}
 
-			foreach ( $items as $item ) {
-				if ( 'membership' === $item['item_type'] ) {
-					$item['subtotal'] = max( 0, pmpro_round_price( (float) $this->subtotal - $others ) );
-				}
-
+			$new_ids = array();
+			foreach ( $this->items as $item ) {
 				$inserted = $wpdb->insert(
 					$wpdb->pmpro_membership_order_items,
 					array(
 						'order_id'       => $this->id,
-						'item_type'      => $item['item_type'],
-						'object_id'      => $item['object_id'],
-						'name'           => $item['name'],
-						'quantity'       => $item['quantity'],
-						'subtotal'       => $item['subtotal'],
-						'billing_amount' => $item['billing_amount'],
+						'item_type'      => $item->item_type,
+						'object_id'      => $item->object_id,
+						'name'           => $item->name,
+						'quantity'       => $item->quantity,
+						'subtotal'       => ( 'membership' === $item->item_type ) ? max( 0, pmpro_round_price( (float) $this->subtotal - $others ) ) : $item->subtotal,
+						'billing_amount' => $item->billing_amount,
 					),
 					array( '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
 				);
 
-				// If a line can't be saved, don't leave a partial set of lines behind.
+				// If a line can't be saved, remove the new lines and keep the old ones.
 				if ( false === $inserted ) {
-					$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => $this->id ), array( '%d' ) );
+					foreach ( $new_ids as $new_id ) {
+						$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'id' => $new_id ), array( '%d' ) );
+					}
 					return false;
 				}
+
+				$new_ids[] = (int) $wpdb->insert_id;
 			}
 
-			$this->items_to_save = array();
+			foreach ( $old_ids as $old_id ) {
+				$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'id' => $old_id ), array( '%d' ) );
+			}
+
+			// Read the saved lines next time, with their IDs.
+			$this->items         = null;
+			$this->items_changed = false;
 			return true;
 		}
 

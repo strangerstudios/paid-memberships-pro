@@ -7,11 +7,11 @@
  *
  * - Lines describe the order. The order's subtotal, tax and total stay the source of truth for money, and
  *   gateways, tax and reports keep reading them.
- * - The checkout sets the lines on the order with MemberOrder::set_items(), and they are saved the first
- *   time the order is saved. MemberOrder::get_items() reads them. Renewal orders and orders saved before
- *   lines existed read as one membership line built from the order. Nothing is backfilled.
- * - On an order with a membership level, the membership line is whatever is left of the order subtotal
- *   after the other lines, so code that changes the order's price is reflected on the membership line.
+ * - Lines belong to the order. MemberOrder::get_items() reads them, MemberOrder::set_items() replaces them
+ *   and saveOrder() saves them. The checkout sets them on the order it builds. Renewal orders and orders
+ *   saved before lines existed read as one membership line built from the order. Nothing is backfilled.
+ * - On an order with a membership level, the membership line is saved as whatever is left of the order
+ *   subtotal after the other lines, so code that changes the order's price is reflected on it.
  * - Add Ons add lines at checkout with the pmpro_checkout_items filter. A line's billing_amount renews
  *   with the membership.
  * - When no level is being purchased and Add Ons added lines, the checkout has no membership level. The
