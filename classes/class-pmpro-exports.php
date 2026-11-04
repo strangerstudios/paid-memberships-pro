@@ -657,7 +657,11 @@ class PMPro_Exports {
 		$lock                  = $this->acquire_export_lock( $export['id'] );
 		$this->last_chunk_busy = ( false === $lock );
 		if ( $this->last_chunk_busy ) {
-			// Another request is writing this export right now and will queue the next chunk.
+			// Another request is writing this export right now and will queue the next chunk; report its latest progress.
+			$fresh = $this->reload_export_record( $export );
+			if ( ! empty( $fresh ) ) {
+				$export = $fresh;
+			}
 			return 0;
 		}
 
@@ -802,7 +806,7 @@ class PMPro_Exports {
 	 */
 	protected function get_export_lock_name( $export_id ) {
 		global $wpdb;
-		return 'pmpro_export_' . substr( md5( $wpdb->dbname . $wpdb->prefix . $export_id ), 0, 40 );
+		return 'pmpro_export_' . md5( $wpdb->dbname . $wpdb->prefix . $export_id );
 	}
 
 	/**
@@ -829,14 +833,23 @@ class PMPro_Exports {
 	 *
 	 * @param array $export Export record.
 	 * @param int   $bytes  Length to keep.
-	 * @return bool False if the file is longer than $bytes and couldn't be trimmed.
+	 * @return bool False if the file couldn't be brought to exactly $bytes (including a missing or short file).
 	 */
 	protected function truncate_export_file( $export, $bytes ) {
 		$bytes     = max( 0, (int) $bytes );
-		$file_path = $this->get_file_path( $export['file_name'] );
+		$file_path = $this->get_file_path( basename( $export['file_name'] ) );
 		clearstatcache( true, $file_path );
-		if ( ! file_exists( $file_path ) || filesize( $file_path ) <= $bytes ) {
+		if ( ! file_exists( $file_path ) ) {
+			return 0 === $bytes;
+		}
+
+		$size = filesize( $file_path );
+		if ( $size === $bytes ) {
 			return true;
+		}
+		if ( false === $size || $size < $bytes ) {
+			// Rows we already counted are missing; don't keep appending to a short file.
+			return false;
 		}
 
 		$fh = fopen( $file_path, 'r+' );
@@ -859,7 +872,7 @@ class PMPro_Exports {
 	 * @return int|null Size in bytes, or null if it can't be read.
 	 */
 	protected function get_export_file_size( $export ) {
-		$file_path = $this->get_file_path( $export['file_name'] );
+		$file_path = $this->get_file_path( basename( $export['file_name'] ) );
 		clearstatcache( true, $file_path );
 		$size = file_exists( $file_path ) ? filesize( $file_path ) : false;
 		return false === $size ? null : (int) $size;
