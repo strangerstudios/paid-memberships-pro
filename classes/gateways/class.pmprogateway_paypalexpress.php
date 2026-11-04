@@ -292,7 +292,7 @@
 				return false;
 			}
 
-			//set up values. An order without a membership level keeps the subtotal of its lines.
+			//set up values. An order without a membership level keeps the subtotal of its items.
 			if ( ! empty( $order->membership_id ) ) {
 				$pmpro_level = $order->getMembershipLevelAtCheckout();
 				$user        = get_userdata( $order->user_id );
@@ -369,7 +369,7 @@
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
 
-			// Get the level. An order without a membership level is a one-time payment, described by its lines.
+			// Get the level. An order without a membership level is a one-time payment, described by its items.
 			$level = empty( $order->membership_id ) ? null : $order->getMembershipLevelAtCheckout();
 			$level_name = empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name;
 
@@ -527,7 +527,7 @@
 			*/
 			if(!empty($level->cycle_number))
 				$nvpStr .= "&BILLINGPERIOD=" . $level->cycle_period . "&BILLINGFREQUENCY=" . $level->cycle_number . "&AUTOBILLOUTAMT=AddToNextBilling";
-			// An order without a membership level is described by its lines.
+			// An order without a membership level is described by its items.
 			$level_name = empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name;
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($level_name . " at " . get_bloginfo("name"), 0, 127), $level_name, $order, get_bloginfo("name")) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );

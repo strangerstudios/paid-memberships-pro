@@ -169,13 +169,13 @@
 			$html = implode( "\n\n", $html );
 			?>
 				jQuery('#pmpro_level_cost').html( <?php echo wp_json_encode( wp_kses_post( $html ) ); ?> );
-				// Reprice the checkout's lines with the code.
+				// Reprice the checkout's items with the code.
 				if ( jQuery('#pmpro_checkout_items').length && typeof pmpro_refresh_checkout_items === 'function' ) {
 					pmpro_refresh_checkout_items();
 				}
 			<?php
 
-			// A checkout with Add On lines still has something to pay for when the code makes the level free.
+			// A checkout with Add On items still has something to pay for when the code makes the level free.
 			$code_levels_free = pmpro_areLevelsFree( $code_levels ) && empty( $_REQUEST['pmpro_checkout_has_items'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, only decides whether billing fields are shown.
 
 			//tell gateway javascripts whether or not to fire (e.g. no Stripe on free levels)

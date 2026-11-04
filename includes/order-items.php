@@ -2,19 +2,19 @@
 /**
  * Order items.
  *
- * An order item (a "line") describes one thing that a checkout order bought: the membership, seats, a
+ * An order item describes one thing that a checkout order bought: the membership, seats, a
  * donation, a package and so on.
  *
- * - Lines describe the order. The order's subtotal, tax and total stay the source of truth for money, and
+ * - Items describe the order. The order's subtotal, tax and total stay the source of truth for money, and
  *   gateways, tax and reports keep reading them.
- * - Lines belong to the order. MemberOrder::get_items() reads them, MemberOrder::set_items() replaces them
+ * - Items belong to the order. MemberOrder::get_items() reads them, MemberOrder::set_items() replaces them
  *   and saveOrder() saves them. The checkout sets them on the order it builds. Renewal orders and orders
- *   saved before lines existed read as one membership line built from the order. Nothing is backfilled.
- * - On an order with a membership level, the membership line is saved as whatever is left of the order
- *   subtotal after the other lines, so code that changes the order's price is reflected on it.
- * - Add Ons add lines at checkout with the pmpro_checkout_items filter. A line's billing_amount renews
+ *   saved before items existed read as one membership item built from the order. Nothing is backfilled.
+ * - On an order with a membership level, the membership item is saved as whatever is left of the order
+ *   subtotal after the other items, so code that changes the order's price is reflected on it.
+ * - Add Ons add items at checkout with the pmpro_checkout_items filter. An item's billing_amount renews
  *   with the membership.
- * - When no level is being purchased and Add Ons added lines, the checkout has no membership level. The
+ * - When no level is being purchased and Add Ons added items, the checkout has no membership level. The
  *   buyer's memberships are not changed.
  *
  * @since TBD
@@ -25,27 +25,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
- * Lines.
+ * Items.
  */
 
 /**
- * Normalize a line to the shape shared by checkout lines and saved lines.
+ * Normalize an item to the shape shared by checkout items and saved items.
  *
- * Checkout lines also have a key (see pmpro_build_checkout_items()). Saved lines also have an id and an
+ * Checkout items also have a key (see pmpro_build_checkout_items()). Saved items also have an id and an
  * order_id (see MemberOrder::get_items()).
  *
- * Line shape:
- * - item_type      (string) What the line is, such as 'seats' or 'donation'. 'membership' is core only.
- * - object_id      (int)    The level ID for the membership line. Defined by the Add On otherwise.
+ * Item shape:
+ * - item_type      (string) What the item is, such as 'seats' or 'donation'. 'membership' is core only.
+ * - object_id      (int)    The level ID for the membership item. Defined by the Add On otherwise.
  * - name           (string) Name shown at checkout, on the invoice and in emails.
  * - quantity       (int)    Quantity. At least 1.
  * - subtotal       (float)  Amount charged on this order for the whole quantity, before tax.
- * - billing_amount (float)  Amount added to each recurring payment of the membership. 0 for a one-time line.
+ * - billing_amount (float)  Amount added to each recurring payment of the membership. 0 for a one-time item.
  *
  * @since TBD
  *
- * @param array|object $item The line to normalize.
- * @return array The normalized line. Other fields, such as key or id, are kept as they are.
+ * @param array|object $item The item to normalize.
+ * @return array The normalized item. Other fields, such as key or id, are kept as they are.
  */
 function pmpro_normalize_order_item( $item ) {
 	$item = wp_parse_args(
@@ -71,11 +71,11 @@ function pmpro_normalize_order_item( $item ) {
 }
 
 /**
- * Add up one amount of a list of lines.
+ * Add up one amount of a list of items.
  *
  * @since TBD
  *
- * @param array  $items Lines (arrays or objects).
+ * @param array  $items Items (arrays or objects).
  * @param string $field 'subtotal' or 'billing_amount'.
  * @return float The total.
  */
@@ -89,19 +89,19 @@ function pmpro_get_items_total( $items, $field = 'subtotal' ) {
 }
 
 /*
- * Checkout lines.
+ * Checkout items.
  */
 
 /**
- * Build the lines being purchased at checkout.
+ * Build the items being purchased at checkout.
  *
- * Core seeds the membership line from the checkout level, then Add Ons add lines with the
- * pmpro_checkout_items filter. Add Ons can't change or remove core's line.
+ * Core seeds the membership item from the checkout level, then Add Ons add items with the
+ * pmpro_checkout_items filter. Add Ons can't change or remove core's item.
  *
  * @since TBD
  *
  * @param object|null $level The checkout level after the pmpro_checkout_level filter, or null when no level is being purchased.
- * @return array Normalized lines keyed by key. Core's line comes first.
+ * @return array Normalized items keyed by key. Core's item comes first.
  */
 function pmpro_build_checkout_items( $level ) {
 	$core_items = array();
@@ -119,37 +119,37 @@ function pmpro_build_checkout_items( $level ) {
 	}
 
 	/**
-	 * Filter the lines being purchased at checkout.
+	 * Filter the items being purchased at checkout.
 	 *
-	 * When a level is being purchased, $items holds core's 'membership' line. Its object_id is the level ID
-	 * and it is priced as charged, after any discount code. Add Ons add their own lines. See
-	 * pmpro_normalize_order_item() for the line shape. A line's key must be unique in the checkout. It
+	 * When a level is being purchased, $items holds core's 'membership' item. Its object_id is the level ID
+	 * and it is priced as charged, after any discount code. Add Ons add their own items. See
+	 * pmpro_normalize_order_item() for the item shape. An item's key must be unique in the checkout. It
 	 * defaults to "{item_type}-{object_id}" and isn't saved.
 	 *
-	 * - A line's billing_amount is added to each recurring payment of the membership. If the membership is
-	 *   one-time, or no level is being purchased, every line is one-time and billing_amount is ignored.
-	 * - Amounts can't be negative. Discount codes only discount the membership line, but an Add On may read
-	 *   the code to price its own lines.
+	 * - An item's billing_amount is added to each recurring payment of the membership. If the membership is
+	 *   one-time, or no level is being purchased, every item is one-time and billing_amount is ignored.
+	 * - Amounts can't be negative. Discount codes only discount the membership item, but an Add On may read
+	 *   the code to price its own items.
 	 *
-	 * When no level is being purchased and this filter returns lines, the checkout has no membership level.
+	 * When no level is being purchased and this filter returns items, the checkout has no membership level.
 	 *
 	 * Callbacks read their inputs from the request. This filter runs every time the checkout level is
-	 * resolved and every time the lines of a checkout without a membership level are read, so callbacks
+	 * resolved and every time the items of a checkout without a membership level are read, so callbacks
 	 * must not have side effects or call pmpro_getLevelAtCheckout().
 	 *
 	 * - Inputs can be in the checkout URL's query string, such as ?ap=12, or in checkout fields, such as a
 	 *   donation amount. Both are restored when the buyer returns from an offsite gateway.
-	 * - Give checkout fields that change a line the pmpro_alter_price class. The checkout then refreshes
-	 *   its lines and total when they change. Until the form is submitted or refreshed, the request doesn't
-	 *   have the field, so price the line with the field's default.
-	 * - A checkout without a membership level only opens if this filter returns a line when the page first
+	 * - Give checkout fields that change an item the pmpro_alter_price class. The checkout then refreshes
+	 *   its items and total when they change. Until the form is submitted or refreshed, the request doesn't
+	 *   have the field, so price the item with the field's default.
+	 * - A checkout without a membership level only opens if this filter returns an item when the page first
 	 *   loads. When the amount comes from a checkout field, start the checkout with a query string
-	 *   parameter that adds the line at its default amount, even $0. A checkout that is still $0 when
+	 *   parameter that adds the item at its default amount, even $0. A checkout that is still $0 when
 	 *   submitted is refused.
 	 *
 	 * @since TBD
 	 *
-	 * @param array       $items Lines keyed by key.
+	 * @param array       $items Items keyed by key.
 	 * @param object|null $level The checkout level, or null when no level is being purchased.
 	 */
 	$filtered = apply_filters( 'pmpro_checkout_items', $core_items, $level );
@@ -162,7 +162,7 @@ function pmpro_build_checkout_items( $level ) {
 			continue;
 		}
 
-		// Lines only renew with a recurring membership.
+		// Items only renew with a recurring membership.
 		if ( empty( $core_items['membership']['billing_amount'] ) ) {
 			$item['billing_amount'] = 0;
 		}
@@ -174,13 +174,13 @@ function pmpro_build_checkout_items( $level ) {
 }
 
 /**
- * Set up the checkout lines for a checkout level.
+ * Set up the checkout items for a checkout level.
  *
  * Called at the end of pmpro_getLevelAtCheckout(), after the pmpro_checkout_level filter. When Add Ons
- * added lines, the level's initial_payment becomes the total of all lines and its billing_amount the
- * total of the recurring lines, so that every gateway charges the whole order. The lines are kept in the
- * level's checkout_items property, and the membership's own price in its pmpro_membership_price property
- * for the cost text.
+ * added items, the level's initial_payment becomes the total of all items and its billing_amount the
+ * total of the recurring items, so that every gateway charges the whole order. The items are kept in the
+ * level's checkout_items property. The 'membership' item keeps the membership's own price, for the cost
+ * text (see pmpro_get_level_with_membership_price()).
  *
  * @since TBD
  *
@@ -192,24 +192,16 @@ function pmpro_set_up_checkout_items_for_level( $level ) {
 		return $level;
 	}
 
-	// A filter may hand back a level object that already carries the lines. Start again from the membership's price.
-	if ( ! empty( $level->pmpro_membership_price ) ) {
-		$level->initial_payment = $level->pmpro_membership_price['initial_payment'];
-		$level->billing_amount  = $level->pmpro_membership_price['billing_amount'];
-		unset( $level->pmpro_membership_price );
-	}
+	// A filter may hand back a level object that already carries the items. Start again from the membership's price.
+	$level = pmpro_get_level_with_membership_price( $level );
 
 	$level->checkout_items = pmpro_build_checkout_items( $level );
 
-	// Core's line is the level's price, so only Add On lines change what the level charges.
+	// Core's item is the level's price, so only Add On items change what the level charges.
 	if ( 1 === count( $level->checkout_items ) ) {
 		return $level;
 	}
 
-	$level->pmpro_membership_price = array(
-		'initial_payment' => $level->initial_payment,
-		'billing_amount'  => $level->billing_amount,
-	);
 	$level->initial_payment = pmpro_get_items_total( $level->checkout_items, 'subtotal' );
 	if ( pmpro_isLevelRecurring( $level ) ) {
 		$level->billing_amount = pmpro_get_items_total( $level->checkout_items, 'billing_amount' );
@@ -219,15 +211,42 @@ function pmpro_set_up_checkout_items_for_level( $level ) {
 }
 
 /**
- * Get the lines being purchased at checkout.
+ * Get a checkout level priced at the membership's own price, without the Add On items.
  *
- * A level checkout's lines are kept on the level by pmpro_getLevelAtCheckout(). A checkout without a
- * membership level has no level to keep them on, so its lines are built again.
+ * When Add Ons added items, the checkout level's initial_payment and billing_amount are the totals of all
+ * items. This returns a copy priced as the 'membership' item, such as for the level cost text. A level
+ * without Add On items is returned as it is.
+ *
+ * @since TBD
+ *
+ * @param object $level The checkout level.
+ * @return object The level, or a copy of it at the membership's own price.
+ */
+function pmpro_get_level_with_membership_price( $level ) {
+	if ( ! isset( $level->checkout_items['membership'] ) || count( $level->checkout_items ) < 2 ) {
+		return $level;
+	}
+
+	$membership_level                  = clone $level;
+	$membership_level->initial_payment = $level->checkout_items['membership']['subtotal'];
+	if ( pmpro_isLevelRecurring( $level ) ) {
+		$membership_level->billing_amount = $level->checkout_items['membership']['billing_amount'];
+	}
+	unset( $membership_level->checkout_items );
+
+	return $membership_level;
+}
+
+/**
+ * Get the items being purchased at checkout.
+ *
+ * A level checkout's items are kept on the level by pmpro_getLevelAtCheckout(). A checkout without a
+ * membership level has no level to keep them on, so its items are built again.
  *
  * @since TBD
  *
  * @param object|null $level The checkout level, or null (or a level with no ID) when no level is being purchased.
- * @return array Normalized lines keyed by key.
+ * @return array Normalized items keyed by key.
  */
 function pmpro_get_checkout_items( $level ) {
 	if ( empty( $level->id ) ) {
@@ -239,22 +258,35 @@ function pmpro_get_checkout_items( $level ) {
 /**
  * Check whether a checkout has no membership level.
  *
+ * Add Ons should use this, called without an argument, to tell whether the current checkout has a level.
+ * Don't check $pmpro_level->id yourself: on a checkout without a membership level, $pmpro_level is null
+ * while the checkout is processed and a placeholder level with ID 0 while the page is shown.
+ *
  * @since TBD
  *
- * @param object|null $level The checkout level.
- * @return bool True if no level is being purchased and Add Ons added lines to purchase.
+ * @param object|null $level The checkout level. Defaults to the current checkout's level.
+ * @return bool True if no level is being purchased and Add Ons added items to purchase.
  */
-function pmpro_is_membershipless_checkout( $level ) {
+function pmpro_is_membershipless_checkout( $level = null ) {
+	// Without an argument, check the current checkout.
+	if ( 0 === func_num_args() ) {
+		global $pmpro_level;
+		if ( ! pmpro_is_checkout() ) {
+			return false;
+		}
+		$level = $pmpro_level;
+	}
+
 	return empty( $level->id ) && ! empty( pmpro_build_checkout_items( null ) );
 }
 
 /**
- * Check the checkout lines when the checkout form is submitted, before the user is created.
+ * Check the checkout items when the checkout form is submitted, before the user is created.
  *
  * @since TBD
  *
- * @param array $items The checkout lines.
- * @return bool False if the lines can't be purchased. An error message is set.
+ * @param array $items The checkout items.
+ * @return bool False if the items can't be purchased. An error message is set.
  */
 function pmpro_check_checkout_items( $items ) {
 	global $gateway;
@@ -264,12 +296,12 @@ function pmpro_check_checkout_items( $items ) {
 	}
 
 	foreach ( $items as $key => $item ) {
-		// Core's line was checked when it was built.
+		// Core's item was checked when it was built.
 		if ( 'membership' === $key ) {
 			continue;
 		}
 
-		// Only core makes membership lines, and amounts can't be negative.
+		// Only core makes membership items, and amounts can't be negative.
 		if ( 'membership' === $item['item_type'] || $item['subtotal'] < 0 || $item['billing_amount'] < 0 ) {
 			pmpro_setMessage( __( 'An item in this checkout has an invalid price. Please contact the site owner.', 'paid-memberships-pro' ), 'pmpro_error' );
 			return false;
@@ -300,8 +332,16 @@ function pmpro_check_checkout_items( $items ) {
  *
  * Gateways declare support with the 'membershipless_checkout' feature in their supports() method. In
  * core, Stripe, PayPal Express and Check do. A gateway that doesn't may charge the order and then fail
- * to complete it, so checkouts without a membership level are refused for it. The check uses the gateway object that
- * checkout uses, after the pmpro_order_gateway_object filter.
+ * to complete it, so checkouts without a membership level are refused for it. The check uses the gateway
+ * object that checkout uses, after the pmpro_order_gateway_object filter.
+ *
+ * Before declaring support, a gateway must handle orders with membership_id 0:
+ * - Charge the order's total once. There is no subscription and no level to read prices from.
+ * - Describe the payment with MemberOrder::get_items_description() instead of the level name.
+ * - Send the buyer offsite from process() or call its own handler directly. A checkout without a
+ *   membership level doesn't run pmpro_checkout_before_change_membership_level, which offsite
+ *   gateways often use for the redirect.
+ * - Complete the order with pmpro_complete_checkout(), which doesn't change the buyer's memberships.
  *
  * @since TBD
  *
@@ -323,7 +363,7 @@ function pmpro_gateway_supports_membershipless_checkout( $gateway ) {
  * Get the checkout URL with the current request's query string.
  *
  * Used for the login link and the offsite cancel URL of a checkout without a membership level, so the
- * buyer comes back to the same lines.
+ * buyer comes back to the same items.
  *
  * @since TBD
  *
@@ -337,9 +377,9 @@ function pmpro_get_membershipless_checkout_url() {
 }
 
 /**
- * Display the checkout lines with the total due today.
+ * Display the checkout items with the total due today.
  *
- * Shown on a checkout without a membership level, and on a level checkout when Add Ons added lines. The
+ * Shown on a checkout without a membership level, and on a level checkout when Add Ons added items. The
  * checkout_level REST endpoint returns the same HTML so the checkout can refresh it when a field with the
  * pmpro_alter_price class changes.
  *
@@ -350,7 +390,7 @@ function pmpro_get_membershipless_checkout_url() {
 function pmpro_display_checkout_items( $level ) {
 	$items = pmpro_get_checkout_items( $level );
 
-	// A level checkout with only the membership line shows the level cost text alone.
+	// A level checkout with only the membership item shows the level cost text alone.
 	if ( empty( $items ) || ( ! empty( $level->id ) && count( $items ) < 2 ) ) {
 		return;
 	}
@@ -385,7 +425,7 @@ function pmpro_display_checkout_items( $level ) {
 			?>
 		</p>
 		<?php
-		// Applying a discount code by AJAX only knows the level, so tell it when Add On lines still need to be paid for.
+		// Applying a discount code by AJAX only knows the level, so tell it when Add On items still need to be paid for.
 		$add_on_items = array_diff_key( $items, array( 'membership' => true ) );
 		if ( ! empty( $level->id ) && ( pmpro_get_items_total( $add_on_items ) > 0 || pmpro_get_items_total( $add_on_items, 'billing_amount' ) > 0 ) ) {
 			echo '<input type="hidden" id="pmpro_checkout_has_items" name="pmpro_checkout_has_items" value="1" />';
@@ -419,7 +459,7 @@ function pmpro_get_checkout_items_recurring_text( $amount, $level ) {
  */
 
 /**
- * Format a line amount, with a minus sign in front of negative amounts, such as "-$5.00".
+ * Format an item amount, with a minus sign in front of negative amounts, such as "-$5.00".
  *
  * @since TBD
  *
@@ -432,11 +472,11 @@ function pmpro_format_order_item_price( $amount ) {
 }
 
 /**
- * Get the label of a line, such as "Seats" or "3 × Seats".
+ * Get the label of an item, such as "Seats" or "3 × Seats".
  *
  * @since TBD
  *
- * @param object|array $line A saved line or a checkout line.
+ * @param object|array $line A saved item or a checkout item.
  * @return string
  */
 function pmpro_get_order_item_label( $line ) {
@@ -449,14 +489,14 @@ function pmpro_get_order_item_label( $line ) {
 }
 
 /**
- * Check whether an order's lines should be listed instead of its single summary row.
+ * Check whether an order's items should be listed instead of its single summary row.
  *
- * A single membership line keeps the order's existing display.
+ * A single membership item keeps the order's existing display.
  *
  * @since TBD
  *
  * @param MemberOrder $order The order.
- * @param object[]    $lines The order's lines, from MemberOrder::get_items().
+ * @param object[]    $lines The order's items, from MemberOrder::get_items().
  * @return bool
  */
 function pmpro_should_display_order_items( $order, $lines ) {
@@ -467,7 +507,7 @@ function pmpro_should_display_order_items( $order, $lines ) {
 }
 
 /**
- * Display an order's lines as table rows (Description | Amount) on the invoice and admin order pages.
+ * Display an order's items as table rows (Description | Amount) on the invoice and admin order pages.
  *
  * @since TBD
  *
@@ -497,9 +537,9 @@ function pmpro_display_order_item_rows( $order ) {
 }
 
 /**
- * Get an order's lines as HTML for the {{ order_lines }} email variable.
+ * Get an order's items as HTML for the {{ order_items }} email variable.
  *
- * Empty for an order that is a single membership line, so those emails read as before.
+ * Empty for an order that is a single membership item, so those emails read as before.
  *
  * @since TBD
  *

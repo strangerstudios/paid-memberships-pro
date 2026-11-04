@@ -346,12 +346,9 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 		return '';
 	}
 
-	// If Add Ons added lines at checkout, describe the membership's own price. The lines are listed separately.
-	if ( ! empty( $level->pmpro_membership_price ) ) {
-		$membership_level                  = clone $level;
-		$membership_level->initial_payment = $level->pmpro_membership_price['initial_payment'];
-		$membership_level->billing_amount  = $level->pmpro_membership_price['billing_amount'];
-		unset( $membership_level->pmpro_membership_price );
+	// If Add Ons added items at checkout, describe the membership's own price. The items are listed separately.
+	if ( isset( $level->checkout_items['membership'] ) && count( $level->checkout_items ) > 1 ) {
+		$membership_level = pmpro_get_level_with_membership_price( $level );
 		return pmpro_getLevelCost( $membership_level, $tags, $short );
 	}
 
@@ -2863,7 +2860,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$level_id = intval( get_post_meta( $post->ID, 'pmpro_default_level', true ) );
 	}
 
-	// If no level was requested but Add Ons added lines to purchase, this checkout has no membership level.
+	// If no level was requested but Add Ons added items to purchase, this checkout has no membership level.
 	if ( empty( $level_id ) && ! empty( pmpro_build_checkout_items( null ) ) ) {
 		// Keep the placeholder level that the checkout template sets up while it renders.
 		if ( is_object( $previous_level ) && empty( $previous_level->id ) ) {
@@ -2949,7 +2946,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
 
-	// Add the lines being purchased. This must be the last step since the level is resolved more than once per request.
+	// Add the items being purchased. This must be the last step since the level is resolved more than once per request.
 	$pmpro_level = pmpro_set_up_checkout_items_for_level( $pmpro_level );
 
 	return $pmpro_level;

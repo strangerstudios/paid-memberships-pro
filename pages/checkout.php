@@ -102,7 +102,7 @@ if ( empty( $default_gateway ) ) {
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 
 						<?php
-						// A checkout without a membership level lists the lines being purchased instead of the level.
+						// A checkout without a membership level lists the items being purchased instead of the level.
 						if ( pmpro_is_membershipless_checkout( $pmpro_level ) ) {
 							pmpro_display_checkout_items( $pmpro_level );
 						} else { ?><p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
@@ -184,7 +184,7 @@ if ( empty( $default_gateway ) ) {
 						</div> <!-- end #pmpro_level_cost -->
 
 						<?php
-						// List the lines when Add Ons added lines.
+						// List the items when Add Ons added items.
 						pmpro_display_checkout_items( $pmpro_level );
 
 						/**

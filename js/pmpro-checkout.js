@@ -278,7 +278,7 @@ function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	return jQuery.param( checkoutFormData );
 }
 
-// Refresh the checkout's lines and total, such as when an Add On field changes a line.
+// Refresh the checkout's items and total, such as when an Add On field changes an item.
 var pmpro_checkout_items_request = 0;
 function pmpro_refresh_checkout_items() {
 	var request = ++pmpro_checkout_items_request;
@@ -287,7 +287,7 @@ function pmpro_refresh_checkout_items() {
 		dataType: 'json',
 		data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 		success: function( data ) {
-			// Skip responses to older requests and responses without lines.
+			// Skip responses to older requests and responses without items.
 			if ( request !== pmpro_checkout_items_request || ! data || ! data.hasOwnProperty( 'checkout_items_html' ) ) {
 				return;
 			}
@@ -301,7 +301,7 @@ function pmpro_refresh_checkout_items() {
 	});
 }
 
-// Fields that change the price refresh the lines. Discount codes refresh them once applied.
+// Fields that change the price refresh the items. Discount codes refresh them once applied.
 jQuery( document ).ready( function() {
 	jQuery( '#pmpro_form' ).on( 'change', '.pmpro_alter_price:not(#pmpro_discount_code, #pmpro_other_discount_code)', pmpro_refresh_checkout_items );
 } );

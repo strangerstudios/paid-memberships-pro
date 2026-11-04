@@ -1953,7 +1953,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		// Next, let's get the product being purchased. An order without a membership level is a one-time payment for its lines.
+		// Next, let's get the product being purchased. An order without a membership level is a one-time payment for its items.
 		$product_id = empty( $morder->membership_id ) ? null : $stripe->get_product_id_for_level( $morder->membership_id );
 		if ( empty( $product_id ) && ! empty( $morder->membership_id ) ) {
 			// Something went wrong getting the product ID or creating the product.
@@ -2082,7 +2082,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'address' => 'auto',
 				'name' => 'auto'
 			),
-			// An order without a membership level is confirmed by its code, and a cancelled payment returns to the same lines.
+			// An order without a membership level is confirmed by its code, and a cancelled payment returns to the same items.
 			'success_url' => empty( $morder->membership_id ) ? pmpro_url( 'confirmation', '?pmpro_order=' . $morder->code ) : apply_filters( 'pmpro_confirmation_url', add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("confirmation" ) ), $user_id, $pmpro_level ),
 			'cancel_url' =>  empty( $morder->membership_id ) ? pmpro_get_membershipless_checkout_url() : add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("checkout" ) ),
 		);
@@ -3712,7 +3712,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get the Stripe Checkout line item for an order without a membership level.
 	 *
 	 * The order is charged once for its subtotal plus tax, the same way that a level's initial payment is.
-	 * The line item is named after the order's lines.
+	 * The line item is named after the order's items.
 	 *
 	 * @since TBD
 	 *

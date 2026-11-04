@@ -204,7 +204,7 @@ $subscription = $order->get_subscription();
 					</thead>
 					<tbody>
 						<?php
-						// Orders with more than one line list each line. Otherwise, show the order's single row.
+						// Orders with more than one item list each item. Otherwise, show the order's single row.
 						if ( ! pmpro_display_order_item_rows( $order ) ) { ?><tr>
 							<th data-title="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>">
 								<?php

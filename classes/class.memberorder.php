@@ -256,22 +256,22 @@
 		private $discount_code_id = null;
 
 		/**
-		 * The order's lines. Null until get_items() loads them or set_items() sets them.
+		 * The order's items. Null until get_items() loads them or set_items() sets them.
 		 *
 		 * @since TBD
 		 *
 		 * @var object[]|null
 		 */
-		private $items = null;
+		private $items_cache = null;
 
 		/**
-		 * Whether the lines were set with set_items() and still need to be saved.
+		 * Whether the items were set with set_items() and still need to be saved.
 		 *
 		 * @since TBD
 		 *
 		 * @var bool
 		 */
-		private $items_changed = false;
+		private $items_cache_changed = false;
 
 		/**
 		 * Defines an array of optionally used properties
@@ -748,10 +748,10 @@
 
 			if($dbobj)
 			{
-				// Loading a different order. Forget the lines of the previous one.
+				// Loading a different order. Forget the items of the previous one.
 				if ( (int) $dbobj->id !== (int) $this->id ) {
-					$this->items         = null;
-					$this->items_changed = false;
+					$this->items_cache         = null;
+					$this->items_cache_changed = false;
 				}
 
 				$this->id = $dbobj->id;
@@ -1494,8 +1494,8 @@
 					$this->updateDiscountCode( $this->discount_code_id );
 				}
 
-				// Save the lines if they were set.
-				if ( $this->items_changed ) {
+				// Save the items if they were set.
+				if ( $this->items_cache_changed ) {
 					$this->save_items();
 				}
 
@@ -1673,7 +1673,7 @@
 				$wpdb->delete( $wpdb->pmpro_membership_ordermeta, array( 'pmpro_membership_order_id' => $this->id ), array( '%d' ) );
 				wp_cache_delete( $this->id, 'pmpro_membership_order_meta' );
 
-				// Delete the order's lines too.
+				// Delete the order's items too.
 				$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => $this->id ), array( '%d' ) );
 
 				return true;
@@ -1787,35 +1787,35 @@
 		}
 
 		/**
-		 * Get the lines of this order.
+		 * Get the items of this order.
 		 *
-		 * Each line is an object with the columns of the order items table: id, order_id, item_type,
+		 * Each item is an object with the columns of the order items table: id, order_id, item_type,
 		 * object_id, name, quantity, subtotal and billing_amount.
 		 *
-		 * - Lines set with set_items() are returned until the order is saved. They have id 0.
-		 * - Orders without lines (renewals and orders saved before lines existed) read as one membership line
-		 *   built from the order, with id 0. Orders without lines or a level have no lines.
+		 * - Items set with set_items() are returned until the order is saved. They have id 0.
+		 * - Orders without items (renewals and orders saved before items existed) read as one membership item
+		 *   built from the order, with id 0. Orders without items or a level have no items.
 		 *
-		 * The lines are copies. To change them, pass the changed lines to set_items() and save the order.
+		 * The items are copies. To change them, pass the changed items to set_items() and save the order.
 		 *
 		 * @since TBD
 		 *
-		 * @return object[] The lines.
+		 * @return object[] The items.
 		 */
 		public function get_items() {
 			global $wpdb;
 
-			if ( null === $this->items ) {
+			if ( null === $this->items_cache ) {
 				$rows        = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
-				$this->items = array_map( array( $this, 'get_item_object' ), $rows );
+				$this->items_cache = array_map( array( $this, 'get_item_object' ), $rows );
 			}
 
-			if ( ! empty( $this->items ) ) {
+			if ( ! empty( $this->items_cache ) ) {
 				return array_map(
 					function ( $line ) {
 						return clone $line;
 					},
-					$this->items
+					$this->items_cache
 				);
 			}
 
@@ -1839,13 +1839,13 @@
 		}
 
 		/**
-		 * Describe what this order is for from its lines, such as "Donation, 2 × Gift".
+		 * Describe what this order is for from its items, such as "Donation, 2 × Gift".
 		 *
 		 * Gateways use this where they would show the level name, such as in the payment description.
 		 *
 		 * @since TBD
 		 *
-		 * @return string The line names, or "Order #CODE" if the order has no lines.
+		 * @return string The item names, or "Order #CODE" if the order has no items.
 		 */
 		public function get_items_description() {
 			$lines = $this->get_items();
@@ -1860,28 +1860,28 @@
 		}
 
 		/**
-		 * Replace the lines of this order. They are saved the next time the order is saved.
+		 * Replace the items of this order. They are saved the next time the order is saved.
 		 *
-		 * Takes checkout lines from pmpro_get_checkout_items(), or lines from get_items() to change them. Pass
-		 * an empty array to remove the order's lines. When the lines are saved, the membership line is saved as
-		 * the order subtotal minus the other lines.
+		 * Takes checkout items from pmpro_get_checkout_items(), or items from get_items() to change them. Pass
+		 * an empty array to remove the order's items. When the items are saved, the membership item is saved as
+		 * the order subtotal minus the other items.
 		 *
 		 * @since TBD
 		 *
-		 * @param array $items The lines, as arrays or objects. See pmpro_normalize_order_item() for their shape.
+		 * @param array $items The items, as arrays or objects. See pmpro_normalize_order_item() for their shape.
 		 */
 		public function set_items( $items ) {
-			$this->items         = array_map( array( $this, 'get_item_object' ), array_map( 'pmpro_normalize_order_item', array_values( (array) $items ) ) );
-			$this->items_changed = true;
+			$this->items_cache         = array_map( array( $this, 'get_item_object' ), array_map( 'pmpro_normalize_order_item', array_values( (array) $items ) ) );
+			$this->items_cache_changed = true;
 		}
 
 		/**
-		 * Build a line object for this order in the shape that get_items() returns.
+		 * Build an item object for this order in the shape that get_items() returns.
 		 *
 		 * @since TBD
 		 *
-		 * @param array|object $item A saved line or a checkout line.
-		 * @return object The line.
+		 * @param array|object $item A saved item or a checkout item.
+		 * @return object The item.
 		 */
 		private function get_item_object( $item ) {
 			$item = (array) $item;
@@ -1898,14 +1898,14 @@
 		}
 
 		/**
-		 * Save the lines set with set_items(), replacing the order's saved lines.
+		 * Save the items set with set_items(), replacing the order's saved items.
 		 *
-		 * The membership line is saved as the order subtotal minus the other lines. The new lines are saved
-		 * before the old ones are deleted, so a failed save keeps the old lines.
+		 * The membership item is saved as the order subtotal minus the other items. The new items are saved
+		 * before the old ones are deleted, so a failed save keeps the old items.
 		 *
 		 * @since TBD
 		 *
-		 * @return bool True if the lines were saved.
+		 * @return bool True if the items were saved.
 		 */
 		private function save_items() {
 			global $wpdb;
@@ -1917,14 +1917,14 @@
 			$old_ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d", $this->id ) );
 
 			$others = 0;
-			foreach ( $this->items as $item ) {
+			foreach ( $this->items_cache as $item ) {
 				if ( 'membership' !== $item->item_type ) {
 					$others += $item->subtotal;
 				}
 			}
 
 			$new_ids = array();
-			foreach ( $this->items as $item ) {
+			foreach ( $this->items_cache as $item ) {
 				$inserted = $wpdb->insert(
 					$wpdb->pmpro_membership_order_items,
 					array(
@@ -1939,7 +1939,7 @@
 					array( '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
 				);
 
-				// If a line can't be saved, remove the new lines and keep the old ones.
+				// If an item can't be saved, remove the new items and keep the old ones.
 				if ( false === $inserted ) {
 					foreach ( $new_ids as $new_id ) {
 						$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'id' => $new_id ), array( '%d' ) );
@@ -1954,9 +1954,9 @@
 				$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'id' => $old_id ), array( '%d' ) );
 			}
 
-			// Read the saved lines next time, with their IDs.
-			$this->items         = null;
-			$this->items_changed = false;
+			// Read the saved items next time, with their IDs.
+			$this->items_cache         = null;
+			$this->items_cache_changed = false;
 			return true;
 		}
 

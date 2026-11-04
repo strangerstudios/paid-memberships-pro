@@ -99,9 +99,9 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 
 {% endif %}{% if membership_expiration %}{{ membership_expiration }}{% endif %}
 
-{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}{% if order_lines %}
+{% if discount_code_name %}<p>Discount Code: {{ discount_code_name }}</p>{% endif %}{% if order_items %}
 
-{{ order_lines }}{% endif %}
+{{ order_items }}{% endif %}
 
 <p>
 	Order #{{ order_id }} on {{ order_date }}<br />
@@ -202,7 +202,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 			'order_total_raw' => $order->total,
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 			'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-			'order_lines' => pmpro_get_order_items_email_html( $order ),
+			'order_items' => pmpro_get_order_items_email_html( $order ),
 			'discount_code' => $discount_code,
 			'discount_code_name' => $discount_code_name,
 			'discount_code_id' => $discount_code_id,
@@ -253,7 +253,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 			'{{ order_total_raw }}' => __( 'The unformatted numeric total of the order.', 'paid-memberships-pro' ),
 			'{{ order_date }}' => __( 'The date of the order.', 'paid-memberships-pro' ),
 			'{{ order_url }}' => __( 'The URL of the order.', 'paid-memberships-pro' ),
-			'{{ order_lines }}' => __( 'The items in the order with their prices. Empty when the order only has a membership.', 'paid-memberships-pro' ),
+			'{{ order_items }}' => __( 'The items in the order with their prices. Empty when the order only has a membership.', 'paid-memberships-pro' ),
 			'{{ discount_code }}' => __( 'The discount code for the order displayed as a formatted paragraph with label.', 'paid-memberships-pro' ),
 			'{{ discount_code_name }}' => __( 'The name of the discount code used for the order.', 'paid-memberships-pro' ),
 			'{{ discount_code_id }}' => __( 'The ID of the discount code used for the order.', 'paid-memberships-pro' ),
