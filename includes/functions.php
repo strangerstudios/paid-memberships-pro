@@ -4971,7 +4971,7 @@ function pmpro_get_ip() {
 
 		// Walk back from the connecting address until we reach a hop that isn't a trusted proxy.
 		foreach ( array_reverse( $hops ) as $hop ) {
-			$hop = trim( $hop );
+			$hop = pmpro_strip_ip_port( $hop );
 			if ( ! filter_var( $hop, FILTER_VALIDATE_IP ) ) {
 				break;
 			}
@@ -5001,6 +5001,10 @@ function pmpro_get_ip() {
 
 /**
  * Get the proxy addresses whose forwarded headers pmpro_get_ip() will read.
+ *
+ * Defaults to loopback and private ranges, which assumes any host on the
+ * site's private network is a reverse proxy or load balancer, plus
+ * Cloudflare's ranges unless PMPRO_TRUST_CLOUDFLARE is false.
  *
  * @since TBD
  *
@@ -5035,12 +5039,19 @@ function pmpro_get_trusted_proxies() {
 /**
  * Get Cloudflare's published IP ranges.
  *
+ * Define PMPRO_TRUST_CLOUDFLARE as false on sites that aren't behind Cloudflare.
+ *
  * @since TBD
  *
  * @return array CIDR ranges.
  */
 function pmpro_get_cloudflare_ip_ranges() {
-	return array(
+	if ( defined( 'PMPRO_TRUST_CLOUDFLARE' ) && ! PMPRO_TRUST_CLOUDFLARE ) {
+		return array();
+	}
+
+	// From https://www.cloudflare.com/ips/ as of November 2026.
+	$ranges = array(
 		'173.245.48.0/20',
 		'103.21.244.0/22',
 		'103.22.200.0/22',
@@ -5064,6 +5075,15 @@ function pmpro_get_cloudflare_ip_ranges() {
 		'2a06:98c0::/29',
 		'2c0f:f248::/32',
 	);
+
+	/**
+	 * Filter the Cloudflare ranges trusted to send CF-Connecting-IP.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $ranges CIDR ranges.
+	 */
+	return apply_filters( 'pmpro_cloudflare_ip_ranges', $ranges );
 }
 
 /**
@@ -5093,20 +5113,28 @@ function pmpro_is_trusted_proxy( $ip, $trusted_proxies = null ) {
  * @return bool
  */
 function pmpro_ip_in_ranges( $ip, $ranges ) {
-	$ip_bin = @inet_pton( $ip );
+	$ip_bin = pmpro_ip_to_binary( $ip );
 	if ( false === $ip_bin ) {
 		return false;
 	}
 
 	foreach ( (array) $ranges as $range ) {
 		$parts     = explode( '/', trim( $range ), 2 );
-		$range_bin = @inet_pton( $parts[0] );
+		$range_bin = pmpro_ip_to_binary( $parts[0] );
 		if ( false === $range_bin || strlen( $range_bin ) !== strlen( $ip_bin ) ) {
 			continue;
 		}
 
+		// Skip malformed prefixes so a bad entry never matches everything.
 		$max_bits = strlen( $ip_bin ) * 8;
-		$bits     = isset( $parts[1] ) ? (int) $parts[1] : $max_bits;
+		if ( isset( $parts[1] ) && ! preg_match( '/^\d{1,3}$/', $parts[1] ) ) {
+			continue;
+		}
+		$bits = isset( $parts[1] ) ? (int) $parts[1] : $max_bits;
+		if ( isset( $parts[1] ) && 4 === strlen( $range_bin ) && false !== strpos( $parts[0], ':' ) ) {
+			// An IPv4-mapped IPv6 range counts its prefix from the 96 mapped bits.
+			$bits -= 96;
+		}
 		if ( $bits < 0 || $bits > $max_bits ) {
 			continue;
 		}
@@ -5129,6 +5157,52 @@ function pmpro_ip_in_ranges( $ip, $ranges ) {
 	}
 
 	return false;
+}
+
+/**
+ * Convert an IP address to its packed binary form.
+ *
+ * IPv4-mapped IPv6 addresses (::ffff:192.0.2.1) are reduced to IPv4 so they
+ * match IPv4 ranges.
+ *
+ * @since TBD
+ *
+ * @param string $ip The IP address.
+ * @return string|false Packed address, or false if it isn't a valid IP.
+ */
+function pmpro_ip_to_binary( $ip ) {
+	if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+		return false;
+	}
+
+	$binary = inet_pton( $ip );
+	if ( 16 === strlen( $binary ) && str_repeat( "\0", 10 ) . "\xff\xff" === substr( $binary, 0, 12 ) ) {
+		$binary = substr( $binary, 12 );
+	}
+
+	return $binary;
+}
+
+/**
+ * Remove a port or IPv6 brackets from a forwarded address.
+ *
+ * Handles 192.0.2.1:8080, [2001:db8::1], and [2001:db8::1]:8080.
+ *
+ * @since TBD
+ *
+ * @param string $hop The forwarded address.
+ * @return string The bare address.
+ */
+function pmpro_strip_ip_port( $hop ) {
+	$hop = trim( $hop );
+	if ( preg_match( '/^\[([^\]]+)\](?::\d+)?$/', $hop, $matches ) ) {
+		return $matches[1];
+	}
+	if ( preg_match( '/^(\d{1,3}(?:\.\d{1,3}){3}):\d+$/', $hop, $matches ) ) {
+		return $matches[1];
+	}
+
+	return $hop;
 }
 
 /**
