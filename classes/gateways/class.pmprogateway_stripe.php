@@ -84,7 +84,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'subscription_sync' => true,
 			'payment_method_updates' => 'individual',
 			'check_token_orders' => true,
-			'membershipless_checkout' => true,
+			'checkout_without_level' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -1972,7 +1972,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$level = $morder->getMembershipLevelAtCheckout();
 		if ( empty( $morder->membership_id ) ) {
 			// An order without a membership level is charged once for its subtotal plus tax, as one line item.
-			$line_item = $stripe->get_line_item_for_membershipless_order( $morder );
+			$line_item = $stripe->get_line_item_for_order_without_level( $morder );
 			if ( is_string( $line_item ) ) {
 				pmpro_setMessage( __( 'Could not get price for initial payment. ', 'paid-memberships-pro' ) . $line_item, 'pmpro_error', true );
 				return;
@@ -2084,7 +2084,7 @@ class PMProGateway_stripe extends PMProGateway {
 			),
 			// An order without a membership level is confirmed by its code, and a cancelled payment returns to the same items.
 			'success_url' => empty( $morder->membership_id ) ? pmpro_url( 'confirmation', '?pmpro_order=' . $morder->code ) : apply_filters( 'pmpro_confirmation_url', add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("confirmation" ) ), $user_id, $pmpro_level ),
-			'cancel_url' =>  empty( $morder->membership_id ) ? pmpro_get_membershipless_checkout_url() : add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("checkout" ) ),
+			'cancel_url' =>  empty( $morder->membership_id ) ? pmpro_get_checkout_without_level_url() : add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("checkout" ) ),
 		);
 		if ( ! empty( $subscription_data ) ) {
 			$checkout_session_params['subscription_data'] = $subscription_data;
@@ -3719,7 +3719,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param MemberOrder $order The order.
 	 * @return array|string The line item, or an error message.
 	 */
-	private function get_line_item_for_membershipless_order( $order ) {
+	private function get_line_item_for_order_without_level( $order ) {
 		global $pmpro_currency;
 
 		$amount      = pmpro_round_price( (float) $order->subtotal + (float) $order->getTaxForPrice( $order->subtotal ) );

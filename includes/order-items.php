@@ -272,7 +272,7 @@ function pmpro_get_checkout_items( $level ) {
  * @param object|null $level The checkout level. Defaults to the current checkout's level.
  * @return bool True if no level is being purchased and Add Ons added items to purchase.
  */
-function pmpro_is_membershipless_checkout( $level = null ) {
+function pmpro_is_checkout_without_level( $level = null ) {
 	// Without an argument, check the current checkout.
 	if ( 0 === func_num_args() ) {
 		global $pmpro_level;
@@ -331,7 +331,7 @@ function pmpro_check_checkout_items( $items ) {
 	}
 
 	// Refuse before anything is charged if the gateway can't complete an order without a membership level.
-	if ( ! pmpro_gateway_supports_membershipless_checkout( $gateway ) ) {
+	if ( ! pmpro_gateway_supports_checkout_without_level( $gateway ) ) {
 		pmpro_setMessage( __( 'This purchase can\'t be paid for with the selected payment method. Please contact the site owner.', 'paid-memberships-pro' ), 'pmpro_error' );
 		return false;
 	}
@@ -342,7 +342,7 @@ function pmpro_check_checkout_items( $items ) {
 /**
  * Check whether a gateway can process a checkout without a membership level.
  *
- * Gateways declare support with the 'membershipless_checkout' feature in their supports() method. In
+ * Gateways declare support with the 'checkout_without_level' feature in their supports() method. In
  * core, Stripe, PayPal Express and Check do. A gateway that doesn't may charge the order and then fail
  * to complete it, so checkouts without a membership level are refused for it. The check uses the gateway
  * object that checkout uses, after the pmpro_order_gateway_object filter.
@@ -360,7 +360,7 @@ function pmpro_check_checkout_items( $items ) {
  * @param string $gateway The gateway slug.
  * @return bool
  */
-function pmpro_gateway_supports_membershipless_checkout( $gateway ) {
+function pmpro_gateway_supports_checkout_without_level( $gateway ) {
 	if ( empty( $gateway ) ) {
 		return false;
 	}
@@ -369,7 +369,7 @@ function pmpro_gateway_supports_membershipless_checkout( $gateway ) {
 	$order->setGateway( $gateway );
 	$gateway_object = $order->Gateway;
 
-	return is_object( $gateway_object ) && method_exists( $gateway_object, 'supports' ) && call_user_func( array( get_class( $gateway_object ), 'supports' ), 'membershipless_checkout' );
+	return is_object( $gateway_object ) && method_exists( $gateway_object, 'supports' ) && call_user_func( array( get_class( $gateway_object ), 'supports' ), 'checkout_without_level' );
 }
 /**
  * Get the checkout URL with the current request's query string.
@@ -381,7 +381,7 @@ function pmpro_gateway_supports_membershipless_checkout( $gateway ) {
  *
  * @return string
  */
-function pmpro_get_membershipless_checkout_url() {
+function pmpro_get_checkout_without_level_url() {
 	$args = map_deep( wp_unslash( $_GET ), 'sanitize_text_field' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, rebuilds the checkout URL.
 	$args = array_combine( array_map( 'sanitize_key', array_keys( $args ) ), $args );
 	unset( $args['pmpro_order'], $args['submit-checkout'], $args['pmpro_checkout_nonce'] );

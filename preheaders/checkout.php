@@ -88,7 +88,7 @@ $pmpro_level = pmpro_getLevelAtCheckout();
 do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', $pmpro_level );
 
 // Send the user to the levels page if there is nothing to purchase. A checkout without a membership level has items instead.
-if ( empty( $pmpro_level->id ) && ! pmpro_is_membershipless_checkout( $pmpro_level ) ) {
+if ( empty( $pmpro_level->id ) && ! pmpro_is_checkout_without_level( $pmpro_level ) ) {
 	wp_redirect( pmpro_url( "levels" ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 	exit( 0 );
 }

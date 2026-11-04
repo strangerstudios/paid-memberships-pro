@@ -4261,7 +4261,7 @@ function pmpro_show_discount_code() {
 	static $show;
 
 	// Discount codes only change a level's price, so they aren't shown on a checkout without a membership level.
-	if ( pmpro_is_checkout() && pmpro_is_membershipless_checkout( $pmpro_level ) ) {
+	if ( pmpro_is_checkout() && pmpro_is_checkout_without_level( $pmpro_level ) ) {
 		return false;
 	}
 

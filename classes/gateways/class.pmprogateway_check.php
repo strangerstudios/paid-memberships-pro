@@ -27,7 +27,7 @@
 		 */
 		public static function supports( $feature ) {
 			$supports = array(
-				'membershipless_checkout' => true,
+				'checkout_without_level' => true,
 			);
 
 			if ( empty( $supports[ $feature ] ) ) {
