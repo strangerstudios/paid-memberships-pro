@@ -1868,10 +1868,10 @@
 		 *
 		 * @since TBD
 		 *
-		 * @param array $items The lines, as arrays or objects. See pmpro_normalize_checkout_item() for their shape.
+		 * @param array $items The lines, as arrays or objects. See pmpro_normalize_order_item() for their shape.
 		 */
 		public function set_items( $items ) {
-			$this->items         = array_map( array( $this, 'get_item_object' ), array_map( 'pmpro_normalize_checkout_item', array_values( (array) $items ) ) );
+			$this->items         = array_map( array( $this, 'get_item_object' ), array_map( 'pmpro_normalize_order_item', array_values( (array) $items ) ) );
 			$this->items_changed = true;
 		}
 

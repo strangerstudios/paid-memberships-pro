@@ -25,17 +25,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
- * Checkout lines.
+ * Lines.
  */
 
 /**
- * Normalize a checkout line to the shape used by the pmpro_checkout_items filter.
+ * Normalize a line to the shape shared by checkout lines and saved lines.
  *
- * A checkout line is an array. It uses the same names as a saved line (see MemberOrder::get_items()) for
- * the same values, plus a key that only exists at checkout.
+ * Checkout lines also have a key (see pmpro_build_checkout_items()). Saved lines also have an id and an
+ * order_id (see MemberOrder::get_items()).
  *
  * Line shape:
- * - key            (string) Unique key for this line in the checkout. Defaults to "{item_type}-{object_id}".
  * - item_type      (string) What the line is, such as 'seats' or 'donation'. 'membership' is core only.
  * - object_id      (int)    The level ID for the membership line. Defined by the Add On otherwise.
  * - name           (string) Name shown at checkout, on the invoice and in emails.
@@ -46,13 +45,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since TBD
  *
  * @param array|object $item The line to normalize.
- * @return array The normalized line.
+ * @return array The normalized line. Other fields, such as key or id, are kept as they are.
  */
-function pmpro_normalize_checkout_item( $item ) {
+function pmpro_normalize_order_item( $item ) {
 	$item = wp_parse_args(
 		(array) $item,
 		array(
-			'key'            => '',
 			'item_type'      => '',
 			'object_id'      => 0,
 			'name'           => '',
@@ -68,7 +66,6 @@ function pmpro_normalize_checkout_item( $item ) {
 	$item['quantity']       = max( 1, (int) $item['quantity'] );
 	$item['subtotal']       = pmpro_round_price( (float) $item['subtotal'] );
 	$item['billing_amount'] = pmpro_round_price( (float) $item['billing_amount'] );
-	$item['key']            = ( '' === (string) $item['key'] ) ? $item['item_type'] . '-' . $item['object_id'] : (string) $item['key'];
 
 	return $item;
 }
@@ -91,6 +88,10 @@ function pmpro_get_items_total( $items, $field = 'subtotal' ) {
 	return pmpro_round_price( $total );
 }
 
+/*
+ * Checkout lines.
+ */
+
 /**
  * Build the lines being purchased at checkout.
  *
@@ -105,7 +106,7 @@ function pmpro_get_items_total( $items, $field = 'subtotal' ) {
 function pmpro_build_checkout_items( $level ) {
 	$core_items = array();
 	if ( ! empty( $level->id ) ) {
-		$core_items['membership'] = pmpro_normalize_checkout_item(
+		$core_items['membership'] = pmpro_normalize_order_item(
 			array(
 				'key'            => 'membership',
 				'item_type'      => 'membership',
@@ -122,7 +123,8 @@ function pmpro_build_checkout_items( $level ) {
 	 *
 	 * When a level is being purchased, $items holds core's 'membership' line. Its object_id is the level ID
 	 * and it is priced as charged, after any discount code. Add Ons add their own lines. See
-	 * pmpro_normalize_checkout_item() for the line shape.
+	 * pmpro_normalize_order_item() for the line shape. A line's key must be unique in the checkout. It
+	 * defaults to "{item_type}-{object_id}" and isn't saved.
 	 *
 	 * - A line's billing_amount is added to each recurring payment of the membership. If the membership is
 	 *   one-time, or no level is being purchased, every line is one-time and billing_amount is ignored.
@@ -131,10 +133,19 @@ function pmpro_build_checkout_items( $level ) {
 	 *
 	 * When no level is being purchased and this filter returns lines, the checkout has no membership level.
 	 *
-	 * This filter runs every time the checkout level is resolved and every time the lines of a checkout
-	 * without a membership level are read, so callbacks must not have side effects or call
-	 * pmpro_getLevelAtCheckout(). Read your inputs from the request and keep the parameters that start a
-	 * purchase in the checkout URL's query string. Offsite gateways send the buyer back to that URL.
+	 * Callbacks read their inputs from the request. This filter runs every time the checkout level is
+	 * resolved and every time the lines of a checkout without a membership level are read, so callbacks
+	 * must not have side effects or call pmpro_getLevelAtCheckout().
+	 *
+	 * - Inputs can be in the checkout URL's query string, such as ?ap=12, or in checkout fields, such as a
+	 *   donation amount. Both are restored when the buyer returns from an offsite gateway.
+	 * - Give checkout fields that change a line the pmpro_alter_price class. The checkout then refreshes
+	 *   its lines and total when they change. Until the form is submitted or refreshed, the request doesn't
+	 *   have the field, so price the line with the field's default.
+	 * - A checkout without a membership level only opens if this filter returns a line when the page first
+	 *   loads. When the amount comes from a checkout field, start the checkout with a query string
+	 *   parameter that adds the line at its default amount, even $0. A checkout that is still $0 when
+	 *   submitted is refused.
 	 *
 	 * @since TBD
 	 *
@@ -145,7 +156,8 @@ function pmpro_build_checkout_items( $level ) {
 
 	$items = array();
 	foreach ( (array) $filtered as $item ) {
-		$item = pmpro_normalize_checkout_item( $item );
+		$item        = pmpro_normalize_order_item( $item );
+		$item['key'] = ( isset( $item['key'] ) && '' !== (string) $item['key'] ) ? (string) $item['key'] : $item['item_type'] . '-' . $item['object_id'];
 		if ( isset( $core_items[ $item['key'] ] ) ) {
 			continue;
 		}
@@ -327,18 +339,24 @@ function pmpro_get_membershipless_checkout_url() {
 /**
  * Display the checkout lines with the total due today.
  *
+ * Shown on a checkout without a membership level, and on a level checkout when Add Ons added lines. The
+ * checkout_level REST endpoint returns the same HTML so the checkout can refresh it when a field with the
+ * pmpro_alter_price class changes.
+ *
  * @since TBD
  *
  * @param object|null $level The checkout level.
  */
 function pmpro_display_checkout_items( $level ) {
 	$items = pmpro_get_checkout_items( $level );
-	if ( empty( $items ) ) {
+
+	// A level checkout with only the membership line shows the level cost text alone.
+	if ( empty( $items ) || ( ! empty( $level->id ) && count( $items ) < 2 ) ) {
 		return;
 	}
 
 	?>
-	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_items' ) ); ?>">
+	<div id="pmpro_checkout_items" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_items' ) ); ?>">
 		<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ); ?>">
 			<?php foreach ( $items as $item ) { ?>
 				<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_checkout_item pmpro_checkout_item-' . $item['item_type'] ) ); ?>">
@@ -366,6 +384,13 @@ function pmpro_display_checkout_items( $level ) {
 			}
 			?>
 		</p>
+		<?php
+		// Applying a discount code by AJAX only knows the level, so tell it when Add On lines still need to be paid for.
+		$add_on_items = array_diff_key( $items, array( 'membership' => true ) );
+		if ( ! empty( $level->id ) && ( pmpro_get_items_total( $add_on_items ) > 0 || pmpro_get_items_total( $add_on_items, 'billing_amount' ) > 0 ) ) {
+			echo '<input type="hidden" id="pmpro_checkout_has_items" name="pmpro_checkout_has_items" value="1" />';
+		}
+		?>
 	</div>
 	<?php
 }

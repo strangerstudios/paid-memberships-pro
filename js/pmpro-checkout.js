@@ -256,6 +256,14 @@ function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	// We need the level, discount code, and any field with the pmpro_alter_price CSS class.
 	const checkoutFormData = jQuery( "#level, #pmpro_level, #discount_code, #pmpro_discount_code, #pmpro_form .pmpro_alter_price" ).serializeArray();
 
+	// The checkout form submits to the checkout URL, so also send its query string. Form fields win.
+	const formFieldNames = checkoutFormData.map( function( field ) { return field.name; } );
+	new URLSearchParams( window.location.search ).forEach( function( value, name ) {
+		if ( ! formFieldNames.includes( name ) ) {
+			checkoutFormData.push( { name: name, value: value } );
+		}
+	} );
+
 	// Double check to remove sensitive data from the array.
 	const sensitiveCheckoutRequestVars = pmpro.sensitiveCheckoutRequestVars;
 	for ( var i = 0; i < checkoutFormData.length; i++ ) {
@@ -269,3 +277,31 @@ function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	// Return form data as string.
 	return jQuery.param( checkoutFormData );
 }
+
+// Refresh the checkout's lines and total, such as when an Add On field changes a line.
+var pmpro_checkout_items_request = 0;
+function pmpro_refresh_checkout_items() {
+	var request = ++pmpro_checkout_items_request;
+	jQuery.ajax({
+		url: pmpro.restUrl + 'pmpro/v1/checkout_level',
+		dataType: 'json',
+		data: pmpro_getCheckoutFormDataForCheckoutLevels(),
+		success: function( data ) {
+			// Skip responses to older requests and responses without lines.
+			if ( request !== pmpro_checkout_items_request || ! data || ! data.hasOwnProperty( 'checkout_items_html' ) ) {
+				return;
+			}
+
+			if ( jQuery( '#pmpro_checkout_items' ).length ) {
+				jQuery( '#pmpro_checkout_items' ).replaceWith( data.checkout_items_html );
+			} else {
+				jQuery( '#pmpro_level_cost' ).after( data.checkout_items_html );
+			}
+		}
+	});
+}
+
+// Fields that change the price refresh the lines. Discount codes refresh them once applied.
+jQuery( document ).ready( function() {
+	jQuery( '#pmpro_form' ).on( 'change', '.pmpro_alter_price:not(#pmpro_discount_code, #pmpro_other_discount_code)', pmpro_refresh_checkout_items );
+} );

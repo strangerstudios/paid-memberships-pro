@@ -169,7 +169,10 @@
 			$html = implode( "\n\n", $html );
 			?>
 				jQuery('#pmpro_level_cost').html( <?php echo wp_json_encode( wp_kses_post( $html ) ); ?> );
-				jQuery('.pmpro_checkout_items').remove(); // The checkout lines are rebuilt when the checkout is submitted.
+				// Reprice the checkout's lines with the code.
+				if ( jQuery('#pmpro_checkout_items').length && typeof pmpro_refresh_checkout_items === 'function' ) {
+					pmpro_refresh_checkout_items();
+				}
 			<?php
 
 			// A checkout with Add On lines still has something to pay for when the code makes the level free.

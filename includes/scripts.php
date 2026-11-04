@@ -37,6 +37,7 @@ function pmpro_enqueue_scripts() {
 			'pmpro',
 			array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'restUrl' => get_rest_url(),
 				'ajax_timeout' => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
 				'show_discount_code' => pmpro_show_discount_code(),
 				'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.

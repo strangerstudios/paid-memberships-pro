@@ -184,10 +184,8 @@ if ( empty( $default_gateway ) ) {
 						</div> <!-- end #pmpro_level_cost -->
 
 						<?php
-						// List the lines when there is more than the membership line.
-						if ( count( pmpro_get_checkout_items( $pmpro_level ) ) > 1 ) {
-							pmpro_display_checkout_items( $pmpro_level );
-						}
+						// List the lines when Add Ons added lines.
+						pmpro_display_checkout_items( $pmpro_level );
 
 						/**
 						 * Fires after the level cost text is shown.
@@ -573,12 +571,6 @@ if ( empty( $default_gateway ) ) {
 			 * @param object $pmpro_level The PMPro Level object being purchased.
 			 */
       		do_action( 'pmpro_checkout_after_payment_information_fields', $pmpro_level );
-
-			// Applying a discount code by AJAX only knows the level, so tell it when Add On lines still need to be paid for.
-			$pmpro_add_on_items = array_diff_key( pmpro_get_checkout_items( $pmpro_level ), array( 'membership' => true ) );
-			if ( pmpro_get_items_total( $pmpro_add_on_items ) > 0 || pmpro_get_items_total( $pmpro_add_on_items, 'billing_amount' ) > 0 ) {
-				echo '<input type="hidden" id="pmpro_checkout_has_items" name="pmpro_checkout_has_items" value="1" />';
-			}
 
 			/**
 			 * Fires before the submit button on the checkout page.
