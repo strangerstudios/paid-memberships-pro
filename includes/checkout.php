@@ -207,112 +207,82 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 	global $wpdb, $pmpro_level, $discount_code, $discount_code_id;
 
 	// A checkout without a membership level doesn't change the user's memberships.
-	if ( empty( $order->membership_id ) ) {
-		$order->status = 'success';
-		if ( false === $order->saveOrder() ) {
-			return false;
-		}
+	if ( ! empty( $order->membership_id ) ) {
+		// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
+		do_action( 'pmpro_checkout_before_change_membership_level', $order->user_id, $order );
 
-		// Save first and last name fields.
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Same as below. Only fills in empty name fields.
-		foreach ( array( 'first_name', 'last_name' ) as $field ) {
-			if ( ! empty( $_POST[ $field ] ) && empty( get_user_meta( $order->user_id, $field, true ) ) ) {
-				update_user_meta( $order->user_id, $field, sanitize_text_field( $_POST[ $field ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself.
+		/**
+		 * Filter the start date for the membership/subscription.
+		 *
+		 * @since 1.8.9
+		 *
+		 * @param string $startdate , datetime formatsted for MySQL (NOW() or YYYY-MM-DD)
+		 * @param int $user_id , ID of the user checking out
+		 * @param object $pmpro_level , object of level being checked out for
+		 */
+		$startdate = apply_filters( "pmpro_checkout_start_date", "'" . current_time( 'mysql' ) . "'", $order->user_id, $pmpro_level );
+
+		//fix expiration date
+		if ( ! empty( $pmpro_level->expiration_number ) ) {
+			if( $pmpro_level->expiration_period == 'Hour' ){
+				$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			} else {
+				$enddate =  date( "Y-m-d 23:59:59", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
 			}
-		}
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
-
-		/** This action is documented below. */
-		do_action( 'pmpro_after_checkout', $order->user_id, $order );
-
-		/** This filter is documented below. */
-		if ( apply_filters( 'pmpro_send_checkout_emails', true, $order ) ) {
-			$user = get_userdata( $order->user_id );
-
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutEmail( $user, $order );
-
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutAdminEmail( $user, $order );
-		}
-
-		return true;
-	}
-
-	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
-	do_action( 'pmpro_checkout_before_change_membership_level', $order->user_id, $order );
-
-	/**
-	 * Filter the start date for the membership/subscription.
-	 *
-	 * @since 1.8.9
-	 *
-	 * @param string $startdate , datetime formatsted for MySQL (NOW() or YYYY-MM-DD)
-	 * @param int $user_id , ID of the user checking out
-	 * @param object $pmpro_level , object of level being checked out for
-	 */
-	$startdate = apply_filters( "pmpro_checkout_start_date", "'" . current_time( 'mysql' ) . "'", $order->user_id, $pmpro_level );
-
-	//fix expiration date
-	if ( ! empty( $pmpro_level->expiration_number ) ) {
-		if( $pmpro_level->expiration_period == 'Hour' ){
-			$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
 		} else {
-			$enddate =  date( "Y-m-d 23:59:59", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			$enddate = "NULL";
 		}
-	} else {
-		$enddate = "NULL";
-	}
 
-	/**
-	 * Filter the end date for the membership/subscription.
-	 *
-	 * @since 1.8.9
-	 *
-	 * @param string $enddate , datetime formatsted for MySQL (YYYY-MM-DD)
-	 * @param int $user_id , ID of the user checking out
-	 * @param object $pmpro_level , object of level being checked out for
-	 * @param string $startdate , startdate calculated above
-	 */
-	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $order->user_id, $pmpro_level, $startdate );
+		/**
+		 * Filter the end date for the membership/subscription.
+		 *
+		 * @since 1.8.9
+		 *
+		 * @param string $enddate , datetime formatsted for MySQL (YYYY-MM-DD)
+		 * @param int $user_id , ID of the user checking out
+		 * @param object $pmpro_level , object of level being checked out for
+		 * @param string $startdate , startdate calculated above
+		 */
+		$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $order->user_id, $pmpro_level, $startdate );
 
-	// If we have a discount code but not the ID, get the ID.
-	if ( ! empty( $pmpro_level->discount_code ) ) {
-		$discount_code = $pmpro_level->discount_code;
-		if ( ! empty( $pmpro_level->code_id ) ) {
-			$discount_code_id = $pmpro_level->code_id;
-		} else {
+		// If we have a discount code but not the ID, get the ID.
+		if ( ! empty( $pmpro_level->discount_code ) ) {
+			$discount_code = $pmpro_level->discount_code;
+			if ( ! empty( $pmpro_level->code_id ) ) {
+				$discount_code_id = $pmpro_level->code_id;
+			} else {
+				$discount_code_row = pmpro_get_discount_code( $discount_code );
+				$discount_code_id  = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
+			}
+		} elseif ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
+			// Throw a doing it wrong warning. If a discount code is being used, it should be set on the level.
+			// @TODO: Remove this in v4.0 along with references to the discount code globals. Discount codes should be set on the level object.
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'Discount codes should be set on the $pmpro_level object.', 'paid-memberships-pro' ), '3.4' );
 			$discount_code_row = pmpro_get_discount_code( $discount_code );
 			$discount_code_id  = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
 		}
-	} elseif ( ! empty( $discount_code ) && empty( $discount_code_id ) ) {
-		// Throw a doing it wrong warning. If a discount code is being used, it should be set on the level.
-		// @TODO: Remove this in v4.0 along with references to the discount code globals. Discount codes should be set on the level object.
-		_doing_it_wrong( __FUNCTION__, esc_html__( 'Discount codes should be set on the $pmpro_level object.', 'paid-memberships-pro' ), '3.4' );
-		$discount_code_row = pmpro_get_discount_code( $discount_code );
-		$discount_code_id  = ! empty( $discount_code_row ) ? $discount_code_row->id : null;
-	}
 
-	//custom level to change user to
-	$custom_level = array(
-		'user_id'         => $order->user_id,
-		'membership_id'   => $pmpro_level->id,
-		'code_id'         => $discount_code_id,
-		'initial_payment' => $pmpro_level->initial_payment,
-		'billing_amount'  => $pmpro_level->billing_amount,
-		'cycle_number'    => $pmpro_level->cycle_number,
-		'cycle_period'    => $pmpro_level->cycle_period,
-		'billing_limit'   => $pmpro_level->billing_limit,
-		'trial_amount'    => $pmpro_level->trial_amount,
-		'trial_limit'     => $pmpro_level->trial_limit,
-		'startdate'       => $startdate,
-		'enddate'         => $enddate
-	);
+		//custom level to change user to
+		$custom_level = array(
+			'user_id'         => $order->user_id,
+			'membership_id'   => $pmpro_level->id,
+			'code_id'         => $discount_code_id,
+			'initial_payment' => $pmpro_level->initial_payment,
+			'billing_amount'  => $pmpro_level->billing_amount,
+			'cycle_number'    => $pmpro_level->cycle_number,
+			'cycle_period'    => $pmpro_level->cycle_period,
+			'billing_limit'   => $pmpro_level->billing_limit,
+			'trial_amount'    => $pmpro_level->trial_amount,
+			'trial_limit'     => $pmpro_level->trial_limit,
+			'startdate'       => $startdate,
+			'enddate'         => $enddate
+		);
 
-	//change level and continue "checkout"
-	if ( pmpro_changeMembershipLevel( $custom_level, $order->user_id, 'changed' ) !== false ) {
-		// Mark the order as successful.
-		$order->status = "success";
+		//change level and continue "checkout"
+		if ( pmpro_changeMembershipLevel( $custom_level, $order->user_id, 'changed' ) === false ) {
+			return false;
+		}
+
 		if ( ! empty( $discount_code_id ) ) {
 			/**
 			 * Ideally, we would set the discount code ID on the order when it is initially created, but
@@ -323,55 +293,58 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 			 */
 			$order->discount_code_id = $discount_code_id;
 		}
-		$order->saveOrder();
-
-		//add discount code use
-		if ( ! empty( $discount_code_id ) ) {
-			do_action_deprecated( 'pmpro_discount_code_used', array( $discount_code_id, $order->user_id, $order->id ), '3.3.2', 'pmpro_added_order' );
-		}
-
-		//save first and last name fields
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- pmpro_checkout_nonce is verified in preheaders/checkout.php before this runs at checkout; async completions come from gateway webhooks or return handlers verified by calling back to the gateway. Only fills in empty name fields.
-		if ( ! empty( $_POST['first_name'] ) ) {
-			$old_firstname = get_user_meta( $order->user_id, "first_name", true );
-			if ( empty( $old_firstname ) ) {
-				update_user_meta( $order->user_id, "first_name", sanitize_text_field( $_POST['first_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
-			}
-		}
-		if ( ! empty( $_POST['last_name'] ) ) {
-			$old_lastname = get_user_meta( $order->user_id, "last_name", true );
-			if ( empty( $old_lastname ) ) {
-				update_user_meta( $order->user_id, "last_name", sanitize_text_field( $_POST['last_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
-			}
-		}
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
-
-		if ( $pmpro_level->expiration_period == 'Hour' ){
-			update_user_meta( $order->user_id, 'pmpro_disable_notifications', true );
-		}
-
-		//hook
-		do_action( "pmpro_after_checkout", $order->user_id, $order );
-
-		// Check if we should send emails.
-		if ( apply_filters( 'pmpro_send_checkout_emails', true, $order ) ) {
-			// Set up some values for the emails.
-			$user                   = get_userdata( $order->user_id );
-			$user->membership_level = $pmpro_level;        // Make sure that they have the right level info.
-
-			// Send email to member.
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutEmail( $user, $order );
-
-			// Send email to admin.
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutAdminEmail( $user, $order );
-		}
-
-		return true;
-	} else {
-		return false;
 	}
+
+	// Mark the order as successful.
+	$order->status = "success";
+	$order->saveOrder();
+
+	//add discount code use
+	if ( ! empty( $order->membership_id ) && ! empty( $discount_code_id ) ) {
+		do_action_deprecated( 'pmpro_discount_code_used', array( $discount_code_id, $order->user_id, $order->id ), '3.3.2', 'pmpro_added_order' );
+	}
+
+	//save first and last name fields
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- pmpro_checkout_nonce is verified in preheaders/checkout.php before this runs at checkout; async completions come from gateway webhooks or return handlers verified by calling back to the gateway. Only fills in empty name fields.
+	if ( ! empty( $_POST['first_name'] ) ) {
+		$old_firstname = get_user_meta( $order->user_id, "first_name", true );
+		if ( empty( $old_firstname ) ) {
+			update_user_meta( $order->user_id, "first_name", sanitize_text_field( $_POST['first_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
+		}
+	}
+	if ( ! empty( $_POST['last_name'] ) ) {
+		$old_lastname = get_user_meta( $order->user_id, "last_name", true );
+		if ( empty( $old_lastname ) ) {
+			update_user_meta( $order->user_id, "last_name", sanitize_text_field( $_POST['last_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- update_user_meta() unslashes the value itself; unslashing here would strip backslashes.
+		}
+	}
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+	if ( ! empty( $order->membership_id ) && $pmpro_level->expiration_period == 'Hour' ){
+		update_user_meta( $order->user_id, 'pmpro_disable_notifications', true );
+	}
+
+	//hook
+	do_action( "pmpro_after_checkout", $order->user_id, $order );
+
+	// Check if we should send emails.
+	if ( apply_filters( 'pmpro_send_checkout_emails', true, $order ) ) {
+		// Set up some values for the emails.
+		$user = get_userdata( $order->user_id );
+		if ( ! empty( $order->membership_id ) ) {
+			$user->membership_level = $pmpro_level;        // Make sure that they have the right level info.
+		}
+
+		// Send email to member.
+		$pmproemail = new PMProEmail();
+		$pmproemail->sendCheckoutEmail( $user, $order );
+
+		// Send email to admin.
+		$pmproemail = new PMProEmail();
+		$pmproemail->sendCheckoutAdminEmail( $user, $order );
+	}
+
+	return true;
 }
 
 /**
