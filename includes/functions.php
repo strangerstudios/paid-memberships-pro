@@ -4942,9 +4942,10 @@ function pmpro_format_date_iso8601( $date ) {
  * Determines the user's actual IP address.
  *
  * Starts from $_SERVER['REMOTE_ADDR']. When the request came through a
- * trusted proxy (a private or reserved address, a Cloudflare address, or
- * an address added with the pmpro_trusted_proxies filter), the address
- * that proxy passed along is used instead.
+ * trusted proxy (a private address or one added with the
+ * pmpro_trusted_proxies filter), the address it appended to
+ * X-Forwarded-For (or sent in X-Real-IP) is used instead. When it came
+ * through Cloudflare, CF-Connecting-IP is used.
  *
  * @since 2.7
  * @since TBD Only reads forwarded addresses from trusted proxies.
@@ -4977,12 +4978,16 @@ function pmpro_get_ip() {
 			}
 
 			$client_ip = $hop;
-			if ( ! pmpro_is_trusted_proxy( $hop, $trusted_proxies ) ) {
+
+			// Cloudflare only vouches for CF-Connecting-IP, never for addresses further back.
+			if ( pmpro_ip_in_ranges( $hop, $cloudflare_ips ) ) {
+				if ( filter_var( $cf_connecting_ip, FILTER_VALIDATE_IP ) ) {
+					$client_ip = $cf_connecting_ip;
+				}
 				break;
 			}
 
-			if ( filter_var( $cf_connecting_ip, FILTER_VALIDATE_IP ) && pmpro_ip_in_ranges( $hop, $cloudflare_ips ) ) {
-				$client_ip = $cf_connecting_ip;
+			if ( ! pmpro_is_trusted_proxy( $hop, $trusted_proxies ) ) {
 				break;
 			}
 		}
@@ -5003,24 +5008,24 @@ function pmpro_get_ip() {
  * Get the proxy addresses whose forwarded headers pmpro_get_ip() will read.
  *
  * Defaults to loopback and private ranges, which assumes any host on the
- * site's private network is a reverse proxy or load balancer, plus
- * Cloudflare's ranges unless PMPRO_TRUST_CLOUDFLARE is false.
+ * site's private network is a reverse proxy or load balancer that appends
+ * the connecting address to X-Forwarded-For. If a local proxy passes the
+ * client's X-Forwarded-For through unchanged, remove its range with the
+ * pmpro_trusted_proxies filter. Cloudflare is handled separately; see
+ * pmpro_get_cloudflare_ip_ranges().
  *
  * @since TBD
  *
  * @return array IP addresses and CIDR ranges.
  */
 function pmpro_get_trusted_proxies() {
-	$trusted_proxies = array_merge(
-		array(
-			'127.0.0.0/8',
-			'10.0.0.0/8',
-			'172.16.0.0/12',
-			'192.168.0.0/16',
-			'::1/128',
-			'fc00::/7',
-		),
-		pmpro_get_cloudflare_ip_ranges()
+	$trusted_proxies = array(
+		'127.0.0.0/8',
+		'10.0.0.0/8',
+		'172.16.0.0/12',
+		'192.168.0.0/16',
+		'::1/128',
+		'fc00::/7',
 	);
 
 	/**
@@ -5119,6 +5124,10 @@ function pmpro_ip_in_ranges( $ip, $ranges ) {
 	}
 
 	foreach ( (array) $ranges as $range ) {
+		if ( ! is_string( $range ) ) {
+			continue;
+		}
+
 		$parts     = explode( '/', trim( $range ), 2 );
 		$range_bin = pmpro_ip_to_binary( $parts[0] );
 		if ( false === $range_bin || strlen( $range_bin ) !== strlen( $ip_bin ) ) {
