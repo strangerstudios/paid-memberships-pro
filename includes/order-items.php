@@ -43,6 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * - quantity       (int)    Quantity. At least 1.
  * - subtotal       (float)  Amount charged on this order for the whole quantity, before tax.
  * - billing_amount (float)  Amount added to each recurring payment of the membership. 0 for a one-time item.
+ *                           Only used when the level has a billing cycle.
  *
  * @since TBD
  *
@@ -128,8 +129,10 @@ function pmpro_build_checkout_items( $level ) {
 	 * pmpro_normalize_order_item() for the item shape. An item's key must be unique in the checkout. It
 	 * defaults to "{item_type}-{object_id}" and isn't saved.
 	 *
-	 * - An item's billing_amount is added to each recurring payment of the membership. If the membership is
-	 *   one-time, or no level is being purchased, every item is one-time and billing_amount is ignored.
+	 * - An item's billing_amount is added to each recurring payment of the membership. If the level has no
+	 *   billing cycle, or no level is being purchased, every item is one-time and billing_amount is ignored.
+	 *   A level can have a billing cycle with a $0 billing amount of its own, such as a free base with paid
+	 *   seats.
 	 * - Amounts can't be negative. Discount codes only discount the membership item, but an Add On may read
 	 *   the code to price its own items.
 	 *
@@ -164,8 +167,8 @@ function pmpro_build_checkout_items( $level ) {
 			continue;
 		}
 
-		// Items only renew with a recurring membership.
-		if ( empty( $core_items['membership']['billing_amount'] ) ) {
+		// Items only renew when the level has a billing cycle.
+		if ( empty( $level->id ) || empty( $level->cycle_number ) ) {
 			$item['billing_amount'] = 0;
 		}
 
@@ -205,7 +208,7 @@ function pmpro_set_up_checkout_items_for_level( $level ) {
 	}
 
 	$level->initial_payment = pmpro_get_items_total( $level->checkout_items, 'subtotal' );
-	if ( pmpro_isLevelRecurring( $level ) ) {
+	if ( ! empty( $level->cycle_number ) ) {
 		$level->billing_amount = pmpro_get_items_total( $level->checkout_items, 'billing_amount' );
 	}
 
@@ -231,7 +234,7 @@ function pmpro_get_level_with_membership_price( $level ) {
 
 	$membership_level                  = clone $level;
 	$membership_level->initial_payment = $level->checkout_items['membership']['subtotal'];
-	if ( pmpro_isLevelRecurring( $level ) ) {
+	if ( ! empty( $level->cycle_number ) ) {
 		$membership_level->billing_amount = $level->checkout_items['membership']['billing_amount'];
 	}
 	unset( $membership_level->checkout_items );
