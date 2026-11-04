@@ -14,6 +14,8 @@ if ( $order_id > 0 ) {
 	$order = new MemberOrder();
 	$order->billing = new stdClass();
 }
+$original_membership_id = (int) $order->membership_id;
+$original_subtotal      = (float) $order->subtotal;
 
 // update values
 if ( isset( $_POST['code'] ) ) {
@@ -114,6 +116,34 @@ if ( ! empty( $affiliates ) ) {
 // Set the discount code.
 if( isset( $_REQUEST['discount_code_id'] ) ) {
 	$order->discount_code_id = intval( $_REQUEST['discount_code_id'] );
+}
+
+// If the level or subtotal changed, update the order's saved items to match. The membership item is
+// saved as what's left of the subtotal after the other items.
+if ( $order_id > 0 && ( (int) $order->membership_id !== $original_membership_id || (float) $order->subtotal !== $original_subtotal ) ) {
+	$items = $order->get_items();
+	if ( ! empty( $items ) && ! empty( $items[0]->id ) ) {
+		$membership_billing_amount = 0;
+		foreach ( $items as $key => $item ) {
+			if ( 'membership' === $item->item_type ) {
+				$membership_billing_amount = $item->billing_amount;
+				unset( $items[ $key ] );
+			}
+		}
+		if ( ! empty( $order->membership_id ) ) {
+			$level = pmpro_getLevel( $order->membership_id );
+			array_unshift(
+				$items,
+				array(
+					'item_type'      => 'membership',
+					'object_id'      => $order->membership_id,
+					'name'           => empty( $level->name ) ? '' : $level->name,
+					'billing_amount' => $membership_billing_amount,
+				)
+			);
+		}
+		$order->set_items( $items );
+	}
 }
 
 // Save
