@@ -35,8 +35,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * order_id (see MemberOrder::get_items()).
  *
  * Item shape:
- * - item_type      (string) What the item is, such as 'seats' or 'donation'. 'membership' is core only.
- * - object_id      (int)    The level ID for the membership item. Defined by the Add On otherwise.
+ * - item_type      (string) What the item is, such as 'seats' or 'donation'. Up to 64 characters.
+ *                           'membership' is core only. Each Add On uses its own types.
+ * - object_id      (int)    The level ID for the membership item. Defined by the Add On otherwise, such as
+ *                           a post ID. Not negative.
  * - name           (string) Name shown at checkout, on the invoice and in emails.
  * - quantity       (int)    Quantity. At least 1.
  * - subtotal       (float)  Amount charged on this order for the whole quantity, before tax.
@@ -60,8 +62,8 @@ function pmpro_normalize_order_item( $item ) {
 		)
 	);
 
-	$item['item_type']      = sanitize_key( $item['item_type'] );
-	$item['object_id']      = (int) $item['object_id'];
+	$item['item_type']      = substr( sanitize_key( $item['item_type'] ), 0, 64 ); // The item_type column is varchar(64).
+	$item['object_id']      = max( 0, (int) $item['object_id'] );
 	$item['name']           = mb_substr( sanitize_text_field( $item['name'] ), 0, 255 ); // The name column is varchar(255).
 	$item['quantity']       = max( 1, (int) $item['quantity'] );
 	$item['subtotal']       = pmpro_round_price( (float) $item['subtotal'] );
@@ -315,6 +317,13 @@ function pmpro_check_checkout_items( $items ) {
 
 	if ( pmpro_get_items_total( $items, 'subtotal' ) <= 0 ) {
 		pmpro_setMessage( __( 'There is nothing to purchase.', 'paid-memberships-pro' ), 'pmpro_error' );
+		return false;
+	}
+
+	// The order's items are the only record of what it bought, so refuse until the items table exists. The
+	// database is updated the next time an admin page loads.
+	if ( version_compare( get_option( 'pmpro_db_version', 0 ), '4.0', '<' ) ) {
+		pmpro_setMessage( __( 'This purchase isn\'t available right now. Please contact the site owner.', 'paid-memberships-pro' ), 'pmpro_error' );
 		return false;
 	}
 
