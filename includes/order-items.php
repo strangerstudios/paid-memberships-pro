@@ -286,9 +286,9 @@ function pmpro_check_checkout_items( $items ) {
 /**
  * Check whether a gateway can process a checkout without a membership level.
  *
- * Gateways declare support with the 'membershipless_checkout' feature in their supports() method. All
- * core gateways do. A gateway that doesn't may charge the order and then fail to complete it, so
- * checkouts without a membership level are refused for it. The check uses the gateway object that
+ * Gateways declare support with the 'membershipless_checkout' feature in their supports() method. In
+ * core, Stripe, PayPal Express and Check do. A gateway that doesn't may charge the order and then fail
+ * to complete it, so checkouts without a membership level are refused for it. The check uses the gateway object that
  * checkout uses, after the pmpro_order_gateway_object filter.
  *
  * @since TBD

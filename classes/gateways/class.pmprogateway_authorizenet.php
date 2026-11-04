@@ -44,7 +44,6 @@ class PMProGateway_authorizenet extends PMProGateway
 			'subscription_sync' => true,
 			'payment_method_updates' => 'individual',
 			'recurring_trials' => true,
-			'membershipless_checkout' => true,
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -250,8 +249,8 @@ class PMProGateway_authorizenet extends PMProGateway
 			//charge first payment
 			if($this->charge($order))
 			{
-				//set up recurring billing. An order without a membership level is a one-time charge.
-				if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) )
+				//set up recurring billing
+				if(pmpro_isLevelRecurring($order->membership_level))
 				{
 					if($this->subscribe($order))
 					{
@@ -498,14 +497,8 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		$user = get_userdata($order->user_id);
 
-		// An order without a membership level is described by its lines.
-		if ( empty( $order->membership_id ) ) {
-			$level_name = $order->get_items_description();
-		} else {
-			if(!isset($order->membership_level->name))
-				$order->membership_level->name = "";
-			$level_name = $order->membership_level->name;
-		}
+		if(!isset($order->membership_level->name))
+			$order->membership_level->name = "";
 
 		$post_values = array(
 
@@ -526,7 +519,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 			"x_amount"			=> $amount,
 			"x_tax"				=> $tax,
-			"x_description"		=> apply_filters( 'pmpro_authorizenet_level_description', substr($level_name . " at " . get_bloginfo("name"), 0, 127), $level_name, $order, get_bloginfo("name")),
+			"x_description"		=> apply_filters( 'pmpro_authorizenet_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")),
 
 			"x_first_name"		=> empty( $nameparts['fname'] ) ? '' : $nameparts['fname'],
 			"x_last_name"		=> empty( $nameparts['lname'] ) ? '' : $nameparts['lname'],

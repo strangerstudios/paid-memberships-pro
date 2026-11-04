@@ -25,26 +25,6 @@
 		}
 
 		/**
-		 * Check whether or not a gateway supports a specific feature.
-		 *
-		 * @since TBD
-		 *
-		 * @param string $feature The feature to check.
-		 * @return bool|string
-		 */
-		public static function supports( $feature ) {
-			$supports = array(
-				'membershipless_checkout' => true,
-			);
-
-			if ( empty( $supports[ $feature ] ) ) {
-				return false;
-			}
-
-			return $supports[ $feature ];
-		}
-
-		/**
 		 * Run on WP init
 		 *
 		 * @since 1.8
@@ -281,11 +261,6 @@
 			$order->status = "review";
 			$order->saveOrder();
 
-			// An order without a membership level doesn't run the level change hooks, so send the user to PayPal now.
-			if ( empty( $order->membership_id ) ) {
-				self::pmpro_checkout_before_change_membership_level( $order->user_id, $order );
-			}
-
 			return true;
 		}
 
@@ -303,9 +278,9 @@
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
 			$initial_payment = pmpro_round_price_as_string( (float) $initial_payment + (float) $initial_payment_tax );
 
-			//taxes on the amount. An order without a membership level is a one-time payment.
-			$level = empty( $order->membership_id ) ? null : $order->getMembershipLevelAtCheckout();
-			$amount = empty( $level ) ? 0 : $level->billing_amount;
+			//taxes on the amount
+			$level = $order->getMembershipLevelAtCheckout();
+			$amount = $level->billing_amount;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$amount = pmpro_round_price_as_string( (float) $amount + (float) $amount_tax );
 
@@ -320,7 +295,7 @@
 				$paypal_url = "https://www.paypal.com/cgi-bin/webscr";
 			}
 
-			if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) )
+			if(pmpro_isLevelRecurring($order->membership_level))
 			{
 				//convert billing period
 				if( $level->cycle_period == "Day")
@@ -453,15 +428,12 @@
 			}
 			else
 			{
-				// An order without a membership level is described by its lines.
-				$level_name = empty( $order->membership_id ) ? $order->get_items_description() : $order->membership_level->name;
-
 				//other args
 				$paypal_args = array(
 					'business'      => get_option("pmpro_gateway_email"),
 					'cmd'           => '_xclick',
 					'amount'        => $initial_payment,
-					'item_name'     => apply_filters( 'pmpro_paypal_level_description', substr($level_name . " at " . get_bloginfo("name"), 0, 127), $level_name, $order, get_bloginfo("name") ),
+					'item_name'     => apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ),
 					'email'         => empty( $user->user_email ) ? '' : $user->user_email,
 					'no_shipping'   => '1',
 					'shipping'      => '0',
@@ -470,7 +442,7 @@
 					'item_number'   => $order->code,
 					'charset'       => get_bloginfo( 'charset' ),
 					'rm'            => '2',
-					'return'        => empty( $order->membership_id ) ? add_query_arg( 'pmpro_order', $order->code, pmpro_url( 'confirmation' ) ) : add_query_arg( 'pmpro_level', $order->membership_level->id, pmpro_url("confirmation" ) ),
+					'return'        => add_query_arg( 'pmpro_level', $order->membership_level->id, pmpro_url("confirmation" ) ),
 					'notify_url'    => add_query_arg( 'action', 'ipnhandler', admin_url("admin-ajax.php") ),
 					'bn'		    => PAYPAL_BN_CODE
 				 );
