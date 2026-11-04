@@ -35,6 +35,15 @@ class PMPro_Exports {
 	 */
 	protected $default_async_threshold = 499;
 
+	/**
+	 * Whether the last process_export_chunk_record() call found another request writing the export.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	protected $last_chunk_busy = false;
+
 	/** Default export file expiration time (in seconds).
 	 *
 	 * How long to keep export files available for download after generation.
@@ -516,8 +525,8 @@ class PMPro_Exports {
 					$this->save_export_record( $export );
 					break;
 				}
-				// Another request holds the lock; status polling will pick the export back up.
-				if ( 0 === $result && (int) $export['next_offset'] === $offset_before && 'running' === $export['status'] ) {
+				// Another request holds the lock or no progress was made; status polling will pick the export back up.
+				if ( $this->last_chunk_busy || ( 0 === $result && (int) $export['next_offset'] === $offset_before && 'running' === $export['status'] ) ) {
 					break;
 				}
 			}
@@ -621,8 +630,8 @@ class PMPro_Exports {
 				return;
 			}
 
-			// Queue next chunk if not finished.
-			if ( ! in_array( $export['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
+			// Queue next chunk if not finished, unless another request is writing it and will queue it.
+			if ( ! $this->last_chunk_busy && ! in_array( $export['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
 				$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
 			}
 		} catch ( \Throwable $e ) {
@@ -645,9 +654,10 @@ class PMPro_Exports {
 	 * @return int|\WP_Error Rows written or WP_Error.
 	 */
 	protected function process_export_chunk_record( &$export ) {
-		$lock = $this->acquire_export_lock( $export['id'] );
-		if ( false === $lock ) {
-			// Another request is writing this export right now.
+		$lock                  = $this->acquire_export_lock( $export['id'] );
+		$this->last_chunk_busy = ( false === $lock );
+		if ( $this->last_chunk_busy ) {
+			// Another request is writing this export right now and will queue the next chunk.
 			return 0;
 		}
 
@@ -704,8 +714,8 @@ class PMPro_Exports {
 
 		// Drop anything past the last saved length: rows from an earlier attempt at this chunk that was never recorded.
 		$committed_bytes = isset( $export['file_bytes'] ) ? (int) $export['file_bytes'] : ( 0 === $offset ? 0 : null );
-		if ( null !== $committed_bytes ) {
-			$this->truncate_export_file( $export, $committed_bytes );
+		if ( null !== $committed_bytes && ! $this->truncate_export_file( $export, $committed_bytes ) ) {
+			return new \WP_Error( 'pmpro_export_file_write_error', __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
 		}
 
 		$write_header = ( 0 === $offset );
@@ -714,7 +724,14 @@ class PMPro_Exports {
 			return $written;
 		}
 
-		$export['file_bytes']       = $this->get_export_file_size( $export );
+		// Without a reliable size, stop trimming for this export rather than trim to a wrong length.
+		$file_bytes = $this->get_export_file_size( $export );
+		if ( null === $file_bytes ) {
+			unset( $export['file_bytes'] );
+		} else {
+			$export['file_bytes'] = $file_bytes;
+		}
+
 		$processed                  = (int) $written;
 		$export['processed_count'] += $processed;
 		$export['next_offset']      = $offset + count( $ids );
@@ -734,6 +751,9 @@ class PMPro_Exports {
 
 	/**
 	 * Try to take the per-export lock without waiting.
+	 *
+	 * The lock is the only protection against two requests writing the same export at once;
+	 * without it, trimming to file_bytes still prevents duplicates from a retried chunk.
 	 *
 	 * @since TBD
 	 *
@@ -809,20 +829,25 @@ class PMPro_Exports {
 	 *
 	 * @param array $export Export record.
 	 * @param int   $bytes  Length to keep.
+	 * @return bool False if the file is longer than $bytes and couldn't be trimmed.
 	 */
 	protected function truncate_export_file( $export, $bytes ) {
+		$bytes     = max( 0, (int) $bytes );
 		$file_path = $this->get_file_path( $export['file_name'] );
 		clearstatcache( true, $file_path );
 		if ( ! file_exists( $file_path ) || filesize( $file_path ) <= $bytes ) {
-			return;
+			return true;
 		}
 
 		$fh = fopen( $file_path, 'r+' );
 		if ( false === $fh ) {
-			return;
+			return false;
 		}
-		ftruncate( $fh, max( 0, (int) $bytes ) );
+		$truncated = ftruncate( $fh, $bytes );
 		fclose( $fh );
+
+		clearstatcache( true, $file_path );
+		return $truncated && filesize( $file_path ) === $bytes;
 	}
 
 	/**
@@ -831,12 +856,13 @@ class PMPro_Exports {
 	 * @since TBD
 	 *
 	 * @param array $export Export record.
-	 * @return int
+	 * @return int|null Size in bytes, or null if it can't be read.
 	 */
 	protected function get_export_file_size( $export ) {
 		$file_path = $this->get_file_path( $export['file_name'] );
 		clearstatcache( true, $file_path );
-		return file_exists( $file_path ) ? (int) filesize( $file_path ) : 0;
+		$size = file_exists( $file_path ) ? filesize( $file_path ) : false;
+		return false === $size ? null : (int) $size;
 	}
 
 	/**
@@ -922,7 +948,7 @@ class PMPro_Exports {
 					$this->save_export_record( $export );
 					return $this->format_public_export_response( $export );
 				}
-				if ( ! in_array( $export['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
+				if ( ! $this->last_chunk_busy && ! in_array( $export['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
 					$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
 				}
 			}
