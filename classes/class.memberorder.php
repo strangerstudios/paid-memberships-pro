@@ -1494,9 +1494,10 @@
 					$this->updateDiscountCode( $this->discount_code_id );
 				}
 
-				// Save the items if they were set.
-				if ( $this->items_cache_changed ) {
-					$this->save_items();
+				// Save the items if they were set. If they can't be saved, note it on the order, since they may be the only record of what it bought.
+				if ( $this->items_cache_changed && ! $this->save_items() ) {
+					$this->add_order_note( __( 'The items of this order could not be saved.', 'paid-memberships-pro' ) );
+					$wpdb->update( $wpdb->pmpro_membership_orders, array( 'notes' => $this->notes ), array( 'id' => $this->id ), array( '%s' ), array( '%d' ) );
 				}
 
 				do_action($after_action, $this);
