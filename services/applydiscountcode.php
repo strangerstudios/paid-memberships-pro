@@ -169,8 +169,8 @@
 			$html = implode( "\n\n", $html );
 			?>
 				jQuery('#pmpro_level_cost').html( <?php echo wp_json_encode( wp_kses_post( $html ) ); ?> );
-				// Reprice the checkout's items with the code.
-				if ( jQuery('#pmpro_checkout_items').length && typeof pmpro_refresh_checkout_items === 'function' ) {
+				// Reprice the checkout with the code. When it responds, the refresh replaces the cost text and billing state set here.
+				if ( typeof pmpro_refresh_checkout_items === 'function' ) {
 					pmpro_refresh_checkout_items();
 				}
 			<?php

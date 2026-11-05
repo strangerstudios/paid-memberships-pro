@@ -38,8 +38,10 @@ function pmpro_enqueue_scripts() {
 			array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'restUrl' => get_rest_url(),
+				'restNonce' => wp_create_nonce( 'wp_rest' ),
 				'ajax_timeout' => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
 				'show_discount_code' => pmpro_show_discount_code(),
+				'gateway' => pmpro_getGateway(),
 				'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the current request to decide which scripts to enqueue.
 				'sensitiveCheckoutRequestVars' => pmpro_get_sensitive_checkout_request_vars(),
 				'update_nonce' => apply_filters( 'pmpro_update_nonce_at_checkout', false ),
