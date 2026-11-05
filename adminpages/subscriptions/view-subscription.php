@@ -76,6 +76,28 @@ $sub_membership_level_id = $subscription->get_membership_level_id();
 						<span class="pmpro_list_item_label"><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></span>
 						<?php echo esc_html( $subscription->get_cost_text() ); ?>
 					</li>
+					<?php
+					$subscription_items = $subscription->get_items();
+					if ( ! empty( $subscription_items ) ) {
+						?>
+						<li class="pmpro_list_item">
+							<span class="pmpro_list_item_label"><?php esc_html_e( 'Items', 'paid-memberships-pro' ); ?></span>
+							<?php
+							$item_texts = array();
+							foreach ( $subscription_items as $subscription_item ) {
+								$item_texts[] = pmpro_get_order_item_label( $subscription_item ) . ': ' . pmpro_format_order_item_price( $subscription_item->billing_amount );
+							}
+							echo esc_html( implode( ', ', $item_texts ) );
+							if ( ! $subscription->items_match_billing_amount() ) {
+								?>
+								<p class="description"><?php esc_html_e( 'The items don\'t add up to the billed amount, so renewal orders list one item.', 'paid-memberships-pro' ); ?></p>
+								<?php
+							}
+							?>
+						</li>
+						<?php
+					}
+					?>
 					<li class="pmpro_list_item">
 						<span class="pmpro_list_item_label"><?php esc_html_e( 'Created', 'paid-memberships-pro' ); ?></span>
 						<?php

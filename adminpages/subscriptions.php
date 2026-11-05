@@ -112,6 +112,13 @@ if ( ! empty( $subscription ) && isset( $_REQUEST['action'] ) && 'edit' === $_RE
 		if ( 'pmpro_error' !== $pmpro_msgt ) {
 			$subscription->set( 'user_id', sanitize_text_field( wp_unslash( $_POST['user_id'] ) ) );
 			$subscription->set( 'membership_level_id', sanitize_text_field( wp_unslash( $_POST['membership_level_id'] ) ) );
+
+			// Save the items as the admin edited them. Editing them doesn't change what the gateway bills.
+			$edited_items = pmpro_get_items_from_editor( 'subscription' );
+			if ( null !== $edited_items ) {
+				$subscription->set_items( $edited_items );
+			}
+
 			$subscription->save();
 
 			// Show a success message with link to view.
