@@ -897,22 +897,23 @@
 
 		}
 
-		.pmpro_table {
+	}
 
-			thead th {
-				white-space: nowrap;
-			}
+	#pmpro_order_single .pmpro_table,
+	#pmpro_checkout_items .pmpro_table {
 
-			thead th:not(th:first-of-type),
-			tbody td,
-			tfoot td {
-				text-align: right;
-			}
+		thead th {
+			white-space: nowrap;
+		}
 
-			tfoot tr:last-of-type td {
-				font-weight: 700;
-			}
+		thead th:not(th:first-of-type),
+		tbody td,
+		tfoot td {
+			text-align: right;
+		}
 
+		tfoot tr:last-of-type td {
+			font-weight: 700;
 		}
 
 	}
@@ -1199,29 +1200,26 @@
 			}
 		}
 
-		#pmpro_order_single {
+		#pmpro_order_single .pmpro_table,
+		#pmpro_checkout_items .pmpro_table {
 
-			.pmpro_table {
-
-				thead th:not(th:first-of-type),
-				tbody td,
-				tfoot td {
-					text-align: left;
-				}
-
-				tbody tr:first-child th {
-					display: block;
-				}
-
-				tbody tr:first-child th:before {
-					display: none;
-				}
-
-				tfoot td:first-of-type {
-					display: none;
-				}
+			thead th:not(th:first-of-type),
+			tbody td,
+			tfoot td {
+				text-align: left;
 			}
 
+			tbody tr:first-child th {
+				display: block;
+			}
+
+			tbody tr:first-child th:before {
+				display: none;
+			}
+
+			tfoot td:first-of-type {
+				display: none;
+			}
 		}
 
 		.pmpro_table_cancel {

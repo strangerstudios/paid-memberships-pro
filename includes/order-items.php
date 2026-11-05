@@ -395,33 +395,43 @@ function pmpro_display_checkout_items( $level ) {
 
 	?>
 	<div id="pmpro_checkout_items" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_items' ) ); ?>">
-		<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ); ?>">
-			<?php foreach ( $items as $item ) { ?>
-				<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_checkout_item pmpro_checkout_item-' . $item['item_type'] ) ); ?>">
-					<?php echo esc_html( pmpro_get_order_item_label( $item ) ); ?>:
-					<strong><?php echo esc_html( pmpro_format_order_item_price( $item['subtotal'] ) ); ?></strong>
-					<?php
-					if ( 0 != $item['billing_amount'] && ! empty( $level->cycle_number ) ) {
-						echo ' ' . esc_html( pmpro_get_checkout_items_recurring_text( $item['billing_amount'], $level ) );
-					}
-					?>
-				</li>
-			<?php } ?>
-		</ul>
-		<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_items_total' ) ); ?>">
-			<strong>
-				<?php
-				/* translators: %s: total due today. */
-				echo esc_html( sprintf( __( 'Total today: %s', 'paid-memberships-pro' ), pmpro_format_order_item_price( pmpro_get_items_total( $items, 'subtotal' ) ) ) );
-				?>
-			</strong>
-			<?php
-			$billing_total = pmpro_get_items_total( $items, 'billing_amount' );
-			if ( $billing_total > 0 && ! empty( $level->cycle_number ) ) {
-				echo ' ' . esc_html( pmpro_get_checkout_items_recurring_text( $billing_total, $level ) );
-			}
-			?>
-		</p>
+		<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Description', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Amount', 'paid-memberships-pro' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach ( $items as $item ) { ?>
+					<tr class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_item pmpro_checkout_item-' . $item['item_type'] ) ); ?>">
+						<th data-title="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>"><?php echo esc_html( pmpro_get_order_item_label( $item ) ); ?></th>
+						<td data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>">
+							<?php echo esc_html( pmpro_format_order_item_price( $item['subtotal'] ) ); ?>
+							<?php if ( 0 != $item['billing_amount'] && ! empty( $level->cycle_number ) ) { ?>
+								<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_font-small' ) ); ?>"><?php echo esc_html( pmpro_get_checkout_items_recurring_text( $item['billing_amount'], $level ) ); ?></p>
+							<?php } ?>
+						</td>
+					</tr>
+				<?php } ?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td><?php esc_html_e( 'Total today', 'paid-memberships-pro' ); ?></td>
+					<td data-title="<?php esc_attr_e( 'Total today', 'paid-memberships-pro' ); ?>">
+						<?php echo esc_html( pmpro_format_order_item_price( pmpro_get_items_total( $items, 'subtotal' ) ) ); ?>
+						<?php
+						$billing_total = pmpro_get_items_total( $items, 'billing_amount' );
+						if ( $billing_total > 0 && ! empty( $level->cycle_number ) ) {
+							?>
+							<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_font-small' ) ); ?>"><?php echo esc_html( pmpro_get_checkout_items_recurring_text( $billing_total, $level ) ); ?></p>
+							<?php
+						}
+						?>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
 		<?php
 		// Applying a discount code by AJAX only knows the level, so tell it when Add On items still need to be paid for.
 		$add_on_items = array_diff_key( $items, array( 'membership' => true ) );
