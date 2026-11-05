@@ -278,7 +278,9 @@ function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	return jQuery.param( checkoutFormData );
 }
 
-// Refresh the checkout's items and total, such as when an Add On field changes an item.
+// Refresh the checkout's price from the checkout_level endpoint, such as when an Add On field changes an item or a
+// discount code is applied: the level cost text, the items and total, and whether payment is needed.
+// Add Ons can react with the pmpro_checkout_refreshed event, which passes the endpoint's response.
 var pmpro_checkout_items_request = 0;
 function pmpro_refresh_checkout_items() {
 	var request = ++pmpro_checkout_items_request;
@@ -305,11 +307,34 @@ function pmpro_refresh_checkout_items() {
 			} else {
 				jQuery( '#pmpro_level_cost' ).after( data.checkout_items_html );
 			}
+
+			// The level cost text. It includes the "code has been applied" message when a code applies.
+			jQuery( '#pmpro_level_cost' ).html( data.level_cost_html );
+
+			// Tell gateway JavaScript whether payment is needed (e.g. no Stripe when the checkout is free).
+			pmpro_require_billing = data.require_billing;
+
+			// Show or hide the billing fields as applying a discount code does. When the checkout has a choice of
+			// gateways, the Add On that offers the choice shows and hides them for the chosen gateway.
+			// Fields that the site hides with the pmpro_hide_billing_address_fields or pmpro_hide_payment_information_fields
+			// filter stay hidden.
+			if ( ! jQuery( '#pmpro_form input[name=gateway]' ).length ) {
+				var offsite_gateway = [ 'paypalexpress', 'paypalstandard' ].indexOf( pmpro.gateway ) > -1;
+				var show_fields = data.require_billing && ! offsite_gateway && 'check' !== pmpro.gateway;
+				jQuery( '#pmpro_billing_address_fields' ).toggle( show_fields && ! pmpro.hide_billing_address_fields );
+				jQuery( '#pmpro_payment_information_fields' ).toggle( show_fields && ! pmpro.hide_payment_information_fields );
+				if ( offsite_gateway ) {
+					jQuery( '#pmpro_paypalexpress_checkout' ).toggle( data.require_billing );
+					jQuery( '#pmpro_submit_span' ).toggle( ! data.require_billing );
+				}
+			}
+
+			jQuery( document ).trigger( 'pmpro_checkout_refreshed', [ data ] );
 		}
 	});
 }
 
-// Fields that change the price refresh the items. Discount codes refresh them once applied.
+// Fields that change the price refresh it. Discount codes refresh it once applied.
 jQuery( document ).ready( function() {
 	jQuery( '#pmpro_form' ).on( 'change', '.pmpro_alter_price:not(#pmpro_discount_code, #pmpro_other_discount_code)', pmpro_refresh_checkout_items );
 } );

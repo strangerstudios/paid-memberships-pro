@@ -187,27 +187,18 @@ jQuery( document ).ready( function( $ ) {
 		jQuery('#pmpro_form').submit(function(){
 			jQuery('#payment-request-button').hide();
 		});	
-		// Update price shown in payment request button if price changes.
-		function stripeUpdatePaymentRequestButton() {
-			jQuery.noConflict().ajax({
-				url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
-				dataType: 'json',
-				data: pmpro_getCheckoutFormDataForCheckoutLevels(),
-				success: function(data) {
-					if ( data.hasOwnProperty('initial_payment') ) {
-						paymentRequest.update({
-							total: {
-								label: pmproStripe.siteName,
-								amount: Math.round( data.initial_payment * 100 ),
-							},
-						});
-					}
-				}
-			});
-		}
+		// Update price shown in payment request button when the checkout refreshes its price.
 		if ( pmproStripe.updatePaymentRequestButton ) {
-			$(".pmpro_alter_price").change(function(){
-				stripeUpdatePaymentRequestButton();
+			$( document ).on( 'pmpro_checkout_refreshed', function( event, data ) {
+				// The button is built once Stripe answers, so it may not exist yet.
+				if ( paymentRequest && data.hasOwnProperty('initial_payment') ) {
+					paymentRequest.update({
+						total: {
+							label: pmproStripe.siteName,
+							amount: Math.round( data.initial_payment * 100 ),
+						},
+					});
+				}
 			});
 		}
 	}
