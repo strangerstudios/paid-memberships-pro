@@ -1136,16 +1136,23 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * - checkout_items lists the items, keyed by key. See pmpro_normalize_order_item() for their shape.
 		 * - checkout_items_html is the checkout's list of items and total, from pmpro_display_checkout_items().
 		 *   It is empty when the checkout only shows the level cost text.
+		 * - level_cost_html is the contents of the checkout's #pmpro_level_cost element: the "code has been
+		 *   applied" message when a discount code applies, then the level cost and expiration text at the
+		 *   membership's own price. It is empty for a checkout without a membership level.
+		 * - require_billing is whether the checkout needs a payment, as the checkout page decides it. A free
+		 *   level with paid Add On items needs one.
 		 * - Add Ons read their inputs from the request. The checkout JavaScript sends the checkout URL's query
 		 *   string, the level, the discount code and fields with the pmpro_alter_price class, so a field that
 		 *   changes an item needs that class or the amounts here won't include it.
 		 * - When no level is requested and Add Ons add items, the checkout has no membership level and the
 		 *   response is not a level: id is 0, initial_payment is the total of the items, billing_amount is 0
-		 *   and checkout_items lists the items. The discount code is ignored.
+		 *   and checkout_items lists the items. require_billing is true when the items total more than 0. The
+		 *   discount code is ignored.
 		 * - With no level and no items, the response is a 400 error.
 		 *
 		 * @since 2.4
-		 * @since TBD Includes Add On items and their HTML, and responds for checkouts without a membership level.
+		 * @since TBD Includes Add On items and their HTML, the level cost HTML and require_billing, and responds for
+		 *            checkouts without a membership level.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
 		 *
 		 * @param WP_REST_Request $request The request.
@@ -1178,6 +1185,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'initial_payment_formatted' => pmpro_formatPrice( $initial_payment ),
 						'checkout_items'            => $items,
 						'checkout_items_html'       => $this->get_checkout_items_html( null ),
+						'level_cost_html'           => '',
+						'require_billing'           => $initial_payment > 0,
 					)
 				);
 			}
@@ -1205,6 +1214,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 				// And the list of items, so the checkout can refresh it.
 				$checkout_level->checkout_items_html = $this->get_checkout_items_html( $checkout_level );
+
+				// And the level cost text and whether payment is needed, so the checkout can update them too.
+				$checkout_level->level_cost_html = $this->get_level_cost_html( $checkout_level );
+				$checkout_level->require_billing = ! pmpro_isLevelFree( $checkout_level );
 			}
 
 			return new WP_REST_Response( $checkout_level );
@@ -1222,6 +1235,41 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			ob_start();
 			pmpro_display_checkout_items( $level );
 			return trim( ob_get_clean() );
+		}
+
+		/**
+		 * Get the contents of the checkout's #pmpro_level_cost element as HTML.
+		 *
+		 * Matches #pmpro_level_cost in pages/checkout.php, including the "code has been applied" message, so the
+		 * checkout can replace the whole element. pmpro_getLevelCost() describes the membership's own price when
+		 * Add Ons added items.
+		 *
+		 * @since TBD
+		 *
+		 * @param object $level The checkout level.
+		 * @return string
+		 */
+		private function get_level_cost_html( $level ) {
+			$html = array();
+
+			// As on the checkout page, the level only has a discount code when the code applies to it.
+			$discount_code = empty( $level->discount_code ) ? '' : preg_replace( '/[^A-Za-z0-9\-]/', '', sanitize_text_field( $level->discount_code ) );
+			if ( $discount_code && pmpro_checkDiscountCode( $discount_code ) ) {
+				/* translators: %s: discount code. */
+				$html[] = '<p class="' . esc_attr( pmpro_get_element_class( 'pmpro_level_discount_applied' ) ) . '">' . sprintf( esc_html__( 'The %s code has been applied to your order.', 'paid-memberships-pro' ), '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_tag pmpro_tag-discount-code', 'pmpro_tag-discount-code' ) ) . '">' . esc_html( $discount_code ) . '</span>' ) . '</p>';
+			}
+
+			$level_cost_text = pmpro_getLevelCost( $level );
+			if ( ! empty( $level_cost_text ) ) {
+				$html[] = '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_level_cost_text' ) ) . '">' . wp_kses_post( wpautop( $level_cost_text ) ) . '</div>';
+			}
+
+			$level_expiration_text = pmpro_getLevelExpiration( $level );
+			if ( ! empty( $level_expiration_text ) ) {
+				$html[] = '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_level_expiration_text' ) ) . '">' . wp_kses_post( wpautop( $level_expiration_text ) ) . '</div>';
+			}
+
+			return implode( "\n", $html );
 		}
 
 		/// ZAPIER TRIGGERS
