@@ -109,32 +109,52 @@ function pmpro_get_items_total( $items, $field = 'subtotal' ) {
 function pmpro_build_checkout_items( $level ) {
 	$core_items = array();
 	if ( ! empty( $level->id ) ) {
+		$recurring = pmpro_isLevelRecurring( $level );
+		$discount  = pmpro_get_checkout_level_code_discount( $level );
+
+		// With a discount item, the membership item has the level's full price.
 		$core_items['membership'] = pmpro_normalize_order_item(
 			array(
 				'key'            => 'membership',
 				'item_type'      => 'membership',
 				'object_id'      => (int) $level->id,
 				'name'           => $level->name,
-				'subtotal'       => $level->initial_payment,
-				'billing_amount' => pmpro_isLevelRecurring( $level ) ? $level->billing_amount : 0,
+				'subtotal'       => $level->initial_payment + ( empty( $discount ) ? 0 : $discount['initial_discount'] ),
+				'billing_amount' => $recurring ? $level->billing_amount + ( empty( $discount ) ? 0 : $discount['billing_discount'] ) : 0,
 			)
 		);
+
+		if ( ! empty( $discount ) ) {
+			$core_items['discount'] = pmpro_normalize_order_item(
+				array(
+					'key'            => 'discount',
+					'item_type'      => 'discount',
+					'object_id'      => (int) $level->code_id,
+					/* translators: %s: discount code. */
+					'name'           => sprintf( __( 'Discount code %s', 'paid-memberships-pro' ), $level->discount_code ),
+					'subtotal'       => -1 * $discount['initial_discount'],
+					'billing_amount' => $recurring ? -1 * $discount['billing_discount'] : 0,
+				)
+			);
+		}
 	}
 
 	/**
 	 * Filter the items being purchased at checkout.
 	 *
-	 * When a level is being purchased, $items holds core's 'membership' item. Its object_id is the level ID
-	 * and it is priced as charged, after any discount code. Add Ons add their own items. See
-	 * pmpro_normalize_order_item() for the item shape. An item's key must be unique in the checkout. It
-	 * defaults to "{item_type}-{object_id}" and isn't saved.
+	 * When a level is being purchased, $items holds core's 'membership' item. Its object_id is the level ID.
+	 * A percentage or fixed discount code adds core's 'discount' item, with negative amounts, and the
+	 * membership item has the level's full price. Otherwise the membership item is priced as charged, after
+	 * any discount code. Add Ons add their own items. See pmpro_normalize_order_item() for the item shape.
+	 * An item's key must be unique in the checkout. It defaults to "{item_type}-{object_id}" and isn't saved.
 	 *
 	 * - An item's billing_amount is added to each recurring payment of the membership. If the level has no
 	 *   billing cycle, or no level is being purchased, every item is one-time and billing_amount is ignored.
 	 *   A level can have a billing cycle with a $0 billing amount of its own, such as a free base with paid
 	 *   seats.
-	 * - Amounts can't be negative. Discount codes only discount the membership item, but an Add On may read
-	 *   the code to price its own items.
+	 * - A one-time item can have a negative subtotal, such as a credit. A billing_amount can't be negative,
+	 *   and the checkout's payments can't add up to less than $0. Discount codes only discount the
+	 *   membership, but an Add On may read the code to price its own items.
 	 *
 	 * When no level is being purchased and this filter returns items, the checkout has no membership level.
 	 *
@@ -232,14 +252,75 @@ function pmpro_get_level_with_membership_price( $level ) {
 		return $level;
 	}
 
+	// A discount item is part of the membership's price.
+	$membership_items = array_intersect_key( $level->checkout_items, array( 'membership' => true, 'discount' => true ) );
+
 	$membership_level                  = clone $level;
-	$membership_level->initial_payment = $level->checkout_items['membership']['subtotal'];
+	$membership_level->initial_payment = pmpro_get_items_total( $membership_items, 'subtotal' );
 	if ( ! empty( $level->cycle_number ) ) {
-		$membership_level->billing_amount = $level->checkout_items['membership']['billing_amount'];
+		$membership_level->billing_amount = pmpro_get_items_total( $membership_items, 'billing_amount' );
 	}
 	unset( $membership_level->checkout_items );
 
 	return $membership_level;
+}
+
+/**
+ * Remember what a percentage or fixed discount code took off a checkout level's price.
+ *
+ * The checkout lists it as a discount item, and the membership item at the level's full price. Set-price
+ * codes set a new price instead of taking an amount off, so they don't have a discount item.
+ *
+ * @since TBD
+ *
+ * @param object $level             The checkout level, priced with the code.
+ * @param object $discount_code_row The discount code, from pmpro_get_discount_code().
+ */
+function pmpro_set_checkout_level_code_discount( $level, $discount_code_row ) {
+	if ( empty( $level->id ) || empty( $discount_code_row->discount_type ) || ! in_array( $discount_code_row->discount_type, array( 'percentage', 'fixed' ), true ) ) {
+		return;
+	}
+
+	$full_level = pmpro_getLevel( $level->id );
+	if ( empty( $full_level ) ) {
+		return;
+	}
+
+	$level->code_discount = array(
+		'initial_payment'  => pmpro_round_price( $level->initial_payment ),
+		'billing_amount'   => pmpro_round_price( $level->billing_amount ),
+		'initial_discount' => max( 0, pmpro_round_price( $full_level->initial_payment - $level->initial_payment ) ),
+		'billing_discount' => max( 0, pmpro_round_price( $full_level->billing_amount - $level->billing_amount ) ),
+	);
+}
+
+/**
+ * Get what a discount code took off a checkout level's price.
+ *
+ * Only when the level still has the code's price. If a pmpro_checkout_level filter changed the price after
+ * the code, the discount can't be told apart from that change, so the membership item keeps the charged
+ * price and there is no discount item.
+ *
+ * @since TBD
+ *
+ * @param object $level The checkout level.
+ * @return array|null The 'initial_discount' and 'billing_discount', or null.
+ */
+function pmpro_get_checkout_level_code_discount( $level ) {
+	if ( empty( $level->code_discount ) || empty( $level->code_id ) ) {
+		return null;
+	}
+
+	$discount = $level->code_discount;
+	if ( pmpro_round_price( $level->initial_payment ) != $discount['initial_payment'] || pmpro_round_price( $level->billing_amount ) != $discount['billing_amount'] ) {
+		return null;
+	}
+
+	if ( $discount['initial_discount'] <= 0 && ( $discount['billing_discount'] <= 0 || ! pmpro_isLevelRecurring( $level ) ) ) {
+		return null;
+	}
+
+	return $discount;
 }
 
 /**
@@ -301,16 +382,22 @@ function pmpro_check_checkout_items( $items ) {
 	}
 
 	foreach ( $items as $key => $item ) {
-		// Core's item was checked when it was built.
-		if ( 'membership' === $key ) {
+		// Core's items were checked when they were built.
+		if ( in_array( $key, array( 'membership', 'discount' ), true ) ) {
 			continue;
 		}
 
-		// Only core makes membership items, and amounts can't be negative.
-		if ( 'membership' === $item['item_type'] || $item['subtotal'] < 0 || $item['billing_amount'] < 0 ) {
+		// Only core makes membership and discount items. An Add On's one-time item can be a credit, but a recurring amount can't be negative.
+		if ( in_array( $item['item_type'], array( 'membership', 'discount' ), true ) || $item['billing_amount'] < 0 || ( $item['subtotal'] < 0 && $item['billing_amount'] > 0 ) ) {
 			pmpro_setMessage( __( 'An item in this checkout has an invalid price. Please contact the site owner.', 'paid-memberships-pro' ), 'pmpro_error' );
 			return false;
 		}
+	}
+
+	// Credits can't make a payment negative.
+	if ( pmpro_get_items_total( $items, 'subtotal' ) < 0 || pmpro_get_items_total( $items, 'billing_amount' ) < 0 ) {
+		pmpro_setMessage( __( 'An item in this checkout has an invalid price. Please contact the site owner.', 'paid-memberships-pro' ), 'pmpro_error' );
+		return false;
 	}
 
 	// The rest is only for checkouts without a membership level.
@@ -395,36 +482,46 @@ function pmpro_display_checkout_items( $level ) {
 
 	?>
 	<div id="pmpro_checkout_items" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_items' ) ); ?>">
-		<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ); ?>">
-			<?php foreach ( $items as $item ) { ?>
-				<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item pmpro_checkout_item pmpro_checkout_item-' . $item['item_type'] ) ); ?>">
-					<?php echo esc_html( pmpro_get_order_item_label( $item ) ); ?>:
-					<strong><?php echo esc_html( pmpro_format_order_item_price( $item['subtotal'] ) ); ?></strong>
-					<?php
-					if ( 0 != $item['billing_amount'] && ! empty( $level->cycle_number ) ) {
-						echo ' ' . esc_html( pmpro_get_checkout_items_recurring_text( $item['billing_amount'], $level ) );
-					}
-					?>
-				</li>
-			<?php } ?>
-		</ul>
-		<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_items_total' ) ); ?>">
-			<strong>
-				<?php
-				/* translators: %s: total due today. */
-				echo esc_html( sprintf( __( 'Total today: %s', 'paid-memberships-pro' ), pmpro_format_order_item_price( pmpro_get_items_total( $items, 'subtotal' ) ) ) );
-				?>
-			</strong>
-			<?php
-			$billing_total = pmpro_get_items_total( $items, 'billing_amount' );
-			if ( $billing_total > 0 && ! empty( $level->cycle_number ) ) {
-				echo ' ' . esc_html( pmpro_get_checkout_items_recurring_text( $billing_total, $level ) );
-			}
-			?>
-		</p>
+		<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Description', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Amount', 'paid-memberships-pro' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach ( $items as $item ) { ?>
+					<tr class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout_item pmpro_checkout_item-' . $item['item_type'] ) ); ?>">
+						<th data-title="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>"><?php echo esc_html( pmpro_get_order_item_label( $item ) ); ?></th>
+						<td data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>">
+							<?php echo esc_html( pmpro_format_order_item_price( $item['subtotal'] ) ); ?>
+							<?php if ( 0 != $item['billing_amount'] && ! empty( $level->cycle_number ) ) { ?>
+								<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_font-small' ) ); ?>"><?php echo esc_html( pmpro_get_checkout_items_recurring_text( $item['billing_amount'], $level ) ); ?></p>
+							<?php } ?>
+						</td>
+					</tr>
+				<?php } ?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td><?php esc_html_e( 'Total today', 'paid-memberships-pro' ); ?></td>
+					<td data-title="<?php esc_attr_e( 'Total today', 'paid-memberships-pro' ); ?>">
+						<?php echo esc_html( pmpro_format_order_item_price( pmpro_get_items_total( $items, 'subtotal' ) ) ); ?>
+						<?php
+						$billing_total = pmpro_get_items_total( $items, 'billing_amount' );
+						if ( $billing_total > 0 && ! empty( $level->cycle_number ) ) {
+							?>
+							<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_font-small' ) ); ?>"><?php echo esc_html( pmpro_get_checkout_items_recurring_text( $billing_total, $level ) ); ?></p>
+							<?php
+						}
+						?>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
 		<?php
 		// Applying a discount code by AJAX only knows the level, so tell it when Add On items still need to be paid for.
-		$add_on_items = array_diff_key( $items, array( 'membership' => true ) );
+		$add_on_items = array_diff_key( $items, array( 'membership' => true, 'discount' => true ) );
 		if ( ! empty( $level->id ) && ( pmpro_get_items_total( $add_on_items ) > 0 || pmpro_get_items_total( $add_on_items, 'billing_amount' ) > 0 ) ) {
 			echo '<input type="hidden" id="pmpro_checkout_has_items" name="pmpro_checkout_has_items" value="1" />';
 		}
@@ -557,4 +654,188 @@ function pmpro_get_order_items_email_html( $order ) {
 	$html .= '</ul>';
 
 	return $html;
+}
+
+/*
+ * Admin editing.
+ */
+
+/**
+ * Display the item editor on the edit order and edit subscription pages.
+ *
+ * The admin can change, add and remove items. The editor shows when the items don't add up to the order's
+ * subtotal, or to what the gateway bills for a subscription, and offers to fix it by changing one item. Saving is
+ * allowed either way. Editing items doesn't charge or refund anything, and doesn't change what the gateway bills or
+ * any Add On data, such as Group Accounts seats.
+ *
+ * @since TBD
+ *
+ * @param object[] $items   The items, from MemberOrder::get_items() or PMPro_Subscription::get_items().
+ * @param string   $context 'order' or 'subscription'.
+ * @param array    $args    For a subscription: 'billing_amount', 'gateway' (the gateway's name) and 'cycle_period'.
+ */
+function pmpro_display_items_editor( $items, $context, $args = array() ) {
+	$is_order = 'order' === $context;
+	$currency = pmpro_get_currency();
+	$gateway  = empty( $args['gateway'] ) ? __( 'the gateway', 'paid-memberships-pro' ) : $args['gateway'];
+
+	wp_enqueue_script( 'pmpro_admin_items_editor', plugins_url( 'js/pmpro-admin-items-editor.js', PMPRO_BASE_FILE ), array( 'jquery' ), PMPRO_VERSION, true );
+	wp_localize_script(
+		'pmpro_admin_items_editor',
+		'pmproItemsEditor',
+		array(
+			'currency' => array(
+				'symbol'              => html_entity_decode( $currency['symbol'] ),
+				'position'            => $currency['position'],
+				'decimals'            => (int) $currency['decimals'],
+				'decimal_separator'   => $currency['decimal_separator'],
+				'thousands_separator' => $currency['thousands_separator'],
+			),
+			'text'     => array(
+				/* translators: %s: what the items should add up to, such as "the order subtotal". */
+				'matches'        => __( 'The items add up to %s.', 'paid-memberships-pro' ),
+				/* translators: 1: an amount, 2: what the items should add up to. */
+				'more'           => __( 'The items add up to %1$s more than %2$s.', 'paid-memberships-pro' ),
+				/* translators: 1: an amount, 2: what the items should add up to. */
+				'less'           => __( 'The items add up to %1$s less than %2$s.', 'paid-memberships-pro' ),
+				'order_target'   => __( 'the order subtotal', 'paid-memberships-pro' ),
+				/* translators: %s: the gateway's name. */
+				'sub_target'     => sprintf( __( 'what %s bills', 'paid-memberships-pro' ), $gateway ),
+				'order_hint'     => __( 'Adjust an item, or set the subtotal.', 'paid-memberships-pro' ),
+				'sub_hint'       => __( 'Adjust an item, or save anyway: renewal orders list one item until the items add up.', 'paid-memberships-pro' ),
+				/* translators: %s: an amount. */
+				'make_it'        => __( 'Make it %s', 'paid-memberships-pro' ),
+				/* translators: %s: an amount. */
+				'set_subtotal'   => __( 'Set subtotal to %s', 'paid-memberships-pro' ),
+			),
+		)
+	);
+
+	/* translators: %s: a billing period, such as Month. */
+	$period = empty( $args['cycle_period'] ) ? __( 'Then per period', 'paid-memberships-pro' ) : sprintf( __( 'Per %s', 'paid-memberships-pro' ), pmpro_translate_billing_period( $args['cycle_period'] ) );
+	?>
+	<div class="pmpro_items_editor" data-context="<?php echo esc_attr( $context ); ?>" <?php if ( ! $is_order ) { ?>data-target-amount="<?php echo esc_attr( pmpro_round_price( (float) $args['billing_amount'] ) ); ?>"<?php } ?>>
+		<table class="widefat striped pmpro_items_editor_table">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Description', 'paid-memberships-pro' ); ?></th>
+					<th class="pmpro_items_editor_num"><?php esc_html_e( 'Qty', 'paid-memberships-pro' ); ?></th>
+					<th class="pmpro_items_editor_num"><?php echo esc_html( $is_order ? __( 'Amount', 'paid-memberships-pro' ) : $period ); ?></th>
+					<?php if ( $is_order ) { ?>
+						<th class="pmpro_items_editor_num"><?php esc_html_e( 'Then per period', 'paid-memberships-pro' ); ?></th>
+					<?php } ?>
+					<th><span class="screen-reader-text"><?php esc_html_e( 'Actions', 'paid-memberships-pro' ); ?></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach ( array_values( $items ) as $index => $item ) {
+					pmpro_display_items_editor_row( $index, $item, $is_order );
+				}
+				?>
+			</tbody>
+		</table>
+		<script type="text/template" class="pmpro_items_editor_template">
+			<?php pmpro_display_items_editor_row( '__INDEX__', null, $is_order ); ?>
+		</script>
+		<div class="pmpro_items_editor_footer">
+			<button type="button" class="button-link pmpro_items_editor_add"><?php esc_html_e( '+ Add item', 'paid-memberships-pro' ); ?></button>
+			<span class="pmpro_items_editor_sum"><?php esc_html_e( 'Items total', 'paid-memberships-pro' ); ?> <strong class="pmpro_items_editor_total"></strong></span>
+		</div>
+		<div class="pmpro_items_editor_status">
+			<span class="pmpro_items_editor_message"></span>
+			<?php if ( $is_order ) { ?>
+				<button type="button" class="button button-secondary pmpro_items_editor_set_target"></button>
+			<?php } ?>
+		</div>
+		<p class="description">
+			<?php
+			if ( $is_order ) {
+				esc_html_e( 'Editing items doesn\'t charge or refund anything, and doesn\'t change Add On data such as Group Accounts seats.', 'paid-memberships-pro' );
+			} else {
+				/* translators: %s: the gateway's name. */
+				echo esc_html( sprintf( __( 'Editing items doesn\'t change what %s bills or any Add On data. Renewal orders list these items only while they add up to the billed amount.', 'paid-memberships-pro' ), $gateway ) );
+			}
+			?>
+		</p>
+		<input type="hidden" name="pmpro_items_edited" value="0" class="pmpro_items_editor_edited" />
+	</div>
+	<?php
+}
+
+/**
+ * Display one row of the item editor.
+ *
+ * @since TBD
+ *
+ * @param int|string  $index    The row's index in the form, or '__INDEX__' for the row template.
+ * @param object|null $item     The item, or null for an empty row.
+ * @param bool        $is_order True for an order's items, false for a subscription's.
+ */
+function pmpro_display_items_editor_row( $index, $item, $is_order ) {
+	$item     = (object) pmpro_normalize_order_item( empty( $item ) ? array( 'item_type' => 'custom' ) : $item );
+	$name     = 'pmpro_items[' . $index . ']';
+	$amount   = $is_order ? $item->subtotal : $item->billing_amount;
+	$currency = pmpro_get_currency();
+	$decimals = (int) $currency['decimals'];
+	?>
+	<tr class="pmpro_items_editor_row">
+		<td>
+			<input type="text" class="widefat" name="<?php echo esc_attr( $name ); ?>[name]" value="<?php echo esc_attr( $item->name ); ?>" aria-label="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>" />
+			<input type="hidden" name="<?php echo esc_attr( $name ); ?>[item_type]" value="<?php echo esc_attr( $item->item_type ); ?>" />
+			<input type="hidden" name="<?php echo esc_attr( $name ); ?>[object_id]" value="<?php echo esc_attr( $item->object_id ); ?>" />
+		</td>
+		<td class="pmpro_items_editor_num"><input type="number" min="1" step="1" class="small-text" name="<?php echo esc_attr( $name ); ?>[quantity]" value="<?php echo esc_attr( $item->quantity ); ?>" aria-label="<?php esc_attr_e( 'Qty', 'paid-memberships-pro' ); ?>" /></td>
+		<td class="pmpro_items_editor_num"><input type="text" size="8" class="pmpro_items_editor_amount" name="<?php echo esc_attr( $name ); ?>[amount]" value="<?php echo esc_attr( number_format( (float) $amount, $decimals, '.', '' ) ); ?>" aria-label="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>" /></td>
+		<?php if ( $is_order ) { ?>
+			<td class="pmpro_items_editor_num"><input type="text" size="8" name="<?php echo esc_attr( $name ); ?>[billing_amount]" value="<?php echo esc_attr( number_format( (float) $item->billing_amount, $decimals, '.', '' ) ); ?>" aria-label="<?php esc_attr_e( 'Then per period', 'paid-memberships-pro' ); ?>" /></td>
+		<?php } ?>
+		<td class="pmpro_items_editor_actions">
+			<button type="button" class="button-link pmpro_items_editor_fix" hidden></button>
+			<button type="button" class="button-link pmpro_items_editor_remove" aria-label="<?php esc_attr_e( 'Remove item', 'paid-memberships-pro' ); ?>">&times;</button>
+		</td>
+	</tr>
+	<?php
+}
+
+/**
+ * Get the items an admin saved with the item editor.
+ *
+ * The caller verifies the form's nonce.
+ *
+ * @since TBD
+ *
+ * @param string $context 'order' or 'subscription'.
+ * @return array|null Normalized items, or null if the items weren't edited.
+ */
+function pmpro_get_items_from_editor( $context ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- The edit order and edit subscription handlers verify their nonces.
+	if ( empty( $_POST['pmpro_items_edited'] ) ) {
+		return null;
+	}
+	$rows = ( isset( $_POST['pmpro_items'] ) && is_array( $_POST['pmpro_items'] ) ) ? wp_unslash( $_POST['pmpro_items'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each field is sanitized by pmpro_normalize_order_item() below.
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+	$is_order = 'order' === $context;
+	$items    = array();
+	foreach ( $rows as $row ) {
+		// Skip rows without a description, such as an added row that was left empty.
+		if ( ! is_array( $row ) || empty( $row['name'] ) || '' === trim( (string) $row['name'] ) ) {
+			continue;
+		}
+
+		$amount  = isset( $row['amount'] ) ? (float) $row['amount'] : 0;
+		$items[] = pmpro_normalize_order_item(
+			array(
+				'item_type'      => empty( $row['item_type'] ) ? 'custom' : $row['item_type'],
+				'object_id'      => isset( $row['object_id'] ) ? $row['object_id'] : 0,
+				'name'           => $row['name'],
+				'quantity'       => isset( $row['quantity'] ) ? $row['quantity'] : 1,
+				'subtotal'       => $is_order ? $amount : 0,
+				'billing_amount' => $is_order ? ( isset( $row['billing_amount'] ) ? (float) $row['billing_amount'] : 0 ) : $amount,
+			)
+		);
+	}
+
+	return $items;
 }

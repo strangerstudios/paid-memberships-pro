@@ -87,6 +87,8 @@ class PMPro_Email_Template_Invoice extends PMPro_Email_Template {
 		return wp_kses_post( __( '<p>Thank you for your membership to {{ sitename }}. Below is a receipt for your most recent membership order.</p>
 
 <p>Account: {{ display_name }} ({{ user_email }})</p>
+{% if order_items %}
+{{ order_items }}{% endif %}
 
 <p>
 	Order #{{ order_id }} on {{ order_date }}<br />
@@ -148,6 +150,7 @@ class PMPro_Email_Template_Invoice extends PMPro_Email_Template {
 			'{{ membership_level_name }}' => __( 'The name of the membership level.', 'paid-memberships-pro' ),
 			'{{ order_id }}' => __( 'The order ID.', 'paid-memberships-pro' ),
 			'{{ order_total }}' => __( 'The total amount of the order.', 'paid-memberships-pro' ),
+			'{{ order_items }}' => __( 'The items in the order with their prices. Empty when the order only has a membership.', 'paid-memberships-pro' ),
 			'{{ order_total_raw }}' => __( 'The unformatted numeric total of the order.', 'paid-memberships-pro' ),
 			'{{ order_date }}' => __( 'The date of the order.', 'paid-memberships-pro' ),
 			'{{ order_url }}' => __( 'The URL of the order.', 'paid-memberships-pro' ),
@@ -215,6 +218,7 @@ class PMPro_Email_Template_Invoice extends PMPro_Email_Template {
 			'membership_level_name' => $membership_level->name,
 			'order_id' => $order->code,
 			'order_total' => $order->get_formatted_total(),
+			'order_items' => pmpro_get_order_items_email_html( $order ),
 			'order_total_raw' => $order->total,
 			'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
 			'order_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),

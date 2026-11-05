@@ -179,15 +179,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</tr>
 			</thead>
 			<tbody>
+				<?php
+				// Orders with more than one item list each item. Otherwise, show the order's single row.
+				$order_items = $order->get_items();
+				if ( pmpro_should_display_order_items( $order, $order_items ) ) {
+					foreach ( $order_items as $order_item ) {
+						?>
+						<tr>
+							<td><?php echo esc_html( 'membership' === $order_item->item_type ? $order_item->object_id : '' ); ?></td>
+							<td><?php echo esc_html( pmpro_get_order_item_label( $order_item ) ); ?></td>
+							<td><?php echo esc_html( pmpro_format_order_item_price( $order_item->subtotal ) ); ?></td>
+						</tr>
+						<?php
+					}
+				} else {
+				?>
 				<tr>
-					<td><?php echo esc_html( $order->membership_level->id ); ?></td>
+					<td><?php echo esc_html( empty( $order->membership_level->id ) ? '' : $order->membership_level->id ); ?></td>
 					<td>
 						<?php
 							echo esc_html(
 								sprintf(
 									// translators: 1: level name, 2: order code
 									__( '%1$s for order #%2$s', 'paid-memberships-pro' ),
-									$order->membership_level->name,
+									empty( $order->membership_level->name ) ? $order->get_items_description() : $order->membership_level->name,
 									$order->code,
 								)
 							);
@@ -218,6 +233,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</td>
 					<td><?php echo pmpro_escape_price( $order->get_formatted_subtotal() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 				</tr>
+				<?php } ?>
 			</tbody>
 			<?php if ( (float)$order->total > 0 ) { ?>
 				<tfoot>

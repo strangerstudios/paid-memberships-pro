@@ -274,6 +274,15 @@
 		private $items_cache_changed = false;
 
 		/**
+		 * Whether the items set with set_items() are saved with their amounts as given.
+		 *
+		 * @since TBD
+		 *
+		 * @var bool
+		 */
+		private $items_as_given = false;
+
+		/**
 		 * Defines an array of optionally used properties
 		 *
 		 * @since 2.9
@@ -1229,6 +1238,13 @@
 		 *
 		 */
 		function getMembershipLevelAtCheckout($force = false) {			
+			// A saved order without a membership level has no checkout level. Without a level ID, pmpro_getLevelAtCheckout()
+			// falls back to the level in the request or the default level.
+			if ( ! empty( $this->id ) && empty( $this->membership_id ) ) {
+				$this->membership_level = null;
+				return null;
+			}
+
 			if ( empty( $this->membership_level ) || $force ) {
 				$this->membership_level = pmpro_getLevelAtCheckout( empty( $this->membership_id ) ? null : $this->membership_id );
 			}
@@ -1494,9 +1510,16 @@
 					$this->updateDiscountCode( $this->discount_code_id );
 				}
 
-				// Save the items if they were set.
-				if ( $this->items_cache_changed ) {
-					$this->save_items();
+				// A new order for a subscription, such as a renewal, lists the subscription's items when they add up to its subtotal.
+				if ( 'pmpro_added_order' === $after_action && ! $this->items_cache_changed ) {
+					$this->set_items_from_subscription();
+				}
+
+				// Save the items if they were set. The items table only exists once the database is updated. If they can't be
+				// saved, note it on the order, since they may be the only record of what it bought.
+				if ( $this->items_cache_changed && version_compare( get_option( 'pmpro_db_version', 0 ), '4.0', '>=' ) && ! $this->save_items() ) {
+					$this->add_order_note( __( 'The items of this order could not be saved.', 'paid-memberships-pro' ) );
+					$wpdb->update( $wpdb->pmpro_membership_orders, array( 'notes' => $this->notes ), array( 'id' => $this->id ), array( '%s' ), array( '%d' ) );
 				}
 
 				do_action($after_action, $this);
@@ -1782,6 +1805,28 @@
 				'next_payment_date'           => pmpro_calculate_profile_start_date( $this, 'Y-m-d H:i:s' ),
 			);
 
+			// The subscription bills for the order's recurring items, such as the membership and its seats.
+			$recurring_items = array_filter(
+				$this->get_items(),
+				function ( $item ) {
+					return ! empty( $item->id ) && 0 != $item->billing_amount;
+				}
+			);
+			if ( ! empty( $recurring_items ) ) {
+				$create_subscription_args['items'] = array_map(
+					function ( $item ) {
+						return array(
+							'item_type'      => $item->item_type,
+							'object_id'      => $item->object_id,
+							'name'           => $item->name,
+							'quantity'       => $item->quantity,
+							'billing_amount' => $item->billing_amount,
+						);
+					},
+					array_values( $recurring_items )
+				);
+			}
+
 			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
 			return ! empty( $new_subscription ) ? $new_subscription : null;
 		}
@@ -1852,6 +1897,10 @@
 
 			$names = array();
 			foreach ( $lines as $line ) {
+				// Discounts and credits aren't something the order bought.
+				if ( $line->subtotal < 0 ) {
+					continue;
+				}
 				$names[] = pmpro_get_order_item_label( $line );
 			}
 
@@ -1864,15 +1913,49 @@
 		 *
 		 * Takes checkout items from pmpro_get_checkout_items(), or items from get_items() to change them. Pass
 		 * an empty array to remove the order's items. When the items are saved, the membership item is saved as
-		 * the order subtotal minus the other items.
+		 * the order subtotal minus the other items, unless $as_given is true, such as for items an admin edited.
+		 * Changing the items doesn't charge or refund anything.
 		 *
 		 * @since TBD
 		 *
-		 * @param array $items The items, as arrays or objects. See pmpro_normalize_order_item() for their shape.
+		 * @param array $items    The items, as arrays or objects. See pmpro_normalize_order_item() for their shape.
+		 * @param bool  $as_given Save every item's amounts as given, even if they don't add up to the subtotal.
 		 */
-		public function set_items( $items ) {
+		public function set_items( $items, $as_given = false ) {
 			$this->items_cache         = array_map( array( $this, 'get_item_object' ), array_map( 'pmpro_normalize_order_item', array_values( (array) $items ) ) );
 			$this->items_cache_changed = true;
+			$this->items_as_given      = (bool) $as_given;
+		}
+
+		/**
+		 * Set this order's items from its subscription's items, if they add up to the order's subtotal.
+		 *
+		 * Used for new orders that a gateway creates for a subscription, such as renewals. Otherwise the order
+		 * reads as one membership item, such as when the price was changed at the gateway or during a trial.
+		 *
+		 * @since TBD
+		 */
+		private function set_items_from_subscription() {
+			if ( empty( $this->subscription_transaction_id ) || empty( $this->membership_id ) || empty( $this->gateway ) ) {
+				return;
+			}
+
+			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
+			if ( empty( $subscription ) ) {
+				return;
+			}
+
+			$items = $subscription->get_items();
+			if ( empty( $items ) || abs( pmpro_get_items_total( $items, 'billing_amount' ) - (float) $this->subtotal ) >= 0.005 ) {
+				return;
+			}
+
+			// Each item was billed its recurring amount.
+			foreach ( $items as $item ) {
+				$item->id       = 0;
+				$item->subtotal = $item->billing_amount;
+			}
+			$this->set_items( $items );
 		}
 
 		/**
@@ -1933,7 +2016,7 @@
 						'object_id'      => $item->object_id,
 						'name'           => $item->name,
 						'quantity'       => $item->quantity,
-						'subtotal'       => ( 'membership' === $item->item_type ) ? max( 0, pmpro_round_price( (float) $this->subtotal - $others ) ) : $item->subtotal,
+						'subtotal'       => ( 'membership' === $item->item_type && ! $this->items_as_given ) ? max( 0, pmpro_round_price( (float) $this->subtotal - $others ) ) : $item->subtotal,
 						'billing_amount' => $item->billing_amount,
 					),
 					array( '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
@@ -1957,6 +2040,7 @@
 			// Read the saved items next time, with their IDs.
 			$this->items_cache         = null;
 			$this->items_cache_changed = false;
+			$this->items_as_given      = false;
 			return true;
 		}
 

@@ -51,6 +51,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
 	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
 	$wpdb->pmpro_membership_order_items = $wpdb->prefix . 'pmpro_membership_order_items';
+	$wpdb->pmpro_subscription_items = $wpdb->prefix . 'pmpro_subscription_items';
 }
 pmpro_setDBTables();
 
@@ -2923,6 +2924,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			$pmpro_level->code_id       = $discount_code_id;
 			$pmpro_level->discount_code = $discount_code;
 			$pmpro_level                = apply_filters( 'pmpro_discount_code_level', $pmpro_level, $discount_code_id );
+
+			// Remember what a percentage or fixed code took off, so the checkout can list it as a discount item.
+			pmpro_set_checkout_level_code_discount( $pmpro_level, $discount_code_row );
 		} else {
 			// error with discount code, we want to halt checkout
 			pmpro_setMessage( $code_check[1], 'pmpro_error' );
