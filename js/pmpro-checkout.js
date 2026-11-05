@@ -286,6 +286,14 @@ function pmpro_refresh_checkout_items() {
 		url: pmpro.restUrl + 'pmpro/v1/checkout_level',
 		dataType: 'json',
 		data: pmpro_getCheckoutFormDataForCheckoutLevels(),
+		beforeSend: function( xhr ) {
+			// Price the checkout for the logged-in user, such as for Proration. Without the nonce, the REST API treats
+			// the request as logged out. The nonce is only sent when logged in, since a guest with an expired nonce
+			// (such as on a cached page) would be refused. A user created during this page load doesn't have a valid nonce yet.
+			if ( pmpro.restNonce && ! pmpro.update_nonce ) {
+				xhr.setRequestHeader( 'X-WP-Nonce', pmpro.restNonce );
+			}
+		},
 		success: function( data ) {
 			// Skip responses to older requests and responses without items.
 			if ( request !== pmpro_checkout_items_request || ! data || ! data.hasOwnProperty( 'checkout_items_html' ) ) {
