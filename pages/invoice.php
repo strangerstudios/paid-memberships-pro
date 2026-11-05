@@ -279,11 +279,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 							$pmpro_price_parts['refunded']['value'] = $pmpro_price_parts['total']['value'];
 						}
 
-						// If the level was deleted, set the name to the level ID.
+						// If the level was deleted, set the name to the level ID. An order without a level is described by its items.
 						if ( empty( $pmpro_invoice->membership_level ) ) {
 							$pmpro_invoice->membership_level = new stdClass();
 							/* translators: %s: level ID */
-							$pmpro_invoice->membership_level->name = sprintf( __( 'Level ID %s', 'paid-memberships-pro' ), $pmpro_invoice->membership_id );
+							$pmpro_invoice->membership_level->name = empty( $pmpro_invoice->membership_id ) ? $pmpro_invoice->get_items_description() : sprintf( __( 'Level ID %s', 'paid-memberships-pro' ), $pmpro_invoice->membership_id );
 						}
 					?>
 

@@ -36,6 +36,9 @@ if ( ! isset( $pmpro_level ) ) {
 	$pmpro_level->trial_limit = 0;
 	$pmpro_level->expiration_number = 0;
 	$pmpro_level->expiration_period = 'Month';
+
+	// A checkout without a membership level is priced by its items, so checks such as pmpro_isLevelFree() see what is paid.
+	$pmpro_level->initial_payment = pmpro_get_items_total( pmpro_get_checkout_items( null ) );
  }
 
 /**

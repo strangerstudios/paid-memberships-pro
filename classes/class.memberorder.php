@@ -1229,6 +1229,13 @@
 		 *
 		 */
 		function getMembershipLevelAtCheckout($force = false) {			
+			// A saved order without a membership level has no checkout level. Without a level ID, pmpro_getLevelAtCheckout()
+			// falls back to the level in the request or the default level.
+			if ( ! empty( $this->id ) && empty( $this->membership_id ) ) {
+				$this->membership_level = null;
+				return null;
+			}
+
 			if ( empty( $this->membership_level ) || $force ) {
 				$this->membership_level = pmpro_getLevelAtCheckout( empty( $this->membership_id ) ? null : $this->membership_id );
 			}
@@ -1494,8 +1501,9 @@
 					$this->updateDiscountCode( $this->discount_code_id );
 				}
 
-				// Save the items if they were set. If they can't be saved, note it on the order, since they may be the only record of what it bought.
-				if ( $this->items_cache_changed && ! $this->save_items() ) {
+				// Save the items if they were set. The items table only exists once the database is updated. If they can't be
+				// saved, note it on the order, since they may be the only record of what it bought.
+				if ( $this->items_cache_changed && version_compare( get_option( 'pmpro_db_version', 0 ), '4.0', '>=' ) && ! $this->save_items() ) {
 					$this->add_order_note( __( 'The items of this order could not be saved.', 'paid-memberships-pro' ) );
 					$wpdb->update( $wpdb->pmpro_membership_orders, array( 'notes' => $this->notes ), array( 'id' => $this->id ), array( '%s' ), array( '%d' ) );
 				}
