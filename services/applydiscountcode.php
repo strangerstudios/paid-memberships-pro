@@ -170,7 +170,7 @@
 			?>
 				jQuery('#pmpro_level_cost').html( <?php echo wp_json_encode( wp_kses_post( $html ) ); ?> );
 				// Reprice the checkout's items with the code.
-				if ( jQuery('#pmpro_checkout_items').length && typeof pmpro_refresh_checkout_items === 'function' ) {
+				if ( typeof pmpro_refresh_checkout_items === 'function' ) {
 					pmpro_refresh_checkout_items();
 				}
 			<?php

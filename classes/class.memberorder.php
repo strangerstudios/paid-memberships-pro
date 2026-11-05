@@ -1853,6 +1853,10 @@
 
 			$names = array();
 			foreach ( $lines as $line ) {
+				// Discounts and credits aren't something the order bought.
+				if ( $line->subtotal < 0 ) {
+					continue;
+				}
 				$names[] = pmpro_get_order_item_label( $line );
 			}
 
