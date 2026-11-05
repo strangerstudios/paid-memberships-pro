@@ -290,7 +290,8 @@ function pmpro_refresh_checkout_items() {
 		data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 		beforeSend: function( xhr ) {
 			// Price the checkout for the logged-in user, such as for Proration. Without the nonce, the REST API treats
-			// the request as logged out. A user created during this page load doesn't have a valid nonce yet.
+			// the request as logged out. The nonce is only sent when logged in, since a guest with an expired nonce
+			// (such as on a cached page) would be refused. A user created during this page load doesn't have a valid nonce yet.
 			if ( pmpro.restNonce && ! pmpro.update_nonce ) {
 				xhr.setRequestHeader( 'X-WP-Nonce', pmpro.restNonce );
 			}

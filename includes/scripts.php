@@ -38,7 +38,7 @@ function pmpro_enqueue_scripts() {
 			array(
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'restUrl' => get_rest_url(),
-				'restNonce' => wp_create_nonce( 'wp_rest' ),
+				'restNonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
 				'ajax_timeout' => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
 				'show_discount_code' => pmpro_show_discount_code(),
 				'gateway' => pmpro_getGateway(),
