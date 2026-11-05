@@ -655,3 +655,187 @@ function pmpro_get_order_items_email_html( $order ) {
 
 	return $html;
 }
+
+/*
+ * Admin editing.
+ */
+
+/**
+ * Display the item editor on the edit order and edit subscription pages.
+ *
+ * The admin can change, add and remove items. The editor shows when the items don't add up to the order's
+ * subtotal, or to what the gateway bills for a subscription, and offers to fix it by changing one item. Saving is
+ * allowed either way. Editing items doesn't charge or refund anything, and doesn't change what the gateway bills or
+ * any Add On data, such as Group Accounts seats.
+ *
+ * @since TBD
+ *
+ * @param object[] $items   The items, from MemberOrder::get_items() or PMPro_Subscription::get_items().
+ * @param string   $context 'order' or 'subscription'.
+ * @param array    $args    For a subscription: 'billing_amount', 'gateway' (the gateway's name) and 'cycle_period'.
+ */
+function pmpro_display_items_editor( $items, $context, $args = array() ) {
+	$is_order = 'order' === $context;
+	$currency = pmpro_get_currency();
+	$gateway  = empty( $args['gateway'] ) ? __( 'the gateway', 'paid-memberships-pro' ) : $args['gateway'];
+
+	wp_enqueue_script( 'pmpro_admin_items_editor', plugins_url( 'js/pmpro-admin-items-editor.js', PMPRO_BASE_FILE ), array( 'jquery' ), PMPRO_VERSION, true );
+	wp_localize_script(
+		'pmpro_admin_items_editor',
+		'pmproItemsEditor',
+		array(
+			'currency' => array(
+				'symbol'              => html_entity_decode( $currency['symbol'] ),
+				'position'            => $currency['position'],
+				'decimals'            => (int) $currency['decimals'],
+				'decimal_separator'   => $currency['decimal_separator'],
+				'thousands_separator' => $currency['thousands_separator'],
+			),
+			'text'     => array(
+				/* translators: %s: what the items should add up to, such as "the order subtotal". */
+				'matches'        => __( 'The items add up to %s.', 'paid-memberships-pro' ),
+				/* translators: 1: an amount, 2: what the items should add up to. */
+				'more'           => __( 'The items add up to %1$s more than %2$s.', 'paid-memberships-pro' ),
+				/* translators: 1: an amount, 2: what the items should add up to. */
+				'less'           => __( 'The items add up to %1$s less than %2$s.', 'paid-memberships-pro' ),
+				'order_target'   => __( 'the order subtotal', 'paid-memberships-pro' ),
+				/* translators: %s: the gateway's name. */
+				'sub_target'     => sprintf( __( 'what %s bills', 'paid-memberships-pro' ), $gateway ),
+				'order_hint'     => __( 'Adjust an item, or set the subtotal.', 'paid-memberships-pro' ),
+				'sub_hint'       => __( 'Adjust an item, or save anyway: renewal orders list one item until the items add up.', 'paid-memberships-pro' ),
+				/* translators: %s: an amount. */
+				'make_it'        => __( 'Make it %s', 'paid-memberships-pro' ),
+				/* translators: %s: an amount. */
+				'set_subtotal'   => __( 'Set subtotal to %s', 'paid-memberships-pro' ),
+			),
+		)
+	);
+
+	/* translators: %s: a billing period, such as Month. */
+	$period = empty( $args['cycle_period'] ) ? __( 'Then per period', 'paid-memberships-pro' ) : sprintf( __( 'Per %s', 'paid-memberships-pro' ), pmpro_translate_billing_period( $args['cycle_period'] ) );
+	?>
+	<div class="pmpro_items_editor" data-context="<?php echo esc_attr( $context ); ?>" <?php if ( ! $is_order ) { ?>data-target-amount="<?php echo esc_attr( pmpro_round_price( (float) $args['billing_amount'] ) ); ?>"<?php } ?>>
+		<table class="widefat striped pmpro_items_editor_table">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Description', 'paid-memberships-pro' ); ?></th>
+					<th class="pmpro_items_editor_num"><?php esc_html_e( 'Qty', 'paid-memberships-pro' ); ?></th>
+					<th class="pmpro_items_editor_num"><?php echo esc_html( $is_order ? __( 'Amount', 'paid-memberships-pro' ) : $period ); ?></th>
+					<?php if ( $is_order ) { ?>
+						<th class="pmpro_items_editor_num"><?php esc_html_e( 'Then per period', 'paid-memberships-pro' ); ?></th>
+					<?php } ?>
+					<th><span class="screen-reader-text"><?php esc_html_e( 'Actions', 'paid-memberships-pro' ); ?></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach ( array_values( $items ) as $index => $item ) {
+					pmpro_display_items_editor_row( $index, $item, $is_order );
+				}
+				?>
+			</tbody>
+		</table>
+		<script type="text/template" class="pmpro_items_editor_template">
+			<?php pmpro_display_items_editor_row( '__INDEX__', null, $is_order ); ?>
+		</script>
+		<div class="pmpro_items_editor_footer">
+			<button type="button" class="button-link pmpro_items_editor_add"><?php esc_html_e( '+ Add item', 'paid-memberships-pro' ); ?></button>
+			<span class="pmpro_items_editor_sum"><?php esc_html_e( 'Items total', 'paid-memberships-pro' ); ?> <strong class="pmpro_items_editor_total"></strong></span>
+		</div>
+		<div class="pmpro_items_editor_status">
+			<span class="pmpro_items_editor_message"></span>
+			<?php if ( $is_order ) { ?>
+				<button type="button" class="button button-secondary pmpro_items_editor_set_target"></button>
+			<?php } ?>
+		</div>
+		<p class="description">
+			<?php
+			if ( $is_order ) {
+				esc_html_e( 'Editing items doesn\'t charge or refund anything, and doesn\'t change Add On data such as Group Accounts seats.', 'paid-memberships-pro' );
+			} else {
+				/* translators: %s: the gateway's name. */
+				echo esc_html( sprintf( __( 'Editing items doesn\'t change what %s bills or any Add On data. Renewal orders list these items only while they add up to the billed amount.', 'paid-memberships-pro' ), $gateway ) );
+			}
+			?>
+		</p>
+		<input type="hidden" name="pmpro_items_edited" value="0" class="pmpro_items_editor_edited" />
+	</div>
+	<?php
+}
+
+/**
+ * Display one row of the item editor.
+ *
+ * @since TBD
+ *
+ * @param int|string  $index    The row's index in the form, or '__INDEX__' for the row template.
+ * @param object|null $item     The item, or null for an empty row.
+ * @param bool        $is_order True for an order's items, false for a subscription's.
+ */
+function pmpro_display_items_editor_row( $index, $item, $is_order ) {
+	$item     = (object) pmpro_normalize_order_item( empty( $item ) ? array( 'item_type' => 'custom' ) : $item );
+	$name     = 'pmpro_items[' . $index . ']';
+	$amount   = $is_order ? $item->subtotal : $item->billing_amount;
+	$currency = pmpro_get_currency();
+	$decimals = (int) $currency['decimals'];
+	?>
+	<tr class="pmpro_items_editor_row">
+		<td>
+			<input type="text" class="widefat" name="<?php echo esc_attr( $name ); ?>[name]" value="<?php echo esc_attr( $item->name ); ?>" aria-label="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>" />
+			<input type="hidden" name="<?php echo esc_attr( $name ); ?>[item_type]" value="<?php echo esc_attr( $item->item_type ); ?>" />
+			<input type="hidden" name="<?php echo esc_attr( $name ); ?>[object_id]" value="<?php echo esc_attr( $item->object_id ); ?>" />
+		</td>
+		<td class="pmpro_items_editor_num"><input type="number" min="1" step="1" class="small-text" name="<?php echo esc_attr( $name ); ?>[quantity]" value="<?php echo esc_attr( $item->quantity ); ?>" aria-label="<?php esc_attr_e( 'Qty', 'paid-memberships-pro' ); ?>" /></td>
+		<td class="pmpro_items_editor_num"><input type="text" size="8" class="pmpro_items_editor_amount" name="<?php echo esc_attr( $name ); ?>[amount]" value="<?php echo esc_attr( number_format( (float) $amount, $decimals, '.', '' ) ); ?>" aria-label="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>" /></td>
+		<?php if ( $is_order ) { ?>
+			<td class="pmpro_items_editor_num"><input type="text" size="8" name="<?php echo esc_attr( $name ); ?>[billing_amount]" value="<?php echo esc_attr( number_format( (float) $item->billing_amount, $decimals, '.', '' ) ); ?>" aria-label="<?php esc_attr_e( 'Then per period', 'paid-memberships-pro' ); ?>" /></td>
+		<?php } ?>
+		<td class="pmpro_items_editor_actions">
+			<button type="button" class="button-link pmpro_items_editor_fix" hidden></button>
+			<button type="button" class="button-link pmpro_items_editor_remove" aria-label="<?php esc_attr_e( 'Remove item', 'paid-memberships-pro' ); ?>">&times;</button>
+		</td>
+	</tr>
+	<?php
+}
+
+/**
+ * Get the items an admin saved with the item editor.
+ *
+ * The caller verifies the form's nonce.
+ *
+ * @since TBD
+ *
+ * @param string $context 'order' or 'subscription'.
+ * @return array|null Normalized items, or null if the items weren't edited.
+ */
+function pmpro_get_items_from_editor( $context ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- The edit order and edit subscription handlers verify their nonces.
+	if ( empty( $_POST['pmpro_items_edited'] ) ) {
+		return null;
+	}
+	$rows = ( isset( $_POST['pmpro_items'] ) && is_array( $_POST['pmpro_items'] ) ) ? wp_unslash( $_POST['pmpro_items'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each field is sanitized by pmpro_normalize_order_item() below.
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+	$is_order = 'order' === $context;
+	$items    = array();
+	foreach ( $rows as $row ) {
+		// Skip rows without a description, such as an added row that was left empty.
+		if ( ! is_array( $row ) || empty( $row['name'] ) || '' === trim( (string) $row['name'] ) ) {
+			continue;
+		}
+
+		$amount  = isset( $row['amount'] ) ? (float) $row['amount'] : 0;
+		$items[] = pmpro_normalize_order_item(
+			array(
+				'item_type'      => empty( $row['item_type'] ) ? 'custom' : $row['item_type'],
+				'object_id'      => isset( $row['object_id'] ) ? $row['object_id'] : 0,
+				'name'           => $row['name'],
+				'quantity'       => isset( $row['quantity'] ) ? $row['quantity'] : 1,
+				'subtotal'       => $is_order ? $amount : 0,
+				'billing_amount' => $is_order ? ( isset( $row['billing_amount'] ) ? (float) $row['billing_amount'] : 0 ) : $amount,
+			)
+		);
+	}
+
+	return $items;
+}
