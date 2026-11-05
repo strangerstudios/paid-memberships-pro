@@ -122,6 +122,7 @@ if( isset( $_REQUEST['discount_code_id'] ) ) {
 // saved as what's left of the subtotal after the other items.
 if ( $order_id > 0 && ( (int) $order->membership_id !== $original_membership_id || (float) $order->subtotal !== $original_subtotal ) ) {
 	$items = $order->get_items();
+	// Orders without saved items, such as renewals and orders from before items, read as one item built from the order, so there is nothing to update.
 	if ( ! empty( $items ) && ! empty( $items[0]->id ) ) {
 		$membership_billing_amount = 0;
 		foreach ( $items as $key => $item ) {
