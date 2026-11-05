@@ -316,9 +316,13 @@ function pmpro_refresh_checkout_items() {
 
 			// Show or hide the billing fields as applying a discount code does. When the checkout has a choice of
 			// gateways, the Add On that offers the choice shows and hides them for the chosen gateway.
+			// Fields that the site hides with the pmpro_hide_billing_address_fields or pmpro_hide_payment_information_fields
+			// filter stay hidden.
 			if ( ! jQuery( '#pmpro_form input[name=gateway]' ).length ) {
 				var offsite_gateway = [ 'paypalexpress', 'paypalstandard' ].indexOf( pmpro.gateway ) > -1;
-				jQuery( '#pmpro_billing_address_fields, #pmpro_payment_information_fields' ).toggle( data.require_billing && ! offsite_gateway && 'check' !== pmpro.gateway );
+				var show_fields = data.require_billing && ! offsite_gateway && 'check' !== pmpro.gateway;
+				jQuery( '#pmpro_billing_address_fields' ).toggle( show_fields && ! pmpro.hide_billing_address_fields );
+				jQuery( '#pmpro_payment_information_fields' ).toggle( show_fields && ! pmpro.hide_payment_information_fields );
 				if ( offsite_gateway ) {
 					jQuery( '#pmpro_paypalexpress_checkout' ).toggle( data.require_billing );
 					jQuery( '#pmpro_submit_span' ).toggle( ! data.require_billing );

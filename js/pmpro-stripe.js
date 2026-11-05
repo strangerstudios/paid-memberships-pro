@@ -190,7 +190,8 @@ jQuery( document ).ready( function( $ ) {
 		// Update price shown in payment request button when the checkout refreshes its price.
 		if ( pmproStripe.updatePaymentRequestButton ) {
 			$( document ).on( 'pmpro_checkout_refreshed', function( event, data ) {
-				if ( data.hasOwnProperty('initial_payment') ) {
+				// The button is built once Stripe answers, so it may not exist yet.
+				if ( paymentRequest && data.hasOwnProperty('initial_payment') ) {
 					paymentRequest.update({
 						total: {
 							label: pmproStripe.siteName,
