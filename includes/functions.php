@@ -2987,9 +2987,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	// If the level or discount code has a subscription delay, set the profile start
 	// date on the level so that gateways delay the first recurring payment.
 	if ( ! empty( $pmpro_level->id ) && pmpro_isLevelRecurring( $pmpro_level ) ) {
-		$delay_date = pmpro_get_subscription_delay_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null );
-		if ( ! empty( $delay_date ) ) {
-			$pmpro_level->profile_start_date = $delay_date . 'T0:0:0';
+		$profile_start_date = pmpro_get_subscription_delay_profile_start_date( $pmpro_level->id, ! empty( $pmpro_level->code_id ) ? $pmpro_level->code_id : null );
+		if ( ! empty( $profile_start_date ) ) {
+			$pmpro_level->profile_start_date = $profile_start_date;
 		}
 	}
 
