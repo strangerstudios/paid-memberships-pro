@@ -1097,6 +1097,9 @@ class PMPro_Subscription {
 			$this->enddate = gmdate( 'Y-m-d H:i:s' );
 		}
 
+		// REPLACE also sets $wpdb->insert_id when it updates an existing subscription, so check for an ID before saving.
+		$is_new = empty( $this->id );
+
 		pmpro_insert_or_replace( 
 			$wpdb->pmpro_subscriptions,
 			array(
@@ -1138,9 +1141,11 @@ class PMPro_Subscription {
 			'id'
 		);
 
-		if ( $wpdb->insert_id ) {
+		if ( $is_new ) {
 			$this->id = $wpdb->insert_id;
+		}
 
+		if ( $is_new && ! empty( $this->id ) ) {
 			/**
 			 * Runs when a subscription is added.
 			 *
@@ -1149,7 +1154,7 @@ class PMPro_Subscription {
 			 * @since 3.5
 			 */
 			do_action('pmpro_added_subscription', $this);
-		} else {
+		} elseif ( ! $is_new ) {
 			/**
 			 * Runs when a subscription is updated.
 			 *
