@@ -1156,7 +1156,8 @@ class PMPro_Subscription {
 			do_action('pmpro_added_subscription', $this);
 		} elseif ( ! $is_new ) {
 			/**
-			 * Runs when a subscription is updated.
+			 * Runs when a subscription that already exists is saved, such as after a gateway sync, even if
+			 * nothing changed.
 			 *
 			 * @param $this PMPro_Subscription The current subscription object
 			 *
