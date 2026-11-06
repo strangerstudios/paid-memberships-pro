@@ -1510,7 +1510,7 @@
 					$this->updateDiscountCode( $this->discount_code_id );
 				}
 
-				// A new order for a subscription, such as a renewal, lists the subscription's items when they add up to its subtotal.
+				// A new order for a subscription, such as a renewal, lists the subscription's items.
 				if ( 'pmpro_added_order' === $after_action && ! $this->items_cache_changed ) {
 					$this->set_items_from_subscription();
 				}
@@ -1838,8 +1838,8 @@
 		 * object_id, name, quantity, subtotal and billing_amount.
 		 *
 		 * - Items set with set_items() are returned until the order is saved. They have id 0.
-		 * - Orders without items (renewals and orders saved before items existed) read as one membership item
-		 *   built from the order, with id 0. Orders without items or a level have no items.
+		 * - Orders without items (orders saved before items existed, and renewals of subscriptions without items)
+		 *   read as one membership item built from the order, with id 0. Orders without items or a level have no items.
 		 *
 		 * The items are copies. To change them, pass the changed items to set_items() and save the order.
 		 *
@@ -1928,10 +1928,14 @@
 		}
 
 		/**
-		 * Set this order's items from its subscription's items, if they add up to the order's subtotal.
+		 * Set this order's items from its subscription's items.
 		 *
-		 * Used for new orders that a gateway creates for a subscription, such as renewals. Otherwise the order
-		 * reads as one membership item, such as when the price was changed at the gateway or during a trial.
+		 * Used for new orders that a gateway creates for a subscription, such as renewals. The items are saved
+		 * as the subscription has them, even if they don't add up to the order's subtotal, such as during a trial
+		 * or after the price was changed at the gateway. The item editor shows the difference.
+		 *
+		 * Gateways such as Stripe report tax that PMPro added to the price as part of the subtotal. Tax Add Ons
+		 * such as VAT Tax split it out on pmpro_added_order, after the items are saved.
 		 *
 		 * @since TBD
 		 */
@@ -1946,7 +1950,7 @@
 			}
 
 			$items = $subscription->get_items();
-			if ( empty( $items ) || abs( pmpro_get_items_total( $items, 'billing_amount' ) - (float) $this->subtotal ) >= 0.005 ) {
+			if ( empty( $items ) ) {
 				return;
 			}
 
@@ -1955,7 +1959,7 @@
 				$item->id       = 0;
 				$item->subtotal = $item->billing_amount;
 			}
-			$this->set_items( $items );
+			$this->set_items( $items, true );
 		}
 
 		/**

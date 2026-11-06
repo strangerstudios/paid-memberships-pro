@@ -8,8 +8,9 @@
  * - Items describe the order. The order's subtotal, tax and total stay the source of truth for money, and
  *   gateways, tax and reports keep reading them.
  * - Items belong to the order. MemberOrder::get_items() reads them, MemberOrder::set_items() replaces them
- *   and saveOrder() saves them. The checkout sets them on the order it builds. Renewal orders and orders
- *   saved before items existed read as one membership item built from the order. Nothing is backfilled.
+ *   and saveOrder() saves them. The checkout sets them on the order it builds, and renewal orders get their
+ *   subscription's items. Orders saved before items existed, and renewals of subscriptions without items,
+ *   read as one membership item built from the order. Nothing is backfilled.
  * - On an order with a membership level, the membership item is saved as whatever is left of the order
  *   subtotal after the other items, so code that changes the order's price is reflected on it.
  * - Add Ons add items at checkout with the pmpro_checkout_items filter. An item's billing_amount renews
@@ -663,16 +664,17 @@ function pmpro_get_order_items_email_html( $order ) {
 /**
  * Display the item editor on the edit order and edit subscription pages.
  *
- * The admin can change, add and remove items. The editor shows when the items don't add up to the order's
- * subtotal, or to what the gateway bills for a subscription, and offers to fix it by changing one item. Saving is
- * allowed either way. Editing items doesn't charge or refund anything, and doesn't change what the gateway bills or
- * any Add On data, such as Group Accounts seats.
+ * The admin can change, add and remove items, and sees their total. For an order, the editor shows when the items
+ * don't add up to the order's subtotal and offers to fix it by changing one item. Saving is allowed either way.
+ * A subscription's items aren't compared to what the gateway bills, since that may include tax. Editing items
+ * doesn't charge or refund anything, and doesn't change what the gateway bills or any Add On data, such as Group
+ * Accounts seats.
  *
  * @since TBD
  *
  * @param object[] $items   The items, from MemberOrder::get_items() or PMPro_Subscription::get_items().
  * @param string   $context 'order' or 'subscription'.
- * @param array    $args    For a subscription: 'billing_amount', 'gateway' (the gateway's name) and 'cycle_period'.
+ * @param array    $args    For a subscription: 'gateway' (the gateway's name) and 'cycle_period'.
  */
 function pmpro_display_items_editor( $items, $context, $args = array() ) {
 	$is_order = 'order' === $context;
@@ -699,10 +701,7 @@ function pmpro_display_items_editor( $items, $context, $args = array() ) {
 				/* translators: 1: an amount, 2: what the items should add up to. */
 				'less'           => __( 'The items add up to %1$s less than %2$s.', 'paid-memberships-pro' ),
 				'order_target'   => __( 'the order subtotal', 'paid-memberships-pro' ),
-				/* translators: %s: the gateway's name. */
-				'sub_target'     => sprintf( __( 'what %s bills', 'paid-memberships-pro' ), $gateway ),
 				'order_hint'     => __( 'Adjust an item, or set the subtotal.', 'paid-memberships-pro' ),
-				'sub_hint'       => __( 'Adjust an item, or save anyway: renewal orders list one item until the items add up.', 'paid-memberships-pro' ),
 				/* translators: %s: an amount. */
 				'make_it'        => __( 'Make it %s', 'paid-memberships-pro' ),
 				/* translators: %s: an amount. */
@@ -714,7 +713,7 @@ function pmpro_display_items_editor( $items, $context, $args = array() ) {
 	/* translators: %s: a billing period, such as Month. */
 	$period = empty( $args['cycle_period'] ) ? __( 'Then per period', 'paid-memberships-pro' ) : sprintf( __( 'Per %s', 'paid-memberships-pro' ), pmpro_translate_billing_period( $args['cycle_period'] ) );
 	?>
-	<div class="pmpro_items_editor" data-context="<?php echo esc_attr( $context ); ?>" <?php if ( ! $is_order ) { ?>data-target-amount="<?php echo esc_attr( pmpro_round_price( (float) $args['billing_amount'] ) ); ?>"<?php } ?>>
+	<div class="pmpro_items_editor" data-context="<?php echo esc_attr( $context ); ?>">
 		<table class="widefat striped pmpro_items_editor_table">
 			<thead>
 				<tr>
@@ -742,19 +741,19 @@ function pmpro_display_items_editor( $items, $context, $args = array() ) {
 			<button type="button" class="button-link pmpro_items_editor_add"><?php esc_html_e( '+ Add item', 'paid-memberships-pro' ); ?></button>
 			<span class="pmpro_items_editor_sum"><?php esc_html_e( 'Items total', 'paid-memberships-pro' ); ?> <strong class="pmpro_items_editor_total"></strong></span>
 		</div>
-		<div class="pmpro_items_editor_status">
-			<span class="pmpro_items_editor_message"></span>
-			<?php if ( $is_order ) { ?>
+		<?php if ( $is_order ) { ?>
+			<div class="pmpro_items_editor_status">
+				<span class="pmpro_items_editor_message"></span>
 				<button type="button" class="button button-secondary pmpro_items_editor_set_target"></button>
-			<?php } ?>
-		</div>
+			</div>
+		<?php } ?>
 		<p class="description">
 			<?php
 			if ( $is_order ) {
 				esc_html_e( 'Editing items doesn\'t charge or refund anything, and doesn\'t change Add On data such as Group Accounts seats.', 'paid-memberships-pro' );
 			} else {
 				/* translators: %s: the gateway's name. */
-				echo esc_html( sprintf( __( 'Editing items doesn\'t change what %s bills or any Add On data. Renewal orders list these items only while they add up to the billed amount.', 'paid-memberships-pro' ), $gateway ) );
+				echo esc_html( sprintf( __( 'Editing items doesn\'t change what %s bills or any Add On data. Renewal orders list these items.', 'paid-memberships-pro' ), $gateway ) );
 			}
 			?>
 		</p>
@@ -791,7 +790,9 @@ function pmpro_display_items_editor_row( $index, $item, $is_order ) {
 			<td class="pmpro_items_editor_num"><input type="text" size="8" name="<?php echo esc_attr( $name ); ?>[billing_amount]" value="<?php echo esc_attr( number_format( (float) $item->billing_amount, $decimals, '.', '' ) ); ?>" aria-label="<?php esc_attr_e( 'Then per period', 'paid-memberships-pro' ); ?>" /></td>
 		<?php } ?>
 		<td class="pmpro_items_editor_actions">
-			<button type="button" class="button-link pmpro_items_editor_fix" hidden></button>
+			<?php if ( $is_order ) { ?>
+				<button type="button" class="button-link pmpro_items_editor_fix" hidden></button>
+			<?php } ?>
 			<button type="button" class="button-link pmpro_items_editor_remove" aria-label="<?php esc_attr_e( 'Remove item', 'paid-memberships-pro' ); ?>">&times;</button>
 		</td>
 	</tr>

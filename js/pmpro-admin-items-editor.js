@@ -1,8 +1,8 @@
 /**
  * The item editor on the edit order and edit subscription pages.
  *
- * Shows whether the items add up to the order's subtotal, or to what the gateway bills for a subscription, and
- * offers to fix the difference by changing one item. An order can also set its subtotal to the items' total.
+ * Shows the items' total. For an order, shows whether the items add up to the order's subtotal and offers to fix
+ * the difference by changing one item, or by setting the subtotal to the items' total.
  */
 jQuery( document ).ready( function( $ ) {
 	var currency = pmproItemsEditor.currency;
@@ -42,20 +42,20 @@ jQuery( document ).ready( function( $ ) {
 		var $edited = $editor.find( '.pmpro_items_editor_edited' );
 		var nextIndex = $editor.find( '.pmpro_items_editor_row' ).length;
 
-		function target() {
-			return isOrder ? parseAmount( $subtotal.val() ) : parseFloat( $editor.data( 'target-amount' ) );
-		}
-
 		function update() {
 			var total = 0;
 			$editor.find( '.pmpro_items_editor_amount' ).each( function() {
 				total += parseAmount( $( this ).val() );
 			} );
 			total = round( total );
-			var difference = round( target() - total );
-			var what = isOrder ? text.order_target : text.sub_target;
-
 			$editor.find( '.pmpro_items_editor_total' ).text( formatPrice( total ) );
+
+			// A subscription's items aren't compared to what the gateway bills, since that may include tax.
+			if ( ! isOrder ) {
+				return;
+			}
+
+			var difference = round( parseAmount( $subtotal.val() ) - total );
 			$editor.toggleClass( 'pmpro_items_editor-off', 0 !== difference );
 
 			// Offer each item that can take the difference without turning a charge into a credit or the reverse.
@@ -72,18 +72,15 @@ jQuery( document ).ready( function( $ ) {
 
 			var message;
 			if ( 0 === difference ) {
-				message = text.matches.replace( '%s', what );
+				message = text.matches.replace( '%s', text.order_target );
 			} else {
-				message = ( difference < 0 ? text.more : text.less ).replace( '%1$s', formatPrice( Math.abs( difference ) ) ).replace( '%2$s', what ) + ' ' + ( isOrder ? text.order_hint : text.sub_hint );
+				message = ( difference < 0 ? text.more : text.less ).replace( '%1$s', formatPrice( Math.abs( difference ) ) ).replace( '%2$s', text.order_target ) + ' ' + text.order_hint;
 			}
 			$editor.find( '.pmpro_items_editor_message' ).text( message );
-
-			if ( isOrder ) {
-				$editor.find( '.pmpro_items_editor_set_target' )
-					.prop( 'hidden', 0 === difference )
-					.text( text.set_subtotal.replace( '%s', formatPrice( total ) ) )
-					.data( 'amount', total );
-			}
+			$editor.find( '.pmpro_items_editor_set_target' )
+				.prop( 'hidden', 0 === difference )
+				.text( text.set_subtotal.replace( '%s', formatPrice( total ) ) )
+				.data( 'amount', total );
 		}
 
 		function edited() {

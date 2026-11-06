@@ -1094,7 +1094,7 @@ class PMPro_Subscription {
 	 * They're copied from the order's recurring items when a checkout creates the subscription. Subscriptions
 	 * created another way, or before subscriptions had items, have none. The gateway bills the subscription's
 	 * billing amount, so the items may not add up to it, such as after the price was changed at the gateway.
-	 * Renewal orders only list the items while they add up to what was billed.
+	 * Renewal orders list the items either way.
 	 *
 	 * The items are copies. To change them, pass the changed items to set_items() and save the subscription.
 	 *
@@ -1134,18 +1134,6 @@ class PMPro_Subscription {
 	public function set_items( $items ) {
 		$this->items_cache   = array_map( array( $this, 'get_item_object' ), array_map( 'pmpro_normalize_order_item', array_values( (array) $items ) ) );
 		$this->items_changed = true;
-	}
-
-	/**
-	 * Check whether the subscription's items add up to its billing amount.
-	 *
-	 * @since TBD
-	 *
-	 * @return bool False if there are no items.
-	 */
-	public function items_match_billing_amount() {
-		$items = $this->get_items();
-		return ! empty( $items ) && abs( pmpro_get_items_total( $items, 'billing_amount' ) - (float) $this->billing_amount ) < 0.005;
 	}
 
 	/**

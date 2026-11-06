@@ -83,9 +83,8 @@ $membership_level_id = empty( $_REQUEST['membership_level_id'] ) ? $subscription
 				$subscription->get_items(),
 				'subscription',
 				array(
-					'billing_amount' => $subscription->get_billing_amount(),
-					'gateway'        => pmpro_get_gateway_nicename( $subscription->get_gateway() ),
-					'cycle_period'   => $subscription->get_cycle_period(),
+					'gateway'      => pmpro_get_gateway_nicename( $subscription->get_gateway() ),
+					'cycle_period' => $subscription->get_cycle_period(),
 				)
 			);
 			?>

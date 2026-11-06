@@ -88,11 +88,6 @@ $sub_membership_level_id = $subscription->get_membership_level_id();
 								$item_texts[] = pmpro_get_order_item_label( $subscription_item ) . ': ' . pmpro_format_order_item_price( $subscription_item->billing_amount );
 							}
 							echo esc_html( implode( ', ', $item_texts ) );
-							if ( ! $subscription->items_match_billing_amount() ) {
-								?>
-								<p class="description"><?php esc_html_e( 'The items don\'t add up to the billed amount, so renewal orders list one item.', 'paid-memberships-pro' ); ?></p>
-								<?php
-							}
 							?>
 						</li>
 						<?php
