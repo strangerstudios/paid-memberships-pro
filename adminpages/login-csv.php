@@ -105,8 +105,6 @@ if ( ! empty( $start ) && ! empty( $limit ) ) {
 
 		$sqlQuery = apply_filters( 'pmpro_visits_views_logins_csv_sql', $sqlQuery );
 
-		$theusers = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- search term is esc_sql()'d inside quotes, level and limits are cast to int.
-
 $headers   = array();
 $headers[] = 'Content-Type: text/csv';
 $headers[] = 'Cache-Control: max-age=0, no-cache, no-store';
@@ -234,11 +232,25 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 
 	// get the user list we should process
 	$user_list = array_slice( $user_ids, $i_start, $max_record_loops );
+	$i_start  += $max_record_loops;
 
 	if ( PMPRO_BENCHMARK ) {
 		$pre_data_time   = microtime( true );
 		$pre_data_memory = memory_get_usage( true );
 	}
+
+	// Only load the rows for the users in this batch.
+	$batch_sql  = "SELECT u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
+	$batch_sql .= ' WHERE u.ID IN (' . implode( ',', array_map( 'intval', $user_list ) ) . ') ';
+
+	if ( 'all' === $l ) {
+		$batch_sql .= " AND mu.membership_id > 0  AND mu.status = 'active' ";
+	} elseif ( $l ) {
+		$batch_sql .= " AND mu.membership_id = '" . esc_sql( $l ) . "' ";
+	}
+	$batch_sql .= 'GROUP BY u.ID ORDER BY user_registered DESC';
+
+	$theusers = $wpdb->get_results( $batch_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- user IDs are cast to int and the level is esc_sql()'d inside quotes.
 
 	foreach ( $theusers as $user ) {
 		$csvoutput = array();
@@ -308,6 +320,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		error_log( 'PMPRO_BENCHMARK - Peak memory usage: ' . number_format( $memory_processing_data, false, '.', ',' ) . ' bytes' );
 	}
 	$user_list = null;
+	$theusers  = null;
 	wp_cache_flush();
 }
 // If this was run via Toolkit API, we don't have to output the CSV file.
