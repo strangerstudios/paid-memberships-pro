@@ -27,13 +27,21 @@ Fixes #
 
 ### Testing done
 
-<!-- What you ran and what happened. Say plainly what you did not test. -->
+<!-- What you ran and what happened. For a bug fix, show the reported behavior before and after the change. Say plainly what you did not test. -->
 
 ### Risk
 
 <!-- Anything that could break for existing sites: a changed filter, a database change, a different default. Write "None known" if so. -->
 
+### AI assistance
+
+<!-- If AI generated code or text in this pull request, check the box and name every model or tool. A human must have reviewed the complete change. -->
+
+- [ ] This pull request includes AI-generated code or text. Model/tool:
+
 ### Checklist
+
+<!-- Tick only what you actually verified. If an item doesn't apply, say why next to it. -->
 
 - [ ] There is a linked issue, and no other open pull request covers it.
 - [ ] This pull request covers one issue and has no unrelated formatting changes.

@@ -60,10 +60,16 @@ Opening a pull request loads [`PULL_REQUEST_TEMPLATE.MD`](PULL_REQUEST_TEMPLATE.
 3. **Commit message:** the message to use when the pull request is merged, written as described [above](#commit-messages-say-why-not-what).
 4. **Why:** the bug, constraint or decision behind the change, and `Fixes #123`.
 5. **How to test:** numbered steps a reviewer can follow on a WordPress site.
-6. **Testing done:** what you ran and what happened. Say plainly what you did not test.
+6. **Testing done:** what you ran and what happened. For a bug fix, show that the change fixes the reported behavior: the reproduction before and after, or a test that fails without the fix. Say plainly what you did not test.
 7. **Risk:** anything that could break for existing sites, such as a changed filter, a database change or a different default.
+8. **AI assistance:** check the box and name every model or tool that generated code or text.
+9. **Checklist:** tick only what you actually verified, and say why next to any item that doesn't apply.
 
-Describe why the change is needed. Do not list the diff file by file; name a file only when the diff doesn't make its role obvious. Complete the checklist honestly.
+The GitHub website loads the template for you; `gh pr create` and the API do not, so copy the template into the body yourself. Describe why the change is needed. Do not list the diff file by file; name a file only when the diff doesn't make its role obvious.
+
+### AI-assisted pull requests
+
+AI-assisted contributions are welcome and held to the same standard as any other. The person submitting is responsible for the change: they review the complete diff, test it, and authorize that specific pull request. Agents that pick their own work and open pull requests on their own are not accepted. [`AGENTS.md`](../AGENTS.md) holds the rules for agents.
 
 ## Changelog entries follow the house format
 
@@ -92,7 +98,7 @@ BUG FIX: Fixed the Logins report CSV export writing every user once per batch on
 ## A pull request is closed without review when
 
 * It has no linked issue.
-* It skips or reorders sections of the pull request template, or leaves them empty.
+* It skips or reorders sections of the pull request template, or leaves them empty, including the AI assistance section.
 * The changelog entry is missing or doesn't follow the house format.
 * A commit message only says what changed, or uses a closing keyword.
 * It covers more than one issue, or includes unrelated formatting changes.
