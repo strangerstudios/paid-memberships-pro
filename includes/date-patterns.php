@@ -335,6 +335,97 @@ function pmpro_get_set_expiration_date( $level_id, $code_id = null ) {
 }
 
 /**
+ * Check whether a date pattern is a fixed date that has already passed.
+ *
+ * Patterns with Y or M tokens always resolve to their next occurrence, so only
+ * a fixed date such as "2022-12-31" can pass.
+ *
+ * @since TBD
+ *
+ * @param string $date_pattern The date pattern to check.
+ * @return bool True if the pattern resolves to a date before today.
+ */
+function pmpro_date_pattern_has_passed( $date_pattern ) {
+	$resolved_date = pmpro_resolve_date_pattern( $date_pattern );
+	return ! empty( $resolved_date ) && $resolved_date < date( 'Y-m-d', current_time( 'timestamp' ) );
+}
+
+/**
+ * Get the checkout error for a level whose subscription delay or set expiration date is a fixed date that has already passed.
+ *
+ * Checkout can't give the member a first payment date or expiration date in the past.
+ *
+ * @since TBD
+ *
+ * @param object $level The level object. When code_id is set, the discount code's settings are checked.
+ * @return string The error message, or an empty string if neither date has passed.
+ */
+function pmpro_get_level_passed_date_error( $level ) {
+	if ( empty( $level->id ) ) {
+		return '';
+	}
+
+	$code_id = ! empty( $level->code_id ) ? $level->code_id : null;
+
+	// Resolve the set expiration date the same way checkout does, including filters.
+	$set_expiration_date      = pmpro_get_set_expiration_date( $level->id, $code_id );
+	$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
+	if ( ! empty( $resolved_expiration_date ) && $resolved_expiration_date < date( 'Y-m-d', current_time( 'timestamp' ) ) ) {
+		return __( 'The expiration date for this membership level is in the past, so checkout cannot be completed. Please contact the site owner.', 'paid-memberships-pro' );
+	}
+
+	// Subscription delays only apply to recurring levels, and a number of days can't pass.
+	if ( pmpro_isLevelRecurring( $level ) && pmpro_date_pattern_has_passed( pmpro_get_subscription_delay( $level->id, $code_id ) ) ) {
+		return __( 'The subscription delay date for this membership level is in the past, so checkout cannot be completed. Please contact the site owner.', 'paid-memberships-pro' );
+	}
+
+	return '';
+}
+
+/**
+ * Halt checkout if the level's subscription delay or set expiration date has already passed.
+ *
+ * @since TBD
+ *
+ * @param object|null $level The level being checked out.
+ */
+function pmpro_checkout_check_passed_dates( $level ) {
+	$error = pmpro_get_level_passed_date_error( $level );
+	if ( ! empty( $error ) ) {
+		pmpro_setMessage( $error, 'pmpro_error' );
+	}
+}
+add_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', 'pmpro_checkout_check_passed_dates' );
+
+/**
+ * Reject a custom pricing discount code whose own subscription delay or set expiration date has already passed.
+ *
+ * Percentage and fixed amount codes use the level's dates, which are checked at checkout.
+ *
+ * @since TBD
+ *
+ * @param bool|string $okay     True if the code is okay, or false or an error message if not.
+ * @param object      $dbcode   The discount code row.
+ * @param int|string  $level_id The level ID, or a comma-separated list of level IDs, being checked out.
+ * @return bool|string The error message if a date has passed, otherwise $okay.
+ */
+function pmpro_check_discount_code_passed_dates( $okay, $dbcode, $level_id ) {
+	if ( true !== $okay || empty( $dbcode->id ) || empty( $level_id ) || pmpro_discount_code_uses_level_pricing( $dbcode->id ) ) {
+		return $okay;
+	}
+
+	foreach ( explode( ',', $level_id ) as $code_level_id ) {
+		$error = pmpro_get_level_passed_date_error( pmpro_get_discounted_level_for_code( intval( $code_level_id ), $dbcode->code ) );
+		if ( ! empty( $error ) ) {
+			return $error;
+		}
+	}
+
+	return $okay;
+}
+add_filter( 'pmpro_check_discount_code', 'pmpro_check_discount_code_passed_dates', 10, 3 );
+
+/**
  * Render a date pattern builder.
  *
  * Used on the Edit Level and Edit Discount Code pages. Outputs a mode select
@@ -429,6 +520,11 @@ function pmpro_render_date_pattern_builder( $field_prefix, $existing_value ) {
 				?>
 				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/membership-levels/date-patterns/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=date-patterns' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn more about date patterns', 'paid-memberships-pro' ); ?></a>
 			</p>
+			<?php if ( pmpro_date_pattern_has_passed( $custom_pattern ) ) { ?>
+				<div class="notice notice-alt notice-error inline">
+					<p><?php esc_html_e( 'This date has already passed. Checkout will fail until you set a new date.', 'paid-memberships-pro' ); ?></p>
+				</div>
+			<?php } ?>
 		</span>
 	</div>
 	<?php
