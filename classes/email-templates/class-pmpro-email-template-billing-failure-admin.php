@@ -190,7 +190,7 @@ class PMPro_Email_Template_Billing_Failure_Admin extends PMPro_Email_Template {
 			'accountnumber' => hideCardNumber( $order->accountnumber ),
 			'expirationmonth' => $order->expirationmonth,
 			'expirationyear' => $order->expirationyear,
-			'order_id' => $order->code,
+			'order_id' => ! empty( $order->id ) ? $order->code : '',
 		);
 	}
 
