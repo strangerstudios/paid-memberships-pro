@@ -596,7 +596,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 
 				//move file
 				$new_filename = $pmprorh_dir . basename( sanitize_file_name( $file['name'] ) );
-				move_uploaded_file( sanitize_text_field( $$file['tmp_name'] ), $new_filename );
+				move_uploaded_file( sanitize_text_field( $file['tmp_name'] ), $new_filename );
 
 				//update location of file
 				$_FILES[$field->name]['tmp_name'] = $new_filename;
