@@ -1,32 +1,42 @@
-### All Submissions:
+<!--
+Every section below is required, in this order. Pull requests that skip, reorder or empty a section are closed without review.
+Rules and examples: https://github.com/strangerstudios/paid-memberships-pro/blob/dev/.github/CONTRIBUTING.md
+-->
 
-* [ ] Have you followed the [Contributing guideline](https://github.com/strangerstudios/paid-memberships-pro/blob/master/.github/CONTRIBUTING.md)?
-* [ ] Does your code follow the [WordPress' coding standards](https://make.wordpress.org/core/handbook/best-practices/coding-standards/)?
-* [ ] Have you checked to ensure there aren't other open [Pull Requests](https://github.com/strangerstudios/paid-memberships-pro/pulls) for the same update/change?
+<!-- One sentence: what this pull request does. -->
 
-<!-- Mark completed items with an [x] -->
+### Changelog entry
 
-<!-- You can erase any parts of this template not applicable to your Pull Request. -->
+<!-- One line: LABEL: complete sentence. #PR-or-issue (@github_username). Labels: SECURITY, FEATURE, ENHANCEMENT, BUG FIX/ENHANCEMENT, BUG FIX, REFACTOR, DEPRECATED. -->
 
-### Changes proposed in this Pull Request:
+### Commit message
 
-<!-- Describe the changes made to this Pull Request and the reason for such changes. -->
+<!-- The message to merge with. Subject: why the change had to happen, under ~72 characters. Optional body: evidence, rejected alternative. Use "Refs #123", never Fixes/Closes/Resolves. -->
 
-Resolves XXX.
+### Why
 
-### How to test the changes in this Pull Request:
+<!-- The bug, constraint or decision behind the change. Don't list the diff file by file. -->
+
+Fixes #
+
+### How to test
 
 1.
 2.
 3.
 
-### Other information:
+### Testing done
 
-* [ ] Have you added an explanation of what your changes do and why you'd like us to include them?
-* [ ] Have you successfully run tests with your changes locally?
+<!-- What you ran and what happened. Say plainly what you did not test. -->
 
-<!-- Mark completed items with an [x] -->
+### Risk
 
-### Changelog entry
+<!-- Anything that could break for existing sites: a changed filter, a database change, a different default. Write "None known" if so. -->
 
-> Enter a summary of all changes on this Pull Request. This will appear in the changelog if accepted.
+### Checklist
+
+- [ ] There is a linked issue, and no other open pull request covers it.
+- [ ] This pull request covers one issue and has no unrelated formatting changes.
+- [ ] It targets `dev` (bug fix) or the milestoned version branch (feature).
+- [ ] New code follows the [WordPress Coding Standards](https://make.wordpress.org/core/handbook/best-practices/coding-standards/) and has phpDoc.
+- [ ] Every section above is filled in.
