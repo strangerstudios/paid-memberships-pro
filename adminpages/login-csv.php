@@ -240,10 +240,12 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	// Load this batch from the (possibly filtered) report query, so a filter's columns and order still apply.
+	// It runs as a derived table, so a filter must return unique column names.
+	$report_sql   = rtrim( $sqlQuery, "; \t\r\n" );
 	$user_id_list = implode( ',', array_map( 'intval', $user_list ) );
-	$batch_sql    = "SELECT t.* FROM ( $sqlQuery ) t WHERE t.ID IN ( $user_id_list ) ORDER BY FIELD( t.ID, $user_id_list )";
+	$batch_sql    = "SELECT t.* FROM ( $report_sql ) t WHERE t.ID IN ( $user_id_list ) ORDER BY FIELD( t.ID, $user_id_list )";
 
-	$theusers = $wpdb->get_results( $batch_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- user IDs are cast to int and the report query is built and escaped above.
+	$theusers = $wpdb->get_results( $batch_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- user IDs are cast to int, the rest is the filtered report SQL, the same trust level as the filter itself.
 
 	foreach ( $theusers as $user ) {
 		$csvoutput = array();
