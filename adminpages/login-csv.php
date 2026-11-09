@@ -100,7 +100,7 @@ if ( $s ) {
 }
 
 if ( ! empty( $start ) && ! empty( $limit ) ) {
-	$sqlQuery .= "LIMIT " . (int) $start . "," . (int) $limit;
+	$sqlQuery .= " LIMIT " . (int) $start . "," . (int) $limit;
 }
 
 		$sqlQuery = apply_filters( 'pmpro_visits_views_logins_csv_sql', $sqlQuery );
@@ -239,18 +239,11 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		$pre_data_memory = memory_get_usage( true );
 	}
 
-	// Only load the rows for the users in this batch.
-	$batch_sql  = "SELECT u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
-	$batch_sql .= ' WHERE u.ID IN (' . implode( ',', array_map( 'intval', $user_list ) ) . ') ';
+	// Load this batch from the (possibly filtered) report query, so a filter's columns and order still apply.
+	$user_id_list = implode( ',', array_map( 'intval', $user_list ) );
+	$batch_sql    = "SELECT t.* FROM ( $sqlQuery ) t WHERE t.ID IN ( $user_id_list ) ORDER BY FIELD( t.ID, $user_id_list )";
 
-	if ( 'all' === $l ) {
-		$batch_sql .= " AND mu.membership_id > 0  AND mu.status = 'active' ";
-	} elseif ( $l ) {
-		$batch_sql .= " AND mu.membership_id = '" . esc_sql( $l ) . "' ";
-	}
-	$batch_sql .= 'GROUP BY u.ID ORDER BY user_registered DESC';
-
-	$theusers = $wpdb->get_results( $batch_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- user IDs are cast to int and the level is esc_sql()'d inside quotes.
+	$theusers = $wpdb->get_results( $batch_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- user IDs are cast to int and the report query is built and escaped above.
 
 	foreach ( $theusers as $user ) {
 		$csvoutput = array();
