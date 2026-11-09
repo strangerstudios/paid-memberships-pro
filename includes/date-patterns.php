@@ -406,7 +406,7 @@ add_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', 'pmpro_check
  *
  * @param bool|string $okay     True if the code is okay, or false or an error message if not.
  * @param object      $dbcode   The discount code row.
- * @param int|string  $level_id The level ID, or a comma-separated list of level IDs, being checked out.
+ * @param int|string|array $level_id The level ID, or a comma-separated list or array of level IDs, being checked out.
  * @return bool|string The error message if a date has passed, otherwise $okay.
  */
 function pmpro_check_discount_code_passed_dates( $okay, $dbcode, $level_id ) {
@@ -414,8 +414,10 @@ function pmpro_check_discount_code_passed_dates( $okay, $dbcode, $level_id ) {
 		return $okay;
 	}
 
-	foreach ( explode( ',', $level_id ) as $code_level_id ) {
-		$error = pmpro_get_level_passed_date_error( pmpro_get_discounted_level_for_code( intval( $code_level_id ), $dbcode->code ) );
+	// pmpro_checkDiscountCode() only flattens an array of level IDs when it checks the code's levels.
+	$level_ids = is_array( $level_id ) ? $level_id : explode( ',', (string) $level_id );
+	foreach ( array_map( 'intval', $level_ids ) as $code_level_id ) {
+		$error = pmpro_get_level_passed_date_error( pmpro_get_discounted_level_for_code( $code_level_id, $dbcode ) );
 		if ( ! empty( $error ) ) {
 			return $error;
 		}
