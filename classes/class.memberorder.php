@@ -256,6 +256,33 @@
 		private $discount_code_id = null;
 
 		/**
+		 * The order's items. Null until get_items() loads them or set_items() sets them.
+		 *
+		 * @since TBD
+		 *
+		 * @var object[]|null
+		 */
+		private $items_cache = null;
+
+		/**
+		 * Whether the items were set with set_items() and still need to be saved.
+		 *
+		 * @since TBD
+		 *
+		 * @var bool
+		 */
+		private $items_cache_changed = false;
+
+		/**
+		 * Whether the items set with set_items() are saved with their amounts as given.
+		 *
+		 * @since TBD
+		 *
+		 * @var bool
+		 */
+		private $items_as_given = false;
+
+		/**
 		 * Defines an array of optionally used properties
 		 *
 		 * @since 2.9
@@ -730,6 +757,12 @@
 
 			if($dbobj)
 			{
+				// Loading a different order. Forget the items of the previous one.
+				if ( (int) $dbobj->id !== (int) $this->id ) {
+					$this->items_cache         = null;
+					$this->items_cache_changed = false;
+				}
+
 				$this->id = $dbobj->id;
 				$this->code = $dbobj->code;
 				$this->session_id = $dbobj->session_id;
@@ -1205,6 +1238,13 @@
 		 *
 		 */
 		function getMembershipLevelAtCheckout($force = false) {			
+			// A saved order without a membership level has no checkout level. Without a level ID, pmpro_getLevelAtCheckout()
+			// falls back to the level in the request or the default level.
+			if ( ! empty( $this->id ) && empty( $this->membership_id ) ) {
+				$this->membership_level = null;
+				return null;
+			}
+
 			if ( empty( $this->membership_level ) || $force ) {
 				$this->membership_level = pmpro_getLevelAtCheckout( empty( $this->membership_id ) ? null : $this->membership_id );
 			}
@@ -1470,6 +1510,18 @@
 					$this->updateDiscountCode( $this->discount_code_id );
 				}
 
+				// A new order for a subscription, such as a renewal, lists the subscription's items.
+				if ( 'pmpro_added_order' === $after_action && ! $this->items_cache_changed ) {
+					$this->set_items_from_subscription();
+				}
+
+				// Save the items if they were set. The items table only exists once the database is updated. If they can't be
+				// saved, note it on the order, since they may be the only record of what it bought.
+				if ( $this->items_cache_changed && version_compare( get_option( 'pmpro_db_version', 0 ), '4.0', '>=' ) && ! $this->save_items() ) {
+					$this->add_order_note( __( 'The items of this order could not be saved.', 'paid-memberships-pro' ) );
+					$wpdb->update( $wpdb->pmpro_membership_orders, array( 'notes' => $this->notes ), array( 'id' => $this->id ), array( '%s' ), array( '%d' ) );
+				}
+
 				do_action($after_action, $this);
 
 				// Create a subscription if we need to.
@@ -1644,6 +1696,9 @@
 				$wpdb->delete( $wpdb->pmpro_membership_ordermeta, array( 'pmpro_membership_order_id' => $this->id ), array( '%d' ) );
 				wp_cache_delete( $this->id, 'pmpro_membership_order_meta' );
 
+				// Delete the order's items too.
+				$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'order_id' => $this->id ), array( '%d' ) );
+
 				return true;
 			}
 			else
@@ -1750,8 +1805,257 @@
 				'next_payment_date'           => pmpro_calculate_profile_start_date( $this, 'Y-m-d H:i:s' ),
 			);
 
+			// The subscription bills for the order's recurring items, such as the membership and its seats. The
+			// membership item is kept even at $0, such as a free base level with paid seats.
+			$recurring_items = array_filter(
+				$this->get_items(),
+				function ( $item ) {
+					return ! empty( $item->id ) && ( 0 != $item->billing_amount || 'membership' === $item->item_type );
+				}
+			);
+			if ( ! empty( $recurring_items ) ) {
+				$create_subscription_args['items'] = array_map(
+					function ( $item ) {
+						return array(
+							'item_type'      => $item->item_type,
+							'object_id'      => $item->object_id,
+							'name'           => $item->name,
+							'quantity'       => $item->quantity,
+							'billing_amount' => $item->billing_amount,
+						);
+					},
+					array_values( $recurring_items )
+				);
+			}
+
 			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
 			return ! empty( $new_subscription ) ? $new_subscription : null;
+		}
+
+		/**
+		 * Get the items of this order.
+		 *
+		 * Each item is an object with the columns of the order items table: id, order_id, item_type,
+		 * object_id, name, quantity, subtotal and billing_amount.
+		 *
+		 * - Items set with set_items() are returned until the order is saved. They have id 0.
+		 * - Orders without items (orders saved before items existed, and renewals of subscriptions without items)
+		 *   read as one membership item built from the order, with id 0. Orders without items or a level have no items.
+		 *
+		 * The items are copies. To change them, pass the changed items to set_items() and save the order.
+		 *
+		 * @since TBD
+		 *
+		 * @return object[] The items.
+		 */
+		public function get_items() {
+			global $wpdb;
+
+			if ( null === $this->items_cache ) {
+				// A new order, or a site whose database isn't updated yet, has no saved items.
+				$rows        = ( empty( $this->id ) || version_compare( get_option( 'pmpro_db_version', 0 ), '4.0', '<' ) ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
+				$this->items_cache = array_map( array( $this, 'get_item_object' ), $rows );
+			}
+
+			if ( ! empty( $this->items_cache ) ) {
+				return array_map(
+					function ( $line ) {
+						return clone $line;
+					},
+					$this->items_cache
+				);
+			}
+
+			if ( empty( $this->membership_id ) ) {
+				return array();
+			}
+
+			$level        = pmpro_getLevel( $this->membership_id );
+			$subscription = empty( $this->subscription_transaction_id ) ? null : PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
+			return array(
+				$this->get_item_object(
+					array(
+						'item_type'      => 'membership',
+						'object_id'      => $this->membership_id,
+						'name'           => empty( $level->name ) ? '' : $level->name,
+						'subtotal'       => $this->subtotal,
+						'billing_amount' => empty( $subscription ) ? 0 : $subscription->get_billing_amount(),
+					)
+				),
+			);
+		}
+
+		/**
+		 * Describe what this order is for from its items, such as "Donation, 2 × Gift".
+		 *
+		 * Gateways use this where they would show the level name, such as in the payment description.
+		 *
+		 * @since TBD
+		 *
+		 * @return string The item names, or "Order #CODE" if the order has no items.
+		 */
+		public function get_items_description() {
+			$lines = $this->get_items();
+
+			$names = array();
+			foreach ( $lines as $line ) {
+				// Discounts and credits aren't something the order bought.
+				if ( $line->subtotal < 0 ) {
+					continue;
+				}
+				$names[] = pmpro_get_order_item_label( $line );
+			}
+
+			/* translators: %s: order code. */
+			return empty( $names ) ? sprintf( __( 'Order #%s', 'paid-memberships-pro' ), $this->code ) : implode( ', ', $names );
+		}
+
+		/**
+		 * Replace the items of this order. They are saved the next time the order is saved.
+		 *
+		 * Takes checkout items from pmpro_get_checkout_items(), or items from get_items() to change them. Pass
+		 * an empty array to remove the order's items. When the items are saved, the membership item is saved as
+		 * the order subtotal minus the other items, unless $as_given is true, such as for items an admin edited.
+		 * Changing the items doesn't charge or refund anything.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $items    The items, as arrays or objects. See pmpro_normalize_order_item() for their shape.
+		 * @param bool  $as_given Save every item's amounts as given, even if they don't add up to the subtotal.
+		 */
+		public function set_items( $items, $as_given = false ) {
+			$this->items_cache         = array_map( array( $this, 'get_item_object' ), array_map( 'pmpro_normalize_order_item', array_values( (array) $items ) ) );
+			$this->items_cache_changed = true;
+			$this->items_as_given      = (bool) $as_given;
+		}
+
+		/**
+		 * Set this order's items from its subscription's items.
+		 *
+		 * Used for new orders that a gateway creates for a subscription, such as renewals. The items are saved
+		 * as the subscription has them, even if they don't add up to the order's subtotal, such as during a trial
+		 * or after the price was changed at the gateway. The item editor shows the difference.
+		 *
+		 * Gateways such as Stripe report tax that PMPro added to the price as part of the subtotal. Tax Add Ons
+		 * such as VAT Tax split it out on pmpro_added_order, after the items are saved.
+		 *
+		 * @since TBD
+		 */
+		private function set_items_from_subscription() {
+			if ( empty( $this->subscription_transaction_id ) || empty( $this->membership_id ) || empty( $this->gateway ) ) {
+				return;
+			}
+
+			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
+			if ( empty( $subscription ) ) {
+				return;
+			}
+
+			$items = $subscription->get_items();
+			if ( empty( $items ) ) {
+				return;
+			}
+
+			// Each item was billed its recurring amount. The membership item is for the order's level, in case an
+			// admin moved the subscription to another level after its items were saved.
+			$level = pmpro_getLevel( $this->membership_id );
+			foreach ( $items as $item ) {
+				$item->id       = 0;
+				$item->subtotal = $item->billing_amount;
+				if ( 'membership' === $item->item_type && (int) $item->object_id !== (int) $this->membership_id ) {
+					$item->object_id = (int) $this->membership_id;
+					if ( ! empty( $level ) ) {
+						$item->name = $level->name;
+					}
+				}
+			}
+			$this->set_items( $items, true );
+		}
+
+		/**
+		 * Build an item object for this order in the shape that get_items() returns.
+		 *
+		 * @since TBD
+		 *
+		 * @param array|object $item A saved item or a checkout item.
+		 * @return object The item.
+		 */
+		private function get_item_object( $item ) {
+			$item = (array) $item;
+			return (object) array(
+				'id'             => empty( $item['id'] ) ? 0 : (int) $item['id'],
+				'order_id'       => (int) $this->id,
+				'item_type'      => (string) $item['item_type'],
+				'object_id'      => (int) $item['object_id'],
+				'name'           => (string) $item['name'],
+				'quantity'       => isset( $item['quantity'] ) ? (int) $item['quantity'] : 1,
+				'subtotal'       => pmpro_round_price( (float) $item['subtotal'] ),
+				'billing_amount' => pmpro_round_price( (float) $item['billing_amount'] ),
+			);
+		}
+
+		/**
+		 * Save the items set with set_items(), replacing the order's saved items.
+		 *
+		 * The membership item is saved as the order subtotal minus the other items. The new items are saved
+		 * before the old ones are deleted, so a failed save keeps the old items.
+		 *
+		 * @since TBD
+		 *
+		 * @return bool True if the items were saved.
+		 */
+		private function save_items() {
+			global $wpdb;
+
+			if ( empty( $this->id ) ) {
+				return false;
+			}
+
+			$old_ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d", $this->id ) );
+
+			$others = 0;
+			foreach ( $this->items_cache as $item ) {
+				if ( 'membership' !== $item->item_type ) {
+					$others += $item->subtotal;
+				}
+			}
+
+			$new_ids = array();
+			foreach ( $this->items_cache as $item ) {
+				$inserted = $wpdb->insert(
+					$wpdb->pmpro_membership_order_items,
+					array(
+						'order_id'       => $this->id,
+						'item_type'      => $item->item_type,
+						'object_id'      => $item->object_id,
+						'name'           => $item->name,
+						'quantity'       => $item->quantity,
+						'subtotal'       => ( 'membership' === $item->item_type && ! $this->items_as_given ) ? max( 0, pmpro_round_price( (float) $this->subtotal - $others ) ) : $item->subtotal,
+						'billing_amount' => $item->billing_amount,
+					),
+					array( '%d', '%s', '%d', '%s', '%d', '%f', '%f' )
+				);
+
+				// If an item can't be saved, remove the new items and keep the old ones.
+				if ( false === $inserted ) {
+					foreach ( $new_ids as $new_id ) {
+						$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'id' => $new_id ), array( '%d' ) );
+					}
+					return false;
+				}
+
+				$new_ids[] = (int) $wpdb->insert_id;
+			}
+
+			foreach ( $old_ids as $old_id ) {
+				$wpdb->delete( $wpdb->pmpro_membership_order_items, array( 'id' => $old_id ), array( '%d' ) );
+			}
+
+			// Read the saved items next time, with their IDs.
+			$this->items_cache         = null;
+			$this->items_cache_changed = false;
+			$this->items_as_given      = false;
+			return true;
 		}
 
 		/**

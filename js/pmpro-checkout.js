@@ -45,7 +45,7 @@ jQuery(document).ready(function(){
                 jQuery.ajax({
                     url: pmpro.ajaxurl, type:'GET',timeout: pmpro.ajax_timeout,
                     dataType: 'html',
-                    data: "action=applydiscountcode&code=" + code + "&pmpro_level=" + level_id + "&msgfield=pmpro_message",
+                    data: "action=applydiscountcode&code=" + code + "&pmpro_level=" + level_id + "&msgfield=pmpro_message" + ( jQuery('#pmpro_checkout_has_items').length ? "&pmpro_checkout_has_items=1" : "" ),
                     error: function(xml){
                         alert('Error applying discount code [1]');
 
@@ -256,6 +256,14 @@ function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	// We need the level, discount code, and any field with the pmpro_alter_price CSS class.
 	const checkoutFormData = jQuery( "#level, #pmpro_level, #discount_code, #pmpro_discount_code, #pmpro_form .pmpro_alter_price" ).serializeArray();
 
+	// The checkout form submits to the checkout URL, so also send its query string. Form fields win.
+	const formFieldNames = checkoutFormData.map( function( field ) { return field.name; } );
+	new URLSearchParams( window.location.search ).forEach( function( value, name ) {
+		if ( ! formFieldNames.includes( name ) ) {
+			checkoutFormData.push( { name: name, value: value } );
+		}
+	} );
+
 	// Double check to remove sensitive data from the array.
 	const sensitiveCheckoutRequestVars = pmpro.sensitiveCheckoutRequestVars;
 	for ( var i = 0; i < checkoutFormData.length; i++ ) {
@@ -269,3 +277,64 @@ function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	// Return form data as string.
 	return jQuery.param( checkoutFormData );
 }
+
+// Refresh the checkout's price from the checkout_level endpoint, such as when an Add On field changes an item or a
+// discount code is applied: the level cost text, the items and total, and whether payment is needed.
+// Add Ons can react with the pmpro_checkout_refreshed event, which passes the endpoint's response.
+var pmpro_checkout_items_request = 0;
+function pmpro_refresh_checkout_items() {
+	var request = ++pmpro_checkout_items_request;
+	jQuery.ajax({
+		url: pmpro.restUrl + 'pmpro/v1/checkout_level',
+		dataType: 'json',
+		data: pmpro_getCheckoutFormDataForCheckoutLevels(),
+		beforeSend: function( xhr ) {
+			// Price the checkout for the logged-in user, such as for Proration. Without the nonce, the REST API treats
+			// the request as logged out. The nonce is only sent when logged in, since a guest with an expired nonce
+			// (such as on a cached page) would be refused. A user created during this page load doesn't have a valid nonce yet.
+			if ( pmpro.restNonce && ! pmpro.update_nonce ) {
+				xhr.setRequestHeader( 'X-WP-Nonce', pmpro.restNonce );
+			}
+		},
+		success: function( data ) {
+			// Skip responses to older requests and responses without items.
+			if ( request !== pmpro_checkout_items_request || ! data || ! data.hasOwnProperty( 'checkout_items_html' ) ) {
+				return;
+			}
+
+			if ( jQuery( '#pmpro_checkout_items' ).length ) {
+				jQuery( '#pmpro_checkout_items' ).replaceWith( data.checkout_items_html );
+			} else {
+				jQuery( '#pmpro_level_cost' ).after( data.checkout_items_html );
+			}
+
+			// The level cost text. It includes the "code has been applied" message when a code applies.
+			jQuery( '#pmpro_level_cost' ).html( data.level_cost_html );
+
+			// Tell gateway JavaScript whether payment is needed (e.g. no Stripe when the checkout is free).
+			pmpro_require_billing = data.require_billing;
+
+			// Show or hide the billing fields as applying a discount code does. When the checkout has a choice of
+			// gateways, the Add On that offers the choice shows and hides them for the chosen gateway.
+			// Fields that the site hides with the pmpro_hide_billing_address_fields or pmpro_hide_payment_information_fields
+			// filter stay hidden.
+			if ( ! jQuery( '#pmpro_form input[name=gateway]' ).length ) {
+				var offsite_gateway = [ 'paypalexpress', 'paypalstandard' ].indexOf( pmpro.gateway ) > -1;
+				var show_fields = data.require_billing && ! offsite_gateway && 'check' !== pmpro.gateway;
+				jQuery( '#pmpro_billing_address_fields' ).toggle( show_fields && ! pmpro.hide_billing_address_fields );
+				jQuery( '#pmpro_payment_information_fields' ).toggle( show_fields && ! pmpro.hide_payment_information_fields );
+				if ( offsite_gateway ) {
+					jQuery( '#pmpro_paypalexpress_checkout' ).toggle( data.require_billing );
+					jQuery( '#pmpro_submit_span' ).toggle( ! data.require_billing );
+				}
+			}
+
+			jQuery( document ).trigger( 'pmpro_checkout_refreshed', [ data ] );
+		}
+	});
+}
+
+// Fields that change the price refresh it. Discount codes refresh it once applied.
+jQuery( document ).ready( function() {
+	jQuery( '#pmpro_form' ).on( 'change', '.pmpro_alter_price:not(#pmpro_discount_code, #pmpro_other_discount_code)', pmpro_refresh_checkout_items );
+} );

@@ -169,11 +169,11 @@ $subscription = $order->get_subscription();
 						$pmpro_price_parts['total'] = $total_part;
 					}
 
-					// If the level was deleted, set the name to the level ID.
+					// If the level was deleted, set the name to the level ID. An order without a level is described by its items.
 					if ( empty( $order->membership_level ) ) {
 						$order->membership_level = new stdClass();
 						/* translators: %s: level ID */
-						$order->membership_level->name = sprintf( __( 'Level ID %s', 'paid-memberships-pro' ), $order->membership_id );
+						$order->membership_level->name = empty( $order->membership_id ) ? $order->get_items_description() : sprintf( __( 'Level ID %s', 'paid-memberships-pro' ), $order->membership_id );
 					}
 				?>
 
@@ -203,7 +203,9 @@ $subscription = $order->get_subscription();
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
+						<?php
+						// Orders with more than one item list each item. Otherwise, show the order's single row.
+						if ( ! pmpro_display_order_item_rows( $order ) ) { ?><tr>
 							<th data-title="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>">
 								<?php
 									echo esc_html(
@@ -244,7 +246,7 @@ $subscription = $order->get_subscription();
 								?>
 							</td>
 						</tr>
-					</tbody>
+					<?php } ?></tbody>
 					<tfoot>
 						<?php
 							foreach ( $pmpro_price_parts as $pmpro_price_part ) { ?>

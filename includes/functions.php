@@ -50,6 +50,8 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
 	$wpdb->pmpro_email_log = $wpdb->prefix . 'pmpro_email_log';
+	$wpdb->pmpro_membership_order_items = $wpdb->prefix . 'pmpro_membership_order_items';
+	$wpdb->pmpro_subscription_items = $wpdb->prefix . 'pmpro_subscription_items';
 }
 pmpro_setDBTables();
 
@@ -343,6 +345,12 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	//Bail if no level
 	if ( empty( $level ) ) {
 		return '';
+	}
+
+	// If Add Ons added items at checkout, describe the membership's own price. The items are listed separately.
+	if ( isset( $level->checkout_items['membership'] ) && count( $level->checkout_items ) > 1 ) {
+		$membership_level = pmpro_get_level_with_membership_price( $level );
+		return pmpro_getLevelCost( $membership_level, $tags, $short );
 	}
 
 	// initial payment
@@ -2834,6 +2842,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
 
 	// Reset $pmpro_level global.
+	$previous_level = $pmpro_level;
 	$pmpro_level = null;
 
 	// Default to level passed in via URL.
@@ -2845,6 +2854,16 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	if ( empty( $level_id ) && ! empty( $_REQUEST['level'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, selects the level/discount code to show at checkout; the checkout submission is nonce-verified in preheaders/checkout.php.
 		// TODO: We may want to show a message here that the level parameter is deprecated.
 		$level_id = intval( $_REQUEST['level'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, selects the level/discount code to show at checkout; the checkout submission is nonce-verified in preheaders/checkout.php.
+	}
+
+	// If no level was requested but Add Ons added items to purchase, this checkout has no membership level.
+	// Checked before the page's default level, which is only a fallback like the lowest level below.
+	if ( empty( $level_id ) && ! empty( pmpro_build_checkout_items( null ) ) ) {
+		// Keep the placeholder level that the checkout template sets up while it renders.
+		if ( is_object( $previous_level ) && empty( $previous_level->id ) ) {
+			$pmpro_level = $previous_level;
+		}
+		return null;
 	}
 
 	// If we still don't have a level yet, check for a default level in the custom fields for this post.
@@ -2906,6 +2925,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			$pmpro_level->code_id       = $discount_code_id;
 			$pmpro_level->discount_code = $discount_code;
 			$pmpro_level                = apply_filters( 'pmpro_discount_code_level', $pmpro_level, $discount_code_id );
+
+			// Remember what a percentage or fixed code took off, so the checkout can list it as a discount item.
+			pmpro_set_checkout_level_code_discount( $pmpro_level, $discount_code_row );
 		} else {
 			// error with discount code, we want to halt checkout
 			pmpro_setMessage( $code_check[1], 'pmpro_error' );
@@ -2928,6 +2950,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
+
+	// Add the items being purchased. This must be the last step since the level is resolved more than once per request.
+	$pmpro_level = pmpro_set_up_checkout_items_for_level( $pmpro_level );
 
 	return $pmpro_level;
 }
@@ -4237,8 +4262,13 @@ function pmpro_is_checkout() {
  * Are we showing discount codes at checkout?
  */
 function pmpro_show_discount_code() {
-	global $wpdb;
+	global $wpdb, $pmpro_level;
 	static $show;
+
+	// Discount codes only change a level's price, so they aren't shown on a checkout without a membership level.
+	if ( pmpro_is_checkout() && pmpro_is_checkout_without_level( $pmpro_level ) ) {
+		return false;
+	}
 
 	// check DB if we haven't yet
 	if ( !isset( $show ) ) {

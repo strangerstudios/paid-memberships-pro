@@ -5164,3 +5164,51 @@ button.pmpro_report_th_closed:before {
 .pmpro-hidden {
 	display: none;
 }
+
+/* Item editor on the edit order and edit subscription pages. */
+.pmpro_items_editor {
+	max-width: 900px;
+}
+.pmpro_items_editor [hidden] {
+	display: none !important;
+}
+.pmpro_items_editor_table td {
+	vertical-align: middle;
+}
+.pmpro_items_editor_table .pmpro_items_editor_num,
+.pmpro_items_editor_table .pmpro_items_editor_actions {
+	text-align: end;
+	white-space: nowrap;
+	width: 1%;
+}
+.pmpro_items_editor_table .pmpro_items_editor_num input[type="text"] {
+	text-align: end;
+}
+.pmpro_items_editor_fix {
+	margin-inline-end: 8px;
+}
+.pmpro_items_editor .pmpro_items_editor_remove {
+	color: #8c8f94;
+	font-size: 18px;
+	line-height: 1;
+	text-decoration: none;
+}
+.pmpro_items_editor_footer {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+	margin: 8px 0;
+}
+.pmpro_items_editor_status {
+	align-items: center;
+	background: #edfaef;
+	border-inline-start: 4px solid #00a32a;
+	display: flex;
+	gap: 12px;
+	justify-content: space-between;
+	padding: 8px 12px;
+}
+.pmpro_items_editor-off .pmpro_items_editor_status {
+	background: #fcf9e8;
+	border-inline-start-color: #dba617;
+}

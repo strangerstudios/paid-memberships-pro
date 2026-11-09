@@ -22,6 +22,7 @@ if ( isset( $_POST['code'] ) ) {
 if ( isset( $_POST['user_id'] ) ) {
 	$order->user_id = intval( $_POST['user_id'] );
 }
+$original_membership_id = (int) $order->membership_id;
 if ( isset( $_POST['membership_id'] ) ) {
 	$order->membership_id = intval( $_POST['membership_id'] );
 }
@@ -114,6 +115,26 @@ if ( ! empty( $affiliates ) ) {
 // Set the discount code.
 if( isset( $_REQUEST['discount_code_id'] ) ) {
 	$order->discount_code_id = intval( $_REQUEST['discount_code_id'] );
+}
+
+// Save the items as the admin edited them. Editing them doesn't charge or refund anything.
+$edited_items = pmpro_get_items_from_editor( 'order' );
+if ( null !== $edited_items ) {
+	$order->set_items( $edited_items, true );
+} elseif ( (int) $order->membership_id !== $original_membership_id && pmpro_getLevel( $order->membership_id ) ) {
+	// The level changed but the items weren't edited. Point the saved membership item at the new level, keeping its prices.
+	$items        = $order->get_items();
+	$items_change = false;
+	foreach ( $items as $item ) {
+		if ( ! empty( $item->id ) && 'membership' === $item->item_type ) {
+			$item->object_id = $order->membership_id;
+			$item->name      = pmpro_getLevel( $order->membership_id )->name;
+			$items_change    = true;
+		}
+	}
+	if ( $items_change ) {
+		$order->set_items( $items, true );
+	}
 }
 
 // Save

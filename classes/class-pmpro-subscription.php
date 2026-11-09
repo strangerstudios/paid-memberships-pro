@@ -193,6 +193,24 @@ class PMPro_Subscription {
 	protected $modified = '';
 
 	/**
+	 * The subscription's items, loaded the first time they're needed or set with set_items().
+	 *
+	 * @since TBD
+	 *
+	 * @var object[]|null
+	 */
+	private $items_cache = null;
+
+	/**
+	 * Whether items were set with set_items() and need to be saved.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	private $items_changed = false;
+
+	/**
 	 * Create a new PMPro_Subscription object.
 	 *
 	 * @since 3.0
@@ -672,8 +690,13 @@ class PMPro_Subscription {
 			return null;
 		}
 
-		// Create the subscription.
+		// Create the subscription, with its items if they were passed.
+		$items = isset( $subscription_data['items'] ) ? $subscription_data['items'] : null;
+		unset( $subscription_data['items'] );
 		$new_subscription = new PMPro_Subscription( $subscription_data );
+		if ( null !== $items ) {
+			$new_subscription->set_items( $items );
+		}
 
 		// Save the subscription before syncing with gateway
 		// to avoid infinite loops if gateways load orders which
@@ -1066,6 +1089,129 @@ class PMPro_Subscription {
 	}
 
 	/**
+	 * Get the items this subscription bills for, such as the membership and its seats.
+	 *
+	 * They're copied from the order's recurring items when a checkout creates the subscription. Subscriptions
+	 * created another way, or before subscriptions had items, have none. The gateway bills the subscription's
+	 * billing amount, so the items may not add up to it, such as after the price was changed at the gateway.
+	 * Renewal orders list the items either way.
+	 *
+	 * The items are copies. To change them, pass the changed items to set_items() and save the subscription.
+	 *
+	 * @since TBD
+	 *
+	 * @return object[] Items with id, subscription_id, item_type, object_id, name, quantity and billing_amount.
+	 */
+	public function get_items() {
+		global $wpdb;
+
+		if ( null === $this->items_cache ) {
+			// A new subscription, or a site whose database isn't updated yet, has no saved items.
+			if ( empty( $this->id ) || version_compare( get_option( 'pmpro_db_version', 0 ), '4.0', '<' ) ) {
+				return array();
+			}
+			$rows              = $wpdb->get_results( $wpdb->prepare( "SELECT id, subscription_id, item_type, object_id, name, quantity, billing_amount FROM $wpdb->pmpro_subscription_items WHERE subscription_id = %d ORDER BY id ASC", $this->id ) );
+			$this->items_cache = array_map( array( $this, 'get_item_object' ), $rows );
+		}
+
+		return array_map(
+			function ( $item ) {
+				return clone $item;
+			},
+			$this->items_cache
+		);
+	}
+
+	/**
+	 * Replace the items of this subscription. They are saved the next time the subscription is saved.
+	 *
+	 * Changing the items doesn't change what the gateway bills or any Add On data.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $items The items, as arrays or objects. See pmpro_normalize_order_item() for their shape.
+	 */
+	public function set_items( $items ) {
+		$this->items_cache   = array_map( array( $this, 'get_item_object' ), array_map( 'pmpro_normalize_order_item', array_values( (array) $items ) ) );
+		$this->items_changed = true;
+	}
+
+	/**
+	 * Build an item object for this subscription in the shape that get_items() returns.
+	 *
+	 * @since TBD
+	 *
+	 * @param array|object $item A saved item or a normalized item.
+	 * @return object The item.
+	 */
+	private function get_item_object( $item ) {
+		$item = (array) $item;
+		return (object) array(
+			'id'              => empty( $item['id'] ) ? 0 : (int) $item['id'],
+			'subscription_id' => (int) $this->id,
+			'item_type'       => (string) $item['item_type'],
+			'object_id'       => (int) $item['object_id'],
+			'name'            => (string) $item['name'],
+			'quantity'        => isset( $item['quantity'] ) ? (int) $item['quantity'] : 1,
+			'billing_amount'  => pmpro_round_price( (float) $item['billing_amount'] ),
+		);
+	}
+
+	/**
+	 * Save the items set with set_items(), replacing the subscription's saved items.
+	 *
+	 * The new items are saved before the old ones are deleted, so a failed save keeps the old items.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool True if the items were saved.
+	 */
+	private function save_items() {
+		global $wpdb;
+
+		if ( empty( $this->id ) || version_compare( get_option( 'pmpro_db_version', 0 ), '4.0', '<' ) ) {
+			return false;
+		}
+
+		$old_ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_subscription_items WHERE subscription_id = %d", $this->id ) );
+
+		$new_ids = array();
+		foreach ( $this->items_cache as $item ) {
+			$inserted = $wpdb->insert(
+				$wpdb->pmpro_subscription_items,
+				array(
+					'subscription_id' => $this->id,
+					'item_type'       => $item->item_type,
+					'object_id'       => $item->object_id,
+					'name'            => $item->name,
+					'quantity'        => $item->quantity,
+					'billing_amount'  => $item->billing_amount,
+				),
+				array( '%d', '%s', '%d', '%s', '%d', '%f' )
+			);
+
+			// If an item can't be saved, remove the new items and keep the old ones.
+			if ( false === $inserted ) {
+				foreach ( $new_ids as $new_id ) {
+					$wpdb->delete( $wpdb->pmpro_subscription_items, array( 'id' => $new_id ), array( '%d' ) );
+				}
+				return false;
+			}
+
+			$new_ids[] = (int) $wpdb->insert_id;
+		}
+
+		foreach ( $old_ids as $old_id ) {
+			$wpdb->delete( $wpdb->pmpro_subscription_items, array( 'id' => $old_id ), array( '%d' ) );
+		}
+
+		// Read the saved items next time, with their IDs.
+		$this->items_cache   = null;
+		$this->items_changed = false;
+		return true;
+	}
+
+	/**
 	 * Save the subscription using the current properties set. This will also set $subscription->id on creation.
 	 *
 	 * @since 3.0
@@ -1138,9 +1284,16 @@ class PMPro_Subscription {
 			'id'
 		);
 
-		if ( $wpdb->insert_id ) {
-			$this->id = $wpdb->insert_id;
+		// Save the items if they were set, before the hooks below run. Saving them changes $wpdb->insert_id.
+		$insert_id = $wpdb->insert_id;
+		if ( $insert_id ) {
+			$this->id = $insert_id;
+		}
+		if ( $this->items_changed && ! empty( $this->id ) ) {
+			$this->save_items();
+		}
 
+		if ( $insert_id ) {
 			/**
 			 * Runs when a subscription is added.
 			 *

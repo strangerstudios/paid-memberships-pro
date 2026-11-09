@@ -294,7 +294,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 				),
 				array(
 					'name' => __( 'Level', 'paid-memberships-pro' ),
-					'value' => $order->membership_level->name,
+					'value' => empty( $order->membership_level->name ) ? '' : $order->membership_level->name,
 				),
 				array(
 					'name' => __( 'Billing Name', 'paid-memberships-pro' ),

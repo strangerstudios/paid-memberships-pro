@@ -68,6 +68,32 @@ $membership_level_id = empty( $_REQUEST['membership_level_id'] ) ? $subscription
 		<div class="pmpro_section_toggle">
 			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 				<span class="dashicons dashicons-arrow-up-alt2"></span>
+				<?php esc_html_e( 'Subscription Items', 'paid-memberships-pro' ); ?>
+			</button>
+		</div>
+		<div class="pmpro_section_inside">
+			<p>
+				<?php
+				/* translators: 1: the gateway's name, 2: the subscription's billing amount and period. */
+				echo esc_html( sprintf( __( '%1$s bills %2$s.', 'paid-memberships-pro' ), pmpro_get_gateway_nicename( $subscription->get_gateway() ), $subscription->get_cost_text() ) );
+				?>
+			</p>
+			<?php
+			pmpro_display_items_editor(
+				$subscription->get_items(),
+				'subscription',
+				array(
+					'gateway'      => pmpro_get_gateway_nicename( $subscription->get_gateway() ),
+					'cycle_period' => $subscription->get_cycle_period(),
+				)
+			);
+			?>
+		</div> <!-- end pmpro_section_inside -->
+	</div> <!-- end pmpro_section -->
+	<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div class="pmpro_section_toggle">
+			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+				<span class="dashicons dashicons-arrow-up-alt2"></span>
 				<?php esc_html_e( 'Payment Gateway Information', 'paid-memberships-pro' ); ?>
 			</button>
 		</div>

@@ -12,6 +12,8 @@ if ( ! is_user_logged_in() ) {
 	// Get level ID from URL parameter.
 	if ( ! empty( $_REQUEST['pmpro_level'] ) ) {
 		$confirmation_url = add_query_arg( 'pmpro_level', sanitize_text_field( wp_unslash( $_REQUEST['pmpro_level'] ) ), pmpro_url( 'confirmation' ) );
+	} elseif ( ! empty( $_REQUEST['pmpro_order'] ) ) {
+		$confirmation_url = add_query_arg( 'pmpro_order', sanitize_text_field( wp_unslash( $_REQUEST['pmpro_order'] ) ), pmpro_url( 'confirmation' ) );
 	} else {
 		$confirmation_url = pmpro_url( 'confirmation' );
 	}
@@ -25,7 +27,14 @@ $confirmation_level = empty( $confirmation_level ) && ! empty( $_REQUEST['level'
 
 // Get the corresponding invoice.
 $pmpro_invoice = new MemberOrder();
-if ( ! empty( $confirmation_level ) ) {
+if ( empty( $confirmation_level ) && ! empty( $_REQUEST['pmpro_order'] ) ) {
+	// A checkout without a membership level is confirmed by its order code. The order must belong to the current user.
+	$pmpro_invoice = new MemberOrder( sanitize_text_field( wp_unslash( $_REQUEST['pmpro_order'] ) ) );
+	if ( empty( $pmpro_invoice->id ) || (int) $pmpro_invoice->user_id !== (int) $current_user->ID || ! empty( $pmpro_invoice->membership_id ) || ! in_array( $pmpro_invoice->status, apply_filters( 'pmpro_confirmation_order_status', array( 'success', 'pending', 'token', 'review' ) ), true ) ) {
+		wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
+		exit;
+	}
+} elseif ( ! empty( $confirmation_level ) ) {
 	$pmpro_invoice->getLastMemberOrder( $current_user->ID, apply_filters( 'pmpro_confirmation_order_status', array( 'success', 'pending', 'token' ) ), $confirmation_level );
 } else {
 	// If there wasn't a confirmation level passed, get the last invoice for the current user and use that level.
@@ -34,7 +43,7 @@ if ( ! empty( $confirmation_level ) ) {
 }
 
 // If no invoice was found or we still don't have a level, redirect to the account page.
-if ( empty( $pmpro_invoice ) || empty( $confirmation_level ) ) {
+if ( empty( $pmpro_invoice ) || ( empty( $confirmation_level ) && empty( $pmpro_invoice->id ) ) ) {
 	$redirect_url = pmpro_url( 'account' );
 	wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 	exit;
@@ -45,7 +54,7 @@ $user_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $confi
 $current_user->membership_level = $user_level; // Backwards compatibility.
 
 // If the user doesn't have the level they are confirming (including pending checkouts), redirect them to the account page.
-if ( ! in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) && empty( $user_level ) ) {
+if ( ! empty( $confirmation_level ) && ! in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) && empty( $user_level ) ) {
 	$redirect_url = pmpro_url( 'account' );
 	wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable (e.g. Network Subsite points it at another domain) and is empty when the page is not set; wp_safe_redirect() would drop offsite targets and send members to wp-admin.
 	exit;

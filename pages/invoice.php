@@ -1,7 +1,7 @@
 <?php 
 /**
  * Template: Invoice
- * Version: 3.1
+ * Version: 4.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -279,11 +279,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 							$pmpro_price_parts['refunded']['value'] = $pmpro_price_parts['total']['value'];
 						}
 
-						// If the level was deleted, set the name to the level ID.
+						// If the level was deleted, set the name to the level ID. An order without a level is described by its items.
 						if ( empty( $pmpro_invoice->membership_level ) ) {
 							$pmpro_invoice->membership_level = new stdClass();
 							/* translators: %s: level ID */
-							$pmpro_invoice->membership_level->name = sprintf( __( 'Level ID %s', 'paid-memberships-pro' ), $pmpro_invoice->membership_id );
+							$pmpro_invoice->membership_level->name = empty( $pmpro_invoice->membership_id ) ? $pmpro_invoice->get_items_description() : sprintf( __( 'Level ID %s', 'paid-memberships-pro' ), $pmpro_invoice->membership_id );
 						}
 					?>
 
@@ -314,7 +314,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
+								<?php
+								// Orders with more than one item list each item. Otherwise, show the order's single row.
+								if ( ! pmpro_display_order_item_rows( $pmpro_invoice ) ) { ?><tr>
 									<th data-title="<?php esc_attr_e( 'Description', 'paid-memberships-pro' ); ?>">
 										<?php
 											echo esc_html(
@@ -356,7 +358,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										?>
 									</td>
 								</tr>
-							</tbody>
+							<?php } ?></tbody>
 							<tfoot>
 								<?php
 									foreach ( $pmpro_price_parts as $pmpro_price_part ) { ?>

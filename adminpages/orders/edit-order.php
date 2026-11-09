@@ -168,6 +168,17 @@ if ( ! empty( $order->id ) ) { ?>
 		<div class="pmpro_section_toggle">
 			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 				<span class="dashicons dashicons-arrow-up-alt2"></span>
+				<?php esc_html_e( 'Order Items', 'paid-memberships-pro' ); ?>
+			</button>
+		</div>
+		<div class="pmpro_section_inside">
+			<?php pmpro_display_items_editor( $order->get_items(), 'order' ); ?>
+		</div> <!-- end pmpro_section_inside -->
+	</div> <!-- end pmpro_section -->
+	<div class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div class="pmpro_section_toggle">
+			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+				<span class="dashicons dashicons-arrow-up-alt2"></span>
 				<?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?>
 			</button>
 		</div>

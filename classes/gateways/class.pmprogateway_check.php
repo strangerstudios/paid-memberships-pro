@@ -18,6 +18,26 @@
 		}										
 		
 		/**
+		 * Check whether or not a gateway supports a specific feature.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $feature The feature to check.
+		 * @return bool|string
+		 */
+		public static function supports( $feature ) {
+			$supports = array(
+				'checkout_without_level' => true,
+			);
+
+			if ( empty( $supports[ $feature ] ) ) {
+				return false;
+			}
+
+			return $supports[ $feature ];
+		}
+
+		/**
 		 * Run on WP init
 		 *		 
 		 * @since 1.8
@@ -217,7 +237,7 @@
 		 * @since 3.1
 		 */
 		static function pmpro_order_single_before_order_details( $order) {
-			if ( $order->gateway == 'check' && ! pmpro_isLevelFree( $order->membership_level ) && $order->status == 'pending' ) {
+			if ( $order->gateway == 'check' && ( empty( $order->membership_id ) || ! pmpro_isLevelFree( $order->membership_level ) ) && $order->status == 'pending' ) {
 				$instructions = get_option( 'pmpro_instructions' );
 				$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
 				?>
@@ -275,7 +295,7 @@
 				if($this->charge($order))
 				{							
 					//set up recurring billing					
-					if(pmpro_isLevelRecurring($order->membership_level))
+					if( ! empty( $order->membership_id ) && pmpro_isLevelRecurring( $order->membership_level ) )
 					{						
 						
 						if($this->subscribe($order))
