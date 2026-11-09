@@ -147,7 +147,8 @@ function pmpro_build_checkout_items( $level ) {
 	 * A percentage or fixed discount code adds core's 'discount' item, with negative amounts, and the
 	 * membership item has the level's full price. Otherwise the membership item is priced as charged, after
 	 * any discount code. Add Ons add their own items. See pmpro_normalize_order_item() for the item shape.
-	 * An item's key must be unique in the checkout. It defaults to "{item_type}-{object_id}" and isn't saved.
+	 * An item's key must be unique in the checkout and can't be 'membership' or 'discount'. It defaults to
+	 * "{item_type}-{object_id}" and isn't saved.
 	 *
 	 * - An item's billing_amount is added to each recurring payment of the membership. If the level has no
 	 *   billing cycle, or no level is being purchased, every item is one-time and billing_amount is ignored.
@@ -184,7 +185,8 @@ function pmpro_build_checkout_items( $level ) {
 	foreach ( (array) $filtered as $item ) {
 		$item        = pmpro_normalize_order_item( $item );
 		$item['key'] = ( isset( $item['key'] ) && '' !== (string) $item['key'] ) ? (string) $item['key'] : $item['item_type'] . '-' . $item['object_id'];
-		if ( isset( $core_items[ $item['key'] ] ) ) {
+		// Only core makes the 'membership' and 'discount' items, even when it didn't add them to this checkout.
+		if ( in_array( $item['key'], array( 'membership', 'discount' ), true ) ) {
 			continue;
 		}
 

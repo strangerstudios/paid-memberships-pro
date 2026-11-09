@@ -421,7 +421,8 @@
 					$nvpStr .= urlencode("&" . $key . "=" . $value);
 			}
 
-			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));
+			// A cancelled payment for an order without a membership level returns to the same items.
+			$nvpStr .= "&CANCELURL=" . urlencode( empty( $order->membership_id ) ? pmpro_get_checkout_without_level_url() : pmpro_url("levels") );
 
 			$account_optional = apply_filters('pmpro_paypal_account_optional', true);
     		if ($account_optional)

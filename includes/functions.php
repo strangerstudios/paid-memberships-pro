@@ -2856,18 +2856,19 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$level_id = intval( $_REQUEST['level'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, selects the level/discount code to show at checkout; the checkout submission is nonce-verified in preheaders/checkout.php.
 	}
 
-	// If we still don't have a level yet, check for a default level in the custom fields for this post.
-	if ( empty( $level_id ) && ! empty( $post ) ) {
-		$level_id = intval( get_post_meta( $post->ID, 'pmpro_default_level', true ) );
-	}
-
 	// If no level was requested but Add Ons added items to purchase, this checkout has no membership level.
+	// Checked before the page's default level, which is only a fallback like the lowest level below.
 	if ( empty( $level_id ) && ! empty( pmpro_build_checkout_items( null ) ) ) {
 		// Keep the placeholder level that the checkout template sets up while it renders.
 		if ( is_object( $previous_level ) && empty( $previous_level->id ) ) {
 			$pmpro_level = $previous_level;
 		}
 		return null;
+	}
+
+	// If we still don't have a level yet, check for a default level in the custom fields for this post.
+	if ( empty( $level_id ) && ! empty( $post ) ) {
+		$level_id = intval( get_post_meta( $post->ID, 'pmpro_default_level', true ) );
 	}
 
 	// If we still don't have a level, use the default level.

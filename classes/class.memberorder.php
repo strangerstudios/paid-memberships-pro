@@ -1805,11 +1805,12 @@
 				'next_payment_date'           => pmpro_calculate_profile_start_date( $this, 'Y-m-d H:i:s' ),
 			);
 
-			// The subscription bills for the order's recurring items, such as the membership and its seats.
+			// The subscription bills for the order's recurring items, such as the membership and its seats. The
+			// membership item is kept even at $0, such as a free base level with paid seats.
 			$recurring_items = array_filter(
 				$this->get_items(),
 				function ( $item ) {
-					return ! empty( $item->id ) && 0 != $item->billing_amount;
+					return ! empty( $item->id ) && ( 0 != $item->billing_amount || 'membership' === $item->item_type );
 				}
 			);
 			if ( ! empty( $recurring_items ) ) {
@@ -1851,7 +1852,8 @@
 			global $wpdb;
 
 			if ( null === $this->items_cache ) {
-				$rows        = empty( $this->id ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
+				// A new order, or a site whose database isn't updated yet, has no saved items.
+				$rows        = ( empty( $this->id ) || version_compare( get_option( 'pmpro_db_version', 0 ), '4.0', '<' ) ) ? array() : $wpdb->get_results( $wpdb->prepare( "SELECT id, order_id, item_type, object_id, name, quantity, subtotal, billing_amount FROM $wpdb->pmpro_membership_order_items WHERE order_id = %d ORDER BY id ASC", $this->id ) );
 				$this->items_cache = array_map( array( $this, 'get_item_object' ), $rows );
 			}
 
@@ -1954,10 +1956,18 @@
 				return;
 			}
 
-			// Each item was billed its recurring amount.
+			// Each item was billed its recurring amount. The membership item is for the order's level, in case an
+			// admin moved the subscription to another level after its items were saved.
+			$level = pmpro_getLevel( $this->membership_id );
 			foreach ( $items as $item ) {
 				$item->id       = 0;
 				$item->subtotal = $item->billing_amount;
+				if ( 'membership' === $item->item_type && (int) $item->object_id !== (int) $this->membership_id ) {
+					$item->object_id = (int) $this->membership_id;
+					if ( ! empty( $level ) ) {
+						$item->name = $level->name;
+					}
+				}
 			}
 			$this->set_items( $items, true );
 		}
