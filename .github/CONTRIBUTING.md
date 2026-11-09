@@ -1,19 +1,32 @@
 # Contribute to Paid Memberships Pro
 
-Paid Memberships Pro is the "community solution" for membership sites on WordPress, so contributions of all kinds are appreciated. This file holds the rules every pull request must follow. **A pull request that does not follow them is closed without review**, whether a person or an AI agent wrote it. You are welcome to open a new one that does.
+Paid Memberships Pro is the "community solution" for membership sites on WordPress, and we welcome contributions from the people who use it. This file holds the rules every pull request follows, whether a person or an AI agent wrote it. A bot checks each pull request against them and comments with anything missing. Pull requests from outside the Paid Memberships Pro team that still don't follow the rules 7 days later are closed.
 
 __Please Note:__ GitHub is for bug reports and contributions only. If you have a support or customization question, go to our [Member Support Page](https://www.paidmembershipspro.com/support/) instead.
 
 ## Contents
 
+- [Who can open a pull request](#who-can-open-a-pull-request)
 - [Report the issue first](#report-the-issue-first)
 - [Make the change](#make-the-change)
 - [Commit messages say why, not what](#commit-messages-say-why-not-what)
 - [Pull requests follow the template, top to bottom](#pull-requests-follow-the-template-top-to-bottom)
 - [Changelog entries follow the house format](#changelog-entries-follow-the-house-format)
-- [A pull request is closed without review when](#a-pull-request-is-closed-without-review-when)
+- [AI-assisted contributions](#ai-assisted-contributions)
+- [The rules bot comments, then closes outside pull requests after 7 days](#the-rules-bot-comments-then-closes-outside-pull-requests-after-7-days)
+- [What we don't accept](#what-we-dont-accept)
 - [Code documentation](#code-documentation)
 - [Additional resources](#additional-resources)
+
+## Who can open a pull request
+
+Open a pull request only when at least one of these is true:
+
+* You use Paid Memberships Pro on a site and ran into the problem the change fixes.
+* You maintain a plugin, gateway or service that integrates with Paid Memberships Pro, and the change concerns that integration.
+* A Paid Memberships Pro team member approved that specific change before you opened the pull request. Link the approval.
+
+If none applies, comment on the issue and ask first. Paid Memberships Pro team members can open pull requests for any issue.
 
 ## Report the issue first
 
@@ -26,7 +39,7 @@ __Please Note:__ GitHub is for bug reports and contributions only. If you have a
 ## Make the change
 
 * Fork the repository on GitHub.
-* For bug fixes, branch from `dev`. For new features and enhancements, branch from the branch for the version the feature is milestoned for.
+* For bug fixes, branch from `dev`. For new features and enhancements, branch from the branch for the version the feature is milestoned for (such as `v4.0`).
 * Pull in any upstream changes first.
 	* `git remote add upstream https://github.com/strangerstudios/paid-memberships-pro.git`
 	* `git checkout dev`
@@ -49,13 +62,13 @@ The diff already shows what changed. A commit message carries what the diff cann
 
 * **Subject:** the reason in one line, under about 72 characters.
 * **Body (optional):** the evidence, the alternative you rejected and why, and anything a future reader needs to avoid undoing the change.
-* **Issue references:** use `Refs #123` in commits. A closing keyword (`Fixes`, `Closes`, `Resolves`) in a commit closes the issue when the commit lands on the default branch, even inside a sentence like "doesn't fix #123". Put `Fixes #123` in the pull request description instead.
+* **Issue references:** use `Refs #123` in commits. `dev` is the default branch, so a closing keyword (`Fixes`, `Closes`, `Resolves`) in a commit closes the issue as soon as the commit lands there, even inside a sentence like "doesn't fix #123". Put `Fixes #123` in the pull request description instead.
 
 ## Pull requests follow the template, top to bottom
 
-Opening a pull request loads [`PULL_REQUEST_TEMPLATE.MD`](PULL_REQUEST_TEMPLATE.MD). Fill in every section in this order and keep the headings:
+Opening a pull request on GitHub loads [`PULL_REQUEST_TEMPLATE.MD`](PULL_REQUEST_TEMPLATE.MD). `gh pr create` and the API do not, so copy the template into the body yourself. Fill in every section, in this order, and keep the headings:
 
-1. **Summary:** one sentence on what the pull request does.
+1. **Summary:** one sentence on what the pull request does, above the first heading.
 2. **Changelog entry:** one line in the [house format](#changelog-entries-follow-the-house-format).
 3. **Commit message:** the message to use when the pull request is merged, written as described [above](#commit-messages-say-why-not-what).
 4. **Why:** the bug, constraint or decision behind the change, and `Fixes #123`.
@@ -63,17 +76,14 @@ Opening a pull request loads [`PULL_REQUEST_TEMPLATE.MD`](PULL_REQUEST_TEMPLATE.
 6. **Testing done:** what you ran and what happened. For a bug fix, show that the change fixes the reported behavior: the reproduction before and after, or a test that fails without the fix. Say plainly what you did not test.
 7. **Risk:** anything that could break for existing sites, such as a changed filter, a database change or a different default.
 8. **AI assistance:** check the box and name every model or tool that generated code or text.
-9. **Checklist:** tick only what you actually verified, and say why next to any item that doesn't apply.
+9. **Your connection to this change:** which of the [eligibility conditions](#who-can-open-a-pull-request) applies. Team members can leave it blank.
+10. **Checklist:** tick only what you actually verified, and say why next to any item that doesn't apply.
 
-The GitHub website loads the template for you; `gh pr create` and the API do not, so copy the template into the body yourself. Describe why the change is needed. Do not list the diff file by file; name a file only when the diff doesn't make its role obvious.
-
-### AI-assisted pull requests
-
-AI-assisted contributions are welcome and held to the same standard as any other. The person submitting is responsible for the change: they review the complete diff, test it, and authorize that specific pull request. Agents that pick their own work and open pull requests on their own are not accepted. [`AGENTS.md`](../AGENTS.md) holds the rules for agents.
+Describe why the change is needed. Do not list the diff file by file; name a file only when the diff doesn't make its role obvious.
 
 ## Changelog entries follow the house format
 
-Each entry starts with one label, is a complete sentence a non-developer can read (two sentences at most), and ends with the pull request or issue number and the contributors' GitHub usernames.
+The changelog entry is what site owners read when deciding whether an update matters to them. Write it for them, not for the reviewer. Each entry starts with one label, is a complete sentence a non-developer can read (two sentences at most), and ends with the pull request or issue number and the contributors' GitHub usernames.
 
 | Label | Use it when |
 |---|---|
@@ -87,7 +97,8 @@ Each entry starts with one label, is a complete sentence a non-developer can rea
 
 * Spell out acronyms and abbreviations. Exceptions: PMPro, REST API, WP, product names, and anything that references code.
 * Wrap function names, class names and hooks in backticks.
-* Call out any new filter or action.
+* Call out any new filter or action, and any change to a default.
+* If nothing in the pull request is user-facing (docs, tests, CI), write `None:` and the reason.
 
 Example:
 
@@ -95,15 +106,43 @@ Example:
 BUG FIX: Fixed the Logins report CSV export writing every user once per batch on sites with more users than the batch size. #3945 (@github_username)
 ```
 
-## A pull request is closed without review when
+## AI-assisted contributions
 
-* It has no linked issue.
-* It skips or reorders sections of the pull request template, or leaves them empty, including the AI assistance section.
-* The changelog entry is missing or doesn't follow the house format.
-* A commit message only says what changed, or uses a closing keyword.
-* It covers more than one issue, or includes unrelated formatting changes.
-* It targets a branch other than `dev` (bug fixes) or the milestoned version branch (features).
-* It comes with an offer of paid work. Pull requests are contributions, not sales pitches.
+AI-assisted contributions are welcome and held to the same standard as any other.
+
+* **A human is responsible for every pull request.** The person submitting reviews the complete diff, tests the change, and authorizes that specific pull request before an agent opens it.
+* **Disclose it.** Check the box in the template's "AI assistance" section and name every model or tool that generated code or text.
+* **No autonomous contribution agents.** Don't give an agent standing permission to pick issues and open pull requests, and don't ask one to scan the repository for things to fix.
+* **Sign agent-written review comments.** A review or reply an agent wrote, posted from a person's account, ends with `~ 🤖 Agent name (model)`. Comments from an identifiable bot account don't need the signature.
+* **Agents read [`AGENTS.md`](../AGENTS.md)**, which lists these rules in short form. `CLAUDE.md` loads it for Claude Code.
+
+## The rules bot comments, then closes outside pull requests after 7 days
+
+The [Pull request rules](workflows/pr-rules.yml) workflow checks each pull request when it opens, when the description is edited, and when commits are pushed. Drafts are checked when they're marked ready for review. It looks for:
+
+* every template section, in order, filled in
+* a changelog entry that starts with a label or `None:`
+* an issue linked in "Why"
+* no closing keyword in the proposed commit message or in any commit
+* no commit subject that only names a file ("Update login-csv.php")
+* a ticked eligibility box and a ticked "I have read CONTRIBUTING.md" box
+* a base branch of `dev` or a version branch
+
+When something is missing, it posts one comment listing what to fix, adds the `needs: pr rules` label and fails the check. Fix the description or push a commit and it checks again, updating the same comment.
+
+**Pull requests from outside the team** that still fail 7 days after the last update are closed with a comment. Fix the items and reopen it, or open a new pull request.
+
+**Pull requests from the Paid Memberships Pro team** get the same comment and label but are never closed by the bot. The team is anyone who is a member of the `strangerstudios` organization or has write access to this repository.
+
+The bot checks form, not substance. A team member still reviews whether the change is right, and can close a pull request that passes the check but doesn't meet these rules.
+
+## What we don't accept
+
+* Pull requests from people with no [connection to the change](#who-can-open-a-pull-request).
+* Drive-by refactors, bulk lint or formatting cleanups, and "while I'm here" edits in unrelated code.
+* Speculative changes that don't fix a reported problem.
+* Pull requests opened by an agent working on its own.
+* Pull requests that come with an offer of paid work. Pull requests are contributions, not sales pitches.
 
 ## Code documentation
 
