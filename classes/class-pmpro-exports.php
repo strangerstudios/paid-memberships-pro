@@ -658,7 +658,13 @@ class PMPro_Exports {
 		}
 
 		$write_header = ( 0 === $offset );
-		$written      = $this->write_rows_for_type( $export['type'], $export, $ids, $write_header );
+		if ( $write_header ) {
+			$bom_result = $this->maybe_write_csv_bom( $export );
+			if ( is_wp_error( $bom_result ) ) {
+				return $bom_result;
+			}
+		}
+		$written = $this->write_rows_for_type( $export['type'], $export, $ids, $write_header );
 		if ( is_wp_error( $written ) ) {
 			return $written;
 		}
@@ -1010,6 +1016,41 @@ class PMPro_Exports {
 			return new \WP_Error( 'pmpro_export_file_write_error', __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
 		}
 		return $fh;
+	}
+
+	/**
+	 * Write the UTF-8 BOM to the start of a new export file.
+	 *
+	 * Runs before the first chunk so it covers every export type, including
+	 * custom types added through the pmpro_export_type_configs filter. The BOM
+	 * is only written when the file is missing or empty, so a retried or
+	 * resumed chunk never adds a second one.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $export Export record.
+	 * @return true|\WP_Error
+	 */
+	protected function maybe_write_csv_bom( $export ) {
+		$bom = pmpro_get_csv_bom( $export['type'] );
+		if ( '' === $bom ) {
+			return true;
+		}
+
+		$file_path = $this->get_file_path( $export['file_name'] );
+		clearstatcache( true, $file_path );
+		if ( file_exists( $file_path ) && filesize( $file_path ) > 0 ) {
+			return true;
+		}
+
+		$fh = $this->open_export_file_handle( $export );
+		if ( is_wp_error( $fh ) ) {
+			return $fh;
+		}
+		fwrite( $fh, $bom );
+		fclose( $fh );
+
+		return true;
 	}
 
 	/**
