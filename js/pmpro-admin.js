@@ -608,6 +608,9 @@ function pmpro_userfields_prep_click_events() {
 		if (jQuery.inArray(fieldtype, defaulttypes) > -1) {
 			fielddefault.show();
 		}
+
+		// Show the date format hint for the default value on date fields.
+		fielddefault.find('.pmpro_userfield-field-setting_default-date-hint').toggle(fieldtype === 'date');
 	});
 
 	// Suggest name after leaving label field.
