@@ -5828,12 +5828,12 @@ function pmpro_get_memberships( $args = array() ) {
 }
 
 /**
- * Get the byte order mark (BOM) to write at the start of a CSV export.
+ * Get the byte order mark (BOM) to write at the start of a CSV or TSV export.
  *
- * Excel on Windows assumes the system code page when a CSV is opened by
- * double-click, so accented characters in UTF-8 exports show up garbled
- * unless the file starts with a UTF-8 BOM. Other spreadsheet apps and text
- * editors ignore the BOM.
+ * Excel on Windows assumes the system code page when a CSV or TSV file is
+ * opened by double-click, so accented characters in UTF-8 exports show up
+ * garbled unless the file starts with a UTF-8 BOM. Other spreadsheet apps and
+ * text editors ignore the BOM.
  *
  * @since TBD
  *
@@ -5842,7 +5842,7 @@ function pmpro_get_memberships( $args = array() ) {
  */
 function pmpro_get_csv_bom( $context = '' ) {
 	/**
-	 * Filter whether CSV exports start with a UTF-8 byte order mark (BOM).
+	 * Filter whether CSV and TSV exports start with a UTF-8 byte order mark (BOM).
 	 *
 	 * @since TBD
 	 *

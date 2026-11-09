@@ -1022,9 +1022,11 @@ class PMPro_Exports {
 	 * Write the UTF-8 BOM to the start of a new export file.
 	 *
 	 * Runs before the first chunk so it covers every export type, including
-	 * custom types added through the pmpro_export_type_configs filter. The BOM
-	 * is only written when the file is missing or empty, so a retried or
-	 * resumed chunk never adds a second one.
+	 * custom types added through the pmpro_export_type_configs filter. Only
+	 * .csv and .tsv files get the BOM, so a custom type renamed to another
+	 * format (e.g. .json) through pmpro_export_file_name is left alone. The BOM
+	 * is only written when the file is missing or empty, so a resumed chunk
+	 * never adds a second one.
 	 *
 	 * @since TBD
 	 *
@@ -1032,6 +1034,11 @@ class PMPro_Exports {
 	 * @return true|\WP_Error
 	 */
 	protected function maybe_write_csv_bom( $export ) {
+		$extension = strtolower( pathinfo( $export['file_name'], PATHINFO_EXTENSION ) );
+		if ( ! in_array( $extension, array( 'csv', 'tsv' ), true ) ) {
+			return true;
+		}
+
 		$bom = pmpro_get_csv_bom( $export['type'] );
 		if ( '' === $bom ) {
 			return true;
@@ -1047,8 +1054,11 @@ class PMPro_Exports {
 		if ( is_wp_error( $fh ) ) {
 			return $fh;
 		}
-		fwrite( $fh, $bom );
+		$written = fwrite( $fh, $bom );
 		fclose( $fh );
+		if ( strlen( $bom ) !== $written ) {
+			return new \WP_Error( 'pmpro_export_file_write_error', __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
+		}
 
 		return true;
 	}
