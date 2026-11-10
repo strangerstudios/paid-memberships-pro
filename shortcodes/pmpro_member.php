@@ -271,8 +271,9 @@ function pmpro_maybe_strip_member_shortcode( $content ) {
 
 	return $content;
 }
-add_filter( 'content_save_pre', 'pmpro_maybe_strip_member_shortcode' );
-add_filter( 'excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode' );
+// Run last so that kses and other save filters can't rebuild the shortcode after it is stripped.
+add_filter( 'content_save_pre', 'pmpro_maybe_strip_member_shortcode', PHP_INT_MAX );
+add_filter( 'excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode', PHP_INT_MAX );
 add_filter( 'widget_update_callback', 'pmpro_maybe_strip_member_shortcode' );
 
 /**
