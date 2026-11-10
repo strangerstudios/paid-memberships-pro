@@ -9,7 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * 3.9 reads the same options that the retired Subscription Delays and Set Expiration
  * Dates Add Ons saved. Those Add Ons never deleted their options, so a site that stopped
  * using one of them would have its old settings go live again. Delete the options for
- * any of these Add Ons that is not active when the site upgrades.
+ * any of these Add Ons that the site is no longer using, keeping a copy so that support
+ * can restore them if needed.
  *
  * This runs while plugins are loading, before pmpro_check_for_deprecated_add_ons()
  * deactivates the retired Add Ons on admin_notices, so an Add On that the site was
@@ -31,8 +32,9 @@ function pmpro_upgrade_3_9() {
 		),
 	);
 
+	$retired_settings = array();
 	foreach ( $add_ons as $plugin_file => $settings ) {
-		if ( pmpro_upgrade_3_9_was_add_on_active( $plugin_file ) ) {
+		if ( pmpro_upgrade_3_9_was_add_on_in_use( $plugin_file ) ) {
 			continue;
 		}
 
@@ -43,15 +45,33 @@ function pmpro_upgrade_3_9() {
 			)
 		);
 
-		// Use delete_option() so that object caches are cleared too.
 		foreach ( array_merge( $option_names, $settings['options'] ) as $option_name ) {
-			delete_option( $option_name );
+			$value = get_option( $option_name );
+			if ( false !== $value ) {
+				$retired_settings[ $option_name ] = $value;
+			}
 		}
+	}
+
+	if ( empty( $retired_settings ) ) {
+		return;
+	}
+
+	// Save the copy before deleting anything. Nothing reads this option at checkout.
+	update_option( 'pmpro_upgrade_3_9_retired_date_settings', array_merge( (array) get_option( 'pmpro_upgrade_3_9_retired_date_settings', array() ), $retired_settings ), false );
+
+	// Use delete_option() so that object caches are cleared too.
+	foreach ( array_keys( $retired_settings ) as $option_name ) {
+		delete_option( $option_name );
 	}
 }
 
 /**
- * Check whether a retired date Add On was active when the site upgraded to 3.9.
+ * Check whether the site was still using a retired date Add On when it upgraded to 3.9.
+ *
+ * An Add On counts as in use if it is active, or if it was deactivated from the Plugins
+ * screen recently enough that WordPress still lists it as recently deactivated (about a
+ * week). That covers sites that turned the Add On off just before updating PMPro.
  *
  * Matches on the main plugin file so that a copy installed in a renamed folder still counts.
  *
@@ -60,12 +80,16 @@ function pmpro_upgrade_3_9() {
  * @param string $plugin_file The main plugin file of the Add On.
  * @return bool
  */
-function pmpro_upgrade_3_9_was_add_on_active( $plugin_file ) {
-	$active_plugins = (array) get_option( 'active_plugins', array() );
+function pmpro_upgrade_3_9_was_add_on_in_use( $plugin_file ) {
+	$plugins = array_merge(
+		(array) get_option( 'active_plugins', array() ),
+		array_keys( (array) get_option( 'recently_activated', array() ) )
+	);
 
 	if ( is_multisite() ) {
 		// The first subsite to upgrade deactivates a network active Add On for the whole
-		// network, so remember it for the subsites that upgrade later.
+		// network, so remember it for the subsites that upgrade later. There is no way to
+		// tell when every subsite has upgraded, so this site option is never deleted.
 		$network_active_add_ons = (array) get_site_option( 'pmpro_upgrade_3_9_network_active_add_ons', array() );
 		if ( in_array( $plugin_file, $network_active_add_ons, true ) ) {
 			return true;
@@ -78,10 +102,12 @@ function pmpro_upgrade_3_9_was_add_on_active( $plugin_file ) {
 				return true;
 			}
 		}
+
+		$plugins = array_merge( $plugins, array_keys( (array) get_site_option( 'recently_activated', array() ) ) );
 	}
 
-	foreach ( $active_plugins as $active_plugin ) {
-		if ( basename( $active_plugin ) === $plugin_file ) {
+	foreach ( $plugins as $plugin ) {
+		if ( basename( (string) $plugin ) === $plugin_file ) {
 			return true;
 		}
 	}
