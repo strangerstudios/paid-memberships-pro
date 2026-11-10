@@ -181,6 +181,10 @@ class PMPro_Site_Health {
 		foreach ( $membership_levels as &$membership_level ) {
 			$membership_level->meta = get_pmpro_membership_level_meta( $membership_level->id );
 
+			// Subscription delay and set expiration date settings are stored as options, not level meta.
+			$membership_level->subscription_delay  = get_option( 'pmpro_subscription_delay_' . $membership_level->id, '' );
+			$membership_level->set_expiration_date = get_option( 'pmprosed_' . $membership_level->id, '' );
+
 			$membership_level = apply_filters( 'pmpro_site_health_info_membership_level', $membership_level );
 		}
 
