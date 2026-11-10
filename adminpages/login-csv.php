@@ -100,12 +100,10 @@ if ( $s ) {
 }
 
 if ( ! empty( $start ) && ! empty( $limit ) ) {
-	$sqlQuery .= "LIMIT " . (int) $start . "," . (int) $limit;
+	$sqlQuery .= " LIMIT " . (int) $start . "," . (int) $limit;
 }
 
 		$sqlQuery = apply_filters( 'pmpro_visits_views_logins_csv_sql', $sqlQuery );
-
-		$theusers = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- search term is esc_sql()'d inside quotes, level and limits are cast to int.
 
 $headers   = array();
 $headers[] = 'Content-Type: text/csv';
@@ -234,10 +232,32 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 
 	// get the user list we should process
 	$user_list = array_slice( $user_ids, $i_start, $max_record_loops );
+	$i_start  += $max_record_loops;
 
 	if ( PMPRO_BENCHMARK ) {
 		$pre_data_time   = microtime( true );
 		$pre_data_memory = memory_get_usage( true );
+	}
+
+	// Load this batch from the (possibly filtered) report query, so a filter's columns and order still apply.
+	$report_sql   = rtrim( $sqlQuery, "; \t\r\n" );
+	$user_id_list = implode( ',', array_map( 'intval', $user_list ) );
+	$batch_sql    = "SELECT t.* FROM ( $report_sql ) t WHERE t.ID IN ( $user_id_list ) ORDER BY FIELD( t.ID, $user_id_list )";
+
+	// Hide the error from a filtered query that can't run as a derived table (e.g. duplicate column names or SQL_CALC_FOUND_ROWS); the fallback below handles it.
+	$show_errors = $wpdb->hide_errors();
+	$theusers    = $wpdb->get_results( $batch_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- user IDs are cast to int, the rest is the filtered report SQL, the same trust level as the filter itself.
+	$wpdb->show_errors( $show_errors );
+
+	// If it can't, load the filtered query unbatched once and take this batch's users from it.
+	if ( '' !== $wpdb->last_error ) {
+		if ( ! isset( $all_users ) ) {
+			$all_users = array();
+			foreach ( $wpdb->get_results( $sqlQuery ) as $row ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- the filtered report SQL, the same trust level as the filter itself.
+				$all_users[ $row->ID ] = $row;
+			}
+		}
+		$theusers = array_values( array_intersect_key( $all_users, array_flip( $user_list ) ) );
 	}
 
 	foreach ( $theusers as $user ) {
@@ -308,6 +328,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		error_log( 'PMPRO_BENCHMARK - Peak memory usage: ' . number_format( $memory_processing_data, false, '.', ',' ) . ' bytes' );
 	}
 	$user_list = null;
+	$theusers  = null;
 	wp_cache_flush();
 }
 // If this was run via Toolkit API, we don't have to output the CSV file.
