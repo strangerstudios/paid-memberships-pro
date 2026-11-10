@@ -60,9 +60,12 @@ function pmpro_upgrade_3_9() {
 	// Save the copy before deleting anything. Nothing reads this option at checkout.
 	update_option( 'pmpro_upgrade_3_9_retired_date_settings', array_merge( (array) get_option( 'pmpro_upgrade_3_9_retired_date_settings', array() ), $retired_settings ), false );
 
-	// Use delete_option() so that object caches are cleared too.
+	// Only delete settings that made it into the copy. Use delete_option() so that object caches are cleared too.
+	$saved_settings = (array) get_option( 'pmpro_upgrade_3_9_retired_date_settings', array() );
 	foreach ( array_keys( $retired_settings ) as $option_name ) {
-		delete_option( $option_name );
+		if ( array_key_exists( $option_name, $saved_settings ) ) {
+			delete_option( $option_name );
+		}
 	}
 }
 
