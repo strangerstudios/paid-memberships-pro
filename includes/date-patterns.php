@@ -335,6 +335,142 @@ function pmpro_get_set_expiration_date( $level_id, $code_id = null ) {
 }
 
 /**
+ * Check whether a date pattern is a fixed date that has already passed.
+ *
+ * Patterns with Y or M tokens always resolve to their next occurrence, so only
+ * a fixed date such as "2022-12-31" can pass.
+ *
+ * @since TBD
+ *
+ * @param string $date_pattern The date pattern to check.
+ * @return bool True if the pattern resolves to a date before today.
+ */
+function pmpro_date_pattern_has_passed( $date_pattern ) {
+	$resolved_date = pmpro_resolve_date_pattern( $date_pattern );
+	return ! empty( $resolved_date ) && $resolved_date < date( 'Y-m-d', current_time( 'timestamp' ) );
+}
+
+/**
+ * Get the checkout error for a level whose subscription delay or set expiration date is a fixed date that has already passed.
+ *
+ * Checkout can't give the member a first payment date or expiration date in the past.
+ *
+ * @since TBD
+ *
+ * @param object $level The level object. When code_id is set, the discount code's settings are checked.
+ * @return string The error message, or an empty string if neither date has passed.
+ */
+function pmpro_get_level_passed_date_error( $level ) {
+	if ( empty( $level->id ) ) {
+		return '';
+	}
+
+	$code_id = ! empty( $level->code_id ) ? $level->code_id : null;
+
+	// Resolve the set expiration date the same way checkout does, including filters.
+	$set_expiration_date      = pmpro_get_set_expiration_date( $level->id, $code_id );
+	$resolved_expiration_date = ! empty( $set_expiration_date ) ? pmpro_resolve_expiration_date_pattern( $set_expiration_date ) : false;
+	if ( ! empty( $resolved_expiration_date ) && $resolved_expiration_date < date( 'Y-m-d', current_time( 'timestamp' ) ) ) {
+		return __( 'The expiration date for this membership level is in the past, so checkout cannot be completed. Please contact the site owner.', 'paid-memberships-pro' );
+	}
+
+	// Subscription delays only apply to recurring levels, and a number of days can't pass.
+	if ( pmpro_isLevelRecurring( $level ) && pmpro_date_pattern_has_passed( pmpro_get_subscription_delay( $level->id, $code_id ) ) ) {
+		return __( 'The subscription delay date for this membership level is in the past, so checkout cannot be completed. Please contact the site owner.', 'paid-memberships-pro' );
+	}
+
+	return '';
+}
+
+/**
+ * Halt checkout if the level's subscription delay or set expiration date has already passed.
+ *
+ * @since TBD
+ *
+ * @param object|null $level The level being checked out.
+ */
+function pmpro_checkout_check_passed_dates( $level ) {
+	$error = pmpro_get_level_passed_date_error( $level );
+	if ( ! empty( $error ) ) {
+		pmpro_setMessage( $error, 'pmpro_error' );
+	}
+}
+add_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', 'pmpro_checkout_check_passed_dates' );
+
+/**
+ * Show a notice on PMPro admin pages listing the levels that allow signups but can't be checked out
+ * because their subscription delay or set expiration date has already passed.
+ *
+ * @since TBD
+ */
+function pmpro_passed_dates_admin_notice() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
+	if ( empty( $_REQUEST['page'] ) || 0 !== strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) ) {
+		return;
+	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+	if ( ! current_user_can( 'pmpro_membershiplevels' ) ) {
+		return;
+	}
+
+	$level_links = array();
+	foreach ( pmpro_getAllLevels( true ) as $level ) {
+		if ( $level->allow_signups && pmpro_get_level_passed_date_error( $level ) ) {
+			$level_links[] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $level->name ) . '</a>';
+		}
+	}
+
+	if ( empty( $level_links ) ) {
+		return;
+	}
+	?>
+	<div class="notice notice-error">
+		<p>
+			<?php
+			printf(
+				// translators: %s is a comma-separated list of linked membership level names.
+				wp_kses_post( __( '<strong>Checkout is blocked</strong> for these membership levels because their subscription delay or set expiration date has passed: %s. Edit each level to set a new date.', 'paid-memberships-pro' ) ),
+				wp_kses_post( implode( ', ', $level_links ) )
+			);
+			?>
+		</p>
+	</div>
+	<?php
+}
+add_action( 'admin_notices', 'pmpro_passed_dates_admin_notice' );
+
+/**
+ * Reject a custom pricing discount code whose own subscription delay or set expiration date has already passed.
+ *
+ * Percentage and fixed amount codes use the level's dates, which are checked at checkout.
+ *
+ * @since TBD
+ *
+ * @param bool|string $okay     True if the code is okay, or false or an error message if not.
+ * @param object      $dbcode   The discount code row.
+ * @param int|string|array $level_id The level ID, or a comma-separated list or array of level IDs, being checked out.
+ * @return bool|string The error message if a date has passed, otherwise $okay.
+ */
+function pmpro_check_discount_code_passed_dates( $okay, $dbcode, $level_id ) {
+	if ( true !== $okay || empty( $dbcode->id ) || empty( $level_id ) || pmpro_discount_code_uses_level_pricing( $dbcode->id ) ) {
+		return $okay;
+	}
+
+	// pmpro_checkDiscountCode() only flattens an array of level IDs when it checks the code's levels.
+	$level_ids = is_array( $level_id ) ? $level_id : explode( ',', (string) $level_id );
+	foreach ( array_map( 'intval', $level_ids ) as $code_level_id ) {
+		$error = pmpro_get_level_passed_date_error( pmpro_get_discounted_level_for_code( $code_level_id, $dbcode ) );
+		if ( ! empty( $error ) ) {
+			return $error;
+		}
+	}
+
+	return $okay;
+}
+add_filter( 'pmpro_check_discount_code', 'pmpro_check_discount_code_passed_dates', 10, 3 );
+
+/**
  * Render a date pattern builder.
  *
  * Used on the Edit Level and Edit Discount Code pages. Outputs a mode select
@@ -429,6 +565,11 @@ function pmpro_render_date_pattern_builder( $field_prefix, $existing_value ) {
 				?>
 				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/membership-levels/date-patterns/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=date-patterns' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Learn more about date patterns', 'paid-memberships-pro' ); ?></a>
 			</p>
+			<?php if ( pmpro_date_pattern_has_passed( $custom_pattern ) ) { ?>
+				<div class="notice notice-alt notice-error inline">
+					<p><?php esc_html_e( 'This date has already passed. Checkout will fail until you set a new date.', 'paid-memberships-pro' ); ?></p>
+				</div>
+			<?php } ?>
 		</span>
 	</div>
 	<?php
