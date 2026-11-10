@@ -5826,3 +5826,30 @@ function pmpro_get_memberships( $args = array() ) {
 
 	return $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Prepared above whenever it has placeholders.
 }
+
+/**
+ * Get the byte order mark (BOM) to write at the start of a CSV or TSV export.
+ *
+ * Excel on Windows assumes the system code page when a CSV or TSV file is
+ * opened by double-click, so accented characters in UTF-8 exports show up
+ * garbled unless the file starts with a UTF-8 BOM. Other spreadsheet apps and
+ * text editors ignore the BOM.
+ *
+ * @since TBD
+ *
+ * @param string $context The export writing the file, e.g. 'members', 'orders', 'sales', 'memberships' or 'logins'.
+ * @return string The UTF-8 BOM, or an empty string if it has been filtered off.
+ */
+function pmpro_get_csv_bom( $context = '' ) {
+	/**
+	 * Filter whether CSV and TSV exports start with a UTF-8 byte order mark (BOM).
+	 *
+	 * @since TBD
+	 *
+	 * @param bool   $include_bom Whether to write the BOM. Default true.
+	 * @param string $context     The export writing the file, e.g. 'members', 'orders', 'sales', 'memberships' or 'logins'.
+	 */
+	$include_bom = apply_filters( 'pmpro_csv_export_include_bom', true, $context );
+
+	return $include_bom ? "\xEF\xBB\xBF" : '';
+}

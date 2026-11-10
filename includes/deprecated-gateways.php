@@ -2053,6 +2053,8 @@ function pmpro_deprecated_gateway_csv_init( $run_id ) {
 
 	$handle = fopen( $path, 'w' );
 	if ( $handle ) {
+		// Write the UTF-8 BOM so Excel on Windows reads accented names correctly.
+		fwrite( $handle, pmpro_get_csv_bom( 'deprecated-gateways' ) );
 		// Pass the separator/enclosure/escape explicitly; relying on the default
 		// $escape is deprecated in PHP 8.4.
 		fputcsv( $handle, pmpro_deprecated_gateway_get_csv_columns(), ',', '"', '\\' );
