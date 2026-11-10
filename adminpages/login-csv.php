@@ -240,12 +240,25 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	// Load this batch from the (possibly filtered) report query, so a filter's columns and order still apply.
-	// It runs as a derived table, so a filter must return unique column names.
 	$report_sql   = rtrim( $sqlQuery, "; \t\r\n" );
 	$user_id_list = implode( ',', array_map( 'intval', $user_list ) );
 	$batch_sql    = "SELECT t.* FROM ( $report_sql ) t WHERE t.ID IN ( $user_id_list ) ORDER BY FIELD( t.ID, $user_id_list )";
 
-	$theusers = $wpdb->get_results( $batch_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- user IDs are cast to int, the rest is the filtered report SQL, the same trust level as the filter itself.
+	// Hide the error from a filtered query that can't run as a derived table (e.g. duplicate column names or SQL_CALC_FOUND_ROWS); the fallback below handles it.
+	$show_errors = $wpdb->hide_errors();
+	$theusers    = $wpdb->get_results( $batch_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- user IDs are cast to int, the rest is the filtered report SQL, the same trust level as the filter itself.
+	$wpdb->show_errors( $show_errors );
+
+	// If it can't, load the filtered query unbatched once and take this batch's users from it.
+	if ( '' !== $wpdb->last_error ) {
+		if ( ! isset( $all_users ) ) {
+			$all_users = array();
+			foreach ( $wpdb->get_results( $sqlQuery ) as $row ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- the filtered report SQL, the same trust level as the filter itself.
+				$all_users[ $row->ID ] = $row;
+			}
+		}
+		$theusers = array_values( array_intersect_key( $all_users, array_flip( $user_list ) ) );
+	}
 
 	foreach ( $theusers as $user ) {
 		$csvoutput = array();
