@@ -2658,6 +2658,18 @@ class PMProGateway_stripe extends PMProGateway {
 		);
 		$billing_address_collection = get_option( 'pmpro_stripe_checkout_billing_address' ) ?: 'auto';
 
+		// A cancelled payment returns to the same checkout, keeping the checkout URL's other arguments (e.g. a discount code or an Add On's arguments).
+		// Only keep scalar arguments whose keys are already clean, and never the `level` alias or sensitive checkout fields.
+		$cancel_args    = array();
+		$sensitive_vars = array_map( 'strtolower', pmpro_get_sensitive_checkout_request_vars() );
+		foreach ( wp_unslash( $_GET ) as $key => $value ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, rebuilds the checkout URL.
+			if ( ! is_scalar( $value ) || $key !== sanitize_key( $key ) || 'level' === $key || in_array( $key, $sensitive_vars, true ) ) {
+				continue;
+			}
+			$cancel_args[ $key ] = sanitize_text_field( $value );
+		}
+		$cancel_args['pmpro_level'] = $morder->membership_level->id;
+
 		// And let's send 'em to Stripe!
 		$checkout_session_params = array(
 			'customer' => $customer->id,
@@ -2672,7 +2684,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'name' => 'auto'
 			),
 			'success_url' => apply_filters( 'pmpro_confirmation_url', add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("confirmation" ) ), $user_id, $pmpro_level ),
-			'cancel_url' =>  add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("checkout" ) ),
+			'cancel_url' =>  add_query_arg( urlencode_deep( $cancel_args ), pmpro_url( 'checkout' ) ),
 		);
 		if ( ! empty( $subscription_data ) ) {
 			$checkout_session_params['subscription_data'] = $subscription_data;
