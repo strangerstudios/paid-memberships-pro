@@ -116,12 +116,13 @@
 			 * Filter whether to send an email.
 			 *
 			 * The recipient can still change after this filter (the template's To setting and the
-			 * pmpro_email_recipient filter run later), so check $email->data rather than $email->email.
+			 * pmpro_email_recipient filter run later), so check $pmpro_email->data rather than $pmpro_email->email.
+			 * Like the template's Disabled setting, returning false also stops test emails.
 			 *
 			 * @since TBD
 			 *
-			 * @param bool       $send  Whether to send the email. Default true.
-			 * @param PMProEmail $email The email being sent.
+			 * @param bool       $send        Whether to send the email. Default true.
+			 * @param PMProEmail $pmpro_email The email being sent.
 			 */
 			$send = apply_filters( 'pmpro_send_email', true, $this );
 
@@ -130,8 +131,8 @@
 			 *
 			 * @since TBD
 			 *
-			 * @param bool       $send  Whether to send the email.
-			 * @param PMProEmail $email The email being sent.
+			 * @param bool       $send        Whether to send the email.
+			 * @param PMProEmail $pmpro_email The email being sent.
 			 */
 			$send = apply_filters( 'pmpro_send_email_' . $this->template, $send, $this );
 
