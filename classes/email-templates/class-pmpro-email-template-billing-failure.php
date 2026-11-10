@@ -144,6 +144,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 			'{{ accountnumber }}' => __( 'The last four digits of the credit card number.', 'paid-memberships-pro' ),
 			'{{ expirationmonth }}' => __( 'The expiration month of the credit card.', 'paid-memberships-pro' ),
 			'{{ expirationyear }}' => __( 'The expiration year of the credit card.', 'paid-memberships-pro' ),
+			'{{ order_id }}' => __( 'The order ID.', 'paid-memberships-pro' ),
 			'{{ billing_update_url }}' => __( 'The URL where the member can update billing information for the failed subscription.', 'paid-memberships-pro' ),
 		);
 	}
@@ -196,6 +197,7 @@ class PMPro_Email_Template_Billing_Failure extends PMPro_Email_Template {
 			'accountnumber' => hideCardNumber( $order->accountnumber ),
 			'expirationmonth' => $order->expirationmonth,
 			'expirationyear' => $order->expirationyear,
+			'order_id' => ! empty( $order->id ) ? $order->code : '',
 			'billing_update_url' => $billing_update_url,
 		);
 	}
