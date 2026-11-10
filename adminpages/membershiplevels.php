@@ -519,11 +519,6 @@
 											} else {
 												esc_html_e('No', 'paid-memberships-pro' );
 											}
-
-											// Checkout fails until a new subscription delay or set expiration date is chosen.
-											if ( $level->allow_signups && pmpro_get_level_passed_date_error( $level ) ) {
-												echo ' <span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">' . esc_html__( 'Date Has Passed', 'paid-memberships-pro' ) . '</span>';
-											}
 											?></td>
 										<?php do_action( 'pmpro_membership_levels_table_extra_cols_body', $level ); ?>
 									</tr>

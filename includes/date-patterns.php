@@ -398,6 +398,49 @@ function pmpro_checkout_check_passed_dates( $level ) {
 add_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', 'pmpro_checkout_check_passed_dates' );
 
 /**
+ * Show a notice on PMPro admin pages listing the levels that allow signups but can't be checked out
+ * because their subscription delay or set expiration date has already passed.
+ *
+ * @since TBD
+ */
+function pmpro_passed_dates_admin_notice() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
+	if ( empty( $_REQUEST['page'] ) || 0 !== strpos( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'pmpro' ) ) {
+		return;
+	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+	if ( ! current_user_can( 'pmpro_membershiplevels' ) ) {
+		return;
+	}
+
+	$level_links = array();
+	foreach ( pmpro_getAllLevels( true ) as $level ) {
+		if ( $level->allow_signups && pmpro_get_level_passed_date_error( $level ) ) {
+			$level_links[] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $level->name ) . '</a>';
+		}
+	}
+
+	if ( empty( $level_links ) ) {
+		return;
+	}
+	?>
+	<div class="notice notice-error">
+		<p>
+			<?php
+			printf(
+				// translators: %s is a comma-separated list of linked membership level names.
+				wp_kses_post( __( '<strong>Checkout is blocked</strong> for these membership levels because their subscription delay or set expiration date has passed: %s. Edit each level to set a new date.', 'paid-memberships-pro' ) ),
+				wp_kses_post( implode( ', ', $level_links ) )
+			);
+			?>
+		</p>
+	</div>
+	<?php
+}
+add_action( 'admin_notices', 'pmpro_passed_dates_admin_notice' );
+
+/**
  * Reject a custom pricing discount code whose own subscription delay or set expiration date has already passed.
  *
  * Percentage and fixed amount codes use the level's dates, which are checked at checkout.
