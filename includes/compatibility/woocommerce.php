@@ -36,7 +36,7 @@ add_action( 'wp', 'pmpro_maybe_remove_wc_lostpassword_url_filter' );
  * the WP_User_Query that finds those users, so we use it to exclude members from that query alone.
  * It runs last so that no other callback on this filter can run a user query after we arm the exclusion.
  *
- * @since TBD
+ * @since 3.9.1
  *
  * @param array $roles Roles whose inactive accounts WooCommerce deletes.
  * @return array
@@ -50,7 +50,7 @@ add_filter( 'woocommerce_delete_inactive_account_roles', 'pmpro_arm_wc_inactive_
 /**
  * Leave anyone who has ever had a membership out of WooCommerce's inactive accounts query.
  *
- * @since TBD
+ * @since 3.9.1
  *
  * @param WP_User_Query $query The user query.
  */
@@ -72,7 +72,7 @@ function pmpro_exclude_members_from_wc_inactive_account_deletion( $query ) {
 /**
  * Note on WooCommerce's "Retain inactive accounts" setting that members are excluded from its cleanup.
  *
- * @since TBD
+ * @since 3.9.1
  *
  * @param array $settings WooCommerce account settings.
  * @return array

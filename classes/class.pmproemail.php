@@ -119,7 +119,7 @@
 			 * pmpro_email_recipient filter run later), so check $pmpro_email->data rather than $pmpro_email->email.
 			 * Like the template's Disabled setting, returning false also stops test emails.
 			 *
-			 * @since TBD
+			 * @since 3.9.1
 			 *
 			 * @param bool       $send        Whether to send the email. Default true.
 			 * @param PMProEmail $pmpro_email The email being sent.
@@ -129,7 +129,7 @@
 			/**
 			 * Filter whether to send an email with a specific template, e.g. pmpro_send_email_billing_failure.
 			 *
-			 * @since TBD
+			 * @since 3.9.1
 			 *
 			 * @param bool       $send        Whether to send the email.
 			 * @param PMProEmail $pmpro_email The email being sent.

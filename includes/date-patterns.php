@@ -340,7 +340,7 @@ function pmpro_get_set_expiration_date( $level_id, $code_id = null ) {
  * Patterns with Y or M tokens always resolve to their next occurrence, so only
  * a fixed date such as "2022-12-31" can pass.
  *
- * @since TBD
+ * @since 3.9.1
  *
  * @param string $date_pattern The date pattern to check.
  * @return bool True if the pattern resolves to a date before today.
@@ -355,7 +355,7 @@ function pmpro_date_pattern_has_passed( $date_pattern ) {
  *
  * Checkout can't give the member a first payment date or expiration date in the past.
  *
- * @since TBD
+ * @since 3.9.1
  *
  * @param object $level The level object. When code_id is set, the discount code's settings are checked.
  * @return string The error message, or an empty string if neither date has passed.
@@ -385,7 +385,7 @@ function pmpro_get_level_passed_date_error( $level ) {
 /**
  * Halt checkout if the level's subscription delay or set expiration date has already passed.
  *
- * @since TBD
+ * @since 3.9.1
  *
  * @param object|null $level The level being checked out.
  */
@@ -401,7 +401,7 @@ add_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', 'pmpro_check
  * Show a notice on PMPro admin pages listing the levels that allow signups but can't be checked out
  * because their subscription delay or set expiration date has already passed.
  *
- * @since TBD
+ * @since 3.9.1
  */
 function pmpro_passed_dates_admin_notice() {
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: only decides which admin pages show the notice.
@@ -445,7 +445,7 @@ add_action( 'admin_notices', 'pmpro_passed_dates_admin_notice' );
  *
  * Percentage and fixed amount codes use the level's dates, which are checked at checkout.
  *
- * @since TBD
+ * @since 3.9.1
  *
  * @param bool|string $okay     True if the code is okay, or false or an error message if not.
  * @param object      $dbcode   The discount code row.

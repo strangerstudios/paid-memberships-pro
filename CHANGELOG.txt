@@ -1,4 +1,22 @@
 == Changelog ==
+= 3.9.1 - 2026-11-10 =
+* SECURITY: Users who cannot edit users can no longer save a working `[pmpro_member]` shortcode by adding HTML that is removed on save or by nesting the shortcode inside its own name. #3951 (@dparker1005, @kta1kri)
+* ENHANCEMENT: Added the `pmpro_send_email` and `pmpro_send_email_{template}` filters to stop specific emails from sending, and the `order_id` variable to the Billing Failure emails. #3932 (@kimcoleman)
+* ENHANCEMENT: CSV exports now start with a UTF-8 byte order mark so Excel on Windows shows accented characters correctly. Use the `pmpro_csv_export_include_bom` filter to turn it off. #3947 (@andrewlimaza)
+* ENHANCEMENT: Site Health now shows each level's subscription delay and set expiration date settings. #3953 (@dparker1005)
+* ENHANCEMENT: The Default Value setting for date user fields now notes that dates use the YYYY-MM-DD format. #3934 (@flintfromthebasement)
+* ENHANCEMENT: The deprecated gateway migration tool now links to its own documentation page. #3927 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Checkout is now blocked with an error when a level's or discount code's set expiration date or subscription delay is a fixed date that has already passed. An admin notice on PMPro admin pages lists the affected levels. #3948 (@dparker1005)
+* BUG FIX/ENHANCEMENT: WooCommerce's "Retain inactive accounts" setting no longer deletes users with any membership history, and a note under the setting explains this. #3939 (@andrewlimaza)
+* BUG FIX: Upgrading from a version before 3.9 now deletes settings left behind by the Subscription Delays and Set Expiration Dates Add Ons when the site is no longer using them, so old delays and expiration dates do not return at checkout. A copy is kept in the `pmpro_upgrade_3_9_retired_date_settings` option. #3952 (@dparker1005)
+* BUG FIX: Fixed duplicate rows in large Members and Orders CSV exports when a batch was written twice, such as after a timeout or when two requests processed it at once. #3938 (@flintfromthebasement)
+* BUG FIX: Fixed the Logins report CSV export repeating rows and failing with a database error on sites with more users than fit in one batch. #3945 (@theluckystrike)
+* BUG FIX: Fixed the Export to CSV button not responding after an export failed to start. The error message is now shown on the button. #3930 (@dparker1005)
+* BUG FIX: Fixed the Export to CSV button offering or returning an export started with different filters than the current Members List or Orders page. #3931 (@dparker1005)
+* BUG FIX: Cancelling a Stripe Checkout payment now returns to checkout with the checkout link's arguments, such as a discount code, still applied. #3940 (@dparker1005)
+* BUG FIX: Fixed the `pmpro_updated_subscription` action never running. Saving an existing subscription fired `pmpro_added_subscription` instead, which now only runs when a subscription is created. #3944 (@dparker1005)
+* BUG FIX: Fixed a typo in the deprecated `pmpro_paypalexpress_session_vars_for_user_fields()` function that PHP compatibility scanners flagged. #3925 (@dparker1005)
+
 = 3.9 - 2026-10-27 =
 * SECURITY: Improved escaping and SQL query preparation throughout the plugin. #3827 (@dparker1005)
 * SECURITY: Added direct file access protection to plugin files. #3828 (@dparker1005)

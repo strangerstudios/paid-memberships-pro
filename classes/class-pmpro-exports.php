@@ -38,7 +38,7 @@ class PMPro_Exports {
 	/**
 	 * Whether the last process_export_chunk_record() call found another request writing the export.
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @var bool
 	 */
@@ -653,7 +653,7 @@ class PMPro_Exports {
 	 * and trims the file back to the last saved length first so a chunk that was written
 	 * but never recorded (e.g. the request timed out) isn't appended twice.
 	 *
-	 * @since TBD Locks the export and trims uncommitted rows before writing.
+	 * @since 3.9.1 Locks the export and trims uncommitted rows before writing.
 	 *
 	 * @param array $export Export record (will be mutated/saved).
 	 * @return int|\WP_Error Rows written or WP_Error.
@@ -692,7 +692,7 @@ class PMPro_Exports {
 	/**
 	 * Write the next chunk of an export. Call through process_export_chunk_record().
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @param array $export Export record (will be mutated/saved).
 	 * @return int|\WP_Error Rows written or WP_Error.
@@ -770,7 +770,7 @@ class PMPro_Exports {
 	 * The lock is the only protection against two requests writing the same export at once;
 	 * without it, trimming to file_bytes still prevents duplicates from a retried chunk.
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @param string $export_id Export ID.
 	 * @return bool|null True if acquired, false if another request holds it, null if locks are unavailable or disabled.
@@ -798,7 +798,7 @@ class PMPro_Exports {
 	/**
 	 * Release the per-export lock.
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @param string $export_id Export ID.
 	 */
@@ -810,7 +810,7 @@ class PMPro_Exports {
 	/**
 	 * Get the MySQL lock name for an export, namespaced to this site's database and table prefix.
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @param string $export_id Export ID.
 	 * @return string
@@ -823,7 +823,7 @@ class PMPro_Exports {
 	/**
 	 * Read an export record fresh from the database, keeping the in-memory download token.
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @param array $export Export record.
 	 * @return array|null
@@ -840,7 +840,7 @@ class PMPro_Exports {
 	/**
 	 * Trim an export file back to a given length.
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @param array $export Export record.
 	 * @param int   $bytes  Length to keep.
@@ -877,7 +877,7 @@ class PMPro_Exports {
 	/**
 	 * Get the current size of an export file in bytes.
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @param array $export Export record.
 	 * @return int|null Size in bytes, or null if it can't be read.
@@ -1241,7 +1241,7 @@ class PMPro_Exports {
 	 * is only written when the file is missing or empty, so a resumed chunk
 	 * never adds a second one.
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @param array $export Export record.
 	 * @return true|\WP_Error

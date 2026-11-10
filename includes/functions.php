@@ -5835,7 +5835,7 @@ function pmpro_get_memberships( $args = array() ) {
  * garbled unless the file starts with a UTF-8 BOM. Other spreadsheet apps and
  * text editors ignore the BOM.
  *
- * @since TBD
+ * @since 3.9.1
  *
  * @param string $context The export writing the file, e.g. 'members', 'orders', 'sales', 'memberships' or 'logins'.
  * @return string The UTF-8 BOM, or an empty string if it has been filtered off.
@@ -5844,7 +5844,7 @@ function pmpro_get_csv_bom( $context = '' ) {
 	/**
 	 * Filter whether CSV and TSV exports start with a UTF-8 byte order mark (BOM).
 	 *
-	 * @since TBD
+	 * @since 3.9.1
 	 *
 	 * @param bool   $include_bom Whether to write the BOM. Default true.
 	 * @param string $context     The export writing the file, e.g. 'members', 'orders', 'sales', 'memberships' or 'logins'.
