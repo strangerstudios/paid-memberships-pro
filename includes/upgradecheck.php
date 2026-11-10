@@ -480,9 +480,13 @@ function pmpro_checkForUpgrades() {
 	 * Run dbDelta to add the attachments column to the email log table and the
 	 * `discount_type`, `discount_value`, `apply_to_initial`, and `apply_to_recurring`
 	 * columns to discount codes for percentage/fixed amount discounts.
+	 * Since 3.9.1, also delete settings left behind by Subscription Delays and Set
+	 * Expiration Dates Add Ons that the site is no longer using.
 	 */
 	if ( $pmpro_db_version < 3.9 ) {
+		require_once( PMPRO_DIR . '/includes/updates/upgrade_3_9.php' );
 		pmpro_db_delta();
+		pmpro_upgrade_3_9();
 		update_option( 'pmpro_db_version', '3.9' );
 	}
 
