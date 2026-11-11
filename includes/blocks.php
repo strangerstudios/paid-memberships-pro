@@ -66,6 +66,9 @@ function pmpro_block_editor_assets() {
 		return;
 	}
 
+	// Load the frontend styles so server-rendered blocks match the frontend.
+	pmpro_enqueue_frontend_styles();
+
 	// Enqueue the CSS file css/blocks.editor.css.
 	wp_enqueue_style(
 		'pmpro-block-editor-css',
