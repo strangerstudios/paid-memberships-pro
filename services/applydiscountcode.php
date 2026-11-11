@@ -138,9 +138,9 @@
 
 				// Show the same first payment date that checkout will send to the gateway.
 				if ( ! empty( $code_level->id ) && pmpro_isLevelRecurring( $code_level ) ) {
-					$delay_date = pmpro_get_subscription_delay_date( $code_level->id, ! empty( $code_level->code_id ) ? $code_level->code_id : null );
-					if ( ! empty( $delay_date ) ) {
-						$code_level->profile_start_date = $delay_date . 'T0:0:0';
+					$profile_start_date = pmpro_get_subscription_delay_profile_start_date( $code_level->id, ! empty( $code_level->code_id ) ? $code_level->code_id : null );
+					if ( ! empty( $profile_start_date ) ) {
+						$code_level->profile_start_date = $profile_start_date;
 					}
 				}
 

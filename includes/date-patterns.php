@@ -309,6 +309,56 @@ function pmpro_get_subscription_delay_date( $level_id, $code_id = null, $current
 }
 
 /**
+ * Get the profile start date in UTC for a level with a subscription delay.
+ *
+ * For numeric delays, this preserves the current time of day in UTC so that
+ * evening checkouts in time zones behind UTC receive the full configured
+ * trial length. For date patterns, local midnight of the resolved date is
+ * converted to UTC.
+ *
+ * @since 3.9.1
+ *
+ * @param int      $level_id          The membership level ID.
+ * @param int|null $code_id           Optional discount code ID.
+ * @param int|null $current_timestamp Optional timestamp to calculate the delay from.
+ * @return string|false The profile start date in Y-m-d\TH:i:s format (UTC), or false if no valid delay.
+ */
+function pmpro_get_subscription_delay_profile_start_date( $level_id, $code_id = null, $current_timestamp = null ) {
+	$subscription_delay = pmpro_get_subscription_delay( $level_id, $code_id );
+	if ( empty( $subscription_delay ) ) {
+		return false;
+	}
+
+	if ( is_numeric( $subscription_delay ) ) {
+		$utc_timestamp = null !== $current_timestamp ? $current_timestamp : time();
+		return gmdate( 'Y-m-d\TH:i:s', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', $utc_timestamp ) );
+	}
+
+	// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
+	$local_timestamp = null !== $current_timestamp ? $current_timestamp : current_time( 'timestamp' );
+	$delay_date      = pmpro_resolve_date_pattern( $subscription_delay, $local_timestamp );
+	if ( empty( $delay_date ) ) {
+		return false;
+	}
+
+	// Don't let a resolved date in the past move the start date backwards.
+	$current_local_date = function_exists( 'wp_date' ) ? wp_date( 'Y-m-d', $local_timestamp ) : gmdate( 'Y-m-d', $local_timestamp );
+	if ( $delay_date < $current_local_date ) {
+		$delay_date = $current_local_date;
+	}
+
+	// Convert local midnight of the resolved date to UTC.
+	$timezone = function_exists( 'wp_timezone' ) ? wp_timezone() : new DateTimeZone( 'UTC' );
+	try {
+		$local_dt = new DateTimeImmutable( $delay_date . ' 00:00:00', $timezone );
+		return $local_dt->setTimezone( new DateTimeZone( 'UTC' ) )->format( 'Y-m-d\TH:i:s' );
+	} catch ( Exception $e ) {
+		return false;
+	}
+}
+
+
+/**
  * Get the set expiration date pattern for a level, optionally with a discount code.
  *
  * When a custom pricing discount code is passed, only the code's own setting is
