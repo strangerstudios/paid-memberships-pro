@@ -67,6 +67,17 @@ class PMPro_Email_Template_Membership_Expiring extends PMPro_Email_Template {
 	}
 
 	/**
+	 * Get the email category that members can opt out of to stop receiving this email.
+	 *
+	 * @since TBD
+	 *
+	 * @return string The email category slug.
+	 */
+	public static function get_email_category() {
+		return 'expiration_reminders';
+	}
+
+	/**
 	 * Get the default subject for the email.
 	 *
 	 * @since 3.4

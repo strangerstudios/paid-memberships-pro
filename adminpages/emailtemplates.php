@@ -24,7 +24,7 @@ if ( ! empty( $template ) ) {
 	?>
 	<hr class="wp-header-end">
 	<h1><?php esc_html_e( 'Edit Email Templates', 'paid-memberships-pro' ); ?></h1>
-	<p><?php esc_html_e( 'Select an email template to customize the subject and body of emails sent through your membership site. You can also disable a specific email or send a test version through this admin page.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/documentation/member-communications/list-of-pmpro-email-templates/" target="_blank"><?php esc_html_e( 'Click here for a description of each email sent to your members and admins at different stages of the member experience.', 'paid-memberships-pro'); ?></a></p>
+	<p><?php esc_html_e( 'Select an email template to customize the subject and body of emails sent through your membership site. You can also disable a specific email or send a test version through this admin page.', 'paid-memberships-pro' ); ?> <?php esc_html_e( 'Members can opt out of emails tagged with an email type.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/documentation/member-communications/list-of-pmpro-email-templates/" target="_blank"><?php esc_html_e( 'Click here for a description of each email sent to your members and admins at different stages of the member experience.', 'paid-memberships-pro'); ?></a></p>
 	<table class="wp-list-table widefat striped">
 		<thead>
 			<tr>
@@ -64,23 +64,12 @@ if ( ! empty( $template ) ) {
 				return strcasecmp( $a['description'], $b['description'] );
 			} );
 
-			// Move the default, header, and footer email templates to the bottom of the list.
-			$pmpro_email_templates_defaults = array_merge(
-				array_filter(
-					$pmpro_email_templates_defaults,
-					function( $key ) {
-						return ! in_array( $key, [ 'default', 'header', 'footer' ], true );
-					},
-					ARRAY_FILTER_USE_KEY
-				),
-				array_filter(
-					$pmpro_email_templates_defaults,
-					function( $key ) {
-						return in_array( $key, [ 'default', 'header', 'footer' ], true );
-					},
-					ARRAY_FILTER_USE_KEY
-				)
-			);
+			// Move the default, header, and footer email templates to the top of the list since they apply to every email.
+			foreach ( [ 'footer', 'header', 'default' ] as $top_key ) {
+				if ( isset( $pmpro_email_templates_defaults[ $top_key ] ) ) {
+					$pmpro_email_templates_defaults = [ $top_key => $pmpro_email_templates_defaults[ $top_key ] ] + $pmpro_email_templates_defaults;
+				}
+			}
 
 			foreach ( $pmpro_email_templates_defaults as $key => $template ) {
 				// If the template is the default template and we're not showing it in the dropdown, skip it.
@@ -91,6 +80,14 @@ if ( ! empty( $template ) ) {
 				<tr>
 					<td class="has-row-actions" data-colname="<?php esc_attr_e( 'Email Template Name', 'paid-memberships-pro' ); ?>">
 						<strong><a href="<?php echo esc_url( add_query_arg( [ 'page' => 'pmpro-emailtemplates', 'edit' => $key ] ), admin_url( 'admin.php' ) ); ?>"><?php echo esc_html( $template['description'] ); ?></a></strong>
+						<?php
+							// Tag emails that members can opt out of with their email type.
+							$email_category = pmpro_get_email_template_category( $key );
+							if ( ! empty( $email_category ) ) {
+								$email_categories = pmpro_get_email_categories();
+								echo '<br /><span class="pmpro_tag pmpro_tag-info">' . esc_html( $email_categories[ $email_category ]['label'] ) . '</span>';
+							}
+						?>
 						<div class="row-actions">
 						<?php
 							$actions = [

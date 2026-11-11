@@ -169,6 +169,20 @@
 							</td>
 						</tr>
 						<?php
+							$email_category = pmpro_get_email_template_category( $edit );
+							if ( ! empty( $email_category ) ) {
+								$email_categories = pmpro_get_email_categories();
+								?>
+								<tr>
+									<th scope="row" valign="top"><?php esc_html_e( 'Member Opt-Out', 'paid-memberships-pro' ); ?></th>
+									<td>
+										<span class="pmpro_tag pmpro_tag-info"><?php echo esc_html( $email_categories[ $email_category ]['label'] ); ?></span>
+										<p class="description"><?php esc_html_e( 'Members can turn off this email from their profile page or with the unsubscribe link in the email.', 'paid-memberships-pro' ); ?></p>
+									</td>
+								</tr>
+								<?php
+							}
+
 							if ( ! in_array( $edit, array( 'header', 'footer' ) ) ) {
 								// Determine if this is a member email or admin email.
 								$is_admin_email = ( strpos( $edit, '_admin' ) !== false );
