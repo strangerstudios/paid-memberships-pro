@@ -35,6 +35,15 @@ class PMPro_Exports {
 	 */
 	protected $default_async_threshold = 499;
 
+	/**
+	 * Whether the last process_export_chunk_record() call found another request writing the export.
+	 *
+	 * @since 3.9.1
+	 *
+	 * @var bool
+	 */
+	protected $last_chunk_busy = false;
+
 	/** Default export file expiration time (in seconds).
 	 *
 	 * How long to keep export files available for download after generation.
@@ -134,8 +143,8 @@ class PMPro_Exports {
 				$type = $record['type'];
 			}
 		}
-		// Delete the active export pointer for this type.
-		if ( ! empty( $type ) ) {
+		// Delete the active export pointer for this type, unless a newer export has replaced it.
+		if ( ! empty( $type ) && get_user_meta( $current_user_id, $this->get_active_meta_key( $type ), true ) === $export_id ) {
 			delete_user_meta( $current_user_id, $this->get_active_meta_key( $type ) );
 		}
 		// Delete the export record stored under the owner.
@@ -468,17 +477,17 @@ class PMPro_Exports {
 			return array( 'error' => __( 'You do not have permission to export this data.', 'paid-memberships-pro' ) );
 		}
 
-		// If an active export for this type exists for the user, return it instead of creating a new one.
+		// Normalize and sanitize args.
+		$filters = $this->sanitize_filters_for_type( $type, $args );
+
+		// If an active export for this type and these filters exists for the user, return it instead of creating a new one.
 		$active = $this->get_active_export_for_user( $user_id, $type );
-		if ( $active && ! in_array( $active['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
+		if ( $active && $active['filters'] == $filters && ! in_array( $active['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
 			return $this->format_public_export_response( $active );
 		}
 
 		// Ensure restricted dir exists.
 		pmpro_set_up_restricted_files_directory();
-
-		// Normalize and sanitize args.
-		$filters = $this->sanitize_filters_for_type( $type, $args );
 
 		// Determine counts and chunk sizes.
 		$total      = $this->count_total_for_type( $type, $filters );
@@ -488,6 +497,11 @@ class PMPro_Exports {
 		// Bail early if there is nothing to export.
 		if ( 0 === $total ) {
 			return array( 'error' => __( 'No records match the selected filters. Nothing to export.', 'paid-memberships-pro' ) );
+		}
+
+		// The new export replaces the active one, which can no longer be resumed. Schedule its file for deletion.
+		if ( $active ) {
+			$this->schedule_file_deletion( $active['file_name'], $this->default_export_exp, $user_id, $active['id'] );
 		}
 
 		// Create export record in user meta.
@@ -502,7 +516,8 @@ class PMPro_Exports {
 			$this->save_export_record( $export );
 
 			while ( 'complete' !== $export['status'] && 'error' !== $export['status'] ) {
-				$result = $this->process_export_chunk_record( $export );
+				$offset_before = (int) $export['next_offset'];
+				$result        = $this->process_export_chunk_record( $export );
 				if ( is_wp_error( $result ) ) {
 					$export['status'] = 'error';
 					$export['error']  = $result->get_error_message();
@@ -513,6 +528,10 @@ class PMPro_Exports {
 				if ( 0 === $result && $export['processed_count'] >= $export['total_count'] ) {
 					$export['status'] = 'complete';
 					$this->save_export_record( $export );
+					break;
+				}
+				// Another request holds the lock or no progress was made; status polling will pick the export back up.
+				if ( $this->last_chunk_busy || ( 0 === $result && (int) $export['next_offset'] === $offset_before && 'running' === $export['status'] ) ) {
 					break;
 				}
 			}
@@ -616,8 +635,8 @@ class PMPro_Exports {
 				return;
 			}
 
-			// Queue next chunk if not complete.
-			if ( 'complete' !== $export['status'] ) {
+			// Queue next chunk if not finished, unless another request is writing it and will queue it.
+			if ( ! $this->last_chunk_busy && ! in_array( $export['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
 				$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
 			}
 		} catch ( \Throwable $e ) {
@@ -630,10 +649,55 @@ class PMPro_Exports {
 	/**
 	 * Process a single chunk for an export record.
 	 *
+	 * Holds a per-export lock while writing so two requests can't write the same chunk,
+	 * and trims the file back to the last saved length first so a chunk that was written
+	 * but never recorded (e.g. the request timed out) isn't appended twice.
+	 *
+	 * @since 3.9.1 Locks the export and trims uncommitted rows before writing.
+	 *
 	 * @param array $export Export record (will be mutated/saved).
 	 * @return int|\WP_Error Rows written or WP_Error.
 	 */
 	protected function process_export_chunk_record( &$export ) {
+		$lock                  = $this->acquire_export_lock( $export['id'] );
+		$this->last_chunk_busy = ( false === $lock );
+		if ( $this->last_chunk_busy ) {
+			// Another request is writing this export right now and will queue the next chunk; report its latest progress.
+			$fresh = $this->reload_export_record( $export );
+			if ( ! empty( $fresh ) ) {
+				$export = $fresh;
+			}
+			return 0;
+		}
+
+		try {
+			// Reload the record now that we hold the lock; the copy passed in may be stale.
+			$fresh = $this->reload_export_record( $export );
+			if ( empty( $fresh ) ) {
+				return 0;
+			}
+			$export = $fresh;
+			if ( in_array( $export['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
+				return 0;
+			}
+
+			return $this->write_export_chunk( $export );
+		} finally {
+			if ( true === $lock ) {
+				$this->release_export_lock( $export['id'] );
+			}
+		}
+	}
+
+	/**
+	 * Write the next chunk of an export. Call through process_export_chunk_record().
+	 *
+	 * @since 3.9.1
+	 *
+	 * @param array $export Export record (will be mutated/saved).
+	 * @return int|\WP_Error Rows written or WP_Error.
+	 */
+	protected function write_export_chunk( &$export ) {
 		$total      = (int) $export['total_count'];
 		$offset     = (int) $export['next_offset'];
 		$chunk_size = (int) $export['chunk_size'];
@@ -657,10 +721,30 @@ class PMPro_Exports {
 			return 0;
 		}
 
+		// Drop anything past the last saved length: rows from an earlier attempt at this chunk that was never recorded.
+		$committed_bytes = isset( $export['file_bytes'] ) ? (int) $export['file_bytes'] : ( 0 === $offset ? 0 : null );
+		if ( null !== $committed_bytes && ! $this->truncate_export_file( $export, $committed_bytes ) ) {
+			return new \WP_Error( 'pmpro_export_file_write_error', __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
+		}
+
 		$write_header = ( 0 === $offset );
-		$written      = $this->write_rows_for_type( $export['type'], $export, $ids, $write_header );
+		if ( $write_header ) {
+			$bom_result = $this->maybe_write_csv_bom( $export );
+			if ( is_wp_error( $bom_result ) ) {
+				return $bom_result;
+			}
+		}
+		$written = $this->write_rows_for_type( $export['type'], $export, $ids, $write_header );
 		if ( is_wp_error( $written ) ) {
 			return $written;
+		}
+
+		// Without a reliable size, stop trimming for this export rather than trim to a wrong length.
+		$file_bytes = $this->get_export_file_size( $export );
+		if ( null === $file_bytes ) {
+			unset( $export['file_bytes'] );
+		} else {
+			$export['file_bytes'] = $file_bytes;
 		}
 
 		$processed                  = (int) $written;
@@ -678,6 +762,131 @@ class PMPro_Exports {
 		}
 
 		return $processed;
+	}
+
+	/**
+	 * Try to take the per-export lock without waiting.
+	 *
+	 * The lock is the only protection against two requests writing the same export at once;
+	 * without it, trimming to file_bytes still prevents duplicates from a retried chunk.
+	 *
+	 * @since 3.9.1
+	 *
+	 * @param string $export_id Export ID.
+	 * @return bool|null True if acquired, false if another request holds it, null if locks are unavailable or disabled.
+	 */
+	protected function acquire_export_lock( $export_id ) {
+		global $wpdb;
+
+		/** This filter is documented in services/class-pmpro-stripe-webhook-handler.php */
+		if ( ! apply_filters( 'pmpro_use_advisory_locks', true ) ) {
+			return null;
+		}
+
+		$got_lock = $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 0)', $this->get_export_lock_name( $export_id ) ) );
+		if ( '1' === $got_lock ) {
+			return true;
+		}
+		if ( '0' === $got_lock ) {
+			return false;
+		}
+
+		// GET_LOCK errored or isn't supported on this host; continue without the lock.
+		return null;
+	}
+
+	/**
+	 * Release the per-export lock.
+	 *
+	 * @since 3.9.1
+	 *
+	 * @param string $export_id Export ID.
+	 */
+	protected function release_export_lock( $export_id ) {
+		global $wpdb;
+		$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $this->get_export_lock_name( $export_id ) ) );
+	}
+
+	/**
+	 * Get the MySQL lock name for an export, namespaced to this site's database and table prefix.
+	 *
+	 * @since 3.9.1
+	 *
+	 * @param string $export_id Export ID.
+	 * @return string
+	 */
+	protected function get_export_lock_name( $export_id ) {
+		global $wpdb;
+		return 'pmpro_export_' . md5( $wpdb->dbname . $wpdb->prefix . $export_id );
+	}
+
+	/**
+	 * Read an export record fresh from the database, keeping the in-memory download token.
+	 *
+	 * @since 3.9.1
+	 *
+	 * @param array $export Export record.
+	 * @return array|null
+	 */
+	protected function reload_export_record( $export ) {
+		wp_cache_delete( (int) $export['user_id'], 'user_meta' );
+		$fresh = $this->get_export_record_for_user( $export['id'], (int) $export['user_id'] );
+		if ( is_array( $fresh ) && isset( $export['token'] ) ) {
+			$fresh['token'] = $export['token'];
+		}
+		return $fresh;
+	}
+
+	/**
+	 * Trim an export file back to a given length.
+	 *
+	 * @since 3.9.1
+	 *
+	 * @param array $export Export record.
+	 * @param int   $bytes  Length to keep.
+	 * @return bool False if the file couldn't be brought to exactly $bytes (including a missing or short file).
+	 */
+	protected function truncate_export_file( $export, $bytes ) {
+		$bytes     = max( 0, (int) $bytes );
+		$file_path = $this->get_file_path( basename( $export['file_name'] ) );
+		clearstatcache( true, $file_path );
+		if ( ! file_exists( $file_path ) ) {
+			return 0 === $bytes;
+		}
+
+		$size = filesize( $file_path );
+		if ( $size === $bytes ) {
+			return true;
+		}
+		if ( false === $size || $size < $bytes ) {
+			// Rows we already counted are missing; don't keep appending to a short file.
+			return false;
+		}
+
+		$fh = fopen( $file_path, 'r+' );
+		if ( false === $fh ) {
+			return false;
+		}
+		$truncated = ftruncate( $fh, $bytes );
+		fclose( $fh );
+
+		clearstatcache( true, $file_path );
+		return $truncated && filesize( $file_path ) === $bytes;
+	}
+
+	/**
+	 * Get the current size of an export file in bytes.
+	 *
+	 * @since 3.9.1
+	 *
+	 * @param array $export Export record.
+	 * @return int|null Size in bytes, or null if it can't be read.
+	 */
+	protected function get_export_file_size( $export ) {
+		$file_path = $this->get_file_path( basename( $export['file_name'] ) );
+		clearstatcache( true, $file_path );
+		$size = file_exists( $file_path ) ? filesize( $file_path ) : false;
+		return false === $size ? null : (int) $size;
 	}
 
 	/**
@@ -705,8 +914,14 @@ class PMPro_Exports {
 
 	/**
 	 * Get status for an export. If export_id omitted, return active export for current user and type.
+	 *
+	 * @since 3.9.1 Added the `$filters` parameter.
+	 *
+	 * @param string     $type      Export type.
+	 * @param string     $export_id Optional. Export ID.
+	 * @param array|null $filters   Optional. When looking up the active export, only return it if it was started with these filters.
 	 */
-	public function get_status( $type, $export_id = '' ) {
+	public function get_status( $type, $export_id = '', $filters = null ) {
 		$user_id = get_current_user_id();
 		if ( empty( $user_id ) ) {
 			return array( 'error' => __( 'Not logged in.', 'paid-memberships-pro' ) );
@@ -719,6 +934,10 @@ class PMPro_Exports {
 			$export = $this->get_active_export_for_user( $user_id, $type );
 		}
 		if ( empty( $export ) || (int) $export['user_id'] !== (int) $user_id || $export['type'] !== $type ) {
+			return array( 'error' => __( 'No export found.', 'paid-memberships-pro' ) );
+		}
+		// Don't offer an export that was started with different filters (e.g. another membership level).
+		if ( empty( $export_id ) && null !== $filters && $export['filters'] != $this->sanitize_filters_for_type( $type, $filters ) ) {
 			return array( 'error' => __( 'No export found.', 'paid-memberships-pro' ) );
 		}
 		if ( ! $this->user_can_export( $type, $user_id ) ) {
@@ -763,7 +982,7 @@ class PMPro_Exports {
 					$this->save_export_record( $export );
 					return $this->format_public_export_response( $export );
 				}
-				if ( 'complete' !== $export['status'] ) {
+				if ( ! $this->last_chunk_busy && ! in_array( $export['status'], array( 'complete', 'error', 'cancelled' ), true ) ) {
 					$this->enqueue_next_chunk( $export['id'], $export['user_id'] );
 				}
 			}
@@ -1010,6 +1229,51 @@ class PMPro_Exports {
 			return new \WP_Error( 'pmpro_export_file_write_error', __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
 		}
 		return $fh;
+	}
+
+	/**
+	 * Write the UTF-8 BOM to the start of a new export file.
+	 *
+	 * Runs before the first chunk so it covers every export type, including
+	 * custom types added through the pmpro_export_type_configs filter. Only
+	 * .csv and .tsv files get the BOM, so a custom type renamed to another
+	 * format (e.g. .json) through pmpro_export_file_name is left alone. The BOM
+	 * is only written when the file is missing or empty, so a resumed chunk
+	 * never adds a second one.
+	 *
+	 * @since 3.9.1
+	 *
+	 * @param array $export Export record.
+	 * @return true|\WP_Error
+	 */
+	protected function maybe_write_csv_bom( $export ) {
+		$extension = strtolower( pathinfo( $export['file_name'], PATHINFO_EXTENSION ) );
+		if ( ! in_array( $extension, array( 'csv', 'tsv' ), true ) ) {
+			return true;
+		}
+
+		$bom = pmpro_get_csv_bom( $export['type'] );
+		if ( '' === $bom ) {
+			return true;
+		}
+
+		$file_path = $this->get_file_path( $export['file_name'] );
+		clearstatcache( true, $file_path );
+		if ( file_exists( $file_path ) && filesize( $file_path ) > 0 ) {
+			return true;
+		}
+
+		$fh = $this->open_export_file_handle( $export );
+		if ( is_wp_error( $fh ) ) {
+			return $fh;
+		}
+		$written = fwrite( $fh, $bom );
+		fclose( $fh );
+		if ( strlen( $bom ) !== $written ) {
+			return new \WP_Error( 'pmpro_export_file_write_error', __( 'Unable to write to export file.', 'paid-memberships-pro' ) );
+		}
+
+		return true;
 	}
 
 	/**

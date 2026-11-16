@@ -608,6 +608,9 @@ function pmpro_userfields_prep_click_events() {
 		if (jQuery.inArray(fieldtype, defaulttypes) > -1) {
 			fielddefault.show();
 		}
+
+		// Show the date format hint for the default value on date fields.
+		fielddefault.find('.pmpro_userfield-field-setting_default-date-hint').toggle(fieldtype === 'date');
 	});
 
 	// Suggest name after leaving label field.
@@ -1585,7 +1588,9 @@ jQuery(document).ready(function ($) {
 	}
 
 	function startExport($btn){
-		if(($btn.attr('data-status')||'idle') !== 'idle'){ return; }
+		// Allow starting from idle or retrying after an error.
+		var currentStatus = $btn.attr('data-status') || 'idle';
+		if(currentStatus !== 'idle' && currentStatus !== 'error' && currentStatus !== 'error_start'){ return; }
 		var type = $btn.data('type') || 'members';
 		var filters = $btn.data('filters') || {};
 		if (typeof filters === 'string') { try { filters = JSON.parse(filters); } catch(e){ filters = {}; } }
@@ -1599,8 +1604,12 @@ jQuery(document).ready(function ($) {
 			headers: { 'Content-Type':'application/json', 'X-WP-Nonce': nonce },
 			body: JSON.stringify(payload)
 		}).then(function(r){ return r.json(); }).then(function(data){
-			if(data && data.error){
+			// PMPro returns { error }; WordPress REST errors (e.g. expired nonce) return { code, message }.
+			var errorMessage = data && ( data.error || ( data.code && data.message ) );
+			if(errorMessage){
 				setButtonStateKey($btn, 'error_start');
+				// Show the server's message (e.g. no records match the current filters).
+				if(typeof errorMessage === 'string'){ $btn.text(errorMessage); }
 				return;
 			}
 			$btn.attr('data-export-id', data.export_id || '');
@@ -1675,8 +1684,12 @@ jQuery(document).ready(function ($) {
 		var statusUrlBase = $btn.data('statusUrl') || ($btn.data('status-url')) || (window.wpApiSettings && wpApiSettings.root ? (wpApiSettings.root + 'pmpro/v1/export/status') : null);
 		var nonce = $btn.data('nonce') || (window.wpApiSettings && wpApiSettings.nonce);
 		if(!statusUrlBase || !nonce){ return; }
+		// Only resume an export that was started with this page's filters.
+		var filters = $btn.data('filters') || {};
+		if (typeof filters === 'string') { try { filters = JSON.parse(filters); } catch(e){ filters = {}; } }
 		var url = new URL(statusUrlBase);
 		url.searchParams.set('type', type);
+		url.searchParams.set('filters', JSON.stringify(filters));
 		fetch(url.toString(), { headers: { 'X-WP-Nonce': nonce } })
 			.then(function(r){ return r.json(); })
 			.then(function(data){
