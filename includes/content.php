@@ -490,7 +490,8 @@ function pmpro_comments_filter($comments, $post_id = NULL) {
 	if(!$comments)
 		return $comments;	//if they are closed anyway, we don't need to check
 
-	$hasaccess = pmpro_has_membership_access(NULL, NULL, true);
+	// Check the post WordPress passed in. REST requests and comment form submissions have no global post to fall back on.
+	$hasaccess = pmpro_has_membership_access( empty( $post_id ) ? NULL : $post_id, NULL, true );
 	if( is_array( $hasaccess ) ) {
 		//returned an array to give us the membership level values
 		$post_membership_levels_ids = $hasaccess[1];
