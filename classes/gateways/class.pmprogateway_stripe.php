@@ -1959,19 +1959,24 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string The Stripe Dashboard URL.
 	 */
 	public static function get_dashboard_url( $path = '' ) {
-		// Anything other than live uses sandbox credentials, so treat it as sandbox here too.
-		$gateway_environment = 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox';
-		$url                 = 'https://dashboard.stripe.com/';
+		$url     = 'https://dashboard.stripe.com/';
+		$is_test = 'sandbox' === get_option( 'pmpro_gateway_environment' );
 
-		// Prefix the connected account ID so the Dashboard opens the account that holds the data.
-		if ( ! self::using_api_keys() && self::has_connect_credentials( $gateway_environment ) ) {
-			$account_id = get_option( 'pmpro_' . $gateway_environment . '_stripe_connect_user_id' );
-			if ( is_string( $account_id ) && preg_match( '/^acct_[A-Za-z0-9]+$/', $account_id ) ) {
-				$url .= $account_id . '/';
+		if ( ! self::using_api_keys() ) {
+			// Anything other than live uses sandbox Connect credentials, so treat it as sandbox here too.
+			$gateway_environment = 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox';
+			$is_test             = 'sandbox' === $gateway_environment;
+
+			// Prefix the connected account ID so the Dashboard opens the account that holds the data.
+			if ( self::has_connect_credentials( $gateway_environment ) ) {
+				$account_id = get_option( 'pmpro_' . $gateway_environment . '_stripe_connect_user_id' );
+				if ( is_string( $account_id ) && preg_match( '/^acct_[A-Za-z0-9]+$/', $account_id ) ) {
+					$url .= $account_id . '/';
+				}
 			}
 		}
 
-		if ( 'sandbox' === $gateway_environment ) {
+		if ( $is_test ) {
 			$url .= 'test/';
 		}
 
