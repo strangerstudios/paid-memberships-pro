@@ -1415,7 +1415,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<tr>
 					<th><?php esc_html_e( 'Stripe Customer', 'paid-memberships-pro' ); ?></th>
 					<td>
-						<a target="_blank" href="<?php echo esc_url( 'https://dashboard.stripe.com/' . ( get_option( 'pmpro_gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ); ?>"><?php esc_html_e( 'Edit customer in Stripe', 'paid-memberships-pro' ); ?></a>
+						<a target="_blank" href="<?php echo esc_url( self::get_dashboard_url( 'customers/' . $customer->id ) ); ?>"><?php esc_html_e( 'Edit customer in Stripe', 'paid-memberships-pro' ); ?></a>
 					</td>
 				</tr>
 			</table>
@@ -1948,6 +1948,33 @@ class PMProGateway_stripe extends PMProGateway {
 				get_option( 'pmpro_sandbox_stripe_connect_publishablekey' )
 			);
 		}
+	}
+
+	/**
+	 * Get a Stripe Dashboard URL for the account and environment this site is using.
+	 *
+	 * @since 3.9.3
+	 *
+	 * @param string $path Dashboard path, e.g. 'customers/cus_123'.
+	 * @return string The Stripe Dashboard URL.
+	 */
+	public static function get_dashboard_url( $path = '' ) {
+		$gateway_environment = get_option( 'pmpro_gateway_environment' );
+		$url                 = 'https://dashboard.stripe.com/';
+
+		// Prefix the connected account ID so the Dashboard opens the account that holds the data.
+		if ( ! self::using_api_keys() && self::has_connect_credentials( $gateway_environment ) ) {
+			$account_id = get_option( 'pmpro_' . ( 'live' === $gateway_environment ? 'live' : 'sandbox' ) . '_stripe_connect_user_id' );
+			if ( is_string( $account_id ) && preg_match( '/^acct_[A-Za-z0-9]+$/', $account_id ) ) {
+				$url .= $account_id . '/';
+			}
+		}
+
+		if ( 'sandbox' === $gateway_environment ) {
+			$url .= 'test/';
+		}
+
+		return $url . ltrim( $path, '/' );
 	}
 
 	/**
