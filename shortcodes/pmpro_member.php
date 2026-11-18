@@ -261,18 +261,25 @@ function pmpro_maybe_strip_member_shortcode( $content ) {
 	// Okay, we have a string, figure out the regex.
 	$shortcodeRegex = get_shortcode_regex( array( 'pmpro_member' ) );	
 
-	// Replace shortcode wrapped in block comments.
 	$blockWrapperPattern = "/<!-- wp:shortcode -->\s*$shortcodeRegex\s*<!-- \/wp:shortcode -->/s";
-	$content = preg_replace( $blockWrapperPattern, '', $content );
-
-	// Replace the shortcode by itself.
 	$shortcodePattern = "/$shortcodeRegex/";
-	$content = preg_replace( $shortcodePattern, '', $content );
+
+	// Repeat until nothing changes, since removing one shortcode can leave another behind (e.g. [pmpro_[pmpro_member]member]).
+	do {
+		$previous_content = $content;
+
+		// Replace shortcode wrapped in block comments.
+		$content = preg_replace( $blockWrapperPattern, '', $content );
+
+		// Replace the shortcode by itself.
+		$content = preg_replace( $shortcodePattern, '', $content );
+	} while ( $content !== $previous_content );
 
 	return $content;
 }
-add_filter( 'content_save_pre', 'pmpro_maybe_strip_member_shortcode' );
-add_filter( 'excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode' );
+// Run last so that kses and other save filters can't rebuild the shortcode after it is stripped.
+add_filter( 'content_save_pre', 'pmpro_maybe_strip_member_shortcode', PHP_INT_MAX );
+add_filter( 'excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode', PHP_INT_MAX );
 add_filter( 'widget_update_callback', 'pmpro_maybe_strip_member_shortcode' );
 
 /**

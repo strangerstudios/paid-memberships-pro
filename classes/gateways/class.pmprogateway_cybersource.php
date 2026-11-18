@@ -341,13 +341,13 @@
 			}
 			catch(Throwable $t)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
 			catch(Exception $e)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $e->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $e->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
@@ -393,13 +393,13 @@
 			}
 			catch(Throwable $t)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
 			catch(Exception $e)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $e->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $e->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
@@ -503,13 +503,13 @@
 			}
 			catch(Throwable $t)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
 			catch(Exception $e)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $e->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $e->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
@@ -693,13 +693,13 @@
 			}
 			catch(Throwable $t)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
 			catch(Exception $e)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $e->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $e->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
@@ -777,13 +777,13 @@
 			}
 			catch(Throwable $t)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
 			catch(Exception $e)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $e->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $e->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
@@ -831,13 +831,13 @@
 			}
 			catch(Throwable $t)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}
 			catch(Exception $e)
 			{
-				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $e->getMessage() );
+				$order->error = sprintf( __( 'Error communicating with Cybersource: %s', 'paid-memberships-pro' ), $e->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
 				return false;
 			}

@@ -298,6 +298,9 @@ $filename = tempnam( $tmp_dir, 'pmpro_olcsv_' );
 // open in append mode
 $csv_fh = fopen( $filename, 'a' );
 
+// Write the UTF-8 BOM so Excel on Windows reads accented characters correctly.
+fwrite( $csv_fh, pmpro_get_csv_bom( 'memberships' ) );
+
 // write the CSV header to the file
 fprintf( $csv_fh, '%s', $csv_file_header );
 

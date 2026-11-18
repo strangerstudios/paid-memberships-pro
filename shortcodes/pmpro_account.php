@@ -609,7 +609,19 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			<?php } ?>
 		<?php } ?>
 
-		<?php if ( in_array('links', $sections ) && ( has_filter( 'pmpro_member_links_top' ) || has_filter( 'pmpro_member_links_bottom' ) ) ) { ?>
+		<?php
+		if ( in_array( 'links', $sections ) && ( has_filter( 'pmpro_member_links_top' ) || has_filter( 'pmpro_member_links_bottom' ) ) ) {
+			// Collect the links first. Add Ons hook in for every member and only print a link when it applies,
+			// so the hooks can run and print nothing. Skip the section then, instead of showing an empty card.
+			ob_start();
+			do_action( 'pmpro_member_links_top' );
+			do_action( 'pmpro_member_links_bottom' );
+			$member_links = ob_get_clean();
+		} else {
+			$member_links = '';
+		}
+
+		if ( '' !== trim( $member_links ) ) { ?>
 			<section id="pmpro_account-links" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_account-links' ) ); ?>">
 				<?php
 					if ( '' !== $title ) { // Check if title is being forced to not show.
@@ -623,11 +635,8 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 						<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list' ) ); ?>">
 							<?php
-								do_action("pmpro_member_links_top");
-							?>
-
-							<?php
-								do_action("pmpro_member_links_bottom");
+								// Already escaped by the Add Ons that print the links.
+								echo $member_links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							?>
 						</ul>
 					</div> <!-- end pmpro_card_content -->
