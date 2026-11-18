@@ -4,11 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Enqueue frontend JavaScript and CSS
+ * Enqueue the frontend base and style variation stylesheets.
+ *
+ * Used on the frontend and in the block editor, so blocks that render
+ * PMPro markup look the same in both.
+ *
+ * @since TBD
  */
-function pmpro_enqueue_scripts() {
-	global $pmpro_level, $pmpro_pages;
-
+function pmpro_enqueue_frontend_styles() {
 	// Load the base stylesheet.
 	wp_enqueue_style( 'pmpro_frontend_base', plugins_url( 'css/frontend/base.css', dirname(__FILE__) ), array(), PMPRO_VERSION, 'all' );
 
@@ -24,6 +27,15 @@ function pmpro_enqueue_scripts() {
 	if ( is_rtl() ) {
 		wp_enqueue_style( 'pmpro_frontend_base_rtl', plugins_url( 'css/frontend/base-rtl.css', dirname(__FILE__) ), array(), PMPRO_VERSION, 'screen' );
 	}
+}
+
+/**
+ * Enqueue frontend JavaScript and CSS
+ */
+function pmpro_enqueue_scripts() {
+	global $pmpro_level, $pmpro_pages;
+
+	pmpro_enqueue_frontend_styles();
 
 	// Checkout page JS
 	if ( pmpro_is_checkout() ) {
