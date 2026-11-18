@@ -612,8 +612,7 @@ add_filter( 'the_comments', 'pmpro_comments_query_filter' );
  *
  * Removing the comments after the query isn't enough for the REST API: its total count and
  * search parameters would still show whether a restricted post has comments matching a search.
- * This finds the restricted posts that have comments and excludes the ones the current user
- * can't access from the query itself.
+ * This excludes the restricted posts the current user can't access from the query itself.
  *
  * @since TBD
  *
@@ -628,23 +627,57 @@ function pmpro_rest_comment_query( $prepared_args, $request ) {
 		return $prepared_args;
 	}
 
-	// Posts with comments that are restricted by level or by a restricted term.
-	$restricted_post_ids = $wpdb->get_col(
-		"SELECT DISTINCT c.comment_post_ID
-		FROM {$wpdb->comments} c
-		WHERE c.comment_post_ID IN( SELECT mp.page_id FROM {$wpdb->pmpro_memberships_pages} mp )
-		OR c.comment_post_ID IN(
-			SELECT tr.object_id
-			FROM {$wpdb->term_relationships} tr
-			INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
-			INNER JOIN {$wpdb->pmpro_memberships_categories} mc ON tt.term_id = mc.category_id
-		)"
-	); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- Only table names from $wpdb are interpolated.
-
 	$hidden_post_ids = array();
-	foreach ( $restricted_post_ids as $post_id ) {
-		if ( ! pmpro_can_read_post_comments( (int) $post_id ) ) {
-			$hidden_post_ids[] = (int) $post_id;
+	if ( ! empty( $prepared_args['post__in'] ) ) {
+		// Only comments on the requested posts can match, so check each of those posts.
+		foreach ( array_unique( array_filter( array_map( 'intval', (array) $prepared_args['post__in'] ) ) ) as $post_id ) {
+			if ( ! pmpro_can_read_post_comments( $post_id ) ) {
+				$hidden_post_ids[] = $post_id;
+			}
+		}
+	} else {
+		/*
+		 * Running pmpro_has_membership_access() on every restricted post is too slow on large sites,
+		 * so check the level restrictions directly, like pmpro_search_filter() does.
+		 */
+		$restrictions = $wpdb->get_results(
+			"SELECT mp.page_id AS post_id, mp.membership_id
+			FROM {$wpdb->pmpro_memberships_pages} mp
+			WHERE EXISTS( SELECT 1 FROM {$wpdb->comments} c WHERE c.comment_post_ID = mp.page_id )
+			UNION
+			SELECT tr.object_id AS post_id, mc.membership_id
+			FROM {$wpdb->pmpro_memberships_categories} mc
+			INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = mc.category_id
+			INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
+			WHERE EXISTS( SELECT 1 FROM {$wpdb->comments} c WHERE c.comment_post_ID = tr.object_id )"
+		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- Only table names from $wpdb are interpolated.
+
+		$user_level_ids = array();
+		if ( is_user_logged_in() ) {
+			$user_levels    = pmpro_getMembershipLevelsForUser( get_current_user_id() );
+			$user_level_ids = empty( $user_levels ) ? array() : array_map( 'intval', wp_list_pluck( $user_levels, 'id' ) );
+		}
+
+		// Hide posts that are restricted to levels the user doesn't have.
+		$restricted_post_ids = array();
+		$unlocked_post_ids   = array();
+		foreach ( $restrictions as $restriction ) {
+			$restricted_post_ids[ (int) $restriction->post_id ] = true;
+			if ( in_array( (int) $restriction->membership_id, $user_level_ids, true ) ) {
+				$unlocked_post_ids[ (int) $restriction->post_id ] = true;
+			}
+		}
+		$hidden_post_ids = array_keys( array_diff_key( $restricted_post_ids, $unlocked_post_ids ) );
+
+		// Users who can edit a post can read its comments.
+		if ( ! empty( $hidden_post_ids ) && current_user_can( 'edit_posts' ) ) {
+			_prime_post_caches( $hidden_post_ids, false, false );
+			foreach ( $hidden_post_ids as $key => $post_id ) {
+				if ( current_user_can( 'edit_post', $post_id ) ) {
+					unset( $hidden_post_ids[ $key ] );
+				}
+			}
+			$hidden_post_ids = array_values( $hidden_post_ids );
 		}
 	}
 
