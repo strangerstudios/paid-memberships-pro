@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.9.1\n"
+"Project-Id-Version: Paid Memberships Pro 3.9.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-10T20:01:49+00:00\n"
+"POT-Creation-Date: 2026-11-18T15:39:36+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -9728,7 +9728,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_cybersource.php:786
 #: classes/gateways/class.pmprogateway_cybersource.php:834
 #: classes/gateways/class.pmprogateway_cybersource.php:840
-msgid "Error communicating with Cybersource: %"
+#, php-format
+msgid "Error communicating with Cybersource: %s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_cybersource.php:345
@@ -11902,6 +11903,10 @@ msgstr ""
 
 #: includes/compatibility/woocommerce.php:86
 msgid "Current and past members are excluded from this cleanup."
+msgstr ""
+
+#: includes/content.php:743
+msgid "Sorry, you are not allowed to read this comment."
 msgstr ""
 
 #: includes/countries.php:17
@@ -14671,15 +14676,15 @@ msgstr ""
 #: includes/login.php:709
 #: includes/login.php:880
 #: includes/profile.php:1298
-#: includes/scripts.php:46
-#: includes/scripts.php:89
+#: includes/scripts.php:58
+#: includes/scripts.php:101
 #: pages/checkout.php:282
 msgid "Show Password"
 msgstr ""
 
 #: includes/login.php:700
-#: includes/scripts.php:45
-#: includes/scripts.php:88
+#: includes/scripts.php:57
+#: includes/scripts.php:100
 msgid "Hide Password"
 msgstr ""
 
@@ -14713,7 +14718,7 @@ msgstr ""
 
 #: includes/login.php:894
 #: includes/profile.php:1320
-#: includes/scripts.php:86
+#: includes/scripts.php:98
 msgid "Strength Indicator"
 msgstr ""
 
@@ -15128,11 +15133,11 @@ msgstr ""
 msgid "File not found."
 msgstr ""
 
-#: includes/scripts.php:47
+#: includes/scripts.php:59
 msgid "Please enter a discount code to apply."
 msgstr ""
 
-#: includes/scripts.php:173
+#: includes/scripts.php:185
 msgid "Plugin updated successfully."
 msgstr ""
 
@@ -15857,7 +15862,7 @@ msgstr ""
 msgid "Please contact the site administrator for full order history."
 msgstr ""
 
-#: shortcodes/pmpro_account.php:618
+#: shortcodes/pmpro_account.php:630
 msgid "Member Links"
 msgstr ""
 

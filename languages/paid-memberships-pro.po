@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.9.1\n"
+"Project-Id-Version: Paid Memberships Pro 3.9.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-10T20:01:51+00:00\n"
+"POT-Creation-Date: 2026-11-18T15:39:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -20720,6 +20720,8 @@ msgstr ""
 #: includes/scripts.php:46
 #: includes/scripts.php:89
 #: pages/checkout.php:282
+#: includes/scripts.php:58
+#: includes/scripts.php:101
 msgid "Show Password"
 msgstr ""
 
@@ -20731,6 +20733,8 @@ msgstr ""
 #: includes/login.php:700
 #: includes/scripts.php:45
 #: includes/scripts.php:88
+#: includes/scripts.php:57
+#: includes/scripts.php:100
 msgid "Hide Password"
 msgstr ""
 
@@ -20791,6 +20795,7 @@ msgstr ""
 #: includes/login.php:894
 #: includes/profile.php:1320
 #: includes/scripts.php:86
+#: includes/scripts.php:98
 msgid "Strength Indicator"
 msgstr ""
 
@@ -21418,6 +21423,7 @@ msgstr ""
 #: includes/scripts.php:163
 #: includes/scripts.php:164
 #: includes/scripts.php:173
+#: includes/scripts.php:185
 msgid "Plugin updated successfully."
 msgstr ""
 
@@ -22468,6 +22474,7 @@ msgstr ""
 #: shortcodes/pmpro_account.php:443
 #: shortcodes/pmpro_account.php:463
 #: shortcodes/pmpro_account.php:618
+#: shortcodes/pmpro_account.php:630
 msgid "Member Links"
 msgstr ""
 
@@ -24270,6 +24277,7 @@ msgstr ""
 
 #: includes/scripts.php:43
 #: includes/scripts.php:47
+#: includes/scripts.php:59
 msgid "Please enter a discount code to apply."
 msgstr ""
 
@@ -25850,4 +25858,24 @@ msgstr ""
 
 #: includes/date-patterns.php:570
 msgid "This date has already passed. Checkout will fail until you set a new date."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_cybersource.php:344
+#: classes/gateways/class.pmprogateway_cybersource.php:350
+#: classes/gateways/class.pmprogateway_cybersource.php:396
+#: classes/gateways/class.pmprogateway_cybersource.php:402
+#: classes/gateways/class.pmprogateway_cybersource.php:506
+#: classes/gateways/class.pmprogateway_cybersource.php:512
+#: classes/gateways/class.pmprogateway_cybersource.php:696
+#: classes/gateways/class.pmprogateway_cybersource.php:702
+#: classes/gateways/class.pmprogateway_cybersource.php:780
+#: classes/gateways/class.pmprogateway_cybersource.php:786
+#: classes/gateways/class.pmprogateway_cybersource.php:834
+#: classes/gateways/class.pmprogateway_cybersource.php:840
+#, php-format
+msgid "Error communicating with Cybersource: %s"
+msgstr ""
+
+#: includes/content.php:743
+msgid "Sorry, you are not allowed to read this comment."
 msgstr ""
