@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Used on the frontend and in the block editor, so blocks that render
  * PMPro markup look the same in both.
  *
- * @since TBD
+ * @since 3.9.2
  */
 function pmpro_enqueue_frontend_styles() {
 	// Load the base stylesheet.

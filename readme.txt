@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.9.1
+Stable tag: 3.9.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,13 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.9.2 - 2026-11-18 =
+* SECURITY: Comments on restricted posts are no longer shown to users without access through the REST API, comment feeds or blocks that list comments, and those users can no longer post comments, pingbacks or trackbacks on restricted posts. #3963 (@dparker1005, @kta1kri)
+* ENHANCEMENT: Blocks that show PMPro content, such as the Events block in the PMPro Events Add On, now look the same in the block editor as on the frontend. Adds the `pmpro_enqueue_frontend_styles()` function. #3955 (@kimcoleman)
+* BUG FIX: Fixed a fatal error on PHP 8 when the CyberSource gateway could not communicate with CyberSource. #3958 (@dparker1005)
+* BUG FIX: The Member Links section of the Membership Account page is now hidden when no links are shown, instead of showing an empty card. #3962 (@kimcoleman)
+* BUG FIX: Removed the space between the currency symbol and amounts for South African Rand. #3954 (@andrewlimaza)
+
 = 3.9.1 - 2026-11-10 =
 * SECURITY: Users who cannot edit users can no longer save a working `[pmpro_member]` shortcode by adding HTML that is removed on save or by nesting the shortcode inside its own name. #3951 (@dparker1005, @kta1kri)
 * ENHANCEMENT: Added the `pmpro_send_email` and `pmpro_send_email_{template}` filters to stop specific emails from sending, and the `order_id` variable to the Billing Failure emails. #3932 (@kimcoleman)

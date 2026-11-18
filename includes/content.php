@@ -546,7 +546,7 @@ add_filter( 'pings_open', 'pmpro_comments_filter', 10, 2 );
  *
  * Users who can edit the post can always read its comments so that the editor keeps working.
  *
- * @since TBD
+ * @since 3.9.2
  *
  * @param int $post_id The post ID.
  * @return bool
@@ -561,7 +561,7 @@ function pmpro_can_read_post_comments( $post_id ) {
  * Users who can moderate comments, or edit the comment's post, keep every comment so that
  * comment moderation and the editor keep working.
  *
- * @since TBD
+ * @since 3.9.2
  *
  * @param WP_Comment[] $comments The comments to check.
  * @return WP_Comment[] The comments the current user can read.
@@ -598,7 +598,7 @@ function pmpro_remove_restricted_comments( $comments ) {
  * The comments template already hides these comments, but the REST API, the Latest Comments block
  * and other code use WP_Comment_Query directly.
  *
- * @since TBD
+ * @since 3.9.2
  *
  * @param WP_Comment[] $comments The comments returned by the query.
  * @return WP_Comment[]
@@ -615,7 +615,7 @@ add_filter( 'the_comments', 'pmpro_comments_query_filter' );
  * search parameters would still show whether a restricted post has comments matching a search.
  * This excludes the restricted posts the current user can't access from the query itself.
  *
- * @since TBD
+ * @since 3.9.2
  *
  * @param array           $prepared_args Arguments for WP_Comment_Query.
  * @param WP_REST_Request $request       The REST API request.
@@ -696,7 +696,7 @@ add_filter( 'rest_comment_query', 'pmpro_rest_comment_query', 10, 2 );
  *
  * Comment feeds query comments directly instead of using WP_Comment_Query.
  *
- * @since TBD
+ * @since 3.9.2
  *
  * @param WP_Post[] $posts The posts returned by the query.
  * @param WP_Query  $query The query.
@@ -717,7 +717,7 @@ add_filter( 'the_posts', 'pmpro_comment_feed_filter', 10, 2 );
  *
  * The comments endpoint loads a single comment directly instead of using WP_Comment_Query.
  *
- * @since TBD
+ * @since 3.9.2
  *
  * @param WP_REST_Response|WP_HTTP_Response|WP_Error|mixed $response Result to send to the client.
  * @param array                                            $handler  Route handler used for the request.
