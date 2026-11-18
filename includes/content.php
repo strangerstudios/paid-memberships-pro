@@ -490,7 +490,8 @@ function pmpro_comments_filter($comments, $post_id = NULL) {
 	if(!$comments)
 		return $comments;	//if they are closed anyway, we don't need to check
 
-	$hasaccess = pmpro_has_membership_access(NULL, NULL, true);
+	// Check the post WordPress passed in. REST requests and comment form submissions have no global post to fall back on.
+	$hasaccess = pmpro_has_membership_access( empty( $post_id ) ? NULL : $post_id, NULL, true );
 	if( is_array( $hasaccess ) ) {
 		//returned an array to give us the membership level values
 		$post_membership_levels_ids = $hasaccess[1];
@@ -538,6 +539,210 @@ function pmpro_comments_filter($comments, $post_id = NULL) {
 }
 add_filter("comments_array", "pmpro_comments_filter", 10, 2);
 add_filter("comments_open", "pmpro_comments_filter", 10, 2);
+add_filter( 'pings_open', 'pmpro_comments_filter', 10, 2 );
+
+/**
+ * Check whether the current user can read the comments on a post.
+ *
+ * Users who can edit the post can always read its comments so that the editor keeps working.
+ *
+ * @since TBD
+ *
+ * @param int $post_id The post ID.
+ * @return bool
+ */
+function pmpro_can_read_post_comments( $post_id ) {
+	return pmpro_has_membership_access( $post_id ) || current_user_can( 'edit_post', $post_id );
+}
+
+/**
+ * Remove comments on posts that the current user doesn't have access to.
+ *
+ * Users who can moderate comments, or edit the comment's post, keep every comment so that
+ * comment moderation and the editor keep working.
+ *
+ * @since TBD
+ *
+ * @param WP_Comment[] $comments The comments to check.
+ * @return WP_Comment[] The comments the current user can read.
+ */
+function pmpro_remove_restricted_comments( $comments ) {
+	if ( empty( $comments ) || ! is_array( $comments ) || current_user_can( 'moderate_comments' ) ) {
+		return $comments;
+	}
+
+	$post_access = array();
+	foreach ( $comments as $key => $comment ) {
+		$post_id = (int) $comment->comment_post_ID;
+
+		// Comments that aren't attached to a post aren't restricted.
+		if ( empty( $post_id ) ) {
+			continue;
+		}
+
+		if ( ! isset( $post_access[ $post_id ] ) ) {
+			$post_access[ $post_id ] = pmpro_can_read_post_comments( $post_id );
+		}
+
+		if ( ! $post_access[ $post_id ] ) {
+			unset( $comments[ $key ] );
+		}
+	}
+
+	return array_values( $comments );
+}
+
+/**
+ * Don't return comments on restricted posts from comment queries.
+ *
+ * The comments template already hides these comments, but the REST API, the Latest Comments block
+ * and other code use WP_Comment_Query directly.
+ *
+ * @since TBD
+ *
+ * @param WP_Comment[] $comments The comments returned by the query.
+ * @return WP_Comment[]
+ */
+function pmpro_comments_query_filter( $comments ) {
+	return pmpro_remove_restricted_comments( $comments );
+}
+add_filter( 'the_comments', 'pmpro_comments_query_filter' );
+
+/**
+ * Exclude restricted posts from REST API comment queries.
+ *
+ * Removing the comments after the query isn't enough for the REST API: its total count and
+ * search parameters would still show whether a restricted post has comments matching a search.
+ * This excludes the restricted posts the current user can't access from the query itself.
+ *
+ * @since TBD
+ *
+ * @param array           $prepared_args Arguments for WP_Comment_Query.
+ * @param WP_REST_Request $request       The REST API request.
+ * @return array
+ */
+function pmpro_rest_comment_query( $prepared_args, $request ) {
+	global $wpdb;
+
+	if ( current_user_can( 'moderate_comments' ) ) {
+		return $prepared_args;
+	}
+
+	$hidden_post_ids = array();
+	if ( ! empty( $prepared_args['post__in'] ) ) {
+		// Only comments on the requested posts can match, so check each of those posts.
+		foreach ( array_unique( array_filter( array_map( 'intval', (array) $prepared_args['post__in'] ) ) ) as $post_id ) {
+			if ( ! pmpro_can_read_post_comments( $post_id ) ) {
+				$hidden_post_ids[] = $post_id;
+			}
+		}
+	} else {
+		/*
+		 * Running pmpro_has_membership_access() on every restricted post is too slow on large sites,
+		 * so check the level restrictions directly, like pmpro_search_filter() does.
+		 */
+		$restrictions = $wpdb->get_results(
+			"SELECT mp.page_id AS post_id, mp.membership_id
+			FROM {$wpdb->pmpro_memberships_pages} mp
+			WHERE EXISTS( SELECT 1 FROM {$wpdb->comments} c WHERE c.comment_post_ID = mp.page_id )
+			UNION
+			SELECT tr.object_id AS post_id, mc.membership_id
+			FROM {$wpdb->pmpro_memberships_categories} mc
+			INNER JOIN {$wpdb->pmpro_membership_levels} ml ON ml.id = mc.membership_id
+			INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = mc.category_id
+			INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
+			WHERE EXISTS( SELECT 1 FROM {$wpdb->comments} c WHERE c.comment_post_ID = tr.object_id )"
+		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- Only table names from $wpdb are interpolated.
+
+		$user_level_ids = array();
+		if ( is_user_logged_in() ) {
+			$user_levels    = pmpro_getMembershipLevelsForUser( get_current_user_id() );
+			$user_level_ids = empty( $user_levels ) ? array() : array_map( 'intval', wp_list_pluck( $user_levels, 'id' ) );
+		}
+
+		// Hide posts that are restricted to levels the user doesn't have.
+		$restricted_post_ids = array();
+		$unlocked_post_ids   = array();
+		foreach ( $restrictions as $restriction ) {
+			$restricted_post_ids[ (int) $restriction->post_id ] = true;
+			if ( in_array( (int) $restriction->membership_id, $user_level_ids, true ) ) {
+				$unlocked_post_ids[ (int) $restriction->post_id ] = true;
+			}
+		}
+		$hidden_post_ids = array_keys( array_diff_key( $restricted_post_ids, $unlocked_post_ids ) );
+
+		// Users who can edit a post can read its comments.
+		if ( ! empty( $hidden_post_ids ) && current_user_can( 'edit_posts' ) ) {
+			_prime_post_caches( $hidden_post_ids, false, false );
+			foreach ( $hidden_post_ids as $key => $post_id ) {
+				if ( current_user_can( 'edit_post', $post_id ) ) {
+					unset( $hidden_post_ids[ $key ] );
+				}
+			}
+			$hidden_post_ids = array_values( $hidden_post_ids );
+		}
+	}
+
+	if ( ! empty( $hidden_post_ids ) ) {
+		$prepared_args['post__not_in'] = array_merge( empty( $prepared_args['post__not_in'] ) ? array() : (array) $prepared_args['post__not_in'], $hidden_post_ids );
+	}
+
+	return $prepared_args;
+}
+add_filter( 'rest_comment_query', 'pmpro_rest_comment_query', 10, 2 );
+
+/**
+ * Don't include comments on restricted posts in comment feeds.
+ *
+ * Comment feeds query comments directly instead of using WP_Comment_Query.
+ *
+ * @since TBD
+ *
+ * @param WP_Post[] $posts The posts returned by the query.
+ * @param WP_Query  $query The query.
+ * @return WP_Post[]
+ */
+function pmpro_comment_feed_filter( $posts, $query ) {
+	if ( $query->is_comment_feed() && ! empty( $query->comments ) ) {
+		$query->comments      = pmpro_remove_restricted_comments( $query->comments );
+		$query->comment_count = count( $query->comments );
+	}
+
+	return $posts;
+}
+add_filter( 'the_posts', 'pmpro_comment_feed_filter', 10, 2 );
+
+/**
+ * Don't return a single comment on a restricted post from the REST API.
+ *
+ * The comments endpoint loads a single comment directly instead of using WP_Comment_Query.
+ *
+ * @since TBD
+ *
+ * @param WP_REST_Response|WP_HTTP_Response|WP_Error|mixed $response Result to send to the client.
+ * @param array                                            $handler  Route handler used for the request.
+ * @param WP_REST_Request                                  $request  Request used to generate the response.
+ * @return mixed
+ */
+function pmpro_rest_comment_filter( $response, $handler, $request ) {
+	if ( ! empty( $response ) ) {
+		return $response;
+	}
+
+	// Only check requests for a single comment.
+	if ( empty( $handler['callback'] ) || ! is_array( $handler['callback'] ) || ! $handler['callback'][0] instanceof WP_REST_Comments_Controller || 'get_item' !== $handler['callback'][1] ) {
+		return $response;
+	}
+
+	// Use the same comment ID the comments controller uses.
+	$comment = get_comment( (int) $request['id'] );
+	if ( empty( $comment ) || ! empty( pmpro_remove_restricted_comments( array( $comment ) ) ) ) {
+		return $response;
+	}
+
+	return new WP_Error( 'rest_cannot_read', __( 'Sorry, you are not allowed to read this comment.', 'paid-memberships-pro' ), array( 'status' => rest_authorization_required_code() ) );
+}
+add_filter( 'rest_request_before_callbacks', 'pmpro_rest_comment_filter', 10, 3 );
 
 //keep non-members from getting to certain pages (attachments, etc)
 function pmpro_hide_pages_redirect() {
