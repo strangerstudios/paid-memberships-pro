@@ -111,7 +111,7 @@
 			),
 		'ZAR' => array(
 			'name' => __('South African Rand (R)', 'paid-memberships-pro' ),
-			'symbol' => 'R ',
+			'symbol' => 'R',
 			'position' => 'left'
 		),			
 		'KRW' => array(
