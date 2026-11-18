@@ -539,6 +539,7 @@ function pmpro_comments_filter($comments, $post_id = NULL) {
 }
 add_filter("comments_array", "pmpro_comments_filter", 10, 2);
 add_filter("comments_open", "pmpro_comments_filter", 10, 2);
+add_filter( 'pings_open', 'pmpro_comments_filter', 10, 2 );
 
 /**
  * Check whether the current user can read the comments on a post.
@@ -647,6 +648,7 @@ function pmpro_rest_comment_query( $prepared_args, $request ) {
 			UNION
 			SELECT tr.object_id AS post_id, mc.membership_id
 			FROM {$wpdb->pmpro_memberships_categories} mc
+			INNER JOIN {$wpdb->pmpro_membership_levels} ml ON ml.id = mc.membership_id
 			INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = mc.category_id
 			INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
 			WHERE EXISTS( SELECT 1 FROM {$wpdb->comments} c WHERE c.comment_post_ID = tr.object_id )"
