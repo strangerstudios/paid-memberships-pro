@@ -1953,18 +1953,19 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get a Stripe Dashboard URL for the account and environment this site is using.
 	 *
-	 * @since 3.9.3
+	 * @since TBD
 	 *
 	 * @param string $path Dashboard path, e.g. 'customers/cus_123'.
 	 * @return string The Stripe Dashboard URL.
 	 */
 	public static function get_dashboard_url( $path = '' ) {
-		$gateway_environment = get_option( 'pmpro_gateway_environment' );
+		// Anything other than live uses sandbox credentials, so treat it as sandbox here too.
+		$gateway_environment = 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox';
 		$url                 = 'https://dashboard.stripe.com/';
 
 		// Prefix the connected account ID so the Dashboard opens the account that holds the data.
 		if ( ! self::using_api_keys() && self::has_connect_credentials( $gateway_environment ) ) {
-			$account_id = get_option( 'pmpro_' . ( 'live' === $gateway_environment ? 'live' : 'sandbox' ) . '_stripe_connect_user_id' );
+			$account_id = get_option( 'pmpro_' . $gateway_environment . '_stripe_connect_user_id' );
 			if ( is_string( $account_id ) && preg_match( '/^acct_[A-Za-z0-9]+$/', $account_id ) ) {
 				$url .= $account_id . '/';
 			}
