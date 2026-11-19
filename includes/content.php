@@ -561,6 +561,9 @@ function pmpro_can_read_post_comments( $post_id ) {
  * Users who can moderate comments, or edit the comment's post, keep every comment so that
  * comment moderation and the editor keep working.
  *
+ * Only comments, pingbacks and trackbacks are removed. Plugins like Sensei LMS store their own
+ * data as other comment types on the post and need to find it whatever the current user's access.
+ *
  * @since 3.9.2
  *
  * @param WP_Comment[] $comments The comments to check.
@@ -577,6 +580,11 @@ function pmpro_remove_restricted_comments( $comments ) {
 
 		// Comments that aren't attached to a post aren't restricted.
 		if ( empty( $post_id ) ) {
+			continue;
+		}
+
+		// Only remove discussion comments, not data that plugins store as comments.
+		if ( ! in_array( $comment->comment_type, array( '', 'comment', 'pingback', 'trackback' ), true ) ) {
 			continue;
 		}
 
