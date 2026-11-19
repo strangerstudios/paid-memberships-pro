@@ -1452,6 +1452,7 @@ class PMPro_Exports {
 		if ( ! empty( $search ) ) {
 			$search = str_replace( '%', '%%', $search ); // Escape for prepare.
 		}
+		$filter = str_replace( '%', '%%', $filter ); // Escape for prepare.
 
 		$user_sql = "
 			SELECT DISTINCT
@@ -1573,7 +1574,20 @@ class PMPro_Exports {
 		if ( empty( $filter ) ) {
 			$filter = " AND mu.status = 'active' ";
 		}
-		return $filter;
+
+		/**
+		 * Filter the SQL that limits the members export to the level or status selected on the Members List.
+		 *
+		 * Lets code that adds its own option to the Members List filter apply that option to the export too.
+		 * The SQL is added to the WHERE clause of the queries that count, select and output the exported members.
+		 * In those queries the users table is aliased as `u` and the memberships users table as `mu`.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $filter  SQL beginning with " AND ".
+		 * @param array  $filters The sanitized export filters: `l` (level or status) and `s` (search).
+		 */
+		return apply_filters( 'pmpro_members_export_filter_sql', $filter, $filters );
 	}
 
 	/**
