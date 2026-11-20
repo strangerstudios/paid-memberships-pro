@@ -574,6 +574,17 @@ function pmpro_remove_restricted_comments( $comments ) {
 		return $comments;
 	}
 
+	/**
+	 * Filter the comment types that are hidden on posts the current user can't access.
+	 *
+	 * Other comment types are left alone, since plugins store their own data as comments.
+	 *
+	 * @since TBD
+	 *
+	 * @param string[] $restricted_types Comment types to hide. Default '', 'comment', 'pingback' and 'trackback'.
+	 */
+	$restricted_types = apply_filters( 'pmpro_restricted_comment_types', array( '', 'comment', 'pingback', 'trackback' ) );
+
 	$post_access = array();
 	foreach ( $comments as $key => $comment ) {
 		$post_id = (int) $comment->comment_post_ID;
@@ -584,7 +595,7 @@ function pmpro_remove_restricted_comments( $comments ) {
 		}
 
 		// Only remove discussion comments, not data that plugins store as comments.
-		if ( ! in_array( $comment->comment_type, array( '', 'comment', 'pingback', 'trackback' ), true ) ) {
+		if ( ! in_array( $comment->comment_type, $restricted_types, true ) ) {
 			continue;
 		}
 
