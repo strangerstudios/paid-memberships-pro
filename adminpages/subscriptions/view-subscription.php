@@ -253,7 +253,7 @@ $sub_membership_level_id = $subscription->get_membership_level_id();
 						if ( ! empty( $customer ) ) {
 							$subscription_actions['stripe_customer'] = array(
 								'title'  => esc_attr__( 'Edit Customer in Stripe', 'paid-memberships-pro' ),
-								'href'   => esc_url( 'https://dashboard.stripe.com/' . ( get_option( 'pmpro_gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ),
+								'href'   => esc_url( PMProGateway_Stripe::get_dashboard_url( 'customers/' . $customer->id ) ),
 								'target' => '_blank',
 								'class'  => 'button button-secondary pmpro-has-icon pmpro-has-icon-admin-users',
 								'label'  => esc_html__( 'Edit Customer in Stripe', 'paid-memberships-pro' ),

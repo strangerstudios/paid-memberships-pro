@@ -566,7 +566,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<option value="1"
 							<?php if ( ! empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 				</select>
-				<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe doesn\'t require billing address fields. Choose \'No\' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in your <a target="_blank" href="%s">Stripe Radar rules</a>.</strong>', 'paid-memberships-pro' ), array( 'br' => array(), 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array() ) ) ), 'https://dashboard.stripe.com/settings/radar/rules' ); ?></p>
+				<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe doesn\'t require billing address fields. Choose \'No\' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in your <a target="_blank" href="%s">Stripe Radar rules</a>.</strong>', 'paid-memberships-pro' ), array( 'br' => array(), 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array() ) ) ), esc_url( self::get_dashboard_url( 'settings/radar/rules' ) ) ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -604,7 +604,7 @@ class PMProGateway_stripe extends PMProGateway {
 						if ( empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off" ) {
 							$payment_request_error_escaped = sprintf( wp_kses( __( 'This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target="_blank" href="%s" title="Configuring WordPress to Always Use HTTPS/SSL">set up WordPress to always use HTTPS</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://www.paidmembershipspro.com/configuring-wordpress-always-use-httpsssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=configure-https' );
 						} elseif ( ! $stripe->pmpro_does_apple_pay_domain_exist() ) {
-							$payment_request_error_escaped = sprintf( wp_kses( __( 'Your domain could not be registered with Apple to enable Apple Pay. Please try <a target="_blank" href="%s" title="Apple Pay Settings Page in Stripe">registering your domain manually from the Apple Pay settings page in Stripe</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/settings/payments/apple_pay' );
+							$payment_request_error_escaped = sprintf( wp_kses( __( 'Your domain could not be registered with Apple to enable Apple Pay. Please try <a target="_blank" href="%s" title="Apple Pay Settings Page in Stripe">registering your domain manually from the Apple Pay settings page in Stripe</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), esc_url( self::get_dashboard_url( 'settings/payments/apple_pay' ) ) );
 						}
 						if ( ! empty( $payment_request_error_escaped ) ) {
 							?>
@@ -647,7 +647,7 @@ class PMProGateway_stripe extends PMProGateway {
 						),
 					);
 				?>
-				<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target="_blank" href="%1$s">activate Stripe Tax</a> in your Stripe dashboard. <a target="_blank" href="%2$s">More information about Stripe Tax »</a>', 'paid-memberships-pro' ), $allowed_stripe_tax_description_html ), 'https://dashboard.stripe.com/settings/tax/activate', 'https://stripe.com/tax' ); ?></p>
+				<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target="_blank" href="%1$s">activate Stripe Tax</a> in your Stripe dashboard. <a target="_blank" href="%2$s">More information about Stripe Tax »</a>', 'paid-memberships-pro' ), $allowed_stripe_tax_description_html ), esc_url( self::get_dashboard_url( 'settings/tax/activate' ) ), 'https://stripe.com/tax' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe gateway_stripe_checkout_fields" <?php if ( $gateway != "stripe"  ) { ?>style="display: none;"<?php } ?>>
@@ -920,7 +920,7 @@ class PMProGateway_stripe extends PMProGateway {
 					0 => __( 'No', 'paid-memberships-pro' ),
 					1 => __( 'Yes', 'paid-memberships-pro' ),
 				),
-				'description' => sprintf( wp_kses( __( 'Stripe doesn\'t require billing address fields. Choose \'No\' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in your <a target="_blank" href="%s">Stripe Radar rules</a>.</strong>', 'paid-memberships-pro' ), array( 'br' => array(), 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array() ) ) ), 'https://dashboard.stripe.com/settings/radar/rules' ),
+				'description' => sprintf( wp_kses( __( 'Stripe doesn\'t require billing address fields. Choose \'No\' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in your <a target="_blank" href="%s">Stripe Radar rules</a>.</strong>', 'paid-memberships-pro' ), array( 'br' => array(), 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array() ) ) ), esc_url( self::get_dashboard_url( 'settings/radar/rules' ) ) ),
 			),
 			array(
 				'name'        => 'stripe_payment_request_button',
@@ -959,7 +959,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'inclusive' => __( 'Membership price includes tax', 'paid-memberships-pro' ),
 					'exclusive' => __( 'Calculate tax on top of membership price', 'paid-memberships-pro' ),
 				),
-				'description' => sprintf( wp_kses( __( 'Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target="_blank" href="%1$s">activate Stripe Tax</a> in your Stripe dashboard. <a target="_blank" href="%2$s">More information about Stripe Tax »</a>', 'paid-memberships-pro' ), array( 'a' => array( 'href' => array(), 'target' => array(), 'title' => array() ) ) ), 'https://dashboard.stripe.com/settings/tax/activate', 'https://stripe.com/tax' ),
+				'description' => sprintf( wp_kses( __( 'Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target="_blank" href="%1$s">activate Stripe Tax</a> in your Stripe dashboard. <a target="_blank" href="%2$s">More information about Stripe Tax »</a>', 'paid-memberships-pro' ), array( 'a' => array( 'href' => array(), 'target' => array(), 'title' => array() ) ) ), esc_url( self::get_dashboard_url( 'settings/tax/activate' ) ), 'https://stripe.com/tax' ),
 			),
 			array(
 				'name'        => 'stripe_tax_id_collection_enabled',
@@ -1415,7 +1415,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<tr>
 					<th><?php esc_html_e( 'Stripe Customer', 'paid-memberships-pro' ); ?></th>
 					<td>
-						<a target="_blank" href="<?php echo esc_url( 'https://dashboard.stripe.com/' . ( get_option( 'pmpro_gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ); ?>"><?php esc_html_e( 'Edit customer in Stripe', 'paid-memberships-pro' ); ?></a>
+						<a target="_blank" href="<?php echo esc_url( self::get_dashboard_url( 'customers/' . $customer->id ) ); ?>"><?php esc_html_e( 'Edit customer in Stripe', 'paid-memberships-pro' ); ?></a>
 					</td>
 				</tr>
 			</table>
@@ -1853,7 +1853,7 @@ class PMProGateway_stripe extends PMProGateway {
 							<?php
 							printf(
 								esc_html__( 'Open the %s page in your Stripe dashboard', 'paid-memberships-pro' ),
-								'<a href="https://dashboard.stripe.com/account/webhooks" target="_blank">' . esc_html__( 'Webhooks', 'paid-memberships-pro' ) . '</a>'
+								'<a href="' . esc_url( self::get_dashboard_url( 'account/webhooks' ) ) . '" target="_blank">' . esc_html__( 'Webhooks', 'paid-memberships-pro' ) . '</a>'
 							)
 							?>
 						</li>
@@ -1948,6 +1948,39 @@ class PMProGateway_stripe extends PMProGateway {
 				get_option( 'pmpro_sandbox_stripe_connect_publishablekey' )
 			);
 		}
+	}
+
+	/**
+	 * Get a Stripe Dashboard URL for the account and environment this site is using.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $path Dashboard path, e.g. 'customers/cus_123'.
+	 * @return string The Stripe Dashboard URL.
+	 */
+	public static function get_dashboard_url( $path = '' ) {
+		$url     = 'https://dashboard.stripe.com/';
+		$is_test = 'sandbox' === get_option( 'pmpro_gateway_environment' );
+
+		if ( ! self::using_api_keys() ) {
+			// Anything other than live uses sandbox Connect credentials, so treat it as sandbox here too.
+			$gateway_environment = 'live' === get_option( 'pmpro_gateway_environment' ) ? 'live' : 'sandbox';
+			$is_test             = 'sandbox' === $gateway_environment;
+
+			// Prefix the connected account ID so the Dashboard opens the account that holds the data.
+			if ( self::has_connect_credentials( $gateway_environment ) ) {
+				$account_id = get_option( 'pmpro_' . $gateway_environment . '_stripe_connect_user_id' );
+				if ( is_string( $account_id ) && preg_match( '/^acct_[A-Za-z0-9]+$/', $account_id ) ) {
+					$url .= $account_id . '/';
+				}
+			}
+		}
+
+		if ( $is_test ) {
+			$url .= 'test/';
+		}
+
+		return $url . ltrim( $path, '/' );
 	}
 
 	/**
