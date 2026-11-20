@@ -201,7 +201,7 @@
 		 * an affiliate have been saved with since 2.9.
 		 *
 		 * @since 2.9
-		 * @since TBD Default changed from int 0 to string '0'.
+		 * @since 3.9.3 Default changed from int 0 to string '0'.
 		 *
 		 * @var string
 		 */

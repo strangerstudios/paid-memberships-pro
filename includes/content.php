@@ -579,7 +579,7 @@ function pmpro_remove_restricted_comments( $comments ) {
 	 *
 	 * Other comment types are left alone, since plugins store their own data as comments.
 	 *
-	 * @since TBD
+	 * @since 3.9.3
 	 *
 	 * @param string[] $restricted_types Comment types to hide. Default '', 'comment', 'pingback' and 'trackback'.
 	 */

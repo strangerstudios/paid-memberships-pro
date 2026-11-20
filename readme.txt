@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.9.2
+Stable tag: 3.9.3
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,6 +210,12 @@ Not sure? You can find out by doing a bit a research.
 4. [Ask using our contact form](https://www.paidmembershipspro.com/contact/)
 
 == Changelog ==
+= 3.9.3 - 2026-11-20 =
+* BUG FIX: Fixed Sensei LMS and other plugins that store data as comments being unable to find that data on restricted posts, which could hang requests, since 3.9.2. Sites can hide other comment types with the new `pmpro_restricted_comment_types` filter. #3970 (@dparker1005)
+* BUG FIX: Fixed "Edit Customer in Stripe" and other Stripe Dashboard links opening the wrong account when the admin's Stripe login can see more than one account. #3964 (@flintfromthebasement)
+* BUG FIX: Fixed affiliate IDs that contain letters being saved as `0` (or only their leading digits) on new orders. #3971 (@dparker1005)
+* BUG FIX: Fixed the "View" row action tooltip in the Edit Member Orders panel saying "Edit". #3968 (@dwanjuki)
+
 = 3.9.2 - 2026-11-18 =
 * SECURITY: Comments on restricted posts are no longer shown to users without access through the REST API, comment feeds or blocks that list comments, and those users can no longer post comments, pingbacks or trackbacks on restricted posts. #3963 (@dparker1005, @kta1kri)
 * ENHANCEMENT: Blocks that show PMPro content, such as the Events block in the PMPro Events Add On, now look the same in the block editor as on the frontend. Adds the `pmpro_enqueue_frontend_styles()` function. #3955 (@kimcoleman)

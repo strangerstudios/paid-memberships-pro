@@ -1953,7 +1953,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get a Stripe Dashboard URL for the account and environment this site is using.
 	 *
-	 * @since TBD
+	 * @since 3.9.3
 	 *
 	 * @param string $path Dashboard path, e.g. 'customers/cus_123'.
 	 * @return string The Stripe Dashboard URL.
