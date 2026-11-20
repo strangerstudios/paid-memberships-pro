@@ -157,7 +157,7 @@ class PMPro_Email_Template_Checkout_Check_Admin extends PMPro_Email_Template {
 				$membership_level->profile_start_date = pmpro_calculate_profile_start_date( $order, 'Y-m-d H:i:s' );
 			} else {
 				// The order doesn't have its checkout level, so get the delay date as of the checkout date.
-				$membership_level->profile_start_date = pmpro_get_subscription_delay_date( $membership_level->id, ! empty( $membership_level->code_id ) ? $membership_level->code_id : null, $order->getTimestamp() );
+				$membership_level->profile_start_date = pmpro_get_subscription_delay_profile_start_date( $membership_level->id, ! empty( $membership_level->code_id ) ? $membership_level->code_id : null, $order->getTimestamp() );
 			}
 		}
 
