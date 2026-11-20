@@ -5,6 +5,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_pages;
 
+// Save email preferences. Signed links from emails work without logging in, so don't redirect them.
+pmpro_email_preferences_process_form();
+if ( pmpro_is_email_preferences_link_request() ) {
+	return;
+}
+
 // Redirect to login.
 if ( ! is_user_logged_in() ) {
 	$redirect = apply_filters( 'pmpro_account_preheader_redirect', pmpro_login_url( get_permalink( $pmpro_pages['account'] ) ) );

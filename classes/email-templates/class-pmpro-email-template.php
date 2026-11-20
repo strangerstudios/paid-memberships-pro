@@ -67,6 +67,8 @@ abstract class PMPro_Email_Template {
 			'siteemail' => get_option( 'pmpro_from_email' ),
 			'wordpress_admin_email' => get_bloginfo( 'admin_email' ),
 			'header_name' => $this->get_recipient_name(),
+			// email_preferences is filled in PMProEmail::sendEmail() once the final recipient is known.
+			// Don't set it here, or !!email_preferences!! in the email body would be replaced with an empty string before then.
 		);
 
 		return $base_email_template_variables;
@@ -89,6 +91,7 @@ abstract class PMPro_Email_Template {
 			'{{ pmpro_from_email }}' => __( 'The "From Email" set in Memberships > Settings > Email Settings.', 'paid-memberships-pro' ),
 			'{{ wordpress_admin_email }}' => __( 'The "Administration Email Address" set in Settings > General.', 'paid-memberships-pro' ),
 			'{{ header_name }}' => __( 'The name of the email recipient.', 'paid-memberships-pro' ),
+			'{{ email_preferences }}' => __( 'Links to unsubscribe from optional emails or manage email preferences. Empty in emails that members can\'t opt out of.', 'paid-memberships-pro' ),
 		);
 
 		return $base_email_template_variables_with_description;
@@ -165,6 +168,20 @@ abstract class PMPro_Email_Template {
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	abstract public static function get_template_description();
+
+	/**
+	 * Get the email category that members can opt out of to stop receiving this email.
+	 *
+	 * Categories are registered with the pmpro_email_categories filter.
+	 * Emails without a category, like checkout and payment emails, are always sent.
+	 *
+	 * @since TBD
+	 *
+	 * @return string The email category slug, or an empty string if members can't opt out of this email.
+	 */
+	public static function get_email_category() {
+		return '';
+	}
 
 	/**
 	 * Get the default subject for the email.
