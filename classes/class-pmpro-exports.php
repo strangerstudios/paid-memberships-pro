@@ -1581,6 +1581,7 @@ class PMPro_Exports {
 		 * Lets code that adds its own option to the Members List filter apply that option to the export too.
 		 * The SQL is added to the WHERE clause of the queries that count, select and output the exported members.
 		 * In those queries the users table is aliased as `u` and the memberships users table as `mu`.
+		 * Return fully escaped SQL with no `$wpdb->prepare()` placeholders.
 		 *
 		 * @since TBD
 		 *
