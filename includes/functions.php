@@ -4939,77 +4939,279 @@ function pmpro_format_date_iso8601( $date ) {
 }
 
 /**
- * Determines the user's actual IP address
+ * Determines the user's actual IP address.
  *
- * $_SERVER['REMOTE_ADDR'] cannot be used in all cases, such as when the user
- * is making their request through a proxy, or when the web server is behind
- * a proxy. In those cases, $_SERVER['REMOTE_ADDR'] is set to the proxy address rather
- * than the user's actual address.
- *
- * Modified from WP_Community_Events::get_unsafe_client_ip() in core WP.
- * Modified from https://stackoverflow.com/a/2031935/450127, MIT license.
- * Modified from https://github.com/geertw/php-ip-anonymizer, MIT license.
- *
- * SECURITY WARNING: This function is _NOT_ intended to be used in
- * circumstances where the authenticity of the IP address matters. This does
- * _NOT_ guarantee that the returned address is valid or accurate, and it can
- * be easily spoofed.
+ * Starts from $_SERVER['REMOTE_ADDR']. When the request came through a
+ * trusted proxy (a private address or one added with the
+ * pmpro_trusted_proxies filter), the address it appended to
+ * X-Forwarded-For (or sent in X-Real-IP) is used instead. When it came
+ * through Cloudflare, CF-Connecting-IP is used.
  *
  * @since 2.7
+ * @since TBD Only reads forwarded addresses from trusted proxies.
  *
  * @return string|false The ip address on success or false on failure.
  */
 function pmpro_get_ip() {
-	$client_ip = false;
+	$client_ip   = false;
+	$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? trim( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) ) : '';
 
-	// In order of preference, with the best ones for this purpose first.
-	// Added some from JetPack's Jetpack_Protect_Module::get_headers()
-	$address_headers = array(
-		'GD_PHP_HANDLER',
-		'HTTP_AKAMAI_ORIGIN_HOP',
-		'HTTP_CF_CONNECTING_IP',
-		'HTTP_CLIENT_IP',
-		'HTTP_FASTLY_CLIENT_IP',
-		'HTTP_FORWARDED',
-		'HTTP_FORWARDED_FOR',
-		'HTTP_INCAP_CLIENT_IP',
-		'HTTP_TRUE_CLIENT_IP',
-		'HTTP_X_CLIENTIP',
-		'HTTP_X_CLUSTER_CLIENT_IP',
-		'HTTP_X_FORWARDED',
-		'HTTP_X_FORWARDED_FOR',
-		'HTTP_X_IP_TRAIL',
-		'HTTP_X_REAL_IP',
-		'HTTP_X_VARNISH',
-		'REMOTE_ADDR',
-	);
+	if ( filter_var( $remote_addr, FILTER_VALIDATE_IP ) ) {
+		// Hops in the order the request passed through them, ending with the connecting address.
+		$hops = array();
+		if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			$hops = explode( ',', sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) );
+		} elseif ( ! empty( $_SERVER['HTTP_X_REAL_IP'] ) ) {
+			$hops = array( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) ) );
+		}
+		$hops[] = $remote_addr;
 
-	foreach ( $address_headers as $header ) {
-		if ( array_key_exists( $header, $_SERVER ) ) {
-			/*
-			 * HTTP_X_FORWARDED_FOR can contain a chain of comma-separated
-			 * addresses. The first one is the original client. It can't be
-			 * trusted for authenticity, but we don't need to for this purpose.
-			 */
-			$address_chain = explode( ',', sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) ) );
-			$client_ip     = trim( $address_chain[0] );
-			break;
+		$cf_connecting_ip = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? trim( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) ) : '';
+		$trusted_proxies  = pmpro_get_trusted_proxies();
+		$cloudflare_ips   = pmpro_get_cloudflare_ip_ranges();
+
+		// Walk back from the connecting address until we reach a hop that isn't a trusted proxy.
+		foreach ( array_reverse( $hops ) as $hop ) {
+			$hop = pmpro_strip_ip_port( $hop );
+			if ( ! filter_var( $hop, FILTER_VALIDATE_IP ) ) {
+				break;
+			}
+
+			$client_ip = $hop;
+
+			// Cloudflare only vouches for CF-Connecting-IP, never for addresses further back.
+			if ( pmpro_ip_in_ranges( $hop, $cloudflare_ips ) ) {
+				if ( filter_var( $cf_connecting_ip, FILTER_VALIDATE_IP ) ) {
+					$client_ip = $cf_connecting_ip;
+				}
+				break;
+			}
+
+			if ( ! pmpro_is_trusted_proxy( $hop, $trusted_proxies ) ) {
+				break;
+			}
 		}
 	}
 
-	if ( ! $client_ip ) {
+	/**
+	 * Filter the IP address detected for the current request.
+	 *
+	 * @since TBD
+	 *
+	 * @param string|false $client_ip   The detected IP address, or false if none was found.
+	 * @param string       $remote_addr The raw $_SERVER['REMOTE_ADDR'] value.
+	 */
+	return apply_filters( 'pmpro_get_ip', $client_ip, $remote_addr );
+}
+
+/**
+ * Get the proxy addresses whose forwarded headers pmpro_get_ip() will read.
+ *
+ * Defaults to loopback and private ranges, which assumes any host on the
+ * site's private network is a reverse proxy or load balancer that appends
+ * the connecting address to X-Forwarded-For. If a local proxy passes the
+ * client's X-Forwarded-For through unchanged, remove its range with the
+ * pmpro_trusted_proxies filter. Cloudflare is handled separately; see
+ * pmpro_get_cloudflare_ip_ranges().
+ *
+ * @since TBD
+ *
+ * @return array IP addresses and CIDR ranges.
+ */
+function pmpro_get_trusted_proxies() {
+	$trusted_proxies = array(
+		'127.0.0.0/8',
+		'10.0.0.0/8',
+		'172.16.0.0/12',
+		'192.168.0.0/16',
+		'::1/128',
+		'fc00::/7',
+	);
+
+	/**
+	 * Filter the proxy addresses whose forwarded headers pmpro_get_ip() will read.
+	 *
+	 * Add the addresses of a load balancer, CDN, or firewall service that sits
+	 * in front of the site and passes the visitor's address in X-Forwarded-For.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $trusted_proxies IP addresses and CIDR ranges.
+	 */
+	return apply_filters( 'pmpro_trusted_proxies', $trusted_proxies );
+}
+
+/**
+ * Get Cloudflare's published IP ranges.
+ *
+ * Define PMPRO_TRUST_CLOUDFLARE as false on sites that aren't behind Cloudflare.
+ *
+ * @since TBD
+ *
+ * @return array CIDR ranges.
+ */
+function pmpro_get_cloudflare_ip_ranges() {
+	if ( defined( 'PMPRO_TRUST_CLOUDFLARE' ) && ! PMPRO_TRUST_CLOUDFLARE ) {
+		return array();
+	}
+
+	// From https://www.cloudflare.com/ips/ as of November 2026.
+	$ranges = array(
+		'173.245.48.0/20',
+		'103.21.244.0/22',
+		'103.22.200.0/22',
+		'103.31.4.0/22',
+		'141.101.64.0/18',
+		'108.162.192.0/18',
+		'190.93.240.0/20',
+		'188.114.96.0/20',
+		'197.234.240.0/22',
+		'198.41.128.0/17',
+		'162.158.0.0/15',
+		'104.16.0.0/13',
+		'104.24.0.0/14',
+		'172.64.0.0/13',
+		'131.0.72.0/22',
+		'2400:cb00::/32',
+		'2606:4700::/32',
+		'2803:f800::/32',
+		'2405:b500::/32',
+		'2405:8100::/32',
+		'2a06:98c0::/29',
+		'2c0f:f248::/32',
+	);
+
+	/**
+	 * Filter the Cloudflare ranges trusted to send CF-Connecting-IP.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $ranges CIDR ranges.
+	 */
+	return apply_filters( 'pmpro_cloudflare_ip_ranges', $ranges );
+}
+
+/**
+ * Check if an IP address is a trusted proxy.
+ *
+ * @since TBD
+ *
+ * @param string     $ip              The IP address to check.
+ * @param array|null $trusted_proxies Optional. Ranges to check against. Defaults to pmpro_get_trusted_proxies().
+ * @return bool
+ */
+function pmpro_is_trusted_proxy( $ip, $trusted_proxies = null ) {
+	if ( null === $trusted_proxies ) {
+		$trusted_proxies = pmpro_get_trusted_proxies();
+	}
+
+	return pmpro_ip_in_ranges( $ip, $trusted_proxies );
+}
+
+/**
+ * Check if an IP address falls within any of a list of addresses or CIDR ranges.
+ *
+ * @since TBD
+ *
+ * @param string $ip     The IP address to check.
+ * @param array  $ranges IP addresses and CIDR ranges, IPv4 or IPv6.
+ * @return bool
+ */
+function pmpro_ip_in_ranges( $ip, $ranges ) {
+	$ip_bin = pmpro_ip_to_binary( $ip );
+	if ( false === $ip_bin ) {
 		return false;
 	}
 
-	// Sanitize the IP
-	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
+	foreach ( (array) $ranges as $range ) {
+		if ( ! is_string( $range ) ) {
+			continue;
+		}
 
-	// Check if it's a valid IPv4 or IPv6 address.
-	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) && ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		$parts     = explode( '/', trim( $range ), 2 );
+		$range_bin = pmpro_ip_to_binary( $parts[0] );
+		if ( false === $range_bin || strlen( $range_bin ) !== strlen( $ip_bin ) ) {
+			continue;
+		}
+
+		// Skip malformed prefixes so a bad entry never matches everything.
+		$max_bits = strlen( $ip_bin ) * 8;
+		if ( isset( $parts[1] ) && ! preg_match( '/^\d{1,3}$/', $parts[1] ) ) {
+			continue;
+		}
+		$bits = isset( $parts[1] ) ? (int) $parts[1] : $max_bits;
+		if ( isset( $parts[1] ) && 4 === strlen( $range_bin ) && false !== strpos( $parts[0], ':' ) ) {
+			// An IPv4-mapped IPv6 range counts its prefix from the 96 mapped bits.
+			$bits -= 96;
+		}
+		if ( $bits < 0 || $bits > $max_bits ) {
+			continue;
+		}
+
+		// Compare whole bytes, then the leftover bits of the next byte.
+		$bytes = intdiv( $bits, 8 );
+		if ( substr( $ip_bin, 0, $bytes ) !== substr( $range_bin, 0, $bytes ) ) {
+			continue;
+		}
+
+		$remainder = $bits % 8;
+		if ( $remainder ) {
+			$mask = chr( ( 0xff << ( 8 - $remainder ) ) & 0xff );
+			if ( ( $ip_bin[ $bytes ] & $mask ) !== ( $range_bin[ $bytes ] & $mask ) ) {
+				continue;
+			}
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Convert an IP address to its packed binary form.
+ *
+ * IPv4-mapped IPv6 addresses (::ffff:192.0.2.1) are reduced to IPv4 so they
+ * match IPv4 ranges.
+ *
+ * @since TBD
+ *
+ * @param string $ip The IP address.
+ * @return string|false Packed address, or false if it isn't a valid IP.
+ */
+function pmpro_ip_to_binary( $ip ) {
+	if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
 		return false;
 	}
 
-	return $client_ip;
+	$binary = inet_pton( $ip );
+	if ( 16 === strlen( $binary ) && str_repeat( "\0", 10 ) . "\xff\xff" === substr( $binary, 0, 12 ) ) {
+		$binary = substr( $binary, 12 );
+	}
+
+	return $binary;
+}
+
+/**
+ * Remove a port or IPv6 brackets from a forwarded address.
+ *
+ * Handles 192.0.2.1:8080, [2001:db8::1], and [2001:db8::1]:8080.
+ *
+ * @since TBD
+ *
+ * @param string $hop The forwarded address.
+ * @return string The bare address.
+ */
+function pmpro_strip_ip_port( $hop ) {
+	$hop = trim( $hop );
+	if ( preg_match( '/^\[([^\]]+)\](?::\d+)?$/', $hop, $matches ) ) {
+		return $matches[1];
+	}
+	if ( preg_match( '/^(\d{1,3}(?:\.\d{1,3}){3}):\d+$/', $hop, $matches ) ) {
+		return $matches[1];
+	}
+
+	return $hop;
 }
 
 /**
