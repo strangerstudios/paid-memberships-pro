@@ -2285,6 +2285,93 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Check whether the webhook is set up and whether this site received the events Stripe sent.
+	 *
+	 * Uses the same "last sent" cache as the Webhook History on the payment settings page.
+	 * Makes one request for the webhook list and up to one request per event type.
+	 *
+	 * @access public
+	 * @since TBD
+	 *
+	 * @return array|false False if there is no secret key or Stripe is rejecting it. Otherwise an array with
+	 *                     'status' ('ok', 'missing', 'disabled' or 'error'), 'error' (message for 'error'),
+	 *                     and 'missed_events' (event type => time Stripe last sent it, for events not received since).
+	 */
+	public static function get_webhook_health() {
+		$stripe = new PMProGateway_stripe();
+		if ( ! self::$is_loaded || empty( $stripe->get_secretkey() ) ) {
+			return false;
+		}
+
+		// If Stripe is rejecting the secret key, every request below would fail for that reason instead.
+		$connection_test = self::get_connection_test_results();
+		if ( ! empty( $connection_test ) && in_array( 'secret_key', self::get_failed_connection_tests( $connection_test ), true ) ) {
+			return false;
+		}
+
+		$health = array(
+			'status'        => 'ok',
+			'error'         => '',
+			'missed_events' => array(),
+		);
+
+		$webhooks = $stripe->get_webhooks();
+		if ( is_string( $webhooks ) ) {
+			$health['status'] = 'error';
+			$health['error']  = $webhooks;
+			return $health;
+		}
+
+		$webhook = $stripe->does_webhook_exist();
+		if ( empty( $webhook ) ) {
+			$health['status'] = 'missing';
+			return $health;
+		}
+		if ( 'disabled' === $webhook['status'] ) {
+			$health['status'] = 'disabled';
+			return $health;
+		}
+
+		// Ignore events sent before this site started tracking events individually.
+		$legacy_last_received = get_option( 'pmpro_stripe_last_webhook_received_' . $stripe->gateway_environment );
+		foreach ( self::webhook_events() as $event_type ) {
+			$cache_key = 'pmpro_stripe_last_webhook_sent_' . $stripe->gateway_environment . '_' . $event_type;
+			$last_sent = get_transient( $cache_key );
+			if ( false === $last_sent ) {
+				$query = array(
+					'limit'   => 1,
+					'created' => array( 'lt' => time() - 60 ), // Allow a minute for recent events to be processed.
+					'type'    => $event_type,
+				);
+				if ( ! empty( $legacy_last_received ) ) {
+					$query['created']['gt'] = strtotime( $legacy_last_received );
+				}
+				try {
+					$events    = Stripe\Event::all( $query );
+					$last_sent = empty( $events->data[0] ) ? '' : $events->data[0];
+				} catch ( \Throwable $th ) {
+					$last_sent = $th->getMessage();
+				} catch ( \Exception $e ) {
+					$last_sent = $e->getMessage();
+				}
+				set_transient( $cache_key, $last_sent, 5 * MINUTE_IN_SECONDS );
+			}
+
+			// Skip event types Stripe hasn't sent and API errors for a single event type.
+			if ( empty( $last_sent ) || is_string( $last_sent ) ) {
+				continue;
+			}
+
+			$last_received = get_option( 'pmpro_stripe_webhook_last_received_' . $stripe->gateway_environment . '_' . $event_type );
+			if ( empty( $last_received ) || $last_received < $last_sent->created ) {
+				$health['missed_events'][ $event_type ] = $last_sent->created;
+			}
+		}
+
+		return $health;
+	}
+
+	/**
 	 * Run the connection test from the daily scheduled task.
 	 *
 	 * @since 3.8.7
@@ -2356,7 +2443,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param string $test The test key.
 	 * @return string The label.
 	 */
-	private static function get_connection_test_label( $test ) {
+	public static function get_connection_test_label( $test ) {
 		$labels = array(
 			'stripe_api'      => __( 'Stripe API', 'paid-memberships-pro' ),
 			'secret_key'      => __( 'Secret Key', 'paid-memberships-pro' ),
