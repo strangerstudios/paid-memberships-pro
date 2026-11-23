@@ -419,15 +419,20 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 				$first_payment_date = $level->profile_start_date;
 			} elseif ( ! is_numeric( $subscription_delay ) ) {
 				// A date pattern is the same date wherever it is shown.
-				$first_payment_date = pmpro_get_subscription_delay_date( $level->id, $code_id );
+				$first_payment_date = pmpro_get_subscription_delay_profile_start_date( $level->id, $code_id );
 			} else {
 				// A number of days moves with the checkout date.
 				$first_payment_date = false;
 			}
 
 			if ( ! empty( $first_payment_date ) ) {
+				if ( function_exists( 'wp_date' ) && ( false !== strpos( $first_payment_date, 'T' ) || false !== strpos( $first_payment_date, ':' ) ) ) {
+					$formatted_date = wp_date( get_option( 'date_format' ), strtotime( $first_payment_date ) );
+				} else {
+					$formatted_date = date_i18n( get_option( 'date_format' ), strtotime( $first_payment_date ) );
+				}
 				/* translators: %s: the date of the first subscription payment. */
-				$r .= sprintf( __( 'Your first subscription payment will be on <strong>%s</strong>.', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), strtotime( $first_payment_date ) ) ) . ' ';
+				$r .= sprintf( __( 'Your first subscription payment will be on <strong>%s</strong>.', 'paid-memberships-pro' ), $formatted_date ) . ' ';
 			} elseif ( is_numeric( $subscription_delay ) ) {
 				$delay_days = intval( $subscription_delay );
 				/* translators: %d: the number of days until the first subscription payment. */

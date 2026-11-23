@@ -281,31 +281,16 @@ function pmpro_get_subscription_delay( $level_id, $code_id = null ) {
  *
  * @param int      $level_id          The membership level ID.
  * @param int|null $code_id           Optional discount code ID.
- * @param int|null $current_timestamp Optional local timestamp of the checkout. Defaults to now.
+ * @param int|null $current_timestamp Optional UTC timestamp of the checkout. Defaults to now.
  * @return string|false The first payment date in Y-m-d format, or false if there is no valid delay.
  */
 function pmpro_get_subscription_delay_date( $level_id, $code_id = null, $current_timestamp = null ) {
-	$subscription_delay = pmpro_get_subscription_delay( $level_id, $code_id );
-	if ( empty( $subscription_delay ) ) {
+	$profile_start_date = pmpro_get_subscription_delay_profile_start_date( $level_id, $code_id, $current_timestamp );
+	if ( empty( $profile_start_date ) ) {
 		return false;
 	}
 
-	if ( null === $current_timestamp ) {
-		$current_timestamp = current_time( 'timestamp' );
-	}
-
-	if ( is_numeric( $subscription_delay ) ) {
-		$delay_date = date( 'Y-m-d', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', $current_timestamp ) );
-	} else {
-		// Ignore malformed stored patterns rather than sending a bad date to the gateway.
-		$delay_date = pmpro_resolve_date_pattern( $subscription_delay, $current_timestamp );
-		if ( empty( $delay_date ) ) {
-			return false;
-		}
-	}
-
-	// Don't let a stored negative day count or a resolved date in the past move the start date backwards.
-	return max( $delay_date, date( 'Y-m-d', $current_timestamp ) );
+	return function_exists( 'wp_date' ) ? wp_date( 'Y-m-d', strtotime( $profile_start_date ) ) : gmdate( 'Y-m-d', strtotime( $profile_start_date ) );
 }
 
 /**
@@ -320,7 +305,7 @@ function pmpro_get_subscription_delay_date( $level_id, $code_id = null, $current
  *
  * @param int      $level_id          The membership level ID.
  * @param int|null $code_id           Optional discount code ID.
- * @param int|null $current_timestamp Optional timestamp to calculate the delay from.
+ * @param int|null $current_timestamp Optional UTC timestamp to calculate the delay from (defaults to time()).
  * @return string|false The profile start date in Y-m-d\TH:i:s format (UTC), or false if no valid delay.
  */
 function pmpro_get_subscription_delay_profile_start_date( $level_id, $code_id = null, $current_timestamp = null ) {
@@ -329,34 +314,43 @@ function pmpro_get_subscription_delay_profile_start_date( $level_id, $code_id = 
 		return false;
 	}
 
+	$utc_timestamp = null !== $current_timestamp ? $current_timestamp : time();
+
 	if ( is_numeric( $subscription_delay ) ) {
-		$utc_timestamp = null !== $current_timestamp ? $current_timestamp : time();
 		return gmdate( 'Y-m-d\TH:i:s', strtotime( '+ ' . intval( $subscription_delay ) . ' Days', $utc_timestamp ) );
 	}
 
-	// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
-	$local_timestamp = null !== $current_timestamp ? $current_timestamp : current_time( 'timestamp' );
-	$delay_date      = pmpro_resolve_date_pattern( $subscription_delay, $local_timestamp );
+	$timezone = function_exists( 'wp_timezone' ) ? wp_timezone() : new DateTimeZone( 'UTC' );
+	try {
+		$utc_dt   = new DateTimeImmutable( '@' . $utc_timestamp );
+		$local_dt = $utc_dt->setTimezone( $timezone );
+	} catch ( Exception $e ) {
+		return false;
+	}
+
+	$current_local_date = $local_dt->format( 'Y-m-d' );
+	// pmpro_resolve_date_pattern() uses date('Y', $current_timestamp) which evaluates in UTC,
+	// so pass a timestamp whose UTC components match the site's local date and time.
+	$local_wall_clock_timestamp = strtotime( $local_dt->format( 'Y-m-d H:i:s' ) );
+
+	$delay_date = pmpro_resolve_date_pattern( $subscription_delay, $local_wall_clock_timestamp );
 	if ( empty( $delay_date ) ) {
 		return false;
 	}
 
 	// Don't let a resolved date in the past move the start date backwards.
-	$current_local_date = function_exists( 'wp_date' ) ? wp_date( 'Y-m-d', $local_timestamp ) : gmdate( 'Y-m-d', $local_timestamp );
 	if ( $delay_date < $current_local_date ) {
 		$delay_date = $current_local_date;
 	}
 
 	// Convert local midnight of the resolved date to UTC.
-	$timezone = function_exists( 'wp_timezone' ) ? wp_timezone() : new DateTimeZone( 'UTC' );
 	try {
-		$local_dt = new DateTimeImmutable( $delay_date . ' 00:00:00', $timezone );
-		return $local_dt->setTimezone( new DateTimeZone( 'UTC' ) )->format( 'Y-m-d\TH:i:s' );
+		$start_dt = new DateTimeImmutable( $delay_date . ' 00:00:00', $timezone );
+		return $start_dt->setTimezone( new DateTimeZone( 'UTC' ) )->format( 'Y-m-d\TH:i:s' );
 	} catch ( Exception $e ) {
 		return false;
 	}
 }
-
 
 /**
  * Get the set expiration date pattern for a level, optionally with a discount code.
