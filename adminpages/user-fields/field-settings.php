@@ -151,6 +151,7 @@ $levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 		<div id="pmpro_userfield-field-setting_default" class="pmpro_userfield-field-setting pmpro_userfield-field-setting_1-4">
 			<label for="pmpro_userfields_field_default"><?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?></label>
 			<input type="text" name="pmpro_userfields_field_default" id="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
+			<span class="description pmpro_userfield-field-setting_default-date-hint" style="display: none;"><?php esc_html_e( 'Use the YYYY-MM-DD format, e.g. 2026-12-31.', 'paid-memberships-pro' ); ?></span>
 		</div> <!-- end pmpro_userfield-field-setting -->
 
 		<div id="pmpro_userfield-row-settings_files" class="pmpro_userfield-row-settings">

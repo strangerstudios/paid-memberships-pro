@@ -193,13 +193,19 @@
 		private $timestamp = 0;
 
 		/**
-		 * The Affiliate ID 
+		 * The Affiliate ID
+		 *
+		 * Stored as varchar(32) and may contain letters, so this must default to
+		 * a string. __set() casts values by the current property type, so an int
+		 * default would turn IDs like "abc12" into 0. '0' is what orders without
+		 * an affiliate have been saved with since 2.9.
 		 *
 		 * @since 2.9
+		 * @since 3.9.3 Default changed from int 0 to string '0'.
 		 *
-		 * @var int
+		 * @var string
 		 */
-		private $affiliate_id = 0;
+		private $affiliate_id = '0';
 
 		/**
 		 * The Affiliate Sub ID

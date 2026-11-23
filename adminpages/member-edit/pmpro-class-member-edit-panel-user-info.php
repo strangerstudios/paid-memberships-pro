@@ -15,7 +15,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$stripe = new PMProGateway_Stripe();
  		$customer = $stripe->get_customer_for_user( $user->ID );
 		 if ( ! empty( $customer ) ) {
-			$this->title_link .= '<a target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users" href="' . esc_url( 'https://dashboard.stripe.com/' . ( get_option( 'pmpro_gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ) . '">' . esc_html__( 'Edit Customer in Stripe', 'paid-memberships-pro' ) . '</a>';
+			$this->title_link .= '<a target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users" href="' . esc_url( PMProGateway_Stripe::get_dashboard_url( 'customers/' . $customer->id ) ) . '">' . esc_html__( 'Edit Customer in Stripe', 'paid-memberships-pro' ) . '</a>';
 		}
 
 		// Show user updated or user created message if necessary.
