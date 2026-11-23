@@ -60,6 +60,15 @@ $pmpro_dashboard_meta_boxes = apply_filters(
 			'columns'           => 1,
 			'grid_column_start' => 4,
 		),
+		'pmpro_dashboard_health'         => array(
+			'title'             => esc_html__( 'Membership Health', 'paid-memberships-pro' ),
+			'callback'          => array( 'PMPro_Health_Checks', 'show_dashboard_metabox' ),
+			'capability'        => '',
+			'header_link'       => '',
+			'header_link_text'  => '',
+			'columns'           => 4,
+			'grid_column_start' => 1,
+		),
 		'pmpro_dashboard_report_sales'   => array(
 			'title'             => esc_html__( 'Sales and Revenue', 'paid-memberships-pro' ),
 			'callback'          => 'pmpro_report_sales_widget',
@@ -162,10 +171,21 @@ function pmpro_render_dashboard_grid_metaboxes( $meta_boxes, $screen_id ) {
 			}
 		}
 
-		// Then add any metaboxes that weren't in the saved order (new ones)
-		foreach ( $meta_boxes as $id => $meta_box ) {
-			if ( ! isset( $ordered_metaboxes[ $id ] ) ) {
-				$ordered_metaboxes[ $id ] = $meta_box;
+		// Then add any metaboxes that weren't in the saved order (new ones) after the metabox they follow by default.
+		$default_ids = array_keys( $meta_boxes );
+		foreach ( $default_ids as $index => $id ) {
+			if ( isset( $ordered_metaboxes[ $id ] ) ) {
+				continue;
+			}
+
+			$previous_id = $index > 0 ? $default_ids[ $index - 1 ] : null;
+			if ( null !== $previous_id && isset( $ordered_metaboxes[ $previous_id ] ) ) {
+				$position          = array_search( $previous_id, array_keys( $ordered_metaboxes ), true ) + 1;
+				$ordered_metaboxes = array_slice( $ordered_metaboxes, 0, $position, true ) + array( $id => $meta_boxes[ $id ] ) + array_slice( $ordered_metaboxes, $position, null, true );
+			} elseif ( null === $previous_id ) {
+				$ordered_metaboxes = array( $id => $meta_boxes[ $id ] ) + $ordered_metaboxes;
+			} else {
+				$ordered_metaboxes[ $id ] = $meta_boxes[ $id ];
 			}
 		}
 

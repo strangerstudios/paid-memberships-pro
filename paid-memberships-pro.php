@@ -98,6 +98,7 @@ require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-c
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-cancel-on-next-payment-date-admin.php' ); //cancel auto renewals admin email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-deprecated-gateway-stripe-migration.php' ); // deprecated gateway Stripe migration email template
 require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-deprecated-gateway-checkout-required.php' ); // deprecated gateway checkout required email template
+require_once( PMPRO_DIR . '/classes/email-templates/class-pmpro-email-template-health-check-admin.php' ); // membership health problem admin email template
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
@@ -168,6 +169,8 @@ require_once( PMPRO_DIR . '/includes/widgets.php' );                // widgets f
 require_once( PMPRO_DIR . '/includes/gateway-request-handlers.php' ); // gateway request handlers
 
 require_once( PMPRO_DIR . '/classes/class-pmpro-site-health.php' ); // Site Health information.
+require_once( PMPRO_DIR . '/classes/class-pmpro-health-checks.php' ); // Membership health checks.
+PMPro_Health_Checks::init();
 
 require_once( PMPRO_DIR . '/shortcodes/checkout_button.php' );      // [pmpro_checkout_button] shortcode to show link to checkout for a level
 require_once( PMPRO_DIR . '/shortcodes/membership.php' );           // [membership] shortcode to hide/show member content

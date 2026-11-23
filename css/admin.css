@@ -4590,6 +4590,125 @@ button.pmpro_report_th_closed:before {
 	margin-top: var(--pmpro--spacing--small);
 }
 
+/* Membership Health */
+.pmpro-health-toolbar {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+
+.pmpro-health.pmpro-health-is-clear .pmpro-health-toolbar {
+	margin-bottom: 8px;
+}
+
+.pmpro-health-summary {
+	align-items: center;
+	color: #646970;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.pmpro-health-summary .pmpro_tag {
+	margin: 0;
+}
+
+.pmpro-health-run {
+	align-items: center;
+	display: flex;
+	gap: 12px;
+}
+
+.pmpro-health-checked {
+	color: #646970;
+}
+
+.pmpro-health-problems {
+	border-top: 1px solid #f0f0f1;
+	margin: 0;
+}
+
+.pmpro-health-problem {
+	align-items: start;
+	border-bottom: 1px solid #f0f0f1;
+	display: grid;
+	gap: 16px;
+	grid-template-columns: 110px 1fr auto;
+	margin: 0;
+	padding: 16px 0;
+}
+
+.pmpro-health-problem .pmpro_tag {
+	margin: 0;
+}
+
+#pmpro-dashboard-form #dashboard-widgets .postbox .inside .pmpro-health-problem-body h3 {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 4px 0;
+}
+
+#pmpro-dashboard-form #dashboard-widgets .postbox .inside .pmpro-health-problem-body p {
+	margin: 0;
+	max-width: 70em;
+}
+
+.pmpro-health-items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 16px;
+	margin: 8px 0 0 0;
+}
+
+.pmpro-health-items li {
+	margin: 0;
+}
+
+.pmpro-health-others summary {
+	cursor: pointer;
+	font-weight: 600;
+	padding-top: 12px;
+}
+
+.pmpro-health.pmpro-health-is-clear .pmpro-health-others summary {
+	padding-top: 0;
+}
+
+.pmpro-health-others ul {
+	margin: 8px 0 0 0;
+}
+
+.pmpro-health-others li {
+	align-items: baseline;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 0 0 6px 0;
+}
+
+.pmpro-health-others .dashicons {
+	align-self: center;
+	color: #646970;
+}
+
+.pmpro-health-others .pmpro-health-pass .dashicons {
+	color: var(--pmpro--color--success-text);
+}
+
+.pmpro-health-detail {
+	color: #646970;
+}
+
+@media screen and (max-width: 782px) {
+	.pmpro-health-problem {
+		grid-template-columns: 1fr;
+		gap: 8px;
+	}
+}
+
 #pmpro-dashboard-form .button {
 	border-radius: var(--pmpro--border--radius);
 }

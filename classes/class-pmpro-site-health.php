@@ -150,6 +150,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Email Sending Method', 'paid-memberships-pro' ),
 					'value' => self::get_email_method_info(),
 				],
+				'pmpro-health-checks' => [
+					'label' => __( 'Membership Health', 'paid-memberships-pro' ),
+					'value' => PMPro_Health_Checks::get_summary(),
+				],
 			],
 		];
 
@@ -811,7 +815,7 @@ class PMPro_Site_Health {
 			'label' => __( 'Incorrect Paid Memberships Pro Add On Folder Names', 'paid-memberships-pro' ),
 			'test'  => array( __CLASS__, 'site_health_incorrect_addon_folder_names' ),
 		);
-		return $tests;
+		return PMPro_Health_Checks::add_site_health_tests( $tests );
 	}
 
 	/**
