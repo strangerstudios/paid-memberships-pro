@@ -363,40 +363,40 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 		if ( $level->billing_limit > 1 ) {
 			if ( $level->cycle_number == '1' ) {
 				/* translators: 1: billing amount, 2: billing period, 3: number of billing periods, 4: plural billing period */
-				$r .= sprintf( __( ' and then <strong>%1$s per %2$s for %3$d more %4$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period ), $level->billing_limit, pmpro_translate_billing_period( $level->cycle_period, $level->billing_limit ) );
+				$r .= sprintf( __( ' and then <strong>%1$s per %2$s for %3$d more %4$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period, 1, true ), $level->billing_limit, pmpro_translate_billing_period( $level->cycle_period, $level->billing_limit, true ) );
 			} else {
 				/* translators: 1: billing amount, 2: cycle number, 3: billing period, 4: total payments */
-				$r .= sprintf( __( ' and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ), $level->billing_limit );
+				$r .= sprintf( __( ' and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number, true ), $level->billing_limit );
 			}
 		} elseif ( $level->billing_limit == 1 ) {
 			/* translators: 1: billing amount, 2: cycle number, 3: billing period */
-			$r .= sprintf( __( ' and then <strong>%1$s after %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
+			$r .= sprintf( __( ' and then <strong>%1$s after %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number, true ) );
 		} else {
 			if ( $level->billing_amount === $level->initial_payment ) {
 				if ( $level->cycle_number == '1' ) {
 					if ( ! $short ) {
 						/* translators: 1: price, 2: billing period */
-						$r = sprintf( __( 'The price for membership is <strong>%1$s per %2$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), pmpro_translate_billing_period( $level->cycle_period ) );
+						$r = sprintf( __( 'The price for membership is <strong>%1$s per %2$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), pmpro_translate_billing_period( $level->cycle_period, 1, true ) );
 					} else {
 						/* translators: 1: price, 2: billing period */
-						$r = sprintf( __( '<strong>%1$s per %2$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), pmpro_translate_billing_period( $level->cycle_period ) );
+						$r = sprintf( __( '<strong>%1$s per %2$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), pmpro_translate_billing_period( $level->cycle_period, 1, true ) );
 					}
 				} else {
 					if ( ! $short ) {
 						/* translators: 1: price, 2: cycle number, 3: billing period */
-						$r = sprintf( __( 'The price for membership is <strong>%1$s every %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
+						$r = sprintf( __( 'The price for membership is <strong>%1$s every %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number, true ) );
 					} else {
 						/* translators: 1: price, 2: cycle number, 3: billing period */
-						$r = sprintf( __( '<strong>%1$s every %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
+						$r = sprintf( __( '<strong>%1$s every %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number, true ) );
 					}
 				}
 			} else {
 				if ( $level->cycle_number == '1' ) {
 					/* translators: 1: billing amount, 2: billing period */
-					$r .= sprintf( __( ' and then <strong>%1$s per %2$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period ) );
+					$r .= sprintf( __( ' and then <strong>%1$s per %2$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period, 1, true ) );
 				} else {
 					/* translators: 1: billing amount, 2: cycle number, 3: billing period */
-					$r .= sprintf( __( ' and then <strong>%1$s every %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
+					$r .= sprintf( __( ' and then <strong>%1$s every %2$d %3$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number, true ) );
 				}
 			}
 		}
@@ -525,21 +525,21 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 					if ( $curbilllimit > 1 ) {
 						if ( $curcyclenum == '1' ) {
 							/* translators: 1: billing amount, 2: billing period, 3: number of billing periods, 4: plural billing period */
-							$billtextparts[] = sprintf( __( '<strong>%1$s per %2$s for %3$d more %4$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), pmpro_translate_billing_period( $curperiod ), $curbilllimit, pmpro_translate_billing_period( $curperiod, $curbilllimit ) );
+							$billtextparts[] = sprintf( __( '<strong>%1$s per %2$s for %3$d more %4$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), pmpro_translate_billing_period( $curperiod, 1, true ), $curbilllimit, pmpro_translate_billing_period( $curperiod, $curbilllimit, true ) );
 						} else {
 							/* translators: 1: billing amount, 2: cycle number, 3: billing period, 4: total payments */
-							$billtextparts[] = sprintf( __( '<strong>%1$s every %2$d %3$s for %4$d more payments</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum ), $curbilllimit );
+							$billtextparts[] = sprintf( __( '<strong>%1$s every %2$d %3$s for %4$d more payments</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum, true ), $curbilllimit );
 						}
 					} elseif ( $curbilllimit == 1 ) {
 						/* translators: 1: billing amount, 2: cycle number, 3: billing period */
-						$billtextparts[] = sprintf( __( '<strong>%1$s after %2$d %3$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum ) );
+						$billtextparts[] = sprintf( __( '<strong>%1$s after %2$d %3$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum, true ) );
 					} else {
 						if ( $curcyclenum == '1' ) {
 							/* translators: 1: billing amount, 2: billing period */
-							$billtextparts[] = sprintf( __( '<strong>%1$s every %2$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), pmpro_translate_billing_period( $curperiod ) );
+							$billtextparts[] = sprintf( __( '<strong>%1$s every %2$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), pmpro_translate_billing_period( $curperiod, 1, true ) );
 						} else {
 							/* translators: 1: billing amount, 2: cycle number, 3: billing period */
-							$billtextparts[] = sprintf( __( '<strong>%1$s every %2$d %3$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum ) );
+							$billtextparts[] = sprintf( __( '<strong>%1$s every %2$d %3$s</strong>', 'paid-memberships-pro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum, true ) );
 						}
 					}
 				}
@@ -614,7 +614,7 @@ function pmpro_getLevelExpiration( &$level ) {
 			/* translators: 1: expiration number, 2: expiration period */
 			__( 'Membership expires after %1$d %2$s.', 'paid-memberships-pro' ),
 			$level->expiration_number,
-			pmpro_translate_billing_period( $level->expiration_period, $level->expiration_number )
+			pmpro_translate_billing_period( $level->expiration_period, $level->expiration_number, true )
 		);
 	} else {
 		$expiration_text = '';
@@ -639,7 +639,7 @@ function pmpro_getLevelsExpiration( &$levels ) {
 				__( '%1$s membership expires after %2$d %3$s', 'paid-memberships-pro' ),
 				$curlevel->name,
 				$curlevel->expiration_number,
-				pmpro_translate_billing_period( $curlevel->expiration_period, $curlevel->expiration_number )
+				pmpro_translate_billing_period( $curlevel->expiration_period, $curlevel->expiration_number, true )
 			);
 		} else {
 			$ongoinglevelnum++;

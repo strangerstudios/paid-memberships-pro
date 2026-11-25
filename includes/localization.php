@@ -26,8 +26,23 @@ function pmpro_load_textdomain() {
 }
 add_action( 'init', 'pmpro_load_textdomain', 1 );
 
-function pmpro_translate_billing_period($period, $number = 1)
-{	
+/**
+ * Translate a billing period name (Day, Month, ...).
+ *
+ * @param string $period      The period: Hour, Day, Week, Month or Year.
+ * @param int    $number      The number of periods, used to pick singular or plural.
+ * @param bool   $in_sentence Whether the period is used inside a sentence (e.g. "$10 per Month").
+ *                            Those strings have their own translation context, so languages that
+ *                            write period names in lowercase mid-sentence can do so without
+ *                            changing the stand-alone labels. English output is unchanged.
+ * @return string|null The translated period, or null for an unknown period.
+ */
+function pmpro_translate_billing_period($period, $number = 1, $in_sentence = false)
+{
+	if ( $in_sentence ) {
+		return pmpro_translate_billing_period_in_sentence( $period, $number );
+	}
+
 	//note as of v1.8, we stopped using _n and split things up to aid in localization
 	if($number == 1)
 	{
@@ -56,6 +71,82 @@ function pmpro_translate_billing_period($period, $number = 1)
 		elseif($period == "Year")
 			return __("Years", 'paid-memberships-pro' );
 	}
+}
+
+/**
+ * Translate a billing period name for use inside a sentence.
+ *
+ * Same English text as pmpro_translate_billing_period(), but with a translation
+ * context, so translators can use the form that fits mid-sentence (for example
+ * lowercase "mes" / "meses" in Spanish) while the stand-alone labels keep theirs.
+ * Falls back to pmpro_translate_billing_period() while the new strings are untranslated.
+ *
+ * @since TBD
+ *
+ * @param string $period The period: Hour, Day, Week, Month or Year.
+ * @param int    $number The number of periods, used to pick singular or plural.
+ * @return string|null The translated period, or null for an unknown period.
+ */
+function pmpro_translate_billing_period_in_sentence( $period, $number = 1 ) {
+	if ( $number == 1 ) {
+		switch ( $period ) {
+			case 'Hour':
+				$english    = 'Hour';
+				$translated = _x( 'Hour', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			case 'Day':
+				$english    = 'Day';
+				$translated = _x( 'Day', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			case 'Week':
+				$english    = 'Week';
+				$translated = _x( 'Week', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			case 'Month':
+				$english    = 'Month';
+				$translated = _x( 'Month', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			case 'Year':
+				$english    = 'Year';
+				$translated = _x( 'Year', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			default:
+				return null;
+		}
+	} else {
+		switch ( $period ) {
+			case 'Hour':
+				$english    = 'Hours';
+				$translated = _x( 'Hours', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			case 'Day':
+				$english    = 'Days';
+				$translated = _x( 'Days', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			case 'Week':
+				$english    = 'Weeks';
+				$translated = _x( 'Weeks', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			case 'Month':
+				$english    = 'Months';
+				$translated = _x( 'Months', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			case 'Year':
+				$english    = 'Years';
+				$translated = _x( 'Years', 'billing period used inside a sentence', 'paid-memberships-pro' );
+				break;
+			default:
+				return null;
+		}
+	}
+
+	// Not translated yet in this language: fall back to the existing period translation,
+	// so sites don't switch to English until translators add the new strings.
+	if ( $translated === $english ) {
+		return pmpro_translate_billing_period( $period, $number );
+	}
+
+	return $translated;
 }
 
 /**
