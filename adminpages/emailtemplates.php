@@ -3,8 +3,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Only admins can get to this screen.
-if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_emailsettings' ) ) ) {
+// Only users who can manage email templates can get to this screen.
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_emailtemplates' ) ) ) {
 	die (esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
